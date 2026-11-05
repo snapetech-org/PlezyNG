@@ -199,6 +199,7 @@ class PublicationFile {
     this.primary = true,
     this.streamOnly = false,
     this.sampleOnly = false,
+    this.sealedAccessHint,
   });
   final String id;
   final String name;
@@ -212,6 +213,9 @@ class PublicationFile {
   /// Provider-declared sample content. It must only be opened through an
   /// ephemeral preview session and must never acquire ordinary progress.
   final bool sampleOnly;
+
+  /// Adapter-owned, vault-encrypted resource locator. Never part of edition identity.
+  final String? sealedAccessHint;
   SourceItemKind get kind => classifySourceFile(name, mimeType);
   bool get previewableSample =>
       sampleOnly &&
@@ -234,6 +238,7 @@ class PublicationFile {
     'primary': primary,
     'streamOnly': streamOnly,
     'sampleOnly': sampleOnly,
+    if (sealedAccessHint != null) 'sealedAccessHint': sealedAccessHint,
   };
   factory PublicationFile.fromJson(Map<String, dynamic> j) => PublicationFile(
     id: j['id'] as String,
@@ -246,6 +251,8 @@ class PublicationFile {
     streamOnly: j['streamOnly'] as bool? ?? false,
     // Accept the earlier PR schema while always writing the canonical key.
     sampleOnly: j['sampleOnly'] as bool? ?? j['sample'] as bool? ?? false,
+    sealedAccessHint: j['sealedAccessHint'] is String && (j['sealedAccessHint'] as String).length <= 32768
+        ? j['sealedAccessHint'] as String : null,
   );
 }
 

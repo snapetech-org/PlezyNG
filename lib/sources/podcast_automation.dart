@@ -7,6 +7,7 @@ import '../services/connectivity_probe.dart';
 import '../services/new_episode_notification_service.dart';
 import '../utils/app_logger.dart';
 import 'podcast_library.dart';
+import 'adapters/podcast_rss_source.dart';
 import 'podcast_metadata.dart';
 import 'source_controller.dart';
 import 'source_models.dart';
@@ -122,9 +123,18 @@ final class PodcastAutomation with WidgetsBindingObserver {
         if (!force && now.millisecondsSinceEpoch - last < const Duration(minutes: 25).inMilliseconds) continue;
         await sources.browse(source.id);
         check();
-        final page = await sources.browse(source.id, parent: 'podcast:episodes');
+        var page = await sources.browse(source.id, parent: 'podcast:episodes');
         check();
-        final episodes = page.entries.where((e) => !e.isFolder).toList()..sort((a, b) =>
+        final rootEntries = [...page.entries];
+        final adapter = sources.adapter(source.id);
+        while (page.next != null && adapter is PodcastRssSourceAdapter && await adapter.cursorIsLatestFeed(page.next!)) {
+          check();
+          page = await sources.browse(source.id, parent: 'podcast:episodes', cursor: page.next);
+          rootEntries.addAll(page.entries);
+          if (rootEntries.length > 10000) throw const SourceException(SourceFailure.invalidData);
+        }
+        check();
+        final episodes = rootEntries.where((e) => !e.isFolder).toList()..sort((a, b) =>
           (podcastPublishedAt(b)?.millisecondsSinceEpoch ?? 0).compareTo(podcastPublishedAt(a)?.millisecondsSinceEpoch ?? 0));
         final seen = (state['seen'] as List? ?? const []).whereType<String>().toSet();
         final hasBaseline = state.containsKey('seen');
@@ -204,7 +214,7 @@ final class PodcastAutomation with WidgetsBindingObserver {
         }
         check();
         await sources.repository.savePreference(profile, _stateKey(source.id), {
-          'lastRefresh': now.millisecondsSinceEpoch, 'seen': episodes.map((e) => e.id).take(2000).toList(),
+          'lastRefresh': now.millisecondsSinceEpoch, 'seen': episodes.map((e) => e.id).take(10000).toList(),
           'managed': managed, 'day': day, 'bytes': used,
         });
       } on SourceException catch (error) {

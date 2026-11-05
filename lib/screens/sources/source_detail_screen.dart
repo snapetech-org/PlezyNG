@@ -41,6 +41,7 @@ import 'source_notes_screen.dart';
 import 'source_player_screen.dart';
 import 'source_sync_screen.dart';
 import 'source_widgets.dart';
+import 'podcast_transcript_screen.dart';
 
 Widget _focusedLendingButton({
   required VoidCallback? onPressed,
@@ -697,6 +698,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
       title: Text(_entry.displayTitle),
       focusableAppBarActions: true,
       actions: [
+        if (_entry.identifiers['transcript'] == 'available')
+          IconButton(tooltip: t.subtitleAiUi.searchTranscript, icon: const Icon(Icons.subject),
+            onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PodcastTranscriptScreen(entry: _entry)))),
         if (source?.kind == FileSourceKind.nfs && _entry.files.isNotEmpty)
           IconButton(
             tooltip: t.sourceSetup.nfsReadTest,

@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import '../../services/credential_vault.dart';
 import '../podcast_transcript.dart';
+import '../gpodder_client.dart';
 
 import 'package:xml/xml.dart';
 
@@ -270,6 +271,7 @@ class PodcastRssSourceAdapter extends SourceAdapter {
         releaseYear: date?.year,
         identifiers: {
           'podcast': 'episode',
+          'podcastSyncIdentity': podcastSyncIdentity(rootFeedUri.toString(), audioUri.toString()),
           if (transcriptUri != null) 'transcript': 'available',
           'feed': source.id,
           'guid': sourceDigest(scopedIdentity),

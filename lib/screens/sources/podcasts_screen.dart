@@ -24,6 +24,7 @@ import '../../widgets/music/mini_player.dart';
 import 'add_source_screen.dart';
 import 'podcast_actions.dart';
 import 'podcast_settings_screen.dart';
+import 'podcast_sync_screen.dart';
 import 'podcast_discover_screen.dart';
 import 'source_detail_screen.dart';
 import 'source_player_screen.dart';
@@ -307,6 +308,7 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
           icon: const AppIcon(Symbols.more_vert_rounded),
           adaptiveSheet: true,
           entriesBuilder: (_) => [
+            AppMenuItem(value: 'sync', label: t.podcasts.syncConnect, icon: Symbols.sync_rounded),
             AppMenuItem(value: 'automation', label: t.common.settings, icon: Symbols.settings_rounded),
             AppMenuItem(value: 'discover', label: t.podcasts.discover, icon: Symbols.search_rounded),
             AppMenuItem(value: 'feed', label: t.podcasts.addFeed, icon: Symbols.rss_feed_rounded),
@@ -315,7 +317,9 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
             AppMenuItem(value: 'export', label: t.podcasts.exportOpml, icon: Symbols.ios_share_rounded),
           ],
           onSelected: (action) => sourceAction(context, () async {
-            if (action == 'automation') {
+            if (action == 'sync') {
+              await _route(const PodcastSyncScreen());
+            } else if (action == 'automation') {
               await _route(const PodcastSettingsScreen());
             } else if (action == 'discover') {
               await _route(const PodcastDiscoverScreen(), refresh: true);

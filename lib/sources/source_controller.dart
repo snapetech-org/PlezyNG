@@ -37,6 +37,7 @@ import 'source_transport.dart';
 import 'publication_shelf.dart';
 import 'podcast_opml.dart';
 import 'podcast_automation.dart';
+import 'podcast_sync.dart';
 import 'sync/publication_sync.dart';
 import 'sync/sync_store.dart';
 import 'sync/sync_document.dart';
@@ -141,6 +142,8 @@ class SourceController extends ChangeNotifier {
   SourceFailure? failure;
   Future<void> Function()? stopPlayback;
   PodcastAutomation? _podcastAutomation;
+  PodcastSync? _podcastSync;
+  PodcastSync get podcastSync => _podcastSync!;
   PodcastAutomation get podcastAutomation => _podcastAutomation!;
   Timer? _syncTimer;
   Timer? _syncSoon;
@@ -392,6 +395,7 @@ class SourceController extends ChangeNotifier {
       repository,
       Directory(p.join((await getApplicationSupportDirectory()).path, 'publication-files')),
     );
+    _podcastSync = PodcastSync(this, onUpdate: _notify);
     _podcastAutomation = PodcastAutomation(this, onUpdate: _notify);
     if (_disposed) _podcastAutomation!.dispose();
     if (!_disposed) _syncTimer = Timer.periodic(const Duration(minutes: 1), (_) => scheduleSync());
@@ -401,6 +405,7 @@ class SourceController extends ChangeNotifier {
     if (profileId == id && this.blocked == blocked) return;
     final profileChanged = profileId != id;
     _cancelImports();
+    _podcastSync?.cancel();
     profileId = id;
     this.blocked = blocked;
     generation++;
@@ -751,12 +756,12 @@ class SourceController extends ChangeNotifier {
     await reload();
   }
 
-  Future<int> importPodcastSubscriptions(List<PodcastSubscription> feeds) async {
+  Future<int> importPodcastSubscriptions(List<PodcastSubscription> feeds, {int? expectedGeneration}) async {
     if (feeds.isEmpty || feeds.length > PodcastOpml.maxFeeds) {
       throw const SourceException(SourceFailure.invalidData);
     }
     await ready;
-    requireSession();
+    requireSession(expectedGeneration);
     final epoch = generation, profile = profileId!;
     final known = <String>{};
     for (final source in sources.where((item) => item.kind == FileSourceKind.podcastRss)) {
@@ -1941,7 +1946,7 @@ class SourceController extends ChangeNotifier {
     for (final event in events) {
       if (event['kind'] == 'annotation') continue;
       final key = event['key'];
-      if (event['kind'] != 'progress' || key is! String || key.isEmpty) {
+      if (key is! String || key.isEmpty) {
         firstFailure ??= const SourceException(SourceFailure.invalidData);
         firstFailureStack ??= StackTrace.current;
         continue;
@@ -1953,6 +1958,7 @@ class SourceController extends ChangeNotifier {
       late PublicationProgress progress;
       try {
         progress = PublicationProgress.fromJson(sourceMap(jsonDecode(event['payload'] as String)));
+        if (progress.key != event['key']) throw const SourceException(SourceFailure.invalidData);
       } catch (error, stackTrace) {
         firstFailure ??= error;
         firstFailureStack ??= stackTrace;
@@ -2062,6 +2068,10 @@ class SourceController extends ChangeNotifier {
         firstFailure ??= error;
         firstFailureStack ??= stackTrace;
       }
+    }
+    if (onlyKey == null) {
+      await _podcastSync?.run();
+      requireSession(epoch);
     }
     _notify();
     if (firstFailure != null) Error.throwWithStackTrace(firstFailure, firstFailureStack!);
@@ -2184,6 +2194,7 @@ class SourceController extends ChangeNotifier {
     _syncTimer?.cancel();
     _syncSoon?.cancel();
     _podcastAutomation?.dispose();
+    _podcastSync?.cancel();
     generation++;
     final stopped = stopPlayback?.call();
     for (final adapter in _adapters.values) {
@@ -2197,6 +2208,7 @@ class SourceController extends ChangeNotifier {
         await _settleImports();
         await downloads.settleCancelled();
         await _podcastAutomation?.settled;
+        await _podcastSync?.settled;
         await stopped;
         await repository.database.close();
       }),

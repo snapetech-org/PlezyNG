@@ -4630,7 +4630,15 @@
     "serverHelp": "Browse or scan your Audiobookshelf source to add its downloaded podcast episodes here.",
     "viewAll": "Show more episodes",
     "inLibrary": "Open podcast",
-    "rateLimited": "Wait a few seconds before searching again."
+    "rateLimited": "Wait a few seconds before searching again.",
+    "syncConnect": "gpodder-compatible sync",
+    "syncPrivacy": "This server receives subscription and episode URLs, which may contain private membership tokens, and listening positions. Credentials and sync checkpoints are encrypted on this device. Subscription removal is synchronized; existing downloads and history are retained.",
+    "syncConsent": "Share podcast URLs and listening progress with this server",
+    "syncSubscriptions": "Sync subscriptions",
+    "syncDevice": "Device ID",
+    "syncDevicesHelp": "Each installation needs its own device ID. Link the devices in your server's device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.",
+    "syncNow": "Sync now",
+    "syncPending": "Some remote changes are waiting for local episodes, manual feed setup, or playback to finish."
   },
   "subtitleAiUi": {
     "cutRepair": "Cut repair",

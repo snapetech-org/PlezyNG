@@ -11786,6 +11786,30 @@ class Translations$podcasts$en {
 
 	/// en: 'Wait a few seconds before searching again.'
 	String get rateLimited => 'Wait a few seconds before searching again.';
+
+	/// en: 'gpodder-compatible sync'
+	String get syncConnect => 'gpodder-compatible sync';
+
+	/// en: 'This server receives subscription and episode URLs, which may contain private membership tokens, and listening positions. Credentials and sync checkpoints are encrypted on this device. Subscription removal is synchronized; existing downloads and history are retained.'
+	String get syncPrivacy => 'This server receives subscription and episode URLs, which may contain private membership tokens, and listening positions. Credentials and sync checkpoints are encrypted on this device. Subscription removal is synchronized; existing downloads and history are retained.';
+
+	/// en: 'Share podcast URLs and listening progress with this server'
+	String get syncConsent => 'Share podcast URLs and listening progress with this server';
+
+	/// en: 'Sync subscriptions'
+	String get syncSubscriptions => 'Sync subscriptions';
+
+	/// en: 'Device ID'
+	String get syncDevice => 'Device ID';
+
+	/// en: 'Each installation needs its own device ID. Link the devices in your server\'s device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.'
+	String get syncDevicesHelp => 'Each installation needs its own device ID. Link the devices in your server\'s device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.';
+
+	/// en: 'Sync now'
+	String get syncNow => 'Sync now';
+
+	/// en: 'Some remote changes are waiting for local episodes, manual feed setup, or playback to finish.'
+	String get syncPending => 'Some remote changes are waiting for local episodes, manual feed setup, or playback to finish.';
 }
 
 // Path: subtitleAiUi
@@ -19427,6 +19451,14 @@ extension on Translations {
 			'podcasts.viewAll' => 'Show more episodes',
 			'podcasts.inLibrary' => 'Open podcast',
 			'podcasts.rateLimited' => 'Wait a few seconds before searching again.',
+			'podcasts.syncConnect' => 'gpodder-compatible sync',
+			'podcasts.syncPrivacy' => 'This server receives subscription and episode URLs, which may contain private membership tokens, and listening positions. Credentials and sync checkpoints are encrypted on this device. Subscription removal is synchronized; existing downloads and history are retained.',
+			'podcasts.syncConsent' => 'Share podcast URLs and listening progress with this server',
+			'podcasts.syncSubscriptions' => 'Sync subscriptions',
+			'podcasts.syncDevice' => 'Device ID',
+			'podcasts.syncDevicesHelp' => 'Each installation needs its own device ID. Link the devices in your server\'s device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.',
+			'podcasts.syncNow' => 'Sync now',
+			'podcasts.syncPending' => 'Some remote changes are waiting for local episodes, manual feed setup, or playback to finish.',
 			'subtitleAiUi.cutRepair' => 'Cut repair',
 			'subtitleAiUi.automaticSync' => 'Automatic sync',
 			'subtitleAiUi.cutRepairLowercase' => 'cut repair',

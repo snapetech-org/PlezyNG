@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "source": "assets/branding/plezyng-approved.png",
-  "source_sha256": "90e6ac90fce3ca7d9822ec9a457c751aa41e3b93f168676654596b56a95e05e0",
+  "source": "assets/branding/pleazyng-approved.png",
+  "source_sha256": "51413382785511220cc80834258eb66c4aedccc17f2f3aba389497670a828e96",
   "default_background": "#071527",
   "themes": {
     "crt": "#f1e7d3",
@@ -30,7 +30,7 @@
   },
   "targets": [
     {
-      "path": "assets/plezyng-app-icon.png",
+      "path": "assets/pleazyng-app-icon.png",
       "size": [
         1254,
         1254
@@ -39,7 +39,7 @@
       "fit": 1
     },
     {
-      "path": "assets/plezy.png",
+      "path": "assets/pleazyng.png",
       "size": [
         1024,
         1024
@@ -57,7 +57,7 @@
       "fit": 1
     },
     {
-      "path": "assets/plezy_adaptive_foreground.png",
+      "path": "assets/pleazyng_adaptive_foreground.png",
       "size": [
         1024,
         1024
@@ -65,7 +65,7 @@
       "role": "adaptive"
     },
     {
-      "path": "assets/branding/plezyng-monochrome.png",
+      "path": "assets/branding/pleazyng-monochrome.png",
       "size": [
         1024,
         1024
@@ -74,7 +74,7 @@
       "fit": 1
     },
     {
-      "path": "ios/plezy.icon/Assets/plezyng-app-icon.png",
+      "path": "ios/plezy.icon/Assets/pleazyng-app-icon.png",
       "size": [
         1024,
         1024
@@ -84,7 +84,7 @@
       "appearance": "light"
     },
     {
-      "path": "macos/plezy.icon/Assets/plezyng-app-icon.png",
+      "path": "macos/plezy.icon/Assets/pleazyng-app-icon.png",
       "size": [
         1024,
         1024
@@ -4306,14 +4306,6 @@
       "role": "feature"
     },
     {
-      "path": "docs/maintainers/store-listing-assets/google-play/phone-01-server-options-1080x1920.png",
-      "size": [
-        1080,
-        1920
-      ],
-      "role": "server_options"
-    },
-    {
       "path": "docs/maintainers/store-listing-assets/amazon/icon-large-512.png",
       "size": [
         512,
@@ -4332,15 +4324,7 @@
       "fit": 0.76
     },
     {
-      "path": "docs/maintainers/store-listing-assets/app-store/iphone-dynamic-island-medium/iphone-01-server-options-1179x2556.png",
-      "size": [
-        1179,
-        2556
-      ],
-      "role": "iphone_server_options"
-    },
-    {
-      "path": "assets/branding/plezyng-mark-light.png",
+      "path": "assets/branding/pleazyng-mark-light.png",
       "role": "logo",
       "size": [
         1024,
@@ -4350,7 +4334,7 @@
       "appearance": "light"
     },
     {
-      "path": "assets/branding/plezyng-wordmark-light.png",
+      "path": "assets/branding/pleazyng-wordmark-light.png",
       "role": "wordmark",
       "size": [
         1200,
@@ -4360,7 +4344,7 @@
       "appearance": "light"
     },
     {
-      "path": "assets/branding/plezyng-artwork-light.webp",
+      "path": "assets/branding/pleazyng-artwork-light.webp",
       "role": "artwork",
       "size": [
         1672,
@@ -4445,7 +4429,7 @@
       "appearance": "light"
     },
     {
-      "path": "assets/branding/plezyng-mark-dark.png",
+      "path": "assets/branding/pleazyng-mark-dark.png",
       "role": "logo",
       "size": [
         1024,
@@ -4455,7 +4439,7 @@
       "appearance": "dark"
     },
     {
-      "path": "assets/branding/plezyng-wordmark-dark.png",
+      "path": "assets/branding/pleazyng-wordmark-dark.png",
       "role": "wordmark",
       "size": [
         1200,
@@ -4465,7 +4449,7 @@
       "appearance": "dark"
     },
     {
-      "path": "assets/branding/plezyng-artwork-dark.webp",
+      "path": "assets/branding/pleazyng-artwork-dark.webp",
       "role": "artwork",
       "size": [
         1672,
@@ -4577,7 +4561,7 @@
       "fit": 0.9
     },
     {
-      "path": "assets/branding/plezyng-compact.png",
+      "path": "assets/branding/pleazyng-compact.png",
       "role": "logo",
       "size": [
         1024,
@@ -4597,7 +4581,7 @@
       "compact": true
     },
     {
-      "path": "assets/branding/plezyng-adaptive-light.png",
+      "path": "assets/branding/pleazyng-adaptive-light.png",
       "role": "adaptive",
       "size": [
         1024,
@@ -4609,27 +4593,28 @@
   "sources": {
     "mark_light": {
       "path": "assets/branding/source/mark-light.png",
-      "sha256": "478edfff1dfde1cc867edae366599fd4ab50fcef06c1b274cd4490607a41cfc1"
+      "sha256": "51413382785511220cc80834258eb66c4aedccc17f2f3aba389497670a828e96"
     },
     "compact": {
       "path": "assets/branding/source/compact.png",
-      "sha256": "5ef10b9ec13e136b70db0400ce9eb7e76ecb375b714e9f3ca74741e05301c522"
+      "sha256": "51413382785511220cc80834258eb66c4aedccc17f2f3aba389497670a828e96"
     },
     "wordmark_dark": {
       "path": "assets/branding/source/wordmark-dark.png",
-      "sha256": "895049d73bd2a077dc37b2659b58c5d0e7db4588bb0849db617c20335b431b63"
+      "sha256": "d3f30fbc911278e8dad68c042c98966b8d2b8cdefa69353cee7676a7caa1fb8c"
     },
     "wordmark_light": {
       "path": "assets/branding/source/wordmark-light.png",
-      "sha256": "059e5de1e453f7242812fd2bccf522a6207286f24c7b98af7ef4e729896a905f"
+      "sha256": "8fcf72db4c98bbb7550521106bad65fc24e8707e3fabb6a622568f6398d8b835"
     },
     "artwork_dark": {
       "path": "assets/branding/source/artwork-dark.png",
-      "sha256": "458d09ec6d3a9ffc5d0a26236bdb3b5dc3b54f54e70da11284aadb7c1af2f2a1"
+      "sha256": "dadafee99df344cb2c4be294ce4f820857deeef8ce753ddcc58559816f564786"
     },
     "artwork_light": {
       "path": "assets/branding/source/artwork-light.png",
-      "sha256": "d3d3f2da2c9710b7d71643054c7d9ac993f7c0873e45ddc3478e079601e170d0"
+      "sha256": "09fbc48657b7d46d251054b1cdcdefa88115711253c4ff5ed2d92dcd9244bbd9"
     }
-  }
+  },
+  "product": "Pleazyng"
 }

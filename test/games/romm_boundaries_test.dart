@@ -48,9 +48,13 @@ void main() {
       '/romm/%252e%252e/secret',
       '/romm/cover%2f..%2f..%2fsecret',
       '/romm/cover%5csecret',
+      '/romm/assets%2f..%2fsecret',
+      '/romm/assets%5c..%5csecret',
     ]) {
       expect(() => client.resource(target), throwsA(isA<RommFailure>()));
     }
+    expect(() => client.uri('api/%2e%2e/secret'), throwsA(isA<RommFailure>()));
+    expect(client.resource('assets/My%20Game.jpg').pathSegments.last, 'My Game.jpg');
     expect(() => client.uri('https://other.example/rom'), throwsA(isA<RommFailure>()));
     client.close();
     expect(client.requireCurrent, throwsA(isA<RommFailure>()));

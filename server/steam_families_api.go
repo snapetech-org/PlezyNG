@@ -232,7 +232,7 @@ func (a *steamFamilyAPI) call(ctx context.Context, token, service, method string
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "PlezyNG Steam Families")
+	req.Header.Set("User-Agent", "Pleazyng Steam Families")
 	client := *a.client
 	client.Timeout = 15 * time.Second
 	client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }

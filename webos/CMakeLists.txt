@@ -8,3 +8,7 @@ install(TARGETS plezy_torrent LIBRARY DESTINATION lib)
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native/games/romm" "${CMAKE_CURRENT_BINARY_DIR}/romm_native")
 install(TARGETS plezy_retro LIBRARY DESTINATION lib)
+if(PLEZY_ROMM_BUILD_CORES)
+  install(TARGETS gambatte_libretro mgba_libretro fceumm_libretro LIBRARY DESTINATION lib)
+  install(DIRECTORY "${ROMM_NOTICES_DIR}/" DESTINATION lib/romm-notices)
+endif()

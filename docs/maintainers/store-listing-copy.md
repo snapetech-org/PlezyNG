@@ -1,8 +1,8 @@
 # Store and package descriptions
 
-Use this copy for release channels that accept an app summary or full description. Lead with what PlezyNG does and the servers it supports; keep product copy about the app itself.
+Use this copy for release channels that accept an app summary or full description. Lead with what Pleazyng does and the servers it supports; keep product copy about the app itself.
 
-Name the product PlezyNG. Keep descriptions focused on its Plex client features and Jellyfin and Emby support; leave project history out of release copy.
+Name the product Pleazyng. Keep descriptions focused on its Plex client features and Jellyfin and Emby support; leave project history out of release copy.
 
 ## Short descriptions
 
@@ -22,7 +22,7 @@ AppStream summary, 30 characters:
 
 ## Full store description
 
-> PlezyNG is an enhanced Plex client that also supports Jellyfin and Emby. Browse movies, shows, and music across your servers, search connected libraries, and keep watchlists and viewing progress in sync. Download media for offline playback. Watch Live TV and DVR where your server supports them. Choose audio tracks and subtitles, adjust playback speed and audio sync, and use HDR or Dolby Vision on supported devices. Watch Together keeps playback in sync when everyone can access the same media on the same server. Use PlezyNG on phones, tablets, TVs, and desktop computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary by server, device, and media.
+> Pleazyng is an enhanced Plex client that also supports Jellyfin and Emby. Browse movies, shows, and music across your servers, search connected libraries, and keep watchlists and viewing progress in sync. Download media for offline playback. Watch Live TV and DVR where your server supports them. Choose audio tracks and subtitles, adjust playback speed and audio sync, and use HDR or Dolby Vision on supported devices. Watch Together keeps playback in sync when everyone can access the same media on the same server. Use Pleazyng on phones, tablets, TVs, and desktop computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary by server, device, and media.
 
 ## Store links
 

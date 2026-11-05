@@ -251,7 +251,7 @@ class _PlaylistHarness {
         baseUrl: 'https://plex.example.com',
         token: 'token',
         clientIdentifier: 'client-id',
-        product: 'PlezyNG',
+        product: 'Pleazyng',
         version: 'test',
       ),
       serverId: _serverId,

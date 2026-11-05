@@ -196,14 +196,14 @@ class ProviderSyncStore implements SyncStore {
             data = await _json(
               'POST',
               _dropbox(cursor == null ? 'list_folder' : 'list_folder/continue'),
-              body: cursor == null ? {'path': '/PlezyNG Sync', 'limit': 1000} : {'cursor': cursor},
+              body: cursor == null ? {'path': '/Pleazyng Sync', 'limit': 1000} : {'cursor': cursor},
             );
           } on SourceException catch (e) {
             if (e.status != 409 || cursor != null) rethrow;
             // The first use creates only the dedicated app folder. A conflict
             // here is a folder collision or permission problem and is surfaced.
-            await _json('POST', _dropbox('create_folder_v2'), body: {'path': '/PlezyNG Sync', 'autorename': false});
-            data = await _json('POST', _dropbox('list_folder'), body: {'path': '/PlezyNG Sync', 'limit': 1000});
+            await _json('POST', _dropbox('create_folder_v2'), body: {'path': '/Pleazyng Sync', 'autorename': false});
+            data = await _json('POST', _dropbox('list_folder'), body: {'path': '/Pleazyng Sync', 'limit': 1000});
           }
           for (final raw in sourceList(data['entries'])) {
             final row = sourceMap(raw);
@@ -320,7 +320,7 @@ class ProviderSyncStore implements SyncStore {
           headers: {
             'Content-Type': 'application/octet-stream',
             'Dropbox-API-Arg': jsonEncode({
-              'path': '/PlezyNG Sync/$name',
+              'path': '/Pleazyng Sync/$name',
               'mode': 'add',
               'autorename': false,
               'mute': true,

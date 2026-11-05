@@ -116,7 +116,7 @@ class DvLabTest(unittest.TestCase):
                 dv_lab.trial_command(source, "mpv", "auto", seconds)
 
     def test_absent_executable_is_reported(self):
-        self.assertFalse(dv_lab.capture(["/nonexistent/plezyng-dv-test-mpv"])["available"])
+        self.assertFalse(dv_lab.capture(["/nonexistent/pleazyng-dv-test-mpv"])["available"])
 
 
 if __name__ == "__main__":

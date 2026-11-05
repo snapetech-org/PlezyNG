@@ -138,7 +138,7 @@ def bootstrap(sdk: Path, archive: Path | None = None) -> Path:
         if archive is None:
             archive = staging / pin["file"]
             request = urllib.request.Request("https://dl.google.com/android/repository/" + pin["file"],
-                                             headers={"User-Agent": "PlezyNG-sdk-preparation/1"})
+                                             headers={"User-Agent": "Pleazyng-sdk-preparation/1"})
             with urllib.request.urlopen(request, timeout=60) as response, archive.open("xb") as output:
                 if urlsplit(response.url).scheme != "https":
                     raise ValueError("Android tool download redirected outside HTTPS")

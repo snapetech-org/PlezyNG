@@ -175,7 +175,7 @@ class _Windows implements _Memory {
     var handle = -1;
     try {
       final identity = sid(-1); // GetCurrentProcess pseudo-handle.
-      final name = '\\\\.\\pipe\\PlezyNG.SteamCloud.$identity'.codeUnits;
+      final name = '\\\\.\\pipe\\Pleazyng.SteamCloud.$identity'.codeUnits;
       final path = arena.alloc<Uint16>((name.length + 1) * 2);
       path.asTypedList(name.length).setAll(0, name);
       final create = k

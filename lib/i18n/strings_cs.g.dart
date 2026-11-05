@@ -122,7 +122,7 @@ class _Translations$app$cs extends Translations$app$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class _Translations$appIcon$cs extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Výchozí';
 	@override String get current => 'Aktuální ikona';
 	@override String get locked => 'Životní přístup požadovaný';
-	@override String get lockedHint => 'Začněte 7denní zkoušku nebo odemkněte PlezyNG po celý život, abyste použili alternativní ikony.';
+	@override String get lockedHint => 'Začněte 7denní zkoušku nebo odemkněte Pleazyng po celý život, abyste použili alternativní ikony.';
 	@override String get changeFailed => 'Nemůžu změnit ikonu aplikace';
-	@override String get launcherHint => 'Nová ikona se objeví na domácím obrazovce, jakmile opustíte PlezyNG.';
-	@override String get tvLauncherHint => 'Nový banner se objeví, jakmile opustíte PlezyNG. Android TV může pokračovat v zobrazování starého, dokud se televizor neotevře.';
+	@override String get launcherHint => 'Nová ikona se objeví na domácím obrazovce, jakmile opustíte Pleazyng.';
+	@override String get tvLauncherHint => 'Nový banner se objeví, jakmile opustíte Pleazyng. Android TV může pokračovat v zobrazování starého, dokud se televizor neotevře.';
 	@override late final _Translations$appIcon$names$cs names = _Translations$appIcon$names$cs._(_root);
 	@override String get description => 'Vyberte ikonu zobrazenou spuštěčem zařízení. Předpovědi ukazují, jak vypadá každá možnost.';
 }
@@ -166,7 +166,7 @@ class _Translations$auth$cs extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Čekáme na schválení...';
 	@override String get quickConnectCancel => 'Zrušit';
 	@override String get quickConnectExpired => 'Platnost rychlého připojení vypršela. Zkuste to znovu.';
-	@override String get localDataRecoveryRequired => 'PlezyNG nedokázalo bezpečně obnovit místní přihlašovací údaje a čekající údaje o přehrávání. Přihlaste se znovu.';
+	@override String get localDataRecoveryRequired => 'Pleazyng nedokázalo bezpečně obnovit místní přihlašovací údaje a čekající údaje o přehrávání. Přihlaste se znovu.';
 	@override String get pinCheckRejected => 'Ček PIN Plex byl zamítnut';
 	@override String get connectToDirectPlex => 'Připojte se k místnímu serveru Plex';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$cs extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Nastavení';
-	@override String get supportDeveloper => 'Podpora PlezyNG';
+	@override String get supportDeveloper => 'Podpora Pleazyng';
 	@override String get supportDeveloperDescription => 'Dotace na podporu rozvoje';
-	@override String get lifetimeAccess => 'PlezyNG Životní přístup';
+	@override String get lifetimeAccess => 'Pleazyng Životní přístup';
 	@override String get language => 'Jazyk';
 	@override String get theme => 'Téma';
 	@override String get appearance => 'Vzhled';
@@ -353,7 +353,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'K dispozici nejsou žádné propojené knihovny.';
 	@override String get contentScreensaverDismissHint => 'Stiskněte tlačítko nebo stiskněte tlačítko k odvolání';
 	@override String get newEpisodeNotifications => 'Nová epizoda oznámení';
-	@override String get newEpisodeNotificationsDescription => 'Upozornění, když je k show přidána nová epizoda, jste zachyceni. kontroly, zatímco Plezy je otevřeno.';
+	@override String get newEpisodeNotificationsDescription => 'Upozornění, když je k show přidána nová epizoda, jste zachyceni. kontroly, zatímco Pleazyng je otevřeno.';
 	@override String get continueWatchingRowSize => 'Pokračujte v sledování velikosti řádku';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} karty';
 	@override String get rowSizeCompact => 'Kompaktní';
@@ -488,7 +488,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Obnovte preference z souboru';
 	@override String get importSettingsConfirm => 'To nahradí vaše aktuální nastavení. pokračovat?';
 	@override String get importSettingsSuccess => 'Nastavení importované';
-	@override String get importSettingsInvalidFile => 'Tento soubor není platný PlezyNG nastavení export';
+	@override String get importSettingsInvalidFile => 'Tento soubor není platný Pleazyng nastavení export';
 	@override String get importSettingsNoUser => 'Přihlaste se před dovozem';
 	@override String get cloudBackup => 'Cloud záloha';
 	@override String get cloudBackupDescription => 'Zálohování přenosných nastavení na koncové místo WebDAV přes HTTPS.Serverové připojení a autentifikace zůstanou na tomto zařízení.';
@@ -670,7 +670,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get forceTvMode => 'TV režim síly';
 	@override String get forceTvModeDescription => 'Pro zařízení, která neexistuje automaticky detekce, vyžaduje restart.';
 	@override String get startInFullscreen => 'Začněte na plném obrazovce';
-	@override String get startInFullscreenDescription => 'Otevřete PlezyNG v režimu plného obrazovky při spuštění';
+	@override String get startInFullscreenDescription => 'Otevřete Pleazyng v režimu plného obrazovky při spuštění';
 	@override String get exitFullscreenOnPlayerClose => 'Výstup na plný obrazovek na hráči uzavřené';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Automaticky vyjde na plný obrazovek při zavírání videa';
 	@override String get autoHidePerformanceOverlay => 'Auto-Hide Výkon Overlay';
@@ -726,7 +726,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Všude všude';
 	@override String get playerScopeLibrary => 'Pro knihovnu';
 	@override String get playerScopeTitle => 'Pro show nebo film';
-	@override String get exportDialogTitle => 'Vývoz PlezyNG nastavení';
+	@override String get exportDialogTitle => 'Vývoz Pleazyng nastavení';
 	@override String get followSystem => 'Podle systému';
 	@override String get followAppLanguage => 'Podle jazyka rozhraní';
 	@override String get regionFormat => 'Místní formáty';
@@ -737,7 +737,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'Otevřete desktopové video na plném obrazovce, když začíná playback';
 	@override String get extendVideoIntoDisplayCutout => 'Rozšířte video do displeje Cutout';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'Umožňujte, aby video s plnou obrazovkou používalo fotoaparát na telefonech Android';
-	@override String get languageDescription => 'Vyberte jazyk používaný pro kontroly a zprávy PlezyNG.Sledujte systém sleduje jazyk vašeho zařízení.';
+	@override String get languageDescription => 'Vyberte jazyk používaný pro kontroly a zprávy Pleazyng.Sledujte systém sleduje jazyk vašeho zařízení.';
 	@override String get themeDescription => 'Vyberte barvy a kontrast používané v celé aplikaci.';
 	@override String get libraryDensityDescription => 'Změňte, kolik knihovních karet se hodí v každém řádku.';
 	@override String get displayScaleDescription => 'Přehrávejte rozhraní na tomto autovém displeji, aniž byste změnili velikost textu v celé zařízení.';
@@ -759,14 +759,14 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get episodeActionDescription => 'Vyberte si, co se stane, když aktivujete epizodovou kartu.';
 	@override String get episodePlayDescription => 'Hra začíná okamžitě.';
 	@override String get episodeDetailsDescription => 'Otevřete stránku epizody před playbackem.';
-	@override String get contentScreensaverDelayDescription => 'Vyberte si, jak dlouho PlezyNG čeká bez vstupu před zobrazením uměleckého díla.';
+	@override String get contentScreensaverDelayDescription => 'Vyberte si, jak dlouho Pleazyng čeká bez vstupu před zobrazením uměleckého díla.';
 	@override String get continueWatchingRowSizeDescription => 'Vyberte si, jak velké jsou karty v řádku Pokračující sledování.';
 	@override String get rowSizeCompactDescription => 'Zobrazit menší karty, takže více položek se hodí po řádku.';
 	@override String get rowSizeStandardDescription => 'Použijte standardní velikost karty.';
 	@override String get rowSizeLargeDescription => 'Zobrazit větší karty s více uměleckých detailů.';
 	@override String get visualEffectsDescription => 'Vyberte rozpočet animace a uměleckých efektů pro toto zařízení.';
 	@override String get visualEffectsFullDescription => 'Použijte plné animace a umělecké efekty na každém zařízení.';
-	@override String get startupSectionDescription => 'Vyberte, která sekce se otevře při zahájení PlezyNG.';
+	@override String get startupSectionDescription => 'Vyberte, která sekce se otevře při zahájení Pleazyng.';
 	@override late final _Translations$settings$startupSectionOptions$cs startupSectionOptions = _Translations$settings$startupSectionOptions$cs._(_root);
 	@override String get smallSkipDurationDescription => 'Nastavte vzdálenost pohybující se krátkou zpětnou a dopředu hledat kontroly.';
 	@override String get largeSkipDurationDescription => 'Nastavte vzdálenost pohybující se dlouhým zpětným a dopředu hledat kontroly.';
@@ -802,7 +802,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => 'Přehrávejte zdrojový zvuk bez bitrate-capped transcode.';
 	@override String get musicQualityTranscodeOptionDescription => 'Požádejte o transkód serveru v blízkosti výše uvedené bitové rychlosti; skutečný výsledek se může lišit.';
 	@override String get maxVolumeInputLabel => 'Maximální objem (%)';
-	@override String get checkForUpdatesDescription => 'Zkontrolujte, zda je k dispozici novější verze PlezyNG.';
+	@override String get checkForUpdatesDescription => 'Zkontrolujte, zda je k dispozici novější verze Pleazyng.';
 	@override String get appearanceDescription => 'Vyberte téma aplikace a přizpůsobte karty knihovny, domovské řádky a navigaci.';
 	@override String get prerollLibraryDescription => 'Vyberte si knihovnu, která obsahuje klipy k dispozici jako filmové pre-rolls.';
 	@override String get prerollSelectionDescription => 'Vyberte, které klipy z vybrané knihovny můžete hrát před filmy.';
@@ -1059,8 +1059,8 @@ class _Translations$mediaMenu$cs extends Translations$mediaMenu$en {
 		many: 'Další epizody ve stejném souboru (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) budou také smazány:',
 		other: 'Ve stejném souboru je uloženo dalších ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod, které budou také smazány:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG nedokázalo ověřit, které soubory budou odstraněny, takže může smazat více než výše uvedenou položku. Akci zrušte a zkuste to znovu, nebo pokračujte ve smazání.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Server neposkytl podrobnosti o souborech této položky, takže PlezyNG nemůže ověřit, které soubory budou odstraněny. Může být smazáno více než výše uvedená položka.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng nedokázalo ověřit, které soubory budou odstraněny, takže může smazat více než výše uvedenou položku. Akci zrušte a zkuste to znovu, nebo pokračujte ve smazání.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Server neposkytl podrobnosti o souborech této položky, takže Pleazyng nemůže ověřit, které soubory budou odstraněny. Může být smazáno více než výše uvedená položka.';
 	@override String get mediaDeletedSuccessfully => 'Media objekt byl úspěšně odstraněn';
 	@override String get mediaFailedToDelete => 'Nedokázal odstranit mediální položku';
 	@override String get rate => 'Hodnocení';
@@ -1128,7 +1128,7 @@ class _Translations$accessibility$cs extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'přístupnost';
 	@override String get summary => 'Text, kontrast, pohyb a kontroly';
-	@override String get systemHint => 'Nastavení přístupnosti vašeho zařízení se vždy vztahují.Tyto možnosti přidávají úpravy po celém PlezyNG.';
+	@override String get systemHint => 'Nastavení přístupnosti vašeho zařízení se vždy vztahují.Tyto možnosti přidávají úpravy po celém Pleazyng.';
 	@override String get readability => 'Čtení a viditelnost';
 	@override String get textSize => 'Další textová velikost';
 	@override String get preview => 'Přečtěte si, poslouchejte a sledujte ve svém vlastním tempu.';
@@ -1141,7 +1141,7 @@ class _Translations$accessibility$cs extends Translations$accessibility$en {
 	@override String get largeTargets => 'větší cíle dotyku';
 	@override String get largeTargetsHint => 'Dáváme sdíleným ovládacím prvkům více prostoru pro dotyk a asistenční navigaci.';
 	@override String get navigationHint => 'Mezi ovládacími prvky se přesouvejte klávesami Tab a Shift+Tab, aktivujte je klávesou Enter nebo mezerníkem a zavírejte klávesou Escape nebo tlačítkem Zpět. Při otevřené knize je dostupné přiblížení a nastavení čtení.';
-	@override String get textSizeDescription => 'Rozsah textového rozhraní v PlezyNG kromě nastavení velikosti textu systému vašeho zařízení.';
+	@override String get textSizeDescription => 'Rozsah textového rozhraní v Pleazyng kromě nastavení velikosti textu systému vašeho zařízení.';
 	@override String get boldTextHint => 'Použijte těžší váhu pro rozhraní etikety a zprávy, aby je jednodušší rozlišovat.';
 }
 
@@ -1471,7 +1471,7 @@ class _Translations$profiles$cs extends Translations$profiles$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Přidat profil PlezyNG';
+	@override String get addPlezyProfile => 'Přidat profil Pleazyng';
 	@override String get switchingProfile => 'Přepínání profilu...';
 	@override String get deleteThisProfileTitle => 'Vymazat tento profil?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Odstranit ${displayName}. připojení není ovlivněno.';
@@ -1562,7 +1562,7 @@ class _Translations$connections$cs extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} servery odmítly přístup k tomuto účtu';
 	@override String get signInAgain => 'Podepisujte se znovu';
 	@override String editMediaBrowserTitle({required Object product}) => 'Edit ${product} připojení';
-	@override String editMediaBrowserIntro({required Object serverName}) => 'Přidat nebo odstranit URL pro ${serverName}. PlezyNG bude používat přístupné URL s nejnižší latencí.';
+	@override String editMediaBrowserIntro({required Object serverName}) => 'Přidat nebo odstranit URL pro ${serverName}. Pleazyng bude používat přístupné URL s nejnižší latencí.';
 }
 
 // Path: accountPreferences
@@ -1576,7 +1576,7 @@ class _Translations$accountPreferences$cs extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => 'Možnosti audio, podtitulů a knihovny uložené na ${account}';
 	@override String hubSubtitleMultiple({required Object count}) => 'Možnosti audio, podtitulů a knihovny uložené na účtech ${count}';
 	@override String get pickAccount => 'Každý účet ukládá své vlastní preference. vyberte ten, který chcete upravit.';
-	@override String get storedOnAccount => 'Tyto možnosti jsou uloženy na samotném účtu, takže každá aplikace, která se k němu přihlásí, je používá – včetně PlezyNG na vašich jiných zařízeních.';
+	@override String get storedOnAccount => 'Tyto možnosti jsou uloženy na samotném účtu, takže každá aplikace, která se k němu přihlásí, je používá – včetně Pleazyng na vašich jiných zařízeních.';
 	@override String get noAccounts => 'Žádné účty, které by se měly nastavit';
 	@override String get noAccountsHint => 'Přihlaste se na Plex, nebo se připojte na server Jellyfin nebo Emby, a preference uložené na tomto účtu se zobrazí zde.';
 	@override String get unavailable => 'Nemůžete tento účet získat';
@@ -1806,9 +1806,9 @@ class _Translations$startup$cs extends Translations$startup$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG nemohl začít';
+	@override String get failedTitle => 'Pleazyng nemohl začít';
 	@override String get failedBody => 'Něco se během start-upu zhroutilo. podrobnosti níže identifikují to, co selžilo.';
-	@override String get failedBodyRepairable => 'Uložený soubor nastavení PlezyNG je poškozený a před spuštěním aplikace je nutné jej znovu vytvořit. Další pokus nepomůže — zvolte opravu úložiště.';
+	@override String get failedBodyRepairable => 'Uložený soubor nastavení Pleazyng je poškozený a před spuštěním aplikace je nutné jej znovu vytvořit. Další pokus nepomůže — zvolte opravu úložiště.';
 	@override String get phaseLabel => 'Krok';
 	@override String get showDetails => 'Zobrazit detaily';
 	@override String get hideDetails => 'skryte detaily';
@@ -1817,16 +1817,16 @@ class _Translations$startup$cs extends Translations$startup$en {
 	@override String get uploadDetails => 'Upload podrobnosti';
 	@override String get repairStorage => 'Oprava skladování';
 	@override String get repairTitle => 'Opravy uložených dat?';
-	@override String get repairBodyCommon => 'Soubor nastavení PlezyNG je poškozen a nelze ho přečíst. opravy obnoví každé nastavení na své výchozí.';
+	@override String get repairBodyCommon => 'Soubor nastavení Pleazyng je poškozen a nelze ho přečíst. opravy obnoví každé nastavení na své výchozí.';
 	@override String get repairBodyOneCredential => 'Jeden uložený sign-in je poškozen a nemůže být přečten. opravy odstraní pouze ten jeden; vaše ostatní nastavení jsou ponechány samy.';
 	@override String get repairBodySignInsKept => 'Přihlášení k vašim serverům a profilům by mělo zůstat zachováno.';
 	@override String get repairBodySignInsLost => 'Klíč chránící uložené přihlašovací údaje nelze z tohoto souboru obnovit, takže se budete muset znovu přihlásit ke každému serveru a profilu. Na mediálním serveru se nic nezmění.';
-	@override String get repairBodySessionsUncertain => 'Údaje služeb MAL, AniList, Simkl, Trakt a Seerr se ukládají samostatně a mohou, ale nemusí zůstat zachovány. PlezyNG vám přesně sdělí, co zachovalo.';
+	@override String get repairBodySessionsUncertain => 'Údaje služeb MAL, AniList, Simkl, Trakt a Seerr se ukládají samostatně a mohou, ale nemusí zůstat zachovány. Pleazyng vám přesně sdělí, co zachovalo.';
 	@override String get repairConfirm => 'Opravy';
 	@override String get repairSucceeded => 'Úložné opravy';
 	@override String get repairNeedsRestart => 'Uložení opravené – nutné restartování';
-	@override String get restartRequiredBody => 'Vaše data byla opravena, ale PlezyNG je může použít až po novém spuštění. Zavřete PlezyNG a znovu jej otevřete.';
-	@override String get quitPlezy => 'Zpět PlezyNG';
+	@override String get restartRequiredBody => 'Vaše data byla opravena, ale Pleazyng je může použít až po novém spuštění. Zavřete Pleazyng a znovu jej otevřete.';
+	@override String get quitPlezy => 'Zpět Pleazyng';
 	@override String get repairFailed => 'Oprava selhala';
 	@override String get repairKeptSignIns => 'K serverům a profilům jste stále přihlášeni.';
 	@override String get repairLostSignIns => 'Klíč chránící uložené přihlašovací údaje se nepodařilo obnovit. Budete se muset znovu přihlásit ke každému serveru a profilu.';
@@ -1835,7 +1835,7 @@ class _Translations$startup$cs extends Translations$startup$en {
 	@override String get backupWarning => 'Obsahuje vaše přihlašovací údaje. Nenahrávejte ji ani ji nesdílejte.';
 	@override String get deleteBackup => 'Vymazat kopii';
 	@override String get backupDeleted => 'Kopie je vymazána.';
-	@override String get previousFailureTitle => 'PlezyNG neuspěl naposledy';
+	@override String get previousFailureTitle => 'Pleazyng neuspěl naposledy';
 }
 
 // Path: licenses
@@ -2177,7 +2177,7 @@ class _Translations$watchTogether$cs extends Translations$watchTogether$en {
 	@override String get codeCopied => 'Kód pokoje kopírovaný';
 	@override String get shareInvite => 'Sdílejte pozvání';
 	@override String get inviteCopied => 'Zkuste kopírovat. vložte ji do zprávy.';
-	@override String inviteMessage({required Object code}) => 'Připojte se k mým hodinám společně v místnosti PlezyNG: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.';
+	@override String inviteMessage({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.';
 	@override String get openSessionControls => 'Otevřete sledování Session Controls';
 	@override String get reconnecting => 'Připojení...';
 	@override String get reconnectingDescription => 'Připojení je zrušené. automaticky se připojíte k místnosti.';
@@ -2203,7 +2203,7 @@ class _Translations$watchTogether$cs extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Vyberte další kopii';
 	@override String get dontPlay => 'Nehrát si';
 	@override String get unavailableTitle => 'Nemáte toto video';
-	@override String get unavailableDescription => 'PlezyNG nemohl najít v knihovně. vyberte si kopii sami nebo vyhledejte znovu.';
+	@override String get unavailableDescription => 'Pleazyng nemohl najít v knihovně. vyberte si kopii sami nebo vyhledejte znovu.';
 	@override String get chooseCopy => 'Vyberte si kopii';
 	@override String get searchAgain => 'Znovu hledat';
 	@override String get noCandidates => 'V knihovně nenajdete žádné kopie.';
@@ -2350,11 +2350,11 @@ class _Translations$downloads$cs extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Synchronizační pravidla';
 	@override String get reviewOrphanFiles => 'Přihláška na sirotek Downloads';
 	@override String get orphanReviewTitle => 'Přihláška na sirotek Downloads';
-	@override String get orphanReviewDescription => 'Tyto označené soubory se nacházejí v předvolebních aplikacích spravovaných stahovacích složkách PlezyNG a nemají odpovídající stahovací záznam nebo aktivní úkol.';
+	@override String get orphanReviewDescription => 'Tyto označené soubory se nacházejí v předvolebních aplikacích spravovaných stahovacích složkách Pleazyng a nemají odpovídající stahovací záznam nebo aktivní úkol.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} soubory · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => 'Odstranit soubory ${count}';
 	@override String get orphanCleanupNone => 'Není nalezeno žádné downloadové soubory';
-	@override String get orphanCleanupFailed => 'PlezyNG nemohl bezpečně skenovat složku spravovaných stahování. žádné soubory nebyly odstraněny.';
+	@override String get orphanCleanupFailed => 'Pleazyng nemohl bezpečně skenovat složku spravovaných stahování. žádné soubory nebyly odstraněny.';
 	@override String get orphanCleanupChanged => 'Seznam stahování se během přezkumu změnil. přezkoumání souborů znovu před čištěním.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => 'Odstraněno ${count} orphaned soubory · ${size} osvobozeno';
 	@override String get noSyncRules => 'Žádné pravidla synchronizace';
@@ -2738,11 +2738,11 @@ class _Translations$trakt$cs extends Translations$trakt$en {
 	@override String get connected => 'připojené';
 	@override String connectedAs({required Object username}) => 'Připojeno jako @${username}';
 	@override String get disconnectConfirm => 'Odstranit účet Trakt?';
-	@override String get disconnectConfirmBody => 'PlezyNG přestane odesílat události na adresu Trakt.Můžete se kdykoli znovu spojit.';
+	@override String get disconnectConfirmBody => 'Pleazyng přestane odesílat události na adresu Trakt.Můžete se kdykoli znovu spojit.';
 	@override String get scrobble => 'Reálný scrobbling';
 	@override String get scrobbleDescription => 'Pošlete si hraní, přestávku a zastavení událostí na adresu Trakt během přehrávání.';
 	@override String get watchedSync => 'Sync sledovaný status';
-	@override String get watchedSyncDescription => 'Pokud označíte položky podle zobrazení v čísle PlezyNG, označují se také podle zobrazení v čísle Trakt.';
+	@override String get watchedSyncDescription => 'Pokud označíte položky podle zobrazení v čísle Pleazyng, označují se také podle zobrazení v čísle Trakt.';
 }
 
 // Path: seerr
@@ -2761,10 +2761,10 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get signInWithEmby => 'Přihlaste se na číslo Emby';
 	@override String get signInWithLocal => 'Použijte místní účet';
 	@override String get email => 'Emailová';
-	@override String get noSignInMethods => 'Tento příklad Seerr neobsahuje žádnou podpůrnou metodu PlezyNG.';
+	@override String get noSignInMethods => 'Tento příklad Seerr neobsahuje žádnou podpůrnou metodu Pleazyng.';
 	@override String get instance => 'Instance';
 	@override String get disconnectConfirm => 'Odstranit se od Seerr?';
-	@override String get disconnectConfirmBody => 'PlezyNG bude zapomenout na tento příklad Seerr.';
+	@override String get disconnectConfirmBody => 'Pleazyng bude zapomenout na tento příklad Seerr.';
 	@override String get request => 'Žádost';
 	@override String get request4k => 'Vyžádání v 4K';
 	@override String get seasons => 'Série';
@@ -2789,7 +2789,7 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Blokované';
 	@override String couldNotReach({required Object url, required Object error}) => 'Nemůže dosáhnout ${url}: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'Žádný případ Seerr na adrese ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'Autentifikující reverzní proxy (SSO nebo HTTP auth) odpověděla namísto Seerr. PlezyNG nemůže přihlásit prostřednictvím něj: nechte Seerr /api/v1 cestu přes proxy pro tuto aplikaci, nebo použijte adresu, která se přímo dostane Seerr.';
+	@override String get behindAuthProxy => 'Autentifikující reverzní proxy (SSO nebo HTTP auth) odpověděla namísto Seerr. Pleazyng nemůže přihlásit prostřednictvím něj: nechte Seerr /api/v1 cestu přes proxy pro tuto aplikaci, nebo použijte adresu, která se přímo dostane Seerr.';
 	@override String get invalidUrl => 'Zadejte serverovou adresu jako je https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Tento příklad Seerr nepodporuje Quick Connect. Potřebuje Seerr 3.4 nebo novější.';
 	@override String get notInitialized => 'Tento příklad Seerr nedokončil první instalace';
@@ -2819,7 +2819,7 @@ class _Translations$services$cs extends Translations$services$en {
 	@override String get scrobble => 'Automaticky sledujte pokrok';
 	@override String get scrobbleDescription => 'Aktualizujte svůj seznam, když dokončíte epizodu nebo film.';
 	@override String disconnectConfirm({required Object service}) => 'Rozhraní ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG přestane aktualizovat ${service}. znovu se připojit kdykoli.';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng přestane aktualizovat ${service}. znovu se připojit kdykoli.';
 	@override String connectFailed({required Object service}) => 'Nemohla jsem se připojit na číslo ${service}. zkuste znovu.';
 	@override late final _Translations$services$names$cs names = _Translations$services$names$cs._(_root);
 	@override late final _Translations$services$simklReconnect$cs simklReconnect = _Translations$services$simklReconnect$cs._(_root);
@@ -2841,8 +2841,8 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String get title => 'Streamování z cloudu a doplňků';
 	@override String get subtitle => 'Připojte účet Debrid, abyste mohli procházet soubory v cloudu a přehrávat podporované streamy. Doplňky kompatibilní se Stremiem nabízejí možnosti streamování na stránkách filmů a epizod. Údaje o připojení jsou v tomto zařízení šifrované a uložené v tomto profilu.';
 	@override String connectionsConfigured({required Object count}) => 'Připojené zdroje: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG nemohl odemknout uložená nastavení streamování. Odemkněte zařízení a před změnou připojení to zkuste znovu.';
-	@override String get settingsUnreadable => 'PlezyNG nemohl odemknout tato uložená připojení. Vymažte je a služby znovu připojte.';
+	@override String get settingsLoadFailed => 'Pleazyng nemohl odemknout uložená nastavení streamování. Odemkněte zařízení a před změnou připojení to zkuste znovu.';
+	@override String get settingsUnreadable => 'Pleazyng nemohl odemknout tato uložená připojení. Vymažte je a služby znovu připojte.';
 	@override String get clearUnreadableSettings => 'Vymazat uložená nastavení';
 	@override String get clearUnreadableSettingsConfirm => 'Vymazat uložená nastavení streamování?';
 	@override String get clearUnreadableSettingsBody => 'Tím se z profilu odeberou všechny uložené účty poskytovatelů a adresy doplňků. Tuto akci nelze vrátit.';
@@ -2854,11 +2854,11 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'Pro procházení katalogu vyberte požadované filtry.';
 	@override String get catalogRequiredLabel => 'Povinné';
 	@override String get importFromStremio => 'Importovat ze Stremia';
-	@override String get stremioImportInstructions => 'Naskenujte QR kód nebo otevřete odkaz. Přihlaste se do Stremia a schvalte žádost. PlezyNG čte pouze seznam vašich doplňků; nikdy nepožaduje heslo ke Stremiu ani nemění jeho nastavení.';
+	@override String get stremioImportInstructions => 'Naskenujte QR kód nebo otevřete odkaz. Přihlaste se do Stremia a schvalte žádost. Pleazyng čte pouze seznam vašich doplňků; nikdy nepožaduje heslo ke Stremiu ani nemění jeho nastavení.';
 	@override String get stremioImportOpen => 'Otevřít odkaz Stremia';
 	@override String get stremioImportCode => 'Párovací kód';
 	@override String get stremioImportPreviewTitle => 'Vybrat doplňky';
-	@override String get stremioImportPreviewBody => 'Vyberte doplňky, které chcete připojit k PlezyNG. Tento import přijímá pouze adresy HTTPS.';
+	@override String get stremioImportPreviewBody => 'Vyberte doplňky, které chcete připojit k Pleazyng. Tento import přijímá pouze adresy HTTPS.';
 	@override String stremioImportIgnored({required Object count}) => 'Přeskočené doplňky s nepodporovanými nebo nezabezpečenými adresami: ${count}.';
 	@override String get stremioCatalogs => 'Katalogy';
 	@override String get stremioStreams => 'Streamy';
@@ -2872,7 +2872,7 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Přidat pomocí URL manifestu';
 	@override String get addAddon => 'Přidat doplněk';
 	@override String get manifestUrl => 'URL manifestu doplňku';
-	@override String get manifestUrlHint => 'Vložte URL manifestu doplňku. PlezyNG před připojením ověří podporu katalogů nebo streamovacích zdrojů.';
+	@override String get manifestUrlHint => 'Vložte URL manifestu doplňku. Pleazyng před připojením ověří podporu katalogů nebo streamovacích zdrojů.';
 	@override String get allowHttp => 'Povolit nešifrovanou adresu HTTP';
 	@override String get allowHttpDescription => 'Používejte pouze pro důvěryhodný doplněk v soukromé síti.';
 	@override String get installAddon => 'Připojit doplněk';
@@ -2880,20 +2880,20 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String get addonRemoved => 'Doplněk odebrán';
 	@override String get addonToggle => 'Povolit doplněk';
 	@override String get addonEmpty => 'Zatím nejsou připojené žádné doplňky';
-	@override String get addonError => 'PlezyNG se k tomuto doplňku nepodařilo připojit. Zkontrolujte URL manifestu a zkuste to znovu.';
+	@override String get addonError => 'Pleazyng se k tomuto doplňku nepodařilo připojit. Zkontrolujte URL manifestu a zkuste to znovu.';
 	@override String get addonPrivacy => 'Připojujte pouze doplňky, kterým důvěřujete. Při vyhledávání doplněk obdrží hledaný název a může vracet odkazy na streamy třetích stran.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Přehrávejte podporované torrentové streamy přes účet Real-Debrid.';
 	@override String get connectRealDebrid => 'Připojit pomocí QR kódu';
 	@override String realDebridConnected({required Object username}) => 'Připojeno jako ${username}';
-	@override String get realDebridInstructions => 'Naskenujte QR kód nebo otevřete odkaz a zadejte tento aktivační kód pro připojení PlezyNG:';
+	@override String get realDebridInstructions => 'Naskenujte QR kód nebo otevřete odkaz a zadejte tento aktivační kód pro připojení Pleazyng:';
 	@override String get realDebridActivate => 'Otevřít Real-Debrid a aktivovat';
 	@override String get realDebridCode => 'Aktivační kód';
 	@override String get realDebridConnectFailed => 'K Real-Debrid se nepodařilo připojit. Zkuste to znovu.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'Přehrávejte podporované torrentové streamy přes účet AllDebrid.';
 	@override String get connectAllDebrid => 'Připojit pomocí QR kódu';
-	@override String get allDebridInstructions => 'Naskenujte QR kód nebo otevřete odkaz a autorizujte PlezyNG. Během připojování ponechte tuto obrazovku otevřenou:';
+	@override String get allDebridInstructions => 'Naskenujte QR kód nebo otevřete odkaz a autorizujte Pleazyng. Během připojování ponechte tuto obrazovku otevřenou:';
 	@override String get allDebridActivate => 'Otevřít AllDebrid a aktivovat';
 	@override String get allDebridCode => 'Aktivační PIN';
 	@override String get allDebridConnectFailed => 'K AllDebrid se nepodařilo připojit. Zkuste to znovu.';
@@ -2904,13 +2904,13 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String get connectApiKey => 'Připojit pomocí klíče API';
 	@override String apiKeyTitle({required Object service}) => 'Připojit ${service}';
 	@override String get apiKey => 'Klíč API';
-	@override String apiKeyHint({required Object service}) => 'Vložte klíč API z nastavení účtu ${service}. PlezyNG ho zašifruje v tomto zařízení a uloží do tohoto profilu.';
+	@override String apiKeyHint({required Object service}) => 'Vložte klíč API z nastavení účtu ${service}. Pleazyng ho zašifruje v tomto zařízení a uloží do tohoto profilu.';
 	@override String get apiKeyConnectFailed => 'Klíč API se nepodařilo ověřit. Zkontrolujte ho a zkuste to znovu.';
 	@override String accountConnected({required Object username}) => 'Připojeno jako ${username}';
 	@override String get streamNeedsProvider => 'Pro přehrání tohoto torrentového streamu připojte službu Debrid.';
 	@override String get playViaProvider => 'Přehrát přes Debrid';
 	@override String disconnectConfirm({required Object service}) => 'Odpojit ${service}?';
-	@override String get disconnectBody => 'PlezyNG odebere oprávnění tohoto zařízení. Soubory u poskytovatele ani probíhající přenosy se nezmění.';
+	@override String get disconnectBody => 'Pleazyng odebere oprávnění tohoto zařízení. Soubory u poskytovatele ani probíhající přenosy se nezmění.';
 	@override String get streamsTitle => 'Vybrat stream';
 	@override String get noStreams => 'Pro tento titul nebyly nalezeny žádné streamy.';
 	@override String get manageConnections => 'Spravovat streamovací služby';
@@ -2926,7 +2926,7 @@ class _Translations$streaming$cs extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Tento formát streamu vestavěný přehrávač nepodporuje.';
 	@override String get remoteNeedsEpisode => 'Před vyhledáním streamu vyberte epizodu.';
 	@override String get remoteNeedsEpisodeNumber => 'U této epizody chybí číslo řady nebo epizody.';
-	@override String get remoteNeedsExternalId => 'PlezyNG pro tento titul nenašel IMDb ani TMDB ID.';
+	@override String get remoteNeedsExternalId => 'Pleazyng pro tento titul nenašel IMDb ani TMDB ID.';
 	@override String get watchWithServices => 'Sledovat přes připojené služby';
 	@override String get chooseEpisode => 'Vybrat epizodu';
 	@override String get episodes => 'Epizody';
@@ -3057,15 +3057,15 @@ class _Translations$appAccess$cs extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => 'Zkuste každou funkci zdarma po dobu 7 dní';
-	@override String get description => 'Začněte sedmdenní zkoušku s plným přístupem k každému PlezyNG funkci. v průběhu zkoušky neexistuje žádná poplatek a žádná předplatná. Po zkoušce jeden životní nákup v ceně vašeho obchodu odblokuje PlezyNG po celý život.';
-	@override String get trialEndedDescription => 'Jediným nákupem za cenu uvedenou ve vašem obchodě odemknete všechny funkce PlezyNG natrvalo. Bez předplatného.';
+	@override String get description => 'Začněte sedmdenní zkoušku s plným přístupem k každému Pleazyng funkci. v průběhu zkoušky neexistuje žádná poplatek a žádná předplatná. Po zkoušce jeden životní nákup v ceně vašeho obchodu odblokuje Pleazyng po celý život.';
+	@override String get trialEndedDescription => 'Jediným nákupem za cenu uvedenou ve vašem obchodě odemknete všechny funkce Pleazyng natrvalo. Bez předplatného.';
 	@override String get startTrial => 'Začínám 7denní bezplatný test';
 	@override String get trialActive => 'Váš 7denní plnohodnotný test je aktivní.';
 	@override String get trialEnded => 'Sedmdenní proces skončil.';
 	@override String get trialStartFailed => 'Nemohla jsem na tomto zařízení ušetřit zkoušku. prosím zkuste znovu.';
-	@override String get lifetimeTitle => 'PlezyNG odemknutá po celý život';
-	@override String get lifetimeBody => 'Díky! máte celoživotní přístup k každému PlezyNG funkci.';
-	@override String get manageTitle => 'PlezyNG Životní přístup';
+	@override String get lifetimeTitle => 'Pleazyng odemknutá po celý život';
+	@override String get lifetimeBody => 'Díky! máte celoživotní přístup k každému Pleazyng funkci.';
+	@override String get manageTitle => 'Pleazyng Životní přístup';
 	@override String get manageDescription => 'Zkuste každou funkci zdarma po dobu 7 dnů, pak odemkněte vše po celý život s jednou platbou za cenu vašeho obchodu.';
 	@override String buy({required Object price}) => 'Odemknout všechny funkce pro ${price}';
 	@override String get loadingPrice => 'Nákladní obchodní cena...';
@@ -3073,11 +3073,11 @@ class _Translations$appAccess$cs extends Translations$appAccess$en {
 	@override String get restore => 'Obnovte životní nákup';
 	@override String get pending => 'Váš nákup čeká na platbu nebo schválení. celoživotní přístup odemkne, jakmile ho obchod dokončí.';
 	@override String get storeUnavailable => 'Nákupy nejsou k dispozici. zkontrolujte, že jste se zaregistrovali do obchodu a nákupy jsou povoleny na tomto zařízení.';
-	@override String get productNotFound => 'Životní odemknutí PlezyNG není v tomto obchodě zatím k dispozici.';
+	@override String get productNotFound => 'Životní odemknutí Pleazyng není v tomto obchodě zatím k dispozici.';
 	@override String get productQueryFailed => 'Nemohla jsem si stáhnout cenu obchodu. zkontrolujte připojení a zkuste znovu.';
 	@override String get purchaseFailed => 'Nákup neprošel, zkuste to znovu.';
 	@override String get restoreFailed => 'Nemohla jsem se dostat do obchodu, abyste obnovili nákup. zkuste znovu.';
-	@override String get nothingToRestore => 'Číslo PlezyNG pro životní nákup byl nalezen pro tento obchodní účet.';
+	@override String get nothingToRestore => 'Číslo Pleazyng pro životní nákup byl nalezen pro tento obchodní účet.';
 }
 
 // Path: detail
@@ -3118,8 +3118,8 @@ class _Translations$homeLayout$cs extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Domů Layout';
-	@override String get resetToast => 'Domů Reset na původní rozložení hrdiny Plezy';
-	@override String get resetHeroTitle => 'Obnovte herecký layout na zásobu Plezy?';
+	@override String get resetToast => 'Domů Reset na původní rozložení hrdiny Pleazyng';
+	@override String get resetHeroTitle => 'Obnovte herecký layout na zásobu Pleazyng?';
 	@override String get resetHeroBody => 'Odstraní postavy hrdiny každé řady a přináší zpět jediný otáčící banner na vrcholu Domova, stejně jako předtím, než hrdinové řádky existovaly.';
 	@override String get removeRowTitle => 'Odstranit domácí řádek?';
 	@override String removeRowBody({required Object title}) => '${title} bude vymazán. to nelze vymazat.';
@@ -3129,7 +3129,7 @@ class _Translations$homeLayout$cs extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Vypnutí: Tento přístroj si udržuje svůj vlastní layout.';
 	@override String get syncNow => 'Synchronizace nyní';
 	@override String get plexHomeManager => 'Plex Domácí manažer';
-	@override String get managePlexRows => 'Řízení Plex řádků v Plezy';
+	@override String get managePlexRows => 'Řízení Plex řádků v Pleazyng';
 	@override String get managePlexRowsDescription => 'Otevřeno pro organizaci domácího výběru řádků';
 	@override String get organizeHomeRows => 'Domácí řádky';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} řádky: pohyb, Hero, Auto-slide, odstranění';
@@ -3199,7 +3199,7 @@ class _Translations$homeLayout$cs extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Vyberte v řádku (nebo držte Vyberte): přejděte · Levo/vpravo: možnosti řádku · Zpět: dokončeno';
 	@override String get layoutNavDescription => 'Vyberte řádky, knihovny a kategorie sběru';
 	@override String get editHomeRow => 'Edit Home řádek';
-	@override String get resetHeroButton => 'Obnovte herecký layout na zásobu Plezy';
+	@override String get resetHeroButton => 'Obnovte herecký layout na zásobu Pleazyng';
 	@override String get reorderingUnlocked => 'Převedení odemknutého';
 	@override String get reorderingLocked => 'Převod zamčené';
 	@override String get rowsCanBeDragged => 'Krovy lze přetáhnout – klepněte na zámek, aby se zabránilo tomu, aby se';
@@ -3225,8 +3225,8 @@ class _Translations$platform$cs extends Translations$platform$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG se připojí k vašim mediálním serverům a přehrávačům na vaší místní síti.';
-	@override String get locationPermission => 'PlezyNG používá přístup k místu, když iOS vyžaduje, aby detekovala vaši místní síť a připojila se k vašim mediálním serverům.';
+	@override String get localNetworkPermission => 'Pleazyng se připojí k vašim mediálním serverům a přehrávačům na vaší místní síti.';
+	@override String get locationPermission => 'Pleazyng používá přístup k místu, když iOS vyžaduje, aby detekovala vaši místní síť a připojila se k vašim mediálním serverům.';
 	@override String get photoLibraryPermission => 'Vyberte si obrázky z vaší knihovny fotografií pro použití jako umělecké dílo.';
 	@override String get cameraPermission => 'Skenování QR kódů pro párování s Companion Remote.';
 }
@@ -3240,7 +3240,7 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'Otevřené média';
 	@override String get shortcutHelp => 'Zahrajte si odkaz, playlist nebo soubor pro tuto sezení.';
-	@override String get intro => 'Otevřete odkaz, playlist nebo soubor. Playback používá standardní přehrávač PlezyNG a do vaší knihovny nepřidá historii.';
+	@override String get intro => 'Otevřete odkaz, playlist nebo soubor. Playback používá standardní přehrávač Pleazyng a do vaší knihovny nepřidá historii.';
 	@override String get openWhat => 'Co byste chtěli otevřít?';
 	@override String get stream => 'Streamová adresa';
 	@override String get playlist => 'Playlisty';
@@ -3304,13 +3304,13 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	@override String get stopTransfer => 'Zastavení přenosu a zrušení adresy';
 	@override String get startTransfer => 'Začátek transferu';
 	@override String get wifiImportedFiles => 'Přenos Wi-Fi';
-	@override String get wifiBrowserTitle => 'Odeslat soubory do PlezyNG';
+	@override String get wifiBrowserTitle => 'Odeslat soubory do Pleazyng';
 	@override String get wifiBrowserIntro => 'Vyberte audio, video, ebook nebo komiksové soubory k odeslání. Soubory jsou uloženy v knihovně souborů a knih tohoto zařízení. Maximální: 100 souboru, 4 GiB na soubor, 10 GiB celkem.';
 	@override String get uploadFilesLabel => 'Soubory k odesílání';
 	@override String get uploadSelected => 'Stáhnout vybrané soubory';
 	@override String get uploadSelectFirst => 'Nejprve vyberte jeden nebo více souborů.';
 	@override String get uploading => 'Odesílání';
-	@override String get uploadComplete => 'Soubor přidán do PlezyNG.';
+	@override String get uploadComplete => 'Soubor přidán do Pleazyng.';
 	@override String get uploadFailed => 'Soubor nelze přidat. Držte tuto stránku otevřenou a zkuste znovu.';
 	@override String get liveCue => 'Životní';
 	@override String get liveSession => 'Živý stream';
@@ -3338,7 +3338,7 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	@override String get recordingActive => 'Zanechání playback se zastaví a ukládá.';
 	@override String get recordingFormatHelp => 'Pro video, vyberte MKV nebo MPEG-TS. pro audio, zvolte MKA nebo MKV.';
 	@override String get replaceRecordingTitle => 'Změníte tuto nahrávku?';
-	@override String get replaceRecordingHelp => 'PlezyNG obnovuje stávající soubor při zaznamenávání. Pokud nemůže uložit novou záznam, Plezy NG obnovuje zálohu.';
+	@override String get replaceRecordingHelp => 'Pleazyng obnovuje stávající soubor při zaznamenávání. Pokud nemůže uložit novou záznam, Pleazyng NG obnovuje zálohu.';
 	@override String get replaceRecording => 'nahrazení souborů';
 	@override String get discHelp => 'Otevřete disk v optickém disku tohoto počítače.Můžete také otevřít obraz ISO z souborů zařízení.';
 	@override String get discs => 'Optický disk';
@@ -3363,7 +3363,7 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'Vyberte si audio nebo video soubor.';
 	@override String get converterLocalOnly => 'Vybraný soubor není k dispozici jako místní zařízení.';
 	@override String get converterReplaceTitle => 'Změnit tento soubor?';
-	@override String get converterReplaceHelp => 'PlezyNG obnovuje stávající soubor, dokud se neukládá převedená kopie.';
+	@override String get converterReplaceHelp => 'Pleazyng obnovuje stávající soubor, dokud se neukládá převedená kopie.';
 	@override String get converterStarting => 'Začínáme s FFmpeg...';
 	@override String get converterProgress => 'Přeměna na tento počítač...';
 	@override String get converterComplete => 'Konverze je hotová, nový soubor je připraven.';
@@ -3387,7 +3387,7 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Předvolený audio vstup';
 	@override String get captureWaylandHelp => 'Wayland omezuje toto XWayland zachycení na X display. Windows mimo XWayland se nemusí zobrazit.';
 	@override String get captureFrameRate => 'Rekordní rámová sazba';
-	@override String get capturePrivacy => 'Záznam se ukládá pouze na vybranou souboru. mikrofonový záznam je volitelný. PlezyNG záznam nezakládá.';
+	@override String get capturePrivacy => 'Záznam se ukládá pouze na vybranou souboru. mikrofonový záznam je volitelný. Pleazyng záznam nezakládá.';
 	@override String get captureSaveAs => 'Shromažďujte záznam obrazovky jako';
 	@override String get captureExtensionMismatch => 'Vyberte název, který končí v .mp4.';
 	@override String get captureFfmpegMissing => 'FFmpeg nebo kódování videa H.264 není k dispozici. nainstalovat podporované FFmpeg stavbu, pak zkuste znovu.';
@@ -3401,7 +3401,7 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	@override String get captureStop => 'Zastavte se a zachraňte';
 	@override String get captureMode => 'únos';
 	@override String get shareMode => 'Sdílejte';
-	@override String get shareIntro => 'Odeslat soubor místních médií do jiného zařízení na vaší soukromé síti. PlezyNG vytváří dočasný tok HLS.';
+	@override String get shareIntro => 'Odeslat soubor místních médií do jiného zařízení na vaší soukromé síti. Pleazyng vytváří dočasný tok HLS.';
 	@override String get sharePrivacy => 'Kdokoliv na vaší místní síti, kdo dostává soukromý odkaz může sledovat, zatímco je aktivní. odkaz vyprší po 60 minutách. zastavit sdílení, aby se server uzavřel a zrušit odkaz.';
 	@override String get shareChooseFile => 'Vyberte mediální soubor';
 	@override String get shareChooseHelp => 'Vyberte místní audio nebo video soubor. soubor zůstává na tomto počítači.';
@@ -3414,7 +3414,7 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'Otevřete tuto adresu v jednom hráči na jiném zařízení';
 	@override String get shareQrLabel => 'QR kód pro dočasnou adresu toku';
 	@override String get shareQrHelp => 'Skenování pomocí kompatibilního přehrávače připojeného k téže soukromé síti.';
-	@override String get shareHttpHint => 'Tento tok používá nekryptované HTTP. V PlezyNG, dovolte HTTP před otevřením.';
+	@override String get shareHttpHint => 'Tento tok používá nekryptované HTTP. V Pleazyng, dovolte HTTP před otevřením.';
 	@override String get shareCopyUrl => 'Kopírování streamové adresy';
 	@override String get shareExpiresLabel => 'Link vyprší na';
 	@override String get shareStarting => 'Připravování toku...';
@@ -3439,7 +3439,7 @@ class _Translations$universalMedia$cs extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'Přidat službu';
 	@override String get extensionReplace => 'Aktualizace služby';
 	@override String get extensionRemoveTitle => 'Odstranit tuto vyhledávací službu?';
-	@override String get extensionRemoveHelp => 'To odstraní službu z tohoto profilu. PlezyNG se s jeho koncovým bodem nesetká.';
+	@override String get extensionRemoveHelp => 'To odstraní službu z tohoto profilu. Pleazyng se s jeho koncovým bodem nesetká.';
 	@override String get extensionRemove => 'Odstranění služby';
 	@override String get extensionInvalidManifest => 'Tento soubor není podporovaným rozšířením manifest. viz průvodce Open media pro formát.';
 	@override String get extensionSaveFailed => 'Rozšíření nelze uložit do aktivního profilu.';
@@ -3596,12 +3596,12 @@ class _Translations$fileSources$cs extends Translations$fileSources$en {
 	@override String get none => 'Žádný';
 	@override String get fullscreen => 'Celá obrazovka';
 	@override String get syncLocation => 'Progress sync folder (volitelné)';
-	@override String get syncLocationHint => 'Vyhrazená složka WebDAV pro stav aplikace PlezyNG. Zápis probíhá podmíněně; mediální soubory zůstávají beze změny.';
+	@override String get syncLocationHint => 'Vyhrazená složka WebDAV pro stav aplikace Pleazyng. Zápis probíhá podmíněně; mediální soubory zůstávají beze změny.';
 	@override String get audiobooks => 'Audioknihy';
 	@override String get comics => 'Komiksy';
 	@override String get scan => 'Skenování knih a médií';
 	@override String get browserReader => 'Otevřený čtenář';
-	@override String get browserReaderHelp => 'Čtečka je otevřena ve vašem prohlížeči.Zachovávejte PlezyNG otevřený, abyste ušetřili své místo a poznámky.';
+	@override String get browserReaderHelp => 'Čtečka je otevřena ve vašem prohlížeči.Zachovávejte Pleazyng otevřený, abyste ušetřili své místo a poznámky.';
 	@override String get on => 'Na';
 	@override String get advancedSetup => 'App registrace';
 	@override String get microsoftSignIn => 'Přihlaste se k Microsoftu';
@@ -3642,7 +3642,7 @@ class _Translations$fileSources$cs extends Translations$fileSources$en {
 	@override String get importInterrupted => 'Import přerušený · odstranit k vymazání';
 	@override String get errorQuotaExceeded => 'Zvýšení limitu nebo odstranění stažené kopie.';
 	@override String get errorStorageLow => 'Neexistuje dostatek bezplatného ukládání zařízení k zachování chráněné rezervy.';
-	@override String get errorStorageUnavailable => 'PlezyNG nemohl kontrolovat bezplatné ukládání zařízení, takže psaní bylo zastaveno.';
+	@override String get errorStorageUnavailable => 'Pleazyng nemohl kontrolovat bezplatné ukládání zařízení, takže psaní bylo zastaveno.';
 	@override String get removeDownloadJob => 'Odstranit download';
 	@override String get downloadAlreadyComplete => 'Toto stahování bylo dokončeno, než by mohlo být odstraněno. položka je nyní k dispozici offline.';
 	@override String get confirmRemoveDownloadJob => 'Odstranit toto stahování a odstraňovat jakékoli částečně stažené údaje? Vaše poloha a poznámky zůstane.';
@@ -3692,7 +3692,7 @@ class _Translations$lending$cs extends Translations$lending$en {
 	@override String get openLibraryNote => 'Procházejte katalog Open Library. Možnosti čtení a vypůjčení jsou uvedeny na stránce každého titulu.';
 	@override String get more => 'Naložte více';
 	@override String get gateway => 'knihovny sign-in';
-	@override String get gatewayHint => 'Zajištěno vaší knihovnou nebo správcem PlezyNG.';
+	@override String get gatewayHint => 'Zajištěno vaší knihovnou nebo správcem Pleazyng.';
 	@override String get advanced => 'knihovny integrace';
 	@override String get loadLibraries => 'Vyberte si svou knihovnu';
 	@override String get expired => 'Tento úvěr skončil.';
@@ -3832,7 +3832,7 @@ class _Translations$sourceSetup$cs extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.';
 	@override String get automaticMetadata => 'Automatická online metadata videa';
 	@override String get metadataPrivacy => 'Odesílá pouze název/rok z názvu souboru a čísla epizod nebo ID NFO, nikdy média ani přihlašovací údaje. Pole NFO mají nadále přednost.';
-	@override String get nfsEncryptionFailure => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. PlezyNG se nepokusí toto spojení zopakovat bez šifrování.';
+	@override String get nfsEncryptionFailure => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. Pleazyng se nepokusí toto spojení zopakovat bez šifrování.';
 	@override String get sourceConnecting => 'Připojování ke zdroji';
 	@override String get metadataSearchPrivacy => 'Toto hledání názvu se odesílá do Trakt. Odesílá zadaný název, nikoli video ani přihlašovací údaje zdroje.';
 	@override String get chooseMatch => 'Vybrat shodu';
@@ -3978,6 +3978,12 @@ class _Translations$games$cs extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3987,7 +3993,7 @@ class _Translations$deepLinks$cs extends Translations$deepLinks$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Tento odkaz Plezy není platný.';
+	@override String get invalid => 'Tento odkaz Pleazyng není platný.';
 	@override String profileNotFound({required Object profile}) => 'Žádný profil se neshoduje s "${profile}".';
 	@override String get serverUnavailable => 'Nemohla jsem se dostat na server pro tento odkaz.';
 	@override String get notFound => 'Tento název v knihovně nenajdete.';
@@ -4162,7 +4168,7 @@ class _Translations$romm$cs extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5055,7 +5061,7 @@ class _Translations$watchTogether$errors$cs extends Translations$watchTogether$e
 	@override String get relayFull => 'Zkuste to už teď, zkuste to ještě jednou.';
 	@override String get unreachable => 'Nemohla jsem se dostat na hodinky Společně relay. zkontrolujte připojení.';
 	@override String get rateLimited => 'Přesně mnoho pokusů. počkejte chvíli a zkuste znovu.';
-	@override String get clientBlocked => 'Tato verze PlezyNG nemůže používat relay. aktualizovat aplikaci.';
+	@override String get clientBlocked => 'Tato verze Pleazyng nemůže používat relay. aktualizovat aplikaci.';
 	@override String get forbidden => 'To může udělat pouze hostitel.';
 	@override String get notInRoom => 'Nejste v místnosti.';
 	@override String get alreadyInRoom => 'Už jste v místnosti.';
@@ -5076,14 +5082,14 @@ class _Translations$downloads$backgroundWarning$cs extends Translations$download
 	@override String get bannerAction => 'detaily';
 	@override String get sheetTitle => 'Základy stahování jsou blokovány';
 	@override String get sheetTitleDegraded => 'Stáhnout základy může být omezené';
-	@override String get sheetIntro => 'Android zabraňuje PlezyNG od stáhnout spolehlivě v pozadí.';
-	@override String get sheetIntroDegraded => 'Vaše zařízení omezuje, kdy může PlezyNG stáhnout v pozadí.';
-	@override String get reasonBackgroundRestricted => 'Použití pozadí PlezyNG je omezeno. nastavte jeho použití baterie nebo pozadí na "Nezákonné".';
-	@override String get reasonStandbyRestricted => 'Android je umístěn PlezyNG v omezeném stavu. nastavte jeho použití baterie na "Neomezené".';
+	@override String get sheetIntro => 'Android zabraňuje Pleazyng od stáhnout spolehlivě v pozadí.';
+	@override String get sheetIntroDegraded => 'Vaše zařízení omezuje, kdy může Pleazyng stáhnout v pozadí.';
+	@override String get reasonBackgroundRestricted => 'Použití pozadí Pleazyng je omezeno. nastavte jeho použití baterie nebo pozadí na "Nezákonné".';
+	@override String get reasonStandbyRestricted => 'Android je umístěn Pleazyng v omezeném stavu. nastavte jeho použití baterie na "Neomezené".';
 	@override String get reasonDownloadChannelBlocked => 'Oznámení o stažení jsou vypnuty, takže pokrok a kontroly nemusí být k dispozici.';
 	@override String get reasonNotificationsDisabled => 'Na Android 13 nebo novější, jsou požadovány pro dlouhé pozadí stahování.';
 	@override String get reasonDataSaver => 'Data Saver je na, který blokuje pozadí stahování na mobilní údaje. stahování by mělo stále probíhat na Wi-Fi.';
-	@override String get reasonOemUnknown => 'Stáhnout se opakovaně zastavil, zatímco PlezyNG byl v pozadí. zkontrolujte nastavení použití baterie nebo pozadí PlezyNG.';
+	@override String get reasonOemUnknown => 'Stáhnout se opakovaně zastavil, zatímco Pleazyng byl v pozadí. zkontrolujte nastavení použití baterie nebo pozadí Pleazyng.';
 	@override String get openSettings => 'Otevřené nastavení';
 	@override String get stillNotWorking => 'Speciální pomoc zařízení';
 	@override String get stillNotWorkingDescription => 'Zobrazit kroky pro vaše zařízení, nebo odeslat záznam z Nastavení › Zobrazit záznamy, pokud problém pokračuje.';
@@ -5138,19 +5144,19 @@ class _Translations$companionRemote$pairing$cs extends Translations$companionRem
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'Přístroje PlezyNG se stejným účtem Plex se zde zobrazí';
+	@override String get discoveryDescription => 'Přístroje Pleazyng se stejným účtem Plex se zde zobrazí';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Připojení...';
 	@override String get searchingForDevices => 'Hledáme přístroje...';
 	@override String get noDevicesFound => 'Na vaší síti nenajdete žádné zařízení';
-	@override String get noDevicesHint => 'Otevřete PlezyNG na desktopu a použijte stejný Wi-Fi';
+	@override String get noDevicesHint => 'Otevřete Pleazyng na desktopu a použijte stejný Wi-Fi';
 	@override String get availableDevices => 'Dostupné zařízení';
 	@override String get manualConnection => 'Manuální připojení';
 	@override String get cryptoInitFailed => 'Bezpečné připojení se nemůže začít. přihlaste se na číslo Plex nejprve.';
 	@override String get validationHostRequired => 'Vložte prosím hostitelskou adresu';
 	@override String get validationHostFormat => 'Formát musí být IP:port (např. 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'Použijte stejnou síť na obou zařízeních.';
-	@override String get sessionNotFound => 'Není nalezeno zařízení. ujistěte se, že PlezyNG běží na hostiteli.';
+	@override String get sessionNotFound => 'Není nalezeno zařízení. ujistěte se, že Pleazyng běží na hostiteli.';
 	@override String get authFailed => 'Obě zařízení potřebují stejný účet Plex.';
 	@override String failedToConnect({required Object error}) => 'Nepodařilo se připojit: ${error}';
 	@override String get codeTitle => 'Pařížový kód';
@@ -5237,7 +5243,7 @@ class _Translations$services$simklReconnect$cs extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Připojení Simkl';
-	@override String get subtitle => 'Simkl ukončuje podporu způsobu přihlášení, který toto připojení používá. Opětovné připojení otevře simkl.com, kde schválíte PlezyNG — PlezyNG nikdy neuvidí vaše heslo. Historie sledování zůstane na Simkl.';
+	@override String get subtitle => 'Simkl ukončuje podporu způsobu přihlášení, který toto připojení používá. Opětovné připojení otevře simkl.com, kde schválíte Pleazyng — Pleazyng nikdy neuvidí vaše heslo. Historie sledování zůstane na Simkl.';
 }
 
 // Path: services.deviceCode
@@ -5247,7 +5253,7 @@ class _Translations$services$deviceCode$cs extends Translations$services$deviceC
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Aktivovat PlezyNG na ${service}';
+	@override String title({required Object service}) => 'Aktivovat Pleazyng na ${service}';
 	@override String get instructions => 'Skenujte QR kód, nebo navštivte níže uvedenou adresu a zadejte tento kód:';
 	@override String openToActivate({required Object service}) => 'Otevřete ${service} aktivovat';
 	@override String get copyCode => 'Kopírování aktivačního kódu';
@@ -5322,15 +5328,15 @@ class _Translations$services$trackerDescriptions$cs extends Translations$service
 extension on TranslationsCs {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'aplikace ikona',
 			'appIcon.defaultIcon' => 'Výchozí',
 			'appIcon.current' => 'Aktuální ikona',
 			'appIcon.locked' => 'Životní přístup požadovaný',
-			'appIcon.lockedHint' => 'Začněte 7denní zkoušku nebo odemkněte PlezyNG po celý život, abyste použili alternativní ikony.',
+			'appIcon.lockedHint' => 'Začněte 7denní zkoušku nebo odemkněte Pleazyng po celý život, abyste použili alternativní ikony.',
 			'appIcon.changeFailed' => 'Nemůžu změnit ikonu aplikace',
-			'appIcon.launcherHint' => 'Nová ikona se objeví na domácím obrazovce, jakmile opustíte PlezyNG.',
-			'appIcon.tvLauncherHint' => 'Nový banner se objeví, jakmile opustíte PlezyNG. Android TV může pokračovat v zobrazování starého, dokud se televizor neotevře.',
+			'appIcon.launcherHint' => 'Nová ikona se objeví na domácím obrazovce, jakmile opustíte Pleazyng.',
+			'appIcon.tvLauncherHint' => 'Nový banner se objeví, jakmile opustíte Pleazyng. Android TV může pokračovat v zobrazování starého, dokud se televizor neotevře.',
 			'appIcon.names.midnight' => 'půlnoci',
 			'appIcon.names.ember' => 'Člověk',
 			'appIcon.names.paper' => 'Papír',
@@ -5370,7 +5376,7 @@ extension on TranslationsCs {
 			'auth.quickConnectWaiting' => 'Čekáme na schválení...',
 			'auth.quickConnectCancel' => 'Zrušit',
 			'auth.quickConnectExpired' => 'Platnost rychlého připojení vypršela. Zkuste to znovu.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG nedokázalo bezpečně obnovit místní přihlašovací údaje a čekající údaje o přehrávání. Přihlaste se znovu.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng nedokázalo bezpečně obnovit místní přihlašovací údaje a čekající údaje o přehrávání. Přihlaste se znovu.',
 			'auth.pinCheckRejected' => 'Ček PIN Plex byl zamítnut',
 			'auth.connectToDirectPlex' => 'Připojte se k místnímu serveru Plex',
 			'common.cancel' => 'Zrušit',
@@ -5486,9 +5492,9 @@ extension on TranslationsCs {
 			'update.latestVersion' => 'Jste na nejnovější verzi',
 			'update.checkFailed' => 'Nedokázal se dohlížet na aktualizace',
 			'settings.title' => 'Nastavení',
-			'settings.supportDeveloper' => 'Podpora PlezyNG',
+			'settings.supportDeveloper' => 'Podpora Pleazyng',
 			'settings.supportDeveloperDescription' => 'Dotace na podporu rozvoje',
-			'settings.lifetimeAccess' => 'PlezyNG Životní přístup',
+			'settings.lifetimeAccess' => 'Pleazyng Životní přístup',
 			'settings.language' => 'Jazyk',
 			'settings.theme' => 'Téma',
 			'settings.appearance' => 'Vzhled',
@@ -5544,7 +5550,7 @@ extension on TranslationsCs {
 			'settings.contentScreensaverNoLibraries' => 'K dispozici nejsou žádné propojené knihovny.',
 			'settings.contentScreensaverDismissHint' => 'Stiskněte tlačítko nebo stiskněte tlačítko k odvolání',
 			'settings.newEpisodeNotifications' => 'Nová epizoda oznámení',
-			'settings.newEpisodeNotificationsDescription' => 'Upozornění, když je k show přidána nová epizoda, jste zachyceni. kontroly, zatímco Plezy je otevřeno.',
+			'settings.newEpisodeNotificationsDescription' => 'Upozornění, když je k show přidána nová epizoda, jste zachyceni. kontroly, zatímco Pleazyng je otevřeno.',
 			'settings.continueWatchingRowSize' => 'Pokračujte v sledování velikosti řádku',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} karty',
 			'settings.rowSizeCompact' => 'Kompaktní',
@@ -5669,7 +5675,7 @@ extension on TranslationsCs {
 			'settings.importSettingsDescription' => 'Obnovte preference z souboru',
 			'settings.importSettingsConfirm' => 'To nahradí vaše aktuální nastavení. pokračovat?',
 			'settings.importSettingsSuccess' => 'Nastavení importované',
-			'settings.importSettingsInvalidFile' => 'Tento soubor není platný PlezyNG nastavení export',
+			'settings.importSettingsInvalidFile' => 'Tento soubor není platný Pleazyng nastavení export',
 			'settings.importSettingsNoUser' => 'Přihlaste se před dovozem',
 			'settings.cloudBackup' => 'Cloud záloha',
 			'settings.cloudBackupDescription' => 'Zálohování přenosných nastavení na koncové místo WebDAV přes HTTPS.Serverové připojení a autentifikace zůstanou na tomto zařízení.',
@@ -5853,7 +5859,7 @@ extension on TranslationsCs {
 			'settings.forceTvMode' => 'TV režim síly',
 			'settings.forceTvModeDescription' => 'Pro zařízení, která neexistuje automaticky detekce, vyžaduje restart.',
 			'settings.startInFullscreen' => 'Začněte na plném obrazovce',
-			'settings.startInFullscreenDescription' => 'Otevřete PlezyNG v režimu plného obrazovky při spuštění',
+			'settings.startInFullscreenDescription' => 'Otevřete Pleazyng v režimu plného obrazovky při spuštění',
 			'settings.exitFullscreenOnPlayerClose' => 'Výstup na plný obrazovek na hráči uzavřené',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Automaticky vyjde na plný obrazovek při zavírání videa',
 			'settings.autoHidePerformanceOverlay' => 'Auto-Hide Výkon Overlay',
@@ -5909,7 +5915,7 @@ extension on TranslationsCs {
 			'settings.playerScopeGlobal' => 'Všude všude',
 			'settings.playerScopeLibrary' => 'Pro knihovnu',
 			'settings.playerScopeTitle' => 'Pro show nebo film',
-			'settings.exportDialogTitle' => 'Vývoz PlezyNG nastavení',
+			'settings.exportDialogTitle' => 'Vývoz Pleazyng nastavení',
 			'settings.followSystem' => 'Podle systému',
 			'settings.followAppLanguage' => 'Podle jazyka rozhraní',
 			'settings.regionFormat' => 'Místní formáty',
@@ -5920,7 +5926,7 @@ extension on TranslationsCs {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Otevřete desktopové video na plném obrazovce, když začíná playback',
 			'settings.extendVideoIntoDisplayCutout' => 'Rozšířte video do displeje Cutout',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Umožňujte, aby video s plnou obrazovkou používalo fotoaparát na telefonech Android',
-			'settings.languageDescription' => 'Vyberte jazyk používaný pro kontroly a zprávy PlezyNG.Sledujte systém sleduje jazyk vašeho zařízení.',
+			'settings.languageDescription' => 'Vyberte jazyk používaný pro kontroly a zprávy Pleazyng.Sledujte systém sleduje jazyk vašeho zařízení.',
 			'settings.themeDescription' => 'Vyberte barvy a kontrast používané v celé aplikaci.',
 			'settings.libraryDensityDescription' => 'Změňte, kolik knihovních karet se hodí v každém řádku.',
 			'settings.displayScaleDescription' => 'Přehrávejte rozhraní na tomto autovém displeji, aniž byste změnili velikost textu v celé zařízení.',
@@ -5942,14 +5948,14 @@ extension on TranslationsCs {
 			'settings.episodeActionDescription' => 'Vyberte si, co se stane, když aktivujete epizodovou kartu.',
 			'settings.episodePlayDescription' => 'Hra začíná okamžitě.',
 			'settings.episodeDetailsDescription' => 'Otevřete stránku epizody před playbackem.',
-			'settings.contentScreensaverDelayDescription' => 'Vyberte si, jak dlouho PlezyNG čeká bez vstupu před zobrazením uměleckého díla.',
+			'settings.contentScreensaverDelayDescription' => 'Vyberte si, jak dlouho Pleazyng čeká bez vstupu před zobrazením uměleckého díla.',
 			'settings.continueWatchingRowSizeDescription' => 'Vyberte si, jak velké jsou karty v řádku Pokračující sledování.',
 			'settings.rowSizeCompactDescription' => 'Zobrazit menší karty, takže více položek se hodí po řádku.',
 			'settings.rowSizeStandardDescription' => 'Použijte standardní velikost karty.',
 			'settings.rowSizeLargeDescription' => 'Zobrazit větší karty s více uměleckých detailů.',
 			'settings.visualEffectsDescription' => 'Vyberte rozpočet animace a uměleckých efektů pro toto zařízení.',
 			'settings.visualEffectsFullDescription' => 'Použijte plné animace a umělecké efekty na každém zařízení.',
-			'settings.startupSectionDescription' => 'Vyberte, která sekce se otevře při zahájení PlezyNG.',
+			'settings.startupSectionDescription' => 'Vyberte, která sekce se otevře při zahájení Pleazyng.',
 			'settings.startupSectionOptions.discover' => 'Otevřete doporučení a položky z propojených zdrojů objevování.',
 			'settings.startupSectionOptions.libraries' => 'Otevřete své propojené mediální knihovny.',
 			'settings.startupSectionOptions.liveTv' => 'Otevřete Live TV, když ji server poskytuje; jinak startup padne zpět na domov.',
@@ -5988,7 +5994,7 @@ extension on TranslationsCs {
 			'settings.musicQualityOriginalDescription' => 'Přehrávejte zdrojový zvuk bez bitrate-capped transcode.',
 			'settings.musicQualityTranscodeOptionDescription' => 'Požádejte o transkód serveru v blízkosti výše uvedené bitové rychlosti; skutečný výsledek se může lišit.',
 			'settings.maxVolumeInputLabel' => 'Maximální objem (%)',
-			'settings.checkForUpdatesDescription' => 'Zkontrolujte, zda je k dispozici novější verze PlezyNG.',
+			'settings.checkForUpdatesDescription' => 'Zkontrolujte, zda je k dispozici novější verze Pleazyng.',
 			'settings.appearanceDescription' => 'Vyberte téma aplikace a přizpůsobte karty knihovny, domovské řádky a navigaci.',
 			'settings.prerollLibraryDescription' => 'Vyberte si knihovnu, která obsahuje klipy k dispozici jako filmové pre-rolls.',
 			'settings.prerollSelectionDescription' => 'Vyberte, které klipy z vybrané knihovny můžete hrát před filmy.',
@@ -6224,8 +6230,8 @@ extension on TranslationsCs {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Tím se smaže ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda v této položce i její soubor.', few: 'Tím se smažou všechny ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody v této položce i jejich soubory.', many: 'Tím se smažou všechny epizody v této položce (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) i jejich soubory.', other: 'Tím se smaže všech ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod v této položce i jejich soubory.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Tato položka je uložena v ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souboru, který bude smazán.', few: 'Tato položka je uložena ve ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souborech a všechny budou smazány.', many: 'Tato položka je uložena v souborech (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}), které budou všechny smazány.', other: 'Tato položka je uložena v ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} souborech a všechny budou smazány.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Ve stejném souboru je uložena ještě ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizoda, která bude také smazána:', few: 'Ve stejném souboru jsou uloženy ještě ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizody, které budou také smazány:', many: 'Další epizody ve stejném souboru (počet: ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) budou také smazány:', other: 'Ve stejném souboru je uloženo dalších ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizod, které budou také smazány:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG nedokázalo ověřit, které soubory budou odstraněny, takže může smazat více než výše uvedenou položku. Akci zrušte a zkuste to znovu, nebo pokračujte ve smazání.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Server neposkytl podrobnosti o souborech této položky, takže PlezyNG nemůže ověřit, které soubory budou odstraněny. Může být smazáno více než výše uvedená položka.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng nedokázalo ověřit, které soubory budou odstraněny, takže může smazat více než výše uvedenou položku. Akci zrušte a zkuste to znovu, nebo pokračujte ve smazání.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Server neposkytl podrobnosti o souborech této položky, takže Pleazyng nemůže ověřit, které soubory budou odstraněny. Může být smazáno více než výše uvedená položka.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media objekt byl úspěšně odstraněn',
 			'mediaMenu.mediaFailedToDelete' => 'Nedokázal odstranit mediální položku',
 			'mediaMenu.rate' => 'Hodnocení',
@@ -6275,7 +6281,7 @@ extension on TranslationsCs {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'přístupnost',
 			'accessibility.summary' => 'Text, kontrast, pohyb a kontroly',
-			'accessibility.systemHint' => 'Nastavení přístupnosti vašeho zařízení se vždy vztahují.Tyto možnosti přidávají úpravy po celém PlezyNG.',
+			'accessibility.systemHint' => 'Nastavení přístupnosti vašeho zařízení se vždy vztahují.Tyto možnosti přidávají úpravy po celém Pleazyng.',
 			'accessibility.readability' => 'Čtení a viditelnost',
 			'accessibility.textSize' => 'Další textová velikost',
 			'accessibility.preview' => 'Přečtěte si, poslouchejte a sledujte ve svém vlastním tempu.',
@@ -6288,7 +6294,7 @@ extension on TranslationsCs {
 			'accessibility.largeTargets' => 'větší cíle dotyku',
 			'accessibility.largeTargetsHint' => 'Dáváme sdíleným ovládacím prvkům více prostoru pro dotyk a asistenční navigaci.',
 			'accessibility.navigationHint' => 'Mezi ovládacími prvky se přesouvejte klávesami Tab a Shift+Tab, aktivujte je klávesou Enter nebo mezerníkem a zavírejte klávesou Escape nebo tlačítkem Zpět. Při otevřené knize je dostupné přiblížení a nastavení čtení.',
-			'accessibility.textSizeDescription' => 'Rozsah textového rozhraní v PlezyNG kromě nastavení velikosti textu systému vašeho zařízení.',
+			'accessibility.textSizeDescription' => 'Rozsah textového rozhraní v Pleazyng kromě nastavení velikosti textu systému vašeho zařízení.',
 			'accessibility.boldTextHint' => 'Použijte těžší váhu pro rozhraní etikety a zprávy, aby je jednodušší rozlišovat.',
 			'tooltips.shufflePlay' => 'Shuffle hraje',
 			'tooltips.playTrailer' => 'Hrajte trailer',
@@ -6556,7 +6562,7 @@ extension on TranslationsCs {
 			'mpvConfig.removeLine' => 'Odstranění linie',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-kontext a gpu-api jsou ignorovány na Linux: vestavěné video vždy přenášejí prostřednictvím vo=libmpv na videu, a gpu-next (které počítačové odstíny, jako je ArtCNN potřebuje) nemůže spustit vestavěné.',
 			'dialog.confirmAction' => 'Potvrzení akce',
-			'profiles.addPlezyProfile' => 'Přidat profil PlezyNG',
+			'profiles.addPlezyProfile' => 'Přidat profil Pleazyng',
 			'profiles.switchingProfile' => 'Přepínání profilu...',
 			'profiles.deleteThisProfileTitle' => 'Vymazat tento profil?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Odstranit ${displayName}. připojení není ovlivněno.',
@@ -6638,12 +6644,12 @@ extension on TranslationsCs {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} servery odmítly přístup k tomuto účtu',
 			'connections.signInAgain' => 'Podepisujte se znovu',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Edit ${product} připojení',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Přidat nebo odstranit URL pro ${serverName}. PlezyNG bude používat přístupné URL s nejnižší latencí.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Přidat nebo odstranit URL pro ${serverName}. Pleazyng bude používat přístupné URL s nejnižší latencí.',
 			'accountPreferences.sectionTitle' => 'účetní preference',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Možnosti audio, podtitulů a knihovny uložené na ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Možnosti audio, podtitulů a knihovny uložené na účtech ${count}',
 			'accountPreferences.pickAccount' => 'Každý účet ukládá své vlastní preference. vyberte ten, který chcete upravit.',
-			'accountPreferences.storedOnAccount' => 'Tyto možnosti jsou uloženy na samotném účtu, takže každá aplikace, která se k němu přihlásí, je používá – včetně PlezyNG na vašich jiných zařízeních.',
+			'accountPreferences.storedOnAccount' => 'Tyto možnosti jsou uloženy na samotném účtu, takže každá aplikace, která se k němu přihlásí, je používá – včetně Pleazyng na vašich jiných zařízeních.',
 			'accountPreferences.noAccounts' => 'Žádné účty, které by se měly nastavit',
 			'accountPreferences.noAccountsHint' => 'Přihlaste se na Plex, nebo se připojte na server Jellyfin nebo Emby, a preference uložené na tomto účtu se zobrazí zde.',
 			'accountPreferences.unavailable' => 'Nemůžete tento účet získat',
@@ -6967,9 +6973,9 @@ extension on TranslationsCs {
 			'logs.saveLogs' => 'Shromažďujte záznamy do souboru',
 			'logs.logsSaved' => ({required Object path}) => 'Přihlášky uložené na ${path}',
 			'logs.saveLogsFailed' => 'Nemohla jsem uložit soubor.',
-			'startup.failedTitle' => 'PlezyNG nemohl začít',
+			'startup.failedTitle' => 'Pleazyng nemohl začít',
 			'startup.failedBody' => 'Něco se během start-upu zhroutilo. podrobnosti níže identifikují to, co selžilo.',
-			'startup.failedBodyRepairable' => 'Uložený soubor nastavení PlezyNG je poškozený a před spuštěním aplikace je nutné jej znovu vytvořit. Další pokus nepomůže — zvolte opravu úložiště.',
+			'startup.failedBodyRepairable' => 'Uložený soubor nastavení Pleazyng je poškozený a před spuštěním aplikace je nutné jej znovu vytvořit. Další pokus nepomůže — zvolte opravu úložiště.',
 			'startup.phaseLabel' => 'Krok',
 			'startup.showDetails' => 'Zobrazit detaily',
 			'startup.hideDetails' => 'skryte detaily',
@@ -6978,16 +6984,16 @@ extension on TranslationsCs {
 			'startup.uploadDetails' => 'Upload podrobnosti',
 			'startup.repairStorage' => 'Oprava skladování',
 			'startup.repairTitle' => 'Opravy uložených dat?',
-			'startup.repairBodyCommon' => 'Soubor nastavení PlezyNG je poškozen a nelze ho přečíst. opravy obnoví každé nastavení na své výchozí.',
+			'startup.repairBodyCommon' => 'Soubor nastavení Pleazyng je poškozen a nelze ho přečíst. opravy obnoví každé nastavení na své výchozí.',
 			'startup.repairBodyOneCredential' => 'Jeden uložený sign-in je poškozen a nemůže být přečten. opravy odstraní pouze ten jeden; vaše ostatní nastavení jsou ponechány samy.',
 			'startup.repairBodySignInsKept' => 'Přihlášení k vašim serverům a profilům by mělo zůstat zachováno.',
 			'startup.repairBodySignInsLost' => 'Klíč chránící uložené přihlašovací údaje nelze z tohoto souboru obnovit, takže se budete muset znovu přihlásit ke každému serveru a profilu. Na mediálním serveru se nic nezmění.',
-			'startup.repairBodySessionsUncertain' => 'Údaje služeb MAL, AniList, Simkl, Trakt a Seerr se ukládají samostatně a mohou, ale nemusí zůstat zachovány. PlezyNG vám přesně sdělí, co zachovalo.',
+			'startup.repairBodySessionsUncertain' => 'Údaje služeb MAL, AniList, Simkl, Trakt a Seerr se ukládají samostatně a mohou, ale nemusí zůstat zachovány. Pleazyng vám přesně sdělí, co zachovalo.',
 			'startup.repairConfirm' => 'Opravy',
 			'startup.repairSucceeded' => 'Úložné opravy',
 			'startup.repairNeedsRestart' => 'Uložení opravené – nutné restartování',
-			'startup.restartRequiredBody' => 'Vaše data byla opravena, ale PlezyNG je může použít až po novém spuštění. Zavřete PlezyNG a znovu jej otevřete.',
-			'startup.quitPlezy' => 'Zpět PlezyNG',
+			'startup.restartRequiredBody' => 'Vaše data byla opravena, ale Pleazyng je může použít až po novém spuštění. Zavřete Pleazyng a znovu jej otevřete.',
+			'startup.quitPlezy' => 'Zpět Pleazyng',
 			'startup.repairFailed' => 'Oprava selhala',
 			'startup.repairKeptSignIns' => 'K serverům a profilům jste stále přihlášeni.',
 			'startup.repairLostSignIns' => 'Klíč chránící uložené přihlašovací údaje se nepodařilo obnovit. Budete se muset znovu přihlásit ke každému serveru a profilu.',
@@ -6996,7 +7002,7 @@ extension on TranslationsCs {
 			'startup.backupWarning' => 'Obsahuje vaše přihlašovací údaje. Nenahrávejte ji ani ji nesdílejte.',
 			'startup.deleteBackup' => 'Vymazat kopii',
 			'startup.backupDeleted' => 'Kopie je vymazána.',
-			'startup.previousFailureTitle' => 'PlezyNG neuspěl naposledy',
+			'startup.previousFailureTitle' => 'Pleazyng neuspěl naposledy',
 			'licenses.relatedPackages' => 'související balíčky',
 			'licenses.license' => 'Licence',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licence ${number}',
@@ -7374,7 +7380,7 @@ extension on TranslationsCs {
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti PlezyNG: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
 			_ => null,
 		} ?? switch (path) {
@@ -7402,7 +7408,7 @@ extension on TranslationsCs {
 			'watchTogether.chooseAnotherCopy' => 'Vyberte další kopii',
 			'watchTogether.dontPlay' => 'Nehrát si',
 			'watchTogether.unavailableTitle' => 'Nemáte toto video',
-			'watchTogether.unavailableDescription' => 'PlezyNG nemohl najít v knihovně. vyberte si kopii sami nebo vyhledejte znovu.',
+			'watchTogether.unavailableDescription' => 'Pleazyng nemohl najít v knihovně. vyberte si kopii sami nebo vyhledejte znovu.',
 			'watchTogether.chooseCopy' => 'Vyberte si kopii',
 			'watchTogether.searchAgain' => 'Znovu hledat',
 			'watchTogether.noCandidates' => 'V knihovně nenajdete žádné kopie.',
@@ -7494,7 +7500,7 @@ extension on TranslationsCs {
 			'watchTogether.errors.relayFull' => 'Zkuste to už teď, zkuste to ještě jednou.',
 			'watchTogether.errors.unreachable' => 'Nemohla jsem se dostat na hodinky Společně relay. zkontrolujte připojení.',
 			'watchTogether.errors.rateLimited' => 'Přesně mnoho pokusů. počkejte chvíli a zkuste znovu.',
-			'watchTogether.errors.clientBlocked' => 'Tato verze PlezyNG nemůže používat relay. aktualizovat aplikaci.',
+			'watchTogether.errors.clientBlocked' => 'Tato verze Pleazyng nemůže používat relay. aktualizovat aplikaci.',
 			'watchTogether.errors.forbidden' => 'To může udělat pouze hostitel.',
 			'watchTogether.errors.notInRoom' => 'Nejste v místnosti.',
 			'watchTogether.errors.alreadyInRoom' => 'Už jste v místnosti.',
@@ -7576,11 +7582,11 @@ extension on TranslationsCs {
 			'downloads.activeSyncRules' => 'Synchronizační pravidla',
 			'downloads.reviewOrphanFiles' => 'Přihláška na sirotek Downloads',
 			'downloads.orphanReviewTitle' => 'Přihláška na sirotek Downloads',
-			'downloads.orphanReviewDescription' => 'Tyto označené soubory se nacházejí v předvolebních aplikacích spravovaných stahovacích složkách PlezyNG a nemají odpovídající stahovací záznam nebo aktivní úkol.',
+			'downloads.orphanReviewDescription' => 'Tyto označené soubory se nacházejí v předvolebních aplikacích spravovaných stahovacích složkách Pleazyng a nemají odpovídající stahovací záznam nebo aktivní úkol.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} soubory · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => 'Odstranit soubory ${count}',
 			'downloads.orphanCleanupNone' => 'Není nalezeno žádné downloadové soubory',
-			'downloads.orphanCleanupFailed' => 'PlezyNG nemohl bezpečně skenovat složku spravovaných stahování. žádné soubory nebyly odstraněny.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng nemohl bezpečně skenovat složku spravovaných stahování. žádné soubory nebyly odstraněny.',
 			'downloads.orphanCleanupChanged' => 'Seznam stahování se během přezkumu změnil. přezkoumání souborů znovu před čištěním.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => 'Odstraněno ${count} orphaned soubory · ${size} osvobozeno',
 			'downloads.noSyncRules' => 'Žádné pravidla synchronizace',
@@ -7602,14 +7608,14 @@ extension on TranslationsCs {
 			'downloads.backgroundWarning.bannerAction' => 'detaily',
 			'downloads.backgroundWarning.sheetTitle' => 'Základy stahování jsou blokovány',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Stáhnout základy může být omezené',
-			'downloads.backgroundWarning.sheetIntro' => 'Android zabraňuje PlezyNG od stáhnout spolehlivě v pozadí.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Vaše zařízení omezuje, kdy může PlezyNG stáhnout v pozadí.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Použití pozadí PlezyNG je omezeno. nastavte jeho použití baterie nebo pozadí na "Nezákonné".',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android je umístěn PlezyNG v omezeném stavu. nastavte jeho použití baterie na "Neomezené".',
+			'downloads.backgroundWarning.sheetIntro' => 'Android zabraňuje Pleazyng od stáhnout spolehlivě v pozadí.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Vaše zařízení omezuje, kdy může Pleazyng stáhnout v pozadí.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Použití pozadí Pleazyng je omezeno. nastavte jeho použití baterie nebo pozadí na "Nezákonné".',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android je umístěn Pleazyng v omezeném stavu. nastavte jeho použití baterie na "Neomezené".',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Oznámení o stažení jsou vypnuty, takže pokrok a kontroly nemusí být k dispozici.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Na Android 13 nebo novější, jsou požadovány pro dlouhé pozadí stahování.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Data Saver je na, který blokuje pozadí stahování na mobilní údaje. stahování by mělo stále probíhat na Wi-Fi.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'Stáhnout se opakovaně zastavil, zatímco PlezyNG byl v pozadí. zkontrolujte nastavení použití baterie nebo pozadí PlezyNG.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Stáhnout se opakovaně zastavil, zatímco Pleazyng byl v pozadí. zkontrolujte nastavení použití baterie nebo pozadí Pleazyng.',
 			'downloads.backgroundWarning.openSettings' => 'Otevřené nastavení',
 			'downloads.backgroundWarning.stillNotWorking' => 'Speciální pomoc zařízení',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Zobrazit kroky pro vaše zařízení, nebo odeslat záznam z Nastavení › Zobrazit záznamy, pokud problém pokračuje.',
@@ -7680,19 +7686,19 @@ extension on TranslationsCs {
 			'companionRemote.session.stopServer' => 'Přestaňte server',
 			'companionRemote.session.minimize' => 'Minimalizovat',
 			'companionRemote.session.manualAddressHint' => 'Manuální kontaktní adresa:',
-			'companionRemote.pairing.discoveryDescription' => 'Přístroje PlezyNG se stejným účtem Plex se zde zobrazí',
+			'companionRemote.pairing.discoveryDescription' => 'Přístroje Pleazyng se stejným účtem Plex se zde zobrazí',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Připojení...',
 			'companionRemote.pairing.searchingForDevices' => 'Hledáme přístroje...',
 			'companionRemote.pairing.noDevicesFound' => 'Na vaší síti nenajdete žádné zařízení',
-			'companionRemote.pairing.noDevicesHint' => 'Otevřete PlezyNG na desktopu a použijte stejný Wi-Fi',
+			'companionRemote.pairing.noDevicesHint' => 'Otevřete Pleazyng na desktopu a použijte stejný Wi-Fi',
 			'companionRemote.pairing.availableDevices' => 'Dostupné zařízení',
 			'companionRemote.pairing.manualConnection' => 'Manuální připojení',
 			'companionRemote.pairing.cryptoInitFailed' => 'Bezpečné připojení se nemůže začít. přihlaste se na číslo Plex nejprve.',
 			'companionRemote.pairing.validationHostRequired' => 'Vložte prosím hostitelskou adresu',
 			'companionRemote.pairing.validationHostFormat' => 'Formát musí být IP:port (např. 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Použijte stejnou síť na obou zařízeních.',
-			'companionRemote.pairing.sessionNotFound' => 'Není nalezeno zařízení. ujistěte se, že PlezyNG běží na hostiteli.',
+			'companionRemote.pairing.sessionNotFound' => 'Není nalezeno zařízení. ujistěte se, že Pleazyng běží na hostiteli.',
 			'companionRemote.pairing.authFailed' => 'Obě zařízení potřebují stejný účet Plex.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Nepodařilo se připojit: ${error}',
 			'companionRemote.pairing.codeTitle' => 'Pařížový kód',
@@ -7956,11 +7962,11 @@ extension on TranslationsCs {
 			'trakt.connected' => 'připojené',
 			'trakt.connectedAs' => ({required Object username}) => 'Připojeno jako @${username}',
 			'trakt.disconnectConfirm' => 'Odstranit účet Trakt?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG přestane odesílat události na adresu Trakt.Můžete se kdykoli znovu spojit.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng přestane odesílat události na adresu Trakt.Můžete se kdykoli znovu spojit.',
 			'trakt.scrobble' => 'Reálný scrobbling',
 			'trakt.scrobbleDescription' => 'Pošlete si hraní, přestávku a zastavení událostí na adresu Trakt během přehrávání.',
 			'trakt.watchedSync' => 'Sync sledovaný status',
-			'trakt.watchedSyncDescription' => 'Pokud označíte položky podle zobrazení v čísle PlezyNG, označují se také podle zobrazení v čísle Trakt.',
+			'trakt.watchedSyncDescription' => 'Pokud označíte položky podle zobrazení v čísle Pleazyng, označují se také podle zobrazení v čísle Trakt.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Připojte se Seerr',
 			'seerr.serverUrl' => 'server URL',
@@ -7970,10 +7976,10 @@ extension on TranslationsCs {
 			'seerr.signInWithEmby' => 'Přihlaste se na číslo Emby',
 			'seerr.signInWithLocal' => 'Použijte místní účet',
 			'seerr.email' => 'Emailová',
-			'seerr.noSignInMethods' => 'Tento příklad Seerr neobsahuje žádnou podpůrnou metodu PlezyNG.',
+			'seerr.noSignInMethods' => 'Tento příklad Seerr neobsahuje žádnou podpůrnou metodu Pleazyng.',
 			'seerr.instance' => 'Instance',
 			'seerr.disconnectConfirm' => 'Odstranit se od Seerr?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG bude zapomenout na tento příklad Seerr.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng bude zapomenout na tento příklad Seerr.',
 			'seerr.request' => 'Žádost',
 			'seerr.request4k' => 'Vyžádání v 4K',
 			'seerr.seasons' => 'Série',
@@ -7998,7 +8004,7 @@ extension on TranslationsCs {
 			'seerr.statusBlocklisted' => 'Blokované',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Nemůže dosáhnout ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'Žádný případ Seerr na adrese ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'Autentifikující reverzní proxy (SSO nebo HTTP auth) odpověděla namísto Seerr. PlezyNG nemůže přihlásit prostřednictvím něj: nechte Seerr /api/v1 cestu přes proxy pro tuto aplikaci, nebo použijte adresu, která se přímo dostane Seerr.',
+			'seerr.behindAuthProxy' => 'Autentifikující reverzní proxy (SSO nebo HTTP auth) odpověděla namísto Seerr. Pleazyng nemůže přihlásit prostřednictvím něj: nechte Seerr /api/v1 cestu přes proxy pro tuto aplikaci, nebo použijte adresu, která se přímo dostane Seerr.',
 			'seerr.invalidUrl' => 'Zadejte serverovou adresu jako je https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Tento příklad Seerr nepodporuje Quick Connect. Potřebuje Seerr 3.4 nebo novější.',
 			'seerr.notInitialized' => 'Tento příklad Seerr nedokončil první instalace',
@@ -8019,7 +8025,7 @@ extension on TranslationsCs {
 			'services.scrobble' => 'Automaticky sledujte pokrok',
 			'services.scrobbleDescription' => 'Aktualizujte svůj seznam, když dokončíte epizodu nebo film.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Rozhraní ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG přestane aktualizovat ${service}. znovu se připojit kdykoli.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng přestane aktualizovat ${service}. znovu se připojit kdykoli.',
 			'services.connectFailed' => ({required Object service}) => 'Nemohla jsem se připojit na číslo ${service}. zkuste znovu.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -8027,8 +8033,8 @@ extension on TranslationsCs {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Připojení Simkl',
-			'services.simklReconnect.subtitle' => 'Simkl ukončuje podporu způsobu přihlášení, který toto připojení používá. Opětovné připojení otevře simkl.com, kde schválíte PlezyNG — PlezyNG nikdy neuvidí vaše heslo. Historie sledování zůstane na Simkl.',
-			'services.deviceCode.title' => ({required Object service}) => 'Aktivovat PlezyNG na ${service}',
+			'services.simklReconnect.subtitle' => 'Simkl ukončuje podporu způsobu přihlášení, který toto připojení používá. Opětovné připojení otevře simkl.com, kde schválíte Pleazyng — Pleazyng nikdy neuvidí vaše heslo. Historie sledování zůstane na Simkl.',
+			'services.deviceCode.title' => ({required Object service}) => 'Aktivovat Pleazyng na ${service}',
 			'services.deviceCode.instructions' => 'Skenujte QR kód, nebo navštivte níže uvedenou adresu a zadejte tento kód:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Otevřete ${service} aktivovat',
 			'services.deviceCode.copyCode' => 'Kopírování aktivačního kódu',
@@ -8061,8 +8067,8 @@ extension on TranslationsCs {
 			'streaming.title' => 'Streamování z cloudu a doplňků',
 			'streaming.subtitle' => 'Připojte účet Debrid, abyste mohli procházet soubory v cloudu a přehrávat podporované streamy. Doplňky kompatibilní se Stremiem nabízejí možnosti streamování na stránkách filmů a epizod. Údaje o připojení jsou v tomto zařízení šifrované a uložené v tomto profilu.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Připojené zdroje: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG nemohl odemknout uložená nastavení streamování. Odemkněte zařízení a před změnou připojení to zkuste znovu.',
-			'streaming.settingsUnreadable' => 'PlezyNG nemohl odemknout tato uložená připojení. Vymažte je a služby znovu připojte.',
+			'streaming.settingsLoadFailed' => 'Pleazyng nemohl odemknout uložená nastavení streamování. Odemkněte zařízení a před změnou připojení to zkuste znovu.',
+			'streaming.settingsUnreadable' => 'Pleazyng nemohl odemknout tato uložená připojení. Vymažte je a služby znovu připojte.',
 			'streaming.clearUnreadableSettings' => 'Vymazat uložená nastavení',
 			'streaming.clearUnreadableSettingsConfirm' => 'Vymazat uložená nastavení streamování?',
 			'streaming.clearUnreadableSettingsBody' => 'Tím se z profilu odeberou všechny uložené účty poskytovatelů a adresy doplňků. Tuto akci nelze vrátit.',
@@ -8074,11 +8080,11 @@ extension on TranslationsCs {
 			'streaming.catalogFiltersRequired' => 'Pro procházení katalogu vyberte požadované filtry.',
 			'streaming.catalogRequiredLabel' => 'Povinné',
 			'streaming.importFromStremio' => 'Importovat ze Stremia',
-			'streaming.stremioImportInstructions' => 'Naskenujte QR kód nebo otevřete odkaz. Přihlaste se do Stremia a schvalte žádost. PlezyNG čte pouze seznam vašich doplňků; nikdy nepožaduje heslo ke Stremiu ani nemění jeho nastavení.',
+			'streaming.stremioImportInstructions' => 'Naskenujte QR kód nebo otevřete odkaz. Přihlaste se do Stremia a schvalte žádost. Pleazyng čte pouze seznam vašich doplňků; nikdy nepožaduje heslo ke Stremiu ani nemění jeho nastavení.',
 			'streaming.stremioImportOpen' => 'Otevřít odkaz Stremia',
 			'streaming.stremioImportCode' => 'Párovací kód',
 			'streaming.stremioImportPreviewTitle' => 'Vybrat doplňky',
-			'streaming.stremioImportPreviewBody' => 'Vyberte doplňky, které chcete připojit k PlezyNG. Tento import přijímá pouze adresy HTTPS.',
+			'streaming.stremioImportPreviewBody' => 'Vyberte doplňky, které chcete připojit k Pleazyng. Tento import přijímá pouze adresy HTTPS.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Přeskočené doplňky s nepodporovanými nebo nezabezpečenými adresami: ${count}.',
 			'streaming.stremioCatalogs' => 'Katalogy',
 			'streaming.stremioStreams' => 'Streamy',
@@ -8092,7 +8098,7 @@ extension on TranslationsCs {
 			'streaming.addByManifestUrl' => 'Přidat pomocí URL manifestu',
 			'streaming.addAddon' => 'Přidat doplněk',
 			'streaming.manifestUrl' => 'URL manifestu doplňku',
-			'streaming.manifestUrlHint' => 'Vložte URL manifestu doplňku. PlezyNG před připojením ověří podporu katalogů nebo streamovacích zdrojů.',
+			'streaming.manifestUrlHint' => 'Vložte URL manifestu doplňku. Pleazyng před připojením ověří podporu katalogů nebo streamovacích zdrojů.',
 			'streaming.allowHttp' => 'Povolit nešifrovanou adresu HTTP',
 			'streaming.allowHttpDescription' => 'Používejte pouze pro důvěryhodný doplněk v soukromé síti.',
 			'streaming.installAddon' => 'Připojit doplněk',
@@ -8100,20 +8106,20 @@ extension on TranslationsCs {
 			'streaming.addonRemoved' => 'Doplněk odebrán',
 			'streaming.addonToggle' => 'Povolit doplněk',
 			'streaming.addonEmpty' => 'Zatím nejsou připojené žádné doplňky',
-			'streaming.addonError' => 'PlezyNG se k tomuto doplňku nepodařilo připojit. Zkontrolujte URL manifestu a zkuste to znovu.',
+			'streaming.addonError' => 'Pleazyng se k tomuto doplňku nepodařilo připojit. Zkontrolujte URL manifestu a zkuste to znovu.',
 			'streaming.addonPrivacy' => 'Připojujte pouze doplňky, kterým důvěřujete. Při vyhledávání doplněk obdrží hledaný název a může vracet odkazy na streamy třetích stran.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Přehrávejte podporované torrentové streamy přes účet Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Připojit pomocí QR kódu',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Připojeno jako ${username}',
-			'streaming.realDebridInstructions' => 'Naskenujte QR kód nebo otevřete odkaz a zadejte tento aktivační kód pro připojení PlezyNG:',
+			'streaming.realDebridInstructions' => 'Naskenujte QR kód nebo otevřete odkaz a zadejte tento aktivační kód pro připojení Pleazyng:',
 			'streaming.realDebridActivate' => 'Otevřít Real-Debrid a aktivovat',
 			'streaming.realDebridCode' => 'Aktivační kód',
 			'streaming.realDebridConnectFailed' => 'K Real-Debrid se nepodařilo připojit. Zkuste to znovu.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'Přehrávejte podporované torrentové streamy přes účet AllDebrid.',
 			'streaming.connectAllDebrid' => 'Připojit pomocí QR kódu',
-			'streaming.allDebridInstructions' => 'Naskenujte QR kód nebo otevřete odkaz a autorizujte PlezyNG. Během připojování ponechte tuto obrazovku otevřenou:',
+			'streaming.allDebridInstructions' => 'Naskenujte QR kód nebo otevřete odkaz a autorizujte Pleazyng. Během připojování ponechte tuto obrazovku otevřenou:',
 			'streaming.allDebridActivate' => 'Otevřít AllDebrid a aktivovat',
 			'streaming.allDebridCode' => 'Aktivační PIN',
 			'streaming.allDebridConnectFailed' => 'K AllDebrid se nepodařilo připojit. Zkuste to znovu.',
@@ -8124,13 +8130,13 @@ extension on TranslationsCs {
 			'streaming.connectApiKey' => 'Připojit pomocí klíče API',
 			'streaming.apiKeyTitle' => ({required Object service}) => 'Připojit ${service}',
 			'streaming.apiKey' => 'Klíč API',
-			'streaming.apiKeyHint' => ({required Object service}) => 'Vložte klíč API z nastavení účtu ${service}. PlezyNG ho zašifruje v tomto zařízení a uloží do tohoto profilu.',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Vložte klíč API z nastavení účtu ${service}. Pleazyng ho zašifruje v tomto zařízení a uloží do tohoto profilu.',
 			'streaming.apiKeyConnectFailed' => 'Klíč API se nepodařilo ověřit. Zkontrolujte ho a zkuste to znovu.',
 			'streaming.accountConnected' => ({required Object username}) => 'Připojeno jako ${username}',
 			'streaming.streamNeedsProvider' => 'Pro přehrání tohoto torrentového streamu připojte službu Debrid.',
 			'streaming.playViaProvider' => 'Přehrát přes Debrid',
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Odpojit ${service}?',
-			'streaming.disconnectBody' => 'PlezyNG odebere oprávnění tohoto zařízení. Soubory u poskytovatele ani probíhající přenosy se nezmění.',
+			'streaming.disconnectBody' => 'Pleazyng odebere oprávnění tohoto zařízení. Soubory u poskytovatele ani probíhající přenosy se nezmění.',
 			'streaming.streamsTitle' => 'Vybrat stream',
 			'streaming.noStreams' => 'Pro tento titul nebyly nalezeny žádné streamy.',
 			'streaming.manageConnections' => 'Spravovat streamovací služby',
@@ -8146,7 +8152,7 @@ extension on TranslationsCs {
 			'streaming.streamUnsupported' => 'Tento formát streamu vestavěný přehrávač nepodporuje.',
 			'streaming.remoteNeedsEpisode' => 'Před vyhledáním streamu vyberte epizodu.',
 			'streaming.remoteNeedsEpisodeNumber' => 'U této epizody chybí číslo řady nebo epizody.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG pro tento titul nenašel IMDb ani TMDB ID.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng pro tento titul nenašel IMDb ani TMDB ID.',
 			'streaming.watchWithServices' => 'Sledovat přes připojené služby',
 			'streaming.chooseEpisode' => 'Vybrat epizodu',
 			'streaming.episodes' => 'Epizody',
@@ -8232,15 +8238,15 @@ extension on TranslationsCs {
 			'notifications.newEpisodeTitle' => 'Nová epizoda',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'Zkuste každou funkci zdarma po dobu 7 dní',
-			'appAccess.description' => 'Začněte sedmdenní zkoušku s plným přístupem k každému PlezyNG funkci. v průběhu zkoušky neexistuje žádná poplatek a žádná předplatná. Po zkoušce jeden životní nákup v ceně vašeho obchodu odblokuje PlezyNG po celý život.',
-			'appAccess.trialEndedDescription' => 'Jediným nákupem za cenu uvedenou ve vašem obchodě odemknete všechny funkce PlezyNG natrvalo. Bez předplatného.',
+			'appAccess.description' => 'Začněte sedmdenní zkoušku s plným přístupem k každému Pleazyng funkci. v průběhu zkoušky neexistuje žádná poplatek a žádná předplatná. Po zkoušce jeden životní nákup v ceně vašeho obchodu odblokuje Pleazyng po celý život.',
+			'appAccess.trialEndedDescription' => 'Jediným nákupem za cenu uvedenou ve vašem obchodě odemknete všechny funkce Pleazyng natrvalo. Bez předplatného.',
 			'appAccess.startTrial' => 'Začínám 7denní bezplatný test',
 			'appAccess.trialActive' => 'Váš 7denní plnohodnotný test je aktivní.',
 			'appAccess.trialEnded' => 'Sedmdenní proces skončil.',
 			'appAccess.trialStartFailed' => 'Nemohla jsem na tomto zařízení ušetřit zkoušku. prosím zkuste znovu.',
-			'appAccess.lifetimeTitle' => 'PlezyNG odemknutá po celý život',
-			'appAccess.lifetimeBody' => 'Díky! máte celoživotní přístup k každému PlezyNG funkci.',
-			'appAccess.manageTitle' => 'PlezyNG Životní přístup',
+			'appAccess.lifetimeTitle' => 'Pleazyng odemknutá po celý život',
+			'appAccess.lifetimeBody' => 'Díky! máte celoživotní přístup k každému Pleazyng funkci.',
+			'appAccess.manageTitle' => 'Pleazyng Životní přístup',
 			'appAccess.manageDescription' => 'Zkuste každou funkci zdarma po dobu 7 dnů, pak odemkněte vše po celý život s jednou platbou za cenu vašeho obchodu.',
 			'appAccess.buy' => ({required Object price}) => 'Odemknout všechny funkce pro ${price}',
 			'appAccess.loadingPrice' => 'Nákladní obchodní cena...',
@@ -8248,11 +8254,11 @@ extension on TranslationsCs {
 			'appAccess.restore' => 'Obnovte životní nákup',
 			'appAccess.pending' => 'Váš nákup čeká na platbu nebo schválení. celoživotní přístup odemkne, jakmile ho obchod dokončí.',
 			'appAccess.storeUnavailable' => 'Nákupy nejsou k dispozici. zkontrolujte, že jste se zaregistrovali do obchodu a nákupy jsou povoleny na tomto zařízení.',
-			'appAccess.productNotFound' => 'Životní odemknutí PlezyNG není v tomto obchodě zatím k dispozici.',
+			'appAccess.productNotFound' => 'Životní odemknutí Pleazyng není v tomto obchodě zatím k dispozici.',
 			'appAccess.productQueryFailed' => 'Nemohla jsem si stáhnout cenu obchodu. zkontrolujte připojení a zkuste znovu.',
 			'appAccess.purchaseFailed' => 'Nákup neprošel, zkuste to znovu.',
 			'appAccess.restoreFailed' => 'Nemohla jsem se dostat do obchodu, abyste obnovili nákup. zkuste znovu.',
-			'appAccess.nothingToRestore' => 'Číslo PlezyNG pro životní nákup byl nalezen pro tento obchodní účet.',
+			'appAccess.nothingToRestore' => 'Číslo Pleazyng pro životní nákup byl nalezen pro tento obchodní účet.',
 			'detail.endsAt' => ({required Object time}) => 'Končí na ${time}',
 			'watchLink.serverUnavailable' => 'Nemohl jsem se dostat k serveru Plex pro tento odkaz.',
 			'watchLink.notFound' => 'Nemohl jsem najít tento show nebo film na vašich serverech Plex.',
@@ -8266,8 +8272,8 @@ extension on TranslationsCs {
 			'watchLink.copy' => 'Kopírovat',
 			'watchLink.copied' => 'Link kopírovaný',
 			'homeLayout.title' => 'Domů Layout',
-			'homeLayout.resetToast' => 'Domů Reset na původní rozložení hrdiny Plezy',
-			'homeLayout.resetHeroTitle' => 'Obnovte herecký layout na zásobu Plezy?',
+			'homeLayout.resetToast' => 'Domů Reset na původní rozložení hrdiny Pleazyng',
+			'homeLayout.resetHeroTitle' => 'Obnovte herecký layout na zásobu Pleazyng?',
 			'homeLayout.resetHeroBody' => 'Odstraní postavy hrdiny každé řady a přináší zpět jediný otáčící banner na vrcholu Domova, stejně jako předtím, než hrdinové řádky existovaly.',
 			'homeLayout.removeRowTitle' => 'Odstranit domácí řádek?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} bude vymazán. to nelze vymazat.',
@@ -8277,7 +8283,7 @@ extension on TranslationsCs {
 			'homeLayout.syncAccountOff' => 'Vypnutí: Tento přístroj si udržuje svůj vlastní layout.',
 			'homeLayout.syncNow' => 'Synchronizace nyní',
 			'homeLayout.plexHomeManager' => 'Plex Domácí manažer',
-			'homeLayout.managePlexRows' => 'Řízení Plex řádků v Plezy',
+			'homeLayout.managePlexRows' => 'Řízení Plex řádků v Pleazyng',
 			'homeLayout.managePlexRowsDescription' => 'Otevřeno pro organizaci domácího výběru řádků',
 			'homeLayout.organizeHomeRows' => 'Domácí řádky',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} řádky: pohyb, Hero, Auto-slide, odstranění',
@@ -8347,7 +8353,7 @@ extension on TranslationsCs {
 			'homeLayout.organizeRowsHint' => 'Vyberte v řádku (nebo držte Vyberte): přejděte · Levo/vpravo: možnosti řádku · Zpět: dokončeno',
 			'homeLayout.layoutNavDescription' => 'Vyberte řádky, knihovny a kategorie sběru',
 			'homeLayout.editHomeRow' => 'Edit Home řádek',
-			'homeLayout.resetHeroButton' => 'Obnovte herecký layout na zásobu Plezy',
+			'homeLayout.resetHeroButton' => 'Obnovte herecký layout na zásobu Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Převedení odemknutého',
 			'homeLayout.reorderingLocked' => 'Převod zamčené',
 			'homeLayout.rowsCanBeDragged' => 'Krovy lze přetáhnout – klepněte na zámek, aby se zabránilo tomu, aby se',
@@ -8364,13 +8370,13 @@ extension on TranslationsCs {
 			'homeLayout.tapHeroCardDescription' => 'Vyberte, zda klepnutí nebo výběr karty Hero zahájí přehrávání nebo otevírá jeho detaily.',
 			'homeLayout.heroTapPlayDescription' => 'Začněte vybranou položku ihned.',
 			'homeLayout.heroTapDetailsDescription' => 'Otevřete podrobnosti vybraného položky před výběrem akce.',
-			'platform.localNetworkPermission' => 'PlezyNG se připojí k vašim mediálním serverům a přehrávačům na vaší místní síti.',
-			'platform.locationPermission' => 'PlezyNG používá přístup k místu, když iOS vyžaduje, aby detekovala vaši místní síť a připojila se k vašim mediálním serverům.',
+			'platform.localNetworkPermission' => 'Pleazyng se připojí k vašim mediálním serverům a přehrávačům na vaší místní síti.',
+			'platform.locationPermission' => 'Pleazyng používá přístup k místu, když iOS vyžaduje, aby detekovala vaši místní síť a připojila se k vašim mediálním serverům.',
 			'platform.photoLibraryPermission' => 'Vyberte si obrázky z vaší knihovny fotografií pro použití jako umělecké dílo.',
 			'platform.cameraPermission' => 'Skenování QR kódů pro párování s Companion Remote.',
 			'universalMedia.title' => 'Otevřené média',
 			'universalMedia.shortcutHelp' => 'Zahrajte si odkaz, playlist nebo soubor pro tuto sezení.',
-			'universalMedia.intro' => 'Otevřete odkaz, playlist nebo soubor. Playback používá standardní přehrávač PlezyNG a do vaší knihovny nepřidá historii.',
+			'universalMedia.intro' => 'Otevřete odkaz, playlist nebo soubor. Playback používá standardní přehrávač Pleazyng a do vaší knihovny nepřidá historii.',
 			'universalMedia.openWhat' => 'Co byste chtěli otevřít?',
 			'universalMedia.stream' => 'Streamová adresa',
 			'universalMedia.playlist' => 'Playlisty',
@@ -8421,13 +8427,13 @@ extension on TranslationsCs {
 			'universalMedia.stopTransfer' => 'Zastavení přenosu a zrušení adresy',
 			'universalMedia.startTransfer' => 'Začátek transferu',
 			'universalMedia.wifiImportedFiles' => 'Přenos Wi-Fi',
-			'universalMedia.wifiBrowserTitle' => 'Odeslat soubory do PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'Odeslat soubory do Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'Vyberte audio, video, ebook nebo komiksové soubory k odeslání. Soubory jsou uloženy v knihovně souborů a knih tohoto zařízení. Maximální: 100 souboru, 4 GiB na soubor, 10 GiB celkem.',
 			'universalMedia.uploadFilesLabel' => 'Soubory k odesílání',
 			'universalMedia.uploadSelected' => 'Stáhnout vybrané soubory',
 			'universalMedia.uploadSelectFirst' => 'Nejprve vyberte jeden nebo více souborů.',
 			'universalMedia.uploading' => 'Odesílání',
-			'universalMedia.uploadComplete' => 'Soubor přidán do PlezyNG.',
+			'universalMedia.uploadComplete' => 'Soubor přidán do Pleazyng.',
 			'universalMedia.uploadFailed' => 'Soubor nelze přidat. Držte tuto stránku otevřenou a zkuste znovu.',
 			'universalMedia.liveCue' => 'Životní',
 			'universalMedia.liveSession' => 'Živý stream',
@@ -8455,7 +8461,7 @@ extension on TranslationsCs {
 			'universalMedia.recordingActive' => 'Zanechání playback se zastaví a ukládá.',
 			'universalMedia.recordingFormatHelp' => 'Pro video, vyberte MKV nebo MPEG-TS. pro audio, zvolte MKA nebo MKV.',
 			'universalMedia.replaceRecordingTitle' => 'Změníte tuto nahrávku?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG obnovuje stávající soubor při zaznamenávání. Pokud nemůže uložit novou záznam, Plezy NG obnovuje zálohu.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng obnovuje stávající soubor při zaznamenávání. Pokud nemůže uložit novou záznam, Pleazyng NG obnovuje zálohu.',
 			'universalMedia.replaceRecording' => 'nahrazení souborů',
 			'universalMedia.discHelp' => 'Otevřete disk v optickém disku tohoto počítače.Můžete také otevřít obraz ISO z souborů zařízení.',
 			'universalMedia.discs' => 'Optický disk',
@@ -8480,7 +8486,7 @@ extension on TranslationsCs {
 			'universalMedia.converterUnsupportedInput' => 'Vyberte si audio nebo video soubor.',
 			'universalMedia.converterLocalOnly' => 'Vybraný soubor není k dispozici jako místní zařízení.',
 			'universalMedia.converterReplaceTitle' => 'Změnit tento soubor?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG obnovuje stávající soubor, dokud se neukládá převedená kopie.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng obnovuje stávající soubor, dokud se neukládá převedená kopie.',
 			'universalMedia.converterStarting' => 'Začínáme s FFmpeg...',
 			'universalMedia.converterProgress' => 'Přeměna na tento počítač...',
 			'universalMedia.converterComplete' => 'Konverze je hotová, nový soubor je připraven.',
@@ -8504,7 +8510,7 @@ extension on TranslationsCs {
 			'universalMedia.captureDefaultAudio' => 'Předvolený audio vstup',
 			'universalMedia.captureWaylandHelp' => 'Wayland omezuje toto XWayland zachycení na X display. Windows mimo XWayland se nemusí zobrazit.',
 			'universalMedia.captureFrameRate' => 'Rekordní rámová sazba',
-			'universalMedia.capturePrivacy' => 'Záznam se ukládá pouze na vybranou souboru. mikrofonový záznam je volitelný. PlezyNG záznam nezakládá.',
+			'universalMedia.capturePrivacy' => 'Záznam se ukládá pouze na vybranou souboru. mikrofonový záznam je volitelný. Pleazyng záznam nezakládá.',
 			'universalMedia.captureSaveAs' => 'Shromažďujte záznam obrazovky jako',
 			'universalMedia.captureExtensionMismatch' => 'Vyberte název, který končí v .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg nebo kódování videa H.264 není k dispozici. nainstalovat podporované FFmpeg stavbu, pak zkuste znovu.',
@@ -8518,7 +8524,7 @@ extension on TranslationsCs {
 			'universalMedia.captureStop' => 'Zastavte se a zachraňte',
 			'universalMedia.captureMode' => 'únos',
 			'universalMedia.shareMode' => 'Sdílejte',
-			'universalMedia.shareIntro' => 'Odeslat soubor místních médií do jiného zařízení na vaší soukromé síti. PlezyNG vytváří dočasný tok HLS.',
+			'universalMedia.shareIntro' => 'Odeslat soubor místních médií do jiného zařízení na vaší soukromé síti. Pleazyng vytváří dočasný tok HLS.',
 			'universalMedia.sharePrivacy' => 'Kdokoliv na vaší místní síti, kdo dostává soukromý odkaz může sledovat, zatímco je aktivní. odkaz vyprší po 60 minutách. zastavit sdílení, aby se server uzavřel a zrušit odkaz.',
 			'universalMedia.shareChooseFile' => 'Vyberte mediální soubor',
 			'universalMedia.shareChooseHelp' => 'Vyberte místní audio nebo video soubor. soubor zůstává na tomto počítači.',
@@ -8531,7 +8537,7 @@ extension on TranslationsCs {
 			'universalMedia.shareOpenUrl' => 'Otevřete tuto adresu v jednom hráči na jiném zařízení',
 			'universalMedia.shareQrLabel' => 'QR kód pro dočasnou adresu toku',
 			'universalMedia.shareQrHelp' => 'Skenování pomocí kompatibilního přehrávače připojeného k téže soukromé síti.',
-			'universalMedia.shareHttpHint' => 'Tento tok používá nekryptované HTTP. V PlezyNG, dovolte HTTP před otevřením.',
+			'universalMedia.shareHttpHint' => 'Tento tok používá nekryptované HTTP. V Pleazyng, dovolte HTTP před otevřením.',
 			'universalMedia.shareCopyUrl' => 'Kopírování streamové adresy',
 			'universalMedia.shareExpiresLabel' => 'Link vyprší na',
 			'universalMedia.shareStarting' => 'Připravování toku...',
@@ -8556,7 +8562,7 @@ extension on TranslationsCs {
 			'universalMedia.extensionInstall' => 'Přidat službu',
 			'universalMedia.extensionReplace' => 'Aktualizace služby',
 			'universalMedia.extensionRemoveTitle' => 'Odstranit tuto vyhledávací službu?',
-			'universalMedia.extensionRemoveHelp' => 'To odstraní službu z tohoto profilu. PlezyNG se s jeho koncovým bodem nesetká.',
+			'universalMedia.extensionRemoveHelp' => 'To odstraní službu z tohoto profilu. Pleazyng se s jeho koncovým bodem nesetká.',
 			'universalMedia.extensionRemove' => 'Odstranění služby',
 			'universalMedia.extensionInvalidManifest' => 'Tento soubor není podporovaným rozšířením manifest. viz průvodce Open media pro formát.',
 			'universalMedia.extensionSaveFailed' => 'Rozšíření nelze uložit do aktivního profilu.',
@@ -8699,12 +8705,12 @@ extension on TranslationsCs {
 			'fileSources.none' => 'Žádný',
 			'fileSources.fullscreen' => 'Celá obrazovka',
 			'fileSources.syncLocation' => 'Progress sync folder (volitelné)',
-			'fileSources.syncLocationHint' => 'Vyhrazená složka WebDAV pro stav aplikace PlezyNG. Zápis probíhá podmíněně; mediální soubory zůstávají beze změny.',
+			'fileSources.syncLocationHint' => 'Vyhrazená složka WebDAV pro stav aplikace Pleazyng. Zápis probíhá podmíněně; mediální soubory zůstávají beze změny.',
 			'fileSources.audiobooks' => 'Audioknihy',
 			'fileSources.comics' => 'Komiksy',
 			'fileSources.scan' => 'Skenování knih a médií',
 			'fileSources.browserReader' => 'Otevřený čtenář',
-			'fileSources.browserReaderHelp' => 'Čtečka je otevřena ve vašem prohlížeči.Zachovávejte PlezyNG otevřený, abyste ušetřili své místo a poznámky.',
+			'fileSources.browserReaderHelp' => 'Čtečka je otevřena ve vašem prohlížeči.Zachovávejte Pleazyng otevřený, abyste ušetřili své místo a poznámky.',
 			'fileSources.on' => 'Na',
 			'fileSources.advancedSetup' => 'App registrace',
 			'fileSources.microsoftSignIn' => 'Přihlaste se k Microsoftu',
@@ -8745,7 +8751,7 @@ extension on TranslationsCs {
 			'fileSources.importInterrupted' => 'Import přerušený · odstranit k vymazání',
 			'fileSources.errorQuotaExceeded' => 'Zvýšení limitu nebo odstranění stažené kopie.',
 			'fileSources.errorStorageLow' => 'Neexistuje dostatek bezplatného ukládání zařízení k zachování chráněné rezervy.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG nemohl kontrolovat bezplatné ukládání zařízení, takže psaní bylo zastaveno.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng nemohl kontrolovat bezplatné ukládání zařízení, takže psaní bylo zastaveno.',
 			'fileSources.removeDownloadJob' => 'Odstranit download',
 			'fileSources.downloadAlreadyComplete' => 'Toto stahování bylo dokončeno, než by mohlo být odstraněno. položka je nyní k dispozici offline.',
 			'fileSources.confirmRemoveDownloadJob' => 'Odstranit toto stahování a odstraňovat jakékoli částečně stažené údaje? Vaše poloha a poznámky zůstane.',
@@ -8786,7 +8792,7 @@ extension on TranslationsCs {
 			'lending.openLibraryNote' => 'Procházejte katalog Open Library. Možnosti čtení a vypůjčení jsou uvedeny na stránce každého titulu.',
 			'lending.more' => 'Naložte více',
 			'lending.gateway' => 'knihovny sign-in',
-			'lending.gatewayHint' => 'Zajištěno vaší knihovnou nebo správcem PlezyNG.',
+			'lending.gatewayHint' => 'Zajištěno vaší knihovnou nebo správcem Pleazyng.',
 			'lending.advanced' => 'knihovny integrace',
 			'lending.loadLibraries' => 'Vyberte si svou knihovnu',
 			'lending.expired' => 'Tento úvěr skončil.',
@@ -8908,7 +8914,7 @@ extension on TranslationsCs {
 			'sourceSetup.subtitlePrivacy' => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.',
 			'sourceSetup.automaticMetadata' => 'Automatická online metadata videa',
 			'sourceSetup.metadataPrivacy' => 'Odesílá pouze název/rok z názvu souboru a čísla epizod nebo ID NFO, nikdy média ani přihlašovací údaje. Pole NFO mají nadále přednost.',
-			'sourceSetup.nfsEncryptionFailure' => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. PlezyNG se nepokusí toto spojení zopakovat bez šifrování.',
+			'sourceSetup.nfsEncryptionFailure' => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. Pleazyng se nepokusí toto spojení zopakovat bez šifrování.',
 			'sourceSetup.sourceConnecting' => 'Připojování ke zdroji',
 			'sourceSetup.metadataSearchPrivacy' => 'Toto hledání názvu se odesílá do Trakt. Odesílá zadaný název, nikoli video ani přihlašovací údaje zdroje.',
 			'sourceSetup.chooseMatch' => 'Vybrat shodu',
@@ -9038,7 +9044,13 @@ extension on TranslationsCs {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Tento odkaz Plezy není platný.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'Tento odkaz Pleazyng není platný.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'Žádný profil se neshoduje s "${profile}".',
 			'deepLinks.serverUnavailable' => 'Nemohla jsem se dostat na server pro tento odkaz.',
 			'deepLinks.notFound' => 'Tento název v knihovně nenajdete.',
@@ -9186,7 +9198,7 @@ extension on TranslationsCs {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

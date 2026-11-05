@@ -1,0 +1,202 @@
+{
+  "date": "2026-11-05",
+  "baseline": "601a9dc79",
+  "shared_image_dispositions": [
+    {
+      "path": "assets/anilist_mark.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/emby_icon.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/jellyfin_icon.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/mal_mark.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/mdblist_mark.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/celluloid.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/iina.png",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/infuse.png",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/just_player.png",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/mpv.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/mx_player.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/outplayer.png",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/potplayer.png",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/player_icons/vlc.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/plex_chevron.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/imdb.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/letterboxd.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/metacritic.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/rt_fresh.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/rt_rotten.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/rt_spilled.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/rt_upright.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/rating_icons/tmdb.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/readme-showcase.webp",
+      "disposition": "removed",
+      "reason": "Inherited product capture removed; README uses labelled Pleazyng brand artwork."
+    },
+    {
+      "path": "assets/readme_icons/browse.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/customization.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/downloads.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/explore.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/integrations.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/live-tv.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/music.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/playback.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/readme_icons/watch-together.svg",
+      "disposition": "replaced",
+      "reason": "Independent code-native geometric SVG, GPL-3.0; no inherited path geometry reused."
+    },
+    {
+      "path": "assets/seerr_mark.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/simkl_mark.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "assets/trakt_circlemark.svg",
+      "disposition": "retained_third_party_mark",
+      "reason": "Provider, rating or player mark; preserve existing attribution and applicable licence."
+    },
+    {
+      "path": "tvos/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png",
+      "disposition": "retained_placeholder",
+      "reason": "Transparent 1x1 launch placeholder, not a product logo."
+    },
+    {
+      "path": "tvos/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png",
+      "disposition": "retained_placeholder",
+      "reason": "Transparent 1x1 launch placeholder, not a product logo."
+    },
+    {
+      "path": "tvos/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png",
+      "disposition": "retained_placeholder",
+      "reason": "Transparent 1x1 launch placeholder, not a product logo."
+    }
+  ],
+  "store_captures": "Old-name screenshot bases removed; actual branded native captures pending."
+}

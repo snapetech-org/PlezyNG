@@ -122,7 +122,7 @@ class _Translations$app$ko extends Translations$app$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,7 +136,7 @@ class _Translations$appIcon$ko extends Translations$appIcon$en {
 	@override String get defaultIcon => '기본';
 	@override String get current => '현재 아이콘';
 	@override String get locked => '인생 접근이 필요합니다';
-	@override String get lockedHint => '7일간의 시험을 시작하거나 PlezyNG을 잠그거나 대체 아이콘을 사용하십시오.';
+	@override String get lockedHint => '7일간의 시험을 시작하거나 Pleazyng을 잠그거나 대체 아이콘을 사용하십시오.';
 	@override String get changeFailed => '앱 아이콘을 변경하지 못했습니다';
 	@override String get launcherHint => 'Plezy를 나가면 홈 화면에 새 아이콘이 표시됩니다.';
 	@override String get tvLauncherHint => 'Plezy를 나가면 새 배너가 표시됩니다. Android TV에서는 TV를 다시 시작할 때까지 이전 배너가 계속 표시될 수 있습니다.';
@@ -295,9 +295,9 @@ class _Translations$settings$ko extends Translations$settings$en {
 
 	// Translations
 	@override String get title => '설정';
-	@override String get supportDeveloper => 'PlezyNG 후원하기';
+	@override String get supportDeveloper => 'Pleazyng 후원하기';
 	@override String get supportDeveloperDescription => '기부로 개발을 지원하세요';
-	@override String get lifetimeAccess => 'PlezyNG 평생 액세스';
+	@override String get lifetimeAccess => 'Pleazyng 평생 액세스';
 	@override String get language => '언어';
 	@override String get theme => '테마';
 	@override String get appearance => '디자인';
@@ -482,7 +482,7 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get importSettingsDescription => '파일에서 기본 설정 복원';
 	@override String get importSettingsConfirm => '현재 설정을 대체합니다. 계속하시겠습니까?';
 	@override String get importSettingsSuccess => '설정 가져오기 완료';
-	@override String get importSettingsInvalidFile => '유효한 PlezyNG 설정 내보내기 파일이 아닙니다';
+	@override String get importSettingsInvalidFile => '유효한 Pleazyng 설정 내보내기 파일이 아닙니다';
 	@override String get importSettingsNoUser => '설정을 가져오기 전에 로그인하세요';
 	@override String get cloudBackup => '클라우드 백업';
 	@override String get cloudBackupDescription => '이동 가능한 설정을 HTTPS를 통해 WebDAV 주소에 백업합니다. 서버 연결 및 로그인 정보는 이 기기에 유지됩니다.';
@@ -720,7 +720,7 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get playerScopeGlobal => '모든 곳';
 	@override String get playerScopeLibrary => '라이브러리별';
 	@override String get playerScopeTitle => '시리즈 또는 영화별';
-	@override String get exportDialogTitle => 'PlezyNG 설정 내보내기';
+	@override String get exportDialogTitle => 'Pleazyng 설정 내보내기';
 	@override String get followSystem => '시스템 설정 따르기';
 	@override String get followAppLanguage => '인터페이스 언어와 동일하게';
 	@override String get regionFormat => '지역별 표시 형식';
@@ -731,7 +731,7 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => '플레이백이 시작되면 풀 스크린으로 데스크톱 비디오를 열어보세요.';
 	@override String get extendVideoIntoDisplayCutout => '비디오를 디스플레이 Cutout로 확장';
 	@override String get extendVideoIntoDisplayCutoutDescription => '전체 스크린 비디오를 안드로이드 휴대폰에서 카메라 절단을 사용하십시오.';
-	@override String get languageDescription => 'PlezyNG 컨트롤 및 메시지에 사용되는 언어를 선택하십시오.Follow system tracks your device language.';
+	@override String get languageDescription => 'Pleazyng 컨트롤 및 메시지에 사용되는 언어를 선택하십시오.Follow system tracks your device language.';
 	@override String get themeDescription => '앱 전체에 걸쳐 사용되는 색상과 대조를 선택합니다.';
 	@override String get libraryDensityDescription => '각 라인에 얼마나 많은 도서관 카드가 적합한지 변경합니다.';
 	@override String get displayScaleDescription => '이 차 디스플레이에 있는 인터페이스를 다시 만들고 장치 전체 텍스트 크기를 변경하지 않습니다.';
@@ -753,14 +753,14 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get episodeActionDescription => '에피소드 카드를 활성화할 때 무슨 일이 일어나는지 선택합니다.';
 	@override String get episodePlayDescription => '즉시 에피소드를 시작합니다.';
 	@override String get episodeDetailsDescription => 'Playback 전에 에피소드 페이지를 열어보세요.';
-	@override String get contentScreensaverDelayDescription => '예술 작품을 보여주기 전에 PlezyNG가 입력없이 얼마나 오래 기다리는지 선택하십시오.';
+	@override String get contentScreensaverDelayDescription => '예술 작품을 보여주기 전에 Pleazyng가 입력없이 얼마나 오래 기다리는지 선택하십시오.';
 	@override String get continueWatchingRowSizeDescription => '계속 관찰 라인에서 카드가 얼마나 큰지 선택하십시오.';
 	@override String get rowSizeCompactDescription => '더 작은 카드를 표시하여 더 많은 항목이 라인에 맞게됩니다.';
 	@override String get rowSizeStandardDescription => '표준 카드 크기를 사용하십시오.';
 	@override String get rowSizeLargeDescription => '더 큰 카드와 더 많은 예술 작품 세부 사항을 표시합니다.';
 	@override String get visualEffectsDescription => '이 장치에 대한 애니메이션 및 예술 효과 예산을 선택합니다.';
 	@override String get visualEffectsFullDescription => '모든 장치에 완전한 애니메이션 및 예술 작품 효과를 사용하십시오.';
-	@override String get startupSectionDescription => 'PlezyNG 시작할 때 어떤 섹션이 열리는지 선택합니다.';
+	@override String get startupSectionDescription => 'Pleazyng 시작할 때 어떤 섹션이 열리는지 선택합니다.';
 	@override late final _Translations$settings$startupSectionOptions$ko startupSectionOptions = _Translations$settings$startupSectionOptions$ko._(_root);
 	@override String get smallSkipDurationDescription => '짧은 뒤쪽으로 이동하는 거리를 설정하고 앞으로 컨트롤을 찾습니다.';
 	@override String get largeSkipDurationDescription => '긴 뒤쪽으로 움직이는 거리를 설정하고 앞으로 통제를 찾습니다.';
@@ -796,7 +796,7 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => '비트라이트 카프 트랜스코드 없이 소스 오디오를 재생합니다.';
 	@override String get musicQualityTranscodeOptionDescription => '위에서 표시된 비트 속도 근처에 서버 트랜스코드를 요청하십시오; 실제 출력은 다를 수 있습니다.';
 	@override String get maxVolumeInputLabel => '최대 수량 ( % )';
-	@override String get checkForUpdatesDescription => '이제 PlezyNG의 새 버전이 사용할 수 있는지 확인하십시오.';
+	@override String get checkForUpdatesDescription => '이제 Pleazyng의 새 버전이 사용할 수 있는지 확인하십시오.';
 	@override String get appearanceDescription => '앱 테마를 선택하고 도서관 카드, 홈 라인 및 네비게이션을 조정합니다.';
 	@override String get prerollLibraryDescription => '영화 프리 롤로 사용할 수있는 클립을 포함하는 도서관을 선택합니다.';
 	@override String get prerollSelectionDescription => '선택한 도서관에서 어떤 클립이 영화 전에 재생할 수 있는지 선택합니다.';
@@ -1116,7 +1116,7 @@ class _Translations$accessibility$ko extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => '접근성';
 	@override String get summary => '텍스트, 대조, 움직임 및 컨트롤';
-	@override String get systemHint => '장치의 접근성 설정은 항상 적용됩니다.이 옵션은 PlezyNG에 걸쳐 조정이 추가됩니다.';
+	@override String get systemHint => '장치의 접근성 설정은 항상 적용됩니다.이 옵션은 Pleazyng에 걸쳐 조정이 추가됩니다.';
 	@override String get readability => '읽기 및 시야';
 	@override String get textSize => '추가 텍스트 크기';
 	@override String get preview => '다음 이야기를 찾아보세요.읽고, 듣고, 자신의 속도로 보세요.';
@@ -1129,7 +1129,7 @@ class _Translations$accessibility$ko extends Translations$accessibility$en {
 	@override String get largeTargets => '더 큰 터치 목표';
 	@override String get largeTargetsHint => '공통 컨트롤의 영역을 넓혀 터치와 보조 기술을 통한 탐색을 쉽게 합니다.';
 	@override String get navigationHint => 'Tab과 Shift+Tab으로 컨트롤 사이를 이동하고, Enter 또는 Space로 실행하고, Escape 또는 뒤로 버튼으로 닫으세요. 책을 열면 확대/축소와 읽기 설정을 사용할 수 있습니다.';
-	@override String get textSizeDescription => 'PlezyNG에서 스케일 인터페이스 텍스트는 장치의 시스템 텍스트 크기 설정 외에도.';
+	@override String get textSizeDescription => 'Pleazyng에서 스케일 인터페이스 텍스트는 장치의 시스템 텍스트 크기 설정 외에도.';
 	@override String get boldTextHint => '인터페이스 라벨과 메시지에 더 무거운 무게를 사용하여 구별하기 쉽습니다.';
 }
 
@@ -1457,7 +1457,7 @@ class _Translations$profiles$ko extends Translations$profiles$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'PlezyNG 프로필 추가';
+	@override String get addPlezyProfile => 'Pleazyng 프로필 추가';
 	@override String get switchingProfile => '프로필 전환 중…';
 	@override String get deleteThisProfileTitle => '이 프로필을 삭제하시겠습니까?';
 	@override String deleteThisProfileMessage({required Object displayName}) => '${displayName}을(를) 제거합니다. 연결에는 영향이 없습니다.';
@@ -1810,7 +1810,7 @@ class _Translations$startup$ko extends Translations$startup$en {
 	@override String get repairSucceeded => '저장소가 복구되었습니다';
 	@override String get repairNeedsRestart => '저장소가 복구되었습니다 — 재시작 필요';
 	@override String get restartRequiredBody => '데이터가 복구되었지만 Plezy는 이를 사용하려면 새로 시작해야 합니다. Plezy를 종료한 후 다시 열어주세요.';
-	@override String get quitPlezy => 'PlezyNG 종료';
+	@override String get quitPlezy => 'Pleazyng 종료';
 	@override String get repairFailed => '복구 실패';
 	@override String get repairKeptSignIns => '서버와 프로필이 계속 로그인 상태입니다.';
 	@override String get repairLostSignIns => '저장된 로그인 정보를 보호하는 키를 복구할 수 없었습니다. 모든 서버와 프로필에 다시 로그인해야 합니다.';
@@ -2149,7 +2149,7 @@ class _Translations$watchTogether$ko extends Translations$watchTogether$en {
 	@override String get codeCopied => '방 코드가 복사되었습니다';
 	@override String get shareInvite => '초대 공유';
 	@override String get inviteCopied => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.';
-	@override String inviteMessage({required Object code}) => 'PlezyNG 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.';
+	@override String inviteMessage({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.';
 	@override String get openSessionControls => '함께 보기 세션 제어 열기';
 	@override String get reconnecting => '재연결 중...';
 	@override String get reconnectingDescription => '연결이 끊어졌습니다. 자동으로 방에 다시 참여합니다.';
@@ -2320,11 +2320,11 @@ class _Translations$downloads$ko extends Translations$downloads$en {
 	@override String get activeSyncRules => '동기화 규칙';
 	@override String get reviewOrphanFiles => '기록이 없는 다운로드 검토';
 	@override String get orphanReviewTitle => '기록이 없는 다운로드 검토';
-	@override String get orphanReviewDescription => '이 태그가 지정된 파일은 PlezyNG가 관리하는 기본 다운로드 폴더에 있지만, 일치하는 다운로드 기록이나 활성 작업이 없습니다. 삭제하기 전에 목록을 확인하세요.';
+	@override String get orphanReviewDescription => '이 태그가 지정된 파일은 Pleazyng가 관리하는 기본 다운로드 폴더에 있지만, 일치하는 다운로드 기록이나 활성 작업이 없습니다. 삭제하기 전에 목록을 확인하세요.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count}개 파일 · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => '${count}개 파일 삭제';
 	@override String get orphanCleanupNone => '기록이 없는 다운로드 파일을 찾지 못했습니다';
-	@override String get orphanCleanupFailed => 'PlezyNG에서 관리되는 다운로드 폴더를 안전하게 검색할 수 없습니다. 파일은 삭제되지 않았습니다.';
+	@override String get orphanCleanupFailed => 'Pleazyng에서 관리되는 다운로드 폴더를 안전하게 검색할 수 없습니다. 파일은 삭제되지 않았습니다.';
 	@override String get orphanCleanupChanged => '검토 중 다운로드 목록이 변경되었습니다. 정리하기 전에 파일을 다시 확인하세요.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => '${count}개 기록 없는 파일 삭제됨 · ${size} 확보';
 	@override String get noSyncRules => '동기화 규칙 없음';
@@ -2803,8 +2803,8 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String get title => '클라우드 및 애드온 스트리밍';
 	@override String get subtitle => 'Debrid 계정을 연결하면 클라우드 파일을 찾아보고 지원되는 스트림을 재생할 수 있습니다. Stremio 호환 애드온은 영화 및 에피소드 페이지에 스트림 옵션을 제공합니다. 연결 정보는 이 기기에서 암호화되어 이 프로필에 저장됩니다.';
 	@override String connectionsConfigured({required Object count}) => '연결된 소스: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG에서 저장된 스트리밍 설정을 잠금 해제하지 못했습니다. 연결을 변경하기 전에 기기 잠금을 해제한 뒤 다시 시도하세요.';
-	@override String get settingsUnreadable => 'PlezyNG에서 저장된 연결을 잠금 해제하지 못했습니다. 삭제한 뒤 서비스를 다시 연결하세요.';
+	@override String get settingsLoadFailed => 'Pleazyng에서 저장된 스트리밍 설정을 잠금 해제하지 못했습니다. 연결을 변경하기 전에 기기 잠금을 해제한 뒤 다시 시도하세요.';
+	@override String get settingsUnreadable => 'Pleazyng에서 저장된 연결을 잠금 해제하지 못했습니다. 삭제한 뒤 서비스를 다시 연결하세요.';
 	@override String get clearUnreadableSettings => '저장된 설정 지우기';
 	@override String get clearUnreadableSettingsConfirm => '저장된 스트리밍 설정을 지울까요?';
 	@override String get clearUnreadableSettingsBody => '이 프로필에 저장된 모든 제공업체 계정과 애드온 주소가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.';
@@ -2816,11 +2816,11 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => '이 카탈로그를 둘러보려면 필수 필터를 선택하세요.';
 	@override String get catalogRequiredLabel => '필수';
 	@override String get importFromStremio => 'Stremio에서 가져오기';
-	@override String get stremioImportInstructions => 'QR 코드를 스캔하거나 링크를 여세요. Stremio에 로그인하고 요청을 승인하세요. PlezyNG는 애드온 목록만 읽으며 Stremio 비밀번호를 묻거나 설정을 변경하지 않습니다.';
+	@override String get stremioImportInstructions => 'QR 코드를 스캔하거나 링크를 여세요. Stremio에 로그인하고 요청을 승인하세요. Pleazyng는 애드온 목록만 읽으며 Stremio 비밀번호를 묻거나 설정을 변경하지 않습니다.';
 	@override String get stremioImportOpen => 'Stremio 링크 열기';
 	@override String get stremioImportCode => '연결 코드';
 	@override String get stremioImportPreviewTitle => '애드온 선택';
-	@override String get stremioImportPreviewBody => 'PlezyNG에 연결할 애드온을 선택하세요. 이 가져오기에서는 HTTPS 주소만 허용됩니다.';
+	@override String get stremioImportPreviewBody => 'Pleazyng에 연결할 애드온을 선택하세요. 이 가져오기에서는 HTTPS 주소만 허용됩니다.';
 	@override String stremioImportIgnored({required Object count}) => '지원되지 않거나 안전하지 않은 주소로 건너뛴 애드온: ${count}.';
 	@override String get stremioCatalogs => '카탈로그';
 	@override String get stremioStreams => '스트림';
@@ -2834,7 +2834,7 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String get addByManifestUrl => '매니페스트 URL로 추가';
 	@override String get addAddon => '애드온 추가';
 	@override String get manifestUrl => '애드온 매니페스트 URL';
-	@override String get manifestUrlHint => '애드온 매니페스트 URL을 붙여넣으세요. 연결 전에 PlezyNG가 지원되는 카탈로그 또는 스트림 리소스를 확인합니다.';
+	@override String get manifestUrlHint => '애드온 매니페스트 URL을 붙여넣으세요. 연결 전에 Pleazyng가 지원되는 카탈로그 또는 스트림 리소스를 확인합니다.';
 	@override String get allowHttp => '암호화되지 않은 HTTP 주소 허용';
 	@override String get allowHttpDescription => '비공개 네트워크에서 신뢰하는 애드온에만 사용하세요.';
 	@override String get installAddon => '애드온 연결';
@@ -2842,20 +2842,20 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String get addonRemoved => '애드온 삭제됨';
 	@override String get addonToggle => '애드온 사용 설정';
 	@override String get addonEmpty => '연결된 애드온이 없습니다';
-	@override String get addonError => 'PlezyNG에서 이 애드온에 연결하지 못했습니다. 매니페스트 URL을 확인하고 다시 시도하세요.';
+	@override String get addonError => 'Pleazyng에서 이 애드온에 연결하지 못했습니다. 매니페스트 URL을 확인하고 다시 시도하세요.';
 	@override String get addonPrivacy => '신뢰하는 애드온만 연결하세요. 검색할 때 애드온은 검색한 제목을 받고 타사 스트림 링크를 반환할 수 있습니다.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Real-Debrid 계정으로 지원되는 토렌트 스트림을 재생하세요.';
 	@override String get connectRealDebrid => 'QR 코드로 연결';
 	@override String realDebridConnected({required Object username}) => '${username} 계정으로 연결됨';
-	@override String get realDebridInstructions => 'QR 코드를 스캔하거나 링크를 연 다음 이 활성화 코드를 입력해 PlezyNG를 연결하세요:';
+	@override String get realDebridInstructions => 'QR 코드를 스캔하거나 링크를 연 다음 이 활성화 코드를 입력해 Pleazyng를 연결하세요:';
 	@override String get realDebridActivate => 'Real-Debrid를 열어 활성화';
 	@override String get realDebridCode => '활성화 코드';
 	@override String get realDebridConnectFailed => 'Real-Debrid에 연결하지 못했습니다. 다시 시도하세요.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'AllDebrid 계정으로 지원되는 토렌트 스트림을 재생하세요.';
 	@override String get connectAllDebrid => 'QR 코드로 연결';
-	@override String get allDebridInstructions => 'QR 코드를 스캔하거나 링크를 열어 PlezyNG를 승인하세요. 연결되는 동안 이 화면을 열어 두세요:';
+	@override String get allDebridInstructions => 'QR 코드를 스캔하거나 링크를 열어 Pleazyng를 승인하세요. 연결되는 동안 이 화면을 열어 두세요:';
 	@override String get allDebridActivate => 'AllDebrid를 열어 활성화';
 	@override String get allDebridCode => '활성화 PIN';
 	@override String get allDebridConnectFailed => 'AllDebrid에 연결하지 못했습니다. 다시 시도하세요.';
@@ -2866,13 +2866,13 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String get connectApiKey => 'API 키로 연결';
 	@override String apiKeyTitle({required Object service}) => '${service} 연결';
 	@override String get apiKey => 'API 키';
-	@override String apiKeyHint({required Object service}) => '${service} 계정 설정의 API 키를 붙여넣으세요. PlezyNG는 이 기기에서 키를 암호화해 이 프로필에 저장합니다.';
+	@override String apiKeyHint({required Object service}) => '${service} 계정 설정의 API 키를 붙여넣으세요. Pleazyng는 이 기기에서 키를 암호화해 이 프로필에 저장합니다.';
 	@override String get apiKeyConnectFailed => '이 API 키를 확인하지 못했습니다. 키를 확인한 뒤 다시 시도하세요.';
 	@override String accountConnected({required Object username}) => '${username} 계정으로 연결됨';
 	@override String get streamNeedsProvider => '이 토렌트 스트림을 재생하려면 Debrid 서비스를 연결하세요.';
 	@override String get playViaProvider => 'Debrid로 재생';
 	@override String disconnectConfirm({required Object service}) => '${service} 연결을 해제할까요?';
-	@override String get disconnectBody => 'PlezyNG가 이 기기의 권한을 삭제합니다. 제공업체에 저장된 파일과 진행 중인 전송은 변경되지 않습니다.';
+	@override String get disconnectBody => 'Pleazyng가 이 기기의 권한을 삭제합니다. 제공업체에 저장된 파일과 진행 중인 전송은 변경되지 않습니다.';
 	@override String get streamsTitle => '스트림 선택';
 	@override String get noStreams => '이 제목에 사용할 스트림을 찾지 못했습니다.';
 	@override String get manageConnections => '스트리밍 서비스 관리';
@@ -2888,7 +2888,7 @@ class _Translations$streaming$ko extends Translations$streaming$en {
 	@override String get streamUnsupported => '앱 내 플레이어에서 이 스트림 형식을 지원하지 않습니다.';
 	@override String get remoteNeedsEpisode => '스트림을 검색하기 전에 에피소드를 선택하세요.';
 	@override String get remoteNeedsEpisodeNumber => '이 에피소드에 시즌 또는 에피소드 번호가 없습니다.';
-	@override String get remoteNeedsExternalId => 'PlezyNG에서 이 제목의 IMDb 또는 TMDB ID를 찾지 못했습니다.';
+	@override String get remoteNeedsExternalId => 'Pleazyng에서 이 제목의 IMDb 또는 TMDB ID를 찾지 못했습니다.';
 	@override String get watchWithServices => '연결된 서비스로 시청';
 	@override String get chooseEpisode => '에피소드 선택';
 	@override String get episodes => '에피소드';
@@ -3019,15 +3019,15 @@ class _Translations$appAccess$ko extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => '7일 동안 무료로 모든 기능을 시도해 보세요.';
-	@override String get description => '모든 PlezyNG 기능에 대한 완전한 액세스를 가진 7일간의 시험을 시작합니다. 시험 중에는 수수료가 없으며 구독이 없습니다. 시험 후에 매장 가격에 한 생명 구매가 PlezyNG를 생명으로 닫습니다.';
-	@override String get trialEndedDescription => '매장 가격에 한 번 구매하여 PlezyNG에서 모든 기능을 잠그십시오.';
+	@override String get description => '모든 Pleazyng 기능에 대한 완전한 액세스를 가진 7일간의 시험을 시작합니다. 시험 중에는 수수료가 없으며 구독이 없습니다. 시험 후에 매장 가격에 한 생명 구매가 Pleazyng를 생명으로 닫습니다.';
+	@override String get trialEndedDescription => '매장 가격에 한 번 구매하여 Pleazyng에서 모든 기능을 잠그십시오.';
 	@override String get startTrial => '내 7 일 무료 시험을 시작합니다.';
 	@override String get trialActive => '7일간의 완전한 실험은 활성화됩니다.';
 	@override String get trialEnded => '7일간의 재판이 끝났다.';
 	@override String get trialStartFailed => '이 장치에서 테스트를 저장할 수 없었습니다. 다시 시도해 주십시오.';
-	@override String get lifetimeTitle => 'PlezyNG 생명을 위해 잠금을 꺼내';
-	@override String get lifetimeBody => '감사합니다!당신은 모든 PlezyNG 기능에 평생 액세스 할 수 있습니다.';
-	@override String get manageTitle => 'PlezyNG 평생 액세스';
+	@override String get lifetimeTitle => 'Pleazyng 생명을 위해 잠금을 꺼내';
+	@override String get lifetimeBody => '감사합니다!당신은 모든 Pleazyng 기능에 평생 액세스 할 수 있습니다.';
+	@override String get manageTitle => 'Pleazyng 평생 액세스';
 	@override String get manageDescription => '7 일 동안 모든 기능을 무료로 시도하고, 한 번의 지불으로 매장 가격으로 모든 것을 잠그십시오.';
 	@override String buy({required Object price}) => '모든 기능을 ${price}에 대 한 끄기';
 	@override String get loadingPrice => '짐 가게 가격...';
@@ -3035,11 +3035,11 @@ class _Translations$appAccess$ko extends Translations$appAccess$en {
 	@override String get restore => '생명 구매 복원';
 	@override String get pending => '귀하의 구매는 지불 또는 승인을 기다리고 있습니다.인생 접근은 상점이 완료되면 잠금됩니다.';
 	@override String get storeUnavailable => '구매가 없습니다.이 장치에서 구매가 허용되고 상점에 가입하고 있는지 확인합니다.';
-	@override String get productNotFound => 'PlezyNG 생명 잠금은 아직 이 가게에서 사용할 수 없습니다.';
+	@override String get productNotFound => 'Pleazyng 생명 잠금은 아직 이 가게에서 사용할 수 없습니다.';
 	@override String get productQueryFailed => '가게 가격을 충전 할 수 없습니다. 연결을 확인하고 다시 시도하십시오.';
 	@override String get purchaseFailed => '구매가 끝나지 않았는데 다시 한번 시도해 보세요.';
 	@override String get restoreFailed => '당신의 구매를 복구하기 위해 상점에 도달 할 수 없습니다.다시 시도하십시오.';
-	@override String get nothingToRestore => 'No. PlezyNG 생명 구매는 이 가게 계정에서 찾을 수 있습니다.';
+	@override String get nothingToRestore => 'No. Pleazyng 생명 구매는 이 가게 계정에서 찾을 수 있습니다.';
 }
 
 // Path: detail
@@ -3080,8 +3080,8 @@ class _Translations$homeLayout$ko extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => '홈 레이아웃';
-	@override String get resetToast => '홈 다시 원래 Plezy 영웅 레이아웃으로 설정';
-	@override String get resetHeroTitle => '영웅 레이아웃을 주식으로 다시 설정할 수 있습니까 Plezy?';
+	@override String get resetToast => '홈 다시 원래 Pleazyng 영웅 레이아웃으로 설정';
+	@override String get resetHeroTitle => '영웅 레이아웃을 주식으로 다시 설정할 수 있습니까 Pleazyng?';
 	@override String get resetHeroBody => '각 라인의 영웅 설정을 끄고 홈의 상단에있는 단일 회전 밴드를 반환합니다, 영웅 라인이 존재하기 전과 마찬가지입니다.';
 	@override String get removeRowTitle => '홈 화면의 행을 삭제할까요?';
 	@override String removeRowBody({required Object title}) => '${title} 삭제될 것입니다.이것은 무시할 수 없습니다.';
@@ -3091,7 +3091,7 @@ class _Translations$homeLayout$ko extends Translations$homeLayout$en {
 	@override String get syncAccountOff => '끄기: 이 장치는 자신의 레이아웃을 유지합니다.';
 	@override String get syncNow => '지금 시너먼트';
 	@override String get plexHomeManager => 'Plex 홈 관리자';
-	@override String get managePlexRows => '관리 Plex 라인 Plezy';
+	@override String get managePlexRows => '관리 Plex 라인 Pleazyng';
 	@override String get managePlexRowsDescription => '홈 선택된 라인을 조직하기 위해 열려 있습니다.';
 	@override String get organizeHomeRows => '홈 라인 조직';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} 라인: 이동, 영웅, 자동 슬라이드, 제거';
@@ -3161,7 +3161,7 @@ class _Translations$homeLayout$ko extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => '좌석/오른쪽: 순서 옵션 · 뒤로: 완료';
 	@override String get layoutNavDescription => '라인, 도서관 및 컬렉션 카테고리를 선택합니다.';
 	@override String get editHomeRow => '에디트 홈 라인';
-	@override String get resetHeroButton => '영웅 레이아웃을 재설정 하 고 주식 Plezy';
+	@override String get resetHeroButton => '영웅 레이아웃을 재설정 하 고 주식 Pleazyng';
 	@override String get reorderingUnlocked => '다시 닫힌';
 	@override String get reorderingLocked => '잠금을 다시 닫습니다';
 	@override String get rowsCanBeDragged => '끈을 끌 수 있습니다 - 잠금을 눌러 그것을 방지합니다.';
@@ -3187,8 +3187,8 @@ class _Translations$platform$ko extends Translations$platform$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG은 현지 네트워크에서 미디어 서버 및 플레이백 장치에 연결됩니다.';
-	@override String get locationPermission => 'PlezyNG는 로컬 네트워크를 찾고 미디어 서버에 연결하는 데 iOS가 요구하는 경우 위치 접근 권한을 사용합니다.';
+	@override String get localNetworkPermission => 'Pleazyng은 현지 네트워크에서 미디어 서버 및 플레이백 장치에 연결됩니다.';
+	@override String get locationPermission => 'Pleazyng는 로컬 네트워크를 찾고 미디어 서버에 연결하는 데 iOS가 요구하는 경우 위치 접근 권한을 사용합니다.';
 	@override String get photoLibraryPermission => '사진 보관함에서 미디어 아트워크로 사용할 이미지를 선택하세요.';
 	@override String get cameraPermission => 'QR 코드를 스캔하여 Companion Remote를 연결합니다.';
 }
@@ -3202,7 +3202,7 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => '오픈 미디어';
 	@override String get shortcutHelp => '이 세션에 대한 링크, 플레이리스트 또는 파일을 재생합니다.';
-	@override String get intro => 'Playback은 PlezyNG의 표준 플레이어를 사용하고 도서관에 역사를 추가하지 않습니다.';
+	@override String get intro => 'Playback은 Pleazyng의 표준 플레이어를 사용하고 도서관에 역사를 추가하지 않습니다.';
 	@override String get openWhat => '무엇을 열고 싶으신가요?';
 	@override String get stream => '흐름 주소';
 	@override String get playlist => '플레이리스트';
@@ -3260,13 +3260,13 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	@override String get stopTransfer => '전송 중지 및 주소 취소';
 	@override String get startTransfer => '전송 시작';
 	@override String get wifiImportedFiles => 'Wi-Fi 전송';
-	@override String get wifiBrowserTitle => '파일을 PlezyNG로 보내기';
+	@override String get wifiBrowserTitle => '파일을 Pleazyng로 보내기';
 	@override String get wifiBrowserIntro => '이 장치의 파일 및 책 라이브러리에 저장됩니다. 최대: 100 파일, 파일 당 4 GiB, 총 10 GiB.';
 	@override String get uploadFilesLabel => '보내기 위한 파일';
 	@override String get uploadSelected => '선택한 파일을 업로드';
 	@override String get uploadSelectFirst => '먼저 하나 이상의 파일을 선택합니다.';
 	@override String get uploading => '보내기';
-	@override String get uploadComplete => '파일이 PlezyNG에 추가되었습니다.';
+	@override String get uploadComplete => '파일이 Pleazyng에 추가되었습니다.';
 	@override String get uploadFailed => '이 페이지를 열고 다시 시도하십시오.';
 	@override String get liveCue => '라이브';
 	@override String get liveSession => '라이브 스트림';
@@ -3294,7 +3294,7 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	@override String get recordingActive => '이 장치를 기록하십시오.Playback을 남기면 멈추고 저장됩니다.';
 	@override String get recordingFormatHelp => '비디오를 위해 MKV 또는 MPEG-TS를 선택합니다.오디오를 위한 경우 MKA 또는 MKV를 선택하십시오.';
 	@override String get replaceRecordingTitle => '이 레코드를 대체할 수 있나요?';
-	@override String get replaceRecordingHelp => 'PlezyNG는 녹음하는 동안 기존 파일을 복구합니다. 새 녹음을 저장할 수 없다면 Plezy NG는 백업을 복원합니다.';
+	@override String get replaceRecordingHelp => 'Pleazyng는 녹음하는 동안 기존 파일을 복구합니다. 새 녹음을 저장할 수 없다면 Pleazyng NG는 백업을 복원합니다.';
 	@override String get replaceRecording => '파일 교체';
 	@override String get discHelp => '이 컴퓨터의 광학 드라이브에서 디스크를 열 수 있습니다 장치 파일에서 ISO 이미지를 열 수 있음.';
 	@override String get discs => '광학 디스크';
@@ -3319,7 +3319,7 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => '오디오 또는 비디오 파일을 선택합니다.';
 	@override String get converterLocalOnly => '선택한 파일은 현지 장치 경로로 사용할 수 없습니다.';
 	@override String get converterReplaceTitle => '이 파일을 교체할 수 있나요?';
-	@override String get converterReplaceHelp => 'PlezyNG은 변환 된 복사본이 저장 될 때까지 기존 파일을 복구합니다.';
+	@override String get converterReplaceHelp => 'Pleazyng은 변환 된 복사본이 저장 될 때까지 기존 파일을 복구합니다.';
 	@override String get converterStarting => 'FFmpeg를 시작합니다.';
 	@override String get converterProgress => '이 컴퓨터로 변환하는 ...';
 	@override String get converterComplete => '변환이 완료되었습니다.새 파일은 준비되어 있습니다.';
@@ -3343,7 +3343,7 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => '기본 오디오 입력';
 	@override String get captureWaylandHelp => 'Wayland limits this XWayland capture to the X display. Windows outside XWayland may not appear.';
 	@override String get captureFrameRate => '녹음 프레임 속도';
-	@override String get capturePrivacy => '녹음은 선택한 파일에만 저장됩니다.마이크로폰 캡처는 선택적입니다.PlezyNG은 녹음을 업로드하지 않습니다.';
+	@override String get capturePrivacy => '녹음은 선택한 파일에만 저장됩니다.마이크로폰 캡처는 선택적입니다.Pleazyng은 녹음을 업로드하지 않습니다.';
 	@override String get captureSaveAs => '스크린 레코딩을 저장하는 방법';
 	@override String get captureExtensionMismatch => '.mp4에서 끝나는 파일 이름을 선택합니다.';
 	@override String get captureFfmpegMissing => 'FFmpeg 또는 H.264 비디오 암호는 사용할 수 없습니다. 지원되는 FFmpeg 건물을 설치하고 다시 시도합니다.';
@@ -3357,7 +3357,7 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	@override String get captureStop => '멈추고 저장';
 	@override String get captureMode => '캡처';
 	@override String get shareMode => '공유하기';
-	@override String get shareIntro => '귀하의 개인 네트워크에서 다른 장치에 지역 미디어 파일을 보내십시오.PlezyNG은 일시적인 HLS 스트림을 생성합니다.';
+	@override String get shareIntro => '귀하의 개인 네트워크에서 다른 장치에 지역 미디어 파일을 보내십시오.Pleazyng은 일시적인 HLS 스트림을 생성합니다.';
 	@override String get sharePrivacy => '귀하의 지역 네트워크에 있는 개인 링크를 받는 사람은 개인 링크가 활성화되는 동안 관찰할 수 있습니다. 링크는 60분 후에 만료됩니다. 공유를 중단하여 서버를 닫고 링크를 취소합니다.';
 	@override String get shareChooseFile => '미디어 파일 선택';
 	@override String get shareChooseHelp => '지역 오디오 또는 비디오 파일을 선택합니다.이 파일은이 컴퓨터에 남아 있습니다.';
@@ -3370,7 +3370,7 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => '다른 장치에서 플레이어에서 이 주소를 열어';
 	@override String get shareQrLabel => '임시 스트림 주소에 대한 QR 코드';
 	@override String get shareQrHelp => '동일한 개인 네트워크에 연결된 호환 플레이어를 사용하여 스캔합니다.';
-	@override String get shareHttpHint => '이 스트림은 암호화되지 않은 HTTP을 사용합니다. PlezyNG에서는 HTTP을 열기 전에 허용합니다.';
+	@override String get shareHttpHint => '이 스트림은 암호화되지 않은 HTTP을 사용합니다. Pleazyng에서는 HTTP을 열기 전에 허용합니다.';
 	@override String get shareCopyUrl => '스트림 주소 복사';
 	@override String get shareExpiresLabel => '링크가 끝나고';
 	@override String get shareStarting => '흐름을 준비하는 ...';
@@ -3395,7 +3395,7 @@ class _Translations$universalMedia$ko extends Translations$universalMedia$en {
 	@override String get extensionInstall => '서비스 추가';
 	@override String get extensionReplace => '업데이트 서비스';
 	@override String get extensionRemoveTitle => '이 검색 서비스 삭제?';
-	@override String get extensionRemoveHelp => '이 서비스는 이 프로필에서 제거됩니다.PlezyNG은 최종 포인트에 연락하지 않습니다.';
+	@override String get extensionRemoveHelp => '이 서비스는 이 프로필에서 제거됩니다.Pleazyng은 최종 포인트에 연락하지 않습니다.';
 	@override String get extensionRemove => '서비스 제거';
 	@override String get extensionInvalidManifest => '이 파일은 지원되는 확장 메시지가 아닙니다.이 형식에 대한 Open media 가이드를 참조하십시오.';
 	@override String get extensionSaveFailed => '확장은 활성 프로필에 저장할 수 없었습니다.';
@@ -3549,12 +3549,12 @@ class _Translations$fileSources$ko extends Translations$fileSources$en {
 	@override String get none => '아무도';
 	@override String get fullscreen => '전체 화면';
 	@override String get syncLocation => 'Progress sync 폴더 (선택)';
-	@override String get syncLocationHint => 'PlezyNG 상태를 위한 전용 WebDAV 폴더.조건적인 글쓰기를 사용; 미디어는 변함없이 남아 있습니다.';
+	@override String get syncLocationHint => 'Pleazyng 상태를 위한 전용 WebDAV 폴더.조건적인 글쓰기를 사용; 미디어는 변함없이 남아 있습니다.';
 	@override String get audiobooks => '오디오 책';
 	@override String get comics => '만화';
 	@override String get scan => '책과 미디어를 위한 스캔';
 	@override String get browserReader => '오픈 리더';
-	@override String get browserReaderHelp => '브라우저에서 리더가 열려 있습니다. 읽던 위치와 메모를 저장하려면 PlezyNG를 열어 두세요.';
+	@override String get browserReaderHelp => '브라우저에서 리더가 열려 있습니다. 읽던 위치와 메모를 저장하려면 Pleazyng를 열어 두세요.';
 	@override String get on => '에';
 	@override String get advancedSetup => 'App 등록';
 	@override String get microsoftSignIn => 'Microsoft와 함께 가입하세요';
@@ -3595,7 +3595,7 @@ class _Translations$fileSources$ko extends Translations$fileSources$en {
 	@override String get importInterrupted => '수입 중단 · 제거 삭제';
 	@override String get errorQuotaExceeded => '오프라인 스토리지 제한이 달성되었습니다.제한을 올리거나 다운로드 된 복사본을 제거합니다.';
 	@override String get errorStorageLow => '보호된 저장소를 유지하기에 충분한 무료 장치 스토리지가 없습니다.';
-	@override String get errorStorageUnavailable => 'PlezyNG는 무료 장치 저장소를 확인할 수 없었으므로 글쓰기가 중단되었습니다.';
+	@override String get errorStorageUnavailable => 'Pleazyng는 무료 장치 저장소를 확인할 수 없었으므로 글쓰기가 중단되었습니다.';
 	@override String get removeDownloadJob => '다운로드 삭제';
 	@override String get downloadAlreadyComplete => '이 다운로드는 삭제되기 전에 완료되었습니다.이 항목은 이제 오프라인으로 사용할 수 있습니다.';
 	@override String get confirmRemoveDownloadJob => '이 다운로드를 제거하고 부분적으로 다운로드 된 데이터를 삭제하십시오.당신의 위치와 노트는 남아있을 것입니다.';
@@ -3645,7 +3645,7 @@ class _Translations$lending$ko extends Translations$lending$en {
 	@override String get openLibraryNote => 'Open Library의 카탈로그를 탐색하십시오.읽기 및 대출 옵션은 각 제목의 페이지에 표시됩니다.';
 	@override String get more => '더 충전';
 	@override String get gateway => '도서관 서명 서비스';
-	@override String get gatewayHint => '도서관 또는 관리자 PlezyNG에 의해 제공됩니다.';
+	@override String get gatewayHint => '도서관 또는 관리자 Pleazyng에 의해 제공됩니다.';
 	@override String get advanced => '도서관 통합';
 	@override String get loadLibraries => '당신의 도서관을 선택하세요';
 	@override String get expired => '이 대출은 끝났습니다.';
@@ -3785,7 +3785,7 @@ class _Translations$sourceSetup$ko extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.';
 	@override String get automaticMetadata => '온라인 동영상 메타데이터 자동 조회';
 	@override String get metadataPrivacy => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.';
-	@override String get nfsEncryptionFailure => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. PlezyNG는 암호화 없이 이 연결을 다시 시도하지 않습니다.';
+	@override String get nfsEncryptionFailure => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. Pleazyng는 암호화 없이 이 연결을 다시 시도하지 않습니다.';
 	@override String get sourceConnecting => '소스에 연결 중';
 	@override String get metadataSearchPrivacy => '이 제목 검색은 Trakt로 전송됩니다. 입력한 제목만 전송하며, 동영상이나 소스 자격 증명은 전송하지 않습니다.';
 	@override String get chooseMatch => '일치하는 결과 선택';
@@ -3931,6 +3931,12 @@ class _Translations$games$ko extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3940,7 +3946,7 @@ class _Translations$deepLinks$ko extends Translations$deepLinks$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => '이 Plezy 링크는 유효하지 않습니다.';
+	@override String get invalid => '이 Pleazyng 링크는 유효하지 않습니다.';
 	@override String profileNotFound({required Object profile}) => '프로필은 "${profile}"과 일치하지 않습니다.';
 	@override String get serverUnavailable => '이 링크를 위해 서버에 접근할 수 없었습니다.';
 	@override String get notFound => '이 책의 제목은 도서관에서 찾을 수 없습니다.';
@@ -4115,7 +4121,7 @@ class _Translations$romm$ko extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5089,7 +5095,7 @@ class _Translations$companionRemote$pairing$ko extends Translations$companionRem
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => '같은 Plex 계정의 PlezyNG 기기가 여기에 표시됩니다';
+	@override String get discoveryDescription => '같은 Plex 계정의 Pleazyng 기기가 여기에 표시됩니다';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => '연결 중...';
 	@override String get searchingForDevices => '기기 검색 중...';
@@ -5198,7 +5204,7 @@ class _Translations$services$deviceCode$ko extends Translations$services$deviceC
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => '${service}에서 PlezyNG 활성화';
+	@override String title({required Object service}) => '${service}에서 Pleazyng 활성화';
 	@override String get instructions => 'QR 코드를 스캔하거나 아래 주소로 이동하여 이 코드를 입력하세요:';
 	@override String openToActivate({required Object service}) => '활성화하려면 ${service} 열기';
 	@override String get copyCode => '활성화 코드 복사';
@@ -5273,12 +5279,12 @@ class _Translations$services$trackerDescriptions$ko extends Translations$service
 extension on TranslationsKo {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => '앱 아이콘',
 			'appIcon.defaultIcon' => '기본',
 			'appIcon.current' => '현재 아이콘',
 			'appIcon.locked' => '인생 접근이 필요합니다',
-			'appIcon.lockedHint' => '7일간의 시험을 시작하거나 PlezyNG을 잠그거나 대체 아이콘을 사용하십시오.',
+			'appIcon.lockedHint' => '7일간의 시험을 시작하거나 Pleazyng을 잠그거나 대체 아이콘을 사용하십시오.',
 			'appIcon.changeFailed' => '앱 아이콘을 변경하지 못했습니다',
 			'appIcon.launcherHint' => 'Plezy를 나가면 홈 화면에 새 아이콘이 표시됩니다.',
 			'appIcon.tvLauncherHint' => 'Plezy를 나가면 새 배너가 표시됩니다. Android TV에서는 TV를 다시 시작할 때까지 이전 배너가 계속 표시될 수 있습니다.',
@@ -5437,9 +5443,9 @@ extension on TranslationsKo {
 			'update.latestVersion' => '최신 버전을 사용 중입니다',
 			'update.checkFailed' => '업데이트 확인 실패',
 			'settings.title' => '설정',
-			'settings.supportDeveloper' => 'PlezyNG 후원하기',
+			'settings.supportDeveloper' => 'Pleazyng 후원하기',
 			'settings.supportDeveloperDescription' => '기부로 개발을 지원하세요',
-			'settings.lifetimeAccess' => 'PlezyNG 평생 액세스',
+			'settings.lifetimeAccess' => 'Pleazyng 평생 액세스',
 			'settings.language' => '언어',
 			'settings.theme' => '테마',
 			'settings.appearance' => '디자인',
@@ -5620,7 +5626,7 @@ extension on TranslationsKo {
 			'settings.importSettingsDescription' => '파일에서 기본 설정 복원',
 			'settings.importSettingsConfirm' => '현재 설정을 대체합니다. 계속하시겠습니까?',
 			'settings.importSettingsSuccess' => '설정 가져오기 완료',
-			'settings.importSettingsInvalidFile' => '유효한 PlezyNG 설정 내보내기 파일이 아닙니다',
+			'settings.importSettingsInvalidFile' => '유효한 Pleazyng 설정 내보내기 파일이 아닙니다',
 			'settings.importSettingsNoUser' => '설정을 가져오기 전에 로그인하세요',
 			'settings.cloudBackup' => '클라우드 백업',
 			'settings.cloudBackupDescription' => '이동 가능한 설정을 HTTPS를 통해 WebDAV 주소에 백업합니다. 서버 연결 및 로그인 정보는 이 기기에 유지됩니다.',
@@ -5860,7 +5866,7 @@ extension on TranslationsKo {
 			'settings.playerScopeGlobal' => '모든 곳',
 			'settings.playerScopeLibrary' => '라이브러리별',
 			'settings.playerScopeTitle' => '시리즈 또는 영화별',
-			'settings.exportDialogTitle' => 'PlezyNG 설정 내보내기',
+			'settings.exportDialogTitle' => 'Pleazyng 설정 내보내기',
 			'settings.followSystem' => '시스템 설정 따르기',
 			'settings.followAppLanguage' => '인터페이스 언어와 동일하게',
 			'settings.regionFormat' => '지역별 표시 형식',
@@ -5871,7 +5877,7 @@ extension on TranslationsKo {
 			'settings.enterFullscreenOnPlaybackStartDescription' => '플레이백이 시작되면 풀 스크린으로 데스크톱 비디오를 열어보세요.',
 			'settings.extendVideoIntoDisplayCutout' => '비디오를 디스플레이 Cutout로 확장',
 			'settings.extendVideoIntoDisplayCutoutDescription' => '전체 스크린 비디오를 안드로이드 휴대폰에서 카메라 절단을 사용하십시오.',
-			'settings.languageDescription' => 'PlezyNG 컨트롤 및 메시지에 사용되는 언어를 선택하십시오.Follow system tracks your device language.',
+			'settings.languageDescription' => 'Pleazyng 컨트롤 및 메시지에 사용되는 언어를 선택하십시오.Follow system tracks your device language.',
 			'settings.themeDescription' => '앱 전체에 걸쳐 사용되는 색상과 대조를 선택합니다.',
 			'settings.libraryDensityDescription' => '각 라인에 얼마나 많은 도서관 카드가 적합한지 변경합니다.',
 			'settings.displayScaleDescription' => '이 차 디스플레이에 있는 인터페이스를 다시 만들고 장치 전체 텍스트 크기를 변경하지 않습니다.',
@@ -5893,14 +5899,14 @@ extension on TranslationsKo {
 			'settings.episodeActionDescription' => '에피소드 카드를 활성화할 때 무슨 일이 일어나는지 선택합니다.',
 			'settings.episodePlayDescription' => '즉시 에피소드를 시작합니다.',
 			'settings.episodeDetailsDescription' => 'Playback 전에 에피소드 페이지를 열어보세요.',
-			'settings.contentScreensaverDelayDescription' => '예술 작품을 보여주기 전에 PlezyNG가 입력없이 얼마나 오래 기다리는지 선택하십시오.',
+			'settings.contentScreensaverDelayDescription' => '예술 작품을 보여주기 전에 Pleazyng가 입력없이 얼마나 오래 기다리는지 선택하십시오.',
 			'settings.continueWatchingRowSizeDescription' => '계속 관찰 라인에서 카드가 얼마나 큰지 선택하십시오.',
 			'settings.rowSizeCompactDescription' => '더 작은 카드를 표시하여 더 많은 항목이 라인에 맞게됩니다.',
 			'settings.rowSizeStandardDescription' => '표준 카드 크기를 사용하십시오.',
 			'settings.rowSizeLargeDescription' => '더 큰 카드와 더 많은 예술 작품 세부 사항을 표시합니다.',
 			'settings.visualEffectsDescription' => '이 장치에 대한 애니메이션 및 예술 효과 예산을 선택합니다.',
 			'settings.visualEffectsFullDescription' => '모든 장치에 완전한 애니메이션 및 예술 작품 효과를 사용하십시오.',
-			'settings.startupSectionDescription' => 'PlezyNG 시작할 때 어떤 섹션이 열리는지 선택합니다.',
+			'settings.startupSectionDescription' => 'Pleazyng 시작할 때 어떤 섹션이 열리는지 선택합니다.',
 			'settings.startupSectionOptions.discover' => '연결된 발견 출처의 권장 사항 및 항목을 열어보세요.',
 			'settings.startupSectionOptions.libraries' => '연결된 미디어 라이브러리를 열어보세요.',
 			'settings.startupSectionOptions.liveTv' => '서버가 제공 할 때 라이브 TV를 열어; 그렇지 않으면 스타트업이 홈으로 돌아갑니다.',
@@ -5939,7 +5945,7 @@ extension on TranslationsKo {
 			'settings.musicQualityOriginalDescription' => '비트라이트 카프 트랜스코드 없이 소스 오디오를 재생합니다.',
 			'settings.musicQualityTranscodeOptionDescription' => '위에서 표시된 비트 속도 근처에 서버 트랜스코드를 요청하십시오; 실제 출력은 다를 수 있습니다.',
 			'settings.maxVolumeInputLabel' => '최대 수량 ( % )',
-			'settings.checkForUpdatesDescription' => '이제 PlezyNG의 새 버전이 사용할 수 있는지 확인하십시오.',
+			'settings.checkForUpdatesDescription' => '이제 Pleazyng의 새 버전이 사용할 수 있는지 확인하십시오.',
 			'settings.appearanceDescription' => '앱 테마를 선택하고 도서관 카드, 홈 라인 및 네비게이션을 조정합니다.',
 			'settings.prerollLibraryDescription' => '영화 프리 롤로 사용할 수있는 클립을 포함하는 도서관을 선택합니다.',
 			'settings.prerollSelectionDescription' => '선택한 도서관에서 어떤 클립이 영화 전에 재생할 수 있는지 선택합니다.',
@@ -6226,7 +6232,7 @@ extension on TranslationsKo {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => '접근성',
 			'accessibility.summary' => '텍스트, 대조, 움직임 및 컨트롤',
-			'accessibility.systemHint' => '장치의 접근성 설정은 항상 적용됩니다.이 옵션은 PlezyNG에 걸쳐 조정이 추가됩니다.',
+			'accessibility.systemHint' => '장치의 접근성 설정은 항상 적용됩니다.이 옵션은 Pleazyng에 걸쳐 조정이 추가됩니다.',
 			'accessibility.readability' => '읽기 및 시야',
 			'accessibility.textSize' => '추가 텍스트 크기',
 			'accessibility.preview' => '다음 이야기를 찾아보세요.읽고, 듣고, 자신의 속도로 보세요.',
@@ -6239,7 +6245,7 @@ extension on TranslationsKo {
 			'accessibility.largeTargets' => '더 큰 터치 목표',
 			'accessibility.largeTargetsHint' => '공통 컨트롤의 영역을 넓혀 터치와 보조 기술을 통한 탐색을 쉽게 합니다.',
 			'accessibility.navigationHint' => 'Tab과 Shift+Tab으로 컨트롤 사이를 이동하고, Enter 또는 Space로 실행하고, Escape 또는 뒤로 버튼으로 닫으세요. 책을 열면 확대/축소와 읽기 설정을 사용할 수 있습니다.',
-			'accessibility.textSizeDescription' => 'PlezyNG에서 스케일 인터페이스 텍스트는 장치의 시스템 텍스트 크기 설정 외에도.',
+			'accessibility.textSizeDescription' => 'Pleazyng에서 스케일 인터페이스 텍스트는 장치의 시스템 텍스트 크기 설정 외에도.',
 			'accessibility.boldTextHint' => '인터페이스 라벨과 메시지에 더 무거운 무게를 사용하여 구별하기 쉽습니다.',
 			'tooltips.shufflePlay' => '무작위 재생',
 			'tooltips.playTrailer' => '예고편 재생',
@@ -6507,7 +6513,7 @@ extension on TranslationsKo {
 			'mpvConfig.removeLine' => '줄 제거',
 			'mpvConfig.embeddedVoHint' => 'Linux에서는 vo, gpu-context, gpu-api가 무시됩니다. 내장 동영상은 항상 비디오 평면에서 vo=libmpv로 렌더링되며, gpu-next(ArtCNN 같은 컴퓨트 셰이더에 필요)는 내장 방식으로 실행할 수 없습니다.',
 			'dialog.confirmAction' => '작업 확인',
-			'profiles.addPlezyProfile' => 'PlezyNG 프로필 추가',
+			'profiles.addPlezyProfile' => 'Pleazyng 프로필 추가',
 			'profiles.switchingProfile' => '프로필 전환 중…',
 			'profiles.deleteThisProfileTitle' => '이 프로필을 삭제하시겠습니까?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => '${displayName}을(를) 제거합니다. 연결에는 영향이 없습니다.',
@@ -6938,7 +6944,7 @@ extension on TranslationsKo {
 			'startup.repairSucceeded' => '저장소가 복구되었습니다',
 			'startup.repairNeedsRestart' => '저장소가 복구되었습니다 — 재시작 필요',
 			'startup.restartRequiredBody' => '데이터가 복구되었지만 Plezy는 이를 사용하려면 새로 시작해야 합니다. Plezy를 종료한 후 다시 열어주세요.',
-			'startup.quitPlezy' => 'PlezyNG 종료',
+			'startup.quitPlezy' => 'Pleazyng 종료',
 			'startup.repairFailed' => '복구 실패',
 			'startup.repairKeptSignIns' => '서버와 프로필이 계속 로그인 상태입니다.',
 			'startup.repairLostSignIns' => '저장된 로그인 정보를 보호하는 키를 복구할 수 없었습니다. 모든 서버와 프로필에 다시 로그인해야 합니다.',
@@ -7325,7 +7331,7 @@ extension on TranslationsKo {
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
 			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
 			_ => null,
 		} ?? switch (path) {
@@ -7527,11 +7533,11 @@ extension on TranslationsKo {
 			'downloads.activeSyncRules' => '동기화 규칙',
 			'downloads.reviewOrphanFiles' => '기록이 없는 다운로드 검토',
 			'downloads.orphanReviewTitle' => '기록이 없는 다운로드 검토',
-			'downloads.orphanReviewDescription' => '이 태그가 지정된 파일은 PlezyNG가 관리하는 기본 다운로드 폴더에 있지만, 일치하는 다운로드 기록이나 활성 작업이 없습니다. 삭제하기 전에 목록을 확인하세요.',
+			'downloads.orphanReviewDescription' => '이 태그가 지정된 파일은 Pleazyng가 관리하는 기본 다운로드 폴더에 있지만, 일치하는 다운로드 기록이나 활성 작업이 없습니다. 삭제하기 전에 목록을 확인하세요.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count}개 파일 · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => '${count}개 파일 삭제',
 			'downloads.orphanCleanupNone' => '기록이 없는 다운로드 파일을 찾지 못했습니다',
-			'downloads.orphanCleanupFailed' => 'PlezyNG에서 관리되는 다운로드 폴더를 안전하게 검색할 수 없습니다. 파일은 삭제되지 않았습니다.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng에서 관리되는 다운로드 폴더를 안전하게 검색할 수 없습니다. 파일은 삭제되지 않았습니다.',
 			'downloads.orphanCleanupChanged' => '검토 중 다운로드 목록이 변경되었습니다. 정리하기 전에 파일을 다시 확인하세요.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => '${count}개 기록 없는 파일 삭제됨 · ${size} 확보',
 			'downloads.noSyncRules' => '동기화 규칙 없음',
@@ -7631,7 +7637,7 @@ extension on TranslationsKo {
 			'companionRemote.session.stopServer' => '서버 중지',
 			'companionRemote.session.minimize' => '최소화',
 			'companionRemote.session.manualAddressHint' => '수동 연결 주소:',
-			'companionRemote.pairing.discoveryDescription' => '같은 Plex 계정의 PlezyNG 기기가 여기에 표시됩니다',
+			'companionRemote.pairing.discoveryDescription' => '같은 Plex 계정의 Pleazyng 기기가 여기에 표시됩니다',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => '연결 중...',
 			'companionRemote.pairing.searchingForDevices' => '기기 검색 중...',
@@ -7979,7 +7985,7 @@ extension on TranslationsKo {
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Simkl 다시 연결',
 			'services.simklReconnect.subtitle' => 'Simkl이 이 연결에 사용되는 로그인 방식을 종료합니다. 다시 연결하면 simkl.com이 열리고 그곳에서 Plezy를 승인합니다 — Plezy는 비밀번호를 볼 수 없습니다. 시청 기록은 Simkl에 그대로 유지됩니다.',
-			'services.deviceCode.title' => ({required Object service}) => '${service}에서 PlezyNG 활성화',
+			'services.deviceCode.title' => ({required Object service}) => '${service}에서 Pleazyng 활성화',
 			'services.deviceCode.instructions' => 'QR 코드를 스캔하거나 아래 주소로 이동하여 이 코드를 입력하세요:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => '활성화하려면 ${service} 열기',
 			'services.deviceCode.copyCode' => '활성화 코드 복사',
@@ -8012,8 +8018,8 @@ extension on TranslationsKo {
 			'streaming.title' => '클라우드 및 애드온 스트리밍',
 			'streaming.subtitle' => 'Debrid 계정을 연결하면 클라우드 파일을 찾아보고 지원되는 스트림을 재생할 수 있습니다. Stremio 호환 애드온은 영화 및 에피소드 페이지에 스트림 옵션을 제공합니다. 연결 정보는 이 기기에서 암호화되어 이 프로필에 저장됩니다.',
 			'streaming.connectionsConfigured' => ({required Object count}) => '연결된 소스: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG에서 저장된 스트리밍 설정을 잠금 해제하지 못했습니다. 연결을 변경하기 전에 기기 잠금을 해제한 뒤 다시 시도하세요.',
-			'streaming.settingsUnreadable' => 'PlezyNG에서 저장된 연결을 잠금 해제하지 못했습니다. 삭제한 뒤 서비스를 다시 연결하세요.',
+			'streaming.settingsLoadFailed' => 'Pleazyng에서 저장된 스트리밍 설정을 잠금 해제하지 못했습니다. 연결을 변경하기 전에 기기 잠금을 해제한 뒤 다시 시도하세요.',
+			'streaming.settingsUnreadable' => 'Pleazyng에서 저장된 연결을 잠금 해제하지 못했습니다. 삭제한 뒤 서비스를 다시 연결하세요.',
 			'streaming.clearUnreadableSettings' => '저장된 설정 지우기',
 			'streaming.clearUnreadableSettingsConfirm' => '저장된 스트리밍 설정을 지울까요?',
 			'streaming.clearUnreadableSettingsBody' => '이 프로필에 저장된 모든 제공업체 계정과 애드온 주소가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.',
@@ -8025,11 +8031,11 @@ extension on TranslationsKo {
 			'streaming.catalogFiltersRequired' => '이 카탈로그를 둘러보려면 필수 필터를 선택하세요.',
 			'streaming.catalogRequiredLabel' => '필수',
 			'streaming.importFromStremio' => 'Stremio에서 가져오기',
-			'streaming.stremioImportInstructions' => 'QR 코드를 스캔하거나 링크를 여세요. Stremio에 로그인하고 요청을 승인하세요. PlezyNG는 애드온 목록만 읽으며 Stremio 비밀번호를 묻거나 설정을 변경하지 않습니다.',
+			'streaming.stremioImportInstructions' => 'QR 코드를 스캔하거나 링크를 여세요. Stremio에 로그인하고 요청을 승인하세요. Pleazyng는 애드온 목록만 읽으며 Stremio 비밀번호를 묻거나 설정을 변경하지 않습니다.',
 			'streaming.stremioImportOpen' => 'Stremio 링크 열기',
 			'streaming.stremioImportCode' => '연결 코드',
 			'streaming.stremioImportPreviewTitle' => '애드온 선택',
-			'streaming.stremioImportPreviewBody' => 'PlezyNG에 연결할 애드온을 선택하세요. 이 가져오기에서는 HTTPS 주소만 허용됩니다.',
+			'streaming.stremioImportPreviewBody' => 'Pleazyng에 연결할 애드온을 선택하세요. 이 가져오기에서는 HTTPS 주소만 허용됩니다.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => '지원되지 않거나 안전하지 않은 주소로 건너뛴 애드온: ${count}.',
 			'streaming.stremioCatalogs' => '카탈로그',
 			'streaming.stremioStreams' => '스트림',
@@ -8043,7 +8049,7 @@ extension on TranslationsKo {
 			'streaming.addByManifestUrl' => '매니페스트 URL로 추가',
 			'streaming.addAddon' => '애드온 추가',
 			'streaming.manifestUrl' => '애드온 매니페스트 URL',
-			'streaming.manifestUrlHint' => '애드온 매니페스트 URL을 붙여넣으세요. 연결 전에 PlezyNG가 지원되는 카탈로그 또는 스트림 리소스를 확인합니다.',
+			'streaming.manifestUrlHint' => '애드온 매니페스트 URL을 붙여넣으세요. 연결 전에 Pleazyng가 지원되는 카탈로그 또는 스트림 리소스를 확인합니다.',
 			'streaming.allowHttp' => '암호화되지 않은 HTTP 주소 허용',
 			'streaming.allowHttpDescription' => '비공개 네트워크에서 신뢰하는 애드온에만 사용하세요.',
 			'streaming.installAddon' => '애드온 연결',
@@ -8051,20 +8057,20 @@ extension on TranslationsKo {
 			'streaming.addonRemoved' => '애드온 삭제됨',
 			'streaming.addonToggle' => '애드온 사용 설정',
 			'streaming.addonEmpty' => '연결된 애드온이 없습니다',
-			'streaming.addonError' => 'PlezyNG에서 이 애드온에 연결하지 못했습니다. 매니페스트 URL을 확인하고 다시 시도하세요.',
+			'streaming.addonError' => 'Pleazyng에서 이 애드온에 연결하지 못했습니다. 매니페스트 URL을 확인하고 다시 시도하세요.',
 			'streaming.addonPrivacy' => '신뢰하는 애드온만 연결하세요. 검색할 때 애드온은 검색한 제목을 받고 타사 스트림 링크를 반환할 수 있습니다.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Real-Debrid 계정으로 지원되는 토렌트 스트림을 재생하세요.',
 			'streaming.connectRealDebrid' => 'QR 코드로 연결',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} 계정으로 연결됨',
-			'streaming.realDebridInstructions' => 'QR 코드를 스캔하거나 링크를 연 다음 이 활성화 코드를 입력해 PlezyNG를 연결하세요:',
+			'streaming.realDebridInstructions' => 'QR 코드를 스캔하거나 링크를 연 다음 이 활성화 코드를 입력해 Pleazyng를 연결하세요:',
 			'streaming.realDebridActivate' => 'Real-Debrid를 열어 활성화',
 			'streaming.realDebridCode' => '활성화 코드',
 			'streaming.realDebridConnectFailed' => 'Real-Debrid에 연결하지 못했습니다. 다시 시도하세요.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'AllDebrid 계정으로 지원되는 토렌트 스트림을 재생하세요.',
 			'streaming.connectAllDebrid' => 'QR 코드로 연결',
-			'streaming.allDebridInstructions' => 'QR 코드를 스캔하거나 링크를 열어 PlezyNG를 승인하세요. 연결되는 동안 이 화면을 열어 두세요:',
+			'streaming.allDebridInstructions' => 'QR 코드를 스캔하거나 링크를 열어 Pleazyng를 승인하세요. 연결되는 동안 이 화면을 열어 두세요:',
 			'streaming.allDebridActivate' => 'AllDebrid를 열어 활성화',
 			'streaming.allDebridCode' => '활성화 PIN',
 			'streaming.allDebridConnectFailed' => 'AllDebrid에 연결하지 못했습니다. 다시 시도하세요.',
@@ -8075,13 +8081,13 @@ extension on TranslationsKo {
 			'streaming.connectApiKey' => 'API 키로 연결',
 			'streaming.apiKeyTitle' => ({required Object service}) => '${service} 연결',
 			'streaming.apiKey' => 'API 키',
-			'streaming.apiKeyHint' => ({required Object service}) => '${service} 계정 설정의 API 키를 붙여넣으세요. PlezyNG는 이 기기에서 키를 암호화해 이 프로필에 저장합니다.',
+			'streaming.apiKeyHint' => ({required Object service}) => '${service} 계정 설정의 API 키를 붙여넣으세요. Pleazyng는 이 기기에서 키를 암호화해 이 프로필에 저장합니다.',
 			'streaming.apiKeyConnectFailed' => '이 API 키를 확인하지 못했습니다. 키를 확인한 뒤 다시 시도하세요.',
 			'streaming.accountConnected' => ({required Object username}) => '${username} 계정으로 연결됨',
 			'streaming.streamNeedsProvider' => '이 토렌트 스트림을 재생하려면 Debrid 서비스를 연결하세요.',
 			'streaming.playViaProvider' => 'Debrid로 재생',
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} 연결을 해제할까요?',
-			'streaming.disconnectBody' => 'PlezyNG가 이 기기의 권한을 삭제합니다. 제공업체에 저장된 파일과 진행 중인 전송은 변경되지 않습니다.',
+			'streaming.disconnectBody' => 'Pleazyng가 이 기기의 권한을 삭제합니다. 제공업체에 저장된 파일과 진행 중인 전송은 변경되지 않습니다.',
 			'streaming.streamsTitle' => '스트림 선택',
 			'streaming.noStreams' => '이 제목에 사용할 스트림을 찾지 못했습니다.',
 			'streaming.manageConnections' => '스트리밍 서비스 관리',
@@ -8097,7 +8103,7 @@ extension on TranslationsKo {
 			'streaming.streamUnsupported' => '앱 내 플레이어에서 이 스트림 형식을 지원하지 않습니다.',
 			'streaming.remoteNeedsEpisode' => '스트림을 검색하기 전에 에피소드를 선택하세요.',
 			'streaming.remoteNeedsEpisodeNumber' => '이 에피소드에 시즌 또는 에피소드 번호가 없습니다.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG에서 이 제목의 IMDb 또는 TMDB ID를 찾지 못했습니다.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng에서 이 제목의 IMDb 또는 TMDB ID를 찾지 못했습니다.',
 			'streaming.watchWithServices' => '연결된 서비스로 시청',
 			'streaming.chooseEpisode' => '에피소드 선택',
 			'streaming.episodes' => '에피소드',
@@ -8183,15 +8189,15 @@ extension on TranslationsKo {
 			'notifications.newEpisodeTitle' => '새로운 에피소드',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => '7일 동안 무료로 모든 기능을 시도해 보세요.',
-			'appAccess.description' => '모든 PlezyNG 기능에 대한 완전한 액세스를 가진 7일간의 시험을 시작합니다. 시험 중에는 수수료가 없으며 구독이 없습니다. 시험 후에 매장 가격에 한 생명 구매가 PlezyNG를 생명으로 닫습니다.',
-			'appAccess.trialEndedDescription' => '매장 가격에 한 번 구매하여 PlezyNG에서 모든 기능을 잠그십시오.',
+			'appAccess.description' => '모든 Pleazyng 기능에 대한 완전한 액세스를 가진 7일간의 시험을 시작합니다. 시험 중에는 수수료가 없으며 구독이 없습니다. 시험 후에 매장 가격에 한 생명 구매가 Pleazyng를 생명으로 닫습니다.',
+			'appAccess.trialEndedDescription' => '매장 가격에 한 번 구매하여 Pleazyng에서 모든 기능을 잠그십시오.',
 			'appAccess.startTrial' => '내 7 일 무료 시험을 시작합니다.',
 			'appAccess.trialActive' => '7일간의 완전한 실험은 활성화됩니다.',
 			'appAccess.trialEnded' => '7일간의 재판이 끝났다.',
 			'appAccess.trialStartFailed' => '이 장치에서 테스트를 저장할 수 없었습니다. 다시 시도해 주십시오.',
-			'appAccess.lifetimeTitle' => 'PlezyNG 생명을 위해 잠금을 꺼내',
-			'appAccess.lifetimeBody' => '감사합니다!당신은 모든 PlezyNG 기능에 평생 액세스 할 수 있습니다.',
-			'appAccess.manageTitle' => 'PlezyNG 평생 액세스',
+			'appAccess.lifetimeTitle' => 'Pleazyng 생명을 위해 잠금을 꺼내',
+			'appAccess.lifetimeBody' => '감사합니다!당신은 모든 Pleazyng 기능에 평생 액세스 할 수 있습니다.',
+			'appAccess.manageTitle' => 'Pleazyng 평생 액세스',
 			'appAccess.manageDescription' => '7 일 동안 모든 기능을 무료로 시도하고, 한 번의 지불으로 매장 가격으로 모든 것을 잠그십시오.',
 			'appAccess.buy' => ({required Object price}) => '모든 기능을 ${price}에 대 한 끄기',
 			'appAccess.loadingPrice' => '짐 가게 가격...',
@@ -8199,11 +8205,11 @@ extension on TranslationsKo {
 			'appAccess.restore' => '생명 구매 복원',
 			'appAccess.pending' => '귀하의 구매는 지불 또는 승인을 기다리고 있습니다.인생 접근은 상점이 완료되면 잠금됩니다.',
 			'appAccess.storeUnavailable' => '구매가 없습니다.이 장치에서 구매가 허용되고 상점에 가입하고 있는지 확인합니다.',
-			'appAccess.productNotFound' => 'PlezyNG 생명 잠금은 아직 이 가게에서 사용할 수 없습니다.',
+			'appAccess.productNotFound' => 'Pleazyng 생명 잠금은 아직 이 가게에서 사용할 수 없습니다.',
 			'appAccess.productQueryFailed' => '가게 가격을 충전 할 수 없습니다. 연결을 확인하고 다시 시도하십시오.',
 			'appAccess.purchaseFailed' => '구매가 끝나지 않았는데 다시 한번 시도해 보세요.',
 			'appAccess.restoreFailed' => '당신의 구매를 복구하기 위해 상점에 도달 할 수 없습니다.다시 시도하십시오.',
-			'appAccess.nothingToRestore' => 'No. PlezyNG 생명 구매는 이 가게 계정에서 찾을 수 있습니다.',
+			'appAccess.nothingToRestore' => 'No. Pleazyng 생명 구매는 이 가게 계정에서 찾을 수 있습니다.',
 			'detail.endsAt' => ({required Object time}) => '${time}에 종료',
 			'watchLink.serverUnavailable' => '이 링크를 위해 Plex 서버에 접근할 수 없었습니다.',
 			'watchLink.notFound' => '이 쇼 또는 영화를 Plex 서버에서 찾을 수 없습니다.',
@@ -8217,8 +8223,8 @@ extension on TranslationsKo {
 			'watchLink.copy' => '복사본',
 			'watchLink.copied' => '링크 복사',
 			'homeLayout.title' => '홈 레이아웃',
-			'homeLayout.resetToast' => '홈 다시 원래 Plezy 영웅 레이아웃으로 설정',
-			'homeLayout.resetHeroTitle' => '영웅 레이아웃을 주식으로 다시 설정할 수 있습니까 Plezy?',
+			'homeLayout.resetToast' => '홈 다시 원래 Pleazyng 영웅 레이아웃으로 설정',
+			'homeLayout.resetHeroTitle' => '영웅 레이아웃을 주식으로 다시 설정할 수 있습니까 Pleazyng?',
 			'homeLayout.resetHeroBody' => '각 라인의 영웅 설정을 끄고 홈의 상단에있는 단일 회전 밴드를 반환합니다, 영웅 라인이 존재하기 전과 마찬가지입니다.',
 			'homeLayout.removeRowTitle' => '홈 화면의 행을 삭제할까요?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} 삭제될 것입니다.이것은 무시할 수 없습니다.',
@@ -8228,7 +8234,7 @@ extension on TranslationsKo {
 			'homeLayout.syncAccountOff' => '끄기: 이 장치는 자신의 레이아웃을 유지합니다.',
 			'homeLayout.syncNow' => '지금 시너먼트',
 			'homeLayout.plexHomeManager' => 'Plex 홈 관리자',
-			'homeLayout.managePlexRows' => '관리 Plex 라인 Plezy',
+			'homeLayout.managePlexRows' => '관리 Plex 라인 Pleazyng',
 			'homeLayout.managePlexRowsDescription' => '홈 선택된 라인을 조직하기 위해 열려 있습니다.',
 			'homeLayout.organizeHomeRows' => '홈 라인 조직',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} 라인: 이동, 영웅, 자동 슬라이드, 제거',
@@ -8298,7 +8304,7 @@ extension on TranslationsKo {
 			'homeLayout.organizeRowsHint' => '좌석/오른쪽: 순서 옵션 · 뒤로: 완료',
 			'homeLayout.layoutNavDescription' => '라인, 도서관 및 컬렉션 카테고리를 선택합니다.',
 			'homeLayout.editHomeRow' => '에디트 홈 라인',
-			'homeLayout.resetHeroButton' => '영웅 레이아웃을 재설정 하 고 주식 Plezy',
+			'homeLayout.resetHeroButton' => '영웅 레이아웃을 재설정 하 고 주식 Pleazyng',
 			'homeLayout.reorderingUnlocked' => '다시 닫힌',
 			'homeLayout.reorderingLocked' => '잠금을 다시 닫습니다',
 			'homeLayout.rowsCanBeDragged' => '끈을 끌 수 있습니다 - 잠금을 눌러 그것을 방지합니다.',
@@ -8315,13 +8321,13 @@ extension on TranslationsKo {
 			'homeLayout.tapHeroCardDescription' => '영웅 카드를 탭하거나 선택하면 재생이 시작되거나 세부 사항이 열립니다.',
 			'homeLayout.heroTapPlayDescription' => '선택한 항목을 즉시 시작합니다.',
 			'homeLayout.heroTapDetailsDescription' => '선택한 항목의 세부 사항을 열기 전에 행동을 선택합니다.',
-			'platform.localNetworkPermission' => 'PlezyNG은 현지 네트워크에서 미디어 서버 및 플레이백 장치에 연결됩니다.',
-			'platform.locationPermission' => 'PlezyNG는 로컬 네트워크를 찾고 미디어 서버에 연결하는 데 iOS가 요구하는 경우 위치 접근 권한을 사용합니다.',
+			'platform.localNetworkPermission' => 'Pleazyng은 현지 네트워크에서 미디어 서버 및 플레이백 장치에 연결됩니다.',
+			'platform.locationPermission' => 'Pleazyng는 로컬 네트워크를 찾고 미디어 서버에 연결하는 데 iOS가 요구하는 경우 위치 접근 권한을 사용합니다.',
 			'platform.photoLibraryPermission' => '사진 보관함에서 미디어 아트워크로 사용할 이미지를 선택하세요.',
 			'platform.cameraPermission' => 'QR 코드를 스캔하여 Companion Remote를 연결합니다.',
 			'universalMedia.title' => '오픈 미디어',
 			'universalMedia.shortcutHelp' => '이 세션에 대한 링크, 플레이리스트 또는 파일을 재생합니다.',
-			'universalMedia.intro' => 'Playback은 PlezyNG의 표준 플레이어를 사용하고 도서관에 역사를 추가하지 않습니다.',
+			'universalMedia.intro' => 'Playback은 Pleazyng의 표준 플레이어를 사용하고 도서관에 역사를 추가하지 않습니다.',
 			'universalMedia.openWhat' => '무엇을 열고 싶으신가요?',
 			'universalMedia.stream' => '흐름 주소',
 			'universalMedia.playlist' => '플레이리스트',
@@ -8372,13 +8378,13 @@ extension on TranslationsKo {
 			'universalMedia.stopTransfer' => '전송 중지 및 주소 취소',
 			'universalMedia.startTransfer' => '전송 시작',
 			'universalMedia.wifiImportedFiles' => 'Wi-Fi 전송',
-			'universalMedia.wifiBrowserTitle' => '파일을 PlezyNG로 보내기',
+			'universalMedia.wifiBrowserTitle' => '파일을 Pleazyng로 보내기',
 			'universalMedia.wifiBrowserIntro' => '이 장치의 파일 및 책 라이브러리에 저장됩니다. 최대: 100 파일, 파일 당 4 GiB, 총 10 GiB.',
 			'universalMedia.uploadFilesLabel' => '보내기 위한 파일',
 			'universalMedia.uploadSelected' => '선택한 파일을 업로드',
 			'universalMedia.uploadSelectFirst' => '먼저 하나 이상의 파일을 선택합니다.',
 			'universalMedia.uploading' => '보내기',
-			'universalMedia.uploadComplete' => '파일이 PlezyNG에 추가되었습니다.',
+			'universalMedia.uploadComplete' => '파일이 Pleazyng에 추가되었습니다.',
 			'universalMedia.uploadFailed' => '이 페이지를 열고 다시 시도하십시오.',
 			'universalMedia.liveCue' => '라이브',
 			'universalMedia.liveSession' => '라이브 스트림',
@@ -8406,7 +8412,7 @@ extension on TranslationsKo {
 			'universalMedia.recordingActive' => '이 장치를 기록하십시오.Playback을 남기면 멈추고 저장됩니다.',
 			'universalMedia.recordingFormatHelp' => '비디오를 위해 MKV 또는 MPEG-TS를 선택합니다.오디오를 위한 경우 MKA 또는 MKV를 선택하십시오.',
 			'universalMedia.replaceRecordingTitle' => '이 레코드를 대체할 수 있나요?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG는 녹음하는 동안 기존 파일을 복구합니다. 새 녹음을 저장할 수 없다면 Plezy NG는 백업을 복원합니다.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng는 녹음하는 동안 기존 파일을 복구합니다. 새 녹음을 저장할 수 없다면 Pleazyng NG는 백업을 복원합니다.',
 			'universalMedia.replaceRecording' => '파일 교체',
 			'universalMedia.discHelp' => '이 컴퓨터의 광학 드라이브에서 디스크를 열 수 있습니다 장치 파일에서 ISO 이미지를 열 수 있음.',
 			'universalMedia.discs' => '광학 디스크',
@@ -8431,7 +8437,7 @@ extension on TranslationsKo {
 			'universalMedia.converterUnsupportedInput' => '오디오 또는 비디오 파일을 선택합니다.',
 			'universalMedia.converterLocalOnly' => '선택한 파일은 현지 장치 경로로 사용할 수 없습니다.',
 			'universalMedia.converterReplaceTitle' => '이 파일을 교체할 수 있나요?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG은 변환 된 복사본이 저장 될 때까지 기존 파일을 복구합니다.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng은 변환 된 복사본이 저장 될 때까지 기존 파일을 복구합니다.',
 			'universalMedia.converterStarting' => 'FFmpeg를 시작합니다.',
 			'universalMedia.converterProgress' => '이 컴퓨터로 변환하는 ...',
 			'universalMedia.converterComplete' => '변환이 완료되었습니다.새 파일은 준비되어 있습니다.',
@@ -8455,7 +8461,7 @@ extension on TranslationsKo {
 			'universalMedia.captureDefaultAudio' => '기본 오디오 입력',
 			'universalMedia.captureWaylandHelp' => 'Wayland limits this XWayland capture to the X display. Windows outside XWayland may not appear.',
 			'universalMedia.captureFrameRate' => '녹음 프레임 속도',
-			'universalMedia.capturePrivacy' => '녹음은 선택한 파일에만 저장됩니다.마이크로폰 캡처는 선택적입니다.PlezyNG은 녹음을 업로드하지 않습니다.',
+			'universalMedia.capturePrivacy' => '녹음은 선택한 파일에만 저장됩니다.마이크로폰 캡처는 선택적입니다.Pleazyng은 녹음을 업로드하지 않습니다.',
 			'universalMedia.captureSaveAs' => '스크린 레코딩을 저장하는 방법',
 			'universalMedia.captureExtensionMismatch' => '.mp4에서 끝나는 파일 이름을 선택합니다.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg 또는 H.264 비디오 암호는 사용할 수 없습니다. 지원되는 FFmpeg 건물을 설치하고 다시 시도합니다.',
@@ -8469,7 +8475,7 @@ extension on TranslationsKo {
 			'universalMedia.captureStop' => '멈추고 저장',
 			'universalMedia.captureMode' => '캡처',
 			'universalMedia.shareMode' => '공유하기',
-			'universalMedia.shareIntro' => '귀하의 개인 네트워크에서 다른 장치에 지역 미디어 파일을 보내십시오.PlezyNG은 일시적인 HLS 스트림을 생성합니다.',
+			'universalMedia.shareIntro' => '귀하의 개인 네트워크에서 다른 장치에 지역 미디어 파일을 보내십시오.Pleazyng은 일시적인 HLS 스트림을 생성합니다.',
 			'universalMedia.sharePrivacy' => '귀하의 지역 네트워크에 있는 개인 링크를 받는 사람은 개인 링크가 활성화되는 동안 관찰할 수 있습니다. 링크는 60분 후에 만료됩니다. 공유를 중단하여 서버를 닫고 링크를 취소합니다.',
 			'universalMedia.shareChooseFile' => '미디어 파일 선택',
 			'universalMedia.shareChooseHelp' => '지역 오디오 또는 비디오 파일을 선택합니다.이 파일은이 컴퓨터에 남아 있습니다.',
@@ -8482,7 +8488,7 @@ extension on TranslationsKo {
 			'universalMedia.shareOpenUrl' => '다른 장치에서 플레이어에서 이 주소를 열어',
 			'universalMedia.shareQrLabel' => '임시 스트림 주소에 대한 QR 코드',
 			'universalMedia.shareQrHelp' => '동일한 개인 네트워크에 연결된 호환 플레이어를 사용하여 스캔합니다.',
-			'universalMedia.shareHttpHint' => '이 스트림은 암호화되지 않은 HTTP을 사용합니다. PlezyNG에서는 HTTP을 열기 전에 허용합니다.',
+			'universalMedia.shareHttpHint' => '이 스트림은 암호화되지 않은 HTTP을 사용합니다. Pleazyng에서는 HTTP을 열기 전에 허용합니다.',
 			'universalMedia.shareCopyUrl' => '스트림 주소 복사',
 			'universalMedia.shareExpiresLabel' => '링크가 끝나고',
 			'universalMedia.shareStarting' => '흐름을 준비하는 ...',
@@ -8507,7 +8513,7 @@ extension on TranslationsKo {
 			'universalMedia.extensionInstall' => '서비스 추가',
 			'universalMedia.extensionReplace' => '업데이트 서비스',
 			'universalMedia.extensionRemoveTitle' => '이 검색 서비스 삭제?',
-			'universalMedia.extensionRemoveHelp' => '이 서비스는 이 프로필에서 제거됩니다.PlezyNG은 최종 포인트에 연락하지 않습니다.',
+			'universalMedia.extensionRemoveHelp' => '이 서비스는 이 프로필에서 제거됩니다.Pleazyng은 최종 포인트에 연락하지 않습니다.',
 			'universalMedia.extensionRemove' => '서비스 제거',
 			'universalMedia.extensionInvalidManifest' => '이 파일은 지원되는 확장 메시지가 아닙니다.이 형식에 대한 Open media 가이드를 참조하십시오.',
 			'universalMedia.extensionSaveFailed' => '확장은 활성 프로필에 저장할 수 없었습니다.',
@@ -8650,12 +8656,12 @@ extension on TranslationsKo {
 			'fileSources.none' => '아무도',
 			'fileSources.fullscreen' => '전체 화면',
 			'fileSources.syncLocation' => 'Progress sync 폴더 (선택)',
-			'fileSources.syncLocationHint' => 'PlezyNG 상태를 위한 전용 WebDAV 폴더.조건적인 글쓰기를 사용; 미디어는 변함없이 남아 있습니다.',
+			'fileSources.syncLocationHint' => 'Pleazyng 상태를 위한 전용 WebDAV 폴더.조건적인 글쓰기를 사용; 미디어는 변함없이 남아 있습니다.',
 			'fileSources.audiobooks' => '오디오 책',
 			'fileSources.comics' => '만화',
 			'fileSources.scan' => '책과 미디어를 위한 스캔',
 			'fileSources.browserReader' => '오픈 리더',
-			'fileSources.browserReaderHelp' => '브라우저에서 리더가 열려 있습니다. 읽던 위치와 메모를 저장하려면 PlezyNG를 열어 두세요.',
+			'fileSources.browserReaderHelp' => '브라우저에서 리더가 열려 있습니다. 읽던 위치와 메모를 저장하려면 Pleazyng를 열어 두세요.',
 			'fileSources.on' => '에',
 			'fileSources.advancedSetup' => 'App 등록',
 			'fileSources.microsoftSignIn' => 'Microsoft와 함께 가입하세요',
@@ -8696,7 +8702,7 @@ extension on TranslationsKo {
 			'fileSources.importInterrupted' => '수입 중단 · 제거 삭제',
 			'fileSources.errorQuotaExceeded' => '오프라인 스토리지 제한이 달성되었습니다.제한을 올리거나 다운로드 된 복사본을 제거합니다.',
 			'fileSources.errorStorageLow' => '보호된 저장소를 유지하기에 충분한 무료 장치 스토리지가 없습니다.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG는 무료 장치 저장소를 확인할 수 없었으므로 글쓰기가 중단되었습니다.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng는 무료 장치 저장소를 확인할 수 없었으므로 글쓰기가 중단되었습니다.',
 			'fileSources.removeDownloadJob' => '다운로드 삭제',
 			'fileSources.downloadAlreadyComplete' => '이 다운로드는 삭제되기 전에 완료되었습니다.이 항목은 이제 오프라인으로 사용할 수 있습니다.',
 			'fileSources.confirmRemoveDownloadJob' => '이 다운로드를 제거하고 부분적으로 다운로드 된 데이터를 삭제하십시오.당신의 위치와 노트는 남아있을 것입니다.',
@@ -8737,7 +8743,7 @@ extension on TranslationsKo {
 			'lending.openLibraryNote' => 'Open Library의 카탈로그를 탐색하십시오.읽기 및 대출 옵션은 각 제목의 페이지에 표시됩니다.',
 			'lending.more' => '더 충전',
 			'lending.gateway' => '도서관 서명 서비스',
-			'lending.gatewayHint' => '도서관 또는 관리자 PlezyNG에 의해 제공됩니다.',
+			'lending.gatewayHint' => '도서관 또는 관리자 Pleazyng에 의해 제공됩니다.',
 			'lending.advanced' => '도서관 통합',
 			'lending.loadLibraries' => '당신의 도서관을 선택하세요',
 			'lending.expired' => '이 대출은 끝났습니다.',
@@ -8859,7 +8865,7 @@ extension on TranslationsKo {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.',
 			'sourceSetup.automaticMetadata' => '온라인 동영상 메타데이터 자동 조회',
 			'sourceSetup.metadataPrivacy' => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.',
-			'sourceSetup.nfsEncryptionFailure' => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. PlezyNG는 암호화 없이 이 연결을 다시 시도하지 않습니다.',
+			'sourceSetup.nfsEncryptionFailure' => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. Pleazyng는 암호화 없이 이 연결을 다시 시도하지 않습니다.',
 			'sourceSetup.sourceConnecting' => '소스에 연결 중',
 			'sourceSetup.metadataSearchPrivacy' => '이 제목 검색은 Trakt로 전송됩니다. 입력한 제목만 전송하며, 동영상이나 소스 자격 증명은 전송하지 않습니다.',
 			'sourceSetup.chooseMatch' => '일치하는 결과 선택',
@@ -8989,7 +8995,13 @@ extension on TranslationsKo {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => '이 Plezy 링크는 유효하지 않습니다.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => '이 Pleazyng 링크는 유효하지 않습니다.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => '프로필은 "${profile}"과 일치하지 않습니다.',
 			'deepLinks.serverUnavailable' => '이 링크를 위해 서버에 접근할 수 없었습니다.',
 			'deepLinks.notFound' => '이 책의 제목은 도서관에서 찾을 수 없습니다.',
@@ -9137,7 +9149,7 @@ extension on TranslationsKo {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

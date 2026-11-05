@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify pinned webOS runtime inputs and inspect a produced PlezyNG IPK."""
+"""Verify pinned webOS runtime inputs and inspect a produced Pleazyng IPK."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[2]
 LOCK_PATH = ROOT / "tools" / "webos" / "compatibility.json"
-APP_ID = "org.snapetech.plezyng"
+APP_ID = "org.snapetech.pleazyng"
 EXPECTED_MAINTAINER = "SnapeTech <noreply@github.com>"
 EXPECTED_DESCRIPTION = "Plex media client for LG webOS TVs."
 APP_ROOT = PurePosixPath("usr/palm/applications") / APP_ID
@@ -211,7 +211,7 @@ def read_tar_members(
                     raise ValueError("visualization helper is not executable")
                 if validate_app_layout:
                     if not (name in allowed_directories or name.startswith(app_prefix) or name.startswith(package_prefix)):
-                        raise ValueError(f"unexpected path in PlezyNG IPK: {name!r}")
+                        raise ValueError(f"unexpected path in Pleazyng IPK: {name!r}")
                     if member.isdir():
                         expected_mode = 0o777 if name == appdata_name else 0o755
                         if member.mode != expected_mode:
@@ -339,7 +339,7 @@ def expected_package_version() -> str:
 def verify_project_metadata() -> None:
     appinfo = json.loads((ROOT / "webos/meta/appinfo.json").read_text(encoding="utf-8"))
     if appinfo.get("id") != APP_ID or appinfo.get("type") != "native":
-        raise ValueError("webOS source metadata is not the expected native PlezyNG package")
+        raise ValueError("webOS source metadata is not the expected native Pleazyng package")
     if appinfo.get("version") != expected_package_version():
         raise ValueError("webOS source appinfo.json version must match pubspec.yaml before building")
 
@@ -349,7 +349,7 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
     source_appinfo = json.loads((ROOT / "webos" / "meta" / "appinfo.json").read_text(encoding="utf-8"))
     app_specific = set(lock["appSpecificACG"])
     if source_appinfo.get("id") != APP_ID or source_appinfo.get("type") != "native":
-        raise ValueError("webos/meta/appinfo.json is not the expected native PlezyNG package")
+        raise ValueError("webos/meta/appinfo.json is not the expected native Pleazyng package")
     source_acg = source_appinfo.get("requiredACG")
     if not isinstance(source_acg, list) or len(source_acg) != len(set(source_acg)) or set(source_acg) != app_specific:
         raise ValueError(f"unexpected app-specific requiredACG set: {source_acg!r}")
@@ -383,15 +383,15 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
         raise ValueError("IPK control installed size is invalid")
     if control_fields.get("webOS-Package-Format-Version") != "2":
         raise ValueError("IPK control metadata has an unsupported webOS package format")
-    if control_fields.get("webOS-Packager-Version") != "plezyng-python-1":
-        raise ValueError("IPK was not produced by the pinned PlezyNG packager")
+    if control_fields.get("webOS-Packager-Version") != "pleazyng-python-1":
+        raise ValueError("IPK was not produced by the pinned Pleazyng packager")
     if control_fields.get("Maintainer") != EXPECTED_MAINTAINER:
-        raise ValueError("IPK control metadata does not identify the PlezyNG maintainer")
+        raise ValueError("IPK control metadata does not identify the Pleazyng maintainer")
     if control_fields.get("Description") != EXPECTED_DESCRIPTION:
-        raise ValueError("IPK control metadata does not describe the PlezyNG webOS client")
+        raise ValueError("IPK control metadata does not describe the Pleazyng webOS client")
 
     appinfo_path = str(APP_ROOT / "appinfo.json")
-    executable_path = str(APP_ROOT / "plezyng")
+    executable_path = str(APP_ROOT / "pleazyng")
     package_info_path = f"usr/palm/packages/{APP_ID}/packageinfo.json"
     notice_path = str(APP_ROOT / "data/flutter_assets/assets/licenses/LGFlutterWebOSRuntimeNotice.txt")
     library_paths = [str(APP_ROOT / "lib" / name) for name in (*RUNTIME_LIBRARIES, *REQUIRED_NATIVE_LIBRARIES)]
@@ -403,8 +403,8 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
     appinfo = json.loads(selected[appinfo_path])
     if appinfo.get("id") != APP_ID:
         raise ValueError(f"IPK app ID is {appinfo.get('id')!r}; expected {APP_ID!r}")
-    if appinfo.get("type") != "native" or appinfo.get("main") != "plezyng":
-        raise ValueError("IPK is not the expected native PlezyNG application")
+    if appinfo.get("type") != "native" or appinfo.get("main") != "pleazyng":
+        raise ValueError("IPK is not the expected native Pleazyng application")
 
     version = appinfo.get("version")
     if version != expected_package_version():
@@ -414,7 +414,7 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
 
     package_info = json.loads(selected[package_info_path])
     if package_info != {"id": APP_ID, "version": version, "app": APP_ID}:
-        raise ValueError("IPK packageinfo.json does not match the PlezyNG application")
+        raise ValueError("IPK packageinfo.json does not match the Pleazyng application")
 
     packager = set(lock["packagerACG"])
     required_acg = appinfo.get("requiredACG")
@@ -427,7 +427,7 @@ def verify_ipk(path: Path, lock: dict[str, object]) -> dict[str, object]:
     if "*" in required_acg:
         raise ValueError("wildcard ACG permissions are forbidden")
 
-    verify_arm_elf(selected[executable_path], "plezyng")
+    verify_arm_elf(selected[executable_path], "pleazyng")
 
     for name in (*RUNTIME_LIBRARIES, *REQUIRED_NATIVE_LIBRARIES):
         library_path = str(APP_ROOT / "lib" / name)
@@ -458,7 +458,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--engine-archive", type=Path, help="pinned webos-arm-release.zip")
     parser.add_argument("--common-archive", type=Path, help="pinned webos-common.zip")
-    parser.add_argument("--ipk", type=Path, help="built PlezyNG webOS IPK to inspect")
+    parser.add_argument("--ipk", type=Path, help="built Pleazyng webOS IPK to inspect")
     parser.add_argument("--project-metadata", action="store_true", help="check native app identity/version before building")
     args = parser.parse_args()
 

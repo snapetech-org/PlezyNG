@@ -75,7 +75,7 @@ def release_metadata(manifest: dict, version: str) -> dict[str, str]:
 def fetch_release_metadata(version: str) -> dict[str, str]:
     request = urllib.request.Request(
         MANIFEST_URL,
-        headers={"User-Agent": "plezyng-macos-flutter-cache/1"},
+        headers={"User-Agent": "pleazyng-macos-flutter-cache/1"},
     )
     with urllib.request.urlopen(request, timeout=30) as response:
         manifest = json.load(response)
@@ -180,7 +180,7 @@ def _archive_length(url: str) -> int:
         method="HEAD",
         headers={
             "Accept-Encoding": "identity",
-            "User-Agent": "plezyng-macos-flutter-cache/1",
+            "User-Agent": "pleazyng-macos-flutter-cache/1",
         },
     )
     with urllib.request.urlopen(request, timeout=60) as response:
@@ -207,7 +207,7 @@ def _download_range(url: str, path: Path, start: int, end: int, total: int) -> P
             headers={
                 "Accept-Encoding": "identity",
                 "Range": f"bytes={offset}-{end}",
-                "User-Agent": "plezyng-macos-flutter-cache/1",
+                "User-Agent": "pleazyng-macos-flutter-cache/1",
             },
         )
         try:

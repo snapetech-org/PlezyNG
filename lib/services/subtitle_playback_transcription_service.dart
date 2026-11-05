@@ -1,4 +1,5 @@
 import 'subtitle_capture_status.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
 

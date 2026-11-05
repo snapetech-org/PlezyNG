@@ -49,7 +49,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>PlezyNG</string>
+	<string>Pleazyng</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -57,7 +57,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>PlezyNG</string>
+	<string>Pleazyng</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -68,10 +68,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>org.snapetech.plezyng</string>
+			<string>org.snapetech.pleazyng</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>plezyng-source</string>
+				<string>pleazyng-source</string>
 			</array>
 		</dict>
 		<dict>
@@ -79,7 +79,7 @@
 			<string>com.edde746.plezy</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>plezy</string>
+				<string>pleazyng</string>
 				<string>plezyng</string>
 				<string>plezxyng</string>
 			</array>
@@ -87,7 +87,7 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<!-- plezy://, plezyng:// and legacy plezxyng:// links reach Dart through DeepLinkPlugin (com.plezy/deep_link);
+	<!-- pleazyng://, plezyng:// and legacy plezxyng:// links reach Dart through DeepLinkPlugin (com.plezy/deep_link);
 	     Flutter's router must not also push them as named routes. -->
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
@@ -109,20 +109,20 @@
 		<true/>
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>PlezyNG connects to your media servers and playback devices on your local network.</string>
+	<string>Pleazyng connects to your media servers and playback devices on your local network.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_CC1AD845._googlecast._tcp</string>
 		<string>_googlecast._tcp</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>PlezyNG uses location access when iOS requires it to detect your local network and connect to your media servers.</string>
+	<string>Pleazyng uses location access when iOS requires it to detect your local network and connect to your media servers.</string>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Search Apple Music catalog results you choose and play them through Apple's native player.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose images from your photo library to use as media artwork.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>PlezyNG uses your microphone only when you enable karaoke pitch feedback or private recording.</string>
+	<string>Pleazyng uses your microphone only when you enable karaoke pitch feedback or private recording.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Scan QR codes to pair a Companion Remote.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

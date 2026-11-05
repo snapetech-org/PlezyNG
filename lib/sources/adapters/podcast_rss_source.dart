@@ -575,7 +575,7 @@ class PodcastRssSourceAdapter extends SourceAdapter {
   }
 
   @override
-  // Episode resume state stays in PlezyNG; RSS has no shared progress-write API.
+  // Episode resume state stays in Pleazyng; RSS has no shared progress-write API.
   SourceCapabilities get capabilities => const SourceCapabilities();
 
   @override

@@ -1,10 +1,15 @@
 import '../services/file_picker_service.dart';
 import '../widgets/app_icon.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
+
 import '../i18n/strings.g.dart' as l10n;
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+
 import 'karaoke_models.dart';
 import 'karaoke_preparation.dart';
 import 'karaoke_session.dart';

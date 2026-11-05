@@ -2,4 +2,4 @@
 set -euo pipefail
 
 APPDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-exec "$APPDIR/opt/plezyng/plezy.sh" "$@"
+exec "$APPDIR/opt/pleazyng/pleazyng.sh" "$@"

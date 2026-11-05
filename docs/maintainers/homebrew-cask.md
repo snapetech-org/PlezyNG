@@ -1,6 +1,6 @@
 # Homebrew Cask release preparation
 
-The macOS product bundle is `PlezyNG.app`, and the release disk image is `plezyng-macos.dmg`; the app keeps its existing `org.snapetech.plezyng` bundle identifier. The release workflow can produce a version-pinned Cask candidate for each stable macOS release. The candidate is generated only when `prepare_homebrew_cask` is enabled for a full release run. To validate the macOS bundle and Gatekeeper without creating a release, dispatch with action `build`, mode `macos-validation`, and `prepare_homebrew_cask` enabled; only the macOS build job runs.
+The macOS product bundle is `Pleazyng.app`, and the release disk image is `plezyng-macos.dmg`; the app keeps its existing `org.snapetech.plezyng` bundle identifier. The release workflow can produce a version-pinned Cask candidate for each stable macOS release. The candidate is generated only when `prepare_homebrew_cask` is enabled for a full release run. To validate the macOS bundle and Gatekeeper without creating a release, dispatch with action `build`, mode `macos-validation`, and `prepare_homebrew_cask` enabled; only the macOS build job runs.
 
 ## Release requirements
 
@@ -12,7 +12,7 @@ The macOS product bundle is `PlezyNG.app`, and the release disk image is `plezyn
 
 ## Official Homebrew submission
 
-Use the generated Cask as `Casks/s/snapetech-plezyng.rb` in `Homebrew/homebrew-cask`. The `snapetech-` prefix identifies our Cask, which installs the PlezyNG bundle as `PlezyNG.app`.
+Use the generated Cask as `Casks/s/snapetech-plezyng.rb` in `Homebrew/homebrew-cask`. The `snapetech-` prefix identifies our Cask, which installs the Pleazyng bundle as `Pleazyng.app`.
 
 Before opening a submission, review the current Homebrew Cask acceptance policy and contribution guide. New Casks must pass Gatekeeper without removing quarantine, include the required metadata and zap stanza, and pass the current audit and style checks. Homebrew may decline self-submissions that do not meet its current repository age and popularity criteria. Disclose AI assistance if the current contribution process requests it, and review all generated content yourself.
 
@@ -42,4 +42,4 @@ Replace the example version with the exact stable release version. The generator
 
 For distribution before an official Homebrew Cask is accepted, commit the generated file as `Casks/snapetech-plezyng.rb` in a tap repository and document the tap install command for users. Keep the version and checksum pinned to a published release; do not use a moving `latest` DMG URL.
 
-There is no `plezy` Cask entry: PlezyNG is distributed under the `snapetech-plezyng` token. Do not add a quarantine-removal postflight. Only publish signed and notarized PlezyNG builds that pass Gatekeeper.
+There is no `plezy` Cask entry: Pleazyng is distributed under the `snapetech-plezyng` token. Do not add a quarantine-removal postflight. Only publish signed and notarized Pleazyng builds that pass Gatekeeper.

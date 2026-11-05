@@ -122,7 +122,7 @@ class _Translations$app$ms extends Translations$app$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class _Translations$appIcon$ms extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Perkataan default';
 	@override String get current => 'Ikon semasa';
 	@override String get locked => 'Akses seumur hidup diperlukan';
-	@override String get lockedHint => 'Mulakan percubaan 7 hari anda atau membuka kunci PlezyNG sepanjang hayat anda untuk menggunakan ikon alternatif.';
+	@override String get lockedHint => 'Mulakan percubaan 7 hari anda atau membuka kunci Pleazyng sepanjang hayat anda untuk menggunakan ikon alternatif.';
 	@override String get changeFailed => 'Tidak boleh mengubah ikon app';
-	@override String get launcherHint => 'Ikon baru muncul pada skrin rumah anda apabila anda meninggalkan PlezyNG.';
-	@override String get tvLauncherHint => 'Banner baru muncul apabila anda meninggalkan PlezyNG. Android TV boleh terus menunjukkan yang lama sehingga TV bermula semula.';
+	@override String get launcherHint => 'Ikon baru muncul pada skrin rumah anda apabila anda meninggalkan Pleazyng.';
+	@override String get tvLauncherHint => 'Banner baru muncul apabila anda meninggalkan Pleazyng. Android TV boleh terus menunjukkan yang lama sehingga TV bermula semula.';
 	@override late final _Translations$appIcon$names$ms names = _Translations$appIcon$names$ms._(_root);
 	@override String get description => 'Pilih ikon yang ditunjukkan oleh pelancaran peranti anda. previews menunjukkan bagaimana setiap opsyen kelihatan.';
 }
@@ -166,7 +166,7 @@ class _Translations$auth$ms extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Menunggu kelulusan...';
 	@override String get quickConnectCancel => 'Batalkan';
 	@override String get quickConnectExpired => 'Sambungan Pantas telah tamat tempoh. Cuba lagi.';
-	@override String get localDataRecoveryRequired => 'PlezyNG tidak dapat memulihkan maklumat log masuk tempatan dan data main balik yang belum diproses dengan selamat. Sila log masuk semula.';
+	@override String get localDataRecoveryRequired => 'Pleazyng tidak dapat memulihkan maklumat log masuk tempatan dan data main balik yang belum diproses dengan selamat. Sila log masuk semula.';
 	@override String get pinCheckRejected => 'Pendaftaran PIN Plex ditolak';
 	@override String get connectToDirectPlex => 'Menyambung ke pelayan tempatan Plex';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$ms extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Tetapan';
-	@override String get supportDeveloper => 'Perkhidmatan PlezyNG';
+	@override String get supportDeveloper => 'Perkhidmatan Pleazyng';
 	@override String get supportDeveloperDescription => 'Memberi sumbangan untuk menyokong pembangunan';
-	@override String get lifetimeAccess => 'PlezyNG akses seumur hidup';
+	@override String get lifetimeAccess => 'Pleazyng akses seumur hidup';
 	@override String get language => 'Bahasa Melayu';
 	@override String get theme => 'Subjek';
 	@override String get appearance => 'Penampilan';
@@ -353,7 +353,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'Tiada perpustakaan media yang disambungkan tersedia.';
 	@override String get contentScreensaverDismissHint => 'Tekan butang atau ketik untuk membatalkan';
 	@override String get newEpisodeNotifications => 'Pemberitahuan episod baru';
-	@override String get newEpisodeNotificationsDescription => 'Peringatan apabila episod baru ditambah kepada persembahan yang anda terperangkap. semak sementara Plezy dibuka.';
+	@override String get newEpisodeNotificationsDescription => 'Peringatan apabila episod baru ditambah kepada persembahan yang anda terperangkap. semak sementara Pleazyng dibuka.';
 	@override String get continueWatchingRowSize => 'Lihat lagi reviu untuk Range Size';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} kad';
 	@override String get rowSizeCompact => 'Kompakt';
@@ -482,7 +482,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Memulihkan keutamaan daripada fail';
 	@override String get importSettingsConfirm => 'Ini akan menggantikan tetapan semasa anda.Lanjutkan?';
 	@override String get importSettingsSuccess => 'Seting yang diimport';
-	@override String get importSettingsInvalidFile => 'Fail ini bukan pengeksportan tetapan PlezyNG yang sah';
+	@override String get importSettingsInvalidFile => 'Fail ini bukan pengeksportan tetapan Pleazyng yang sah';
 	@override String get importSettingsNoUser => 'Menandatangani sebelum mengimport tetapan';
 	@override String get cloudBackup => 'Penyelesaian Cloud Backup';
 	@override String get cloudBackupDescription => 'Sandarkan tetapan yang boleh dipindahkan ke alamat WebDAV melalui HTTPS. Sambungan pelayan dan maklumat log masuk kekal pada peranti ini.';
@@ -664,7 +664,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get forceTvMode => 'Kekuatan TV Mode';
 	@override String get forceTvModeDescription => 'Layout TV Force. untuk peranti yang tidak mendeteksi secara automatik. memerlukan pemulihan semula.';
 	@override String get startInFullscreen => 'Mulakan pada skrin penuh';
-	@override String get startInFullscreenDescription => 'Buka PlezyNG dalam mod skrin penuh pada pelancaran';
+	@override String get startInFullscreenDescription => 'Buka Pleazyng dalam mod skrin penuh pada pelancaran';
 	@override String get exitFullscreenOnPlayerClose => 'Ekran penuh keluar pada pemain tertutup';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Secara automatik keluar skrin penuh apabila menutup pemutar video';
 	@override String get autoHidePerformanceOverlay => 'Auto-Hide Perkhidmatan Overlay';
@@ -720,7 +720,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Di mana-mana sahaja';
 	@override String get playerScopeLibrary => 'Per Perpustakaan';
 	@override String get playerScopeTitle => 'untuk persembahan atau filem';
-	@override String get exportDialogTitle => 'Eksport PlezyNG tetapan';
+	@override String get exportDialogTitle => 'Eksport Pleazyng tetapan';
 	@override String get followSystem => 'Ikut sistem';
 	@override String get followAppLanguage => 'Ikut bahasa antara muka';
 	@override String get regionFormat => 'Format serantau';
@@ -731,7 +731,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'Membuka video desktop dalam skrin penuh apabila playback bermula';
 	@override String get extendVideoIntoDisplayCutout => 'Memperluaskan video ke dalam display cutout';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'Biarkan video skrin penuh menggunakan kamera cutout pada telefon Android';
-	@override String get languageDescription => 'Pilih bahasa yang digunakan untuk kawalan dan mesej PlezyNG. sistem mengikuti bahasa peranti anda.';
+	@override String get languageDescription => 'Pilih bahasa yang digunakan untuk kawalan dan mesej Pleazyng. sistem mengikuti bahasa peranti anda.';
 	@override String get themeDescription => 'Pilih warna dan kontras yang digunakan sepanjang aplikasi.';
 	@override String get libraryDensityDescription => 'Mengubah bilangan kad perpustakaan yang sesuai dalam setiap baris.';
 	@override String get displayScaleDescription => 'Mengembalikan antara muka pada paparan kereta ini tanpa mengubah saiz teks keseluruhan peranti anda.';
@@ -753,14 +753,14 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get episodeActionDescription => 'Pilih apa yang berlaku apabila anda mengaktifkan kad episod.';
 	@override String get episodePlayDescription => 'Mulakan episod ini dengan segera.';
 	@override String get episodeDetailsDescription => 'Buka halaman episod sebelum playback.';
-	@override String get contentScreensaverDelayDescription => 'Pilih berapa lama PlezyNG menunggu tanpa input sebelum menunjukkan karya seni.';
+	@override String get contentScreensaverDelayDescription => 'Pilih berapa lama Pleazyng menunggu tanpa input sebelum menunjukkan karya seni.';
 	@override String get continueWatchingRowSizeDescription => 'Pilih seberapa besar kad yang terdapat dalam baris terus-menerus.';
 	@override String get rowSizeCompactDescription => 'Tunjukkan kad yang lebih kecil supaya lebih banyak item sesuai di sepanjang baris.';
 	@override String get rowSizeStandardDescription => 'Gunakan saiz kad standard.';
 	@override String get rowSizeLargeDescription => 'Tunjukkan kad yang lebih besar dengan lebih banyak butiran karya seni.';
 	@override String get visualEffectsDescription => 'Pilih anggaran animasi dan kesan seni untuk peranti ini.';
 	@override String get visualEffectsFullDescription => 'Gunakan kesan animasi dan seni penuh pada setiap peranti.';
-	@override String get startupSectionDescription => 'Pilih bahagian mana yang dibuka apabila PlezyNG bermula.';
+	@override String get startupSectionDescription => 'Pilih bahagian mana yang dibuka apabila Pleazyng bermula.';
 	@override late final _Translations$settings$startupSectionOptions$ms startupSectionOptions = _Translations$settings$startupSectionOptions$ms._(_root);
 	@override String get smallSkipDurationDescription => 'Tetapkan jarak yang dipindahkan oleh belakang pendek dan ke hadapan mencari kawalan.';
 	@override String get largeSkipDurationDescription => 'Tetapkan jarak yang dipindahkan oleh latar belakang panjang dan ke hadapan mencari kawalan.';
@@ -796,7 +796,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => 'Mainkan audio sumber tanpa transcode bitrate-capped.';
 	@override String get musicQualityTranscodeOptionDescription => 'Meminta transcode pelayan yang dilapisi berhampiran kadar bit yang ditunjukkan di atas; output sebenar boleh berbeza-beza.';
 	@override String get maxVolumeInputLabel => 'Jumlah maksimum (%)';
-	@override String get checkForUpdatesDescription => 'Sekarang semak sama ada versi PlezyNG yang lebih baru boleh didapati.';
+	@override String get checkForUpdatesDescription => 'Sekarang semak sama ada versi Pleazyng yang lebih baru boleh didapati.';
 	@override String get appearanceDescription => 'Pilih tema aplikasi dan menyesuaikan kad perpustakaan, baris rumah, dan navigasi.';
 	@override String get prerollLibraryDescription => 'Pilih perpustakaan yang mengandungi klip yang tersedia sebagai pre-rolls filem.';
 	@override String get prerollSelectionDescription => 'Pilih klip mana daripada perpustakaan yang dipilih boleh dimainkan sebelum filem.';
@@ -1044,8 +1044,8 @@ class _Translations$mediaMenu$ms extends Translations$mediaMenu$en {
 	@override String deleteSharedFileHeading({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n,
 		other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod lain disimpan dalam fail yang sama dan juga akan dipadamkan:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG tidak dapat memeriksa fail yang akan dipadamkan, jadi lebih daripada item yang dinyatakan di atas mungkin dipadamkan. Batalkan dan cuba lagi, atau padamkan juga.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Pelayan anda tidak memberikan butiran fail untuk item ini, jadi PlezyNG tidak dapat memeriksa fail yang akan dipadamkan. Lebih daripada item yang dinyatakan di atas mungkin dipadamkan.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng tidak dapat memeriksa fail yang akan dipadamkan, jadi lebih daripada item yang dinyatakan di atas mungkin dipadamkan. Batalkan dan cuba lagi, atau padamkan juga.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Pelayan anda tidak memberikan butiran fail untuk item ini, jadi Pleazyng tidak dapat memeriksa fail yang akan dipadamkan. Lebih daripada item yang dinyatakan di atas mungkin dipadamkan.';
 	@override String get mediaDeletedSuccessfully => 'Media item dihapuskan dengan berjaya';
 	@override String get mediaFailedToDelete => 'gagal menghapuskan item media';
 	@override String get rate => 'Kadar';
@@ -1113,7 +1113,7 @@ class _Translations$accessibility$ms extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'Aksesibiliti';
 	@override String get summary => 'teks, kontras, pergerakan dan kawalan';
-	@override String get systemHint => 'Seting aksesibiliti peranti anda sentiasa terpakai. pilihan ini menambah penyesuaian sepanjang PlezyNG.';
+	@override String get systemHint => 'Seting aksesibiliti peranti anda sentiasa terpakai. pilihan ini menambah penyesuaian sepanjang Pleazyng.';
 	@override String get readability => 'Pembacaan dan penglihatan';
 	@override String get textSize => 'Saiz teks tambahan';
 	@override String get preview => 'Baca, dengar dan lihat pada kelajuan anda sendiri.';
@@ -1126,7 +1126,7 @@ class _Translations$accessibility$ms extends Translations$accessibility$en {
 	@override String get largeTargets => 'Target sentuhan yang lebih besar';
 	@override String get largeTargetsHint => 'Memberi kawalan berkongsi lebih banyak ruang untuk sentuhan dan navigasi bantuan.';
 	@override String get navigationHint => 'Gunakan Tab dan Shift+Tab untuk bergerak antara kawalan, Enter atau Space untuk mengaktifkan, dan Escape atau butang Kembali untuk menutup. Zum dan keutamaan bacaan tersedia semasa buku dibuka.';
-	@override String get textSizeDescription => 'Skala antara muka teks dalam PlezyNG di samping tetapan saiz teks sistem peranti anda.';
+	@override String get textSizeDescription => 'Skala antara muka teks dalam Pleazyng di samping tetapan saiz teks sistem peranti anda.';
 	@override String get boldTextHint => 'Gunakan berat yang lebih berat untuk label antara muka dan mesej untuk memudahkan mereka untuk membezakan.';
 }
 
@@ -1452,7 +1452,7 @@ class _Translations$profiles$ms extends Translations$profiles$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Menambah PlezyNG profil';
+	@override String get addPlezyProfile => 'Menambah Pleazyng profil';
 	@override String get switchingProfile => 'Menukar profil ...';
 	@override String get deleteThisProfileTitle => 'Menghapuskan profil ini?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Menghapus ${displayName}. sambungan tidak terjejas.';
@@ -1543,7 +1543,7 @@ class _Translations$connections$ms extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} pelayan menolak akses kepada akaun ini';
 	@override String get signInAgain => 'Menandatangani lagi';
 	@override String editMediaBrowserTitle({required Object product}) => 'Edit ${product} sambungan';
-	@override String editMediaBrowserIntro({required Object serverName}) => 'Menambah atau menghapuskan URL untuk ${serverName}. PlezyNG akan menggunakan URL yang boleh dicapai dengan latensi terendah.';
+	@override String editMediaBrowserIntro({required Object serverName}) => 'Menambah atau menghapuskan URL untuk ${serverName}. Pleazyng akan menggunakan URL yang boleh dicapai dengan latensi terendah.';
 }
 
 // Path: accountPreferences
@@ -1557,7 +1557,7 @@ class _Translations$accountPreferences$ms extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => 'Audio, subtitle dan pilihan perpustakaan disimpan pada ${account}';
 	@override String hubSubtitleMultiple({required Object count}) => 'Audio, subtitle dan pilihan perpustakaan disimpan pada ${count} akaun';
 	@override String get pickAccount => 'Setiap akaun menyimpan keutamaan mereka sendiri. pilih yang untuk mengedit.';
-	@override String get storedOnAccount => 'Pilihan-pilihan ini disimpan pada akaun itu sendiri, jadi setiap aplikasi yang mendaftar masuk ke dalamnya menggunakan mereka - termasuk PlezyNG pada peranti lain anda.';
+	@override String get storedOnAccount => 'Pilihan-pilihan ini disimpan pada akaun itu sendiri, jadi setiap aplikasi yang mendaftar masuk ke dalamnya menggunakan mereka - termasuk Pleazyng pada peranti lain anda.';
 	@override String get noAccounts => 'Tiada akaun yang boleh dikonfigurasi';
 	@override String get noAccountsHint => 'Mendaftar masuk ke Plex, atau sambungkan pelayan Jellyfin atau Emby, dan keutamaan yang disimpan pada akaun itu dipaparkan di sini.';
 	@override String get unavailable => 'Tidak boleh mencapai akaun ini';
@@ -1784,9 +1784,9 @@ class _Translations$startup$ms extends Translations$startup$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG tidak boleh bermula';
+	@override String get failedTitle => 'Pleazyng tidak boleh bermula';
 	@override String get failedBody => 'Sesuatu yang salah semasa permulaan. butiran di bawah mengenal pasti apa yang gagal.';
-	@override String get failedBodyRepairable => 'Fail tetapan PlezyNG yang disimpan rosak dan perlu dibina semula sebelum aplikasi boleh bermula. Mencuba lagi tidak akan membantu — pilih Baiki storan.';
+	@override String get failedBodyRepairable => 'Fail tetapan Pleazyng yang disimpan rosak dan perlu dibina semula sebelum aplikasi boleh bermula. Mencuba lagi tidak akan membantu — pilih Baiki storan.';
 	@override String get phaseLabel => 'Langkah';
 	@override String get showDetails => 'Tunjukkan butiran';
 	@override String get hideDetails => 'menyembunyikan butiran';
@@ -1795,16 +1795,16 @@ class _Translations$startup$ms extends Translations$startup$en {
 	@override String get uploadDetails => 'Tambah butiran';
 	@override String get repairStorage => 'Perbaikan penyimpanan';
 	@override String get repairTitle => 'Perbaikan data yang disimpan?';
-	@override String get repairBodyCommon => 'Fail tetapan PlezyNG rosak dan tidak boleh dibaca. pembaikan memulihkan setiap tetapan kepada lalai.';
+	@override String get repairBodyCommon => 'Fail tetapan Pleazyng rosak dan tidak boleh dibaca. pembaikan memulihkan setiap tetapan kepada lalai.';
 	@override String get repairBodyOneCredential => 'Satu log masuk yang disimpan rosak dan tidak boleh dibaca. pembaikan menghapuskan hanya satu; tetapan lain anda ditinggalkan sendirian.';
 	@override String get repairBodySignInsKept => 'Sesi log masuk pelayan dan profil anda sepatutnya kekal aktif.';
 	@override String get repairBodySignInsLost => 'Kunci yang melindungi maklumat log masuk tersimpan tidak dapat dipulihkan daripada fail ini. Anda perlu log masuk semula ke setiap pelayan dan profil. Tiada apa-apa pada pelayan media anda terjejas.';
-	@override String get repairBodySessionsUncertain => 'Data penjejak (MAL, AniList, Simkl, Trakt) dan Seerr disimpan secara berasingan dan mungkin kekal atau hilang. PlezyNG akan memberitahu anda dengan tepat data yang dikekalkan.';
+	@override String get repairBodySessionsUncertain => 'Data penjejak (MAL, AniList, Simkl, Trakt) dan Seerr disimpan secara berasingan dan mungkin kekal atau hilang. Pleazyng akan memberitahu anda dengan tepat data yang dikekalkan.';
 	@override String get repairConfirm => 'Perbaikan';
 	@override String get repairSucceeded => 'Penyimpanan diperbaiki';
 	@override String get repairNeedsRestart => 'Penyimpanan diperbaiki - perlu memulakan semula';
-	@override String get restartRequiredBody => 'Data anda telah dibaiki, tetapi PlezyNG perlu dimulakan semula sebelum dapat menggunakannya. Tutup PlezyNG dan buka semula.';
-	@override String get quitPlezy => 'Perbincangan:Penghantaran PlezyNG';
+	@override String get restartRequiredBody => 'Data anda telah dibaiki, tetapi Pleazyng perlu dimulakan semula sebelum dapat menggunakannya. Tutup Pleazyng dan buka semula.';
+	@override String get quitPlezy => 'Perbincangan:Penghantaran Pleazyng';
 	@override String get repairFailed => 'Perbaikan gagal';
 	@override String get repairKeptSignIns => 'Sesi log masuk pelayan dan profil anda masih aktif.';
 	@override String get repairLostSignIns => 'Kunci yang melindungi maklumat log masuk tersimpan tidak dapat dipulihkan. Anda perlu log masuk semula ke setiap pelayan dan profil.';
@@ -1813,7 +1813,7 @@ class _Translations$startup$ms extends Translations$startup$en {
 	@override String get backupWarning => 'Ia mengandungi pengesahan log masuk anda.Jangan muat naik atau berkongsi.';
 	@override String get deleteBackup => 'Menghapuskan copy';
 	@override String get backupDeleted => 'salinan telah dipadamkan.';
-	@override String get previousFailureTitle => 'PlezyNG gagal memulakan kali terakhir';
+	@override String get previousFailureTitle => 'Pleazyng gagal memulakan kali terakhir';
 }
 
 // Path: licenses
@@ -2139,7 +2139,7 @@ class _Translations$watchTogether$ms extends Translations$watchTogether$en {
 	@override String get codeCopied => 'Kod bilik disalin';
 	@override String get shareInvite => 'Memberi jemputan';
 	@override String get inviteCopied => 'Sila rujuk. masukkan ke dalam mesej.';
-	@override String inviteMessage({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di PlezyNG: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.';
+	@override String inviteMessage({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.';
 	@override String get openSessionControls => 'Open Watch Bersama-sama kawalan sesi';
 	@override String get reconnecting => 'Menghubungkan semula...';
 	@override String get reconnectingDescription => 'sambungan hilang. anda menyertai bilik secara automatik.';
@@ -2165,7 +2165,7 @@ class _Translations$watchTogether$ms extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Pilih salinan lain';
 	@override String get dontPlay => 'Jangan Bermain';
 	@override String get unavailableTitle => 'Anda tidak mempunyai video ini';
-	@override String get unavailableDescription => 'PlezyNG tidak dapat menemukannya dalam perpustakaan anda. pilih salinan sendiri atau cari lagi.';
+	@override String get unavailableDescription => 'Pleazyng tidak dapat menemukannya dalam perpustakaan anda. pilih salinan sendiri atau cari lagi.';
 	@override String get chooseCopy => 'Pilih salinan';
 	@override String get searchAgain => 'Cari lagi';
 	@override String get noCandidates => 'Tiada salinan yang boleh didapati di perpustakaan anda.';
@@ -2309,11 +2309,11 @@ class _Translations$downloads$ms extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Peraturan Sync';
 	@override String get reviewOrphanFiles => 'Lihat lagi reviu untuk Orphaned downloads';
 	@override String get orphanReviewTitle => 'Lihat lagi reviu untuk Orphaned downloads';
-	@override String get orphanReviewDescription => 'Fail-fail yang ditandakan ini terdapat dalam folder muat turun yang dikendalikan oleh aplikasi lalai PlezyNG dan tidak mempunyai rekod muat turun atau tugas aktif yang sepadan.';
+	@override String get orphanReviewDescription => 'Fail-fail yang ditandakan ini terdapat dalam folder muat turun yang dikendalikan oleh aplikasi lalai Pleazyng dan tidak mempunyai rekod muat turun atau tugas aktif yang sepadan.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} fail · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => 'Memadamkan fail ${count}';
 	@override String get orphanCleanupNone => 'Tiada fail muat turun yang ditemui';
-	@override String get orphanCleanupFailed => 'PlezyNG tidak boleh selamat memindai folder muat turun yang dikendalikan. tiada fail yang dipadamkan.';
+	@override String get orphanCleanupFailed => 'Pleazyng tidak boleh selamat memindai folder muat turun yang dikendalikan. tiada fail yang dipadamkan.';
 	@override String get orphanCleanupChanged => 'Senarai muat turun berubah semasa ulasan. ulasan semula fail sebelum pembersihan.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => 'Memadamkan ${count} fail yatim piatu · ${size} dibebaskan';
 	@override String get noSyncRules => 'Tiada Peraturan Sinkron';
@@ -2685,11 +2685,11 @@ class _Translations$trakt$ms extends Translations$trakt$en {
 	@override String get connected => 'Terhubung';
 	@override String connectedAs({required Object username}) => 'Terhubung dengan @${username}';
 	@override String get disconnectConfirm => 'Mengalih keluar akaun Trakt?';
-	@override String get disconnectConfirmBody => 'PlezyNG akan berhenti menghantar acara ke Trakt. anda boleh menyambung semula pada bila-bila masa.';
+	@override String get disconnectConfirmBody => 'Pleazyng akan berhenti menghantar acara ke Trakt. anda boleh menyambung semula pada bila-bila masa.';
 	@override String get scrobble => 'Pengeluaran masa nyata scrobbling';
 	@override String get scrobbleDescription => 'Hantar permainan, istirahat, dan menghentikan peristiwa kepada Trakt semasa pemutaran.';
 	@override String get watchedSync => 'Sinkronkan status yang dilihat';
-	@override String get watchedSyncDescription => 'Apabila anda menandakan item seperti yang dilihat di PlezyNG, mereka juga ditandakan seperti yang dilihat di Trakt.';
+	@override String get watchedSyncDescription => 'Apabila anda menandakan item seperti yang dilihat di Pleazyng, mereka juga ditandakan seperti yang dilihat di Trakt.';
 }
 
 // Path: seerr
@@ -2708,10 +2708,10 @@ class _Translations$seerr$ms extends Translations$seerr$en {
 	@override String get signInWithEmby => 'Mendaftar dengan Emby';
 	@override String get signInWithLocal => 'Menggunakan akaun tempatan';
 	@override String get email => 'Email yang';
-	@override String get noSignInMethods => 'Contoh Seerr ini tidak menawarkan sokongan kaedah log masuk PlezyNG.';
+	@override String get noSignInMethods => 'Contoh Seerr ini tidak menawarkan sokongan kaedah log masuk Pleazyng.';
 	@override String get instance => 'instans';
 	@override String get disconnectConfirm => 'Menghubungkan Seerr?';
-	@override String get disconnectConfirmBody => 'PlezyNG akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.';
+	@override String get disconnectConfirmBody => 'Pleazyng akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.';
 	@override String get request => 'Permintaan';
 	@override String get request4k => 'Permintaan dalam 4K';
 	@override String get seasons => 'Musim';
@@ -2736,7 +2736,7 @@ class _Translations$seerr$ms extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Terjejas';
 	@override String couldNotReach({required Object url, required Object error}) => 'Tidak boleh mencapai ${url}: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'Tiada permohonan Seerr di ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'Sebuah proxy terbalik yang mengesahkan (SSO atau HTTP auth) dijawab daripada Seerr. PlezyNG tidak boleh mendaftar melalui: biarkan laluan /api/v1 Seerr melepasi proxy untuk aplikasi ini, atau gunakan alamat yang mencapai Seerr secara langsung.';
+	@override String get behindAuthProxy => 'Sebuah proxy terbalik yang mengesahkan (SSO atau HTTP auth) dijawab daripada Seerr. Pleazyng tidak boleh mendaftar melalui: biarkan laluan /api/v1 Seerr melepasi proxy untuk aplikasi ini, atau gunakan alamat yang mencapai Seerr secara langsung.';
 	@override String get invalidUrl => 'Masukkan alamat pelayan seperti https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Contoh Seerr ini tidak menyokong Quick Connect.Ia memerlukan Seerr 3.4 atau lebih baru.';
 	@override String get notInitialized => 'instans Seerr ini tidak menyelesaikan setup pertama berjalan';
@@ -2766,7 +2766,7 @@ class _Translations$services$ms extends Translations$services$en {
 	@override String get scrobble => 'Menjejaki kemajuan secara automatik';
 	@override String get scrobbleDescription => 'Memperbaharui senarai anda apabila anda menyelesaikan episod atau filem.';
 	@override String disconnectConfirm({required Object service}) => 'Menghilangkan sambungan ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG akan berhenti mengemas kini ${service}. sambungkan semula pada bila-bila masa.';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng akan berhenti mengemas kini ${service}. sambungkan semula pada bila-bila masa.';
 	@override String connectFailed({required Object service}) => 'Saya tidak boleh menyambung ke ${service}. cuba lagi.';
 	@override late final _Translations$services$names$ms names = _Translations$services$names$ms._(_root);
 	@override late final _Translations$services$simklReconnect$ms simklReconnect = _Translations$services$simklReconnect$ms._(_root);
@@ -2788,8 +2788,8 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String get title => 'Penstriman awan dan add-on';
 	@override String get subtitle => 'Sambungkan akaun Debrid untuk menyemak imbas fail dalam awan dan memainkan strim yang disokong. Add-on serasi Stremio menyediakan pilihan strim pada halaman filem dan episod. Butiran sambungan disulitkan pada peranti ini dan disimpan dalam profil ini.';
 	@override String connectionsConfigured({required Object count}) => 'Sumber disambungkan: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG tidak dapat membuka kunci tetapan penstriman yang disimpan. Buka kunci peranti dan cuba lagi sebelum mengubah sambungan.';
-	@override String get settingsUnreadable => 'PlezyNG tidak dapat membuka kunci sambungan tersimpan ini. Kosongkannya untuk menyambungkan semula perkhidmatan.';
+	@override String get settingsLoadFailed => 'Pleazyng tidak dapat membuka kunci tetapan penstriman yang disimpan. Buka kunci peranti dan cuba lagi sebelum mengubah sambungan.';
+	@override String get settingsUnreadable => 'Pleazyng tidak dapat membuka kunci sambungan tersimpan ini. Kosongkannya untuk menyambungkan semula perkhidmatan.';
 	@override String get clearUnreadableSettings => 'Kosongkan tetapan tersimpan';
 	@override String get clearUnreadableSettingsConfirm => 'Kosongkan tetapan penstriman tersimpan?';
 	@override String get clearUnreadableSettingsBody => 'Tindakan ini mengalih keluar semua akaun penyedia dan alamat add-on yang disimpan daripada profil ini. Tindakan ini tidak boleh dibuat asal.';
@@ -2801,11 +2801,11 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'Pilih penapis yang diperlukan untuk menyemak imbas katalog ini.';
 	@override String get catalogRequiredLabel => 'Wajib';
 	@override String get importFromStremio => 'Import daripada Stremio';
-	@override String get stremioImportInstructions => 'Imbas kod QR atau buka pautan. Log masuk ke Stremio dan luluskan permintaan. PlezyNG hanya membaca senarai add-on anda; aplikasi tidak meminta kata laluan Stremio atau mengubah tetapannya.';
+	@override String get stremioImportInstructions => 'Imbas kod QR atau buka pautan. Log masuk ke Stremio dan luluskan permintaan. Pleazyng hanya membaca senarai add-on anda; aplikasi tidak meminta kata laluan Stremio atau mengubah tetapannya.';
 	@override String get stremioImportOpen => 'Buka pautan Stremio';
 	@override String get stremioImportCode => 'Kod pautan';
 	@override String get stremioImportPreviewTitle => 'Pilih add-on';
-	@override String get stremioImportPreviewBody => 'Pilih add-on untuk disambungkan ke PlezyNG. Import ini hanya menerima alamat HTTPS.';
+	@override String get stremioImportPreviewBody => 'Pilih add-on untuk disambungkan ke Pleazyng. Import ini hanya menerima alamat HTTPS.';
 	@override String stremioImportIgnored({required Object count}) => 'Add-on dilangkau kerana alamat tidak disokong atau tidak selamat: ${count}.';
 	@override String get stremioCatalogs => 'Katalog';
 	@override String get stremioStreams => 'Strim';
@@ -2819,7 +2819,7 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Tambah melalui URL manifes';
 	@override String get addAddon => 'Tambah add-on';
 	@override String get manifestUrl => 'URL manifes add-on';
-	@override String get manifestUrlHint => 'Tampal URL manifes add-on. PlezyNG menyemak sokongan katalog atau sumber strim sebelum menyambung.';
+	@override String get manifestUrlHint => 'Tampal URL manifes add-on. Pleazyng menyemak sokongan katalog atau sumber strim sebelum menyambung.';
 	@override String get allowHttp => 'Benarkan alamat HTTP tanpa penyulitan';
 	@override String get allowHttpDescription => 'Gunakan hanya untuk add-on yang dipercayai pada rangkaian peribadi anda.';
 	@override String get installAddon => 'Sambungkan add-on';
@@ -2827,20 +2827,20 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String get addonRemoved => 'Add-on dialih keluar';
 	@override String get addonToggle => 'Dayakan add-on';
 	@override String get addonEmpty => 'Belum ada add-on disambungkan';
-	@override String get addonError => 'PlezyNG tidak dapat menyambung ke add-on ini. Semak URL manifes dan cuba lagi.';
+	@override String get addonError => 'Pleazyng tidak dapat menyambung ke add-on ini. Semak URL manifes dan cuba lagi.';
 	@override String get addonPrivacy => 'Sambungkan add-on yang anda percayai sahaja. Semasa carian, add-on menerima tajuk yang dicari dan boleh memulangkan pautan strim pihak ketiga.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Mainkan strim torrent yang disokong melalui akaun Real-Debrid anda.';
 	@override String get connectRealDebrid => 'Sambung dengan kod QR';
 	@override String realDebridConnected({required Object username}) => 'Disambungkan sebagai ${username}';
-	@override String get realDebridInstructions => 'Imbas kod QR atau buka pautan, kemudian masukkan kod pengaktifan ini untuk menyambungkan PlezyNG:';
+	@override String get realDebridInstructions => 'Imbas kod QR atau buka pautan, kemudian masukkan kod pengaktifan ini untuk menyambungkan Pleazyng:';
 	@override String get realDebridActivate => 'Buka Real-Debrid untuk mengaktifkan';
 	@override String get realDebridCode => 'Kod pengaktifan';
 	@override String get realDebridConnectFailed => 'Tidak dapat menyambung ke Real-Debrid. Cuba lagi.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'Mainkan strim torrent yang disokong melalui akaun AllDebrid anda.';
 	@override String get connectAllDebrid => 'Sambung dengan kod QR';
-	@override String get allDebridInstructions => 'Imbas kod QR atau buka pautan untuk membenarkan PlezyNG. Biarkan skrin ini terbuka semasa menyambung:';
+	@override String get allDebridInstructions => 'Imbas kod QR atau buka pautan untuk membenarkan Pleazyng. Biarkan skrin ini terbuka semasa menyambung:';
 	@override String get allDebridActivate => 'Buka AllDebrid untuk mengaktifkan';
 	@override String get allDebridCode => 'PIN pengaktifan';
 	@override String get allDebridConnectFailed => 'Tidak dapat menyambung ke AllDebrid. Cuba lagi.';
@@ -2851,13 +2851,13 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String get connectApiKey => 'Sambung dengan kunci API';
 	@override String apiKeyTitle({required Object service}) => 'Sambungkan ${service}';
 	@override String get apiKey => 'Kunci API';
-	@override String apiKeyHint({required Object service}) => 'Tampal kunci API daripada tetapan akaun ${service}. PlezyNG menyulitkannya pada peranti ini dan menyimpannya dalam profil ini.';
+	@override String apiKeyHint({required Object service}) => 'Tampal kunci API daripada tetapan akaun ${service}. Pleazyng menyulitkannya pada peranti ini dan menyimpannya dalam profil ini.';
 	@override String get apiKeyConnectFailed => 'Tidak dapat mengesahkan kunci API ini. Semak dan cuba lagi.';
 	@override String accountConnected({required Object username}) => 'Disambungkan sebagai ${username}';
 	@override String get streamNeedsProvider => 'Sambungkan perkhidmatan Debrid untuk memainkan strim torrent ini.';
 	@override String get playViaProvider => 'Main melalui Debrid';
 	@override String disconnectConfirm({required Object service}) => 'Putuskan sambungan ${service}?';
-	@override String get disconnectBody => 'PlezyNG akan membatalkan kebenaran peranti ini. Fail penyedia dan pemindahan yang sedang berjalan tidak akan berubah.';
+	@override String get disconnectBody => 'Pleazyng akan membatalkan kebenaran peranti ini. Fail penyedia dan pemindahan yang sedang berjalan tidak akan berubah.';
 	@override String get streamsTitle => 'Pilih strim';
 	@override String get noStreams => 'Tiada strim ditemukan untuk tajuk ini.';
 	@override String get manageConnections => 'Urus perkhidmatan penstriman';
@@ -2873,7 +2873,7 @@ class _Translations$streaming$ms extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Format strim ini tidak disokong oleh pemain dalam aplikasi.';
 	@override String get remoteNeedsEpisode => 'Pilih episod sebelum mencari strim.';
 	@override String get remoteNeedsEpisodeNumber => 'Nombor musim atau episod tiada untuk episod ini.';
-	@override String get remoteNeedsExternalId => 'PlezyNG tidak menemukan ID IMDb atau TMDB untuk tajuk ini.';
+	@override String get remoteNeedsExternalId => 'Pleazyng tidak menemukan ID IMDb atau TMDB untuk tajuk ini.';
 	@override String get watchWithServices => 'Tonton dengan perkhidmatan yang disambungkan';
 	@override String get chooseEpisode => 'Pilih episod';
 	@override String get episodes => 'Episod';
@@ -3004,15 +3004,15 @@ class _Translations$appAccess$ms extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => 'Cuba setiap ciri percuma selama 7 hari';
-	@override String get description => 'Memulakan percubaan tujuh hari dengan akses penuh kepada setiap ciri PlezyNG. tiada bayaran semasa percubaan dan tiada langganan.Selepas percubaan, satu pembelian seumur hidup pada harga kedai anda membuka PlezyNG seumur hidup.';
-	@override String get trialEndedDescription => 'Membuka kunci setiap ciri dalam PlezyNG untuk hidup dengan satu pembelian pada harga kedai anda.';
+	@override String get description => 'Memulakan percubaan tujuh hari dengan akses penuh kepada setiap ciri Pleazyng. tiada bayaran semasa percubaan dan tiada langganan.Selepas percubaan, satu pembelian seumur hidup pada harga kedai anda membuka Pleazyng seumur hidup.';
+	@override String get trialEndedDescription => 'Membuka kunci setiap ciri dalam Pleazyng untuk hidup dengan satu pembelian pada harga kedai anda.';
 	@override String get startTrial => 'Mulakan percubaan percuma 7 hari';
 	@override String get trialActive => 'Ujian penuh 7 hari anda aktif.';
 	@override String get trialEnded => 'Perbicaraan 7 hari telah berakhir';
 	@override String get trialStartFailed => 'Saya tidak boleh menyimpan percubaan pada peranti ini. sila cuba lagi.';
-	@override String get lifetimeTitle => 'PlezyNG dikunci untuk seumur hidup';
-	@override String get lifetimeBody => 'Terima kasih! anda mempunyai akses seumur hidup kepada setiap fungsi PlezyNG.';
-	@override String get manageTitle => 'PlezyNG akses seumur hidup';
+	@override String get lifetimeTitle => 'Pleazyng dikunci untuk seumur hidup';
+	@override String get lifetimeBody => 'Terima kasih! anda mempunyai akses seumur hidup kepada setiap fungsi Pleazyng.';
+	@override String get manageTitle => 'Pleazyng akses seumur hidup';
 	@override String get manageDescription => 'Cuba setiap ciri percuma selama 7 hari, kemudian membuka semua untuk seumur hidup dengan satu pembayaran pada harga kedai anda.';
 	@override String buy({required Object price}) => 'Membuka semua ciri untuk ${price}';
 	@override String get loadingPrice => 'Harga kedai yang dibayar...';
@@ -3020,11 +3020,11 @@ class _Translations$appAccess$ms extends Translations$appAccess$en {
 	@override String get restore => 'Restorasi pembelian seumur hidup';
 	@override String get pending => 'Pembelian anda sedang menunggu pembayaran atau kelulusan. akses seumur hidup dibuka sebaik sahaja kedai melengkapkannya.';
 	@override String get storeUnavailable => 'Pastikan anda mendaftar di kedai dan pembelian dibenarkan pada peranti ini.';
-	@override String get productNotFound => 'PlezyNG seumur hidup tidak tersedia di kedai ini sehingga kini.';
+	@override String get productNotFound => 'Pleazyng seumur hidup tidak tersedia di kedai ini sehingga kini.';
 	@override String get productQueryFailed => 'Tidak boleh memuatkan harga kedai. semak sambungan anda dan cuba lagi.';
 	@override String get purchaseFailed => 'Pembelian tidak berjalan. cuba lagi.';
 	@override String get restoreFailed => 'Tidak boleh sampai ke kedai untuk memulihkan pembelian anda. cuba lagi.';
-	@override String get nothingToRestore => 'Nombor PlezyNG pembelian seumur hidup telah ditemui untuk akaun kedai ini.';
+	@override String get nothingToRestore => 'Nombor Pleazyng pembelian seumur hidup telah ditemui untuk akaun kedai ini.';
 }
 
 // Path: detail
@@ -3065,8 +3065,8 @@ class _Translations$homeLayout$ms extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Susun atur laman utama';
-	@override String get resetToast => 'Home Reset ke layout asli Plezy hero';
-	@override String get resetHeroTitle => 'Mengembalikan tataletak pahlawan kepada stok Plezy?';
+	@override String get resetToast => 'Home Reset ke layout asli Pleazyng hero';
+	@override String get resetHeroTitle => 'Mengembalikan tataletak pahlawan kepada stok Pleazyng?';
 	@override String get resetHeroBody => 'Mengalih keluar seting wira setiap baris dan membawa kembali satu banner berputar di bahagian atas rumah, seperti sebelum baris wira wujud.';
 	@override String get removeRowTitle => 'Menghilangkan Home Range?';
 	@override String removeRowBody({required Object title}) => '${title} akan dipadamkan. ini tidak boleh dikecualikan.';
@@ -3076,7 +3076,7 @@ class _Translations$homeLayout$ms extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Off: Peranti ini mengekalkan tataletak sendiri.';
 	@override String get syncNow => 'Sinkronkan sekarang';
 	@override String get plexHomeManager => 'Plex Pengurus Rumah';
-	@override String get managePlexRows => 'Menguruskan Plex baris dalam Plezy';
+	@override String get managePlexRows => 'Menguruskan Plex baris dalam Pleazyng';
 	@override String get managePlexRowsDescription => 'Terbuka untuk menganjurkan baris-baris yang dipilih di rumah';
 	@override String get organizeHomeRows => 'Mengatur rangkaian rumah';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} baris: bergerak, Hero, Auto-slide, menghapuskan';
@@ -3146,7 +3146,7 @@ class _Translations$homeLayout$ms extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Pilih pada baris (atau tahan Pilih): pindah · Kiri/Kiri: pilihan baris · Kembali: selesai';
 	@override String get layoutNavDescription => 'Pilih baris, perpustakaan, dan kategori koleksi';
 	@override String get editHomeRow => 'Edit rumah rangkaian';
-	@override String get resetHeroButton => 'Mengembalikan tataletak pahlawan kepada stok Plezy';
+	@override String get resetHeroButton => 'Mengembalikan tataletak pahlawan kepada stok Pleazyng';
 	@override String get reorderingUnlocked => 'Penyelesaian semula diselesaikan';
 	@override String get reorderingLocked => 'Penyelesaian Locked';
 	@override String get rowsCanBeDragged => 'Roda boleh ditarik — tekan kunci untuk mengelakkan';
@@ -3172,8 +3172,8 @@ class _Translations$platform$ms extends Translations$platform$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG menyambung ke pelayan media dan peranti playback anda di rangkaian tempatan anda.';
-	@override String get locationPermission => 'PlezyNG menggunakan akses lokasi apabila iOS memerlukan untuk mengesan rangkaian tempatan anda dan menyambung ke pelayan media anda.';
+	@override String get localNetworkPermission => 'Pleazyng menyambung ke pelayan media dan peranti playback anda di rangkaian tempatan anda.';
+	@override String get locationPermission => 'Pleazyng menggunakan akses lokasi apabila iOS memerlukan untuk mengesan rangkaian tempatan anda dan menyambung ke pelayan media anda.';
 	@override String get photoLibraryPermission => 'Pilih imej daripada perpustakaan foto anda untuk digunakan sebagai karya seni media.';
 	@override String get cameraPermission => 'Mengimbas kod QR untuk menggabungkan Companion Remote.';
 }
@@ -3187,7 +3187,7 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'Media Terbuka';
 	@override String get shortcutHelp => 'Mainkan pautan, senarai main atau fail untuk sesi ini.';
-	@override String get intro => 'Buka pautan, senarai main, atau fail. Playback menggunakan pemain standard PlezyNG dan tidak menambah sejarah kepada perpustakaan anda.';
+	@override String get intro => 'Buka pautan, senarai main, atau fail. Playback menggunakan pemain standard Pleazyng dan tidak menambah sejarah kepada perpustakaan anda.';
 	@override String get openWhat => 'Apa yang anda mahu buka?';
 	@override String get stream => 'Alamat aliran';
 	@override String get playlist => 'Senarai Playlist';
@@ -3242,13 +3242,13 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	@override String get stopTransfer => 'Hentikan pemindahan dan membatalkan alamat';
 	@override String get startTransfer => 'Mulakan pemindahan';
 	@override String get wifiImportedFiles => 'Penghantaran Wi-Fi';
-	@override String get wifiBrowserTitle => 'Hantar fail kepada PlezyNG';
+	@override String get wifiBrowserTitle => 'Hantar fail kepada Pleazyng';
 	@override String get wifiBrowserIntro => 'Pilih audio, video, ebook, atau komik fail untuk dihantar. fail disimpan dalam perpustakaan fail dan buku peranti ini. maksimum: 100 fail, 4 GiB setiap fail, 10 GiB total.';
 	@override String get uploadFilesLabel => 'fail untuk menghantar';
 	@override String get uploadSelected => 'Muat naik fail yang dipilih';
 	@override String get uploadSelectFirst => 'Pilih satu atau lebih fail terlebih dahulu.';
 	@override String get uploading => 'Penghantaran';
-	@override String get uploadComplete => 'Fail ditambah kepada PlezyNG.';
+	@override String get uploadComplete => 'Fail ditambah kepada Pleazyng.';
 	@override String get uploadFailed => 'Fail tidak boleh ditambah.Tahan halaman ini terbuka dan cuba lagi.';
 	@override String get liveCue => 'hidup';
 	@override String get liveSession => 'Penghantaran Live Stream';
@@ -3276,7 +3276,7 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	@override String get recordingActive => 'Mengikut peranti ini. meninggalkan playback berhenti dan menyimpannya.';
 	@override String get recordingFormatHelp => 'Untuk video, pilih MKV atau MPEG-TS. untuk audio, pilih MKA atau MKV.';
 	@override String get replaceRecordingTitle => 'Menggantikan rekod ini?';
-	@override String get replaceRecordingHelp => 'PlezyNG mengembalikan fail yang sedia ada semasa rakaman.Jika ia tidak dapat menyimpan rakaman baru, Plezyng memulihkan sandaran.';
+	@override String get replaceRecordingHelp => 'Pleazyng mengembalikan fail yang sedia ada semasa rakaman.Jika ia tidak dapat menyimpan rakaman baru, Plezyng memulihkan sandaran.';
 	@override String get replaceRecording => 'Menggantikan fail';
 	@override String get discHelp => 'Buka cakera dalam cakera optik komputer ini.Anda juga boleh membuka imej ISO daripada fail Peranti.';
 	@override String get discs => 'cakera optik';
@@ -3301,7 +3301,7 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'Pilih fail audio atau video.';
 	@override String get converterLocalOnly => 'Fail yang dipilih tidak tersedia sebagai laluan peranti tempatan.';
 	@override String get converterReplaceTitle => 'Menggantikan fail ini?';
-	@override String get converterReplaceHelp => 'PlezyNG mengembalikan fail yang sedia ada sehingga salinan yang ditukar disimpan.';
+	@override String get converterReplaceHelp => 'Pleazyng mengembalikan fail yang sedia ada sehingga salinan yang ditukar disimpan.';
 	@override String get converterStarting => 'Bermula daripada FFmpeg...';
 	@override String get converterProgress => 'Menukar kepada komputer ini ...';
 	@override String get converterComplete => 'Konversi selesai. fail baru telah siap.';
@@ -3325,7 +3325,7 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Pengenalan audio lalai';
 	@override String get captureWaylandHelp => 'Wayland membatasi penangkapan XWayland ini kepada X display. Windows di luar XWayland mungkin tidak muncul.';
 	@override String get captureFrameRate => 'Kadar rakaman';
-	@override String get capturePrivacy => 'Rekod disimpan hanya untuk fail yang anda pilih. penangkapan mikrofon adalah opsional. PlezyNG tidak memuat naik rekod.';
+	@override String get capturePrivacy => 'Rekod disimpan hanya untuk fail yang anda pilih. penangkapan mikrofon adalah opsional. Pleazyng tidak memuat naik rekod.';
 	@override String get captureSaveAs => 'Menyimpan rekod skrin sebagai';
 	@override String get captureExtensionMismatch => 'Pilih nama fail yang berakhir dalam .mp4.';
 	@override String get captureFfmpegMissing => 'FFmpeg atau kod video H.264 tidak boleh didapati.Memasang pembinaan FFmpeg yang disokong, kemudian cuba lagi.';
@@ -3339,7 +3339,7 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	@override String get captureStop => 'berhenti dan menyelamatkan';
 	@override String get captureMode => 'Penangkapan';
 	@override String get shareMode => 'berkongsi';
-	@override String get shareIntro => 'Hantar fail media tempatan ke peranti lain di rangkaian peribadi anda. PlezyNG mewujudkan aliran sementara HLS.';
+	@override String get shareIntro => 'Hantar fail media tempatan ke peranti lain di rangkaian peribadi anda. Pleazyng mewujudkan aliran sementara HLS.';
 	@override String get sharePrivacy => 'Sesiapa sahaja di rangkaian tempatan anda yang menerima pautan peribadi boleh menonton sementara ia aktif. pautan tamat tempoh selepas 60 minit. berhenti berkongsi untuk menutup pelayan dan membatalkan pautan.';
 	@override String get shareChooseFile => 'Pilih fail media';
 	@override String get shareChooseHelp => 'Pilih fail audio atau video tempatan. fail itu kekal pada komputer ini.';
@@ -3352,7 +3352,7 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'Buka alamat ini dalam satu pemain pada peranti lain';
 	@override String get shareQrLabel => 'Kod QR untuk alamat aliran sementara';
 	@override String get shareQrHelp => 'Scan dengan pemain yang kompatibel yang disambungkan ke rangkaian peribadi yang sama.';
-	@override String get shareHttpHint => 'Stream ini menggunakan HTTP yang tidak disulitkan. dalam PlezyNG, biarkan HTTP sebelum membuka.';
+	@override String get shareHttpHint => 'Stream ini menggunakan HTTP yang tidak disulitkan. dalam Pleazyng, biarkan HTTP sebelum membuka.';
 	@override String get shareCopyUrl => 'Menyalin alamat Stream';
 	@override String get shareExpiresLabel => 'Link akan tamat pada';
 	@override String get shareStarting => 'Menyediakan aliran ...';
@@ -3377,7 +3377,7 @@ class _Translations$universalMedia$ms extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'menambah perkhidmatan';
 	@override String get extensionReplace => 'Perkhidmatan Update';
 	@override String get extensionRemoveTitle => 'Menghapuskan perkhidmatan carian ini?';
-	@override String get extensionRemoveHelp => 'Ini menghapuskan perkhidmatan daripada profil ini.PlezyNG tidak menghubungi titik akhir.';
+	@override String get extensionRemoveHelp => 'Ini menghapuskan perkhidmatan daripada profil ini.Pleazyng tidak menghubungi titik akhir.';
 	@override String get extensionRemove => 'Hentikan Perkhidmatan';
 	@override String get extensionInvalidManifest => 'Fail ini bukan manifest lanjutan yang disokong. lihat panduan Open media untuk format.';
 	@override String get extensionSaveFailed => 'Perpanjangan tidak boleh disimpan ke profil aktif.';
@@ -3531,12 +3531,12 @@ class _Translations$fileSources$ms extends Translations$fileSources$en {
 	@override String get none => 'Tiada';
 	@override String get fullscreen => 'skrin penuh';
 	@override String get syncLocation => 'folder Sink progress (pilihan)';
-	@override String get syncLocationHint => 'folder WebDAV yang didedikasikan untuk PlezyNG status. menggunakan penulisan bersyarat; media kekal tidak berubah.';
+	@override String get syncLocationHint => 'folder WebDAV yang didedikasikan untuk Pleazyng status. menggunakan penulisan bersyarat; media kekal tidak berubah.';
 	@override String get audiobooks => 'Buku audio';
 	@override String get comics => 'Komik';
 	@override String get scan => 'Scan untuk buku dan media';
 	@override String get browserReader => 'Pembaca Terbuka';
-	@override String get browserReaderHelp => 'Membaca dibuka dalam pelayar anda.Jadilah PlezyNG terbuka untuk menyimpan lokasi dan nota anda.';
+	@override String get browserReaderHelp => 'Membaca dibuka dalam pelayar anda.Jadilah Pleazyng terbuka untuk menyimpan lokasi dan nota anda.';
 	@override String get on => 'Pada';
 	@override String get advancedSetup => 'Pendaftaran App';
 	@override String get microsoftSignIn => 'Mendaftar dengan Microsoft';
@@ -3577,7 +3577,7 @@ class _Translations$fileSources$ms extends Translations$fileSources$en {
 	@override String get importInterrupted => 'Import dihentikan · menghapuskan untuk membersihkan';
 	@override String get errorQuotaExceeded => 'Batas penyimpanan offline telah dicapai. menaikkan had atau menghapuskan salinan yang dimuat turun.';
 	@override String get errorStorageLow => 'Tiada penyimpanan peranti percuma yang mencukupi untuk mengekalkan simpanan yang dilindungi.';
-	@override String get errorStorageUnavailable => 'PlezyNG tidak boleh memeriksa penyimpanan peranti percuma, jadi penulisan dihentikan.';
+	@override String get errorStorageUnavailable => 'Pleazyng tidak boleh memeriksa penyimpanan peranti percuma, jadi penulisan dihentikan.';
 	@override String get removeDownloadJob => 'Menghapus download';
 	@override String get downloadAlreadyComplete => 'Download ini selesai sebelum ia boleh dihapuskan. item kini tersedia offline.';
 	@override String get confirmRemoveDownloadJob => 'Menghapuskan muat turun ini dan menyingkirkan sebarang data yang dimuat turun sebahagiannya? kedudukan dan nota anda akan kekal.';
@@ -3627,7 +3627,7 @@ class _Translations$lending$ms extends Translations$lending$en {
 	@override String get openLibraryNote => 'Terokai katalog Open Library. Pilihan membaca dan meminjam dipaparkan pada halaman setiap judul.';
 	@override String get more => 'muat lebih banyak';
 	@override String get gateway => 'Perpustakaan Perkhidmatan Sign-in';
-	@override String get gatewayHint => 'disediakan oleh perpustakaan anda atau pentadbir PlezyNG.';
+	@override String get gatewayHint => 'disediakan oleh perpustakaan anda atau pentadbir Pleazyng.';
 	@override String get advanced => 'Integrasi Perpustakaan';
 	@override String get loadLibraries => 'Pilih perpustakaan anda';
 	@override String get expired => 'Pinjaman ini telah tamat tempoh.';
@@ -3767,7 +3767,7 @@ class _Translations$sourceSetup$ms extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'Dapatkan kunci API daripada opensubtitles.com. Carian menghantar tajuk video dan ID IMDb/TMDB yang tersedia, bukan fail video sama sekali. Kunci dan bukti kelayakan akaun pilihan disulitkan bersama sumber ini.';
 	@override String get automaticMetadata => 'Metadata video dalam talian automatik';
 	@override String get metadataPrivacy => 'Hanya menghantar tajuk/tahun daripada nama fail dan nombor episod atau ID NFO; tidak sekali-kali menghantar media atau bukti kelayakan. Medan NFO kekal sebagai rujukan utama.';
-	@override String get nfsEncryptionFailure => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. PlezyNG tidak akan mencuba semula sambungan ini tanpa penyulitan.';
+	@override String get nfsEncryptionFailure => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. Pleazyng tidak akan mencuba semula sambungan ini tanpa penyulitan.';
 	@override String get sourceConnecting => 'Menyambung ke sumber';
 	@override String get metadataSearchPrivacy => 'Carian tajuk ini dihantar ke Trakt. Carian menghantar tajuk yang anda masukkan, bukan video atau bukti kelayakan sumber.';
 	@override String get chooseMatch => 'Pilih padanan';
@@ -3913,6 +3913,12 @@ class _Translations$games$ms extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3922,7 +3928,7 @@ class _Translations$deepLinks$ms extends Translations$deepLinks$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Link Plezy ini tidak sah.';
+	@override String get invalid => 'Link Pleazyng ini tidak sah.';
 	@override String profileNotFound({required Object profile}) => 'Tiada profil yang sepadan dengan "${profile}".';
 	@override String get serverUnavailable => 'Saya tidak boleh mencapai pelayan untuk pautan ini.';
 	@override String get notFound => 'Saya tidak boleh menemui tajuk ini di perpustakaan anda.';
@@ -4097,7 +4103,7 @@ class _Translations$romm$ms extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -4986,7 +4992,7 @@ class _Translations$watchTogether$errors$ms extends Translations$watchTogether$e
 	@override String get relayFull => 'Lihat Bersama sibuk sekarang. cuba lagi nanti.';
 	@override String get unreachable => 'Tidak boleh mencapai jam bersama relay. semak sambungan anda.';
 	@override String get rateLimited => 'Terlalu banyak percubaan. tunggu sebentar dan cuba lagi.';
-	@override String get clientBlocked => 'Versi PlezyNG ini tidak boleh menggunakan relay.';
+	@override String get clientBlocked => 'Versi Pleazyng ini tidak boleh menggunakan relay.';
 	@override String get forbidden => 'Hanya tuan rumah sahaja yang boleh melakukannya.';
 	@override String get notInRoom => 'Awak tak ada di dalam bilik.';
 	@override String get alreadyInRoom => 'Awak dah ada di dalam bilik.';
@@ -5007,14 +5013,14 @@ class _Translations$downloads$backgroundWarning$ms extends Translations$download
 	@override String get bannerAction => 'Maklumat';
 	@override String get sheetTitle => 'Download latar belakang disekat';
 	@override String get sheetTitleDegraded => 'Download latar belakang boleh terhad';
-	@override String get sheetIntro => 'Android mencegah PlezyNG daripada memuat turun dengan boleh dipercayai dalam latar belakang.';
-	@override String get sheetIntroDegraded => 'Peranti anda membatasi apabila PlezyNG boleh dimuat turun dalam latar belakang.';
-	@override String get reasonBackgroundRestricted => 'Penggunaan latar belakang PlezyNG terhad. tetapkan penggunaan bateri atau latar belakang kepada "Tidak terhad".';
-	@override String get reasonStandbyRestricted => 'Android telah meletakkan PlezyNG dalam keadaan berdiri terhad. menetapkan penggunaan bateri kepada "Tidak terhad".';
+	@override String get sheetIntro => 'Android mencegah Pleazyng daripada memuat turun dengan boleh dipercayai dalam latar belakang.';
+	@override String get sheetIntroDegraded => 'Peranti anda membatasi apabila Pleazyng boleh dimuat turun dalam latar belakang.';
+	@override String get reasonBackgroundRestricted => 'Penggunaan latar belakang Pleazyng terhad. tetapkan penggunaan bateri atau latar belakang kepada "Tidak terhad".';
+	@override String get reasonStandbyRestricted => 'Android telah meletakkan Pleazyng dalam keadaan berdiri terhad. menetapkan penggunaan bateri kepada "Tidak terhad".';
 	@override String get reasonDownloadChannelBlocked => 'Pemberitahuan muat turun dimatikan, jadi kemajuan dan kawalan mungkin tidak tersedia.';
 	@override String get reasonNotificationsDisabled => 'Pada Android 13 atau lebih baru, mereka diperlukan untuk muat turun latar belakang yang panjang.';
 	@override String get reasonDataSaver => 'Data Saver ialah pada, yang memblokir muat turun latar belakang pada data mudah alih. muat turun masih perlu berjalan pada Wi-Fi.';
-	@override String get reasonOemUnknown => 'Muat turun berulang kali berhenti semasa PlezyNG berada di latar belakang. semak tetapan penggunaan bateri atau latar belakang PlezyNG.';
+	@override String get reasonOemUnknown => 'Muat turun berulang kali berhenti semasa Pleazyng berada di latar belakang. semak tetapan penggunaan bateri atau latar belakang Pleazyng.';
 	@override String get openSettings => 'Seting Terbuka';
 	@override String get stillNotWorking => 'Bantuan khusus peranti';
 	@override String get stillNotWorkingDescription => 'Lihat langkah-langkah untuk peranti anda, atau hantar log daripada Settings › Lihat log jika masalah berterusan.';
@@ -5069,19 +5075,19 @@ class _Translations$companionRemote$pairing$ms extends Translations$companionRem
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'PlezyNG peranti dengan akaun yang sama Plex muncul di sini';
+	@override String get discoveryDescription => 'Pleazyng peranti dengan akaun yang sama Plex muncul di sini';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Menghubungkan ...';
 	@override String get searchingForDevices => 'Mencari peranti ...';
 	@override String get noDevicesFound => 'Tiada peranti yang ditemui di rangkaian anda';
-	@override String get noDevicesHint => 'Buka PlezyNG pada desktop dan gunakan yang sama Wi-Fi';
+	@override String get noDevicesHint => 'Buka Pleazyng pada desktop dan gunakan yang sama Wi-Fi';
 	@override String get availableDevices => 'Peranti yang tersedia';
 	@override String get manualConnection => 'Penghubung manual';
 	@override String get cryptoInitFailed => 'Tidak boleh memulakan sambungan yang selamat. mendaftar di Plex terlebih dahulu.';
 	@override String get validationHostRequired => 'Sila masukkan alamat tuan rumah';
 	@override String get validationHostFormat => 'Format hendaklah IP:port (contohnya, 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'Menggunakan rangkaian yang sama pada kedua-dua peranti.';
-	@override String get sessionNotFound => 'Peranti tidak ditemui. pastikan PlezyNG berjalan pada host.';
+	@override String get sessionNotFound => 'Peranti tidak ditemui. pastikan Pleazyng berjalan pada host.';
 	@override String get authFailed => 'Pengesahan gagal. kedua-dua peranti memerlukan akaun yang sama Plex.';
 	@override String failedToConnect({required Object error}) => 'Kegagalan untuk menghubungkan: ${error}';
 	@override String get codeTitle => 'Pasangan Kod';
@@ -5168,7 +5174,7 @@ class _Translations$services$simklReconnect$ms extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Perbincangan Simkl';
-	@override String get subtitle => 'Simkl adalah penarikan kaedah log masuk yang menggunakan sambungan ini. penyambungan semula membuka simkl.com untuk meluluskan PlezyNG — PlezyNG tidak pernah melihat kata laluan anda. sejarah jam anda kekal pada Simkl.';
+	@override String get subtitle => 'Simkl adalah penarikan kaedah log masuk yang menggunakan sambungan ini. penyambungan semula membuka simkl.com untuk meluluskan Pleazyng — Pleazyng tidak pernah melihat kata laluan anda. sejarah jam anda kekal pada Simkl.';
 }
 
 // Path: services.deviceCode
@@ -5178,7 +5184,7 @@ class _Translations$services$deviceCode$ms extends Translations$services$deviceC
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Mengaktifkan PlezyNG pada ${service}';
+	@override String title({required Object service}) => 'Mengaktifkan Pleazyng pada ${service}';
 	@override String get instructions => 'Mengimbas kod QR, atau lawati alamat di bawah dan masukkan kod ini:';
 	@override String openToActivate({required Object service}) => 'Buka ${service} untuk mengaktifkan';
 	@override String get copyCode => 'Menyalin kod pengaktifan';
@@ -5253,15 +5259,15 @@ class _Translations$services$trackerDescriptions$ms extends Translations$service
 extension on TranslationsMs {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'Icon Permohonan',
 			'appIcon.defaultIcon' => 'Perkataan default',
 			'appIcon.current' => 'Ikon semasa',
 			'appIcon.locked' => 'Akses seumur hidup diperlukan',
-			'appIcon.lockedHint' => 'Mulakan percubaan 7 hari anda atau membuka kunci PlezyNG sepanjang hayat anda untuk menggunakan ikon alternatif.',
+			'appIcon.lockedHint' => 'Mulakan percubaan 7 hari anda atau membuka kunci Pleazyng sepanjang hayat anda untuk menggunakan ikon alternatif.',
 			'appIcon.changeFailed' => 'Tidak boleh mengubah ikon app',
-			'appIcon.launcherHint' => 'Ikon baru muncul pada skrin rumah anda apabila anda meninggalkan PlezyNG.',
-			'appIcon.tvLauncherHint' => 'Banner baru muncul apabila anda meninggalkan PlezyNG. Android TV boleh terus menunjukkan yang lama sehingga TV bermula semula.',
+			'appIcon.launcherHint' => 'Ikon baru muncul pada skrin rumah anda apabila anda meninggalkan Pleazyng.',
+			'appIcon.tvLauncherHint' => 'Banner baru muncul apabila anda meninggalkan Pleazyng. Android TV boleh terus menunjukkan yang lama sehingga TV bermula semula.',
 			'appIcon.names.midnight' => 'tengah malam',
 			'appIcon.names.ember' => 'orang',
 			'appIcon.names.paper' => 'kertas',
@@ -5301,7 +5307,7 @@ extension on TranslationsMs {
 			'auth.quickConnectWaiting' => 'Menunggu kelulusan...',
 			'auth.quickConnectCancel' => 'Batalkan',
 			'auth.quickConnectExpired' => 'Sambungan Pantas telah tamat tempoh. Cuba lagi.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG tidak dapat memulihkan maklumat log masuk tempatan dan data main balik yang belum diproses dengan selamat. Sila log masuk semula.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng tidak dapat memulihkan maklumat log masuk tempatan dan data main balik yang belum diproses dengan selamat. Sila log masuk semula.',
 			'auth.pinCheckRejected' => 'Pendaftaran PIN Plex ditolak',
 			'auth.connectToDirectPlex' => 'Menyambung ke pelayan tempatan Plex',
 			'common.cancel' => 'Batalkan',
@@ -5417,9 +5423,9 @@ extension on TranslationsMs {
 			'update.latestVersion' => 'Anda berada dalam versi terkini',
 			'update.checkFailed' => 'Tidak boleh memeriksa untuk update',
 			'settings.title' => 'Tetapan',
-			'settings.supportDeveloper' => 'Perkhidmatan PlezyNG',
+			'settings.supportDeveloper' => 'Perkhidmatan Pleazyng',
 			'settings.supportDeveloperDescription' => 'Memberi sumbangan untuk menyokong pembangunan',
-			'settings.lifetimeAccess' => 'PlezyNG akses seumur hidup',
+			'settings.lifetimeAccess' => 'Pleazyng akses seumur hidup',
 			'settings.language' => 'Bahasa Melayu',
 			'settings.theme' => 'Subjek',
 			'settings.appearance' => 'Penampilan',
@@ -5475,7 +5481,7 @@ extension on TranslationsMs {
 			'settings.contentScreensaverNoLibraries' => 'Tiada perpustakaan media yang disambungkan tersedia.',
 			'settings.contentScreensaverDismissHint' => 'Tekan butang atau ketik untuk membatalkan',
 			'settings.newEpisodeNotifications' => 'Pemberitahuan episod baru',
-			'settings.newEpisodeNotificationsDescription' => 'Peringatan apabila episod baru ditambah kepada persembahan yang anda terperangkap. semak sementara Plezy dibuka.',
+			'settings.newEpisodeNotificationsDescription' => 'Peringatan apabila episod baru ditambah kepada persembahan yang anda terperangkap. semak sementara Pleazyng dibuka.',
 			'settings.continueWatchingRowSize' => 'Lihat lagi reviu untuk Range Size',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} kad',
 			'settings.rowSizeCompact' => 'Kompakt',
@@ -5600,7 +5606,7 @@ extension on TranslationsMs {
 			'settings.importSettingsDescription' => 'Memulihkan keutamaan daripada fail',
 			'settings.importSettingsConfirm' => 'Ini akan menggantikan tetapan semasa anda.Lanjutkan?',
 			'settings.importSettingsSuccess' => 'Seting yang diimport',
-			'settings.importSettingsInvalidFile' => 'Fail ini bukan pengeksportan tetapan PlezyNG yang sah',
+			'settings.importSettingsInvalidFile' => 'Fail ini bukan pengeksportan tetapan Pleazyng yang sah',
 			'settings.importSettingsNoUser' => 'Menandatangani sebelum mengimport tetapan',
 			'settings.cloudBackup' => 'Penyelesaian Cloud Backup',
 			'settings.cloudBackupDescription' => 'Sandarkan tetapan yang boleh dipindahkan ke alamat WebDAV melalui HTTPS. Sambungan pelayan dan maklumat log masuk kekal pada peranti ini.',
@@ -5784,7 +5790,7 @@ extension on TranslationsMs {
 			'settings.forceTvMode' => 'Kekuatan TV Mode',
 			'settings.forceTvModeDescription' => 'Layout TV Force. untuk peranti yang tidak mendeteksi secara automatik. memerlukan pemulihan semula.',
 			'settings.startInFullscreen' => 'Mulakan pada skrin penuh',
-			'settings.startInFullscreenDescription' => 'Buka PlezyNG dalam mod skrin penuh pada pelancaran',
+			'settings.startInFullscreenDescription' => 'Buka Pleazyng dalam mod skrin penuh pada pelancaran',
 			'settings.exitFullscreenOnPlayerClose' => 'Ekran penuh keluar pada pemain tertutup',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Secara automatik keluar skrin penuh apabila menutup pemutar video',
 			'settings.autoHidePerformanceOverlay' => 'Auto-Hide Perkhidmatan Overlay',
@@ -5840,7 +5846,7 @@ extension on TranslationsMs {
 			'settings.playerScopeGlobal' => 'Di mana-mana sahaja',
 			'settings.playerScopeLibrary' => 'Per Perpustakaan',
 			'settings.playerScopeTitle' => 'untuk persembahan atau filem',
-			'settings.exportDialogTitle' => 'Eksport PlezyNG tetapan',
+			'settings.exportDialogTitle' => 'Eksport Pleazyng tetapan',
 			'settings.followSystem' => 'Ikut sistem',
 			'settings.followAppLanguage' => 'Ikut bahasa antara muka',
 			'settings.regionFormat' => 'Format serantau',
@@ -5851,7 +5857,7 @@ extension on TranslationsMs {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Membuka video desktop dalam skrin penuh apabila playback bermula',
 			'settings.extendVideoIntoDisplayCutout' => 'Memperluaskan video ke dalam display cutout',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Biarkan video skrin penuh menggunakan kamera cutout pada telefon Android',
-			'settings.languageDescription' => 'Pilih bahasa yang digunakan untuk kawalan dan mesej PlezyNG. sistem mengikuti bahasa peranti anda.',
+			'settings.languageDescription' => 'Pilih bahasa yang digunakan untuk kawalan dan mesej Pleazyng. sistem mengikuti bahasa peranti anda.',
 			'settings.themeDescription' => 'Pilih warna dan kontras yang digunakan sepanjang aplikasi.',
 			'settings.libraryDensityDescription' => 'Mengubah bilangan kad perpustakaan yang sesuai dalam setiap baris.',
 			'settings.displayScaleDescription' => 'Mengembalikan antara muka pada paparan kereta ini tanpa mengubah saiz teks keseluruhan peranti anda.',
@@ -5873,14 +5879,14 @@ extension on TranslationsMs {
 			'settings.episodeActionDescription' => 'Pilih apa yang berlaku apabila anda mengaktifkan kad episod.',
 			'settings.episodePlayDescription' => 'Mulakan episod ini dengan segera.',
 			'settings.episodeDetailsDescription' => 'Buka halaman episod sebelum playback.',
-			'settings.contentScreensaverDelayDescription' => 'Pilih berapa lama PlezyNG menunggu tanpa input sebelum menunjukkan karya seni.',
+			'settings.contentScreensaverDelayDescription' => 'Pilih berapa lama Pleazyng menunggu tanpa input sebelum menunjukkan karya seni.',
 			'settings.continueWatchingRowSizeDescription' => 'Pilih seberapa besar kad yang terdapat dalam baris terus-menerus.',
 			'settings.rowSizeCompactDescription' => 'Tunjukkan kad yang lebih kecil supaya lebih banyak item sesuai di sepanjang baris.',
 			'settings.rowSizeStandardDescription' => 'Gunakan saiz kad standard.',
 			'settings.rowSizeLargeDescription' => 'Tunjukkan kad yang lebih besar dengan lebih banyak butiran karya seni.',
 			'settings.visualEffectsDescription' => 'Pilih anggaran animasi dan kesan seni untuk peranti ini.',
 			'settings.visualEffectsFullDescription' => 'Gunakan kesan animasi dan seni penuh pada setiap peranti.',
-			'settings.startupSectionDescription' => 'Pilih bahagian mana yang dibuka apabila PlezyNG bermula.',
+			'settings.startupSectionDescription' => 'Pilih bahagian mana yang dibuka apabila Pleazyng bermula.',
 			'settings.startupSectionOptions.discover' => 'Membuka cadangan dan item daripada sumber penemuan yang berkaitan.',
 			'settings.startupSectionOptions.libraries' => 'Buka perpustakaan media yang disambungkan.',
 			'settings.startupSectionOptions.liveTv' => 'Buka TV secara langsung apabila pelayan menyediakan ia; jika tidak, permulaan jatuh kembali ke Home.',
@@ -5919,7 +5925,7 @@ extension on TranslationsMs {
 			'settings.musicQualityOriginalDescription' => 'Mainkan audio sumber tanpa transcode bitrate-capped.',
 			'settings.musicQualityTranscodeOptionDescription' => 'Meminta transcode pelayan yang dilapisi berhampiran kadar bit yang ditunjukkan di atas; output sebenar boleh berbeza-beza.',
 			'settings.maxVolumeInputLabel' => 'Jumlah maksimum (%)',
-			'settings.checkForUpdatesDescription' => 'Sekarang semak sama ada versi PlezyNG yang lebih baru boleh didapati.',
+			'settings.checkForUpdatesDescription' => 'Sekarang semak sama ada versi Pleazyng yang lebih baru boleh didapati.',
 			'settings.appearanceDescription' => 'Pilih tema aplikasi dan menyesuaikan kad perpustakaan, baris rumah, dan navigasi.',
 			'settings.prerollLibraryDescription' => 'Pilih perpustakaan yang mengandungi klip yang tersedia sebagai pre-rolls filem.',
 			'settings.prerollSelectionDescription' => 'Pilih klip mana daripada perpustakaan yang dipilih boleh dimainkan sebelum filem.',
@@ -6155,8 +6161,8 @@ extension on TranslationsMs {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Ini memadamkan semua ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod di dalamnya, dan fail mereka.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: 'Item ini disimpan melalui fail ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} dan semua akan dipadamkan.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episod lain disimpan dalam fail yang sama dan juga akan dipadamkan:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG tidak dapat memeriksa fail yang akan dipadamkan, jadi lebih daripada item yang dinyatakan di atas mungkin dipadamkan. Batalkan dan cuba lagi, atau padamkan juga.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Pelayan anda tidak memberikan butiran fail untuk item ini, jadi PlezyNG tidak dapat memeriksa fail yang akan dipadamkan. Lebih daripada item yang dinyatakan di atas mungkin dipadamkan.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng tidak dapat memeriksa fail yang akan dipadamkan, jadi lebih daripada item yang dinyatakan di atas mungkin dipadamkan. Batalkan dan cuba lagi, atau padamkan juga.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Pelayan anda tidak memberikan butiran fail untuk item ini, jadi Pleazyng tidak dapat memeriksa fail yang akan dipadamkan. Lebih daripada item yang dinyatakan di atas mungkin dipadamkan.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media item dihapuskan dengan berjaya',
 			'mediaMenu.mediaFailedToDelete' => 'gagal menghapuskan item media',
 			'mediaMenu.rate' => 'Kadar',
@@ -6206,7 +6212,7 @@ extension on TranslationsMs {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'Aksesibiliti',
 			'accessibility.summary' => 'teks, kontras, pergerakan dan kawalan',
-			'accessibility.systemHint' => 'Seting aksesibiliti peranti anda sentiasa terpakai. pilihan ini menambah penyesuaian sepanjang PlezyNG.',
+			'accessibility.systemHint' => 'Seting aksesibiliti peranti anda sentiasa terpakai. pilihan ini menambah penyesuaian sepanjang Pleazyng.',
 			'accessibility.readability' => 'Pembacaan dan penglihatan',
 			'accessibility.textSize' => 'Saiz teks tambahan',
 			'accessibility.preview' => 'Baca, dengar dan lihat pada kelajuan anda sendiri.',
@@ -6219,7 +6225,7 @@ extension on TranslationsMs {
 			'accessibility.largeTargets' => 'Target sentuhan yang lebih besar',
 			'accessibility.largeTargetsHint' => 'Memberi kawalan berkongsi lebih banyak ruang untuk sentuhan dan navigasi bantuan.',
 			'accessibility.navigationHint' => 'Gunakan Tab dan Shift+Tab untuk bergerak antara kawalan, Enter atau Space untuk mengaktifkan, dan Escape atau butang Kembali untuk menutup. Zum dan keutamaan bacaan tersedia semasa buku dibuka.',
-			'accessibility.textSizeDescription' => 'Skala antara muka teks dalam PlezyNG di samping tetapan saiz teks sistem peranti anda.',
+			'accessibility.textSizeDescription' => 'Skala antara muka teks dalam Pleazyng di samping tetapan saiz teks sistem peranti anda.',
 			'accessibility.boldTextHint' => 'Gunakan berat yang lebih berat untuk label antara muka dan mesej untuk memudahkan mereka untuk membezakan.',
 			'tooltips.shufflePlay' => 'Permainan Shuffle',
 			'tooltips.playTrailer' => 'Bermain Trailer',
@@ -6487,7 +6493,7 @@ extension on TranslationsMs {
 			'mpvConfig.removeLine' => 'Menghilangkan garis',
 			'mpvConfig.embeddedVoHint' => 'vo, konteks gpu dan gpu-api diabaikan pada Linux: video tertanam sentiasa mengalir melalui vo=libmpv pada pesawat video, dan gpu-next (yang bayangan komputer seperti ArtCNN perlu) tidak boleh berjalan tertanam.',
 			'dialog.confirmAction' => 'Mengesahkan tindakan',
-			'profiles.addPlezyProfile' => 'Menambah PlezyNG profil',
+			'profiles.addPlezyProfile' => 'Menambah Pleazyng profil',
 			'profiles.switchingProfile' => 'Menukar profil ...',
 			'profiles.deleteThisProfileTitle' => 'Menghapuskan profil ini?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Menghapus ${displayName}. sambungan tidak terjejas.',
@@ -6569,12 +6575,12 @@ extension on TranslationsMs {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} pelayan menolak akses kepada akaun ini',
 			'connections.signInAgain' => 'Menandatangani lagi',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Edit ${product} sambungan',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Menambah atau menghapuskan URL untuk ${serverName}. PlezyNG akan menggunakan URL yang boleh dicapai dengan latensi terendah.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Menambah atau menghapuskan URL untuk ${serverName}. Pleazyng akan menggunakan URL yang boleh dicapai dengan latensi terendah.',
 			'accountPreferences.sectionTitle' => 'Keutamaan akaun',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Audio, subtitle dan pilihan perpustakaan disimpan pada ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Audio, subtitle dan pilihan perpustakaan disimpan pada ${count} akaun',
 			'accountPreferences.pickAccount' => 'Setiap akaun menyimpan keutamaan mereka sendiri. pilih yang untuk mengedit.',
-			'accountPreferences.storedOnAccount' => 'Pilihan-pilihan ini disimpan pada akaun itu sendiri, jadi setiap aplikasi yang mendaftar masuk ke dalamnya menggunakan mereka - termasuk PlezyNG pada peranti lain anda.',
+			'accountPreferences.storedOnAccount' => 'Pilihan-pilihan ini disimpan pada akaun itu sendiri, jadi setiap aplikasi yang mendaftar masuk ke dalamnya menggunakan mereka - termasuk Pleazyng pada peranti lain anda.',
 			'accountPreferences.noAccounts' => 'Tiada akaun yang boleh dikonfigurasi',
 			'accountPreferences.noAccountsHint' => 'Mendaftar masuk ke Plex, atau sambungkan pelayan Jellyfin atau Emby, dan keutamaan yang disimpan pada akaun itu dipaparkan di sini.',
 			'accountPreferences.unavailable' => 'Tidak boleh mencapai akaun ini',
@@ -6898,9 +6904,9 @@ extension on TranslationsMs {
 			'logs.saveLogs' => 'Simpan log ke fail',
 			'logs.logsSaved' => ({required Object path}) => 'Rekod disimpan pada ${path}',
 			'logs.saveLogsFailed' => 'Saya tidak boleh menyimpan fail log.',
-			'startup.failedTitle' => 'PlezyNG tidak boleh bermula',
+			'startup.failedTitle' => 'Pleazyng tidak boleh bermula',
 			'startup.failedBody' => 'Sesuatu yang salah semasa permulaan. butiran di bawah mengenal pasti apa yang gagal.',
-			'startup.failedBodyRepairable' => 'Fail tetapan PlezyNG yang disimpan rosak dan perlu dibina semula sebelum aplikasi boleh bermula. Mencuba lagi tidak akan membantu — pilih Baiki storan.',
+			'startup.failedBodyRepairable' => 'Fail tetapan Pleazyng yang disimpan rosak dan perlu dibina semula sebelum aplikasi boleh bermula. Mencuba lagi tidak akan membantu — pilih Baiki storan.',
 			'startup.phaseLabel' => 'Langkah',
 			'startup.showDetails' => 'Tunjukkan butiran',
 			'startup.hideDetails' => 'menyembunyikan butiran',
@@ -6909,16 +6915,16 @@ extension on TranslationsMs {
 			'startup.uploadDetails' => 'Tambah butiran',
 			'startup.repairStorage' => 'Perbaikan penyimpanan',
 			'startup.repairTitle' => 'Perbaikan data yang disimpan?',
-			'startup.repairBodyCommon' => 'Fail tetapan PlezyNG rosak dan tidak boleh dibaca. pembaikan memulihkan setiap tetapan kepada lalai.',
+			'startup.repairBodyCommon' => 'Fail tetapan Pleazyng rosak dan tidak boleh dibaca. pembaikan memulihkan setiap tetapan kepada lalai.',
 			'startup.repairBodyOneCredential' => 'Satu log masuk yang disimpan rosak dan tidak boleh dibaca. pembaikan menghapuskan hanya satu; tetapan lain anda ditinggalkan sendirian.',
 			'startup.repairBodySignInsKept' => 'Sesi log masuk pelayan dan profil anda sepatutnya kekal aktif.',
 			'startup.repairBodySignInsLost' => 'Kunci yang melindungi maklumat log masuk tersimpan tidak dapat dipulihkan daripada fail ini. Anda perlu log masuk semula ke setiap pelayan dan profil. Tiada apa-apa pada pelayan media anda terjejas.',
-			'startup.repairBodySessionsUncertain' => 'Data penjejak (MAL, AniList, Simkl, Trakt) dan Seerr disimpan secara berasingan dan mungkin kekal atau hilang. PlezyNG akan memberitahu anda dengan tepat data yang dikekalkan.',
+			'startup.repairBodySessionsUncertain' => 'Data penjejak (MAL, AniList, Simkl, Trakt) dan Seerr disimpan secara berasingan dan mungkin kekal atau hilang. Pleazyng akan memberitahu anda dengan tepat data yang dikekalkan.',
 			'startup.repairConfirm' => 'Perbaikan',
 			'startup.repairSucceeded' => 'Penyimpanan diperbaiki',
 			'startup.repairNeedsRestart' => 'Penyimpanan diperbaiki - perlu memulakan semula',
-			'startup.restartRequiredBody' => 'Data anda telah dibaiki, tetapi PlezyNG perlu dimulakan semula sebelum dapat menggunakannya. Tutup PlezyNG dan buka semula.',
-			'startup.quitPlezy' => 'Perbincangan:Penghantaran PlezyNG',
+			'startup.restartRequiredBody' => 'Data anda telah dibaiki, tetapi Pleazyng perlu dimulakan semula sebelum dapat menggunakannya. Tutup Pleazyng dan buka semula.',
+			'startup.quitPlezy' => 'Perbincangan:Penghantaran Pleazyng',
 			'startup.repairFailed' => 'Perbaikan gagal',
 			'startup.repairKeptSignIns' => 'Sesi log masuk pelayan dan profil anda masih aktif.',
 			'startup.repairLostSignIns' => 'Kunci yang melindungi maklumat log masuk tersimpan tidak dapat dipulihkan. Anda perlu log masuk semula ke setiap pelayan dan profil.',
@@ -6927,7 +6933,7 @@ extension on TranslationsMs {
 			'startup.backupWarning' => 'Ia mengandungi pengesahan log masuk anda.Jangan muat naik atau berkongsi.',
 			'startup.deleteBackup' => 'Menghapuskan copy',
 			'startup.backupDeleted' => 'salinan telah dipadamkan.',
-			'startup.previousFailureTitle' => 'PlezyNG gagal memulakan kali terakhir',
+			'startup.previousFailureTitle' => 'Pleazyng gagal memulakan kali terakhir',
 			'licenses.relatedPackages' => 'Pakej yang berkaitan',
 			'licenses.license' => 'Lisensi',
 			'licenses.licenseNumber' => ({required Object number}) => 'Permohonan Permohonan ${number}',
@@ -7305,7 +7311,7 @@ extension on TranslationsMs {
 			'watchTogether.codeCopied' => 'Kod bilik disalin',
 			'watchTogether.shareInvite' => 'Memberi jemputan',
 			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di PlezyNG: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kawalan sesi',
 			_ => null,
 		} ?? switch (path) {
@@ -7333,7 +7339,7 @@ extension on TranslationsMs {
 			'watchTogether.chooseAnotherCopy' => 'Pilih salinan lain',
 			'watchTogether.dontPlay' => 'Jangan Bermain',
 			'watchTogether.unavailableTitle' => 'Anda tidak mempunyai video ini',
-			'watchTogether.unavailableDescription' => 'PlezyNG tidak dapat menemukannya dalam perpustakaan anda. pilih salinan sendiri atau cari lagi.',
+			'watchTogether.unavailableDescription' => 'Pleazyng tidak dapat menemukannya dalam perpustakaan anda. pilih salinan sendiri atau cari lagi.',
 			'watchTogether.chooseCopy' => 'Pilih salinan',
 			'watchTogether.searchAgain' => 'Cari lagi',
 			'watchTogether.noCandidates' => 'Tiada salinan yang boleh didapati di perpustakaan anda.',
@@ -7425,7 +7431,7 @@ extension on TranslationsMs {
 			'watchTogether.errors.relayFull' => 'Lihat Bersama sibuk sekarang. cuba lagi nanti.',
 			'watchTogether.errors.unreachable' => 'Tidak boleh mencapai jam bersama relay. semak sambungan anda.',
 			'watchTogether.errors.rateLimited' => 'Terlalu banyak percubaan. tunggu sebentar dan cuba lagi.',
-			'watchTogether.errors.clientBlocked' => 'Versi PlezyNG ini tidak boleh menggunakan relay.',
+			'watchTogether.errors.clientBlocked' => 'Versi Pleazyng ini tidak boleh menggunakan relay.',
 			'watchTogether.errors.forbidden' => 'Hanya tuan rumah sahaja yang boleh melakukannya.',
 			'watchTogether.errors.notInRoom' => 'Awak tak ada di dalam bilik.',
 			'watchTogether.errors.alreadyInRoom' => 'Awak dah ada di dalam bilik.',
@@ -7507,11 +7513,11 @@ extension on TranslationsMs {
 			'downloads.activeSyncRules' => 'Peraturan Sync',
 			'downloads.reviewOrphanFiles' => 'Lihat lagi reviu untuk Orphaned downloads',
 			'downloads.orphanReviewTitle' => 'Lihat lagi reviu untuk Orphaned downloads',
-			'downloads.orphanReviewDescription' => 'Fail-fail yang ditandakan ini terdapat dalam folder muat turun yang dikendalikan oleh aplikasi lalai PlezyNG dan tidak mempunyai rekod muat turun atau tugas aktif yang sepadan.',
+			'downloads.orphanReviewDescription' => 'Fail-fail yang ditandakan ini terdapat dalam folder muat turun yang dikendalikan oleh aplikasi lalai Pleazyng dan tidak mempunyai rekod muat turun atau tugas aktif yang sepadan.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} fail · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => 'Memadamkan fail ${count}',
 			'downloads.orphanCleanupNone' => 'Tiada fail muat turun yang ditemui',
-			'downloads.orphanCleanupFailed' => 'PlezyNG tidak boleh selamat memindai folder muat turun yang dikendalikan. tiada fail yang dipadamkan.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng tidak boleh selamat memindai folder muat turun yang dikendalikan. tiada fail yang dipadamkan.',
 			'downloads.orphanCleanupChanged' => 'Senarai muat turun berubah semasa ulasan. ulasan semula fail sebelum pembersihan.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => 'Memadamkan ${count} fail yatim piatu · ${size} dibebaskan',
 			'downloads.noSyncRules' => 'Tiada Peraturan Sinkron',
@@ -7533,14 +7539,14 @@ extension on TranslationsMs {
 			'downloads.backgroundWarning.bannerAction' => 'Maklumat',
 			'downloads.backgroundWarning.sheetTitle' => 'Download latar belakang disekat',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Download latar belakang boleh terhad',
-			'downloads.backgroundWarning.sheetIntro' => 'Android mencegah PlezyNG daripada memuat turun dengan boleh dipercayai dalam latar belakang.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Peranti anda membatasi apabila PlezyNG boleh dimuat turun dalam latar belakang.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Penggunaan latar belakang PlezyNG terhad. tetapkan penggunaan bateri atau latar belakang kepada "Tidak terhad".',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android telah meletakkan PlezyNG dalam keadaan berdiri terhad. menetapkan penggunaan bateri kepada "Tidak terhad".',
+			'downloads.backgroundWarning.sheetIntro' => 'Android mencegah Pleazyng daripada memuat turun dengan boleh dipercayai dalam latar belakang.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Peranti anda membatasi apabila Pleazyng boleh dimuat turun dalam latar belakang.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Penggunaan latar belakang Pleazyng terhad. tetapkan penggunaan bateri atau latar belakang kepada "Tidak terhad".',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android telah meletakkan Pleazyng dalam keadaan berdiri terhad. menetapkan penggunaan bateri kepada "Tidak terhad".',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Pemberitahuan muat turun dimatikan, jadi kemajuan dan kawalan mungkin tidak tersedia.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Pada Android 13 atau lebih baru, mereka diperlukan untuk muat turun latar belakang yang panjang.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Data Saver ialah pada, yang memblokir muat turun latar belakang pada data mudah alih. muat turun masih perlu berjalan pada Wi-Fi.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'Muat turun berulang kali berhenti semasa PlezyNG berada di latar belakang. semak tetapan penggunaan bateri atau latar belakang PlezyNG.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Muat turun berulang kali berhenti semasa Pleazyng berada di latar belakang. semak tetapan penggunaan bateri atau latar belakang Pleazyng.',
 			'downloads.backgroundWarning.openSettings' => 'Seting Terbuka',
 			'downloads.backgroundWarning.stillNotWorking' => 'Bantuan khusus peranti',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Lihat langkah-langkah untuk peranti anda, atau hantar log daripada Settings › Lihat log jika masalah berterusan.',
@@ -7611,19 +7617,19 @@ extension on TranslationsMs {
 			'companionRemote.session.stopServer' => 'Hentikan pelayan',
 			'companionRemote.session.minimize' => 'Minimum',
 			'companionRemote.session.manualAddressHint' => 'Alamat sambungan manual :',
-			'companionRemote.pairing.discoveryDescription' => 'PlezyNG peranti dengan akaun yang sama Plex muncul di sini',
+			'companionRemote.pairing.discoveryDescription' => 'Pleazyng peranti dengan akaun yang sama Plex muncul di sini',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Menghubungkan ...',
 			'companionRemote.pairing.searchingForDevices' => 'Mencari peranti ...',
 			'companionRemote.pairing.noDevicesFound' => 'Tiada peranti yang ditemui di rangkaian anda',
-			'companionRemote.pairing.noDevicesHint' => 'Buka PlezyNG pada desktop dan gunakan yang sama Wi-Fi',
+			'companionRemote.pairing.noDevicesHint' => 'Buka Pleazyng pada desktop dan gunakan yang sama Wi-Fi',
 			'companionRemote.pairing.availableDevices' => 'Peranti yang tersedia',
 			'companionRemote.pairing.manualConnection' => 'Penghubung manual',
 			'companionRemote.pairing.cryptoInitFailed' => 'Tidak boleh memulakan sambungan yang selamat. mendaftar di Plex terlebih dahulu.',
 			'companionRemote.pairing.validationHostRequired' => 'Sila masukkan alamat tuan rumah',
 			'companionRemote.pairing.validationHostFormat' => 'Format hendaklah IP:port (contohnya, 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Menggunakan rangkaian yang sama pada kedua-dua peranti.',
-			'companionRemote.pairing.sessionNotFound' => 'Peranti tidak ditemui. pastikan PlezyNG berjalan pada host.',
+			'companionRemote.pairing.sessionNotFound' => 'Peranti tidak ditemui. pastikan Pleazyng berjalan pada host.',
 			'companionRemote.pairing.authFailed' => 'Pengesahan gagal. kedua-dua peranti memerlukan akaun yang sama Plex.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Kegagalan untuk menghubungkan: ${error}',
 			'companionRemote.pairing.codeTitle' => 'Pasangan Kod',
@@ -7887,11 +7893,11 @@ extension on TranslationsMs {
 			'trakt.connected' => 'Terhubung',
 			'trakt.connectedAs' => ({required Object username}) => 'Terhubung dengan @${username}',
 			'trakt.disconnectConfirm' => 'Mengalih keluar akaun Trakt?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG akan berhenti menghantar acara ke Trakt. anda boleh menyambung semula pada bila-bila masa.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng akan berhenti menghantar acara ke Trakt. anda boleh menyambung semula pada bila-bila masa.',
 			'trakt.scrobble' => 'Pengeluaran masa nyata scrobbling',
 			'trakt.scrobbleDescription' => 'Hantar permainan, istirahat, dan menghentikan peristiwa kepada Trakt semasa pemutaran.',
 			'trakt.watchedSync' => 'Sinkronkan status yang dilihat',
-			'trakt.watchedSyncDescription' => 'Apabila anda menandakan item seperti yang dilihat di PlezyNG, mereka juga ditandakan seperti yang dilihat di Trakt.',
+			'trakt.watchedSyncDescription' => 'Apabila anda menandakan item seperti yang dilihat di Pleazyng, mereka juga ditandakan seperti yang dilihat di Trakt.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Menghubungkan Seerr',
 			'seerr.serverUrl' => 'Pelayan URL',
@@ -7901,10 +7907,10 @@ extension on TranslationsMs {
 			'seerr.signInWithEmby' => 'Mendaftar dengan Emby',
 			'seerr.signInWithLocal' => 'Menggunakan akaun tempatan',
 			'seerr.email' => 'Email yang',
-			'seerr.noSignInMethods' => 'Contoh Seerr ini tidak menawarkan sokongan kaedah log masuk PlezyNG.',
+			'seerr.noSignInMethods' => 'Contoh Seerr ini tidak menawarkan sokongan kaedah log masuk Pleazyng.',
 			'seerr.instance' => 'instans',
 			'seerr.disconnectConfirm' => 'Menghubungkan Seerr?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.',
 			'seerr.request' => 'Permintaan',
 			'seerr.request4k' => 'Permintaan dalam 4K',
 			'seerr.seasons' => 'Musim',
@@ -7929,7 +7935,7 @@ extension on TranslationsMs {
 			'seerr.statusBlocklisted' => 'Terjejas',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Tidak boleh mencapai ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'Tiada permohonan Seerr di ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'Sebuah proxy terbalik yang mengesahkan (SSO atau HTTP auth) dijawab daripada Seerr. PlezyNG tidak boleh mendaftar melalui: biarkan laluan /api/v1 Seerr melepasi proxy untuk aplikasi ini, atau gunakan alamat yang mencapai Seerr secara langsung.',
+			'seerr.behindAuthProxy' => 'Sebuah proxy terbalik yang mengesahkan (SSO atau HTTP auth) dijawab daripada Seerr. Pleazyng tidak boleh mendaftar melalui: biarkan laluan /api/v1 Seerr melepasi proxy untuk aplikasi ini, atau gunakan alamat yang mencapai Seerr secara langsung.',
 			'seerr.invalidUrl' => 'Masukkan alamat pelayan seperti https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Contoh Seerr ini tidak menyokong Quick Connect.Ia memerlukan Seerr 3.4 atau lebih baru.',
 			'seerr.notInitialized' => 'instans Seerr ini tidak menyelesaikan setup pertama berjalan',
@@ -7950,7 +7956,7 @@ extension on TranslationsMs {
 			'services.scrobble' => 'Menjejaki kemajuan secara automatik',
 			'services.scrobbleDescription' => 'Memperbaharui senarai anda apabila anda menyelesaikan episod atau filem.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Menghilangkan sambungan ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG akan berhenti mengemas kini ${service}. sambungkan semula pada bila-bila masa.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng akan berhenti mengemas kini ${service}. sambungkan semula pada bila-bila masa.',
 			'services.connectFailed' => ({required Object service}) => 'Saya tidak boleh menyambung ke ${service}. cuba lagi.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7958,8 +7964,8 @@ extension on TranslationsMs {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Perbincangan Simkl',
-			'services.simklReconnect.subtitle' => 'Simkl adalah penarikan kaedah log masuk yang menggunakan sambungan ini. penyambungan semula membuka simkl.com untuk meluluskan PlezyNG — PlezyNG tidak pernah melihat kata laluan anda. sejarah jam anda kekal pada Simkl.',
-			'services.deviceCode.title' => ({required Object service}) => 'Mengaktifkan PlezyNG pada ${service}',
+			'services.simklReconnect.subtitle' => 'Simkl adalah penarikan kaedah log masuk yang menggunakan sambungan ini. penyambungan semula membuka simkl.com untuk meluluskan Pleazyng — Pleazyng tidak pernah melihat kata laluan anda. sejarah jam anda kekal pada Simkl.',
+			'services.deviceCode.title' => ({required Object service}) => 'Mengaktifkan Pleazyng pada ${service}',
 			'services.deviceCode.instructions' => 'Mengimbas kod QR, atau lawati alamat di bawah dan masukkan kod ini:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Buka ${service} untuk mengaktifkan',
 			'services.deviceCode.copyCode' => 'Menyalin kod pengaktifan',
@@ -7992,8 +7998,8 @@ extension on TranslationsMs {
 			'streaming.title' => 'Penstriman awan dan add-on',
 			'streaming.subtitle' => 'Sambungkan akaun Debrid untuk menyemak imbas fail dalam awan dan memainkan strim yang disokong. Add-on serasi Stremio menyediakan pilihan strim pada halaman filem dan episod. Butiran sambungan disulitkan pada peranti ini dan disimpan dalam profil ini.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Sumber disambungkan: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG tidak dapat membuka kunci tetapan penstriman yang disimpan. Buka kunci peranti dan cuba lagi sebelum mengubah sambungan.',
-			'streaming.settingsUnreadable' => 'PlezyNG tidak dapat membuka kunci sambungan tersimpan ini. Kosongkannya untuk menyambungkan semula perkhidmatan.',
+			'streaming.settingsLoadFailed' => 'Pleazyng tidak dapat membuka kunci tetapan penstriman yang disimpan. Buka kunci peranti dan cuba lagi sebelum mengubah sambungan.',
+			'streaming.settingsUnreadable' => 'Pleazyng tidak dapat membuka kunci sambungan tersimpan ini. Kosongkannya untuk menyambungkan semula perkhidmatan.',
 			'streaming.clearUnreadableSettings' => 'Kosongkan tetapan tersimpan',
 			'streaming.clearUnreadableSettingsConfirm' => 'Kosongkan tetapan penstriman tersimpan?',
 			'streaming.clearUnreadableSettingsBody' => 'Tindakan ini mengalih keluar semua akaun penyedia dan alamat add-on yang disimpan daripada profil ini. Tindakan ini tidak boleh dibuat asal.',
@@ -8005,11 +8011,11 @@ extension on TranslationsMs {
 			'streaming.catalogFiltersRequired' => 'Pilih penapis yang diperlukan untuk menyemak imbas katalog ini.',
 			'streaming.catalogRequiredLabel' => 'Wajib',
 			'streaming.importFromStremio' => 'Import daripada Stremio',
-			'streaming.stremioImportInstructions' => 'Imbas kod QR atau buka pautan. Log masuk ke Stremio dan luluskan permintaan. PlezyNG hanya membaca senarai add-on anda; aplikasi tidak meminta kata laluan Stremio atau mengubah tetapannya.',
+			'streaming.stremioImportInstructions' => 'Imbas kod QR atau buka pautan. Log masuk ke Stremio dan luluskan permintaan. Pleazyng hanya membaca senarai add-on anda; aplikasi tidak meminta kata laluan Stremio atau mengubah tetapannya.',
 			'streaming.stremioImportOpen' => 'Buka pautan Stremio',
 			'streaming.stremioImportCode' => 'Kod pautan',
 			'streaming.stremioImportPreviewTitle' => 'Pilih add-on',
-			'streaming.stremioImportPreviewBody' => 'Pilih add-on untuk disambungkan ke PlezyNG. Import ini hanya menerima alamat HTTPS.',
+			'streaming.stremioImportPreviewBody' => 'Pilih add-on untuk disambungkan ke Pleazyng. Import ini hanya menerima alamat HTTPS.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Add-on dilangkau kerana alamat tidak disokong atau tidak selamat: ${count}.',
 			'streaming.stremioCatalogs' => 'Katalog',
 			'streaming.stremioStreams' => 'Strim',
@@ -8023,7 +8029,7 @@ extension on TranslationsMs {
 			'streaming.addByManifestUrl' => 'Tambah melalui URL manifes',
 			'streaming.addAddon' => 'Tambah add-on',
 			'streaming.manifestUrl' => 'URL manifes add-on',
-			'streaming.manifestUrlHint' => 'Tampal URL manifes add-on. PlezyNG menyemak sokongan katalog atau sumber strim sebelum menyambung.',
+			'streaming.manifestUrlHint' => 'Tampal URL manifes add-on. Pleazyng menyemak sokongan katalog atau sumber strim sebelum menyambung.',
 			'streaming.allowHttp' => 'Benarkan alamat HTTP tanpa penyulitan',
 			'streaming.allowHttpDescription' => 'Gunakan hanya untuk add-on yang dipercayai pada rangkaian peribadi anda.',
 			'streaming.installAddon' => 'Sambungkan add-on',
@@ -8031,20 +8037,20 @@ extension on TranslationsMs {
 			'streaming.addonRemoved' => 'Add-on dialih keluar',
 			'streaming.addonToggle' => 'Dayakan add-on',
 			'streaming.addonEmpty' => 'Belum ada add-on disambungkan',
-			'streaming.addonError' => 'PlezyNG tidak dapat menyambung ke add-on ini. Semak URL manifes dan cuba lagi.',
+			'streaming.addonError' => 'Pleazyng tidak dapat menyambung ke add-on ini. Semak URL manifes dan cuba lagi.',
 			'streaming.addonPrivacy' => 'Sambungkan add-on yang anda percayai sahaja. Semasa carian, add-on menerima tajuk yang dicari dan boleh memulangkan pautan strim pihak ketiga.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Mainkan strim torrent yang disokong melalui akaun Real-Debrid anda.',
 			'streaming.connectRealDebrid' => 'Sambung dengan kod QR',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Disambungkan sebagai ${username}',
-			'streaming.realDebridInstructions' => 'Imbas kod QR atau buka pautan, kemudian masukkan kod pengaktifan ini untuk menyambungkan PlezyNG:',
+			'streaming.realDebridInstructions' => 'Imbas kod QR atau buka pautan, kemudian masukkan kod pengaktifan ini untuk menyambungkan Pleazyng:',
 			'streaming.realDebridActivate' => 'Buka Real-Debrid untuk mengaktifkan',
 			'streaming.realDebridCode' => 'Kod pengaktifan',
 			'streaming.realDebridConnectFailed' => 'Tidak dapat menyambung ke Real-Debrid. Cuba lagi.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'Mainkan strim torrent yang disokong melalui akaun AllDebrid anda.',
 			'streaming.connectAllDebrid' => 'Sambung dengan kod QR',
-			'streaming.allDebridInstructions' => 'Imbas kod QR atau buka pautan untuk membenarkan PlezyNG. Biarkan skrin ini terbuka semasa menyambung:',
+			'streaming.allDebridInstructions' => 'Imbas kod QR atau buka pautan untuk membenarkan Pleazyng. Biarkan skrin ini terbuka semasa menyambung:',
 			'streaming.allDebridActivate' => 'Buka AllDebrid untuk mengaktifkan',
 			'streaming.allDebridCode' => 'PIN pengaktifan',
 			'streaming.allDebridConnectFailed' => 'Tidak dapat menyambung ke AllDebrid. Cuba lagi.',
@@ -8055,13 +8061,13 @@ extension on TranslationsMs {
 			'streaming.connectApiKey' => 'Sambung dengan kunci API',
 			'streaming.apiKeyTitle' => ({required Object service}) => 'Sambungkan ${service}',
 			'streaming.apiKey' => 'Kunci API',
-			'streaming.apiKeyHint' => ({required Object service}) => 'Tampal kunci API daripada tetapan akaun ${service}. PlezyNG menyulitkannya pada peranti ini dan menyimpannya dalam profil ini.',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Tampal kunci API daripada tetapan akaun ${service}. Pleazyng menyulitkannya pada peranti ini dan menyimpannya dalam profil ini.',
 			'streaming.apiKeyConnectFailed' => 'Tidak dapat mengesahkan kunci API ini. Semak dan cuba lagi.',
 			'streaming.accountConnected' => ({required Object username}) => 'Disambungkan sebagai ${username}',
 			'streaming.streamNeedsProvider' => 'Sambungkan perkhidmatan Debrid untuk memainkan strim torrent ini.',
 			'streaming.playViaProvider' => 'Main melalui Debrid',
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Putuskan sambungan ${service}?',
-			'streaming.disconnectBody' => 'PlezyNG akan membatalkan kebenaran peranti ini. Fail penyedia dan pemindahan yang sedang berjalan tidak akan berubah.',
+			'streaming.disconnectBody' => 'Pleazyng akan membatalkan kebenaran peranti ini. Fail penyedia dan pemindahan yang sedang berjalan tidak akan berubah.',
 			'streaming.streamsTitle' => 'Pilih strim',
 			'streaming.noStreams' => 'Tiada strim ditemukan untuk tajuk ini.',
 			'streaming.manageConnections' => 'Urus perkhidmatan penstriman',
@@ -8077,7 +8083,7 @@ extension on TranslationsMs {
 			'streaming.streamUnsupported' => 'Format strim ini tidak disokong oleh pemain dalam aplikasi.',
 			'streaming.remoteNeedsEpisode' => 'Pilih episod sebelum mencari strim.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Nombor musim atau episod tiada untuk episod ini.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG tidak menemukan ID IMDb atau TMDB untuk tajuk ini.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng tidak menemukan ID IMDb atau TMDB untuk tajuk ini.',
 			'streaming.watchWithServices' => 'Tonton dengan perkhidmatan yang disambungkan',
 			'streaming.chooseEpisode' => 'Pilih episod',
 			'streaming.episodes' => 'Episod',
@@ -8163,15 +8169,15 @@ extension on TranslationsMs {
 			'notifications.newEpisodeTitle' => 'Episod baru',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'Cuba setiap ciri percuma selama 7 hari',
-			'appAccess.description' => 'Memulakan percubaan tujuh hari dengan akses penuh kepada setiap ciri PlezyNG. tiada bayaran semasa percubaan dan tiada langganan.Selepas percubaan, satu pembelian seumur hidup pada harga kedai anda membuka PlezyNG seumur hidup.',
-			'appAccess.trialEndedDescription' => 'Membuka kunci setiap ciri dalam PlezyNG untuk hidup dengan satu pembelian pada harga kedai anda.',
+			'appAccess.description' => 'Memulakan percubaan tujuh hari dengan akses penuh kepada setiap ciri Pleazyng. tiada bayaran semasa percubaan dan tiada langganan.Selepas percubaan, satu pembelian seumur hidup pada harga kedai anda membuka Pleazyng seumur hidup.',
+			'appAccess.trialEndedDescription' => 'Membuka kunci setiap ciri dalam Pleazyng untuk hidup dengan satu pembelian pada harga kedai anda.',
 			'appAccess.startTrial' => 'Mulakan percubaan percuma 7 hari',
 			'appAccess.trialActive' => 'Ujian penuh 7 hari anda aktif.',
 			'appAccess.trialEnded' => 'Perbicaraan 7 hari telah berakhir',
 			'appAccess.trialStartFailed' => 'Saya tidak boleh menyimpan percubaan pada peranti ini. sila cuba lagi.',
-			'appAccess.lifetimeTitle' => 'PlezyNG dikunci untuk seumur hidup',
-			'appAccess.lifetimeBody' => 'Terima kasih! anda mempunyai akses seumur hidup kepada setiap fungsi PlezyNG.',
-			'appAccess.manageTitle' => 'PlezyNG akses seumur hidup',
+			'appAccess.lifetimeTitle' => 'Pleazyng dikunci untuk seumur hidup',
+			'appAccess.lifetimeBody' => 'Terima kasih! anda mempunyai akses seumur hidup kepada setiap fungsi Pleazyng.',
+			'appAccess.manageTitle' => 'Pleazyng akses seumur hidup',
 			'appAccess.manageDescription' => 'Cuba setiap ciri percuma selama 7 hari, kemudian membuka semua untuk seumur hidup dengan satu pembayaran pada harga kedai anda.',
 			'appAccess.buy' => ({required Object price}) => 'Membuka semua ciri untuk ${price}',
 			'appAccess.loadingPrice' => 'Harga kedai yang dibayar...',
@@ -8179,11 +8185,11 @@ extension on TranslationsMs {
 			'appAccess.restore' => 'Restorasi pembelian seumur hidup',
 			'appAccess.pending' => 'Pembelian anda sedang menunggu pembayaran atau kelulusan. akses seumur hidup dibuka sebaik sahaja kedai melengkapkannya.',
 			'appAccess.storeUnavailable' => 'Pastikan anda mendaftar di kedai dan pembelian dibenarkan pada peranti ini.',
-			'appAccess.productNotFound' => 'PlezyNG seumur hidup tidak tersedia di kedai ini sehingga kini.',
+			'appAccess.productNotFound' => 'Pleazyng seumur hidup tidak tersedia di kedai ini sehingga kini.',
 			'appAccess.productQueryFailed' => 'Tidak boleh memuatkan harga kedai. semak sambungan anda dan cuba lagi.',
 			'appAccess.purchaseFailed' => 'Pembelian tidak berjalan. cuba lagi.',
 			'appAccess.restoreFailed' => 'Tidak boleh sampai ke kedai untuk memulihkan pembelian anda. cuba lagi.',
-			'appAccess.nothingToRestore' => 'Nombor PlezyNG pembelian seumur hidup telah ditemui untuk akaun kedai ini.',
+			'appAccess.nothingToRestore' => 'Nombor Pleazyng pembelian seumur hidup telah ditemui untuk akaun kedai ini.',
 			'detail.endsAt' => ({required Object time}) => 'Berakhir pada ${time}',
 			'watchLink.serverUnavailable' => 'Saya tidak boleh mencapai server Plex untuk pautan ini.',
 			'watchLink.notFound' => 'Saya tidak boleh menemui persembahan atau filem ini pada pelayan anda Plex.',
@@ -8197,8 +8203,8 @@ extension on TranslationsMs {
 			'watchLink.copy' => 'Salin',
 			'watchLink.copied' => 'Link yang disalin',
 			'homeLayout.title' => 'Susun atur laman utama',
-			'homeLayout.resetToast' => 'Home Reset ke layout asli Plezy hero',
-			'homeLayout.resetHeroTitle' => 'Mengembalikan tataletak pahlawan kepada stok Plezy?',
+			'homeLayout.resetToast' => 'Home Reset ke layout asli Pleazyng hero',
+			'homeLayout.resetHeroTitle' => 'Mengembalikan tataletak pahlawan kepada stok Pleazyng?',
 			'homeLayout.resetHeroBody' => 'Mengalih keluar seting wira setiap baris dan membawa kembali satu banner berputar di bahagian atas rumah, seperti sebelum baris wira wujud.',
 			'homeLayout.removeRowTitle' => 'Menghilangkan Home Range?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} akan dipadamkan. ini tidak boleh dikecualikan.',
@@ -8208,7 +8214,7 @@ extension on TranslationsMs {
 			'homeLayout.syncAccountOff' => 'Off: Peranti ini mengekalkan tataletak sendiri.',
 			'homeLayout.syncNow' => 'Sinkronkan sekarang',
 			'homeLayout.plexHomeManager' => 'Plex Pengurus Rumah',
-			'homeLayout.managePlexRows' => 'Menguruskan Plex baris dalam Plezy',
+			'homeLayout.managePlexRows' => 'Menguruskan Plex baris dalam Pleazyng',
 			'homeLayout.managePlexRowsDescription' => 'Terbuka untuk menganjurkan baris-baris yang dipilih di rumah',
 			'homeLayout.organizeHomeRows' => 'Mengatur rangkaian rumah',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} baris: bergerak, Hero, Auto-slide, menghapuskan',
@@ -8278,7 +8284,7 @@ extension on TranslationsMs {
 			'homeLayout.organizeRowsHint' => 'Pilih pada baris (atau tahan Pilih): pindah · Kiri/Kiri: pilihan baris · Kembali: selesai',
 			'homeLayout.layoutNavDescription' => 'Pilih baris, perpustakaan, dan kategori koleksi',
 			'homeLayout.editHomeRow' => 'Edit rumah rangkaian',
-			'homeLayout.resetHeroButton' => 'Mengembalikan tataletak pahlawan kepada stok Plezy',
+			'homeLayout.resetHeroButton' => 'Mengembalikan tataletak pahlawan kepada stok Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Penyelesaian semula diselesaikan',
 			'homeLayout.reorderingLocked' => 'Penyelesaian Locked',
 			'homeLayout.rowsCanBeDragged' => 'Roda boleh ditarik — tekan kunci untuk mengelakkan',
@@ -8295,13 +8301,13 @@ extension on TranslationsMs {
 			'homeLayout.tapHeroCardDescription' => 'Pilih sama ada menandakan atau memilih kad Hero memulakan playback atau membuka butiran.',
 			'homeLayout.heroTapPlayDescription' => 'Mulakan item yang dipilih dengan segera.',
 			'homeLayout.heroTapDetailsDescription' => 'Buka butiran item yang dipilih sebelum memilih tindakan.',
-			'platform.localNetworkPermission' => 'PlezyNG menyambung ke pelayan media dan peranti playback anda di rangkaian tempatan anda.',
-			'platform.locationPermission' => 'PlezyNG menggunakan akses lokasi apabila iOS memerlukan untuk mengesan rangkaian tempatan anda dan menyambung ke pelayan media anda.',
+			'platform.localNetworkPermission' => 'Pleazyng menyambung ke pelayan media dan peranti playback anda di rangkaian tempatan anda.',
+			'platform.locationPermission' => 'Pleazyng menggunakan akses lokasi apabila iOS memerlukan untuk mengesan rangkaian tempatan anda dan menyambung ke pelayan media anda.',
 			'platform.photoLibraryPermission' => 'Pilih imej daripada perpustakaan foto anda untuk digunakan sebagai karya seni media.',
 			'platform.cameraPermission' => 'Mengimbas kod QR untuk menggabungkan Companion Remote.',
 			'universalMedia.title' => 'Media Terbuka',
 			'universalMedia.shortcutHelp' => 'Mainkan pautan, senarai main atau fail untuk sesi ini.',
-			'universalMedia.intro' => 'Buka pautan, senarai main, atau fail. Playback menggunakan pemain standard PlezyNG dan tidak menambah sejarah kepada perpustakaan anda.',
+			'universalMedia.intro' => 'Buka pautan, senarai main, atau fail. Playback menggunakan pemain standard Pleazyng dan tidak menambah sejarah kepada perpustakaan anda.',
 			'universalMedia.openWhat' => 'Apa yang anda mahu buka?',
 			'universalMedia.stream' => 'Alamat aliran',
 			'universalMedia.playlist' => 'Senarai Playlist',
@@ -8352,13 +8358,13 @@ extension on TranslationsMs {
 			'universalMedia.stopTransfer' => 'Hentikan pemindahan dan membatalkan alamat',
 			'universalMedia.startTransfer' => 'Mulakan pemindahan',
 			'universalMedia.wifiImportedFiles' => 'Penghantaran Wi-Fi',
-			'universalMedia.wifiBrowserTitle' => 'Hantar fail kepada PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'Hantar fail kepada Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'Pilih audio, video, ebook, atau komik fail untuk dihantar. fail disimpan dalam perpustakaan fail dan buku peranti ini. maksimum: 100 fail, 4 GiB setiap fail, 10 GiB total.',
 			'universalMedia.uploadFilesLabel' => 'fail untuk menghantar',
 			'universalMedia.uploadSelected' => 'Muat naik fail yang dipilih',
 			'universalMedia.uploadSelectFirst' => 'Pilih satu atau lebih fail terlebih dahulu.',
 			'universalMedia.uploading' => 'Penghantaran',
-			'universalMedia.uploadComplete' => 'Fail ditambah kepada PlezyNG.',
+			'universalMedia.uploadComplete' => 'Fail ditambah kepada Pleazyng.',
 			'universalMedia.uploadFailed' => 'Fail tidak boleh ditambah.Tahan halaman ini terbuka dan cuba lagi.',
 			'universalMedia.liveCue' => 'hidup',
 			'universalMedia.liveSession' => 'Penghantaran Live Stream',
@@ -8386,7 +8392,7 @@ extension on TranslationsMs {
 			'universalMedia.recordingActive' => 'Mengikut peranti ini. meninggalkan playback berhenti dan menyimpannya.',
 			'universalMedia.recordingFormatHelp' => 'Untuk video, pilih MKV atau MPEG-TS. untuk audio, pilih MKA atau MKV.',
 			'universalMedia.replaceRecordingTitle' => 'Menggantikan rekod ini?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG mengembalikan fail yang sedia ada semasa rakaman.Jika ia tidak dapat menyimpan rakaman baru, Plezyng memulihkan sandaran.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng mengembalikan fail yang sedia ada semasa rakaman.Jika ia tidak dapat menyimpan rakaman baru, Plezyng memulihkan sandaran.',
 			'universalMedia.replaceRecording' => 'Menggantikan fail',
 			'universalMedia.discHelp' => 'Buka cakera dalam cakera optik komputer ini.Anda juga boleh membuka imej ISO daripada fail Peranti.',
 			'universalMedia.discs' => 'cakera optik',
@@ -8411,7 +8417,7 @@ extension on TranslationsMs {
 			'universalMedia.converterUnsupportedInput' => 'Pilih fail audio atau video.',
 			'universalMedia.converterLocalOnly' => 'Fail yang dipilih tidak tersedia sebagai laluan peranti tempatan.',
 			'universalMedia.converterReplaceTitle' => 'Menggantikan fail ini?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG mengembalikan fail yang sedia ada sehingga salinan yang ditukar disimpan.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng mengembalikan fail yang sedia ada sehingga salinan yang ditukar disimpan.',
 			'universalMedia.converterStarting' => 'Bermula daripada FFmpeg...',
 			'universalMedia.converterProgress' => 'Menukar kepada komputer ini ...',
 			'universalMedia.converterComplete' => 'Konversi selesai. fail baru telah siap.',
@@ -8435,7 +8441,7 @@ extension on TranslationsMs {
 			'universalMedia.captureDefaultAudio' => 'Pengenalan audio lalai',
 			'universalMedia.captureWaylandHelp' => 'Wayland membatasi penangkapan XWayland ini kepada X display. Windows di luar XWayland mungkin tidak muncul.',
 			'universalMedia.captureFrameRate' => 'Kadar rakaman',
-			'universalMedia.capturePrivacy' => 'Rekod disimpan hanya untuk fail yang anda pilih. penangkapan mikrofon adalah opsional. PlezyNG tidak memuat naik rekod.',
+			'universalMedia.capturePrivacy' => 'Rekod disimpan hanya untuk fail yang anda pilih. penangkapan mikrofon adalah opsional. Pleazyng tidak memuat naik rekod.',
 			'universalMedia.captureSaveAs' => 'Menyimpan rekod skrin sebagai',
 			'universalMedia.captureExtensionMismatch' => 'Pilih nama fail yang berakhir dalam .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg atau kod video H.264 tidak boleh didapati.Memasang pembinaan FFmpeg yang disokong, kemudian cuba lagi.',
@@ -8449,7 +8455,7 @@ extension on TranslationsMs {
 			'universalMedia.captureStop' => 'berhenti dan menyelamatkan',
 			'universalMedia.captureMode' => 'Penangkapan',
 			'universalMedia.shareMode' => 'berkongsi',
-			'universalMedia.shareIntro' => 'Hantar fail media tempatan ke peranti lain di rangkaian peribadi anda. PlezyNG mewujudkan aliran sementara HLS.',
+			'universalMedia.shareIntro' => 'Hantar fail media tempatan ke peranti lain di rangkaian peribadi anda. Pleazyng mewujudkan aliran sementara HLS.',
 			'universalMedia.sharePrivacy' => 'Sesiapa sahaja di rangkaian tempatan anda yang menerima pautan peribadi boleh menonton sementara ia aktif. pautan tamat tempoh selepas 60 minit. berhenti berkongsi untuk menutup pelayan dan membatalkan pautan.',
 			'universalMedia.shareChooseFile' => 'Pilih fail media',
 			'universalMedia.shareChooseHelp' => 'Pilih fail audio atau video tempatan. fail itu kekal pada komputer ini.',
@@ -8462,7 +8468,7 @@ extension on TranslationsMs {
 			'universalMedia.shareOpenUrl' => 'Buka alamat ini dalam satu pemain pada peranti lain',
 			'universalMedia.shareQrLabel' => 'Kod QR untuk alamat aliran sementara',
 			'universalMedia.shareQrHelp' => 'Scan dengan pemain yang kompatibel yang disambungkan ke rangkaian peribadi yang sama.',
-			'universalMedia.shareHttpHint' => 'Stream ini menggunakan HTTP yang tidak disulitkan. dalam PlezyNG, biarkan HTTP sebelum membuka.',
+			'universalMedia.shareHttpHint' => 'Stream ini menggunakan HTTP yang tidak disulitkan. dalam Pleazyng, biarkan HTTP sebelum membuka.',
 			'universalMedia.shareCopyUrl' => 'Menyalin alamat Stream',
 			'universalMedia.shareExpiresLabel' => 'Link akan tamat pada',
 			'universalMedia.shareStarting' => 'Menyediakan aliran ...',
@@ -8487,7 +8493,7 @@ extension on TranslationsMs {
 			'universalMedia.extensionInstall' => 'menambah perkhidmatan',
 			'universalMedia.extensionReplace' => 'Perkhidmatan Update',
 			'universalMedia.extensionRemoveTitle' => 'Menghapuskan perkhidmatan carian ini?',
-			'universalMedia.extensionRemoveHelp' => 'Ini menghapuskan perkhidmatan daripada profil ini.PlezyNG tidak menghubungi titik akhir.',
+			'universalMedia.extensionRemoveHelp' => 'Ini menghapuskan perkhidmatan daripada profil ini.Pleazyng tidak menghubungi titik akhir.',
 			'universalMedia.extensionRemove' => 'Hentikan Perkhidmatan',
 			'universalMedia.extensionInvalidManifest' => 'Fail ini bukan manifest lanjutan yang disokong. lihat panduan Open media untuk format.',
 			'universalMedia.extensionSaveFailed' => 'Perpanjangan tidak boleh disimpan ke profil aktif.',
@@ -8630,12 +8636,12 @@ extension on TranslationsMs {
 			'fileSources.none' => 'Tiada',
 			'fileSources.fullscreen' => 'skrin penuh',
 			'fileSources.syncLocation' => 'folder Sink progress (pilihan)',
-			'fileSources.syncLocationHint' => 'folder WebDAV yang didedikasikan untuk PlezyNG status. menggunakan penulisan bersyarat; media kekal tidak berubah.',
+			'fileSources.syncLocationHint' => 'folder WebDAV yang didedikasikan untuk Pleazyng status. menggunakan penulisan bersyarat; media kekal tidak berubah.',
 			'fileSources.audiobooks' => 'Buku audio',
 			'fileSources.comics' => 'Komik',
 			'fileSources.scan' => 'Scan untuk buku dan media',
 			'fileSources.browserReader' => 'Pembaca Terbuka',
-			'fileSources.browserReaderHelp' => 'Membaca dibuka dalam pelayar anda.Jadilah PlezyNG terbuka untuk menyimpan lokasi dan nota anda.',
+			'fileSources.browserReaderHelp' => 'Membaca dibuka dalam pelayar anda.Jadilah Pleazyng terbuka untuk menyimpan lokasi dan nota anda.',
 			'fileSources.on' => 'Pada',
 			'fileSources.advancedSetup' => 'Pendaftaran App',
 			'fileSources.microsoftSignIn' => 'Mendaftar dengan Microsoft',
@@ -8676,7 +8682,7 @@ extension on TranslationsMs {
 			'fileSources.importInterrupted' => 'Import dihentikan · menghapuskan untuk membersihkan',
 			'fileSources.errorQuotaExceeded' => 'Batas penyimpanan offline telah dicapai. menaikkan had atau menghapuskan salinan yang dimuat turun.',
 			'fileSources.errorStorageLow' => 'Tiada penyimpanan peranti percuma yang mencukupi untuk mengekalkan simpanan yang dilindungi.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG tidak boleh memeriksa penyimpanan peranti percuma, jadi penulisan dihentikan.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng tidak boleh memeriksa penyimpanan peranti percuma, jadi penulisan dihentikan.',
 			'fileSources.removeDownloadJob' => 'Menghapus download',
 			'fileSources.downloadAlreadyComplete' => 'Download ini selesai sebelum ia boleh dihapuskan. item kini tersedia offline.',
 			'fileSources.confirmRemoveDownloadJob' => 'Menghapuskan muat turun ini dan menyingkirkan sebarang data yang dimuat turun sebahagiannya? kedudukan dan nota anda akan kekal.',
@@ -8717,7 +8723,7 @@ extension on TranslationsMs {
 			'lending.openLibraryNote' => 'Terokai katalog Open Library. Pilihan membaca dan meminjam dipaparkan pada halaman setiap judul.',
 			'lending.more' => 'muat lebih banyak',
 			'lending.gateway' => 'Perpustakaan Perkhidmatan Sign-in',
-			'lending.gatewayHint' => 'disediakan oleh perpustakaan anda atau pentadbir PlezyNG.',
+			'lending.gatewayHint' => 'disediakan oleh perpustakaan anda atau pentadbir Pleazyng.',
 			'lending.advanced' => 'Integrasi Perpustakaan',
 			'lending.loadLibraries' => 'Pilih perpustakaan anda',
 			'lending.expired' => 'Pinjaman ini telah tamat tempoh.',
@@ -8839,7 +8845,7 @@ extension on TranslationsMs {
 			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API daripada opensubtitles.com. Carian menghantar tajuk video dan ID IMDb/TMDB yang tersedia, bukan fail video sama sekali. Kunci dan bukti kelayakan akaun pilihan disulitkan bersama sumber ini.',
 			'sourceSetup.automaticMetadata' => 'Metadata video dalam talian automatik',
 			'sourceSetup.metadataPrivacy' => 'Hanya menghantar tajuk/tahun daripada nama fail dan nombor episod atau ID NFO; tidak sekali-kali menghantar media atau bukti kelayakan. Medan NFO kekal sebagai rujukan utama.',
-			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. PlezyNG tidak akan mencuba semula sambungan ini tanpa penyulitan.',
+			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. Pleazyng tidak akan mencuba semula sambungan ini tanpa penyulitan.',
 			'sourceSetup.sourceConnecting' => 'Menyambung ke sumber',
 			'sourceSetup.metadataSearchPrivacy' => 'Carian tajuk ini dihantar ke Trakt. Carian menghantar tajuk yang anda masukkan, bukan video atau bukti kelayakan sumber.',
 			'sourceSetup.chooseMatch' => 'Pilih padanan',
@@ -8969,7 +8975,13 @@ extension on TranslationsMs {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Link Plezy ini tidak sah.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'Link Pleazyng ini tidak sah.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'Tiada profil yang sepadan dengan "${profile}".',
 			'deepLinks.serverUnavailable' => 'Saya tidak boleh mencapai pelayan untuk pautan ini.',
 			'deepLinks.notFound' => 'Saya tidak boleh menemui tajuk ini di perpustakaan anda.',
@@ -9117,7 +9129,7 @@ extension on TranslationsMs {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

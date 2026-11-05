@@ -305,7 +305,7 @@ jobs:
         id: ffmpeg-source-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezyng-ffmpeg-source
+          path: ${{ runner.temp }}/pleazyng-ffmpeg-source
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Prepare verified Android FFmpeg source archive
@@ -314,16 +314,16 @@ jobs:
           PLEZY_EXECUTION_PROFILE: ${{ inputs.execution_profile }}
         run: |
           if [[ "$PLEZY_EXECUTION_PROFILE" == "hybrid" ]]; then
-            python3 scripts/prepare_android_ffmpeg_source.py --direct-egress "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+            python3 scripts/prepare_android_ffmpeg_source.py --direct-egress "$RUNNER_TEMP/pleazyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
           else
-            python3 scripts/prepare_android_ffmpeg_source.py "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+            python3 scripts/prepare_android_ffmpeg_source.py "$RUNNER_TEMP/pleazyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
           fi
 
       - name: Save Android FFmpeg source cache
         if: steps.ffmpeg-source-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezyng-ffmpeg-source
+          path: ${{ runner.temp }}/pleazyng-ffmpeg-source
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Setup Android SDK
@@ -1028,7 +1028,7 @@ jobs:
   windows-native-test:
     name: Windows native reliability (${{ matrix.arch }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-{1}-windows-native-test"]}}', github.run_id, strategy.job-index)) }}
     env:
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}
     permissions:
@@ -1365,7 +1365,7 @@ jobs:
         run: bash linux/packaging/bundle-libs.sh build/linux/x64/release/bundle
 
       - name: Copy wrapper script into the bundle
-        run: cp linux/packaging/plezy.sh build/linux/x64/release/bundle/plezy.sh
+        run: cp linux/packaging/pleazyng.sh build/linux/x64/release/bundle/plezy.sh
 
       # Derives what the resolved bundle still needs from the host and proves
       # every one of those libraries is declared. This is the check that would
@@ -1401,7 +1401,7 @@ jobs:
         run: |
           BUNDLE_DIR=build/linux/x64/release/bundle
           mkdir -p "$OUTPUT_DIR"
-          tar -czf "$OUTPUT_DIR/plezy-linux-x64.tar.gz" -C "$BUNDLE_DIR" .
+          tar -czf "$OUTPUT_DIR/pleazyng-linux-x64.tar.gz" -C "$BUNDLE_DIR" .
           echo "=== libmpv travelling in every artifact ==="
           ldd "$BUNDLE_DIR/lib/libmpv.so" | grep -iE 'wayland|libX11|vdpau' || echo '(none)'
         env:
@@ -1411,6 +1411,6 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: linux-packages-smoke
-          path: ${{ github.workspace }}/packages/plezy-linux-x64.*
+          path: ${{ github.workspace }}/packages/pleazyng-linux-x64.*
           if-no-files-found: error
           retention-days: 7

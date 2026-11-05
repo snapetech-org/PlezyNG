@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'mono_theme.dart';
 import 'mono_tokens.dart';
+import 'navigation_indicator_shape.dart';
 
 enum ThemeNavigation { adaptive, sidebar, bottom }
 
@@ -128,9 +129,51 @@ final class ThemePackage {
   ThemeData apply(ThemeData base) {
     final tokens = base.extension<MonoTokens>()!;
     final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd));
+    // Sparse text themes inherit unspecified sizes later in Flutter. Scale
+    // only declared sizes so a package does not assert on those inherited styles.
+    TextStyle? scaled(TextStyle? style) {
+      if (style == null || style.fontSize == null) return style;
+      return style.apply(fontSizeFactor: textScale);
+    }
+
+    final text = base.textTheme;
     return base.copyWith(
-      textTheme: base.textTheme.apply(fontSizeFactor: textScale),
+      textTheme: text.copyWith(
+        displayLarge: scaled(text.displayLarge),
+        displayMedium: scaled(text.displayMedium),
+        displaySmall: scaled(text.displaySmall),
+        headlineLarge: scaled(text.headlineLarge),
+        headlineMedium: scaled(text.headlineMedium),
+        headlineSmall: scaled(text.headlineSmall),
+        titleLarge: scaled(text.titleLarge),
+        titleMedium: scaled(text.titleMedium),
+        titleSmall: scaled(text.titleSmall),
+        bodyLarge: scaled(text.bodyLarge),
+        bodyMedium: scaled(text.bodyMedium),
+        bodySmall: scaled(text.bodySmall),
+        labelLarge: scaled(text.labelLarge),
+        labelMedium: scaled(text.labelMedium),
+        labelSmall: scaled(text.labelSmall),
+      ),
       cardTheme: base.cardTheme.copyWith(shape: shape),
+      filledButtonTheme: FilledButtonThemeData(
+        style: base.filledButtonTheme.style?.copyWith(shape: WidgetStatePropertyAll(shape)),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: base.elevatedButtonTheme.style?.copyWith(shape: WidgetStatePropertyAll(shape)),
+      ),
+      navigationBarTheme: base.navigationBarTheme.copyWith(
+        indicatorShape: NavigationIndicatorShape(
+          markerColor: palette.accent,
+          borderRadius: BorderRadius.circular(radiusMd),
+        ),
+      ),
+      navigationRailTheme: base.navigationRailTheme.copyWith(
+        indicatorShape: NavigationIndicatorShape(
+          markerColor: palette.accent,
+          borderRadius: BorderRadius.circular(radiusMd),
+        ),
+      ),
       dialogTheme: base.dialogTheme.copyWith(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusLg)),
       ),

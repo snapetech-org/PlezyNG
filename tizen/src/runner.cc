@@ -4,7 +4,7 @@
 
 // Standard flutter-tizen native embedding. Every Tizen plugin used by this
 // target has a C++ or Dart implementation, so no .NET runtime is required.
-class PlezyNGApp : public FlutterApp {
+class PleazyngApp : public FlutterApp {
  public:
   bool OnCreate() override {
     if (FlutterApp::OnCreate()) {
@@ -15,6 +15,6 @@ class PlezyNGApp : public FlutterApp {
 };
 
 int main(int argc, char* argv[]) {
-  PlezyNGApp app;
+  PleazyngApp app;
   return app.Run(argc, argv);
 }

@@ -80,7 +80,7 @@ void main() {
 
         expect(captured.url.queryParameters['client_id'], clientId);
         expect(captured.headers['simkl-api-key'], clientId);
-        expect(captured.url.queryParameters['app-name'], 'plezy');
+        expect(captured.url.queryParameters['app-name'], SimklConstants.appName);
         expect(captured.url.queryParameters['app-version'], appVersion);
         expect(captured.headers['user-agent'], '${SimklConstants.appName}/$appVersion');
         expect(captured.headers['authorization'], 'Bearer ${session.accessToken}');

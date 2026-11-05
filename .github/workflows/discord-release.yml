@@ -56,7 +56,7 @@ jobs:
           DISCORD_RELEASE_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
-          RELEASE_JSON_PATH: ${{ runner.temp }}/plezyng-release.json
+          RELEASE_JSON_PATH: ${{ runner.temp }}/pleazyng-release.json
           DISCORD_RECEIPT_PATH: ${{ runner.temp }}/discord-announcement-receipt.json
         run: |
           gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RELEASE_JSON_PATH"

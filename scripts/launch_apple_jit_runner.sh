@@ -3,7 +3,7 @@ set -euo pipefail
 
 readonly ORG="snapetech-org"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly REPO="PlezyNG"
+readonly REPO="Pleazyng"
 readonly RUNNER_GROUP_ID="${APPLE_JIT_RUNNER_GROUP_ID:-8}"
 readonly SSH_TARGET="${APPLE_JIT_SSH_TARGET:-keith@100.64.0.3}"
 readonly SERVICE_USER="gha-jit-macos"
@@ -15,7 +15,7 @@ readonly REMOTE_PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/
 
 usage() {
   echo "Usage: $0 <workflow-run-id> <queued-apple-job-id>" >&2
-  echo "Starts exactly one queued PlezyNG Apple JIT job and stays attached until it exits." >&2
+  echo "Starts exactly one queued Pleazyng Apple JIT job and stays attached until it exits." >&2
   exit 2
 }
 
@@ -36,7 +36,7 @@ run_attempt="$(jq -er '.run_attempt | select(type == "number")' <<<"$run_json")"
 if [[ "$(jq -r '.event' <<<"$run_json")" != workflow_dispatch \
   || "$(jq -r '.head_branch' <<<"$run_json")" != main \
   || "$(jq -r '.head_repository.full_name' <<<"$run_json")" != "$ORG/$REPO" ]]; then
-  echo "Only trusted-main PlezyNG workflow_dispatch runs may use the private Apple lane." >&2
+  echo "Only trusted-main Pleazyng workflow_dispatch runs may use the private Apple lane." >&2
   exit 1
 fi
 run_root="$RUNS_ROOT/$run_id-$job_id-attempt$run_attempt"

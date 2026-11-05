@@ -10,7 +10,7 @@ class HardcoverAccountSession {
 }
 
 /// Stores the provider token in the source repository's encrypted,
-/// profile-scoped preference table. Deleting the PlezyNG profile removes it
+/// profile-scoped preference table. Deleting the Pleazyng profile removes it
 /// through the existing repository lifecycle.
 class HardcoverAccountStore {
   static const accountPreferenceKey = 'hardcover-account-v1';

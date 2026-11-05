@@ -133,8 +133,8 @@ class Translations$app$en {
 
 	// Translations
 
-	/// en: 'PlezyNG'
-	String get title => 'PlezyNG';
+	/// en: 'Pleazyng'
+	String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -157,17 +157,17 @@ class Translations$appIcon$en {
 	/// en: 'Lifetime access required'
 	String get locked => 'Lifetime access required';
 
-	/// en: 'Start your 7-day trial or unlock PlezyNG for life to use alternate icons.'
-	String get lockedHint => 'Start your 7-day trial or unlock PlezyNG for life to use alternate icons.';
+	/// en: 'Start your 7-day trial or unlock Pleazyng for life to use alternate icons.'
+	String get lockedHint => 'Start your 7-day trial or unlock Pleazyng for life to use alternate icons.';
 
 	/// en: 'Couldn't change the app icon'
 	String get changeFailed => 'Couldn\'t change the app icon';
 
-	/// en: 'The new icon appears on your home screen once you leave PlezyNG.'
-	String get launcherHint => 'The new icon appears on your home screen once you leave PlezyNG.';
+	/// en: 'The new icon appears on your home screen once you leave Pleazyng.'
+	String get launcherHint => 'The new icon appears on your home screen once you leave Pleazyng.';
 
-	/// en: 'The new banner appears once you leave PlezyNG. Android TV can keep showing the old one until the TV restarts.'
-	String get tvLauncherHint => 'The new banner appears once you leave PlezyNG. Android TV can keep showing the old one until the TV restarts.';
+	/// en: 'The new banner appears once you leave Pleazyng. Android TV can keep showing the old one until the TV restarts.'
+	String get tvLauncherHint => 'The new banner appears once you leave Pleazyng. Android TV can keep showing the old one until the TV restarts.';
 
 	late final Translations$appIcon$names$en names = Translations$appIcon$names$en.internal(_root);
 
@@ -228,8 +228,8 @@ class Translations$auth$en {
 	/// en: 'Quick Connect expired. Try again.'
 	String get quickConnectExpired => 'Quick Connect expired. Try again.';
 
-	/// en: 'PlezyNG could not safely recover local sign-in and pending playback data. Please sign in again.'
-	String get localDataRecoveryRequired => 'PlezyNG could not safely recover local sign-in and pending playback data. Please sign in again.';
+	/// en: 'Pleazyng could not safely recover local sign-in and pending playback data. Please sign in again.'
+	String get localDataRecoveryRequired => 'Pleazyng could not safely recover local sign-in and pending playback data. Please sign in again.';
 
 	/// en: 'The Plex PIN check was rejected'
 	String get pinCheckRejected => 'The Plex PIN check was rejected';
@@ -550,14 +550,14 @@ class Translations$settings$en {
 	/// en: 'Settings'
 	String get title => 'Settings';
 
-	/// en: 'Support PlezyNG'
-	String get supportDeveloper => 'Support PlezyNG';
+	/// en: 'Support Pleazyng'
+	String get supportDeveloper => 'Support Pleazyng';
 
 	/// en: 'Donate to support development'
 	String get supportDeveloperDescription => 'Donate to support development';
 
-	/// en: 'PlezyNG lifetime access'
-	String get lifetimeAccess => 'PlezyNG lifetime access';
+	/// en: 'Pleazyng lifetime access'
+	String get lifetimeAccess => 'Pleazyng lifetime access';
 
 	/// en: 'Language'
 	String get language => 'Language';
@@ -724,8 +724,8 @@ class Translations$settings$en {
 	/// en: 'New episode notifications'
 	String get newEpisodeNotifications => 'New episode notifications';
 
-	/// en: 'Alert when a new episode is added to a show you are caught up on. Checks while Plezy is open.'
-	String get newEpisodeNotificationsDescription => 'Alert when a new episode is added to a show you are caught up on. Checks while Plezy is open.';
+	/// en: 'Alert when a new episode is added to a show you are caught up on. Checks while Pleazyng is open.'
+	String get newEpisodeNotificationsDescription => 'Alert when a new episode is added to a show you are caught up on. Checks while Pleazyng is open.';
 
 	/// en: 'Continue Watching row size'
 	String get continueWatchingRowSize => 'Continue Watching row size';
@@ -1105,8 +1105,8 @@ class Translations$settings$en {
 	/// en: 'Settings imported'
 	String get importSettingsSuccess => 'Settings imported';
 
-	/// en: 'This file isn't a valid PlezyNG settings export'
-	String get importSettingsInvalidFile => 'This file isn\'t a valid PlezyNG settings export';
+	/// en: 'This file isn't a valid Pleazyng settings export'
+	String get importSettingsInvalidFile => 'This file isn\'t a valid Pleazyng settings export';
 
 	/// en: 'Sign in before importing settings'
 	String get importSettingsNoUser => 'Sign in before importing settings';
@@ -1510,8 +1510,8 @@ class Translations$settings$en {
 	/// en: 'Neural unavailable'
 	String get neuralInterpolationUnavailable => 'Neural unavailable';
 
-	/// en: 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.'
-	String get neuralInterpolationUnavailableDescription => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.';
+	/// en: 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Pleazyng Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.'
+	String get neuralInterpolationUnavailableDescription => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Pleazyng Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.';
 
 	/// en: 'Performance'
 	String get neuralInterpolationPresetPerformance => 'Performance';
@@ -1723,8 +1723,8 @@ class Translations$settings$en {
 	/// en: 'Start in fullscreen'
 	String get startInFullscreen => 'Start in fullscreen';
 
-	/// en: 'Open PlezyNG in fullscreen mode at launch'
-	String get startInFullscreenDescription => 'Open PlezyNG in fullscreen mode at launch';
+	/// en: 'Open Pleazyng in fullscreen mode at launch'
+	String get startInFullscreenDescription => 'Open Pleazyng in fullscreen mode at launch';
 
 	/// en: 'Exit fullscreen on player close'
 	String get exitFullscreenOnPlayerClose => 'Exit fullscreen on player close';
@@ -1891,8 +1891,8 @@ class Translations$settings$en {
 	/// en: 'Per show or movie'
 	String get playerScopeTitle => 'Per show or movie';
 
-	/// en: 'Export PlezyNG settings'
-	String get exportDialogTitle => 'Export PlezyNG settings';
+	/// en: 'Export Pleazyng settings'
+	String get exportDialogTitle => 'Export Pleazyng settings';
 
 	/// en: 'Follow system'
 	String get followSystem => 'Follow system';
@@ -1924,8 +1924,8 @@ class Translations$settings$en {
 	/// en: 'Let fullscreen video use the camera cutout on Android phones'
 	String get extendVideoIntoDisplayCutoutDescription => 'Let fullscreen video use the camera cutout on Android phones';
 
-	/// en: 'Choose the language used for PlezyNG controls and messages. Follow system tracks your device language.'
-	String get languageDescription => 'Choose the language used for PlezyNG controls and messages. Follow system tracks your device language.';
+	/// en: 'Choose the language used for Pleazyng controls and messages. Follow system tracks your device language.'
+	String get languageDescription => 'Choose the language used for Pleazyng controls and messages. Follow system tracks your device language.';
 
 	/// en: 'Choose the colors and contrast used throughout the app.'
 	String get themeDescription => 'Choose the colors and contrast used throughout the app.';
@@ -1990,8 +1990,8 @@ class Translations$settings$en {
 	/// en: 'Open the episode page before playback.'
 	String get episodeDetailsDescription => 'Open the episode page before playback.';
 
-	/// en: 'Choose how long PlezyNG waits without input before showing artwork.'
-	String get contentScreensaverDelayDescription => 'Choose how long PlezyNG waits without input before showing artwork.';
+	/// en: 'Choose how long Pleazyng waits without input before showing artwork.'
+	String get contentScreensaverDelayDescription => 'Choose how long Pleazyng waits without input before showing artwork.';
 
 	/// en: 'Choose how large the cards are in the Continue Watching row.'
 	String get continueWatchingRowSizeDescription => 'Choose how large the cards are in the Continue Watching row.';
@@ -2011,8 +2011,8 @@ class Translations$settings$en {
 	/// en: 'Use the full animation and artwork effects on every device.'
 	String get visualEffectsFullDescription => 'Use the full animation and artwork effects on every device.';
 
-	/// en: 'Choose which section opens when PlezyNG starts.'
-	String get startupSectionDescription => 'Choose which section opens when PlezyNG starts.';
+	/// en: 'Choose which section opens when Pleazyng starts.'
+	String get startupSectionDescription => 'Choose which section opens when Pleazyng starts.';
 
 	late final Translations$settings$startupSectionOptions$en startupSectionOptions = Translations$settings$startupSectionOptions$en.internal(_root);
 
@@ -2118,8 +2118,8 @@ class Translations$settings$en {
 	/// en: 'Maximum volume (%)'
 	String get maxVolumeInputLabel => 'Maximum volume (%)';
 
-	/// en: 'Check now whether a newer version of PlezyNG is available.'
-	String get checkForUpdatesDescription => 'Check now whether a newer version of PlezyNG is available.';
+	/// en: 'Check now whether a newer version of Pleazyng is available.'
+	String get checkForUpdatesDescription => 'Check now whether a newer version of Pleazyng is available.';
 
 	/// en: 'Choose the app theme and adjust library cards, Home rows, and navigation.'
 	String get appearanceDescription => 'Choose the app theme and adjust library cards, Home rows, and navigation.';
@@ -2793,11 +2793,11 @@ class Translations$mediaMenu$en {
 		other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episodes are stored in the same file and will be deleted too:',
 	);
 
-	/// en: 'PlezyNG could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.'
-	String get deleteScopeUnverifiedProbeFailed => 'PlezyNG could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.';
+	/// en: 'Pleazyng could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.'
+	String get deleteScopeUnverifiedProbeFailed => 'Pleazyng could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.';
 
-	/// en: 'Your server did not provide file details for this item, so PlezyNG cannot check which files this will remove. It may delete more than the item named above.'
-	String get deleteScopeUnverifiedNoFileInfo => 'Your server did not provide file details for this item, so PlezyNG cannot check which files this will remove. It may delete more than the item named above.';
+	/// en: 'Your server did not provide file details for this item, so Pleazyng cannot check which files this will remove. It may delete more than the item named above.'
+	String get deleteScopeUnverifiedNoFileInfo => 'Your server did not provide file details for this item, so Pleazyng cannot check which files this will remove. It may delete more than the item named above.';
 
 	/// en: 'Media item deleted successfully'
 	String get mediaDeletedSuccessfully => 'Media item deleted successfully';
@@ -2964,8 +2964,8 @@ class Translations$accessibility$en {
 	/// en: 'Text, contrast, motion and controls'
 	String get summary => 'Text, contrast, motion and controls';
 
-	/// en: 'Your device’s accessibility settings always apply. These options add adjustments throughout PlezyNG.'
-	String get systemHint => 'Your device’s accessibility settings always apply. These options add adjustments throughout PlezyNG.';
+	/// en: 'Your device’s accessibility settings always apply. These options add adjustments throughout Pleazyng.'
+	String get systemHint => 'Your device’s accessibility settings always apply. These options add adjustments throughout Pleazyng.';
 
 	/// en: 'Reading and visibility'
 	String get readability => 'Reading and visibility';
@@ -3003,8 +3003,8 @@ class Translations$accessibility$en {
 	/// en: 'Use Tab and Shift+Tab to move between controls, Enter or Space to activate, and Escape or Back to close. Reader zoom and reading preferences are available while a book is open.'
 	String get navigationHint => 'Use Tab and Shift+Tab to move between controls, Enter or Space to activate, and Escape or Back to close. Reader zoom and reading preferences are available while a book is open.';
 
-	/// en: 'Scale interface text in PlezyNG in addition to your device’s system text-size setting.'
-	String get textSizeDescription => 'Scale interface text in PlezyNG in addition to your device’s system text-size setting.';
+	/// en: 'Scale interface text in Pleazyng in addition to your device’s system text-size setting.'
+	String get textSizeDescription => 'Scale interface text in Pleazyng in addition to your device’s system text-size setting.';
 
 	/// en: 'Use a heavier weight for interface labels and messages to make them easier to distinguish.'
 	String get boldTextHint => 'Use a heavier weight for interface labels and messages to make them easier to distinguish.';
@@ -3837,8 +3837,8 @@ class Translations$profiles$en {
 
 	// Translations
 
-	/// en: 'Add PlezyNG profile'
-	String get addPlezyProfile => 'Add PlezyNG profile';
+	/// en: 'Add Pleazyng profile'
+	String get addPlezyProfile => 'Add Pleazyng profile';
 
 	/// en: 'Switching profile…'
 	String get switchingProfile => 'Switching profile…';
@@ -4092,8 +4092,8 @@ class Translations$connections$en {
 	/// en: 'Edit ${product} connection'
 	String editMediaBrowserTitle({required Object product}) => 'Edit ${product} connection';
 
-	/// en: 'Add or remove URLs for ${serverName}. PlezyNG will use the reachable URL with the lowest latency.'
-	String editMediaBrowserIntro({required Object serverName}) => 'Add or remove URLs for ${serverName}. PlezyNG will use the reachable URL with the lowest latency.';
+	/// en: 'Add or remove URLs for ${serverName}. Pleazyng will use the reachable URL with the lowest latency.'
+	String editMediaBrowserIntro({required Object serverName}) => 'Add or remove URLs for ${serverName}. Pleazyng will use the reachable URL with the lowest latency.';
 }
 
 // Path: iptv
@@ -4254,8 +4254,8 @@ class Translations$iptv$en {
 	/// en: 'Paste the M3U playlist URL. Add an XMLTV URL to show programme details in the guide.'
 	String get m3uHelp => 'Paste the M3U playlist URL. Add an XMLTV URL to show programme details in the guide.';
 
-	/// en: 'Enter the provider server URL and login. PlezyNG requests its M3U playlist and XMLTV guide.'
-	String get xtreamHelp => 'Enter the provider server URL and login. PlezyNG requests its M3U playlist and XMLTV guide.';
+	/// en: 'Enter the provider server URL and login. Pleazyng requests its M3U playlist and XMLTV guide.'
+	String get xtreamHelp => 'Enter the provider server URL and login. Pleazyng requests its M3U playlist and XMLTV guide.';
 
 	/// en: 'Use the playlist and XMLTV URLs shown by this service. The service remains optional.'
 	String get managedFeedHelp => 'Use the playlist and XMLTV URLs shown by this service. The service remains optional.';
@@ -4431,8 +4431,8 @@ class Translations$iptv$en {
 	/// en: 'Missed'
 	String get recordingMissed => 'Missed';
 
-	/// en: 'PlezyNG closed before recording started or finished.'
-	String get recordingAppClosed => 'PlezyNG closed before recording started or finished.';
+	/// en: 'Pleazyng closed before recording started or finished.'
+	String get recordingAppClosed => 'Pleazyng closed before recording started or finished.';
 
 	/// en: 'This provider uses an unsupported HLS encryption mode.'
 	String get recordingEncryptedHls => 'This provider uses an unsupported HLS encryption mode.';
@@ -4464,8 +4464,8 @@ class Translations$iptv$en {
 	/// en: 'Schedule local recording'
 	String get scheduleRecordingOnDevice => 'Schedule local recording';
 
-	/// en: 'Local recording scheduled. PlezyNG must be running when it starts.'
-	String get localRecordingScheduled => 'Local recording scheduled. PlezyNG must be running when it starts.';
+	/// en: 'Local recording scheduled. Pleazyng must be running when it starts.'
+	String get localRecordingScheduled => 'Local recording scheduled. Pleazyng must be running when it starts.';
 
 	/// en: 'This program is already scheduled for local recording.'
 	String get localRecordingAlreadyScheduled => 'This program is already scheduled for local recording.';
@@ -4548,8 +4548,8 @@ class Translations$accountPreferences$en {
 	/// en: 'Every account stores its own preferences. Pick the one to edit.'
 	String get pickAccount => 'Every account stores its own preferences. Pick the one to edit.';
 
-	/// en: 'These options are saved on the account itself, so every app signed in to it uses them — including PlezyNG on your other devices.'
-	String get storedOnAccount => 'These options are saved on the account itself, so every app signed in to it uses them — including PlezyNG on your other devices.';
+	/// en: 'These options are saved on the account itself, so every app signed in to it uses them — including Pleazyng on your other devices.'
+	String get storedOnAccount => 'These options are saved on the account itself, so every app signed in to it uses them — including Pleazyng on your other devices.';
 
 	/// en: 'No accounts to configure'
 	String get noAccounts => 'No accounts to configure';
@@ -5069,14 +5069,14 @@ class Translations$startup$en {
 
 	// Translations
 
-	/// en: 'PlezyNG could not start'
-	String get failedTitle => 'PlezyNG could not start';
+	/// en: 'Pleazyng could not start'
+	String get failedTitle => 'Pleazyng could not start';
 
 	/// en: 'Something went wrong during startup. The details below identify what failed.'
 	String get failedBody => 'Something went wrong during startup. The details below identify what failed.';
 
-	/// en: 'PlezyNG's saved settings file is damaged and has to be rebuilt before PlezyNG can start. Retrying will not help — choose Repair storage.'
-	String get failedBodyRepairable => 'PlezyNG\'s saved settings file is damaged and has to be rebuilt before PlezyNG can start. Retrying will not help — choose Repair storage.';
+	/// en: 'Pleazyng's saved settings file is damaged and has to be rebuilt before Pleazyng can start. Retrying will not help — choose Repair storage.'
+	String get failedBodyRepairable => 'Pleazyng\'s saved settings file is damaged and has to be rebuilt before Pleazyng can start. Retrying will not help — choose Repair storage.';
 
 	/// en: 'Step'
 	String get phaseLabel => 'Step';
@@ -5102,8 +5102,8 @@ class Translations$startup$en {
 	/// en: 'Repair stored data?'
 	String get repairTitle => 'Repair stored data?';
 
-	/// en: 'PlezyNG's settings file is damaged and cannot be read. Repairing resets every setting to its default.'
-	String get repairBodyCommon => 'PlezyNG\'s settings file is damaged and cannot be read. Repairing resets every setting to its default.';
+	/// en: 'Pleazyng's settings file is damaged and cannot be read. Repairing resets every setting to its default.'
+	String get repairBodyCommon => 'Pleazyng\'s settings file is damaged and cannot be read. Repairing resets every setting to its default.';
 
 	/// en: 'One saved sign-in is damaged and cannot be read. Repairing removes just that one; your other settings are left alone.'
 	String get repairBodyOneCredential => 'One saved sign-in is damaged and cannot be read. Repairing removes just that one; your other settings are left alone.';
@@ -5114,8 +5114,8 @@ class Translations$startup$en {
 	/// en: 'The key protecting your saved sign-ins cannot be recovered from this file, so you will have to sign in to every server and profile again. Nothing on your media server is affected.'
 	String get repairBodySignInsLost => 'The key protecting your saved sign-ins cannot be recovered from this file, so you will have to sign in to every server and profile again. Nothing on your media server is affected.';
 
-	/// en: 'Trackers (MAL, AniList, Simkl, Trakt) and Seerr are stored separately and may or may not survive. PlezyNG will tell you exactly what it kept.'
-	String get repairBodySessionsUncertain => 'Trackers (MAL, AniList, Simkl, Trakt) and Seerr are stored separately and may or may not survive. PlezyNG will tell you exactly what it kept.';
+	/// en: 'Trackers (MAL, AniList, Simkl, Trakt) and Seerr are stored separately and may or may not survive. Pleazyng will tell you exactly what it kept.'
+	String get repairBodySessionsUncertain => 'Trackers (MAL, AniList, Simkl, Trakt) and Seerr are stored separately and may or may not survive. Pleazyng will tell you exactly what it kept.';
 
 	/// en: 'Repair'
 	String get repairConfirm => 'Repair';
@@ -5126,11 +5126,11 @@ class Translations$startup$en {
 	/// en: 'Storage repaired — restart required'
 	String get repairNeedsRestart => 'Storage repaired — restart required';
 
-	/// en: 'Your data was repaired, but PlezyNG has to start fresh before it can use it. Close PlezyNG and open it again.'
-	String get restartRequiredBody => 'Your data was repaired, but PlezyNG has to start fresh before it can use it. Close PlezyNG and open it again.';
+	/// en: 'Your data was repaired, but Pleazyng has to start fresh before it can use it. Close Pleazyng and open it again.'
+	String get restartRequiredBody => 'Your data was repaired, but Pleazyng has to start fresh before it can use it. Close Pleazyng and open it again.';
 
-	/// en: 'Quit PlezyNG'
-	String get quitPlezy => 'Quit PlezyNG';
+	/// en: 'Quit Pleazyng'
+	String get quitPlezy => 'Quit Pleazyng';
 
 	/// en: 'Repair failed'
 	String get repairFailed => 'Repair failed';
@@ -5156,8 +5156,8 @@ class Translations$startup$en {
 	/// en: 'Copy deleted.'
 	String get backupDeleted => 'Copy deleted.';
 
-	/// en: 'PlezyNG failed to start last time'
-	String get previousFailureTitle => 'PlezyNG failed to start last time';
+	/// en: 'Pleazyng failed to start last time'
+	String get previousFailureTitle => 'Pleazyng failed to start last time';
 }
 
 // Path: licenses
@@ -5951,8 +5951,8 @@ class Translations$watchTogether$en {
 	/// en: 'Invite copied. Paste it into a message.'
 	String get inviteCopied => 'Invite copied. Paste it into a message.';
 
-	/// en: 'Join my Watch Together room in PlezyNG: open Watch Together, choose Join Room and enter ${code}.'
-	String inviteMessage({required Object code}) => 'Join my Watch Together room in PlezyNG: open Watch Together, choose Join Room and enter ${code}.';
+	/// en: 'Join my Watch Together room in Pleazyng: open Watch Together, choose Join Room and enter ${code}.'
+	String inviteMessage({required Object code}) => 'Join my Watch Together room in Pleazyng: open Watch Together, choose Join Room and enter ${code}.';
 
 	/// en: 'Open Watch Together session controls'
 	String get openSessionControls => 'Open Watch Together session controls';
@@ -6029,8 +6029,8 @@ class Translations$watchTogether$en {
 	/// en: 'You don't have this video'
 	String get unavailableTitle => 'You don\'t have this video';
 
-	/// en: 'PlezyNG couldn't find it in your libraries. Pick a copy yourself or search again.'
-	String get unavailableDescription => 'PlezyNG couldn\'t find it in your libraries. Pick a copy yourself or search again.';
+	/// en: 'Pleazyng couldn't find it in your libraries. Pick a copy yourself or search again.'
+	String get unavailableDescription => 'Pleazyng couldn\'t find it in your libraries. Pick a copy yourself or search again.';
 
 	/// en: 'Choose a Copy'
 	String get chooseCopy => 'Choose a Copy';
@@ -6435,8 +6435,8 @@ class Translations$downloads$en {
 	/// en: 'Review orphaned downloads'
 	String get orphanReviewTitle => 'Review orphaned downloads';
 
-	/// en: 'These tagged files are in PlezyNG's default app-managed download folders and have no matching download record or active task. Check the list before deleting them.'
-	String get orphanReviewDescription => 'These tagged files are in PlezyNG\'s default app-managed download folders and have no matching download record or active task. Check the list before deleting them.';
+	/// en: 'These tagged files are in Pleazyng's default app-managed download folders and have no matching download record or active task. Check the list before deleting them.'
+	String get orphanReviewDescription => 'These tagged files are in Pleazyng\'s default app-managed download folders and have no matching download record or active task. Check the list before deleting them.';
 
 	/// en: '${count} files · ${size}'
 	String orphanReviewCount({required Object count, required Object size}) => '${count} files · ${size}';
@@ -6447,8 +6447,8 @@ class Translations$downloads$en {
 	/// en: 'No orphaned download files found'
 	String get orphanCleanupNone => 'No orphaned download files found';
 
-	/// en: 'PlezyNG could not safely scan the managed downloads folder. No files were deleted.'
-	String get orphanCleanupFailed => 'PlezyNG could not safely scan the managed downloads folder. No files were deleted.';
+	/// en: 'Pleazyng could not safely scan the managed downloads folder. No files were deleted.'
+	String get orphanCleanupFailed => 'Pleazyng could not safely scan the managed downloads folder. No files were deleted.';
 
 	/// en: 'The download list changed during review. Review the files again before cleaning.'
 	String get orphanCleanupChanged => 'The download list changed during review. Review the files again before cleaning.';
@@ -7716,8 +7716,8 @@ class Translations$trakt$en {
 	/// en: 'Disconnect Trakt account?'
 	String get disconnectConfirm => 'Disconnect Trakt account?';
 
-	/// en: 'PlezyNG will stop sending events to Trakt. You can reconnect any time.'
-	String get disconnectConfirmBody => 'PlezyNG will stop sending events to Trakt. You can reconnect any time.';
+	/// en: 'Pleazyng will stop sending events to Trakt. You can reconnect any time.'
+	String get disconnectConfirmBody => 'Pleazyng will stop sending events to Trakt. You can reconnect any time.';
 
 	/// en: 'Real-time scrobbling'
 	String get scrobble => 'Real-time scrobbling';
@@ -7728,8 +7728,8 @@ class Translations$trakt$en {
 	/// en: 'Sync watched status'
 	String get watchedSync => 'Sync watched status';
 
-	/// en: 'When you mark items as watched in PlezyNG, they are also marked as watched on Trakt.'
-	String get watchedSyncDescription => 'When you mark items as watched in PlezyNG, they are also marked as watched on Trakt.';
+	/// en: 'When you mark items as watched in Pleazyng, they are also marked as watched on Trakt.'
+	String get watchedSyncDescription => 'When you mark items as watched in Pleazyng, they are also marked as watched on Trakt.';
 
 	/// en: 'Export to Letterboxd'
 	String get historyExport => 'Export to Letterboxd';
@@ -7809,8 +7809,8 @@ class Translations$seerr$en {
 	/// en: 'Email'
 	String get email => 'Email';
 
-	/// en: 'This Seerr instance offers no sign-in method PlezyNG supports.'
-	String get noSignInMethods => 'This Seerr instance offers no sign-in method PlezyNG supports.';
+	/// en: 'This Seerr instance offers no sign-in method Pleazyng supports.'
+	String get noSignInMethods => 'This Seerr instance offers no sign-in method Pleazyng supports.';
 
 	/// en: 'Instance'
 	String get instance => 'Instance';
@@ -7818,8 +7818,8 @@ class Translations$seerr$en {
 	/// en: 'Disconnect Seerr?'
 	String get disconnectConfirm => 'Disconnect Seerr?';
 
-	/// en: 'PlezyNG will forget this Seerr instance. Reconnect any time.'
-	String get disconnectConfirmBody => 'PlezyNG will forget this Seerr instance. Reconnect any time.';
+	/// en: 'Pleazyng will forget this Seerr instance. Reconnect any time.'
+	String get disconnectConfirmBody => 'Pleazyng will forget this Seerr instance. Reconnect any time.';
 
 	/// en: 'Request'
 	String get request => 'Request';
@@ -7893,8 +7893,8 @@ class Translations$seerr$en {
 	/// en: 'No Seerr instance at ${url} (HTTP ${status})'
 	String noInstanceAtUrl({required Object url, required Object status}) => 'No Seerr instance at ${url} (HTTP ${status})';
 
-	/// en: 'An authenticating reverse proxy (SSO or HTTP auth) answered instead of Seerr. PlezyNG cannot sign in through it: let Seerr's /api/v1 path bypass the proxy for this app, or use an address that reaches Seerr directly.'
-	String get behindAuthProxy => 'An authenticating reverse proxy (SSO or HTTP auth) answered instead of Seerr. PlezyNG cannot sign in through it: let Seerr\'s /api/v1 path bypass the proxy for this app, or use an address that reaches Seerr directly.';
+	/// en: 'An authenticating reverse proxy (SSO or HTTP auth) answered instead of Seerr. Pleazyng cannot sign in through it: let Seerr's /api/v1 path bypass the proxy for this app, or use an address that reaches Seerr directly.'
+	String get behindAuthProxy => 'An authenticating reverse proxy (SSO or HTTP auth) answered instead of Seerr. Pleazyng cannot sign in through it: let Seerr\'s /api/v1 path bypass the proxy for this app, or use an address that reaches Seerr directly.';
 
 	/// en: 'Enter a server address like https://seerr.example.com'
 	String get invalidUrl => 'Enter a server address like https://seerr.example.com';
@@ -7956,8 +7956,8 @@ class Translations$services$en {
 	/// en: 'Linked catalog titles'
 	String get linkedCatalogTitles => 'Linked catalog titles';
 
-	/// en: 'Optional plan note. This label is only for you; PlezyNG does not verify account access.'
-	String get planNote => 'Optional plan note. This label is only for you; PlezyNG does not verify account access.';
+	/// en: 'Optional plan note. This label is only for you; Pleazyng does not verify account access.'
+	String get planNote => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.';
 
 	/// en: 'Plan label'
 	String get planLabel => 'Plan label';
@@ -7965,8 +7965,8 @@ class Translations$services$en {
 	/// en: 'Set plan label'
 	String get setPlanLabel => 'Set plan label';
 
-	/// en: 'PlezyNG may earn a commission from some links.'
-	String get commissionDisclosure => 'PlezyNG may earn a commission from some links.';
+	/// en: 'Pleazyng may earn a commission from some links.'
+	String get commissionDisclosure => 'Pleazyng may earn a commission from some links.';
 
 	/// en: 'Not connected'
 	String get notConnected => 'Not connected';
@@ -7983,8 +7983,8 @@ class Translations$services$en {
 	/// en: 'Disconnect ${service}?'
 	String disconnectConfirm({required Object service}) => 'Disconnect ${service}?';
 
-	/// en: 'PlezyNG will stop updating ${service}. Reconnect any time.'
-	String disconnectConfirmBody({required Object service}) => 'PlezyNG will stop updating ${service}. Reconnect any time.';
+	/// en: 'Pleazyng will stop updating ${service}. Reconnect any time.'
+	String disconnectConfirmBody({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.';
 
 	/// en: 'Couldn't connect to ${service}. Try again.'
 	String connectFailed({required Object service}) => 'Couldn\'t connect to ${service}. Try again.';
@@ -8058,8 +8058,8 @@ class Translations$streaming$en {
 	/// en: 'Import from Stremio'
 	String get importFromStremio => 'Import from Stremio';
 
-	/// en: 'Scan the QR code or open the link, sign in on Stremio, then approve access. PlezyNG only reads your add-on list; it never asks for your password or changes your Stremio settings.'
-	String get stremioImportInstructions => 'Scan the QR code or open the link, sign in on Stremio, then approve access. PlezyNG only reads your add-on list; it never asks for your password or changes your Stremio settings.';
+	/// en: 'Scan the QR code or open the link, sign in on Stremio, then approve access. Pleazyng only reads your add-on list; it never asks for your password or changes your Stremio settings.'
+	String get stremioImportInstructions => 'Scan the QR code or open the link, sign in on Stremio, then approve access. Pleazyng only reads your add-on list; it never asks for your password or changes your Stremio settings.';
 
 	/// en: 'Open Stremio account link'
 	String get stremioImportOpen => 'Open Stremio account link';
@@ -8070,8 +8070,8 @@ class Translations$streaming$en {
 	/// en: 'Choose add-ons'
 	String get stremioImportPreviewTitle => 'Choose add-ons';
 
-	/// en: 'Select the add-ons to connect to PlezyNG. Only secure HTTPS add-ons are available in this import.'
-	String get stremioImportPreviewBody => 'Select the add-ons to connect to PlezyNG. Only secure HTTPS add-ons are available in this import.';
+	/// en: 'Select the add-ons to connect to Pleazyng. Only secure HTTPS add-ons are available in this import.'
+	String get stremioImportPreviewBody => 'Select the add-ons to connect to Pleazyng. Only secure HTTPS add-ons are available in this import.';
 
 	/// en: 'Skipped ${count} add-on(s) with an unsupported or unsecured address.'
 	String stremioImportIgnored({required Object count}) => 'Skipped ${count} add-on(s) with an unsupported or unsecured address.';
@@ -8112,8 +8112,8 @@ class Translations$streaming$en {
 	/// en: 'Add-on manifest URL'
 	String get manifestUrl => 'Add-on manifest URL';
 
-	/// en: 'Paste the add-on's manifest URL. PlezyNG checks for supported catalogs or stream resources before connecting.'
-	String get manifestUrlHint => 'Paste the add-on\'s manifest URL. PlezyNG checks for supported catalogs or stream resources before connecting.';
+	/// en: 'Paste the add-on's manifest URL. Pleazyng checks for supported catalogs or stream resources before connecting.'
+	String get manifestUrlHint => 'Paste the add-on\'s manifest URL. Pleazyng checks for supported catalogs or stream resources before connecting.';
 
 	/// en: 'Allow an unsecured HTTP address'
 	String get allowHttp => 'Allow an unsecured HTTP address';
@@ -8136,8 +8136,8 @@ class Translations$streaming$en {
 	/// en: 'No add-ons connected yet'
 	String get addonEmpty => 'No add-ons connected yet';
 
-	/// en: 'PlezyNG couldn't connect to that add-on. Check the manifest URL and try again.'
-	String get addonError => 'PlezyNG couldn\'t connect to that add-on. Check the manifest URL and try again.';
+	/// en: 'Pleazyng couldn't connect to that add-on. Check the manifest URL and try again.'
+	String get addonError => 'Pleazyng couldn\'t connect to that add-on. Check the manifest URL and try again.';
 
 	/// en: 'Install only add-ons you trust. An add-on can receive the title you ask it to search and can return third-party stream links.'
 	String get addonPrivacy => 'Install only add-ons you trust. An add-on can receive the title you ask it to search and can return third-party stream links.';
@@ -8154,8 +8154,8 @@ class Translations$streaming$en {
 	/// en: 'Connected as ${username}'
 	String realDebridConnected({required Object username}) => 'Connected as ${username}';
 
-	/// en: 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:'
-	String get realDebridInstructions => 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:';
+	/// en: 'Scan the QR code or open the address, then enter this activation code to connect Pleazyng:'
+	String get realDebridInstructions => 'Scan the QR code or open the address, then enter this activation code to connect Pleazyng:';
 
 	/// en: 'Open Real-Debrid to activate'
 	String get realDebridActivate => 'Open Real-Debrid to activate';
@@ -8175,8 +8175,8 @@ class Translations$streaming$en {
 	/// en: 'Connect with QR code'
 	String get connectAllDebrid => 'Connect with QR code';
 
-	/// en: 'Scan the QR code or open the address to approve PlezyNG. Keep this screen open while it connects:'
-	String get allDebridInstructions => 'Scan the QR code or open the address to approve PlezyNG. Keep this screen open while it connects:';
+	/// en: 'Scan the QR code or open the address to approve Pleazyng. Keep this screen open while it connects:'
+	String get allDebridInstructions => 'Scan the QR code or open the address to approve Pleazyng. Keep this screen open while it connects:';
 
 	/// en: 'Open AllDebrid to activate'
 	String get allDebridActivate => 'Open AllDebrid to activate';
@@ -8208,8 +8208,8 @@ class Translations$streaming$en {
 	/// en: 'API key'
 	String get apiKey => 'API key';
 
-	/// en: 'Paste the API key from your ${service} account settings. PlezyNG encrypts it on this device and keeps it private to this profile.'
-	String apiKeyHint({required Object service}) => 'Paste the API key from your ${service} account settings. PlezyNG encrypts it on this device and keeps it private to this profile.';
+	/// en: 'Paste the API key from your ${service} account settings. Pleazyng encrypts it on this device and keeps it private to this profile.'
+	String apiKeyHint({required Object service}) => 'Paste the API key from your ${service} account settings. Pleazyng encrypts it on this device and keeps it private to this profile.';
 
 	/// en: 'Couldn't verify that API key. Check it and try again.'
 	String get apiKeyConnectFailed => 'Couldn\'t verify that API key. Check it and try again.';
@@ -8226,8 +8226,8 @@ class Translations$streaming$en {
 	/// en: 'Disconnect ${service}?'
 	String disconnectConfirm({required Object service}) => 'Disconnect ${service}?';
 
-	/// en: 'PlezyNG will remove this device's authorization. Your provider files and transfers stay untouched.'
-	String get disconnectBody => 'PlezyNG will remove this device\'s authorization. Your provider files and transfers stay untouched.';
+	/// en: 'Pleazyng will remove this device's authorization. Your provider files and transfers stay untouched.'
+	String get disconnectBody => 'Pleazyng will remove this device\'s authorization. Your provider files and transfers stay untouched.';
 
 	/// en: 'Choose a stream'
 	String get streamsTitle => 'Choose a stream';
@@ -8274,8 +8274,8 @@ class Translations$streaming$en {
 	/// en: 'This episode is missing its season or episode number.'
 	String get remoteNeedsEpisodeNumber => 'This episode is missing its season or episode number.';
 
-	/// en: 'PlezyNG couldn't find an IMDb or TMDB ID for this title.'
-	String get remoteNeedsExternalId => 'PlezyNG couldn\'t find an IMDb or TMDB ID for this title.';
+	/// en: 'Pleazyng couldn't find an IMDb or TMDB ID for this title.'
+	String get remoteNeedsExternalId => 'Pleazyng couldn\'t find an IMDb or TMDB ID for this title.';
 
 	/// en: 'Watch with connected services'
 	String get watchWithServices => 'Watch with connected services';
@@ -8328,8 +8328,8 @@ class Translations$streaming$en {
 	/// en: 'Preparation continues when the app is closed. Your device decides when to run it.'
 	String get preparationBackground => 'Preparation continues when the app is closed. Your device decides when to run it.';
 
-	/// en: 'This device can resume preparation while PlezyNG is open.'
-	String get preparationForeground => 'This device can resume preparation while PlezyNG is open.';
+	/// en: 'This device can resume preparation while Pleazyng is open.'
+	String get preparationForeground => 'This device can resume preparation while Pleazyng is open.';
 
 	/// en: 'Preparation'
 	String get preparationQueue => 'Preparation';
@@ -8604,11 +8604,11 @@ class Translations$appAccess$en {
 	/// en: 'Try every feature free for 7 days'
 	String get title => 'Try every feature free for 7 days';
 
-	/// en: 'Start a seven-day trial with full access to every PlezyNG feature. There is no charge during the trial and no subscription. After the trial, one lifetime purchase at your store's price unlocks PlezyNG for life.'
-	String get description => 'Start a seven-day trial with full access to every PlezyNG feature. There is no charge during the trial and no subscription. After the trial, one lifetime purchase at your store\'s price unlocks PlezyNG for life.';
+	/// en: 'Start a seven-day trial with full access to every Pleazyng feature. There is no charge during the trial and no subscription. After the trial, one lifetime purchase at your store's price unlocks Pleazyng for life.'
+	String get description => 'Start a seven-day trial with full access to every Pleazyng feature. There is no charge during the trial and no subscription. After the trial, one lifetime purchase at your store\'s price unlocks Pleazyng for life.';
 
-	/// en: 'Unlock every feature in PlezyNG for life with one purchase at your store's price. There is no subscription.'
-	String get trialEndedDescription => 'Unlock every feature in PlezyNG for life with one purchase at your store\'s price. There is no subscription.';
+	/// en: 'Unlock every feature in Pleazyng for life with one purchase at your store's price. There is no subscription.'
+	String get trialEndedDescription => 'Unlock every feature in Pleazyng for life with one purchase at your store\'s price. There is no subscription.';
 
 	/// en: 'Start my 7-day free trial'
 	String get startTrial => 'Start my 7-day free trial';
@@ -8622,14 +8622,14 @@ class Translations$appAccess$en {
 	/// en: 'Couldn't save the trial on this device. Please try again.'
 	String get trialStartFailed => 'Couldn\'t save the trial on this device. Please try again.';
 
-	/// en: 'PlezyNG unlocked for life'
-	String get lifetimeTitle => 'PlezyNG unlocked for life';
+	/// en: 'Pleazyng unlocked for life'
+	String get lifetimeTitle => 'Pleazyng unlocked for life';
 
-	/// en: 'Thanks! You have lifetime access to every PlezyNG feature.'
-	String get lifetimeBody => 'Thanks! You have lifetime access to every PlezyNG feature.';
+	/// en: 'Thanks! You have lifetime access to every Pleazyng feature.'
+	String get lifetimeBody => 'Thanks! You have lifetime access to every Pleazyng feature.';
 
-	/// en: 'PlezyNG lifetime access'
-	String get manageTitle => 'PlezyNG lifetime access';
+	/// en: 'Pleazyng lifetime access'
+	String get manageTitle => 'Pleazyng lifetime access';
 
 	/// en: 'Try every feature free for 7 days, then unlock everything for life with one payment at your store's price.'
 	String get manageDescription => 'Try every feature free for 7 days, then unlock everything for life with one payment at your store\'s price.';
@@ -8652,8 +8652,8 @@ class Translations$appAccess$en {
 	/// en: 'Purchases aren't available. Check that you're signed in to the store and purchases are allowed on this device.'
 	String get storeUnavailable => 'Purchases aren\'t available. Check that you\'re signed in to the store and purchases are allowed on this device.';
 
-	/// en: 'The PlezyNG lifetime unlock isn't available in this store yet.'
-	String get productNotFound => 'The PlezyNG lifetime unlock isn\'t available in this store yet.';
+	/// en: 'The Pleazyng lifetime unlock isn't available in this store yet.'
+	String get productNotFound => 'The Pleazyng lifetime unlock isn\'t available in this store yet.';
 
 	/// en: 'Couldn't load the store price. Check your connection and try again.'
 	String get productQueryFailed => 'Couldn\'t load the store price. Check your connection and try again.';
@@ -8664,8 +8664,8 @@ class Translations$appAccess$en {
 	/// en: 'Couldn't reach the store to restore your purchase. Try again.'
 	String get restoreFailed => 'Couldn\'t reach the store to restore your purchase. Try again.';
 
-	/// en: 'No PlezyNG lifetime purchase was found for this store account.'
-	String get nothingToRestore => 'No PlezyNG lifetime purchase was found for this store account.';
+	/// en: 'No Pleazyng lifetime purchase was found for this store account.'
+	String get nothingToRestore => 'No Pleazyng lifetime purchase was found for this store account.';
 }
 
 // Path: detail
@@ -8733,11 +8733,11 @@ class Translations$homeLayout$en {
 	/// en: 'Home layout'
 	String get title => 'Home layout';
 
-	/// en: 'Home reset to the original Plezy hero layout'
-	String get resetToast => 'Home reset to the original Plezy hero layout';
+	/// en: 'Home reset to the original Pleazyng hero layout'
+	String get resetToast => 'Home reset to the original Pleazyng hero layout';
 
-	/// en: 'Reset hero layout to stock Plezy?'
-	String get resetHeroTitle => 'Reset hero layout to stock Plezy?';
+	/// en: 'Reset hero layout to stock Pleazyng?'
+	String get resetHeroTitle => 'Reset hero layout to stock Pleazyng?';
 
 	/// en: 'Turns off every row's hero setting and brings back the single rotating banner at the top of Home, like before hero rows existed. Row order and which rows are shown are not affected.'
 	String get resetHeroBody => 'Turns off every row\'s hero setting and brings back the single rotating banner at the top of Home, like before hero rows existed. Row order and which rows are shown are not affected.';
@@ -8766,8 +8766,8 @@ class Translations$homeLayout$en {
 	/// en: 'Plex Home manager'
 	String get plexHomeManager => 'Plex Home manager';
 
-	/// en: 'Manage Plex rows in Plezy'
-	String get managePlexRows => 'Manage Plex rows in Plezy';
+	/// en: 'Manage Plex rows in Pleazyng'
+	String get managePlexRows => 'Manage Plex rows in Pleazyng';
 
 	/// en: 'Open to organize the Home-selected rows'
 	String get managePlexRowsDescription => 'Open to organize the Home-selected rows';
@@ -8976,8 +8976,8 @@ class Translations$homeLayout$en {
 	/// en: 'Edit Home row'
 	String get editHomeRow => 'Edit Home row';
 
-	/// en: 'Reset hero layout to stock Plezy'
-	String get resetHeroButton => 'Reset hero layout to stock Plezy';
+	/// en: 'Reset hero layout to stock Pleazyng'
+	String get resetHeroButton => 'Reset hero layout to stock Pleazyng';
 
 	/// en: 'Reordering unlocked'
 	String get reorderingUnlocked => 'Reordering unlocked';
@@ -9036,11 +9036,11 @@ class Translations$platform$en {
 
 	// Translations
 
-	/// en: 'PlezyNG connects to your media servers and playback devices on your local network.'
-	String get localNetworkPermission => 'PlezyNG connects to your media servers and playback devices on your local network.';
+	/// en: 'Pleazyng connects to your media servers and playback devices on your local network.'
+	String get localNetworkPermission => 'Pleazyng connects to your media servers and playback devices on your local network.';
 
-	/// en: 'PlezyNG uses location access when iOS requires it to detect your local network and connect to your media servers.'
-	String get locationPermission => 'PlezyNG uses location access when iOS requires it to detect your local network and connect to your media servers.';
+	/// en: 'Pleazyng uses location access when iOS requires it to detect your local network and connect to your media servers.'
+	String get locationPermission => 'Pleazyng uses location access when iOS requires it to detect your local network and connect to your media servers.';
 
 	/// en: 'Choose images from your photo library to use as media artwork.'
 	String get photoLibraryPermission => 'Choose images from your photo library to use as media artwork.';
@@ -9063,8 +9063,8 @@ class Translations$universalMedia$en {
 	/// en: 'Play a link, playlist, or file for this session.'
 	String get shortcutHelp => 'Play a link, playlist, or file for this session.';
 
-	/// en: 'Open a link, playlist, or file. Playback uses PlezyNG’s standard player and does not add history to your library.'
-	String get intro => 'Open a link, playlist, or file. Playback uses PlezyNG’s standard player and does not add history to your library.';
+	/// en: 'Open a link, playlist, or file. Playback uses Pleazyng’s standard player and does not add history to your library.'
+	String get intro => 'Open a link, playlist, or file. Playback uses Pleazyng’s standard player and does not add history to your library.';
 
 	/// en: 'What would you like to open?'
 	String get openWhat => 'What would you like to open?';
@@ -9219,8 +9219,8 @@ class Translations$universalMedia$en {
 	/// en: 'Wi-Fi transfer'
 	String get wifiImportedFiles => 'Wi-Fi transfer';
 
-	/// en: 'Send files to PlezyNG'
-	String get wifiBrowserTitle => 'Send files to PlezyNG';
+	/// en: 'Send files to Pleazyng'
+	String get wifiBrowserTitle => 'Send files to Pleazyng';
 
 	/// en: 'Choose audio, video, ebook, or comic files to send. The files are saved in this device’s Files and books library. Maximum: 100 files, 4 GiB per file, 10 GiB total.'
 	String get wifiBrowserIntro => 'Choose audio, video, ebook, or comic files to send. The files are saved in this device’s Files and books library. Maximum: 100 files, 4 GiB per file, 10 GiB total.';
@@ -9237,8 +9237,8 @@ class Translations$universalMedia$en {
 	/// en: 'Sending'
 	String get uploading => 'Sending';
 
-	/// en: 'File added to PlezyNG.'
-	String get uploadComplete => 'File added to PlezyNG.';
+	/// en: 'File added to Pleazyng.'
+	String get uploadComplete => 'File added to Pleazyng.';
 
 	/// en: 'The file could not be added. Keep this page open and try again.'
 	String get uploadFailed => 'The file could not be added. Keep this page open and try again.';
@@ -9321,8 +9321,8 @@ class Translations$universalMedia$en {
 	/// en: 'Replace this recording?'
 	String get replaceRecordingTitle => 'Replace this recording?';
 
-	/// en: 'PlezyNG backs up the existing file while recording. If it cannot save the new recording, PlezyNG restores the backup.'
-	String get replaceRecordingHelp => 'PlezyNG backs up the existing file while recording. If it cannot save the new recording, PlezyNG restores the backup.';
+	/// en: 'Pleazyng backs up the existing file while recording. If it cannot save the new recording, Pleazyng restores the backup.'
+	String get replaceRecordingHelp => 'Pleazyng backs up the existing file while recording. If it cannot save the new recording, Pleazyng restores the backup.';
 
 	/// en: 'Replace file'
 	String get replaceRecording => 'Replace file';
@@ -9396,8 +9396,8 @@ class Translations$universalMedia$en {
 	/// en: 'Replace this file?'
 	String get converterReplaceTitle => 'Replace this file?';
 
-	/// en: 'PlezyNG backs up the existing file until the converted copy is saved.'
-	String get converterReplaceHelp => 'PlezyNG backs up the existing file until the converted copy is saved.';
+	/// en: 'Pleazyng backs up the existing file until the converted copy is saved.'
+	String get converterReplaceHelp => 'Pleazyng backs up the existing file until the converted copy is saved.';
 
 	/// en: 'Starting FFmpeg…'
 	String get converterStarting => 'Starting FFmpeg…';
@@ -9468,8 +9468,8 @@ class Translations$universalMedia$en {
 	/// en: 'Capture frame rate'
 	String get captureFrameRate => 'Capture frame rate';
 
-	/// en: 'The recording is saved only to the file you choose. Microphone capture is optional. PlezyNG does not upload the recording.'
-	String get capturePrivacy => 'The recording is saved only to the file you choose. Microphone capture is optional. PlezyNG does not upload the recording.';
+	/// en: 'The recording is saved only to the file you choose. Microphone capture is optional. Pleazyng does not upload the recording.'
+	String get capturePrivacy => 'The recording is saved only to the file you choose. Microphone capture is optional. Pleazyng does not upload the recording.';
 
 	/// en: 'Save screen recording as'
 	String get captureSaveAs => 'Save screen recording as';
@@ -9510,8 +9510,8 @@ class Translations$universalMedia$en {
 	/// en: 'Share'
 	String get shareMode => 'Share';
 
-	/// en: 'Send a local media file to another device on your private network. PlezyNG creates a temporary HLS stream.'
-	String get shareIntro => 'Send a local media file to another device on your private network. PlezyNG creates a temporary HLS stream.';
+	/// en: 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.'
+	String get shareIntro => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.';
 
 	/// en: 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.'
 	String get sharePrivacy => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.';
@@ -9549,8 +9549,8 @@ class Translations$universalMedia$en {
 	/// en: 'Scan with a compatible player connected to the same private network.'
 	String get shareQrHelp => 'Scan with a compatible player connected to the same private network.';
 
-	/// en: 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.'
-	String get shareHttpHint => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.';
+	/// en: 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.'
+	String get shareHttpHint => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.';
 
 	/// en: 'Copy stream address'
 	String get shareCopyUrl => 'Copy stream address';
@@ -9624,8 +9624,8 @@ class Translations$universalMedia$en {
 	/// en: 'Remove this search service?'
 	String get extensionRemoveTitle => 'Remove this search service?';
 
-	/// en: 'This removes the service from this profile. PlezyNG does not contact its endpoint.'
-	String get extensionRemoveHelp => 'This removes the service from this profile. PlezyNG does not contact its endpoint.';
+	/// en: 'This removes the service from this profile. Pleazyng does not contact its endpoint.'
+	String get extensionRemoveHelp => 'This removes the service from this profile. Pleazyng does not contact its endpoint.';
 
 	/// en: 'Remove service'
 	String get extensionRemove => 'Remove service';
@@ -10065,8 +10065,8 @@ class Translations$fileSources$en {
 	/// en: 'Progress sync folder (optional)'
 	String get syncLocation => 'Progress sync folder (optional)';
 
-	/// en: 'A dedicated WebDAV folder for PlezyNG state. Uses conditional writes; media stays unchanged.'
-	String get syncLocationHint => 'A dedicated WebDAV folder for PlezyNG state. Uses conditional writes; media stays unchanged.';
+	/// en: 'A dedicated WebDAV folder for Pleazyng state. Uses conditional writes; media stays unchanged.'
+	String get syncLocationHint => 'A dedicated WebDAV folder for Pleazyng state. Uses conditional writes; media stays unchanged.';
 
 	/// en: 'Audiobooks'
 	String get audiobooks => 'Audiobooks';
@@ -10080,8 +10080,8 @@ class Translations$fileSources$en {
 	/// en: 'Open reader'
 	String get browserReader => 'Open reader';
 
-	/// en: 'The reader is open in your browser. Keep PlezyNG open to save your place and notes.'
-	String get browserReaderHelp => 'The reader is open in your browser. Keep PlezyNG open to save your place and notes.';
+	/// en: 'The reader is open in your browser. Keep Pleazyng open to save your place and notes.'
+	String get browserReaderHelp => 'The reader is open in your browser. Keep Pleazyng open to save your place and notes.';
 
 	/// en: 'On'
 	String get on => 'On';
@@ -10203,8 +10203,8 @@ class Translations$fileSources$en {
 	/// en: 'There is not enough free device storage to keep the protected reserve.'
 	String get errorStorageLow => 'There is not enough free device storage to keep the protected reserve.';
 
-	/// en: 'PlezyNG could not check free device storage, so the write was stopped.'
-	String get errorStorageUnavailable => 'PlezyNG could not check free device storage, so the write was stopped.';
+	/// en: 'Pleazyng could not check free device storage, so the write was stopped.'
+	String get errorStorageUnavailable => 'Pleazyng could not check free device storage, so the write was stopped.';
 
 	/// en: 'Remove download'
 	String get removeDownloadJob => 'Remove download';
@@ -10335,8 +10335,8 @@ class Translations$lending$en {
 	/// en: 'Library sign-in service'
 	String get gateway => 'Library sign-in service';
 
-	/// en: 'Provided by your library or the PlezyNG administrator.'
-	String get gatewayHint => 'Provided by your library or the PlezyNG administrator.';
+	/// en: 'Provided by your library or the Pleazyng administrator.'
+	String get gatewayHint => 'Provided by your library or the Pleazyng administrator.';
 
 	/// en: 'Library integration'
 	String get advanced => 'Library integration';
@@ -10428,8 +10428,8 @@ class Translations$audiobook$en {
 	/// en: 'Last synced at $time'
 	String lastSynced({required Object time}) => 'Last synced at ${time}';
 
-	/// en: 'Cloud sync writes encrypted progress, completion, bookmark and note data to app-owned sync files. Playback media is never uploaded, replaced, renamed or deleted. Account tokens and passwords are not uploaded. Google Drive and OneDrive use app storage; Dropbox uses PlezyNG Sync; WebDAV and S3 use the chosen folder or prefix. Enabling sync may require provider write permission, but the app writes only those state files. Cloud sync and compatible server progress/bookmark sync run independently with separate retries. Conflicts are shown for you to resolve. Turning sync off keeps local history and remote state.'
-	String get syncPrivacy => 'Cloud sync writes encrypted progress, completion, bookmark and note data to app-owned sync files. Playback media is never uploaded, replaced, renamed or deleted. Account tokens and passwords are not uploaded. Google Drive and OneDrive use app storage; Dropbox uses PlezyNG Sync; WebDAV and S3 use the chosen folder or prefix. Enabling sync may require provider write permission, but the app writes only those state files. Cloud sync and compatible server progress/bookmark sync run independently with separate retries. Conflicts are shown for you to resolve. Turning sync off keeps local history and remote state.';
+	/// en: 'Cloud sync writes encrypted progress, completion, bookmark and note data to app-owned sync files. Playback media is never uploaded, replaced, renamed or deleted. Account tokens and passwords are not uploaded. Google Drive and OneDrive use app storage; Dropbox uses Pleazyng Sync; WebDAV and S3 use the chosen folder or prefix. Enabling sync may require provider write permission, but the app writes only those state files. Cloud sync and compatible server progress/bookmark sync run independently with separate retries. Conflicts are shown for you to resolve. Turning sync off keeps local history and remote state.'
+	String get syncPrivacy => 'Cloud sync writes encrypted progress, completion, bookmark and note data to app-owned sync files. Playback media is never uploaded, replaced, renamed or deleted. Account tokens and passwords are not uploaded. Google Drive and OneDrive use app storage; Dropbox uses Pleazyng Sync; WebDAV and S3 use the chosen folder or prefix. Enabling sync may require provider write permission, but the app writes only those state files. Cloud sync and compatible server progress/bookmark sync run independently with separate retries. Conflicts are shown for you to resolve. Turning sync off keeps local history and remote state.';
 
 	/// en: 'Choose where to resume'
 	String get syncConflicts => 'Choose where to resume';
@@ -10728,8 +10728,8 @@ class Translations$sourceSetup$en {
 	/// en: 'Sends only filename title/year and episode numbers or an NFO ID, never media or credentials. NFO fields stay authoritative.'
 	String get metadataPrivacy => 'Sends only filename title/year and episode numbers or an NFO ID, never media or credentials. NFO fields stay authoritative.';
 
-	/// en: 'For encrypted NFS, check RFC 9289 and TLS 1.3 support on both NAS services, the certificate name, and the export UID/GID. PlezyNG will not retry this connection without encryption.'
-	String get nfsEncryptionFailure => 'For encrypted NFS, check RFC 9289 and TLS 1.3 support on both NAS services, the certificate name, and the export UID/GID. PlezyNG will not retry this connection without encryption.';
+	/// en: 'For encrypted NFS, check RFC 9289 and TLS 1.3 support on both NAS services, the certificate name, and the export UID/GID. Pleazyng will not retry this connection without encryption.'
+	String get nfsEncryptionFailure => 'For encrypted NFS, check RFC 9289 and TLS 1.3 support on both NAS services, the certificate name, and the export UID/GID. Pleazyng will not retry this connection without encryption.';
 
 	/// en: 'Connecting to source'
 	String get sourceConnecting => 'Connecting to source';
@@ -11121,8 +11121,8 @@ class Translations$games$en {
 	/// en: 'Pyrowave · experimental'
 	String get steamBetaTitle => 'Pyrowave · experimental';
 
-	/// en: 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, PlezyNG reconnects using a compatible codec.'
-	String get steamBetaDescription => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, PlezyNG reconnects using a compatible codec.';
+	/// en: 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, Pleazyng reconnects using a compatible codec.'
+	String get steamBetaDescription => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, Pleazyng reconnects using a compatible codec.';
 
 	/// en: 'Steam library'
 	String get steamLibrary => 'Steam library';
@@ -11166,8 +11166,8 @@ class Translations$games$en {
 	/// en: 'Connect a computer'
 	String get connectComputer => 'Connect a computer';
 
-	/// en: 'Connect a gaming computer to play this game inside PlezyNG.'
-	String get connectToPlay => 'Connect a gaming computer to play this game inside PlezyNG.';
+	/// en: 'Connect a gaming computer to play this game inside Pleazyng.'
+	String get connectToPlay => 'Connect a gaming computer to play this game inside Pleazyng.';
 
 	/// en: 'From Steam'
 	String get steamSource => 'From Steam';
@@ -11232,8 +11232,8 @@ class Translations$games$en {
 	/// en: 'Game sessions'
 	String get remoteSessions => 'Game sessions';
 
-	/// en: 'Control streams inside PlezyNG on the connected device. This does not quit games on their computers or send gamepad input.'
-	String get remoteSessionsHelp => 'Control streams inside PlezyNG on the connected device. This does not quit games on their computers or send gamepad input.';
+	/// en: 'Control streams inside Pleazyng on the connected device. This does not quit games on their computers or send gamepad input.'
+	String get remoteSessionsHelp => 'Control streams inside Pleazyng on the connected device. This does not quit games on their computers or send gamepad input.';
 
 	/// en: 'Enable companion game session controls in Games settings on the connected device.'
 	String get remoteSessionsDenied => 'Enable companion game session controls in Games settings on the connected device.';
@@ -11502,8 +11502,8 @@ class Translations$games$en {
 	/// en: 'Steam audio'
 	String get streamAudio => 'Steam audio';
 
-	/// en: 'Request stereo, quad or 5.1 audio for new streams. Surround needs a compatible host and speaker output. If the channel layout or output is unsupported, PlezyNG retries in stereo. Stream details show the negotiated channel count.'
-	String get streamAudioHelp => 'Request stereo, quad or 5.1 audio for new streams. Surround needs a compatible host and speaker output. If the channel layout or output is unsupported, PlezyNG retries in stereo. Stream details show the negotiated channel count.';
+	/// en: 'Request stereo, quad or 5.1 audio for new streams. Surround needs a compatible host and speaker output. If the channel layout or output is unsupported, Pleazyng retries in stereo. Stream details show the negotiated channel count.'
+	String get streamAudioHelp => 'Request stereo, quad or 5.1 audio for new streams. Surround needs a compatible host and speaker output. If the channel layout or output is unsupported, Pleazyng retries in stereo. Stream details show the negotiated channel count.';
 
 	/// en: 'Stereo'
 	String get audioStereo => 'Stereo';
@@ -11529,11 +11529,11 @@ class Translations$games$en {
 	/// en: 'Steam Families'
 	String get steamFamilies => 'Steam Families';
 
-	/// en: 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.'
-	String get steamCloudHelp => 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.';
+	/// en: 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to Pleazyng. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.'
+	String get steamCloudHelp => 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to Pleazyng. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.';
 
-	/// en: 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Invitations, household eligibility, copy availability and parental controls are managed by Steam.'
-	String get steamFamiliesHelp => 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Invitations, household eligibility, copy availability and parental controls are managed by Steam.';
+	/// en: 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to Pleazyng. Invitations, household eligibility, copy availability and parental controls are managed by Steam.'
+	String get steamFamiliesHelp => 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to Pleazyng. Invitations, household eligibility, copy availability and parental controls are managed by Steam.';
 
 	/// en: 'Directional pad up'
 	String get touchDpadUp => 'Directional pad up';
@@ -11568,8 +11568,8 @@ class Translations$games$en {
 	/// en: 'Drag to move. Double-tap to press the stick.'
 	String get touchStickHint => 'Drag to move. Double-tap to press the stick.';
 
-	/// en: 'Connect to view and download this game’s Steam Cloud files. Access in PlezyNG is temporary and ends when you close this view.'
-	String get cloudAccessHelp => 'Connect to view and download this game’s Steam Cloud files. Access in PlezyNG is temporary and ends when you close this view.';
+	/// en: 'Connect to view and download this game’s Steam Cloud files. Access in Pleazyng is temporary and ends when you close this view.'
+	String get cloudAccessHelp => 'Connect to view and download this game’s Steam Cloud files. Access in Pleazyng is temporary and ends when you close this view.';
 
 	/// en: 'Allow Cloud changes'
 	String get cloudEnableChanges => 'Allow Cloud changes';
@@ -11616,11 +11616,11 @@ class Translations$games$en {
 	/// en: 'Authorize Steam Families'
 	String get familyAuthorize => 'Authorize Steam Families';
 
-	/// en: 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; PlezyNG uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.'
-	String get familyAuthorizeHelp => 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; PlezyNG uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.';
+	/// en: 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; Pleazyng uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.'
+	String get familyAuthorizeHelp => 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; Pleazyng uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.';
 
-	/// en: 'Scan this code with the Steam mobile app and approve only the PlezyNG request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.'
-	String get familyScanHelp => 'Scan this code with the Steam mobile app and approve only the PlezyNG request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.';
+	/// en: 'Scan this code with the Steam mobile app and approve only the Pleazyng request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.'
+	String get familyScanHelp => 'Scan this code with the Steam mobile app and approve only the Pleazyng request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.';
 
 	/// en: 'The session expired, Steam refused the request, or its outcome could not be verified. Refresh before reviewing another change. A submitted change is never retried automatically.'
 	String get familyRefreshRequired => 'The session expired, Steam refused the request, or its outcome could not be verified. Refresh before reviewing another change. A submitted change is never retried automatically.';
@@ -11703,8 +11703,8 @@ class Translations$games$en {
 	/// en: 'Controller layout'
 	String get controllerLayout => 'Controller layout';
 
-	/// en: 'Saved for this game and PlezyNG profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.'
-	String get controllerLayoutHelp => 'Saved for this game and PlezyNG profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.';
+	/// en: 'Saved for this game and Pleazyng profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.'
+	String get controllerLayoutHelp => 'Saved for this game and Pleazyng profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.';
 
 	/// en: 'Controller layout could not be applied. Open the layout to retry or reset it. Input stays paused if the receiver cannot confirm its layout.'
 	String get controllerLayoutFailed => 'Controller layout could not be applied. Open the layout to retry or reset it. Input stays paused if the receiver cannot confirm its layout.';
@@ -12009,8 +12009,8 @@ class Translations$games$en {
 	/// en: 'Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.'
 	String get browseComputersHelp => 'Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.';
 
-	/// en: 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.'
-	String get steamSessionSignIn => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.';
+	/// en: 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting Pleazyng.'
+	String get steamSessionSignIn => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting Pleazyng.';
 
 	/// en: 'Allow Steam Cloud settings changes'
 	String get allowCloudSettings => 'Allow Steam Cloud settings changes';
@@ -12035,6 +12035,69 @@ class Translations$games$en {
 
 	/// en: '${value1} · Vulkan'
 	String vulkan({required Object value1}) => '${value1} · Vulkan';
+
+	/// en: 'Nearby computers'
+	String get nearby => 'Nearby computers';
+
+	/// en: 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.'
+	String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+
+	/// en: 'No computers found on this network. You can enter an address manually.'
+	String get noNearby => 'No computers found on this network. You can enter an address manually.';
+
+	/// en: 'Looking for computers…'
+	String get scanning => 'Looking for computers…';
+
+	/// en: 'Steam could not refresh the library. Showing the last available catalog.'
+	String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+
+	/// en: 'Showing up to 2,000 games. The Steam catalog was truncated.'
+	String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
+
+	/// en: 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.'
+	String get lanInstallSubmitted => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.';
+
+	/// en: 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.'
+	String get cloudSettingsHelp => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.';
+
+	/// en: 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.'
+	String get computerSetupHint => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.';
+
+	/// en: 'Library status'
+	String get accountStatus => 'Library status';
+
+	/// en: 'Prefer this computer'
+	String get preferComputer => 'Prefer this computer';
+
+	/// en: 'Choose automatically'
+	String get automaticComputer => 'Choose automatically';
+
+	/// en: 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.'
+	String get steamAttribution => 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.';
+
+	/// en: 'Steam Cloud on computer'
+	String get cloudAccountSetting => 'Steam Cloud on computer';
+
+	/// en: 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.'
+	String get cloudBridgeUnavailable => 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.';
+
+	/// en: 'Enable Steam Cloud'
+	String get enableAccountCloud => 'Enable Steam Cloud';
+
+	/// en: 'Disable Steam Cloud'
+	String get disableAccountCloud => 'Disable Steam Cloud';
+
+	/// en: 'Change Steam Cloud for all games in the signed-in Steam account on $computer? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.'
+	String cloudAccountConfirm({required Object computer}) => 'Change Steam Cloud for all games in the signed-in Steam account on ${computer}? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.';
+
+	/// en: 'Steam confirmed the Cloud setting on this computer.'
+	String get cloudAccountObserved => 'Steam confirmed the Cloud setting on this computer.';
+
+	/// en: 'The setting changed since you reviewed it. Open it again to review the current state.'
+	String get cloudAccountStale => 'The setting changed since you reviewed it. Open it again to review the current state.';
+
+	/// en: 'The change could not be confirmed. It may have applied. Check Steam before trying again.'
+	String get cloudAccountUnknown => 'The change could not be confirmed. It may have applied. Check Steam before trying again.';
 }
 
 // Path: deepLinks
@@ -12045,8 +12108,8 @@ class Translations$deepLinks$en {
 
 	// Translations
 
-	/// en: 'This Plezy link isn't valid.'
-	String get invalid => 'This Plezy link isn\'t valid.';
+	/// en: 'This Pleazyng link isn't valid.'
+	String get invalid => 'This Pleazyng link isn\'t valid.';
 
 	/// en: 'No profile matches "${profile}".'
 	String profileNotFound({required Object profile}) => 'No profile matches "${profile}".';
@@ -13440,8 +13503,8 @@ class Translations$romm$en {
 	/// en: 'Open game link'
 	String get openLink => 'Open game link';
 
-	/// en: 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.'
-	String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	/// en: 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.'
+	String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 
 	/// en: 'This link identifies a different copy. Choose the intended game from your library.'
 	String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
@@ -13833,8 +13896,8 @@ class Translations$karaokeUi$en {
 	/// en: 'Preparation companion'
 	String get preparationCompanion => 'Preparation companion';
 
-	/// en: 'Run the PlezyNG karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.'
-	String get runThePlezyNGKaraokeCompanionOnYourComputerHTTPS => 'Run the PlezyNG karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.';
+	/// en: 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.'
+	String get runThePlezyNGKaraokeCompanionOnYourComputerHTTPS => 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.';
 
 	/// en: 'Companion URL'
 	String get companionURL => 'Companion URL';
@@ -16179,8 +16242,8 @@ class Translations$watchTogether$errors$en {
 	/// en: 'Too many attempts. Wait a moment and try again.'
 	String get rateLimited => 'Too many attempts. Wait a moment and try again.';
 
-	/// en: 'This version of PlezyNG can't use the relay. Update the app.'
-	String get clientBlocked => 'This version of PlezyNG can\'t use the relay. Update the app.';
+	/// en: 'This version of Pleazyng can't use the relay. Update the app.'
+	String get clientBlocked => 'This version of Pleazyng can\'t use the relay. Update the app.';
 
 	/// en: 'Only the host can do that.'
 	String get forbidden => 'Only the host can do that.';
@@ -16224,17 +16287,17 @@ class Translations$downloads$backgroundWarning$en {
 	/// en: 'Background downloads may be limited'
 	String get sheetTitleDegraded => 'Background downloads may be limited';
 
-	/// en: 'Android is preventing PlezyNG from downloading reliably in the background.'
-	String get sheetIntro => 'Android is preventing PlezyNG from downloading reliably in the background.';
+	/// en: 'Android is preventing Pleazyng from downloading reliably in the background.'
+	String get sheetIntro => 'Android is preventing Pleazyng from downloading reliably in the background.';
 
-	/// en: 'Your device is limiting when PlezyNG can download in the background.'
-	String get sheetIntroDegraded => 'Your device is limiting when PlezyNG can download in the background.';
+	/// en: 'Your device is limiting when Pleazyng can download in the background.'
+	String get sheetIntroDegraded => 'Your device is limiting when Pleazyng can download in the background.';
 
-	/// en: 'PlezyNG's background usage is restricted. Set its battery or background usage to "Unrestricted".'
-	String get reasonBackgroundRestricted => 'PlezyNG\'s background usage is restricted. Set its battery or background usage to "Unrestricted".';
+	/// en: 'Pleazyng's background usage is restricted. Set its battery or background usage to "Unrestricted".'
+	String get reasonBackgroundRestricted => 'Pleazyng\'s background usage is restricted. Set its battery or background usage to "Unrestricted".';
 
-	/// en: 'Android has put PlezyNG in a restricted standby state. Set its battery usage to "Unrestricted".'
-	String get reasonStandbyRestricted => 'Android has put PlezyNG in a restricted standby state. Set its battery usage to "Unrestricted".';
+	/// en: 'Android has put Pleazyng in a restricted standby state. Set its battery usage to "Unrestricted".'
+	String get reasonStandbyRestricted => 'Android has put Pleazyng in a restricted standby state. Set its battery usage to "Unrestricted".';
 
 	/// en: 'Download notifications are turned off, so progress and controls may be unavailable.'
 	String get reasonDownloadChannelBlocked => 'Download notifications are turned off, so progress and controls may be unavailable.';
@@ -16245,8 +16308,8 @@ class Translations$downloads$backgroundWarning$en {
 	/// en: 'Data Saver is on, which blocks background downloads on mobile data. Downloads should still run on Wi-Fi.'
 	String get reasonDataSaver => 'Data Saver is on, which blocks background downloads on mobile data. Downloads should still run on Wi-Fi.';
 
-	/// en: 'Downloads repeatedly stopped while PlezyNG was in the background. Check PlezyNG's battery or background usage settings.'
-	String get reasonOemUnknown => 'Downloads repeatedly stopped while PlezyNG was in the background. Check PlezyNG\'s battery or background usage settings.';
+	/// en: 'Downloads repeatedly stopped while Pleazyng was in the background. Check Pleazyng's battery or background usage settings.'
+	String get reasonOemUnknown => 'Downloads repeatedly stopped while Pleazyng was in the background. Check Pleazyng\'s battery or background usage settings.';
 
 	/// en: 'Open settings'
 	String get openSettings => 'Open settings';
@@ -16356,8 +16419,8 @@ class Translations$companionRemote$pairing$en {
 
 	// Translations
 
-	/// en: 'PlezyNG devices with the same Plex account appear here'
-	String get discoveryDescription => 'PlezyNG devices with the same Plex account appear here';
+	/// en: 'Pleazyng devices with the same Plex account appear here'
+	String get discoveryDescription => 'Pleazyng devices with the same Plex account appear here';
 
 	/// en: '192.168.1.100:48632'
 	String get hostAddressHint => '192.168.1.100:48632';
@@ -16371,8 +16434,8 @@ class Translations$companionRemote$pairing$en {
 	/// en: 'No devices found on your network'
 	String get noDevicesFound => 'No devices found on your network';
 
-	/// en: 'Open PlezyNG on desktop and use the same Wi-Fi'
-	String get noDevicesHint => 'Open PlezyNG on desktop and use the same Wi-Fi';
+	/// en: 'Open Pleazyng on desktop and use the same Wi-Fi'
+	String get noDevicesHint => 'Open Pleazyng on desktop and use the same Wi-Fi';
 
 	/// en: 'Available Devices'
 	String get availableDevices => 'Available Devices';
@@ -16392,8 +16455,8 @@ class Translations$companionRemote$pairing$en {
 	/// en: 'Connection timed out. Use the same network on both devices.'
 	String get connectionTimedOut => 'Connection timed out. Use the same network on both devices.';
 
-	/// en: 'Device not found. Make sure PlezyNG is running on the host.'
-	String get sessionNotFound => 'Device not found. Make sure PlezyNG is running on the host.';
+	/// en: 'Device not found. Make sure Pleazyng is running on the host.'
+	String get sessionNotFound => 'Device not found. Make sure Pleazyng is running on the host.';
 
 	/// en: 'Authentication failed. Both devices need the same Plex account.'
 	String get authFailed => 'Authentication failed. Both devices need the same Plex account.';
@@ -16581,8 +16644,8 @@ class Translations$services$simklReconnect$en {
 	/// en: 'Reconnect Simkl'
 	String get title => 'Reconnect Simkl';
 
-	/// en: 'Simkl is retiring the sign-in method this connection uses. Reconnecting opens simkl.com to approve PlezyNG — PlezyNG never sees your password. Your watch history stays on Simkl.'
-	String get subtitle => 'Simkl is retiring the sign-in method this connection uses. Reconnecting opens simkl.com to approve PlezyNG — PlezyNG never sees your password. Your watch history stays on Simkl.';
+	/// en: 'Simkl is retiring the sign-in method this connection uses. Reconnecting opens simkl.com to approve Pleazyng — Pleazyng never sees your password. Your watch history stays on Simkl.'
+	String get subtitle => 'Simkl is retiring the sign-in method this connection uses. Reconnecting opens simkl.com to approve Pleazyng — Pleazyng never sees your password. Your watch history stays on Simkl.';
 }
 
 // Path: services.deviceCode
@@ -16593,8 +16656,8 @@ class Translations$services$deviceCode$en {
 
 	// Translations
 
-	/// en: 'Activate PlezyNG on ${service}'
-	String title({required Object service}) => 'Activate PlezyNG on ${service}';
+	/// en: 'Activate Pleazyng on ${service}'
+	String title({required Object service}) => 'Activate Pleazyng on ${service}';
 
 	/// en: 'Scan the QR code, or visit the address below and enter this code:'
 	String get instructions => 'Scan the QR code, or visit the address below and enter this code:';
@@ -16725,15 +16788,15 @@ class Translations$services$trackerDescriptions$en {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'App icon',
 			'appIcon.defaultIcon' => 'Default',
 			'appIcon.current' => 'Current icon',
 			'appIcon.locked' => 'Lifetime access required',
-			'appIcon.lockedHint' => 'Start your 7-day trial or unlock PlezyNG for life to use alternate icons.',
+			'appIcon.lockedHint' => 'Start your 7-day trial or unlock Pleazyng for life to use alternate icons.',
 			'appIcon.changeFailed' => 'Couldn\'t change the app icon',
-			'appIcon.launcherHint' => 'The new icon appears on your home screen once you leave PlezyNG.',
-			'appIcon.tvLauncherHint' => 'The new banner appears once you leave PlezyNG. Android TV can keep showing the old one until the TV restarts.',
+			'appIcon.launcherHint' => 'The new icon appears on your home screen once you leave Pleazyng.',
+			'appIcon.tvLauncherHint' => 'The new banner appears once you leave Pleazyng. Android TV can keep showing the old one until the TV restarts.',
 			'appIcon.names.midnight' => 'Midnight',
 			'appIcon.names.ember' => 'Ember',
 			'appIcon.names.paper' => 'Paper',
@@ -16773,7 +16836,7 @@ extension on Translations {
 			'auth.quickConnectWaiting' => 'Waiting for approval…',
 			'auth.quickConnectCancel' => 'Cancel',
 			'auth.quickConnectExpired' => 'Quick Connect expired. Try again.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG could not safely recover local sign-in and pending playback data. Please sign in again.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng could not safely recover local sign-in and pending playback data. Please sign in again.',
 			'auth.pinCheckRejected' => 'The Plex PIN check was rejected',
 			'auth.connectToDirectPlex' => 'Connect to local Plex server',
 			'common.cancel' => 'Cancel',
@@ -16892,9 +16955,9 @@ extension on Translations {
 			'update.latestVersion' => 'You are on the latest version',
 			'update.checkFailed' => 'Failed to check for updates',
 			'settings.title' => 'Settings',
-			'settings.supportDeveloper' => 'Support PlezyNG',
+			'settings.supportDeveloper' => 'Support Pleazyng',
 			'settings.supportDeveloperDescription' => 'Donate to support development',
-			'settings.lifetimeAccess' => 'PlezyNG lifetime access',
+			'settings.lifetimeAccess' => 'Pleazyng lifetime access',
 			'settings.language' => 'Language',
 			'settings.theme' => 'Theme',
 			'settings.appearance' => 'Appearance',
@@ -16950,7 +17013,7 @@ extension on Translations {
 			'settings.contentScreensaverNoLibraries' => 'No connected media libraries are available.',
 			'settings.contentScreensaverDismissHint' => 'Press any button or tap to dismiss',
 			'settings.newEpisodeNotifications' => 'New episode notifications',
-			'settings.newEpisodeNotificationsDescription' => 'Alert when a new episode is added to a show you are caught up on. Checks while Plezy is open.',
+			'settings.newEpisodeNotificationsDescription' => 'Alert when a new episode is added to a show you are caught up on. Checks while Pleazyng is open.',
 			'settings.continueWatchingRowSize' => 'Continue Watching row size',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} cards',
 			'settings.rowSizeCompact' => 'Compact',
@@ -17075,7 +17138,7 @@ extension on Translations {
 			'settings.importSettingsDescription' => 'Restore preferences from a file',
 			'settings.importSettingsConfirm' => 'This will replace your current settings. Continue?',
 			'settings.importSettingsSuccess' => 'Settings imported',
-			'settings.importSettingsInvalidFile' => 'This file isn\'t a valid PlezyNG settings export',
+			'settings.importSettingsInvalidFile' => 'This file isn\'t a valid Pleazyng settings export',
 			'settings.importSettingsNoUser' => 'Sign in before importing settings',
 			'settings.cloudBackup' => 'Cloud Backup',
 			'settings.cloudBackupDescription' => 'Back up portable settings to a WebDAV endpoint over HTTPS. Server connections and credentials stay on this device.',
@@ -17210,7 +17273,7 @@ extension on Translations {
 			'settings.neuralInterpolation' => 'Neural interpolation',
 			'settings.neuralInterpolationPresets' => 'Presets',
 			'settings.neuralInterpolationUnavailable' => 'Neural unavailable',
-			'settings.neuralInterpolationUnavailableDescription' => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Plezy Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.',
+			'settings.neuralInterpolationUnavailableDescription' => 'Generate intermediate frames on the device. Apple uses VideoToolbox; Android tries Qualcomm HTP, then LiteRT NPU or GPU; Windows and Linux use the Pleazyng Motion Engine with a matching model and runtime. On Android and desktop, model packs download the first time Neural is selected and are verified before use; that playback uses the available MPV or normal playback path while they download. Playback diagnostics show the provider that actually ran. Choose Performance, Balanced, or Quality.',
 			'settings.neuralInterpolationPresetPerformance' => 'Performance',
 			'settings.neuralInterpolationPresetBalanced' => 'Balanced',
 			'settings.neuralInterpolationPresetQuality' => 'Quality',
@@ -17283,7 +17346,7 @@ extension on Translations {
 			'settings.forceTvMode' => 'Force TV mode',
 			'settings.forceTvModeDescription' => 'Force TV layout. For devices that don\'t auto-detect. Requires restart.',
 			'settings.startInFullscreen' => 'Start in fullscreen',
-			'settings.startInFullscreenDescription' => 'Open PlezyNG in fullscreen mode at launch',
+			'settings.startInFullscreenDescription' => 'Open Pleazyng in fullscreen mode at launch',
 			'settings.exitFullscreenOnPlayerClose' => 'Exit fullscreen on player close',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Automatically exit fullscreen when closing the video player',
 			'settings.autoHidePerformanceOverlay' => 'Auto-Hide Performance Overlay',
@@ -17339,7 +17402,7 @@ extension on Translations {
 			'settings.playerScopeGlobal' => 'Everywhere',
 			'settings.playerScopeLibrary' => 'Per library',
 			'settings.playerScopeTitle' => 'Per show or movie',
-			'settings.exportDialogTitle' => 'Export PlezyNG settings',
+			'settings.exportDialogTitle' => 'Export Pleazyng settings',
 			'settings.followSystem' => 'Follow system',
 			'settings.followAppLanguage' => 'Match interface language',
 			'settings.regionFormat' => 'Regional formats',
@@ -17350,7 +17413,7 @@ extension on Translations {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Open desktop video in fullscreen when playback starts',
 			'settings.extendVideoIntoDisplayCutout' => 'Extend video into display cutout',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Let fullscreen video use the camera cutout on Android phones',
-			'settings.languageDescription' => 'Choose the language used for PlezyNG controls and messages. Follow system tracks your device language.',
+			'settings.languageDescription' => 'Choose the language used for Pleazyng controls and messages. Follow system tracks your device language.',
 			'settings.themeDescription' => 'Choose the colors and contrast used throughout the app.',
 			'settings.libraryDensityDescription' => 'Change how many library cards fit in each row.',
 			'settings.displayScaleDescription' => 'Resize the interface on this car display without changing your device-wide text size.',
@@ -17372,14 +17435,14 @@ extension on Translations {
 			'settings.episodeActionDescription' => 'Choose what happens when you activate an episode card.',
 			'settings.episodePlayDescription' => 'Start the episode immediately.',
 			'settings.episodeDetailsDescription' => 'Open the episode page before playback.',
-			'settings.contentScreensaverDelayDescription' => 'Choose how long PlezyNG waits without input before showing artwork.',
+			'settings.contentScreensaverDelayDescription' => 'Choose how long Pleazyng waits without input before showing artwork.',
 			'settings.continueWatchingRowSizeDescription' => 'Choose how large the cards are in the Continue Watching row.',
 			'settings.rowSizeCompactDescription' => 'Show smaller cards so more items fit across the row.',
 			'settings.rowSizeStandardDescription' => 'Use the standard card size.',
 			'settings.rowSizeLargeDescription' => 'Show larger cards with more artwork detail.',
 			'settings.visualEffectsDescription' => 'Choose the animation and artwork effects budget for this device.',
 			'settings.visualEffectsFullDescription' => 'Use the full animation and artwork effects on every device.',
-			'settings.startupSectionDescription' => 'Choose which section opens when PlezyNG starts.',
+			'settings.startupSectionDescription' => 'Choose which section opens when Pleazyng starts.',
 			'settings.startupSectionOptions.discover' => 'Open recommendations and items from connected discovery sources.',
 			'settings.startupSectionOptions.libraries' => 'Open your connected media libraries.',
 			'settings.startupSectionOptions.liveTv' => 'Open Live TV when a server provides it; otherwise startup falls back to Home.',
@@ -17418,7 +17481,7 @@ extension on Translations {
 			'settings.musicQualityOriginalDescription' => 'Play the source audio without a bitrate-capped transcode.',
 			'settings.musicQualityTranscodeOptionDescription' => 'Request a server transcode capped near the bitrate shown above; the actual output can vary.',
 			'settings.maxVolumeInputLabel' => 'Maximum volume (%)',
-			'settings.checkForUpdatesDescription' => 'Check now whether a newer version of PlezyNG is available.',
+			'settings.checkForUpdatesDescription' => 'Check now whether a newer version of Pleazyng is available.',
 			'settings.appearanceDescription' => 'Choose the app theme and adjust library cards, Home rows, and navigation.',
 			'settings.prerollLibraryDescription' => 'Choose the library that contains the clips available as movie pre-rolls.',
 			'settings.prerollSelectionDescription' => 'Choose which clips from the selected library can play before movies.',
@@ -17666,8 +17729,8 @@ extension on Translations {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This deletes the ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode it contains and its file.', other: 'This deletes all ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes in it, and their files.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This item is stored as ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} file, which will be deleted.', other: 'This item is stored across ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} files, and all of them will be deleted.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episode is stored in the same file and will be deleted too:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episodes are stored in the same file and will be deleted too:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Your server did not provide file details for this item, so PlezyNG cannot check which files this will remove. It may delete more than the item named above.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Your server did not provide file details for this item, so Pleazyng cannot check which files this will remove. It may delete more than the item named above.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media item deleted successfully',
 			'mediaMenu.mediaFailedToDelete' => 'Failed to delete media item',
 			'mediaMenu.rate' => 'Rate',
@@ -17717,7 +17780,7 @@ extension on Translations {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'Accessibility',
 			'accessibility.summary' => 'Text, contrast, motion and controls',
-			'accessibility.systemHint' => 'Your device’s accessibility settings always apply. These options add adjustments throughout PlezyNG.',
+			'accessibility.systemHint' => 'Your device’s accessibility settings always apply. These options add adjustments throughout Pleazyng.',
 			'accessibility.readability' => 'Reading and visibility',
 			'accessibility.textSize' => 'Additional text size',
 			'accessibility.preview' => 'Find your next story. Read, listen and watch at your own pace.',
@@ -17730,7 +17793,7 @@ extension on Translations {
 			'accessibility.largeTargets' => 'Larger touch targets',
 			'accessibility.largeTargetsHint' => 'Give shared controls more room for touch and assistive navigation.',
 			'accessibility.navigationHint' => 'Use Tab and Shift+Tab to move between controls, Enter or Space to activate, and Escape or Back to close. Reader zoom and reading preferences are available while a book is open.',
-			'accessibility.textSizeDescription' => 'Scale interface text in PlezyNG in addition to your device’s system text-size setting.',
+			'accessibility.textSizeDescription' => 'Scale interface text in Pleazyng in addition to your device’s system text-size setting.',
 			'accessibility.boldTextHint' => 'Use a heavier weight for interface labels and messages to make them easier to distinguish.',
 			'tooltips.shufflePlay' => 'Shuffle play',
 			'tooltips.playTrailer' => 'Play trailer',
@@ -18001,7 +18064,7 @@ extension on Translations {
 			'mpvConfig.removeLine' => 'Remove line',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-context and gpu-api are ignored on Linux: embedded video always renders through vo=libmpv on the video plane, and gpu-next (which compute shaders like ArtCNN need) cannot run embedded.',
 			'dialog.confirmAction' => 'Confirm Action',
-			'profiles.addPlezyProfile' => 'Add PlezyNG profile',
+			'profiles.addPlezyProfile' => 'Add Pleazyng profile',
 			'profiles.switchingProfile' => 'Switching profile…',
 			'profiles.deleteThisProfileTitle' => 'Delete this profile?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Remove ${displayName}. Connections aren\'t affected.',
@@ -18083,7 +18146,7 @@ extension on Translations {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} servers refused access for this account',
 			'connections.signInAgain' => 'Sign in again',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Edit ${product} connection',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Add or remove URLs for ${serverName}. PlezyNG will use the reachable URL with the lowest latency.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Add or remove URLs for ${serverName}. Pleazyng will use the reachable URL with the lowest latency.',
 			'iptv.addSource' => 'Add IPTV source',
 			'iptv.addSourceDescription' => 'Add an M3U or Xtream feed, including Tunerr and Dispatcharr playlist outputs.',
 			'iptv.sourcesTitle' => 'IPTV sources',
@@ -18134,7 +18197,7 @@ extension on Translations {
 			'iptv.allowHttp' => 'Allow unencrypted HTTP',
 			'iptv.allowHttpDescription' => 'Use only for a trusted local network. HTTPS is preferred when available.',
 			'iptv.m3uHelp' => 'Paste the M3U playlist URL. Add an XMLTV URL to show programme details in the guide.',
-			'iptv.xtreamHelp' => 'Enter the provider server URL and login. PlezyNG requests its M3U playlist and XMLTV guide.',
+			'iptv.xtreamHelp' => 'Enter the provider server URL and login. Pleazyng requests its M3U playlist and XMLTV guide.',
 			'iptv.managedFeedHelp' => 'Use the playlist and XMLTV URLs shown by this service. The service remains optional.',
 			'iptv.playlistHeadersHelp' => 'Playlist User-Agent, referrer, and origin options are honored for playback. Other playlist commands and headers are ignored.',
 			'iptv.saveAndImport' => 'Save and load channels',
@@ -18193,7 +18256,7 @@ extension on Translations {
 			'iptv.recordingInProgressLocal' => 'Recording',
 			'iptv.recordingInterrupted' => 'Interrupted',
 			'iptv.recordingMissed' => 'Missed',
-			'iptv.recordingAppClosed' => 'PlezyNG closed before recording started or finished.',
+			'iptv.recordingAppClosed' => 'Pleazyng closed before recording started or finished.',
 			'iptv.recordingEncryptedHls' => 'This provider uses an unsupported HLS encryption mode.',
 			'iptv.recordingProviderAuthentication' => 'The provider rejected the recording connection.',
 			'iptv.recordingProviderPermission' => 'The provider denied access to this stream.',
@@ -18204,7 +18267,7 @@ extension on Translations {
 			'iptv.recordingDeleted' => 'Recording deleted.',
 			'iptv.recordingScheduled' => 'Recording scheduled on Dispatcharr.',
 			'iptv.scheduleRecordingOnDevice' => 'Schedule local recording',
-			'iptv.localRecordingScheduled' => 'Local recording scheduled. PlezyNG must be running when it starts.',
+			'iptv.localRecordingScheduled' => 'Local recording scheduled. Pleazyng must be running when it starts.',
 			'iptv.localRecordingAlreadyScheduled' => 'This program is already scheduled for local recording.',
 			'iptv.localRecordingSchedules' => 'Local recording schedule',
 			'iptv.scheduledOnThisDevice' => 'Scheduled on this device',
@@ -18229,7 +18292,7 @@ extension on Translations {
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Audio, subtitle and library options saved on ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Audio, subtitle and library options saved on ${count} accounts',
 			'accountPreferences.pickAccount' => 'Every account stores its own preferences. Pick the one to edit.',
-			'accountPreferences.storedOnAccount' => 'These options are saved on the account itself, so every app signed in to it uses them — including PlezyNG on your other devices.',
+			'accountPreferences.storedOnAccount' => 'These options are saved on the account itself, so every app signed in to it uses them — including Pleazyng on your other devices.',
 			'accountPreferences.noAccounts' => 'No accounts to configure',
 			'accountPreferences.noAccountsHint' => 'Sign in to Plex, or connect a Jellyfin or Emby server, and the preferences stored on that account show up here.',
 			'accountPreferences.unavailable' => 'Can\'t reach this account',
@@ -18619,9 +18682,9 @@ extension on Translations {
 			'logs.saveLogs' => 'Save Logs to File',
 			'logs.logsSaved' => ({required Object path}) => 'Logs saved to ${path}',
 			'logs.saveLogsFailed' => 'Could not save the log file.',
-			'startup.failedTitle' => 'PlezyNG could not start',
+			'startup.failedTitle' => 'Pleazyng could not start',
 			'startup.failedBody' => 'Something went wrong during startup. The details below identify what failed.',
-			'startup.failedBodyRepairable' => 'PlezyNG\'s saved settings file is damaged and has to be rebuilt before PlezyNG can start. Retrying will not help — choose Repair storage.',
+			'startup.failedBodyRepairable' => 'Pleazyng\'s saved settings file is damaged and has to be rebuilt before Pleazyng can start. Retrying will not help — choose Repair storage.',
 			'startup.phaseLabel' => 'Step',
 			'startup.showDetails' => 'Show details',
 			'startup.hideDetails' => 'Hide details',
@@ -18630,16 +18693,16 @@ extension on Translations {
 			'startup.uploadDetails' => 'Upload details',
 			'startup.repairStorage' => 'Repair storage',
 			'startup.repairTitle' => 'Repair stored data?',
-			'startup.repairBodyCommon' => 'PlezyNG\'s settings file is damaged and cannot be read. Repairing resets every setting to its default.',
+			'startup.repairBodyCommon' => 'Pleazyng\'s settings file is damaged and cannot be read. Repairing resets every setting to its default.',
 			'startup.repairBodyOneCredential' => 'One saved sign-in is damaged and cannot be read. Repairing removes just that one; your other settings are left alone.',
 			'startup.repairBodySignInsKept' => 'Your servers and profiles should stay signed in.',
 			'startup.repairBodySignInsLost' => 'The key protecting your saved sign-ins cannot be recovered from this file, so you will have to sign in to every server and profile again. Nothing on your media server is affected.',
-			'startup.repairBodySessionsUncertain' => 'Trackers (MAL, AniList, Simkl, Trakt) and Seerr are stored separately and may or may not survive. PlezyNG will tell you exactly what it kept.',
+			'startup.repairBodySessionsUncertain' => 'Trackers (MAL, AniList, Simkl, Trakt) and Seerr are stored separately and may or may not survive. Pleazyng will tell you exactly what it kept.',
 			'startup.repairConfirm' => 'Repair',
 			'startup.repairSucceeded' => 'Storage repaired',
 			'startup.repairNeedsRestart' => 'Storage repaired — restart required',
-			'startup.restartRequiredBody' => 'Your data was repaired, but PlezyNG has to start fresh before it can use it. Close PlezyNG and open it again.',
-			'startup.quitPlezy' => 'Quit PlezyNG',
+			'startup.restartRequiredBody' => 'Your data was repaired, but Pleazyng has to start fresh before it can use it. Close Pleazyng and open it again.',
+			'startup.quitPlezy' => 'Quit Pleazyng',
 			'startup.repairFailed' => 'Repair failed',
 			'startup.repairKeptSignIns' => 'Your servers and profiles are still signed in.',
 			'startup.repairLostSignIns' => 'The key protecting your saved sign-ins could not be recovered. You will have to sign in to every server and profile again.',
@@ -18648,7 +18711,7 @@ extension on Translations {
 			'startup.backupWarning' => 'It contains your sign-in credentials. Do not upload or share it.',
 			'startup.deleteBackup' => 'Delete copy',
 			'startup.backupDeleted' => 'Copy deleted.',
-			'startup.previousFailureTitle' => 'PlezyNG failed to start last time',
+			'startup.previousFailureTitle' => 'Pleazyng failed to start last time',
 			'licenses.relatedPackages' => 'Related Packages',
 			'licenses.license' => 'License',
 			'licenses.licenseNumber' => ({required Object number}) => 'License ${number}',
@@ -19028,7 +19091,7 @@ extension on Translations {
 			'watchTogether.codeCopied' => 'Room code copied',
 			'watchTogether.shareInvite' => 'Share Invite',
 			'watchTogether.inviteCopied' => 'Invite copied. Paste it into a message.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Join my Watch Together room in PlezyNG: open Watch Together, choose Join Room and enter ${code}.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Join my Watch Together room in Pleazyng: open Watch Together, choose Join Room and enter ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Together session controls',
 			'watchTogether.reconnecting' => 'Reconnecting...',
 			'watchTogether.reconnectingDescription' => 'The connection dropped. You rejoin the room automatically.',
@@ -19054,7 +19117,7 @@ extension on Translations {
 			'watchTogether.chooseAnotherCopy' => 'Choose Another Copy',
 			'watchTogether.dontPlay' => 'Don\'t Play',
 			'watchTogether.unavailableTitle' => 'You don\'t have this video',
-			'watchTogether.unavailableDescription' => 'PlezyNG couldn\'t find it in your libraries. Pick a copy yourself or search again.',
+			'watchTogether.unavailableDescription' => 'Pleazyng couldn\'t find it in your libraries. Pick a copy yourself or search again.',
 			'watchTogether.chooseCopy' => 'Choose a Copy',
 			'watchTogether.searchAgain' => 'Search Again',
 			'watchTogether.noCandidates' => 'No copies found in your libraries.',
@@ -19146,7 +19209,7 @@ extension on Translations {
 			'watchTogether.errors.relayFull' => 'Watch Together is busy right now. Try again later.',
 			'watchTogether.errors.unreachable' => 'Couldn\'t reach the Watch Together relay. Check your connection.',
 			'watchTogether.errors.rateLimited' => 'Too many attempts. Wait a moment and try again.',
-			'watchTogether.errors.clientBlocked' => 'This version of PlezyNG can\'t use the relay. Update the app.',
+			'watchTogether.errors.clientBlocked' => 'This version of Pleazyng can\'t use the relay. Update the app.',
 			'watchTogether.errors.forbidden' => 'Only the host can do that.',
 			'watchTogether.errors.notInRoom' => 'You\'re not in a room.',
 			'watchTogether.errors.alreadyInRoom' => 'You\'re already in a room.',
@@ -19228,11 +19291,11 @@ extension on Translations {
 			'downloads.activeSyncRules' => 'Sync rules',
 			'downloads.reviewOrphanFiles' => 'Review orphaned downloads',
 			'downloads.orphanReviewTitle' => 'Review orphaned downloads',
-			'downloads.orphanReviewDescription' => 'These tagged files are in PlezyNG\'s default app-managed download folders and have no matching download record or active task. Check the list before deleting them.',
+			'downloads.orphanReviewDescription' => 'These tagged files are in Pleazyng\'s default app-managed download folders and have no matching download record or active task. Check the list before deleting them.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} files · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => 'Delete ${count} files',
 			'downloads.orphanCleanupNone' => 'No orphaned download files found',
-			'downloads.orphanCleanupFailed' => 'PlezyNG could not safely scan the managed downloads folder. No files were deleted.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng could not safely scan the managed downloads folder. No files were deleted.',
 			'downloads.orphanCleanupChanged' => 'The download list changed during review. Review the files again before cleaning.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => 'Deleted ${count} orphaned files · ${size} freed',
 			'downloads.noSyncRules' => 'No sync rules',
@@ -19254,14 +19317,14 @@ extension on Translations {
 			'downloads.backgroundWarning.bannerAction' => 'Details',
 			'downloads.backgroundWarning.sheetTitle' => 'Background downloads are blocked',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Background downloads may be limited',
-			'downloads.backgroundWarning.sheetIntro' => 'Android is preventing PlezyNG from downloading reliably in the background.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Your device is limiting when PlezyNG can download in the background.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'PlezyNG\'s background usage is restricted. Set its battery or background usage to "Unrestricted".',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android has put PlezyNG in a restricted standby state. Set its battery usage to "Unrestricted".',
+			'downloads.backgroundWarning.sheetIntro' => 'Android is preventing Pleazyng from downloading reliably in the background.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Your device is limiting when Pleazyng can download in the background.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Pleazyng\'s background usage is restricted. Set its battery or background usage to "Unrestricted".',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android has put Pleazyng in a restricted standby state. Set its battery usage to "Unrestricted".',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Download notifications are turned off, so progress and controls may be unavailable.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Notifications are turned off. On Android 13 or newer, they are required for long background downloads.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Data Saver is on, which blocks background downloads on mobile data. Downloads should still run on Wi-Fi.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'Downloads repeatedly stopped while PlezyNG was in the background. Check PlezyNG\'s battery or background usage settings.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Downloads repeatedly stopped while Pleazyng was in the background. Check Pleazyng\'s battery or background usage settings.',
 			'downloads.backgroundWarning.openSettings' => 'Open settings',
 			'downloads.backgroundWarning.stillNotWorking' => 'Device-specific help',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'See steps for your device, or send a log from Settings › View Logs if the issue continues.',
@@ -19336,19 +19399,19 @@ extension on Translations {
 			'companionRemote.session.stopServer' => 'Stop Server',
 			'companionRemote.session.minimize' => 'Minimize',
 			'companionRemote.session.manualAddressHint' => 'Manual connection address:',
-			'companionRemote.pairing.discoveryDescription' => 'PlezyNG devices with the same Plex account appear here',
+			'companionRemote.pairing.discoveryDescription' => 'Pleazyng devices with the same Plex account appear here',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Connecting...',
 			'companionRemote.pairing.searchingForDevices' => 'Looking for devices...',
 			'companionRemote.pairing.noDevicesFound' => 'No devices found on your network',
-			'companionRemote.pairing.noDevicesHint' => 'Open PlezyNG on desktop and use the same Wi-Fi',
+			'companionRemote.pairing.noDevicesHint' => 'Open Pleazyng on desktop and use the same Wi-Fi',
 			'companionRemote.pairing.availableDevices' => 'Available Devices',
 			'companionRemote.pairing.manualConnection' => 'Manual Connection',
 			'companionRemote.pairing.cryptoInitFailed' => 'Couldn\'t start secure connection. Sign in to Plex first.',
 			'companionRemote.pairing.validationHostRequired' => 'Please enter host address',
 			'companionRemote.pairing.validationHostFormat' => 'Format must be IP:port (e.g., 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Connection timed out. Use the same network on both devices.',
-			'companionRemote.pairing.sessionNotFound' => 'Device not found. Make sure PlezyNG is running on the host.',
+			'companionRemote.pairing.sessionNotFound' => 'Device not found. Make sure Pleazyng is running on the host.',
 			'companionRemote.pairing.authFailed' => 'Authentication failed. Both devices need the same Plex account.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Failed to connect: ${error}',
 			'companionRemote.pairing.codeTitle' => 'Pairing code',
@@ -19720,11 +19783,11 @@ extension on Translations {
 			'trakt.connected' => 'Connected',
 			'trakt.connectedAs' => ({required Object username}) => 'Connected as @${username}',
 			'trakt.disconnectConfirm' => 'Disconnect Trakt account?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG will stop sending events to Trakt. You can reconnect any time.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng will stop sending events to Trakt. You can reconnect any time.',
 			'trakt.scrobble' => 'Real-time scrobbling',
 			'trakt.scrobbleDescription' => 'Send play, pause, and stop events to Trakt during playback.',
 			'trakt.watchedSync' => 'Sync watched status',
-			'trakt.watchedSyncDescription' => 'When you mark items as watched in PlezyNG, they are also marked as watched on Trakt.',
+			'trakt.watchedSyncDescription' => 'When you mark items as watched in Pleazyng, they are also marked as watched on Trakt.',
 			'trakt.historyExport' => 'Export to Letterboxd',
 			'trakt.historyExportDescription' => 'Create a local CSV from Trakt movie history. Nothing is uploaded.',
 			'trakt.historyExportLoading' => 'Loading Trakt movie history…',
@@ -19748,10 +19811,10 @@ extension on Translations {
 			'seerr.signInWithEmby' => 'Sign in with Emby',
 			'seerr.signInWithLocal' => 'Use a local account',
 			'seerr.email' => 'Email',
-			'seerr.noSignInMethods' => 'This Seerr instance offers no sign-in method PlezyNG supports.',
+			'seerr.noSignInMethods' => 'This Seerr instance offers no sign-in method Pleazyng supports.',
 			'seerr.instance' => 'Instance',
 			'seerr.disconnectConfirm' => 'Disconnect Seerr?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG will forget this Seerr instance. Reconnect any time.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng will forget this Seerr instance. Reconnect any time.',
 			'seerr.request' => 'Request',
 			'seerr.request4k' => 'Request in 4K',
 			'seerr.seasons' => 'Seasons',
@@ -19776,7 +19839,7 @@ extension on Translations {
 			'seerr.statusBlocklisted' => 'Blocklisted',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Could not reach ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'No Seerr instance at ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'An authenticating reverse proxy (SSO or HTTP auth) answered instead of Seerr. PlezyNG cannot sign in through it: let Seerr\'s /api/v1 path bypass the proxy for this app, or use an address that reaches Seerr directly.',
+			'seerr.behindAuthProxy' => 'An authenticating reverse proxy (SSO or HTTP auth) answered instead of Seerr. Pleazyng cannot sign in through it: let Seerr\'s /api/v1 path bypass the proxy for this app, or use an address that reaches Seerr directly.',
 			'seerr.invalidUrl' => 'Enter a server address like https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'This Seerr instance does not support Quick Connect. It needs Seerr 3.4 or newer.',
 			'seerr.notInitialized' => 'This Seerr instance has not completed first-run setup',
@@ -19794,16 +19857,16 @@ extension on Translations {
 			'services.integrations' => 'Integrations',
 			'services.hardcover' => 'Hardcover',
 			'services.linkedCatalogTitles' => 'Linked catalog titles',
-			'services.planNote' => 'Optional plan note. This label is only for you; PlezyNG does not verify account access.',
+			'services.planNote' => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.',
 			'services.planLabel' => 'Plan label',
 			'services.setPlanLabel' => 'Set plan label',
-			'services.commissionDisclosure' => 'PlezyNG may earn a commission from some links.',
+			'services.commissionDisclosure' => 'Pleazyng may earn a commission from some links.',
 			'services.notConnected' => 'Not connected',
 			'services.connectedAs' => ({required Object username}) => 'Connected as @${username}',
 			'services.scrobble' => 'Track progress automatically',
 			'services.scrobbleDescription' => 'Update your list when you finish an episode or movie.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG will stop updating ${service}. Reconnect any time.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.',
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -19813,8 +19876,8 @@ extension on Translations {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Reconnect Simkl',
-			'services.simklReconnect.subtitle' => 'Simkl is retiring the sign-in method this connection uses. Reconnecting opens simkl.com to approve PlezyNG — PlezyNG never sees your password. Your watch history stays on Simkl.',
-			'services.deviceCode.title' => ({required Object service}) => 'Activate PlezyNG on ${service}',
+			'services.simklReconnect.subtitle' => 'Simkl is retiring the sign-in method this connection uses. Reconnecting opens simkl.com to approve Pleazyng — Pleazyng never sees your password. Your watch history stays on Simkl.',
+			'services.deviceCode.title' => ({required Object service}) => 'Activate Pleazyng on ${service}',
 			'services.deviceCode.instructions' => 'Scan the QR code, or visit the address below and enter this code:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
 			'services.deviceCode.copyCode' => 'Copy activation code',
@@ -19860,11 +19923,11 @@ extension on Translations {
 			'streaming.catalogFiltersRequired' => 'Choose the required filters to browse this catalog.',
 			'streaming.catalogRequiredLabel' => 'Required',
 			'streaming.importFromStremio' => 'Import from Stremio',
-			'streaming.stremioImportInstructions' => 'Scan the QR code or open the link, sign in on Stremio, then approve access. PlezyNG only reads your add-on list; it never asks for your password or changes your Stremio settings.',
+			'streaming.stremioImportInstructions' => 'Scan the QR code or open the link, sign in on Stremio, then approve access. Pleazyng only reads your add-on list; it never asks for your password or changes your Stremio settings.',
 			'streaming.stremioImportOpen' => 'Open Stremio account link',
 			'streaming.stremioImportCode' => 'Link code',
 			'streaming.stremioImportPreviewTitle' => 'Choose add-ons',
-			'streaming.stremioImportPreviewBody' => 'Select the add-ons to connect to PlezyNG. Only secure HTTPS add-ons are available in this import.',
+			'streaming.stremioImportPreviewBody' => 'Select the add-ons to connect to Pleazyng. Only secure HTTPS add-ons are available in this import.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Skipped ${count} add-on(s) with an unsupported or unsecured address.',
 			'streaming.stremioCatalogs' => 'Catalogs',
 			'streaming.stremioStreams' => 'Streams',
@@ -19878,7 +19941,7 @@ extension on Translations {
 			'streaming.addByManifestUrl' => 'Add by manifest URL',
 			'streaming.addAddon' => 'Add add-on',
 			'streaming.manifestUrl' => 'Add-on manifest URL',
-			'streaming.manifestUrlHint' => 'Paste the add-on\'s manifest URL. PlezyNG checks for supported catalogs or stream resources before connecting.',
+			'streaming.manifestUrlHint' => 'Paste the add-on\'s manifest URL. Pleazyng checks for supported catalogs or stream resources before connecting.',
 			'streaming.allowHttp' => 'Allow an unsecured HTTP address',
 			'streaming.allowHttpDescription' => 'Use only for a trusted add-on on your private network.',
 			'streaming.installAddon' => 'Connect add-on',
@@ -19886,20 +19949,20 @@ extension on Translations {
 			'streaming.addonRemoved' => 'Add-on removed',
 			'streaming.addonToggle' => 'Enable add-on',
 			'streaming.addonEmpty' => 'No add-ons connected yet',
-			'streaming.addonError' => 'PlezyNG couldn\'t connect to that add-on. Check the manifest URL and try again.',
+			'streaming.addonError' => 'Pleazyng couldn\'t connect to that add-on. Check the manifest URL and try again.',
 			'streaming.addonPrivacy' => 'Install only add-ons you trust. An add-on can receive the title you ask it to search and can return third-party stream links.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Resolve torrent-backed streams through your Real-Debrid account.',
 			'streaming.connectRealDebrid' => 'Connect with QR code',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Connected as ${username}',
-			'streaming.realDebridInstructions' => 'Scan the QR code or open the address, then enter this activation code to connect PlezyNG:',
+			'streaming.realDebridInstructions' => 'Scan the QR code or open the address, then enter this activation code to connect Pleazyng:',
 			'streaming.realDebridActivate' => 'Open Real-Debrid to activate',
 			'streaming.realDebridCode' => 'Activation code',
 			'streaming.realDebridConnectFailed' => 'Couldn\'t connect to Real-Debrid. Try again.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'Resolve torrent-backed streams through your AllDebrid account.',
 			'streaming.connectAllDebrid' => 'Connect with QR code',
-			'streaming.allDebridInstructions' => 'Scan the QR code or open the address to approve PlezyNG. Keep this screen open while it connects:',
+			'streaming.allDebridInstructions' => 'Scan the QR code or open the address to approve Pleazyng. Keep this screen open while it connects:',
 			'streaming.allDebridActivate' => 'Open AllDebrid to activate',
 			'streaming.allDebridCode' => 'Activation PIN',
 			'streaming.allDebridConnectFailed' => 'Couldn\'t connect to AllDebrid. Try again.',
@@ -19910,13 +19973,13 @@ extension on Translations {
 			'streaming.connectApiKey' => 'Connect with API key',
 			'streaming.apiKeyTitle' => ({required Object service}) => 'Connect ${service}',
 			'streaming.apiKey' => 'API key',
-			'streaming.apiKeyHint' => ({required Object service}) => 'Paste the API key from your ${service} account settings. PlezyNG encrypts it on this device and keeps it private to this profile.',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Paste the API key from your ${service} account settings. Pleazyng encrypts it on this device and keeps it private to this profile.',
 			'streaming.apiKeyConnectFailed' => 'Couldn\'t verify that API key. Check it and try again.',
 			'streaming.accountConnected' => ({required Object username}) => 'Connected as ${username}',
 			'streaming.streamNeedsProvider' => 'Connect a debrid service to play this torrent stream.',
 			'streaming.playViaProvider' => 'Play via debrid',
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
-			'streaming.disconnectBody' => 'PlezyNG will remove this device\'s authorization. Your provider files and transfers stay untouched.',
+			'streaming.disconnectBody' => 'Pleazyng will remove this device\'s authorization. Your provider files and transfers stay untouched.',
 			'streaming.streamsTitle' => 'Choose a stream',
 			'streaming.noStreams' => 'No streams were found for this title.',
 			'streaming.manageConnections' => 'Manage streaming services',
@@ -19932,7 +19995,7 @@ extension on Translations {
 			'streaming.streamUnsupported' => 'This stream format isn\'t supported by the in-app player.',
 			'streaming.remoteNeedsEpisode' => 'Choose an episode before searching for a stream.',
 			'streaming.remoteNeedsEpisodeNumber' => 'This episode is missing its season or episode number.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG couldn\'t find an IMDb or TMDB ID for this title.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng couldn\'t find an IMDb or TMDB ID for this title.',
 			'streaming.watchWithServices' => 'Watch with connected services',
 			'streaming.chooseEpisode' => 'Choose episode',
 			'streaming.episodes' => 'Episodes',
@@ -19950,7 +20013,7 @@ extension on Translations {
 			'streaming.availableCopiesCount' => ({required Object count}) => '${count} sources',
 			'streaming.canonicalIndexing' => 'Finding your server and cloud copies…',
 			'streaming.preparationBackground' => 'Preparation continues when the app is closed. Your device decides when to run it.',
-			'streaming.preparationForeground' => 'This device can resume preparation while PlezyNG is open.',
+			'streaming.preparationForeground' => 'This device can resume preparation while Pleazyng is open.',
 			'streaming.preparationQueue' => 'Preparation',
 			'addServer.addMediaBrowserTitle' => ({required Object product}) => 'Add ${product} server',
 			'addServer.serverUrls' => 'Server URLs',
@@ -20027,15 +20090,15 @@ extension on Translations {
 			'notifications.newEpisodeTitle' => 'New episode',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'Try every feature free for 7 days',
-			'appAccess.description' => 'Start a seven-day trial with full access to every PlezyNG feature. There is no charge during the trial and no subscription. After the trial, one lifetime purchase at your store\'s price unlocks PlezyNG for life.',
-			'appAccess.trialEndedDescription' => 'Unlock every feature in PlezyNG for life with one purchase at your store\'s price. There is no subscription.',
+			'appAccess.description' => 'Start a seven-day trial with full access to every Pleazyng feature. There is no charge during the trial and no subscription. After the trial, one lifetime purchase at your store\'s price unlocks Pleazyng for life.',
+			'appAccess.trialEndedDescription' => 'Unlock every feature in Pleazyng for life with one purchase at your store\'s price. There is no subscription.',
 			'appAccess.startTrial' => 'Start my 7-day free trial',
 			'appAccess.trialActive' => 'Your 7-day full-feature trial is active.',
 			'appAccess.trialEnded' => 'Your 7-day trial has ended',
 			'appAccess.trialStartFailed' => 'Couldn\'t save the trial on this device. Please try again.',
-			'appAccess.lifetimeTitle' => 'PlezyNG unlocked for life',
-			'appAccess.lifetimeBody' => 'Thanks! You have lifetime access to every PlezyNG feature.',
-			'appAccess.manageTitle' => 'PlezyNG lifetime access',
+			'appAccess.lifetimeTitle' => 'Pleazyng unlocked for life',
+			'appAccess.lifetimeBody' => 'Thanks! You have lifetime access to every Pleazyng feature.',
+			'appAccess.manageTitle' => 'Pleazyng lifetime access',
 			'appAccess.manageDescription' => 'Try every feature free for 7 days, then unlock everything for life with one payment at your store\'s price.',
 			'appAccess.buy' => ({required Object price}) => 'Unlock every feature for ${price}',
 			'appAccess.loadingPrice' => 'Loading store price...',
@@ -20043,11 +20106,11 @@ extension on Translations {
 			'appAccess.restore' => 'Restore lifetime purchase',
 			'appAccess.pending' => 'Your purchase is waiting for payment or approval. Lifetime access unlocks as soon as the store completes it.',
 			'appAccess.storeUnavailable' => 'Purchases aren\'t available. Check that you\'re signed in to the store and purchases are allowed on this device.',
-			'appAccess.productNotFound' => 'The PlezyNG lifetime unlock isn\'t available in this store yet.',
+			'appAccess.productNotFound' => 'The Pleazyng lifetime unlock isn\'t available in this store yet.',
 			'appAccess.productQueryFailed' => 'Couldn\'t load the store price. Check your connection and try again.',
 			'appAccess.purchaseFailed' => 'The purchase didn\'t go through. Try again.',
 			'appAccess.restoreFailed' => 'Couldn\'t reach the store to restore your purchase. Try again.',
-			'appAccess.nothingToRestore' => 'No PlezyNG lifetime purchase was found for this store account.',
+			'appAccess.nothingToRestore' => 'No Pleazyng lifetime purchase was found for this store account.',
 			'detail.endsAt' => ({required Object time}) => 'Ends at ${time}',
 			'watchLink.serverUnavailable' => 'Couldn\'t reach a Plex server for this link.',
 			'watchLink.notFound' => 'Couldn\'t find this show or movie on your Plex servers.',
@@ -20061,8 +20124,8 @@ extension on Translations {
 			'watchLink.copy' => 'Copy',
 			'watchLink.copied' => 'Link copied',
 			'homeLayout.title' => 'Home layout',
-			'homeLayout.resetToast' => 'Home reset to the original Plezy hero layout',
-			'homeLayout.resetHeroTitle' => 'Reset hero layout to stock Plezy?',
+			'homeLayout.resetToast' => 'Home reset to the original Pleazyng hero layout',
+			'homeLayout.resetHeroTitle' => 'Reset hero layout to stock Pleazyng?',
 			'homeLayout.resetHeroBody' => 'Turns off every row\'s hero setting and brings back the single rotating banner at the top of Home, like before hero rows existed. Row order and which rows are shown are not affected.',
 			'homeLayout.removeRowTitle' => 'Remove Home row?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} will be deleted. This can\'t be undone.',
@@ -20072,7 +20135,7 @@ extension on Translations {
 			'homeLayout.syncAccountOff' => 'Off: this device keeps its own layout.',
 			'homeLayout.syncNow' => 'Sync now',
 			'homeLayout.plexHomeManager' => 'Plex Home manager',
-			'homeLayout.managePlexRows' => 'Manage Plex rows in Plezy',
+			'homeLayout.managePlexRows' => 'Manage Plex rows in Pleazyng',
 			'homeLayout.managePlexRowsDescription' => 'Open to organize the Home-selected rows',
 			'homeLayout.organizeHomeRows' => 'Organize Home rows',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} rows: move, Hero, Auto-slide, remove',
@@ -20142,7 +20205,7 @@ extension on Translations {
 			'homeLayout.organizeRowsHint' => 'Select on a row (or hold Select): move it · Left/Right: row options · Back: done',
 			'homeLayout.layoutNavDescription' => 'Choose rows, libraries, and collection categories',
 			'homeLayout.editHomeRow' => 'Edit Home row',
-			'homeLayout.resetHeroButton' => 'Reset hero layout to stock Plezy',
+			'homeLayout.resetHeroButton' => 'Reset hero layout to stock Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Reordering unlocked',
 			'homeLayout.reorderingLocked' => 'Reordering locked',
 			'homeLayout.rowsCanBeDragged' => 'Rows can be dragged — tap the lock to prevent that',
@@ -20159,13 +20222,13 @@ extension on Translations {
 			'homeLayout.tapHeroCardDescription' => 'Choose whether tapping or selecting a Hero card starts playback or opens its details.',
 			'homeLayout.heroTapPlayDescription' => 'Start the selected item right away.',
 			'homeLayout.heroTapDetailsDescription' => 'Open the selected item’s details before choosing an action.',
-			'platform.localNetworkPermission' => 'PlezyNG connects to your media servers and playback devices on your local network.',
-			'platform.locationPermission' => 'PlezyNG uses location access when iOS requires it to detect your local network and connect to your media servers.',
+			'platform.localNetworkPermission' => 'Pleazyng connects to your media servers and playback devices on your local network.',
+			'platform.locationPermission' => 'Pleazyng uses location access when iOS requires it to detect your local network and connect to your media servers.',
 			'platform.photoLibraryPermission' => 'Choose images from your photo library to use as media artwork.',
 			'platform.cameraPermission' => 'Scan QR codes to pair a Companion Remote.',
 			'universalMedia.title' => 'Open media',
 			'universalMedia.shortcutHelp' => 'Play a link, playlist, or file for this session.',
-			'universalMedia.intro' => 'Open a link, playlist, or file. Playback uses PlezyNG’s standard player and does not add history to your library.',
+			'universalMedia.intro' => 'Open a link, playlist, or file. Playback uses Pleazyng’s standard player and does not add history to your library.',
 			'universalMedia.openWhat' => 'What would you like to open?',
 			'universalMedia.stream' => 'Stream address',
 			'universalMedia.playlist' => 'Playlist',
@@ -20214,13 +20277,13 @@ extension on Translations {
 			'universalMedia.stopTransfer' => 'Stop transfer and invalidate address',
 			'universalMedia.startTransfer' => 'Start transfer',
 			'universalMedia.wifiImportedFiles' => 'Wi-Fi transfer',
-			'universalMedia.wifiBrowserTitle' => 'Send files to PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'Send files to Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'Choose audio, video, ebook, or comic files to send. The files are saved in this device’s Files and books library. Maximum: 100 files, 4 GiB per file, 10 GiB total.',
 			'universalMedia.uploadFilesLabel' => 'Files to send',
 			'universalMedia.uploadSelected' => 'Upload selected files',
 			'universalMedia.uploadSelectFirst' => 'Choose one or more files first.',
 			'universalMedia.uploading' => 'Sending',
-			'universalMedia.uploadComplete' => 'File added to PlezyNG.',
+			'universalMedia.uploadComplete' => 'File added to Pleazyng.',
 			'universalMedia.uploadFailed' => 'The file could not be added. Keep this page open and try again.',
 			'universalMedia.liveCue' => 'LIVE',
 			'universalMedia.liveSession' => 'Live stream',
@@ -20248,7 +20311,7 @@ extension on Translations {
 			'universalMedia.recordingActive' => 'Recording to this device. Leaving playback stops and saves it.',
 			'universalMedia.recordingFormatHelp' => 'For video, choose MKV or MPEG-TS. For audio, choose MKA or MKV.',
 			'universalMedia.replaceRecordingTitle' => 'Replace this recording?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG backs up the existing file while recording. If it cannot save the new recording, PlezyNG restores the backup.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng backs up the existing file while recording. If it cannot save the new recording, Pleazyng restores the backup.',
 			'universalMedia.replaceRecording' => 'Replace file',
 			'universalMedia.discHelp' => 'Open a disc in this computer’s optical drive. You can also open an ISO image from Device files.',
 			'universalMedia.discs' => 'Optical disc',
@@ -20273,7 +20336,7 @@ extension on Translations {
 			'universalMedia.converterUnsupportedInput' => 'Choose an audio or video file.',
 			'universalMedia.converterLocalOnly' => 'The selected file is not available as a local device path.',
 			'universalMedia.converterReplaceTitle' => 'Replace this file?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG backs up the existing file until the converted copy is saved.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng backs up the existing file until the converted copy is saved.',
 			'universalMedia.converterStarting' => 'Starting FFmpeg…',
 			'universalMedia.converterProgress' => 'Converting on this computer…',
 			'universalMedia.converterComplete' => 'Conversion complete. The new file is ready.',
@@ -20297,7 +20360,7 @@ extension on Translations {
 			'universalMedia.captureDefaultAudio' => 'Default audio input',
 			'universalMedia.captureWaylandHelp' => 'Wayland limits this XWayland capture to the X display. Windows outside XWayland may not appear.',
 			'universalMedia.captureFrameRate' => 'Capture frame rate',
-			'universalMedia.capturePrivacy' => 'The recording is saved only to the file you choose. Microphone capture is optional. PlezyNG does not upload the recording.',
+			'universalMedia.capturePrivacy' => 'The recording is saved only to the file you choose. Microphone capture is optional. Pleazyng does not upload the recording.',
 			'universalMedia.captureSaveAs' => 'Save screen recording as',
 			'universalMedia.captureExtensionMismatch' => 'Choose a filename ending in .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg or the H.264 video encoder is unavailable. Install a supported FFmpeg build, then try again.',
@@ -20311,7 +20374,7 @@ extension on Translations {
 			'universalMedia.captureStop' => 'Stop and save',
 			'universalMedia.captureMode' => 'Capture',
 			'universalMedia.shareMode' => 'Share',
-			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. PlezyNG creates a temporary HLS stream.',
+			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
@@ -20326,7 +20389,7 @@ extension on Translations {
 			'universalMedia.shareOpenUrl' => 'Open this address in a player on the other device',
 			'universalMedia.shareQrLabel' => 'QR code for the temporary stream address',
 			'universalMedia.shareQrHelp' => 'Scan with a compatible player connected to the same private network.',
-			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.',
+			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.',
 			'universalMedia.shareCopyUrl' => 'Copy stream address',
 			'universalMedia.shareExpiresLabel' => 'Link expires at',
 			'universalMedia.shareStarting' => 'Preparing the stream…',
@@ -20351,7 +20414,7 @@ extension on Translations {
 			'universalMedia.extensionInstall' => 'Add service',
 			'universalMedia.extensionReplace' => 'Update service',
 			'universalMedia.extensionRemoveTitle' => 'Remove this search service?',
-			'universalMedia.extensionRemoveHelp' => 'This removes the service from this profile. PlezyNG does not contact its endpoint.',
+			'universalMedia.extensionRemoveHelp' => 'This removes the service from this profile. Pleazyng does not contact its endpoint.',
 			'universalMedia.extensionRemove' => 'Remove service',
 			'universalMedia.extensionInvalidManifest' => 'This file is not a supported extension manifest. See the Open media guide for the format.',
 			'universalMedia.extensionSaveFailed' => 'The extension could not be saved to the active profile.',
@@ -20494,12 +20557,12 @@ extension on Translations {
 			'fileSources.none' => 'None',
 			'fileSources.fullscreen' => 'Full screen',
 			'fileSources.syncLocation' => 'Progress sync folder (optional)',
-			'fileSources.syncLocationHint' => 'A dedicated WebDAV folder for PlezyNG state. Uses conditional writes; media stays unchanged.',
+			'fileSources.syncLocationHint' => 'A dedicated WebDAV folder for Pleazyng state. Uses conditional writes; media stays unchanged.',
 			'fileSources.audiobooks' => 'Audiobooks',
 			'fileSources.comics' => 'Comics',
 			'fileSources.scan' => 'Scan for books and media',
 			'fileSources.browserReader' => 'Open reader',
-			'fileSources.browserReaderHelp' => 'The reader is open in your browser. Keep PlezyNG open to save your place and notes.',
+			'fileSources.browserReaderHelp' => 'The reader is open in your browser. Keep Pleazyng open to save your place and notes.',
 			'fileSources.on' => 'On',
 			'fileSources.advancedSetup' => 'App registration',
 			'fileSources.microsoftSignIn' => 'Sign in with Microsoft',
@@ -20540,7 +20603,7 @@ extension on Translations {
 			'fileSources.importInterrupted' => 'Import interrupted · remove to clear',
 			'fileSources.errorQuotaExceeded' => 'The offline storage limit was reached. Raise the limit or remove a downloaded copy.',
 			'fileSources.errorStorageLow' => 'There is not enough free device storage to keep the protected reserve.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG could not check free device storage, so the write was stopped.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng could not check free device storage, so the write was stopped.',
 			'fileSources.removeDownloadJob' => 'Remove download',
 			'fileSources.downloadAlreadyComplete' => 'This download finished before it could be removed. The item is now available offline.',
 			'fileSources.confirmRemoveDownloadJob' => 'Remove this download and discard any partially downloaded data? Your position and notes will stay.',
@@ -20581,7 +20644,7 @@ extension on Translations {
 			'lending.openLibraryNote' => 'Explore Open Library’s catalogue. Reading and borrowing options are shown on each title’s page.',
 			'lending.more' => 'Load more',
 			'lending.gateway' => 'Library sign-in service',
-			'lending.gatewayHint' => 'Provided by your library or the PlezyNG administrator.',
+			'lending.gatewayHint' => 'Provided by your library or the Pleazyng administrator.',
 			'lending.advanced' => 'Library integration',
 			'lending.loadLibraries' => 'Choose your library',
 			'lending.expired' => 'This loan has expired.',
@@ -20609,7 +20672,7 @@ extension on Translations {
 			'audiobook.syncSourceDisconnect' => 'Removing this source will turn off reading and listening sync here. Encrypted sync files will remain in the provider.',
 			'audiobook.syncReconnect' => 'Reconnect storage account',
 			'audiobook.lastSynced' => ({required Object time}) => 'Last synced at ${time}',
-			'audiobook.syncPrivacy' => 'Cloud sync writes encrypted progress, completion, bookmark and note data to app-owned sync files. Playback media is never uploaded, replaced, renamed or deleted. Account tokens and passwords are not uploaded. Google Drive and OneDrive use app storage; Dropbox uses PlezyNG Sync; WebDAV and S3 use the chosen folder or prefix. Enabling sync may require provider write permission, but the app writes only those state files. Cloud sync and compatible server progress/bookmark sync run independently with separate retries. Conflicts are shown for you to resolve. Turning sync off keeps local history and remote state.',
+			'audiobook.syncPrivacy' => 'Cloud sync writes encrypted progress, completion, bookmark and note data to app-owned sync files. Playback media is never uploaded, replaced, renamed or deleted. Account tokens and passwords are not uploaded. Google Drive and OneDrive use app storage; Dropbox uses Pleazyng Sync; WebDAV and S3 use the chosen folder or prefix. Enabling sync may require provider write permission, but the app writes only those state files. Cloud sync and compatible server progress/bookmark sync run independently with separate retries. Conflicts are shown for you to resolve. Turning sync off keeps local history and remote state.',
 			'audiobook.syncConflicts' => 'Choose where to resume',
 			'audiobook.conflictHelp' => 'These changes were made independently. Choose the position or bookmark version to keep. A later timestamp or a higher percentage does not automatically win.',
 			'audiobook.syncDevice' => ({required Object device}) => 'Device ${device}',
@@ -20706,7 +20769,7 @@ extension on Translations {
 			'sourceSetup.subtitlePrivacy' => 'Get an API key from opensubtitles.com. Search sends the video title and available IMDb/TMDB IDs, never the video file. The key and optional account credentials are encrypted with this source.',
 			'sourceSetup.automaticMetadata' => 'Automatic online video metadata',
 			'sourceSetup.metadataPrivacy' => 'Sends only filename title/year and episode numbers or an NFO ID, never media or credentials. NFO fields stay authoritative.',
-			'sourceSetup.nfsEncryptionFailure' => 'For encrypted NFS, check RFC 9289 and TLS 1.3 support on both NAS services, the certificate name, and the export UID/GID. PlezyNG will not retry this connection without encryption.',
+			'sourceSetup.nfsEncryptionFailure' => 'For encrypted NFS, check RFC 9289 and TLS 1.3 support on both NAS services, the certificate name, and the export UID/GID. Pleazyng will not retry this connection without encryption.',
 			'sourceSetup.sourceConnecting' => 'Connecting to source',
 			'sourceSetup.metadataSearchPrivacy' => 'This title search goes to Trakt. It sends the title you enter, not the video or source credentials.',
 			'sourceSetup.chooseMatch' => 'Choose a match',
@@ -20831,7 +20894,7 @@ extension on Translations {
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
-			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, PlezyNG reconnects using a compatible codec.',
+			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, Pleazyng reconnects using a compatible codec.',
 			'games.steamLibrary' => 'Steam library',
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
@@ -20848,7 +20911,7 @@ extension on Translations {
 			'games.gameDetails' => 'Game details',
 			'games.chooseComputer' => 'Choose computer',
 			'games.connectComputer' => 'Connect a computer',
-			'games.connectToPlay' => 'Connect a gaming computer to play this game inside PlezyNG.',
+			'games.connectToPlay' => 'Connect a gaming computer to play this game inside Pleazyng.',
 			'games.steamSource' => 'From Steam',
 			'games.disconnected' => 'Disconnected',
 			'games.installed' => 'Installed',
@@ -20870,7 +20933,7 @@ extension on Translations {
 			'games.allowSessionControl' => 'Allow companion game session controls',
 			'games.allowSessionControlHelp' => 'Let your authenticated companion view active game titles, choose game audio, show a stream fullscreen or disconnect it. Disconnecting leaves the game running on its computer. Off by default for each profile.',
 			'games.remoteSessions' => 'Game sessions',
-			'games.remoteSessionsHelp' => 'Control streams inside PlezyNG on the connected device. This does not quit games on their computers or send gamepad input.',
+			'games.remoteSessionsHelp' => 'Control streams inside Pleazyng on the connected device. This does not quit games on their computers or send gamepad input.',
 			'games.remoteSessionsDenied' => 'Enable companion game session controls in Games settings on the connected device.',
 			'games.remoteSessionsUnavailable' => 'Game session controls are unavailable. Reconnect or refresh to try again.',
 			'games.remoteSessionSubmitted' => 'The request was accepted. Refresh to check the current sessions.',
@@ -20960,7 +21023,7 @@ extension on Translations {
 			'games.allowHostInstall' => 'Allow Steam install requests',
 			'games.allowHostInstallHelp' => 'Also allow paired remotes to send installation requests to Steam. Requires Steam control above. Steam handles disk space, ownership and prompts. Off by default.',
 			'games.streamAudio' => 'Steam audio',
-			'games.streamAudioHelp' => 'Request stereo, quad or 5.1 audio for new streams. Surround needs a compatible host and speaker output. If the channel layout or output is unsupported, PlezyNG retries in stereo. Stream details show the negotiated channel count.',
+			'games.streamAudioHelp' => 'Request stereo, quad or 5.1 audio for new streams. Surround needs a compatible host and speaker output. If the channel layout or output is unsupported, Pleazyng retries in stereo. Stream details show the negotiated channel count.',
 			'games.audioStereo' => 'Stereo',
 			'games.audioQuad' => 'Quad (4 speakers)',
 			'games.audioSurround51' => 'Surround (5.1)',
@@ -20969,8 +21032,8 @@ extension on Translations {
 			'games.openInSteam' => 'Open in Steam',
 			'games.steamCloudFiles' => 'Steam Cloud files',
 			'games.steamFamilies' => 'Steam Families',
-			'games.steamCloudHelp' => 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.',
-			'games.steamFamiliesHelp' => 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to PlezyNG. Invitations, household eligibility, copy availability and parental controls are managed by Steam.',
+			'games.steamCloudHelp' => 'Open this game’s Steam Cloud files in your browser? Check the signed-in Steam account; it may differ from the account linked to Pleazyng. Steam handles downloads, sync and conflicts. Files depend on the game’s Cloud support.',
+			'games.steamFamiliesHelp' => 'Open Steam Families in your browser? Check the signed-in Steam account; it may differ from the account linked to Pleazyng. Invitations, household eligibility, copy availability and parental controls are managed by Steam.',
 			'games.touchDpadUp' => 'Directional pad up',
 			'games.touchDpadDown' => 'Directional pad down',
 			'games.touchDpadLeft' => 'Directional pad left',
@@ -20982,7 +21045,7 @@ extension on Translations {
 			'games.touchViewButton' => 'View button',
 			'games.touchMenuButton' => 'Menu button',
 			'games.touchStickHint' => 'Drag to move. Double-tap to press the stick.',
-			'games.cloudAccessHelp' => 'Connect to view and download this game’s Steam Cloud files. Access in PlezyNG is temporary and ends when you close this view.',
+			'games.cloudAccessHelp' => 'Connect to view and download this game’s Steam Cloud files. Access in Pleazyng is temporary and ends when you close this view.',
 			'games.cloudEnableChanges' => 'Allow Cloud changes',
 			'games.cloudChangeHelp' => 'Close the game on all computers and let Steam finish syncing. Replacing or deleting Cloud files can affect saves on every computer. Download a backup first. If a change fails, refresh and check the files before trying again.',
 			'games.cloudReplace' => 'Replace from file…',
@@ -20998,8 +21061,8 @@ extension on Translations {
 			'games.internetDirect' => 'Direct encrypted connection',
 			'games.internetRelay' => 'Encrypted relay · additional latency possible',
 			'games.familyAuthorize' => 'Authorize Steam Families',
-			'games.familyAuthorizeHelp' => 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; PlezyNG uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.',
-			'games.familyScanHelp' => 'Scan this code with the Steam mobile app and approve only the PlezyNG request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.',
+			'games.familyAuthorizeHelp' => 'Approve a separate, temporary Steam session to manage your family here. Steam grants this session broader account access; Pleazyng uses it only for the family actions you review. Authorization is kept in memory for up to 10 minutes and retired when you close this dialog. No Steam password is requested.',
+			'games.familyScanHelp' => 'Scan this code with the Steam mobile app and approve only the Pleazyng request you just started. Use the same Steam account shown below. Never approve a code sent by someone else.',
 			'games.familyRefreshRequired' => 'The session expired, Steam refused the request, or its outcome could not be verified. Refresh before reviewing another change. A submitted change is never retried automatically.',
 			'games.familyReviewHelp' => 'Review the family, account and role below. This can change access to shared games and may start Steam cooldowns. Steam may require another confirmation. A review expires after one minute.',
 			'games.familyAcknowledge' => 'I have checked the accounts and understand this change.',
@@ -21027,7 +21090,7 @@ extension on Translations {
 			'games.familyInvitations' => 'Invitations for you',
 			'games.familyPendingInvites' => 'Pending invitations',
 			'games.controllerLayout' => 'Controller layout',
-			'games.controllerLayoutHelp' => 'Saved for this game and PlezyNG profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.',
+			'games.controllerLayoutHelp' => 'Saved for this game and Pleazyng profile on every computer. These mappings adjust the streamed controller before Steam Input applies its own layout. Changing a layout releases held controls.',
 			'games.controllerLayoutFailed' => 'Controller layout could not be applied. Open the layout to retry or reset it. Input stays paused if the receiver cannot confirm its layout.',
 			'games.controllerPlayer' => ({required int number}) => 'Player ${number}',
 			'games.padBack' => 'Back / View',
@@ -21127,7 +21190,7 @@ extension on Translations {
 			'games.browseOnlyTitle' => 'Your library is available here',
 			'games.browseOnlyHelp' => 'Browse games, manage favorites and view Steam activity on this device. Playing here needs a compatible streaming receiver.',
 			'games.browseComputersHelp' => 'Save your computers and import their installed games through Companion Remote. Streaming and Steam pairing are unavailable on this device.',
-			'games.steamSessionSignIn' => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.',
+			'games.steamSessionSignIn' => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting Pleazyng.',
 			'games.allowCloudSettings' => 'Allow Steam Cloud settings changes',
 			'games.allowCloudSettingsHelp' => 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.',
 			'games.steam_f71a8503' => 'Steam',
@@ -21136,7 +21199,28 @@ extension on Translations {
 			'games.mib' => ({required Object value1, required Object value2}) => '${value1} · ${value2} MiB',
 			'games.steamAppID' => ({required Object value1}) => 'Steam AppID: ${value1}',
 			'games.vulkan' => ({required Object value1}) => '${value1} · Vulkan',
-			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'games.lanInstallSubmitted' => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.',
+			'games.cloudSettingsHelp' => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.',
+			'games.computerSetupHint' => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.',
+			'games.accountStatus' => 'Library status',
+			'games.preferComputer' => 'Prefer this computer',
+			'games.automaticComputer' => 'Choose automatically',
+			'games.steamAttribution' => 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.',
+			'games.cloudAccountSetting' => 'Steam Cloud on computer',
+			'games.cloudBridgeUnavailable' => 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.',
+			'games.enableAccountCloud' => 'Enable Steam Cloud',
+			'games.disableAccountCloud' => 'Disable Steam Cloud',
+			'games.cloudAccountConfirm' => ({required Object computer}) => 'Change Steam Cloud for all games in the signed-in Steam account on ${computer}? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.',
+			'games.cloudAccountObserved' => 'Steam confirmed the Cloud setting on this computer.',
+			'games.cloudAccountStale' => 'The setting changed since you reviewed it. Open it again to review the current state.',
+			'games.cloudAccountUnknown' => 'The change could not be confirmed. It may have applied. Check Steam before trying again.',
+			'deepLinks.invalid' => 'This Pleazyng link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',
 			'deepLinks.notFound' => 'Couldn\'t find this title in your libraries.',
@@ -21328,6 +21412,8 @@ extension on Translations {
 			'subtitleAiUi.timingAndSourceFileRemainUnchanged' => 'Timing and source file remain unchanged',
 			'subtitleAiUi.couldNotSeekToThisTranscriptCue' => 'Could not seek to this transcript cue.',
 			'subtitleAiUi.capturedTranscript' => 'Captured transcript',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.onlyWatchedPortionsAreIncludedSelect_bb56a271' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'subtitleAiUi.searchTranscript' => 'Search transcript',
 			'subtitleAiUi.clearSearch' => 'Clear search',
@@ -21349,8 +21435,6 @@ extension on Translations {
 			'subtitleAiUi.sDHClosedCaptions' => 'SDH / closed captions',
 			'subtitleAiUi.enterAValidISO6391LanguageCode' => 'Enter a valid ISO 639-1 language code.',
 			'subtitleAiUi.upload' => 'Upload',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.continueButton' => 'Continue',
 			'subtitleAiUi.speechTranslatedToEnglish' => 'Speech translated to English',
 			'subtitleAiUi.detectedSpeechLanguage' => ({required Object language}) => 'Detected language: ${language}',
@@ -21573,7 +21657,7 @@ extension on Translations {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',
@@ -21698,7 +21782,7 @@ extension on Translations {
 			'karaokeUi.recentPrivateScores' => 'Recent private scores',
 			'karaokeUi.keyTempo' => ({required Object value1, required Object value2, required Object value3, required Object value4}) => '${value1} · ${value2} · key ${value3} · tempo ${value4}',
 			'karaokeUi.preparationCompanion' => 'Preparation companion',
-			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Run the PlezyNG karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.',
+			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.',
 			'karaokeUi.companionURL' => 'Companion URL',
 			'karaokeUi.token' => 'Token',
 			'karaokeUi.chooseTheSourceAsset' => 'Choose the source asset',

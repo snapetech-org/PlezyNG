@@ -35,6 +35,7 @@ import 'music/equalizer_icon.dart';
 import '../providers/multi_server_provider.dart';
 import '../services/fullscreen_state_manager.dart';
 import '../theme/mono_tokens.dart';
+import '../theme/navigation_indicator_shape.dart';
 import '../widgets/backend_badge.dart';
 import '../i18n/strings.g.dart';
 
@@ -200,8 +201,8 @@ class NavigationRailItem extends StatelessWidget {
     // The collapsed TV rail is a transparent overlay strip; a persistent
     // active pill over artwork is noise there, so it shows focus only.
     final showSelected = isSelected && !suppressSelectedBackground && !(collapsedLayout && PlatformDetector.isTV());
-    if (focused) return t.text.withValues(alpha: showSelected ? selectedFocusAlpha : focusAlpha);
-    if (showSelected) return t.text.withValues(alpha: 0.1);
+    if (focused) return t.accent.withValues(alpha: showSelected ? selectedFocusAlpha : focusAlpha);
+    if (showSelected) return t.accent.withValues(alpha: 0.12);
     return null;
   }
 
@@ -213,11 +214,25 @@ class NavigationRailItem extends StatelessWidget {
     );
   }
 
+  ShapeDecoration _indicatorDecoration(MonoTokens t, {required bool focused, required double expansion}) {
+    final selected = isSelected && !suppressSelectedBackground;
+    final markerAlpha = selected ? (PlatformDetector.isTV() ? expansion : 1.0) : 0.0;
+    return ShapeDecoration(
+      color: _indicatorColor(t, focused: focused, expansion: expansion),
+      shape: NavigationIndicatorShape(
+        markerColor: t.accent.withValues(alpha: markerAlpha),
+        borderRadius: BorderRadius.circular(t.radiusMd),
+        side: focused ? BorderSide(color: t.accent, width: 2) : BorderSide.none,
+      ),
+    );
+  }
+
   Widget _leadingIcon(MonoTokens t) =>
       iconWidget ??
       AppIcon(
         isSelected && selectedIcon != null ? selectedIcon! : icon,
-        fill: 1,
+        fill: isSelected ? 1 : 0,
+        weight: isSelected ? 600 : 500,
         size: iconSize,
         color: isSelected ? t.accent : t.textMuted,
       );
@@ -226,7 +241,7 @@ class NavigationRailItem extends StatelessWidget {
       SideNavigationRailState.collapsedWidthForContext(context) -
       2 * SideNavigationRailState.horizontalPaddingForContext(context, isCollapsed: true);
 
-  /// M3E collapsed destination: an icon-only pill indicator.
+  /// Collapsed destination with the same selection shape as the expanded row.
   Widget _buildCollapsedLayout(BuildContext context, MonoTokens t, {required bool focused}) {
     final width = _collapsedItemWidth(context);
     return SizedBox(
@@ -239,10 +254,7 @@ class NavigationRailItem extends StatelessWidget {
             width: width < collapsedIndicatorWidth ? width : collapsedIndicatorWidth,
             height: collapsedIndicatorHeight,
             alignment: .center,
-            decoration: BoxDecoration(
-              color: _indicatorColor(t, focused: focused, expansion: 0),
-              borderRadius: BorderRadius.circular(MonoTokens.radiusFull),
-            ),
+            decoration: _indicatorDecoration(t, focused: focused, expansion: 0),
             child: _leadingIcon(t),
           ),
         ),
@@ -250,7 +262,7 @@ class NavigationRailItem extends StatelessWidget {
     );
   }
 
-  /// M3E expanded destination: full-width stadium indicator behind the row.
+  /// Expanded destination with a leading selected-state marker.
   Widget _labelAtOpacity(BuildContext context, double opacity) {
     final builder = labelBuilder;
     if (builder != null) return builder(opacity);
@@ -300,10 +312,7 @@ class NavigationRailItem extends StatelessWidget {
       constraints: fixedHeight ? null : BoxConstraints(minHeight: expandedHeight),
       alignment: AlignmentDirectional.centerStart,
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: fixedHeight ? 0 : 8),
-      decoration: BoxDecoration(
-        color: _indicatorColor(t, focused: focused, expansion: 1),
-        borderRadius: BorderRadius.circular(MonoTokens.radiusFull),
-      ),
+      decoration: _indicatorDecoration(t, focused: focused, expansion: 1),
       child: _buildExpandedContent(context, t, labelOpacity: 1, showLeading: true),
     );
   }
@@ -340,10 +349,7 @@ class NavigationRailItem extends StatelessWidget {
             child: Container(
               width: lerpDouble(collapsedPillWidth, expandedContentWidth, expansion),
               height: lerpDouble(collapsedIndicatorHeight, expandedHeight, expansion),
-              decoration: BoxDecoration(
-                color: _indicatorColor(t, focused: focused, expansion: expansion),
-                borderRadius: BorderRadius.circular(MonoTokens.radiusFull),
-              ),
+              decoration: _indicatorDecoration(t, focused: focused, expansion: expansion),
             ),
           ),
           PositionedDirectional(
@@ -402,7 +408,7 @@ class NavigationRailItem extends StatelessWidget {
             child: InkWell(
               canRequestFocus: false,
               onTap: onTap,
-              borderRadius: BorderRadius.circular(MonoTokens.radiusFull),
+              borderRadius: BorderRadius.circular(t.radiusMd),
               child: UnconstrainedBox(
                 alignment: AlignmentDirectional.centerStart,
                 constrainedAxis: Axis.vertical,

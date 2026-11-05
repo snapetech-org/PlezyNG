@@ -32,7 +32,7 @@ PATH are set for the current PowerShell process. Invoke the script with `&`
 from that process if the next command is a local Flutter build.
 
 The default directory is `RUNNER_TEMP/plezyng-windows-toolchain` in CI, or
-`LOCALAPPDATA/PlezyNG/build-tools` locally. `-InstallRoot` overrides it. Inno Setup
+`LOCALAPPDATA/Pleazyng/build-tools` locally. `-InstallRoot` overrides it. Inno Setup
 uses a per-user installation in that directory and retains its installer log.
 A receipt records all installed payload hashes; later verification rejects
 changed or incomplete files. `-VerifyOnly` performs no downloads or installs.

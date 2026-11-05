@@ -1,4 +1,4 @@
-/// How this build offers PlezyNG's full-app access: a seven-day trial followed
+/// How this build offers Pleazyng's full-app access: a seven-day trial followed
 /// by a one-time lifetime unlock in store builds.
 ///
 /// Chosen per build with `--dart-define=SUPPORTER_MODE=<name>`. Leaving it unset

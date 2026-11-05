@@ -8,4 +8,5 @@ Pod::Spec.new do |s|
   s.source = { :path => '.' }
   s.platform = :osx, '14.0'
   s.vendored_frameworks = 'Frameworks/macos/*.xcframework'
+  s.resource_bundles = { 'PleazyngRommNotices' => ['Frameworks/macos/notices/**/*'] }
 end

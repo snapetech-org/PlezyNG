@@ -172,7 +172,7 @@ bool saveTrust(uint64_t id, const Credentials& c, GCancellable* cancel) {
   GError* failure = nullptr;
   const auto key = std::to_string(id);
   bool saved = secret_password_store_sync(
-      &schema, SECRET_COLLECTION_DEFAULT, "PlezyNG Steam pairing", encoded.data(), cancel, &failure, "host",
+      &schema, SECRET_COLLECTION_DEFAULT, "Pleazyng Steam pairing", encoded.data(), cancel, &failure, "host",
       key.c_str(), nullptr);
   volatile char* wipe = encoded.data();
   for (size_t i = 0; i < encoded.size(); ++i) wipe[i] = 0;

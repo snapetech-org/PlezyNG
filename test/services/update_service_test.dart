@@ -16,7 +16,7 @@ void main() {
 
   setUp(resetSharedPreferencesForTest);
   PackageInfo.setMockInitialValues(
-    appName: 'PlezyNG',
+    appName: 'Pleazyng',
     packageName: 'com.plezy.test',
     version: '1.0.0',
     buildNumber: '1',

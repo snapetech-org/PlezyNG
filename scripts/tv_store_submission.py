@@ -20,7 +20,7 @@ PROFILES: dict[str, dict[str, Any]] = {
         "portal": "https://seller.samsungapps.com/tv/",
         "package_suffix": ".tpk",
         "architecture": "ARM Tizen TV",
-        "application_id": "org.snapetech.plezyng",
+        "application_id": "org.snapetech.pleazyng",
         "platform": "Samsung Smart TV / Tizen",
         "regional_note": (
             "A Public Seller is limited to the United States. Partner Seller "
@@ -36,7 +36,7 @@ PROFILES: dict[str, dict[str, Any]] = {
         "portal": "https://seller.lgappstv.com/",
         "package_suffix": ".ipk",
         "architecture": "ARMv7 webOS TV",
-        "application_id": "org.snapetech.plezyng",
+        "application_id": "org.snapetech.pleazyng",
         "platform": "LG webOS TV",
         "regional_note": (
             "Confirm the approved seller account and supported countries in Seller Lounge."
@@ -85,9 +85,9 @@ def archive_file(entries: dict[str, bytes], archive_path: str, source: Path) -> 
 
 def make_readme(profile: dict[str, Any], args: argparse.Namespace, package_hash: str) -> str:
     lines = [
-        f"# PlezyNG manual submission handoff: {profile['store']}",
+        f"# Pleazyng manual submission handoff: {profile['store']}",
         "",
-        f"- App: PlezyNG ({profile['application_id']})",
+        f"- App: Pleazyng ({profile['application_id']})",
         f"- Version: {args.version}",
         f"- Package: package/{args.package.name}",
         f"- Package SHA-256: {package_hash}",
@@ -110,7 +110,7 @@ def make_readme(profile: dict[str, Any], args: argparse.Namespace, package_hash:
         "This ZIP prepares files for manual review. It does not sign, upload, submit, or publish the app to either vendor store.",
         "It does not independently verify the package signature or establish device compatibility; use the attached build evidence and target-device qualification records.",
         "No store credentials, private keys, TV addresses, or device identifiers are included.",
-        "PlezyNG is a public repository. Treat its GitHub Actions artifacts as accessible to repository readers.",
+        "Pleazyng is a public repository. Treat its GitHub Actions artifacts as accessible to repository readers.",
         "",
     ]
     if args.package_verified:
@@ -175,11 +175,11 @@ def main() -> int:
             for name, data in sorted(entries.items())
         ]
         manifest = {
-            "schema": "org.snapetech.plezyng.tv-store-handoff.v1",
+            "schema": "org.snapetech.pleazyng.tv-store-handoff.v1",
             "store": profile["store"],
             "platform": profile["platform"],
             "application_id": profile["application_id"],
-            "application_name": "PlezyNG",
+            "application_name": "Pleazyng",
             "version": args.version,
             "architecture": profile["architecture"],
             "package": {

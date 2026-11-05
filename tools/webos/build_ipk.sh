@@ -54,7 +54,7 @@ for output_path in \
   fi
 done
 shopt -s nullglob
-EXISTING_IPKS=("$IPK_DIR"/org.snapetech.plezyng_*_arm.ipk)
+EXISTING_IPKS=("$IPK_DIR"/org.snapetech.pleazyng_*_arm.ipk)
 if (( ${#EXISTING_IPKS[@]} != 0 )); then
   echo "Refusing to reuse existing webOS IPKs; use a clean build output tree: ${EXISTING_IPKS[*]}" >&2
   exit 1
@@ -63,11 +63,11 @@ fi
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/verify_package.py" --project-metadata
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/verify_sdk_checkout.py" "$SDK_ROOT"
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --verify
-NDK_ENVIRONMENT="$(mktemp "${TMPDIR:-/tmp}/plezyng-webos-ndk-env.XXXXXX")"
+NDK_ENVIRONMENT="$(mktemp "${TMPDIR:-/tmp}/pleazyng-webos-ndk-env.XXXXXX")"
 trap 'rm -f -- "$NDK_ENVIRONMENT"' EXIT
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --emit-shell > "$NDK_ENVIRONMENT"
 source "$ROOT/tools/webos/source_ndk_environment.sh"
-plezyng_source_ndk_environment "$NDK_ENVIRONMENT"
+pleazyng_source_ndk_environment "$NDK_ENVIRONMENT"
 rm -f -- "$NDK_ENVIRONMENT"
 trap - EXIT
 if [[ "${SDKTARGETSYSROOT:-}" != "$NDK_ROOT/sysroots/ca9v1-webosmllib32-linux-gnueabi" ]]; then
@@ -85,7 +85,7 @@ if ! "$WEBOS_PYTHON_BIN" -c 'import sys; raise SystemExit(0 if sys.version_info 
   exit 1
 fi
 PACKAGER_VERSION="$("$PACKAGER" --version)"
-if [[ "$PACKAGER_VERSION" != "plezyng-ipk-packager 1" ]]; then
+if [[ "$PACKAGER_VERSION" != "pleazyng-ipk-packager 1" ]]; then
   echo "The webOS IPK packager version is not pinned to version 1." >&2
   exit 1
 fi
@@ -130,9 +130,9 @@ if ! git -C "$ROOT" diff --quiet -- webos/flutter/main.dart pubspec.lock; then
   exit 1
 fi
 
-IPKS=("$IPK_DIR"/org.snapetech.plezyng_*_arm.ipk)
+IPKS=("$IPK_DIR"/org.snapetech.pleazyng_*_arm.ipk)
 if (( ${#IPKS[@]} != 1 )); then
-  echo "Expected one versioned PlezyNG ARM IPK; found ${#IPKS[@]}." >&2
+  echo "Expected one versioned Pleazyng ARM IPK; found ${#IPKS[@]}." >&2
   exit 1
 fi
 if [[ -L "${IPKS[0]}" || ! -f "${IPKS[0]}" ]]; then

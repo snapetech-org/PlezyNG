@@ -1,7 +1,7 @@
 <a href="https://plezyng.app/">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/branding/plezyng-artwork-dark.webp">
-    <img src="assets/branding/plezyng-artwork-light.webp" alt="PlezyNG — coral folded-ribbon identity" width="840">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/branding/pleazyng-artwork-dark.webp">
+    <img src="assets/branding/pleazyng-artwork-light.webp" alt="Pleazyng — coral folded-ribbon identity" width="840">
   </picture>
 </a>
 
@@ -11,7 +11,7 @@
 
 A cross-platform media client for Plex, Jellyfin, Emby, standalone files, books, music, and podcasts, maintained as a fork of [Plezy](https://github.com/edde746/plezy).
 
-PlezyNG is a downstream fork for feature requests that Plezy upstream has declined, left open, or not yet shipped. The table below maps those upstream gaps to the corresponding downstream implementation.
+Pleazyng is a downstream fork for feature requests that Plezy upstream has declined, left open, or not yet shipped. The table below maps those upstream gaps to the corresponding downstream implementation.
 
 See [Files, books and listening](docs/FILES_AND_BOOKS.md) for standard/cloud sources, readers and offline behavior, and [Public-library setup](docs/LENDING_SETUP.md) for the staged OverDrive integration.
 
@@ -23,7 +23,7 @@ The [Discord client and PiP feasibility plan](docs/plezyng/discord/README.md) pr
 
 ## Dolby Vision experiments
 
-PlezyNG has developed genuine Profile 7 FEL reconstruction alongside native and
+Pleazyng has developed genuine Profile 7 FEL reconstruction alongside native and
 compatibility playback. The isolated Linux engine has rendered the FEL mark in a
 real P7 sample through standalone mpv and embedded libmpv; full app playback and
 independent reference-pixel accuracy still need qualification. Linux users can
@@ -43,14 +43,14 @@ native Dolby Vision signaling depends on the platform and connected display path
 See the [buildout, setup and Luna handoff](docs/maintainers/dv-platform-buildout.md)
 and [Linux engine evidence](docs/maintainers/dv-engine-luna-handoff.md).
 
-## What PlezyNG has built
+## What Pleazyng has built
 
-PlezyNG builds on upstream Plezy with a broad set of features for Plex, Jellyfin, and Emby, wherever each server's APIs allow. The table below highlights delivered code, links related upstream work for context, and notes platform or server limitations. An implementation entry describes code presence; it does not imply live-server or device qualification unless that evidence is stated.
+Pleazyng builds on upstream Plezy with a broad set of features for Plex, Jellyfin, and Emby, wherever each server's APIs allow. The table below highlights delivered code, links related upstream work for context, and notes platform or server limitations. An implementation entry describes code presence; it does not imply live-server or device qualification unless that evidence is stated.
 
-| Area | Related upstream work | PlezyNG status |
+| Area | Related upstream work | Pleazyng status |
 | --- | --- | --- |
 | Downloads | Converted download quality; per-rule quality; auto-download Continue Watching items and remove them when they leave the shelf (#1145, #1413, #1847, #1978, #2181, #2206) | Code is implemented for Plex, Jellyfin, and Emby; validation against real servers remains pending. Jellyfin and Emby use progressive transcodes that restart after an interrupted transfer. |
-| Downloads | Local Plex connections (#1447/#2248); download size and storage usage (#2376); manual sync and random episode selection (#1197, #1199) | Implemented in PlezyNG |
+| Downloads | Local Plex connections (#1447/#2248); download size and storage usage (#2376); manual sync and random episode selection (#1197, #1199) | Implemented in Pleazyng |
 | Downloads | Playlist downloads and watched-item cleanup (#1721, #2600, #1413, #2181); orphan cleanup | Playlist downloads and watched-item cleanup are implemented. The Downloads screen can review and remove orphaned tagged files in the default app-managed folders; custom/SAF roots, legacy files, shared artwork, and iOS Documents are left untouched. |
 | Profiles and privacy | PIN-gate download deletion, settings, and Explore; hide Explore per profile (#1924, #2514) | Local profile PIN gates Settings, download deletion, and entry to Explore; Explore can also be hidden per profile. Plex Home PINs remain server-owned. |
 | Audio and subtitles | Remember choices per show; choose tracks before playback; always-on subtitles and preferred-language fetching; per-item sync offsets (#84, #1758, #1956, #2116, #2182, #2346, #2382, #2792) | Code implements per-show memory, optional pre-play selection, device-local preferred-language selection and opt-in provider downloads, and scoped sync offsets across Plex, Jellyfin, and Emby. Per-show choices are app-profile local; real-server validation remains pending. Explicit server-selected tracks, account Off, and local picks remain authoritative. |
@@ -58,10 +58,10 @@ PlezyNG builds on upstream Plezy with a broad set of features for Plex, Jellyfin
 | Universal media tools | Direct media URLs, radio playlists, local files, capture, sharing, extensions, Wi-Fi transfer, conversion, recording and picture controls | **Open media** handles session-only HTTP(S)/MPV streams, M3U/PLS/HLS playlists, temporary file and desktop folder queues, and supported ISO/disc inputs; the active source player offers queue browsing, upcoming-file shuffle, repeat, and item selection in one adaptive sheet. Eligible desktop queues can be saved as sibling-relative M3U files in current playback order. MPV exposes direct-input File Info and edition/disc-title choices when available. Safe stream favorites are profile-local. Desktop tools add screen/camera recording and live preview, temporary private-LAN HLS sharing, declarative HTTPS search extensions, `plezyctl` (Python 3.10+), FFmpeg conversion and MPV live-stream recording. See the [Open media guide](docs/UNIVERSAL_MEDIA.md) and [VLC feature comparison](docs/VLC_FEATURE_PARITY.md) for privacy and platform limits. |
 | Cloud and add-on streaming | — | Real-Debrid/AllDebrid QR or PIN connection, Premiumize/TorBox API-key validation, on-demand cloud-file browsing through Files and books, cached cloud-video Search and Home posters, Stremio QR account linking with a selectable add-on import preview, and manual HTTPS add-on setup. Supported add-on catalogs appear in Explore; stream options open from existing title details. Matched server items use the shared video player and queue, with resume updates reconciled through the local watch queue. Credentials are encrypted and profile-scoped. Native peer-to-peer playback and canonical cloud/server library-card merging are implemented; live provider and packaged-device qualification remain open. Active server-session progress reporting remains incomplete. See the [connected streaming guide](docs/plezyng/remote-streams/README.md). |
 | Subtitle controls | Live styling preview (#2347); in-player size and position controls (#95, #689, #2174); load a local subtitle file (#1431) | Local/archive import, dual-track controls, exact and cue-based sync, drift preview/undo, cue navigation/replay, and corrected export are implemented. Local AI workflows add WAV-based speech recognition, translation, automatic timing/cut repair, bilingual review, revision history and server attachment. Live capture, model availability and acceleration depend on the player and packaged runtime; device qualification remains open. See [Subtitles and local AI](#subtitles-and-local-ai). |
-| Playback | Swipe-to-seek (#2601), frame stepping (#1584), subtitle-delay hotkeys (#2824), remembered version across episodes (#2563), video playlist repeat (#1757/#1985) | Implemented in PlezyNG |
+| Playback | Swipe-to-seek (#2601), frame stepping (#1584), subtitle-delay hotkeys (#2824), remembered version across episodes (#2563), video playlist repeat (#1757/#1985) | Implemented in Pleazyng |
 | Playback | Plex cinema pre-rolls (#970/#2483); random local pre-rolls (#2271); theme music (#791/#2170/#2596) | Server-configured cinema intro code is present for Plex, Jellyfin, and Emby; real-server validation remains pending. Local pre-rolls, detail-page theme songs, and home spotlight music are implemented in the app. |
 | Playback | Background video/audio-only mode (#367), mpv equalizer (#2292), local/remote quality presets (#2064), opt-in TheIntroDB fallback (#389, #1110, #1886) | Optional audio-only background playback is implemented on handheld Android and iOS; Android uses the OS media playback service. A ten-band device-local equalizer plus MPV stereo widening, room ambience, and pitch shift are available where the build and track support them; opt-in intro fallback is implemented. |
-| Browsing | Director links (#2762), library item counts (#1516), Watchlist filters (#2725), MDBList Explore lists (#2740), Seerr search results (#2811) | Implemented in PlezyNG |
+| Browsing | Director links (#2762), library item counts (#1516), Watchlist filters (#2725), MDBList Explore lists (#2740), Seerr search results (#2811) | Implemented in Pleazyng |
 | Browsing | Search by actor or director (#1517, #2368); random movie or library shuffle (#1561, #2741, #2757); show end time on detail pages (#2671) | People search, random movie selection, and shuffled playback of movie and TV libraries are implemented across connected servers; detail-page finish time is shown on media details |
 | Home screen | Configurable rows, merged library and collection rows, organizer controls, and Plex account layout sync (#1652/#2203) | Implemented; Plex account sync applies to Plex profiles. Custom rows can combine selected libraries across connected servers |
 | Home screen | Separate Next Up; hide empty libraries or backdrop art; Continue Watching row sizing (#2498, #2690, #2701, #2723, #2784) | Continue Watching and Next Up have separate Home rows and independent visibility/order. Empty-library filtering hides a library only when its server reports an explicit count of zero; unknown counts remain visible. Backdrop visibility and row sizing are implemented. The legacy hero banner visibility setting and TV clock already exist. |
@@ -75,24 +75,24 @@ PlezyNG builds on upstream Plezy with a broad set of features for Plex, Jellyfin
 | Games and media workspace | — | Experimental embedded GameStream/Steam receivers and an app-owned Multiview workspace are present in source. Native composition, simultaneous decoding, host sessions and device qualification remain platform-specific gates; see [Games](docs/games/ARCHITECTURE.md) and [Multiview](docs/plezyng/multiview/DELIVERY.md). |
 | Playback experiments | — | Opt-in Neural motion processing, native projectM/MilkRust preset visualizers and Dolby Vision FEL work have separate runtime and qualification requirements. See [Experimental playback and workspace](#experimental-playback-and-workspace). |
 
-This table is a snapshot of downstream work and its current limits. The linked upstream requests provide context for the gap PlezyNG addresses; equivalent upstream implementations can replace the corresponding downstream code when their behavior and server coverage match.
+This table is a snapshot of downstream work and its current limits. The linked upstream requests provide context for the gap Pleazyng addresses; equivalent upstream implementations can replace the corresponding downstream code when their behavior and server coverage match.
 
 <p>
   <a href="https://plezyng.app/">Website</a> ·
   <a href="https://github.com/edde746/plezy">Upstream Plezy</a> ·
-  <a href="https://github.com/snapetech-org/PlezyNG/issues">PlezyNG issues</a> ·
+  <a href="https://github.com/snapetech-org/PlezyNG/issues">Pleazyng issues</a> ·
   <a href="#download">Download</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="LICENSE">License</a>
 </p>
 
 <p align="center">
-  <img src="assets/readme-showcase.webp" alt="Plezy mobile screenshots" width="900" />
+  <img src="assets/branding/pleazyng-artwork-dark.webp" alt="Pleazyng by SnapeTech — brand illustration" width="900" />
 </p>
 
 ## Download
 
-Published PlezyNG downloads appear on the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases). Version [3.0.0](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.0) was published on 5 November 2026. Its assets include Android, Linux x64/ARM64, Windows x64/ARM64, macOS, unsigned iOS/tvOS developer packages and a Tizen tester handoff. The public release still lacks a webOS package; a successful candidate build is not a published download. See the [recorded release evidence](docs/maintainers/releases/v3.0.0.json).
+Published Pleazyng downloads appear on the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases). Version [3.0.0](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.0) was published on 5 November 2026. Its assets include Android, Linux x64/ARM64, Windows x64/ARM64, macOS, unsigned iOS/tvOS developer packages and a Tizen tester handoff. The public release still lacks a webOS package; a successful candidate build is not a published download. See the [recorded release evidence](docs/maintainers/releases/v3.0.0.json).
 
 | Platform | Download |
 | --- | --- |
@@ -136,7 +136,7 @@ On arm64, install `plezy-linux-arm64.flatpak`.
 
 </details>
 
-The following distribution packages are for upstream **Plezy**, not this PlezyNG fork. Use the PlezyNG release bundles above for the features documented here.
+The following distribution packages are for upstream **Plezy**, not this Pleazyng fork. Use the Pleazyng release bundles above for the features documented here.
 
 ### Arch Linux — Pacman (upstream Plezy)
 
@@ -166,11 +166,11 @@ sudo moss pad plezy
 
 ## Android closed beta
 
-PlezyNG's Google Play closed test is being prepared. Once the test release is published, invited testers can opt in at [the PlezyNG Google Play test page](https://play.google.com/apps/testing/org.snapetech.plezyng). The link is inactive until then, and only accounts added to the test can join. Google Play requires at least 12 testers to stay opted in continuously for 14 days before production access.
+Pleazyng's Google Play closed test is being prepared. Once the test release is published, invited testers can opt in at [the Pleazyng Google Play test page](https://play.google.com/apps/testing/org.snapetech.plezyng). The link is inactive until then, and only accounts added to the test can join. Google Play requires at least 12 testers to stay opted in continuously for 14 days before production access.
 
 ## Features
 
-This list covers the current PlezyNG codebase, including additions since the fork. Server APIs, build options and native runtimes determine availability. Experimental and gated features are identified below; implementation does not by itself establish a published package or device qualification.
+This list covers the current Pleazyng codebase, including additions since the fork. Server APIs, build options and native runtimes determine availability. Experimental and gated features are identified below; implementation does not by itself establish a published package or device qualification.
 
 ### <img src="assets/readme_icons/browse.svg" height="20" alt="" align="center" /> Browse & Discover
 
@@ -401,7 +401,7 @@ This list covers the current PlezyNG codebase, including additions since the for
 
 ## plezy:// links
 
-PlezyNG accepts both `plezy://` and `plezxyng://` schemes; links shown by the app continue using `plezy://` for compatibility. Use either scheme with the hosts and parameters below. Links start Plezy from outside the app. Any link may add `profile=<profile>`: a profile id, a Plex Home user UUID, or a display name (ignoring case; it must match one profile). Plezy switches to that profile first, and a protected profile still asks for its PIN. A link replaces whatever is playing.
+Pleazyng accepts both `plezy://` and `plezxyng://` schemes; links shown by the app continue using `plezy://` for compatibility. Use either scheme with the hosts and parameters below. Links start Plezy from outside the app. Any link may add `profile=<profile>`: a profile id, a Plex Home user UUID, or a display name (ignoring case; it must match one profile). Plezy switches to that profile first, and a protected profile still asks for its PIN. A link replaces whatever is playing.
 
 | Link | Does |
 |---|---|
@@ -431,7 +431,7 @@ On iOS, use the Open URLs action in Shortcuts.
 
 ```bash
 git clone https://github.com/snapetech-org/PlezyNG.git
-cd PlezyNG
+cd Pleazyng
 flutter pub get
 scripts/codegen.sh
 flutter run

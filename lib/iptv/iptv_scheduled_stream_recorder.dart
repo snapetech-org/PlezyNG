@@ -5,7 +5,7 @@ import 'iptv_hls_archive.dart';
 
 import '../sources/source_transport.dart';
 
-/// Captures direct HTTP streams and AES-128 or clear HLS while PlezyNG is
+/// Captures direct HTTP streams and AES-128 or clear HLS while Pleazyng is
 /// running. HLS is retained as a self-contained local playlist archive so
 /// separate renditions and initialization changes remain intact.
 class IptvScheduledStreamRecorder {

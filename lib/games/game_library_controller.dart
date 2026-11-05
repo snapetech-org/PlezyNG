@@ -6,7 +6,7 @@ import 'game_artwork.dart';
 import 'game_models.dart';
 import 'game_streaming_client.dart';
 
-/// All persistent state is scoped to the active PlezyNG profile. Retired work
+/// All persistent state is scoped to the active Pleazyng profile. Retired work
 /// cannot publish state, launch an app, or resurrect a deleted profile.
 class GameLibraryController extends ChangeNotifier {
   GameLibraryController({

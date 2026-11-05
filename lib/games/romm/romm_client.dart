@@ -31,6 +31,7 @@ class RommClient {
   }
 
   Uri uri(String path, [Map<String, Object?> query = const {}]) {
+    _checkRawPath(path);
     if (path.startsWith('/') || path.contains('\\') || path.split('/').contains('..')) {
       throw const RommFailure('romm.invalidAddress');
     }
@@ -51,22 +52,7 @@ class RommClient {
   /// Resolves server-relative art and asset links without allowing a token to
   /// follow an external origin, path traversal, or a credential-bearing URL.
   Uri resource(String path) {
-    // Uri parsing normalizes encoded dot segments. Inspect them first, so an
-    // escaped parent cannot be normalized outside the prefix and then rebound.
-    var rawPath = path.split(RegExp(r'[?#]')).first;
-    try {
-      for (var depth = 0; depth < 4; depth++) {
-        if (rawPath.contains('\\') || rawPath.split('/').contains('..')) {
-          throw const RommFailure('romm.invalidAddress');
-        }
-        final decoded = Uri.decodeComponent(rawPath);
-        if (decoded == rawPath) break;
-        if (depth == 3) throw const RommFailure('romm.invalidAddress');
-        rawPath = decoded;
-      }
-    } on FormatException {
-      throw const RommFailure('romm.invalidAddress');
-    }
+    _checkRawPath(path);
     final parsed = Uri.tryParse(path);
     if (parsed == null ||
         parsed.userInfo.isNotEmpty ||
@@ -82,6 +68,31 @@ class RommClient {
       throw const RommFailure('romm.invalidAddress');
     }
     return resolved;
+  }
+
+  // Uri parsing removes dot segments, including percent-encoded dots. Check
+  // the original spelling before normalization can hide a traversal attempt.
+  static void _checkRawPath(String value) {
+    final rawPath = value.split(RegExp(r'[?#]')).first;
+    for (final raw in rawPath.split('/')) {
+      var segment = raw;
+      for (var depth = 0; depth < 8; depth++) {
+        if (segment == '.' ||
+            segment == '..' ||
+            segment.contains('\\') ||
+            segment.contains('/') ||
+            segment.contains('\u0000')) {
+          throw const RommFailure('romm.invalidAddress');
+        }
+        if (!RegExp(r'%[0-9a-fA-F]{2}').hasMatch(segment)) break;
+        try {
+          segment = Uri.decodeComponent(segment);
+        } on FormatException {
+          throw const RommFailure('romm.invalidAddress');
+        }
+        if (depth == 7) throw const RommFailure('romm.invalidAddress');
+      }
+    }
   }
 
   Future<HttpClientRequest> open(String method, Uri url, {Map<String, String> headers = const {}}) async {
@@ -203,7 +214,7 @@ class RommClient {
       body: {
         'client_device_identifier': identifier,
         'name': rommString(name, 128),
-        'client': 'PlezyNG',
+        'client': 'Pleazyng',
         'platform': Platform.operatingSystem,
         'client_version': '1',
         'requested_scopes': [
@@ -308,7 +319,7 @@ class RommClient {
     final request = await open('POST', uri('api/collections', {'is_favorite': true, 'is_public': false}));
     try {
       request.headers.set('content-type', 'application/x-www-form-urlencoded');
-      request.write('name=PlezyNG+Favorites');
+      request.write('name=Pleazyng+Favorites');
       final response = await request.close().timeout(const Duration(seconds: 30));
       final bytes = await read(response);
       if (response.statusCode < 200 || response.statusCode > 299) {

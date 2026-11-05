@@ -49,7 +49,7 @@ class PackageTest(unittest.TestCase):
                         ('libapp.so', 'libdart_smb2.so', 'libplezy_sqlite3.so', 'libplezy_torrent.so',
                          'libflutter_engine.so', 'libflutter_plugins.so', 'libflutter_tizen_tv.so',
                          'libftpw_video_player_videohole.so')})
-        entries.update({'bin/plezyng': elf(arch), 'res/icudtl.dat': b'fixture',
+        entries.update({'bin/pleazyng': elf(arch), 'res/icudtl.dat': b'fixture',
                         'res/flutter_assets/AssetManifest.bin': b'fixture'})
         if arch == 'x64' and manifest is None:
             entries['tizen-manifest.xml'] = self.manifest.replace(b'api-version="6.0"', b'api-version="8.0"')
@@ -67,7 +67,7 @@ class PackageTest(unittest.TestCase):
     def test_report_is_structural_not_hardware_qualification(self):
         path = self.archive()
         report = package.inspect_package(path, 'arm')
-        self.assertEqual(report['app_id'], 'org.snapetech.plezyng')
+        self.assertEqual(report['app_id'], 'org.snapetech.pleazyng')
         self.assertEqual(report['sha256'], package.sha256(path))
         self.assertTrue(report['signature_files_present'])
         self.assertFalse(report['hardware_qualified'])
@@ -154,11 +154,11 @@ class PackageTest(unittest.TestCase):
     def test_signature_storage_library_and_identity_are_required(self):
         for omit in ('signature1.xml', 'lib/libdart_smb2.so', 'lib/libplezy_sqlite3.so', 'lib/libplezy_torrent.so',
                      'lib/libflutter_engine.so', 'lib/libflutter_plugins.so',
-                     'lib/libftpw_video_player_videohole.so', 'bin/plezyng', 'res/icudtl.dat'):
+                     'lib/libftpw_video_player_videohole.so', 'bin/pleazyng', 'res/icudtl.dat'):
             with self.subTest(omit=omit), self.assertRaises(ValueError):
                 package.inspect_package(self.archive(omit=omit), 'arm')
         with self.assertRaisesRegex(ValueError, 'identity'):
-            package.inspect_package(self.archive(manifest=self.manifest.replace(b'org.snapetech.plezyng', b'other.app')), 'arm')
+            package.inspect_package(self.archive(manifest=self.manifest.replace(b'org.snapetech.pleazyng', b'other.app')), 'arm')
 
     def test_private_material_and_unsafe_paths_are_rejected(self):
         for name in ('cert/author.p12', 'distributor.pfx', 'private.key', 'profiles.xml', '.env', '../escape', '/absolute', 'dir\\file'):
@@ -182,16 +182,16 @@ class PackageTest(unittest.TestCase):
         recipe = json.loads((package.ROOT / 'packaging/tizen/apps2samsung.json').read_text())
         self.assertFalse(recipe['enabled'])
         pattern = recipe['assets'][0]['match']
-        self.assertIsNotNone(re.fullmatch(pattern, 'PlezyNG-tizen-arm.tpk'))
-        for name in ('PlezyNG-tizen-x64.tpk', 'PlezyNG-tizen-arm-tester.tpk', 'PlezyNG-tizen-arm-signed.tpk',
-                     'PlezyNG-tizen-arm.tpk.sha256', 'Other-tizen-arm.tpk'):
+        self.assertIsNotNone(re.fullmatch(pattern, 'pleazyng-tizen-arm.tpk'))
+        for name in ('pleazyng-tizen-x64.tpk', 'pleazyng-tizen-arm-tester.tpk', 'pleazyng-tizen-arm-signed.tpk',
+                     'pleazyng-tizen-arm.tpk.sha256', 'Other-tizen-arm.tpk'):
             self.assertIsNone(re.fullmatch(pattern, name))
 
     def test_api_floor_and_launcher_abi_are_checked(self):
         with self.assertRaisesRegex(ValueError, 'Expected API'):
             package.inspect_package(self.archive(manifest=self.manifest.replace(b'api-version="6.0"', b'api-version="2.24.1"')), 'arm')
         with self.assertRaisesRegex(ValueError, 'Wrong architecture'):
-            package.inspect_package(self.archive(extra={'bin/plezyng': elf('x64')}), 'arm')
+            package.inspect_package(self.archive(extra={'bin/pleazyng': elf('x64')}), 'arm')
         self.assertEqual(package.inspect_package(self.archive(arch='x64'), 'x64')['minimum_api'], '8.0')
 
     def test_resign_rejects_digest_mismatch_without_running_signer(self):
@@ -221,13 +221,13 @@ class PackageTest(unittest.TestCase):
             with self.subTest(kind=kind), patch.object(package, 'run', side_effect=signer):
                 if kind == 'valid':
                     package.resign(args)
-                    report = json.loads((args.output / 'PlezyNG-tizen-arm-signed.tpk.json').read_text())
+                    report = json.loads((args.output / 'pleazyng-tizen-arm-signed.tpk.json').read_text())
                     self.assertTrue(report['payload_unchanged'])
                     self.assertFalse(report['tv_install_verified'])
                 else:
                     with self.assertRaisesRegex(ValueError, 'no change' if kind == 'noop' else 'changed the application'):
                         package.resign(args)
-                    self.assertFalse((args.output / 'PlezyNG-tizen-arm-signed.tpk').exists())
+                    self.assertFalse((args.output / 'pleazyng-tizen-arm-signed.tpk').exists())
 
     def test_stage_keeps_overrides_excludes_untracked_and_checks_native_digests(self):
         source, stage, native = [self.root / p for p in ('source', 'stage', 'native')]
@@ -239,7 +239,7 @@ class PackageTest(unittest.TestCase):
             'tizen/tizen-manifest.xml': self.manifest.decode(),
             'scripts/tizen/smb_build_hook.dart': '// staged hook',
             'scripts/tizen/publication_reader_screen.dart': '// TV reader',
-            'assets/plezy.png': 'fixture image',
+            'assets/pleazyng.png': 'fixture image',
         }
         for name, content in files.items():
             p = source / name

@@ -53,7 +53,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
             },
-            "PlezyNG CI",
+            "Pleazyng CI",
             expected_title="action:ci:pool:private",
             expected_sha=commit_sha,
         )
@@ -76,7 +76,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
                 "execution_profile": "hybrid",
                 "build_linux_packages": "true",
             },
-            "PlezyNG CI",
+            "Pleazyng CI",
             expected_title="action:ci:pool:private",
             expected_sha=commit_sha,
         )
@@ -157,7 +157,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
                 "subtitle_gpu_backend": "cpu",
                 "prepare_homebrew_cask": "false",
             },
-            "PlezyNG 3.0.0 all-platform release-mode candidate",
+            "Pleazyng 3.0.0 all-platform release-mode candidate",
             expected_title="action:build:pool:private:mode:release:version:3.0.0",
             expected_sha=commit_sha,
         )
@@ -205,7 +205,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
 
 class ImmutableReleaseTagTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.tempdir = tempfile.TemporaryDirectory(prefix="plezyng-immutable-tag-")
+        self.tempdir = tempfile.TemporaryDirectory(prefix="pleazyng-immutable-tag-")
         self.root = Path(self.tempdir.name)
         self.remote = self.root / "remote.git"
         self.checkout = self.root / "checkout"
@@ -222,7 +222,7 @@ class ImmutableReleaseTagTests(unittest.TestCase):
         self.checkout.joinpath("lib/main.dart").write_text("void main() {}\n", encoding="utf-8")
         self.git("add", "lib/main.dart")
         self.git("commit", "-m", "initial source")
-        self.git("tag", "-a", "v3.0.0", "-m", "PlezyNG 3.0.0")
+        self.git("tag", "-a", "v3.0.0", "-m", "Pleazyng 3.0.0")
         self.git("push", "-u", "origin", "main", "--tags")
         self.tag_commit = self.git("rev-parse", "refs/tags/v3.0.0^{commit}")
 
@@ -250,7 +250,7 @@ class ImmutableReleaseTagTests(unittest.TestCase):
 
     def test_reuses_immutable_tag_after_allowlisted_release_changes(self) -> None:
         self.commit_file("CHANGELOG.md", "## [Unreleased]\n\n- Release infrastructure update.\n")
-        main_commit = self.commit_file(".github/workflows/build.yml", "name: PlezyNG Release\n")
+        main_commit = self.commit_file(".github/workflows/build.yml", "name: Pleazyng Release\n")
 
         self.assertEqual(ensure_tag(self.checkout, "3.0.0", main_commit), "v3.0.0")
         self.assertEqual(self.git("rev-parse", "refs/tags/v3.0.0^{commit}"), self.tag_commit)

@@ -1,5 +1,5 @@
 // Generated from lib/i18n; edit the source catalog.
-"NSLocalNetworkUsageDescription" = "A PlezyNG a helyi hálózaton keresztül csatlakozik a média szerverekhez és a lejátszó eszközökhöz.";
-"NSLocationWhenInUseUsageDescription" = "A PlezyNG akkor használja a helyadatokhoz való hozzáférést, ha az iOS ezt megköveteli a helyi hálózat felismeréséhez és a médiaszerverekhez való csatlakozáshoz.";
+"NSLocalNetworkUsageDescription" = "A Pleazyng a helyi hálózaton keresztül csatlakozik a média szerverekhez és a lejátszó eszközökhöz.";
+"NSLocationWhenInUseUsageDescription" = "A Pleazyng akkor használja a helyadatokhoz való hozzáférést, ha az iOS ezt megköveteli a helyi hálózat felismeréséhez és a médiaszerverekhez való csatlakozáshoz.";
 "NSPhotoLibraryUsageDescription" = "Válassz képeket a fotókönyvtáradból a médiatartalmak borítóképeihez és illusztrációihoz.";
 "NSCameraUsageDescription" = "QR kódok szkennelése a Companion Remote párosításához.";

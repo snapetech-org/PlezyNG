@@ -179,9 +179,9 @@ void main() {
       expect(uri.toString(), contains('file%20name.mkv%3FX-Plex-Token%3Dabc%26download%3D1'));
       expect(uri.queryParameters['url'], stream);
       expect(uri.queryParameters['position'], '90');
-      expect(uri.queryParameters['x-success'], 'plezy://external-player/success/s1');
-      expect(uri.queryParameters['x-cancel'], 'plezy://external-player/cancel/s1');
-      expect(uri.queryParameters['x-error'], 'plezy://external-player/error/s1');
+      expect(uri.queryParameters['x-success'], 'pleazyng://external-player/success/s1');
+      expect(uri.queryParameters['x-cancel'], 'pleazyng://external-player/cancel/s1');
+      expect(uri.queryParameters['x-error'], 'pleazyng://external-player/error/s1');
     });
 
     test('play link without return links or a position is just the stream', () {
@@ -204,8 +204,8 @@ void main() {
 
     expect(uri.toString(), startsWith('infuse://x-callback-url/play?url=http%3A%2F%2Fsrv%2Fv.mkv'));
     expect(uri.queryParameters['position'], '42');
-    expect(uri.queryParameters['x-success'], 'plezy://external-player/success/s2');
-    expect(uri.queryParameters['x-error'], 'plezy://external-player/error/s2');
+    expect(uri.queryParameters['x-success'], 'pleazyng://external-player/success/s2');
+    expect(uri.queryParameters['x-error'], 'pleazyng://external-player/error/s2');
     expect(uri.queryParameters.containsKey('x-cancel'), isFalse);
     expect(uri.queryParameters['filename'], 'The Office - S02E01 - The Dundies.mkv');
     expect(uri.toString(), contains('filename=The%20Office%20-%20S02E01%20-%20The%20Dundies.mkv'));
@@ -236,12 +236,12 @@ void main() {
     // VLC only decodes `url` when it starts fully encoded (`https%3A%2F%2F`).
     expect(uri.toString(), startsWith('vlc-x-callback://x-callback-url/stream?url=https%3A%2F%2Fsrv.plex.direct'));
     expect(uri.queryParameters['url'], stream);
-    expect(uri.queryParameters['x-success'], 'plezy://external-player/success/s3');
-    expect(uri.queryParameters['x-error'], 'plezy://external-player/error/s3');
+    expect(uri.queryParameters['x-success'], 'pleazyng://external-player/success/s3');
+    expect(uri.queryParameters['x-error'], 'pleazyng://external-player/error/s3');
     expect(uri.queryParameters.keys, unorderedEquals(['url', 'x-success', 'x-error']));
     // VLC 3.7.x opens return links without decoding them, so they go raw.
-    expect(uri.query, contains('x-success=plezy://external-player/success/s3'));
-    expect(uri.query, contains('x-error=plezy://external-player/error/s3'));
+    expect(uri.query, contains('x-success=pleazyng://external-player/success/s3'));
+    expect(uri.query, contains('x-error=pleazyng://external-player/error/s3'));
   });
 
   test("VLC 3.7.3's own query parsing recovers usable return links", () {

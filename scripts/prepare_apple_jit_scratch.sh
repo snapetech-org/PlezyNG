@@ -51,7 +51,7 @@ primary_mount_line="$(/sbin/mount | /usr/bin/awk -v mountpoint="$NFS_PRIMARY_MOU
 case "$mount_line" in
   kspld0*:/mnt/disks/gamespool0/plezyng-native-build-*" on $NFS_MOUNT (nfs,"*) ;;
   *)
-    echo "Expected the PlezyNG NFS export from kspld0 at $NFS_MOUNT; found: ${mount_line:-no mount}" >&2
+    echo "Expected the Pleazyng NFS export from kspld0 at $NFS_MOUNT; found: ${mount_line:-no mount}" >&2
     exit 1
     ;;
 esac
@@ -60,7 +60,7 @@ short_source="$(/usr/bin/awk '{ print $1 }' <<< "$mount_line")"
 case "$primary_source" in
   kspld0*:/mnt/disks/gamespool0/plezyng-native-build-*) ;;
   *)
-    echo "Expected the primary PlezyNG NFS export at $NFS_PRIMARY_MOUNT; found: ${primary_mount_line:-no mount}" >&2
+    echo "Expected the primary Pleazyng NFS export at $NFS_PRIMARY_MOUNT; found: ${primary_mount_line:-no mount}" >&2
     exit 1
     ;;
 esac
@@ -93,7 +93,7 @@ if [[ "$scratch_mode" == "local-xcode" ]]; then
     exit 1
   fi
   runner_temp_real="$(cd "$RUNNER_TEMP" && /bin/pwd -P)"
-  local_xcode_root="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
+  local_xcode_root="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
   local_build_dir="$local_xcode_root/build"
 fi
 if (( ${#task_root} > 64 )); then
@@ -145,7 +145,7 @@ created_owner=1
 
 probe_dir="$task_root/.nfs-probe"
 /bin/mkdir -m 700 "$probe_dir"
-/usr/bin/printf 'PlezyNG Apple JIT NFS scratch probe\n' > "$probe_dir/probe.bin"
+/usr/bin/printf 'Pleazyng Apple JIT NFS scratch probe\n' > "$probe_dir/probe.bin"
 /bin/chmod 640 "$probe_dir/probe.bin"
 /bin/mv "$probe_dir/probe.bin" "$probe_dir/renamed.bin"
 /bin/ln -s renamed.bin "$probe_dir/link"

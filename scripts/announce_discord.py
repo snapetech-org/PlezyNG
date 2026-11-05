@@ -68,7 +68,7 @@ def post(webhook_url: str, title: str, release_url: str, description: str) -> di
     # Discord normalizes surrounding whitespace in embed descriptions.
     description = description.strip()
     payload = {
-        "username": "PlezyNG Releases",
+        "username": "Pleazyng Releases",
         "allowed_mentions": {"parse": []},
         "embeds": [
             {
@@ -164,7 +164,7 @@ def announce(release: dict, webhook_url: str, receipt_path: Path) -> dict:
         save()
         suffix = f" ({index + 1}/{len(chunks)})" if len(chunks) > 1 else ""
         try:
-            message = post(webhook_url, f"PlezyNG {version} is out{suffix}",
+            message = post(webhook_url, f"Pleazyng {version} is out{suffix}",
                            release["html_url"], chunks[index])
         except RejectedPost:
             receipt["in_flight_chunk"] = None

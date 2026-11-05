@@ -122,7 +122,7 @@ class _Translations$app$it extends Translations$app$en {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class _Translations$appIcon$it extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Predefinita';
 	@override String get current => 'Icona attuale';
 	@override String get locked => 'L’accesso a vita richiesto';
-	@override String get lockedHint => 'Inizia il tuo tentativo di 7 giorni o disattivare PlezyNG per tutta la vita per utilizzare icone alternative.';
+	@override String get lockedHint => 'Inizia il tuo tentativo di 7 giorni o disattivare Pleazyng per tutta la vita per utilizzare icone alternative.';
 	@override String get changeFailed => 'Impossibile cambiare l\'icona dell\'app';
-	@override String get launcherHint => 'La nuova icona appare nella schermata Home quando esci da PlezyNG.';
-	@override String get tvLauncherHint => 'Il nuovo banner appare quando esci da PlezyNG. Android TV potrebbe continuare a mostrare quello precedente fino al riavvio del televisore.';
+	@override String get launcherHint => 'La nuova icona appare nella schermata Home quando esci da Pleazyng.';
+	@override String get tvLauncherHint => 'Il nuovo banner appare quando esci da Pleazyng. Android TV potrebbe continuare a mostrare quello precedente fino al riavvio del televisore.';
 	@override late final _Translations$appIcon$names$it names = _Translations$appIcon$names$it._(_root);
 	@override String get description => 'Scegli l\'icona mostrata dal lanciatore del dispositivo. le previsioni mostrano come appare ogni opzione.';
 }
@@ -166,7 +166,7 @@ class _Translations$auth$it extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'In attesa di approvazione…';
 	@override String get quickConnectCancel => 'Annulla';
 	@override String get quickConnectExpired => 'Quick Connect scaduto. Riprova.';
-	@override String get localDataRecoveryRequired => 'PlezyNG non è riuscito a recuperare in sicurezza i dati locali di accesso e delle riproduzioni in sospeso. Accedi di nuovo.';
+	@override String get localDataRecoveryRequired => 'Pleazyng non è riuscito a recuperare in sicurezza i dati locali di accesso e delle riproduzioni in sospeso. Accedi di nuovo.';
 	@override String get pinCheckRejected => 'La verifica del PIN Plex è stata rifiutata';
 	@override String get connectToDirectPlex => 'Connessione al server locale Plex';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$it extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Impostazioni';
-	@override String get supportDeveloper => 'Supporta PlezyNG';
+	@override String get supportDeveloper => 'Supporta Pleazyng';
 	@override String get supportDeveloperDescription => 'Fai una donazione per sostenere lo sviluppo';
-	@override String get lifetimeAccess => 'PlezyNG accesso a vita';
+	@override String get lifetimeAccess => 'Pleazyng accesso a vita';
 	@override String get language => 'Lingua';
 	@override String get theme => 'Tema';
 	@override String get appearance => 'Aspetto';
@@ -353,7 +353,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'Non sono disponibili biblioteche multimediali collegate.';
 	@override String get contentScreensaverDismissHint => 'Premere qualsiasi pulsante o tappa per rimuovere';
 	@override String get newEpisodeNotifications => 'Nuove notizie di episodio';
-	@override String get newEpisodeNotificationsDescription => 'Allarme quando un nuovo episodio viene aggiunto a un show che si è catturato. controlla mentre Plezy è aperto.';
+	@override String get newEpisodeNotificationsDescription => 'Allarme quando un nuovo episodio viene aggiunto a un show che si è catturato. controlla mentre Pleazyng è aperto.';
 	@override String get continueWatchingRowSize => 'Continua a guardare la dimensione della linea';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} carte';
 	@override String get rowSizeCompact => 'Compatta';
@@ -486,7 +486,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Ripristina le preferenze da un file';
 	@override String get importSettingsConfirm => 'Questa azione sostituirà le impostazioni attuali. Continuare?';
 	@override String get importSettingsSuccess => 'Impostazioni importate';
-	@override String get importSettingsInvalidFile => 'Questo file non è un\'esportazione PlezyNG valida';
+	@override String get importSettingsInvalidFile => 'Questo file non è un\'esportazione Pleazyng valida';
 	@override String get importSettingsNoUser => 'Accedi prima di importare le impostazioni';
 	@override String get cloudBackup => 'Cloud Backup di sicurezza';
 	@override String get cloudBackupDescription => 'Esegui il backup delle impostazioni trasferibili a un indirizzo WebDAV tramite HTTPS. Le connessioni ai server e le credenziali restano su questo dispositivo.';
@@ -668,7 +668,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get forceTvMode => 'Forza modalità TV';
 	@override String get forceTvModeDescription => 'Forza il layout TV sui dispositivi che non vengono rilevati automaticamente. Richiede il riavvio.';
 	@override String get startInFullscreen => 'Avvia a schermo intero';
-	@override String get startInFullscreenDescription => 'Apri PlezyNG a schermo intero all\'avvio';
+	@override String get startInFullscreenDescription => 'Apri Pleazyng a schermo intero all\'avvio';
 	@override String get exitFullscreenOnPlayerClose => 'Esci dalla modalità a schermo intero alla chiusura del lettore';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Esce automaticamente dalla modalità a schermo intero quando chiudi il lettore video';
 	@override String get autoHidePerformanceOverlay => 'Nascondi automaticamente il riquadro delle prestazioni';
@@ -724,7 +724,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Ovunque';
 	@override String get playerScopeLibrary => 'Per libreria';
 	@override String get playerScopeTitle => 'Per serie o film';
-	@override String get exportDialogTitle => 'Esporta le impostazioni di PlezyNG';
+	@override String get exportDialogTitle => 'Esporta le impostazioni di Pleazyng';
 	@override String get followSystem => 'Usa la lingua di sistema';
 	@override String get followAppLanguage => 'Come la lingua dell’interfaccia';
 	@override String get regionFormat => 'Formati regionali';
@@ -735,7 +735,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'Aprire video desktop in schermo pieno quando si avvia il playback';
 	@override String get extendVideoIntoDisplayCutout => 'Estendere il video in display cutout';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'Lascia che il video a schermo pieno utilizzi la cutout della fotocamera sui telefoni Android';
-	@override String get languageDescription => 'Selezionare il linguaggio utilizzato per i controlli e i messaggi PlezyNG. Seguire il sistema traccia la lingua del dispositivo.';
+	@override String get languageDescription => 'Selezionare il linguaggio utilizzato per i controlli e i messaggi Pleazyng. Seguire il sistema traccia la lingua del dispositivo.';
 	@override String get themeDescription => 'Scegliere i colori e il contrasto utilizzati in tutta l\'app.';
 	@override String get libraryDensityDescription => 'Cambiare quante carte di libreria si adatta in ogni riga.';
 	@override String get displayScaleDescription => 'Ristrutturare l\'interfaccia su questo display auto senza cambiare la dimensione del testo in tutto il dispositivo.';
@@ -757,14 +757,14 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get episodeActionDescription => 'Scegli ciò che accade quando si attiva una scheda di episodio.';
 	@override String get episodePlayDescription => 'Inizia subito l’episodio.';
 	@override String get episodeDetailsDescription => 'Apri la pagina dell\'episodio prima del playback.';
-	@override String get contentScreensaverDelayDescription => 'Scegli quanto tempo PlezyNG aspetta senza input prima di mostrare opere d\'arte.';
+	@override String get contentScreensaverDelayDescription => 'Scegli quanto tempo Pleazyng aspetta senza input prima di mostrare opere d\'arte.';
 	@override String get continueWatchingRowSizeDescription => 'Scegliamo quanto sono grandi le carte nella riga Continuing Watching.';
 	@override String get rowSizeCompactDescription => 'Mostra carte più piccole in modo che più articoli si adattino per tutta la riga.';
 	@override String get rowSizeStandardDescription => 'Utilizzare la dimensione standard della scheda.';
 	@override String get rowSizeLargeDescription => 'Mostra mappe più grandi con maggiori dettagli artwork.';
 	@override String get visualEffectsDescription => 'Scegli il budget di animazione e effetti artificiali per questo dispositivo.';
 	@override String get visualEffectsFullDescription => 'Utilizzare tutti gli effetti di animazione e arte su ogni dispositivo.';
-	@override String get startupSectionDescription => 'Selezionare quale sezione si apre quando PlezyNG inizia.';
+	@override String get startupSectionDescription => 'Selezionare quale sezione si apre quando Pleazyng inizia.';
 	@override late final _Translations$settings$startupSectionOptions$it startupSectionOptions = _Translations$settings$startupSectionOptions$it._(_root);
 	@override String get smallSkipDurationDescription => 'Imposta la distanza spostata dal breve ritorno e avanti cerca controlli.';
 	@override String get largeSkipDurationDescription => 'Imposta la distanza spostata dal lungo ritorno e avanti cerca controlli.';
@@ -800,7 +800,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => 'Gioca l\'audio sorgente senza un transcode cappato a bitrate.';
 	@override String get musicQualityTranscodeOptionDescription => 'Richiedi un codice trans server capped vicino alla bitrate mostrata sopra; la produzione effettiva può variare.';
 	@override String get maxVolumeInputLabel => 'Il volume massimo (%)';
-	@override String get checkForUpdatesDescription => 'Scopri ora se è disponibile una versione più recente di PlezyNG.';
+	@override String get checkForUpdatesDescription => 'Scopri ora se è disponibile una versione più recente di Pleazyng.';
 	@override String get appearanceDescription => 'Selezionare il tema dell\'app e personalizzare le schede della biblioteca, le righe di casa e la navigazione.';
 	@override String get prerollLibraryDescription => 'Scegli la libreria che contiene i clip disponibili come pre-roll di film.';
 	@override String get prerollSelectionDescription => 'Scegli i clip dalla biblioteca selezionata che puoi giocare prima dei film.';
@@ -1051,8 +1051,8 @@ class _Translations$mediaMenu$it extends Translations$mediaMenu$en {
 		one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} altro episodio è archiviato nello stesso file e verrà eliminato anche lui:',
 		other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} altri episodi sono archiviati nello stesso file e verranno eliminati anche loro:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG non ha potuto verificare quali file rimuoverà, quindi potrebbe eliminare più di quanto indicato sopra. Annulla e riprova, oppure elimina comunque.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Il tuo server non ha fornito i dettagli del file per questo elemento, quindi PlezyNG non può verificare quali file rimuoverà. Potrebbe eliminare più di quanto indicato sopra.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng non ha potuto verificare quali file rimuoverà, quindi potrebbe eliminare più di quanto indicato sopra. Annulla e riprova, oppure elimina comunque.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Il tuo server non ha fornito i dettagli del file per questo elemento, quindi Pleazyng non può verificare quali file rimuoverà. Potrebbe eliminare più di quanto indicato sopra.';
 	@override String get mediaDeletedSuccessfully => 'Elemento multimediale eliminato correttamente';
 	@override String get mediaFailedToDelete => 'Impossibile eliminare l\'elemento multimediale';
 	@override String get rate => 'Valuta';
@@ -1120,7 +1120,7 @@ class _Translations$accessibility$it extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'accessibilità';
 	@override String get summary => 'testo, contrasto, movimento e controlli';
-	@override String get systemHint => 'Le impostazioni di accessibilità del dispositivo si applicano sempre.Queste opzioni aggiungono ajustamenti nel corso di PlezyNG.';
+	@override String get systemHint => 'Le impostazioni di accessibilità del dispositivo si applicano sempre.Queste opzioni aggiungono ajustamenti nel corso di Pleazyng.';
 	@override String get readability => 'Leggi e visibilità';
 	@override String get textSize => 'Dimensioni aggiuntive del testo';
 	@override String get preview => 'Leggi, ascolta e guarda al tuo ritmo.';
@@ -1133,7 +1133,7 @@ class _Translations$accessibility$it extends Translations$accessibility$en {
 	@override String get largeTargets => 'obiettivi touch più grandi';
 	@override String get largeTargetsHint => 'Gioca i controlli condivisi più spazio per la navigazione a touch e assistive.';
 	@override String get navigationHint => 'Usa Tab e Shift+Tab per spostarti tra i controlli, Enter o la barra spaziatrice per attivarli ed Escape o Indietro per chiudere. Quando un libro è aperto, puoi regolare lo zoom e le preferenze di lettura.';
-	@override String get textSizeDescription => 'Scala il testo dell\'interfaccia in PlezyNG oltre alla configurazione di dimensioni del testo del sistema del dispositivo.';
+	@override String get textSizeDescription => 'Scala il testo dell\'interfaccia in Pleazyng oltre alla configurazione di dimensioni del testo del sistema del dispositivo.';
 	@override String get boldTextHint => 'Utilizzare un peso più pesante per le etichette e i messaggi di interfaccia per renderli più facili da distinguere.';
 }
 
@@ -1461,7 +1461,7 @@ class _Translations$profiles$it extends Translations$profiles$en {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Aggiungi profilo PlezyNG';
+	@override String get addPlezyProfile => 'Aggiungi profilo Pleazyng';
 	@override String get switchingProfile => 'Cambio profilo…';
 	@override String get deleteThisProfileTitle => 'Eliminare questo profilo?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Rimuovi ${displayName}. Le connessioni resteranno invariate.';
@@ -1552,7 +1552,7 @@ class _Translations$connections$it extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} server hanno negato l\'accesso a questo account';
 	@override String get signInAgain => 'Accedi di nuovo';
 	@override String editMediaBrowserTitle({required Object product}) => 'Modifica connessione ${product}';
-	@override String editMediaBrowserIntro({required Object serverName}) => 'Aggiungi o rimuovi gli URL per ${serverName}. PlezyNG userà l\'URL raggiungibile con la latenza più bassa.';
+	@override String editMediaBrowserIntro({required Object serverName}) => 'Aggiungi o rimuovi gli URL per ${serverName}. Pleazyng userà l\'URL raggiungibile con la latenza più bassa.';
 }
 
 // Path: accountPreferences
@@ -1566,7 +1566,7 @@ class _Translations$accountPreferences$it extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => 'Opzioni di audio, sottotitoli e libreria salvate su ${account}';
 	@override String hubSubtitleMultiple({required Object count}) => 'Opzioni di audio, sottotitoli e libreria salvate su ${count} account';
 	@override String get pickAccount => 'Ogni account conserva le proprie preferenze. Scegli quale modificare.';
-	@override String get storedOnAccount => 'Queste opzioni vengono salvate sull\'account stesso, quindi ogni app che vi accede le usa — inclusa PlezyNG sugli altri tuoi dispositivi.';
+	@override String get storedOnAccount => 'Queste opzioni vengono salvate sull\'account stesso, quindi ogni app che vi accede le usa — inclusa Pleazyng sugli altri tuoi dispositivi.';
 	@override String get noAccounts => 'Nessun account da configurare';
 	@override String get noAccountsHint => 'Accedi a Plex oppure connetti un server Jellyfin o Emby: le preferenze salvate su quell\'account appariranno qui.';
 	@override String get unavailable => 'Impossibile raggiungere questo account';
@@ -1794,9 +1794,9 @@ class _Translations$startup$it extends Translations$startup$en {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG non ha potuto avviarsi';
+	@override String get failedTitle => 'Pleazyng non ha potuto avviarsi';
 	@override String get failedBody => 'Si è verificato un errore durante l\'avvio. I dettagli seguenti indicano cosa non ha funzionato.';
-	@override String get failedBodyRepairable => 'Il file delle impostazioni salvate di PlezyNG è danneggiato e deve essere ricostruito prima che PlezyNG possa avviarsi. Riprovare non servirà: scegli Ripara storage.';
+	@override String get failedBodyRepairable => 'Il file delle impostazioni salvate di Pleazyng è danneggiato e deve essere ricostruito prima che Pleazyng possa avviarsi. Riprovare non servirà: scegli Ripara storage.';
 	@override String get phaseLabel => 'Passaggio';
 	@override String get showDetails => 'Mostra dettagli';
 	@override String get hideDetails => 'Nascondi dettagli';
@@ -1805,16 +1805,16 @@ class _Translations$startup$it extends Translations$startup$en {
 	@override String get uploadDetails => 'Carica dettagli';
 	@override String get repairStorage => 'Ripara storage';
 	@override String get repairTitle => 'Riparare i dati archiviati?';
-	@override String get repairBodyCommon => 'Il file delle impostazioni di PlezyNG è danneggiato e non può essere letto. La riparazione ripristina ogni impostazione al suo valore predefinito.';
+	@override String get repairBodyCommon => 'Il file delle impostazioni di Pleazyng è danneggiato e non può essere letto. La riparazione ripristina ogni impostazione al suo valore predefinito.';
 	@override String get repairBodyOneCredential => 'Un accesso salvato è danneggiato e non può essere letto. La riparazione rimuove solo quello; le altre impostazioni restano intatte.';
 	@override String get repairBodySignInsKept => 'I tuoi server e profili dovrebbero rimanere con accesso effettuato.';
 	@override String get repairBodySignInsLost => 'La chiave che protegge i tuoi accessi salvati non può essere recuperata da questo file, quindi dovrai effettuare di nuovo l\'accesso a ogni server e profilo. Nulla sul tuo server multimediale è interessato.';
-	@override String get repairBodySessionsUncertain => 'I tracker (MAL, AniList, Simkl, Trakt) e Seerr sono archiviati separatamente e potrebbero sopravvivere o meno. PlezyNG ti dirà esattamente cosa ha conservato.';
+	@override String get repairBodySessionsUncertain => 'I tracker (MAL, AniList, Simkl, Trakt) e Seerr sono archiviati separatamente e potrebbero sopravvivere o meno. Pleazyng ti dirà esattamente cosa ha conservato.';
 	@override String get repairConfirm => 'Ripara';
 	@override String get repairSucceeded => 'Storage riparato';
 	@override String get repairNeedsRestart => 'Storage riparato — riavvio richiesto';
-	@override String get restartRequiredBody => 'I tuoi dati sono stati riparati, ma PlezyNG deve ripartire da zero prima di poterli usare. Chiudi PlezyNG e riaprilo.';
-	@override String get quitPlezy => 'Esci da PlezyNG';
+	@override String get restartRequiredBody => 'I tuoi dati sono stati riparati, ma Pleazyng deve ripartire da zero prima di poterli usare. Chiudi Pleazyng e riaprilo.';
+	@override String get quitPlezy => 'Esci da Pleazyng';
 	@override String get repairFailed => 'Riparazione non riuscita';
 	@override String get repairKeptSignIns => 'I tuoi server e profili hanno ancora l\'accesso effettuato.';
 	@override String get repairLostSignIns => 'La chiave che protegge i tuoi accessi salvati non ha potuto essere recuperata. Dovrai effettuare di nuovo l\'accesso a ogni server e profilo.';
@@ -1823,7 +1823,7 @@ class _Translations$startup$it extends Translations$startup$en {
 	@override String get backupWarning => 'Contiene le tue credenziali di accesso. Non caricarla né condividerla.';
 	@override String get deleteBackup => 'Elimina copia';
 	@override String get backupDeleted => 'Copia eliminata.';
-	@override String get previousFailureTitle => 'PlezyNG non è riuscito ad avviarsi l\'ultima volta';
+	@override String get previousFailureTitle => 'Pleazyng non è riuscito ad avviarsi l\'ultima volta';
 }
 
 // Path: licenses
@@ -2156,7 +2156,7 @@ class _Translations$watchTogether$it extends Translations$watchTogether$en {
 	@override String get codeCopied => 'Codice stanza copiato';
 	@override String get shareInvite => 'Condividi invito';
 	@override String get inviteCopied => 'Invito copiato. Incollalo in un messaggio.';
-	@override String inviteMessage({required Object code}) => 'Unisciti alla mia stanza di Guarda insieme su PlezyNG: apri «Guarda insieme», scegli «Unisciti a una stanza» e inserisci ${code}.';
+	@override String inviteMessage({required Object code}) => 'Unisciti alla mia stanza di Guarda insieme su Pleazyng: apri «Guarda insieme», scegli «Unisciti a una stanza» e inserisci ${code}.';
 	@override String get openSessionControls => 'Apri i controlli della sessione di Guarda insieme';
 	@override String get reconnecting => 'Riconnessione...';
 	@override String get reconnectingDescription => 'La connessione si è interrotta. Rientrerai automaticamente nella stanza.';
@@ -2182,7 +2182,7 @@ class _Translations$watchTogether$it extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Scegli un\'altra copia';
 	@override String get dontPlay => 'Non riprodurre';
 	@override String get unavailableTitle => 'Non hai questo video';
-	@override String get unavailableDescription => 'PlezyNG non l\'ha trovato nelle tue librerie. Scegli tu una copia o cerca di nuovo.';
+	@override String get unavailableDescription => 'Pleazyng non l\'ha trovato nelle tue librerie. Scegli tu una copia o cerca di nuovo.';
 	@override String get chooseCopy => 'Scegli una copia';
 	@override String get searchAgain => 'Cerca di nuovo';
 	@override String get noCandidates => 'Nessuna copia trovata nelle tue librerie.';
@@ -2327,11 +2327,11 @@ class _Translations$downloads$it extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Regole di sincronizzazione';
 	@override String get reviewOrphanFiles => 'Rivedi i download orfani';
 	@override String get orphanReviewTitle => 'Rivedi i download orfani';
-	@override String get orphanReviewDescription => 'Questi file contrassegnati si trovano nelle cartelle di download predefinite gestite da PlezyNG e non hanno una voce di download corrispondente né un’attività in corso. Controlla l’elenco prima di eliminarli.';
+	@override String get orphanReviewDescription => 'Questi file contrassegnati si trovano nelle cartelle di download predefinite gestite da Pleazyng e non hanno una voce di download corrispondente né un’attività in corso. Controlla l’elenco prima di eliminarli.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} file · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => 'Elimina ${count} file';
 	@override String get orphanCleanupNone => 'Nessun file di download orfano trovato';
-	@override String get orphanCleanupFailed => 'PlezyNG non è riuscito a eseguire una scansione sicura della cartella di download gestita. Non è stato eliminato alcun file.';
+	@override String get orphanCleanupFailed => 'Pleazyng non è riuscito a eseguire una scansione sicura della cartella di download gestita. Non è stato eliminato alcun file.';
 	@override String get orphanCleanupChanged => 'L’elenco dei download è cambiato durante la revisione. Controlla di nuovo i file prima di ripulire.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => 'Eliminati ${count} file di download orfani · liberati ${size}';
 	@override String get noSyncRules => 'Nessuna regola di sincronizzazione';
@@ -2707,11 +2707,11 @@ class _Translations$trakt$it extends Translations$trakt$en {
 	@override String get connected => 'Connesso';
 	@override String connectedAs({required Object username}) => 'Connesso come @${username}';
 	@override String get disconnectConfirm => 'Disconnettere l\'account Trakt?';
-	@override String get disconnectConfirmBody => 'PlezyNG smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.';
+	@override String get disconnectConfirmBody => 'Pleazyng smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.';
 	@override String get scrobble => 'Scrobbling in tempo reale';
 	@override String get scrobbleDescription => 'Invia eventi di riproduzione, pausa e arresto a Trakt durante la riproduzione.';
 	@override String get watchedSync => 'Sincronizza lo stato di visione';
-	@override String get watchedSyncDescription => 'Quando contrassegni un elemento come visto in PlezyNG, viene contrassegnato come visto anche su Trakt.';
+	@override String get watchedSyncDescription => 'Quando contrassegni un elemento come visto in Pleazyng, viene contrassegnato come visto anche su Trakt.';
 }
 
 // Path: seerr
@@ -2730,10 +2730,10 @@ class _Translations$seerr$it extends Translations$seerr$en {
 	@override String get signInWithEmby => 'Accedi con Emby';
 	@override String get signInWithLocal => 'Usa un account locale';
 	@override String get email => 'Email';
-	@override String get noSignInMethods => 'Questa istanza Seerr non offre alcun metodo di accesso supportato da PlezyNG.';
+	@override String get noSignInMethods => 'Questa istanza Seerr non offre alcun metodo di accesso supportato da Pleazyng.';
 	@override String get instance => 'Istanza';
 	@override String get disconnectConfirm => 'Disconnettere Seerr?';
-	@override String get disconnectConfirmBody => 'PlezyNG rimuoverà questa istanza Seerr. Potrai riconnetterla in qualsiasi momento.';
+	@override String get disconnectConfirmBody => 'Pleazyng rimuoverà questa istanza Seerr. Potrai riconnetterla in qualsiasi momento.';
 	@override String get request => 'Richiedi';
 	@override String get request4k => 'Richiedi in 4K';
 	@override String get seasons => 'Stagioni';
@@ -2758,7 +2758,7 @@ class _Translations$seerr$it extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Nella lista di blocco';
 	@override String couldNotReach({required Object url, required Object error}) => 'Impossibile raggiungere ${url}: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'Nessuna istanza Seerr all\'indirizzo ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'Un reverse proxy con autenticazione (SSO o autenticazione HTTP) ha risposto al posto di Seerr. PlezyNG non può accedere attraverso di esso: consenti al percorso /api/v1 di Seerr di bypassare il proxy per questa app, oppure usa un indirizzo che raggiunga Seerr direttamente.';
+	@override String get behindAuthProxy => 'Un reverse proxy con autenticazione (SSO o autenticazione HTTP) ha risposto al posto di Seerr. Pleazyng non può accedere attraverso di esso: consenti al percorso /api/v1 di Seerr di bypassare il proxy per questa app, oppure usa un indirizzo che raggiunga Seerr direttamente.';
 	@override String get invalidUrl => 'Inserisci un indirizzo del server come https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Questa istanza Seerr non supporta Quick Connect. È necessaria la versione 3.4 o successiva di Seerr.';
 	@override String get notInitialized => 'Questa istanza Seerr non ha completato la configurazione iniziale';
@@ -2788,7 +2788,7 @@ class _Translations$services$it extends Translations$services$en {
 	@override String get scrobble => 'Registra automaticamente i progressi';
 	@override String get scrobbleDescription => 'Aggiorna la tua lista quando termini un episodio o un film.';
 	@override String disconnectConfirm({required Object service}) => 'Disconnettere ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG smetterà di aggiornare ${service}. Riconnetti quando vuoi.';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng smetterà di aggiornare ${service}. Riconnetti quando vuoi.';
 	@override String connectFailed({required Object service}) => 'Impossibile connettersi a ${service}. Riprova.';
 	@override late final _Translations$services$names$it names = _Translations$services$names$it._(_root);
 	@override late final _Translations$services$simklReconnect$it simklReconnect = _Translations$services$simklReconnect$it._(_root);
@@ -2810,8 +2810,8 @@ class _Translations$streaming$it extends Translations$streaming$en {
 	@override String get title => 'Streaming cloud e con add-on';
 	@override String get subtitle => 'Collega un account Debrid per sfogliare i file nel cloud e riprodurre gli stream supportati. Gli add-on compatibili con Stremio offrono opzioni di streaming nelle pagine di film ed episodi. I dati di connessione sono cifrati su questo dispositivo e salvati in questo profilo.';
 	@override String connectionsConfigured({required Object count}) => 'Sorgenti connesse: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG non è riuscito a sbloccare le impostazioni di streaming salvate. Sblocca il dispositivo e riprova prima di modificare le connessioni.';
-	@override String get settingsUnreadable => 'PlezyNG non riesce a sbloccare queste connessioni salvate. Eliminale per collegare di nuovo i servizi.';
+	@override String get settingsLoadFailed => 'Pleazyng non è riuscito a sbloccare le impostazioni di streaming salvate. Sblocca il dispositivo e riprova prima di modificare le connessioni.';
+	@override String get settingsUnreadable => 'Pleazyng non riesce a sbloccare queste connessioni salvate. Eliminale per collegare di nuovo i servizi.';
 	@override String get clearUnreadableSettings => 'Cancella impostazioni salvate';
 	@override String get clearUnreadableSettingsConfirm => 'Cancellare le impostazioni di streaming salvate?';
 	@override String get clearUnreadableSettingsBody => 'Questa operazione rimuove da questo profilo tutti gli account dei provider e gli indirizzi degli add-on salvati. Non puoi annullarla.';
@@ -2823,11 +2823,11 @@ class _Translations$streaming$it extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'Scegli i filtri richiesti per sfogliare questo catalogo.';
 	@override String get catalogRequiredLabel => 'Obbligatorio';
 	@override String get importFromStremio => 'Importa da Stremio';
-	@override String get stremioImportInstructions => 'Scansiona il codice QR o apri il link. Accedi a Stremio e autorizza la richiesta. PlezyNG legge solo l’elenco dei tuoi add-on; non chiede mai la password di Stremio e non modifica le impostazioni.';
+	@override String get stremioImportInstructions => 'Scansiona il codice QR o apri il link. Accedi a Stremio e autorizza la richiesta. Pleazyng legge solo l’elenco dei tuoi add-on; non chiede mai la password di Stremio e non modifica le impostazioni.';
 	@override String get stremioImportOpen => 'Apri il link di Stremio';
 	@override String get stremioImportCode => 'Codice di collegamento';
 	@override String get stremioImportPreviewTitle => 'Scegli gli add-on';
-	@override String get stremioImportPreviewBody => 'Seleziona gli add-on da collegare a PlezyNG. Questo import accetta solo indirizzi HTTPS.';
+	@override String get stremioImportPreviewBody => 'Seleziona gli add-on da collegare a Pleazyng. Questo import accetta solo indirizzi HTTPS.';
 	@override String stremioImportIgnored({required Object count}) => 'Add-on ignorati per indirizzo non supportato o non sicuro: ${count}.';
 	@override String get stremioCatalogs => 'Cataloghi';
 	@override String get stremioStreams => 'Stream';
@@ -2841,7 +2841,7 @@ class _Translations$streaming$it extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Aggiungi tramite URL del manifest';
 	@override String get addAddon => 'Aggiungi add-on';
 	@override String get manifestUrl => 'URL del manifest dell’add-on';
-	@override String get manifestUrlHint => 'Incolla l’URL del manifest dell’add-on. Prima di collegarlo, PlezyNG verifica che supporti cataloghi o risorse di streaming.';
+	@override String get manifestUrlHint => 'Incolla l’URL del manifest dell’add-on. Prima di collegarlo, Pleazyng verifica che supporti cataloghi o risorse di streaming.';
 	@override String get allowHttp => 'Consenti un indirizzo HTTP non crittografato';
 	@override String get allowHttpDescription => 'Usalo solo per un add-on attendibile sulla tua rete privata.';
 	@override String get installAddon => 'Collega add-on';
@@ -2849,20 +2849,20 @@ class _Translations$streaming$it extends Translations$streaming$en {
 	@override String get addonRemoved => 'Add-on rimosso';
 	@override String get addonToggle => 'Attiva add-on';
 	@override String get addonEmpty => 'Nessun add-on collegato';
-	@override String get addonError => 'PlezyNG non è riuscito a collegare questo add-on. Controlla l’URL del manifest e riprova.';
+	@override String get addonError => 'Pleazyng non è riuscito a collegare questo add-on. Controlla l’URL del manifest e riprova.';
 	@override String get addonPrivacy => 'Collega solo add-on di cui ti fidi. Quando cerchi un titolo, l’add-on può riceverne il nome e restituire link di streaming di terze parti.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Riproduci stream torrent supportati con il tuo account Real-Debrid.';
 	@override String get connectRealDebrid => 'Collega con codice QR';
 	@override String realDebridConnected({required Object username}) => 'Connesso come ${username}';
-	@override String get realDebridInstructions => 'Scansiona il codice QR o apri il link, quindi inserisci questo codice di attivazione per collegare PlezyNG:';
+	@override String get realDebridInstructions => 'Scansiona il codice QR o apri il link, quindi inserisci questo codice di attivazione per collegare Pleazyng:';
 	@override String get realDebridActivate => 'Apri Real-Debrid per attivare';
 	@override String get realDebridCode => 'Codice di attivazione';
 	@override String get realDebridConnectFailed => 'Impossibile collegarsi a Real-Debrid. Riprova.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'Riproduci stream torrent supportati con il tuo account AllDebrid.';
 	@override String get connectAllDebrid => 'Collega con codice QR';
-	@override String get allDebridInstructions => 'Scansiona il codice QR o apri il link per autorizzare PlezyNG. Lascia aperta questa schermata durante la connessione:';
+	@override String get allDebridInstructions => 'Scansiona il codice QR o apri il link per autorizzare Pleazyng. Lascia aperta questa schermata durante la connessione:';
 	@override String get allDebridActivate => 'Apri AllDebrid per attivare';
 	@override String get allDebridCode => 'PIN di attivazione';
 	@override String get allDebridConnectFailed => 'Impossibile collegarsi a AllDebrid. Riprova.';
@@ -2873,13 +2873,13 @@ class _Translations$streaming$it extends Translations$streaming$en {
 	@override String get connectApiKey => 'Collega con chiave API';
 	@override String apiKeyTitle({required Object service}) => 'Collega ${service}';
 	@override String get apiKey => 'Chiave API';
-	@override String apiKeyHint({required Object service}) => 'Incolla la chiave API dalle impostazioni del tuo account ${service}. PlezyNG la cifra su questo dispositivo e la salva in questo profilo.';
+	@override String apiKeyHint({required Object service}) => 'Incolla la chiave API dalle impostazioni del tuo account ${service}. Pleazyng la cifra su questo dispositivo e la salva in questo profilo.';
 	@override String get apiKeyConnectFailed => 'Impossibile verificare questa chiave API. Controllala e riprova.';
 	@override String accountConnected({required Object username}) => 'Connesso come ${username}';
 	@override String get streamNeedsProvider => 'Collega un servizio Debrid per riprodurre questo stream torrent.';
 	@override String get playViaProvider => 'Riproduci con Debrid';
 	@override String disconnectConfirm({required Object service}) => 'Disconnettere ${service}?';
-	@override String get disconnectBody => 'PlezyNG rimuoverà l’autorizzazione di questo dispositivo. I file del provider e i trasferimenti in corso non verranno modificati.';
+	@override String get disconnectBody => 'Pleazyng rimuoverà l’autorizzazione di questo dispositivo. I file del provider e i trasferimenti in corso non verranno modificati.';
 	@override String get streamsTitle => 'Scegli uno stream';
 	@override String get noStreams => 'Nessuno stream trovato per questo titolo.';
 	@override String get manageConnections => 'Gestisci servizi di streaming';
@@ -2895,7 +2895,7 @@ class _Translations$streaming$it extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Il player nell’app non supporta questo formato di stream.';
 	@override String get remoteNeedsEpisode => 'Scegli un episodio prima di cercare uno stream.';
 	@override String get remoteNeedsEpisodeNumber => 'A questo episodio manca il numero di stagione o di episodio.';
-	@override String get remoteNeedsExternalId => 'PlezyNG non ha trovato un ID IMDb o TMDB per questo titolo.';
+	@override String get remoteNeedsExternalId => 'Pleazyng non ha trovato un ID IMDb o TMDB per questo titolo.';
 	@override String get watchWithServices => 'Guarda con i servizi collegati';
 	@override String get chooseEpisode => 'Scegli episodio';
 	@override String get episodes => 'Episodi';
@@ -3026,15 +3026,15 @@ class _Translations$appAccess$it extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => 'Prova ogni funzione gratuita per 7 giorni';
-	@override String get description => 'Inizia un test di sette giorni con accesso completo a ogni funzione PlezyNG. non ci sono costi durante il test e non ci sono abbonamenti. Dopo il test, un acquisto di vita al prezzo del tuo negozio rilascia PlezyNG per tutta la vita.';
-	@override String get trialEndedDescription => 'Rimuovere ogni funzionalità in PlezyNG per tutta la vita con un acquisto al prezzo del tuo negozio.';
+	@override String get description => 'Inizia un test di sette giorni con accesso completo a ogni funzione Pleazyng. non ci sono costi durante il test e non ci sono abbonamenti. Dopo il test, un acquisto di vita al prezzo del tuo negozio rilascia Pleazyng per tutta la vita.';
+	@override String get trialEndedDescription => 'Rimuovere ogni funzionalità in Pleazyng per tutta la vita con un acquisto al prezzo del tuo negozio.';
 	@override String get startTrial => 'Inizia il mio trial gratuito di 7 giorni';
 	@override String get trialActive => 'Il tuo test di 7 giorni è attivo.';
 	@override String get trialEnded => 'Il processo di 7 giorni è finito';
 	@override String get trialStartFailed => 'Non potevo salvare il test su questo dispositivo. si prega di provare di nuovo.';
-	@override String get lifetimeTitle => 'PlezyNG disattivato per la vita';
-	@override String get lifetimeBody => 'Grazie! avete accesso a tutti i PlezyNG funzionalità.';
-	@override String get manageTitle => 'PlezyNG accesso a vita';
+	@override String get lifetimeTitle => 'Pleazyng disattivato per la vita';
+	@override String get lifetimeBody => 'Grazie! avete accesso a tutti i Pleazyng funzionalità.';
+	@override String get manageTitle => 'Pleazyng accesso a vita';
 	@override String get manageDescription => 'Prova ogni funzionalità gratuita per 7 giorni, poi disattivare tutto per tutta la vita con un solo pagamento al prezzo del tuo negozio.';
 	@override String buy({required Object price}) => 'Rimuovere ogni funzionalità per ${price}';
 	@override String get loadingPrice => 'Il prezzo del negozio...';
@@ -3042,11 +3042,11 @@ class _Translations$appAccess$it extends Translations$appAccess$en {
 	@override String get restore => 'Ristrutturazione acquisto per tutta la vita';
 	@override String get pending => 'L\'acquisto è in attesa di pagamento o approvazione.L\'accesso a tempo pieno si distacca non appena il negozio lo completa.';
 	@override String get storeUnavailable => 'Verificare che si è iscritti al negozio e gli acquisti sono consentiti su questo dispositivo.';
-	@override String get productNotFound => 'Il disattivatore di vita PlezyNG non è ancora disponibile in questo negozio.';
+	@override String get productNotFound => 'Il disattivatore di vita Pleazyng non è ancora disponibile in questo negozio.';
 	@override String get productQueryFailed => 'Non poteva caricare il prezzo del negozio. verificare la connessione e provare di nuovo.';
 	@override String get purchaseFailed => 'L’acquisto non è andato via, prova di nuovo.';
 	@override String get restoreFailed => 'Non potevo raggiungere il negozio per ripristinare l\'acquisto. prova di nuovo.';
-	@override String get nothingToRestore => 'N. PlezyNG acquisto a vita è stato trovato per questo account del negozio.';
+	@override String get nothingToRestore => 'N. Pleazyng acquisto a vita è stato trovato per questo account del negozio.';
 }
 
 // Path: detail
@@ -3087,8 +3087,8 @@ class _Translations$homeLayout$it extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Home Layout';
-	@override String get resetToast => 'Home Ristrutturazione all\'originale layout Plezy';
-	@override String get resetHeroTitle => 'Ristrutturare il layout del eroe al stock Plezy?';
+	@override String get resetToast => 'Home Ristrutturazione all\'originale layout Pleazyng';
+	@override String get resetHeroTitle => 'Ristrutturare il layout del eroe al stock Pleazyng?';
 	@override String get resetHeroBody => 'Ritorna il set di eroe di ogni riga e riporta il singolo banner rotativo al top di Home, come prima che le riga eroe esistessero.';
 	@override String get removeRowTitle => 'Rimuovere la linea di casa?';
 	@override String removeRowBody({required Object title}) => '${title} sarà cancellato. non può essere negato.';
@@ -3098,7 +3098,7 @@ class _Translations$homeLayout$it extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Off: questo dispositivo mantiene il suo layout.';
 	@override String get syncNow => 'Sincolo ora';
 	@override String get plexHomeManager => 'Plex Direttore di casa';
-	@override String get managePlexRows => 'Gestione Plex righe in Plezy';
+	@override String get managePlexRows => 'Gestione Plex righe in Pleazyng';
 	@override String get managePlexRowsDescription => 'Aperto per organizzare le righe selezionate in casa';
 	@override String get organizeHomeRows => 'Organizzare le linee di casa';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} righe: movimento, eroe, auto-slide, rimozione';
@@ -3168,7 +3168,7 @@ class _Translations$homeLayout$it extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Selezionare una riga (o tenere Selezionare): spostarlo · Sinistra/Destra: opzioni di riga · Ritorno: fatto';
 	@override String get layoutNavDescription => 'Scegliere le righe, le biblioteche e le categorie di raccolta';
 	@override String get editHomeRow => 'Edit Home Ronde';
-	@override String get resetHeroButton => 'Ristrutturare il layout del eroe in stock Plezy';
+	@override String get resetHeroButton => 'Ristrutturare il layout del eroe in stock Pleazyng';
 	@override String get reorderingUnlocked => 'Ristrutturazione disattivata';
 	@override String get reorderingLocked => 'Ristrutturazione chiusa';
 	@override String get rowsCanBeDragged => 'Le corde possono essere tracciate - tappa il blocco per evitare che';
@@ -3194,8 +3194,8 @@ class _Translations$platform$it extends Translations$platform$en {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG connette ai tuoi server multimediali e dispositivi di riproduzione sulla tua rete locale.';
-	@override String get locationPermission => 'PlezyNG utilizza l\'accesso alla localizzazione quando iOS lo richiede per rilevare la tua rete locale e connetterti ai tuoi server multimediali.';
+	@override String get localNetworkPermission => 'Pleazyng connette ai tuoi server multimediali e dispositivi di riproduzione sulla tua rete locale.';
+	@override String get locationPermission => 'Pleazyng utilizza l\'accesso alla localizzazione quando iOS lo richiede per rilevare la tua rete locale e connetterti ai tuoi server multimediali.';
 	@override String get photoLibraryPermission => 'Scegli immagini dalla tua libreria fotografica da usare come copertine e illustrazioni dei contenuti multimediali.';
 	@override String get cameraPermission => 'Scansione QR per unirsi a un Companion Remote.';
 }
@@ -3209,7 +3209,7 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'Media aperte';
 	@override String get shortcutHelp => 'Gioca un link, playlist o file per questa sessione.';
-	@override String get intro => 'Apri un link, playlist o file. Playback utilizza il lettore standard di PlezyNG e non aggiunge storia alla tua biblioteca.';
+	@override String get intro => 'Apri un link, playlist o file. Playback utilizza il lettore standard di Pleazyng e non aggiunge storia alla tua biblioteca.';
 	@override String get openWhat => 'Cosa vorresti aprire?';
 	@override String get stream => 'Indirizzo Stream';
 	@override String get playlist => 'giocattoli';
@@ -3270,13 +3270,13 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	@override String get stopTransfer => 'Smettere di trasferire e invalidare l\'indirizzo';
 	@override String get startTransfer => 'Inizia il trasferimento';
 	@override String get wifiImportedFiles => 'Trasferimento Wi-Fi';
-	@override String get wifiBrowserTitle => 'Invia file a PlezyNG';
+	@override String get wifiBrowserTitle => 'Invia file a Pleazyng';
 	@override String get wifiBrowserIntro => 'Selezionare file audio, video, ebook o comic per inviare. i file vengono salvati nella libreria dei file e dei libri di questo dispositivo. massimo: 100 file, 4 GiB per file, 10 GiB totale.';
 	@override String get uploadFilesLabel => 'I file da inviare';
 	@override String get uploadSelected => 'Scarica i file selezionati';
 	@override String get uploadSelectFirst => 'Selezionare uno o più file prima.';
 	@override String get uploading => 'Inviare';
-	@override String get uploadComplete => 'Il file è stato aggiunto a PlezyNG.';
+	@override String get uploadComplete => 'Il file è stato aggiunto a Pleazyng.';
 	@override String get uploadFailed => 'Il file non può essere aggiunto. tenere aperta questa pagina e provare di nuovo.';
 	@override String get liveCue => 'Il vivo';
 	@override String get liveSession => 'Il Live Stream';
@@ -3304,7 +3304,7 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	@override String get recordingActive => 'Lasciare il riproduzione si ferma e lo salva.';
 	@override String get recordingFormatHelp => 'Per video, scegliere MKV o MPEG-TS. per audio, scegliere MKA o MKV.';
 	@override String get replaceRecordingTitle => 'Sostituisci questa registrazione?';
-	@override String get replaceRecordingHelp => 'PlezyNG ripara il file esistente durante la registrazione. se non riesce a salvare la nuova registrazione, Plezy NG ripristina il backup.';
+	@override String get replaceRecordingHelp => 'Pleazyng ripara il file esistente durante la registrazione. se non riesce a salvare la nuova registrazione, Pleazyng NG ripristina il backup.';
 	@override String get replaceRecording => 'sostituire il file';
 	@override String get discHelp => 'Apri un disco in questa scheda ottica del computer. Puoi anche aprire un\'immagine ISO dai file Device.';
 	@override String get discs => 'Il disco ottico';
@@ -3329,7 +3329,7 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'Scegli un file audio o video.';
 	@override String get converterLocalOnly => 'Il file selezionato non è disponibile come percorso di dispositivo locale.';
 	@override String get converterReplaceTitle => 'Sostituisci questo file?';
-	@override String get converterReplaceHelp => 'PlezyNG rimborserà il file esistente fino a quando la copia convertita non sarà salvata.';
+	@override String get converterReplaceHelp => 'Pleazyng rimborserà il file esistente fino a quando la copia convertita non sarà salvata.';
 	@override String get converterStarting => 'A partire da FFmpeg...';
 	@override String get converterProgress => 'Conversione su questo computer...';
 	@override String get converterComplete => 'Conversione completa: il nuovo file è pronto.';
@@ -3353,7 +3353,7 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Introduzione audio';
 	@override String get captureWaylandHelp => 'Wayland limita questa cattura XWayland al X display. Windows al di fuori di XWayland non può apparire.';
 	@override String get captureFrameRate => 'Tasso di registrazione frame rate';
-	@override String get capturePrivacy => 'La registrazione viene salvata solo al file che scegli. la registrazione del microfono è facoltativa. PlezyNG non carica la registrazione.';
+	@override String get capturePrivacy => 'La registrazione viene salvata solo al file che scegli. la registrazione del microfono è facoltativa. Pleazyng non carica la registrazione.';
 	@override String get captureSaveAs => 'Salva la registrazione dello schermo come';
 	@override String get captureExtensionMismatch => 'Scegli un nome di file che finisce in .mp4.';
 	@override String get captureFfmpegMissing => 'FFmpeg o il codificatore video H.264 non è disponibile. Installare una costruzione FFmpeg supportata, poi provare di nuovo.';
@@ -3367,7 +3367,7 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	@override String get captureStop => 'Stop e salvare';
 	@override String get captureMode => 'cattura';
 	@override String get shareMode => 'Condividi';
-	@override String get shareIntro => 'Invia un file di media locale ad un altro dispositivo sulla tua rete privata. PlezyNG crea un flusso temporaneo HLS.';
+	@override String get shareIntro => 'Invia un file di media locale ad un altro dispositivo sulla tua rete privata. Pleazyng crea un flusso temporaneo HLS.';
 	@override String get sharePrivacy => 'Chiunque nella tua rete locale che riceve il link privato può guardare mentre è attivo. il link scade dopo 60 minuti. smettere di condividere per chiudere il server e annullare il link.';
 	@override String get shareChooseFile => 'Selezionare file di media';
 	@override String get shareChooseHelp => 'Selezionare un file audio o video locale. il file rimane su questo computer.';
@@ -3380,7 +3380,7 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'Aprire questo indirizzo in un giocatore sull\'altro dispositivo';
 	@override String get shareQrLabel => 'Il codice QR per l’indirizzo temporaneo';
 	@override String get shareQrHelp => 'Scansione con un giocatore compatibile connesso alla stessa rete privata.';
-	@override String get shareHttpHint => 'Questo flusso utilizza HTTP non crittografato. in PlezyNG, permettere HTTP prima di aprire.';
+	@override String get shareHttpHint => 'Questo flusso utilizza HTTP non crittografato. in Pleazyng, permettere HTTP prima di aprire.';
 	@override String get shareCopyUrl => 'Indirizzo Stream';
 	@override String get shareExpiresLabel => 'Il link scade a';
 	@override String get shareStarting => 'Preparando il flusso...';
@@ -3405,7 +3405,7 @@ class _Translations$universalMedia$it extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'Aggiungi servizio';
 	@override String get extensionReplace => 'Aggiornamento servizio';
 	@override String get extensionRemoveTitle => 'Rimuovere questo servizio di ricerca?';
-	@override String get extensionRemoveHelp => 'Questo rimuove il servizio da questo profilo. PlezyNG non contatta il suo punto finale.';
+	@override String get extensionRemoveHelp => 'Questo rimuove il servizio da questo profilo. Pleazyng non contatta il suo punto finale.';
 	@override String get extensionRemove => 'Rimuovere il servizio';
 	@override String get extensionInvalidManifest => 'Questo file non è un manifesto di estensione supportato. vedi la guida Open media per il formato.';
 	@override String get extensionSaveFailed => 'L\'estensione non poteva essere salvata al profilo attivo.';
@@ -3561,12 +3561,12 @@ class _Translations$fileSources$it extends Translations$fileSources$en {
 	@override String get none => 'Nessuno';
 	@override String get fullscreen => 'schermo completo';
 	@override String get syncLocation => 'Fornitura di Progress Sync (opzionale)';
-	@override String get syncLocationHint => 'Una cartella dedicata WebDAV per PlezyNG stato. utilizza scrittura condizionale; i media rimangono invariati.';
+	@override String get syncLocationHint => 'Una cartella dedicata WebDAV per Pleazyng stato. utilizza scrittura condizionale; i media rimangono invariati.';
 	@override String get audiobooks => 'Audiolibri';
 	@override String get comics => 'Fumetti';
 	@override String get scan => 'Scansione dei libri e dei media';
 	@override String get browserReader => 'Il lettore aperto';
-	@override String get browserReaderHelp => 'Il lettore è aperto nel tuo browser. Mantenere aperto PlezyNG per salvare il tuo posto e note.';
+	@override String get browserReaderHelp => 'Il lettore è aperto nel tuo browser. Mantenere aperto Pleazyng per salvare il tuo posto e note.';
 	@override String get on => 'di';
 	@override String get advancedSetup => 'App di registrazione';
 	@override String get microsoftSignIn => 'Iscriviti con Microsoft';
@@ -3607,7 +3607,7 @@ class _Translations$fileSources$it extends Translations$fileSources$en {
 	@override String get importInterrupted => 'Importazione interrotta · rimuovere a chiarire';
 	@override String get errorQuotaExceeded => 'Il limite di archiviazione offline è stato raggiunto. Aumentare il limite o rimuovere una copia scaricata.';
 	@override String get errorStorageLow => 'Non c\'è sufficiente archiviazione gratuita per mantenere la riserva protetta.';
-	@override String get errorStorageUnavailable => 'PlezyNG non poteva controllare lo storage del dispositivo gratuito, quindi la scrittura è stata interrotta.';
+	@override String get errorStorageUnavailable => 'Pleazyng non poteva controllare lo storage del dispositivo gratuito, quindi la scrittura è stata interrotta.';
 	@override String get removeDownloadJob => 'Rimuovere download';
 	@override String get downloadAlreadyComplete => 'Questo download è finito prima che possa essere rimosso. l\'articolo è ora disponibile offline.';
 	@override String get confirmRemoveDownloadJob => 'Rimuovere questo download e rimuovere tutti i dati parzialmente scaricati? la tua posizione e le note rimarranno.';
@@ -3657,7 +3657,7 @@ class _Translations$lending$it extends Translations$lending$en {
 	@override String get openLibraryNote => 'Esplora il catalogo di Open Library. Le opzioni di lettura e prestito sono indicate nella pagina di ciascun titolo.';
 	@override String get more => 'Carica di più';
 	@override String get gateway => 'Servizio di accesso alla biblioteca';
-	@override String get gatewayHint => 'Fornito dalla tua biblioteca o dall’amministratore di PlezyNG.';
+	@override String get gatewayHint => 'Fornito dalla tua biblioteca o dall’amministratore di Pleazyng.';
 	@override String get advanced => 'Integrazione della biblioteca';
 	@override String get loadLibraries => 'Scegli la tua biblioteca';
 	@override String get expired => 'Il prestito è scaduto.';
@@ -3797,7 +3797,7 @@ class _Translations$sourceSetup$it extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'Ottieni una chiave API da opensubtitles.com. La ricerca invia il titolo del video e gli ID IMDb/TMDB disponibili, mai il file video. La chiave e le credenziali facoltative dell’account vengono crittografate insieme a questa fonte.';
 	@override String get automaticMetadata => 'Metadati video online automatici';
 	@override String get metadataPrivacy => 'Invia solo titolo/anno ricavati dal nome del file e numeri degli episodi, oppure un ID NFO; non invia mai contenuti multimediali o credenziali. I campi NFO mantengono la precedenza.';
-	@override String get nfsEncryptionFailure => 'Per NFS crittografato, verifica il supporto di RFC 9289 e TLS 1.3 su entrambi i servizi del NAS, il nome nel certificato e gli UID/GID della condivisione. PlezyNG non riproverà questa connessione senza crittografia.';
+	@override String get nfsEncryptionFailure => 'Per NFS crittografato, verifica il supporto di RFC 9289 e TLS 1.3 su entrambi i servizi del NAS, il nome nel certificato e gli UID/GID della condivisione. Pleazyng non riproverà questa connessione senza crittografia.';
 	@override String get sourceConnecting => 'Connessione alla fonte';
 	@override String get metadataSearchPrivacy => 'Questa ricerca di titoli viene inviata a Trakt. Viene trasmesso il titolo inserito, non il video né le credenziali della fonte.';
 	@override String get chooseMatch => 'Scegli una corrispondenza';
@@ -3943,6 +3943,12 @@ class _Translations$games$it extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3952,7 +3958,7 @@ class _Translations$deepLinks$it extends Translations$deepLinks$en {
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Questo link Plezy non è valido.';
+	@override String get invalid => 'Questo link Pleazyng non è valido.';
 	@override String profileNotFound({required Object profile}) => 'Nessun profilo corrisponde a "${profile}".';
 	@override String get serverUnavailable => 'Non riuscivo a raggiungere il server per questo link.';
 	@override String get notFound => 'Non riesco a trovare questo titolo nelle tue biblioteche.';
@@ -4127,7 +4133,7 @@ class _Translations$romm$it extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5018,7 +5024,7 @@ class _Translations$watchTogether$errors$it extends Translations$watchTogether$e
 	@override String get relayFull => 'Guarda insieme è momentaneamente sovraccarico. Riprova più tardi.';
 	@override String get unreachable => 'Impossibile raggiungere il relay di Guarda insieme. Controlla la connessione.';
 	@override String get rateLimited => 'Troppi tentativi. Attendi un momento e riprova.';
-	@override String get clientBlocked => 'Questa versione di PlezyNG non può usare il relay. Aggiorna l\'app.';
+	@override String get clientBlocked => 'Questa versione di Pleazyng non può usare il relay. Aggiorna l\'app.';
 	@override String get forbidden => 'Solo l\'host può farlo.';
 	@override String get notInRoom => 'Non sei in una stanza.';
 	@override String get alreadyInRoom => 'Sei già in una stanza.';
@@ -5039,14 +5045,14 @@ class _Translations$downloads$backgroundWarning$it extends Translations$download
 	@override String get bannerAction => 'Dettagli';
 	@override String get sheetTitle => 'I download in background sono bloccati';
 	@override String get sheetTitleDegraded => 'I download in background potrebbero essere limitati';
-	@override String get sheetIntro => 'Android impedisce a PlezyNG di scaricare in modo affidabile in background.';
-	@override String get sheetIntroDegraded => 'Il dispositivo limita i momenti in cui PlezyNG può scaricare in background.';
-	@override String get reasonBackgroundRestricted => 'L’uso in background di PlezyNG è limitato. Nelle impostazioni della batteria o dell’uso in background, seleziona «Senza restrizioni».';
-	@override String get reasonStandbyRestricted => 'Android ha messo PlezyNG in uno stato di standby con restrizioni. Imposta l’uso della batteria su «Senza restrizioni».';
+	@override String get sheetIntro => 'Android impedisce a Pleazyng di scaricare in modo affidabile in background.';
+	@override String get sheetIntroDegraded => 'Il dispositivo limita i momenti in cui Pleazyng può scaricare in background.';
+	@override String get reasonBackgroundRestricted => 'L’uso in background di Pleazyng è limitato. Nelle impostazioni della batteria o dell’uso in background, seleziona «Senza restrizioni».';
+	@override String get reasonStandbyRestricted => 'Android ha messo Pleazyng in uno stato di standby con restrizioni. Imposta l’uso della batteria su «Senza restrizioni».';
 	@override String get reasonDownloadChannelBlocked => 'Le notifiche dei download sono disattivate, quindi l’avanzamento e i controlli potrebbero non essere disponibili.';
 	@override String get reasonNotificationsDisabled => 'Le notifiche sono disattivate. Su Android 13 o versioni successive sono necessarie per i download prolungati in background.';
 	@override String get reasonDataSaver => 'Il Risparmio dati è attivo e blocca i download in background tramite dati mobili. I download dovrebbero comunque funzionare su Wi-Fi.';
-	@override String get reasonOemUnknown => 'I download si sono interrotti più volte mentre PlezyNG era in background. Controlla le impostazioni della batteria o dell’uso in background di PlezyNG.';
+	@override String get reasonOemUnknown => 'I download si sono interrotti più volte mentre Pleazyng era in background. Controlla le impostazioni della batteria o dell’uso in background di Pleazyng.';
 	@override String get openSettings => 'Apri le impostazioni';
 	@override String get stillNotWorking => 'Guida specifica per il dispositivo';
 	@override String get stillNotWorkingDescription => 'Consulta la procedura per il tuo dispositivo oppure invia un log da Impostazioni › Visualizza i log se il problema persiste.';
@@ -5101,19 +5107,19 @@ class _Translations$companionRemote$pairing$it extends Translations$companionRem
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'I dispositivi PlezyNG con lo stesso account Plex appaiono qui';
+	@override String get discoveryDescription => 'I dispositivi Pleazyng con lo stesso account Plex appaiono qui';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Connessione...';
 	@override String get searchingForDevices => 'Ricerca dispositivi...';
 	@override String get noDevicesFound => 'Nessun dispositivo trovato nella tua rete';
-	@override String get noDevicesHint => 'Apri PlezyNG sul computer e usa la stessa rete Wi-Fi';
+	@override String get noDevicesHint => 'Apri Pleazyng sul computer e usa la stessa rete Wi-Fi';
 	@override String get availableDevices => 'Dispositivi disponibili';
 	@override String get manualConnection => 'Connessione manuale';
 	@override String get cryptoInitFailed => 'Impossibile avviare la connessione sicura. Accedi prima a Plex.';
 	@override String get validationHostRequired => 'Inserisci l\'indirizzo host';
 	@override String get validationHostFormat => 'Il formato deve essere IP:porta (es. 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'Tempo scaduto per la connessione. Usa la stessa rete su entrambi i dispositivi.';
-	@override String get sessionNotFound => 'Dispositivo non trovato. Assicurati che PlezyNG sia in esecuzione sull\'host.';
+	@override String get sessionNotFound => 'Dispositivo non trovato. Assicurati che Pleazyng sia in esecuzione sull\'host.';
 	@override String get authFailed => 'Autenticazione non riuscita. Entrambi i dispositivi devono usare lo stesso account Plex.';
 	@override String failedToConnect({required Object error}) => 'Connessione non riuscita: ${error}';
 	@override String get codeTitle => 'Codice di coppia';
@@ -5200,7 +5206,7 @@ class _Translations$services$simklReconnect$it extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Riconnetti Simkl';
-	@override String get subtitle => 'Simkl sta dismettendo il metodo di accesso usato da questa connessione. La riconnessione apre simkl.com per autorizzare PlezyNG — PlezyNG non vede mai la tua password. La tua cronologia di visione resta su Simkl.';
+	@override String get subtitle => 'Simkl sta dismettendo il metodo di accesso usato da questa connessione. La riconnessione apre simkl.com per autorizzare Pleazyng — Pleazyng non vede mai la tua password. La tua cronologia di visione resta su Simkl.';
 }
 
 // Path: services.deviceCode
@@ -5210,7 +5216,7 @@ class _Translations$services$deviceCode$it extends Translations$services$deviceC
 	final TranslationsIt _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Attiva PlezyNG su ${service}';
+	@override String title({required Object service}) => 'Attiva Pleazyng su ${service}';
 	@override String get instructions => 'Scansiona il codice QR oppure visita l\'indirizzo qui sotto e inserisci questo codice:';
 	@override String openToActivate({required Object service}) => 'Apri ${service} per attivare';
 	@override String get copyCode => 'Copia il codice di attivazione';
@@ -5285,15 +5291,15 @@ class _Translations$services$trackerDescriptions$it extends Translations$service
 extension on TranslationsIt {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'Icona dell\'app',
 			'appIcon.defaultIcon' => 'Predefinita',
 			'appIcon.current' => 'Icona attuale',
 			'appIcon.locked' => 'L’accesso a vita richiesto',
-			'appIcon.lockedHint' => 'Inizia il tuo tentativo di 7 giorni o disattivare PlezyNG per tutta la vita per utilizzare icone alternative.',
+			'appIcon.lockedHint' => 'Inizia il tuo tentativo di 7 giorni o disattivare Pleazyng per tutta la vita per utilizzare icone alternative.',
 			'appIcon.changeFailed' => 'Impossibile cambiare l\'icona dell\'app',
-			'appIcon.launcherHint' => 'La nuova icona appare nella schermata Home quando esci da PlezyNG.',
-			'appIcon.tvLauncherHint' => 'Il nuovo banner appare quando esci da PlezyNG. Android TV potrebbe continuare a mostrare quello precedente fino al riavvio del televisore.',
+			'appIcon.launcherHint' => 'La nuova icona appare nella schermata Home quando esci da Pleazyng.',
+			'appIcon.tvLauncherHint' => 'Il nuovo banner appare quando esci da Pleazyng. Android TV potrebbe continuare a mostrare quello precedente fino al riavvio del televisore.',
 			'appIcon.names.midnight' => 'Mezzanotte',
 			'appIcon.names.ember' => 'Brace',
 			'appIcon.names.paper' => 'Carta',
@@ -5333,7 +5339,7 @@ extension on TranslationsIt {
 			'auth.quickConnectWaiting' => 'In attesa di approvazione…',
 			'auth.quickConnectCancel' => 'Annulla',
 			'auth.quickConnectExpired' => 'Quick Connect scaduto. Riprova.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG non è riuscito a recuperare in sicurezza i dati locali di accesso e delle riproduzioni in sospeso. Accedi di nuovo.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng non è riuscito a recuperare in sicurezza i dati locali di accesso e delle riproduzioni in sospeso. Accedi di nuovo.',
 			'auth.pinCheckRejected' => 'La verifica del PIN Plex è stata rifiutata',
 			'auth.connectToDirectPlex' => 'Connessione al server locale Plex',
 			'common.cancel' => 'Annulla',
@@ -5449,9 +5455,9 @@ extension on TranslationsIt {
 			'update.latestVersion' => 'La versione installata è l\'ultima disponibile',
 			'update.checkFailed' => 'Impossibile controllare gli aggiornamenti',
 			'settings.title' => 'Impostazioni',
-			'settings.supportDeveloper' => 'Supporta PlezyNG',
+			'settings.supportDeveloper' => 'Supporta Pleazyng',
 			'settings.supportDeveloperDescription' => 'Fai una donazione per sostenere lo sviluppo',
-			'settings.lifetimeAccess' => 'PlezyNG accesso a vita',
+			'settings.lifetimeAccess' => 'Pleazyng accesso a vita',
 			'settings.language' => 'Lingua',
 			'settings.theme' => 'Tema',
 			'settings.appearance' => 'Aspetto',
@@ -5507,7 +5513,7 @@ extension on TranslationsIt {
 			'settings.contentScreensaverNoLibraries' => 'Non sono disponibili biblioteche multimediali collegate.',
 			'settings.contentScreensaverDismissHint' => 'Premere qualsiasi pulsante o tappa per rimuovere',
 			'settings.newEpisodeNotifications' => 'Nuove notizie di episodio',
-			'settings.newEpisodeNotificationsDescription' => 'Allarme quando un nuovo episodio viene aggiunto a un show che si è catturato. controlla mentre Plezy è aperto.',
+			'settings.newEpisodeNotificationsDescription' => 'Allarme quando un nuovo episodio viene aggiunto a un show che si è catturato. controlla mentre Pleazyng è aperto.',
 			'settings.continueWatchingRowSize' => 'Continua a guardare la dimensione della linea',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} carte',
 			'settings.rowSizeCompact' => 'Compatta',
@@ -5632,7 +5638,7 @@ extension on TranslationsIt {
 			'settings.importSettingsDescription' => 'Ripristina le preferenze da un file',
 			'settings.importSettingsConfirm' => 'Questa azione sostituirà le impostazioni attuali. Continuare?',
 			'settings.importSettingsSuccess' => 'Impostazioni importate',
-			'settings.importSettingsInvalidFile' => 'Questo file non è un\'esportazione PlezyNG valida',
+			'settings.importSettingsInvalidFile' => 'Questo file non è un\'esportazione Pleazyng valida',
 			'settings.importSettingsNoUser' => 'Accedi prima di importare le impostazioni',
 			'settings.cloudBackup' => 'Cloud Backup di sicurezza',
 			'settings.cloudBackupDescription' => 'Esegui il backup delle impostazioni trasferibili a un indirizzo WebDAV tramite HTTPS. Le connessioni ai server e le credenziali restano su questo dispositivo.',
@@ -5816,7 +5822,7 @@ extension on TranslationsIt {
 			'settings.forceTvMode' => 'Forza modalità TV',
 			'settings.forceTvModeDescription' => 'Forza il layout TV sui dispositivi che non vengono rilevati automaticamente. Richiede il riavvio.',
 			'settings.startInFullscreen' => 'Avvia a schermo intero',
-			'settings.startInFullscreenDescription' => 'Apri PlezyNG a schermo intero all\'avvio',
+			'settings.startInFullscreenDescription' => 'Apri Pleazyng a schermo intero all\'avvio',
 			'settings.exitFullscreenOnPlayerClose' => 'Esci dalla modalità a schermo intero alla chiusura del lettore',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Esce automaticamente dalla modalità a schermo intero quando chiudi il lettore video',
 			'settings.autoHidePerformanceOverlay' => 'Nascondi automaticamente il riquadro delle prestazioni',
@@ -5872,7 +5878,7 @@ extension on TranslationsIt {
 			'settings.playerScopeGlobal' => 'Ovunque',
 			'settings.playerScopeLibrary' => 'Per libreria',
 			'settings.playerScopeTitle' => 'Per serie o film',
-			'settings.exportDialogTitle' => 'Esporta le impostazioni di PlezyNG',
+			'settings.exportDialogTitle' => 'Esporta le impostazioni di Pleazyng',
 			'settings.followSystem' => 'Usa la lingua di sistema',
 			'settings.followAppLanguage' => 'Come la lingua dell’interfaccia',
 			'settings.regionFormat' => 'Formati regionali',
@@ -5883,7 +5889,7 @@ extension on TranslationsIt {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Aprire video desktop in schermo pieno quando si avvia il playback',
 			'settings.extendVideoIntoDisplayCutout' => 'Estendere il video in display cutout',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Lascia che il video a schermo pieno utilizzi la cutout della fotocamera sui telefoni Android',
-			'settings.languageDescription' => 'Selezionare il linguaggio utilizzato per i controlli e i messaggi PlezyNG. Seguire il sistema traccia la lingua del dispositivo.',
+			'settings.languageDescription' => 'Selezionare il linguaggio utilizzato per i controlli e i messaggi Pleazyng. Seguire il sistema traccia la lingua del dispositivo.',
 			'settings.themeDescription' => 'Scegliere i colori e il contrasto utilizzati in tutta l\'app.',
 			'settings.libraryDensityDescription' => 'Cambiare quante carte di libreria si adatta in ogni riga.',
 			'settings.displayScaleDescription' => 'Ristrutturare l\'interfaccia su questo display auto senza cambiare la dimensione del testo in tutto il dispositivo.',
@@ -5905,14 +5911,14 @@ extension on TranslationsIt {
 			'settings.episodeActionDescription' => 'Scegli ciò che accade quando si attiva una scheda di episodio.',
 			'settings.episodePlayDescription' => 'Inizia subito l’episodio.',
 			'settings.episodeDetailsDescription' => 'Apri la pagina dell\'episodio prima del playback.',
-			'settings.contentScreensaverDelayDescription' => 'Scegli quanto tempo PlezyNG aspetta senza input prima di mostrare opere d\'arte.',
+			'settings.contentScreensaverDelayDescription' => 'Scegli quanto tempo Pleazyng aspetta senza input prima di mostrare opere d\'arte.',
 			'settings.continueWatchingRowSizeDescription' => 'Scegliamo quanto sono grandi le carte nella riga Continuing Watching.',
 			'settings.rowSizeCompactDescription' => 'Mostra carte più piccole in modo che più articoli si adattino per tutta la riga.',
 			'settings.rowSizeStandardDescription' => 'Utilizzare la dimensione standard della scheda.',
 			'settings.rowSizeLargeDescription' => 'Mostra mappe più grandi con maggiori dettagli artwork.',
 			'settings.visualEffectsDescription' => 'Scegli il budget di animazione e effetti artificiali per questo dispositivo.',
 			'settings.visualEffectsFullDescription' => 'Utilizzare tutti gli effetti di animazione e arte su ogni dispositivo.',
-			'settings.startupSectionDescription' => 'Selezionare quale sezione si apre quando PlezyNG inizia.',
+			'settings.startupSectionDescription' => 'Selezionare quale sezione si apre quando Pleazyng inizia.',
 			'settings.startupSectionOptions.discover' => 'Apri raccomandazioni e articoli da fonti di scoperta collegate.',
 			'settings.startupSectionOptions.libraries' => 'Apri le tue biblioteche multimediali connesse.',
 			'settings.startupSectionOptions.liveTv' => 'Apri Live TV quando un server lo fornisce; altrimenti la startup ritorna a Home.',
@@ -5951,7 +5957,7 @@ extension on TranslationsIt {
 			'settings.musicQualityOriginalDescription' => 'Gioca l\'audio sorgente senza un transcode cappato a bitrate.',
 			'settings.musicQualityTranscodeOptionDescription' => 'Richiedi un codice trans server capped vicino alla bitrate mostrata sopra; la produzione effettiva può variare.',
 			'settings.maxVolumeInputLabel' => 'Il volume massimo (%)',
-			'settings.checkForUpdatesDescription' => 'Scopri ora se è disponibile una versione più recente di PlezyNG.',
+			'settings.checkForUpdatesDescription' => 'Scopri ora se è disponibile una versione più recente di Pleazyng.',
 			'settings.appearanceDescription' => 'Selezionare il tema dell\'app e personalizzare le schede della biblioteca, le righe di casa e la navigazione.',
 			'settings.prerollLibraryDescription' => 'Scegli la libreria che contiene i clip disponibili come pre-roll di film.',
 			'settings.prerollSelectionDescription' => 'Scegli i clip dalla biblioteca selezionata che puoi giocare prima dei film.',
@@ -6187,8 +6193,8 @@ extension on TranslationsIt {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('it'))(n, one: 'Questo elimina il ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodio in essa contenuto e il relativo file.', other: 'Questo elimina tutti i ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodi in essa contenuti e i relativi file.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('it'))(n, one: 'Questo elemento è archiviato in ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} file, che verrà eliminato.', other: 'Questo elemento è archiviato in ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} file, e tutti verranno eliminati.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('it'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} altro episodio è archiviato nello stesso file e verrà eliminato anche lui:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} altri episodi sono archiviati nello stesso file e verranno eliminati anche loro:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG non ha potuto verificare quali file rimuoverà, quindi potrebbe eliminare più di quanto indicato sopra. Annulla e riprova, oppure elimina comunque.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Il tuo server non ha fornito i dettagli del file per questo elemento, quindi PlezyNG non può verificare quali file rimuoverà. Potrebbe eliminare più di quanto indicato sopra.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng non ha potuto verificare quali file rimuoverà, quindi potrebbe eliminare più di quanto indicato sopra. Annulla e riprova, oppure elimina comunque.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Il tuo server non ha fornito i dettagli del file per questo elemento, quindi Pleazyng non può verificare quali file rimuoverà. Potrebbe eliminare più di quanto indicato sopra.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Elemento multimediale eliminato correttamente',
 			'mediaMenu.mediaFailedToDelete' => 'Impossibile eliminare l\'elemento multimediale',
 			'mediaMenu.rate' => 'Valuta',
@@ -6238,7 +6244,7 @@ extension on TranslationsIt {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'accessibilità',
 			'accessibility.summary' => 'testo, contrasto, movimento e controlli',
-			'accessibility.systemHint' => 'Le impostazioni di accessibilità del dispositivo si applicano sempre.Queste opzioni aggiungono ajustamenti nel corso di PlezyNG.',
+			'accessibility.systemHint' => 'Le impostazioni di accessibilità del dispositivo si applicano sempre.Queste opzioni aggiungono ajustamenti nel corso di Pleazyng.',
 			'accessibility.readability' => 'Leggi e visibilità',
 			'accessibility.textSize' => 'Dimensioni aggiuntive del testo',
 			'accessibility.preview' => 'Leggi, ascolta e guarda al tuo ritmo.',
@@ -6251,7 +6257,7 @@ extension on TranslationsIt {
 			'accessibility.largeTargets' => 'obiettivi touch più grandi',
 			'accessibility.largeTargetsHint' => 'Gioca i controlli condivisi più spazio per la navigazione a touch e assistive.',
 			'accessibility.navigationHint' => 'Usa Tab e Shift+Tab per spostarti tra i controlli, Enter o la barra spaziatrice per attivarli ed Escape o Indietro per chiudere. Quando un libro è aperto, puoi regolare lo zoom e le preferenze di lettura.',
-			'accessibility.textSizeDescription' => 'Scala il testo dell\'interfaccia in PlezyNG oltre alla configurazione di dimensioni del testo del sistema del dispositivo.',
+			'accessibility.textSizeDescription' => 'Scala il testo dell\'interfaccia in Pleazyng oltre alla configurazione di dimensioni del testo del sistema del dispositivo.',
 			'accessibility.boldTextHint' => 'Utilizzare un peso più pesante per le etichette e i messaggi di interfaccia per renderli più facili da distinguere.',
 			'tooltips.shufflePlay' => 'Riproduzione casuale',
 			'tooltips.playTrailer' => 'Riproduci trailer',
@@ -6519,7 +6525,7 @@ extension on TranslationsIt {
 			'mpvConfig.removeLine' => 'Rimuovi riga',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-context e gpu-api vengono ignorati su Linux: il video incorporato viene sempre renderizzato tramite vo=libmpv sul piano video e gpu-next (che gli shader di calcolo come ArtCNN richiedono) non può essere eseguito in modalità incorporata.',
 			'dialog.confirmAction' => 'Conferma azione',
-			'profiles.addPlezyProfile' => 'Aggiungi profilo PlezyNG',
+			'profiles.addPlezyProfile' => 'Aggiungi profilo Pleazyng',
 			'profiles.switchingProfile' => 'Cambio profilo…',
 			'profiles.deleteThisProfileTitle' => 'Eliminare questo profilo?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Rimuovi ${displayName}. Le connessioni resteranno invariate.',
@@ -6601,12 +6607,12 @@ extension on TranslationsIt {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} server hanno negato l\'accesso a questo account',
 			'connections.signInAgain' => 'Accedi di nuovo',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Modifica connessione ${product}',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Aggiungi o rimuovi gli URL per ${serverName}. PlezyNG userà l\'URL raggiungibile con la latenza più bassa.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Aggiungi o rimuovi gli URL per ${serverName}. Pleazyng userà l\'URL raggiungibile con la latenza più bassa.',
 			'accountPreferences.sectionTitle' => 'Preferenze dell\'account',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Opzioni di audio, sottotitoli e libreria salvate su ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Opzioni di audio, sottotitoli e libreria salvate su ${count} account',
 			'accountPreferences.pickAccount' => 'Ogni account conserva le proprie preferenze. Scegli quale modificare.',
-			'accountPreferences.storedOnAccount' => 'Queste opzioni vengono salvate sull\'account stesso, quindi ogni app che vi accede le usa — inclusa PlezyNG sugli altri tuoi dispositivi.',
+			'accountPreferences.storedOnAccount' => 'Queste opzioni vengono salvate sull\'account stesso, quindi ogni app che vi accede le usa — inclusa Pleazyng sugli altri tuoi dispositivi.',
 			'accountPreferences.noAccounts' => 'Nessun account da configurare',
 			'accountPreferences.noAccountsHint' => 'Accedi a Plex oppure connetti un server Jellyfin o Emby: le preferenze salvate su quell\'account appariranno qui.',
 			'accountPreferences.unavailable' => 'Impossibile raggiungere questo account',
@@ -6930,9 +6936,9 @@ extension on TranslationsIt {
 			'logs.saveLogs' => 'Salva i file in file',
 			'logs.logsSaved' => ({required Object path}) => 'I registri salvati a ${path}',
 			'logs.saveLogsFailed' => 'Non poteva salvare il file di log.',
-			'startup.failedTitle' => 'PlezyNG non ha potuto avviarsi',
+			'startup.failedTitle' => 'Pleazyng non ha potuto avviarsi',
 			'startup.failedBody' => 'Si è verificato un errore durante l\'avvio. I dettagli seguenti indicano cosa non ha funzionato.',
-			'startup.failedBodyRepairable' => 'Il file delle impostazioni salvate di PlezyNG è danneggiato e deve essere ricostruito prima che PlezyNG possa avviarsi. Riprovare non servirà: scegli Ripara storage.',
+			'startup.failedBodyRepairable' => 'Il file delle impostazioni salvate di Pleazyng è danneggiato e deve essere ricostruito prima che Pleazyng possa avviarsi. Riprovare non servirà: scegli Ripara storage.',
 			'startup.phaseLabel' => 'Passaggio',
 			'startup.showDetails' => 'Mostra dettagli',
 			'startup.hideDetails' => 'Nascondi dettagli',
@@ -6941,16 +6947,16 @@ extension on TranslationsIt {
 			'startup.uploadDetails' => 'Carica dettagli',
 			'startup.repairStorage' => 'Ripara storage',
 			'startup.repairTitle' => 'Riparare i dati archiviati?',
-			'startup.repairBodyCommon' => 'Il file delle impostazioni di PlezyNG è danneggiato e non può essere letto. La riparazione ripristina ogni impostazione al suo valore predefinito.',
+			'startup.repairBodyCommon' => 'Il file delle impostazioni di Pleazyng è danneggiato e non può essere letto. La riparazione ripristina ogni impostazione al suo valore predefinito.',
 			'startup.repairBodyOneCredential' => 'Un accesso salvato è danneggiato e non può essere letto. La riparazione rimuove solo quello; le altre impostazioni restano intatte.',
 			'startup.repairBodySignInsKept' => 'I tuoi server e profili dovrebbero rimanere con accesso effettuato.',
 			'startup.repairBodySignInsLost' => 'La chiave che protegge i tuoi accessi salvati non può essere recuperata da questo file, quindi dovrai effettuare di nuovo l\'accesso a ogni server e profilo. Nulla sul tuo server multimediale è interessato.',
-			'startup.repairBodySessionsUncertain' => 'I tracker (MAL, AniList, Simkl, Trakt) e Seerr sono archiviati separatamente e potrebbero sopravvivere o meno. PlezyNG ti dirà esattamente cosa ha conservato.',
+			'startup.repairBodySessionsUncertain' => 'I tracker (MAL, AniList, Simkl, Trakt) e Seerr sono archiviati separatamente e potrebbero sopravvivere o meno. Pleazyng ti dirà esattamente cosa ha conservato.',
 			'startup.repairConfirm' => 'Ripara',
 			'startup.repairSucceeded' => 'Storage riparato',
 			'startup.repairNeedsRestart' => 'Storage riparato — riavvio richiesto',
-			'startup.restartRequiredBody' => 'I tuoi dati sono stati riparati, ma PlezyNG deve ripartire da zero prima di poterli usare. Chiudi PlezyNG e riaprilo.',
-			'startup.quitPlezy' => 'Esci da PlezyNG',
+			'startup.restartRequiredBody' => 'I tuoi dati sono stati riparati, ma Pleazyng deve ripartire da zero prima di poterli usare. Chiudi Pleazyng e riaprilo.',
+			'startup.quitPlezy' => 'Esci da Pleazyng',
 			'startup.repairFailed' => 'Riparazione non riuscita',
 			'startup.repairKeptSignIns' => 'I tuoi server e profili hanno ancora l\'accesso effettuato.',
 			'startup.repairLostSignIns' => 'La chiave che protegge i tuoi accessi salvati non ha potuto essere recuperata. Dovrai effettuare di nuovo l\'accesso a ogni server e profilo.',
@@ -6959,7 +6965,7 @@ extension on TranslationsIt {
 			'startup.backupWarning' => 'Contiene le tue credenziali di accesso. Non caricarla né condividerla.',
 			'startup.deleteBackup' => 'Elimina copia',
 			'startup.backupDeleted' => 'Copia eliminata.',
-			'startup.previousFailureTitle' => 'PlezyNG non è riuscito ad avviarsi l\'ultima volta',
+			'startup.previousFailureTitle' => 'Pleazyng non è riuscito ad avviarsi l\'ultima volta',
 			'licenses.relatedPackages' => 'Pacchetti correlati',
 			'licenses.license' => 'Licenza',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licenza ${number}',
@@ -7337,7 +7343,7 @@ extension on TranslationsIt {
 			'watchTogether.codeCopied' => 'Codice stanza copiato',
 			'watchTogether.shareInvite' => 'Condividi invito',
 			'watchTogether.inviteCopied' => 'Invito copiato. Incollalo in un messaggio.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Unisciti alla mia stanza di Guarda insieme su PlezyNG: apri «Guarda insieme», scegli «Unisciti a una stanza» e inserisci ${code}.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Unisciti alla mia stanza di Guarda insieme su Pleazyng: apri «Guarda insieme», scegli «Unisciti a una stanza» e inserisci ${code}.',
 			'watchTogether.openSessionControls' => 'Apri i controlli della sessione di Guarda insieme',
 			_ => null,
 		} ?? switch (path) {
@@ -7365,7 +7371,7 @@ extension on TranslationsIt {
 			'watchTogether.chooseAnotherCopy' => 'Scegli un\'altra copia',
 			'watchTogether.dontPlay' => 'Non riprodurre',
 			'watchTogether.unavailableTitle' => 'Non hai questo video',
-			'watchTogether.unavailableDescription' => 'PlezyNG non l\'ha trovato nelle tue librerie. Scegli tu una copia o cerca di nuovo.',
+			'watchTogether.unavailableDescription' => 'Pleazyng non l\'ha trovato nelle tue librerie. Scegli tu una copia o cerca di nuovo.',
 			'watchTogether.chooseCopy' => 'Scegli una copia',
 			'watchTogether.searchAgain' => 'Cerca di nuovo',
 			'watchTogether.noCandidates' => 'Nessuna copia trovata nelle tue librerie.',
@@ -7457,7 +7463,7 @@ extension on TranslationsIt {
 			'watchTogether.errors.relayFull' => 'Guarda insieme è momentaneamente sovraccarico. Riprova più tardi.',
 			'watchTogether.errors.unreachable' => 'Impossibile raggiungere il relay di Guarda insieme. Controlla la connessione.',
 			'watchTogether.errors.rateLimited' => 'Troppi tentativi. Attendi un momento e riprova.',
-			'watchTogether.errors.clientBlocked' => 'Questa versione di PlezyNG non può usare il relay. Aggiorna l\'app.',
+			'watchTogether.errors.clientBlocked' => 'Questa versione di Pleazyng non può usare il relay. Aggiorna l\'app.',
 			'watchTogether.errors.forbidden' => 'Solo l\'host può farlo.',
 			'watchTogether.errors.notInRoom' => 'Non sei in una stanza.',
 			'watchTogether.errors.alreadyInRoom' => 'Sei già in una stanza.',
@@ -7539,11 +7545,11 @@ extension on TranslationsIt {
 			'downloads.activeSyncRules' => 'Regole di sincronizzazione',
 			'downloads.reviewOrphanFiles' => 'Rivedi i download orfani',
 			'downloads.orphanReviewTitle' => 'Rivedi i download orfani',
-			'downloads.orphanReviewDescription' => 'Questi file contrassegnati si trovano nelle cartelle di download predefinite gestite da PlezyNG e non hanno una voce di download corrispondente né un’attività in corso. Controlla l’elenco prima di eliminarli.',
+			'downloads.orphanReviewDescription' => 'Questi file contrassegnati si trovano nelle cartelle di download predefinite gestite da Pleazyng e non hanno una voce di download corrispondente né un’attività in corso. Controlla l’elenco prima di eliminarli.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} file · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => 'Elimina ${count} file',
 			'downloads.orphanCleanupNone' => 'Nessun file di download orfano trovato',
-			'downloads.orphanCleanupFailed' => 'PlezyNG non è riuscito a eseguire una scansione sicura della cartella di download gestita. Non è stato eliminato alcun file.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng non è riuscito a eseguire una scansione sicura della cartella di download gestita. Non è stato eliminato alcun file.',
 			'downloads.orphanCleanupChanged' => 'L’elenco dei download è cambiato durante la revisione. Controlla di nuovo i file prima di ripulire.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => 'Eliminati ${count} file di download orfani · liberati ${size}',
 			'downloads.noSyncRules' => 'Nessuna regola di sincronizzazione',
@@ -7565,14 +7571,14 @@ extension on TranslationsIt {
 			'downloads.backgroundWarning.bannerAction' => 'Dettagli',
 			'downloads.backgroundWarning.sheetTitle' => 'I download in background sono bloccati',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'I download in background potrebbero essere limitati',
-			'downloads.backgroundWarning.sheetIntro' => 'Android impedisce a PlezyNG di scaricare in modo affidabile in background.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Il dispositivo limita i momenti in cui PlezyNG può scaricare in background.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'L’uso in background di PlezyNG è limitato. Nelle impostazioni della batteria o dell’uso in background, seleziona «Senza restrizioni».',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android ha messo PlezyNG in uno stato di standby con restrizioni. Imposta l’uso della batteria su «Senza restrizioni».',
+			'downloads.backgroundWarning.sheetIntro' => 'Android impedisce a Pleazyng di scaricare in modo affidabile in background.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Il dispositivo limita i momenti in cui Pleazyng può scaricare in background.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'L’uso in background di Pleazyng è limitato. Nelle impostazioni della batteria o dell’uso in background, seleziona «Senza restrizioni».',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android ha messo Pleazyng in uno stato di standby con restrizioni. Imposta l’uso della batteria su «Senza restrizioni».',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Le notifiche dei download sono disattivate, quindi l’avanzamento e i controlli potrebbero non essere disponibili.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Le notifiche sono disattivate. Su Android 13 o versioni successive sono necessarie per i download prolungati in background.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Il Risparmio dati è attivo e blocca i download in background tramite dati mobili. I download dovrebbero comunque funzionare su Wi-Fi.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'I download si sono interrotti più volte mentre PlezyNG era in background. Controlla le impostazioni della batteria o dell’uso in background di PlezyNG.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'I download si sono interrotti più volte mentre Pleazyng era in background. Controlla le impostazioni della batteria o dell’uso in background di Pleazyng.',
 			'downloads.backgroundWarning.openSettings' => 'Apri le impostazioni',
 			'downloads.backgroundWarning.stillNotWorking' => 'Guida specifica per il dispositivo',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Consulta la procedura per il tuo dispositivo oppure invia un log da Impostazioni › Visualizza i log se il problema persiste.',
@@ -7643,19 +7649,19 @@ extension on TranslationsIt {
 			'companionRemote.session.stopServer' => 'Arresta server',
 			'companionRemote.session.minimize' => 'Riduci',
 			'companionRemote.session.manualAddressHint' => 'Indirizzo di connessione manuale:',
-			'companionRemote.pairing.discoveryDescription' => 'I dispositivi PlezyNG con lo stesso account Plex appaiono qui',
+			'companionRemote.pairing.discoveryDescription' => 'I dispositivi Pleazyng con lo stesso account Plex appaiono qui',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Connessione...',
 			'companionRemote.pairing.searchingForDevices' => 'Ricerca dispositivi...',
 			'companionRemote.pairing.noDevicesFound' => 'Nessun dispositivo trovato nella tua rete',
-			'companionRemote.pairing.noDevicesHint' => 'Apri PlezyNG sul computer e usa la stessa rete Wi-Fi',
+			'companionRemote.pairing.noDevicesHint' => 'Apri Pleazyng sul computer e usa la stessa rete Wi-Fi',
 			'companionRemote.pairing.availableDevices' => 'Dispositivi disponibili',
 			'companionRemote.pairing.manualConnection' => 'Connessione manuale',
 			'companionRemote.pairing.cryptoInitFailed' => 'Impossibile avviare la connessione sicura. Accedi prima a Plex.',
 			'companionRemote.pairing.validationHostRequired' => 'Inserisci l\'indirizzo host',
 			'companionRemote.pairing.validationHostFormat' => 'Il formato deve essere IP:porta (es. 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Tempo scaduto per la connessione. Usa la stessa rete su entrambi i dispositivi.',
-			'companionRemote.pairing.sessionNotFound' => 'Dispositivo non trovato. Assicurati che PlezyNG sia in esecuzione sull\'host.',
+			'companionRemote.pairing.sessionNotFound' => 'Dispositivo non trovato. Assicurati che Pleazyng sia in esecuzione sull\'host.',
 			'companionRemote.pairing.authFailed' => 'Autenticazione non riuscita. Entrambi i dispositivi devono usare lo stesso account Plex.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Connessione non riuscita: ${error}',
 			'companionRemote.pairing.codeTitle' => 'Codice di coppia',
@@ -7919,11 +7925,11 @@ extension on TranslationsIt {
 			'trakt.connected' => 'Connesso',
 			'trakt.connectedAs' => ({required Object username}) => 'Connesso come @${username}',
 			'trakt.disconnectConfirm' => 'Disconnettere l\'account Trakt?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng smetterà di inviare eventi a Trakt. Puoi riconnetterti quando vuoi.',
 			'trakt.scrobble' => 'Scrobbling in tempo reale',
 			'trakt.scrobbleDescription' => 'Invia eventi di riproduzione, pausa e arresto a Trakt durante la riproduzione.',
 			'trakt.watchedSync' => 'Sincronizza lo stato di visione',
-			'trakt.watchedSyncDescription' => 'Quando contrassegni un elemento come visto in PlezyNG, viene contrassegnato come visto anche su Trakt.',
+			'trakt.watchedSyncDescription' => 'Quando contrassegni un elemento come visto in Pleazyng, viene contrassegnato come visto anche su Trakt.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Connetti Seerr',
 			'seerr.serverUrl' => 'URL del server',
@@ -7933,10 +7939,10 @@ extension on TranslationsIt {
 			'seerr.signInWithEmby' => 'Accedi con Emby',
 			'seerr.signInWithLocal' => 'Usa un account locale',
 			'seerr.email' => 'Email',
-			'seerr.noSignInMethods' => 'Questa istanza Seerr non offre alcun metodo di accesso supportato da PlezyNG.',
+			'seerr.noSignInMethods' => 'Questa istanza Seerr non offre alcun metodo di accesso supportato da Pleazyng.',
 			'seerr.instance' => 'Istanza',
 			'seerr.disconnectConfirm' => 'Disconnettere Seerr?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG rimuoverà questa istanza Seerr. Potrai riconnetterla in qualsiasi momento.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng rimuoverà questa istanza Seerr. Potrai riconnetterla in qualsiasi momento.',
 			'seerr.request' => 'Richiedi',
 			'seerr.request4k' => 'Richiedi in 4K',
 			'seerr.seasons' => 'Stagioni',
@@ -7961,7 +7967,7 @@ extension on TranslationsIt {
 			'seerr.statusBlocklisted' => 'Nella lista di blocco',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Impossibile raggiungere ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'Nessuna istanza Seerr all\'indirizzo ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'Un reverse proxy con autenticazione (SSO o autenticazione HTTP) ha risposto al posto di Seerr. PlezyNG non può accedere attraverso di esso: consenti al percorso /api/v1 di Seerr di bypassare il proxy per questa app, oppure usa un indirizzo che raggiunga Seerr direttamente.',
+			'seerr.behindAuthProxy' => 'Un reverse proxy con autenticazione (SSO o autenticazione HTTP) ha risposto al posto di Seerr. Pleazyng non può accedere attraverso di esso: consenti al percorso /api/v1 di Seerr di bypassare il proxy per questa app, oppure usa un indirizzo che raggiunga Seerr direttamente.',
 			'seerr.invalidUrl' => 'Inserisci un indirizzo del server come https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Questa istanza Seerr non supporta Quick Connect. È necessaria la versione 3.4 o successiva di Seerr.',
 			'seerr.notInitialized' => 'Questa istanza Seerr non ha completato la configurazione iniziale',
@@ -7982,7 +7988,7 @@ extension on TranslationsIt {
 			'services.scrobble' => 'Registra automaticamente i progressi',
 			'services.scrobbleDescription' => 'Aggiorna la tua lista quando termini un episodio o un film.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Disconnettere ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG smetterà di aggiornare ${service}. Riconnetti quando vuoi.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng smetterà di aggiornare ${service}. Riconnetti quando vuoi.',
 			'services.connectFailed' => ({required Object service}) => 'Impossibile connettersi a ${service}. Riprova.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7990,8 +7996,8 @@ extension on TranslationsIt {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Riconnetti Simkl',
-			'services.simklReconnect.subtitle' => 'Simkl sta dismettendo il metodo di accesso usato da questa connessione. La riconnessione apre simkl.com per autorizzare PlezyNG — PlezyNG non vede mai la tua password. La tua cronologia di visione resta su Simkl.',
-			'services.deviceCode.title' => ({required Object service}) => 'Attiva PlezyNG su ${service}',
+			'services.simklReconnect.subtitle' => 'Simkl sta dismettendo il metodo di accesso usato da questa connessione. La riconnessione apre simkl.com per autorizzare Pleazyng — Pleazyng non vede mai la tua password. La tua cronologia di visione resta su Simkl.',
+			'services.deviceCode.title' => ({required Object service}) => 'Attiva Pleazyng su ${service}',
 			'services.deviceCode.instructions' => 'Scansiona il codice QR oppure visita l\'indirizzo qui sotto e inserisci questo codice:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Apri ${service} per attivare',
 			'services.deviceCode.copyCode' => 'Copia il codice di attivazione',
@@ -8024,8 +8030,8 @@ extension on TranslationsIt {
 			'streaming.title' => 'Streaming cloud e con add-on',
 			'streaming.subtitle' => 'Collega un account Debrid per sfogliare i file nel cloud e riprodurre gli stream supportati. Gli add-on compatibili con Stremio offrono opzioni di streaming nelle pagine di film ed episodi. I dati di connessione sono cifrati su questo dispositivo e salvati in questo profilo.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Sorgenti connesse: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG non è riuscito a sbloccare le impostazioni di streaming salvate. Sblocca il dispositivo e riprova prima di modificare le connessioni.',
-			'streaming.settingsUnreadable' => 'PlezyNG non riesce a sbloccare queste connessioni salvate. Eliminale per collegare di nuovo i servizi.',
+			'streaming.settingsLoadFailed' => 'Pleazyng non è riuscito a sbloccare le impostazioni di streaming salvate. Sblocca il dispositivo e riprova prima di modificare le connessioni.',
+			'streaming.settingsUnreadable' => 'Pleazyng non riesce a sbloccare queste connessioni salvate. Eliminale per collegare di nuovo i servizi.',
 			'streaming.clearUnreadableSettings' => 'Cancella impostazioni salvate',
 			'streaming.clearUnreadableSettingsConfirm' => 'Cancellare le impostazioni di streaming salvate?',
 			'streaming.clearUnreadableSettingsBody' => 'Questa operazione rimuove da questo profilo tutti gli account dei provider e gli indirizzi degli add-on salvati. Non puoi annullarla.',
@@ -8037,11 +8043,11 @@ extension on TranslationsIt {
 			'streaming.catalogFiltersRequired' => 'Scegli i filtri richiesti per sfogliare questo catalogo.',
 			'streaming.catalogRequiredLabel' => 'Obbligatorio',
 			'streaming.importFromStremio' => 'Importa da Stremio',
-			'streaming.stremioImportInstructions' => 'Scansiona il codice QR o apri il link. Accedi a Stremio e autorizza la richiesta. PlezyNG legge solo l’elenco dei tuoi add-on; non chiede mai la password di Stremio e non modifica le impostazioni.',
+			'streaming.stremioImportInstructions' => 'Scansiona il codice QR o apri il link. Accedi a Stremio e autorizza la richiesta. Pleazyng legge solo l’elenco dei tuoi add-on; non chiede mai la password di Stremio e non modifica le impostazioni.',
 			'streaming.stremioImportOpen' => 'Apri il link di Stremio',
 			'streaming.stremioImportCode' => 'Codice di collegamento',
 			'streaming.stremioImportPreviewTitle' => 'Scegli gli add-on',
-			'streaming.stremioImportPreviewBody' => 'Seleziona gli add-on da collegare a PlezyNG. Questo import accetta solo indirizzi HTTPS.',
+			'streaming.stremioImportPreviewBody' => 'Seleziona gli add-on da collegare a Pleazyng. Questo import accetta solo indirizzi HTTPS.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Add-on ignorati per indirizzo non supportato o non sicuro: ${count}.',
 			'streaming.stremioCatalogs' => 'Cataloghi',
 			'streaming.stremioStreams' => 'Stream',
@@ -8055,7 +8061,7 @@ extension on TranslationsIt {
 			'streaming.addByManifestUrl' => 'Aggiungi tramite URL del manifest',
 			'streaming.addAddon' => 'Aggiungi add-on',
 			'streaming.manifestUrl' => 'URL del manifest dell’add-on',
-			'streaming.manifestUrlHint' => 'Incolla l’URL del manifest dell’add-on. Prima di collegarlo, PlezyNG verifica che supporti cataloghi o risorse di streaming.',
+			'streaming.manifestUrlHint' => 'Incolla l’URL del manifest dell’add-on. Prima di collegarlo, Pleazyng verifica che supporti cataloghi o risorse di streaming.',
 			'streaming.allowHttp' => 'Consenti un indirizzo HTTP non crittografato',
 			'streaming.allowHttpDescription' => 'Usalo solo per un add-on attendibile sulla tua rete privata.',
 			'streaming.installAddon' => 'Collega add-on',
@@ -8063,20 +8069,20 @@ extension on TranslationsIt {
 			'streaming.addonRemoved' => 'Add-on rimosso',
 			'streaming.addonToggle' => 'Attiva add-on',
 			'streaming.addonEmpty' => 'Nessun add-on collegato',
-			'streaming.addonError' => 'PlezyNG non è riuscito a collegare questo add-on. Controlla l’URL del manifest e riprova.',
+			'streaming.addonError' => 'Pleazyng non è riuscito a collegare questo add-on. Controlla l’URL del manifest e riprova.',
 			'streaming.addonPrivacy' => 'Collega solo add-on di cui ti fidi. Quando cerchi un titolo, l’add-on può riceverne il nome e restituire link di streaming di terze parti.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Riproduci stream torrent supportati con il tuo account Real-Debrid.',
 			'streaming.connectRealDebrid' => 'Collega con codice QR',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Connesso come ${username}',
-			'streaming.realDebridInstructions' => 'Scansiona il codice QR o apri il link, quindi inserisci questo codice di attivazione per collegare PlezyNG:',
+			'streaming.realDebridInstructions' => 'Scansiona il codice QR o apri il link, quindi inserisci questo codice di attivazione per collegare Pleazyng:',
 			'streaming.realDebridActivate' => 'Apri Real-Debrid per attivare',
 			'streaming.realDebridCode' => 'Codice di attivazione',
 			'streaming.realDebridConnectFailed' => 'Impossibile collegarsi a Real-Debrid. Riprova.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'Riproduci stream torrent supportati con il tuo account AllDebrid.',
 			'streaming.connectAllDebrid' => 'Collega con codice QR',
-			'streaming.allDebridInstructions' => 'Scansiona il codice QR o apri il link per autorizzare PlezyNG. Lascia aperta questa schermata durante la connessione:',
+			'streaming.allDebridInstructions' => 'Scansiona il codice QR o apri il link per autorizzare Pleazyng. Lascia aperta questa schermata durante la connessione:',
 			'streaming.allDebridActivate' => 'Apri AllDebrid per attivare',
 			'streaming.allDebridCode' => 'PIN di attivazione',
 			'streaming.allDebridConnectFailed' => 'Impossibile collegarsi a AllDebrid. Riprova.',
@@ -8087,13 +8093,13 @@ extension on TranslationsIt {
 			'streaming.connectApiKey' => 'Collega con chiave API',
 			'streaming.apiKeyTitle' => ({required Object service}) => 'Collega ${service}',
 			'streaming.apiKey' => 'Chiave API',
-			'streaming.apiKeyHint' => ({required Object service}) => 'Incolla la chiave API dalle impostazioni del tuo account ${service}. PlezyNG la cifra su questo dispositivo e la salva in questo profilo.',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Incolla la chiave API dalle impostazioni del tuo account ${service}. Pleazyng la cifra su questo dispositivo e la salva in questo profilo.',
 			'streaming.apiKeyConnectFailed' => 'Impossibile verificare questa chiave API. Controllala e riprova.',
 			'streaming.accountConnected' => ({required Object username}) => 'Connesso come ${username}',
 			'streaming.streamNeedsProvider' => 'Collega un servizio Debrid per riprodurre questo stream torrent.',
 			'streaming.playViaProvider' => 'Riproduci con Debrid',
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Disconnettere ${service}?',
-			'streaming.disconnectBody' => 'PlezyNG rimuoverà l’autorizzazione di questo dispositivo. I file del provider e i trasferimenti in corso non verranno modificati.',
+			'streaming.disconnectBody' => 'Pleazyng rimuoverà l’autorizzazione di questo dispositivo. I file del provider e i trasferimenti in corso non verranno modificati.',
 			'streaming.streamsTitle' => 'Scegli uno stream',
 			'streaming.noStreams' => 'Nessuno stream trovato per questo titolo.',
 			'streaming.manageConnections' => 'Gestisci servizi di streaming',
@@ -8109,7 +8115,7 @@ extension on TranslationsIt {
 			'streaming.streamUnsupported' => 'Il player nell’app non supporta questo formato di stream.',
 			'streaming.remoteNeedsEpisode' => 'Scegli un episodio prima di cercare uno stream.',
 			'streaming.remoteNeedsEpisodeNumber' => 'A questo episodio manca il numero di stagione o di episodio.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG non ha trovato un ID IMDb o TMDB per questo titolo.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng non ha trovato un ID IMDb o TMDB per questo titolo.',
 			'streaming.watchWithServices' => 'Guarda con i servizi collegati',
 			'streaming.chooseEpisode' => 'Scegli episodio',
 			'streaming.episodes' => 'Episodi',
@@ -8195,15 +8201,15 @@ extension on TranslationsIt {
 			'notifications.newEpisodeTitle' => 'Nuovo episodio',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'Prova ogni funzione gratuita per 7 giorni',
-			'appAccess.description' => 'Inizia un test di sette giorni con accesso completo a ogni funzione PlezyNG. non ci sono costi durante il test e non ci sono abbonamenti. Dopo il test, un acquisto di vita al prezzo del tuo negozio rilascia PlezyNG per tutta la vita.',
-			'appAccess.trialEndedDescription' => 'Rimuovere ogni funzionalità in PlezyNG per tutta la vita con un acquisto al prezzo del tuo negozio.',
+			'appAccess.description' => 'Inizia un test di sette giorni con accesso completo a ogni funzione Pleazyng. non ci sono costi durante il test e non ci sono abbonamenti. Dopo il test, un acquisto di vita al prezzo del tuo negozio rilascia Pleazyng per tutta la vita.',
+			'appAccess.trialEndedDescription' => 'Rimuovere ogni funzionalità in Pleazyng per tutta la vita con un acquisto al prezzo del tuo negozio.',
 			'appAccess.startTrial' => 'Inizia il mio trial gratuito di 7 giorni',
 			'appAccess.trialActive' => 'Il tuo test di 7 giorni è attivo.',
 			'appAccess.trialEnded' => 'Il processo di 7 giorni è finito',
 			'appAccess.trialStartFailed' => 'Non potevo salvare il test su questo dispositivo. si prega di provare di nuovo.',
-			'appAccess.lifetimeTitle' => 'PlezyNG disattivato per la vita',
-			'appAccess.lifetimeBody' => 'Grazie! avete accesso a tutti i PlezyNG funzionalità.',
-			'appAccess.manageTitle' => 'PlezyNG accesso a vita',
+			'appAccess.lifetimeTitle' => 'Pleazyng disattivato per la vita',
+			'appAccess.lifetimeBody' => 'Grazie! avete accesso a tutti i Pleazyng funzionalità.',
+			'appAccess.manageTitle' => 'Pleazyng accesso a vita',
 			'appAccess.manageDescription' => 'Prova ogni funzionalità gratuita per 7 giorni, poi disattivare tutto per tutta la vita con un solo pagamento al prezzo del tuo negozio.',
 			'appAccess.buy' => ({required Object price}) => 'Rimuovere ogni funzionalità per ${price}',
 			'appAccess.loadingPrice' => 'Il prezzo del negozio...',
@@ -8211,11 +8217,11 @@ extension on TranslationsIt {
 			'appAccess.restore' => 'Ristrutturazione acquisto per tutta la vita',
 			'appAccess.pending' => 'L\'acquisto è in attesa di pagamento o approvazione.L\'accesso a tempo pieno si distacca non appena il negozio lo completa.',
 			'appAccess.storeUnavailable' => 'Verificare che si è iscritti al negozio e gli acquisti sono consentiti su questo dispositivo.',
-			'appAccess.productNotFound' => 'Il disattivatore di vita PlezyNG non è ancora disponibile in questo negozio.',
+			'appAccess.productNotFound' => 'Il disattivatore di vita Pleazyng non è ancora disponibile in questo negozio.',
 			'appAccess.productQueryFailed' => 'Non poteva caricare il prezzo del negozio. verificare la connessione e provare di nuovo.',
 			'appAccess.purchaseFailed' => 'L’acquisto non è andato via, prova di nuovo.',
 			'appAccess.restoreFailed' => 'Non potevo raggiungere il negozio per ripristinare l\'acquisto. prova di nuovo.',
-			'appAccess.nothingToRestore' => 'N. PlezyNG acquisto a vita è stato trovato per questo account del negozio.',
+			'appAccess.nothingToRestore' => 'N. Pleazyng acquisto a vita è stato trovato per questo account del negozio.',
 			'detail.endsAt' => ({required Object time}) => 'Termina alle ${time}',
 			'watchLink.serverUnavailable' => 'Non potevo raggiungere un server Plex per questo link.',
 			'watchLink.notFound' => 'Non potevo trovare questo spettacolo o film sui tuoi server Plex.',
@@ -8229,8 +8235,8 @@ extension on TranslationsIt {
 			'watchLink.copy' => 'Copia',
 			'watchLink.copied' => 'Link copia',
 			'homeLayout.title' => 'Home Layout',
-			'homeLayout.resetToast' => 'Home Ristrutturazione all\'originale layout Plezy',
-			'homeLayout.resetHeroTitle' => 'Ristrutturare il layout del eroe al stock Plezy?',
+			'homeLayout.resetToast' => 'Home Ristrutturazione all\'originale layout Pleazyng',
+			'homeLayout.resetHeroTitle' => 'Ristrutturare il layout del eroe al stock Pleazyng?',
 			'homeLayout.resetHeroBody' => 'Ritorna il set di eroe di ogni riga e riporta il singolo banner rotativo al top di Home, come prima che le riga eroe esistessero.',
 			'homeLayout.removeRowTitle' => 'Rimuovere la linea di casa?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} sarà cancellato. non può essere negato.',
@@ -8240,7 +8246,7 @@ extension on TranslationsIt {
 			'homeLayout.syncAccountOff' => 'Off: questo dispositivo mantiene il suo layout.',
 			'homeLayout.syncNow' => 'Sincolo ora',
 			'homeLayout.plexHomeManager' => 'Plex Direttore di casa',
-			'homeLayout.managePlexRows' => 'Gestione Plex righe in Plezy',
+			'homeLayout.managePlexRows' => 'Gestione Plex righe in Pleazyng',
 			'homeLayout.managePlexRowsDescription' => 'Aperto per organizzare le righe selezionate in casa',
 			'homeLayout.organizeHomeRows' => 'Organizzare le linee di casa',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} righe: movimento, eroe, auto-slide, rimozione',
@@ -8310,7 +8316,7 @@ extension on TranslationsIt {
 			'homeLayout.organizeRowsHint' => 'Selezionare una riga (o tenere Selezionare): spostarlo · Sinistra/Destra: opzioni di riga · Ritorno: fatto',
 			'homeLayout.layoutNavDescription' => 'Scegliere le righe, le biblioteche e le categorie di raccolta',
 			'homeLayout.editHomeRow' => 'Edit Home Ronde',
-			'homeLayout.resetHeroButton' => 'Ristrutturare il layout del eroe in stock Plezy',
+			'homeLayout.resetHeroButton' => 'Ristrutturare il layout del eroe in stock Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Ristrutturazione disattivata',
 			'homeLayout.reorderingLocked' => 'Ristrutturazione chiusa',
 			'homeLayout.rowsCanBeDragged' => 'Le corde possono essere tracciate - tappa il blocco per evitare che',
@@ -8327,13 +8333,13 @@ extension on TranslationsIt {
 			'homeLayout.tapHeroCardDescription' => 'Selezionare se tappando o selezionando una carta Hero inizia la riproduzione o si aprono i suoi dettagli.',
 			'homeLayout.heroTapPlayDescription' => 'Inizia subito l’oggetto selezionato.',
 			'homeLayout.heroTapDetailsDescription' => 'Apri i dettagli dell\'oggetto selezionato prima di scegliere un\'azione.',
-			'platform.localNetworkPermission' => 'PlezyNG connette ai tuoi server multimediali e dispositivi di riproduzione sulla tua rete locale.',
-			'platform.locationPermission' => 'PlezyNG utilizza l\'accesso alla localizzazione quando iOS lo richiede per rilevare la tua rete locale e connetterti ai tuoi server multimediali.',
+			'platform.localNetworkPermission' => 'Pleazyng connette ai tuoi server multimediali e dispositivi di riproduzione sulla tua rete locale.',
+			'platform.locationPermission' => 'Pleazyng utilizza l\'accesso alla localizzazione quando iOS lo richiede per rilevare la tua rete locale e connetterti ai tuoi server multimediali.',
 			'platform.photoLibraryPermission' => 'Scegli immagini dalla tua libreria fotografica da usare come copertine e illustrazioni dei contenuti multimediali.',
 			'platform.cameraPermission' => 'Scansione QR per unirsi a un Companion Remote.',
 			'universalMedia.title' => 'Media aperte',
 			'universalMedia.shortcutHelp' => 'Gioca un link, playlist o file per questa sessione.',
-			'universalMedia.intro' => 'Apri un link, playlist o file. Playback utilizza il lettore standard di PlezyNG e non aggiunge storia alla tua biblioteca.',
+			'universalMedia.intro' => 'Apri un link, playlist o file. Playback utilizza il lettore standard di Pleazyng e non aggiunge storia alla tua biblioteca.',
 			'universalMedia.openWhat' => 'Cosa vorresti aprire?',
 			'universalMedia.stream' => 'Indirizzo Stream',
 			'universalMedia.playlist' => 'giocattoli',
@@ -8384,13 +8390,13 @@ extension on TranslationsIt {
 			'universalMedia.stopTransfer' => 'Smettere di trasferire e invalidare l\'indirizzo',
 			'universalMedia.startTransfer' => 'Inizia il trasferimento',
 			'universalMedia.wifiImportedFiles' => 'Trasferimento Wi-Fi',
-			'universalMedia.wifiBrowserTitle' => 'Invia file a PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'Invia file a Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'Selezionare file audio, video, ebook o comic per inviare. i file vengono salvati nella libreria dei file e dei libri di questo dispositivo. massimo: 100 file, 4 GiB per file, 10 GiB totale.',
 			'universalMedia.uploadFilesLabel' => 'I file da inviare',
 			'universalMedia.uploadSelected' => 'Scarica i file selezionati',
 			'universalMedia.uploadSelectFirst' => 'Selezionare uno o più file prima.',
 			'universalMedia.uploading' => 'Inviare',
-			'universalMedia.uploadComplete' => 'Il file è stato aggiunto a PlezyNG.',
+			'universalMedia.uploadComplete' => 'Il file è stato aggiunto a Pleazyng.',
 			'universalMedia.uploadFailed' => 'Il file non può essere aggiunto. tenere aperta questa pagina e provare di nuovo.',
 			'universalMedia.liveCue' => 'Il vivo',
 			'universalMedia.liveSession' => 'Il Live Stream',
@@ -8418,7 +8424,7 @@ extension on TranslationsIt {
 			'universalMedia.recordingActive' => 'Lasciare il riproduzione si ferma e lo salva.',
 			'universalMedia.recordingFormatHelp' => 'Per video, scegliere MKV o MPEG-TS. per audio, scegliere MKA o MKV.',
 			'universalMedia.replaceRecordingTitle' => 'Sostituisci questa registrazione?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG ripara il file esistente durante la registrazione. se non riesce a salvare la nuova registrazione, Plezy NG ripristina il backup.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng ripara il file esistente durante la registrazione. se non riesce a salvare la nuova registrazione, Pleazyng NG ripristina il backup.',
 			'universalMedia.replaceRecording' => 'sostituire il file',
 			'universalMedia.discHelp' => 'Apri un disco in questa scheda ottica del computer. Puoi anche aprire un\'immagine ISO dai file Device.',
 			'universalMedia.discs' => 'Il disco ottico',
@@ -8443,7 +8449,7 @@ extension on TranslationsIt {
 			'universalMedia.converterUnsupportedInput' => 'Scegli un file audio o video.',
 			'universalMedia.converterLocalOnly' => 'Il file selezionato non è disponibile come percorso di dispositivo locale.',
 			'universalMedia.converterReplaceTitle' => 'Sostituisci questo file?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG rimborserà il file esistente fino a quando la copia convertita non sarà salvata.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng rimborserà il file esistente fino a quando la copia convertita non sarà salvata.',
 			'universalMedia.converterStarting' => 'A partire da FFmpeg...',
 			'universalMedia.converterProgress' => 'Conversione su questo computer...',
 			'universalMedia.converterComplete' => 'Conversione completa: il nuovo file è pronto.',
@@ -8467,7 +8473,7 @@ extension on TranslationsIt {
 			'universalMedia.captureDefaultAudio' => 'Introduzione audio',
 			'universalMedia.captureWaylandHelp' => 'Wayland limita questa cattura XWayland al X display. Windows al di fuori di XWayland non può apparire.',
 			'universalMedia.captureFrameRate' => 'Tasso di registrazione frame rate',
-			'universalMedia.capturePrivacy' => 'La registrazione viene salvata solo al file che scegli. la registrazione del microfono è facoltativa. PlezyNG non carica la registrazione.',
+			'universalMedia.capturePrivacy' => 'La registrazione viene salvata solo al file che scegli. la registrazione del microfono è facoltativa. Pleazyng non carica la registrazione.',
 			'universalMedia.captureSaveAs' => 'Salva la registrazione dello schermo come',
 			'universalMedia.captureExtensionMismatch' => 'Scegli un nome di file che finisce in .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg o il codificatore video H.264 non è disponibile. Installare una costruzione FFmpeg supportata, poi provare di nuovo.',
@@ -8481,7 +8487,7 @@ extension on TranslationsIt {
 			'universalMedia.captureStop' => 'Stop e salvare',
 			'universalMedia.captureMode' => 'cattura',
 			'universalMedia.shareMode' => 'Condividi',
-			'universalMedia.shareIntro' => 'Invia un file di media locale ad un altro dispositivo sulla tua rete privata. PlezyNG crea un flusso temporaneo HLS.',
+			'universalMedia.shareIntro' => 'Invia un file di media locale ad un altro dispositivo sulla tua rete privata. Pleazyng crea un flusso temporaneo HLS.',
 			'universalMedia.sharePrivacy' => 'Chiunque nella tua rete locale che riceve il link privato può guardare mentre è attivo. il link scade dopo 60 minuti. smettere di condividere per chiudere il server e annullare il link.',
 			'universalMedia.shareChooseFile' => 'Selezionare file di media',
 			'universalMedia.shareChooseHelp' => 'Selezionare un file audio o video locale. il file rimane su questo computer.',
@@ -8494,7 +8500,7 @@ extension on TranslationsIt {
 			'universalMedia.shareOpenUrl' => 'Aprire questo indirizzo in un giocatore sull\'altro dispositivo',
 			'universalMedia.shareQrLabel' => 'Il codice QR per l’indirizzo temporaneo',
 			'universalMedia.shareQrHelp' => 'Scansione con un giocatore compatibile connesso alla stessa rete privata.',
-			'universalMedia.shareHttpHint' => 'Questo flusso utilizza HTTP non crittografato. in PlezyNG, permettere HTTP prima di aprire.',
+			'universalMedia.shareHttpHint' => 'Questo flusso utilizza HTTP non crittografato. in Pleazyng, permettere HTTP prima di aprire.',
 			'universalMedia.shareCopyUrl' => 'Indirizzo Stream',
 			'universalMedia.shareExpiresLabel' => 'Il link scade a',
 			'universalMedia.shareStarting' => 'Preparando il flusso...',
@@ -8519,7 +8525,7 @@ extension on TranslationsIt {
 			'universalMedia.extensionInstall' => 'Aggiungi servizio',
 			'universalMedia.extensionReplace' => 'Aggiornamento servizio',
 			'universalMedia.extensionRemoveTitle' => 'Rimuovere questo servizio di ricerca?',
-			'universalMedia.extensionRemoveHelp' => 'Questo rimuove il servizio da questo profilo. PlezyNG non contatta il suo punto finale.',
+			'universalMedia.extensionRemoveHelp' => 'Questo rimuove il servizio da questo profilo. Pleazyng non contatta il suo punto finale.',
 			'universalMedia.extensionRemove' => 'Rimuovere il servizio',
 			'universalMedia.extensionInvalidManifest' => 'Questo file non è un manifesto di estensione supportato. vedi la guida Open media per il formato.',
 			'universalMedia.extensionSaveFailed' => 'L\'estensione non poteva essere salvata al profilo attivo.',
@@ -8662,12 +8668,12 @@ extension on TranslationsIt {
 			'fileSources.none' => 'Nessuno',
 			'fileSources.fullscreen' => 'schermo completo',
 			'fileSources.syncLocation' => 'Fornitura di Progress Sync (opzionale)',
-			'fileSources.syncLocationHint' => 'Una cartella dedicata WebDAV per PlezyNG stato. utilizza scrittura condizionale; i media rimangono invariati.',
+			'fileSources.syncLocationHint' => 'Una cartella dedicata WebDAV per Pleazyng stato. utilizza scrittura condizionale; i media rimangono invariati.',
 			'fileSources.audiobooks' => 'Audiolibri',
 			'fileSources.comics' => 'Fumetti',
 			'fileSources.scan' => 'Scansione dei libri e dei media',
 			'fileSources.browserReader' => 'Il lettore aperto',
-			'fileSources.browserReaderHelp' => 'Il lettore è aperto nel tuo browser. Mantenere aperto PlezyNG per salvare il tuo posto e note.',
+			'fileSources.browserReaderHelp' => 'Il lettore è aperto nel tuo browser. Mantenere aperto Pleazyng per salvare il tuo posto e note.',
 			'fileSources.on' => 'di',
 			'fileSources.advancedSetup' => 'App di registrazione',
 			'fileSources.microsoftSignIn' => 'Iscriviti con Microsoft',
@@ -8708,7 +8714,7 @@ extension on TranslationsIt {
 			'fileSources.importInterrupted' => 'Importazione interrotta · rimuovere a chiarire',
 			'fileSources.errorQuotaExceeded' => 'Il limite di archiviazione offline è stato raggiunto. Aumentare il limite o rimuovere una copia scaricata.',
 			'fileSources.errorStorageLow' => 'Non c\'è sufficiente archiviazione gratuita per mantenere la riserva protetta.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG non poteva controllare lo storage del dispositivo gratuito, quindi la scrittura è stata interrotta.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng non poteva controllare lo storage del dispositivo gratuito, quindi la scrittura è stata interrotta.',
 			'fileSources.removeDownloadJob' => 'Rimuovere download',
 			'fileSources.downloadAlreadyComplete' => 'Questo download è finito prima che possa essere rimosso. l\'articolo è ora disponibile offline.',
 			'fileSources.confirmRemoveDownloadJob' => 'Rimuovere questo download e rimuovere tutti i dati parzialmente scaricati? la tua posizione e le note rimarranno.',
@@ -8749,7 +8755,7 @@ extension on TranslationsIt {
 			'lending.openLibraryNote' => 'Esplora il catalogo di Open Library. Le opzioni di lettura e prestito sono indicate nella pagina di ciascun titolo.',
 			'lending.more' => 'Carica di più',
 			'lending.gateway' => 'Servizio di accesso alla biblioteca',
-			'lending.gatewayHint' => 'Fornito dalla tua biblioteca o dall’amministratore di PlezyNG.',
+			'lending.gatewayHint' => 'Fornito dalla tua biblioteca o dall’amministratore di Pleazyng.',
 			'lending.advanced' => 'Integrazione della biblioteca',
 			'lending.loadLibraries' => 'Scegli la tua biblioteca',
 			'lending.expired' => 'Il prestito è scaduto.',
@@ -8871,7 +8877,7 @@ extension on TranslationsIt {
 			'sourceSetup.subtitlePrivacy' => 'Ottieni una chiave API da opensubtitles.com. La ricerca invia il titolo del video e gli ID IMDb/TMDB disponibili, mai il file video. La chiave e le credenziali facoltative dell’account vengono crittografate insieme a questa fonte.',
 			'sourceSetup.automaticMetadata' => 'Metadati video online automatici',
 			'sourceSetup.metadataPrivacy' => 'Invia solo titolo/anno ricavati dal nome del file e numeri degli episodi, oppure un ID NFO; non invia mai contenuti multimediali o credenziali. I campi NFO mantengono la precedenza.',
-			'sourceSetup.nfsEncryptionFailure' => 'Per NFS crittografato, verifica il supporto di RFC 9289 e TLS 1.3 su entrambi i servizi del NAS, il nome nel certificato e gli UID/GID della condivisione. PlezyNG non riproverà questa connessione senza crittografia.',
+			'sourceSetup.nfsEncryptionFailure' => 'Per NFS crittografato, verifica il supporto di RFC 9289 e TLS 1.3 su entrambi i servizi del NAS, il nome nel certificato e gli UID/GID della condivisione. Pleazyng non riproverà questa connessione senza crittografia.',
 			'sourceSetup.sourceConnecting' => 'Connessione alla fonte',
 			'sourceSetup.metadataSearchPrivacy' => 'Questa ricerca di titoli viene inviata a Trakt. Viene trasmesso il titolo inserito, non il video né le credenziali della fonte.',
 			'sourceSetup.chooseMatch' => 'Scegli una corrispondenza',
@@ -9001,7 +9007,13 @@ extension on TranslationsIt {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Questo link Plezy non è valido.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'Questo link Pleazyng non è valido.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'Nessun profilo corrisponde a "${profile}".',
 			'deepLinks.serverUnavailable' => 'Non riuscivo a raggiungere il server per questo link.',
 			'deepLinks.notFound' => 'Non riesco a trovare questo titolo nelle tue biblioteche.',
@@ -9149,7 +9161,7 @@ extension on TranslationsIt {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

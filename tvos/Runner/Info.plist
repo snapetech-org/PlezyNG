@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>PlezyNG connects to your media servers and playback devices on your local network.</string>
+	<string>Pleazyng connects to your media servers and playback devices on your local network.</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>ar</string>
@@ -47,7 +47,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Plezy</string>
+	<string>Pleazyng</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<!-- tvOS takes CFBundleAlternateIcons as an array of icon names. The asset catalog compiler
@@ -89,7 +89,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Plezy</string>
+	<string>Pleazyng</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -102,16 +102,16 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>org.snapetech.plezyng.play</string>
+			<string>org.snapetech.pleazyng.play</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>plezy</string>
+				<string>pleazyng</string>
 				<string>plezyng</string>
 				<string>plezxyng</string>
 			</array>
 		</dict>
 	</array>
-	<!-- plezy://, plezyng:// and legacy plezxyng:// links reach Dart through DeepLinkPlugin (com.plezy/deep_link);
+	<!-- pleazyng://, plezyng:// and legacy plezxyng:// links reach Dart through DeepLinkPlugin (com.plezy/deep_link);
 	     Flutter's router must not also push them as named routes. -->
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
@@ -174,6 +174,6 @@
 		<string>arm64</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>PlezyNG connects to your media servers and playback devices on your local network.</string>
+	<string>Pleazyng connects to your media servers and playback devices on your local network.</string>
 </dict>
 </plist>

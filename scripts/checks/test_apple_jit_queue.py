@@ -38,7 +38,7 @@ def apple_job(status="queued"):
 
 class AppleQueueTests(unittest.TestCase):
     def run_sequence(self, job_lists, launches, *, capacity=None):
-        with tempfile.TemporaryDirectory(prefix="plezyng-apple-queue-test-") as scratch:
+        with tempfile.TemporaryDirectory(prefix="pleazyng-apple-queue-test-") as scratch:
             with (
                 patch.object(queue, "get_run", side_effect=[
                     {"status": "in_progress"}, {"status": "in_progress"},
@@ -104,7 +104,7 @@ class AppleQueueTests(unittest.TestCase):
 
 class DerivedDataCleanupTests(unittest.TestCase):
     def setUp(self):
-        self.scratch = tempfile.TemporaryDirectory(prefix="plezyng-derived-data-test-")
+        self.scratch = tempfile.TemporaryDirectory(prefix="pleazyng-derived-data-test-")
         self.addCleanup(self.scratch.cleanup)
         self.root = Path(self.scratch.name)
         self.derived = self.root / "DerivedData"

@@ -250,14 +250,14 @@ void main() {
       final attempt = WebSocketConnectAttempt(
         Uri.parse('ws://${server.address.address}:${server.port}/socket'),
         connectTimeout: const Duration(seconds: 30),
-        headers: const {'Authorization': 'MediaBrowser Client="PlezyNG Android TV"'},
+        headers: const {'Authorization': 'MediaBrowser Client="Pleazyng Android TV"'},
       );
       final webSocket = await attempt.socket;
       addTearDown(webSocket.close);
 
       expect(
         await authorization.future.timeout(const Duration(seconds: 5)),
-        'MediaBrowser Client="PlezyNG Android TV"',
+        'MediaBrowser Client="Pleazyng Android TV"',
       );
     });
 

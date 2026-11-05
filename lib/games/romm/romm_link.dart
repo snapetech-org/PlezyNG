@@ -19,7 +19,7 @@ class RommLink {
     igdbId: game.igdbId,
   );
   Uri get uri => Uri(
-    scheme: 'plezy',
+    scheme: 'pleazyng',
     host: 'game',
     queryParameters: {
       'source': 'romm',
@@ -31,7 +31,7 @@ class RommLink {
     },
   );
   static RommLink? parse(Uri uri) {
-    if (!{'plezy', 'plezyng', 'plezxyng'}.contains(uri.scheme) ||
+    if (!{'pleazyng', 'plezyng', 'plezxyng'}.contains(uri.scheme) ||
         uri.host != 'game' ||
         uri.path.isNotEmpty ||
         uri.userInfo.isNotEmpty ||

@@ -29,11 +29,10 @@ class BrandAssetsTest(unittest.TestCase):
             self.assertEqual(image.getpixel((10, 10))[3], 0)
             self.assertGreater(image.getpixel((100, 200))[3], 240)
 
-    def test_ng_lettering_has_contrast_on_both_surfaces(self):
-        image = self.renderer.frame((512, 512), 1)
-        self.assertGreater(min(image.getpixel((384, 384))[:3]), 200)
+    def test_symbol_has_no_lettering_and_is_identical_on_both_surfaces(self):
+        dark = self.renderer.frame((512, 512), 1)
         light = self.renderer.frame((512, 512), 1, appearance='light')
-        self.assertLess(max(light.getpixel((384, 384))[:3]), 70)
+        self.assertEqual(dark.tobytes(), light.tobytes())
 
     def test_monochrome_retains_the_open_compact_ribbon(self):
         image = self.renderer.frame((512, 512), 1, mono=True)

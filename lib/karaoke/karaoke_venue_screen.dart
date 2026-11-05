@@ -1,9 +1,13 @@
 import '../services/file_picker_service.dart';
 import '../widgets/app_icon.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
+
 import '../i18n/strings.g.dart' as l10n;
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
 import '../utils/platform_detector.dart';
 import 'karaoke_collections.dart';
 import 'karaoke_models.dart';

@@ -1,14 +1,19 @@
 import '../services/file_picker_service.dart';
 import '../widgets/app_icon.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
+
 import '../i18n/strings.g.dart' as l10n;
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
 import '../media/media_item.dart';
 import '../media/media_kind.dart';
 import '../providers/multi_server_provider.dart';
@@ -61,7 +66,7 @@ Future<void> openKaraoke(BuildContext context, {MediaItem? media}) async {
                   .where(
                     (t) =>
                         t.kind == MediaKind.track &&
-                        (t.libraryGlobalKey == null || !hidden.isLibraryHidden(t.libraryGlobalKey!)),
+                        (t.libraryGlobalKey == null || !hidden.hiddenLibraryKeys.contains(t.libraryGlobalKey!)),
                   )
                   .take(100)) {
             await session.addMedia(item);

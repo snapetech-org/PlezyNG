@@ -1,8 +1,8 @@
-# PlezyNG Steam Cloud host extension
+# Pleazyng Steam Cloud host extension
 
 This optional Decky plugin implements the account-wide Cloud setting through
 Steam's own UI-side `SteamClient.Settings.SetSetting` and settings callbacks.
-Host transport source is implemented for **Linux / SteamOS, Windows and macOS**. Any PlezyNG client
+Host transport source is implemented for **Linux / SteamOS, Windows and macOS**. Any Pleazyng client
 with Companion support can request a change on that paired host, including a
 phone, desktop or TV. Host operation still requires a working, compatible Decky
 installation on that OS; this change does not supply a Windows/macOS plugin loader.
@@ -21,22 +21,27 @@ python3 -m unittest discover -p 'test_*.py'
 python3 package.py --output build/plezyng-steam-cloud.zip
 ```
 
+The build overrides pin patched glob/minimatch releases and rollup-plugin-delete
+3. The cleanup plugin uses the current del API so it does not retain an obsolete
+rimraf/glob dependency chain. JavaScript tests, TypeScript checking, and a build
+with a stale-output sentinel verify matching and cleanup compatibility.
+
 Install the archive using Decky's explicit local-plugin installation flow on the
 chosen gaming computer. The package requests **no root flag**. It must run as the
 Steam desktop user; the backend refuses privileged execution on another user's
 behalf. No CEF debugging setting is changed. This extension relies on an existing
-working Decky installation; PlezyNG does not install or modify Steam or Decky.
+working Decky installation; Pleazyng does not install or modify Steam or Decky.
 
-1. Run Steam, the plugin backend and PlezyNG Companion as the same desktop user.
+1. Run Steam, the plugin backend and Pleazyng Companion as the same desktop user.
    On Linux, use `XDG_RUNTIME_DIR=/run/user/<uid>` pointing to that user's private
    runtime directory. macOS uses `/tmp/plezyng-steam-cloud-<uid>/` (mode 0700).
    Windows uses a local named pipe scoped to the desktop user's SID. No local
    firewall rule, secret file, administrator flag or network port is required.
-2. In the host PlezyNG profile's Games settings, enable host actions and the
+2. In the host Pleazyng profile's Games settings, enable host actions and the
    separate **Allow Steam Cloud settings changes** permission.
 3. In Decky, explicitly enable **Allow Cloud settings changes**. It resets off
    on backend or frontend reload. Reloading or disabling the plugin retires access.
-4. Pair Companion and import this computer's inventory in PlezyNG. Link the same
+4. Pair Companion and import this computer's inventory in Pleazyng. Link the same
    Steam account on the receiving client. Open that computer's game-route menu,
    select **Steam Cloud on computer**, review the observed state, then confirm
    enable or disable. Missing permission, account mismatch, absent bridge or
@@ -45,7 +50,7 @@ working Decky installation; PlezyNG does not install or modify Steam or Decky.
 A disabled or uninstalled bridge changes none of the ordinary library, streaming,
 Cloud-file or existing host settings behavior. Hosts without the new Companion
 capability do not show the action. This plugin's own small consent panel currently
-uses English; the PlezyNG action, review, errors and permission use app localization
+uses English; the Pleazyng action, review, errors and permission use app localization
 with tracked English fallback in all 37 locales.
 
 ## Narrow contract

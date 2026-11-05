@@ -122,7 +122,7 @@ class _Translations$app$uz extends Translations$app$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class _Translations$appIcon$uz extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Standart';
 	@override String get current => 'Joriy belgi';
 	@override String get locked => 'Hayatdan qaplan qaplan';
-	@override String get lockedHint => '7 dayni provayni ko‘zingiz o‘zingizga PlezyNG qaytadi, alternatiyik ikonlar kullan.';
+	@override String get lockedHint => '7 dayni provayni ko‘zingiz o‘zingizga Pleazyng qaytadi, alternatiyik ikonlar kullan.';
 	@override String get changeFailed => 'Ilova belgisini oʻzgartirib boʻlmadi';
-	@override String get launcherHint => 'Yangi belgi PlezyNG-dan chiqqaningizdan soʻng bosh ekranda paydo boʻladi.';
-	@override String get tvLauncherHint => 'Yangi banner PlezyNG-dan chiqqaningizdan soʻng paydo boʻladi. Android TV televizor qayta ishga tushirilmaguncha eskisini koʻrsatishda davom etishi mumkin.';
+	@override String get launcherHint => 'Yangi belgi Pleazyng-dan chiqqaningizdan soʻng bosh ekranda paydo boʻladi.';
+	@override String get tvLauncherHint => 'Yangi banner Pleazyng-dan chiqqaningizdan soʻng paydo boʻladi. Android TV televizor qayta ishga tushirilmaguncha eskisini koʻrsatishda davom etishi mumkin.';
 	@override late final _Translations$appIcon$names$uz names = _Translations$appIcon$names$uz._(_root);
 	@override String get description => 'Ikonini sizlik cihazın başlatıcısı tarafından gösterdi. Preview\'lar hər bir seçiminin nasıl göründiyi gösterir.';
 }
@@ -166,7 +166,7 @@ class _Translations$auth$uz extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Tasdiq kutilmoqda…';
 	@override String get quickConnectCancel => 'Bekor qilish';
 	@override String get quickConnectExpired => 'Tezkor ulanish vaqti tugadi. Qaytadan urinib koʻring.';
-	@override String get localDataRecoveryRequired => 'PlezyNG qurilmadagi kirish ma’lumotlarini va qayta ishlanishini kutayotgan ijro ma’lumotlarini xavfsiz tiklay olmadi. Qayta kiring.';
+	@override String get localDataRecoveryRequired => 'Pleazyng qurilmadagi kirish ma’lumotlarini va qayta ishlanishini kutayotgan ijro ma’lumotlarini xavfsiz tiklay olmadi. Qayta kiring.';
 	@override String get pinCheckRejected => 'Plex PIN tekshiruvi rad etildi';
 	@override String get connectToDirectPlex => 'Mahalliy Plex serveriga ulanish';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$uz extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Sozlamalar';
-	@override String get supportDeveloper => 'PlezyNG-ni qoʻllab-quvvatlash';
+	@override String get supportDeveloper => 'Pleazyng-ni qoʻllab-quvvatlash';
 	@override String get supportDeveloperDescription => 'Rivojlanishni qoʻllab-quvvatlash uchun xayriya qiling';
-	@override String get lifetimeAccess => 'PlezyNG lifetime qasizga';
+	@override String get lifetimeAccess => 'Pleazyng lifetime qasizga';
 	@override String get language => 'Til';
 	@override String get theme => 'Mavzu';
 	@override String get appearance => 'Tashqi koʻrinish';
@@ -353,7 +353,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'Bağlanmış medya librarlar yok.';
 	@override String get contentScreensaverDismissHint => 'Bu\'da bir buton o\'t tapatni bo\'t tabatni';
 	@override String get newEpisodeNotifications => 'Yangi qismlar haqida bildirishnomalar';
-	@override String get newEpisodeNotificationsDescription => 'Tomosha qilib bo‘lgan serialingizga yangi qism qo‘shilganda xabar berish. Plezy ochiq bo‘lganda tekshiriladi.';
+	@override String get newEpisodeNotificationsDescription => 'Tomosha qilib bo‘lgan serialingizga yangi qism qo‘shilganda xabar berish. Pleazyng ochiq bo‘lganda tekshiriladi.';
 	@override String get continueWatchingRowSize => 'U\'qizga sizliklikliklik.';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} kartlar';
 	@override String get rowSizeCompact => 'Ixcham';
@@ -484,7 +484,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Parametrlarni fayldan tiklang';
 	@override String get importSettingsConfirm => 'Bu joriy sozlamalaringiz ustidan yoziladi. Davom etasizmi?';
 	@override String get importSettingsSuccess => 'Sozlamalar import qilindi';
-	@override String get importSettingsInvalidFile => 'Ushbu fayl toʻgʻri PlezyNG sozlamalar fayli emas';
+	@override String get importSettingsInvalidFile => 'Ushbu fayl toʻgʻri Pleazyng sozlamalar fayli emas';
 	@override String get importSettingsNoUser => 'Sozlamalarni import qilishdan oldin tizimga kiring';
 	@override String get cloudBackup => 'Bulutli zaxira nusxasi';
 	@override String get cloudBackupDescription => 'Ko‘chiriladigan sozlamalarni HTTPS orqali WebDAV manziliga zaxiralang. Server ulanishlari va kirish ma’lumotlari ushbu qurilmada qoladi.';
@@ -666,7 +666,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get forceTvMode => 'TV rejimini majburlash';
 	@override String get forceTvModeDescription => 'TV interfeysini majburiy yoqish. Avtomatik aniqlanmaydigan qurilmalar uchun. Qayta ishga tushirish talab qilinadi.';
 	@override String get startInFullscreen => 'Toʻliq ekranda boshlash';
-	@override String get startInFullscreenDescription => 'PlezyNG-ni ochganda toʻliq ekran rejimida ochish';
+	@override String get startInFullscreenDescription => 'Pleazyng-ni ochganda toʻliq ekran rejimida ochish';
 	@override String get exitFullscreenOnPlayerClose => 'Pleyer yopilganda toʻliq ekrandan chiqish';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Video pleyerni yopganda avtomatik ravishda toʻliq ekrandan chiqish';
 	@override String get autoHidePerformanceOverlay => 'Unumdorlik panelini avto-yashirish';
@@ -722,7 +722,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Hamma joyda';
 	@override String get playerScopeLibrary => 'Kutubxona boʻyicha';
 	@override String get playerScopeTitle => 'Serial yoki film boʻyicha';
-	@override String get exportDialogTitle => 'PlezyNG sozlamalarini eksport qilish';
+	@override String get exportDialogTitle => 'Pleazyng sozlamalarini eksport qilish';
 	@override String get followSystem => 'Tizim tiliga mos';
 	@override String get followAppLanguage => 'Interfeys tili bilan bir xil';
 	@override String get regionFormat => 'Mintaqaviy formatlar';
@@ -733,7 +733,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'Full screen-da video o‘yadi, playback başlarsa.';
 	@override String get extendVideoIntoDisplayCutout => 'Video\'yi display cutout\'a qaytadi';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'Full-screen videoga Android telefonlarda kamera cutout\'u kullanmayalım.';
-	@override String get languageDescription => 'PlezyNG boshqaruvlari va xabarlari uchun tilni tanlang. Tizimga ergashish qurilmangiz tilidan foydalanadi.';
+	@override String get languageDescription => 'Pleazyng boshqaruvlari va xabarlari uchun tilni tanlang. Tizimga ergashish qurilmangiz tilidan foydalanadi.';
 	@override String get themeDescription => 'U‘ziz, kontrast o‘ziyadi bütün aplikasyonda.';
 	@override String get libraryDensityDescription => 'Bu aylarda librarik kartlar saymi dəyişdi.';
 	@override String get displayScaleDescription => 'Bu otomobil ekranda interfesi qaytadi, cihazda-gizlik texti sizini dəyişmadan.';
@@ -755,7 +755,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get episodeActionDescription => 'Siz bir epizod kartlar aktivizdi o‘yadi.';
 	@override String get episodePlayDescription => 'Bu epizod o‘zadi.';
 	@override String get episodeDetailsDescription => 'Playback-dan əvvəl epizod sayadi açılır.';
-	@override String get contentScreensaverDelayDescription => 'PlezyNG foydalanuvchi faoliyati bo‘lmaganda tasvirni ko‘rsatishdan oldin qancha kutishini tanlang.';
+	@override String get contentScreensaverDelayDescription => 'Pleazyng foydalanuvchi faoliyati bo‘lmaganda tasvirni ko‘rsatishdan oldin qancha kutishini tanlang.';
 	@override String get continueWatchingRowSizeDescription => 'Siz o‘qotlar bilan qotlar ko‘yadi.';
 	@override String get rowSizeCompactDescription => 'U\'zlar kartlar daha küçir, daha fazla item qaytadi.';
 	@override String get rowSizeStandardDescription => 'Standart kartat sizni qaytadi.';
@@ -1049,8 +1049,8 @@ class _Translations$mediaMenu$uz extends Translations$mediaMenu$en {
 		one: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va u ham oʻchiriladi:',
 		other: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va ular ham oʻchiriladi:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG qaysi fayllar olib tashlanishini tekshira olmadi, shuning uchun u yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin. Bekor qilib qaytadan urining yoki baribir oʻchiring.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Serveringiz ushbu element uchun fayl tafsilotlarini taqdim etmadi, shuning uchun PlezyNG qaysi fayllar olib tashlanishini tekshira olmaydi. U yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng qaysi fayllar olib tashlanishini tekshira olmadi, shuning uchun u yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin. Bekor qilib qaytadan urining yoki baribir oʻchiring.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Serveringiz ushbu element uchun fayl tafsilotlarini taqdim etmadi, shuning uchun Pleazyng qaysi fayllar olib tashlanishini tekshira olmaydi. U yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin.';
 	@override String get mediaDeletedSuccessfully => 'Media elementi muvaffaqiyatli oʻchirildi';
 	@override String get mediaFailedToDelete => 'Media elementini oʻchirib boʻlmadi';
 	@override String get rate => 'Baho berish';
@@ -1118,7 +1118,7 @@ class _Translations$accessibility$uz extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'Aksesibilit';
 	@override String get summary => 'Text, kontrast, motil, kontrollar';
-	@override String get systemHint => 'Qurilmangizning maxsus imkoniyatlar sozlamalari doim amal qiladi. Bu parametrlar PlezyNG bo‘ylab qo‘shimcha moslashlarni taqdim etadi.';
+	@override String get systemHint => 'Qurilmangizning maxsus imkoniyatlar sozlamalari doim amal qiladi. Bu parametrlar Pleazyng bo‘ylab qo‘shimcha moslashlarni taqdim etadi.';
 	@override String get readability => 'Okumadi və vizibiliyadi';
 	@override String get textSize => 'Tekstil bilan bilan bilan';
 	@override String get preview => 'Keyingi hikoyangizni toping. O‘zingizga qulay sur’atda o‘qing, tinglang va tomosha qiling.';
@@ -1131,7 +1131,7 @@ class _Translations$accessibility$uz extends Translations$accessibility$en {
 	@override String get largeTargets => 'Tadiqni sasni';
 	@override String get largeTargetsHint => 'U\'zizga qo‘zlar, touch-i-asistivi navigation üçün daha fazla yer qo‘z.';
 	@override String get navigationHint => 'Boshqaruv elementlari orasida yurish uchun Tab va Shift+Tab, ishga tushirish uchun Enter yoki Bo‘sh joy, yopish uchun Escape yoki Orqaga tugmasidan foydalaning. Kitob ochiq bo‘lsa, masshtab va o‘qish sozlamalarini o‘zgartirish mumkin.';
-	@override String get textSizeDescription => 'Tekstil-Skala interfacing-i PlezyNG-da sistem-size-situasyonun yanı sıra cihazın texta-sized-settings.';
+	@override String get textSizeDescription => 'Tekstil-Skala interfacing-i Pleazyng-da sistem-size-situasyonun yanı sıra cihazın texta-sized-settings.';
 	@override String get boldTextHint => 'Interface etiketleri ve mesajlar için daha ağır bir ağır kullanın, onları ayırt etmek daha kolaydır.';
 }
 
@@ -1459,7 +1459,7 @@ class _Translations$profiles$uz extends Translations$profiles$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'PlezyNG profilini qoʻshish';
+	@override String get addPlezyProfile => 'Pleazyng profilini qoʻshish';
 	@override String get switchingProfile => 'Profil almashtirilmoqda…';
 	@override String get deleteThisProfileTitle => 'Ushbu profil oʻchirilsinmi?';
 	@override String deleteThisProfileMessage({required Object displayName}) => '${displayName} oʻchiriladi. Ulanishlarga taʼsir qilmaydi.';
@@ -1550,7 +1550,7 @@ class _Translations$connections$uz extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} ta server ushbu hisobga kirishni rad etdi';
 	@override String get signInAgain => 'Qaytadan kirish';
 	@override String editMediaBrowserTitle({required Object product}) => '${product} ulanishini tahrirlash';
-	@override String editMediaBrowserIntro({required Object serverName}) => '${serverName} uchun URL-larni qoʻshing yoki olib tashlang. PlezyNG eng kam kechikishga ega boʻlgan mavjud URL-dan foydalanadi.';
+	@override String editMediaBrowserIntro({required Object serverName}) => '${serverName} uchun URL-larni qoʻshing yoki olib tashlang. Pleazyng eng kam kechikishga ega boʻlgan mavjud URL-dan foydalanadi.';
 }
 
 // Path: accountPreferences
@@ -1564,7 +1564,7 @@ class _Translations$accountPreferences$uz extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => '${account} hisobida saqlangan audio, subtitr va kutubxona parametrlari';
 	@override String hubSubtitleMultiple({required Object count}) => '${count} ta hisobda saqlangan audio, subtitr va kutubxona parametrlari';
 	@override String get pickAccount => 'Har bir hisob oʻz sozlamalarini saqlaydi. Tahrirlash uchun birini tanlang.';
-	@override String get storedOnAccount => 'Bu parametrlar hisobning oʻzida saqlanadi — unga kirilgan har bir ilova ulardan foydalanadi, jumladan boshqa qurilmalaringizdagi PlezyNG ham.';
+	@override String get storedOnAccount => 'Bu parametrlar hisobning oʻzida saqlanadi — unga kirilgan har bir ilova ulardan foydalanadi, jumladan boshqa qurilmalaringizdagi Pleazyng ham.';
 	@override String get noAccounts => 'Sozlanadigan hisoblar yoʻq';
 	@override String get noAccountsHint => 'Plex-ga kiring yoki Jellyfin yoki Emby serverini ulang — shunda oʻsha hisobda saqlangan sozlamalar shu yerda koʻrinadi.';
 	@override String get unavailable => 'Bu hisobga ulanib boʻlmadi';
@@ -1792,9 +1792,9 @@ class _Translations$startup$uz extends Translations$startup$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG ishga tusha olmadi';
+	@override String get failedTitle => 'Pleazyng ishga tusha olmadi';
 	@override String get failedBody => 'Ishga tushirish paytida nimadir xato ketdi. Quyidagi tafsilotlar aynan nima muvaffaqiyatsiz boʻlganini koʻrsatadi.';
-	@override String get failedBodyRepairable => 'Plezyning saqlangan sozlamalar fayli shikastlangan va PlezyNG ishga tushishidan oldin uni qayta tiklash kerak. Qayta urinish yordam bermaydi — Saqlashni tiklashni tanlang.';
+	@override String get failedBodyRepairable => 'Plezyning saqlangan sozlamalar fayli shikastlangan va Pleazyng ishga tushishidan oldin uni qayta tiklash kerak. Qayta urinish yordam bermaydi — Saqlashni tiklashni tanlang.';
 	@override String get phaseLabel => 'Qadam';
 	@override String get showDetails => 'Tafsilotlarni koʻrsatish';
 	@override String get hideDetails => 'Tafsilotlarni yashirish';
@@ -1807,12 +1807,12 @@ class _Translations$startup$uz extends Translations$startup$en {
 	@override String get repairBodyOneCredential => 'Bitta saqlangan kirish maʼlumoti shikastlangan va uni oʻqib boʻlmaydi. Tiklash faqat uni olib tashlaydi; boshqa sozlamalaringizga tegilmaydi.';
 	@override String get repairBodySignInsKept => 'Serverlaringiz va profillaringiz tizimga kirgan holda qoladi.';
 	@override String get repairBodySignInsLost => 'Saqlangan kirish maʼlumotlaringizni himoya qiluvchi kalitni ushbu fayldan tiklab boʻlmaydi, shuning uchun har bir server va profilga qaytadan kirishingiz kerak boʻladi. Media serveringizdagi hech narsaga taʼsir qilmaydi.';
-	@override String get repairBodySessionsUncertain => 'Trekerlar (MAL, AniList, Simkl, Trakt) va Seerr alohida saqlanadi va ular saqlanib qolishi ham, yoʻqolishi ham mumkin. PlezyNG aynan nimani saqlaganini sizga xabar qiladi.';
+	@override String get repairBodySessionsUncertain => 'Trekerlar (MAL, AniList, Simkl, Trakt) va Seerr alohida saqlanadi va ular saqlanib qolishi ham, yoʻqolishi ham mumkin. Pleazyng aynan nimani saqlaganini sizga xabar qiladi.';
 	@override String get repairConfirm => 'Tiklash';
 	@override String get repairSucceeded => 'Saqlash tiklandi';
 	@override String get repairNeedsRestart => 'Saqlash tiklandi — qayta ishga tushirish kerak';
-	@override String get restartRequiredBody => 'Maʼlumotlaringiz tiklandi, lekin PlezyNG ulardan foydalanishi uchun yangidan ishga tushishi kerak. PlezyNG-ni yoping va qayta oching.';
-	@override String get quitPlezy => 'PlezyNG-dan chiqish';
+	@override String get restartRequiredBody => 'Maʼlumotlaringiz tiklandi, lekin Pleazyng ulardan foydalanishi uchun yangidan ishga tushishi kerak. Pleazyng-ni yoping va qayta oching.';
+	@override String get quitPlezy => 'Pleazyng-dan chiqish';
 	@override String get repairFailed => 'Tiklash amalga oshmadi';
 	@override String get repairKeptSignIns => 'Serverlaringiz va profillaringiz hali ham tizimga kirgan.';
 	@override String get repairLostSignIns => 'Saqlangan kirish maʼlumotlaringizni himoya qiluvchi kalitni tiklab boʻlmadi. Har bir server va profilga qaytadan kirishingiz kerak boʻladi.';
@@ -1821,7 +1821,7 @@ class _Translations$startup$uz extends Translations$startup$en {
 	@override String get backupWarning => 'Unda kirish hisob maʼlumotlaringiz bor. Uni yuklamang yoki baham koʻrmang.';
 	@override String get deleteBackup => 'Nusxani oʻchirish';
 	@override String get backupDeleted => 'Nusxa oʻchirildi.';
-	@override String get previousFailureTitle => 'PlezyNG oxirgi marta ishga tushmadi';
+	@override String get previousFailureTitle => 'Pleazyng oxirgi marta ishga tushmadi';
 }
 
 // Path: licenses
@@ -2153,7 +2153,7 @@ class _Translations$watchTogether$uz extends Translations$watchTogether$en {
 	@override String get codeCopied => 'Xona kodi nusxalandi';
 	@override String get shareInvite => 'Taklifni ulashish';
 	@override String get inviteCopied => 'Taklif nusxalandi. Uni xabarga joylashtiring.';
-	@override String inviteMessage({required Object code}) => 'PlezyNG-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.';
+	@override String inviteMessage({required Object code}) => 'Pleazyng-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.';
 	@override String get openSessionControls => 'Boshqaruv elementlarini ochish';
 	@override String get reconnecting => 'Qayta ulanmoqda...';
 	@override String get reconnectingDescription => 'Ulanish uzildi. Xonaga avtomatik ravishda qayta qoʻshilasiz.';
@@ -2179,7 +2179,7 @@ class _Translations$watchTogether$uz extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Boshqa nusxani tanlash';
 	@override String get dontPlay => 'Ijro etmaslik';
 	@override String get unavailableTitle => 'Sizda bu video yoʻq';
-	@override String get unavailableDescription => 'PlezyNG uni kutubxonalaringizdan topa olmadi. Nusxani oʻzingiz tanlang yoki qaytadan qidiring.';
+	@override String get unavailableDescription => 'Pleazyng uni kutubxonalaringizdan topa olmadi. Nusxani oʻzingiz tanlang yoki qaytadan qidiring.';
 	@override String get chooseCopy => 'Nusxani tanlash';
 	@override String get searchAgain => 'Qaytadan qidirish';
 	@override String get noCandidates => 'Kutubxonalaringizda nusxalar topilmadi.';
@@ -2324,11 +2324,11 @@ class _Translations$downloads$uz extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Faol sinxronlash qoidalari';
 	@override String get reviewOrphanFiles => 'Yozuvi yo‘q yuklamalarni ko‘rib chiqish';
 	@override String get orphanReviewTitle => 'Yozuvi yo‘q yuklamalarni ko‘rib chiqish';
-	@override String get orphanReviewDescription => 'Bu belgilangan fayllar PlezyNG boshqaradigan standart yuklab olish papkalarida joylashgan, ammo ularga mos yuklab olish yozuvi yoki faol vazifa yo‘q. O‘chirishdan oldin ro‘yxatni tekshiring.';
+	@override String get orphanReviewDescription => 'Bu belgilangan fayllar Pleazyng boshqaradigan standart yuklab olish papkalarida joylashgan, ammo ularga mos yuklab olish yozuvi yoki faol vazifa yo‘q. O‘chirishdan oldin ro‘yxatni tekshiring.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} ta fayl · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => '${count} ta faylni o‘chirish';
 	@override String get orphanCleanupNone => 'Yozuvi yo‘q yuklab olingan fayllar topilmadi';
-	@override String get orphanCleanupFailed => 'PlezyNG boshqariladigan yuklab olish papkasini xavfsiz tarzda tekshira olmadi. Hech qanday fayl o‘chirilmadi.';
+	@override String get orphanCleanupFailed => 'Pleazyng boshqariladigan yuklab olish papkasini xavfsiz tarzda tekshira olmadi. Hech qanday fayl o‘chirilmadi.';
 	@override String get orphanCleanupChanged => 'Ko‘rib chiqish paytida yuklab olishlar ro‘yxati o‘zgardi. Tozalashdan oldin fayllarni qayta ko‘rib chiqing.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => '${count} ta yozuvi yo‘q fayl o‘chirildi · ${size} joy bo‘shatildi';
 	@override String get noSyncRules => 'Sinxronlash qoidalari yoʻq';
@@ -2704,11 +2704,11 @@ class _Translations$trakt$uz extends Translations$trakt$en {
 	@override String get connected => 'Ulandi';
 	@override String connectedAs({required Object username}) => '@${username} sifatida ulandi';
 	@override String get disconnectConfirm => 'Trakt uzilsinmi?';
-	@override String get disconnectConfirmBody => 'PlezyNG Trakt-ga maʼlumot yuborishni toʻxtatadi.';
+	@override String get disconnectConfirmBody => 'Pleazyng Trakt-ga maʼlumot yuborishni toʻxtatadi.';
 	@override String get scrobble => 'Real vaqt rejimida kuzatish';
 	@override String get scrobbleDescription => 'Ijro paytida Trakt-ga maʼlumot yuborish.';
 	@override String get watchedSync => 'Koʻrish holatini sinxronlash';
-	@override String get watchedSyncDescription => 'PlezyNG-da belgilanganda Trakt-da ham belgilanadi.';
+	@override String get watchedSyncDescription => 'Pleazyng-da belgilanganda Trakt-da ham belgilanadi.';
 }
 
 // Path: seerr
@@ -2730,7 +2730,7 @@ class _Translations$seerr$uz extends Translations$seerr$en {
 	@override String get noSignInMethods => 'Ushbu Seerr qoʻllab-quvvatlanadigan kirish usulini taklif qilmaydi.';
 	@override String get instance => 'Instansiya';
 	@override String get disconnectConfirm => 'Seerr uzilsinmi?';
-	@override String get disconnectConfirmBody => 'PlezyNG ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.';
+	@override String get disconnectConfirmBody => 'Pleazyng ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.';
 	@override String get request => 'Soʻrov yuborish';
 	@override String get request4k => '4K soʻrov yuborish';
 	@override String get seasons => 'Mavsumlar';
@@ -2755,7 +2755,7 @@ class _Translations$seerr$uz extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Bloklangan roʻyxatda';
 	@override String couldNotReach({required Object url, required Object error}) => '${url} manziliga ulanib boʻlmadi: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => '${url} manzilida Seerr nusxasi yoʻq (HTTP ${status})';
-	@override String get behindAuthProxy => 'Seerr oʻrniga autentifikatsiya qiluvchi teskari proksi (SSO yoki HTTP auth) javob berdi. PlezyNG uning orqali kira olmaydi: ushbu ilova uchun Seerrning /api/v1 yoʻli proksini aylanib oʻtishiga ruxsat bering yoki Seerrga toʻgʻridan-toʻgʻri yetadigan manzildan foydalaning.';
+	@override String get behindAuthProxy => 'Seerr oʻrniga autentifikatsiya qiluvchi teskari proksi (SSO yoki HTTP auth) javob berdi. Pleazyng uning orqali kira olmaydi: ushbu ilova uchun Seerrning /api/v1 yoʻli proksini aylanib oʻtishiga ruxsat bering yoki Seerrga toʻgʻridan-toʻgʻri yetadigan manzildan foydalaning.';
 	@override String get invalidUrl => 'Server manzilini kiriting, masalan: https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Bu Seerr nusxasi Tezkor ulanishni qoʻllab-quvvatlamaydi. Buning uchun Seerr 3.4 yoki undan yangi versiya kerak.';
 	@override String get notInitialized => 'Bu Seerr nusxasining dastlabki sozlamasi yakunlanmagan';
@@ -2785,7 +2785,7 @@ class _Translations$services$uz extends Translations$services$en {
 	@override String get scrobble => 'Jarayonni avtomatik kuzatish';
 	@override String get scrobbleDescription => 'Epizod yoki filmni tugatganingizda roʻyxatingizni yangilash.';
 	@override String disconnectConfirm({required Object service}) => '${service} uzilsinmi?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG ${service} yangilashni toʻxtatadi. Istalgan vaqtda qayta ulanishingiz mumkin.';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng ${service} yangilashni toʻxtatadi. Istalgan vaqtda qayta ulanishingiz mumkin.';
 	@override String connectFailed({required Object service}) => '${service} ulana olmadi. Qaytadan urinib koʻring.';
 	@override late final _Translations$services$names$uz names = _Translations$services$names$uz._(_root);
 	@override late final _Translations$services$simklReconnect$uz simklReconnect = _Translations$services$simklReconnect$uz._(_root);
@@ -2807,8 +2807,8 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String get title => 'Bulut va qo‘shimcha oqimlari';
 	@override String get subtitle => 'Bulutingizdagi fayllarni ko‘rish va qo‘llab-quvvatlanadigan oqimlarni ijro etish uchun Debrid hisobini ulang. Stremio bilan mos qo‘shimchalar film va epizod sahifalarida oqim tanlovlarini ko‘rsatadi. Ulanish ma’lumotlari ushbu qurilmada shifrlanib, ushbu profilda saqlanadi.';
 	@override String connectionsConfigured({required Object count}) => 'Ulangan manbalar: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG saqlangan oqim sozlamalarini ocholmadi. Ulanishlarni o‘zgartirishdan oldin qurilma qulfini ochib, qayta urinib ko‘ring.';
-	@override String get settingsUnreadable => 'PlezyNG bu saqlangan ulanishlarni ocholmadi. Xizmatlarni qayta ulash uchun ularni tozalang.';
+	@override String get settingsLoadFailed => 'Pleazyng saqlangan oqim sozlamalarini ocholmadi. Ulanishlarni o‘zgartirishdan oldin qurilma qulfini ochib, qayta urinib ko‘ring.';
+	@override String get settingsUnreadable => 'Pleazyng bu saqlangan ulanishlarni ocholmadi. Xizmatlarni qayta ulash uchun ularni tozalang.';
 	@override String get clearUnreadableSettings => 'Saqlangan sozlamalarni tozalash';
 	@override String get clearUnreadableSettingsConfirm => 'Saqlangan oqim sozlamalari tozalansinmi?';
 	@override String get clearUnreadableSettingsBody => 'Bu profildagi saqlangan barcha provayder hisoblari va qo‘shimcha manzillari o‘chiriladi. Bu amalni ortga qaytarib bo‘lmaydi.';
@@ -2820,11 +2820,11 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'Bu katalogni ko‘rish uchun kerakli filtrlarni tanlang.';
 	@override String get catalogRequiredLabel => 'Majburiy';
 	@override String get importFromStremio => 'Stremio’dan import qilish';
-	@override String get stremioImportInstructions => 'QR kodni skanerlang yoki havolani oching. Stremio’ga kiring va so‘rovni tasdiqlang. PlezyNG faqat qo‘shimchalar ro‘yxatini o‘qiydi; Stremio parolingizni so‘ramaydi va sozlamalarni o‘zgartirmaydi.';
+	@override String get stremioImportInstructions => 'QR kodni skanerlang yoki havolani oching. Stremio’ga kiring va so‘rovni tasdiqlang. Pleazyng faqat qo‘shimchalar ro‘yxatini o‘qiydi; Stremio parolingizni so‘ramaydi va sozlamalarni o‘zgartirmaydi.';
 	@override String get stremioImportOpen => 'Stremio havolasini ochish';
 	@override String get stremioImportCode => 'Ulanish kodi';
 	@override String get stremioImportPreviewTitle => 'Qo‘shimchalarni tanlang';
-	@override String get stremioImportPreviewBody => 'PlezyNG’ga ulamoqchi bo‘lgan qo‘shimchalarni tanlang. Bu import faqat HTTPS manzillarini qabul qiladi.';
+	@override String get stremioImportPreviewBody => 'Pleazyng’ga ulamoqchi bo‘lgan qo‘shimchalarni tanlang. Bu import faqat HTTPS manzillarini qabul qiladi.';
 	@override String stremioImportIgnored({required Object count}) => 'Qo‘llab-quvvatlanmaydigan yoki xavfsiz bo‘lmagan manzillar sabab o‘tkazib yuborilgan qo‘shimchalar: ${count}.';
 	@override String get stremioCatalogs => 'Kataloglar';
 	@override String get stremioStreams => 'Oqimlar';
@@ -2838,7 +2838,7 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Manifest URL orqali qo‘shish';
 	@override String get addAddon => 'Qo‘shimcha qo‘shish';
 	@override String get manifestUrl => 'Qo‘shimcha manifest URL’i';
-	@override String get manifestUrlHint => 'Qo‘shimchaning manifest URL’ini joylashtiring. Ulanishdan oldin PlezyNG katalog yoki oqim resurslarini qo‘llab-quvvatlashini tekshiradi.';
+	@override String get manifestUrlHint => 'Qo‘shimchaning manifest URL’ini joylashtiring. Ulanishdan oldin Pleazyng katalog yoki oqim resurslarini qo‘llab-quvvatlashini tekshiradi.';
 	@override String get allowHttp => 'Shifrlanmagan HTTP manziliga ruxsat berish';
 	@override String get allowHttpDescription => 'Buni faqat shaxsiy tarmog‘ingizdagi ishonchli qo‘shimcha uchun ishlating.';
 	@override String get installAddon => 'Qo‘shimchani ulash';
@@ -2846,20 +2846,20 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String get addonRemoved => 'Qo‘shimcha olib tashlandi';
 	@override String get addonToggle => 'Qo‘shimchani yoqish';
 	@override String get addonEmpty => 'Hali qo‘shimchalar ulanmagan';
-	@override String get addonError => 'PlezyNG bu qo‘shimchaga ulana olmadi. Manifest URL’ini tekshirib, qayta urinib ko‘ring.';
+	@override String get addonError => 'Pleazyng bu qo‘shimchaga ulana olmadi. Manifest URL’ini tekshirib, qayta urinib ko‘ring.';
 	@override String get addonPrivacy => 'Faqat ishonchli qo‘shimchalarni ulang. Qidiruvda qo‘shimcha siz izlayotgan nomni oladi va uchinchi tomon oqim havolalarini qaytarishi mumkin.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Real-Debrid hisobingiz orqali qo‘llab-quvvatlanadigan torrent oqimlarini ijro eting.';
 	@override String get connectRealDebrid => 'QR kod orqali ulash';
 	@override String realDebridConnected({required Object username}) => '${username} nomi bilan ulandi';
-	@override String get realDebridInstructions => 'QR kodni skanerlang yoki havolani oching, so‘ng PlezyNG’ni ulash uchun faollashtirish kodini kiriting:';
+	@override String get realDebridInstructions => 'QR kodni skanerlang yoki havolani oching, so‘ng Pleazyng’ni ulash uchun faollashtirish kodini kiriting:';
 	@override String get realDebridActivate => 'Faollashtirish uchun Real-Debrid’ni ochish';
 	@override String get realDebridCode => 'Faollashtirish kodi';
 	@override String get realDebridConnectFailed => 'Real-Debrid’ga ulanib bo‘lmadi. Qayta urinib ko‘ring.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'AllDebrid hisobingiz orqali qo‘llab-quvvatlanadigan torrent oqimlarini ijro eting.';
 	@override String get connectAllDebrid => 'QR kod orqali ulash';
-	@override String get allDebridInstructions => 'PlezyNG’ga ruxsat berish uchun QR kodni skanerlang yoki havolani oching. Ulanish vaqtida bu ekranni ochiq qoldiring:';
+	@override String get allDebridInstructions => 'Pleazyng’ga ruxsat berish uchun QR kodni skanerlang yoki havolani oching. Ulanish vaqtida bu ekranni ochiq qoldiring:';
 	@override String get allDebridActivate => 'Faollashtirish uchun AllDebrid’ni ochish';
 	@override String get allDebridCode => 'Faollashtirish PIN-kodi';
 	@override String get allDebridConnectFailed => 'AllDebrid’ga ulanib bo‘lmadi. Qayta urinib ko‘ring.';
@@ -2870,13 +2870,13 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String get connectApiKey => 'API kaliti bilan ulash';
 	@override String apiKeyTitle({required Object service}) => '${service}’ni ulash';
 	@override String get apiKey => 'API kaliti';
-	@override String apiKeyHint({required Object service}) => '${service} hisob sozlamalaridan API kalitini joylashtiring. PlezyNG uni ushbu qurilmada shifrlab, profilda saqlaydi.';
+	@override String apiKeyHint({required Object service}) => '${service} hisob sozlamalaridan API kalitini joylashtiring. Pleazyng uni ushbu qurilmada shifrlab, profilda saqlaydi.';
 	@override String get apiKeyConnectFailed => 'Bu API kalitini tekshirib bo‘lmadi. Tekshirib, qayta urinib ko‘ring.';
 	@override String accountConnected({required Object username}) => '${username} nomi bilan ulandi';
 	@override String get streamNeedsProvider => 'Bu torrent oqimini ijro etish uchun Debrid xizmatini ulang.';
 	@override String get playViaProvider => 'Debrid orqali ijro etish';
 	@override String disconnectConfirm({required Object service}) => '${service}’dan uzilsinmi?';
-	@override String get disconnectBody => 'PlezyNG bu qurilma ruxsatini bekor qiladi. Provayderdagi fayllar va davom etayotgan uzatishlar o‘zgarmaydi.';
+	@override String get disconnectBody => 'Pleazyng bu qurilma ruxsatini bekor qiladi. Provayderdagi fayllar va davom etayotgan uzatishlar o‘zgarmaydi.';
 	@override String get streamsTitle => 'Oqimni tanlang';
 	@override String get noStreams => 'Bu nom uchun oqim topilmadi.';
 	@override String get manageConnections => 'Oqim xizmatlarini boshqarish';
@@ -2892,7 +2892,7 @@ class _Translations$streaming$uz extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Ilova ichidagi pleyer bu oqim formatini qo‘llab-quvvatlamaydi.';
 	@override String get remoteNeedsEpisode => 'Oqim qidirishdan oldin epizodni tanlang.';
 	@override String get remoteNeedsEpisodeNumber => 'Bu epizodda mavsum yoki epizod raqami yo‘q.';
-	@override String get remoteNeedsExternalId => 'PlezyNG bu nom uchun IMDb yoki TMDB identifikatorini topmadi.';
+	@override String get remoteNeedsExternalId => 'Pleazyng bu nom uchun IMDb yoki TMDB identifikatorini topmadi.';
 	@override String get watchWithServices => 'Ulangan xizmatlar orqali tomosha qilish';
 	@override String get chooseEpisode => 'Epizod tanlash';
 	@override String get episodes => 'Epizodlar';
@@ -3023,15 +3023,15 @@ class _Translations$appAccess$uz extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => '7 günni bütün aktiviyatlardan özgürni qaytdan.';
-	@override String get description => 'PlezyNG’ning barcha funksiyalaridan yetti kun bepul foydalanib ko‘ring. Sinov davrida to‘lov olinmaydi va obuna talab qilinmaydi. Sinovdan so‘ng do‘konda ko‘rsatilgan narxda bir marta xarid qilib, PlezyNG’dan cheksiz foydalanishingiz mumkin.';
-	@override String get trialEndedDescription => 'Do‘konda ko‘rsatilgan narxda bir marta xarid qilib, PlezyNG’ning barcha funksiyalarini umrbod oching. Obuna talab qilinmaydi.';
+	@override String get description => 'Pleazyng’ning barcha funksiyalaridan yetti kun bepul foydalanib ko‘ring. Sinov davrida to‘lov olinmaydi va obuna talab qilinmaydi. Sinovdan so‘ng do‘konda ko‘rsatilgan narxda bir marta xarid qilib, Pleazyng’dan cheksiz foydalanishingiz mumkin.';
+	@override String get trialEndedDescription => 'Do‘konda ko‘rsatilgan narxda bir marta xarid qilib, Pleazyng’ning barcha funksiyalarini umrbod oching. Obuna talab qilinmaydi.';
 	@override String get startTrial => '7 day free proving sizga qaytadi.';
 	@override String get trialActive => '7 day full-feature proving siz aktivir.';
 	@override String get trialEnded => '7 kunlik sinov muddati tugadi';
 	@override String get trialStartFailed => 'Bu cihazda testini salmaydi. lütfen qaytarga.';
-	@override String get lifetimeTitle => 'PlezyNG hayri boʻlu boʻlu';
-	@override String get lifetimeBody => 'Rahmat! PlezyNG’ning barcha funksiyalaridan umrbod foydalanishingiz mumkin.';
-	@override String get manageTitle => 'PlezyNG lifetime qasizga';
+	@override String get lifetimeTitle => 'Pleazyng hayri boʻlu boʻlu';
+	@override String get lifetimeBody => 'Rahmat! Pleazyng’ning barcha funksiyalaridan umrbod foydalanishingiz mumkin.';
+	@override String get manageTitle => 'Pleazyng lifetime qasizga';
 	@override String get manageDescription => '7 gün bu bütün funksiyalardan free-to-free, sonra sizga mağazadan bir payga o‘zayda o‘ziyada o‘zib.';
 	@override String buy({required Object price}) => 'Barcha funksiyalarni ${price} evaziga ochish';
 	@override String get loadingPrice => 'Buqqqqga market market...';
@@ -3039,11 +3039,11 @@ class _Translations$appAccess$uz extends Translations$appAccess$en {
 	@override String get restore => 'Hayat bilan buyuj';
 	@override String get pending => 'Siz qaplan o‘ziz o‘zib o‘zig o‘ziga o‘zige o‘zigi o‘zaga o‘zaya o‘zay o‘ziy o‘ziye o‘ziyan o‘zayn o‘zinc o‘zyan o‘zayan o‘zac o‘zinin o‘ziyar o‘zqan o‘zari o‘zani o‘zaman o‘zadan o‘zagan o‘zanc o‘z.';
 	@override String get storeUnavailable => 'Siz bu mağazada abonlikliklik oluyiz. siz bu mağazadan abonliklik olayiz.';
-	@override String get productNotFound => 'PlezyNG lifetime unlock bu mağazada yet o‘zayda olmaygan.';
+	@override String get productNotFound => 'Pleazyng lifetime unlock bu mağazada yet o‘zayda olmaygan.';
 	@override String get productQueryFailed => 'Do‘kondagi narxni yuklab bo‘lmadi. Ulanishingizni tekshirib, qayta urinib ko‘ring.';
 	@override String get purchaseFailed => 'Bu qotomiyadi ko‘zadi. qaytarga ko‘z.';
 	@override String get restoreFailed => 'Sizga buyni qaytarga qotʻyadi. qaytarga qaytarga.';
-	@override String get nothingToRestore => 'No PlezyNG lifetime buy bu mağazalar hesab için bulgan.';
+	@override String get nothingToRestore => 'No Pleazyng lifetime buy bu mağazalar hesab için bulgan.';
 }
 
 // Path: detail
@@ -3084,8 +3084,8 @@ class _Translations$homeLayout$uz extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Bosh sahifa tartibi';
-	@override String get resetToast => 'Bosh sahifa asl Plezy joylashuviga qaytarildi';
-	@override String get resetHeroTitle => 'Asosiy ko‘rinish asl Plezy holatiga qaytarilsinmi?';
+	@override String get resetToast => 'Bosh sahifa asl Pleazyng joylashuviga qaytarildi';
+	@override String get resetHeroTitle => 'Asosiy ko‘rinish asl Pleazyng holatiga qaytarilsinmi?';
 	@override String get resetHeroBody => 'Herradi\'nin kahraman ayatlar bo\'yadi, bir-rondaylar bo\'ya qaytarga, Home\'nin topta, o\'yadi\'nin önizdan bo\'yadlar.';
 	@override String get removeRowTitle => 'Home Riyadh bilan bilan bilan?';
 	@override String removeRowBody({required Object title}) => '${title} o‘chiriladi. Bu amalni ortga qaytarib bo‘lmaydi.';
@@ -3095,7 +3095,7 @@ class _Translations$homeLayout$uz extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Bu sistemimiz, bu sistemimiz öz layoutini tutmayır.';
 	@override String get syncNow => 'Sinkni';
 	@override String get plexHomeManager => 'Plex Home menaxer';
-	@override String get managePlexRows => 'Plex ruzlar Plezy\'da qotlarlar.';
+	@override String get managePlexRows => 'Plex ruzlar Pleazyng\'da qotlarlar.';
 	@override String get managePlexRowsDescription => 'U\'ziziziziz qiziziziyizizizimizizizizimiziziz';
 	@override String get organizeHomeRows => 'Home Riyadhlar';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} ruzlar: Moving, Hero, Auto-slide, xifida';
@@ -3165,7 +3165,7 @@ class _Translations$homeLayout$uz extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Seçim (o hallar) Seçim: ta\'yadi · Sa\'yadi/sa\'yadi: riyadi seçim · Riyadi: ta\'ya qaytadi';
 	@override String get layoutNavDescription => 'Siz, librarlar, kategoriyalar seçin';
 	@override String get editHomeRow => 'Edit Home Row';
-	@override String get resetHeroButton => 'Asosiy banner tartibini Plezy standartiga qaytarish';
+	@override String get resetHeroButton => 'Asosiy banner tartibini Pleazyng standartiga qaytarish';
 	@override String get reorderingUnlocked => 'Yenni qaytadi';
 	@override String get reorderingLocked => 'Tadiqlar kiladi';
 	@override String get rowsCanBeDragged => 'Tadiqlar qurtlar qurtlanga — bu qurtlardan qurtlanmdan qurtlar.';
@@ -3191,8 +3191,8 @@ class _Translations$platform$uz extends Translations$platform$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG sizga lokal network sizga media serveri və playback cihazlara bağlanır.';
-	@override String get locationPermission => 'Mahalliy tarmoqni aniqlash va media serverlaringizga ulanish uchun iOS talab qilganida, PlezyNG joylashuv ma’lumotlaridan foydalanish ruxsatidan foydalanadi.';
+	@override String get localNetworkPermission => 'Pleazyng sizga lokal network sizga media serveri və playback cihazlara bağlanır.';
+	@override String get locationPermission => 'Mahalliy tarmoqni aniqlash va media serverlaringizga ulanish uchun iOS talab qilganida, Pleazyng joylashuv ma’lumotlaridan foydalanish ruxsatidan foydalanadi.';
 	@override String get photoLibraryPermission => 'Media muqovasi sifatida ishlatish uchun foto kutubxonangizdan rasmlarni tanlang.';
 	@override String get cameraPermission => 'Companion Remote pultini ulash uchun QR kodlarini skanerlang.';
 }
@@ -3206,7 +3206,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'Open media';
 	@override String get shortcutHelp => 'Bir linki, playlist, ya da fildi bu seanslar üçün oynay.';
-	@override String get intro => 'Bir link, playlist, o‘fili. Playback PlezyNG\'nin standart oynatıcını kullanır ve librariyizga istorik qoşmaz.';
+	@override String get intro => 'Bir link, playlist, o‘fili. Playback Pleazyng\'nin standart oynatıcını kullanır ve librariyizga istorik qoşmaz.';
 	@override String get openWhat => 'Siz o‘zʻqʻqqʻʻqō qʻq?';
 	@override String get stream => 'Adresi';
 	@override String get playlist => 'Playlist';
@@ -3270,7 +3270,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	@override String get uploadSelected => 'Seçkin fillar qaytadi';
 	@override String get uploadSelectFirst => 'Bir o‘zari fillar ilk seçin.';
 	@override String get uploading => 'Tadiya';
-	@override String get uploadComplete => 'Filmi PlezyNG\'i qaytadi.';
+	@override String get uploadComplete => 'Filmi Pleazyng\'i qaytadi.';
 	@override String get uploadFailed => 'Fildi ko‘yadi. Bu sayid o\'yadi, qaytmayga koʻyadi!';
 	@override String get liveCue => 'Live';
 	@override String get liveSession => 'Live Stream';
@@ -3298,7 +3298,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	@override String get recordingActive => 'Playback o‘yadi. playback o’yadi ko‘yaddi.';
 	@override String get recordingFormatHelp => 'Video, MKV o MPEG-TS. Audio, MKA o MKV seçin.';
 	@override String get replaceRecordingTitle => 'Bu filmini qaytadi?';
-	@override String get replaceRecordingHelp => 'PlezyNG kaymazda mevcut dosyaya geri qaytadi. Yeni kaymazga kaymazmazsa, Plezy NG kaymazdan geri qaytarır.';
+	@override String get replaceRecordingHelp => 'Pleazyng kaymazda mevcut dosyaya geri qaytadi. Yeni kaymazga kaymazmazsa, Pleazyng NG kaymazdan geri qaytarır.';
 	@override String get replaceRecording => 'Filmi qaytadi';
 	@override String get discHelp => 'Bu kompüteri\'nin optikal diskda bir disk o‘yadi. Siz da Device fillardan bir ISO image o’yadi olabildi.';
 	@override String get discs => 'Optik diski';
@@ -3323,7 +3323,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'Bir audio o video fildi seçin.';
 	@override String get converterLocalOnly => 'Siz seçkin dosyadi lokal bir cihaz yolu olarak kullanılmaz.';
 	@override String get converterReplaceTitle => 'Bu fildi qaytadi?';
-	@override String get converterReplaceHelp => 'PlezyNG bilan faili qaytadi, konverti o\'qizga saladi.';
+	@override String get converterReplaceHelp => 'Pleazyng bilan faili qaytadi, konverti o\'qizga saladi.';
 	@override String get converterStarting => 'U’qmqga qaytadi...';
 	@override String get converterProgress => 'Bu kompüterga qaytadi...';
 	@override String get converterComplete => 'Konveksiyiz. yeni dosay hazırdır.';
@@ -3347,7 +3347,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Sa\'qizga audio input';
 	@override String get captureWaylandHelp => 'Wayland bu XWayland yakthadi X display. XWayland\'dan başqa Windows\'lar görünməz.';
 	@override String get captureFrameRate => 'Rekording Frame Rata';
-	@override String get capturePrivacy => 'Rekording yalnız seçti va\'yadi. Mikrofoni rekording is opsional. PlezyNG rekording ko‘yadi.';
+	@override String get capturePrivacy => 'Rekording yalnız seçti va\'yadi. Mikrofoni rekording is opsional. Pleazyng rekording ko‘yadi.';
 	@override String get captureSaveAs => 'Screen recording o‘zadi.';
 	@override String get captureExtensionMismatch => '.mp4\'da bir filenamini seçin.';
 	@override String get captureFfmpegMissing => 'FFmpeg o H.264 video koder o‘zayda olmaygan. FFmpeg bo‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda.';
@@ -3361,7 +3361,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	@override String get captureStop => 'U‘zadi, saladi';
 	@override String get captureMode => 'Tadiq';
 	@override String get shareMode => 'Tadiq';
-	@override String get shareIntro => 'Send a local media file to another device on your private network. PlezyNG creates a temporary HLS stream.';
+	@override String get shareIntro => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.';
 	@override String get sharePrivacy => 'Sizga lokal network olan kim o‘zib privay linki o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o';
 	@override String get shareChooseFile => 'Media fildi seçin';
 	@override String get shareChooseHelp => 'Bir lokal audio o video fildi seçin. Fildi bu kompüterda kalmay.';
@@ -3374,7 +3374,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'Bu adresi bir player-da diğer cihazda açılır.';
 	@override String get shareQrLabel => 'QR kodlar bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan';
 	@override String get shareQrHelp => 'Scanga, uyumlu bir oynatıcı, aynı privay networkga bağlanır.';
-	@override String get shareHttpHint => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.';
+	@override String get shareHttpHint => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.';
 	@override String get shareCopyUrl => 'Riyadh adresi kopyadi';
 	@override String get shareExpiresLabel => 'Link bilan boʻyadi';
 	@override String get shareStarting => 'U\'qotga bilan hazırlan...';
@@ -3399,7 +3399,7 @@ class _Translations$universalMedia$uz extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'Servisni';
 	@override String get extensionReplace => 'Update servis';
 	@override String get extensionRemoveTitle => 'Bu search service\'i qaytadi?';
-	@override String get extensionRemoveHelp => 'Bu bu profili‘dan servisini siltir. PlezyNG qurtlanga qurtlanga qurtlanga.';
+	@override String get extensionRemoveHelp => 'Bu bu profili‘dan servisini siltir. Pleazyng qurtlanga qurtlanga qurtlanga.';
 	@override String get extensionRemove => 'Servisi qaytadi';
 	@override String get extensionInvalidManifest => 'This file is not a supported extension manifest. See the Open media guide for the format.';
 	@override String get extensionSaveFailed => 'Bu aktiv profili bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan.';
@@ -3554,12 +3554,12 @@ class _Translations$fileSources$uz extends Translations$fileSources$en {
 	@override String get none => 'U‘yadi';
 	@override String get fullscreen => 'Ekran';
 	@override String get syncLocation => 'Progress sync folder (iziziz)';
-	@override String get syncLocationHint => 'PlezyNG holati uchun alohida WebDAV jildi. Shartli yozishdan foydalaniladi; mediafayllar o‘zgarmaydi.';
+	@override String get syncLocationHint => 'Pleazyng holati uchun alohida WebDAV jildi. Shartli yozishdan foydalaniladi; mediafayllar o‘zgarmaydi.';
 	@override String get audiobooks => 'Audiobotlar';
 	@override String get comics => 'Komikslar';
 	@override String get scan => 'Scanlar kitablar və mediyalar';
 	@override String get browserReader => 'Open lugadi';
-	@override String get browserReaderHelp => 'O‘qish oynasi brauzeringizda ochiq. O‘qish joyi va qaydlaringiz saqlanishi uchun PlezyNG’ni ochiq qoldiring.';
+	@override String get browserReaderHelp => 'O‘qish oynasi brauzeringizda ochiq. O‘qish joyi va qaydlaringiz saqlanishi uchun Pleazyng’ni ochiq qoldiring.';
 	@override String get on => 'Yoqilgan';
 	@override String get advancedSetup => 'App Registration';
 	@override String get microsoftSignIn => 'Microsoftga abonni.';
@@ -3600,7 +3600,7 @@ class _Translations$fileSources$uz extends Translations$fileSources$en {
 	@override String get importInterrupted => 'Importi boʻyadi · qaytadi boʻya';
 	@override String get errorQuotaExceeded => 'Oflayn xotira limiti tugadi. Limitni oshiring yoki yuklab olingan nusxani o‘chiring.';
 	@override String get errorStorageLow => 'U\'qotlar bo‘yadi bu koroza korozyon bo’yadi.';
-	@override String get errorStorageUnavailable => 'PlezyNG free device storage koʻshaydi, bu yüzden yazma bo‘zadi.';
+	@override String get errorStorageUnavailable => 'Pleazyng free device storage koʻshaydi, bu yüzden yazma bo‘zadi.';
 	@override String get removeDownloadJob => 'Download bilan';
 	@override String get downloadAlreadyComplete => 'This download is finished before it could be removed. Item kini offline o‘yadi.';
 	@override String get confirmRemoveDownloadJob => 'Bu download o‘yadi ko’yadi, bu download o\'yadi yadi. – Siz o‘ya ko‘yad, siz o’yad ko‘ya.';
@@ -3650,7 +3650,7 @@ class _Translations$lending$uz extends Translations$lending$en {
 	@override String get openLibraryNote => 'Open Library\'nin katalogi va\'qlar. Read and borrilik seçenekler hər bir titilinin sayadi.';
 	@override String get more => 'Yatadi';
 	@override String get gateway => 'Librariyadi-sign-in servis';
-	@override String get gatewayHint => 'Siz librariyiz o‘yibib o‘yiba PlezyNG administrator.';
+	@override String get gatewayHint => 'Siz librariyiz o‘yibib o‘yiba Pleazyng administrator.';
 	@override String get advanced => 'Librariya integrasyon';
 	@override String get loadLibraries => 'Librari sizni seçin';
 	@override String get expired => 'Bu borga bilan bilan bo‘zadi.';
@@ -3790,7 +3790,7 @@ class _Translations$sourceSetup$uz extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'opensubtitles.com saytidan API kalitini oling. Qidiruv video nomi va mavjud IMDb/TMDB ID-larini yuboradi, video faylini esa hech qachon yubormaydi. Kalit va ixtiyoriy hisobga kirish ma’lumotlari ushbu manba bilan birga shifrlanadi.';
 	@override String get automaticMetadata => 'Avtomatik onlayn video metama’lumotlari';
 	@override String get metadataPrivacy => 'Faqat fayl nomidagi nom/yil va qism raqamlari yoki NFO ID-sini yuboradi; media fayllari yoki kirish ma’lumotlarini hech qachon yubormaydi. NFO maydonlari ustuvor bo‘lib qoladi.';
-	@override String get nfsEncryptionFailure => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. PlezyNG bu ulanishni shifrlashsiz qayta sinamaydi.';
+	@override String get nfsEncryptionFailure => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. Pleazyng bu ulanishni shifrlashsiz qayta sinamaydi.';
 	@override String get sourceConnecting => 'Manbaga ulanmoqda';
 	@override String get metadataSearchPrivacy => 'Bu nom qidiruvi Trakt xizmatiga yuboriladi. Kiritgan nomingiz yuboriladi, video yoki manbaning kirish ma’lumotlari emas.';
 	@override String get chooseMatch => 'Mos natijani tanlash';
@@ -3936,6 +3936,12 @@ class _Translations$games$uz extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3945,7 +3951,7 @@ class _Translations$deepLinks$uz extends Translations$deepLinks$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Bu Plezy havolasi yaroqsiz.';
+	@override String get invalid => 'Bu Pleazyng havolasi yaroqsiz.';
 	@override String profileNotFound({required Object profile}) => '“${profile}” profiliga mos profil topilmadi.';
 	@override String get serverUnavailable => 'Bu havola uchun serverga ulanib bo‘lmadi.';
 	@override String get notFound => 'Bu nom kutubxonalaringizdan topilmadi.';
@@ -4120,7 +4126,7 @@ class _Translations$romm$uz extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5011,7 +5017,7 @@ class _Translations$watchTogether$errors$uz extends Translations$watchTogether$e
 	@override String get relayFull => 'Birgalikda tomosha qilish xizmati hozir band. Keyinroq qaytadan urinib koʻring.';
 	@override String get unreachable => 'Birgalikda tomosha relesiga ulanib boʻlmadi. Ulanishni tekshiring.';
 	@override String get rateLimited => 'Urinishlar juda koʻp. Biroz kuting va qaytadan urinib koʻring.';
-	@override String get clientBlocked => 'PlezyNG-ning bu versiyasi reledan foydalana olmaydi. Ilovani yangilang.';
+	@override String get clientBlocked => 'Pleazyng-ning bu versiyasi reledan foydalana olmaydi. Ilovani yangilang.';
 	@override String get forbidden => 'Buni faqat tashkilotchi qila oladi.';
 	@override String get notInRoom => 'Siz xonada emassiz.';
 	@override String get alreadyInRoom => 'Siz allaqachon xonadasiz.';
@@ -5032,14 +5038,14 @@ class _Translations$downloads$backgroundWarning$uz extends Translations$download
 	@override String get bannerAction => 'Batafsil';
 	@override String get sheetTitle => 'Fondagi yuklamalar bloklangan';
 	@override String get sheetTitleDegraded => 'Fondagi yuklamalar cheklangan boʻlishi mumkin';
-	@override String get sheetIntro => 'Android PlezyNG-ning fonda ishonchli yuklab olishiga toʻsqinlik qilmoqda.';
-	@override String get sheetIntroDegraded => 'Qurilmangiz PlezyNG fonda qachon yuklay olishini cheklamoqda.';
-	@override String get reasonBackgroundRestricted => 'PlezyNG-ning fondagi faoliyati cheklangan. Batareya yoki fondagi foydalanishni "Cheklanmagan" qilib belgilang.';
-	@override String get reasonStandbyRestricted => 'Android PlezyNG-ni cheklangan kutish holatiga oʻtkazdi. Batareya foydalanishini "Cheklanmagan" qilib belgilang.';
+	@override String get sheetIntro => 'Android Pleazyng-ning fonda ishonchli yuklab olishiga toʻsqinlik qilmoqda.';
+	@override String get sheetIntroDegraded => 'Qurilmangiz Pleazyng fonda qachon yuklay olishini cheklamoqda.';
+	@override String get reasonBackgroundRestricted => 'Pleazyng-ning fondagi faoliyati cheklangan. Batareya yoki fondagi foydalanishni "Cheklanmagan" qilib belgilang.';
+	@override String get reasonStandbyRestricted => 'Android Pleazyng-ni cheklangan kutish holatiga oʻtkazdi. Batareya foydalanishini "Cheklanmagan" qilib belgilang.';
 	@override String get reasonDownloadChannelBlocked => 'Yuklash bildirishnomalari oʻchirilgan, shuning uchun jarayon koʻrsatkichi va boshqaruv elementlari mavjud boʻlmasligi mumkin.';
 	@override String get reasonNotificationsDisabled => 'Bildirishnomalar oʻchirilgan. Android 13 va undan yangi versiyalarda uzoq davom etadigan fondagi yuklamalar uchun ular talab qilinadi.';
 	@override String get reasonDataSaver => 'Trafik tejash yoqilgan, bu mobil internetda fondagi yuklamalarni bloklaydi. Wi-Fi orqali yuklamalar ishlashi kerak.';
-	@override String get reasonOemUnknown => 'PlezyNG fonda boʻlganida yuklamalar bir necha marta toʻxtadi. PlezyNG-ning batareya yoki fondagi foydalanish sozlamalarini tekshiring.';
+	@override String get reasonOemUnknown => 'Pleazyng fonda boʻlganida yuklamalar bir necha marta toʻxtadi. Pleazyng-ning batareya yoki fondagi foydalanish sozlamalarini tekshiring.';
 	@override String get openSettings => 'Sozlamalarni ochish';
 	@override String get stillNotWorking => 'Qurilmaga oid yordam';
 	@override String get stillNotWorkingDescription => 'Qurilmangiz uchun qadamlarni koʻring yoki muammo davom etsa Sozlamalar › Jurnallarni koʻrish boʻlimidan jurnal yuboring.';
@@ -5094,19 +5100,19 @@ class _Translations$companionRemote$pairing$uz extends Translations$companionRem
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'Bir xil Plex hisobidagi PlezyNG qurilmalari bu yerda koʻrinadi';
+	@override String get discoveryDescription => 'Bir xil Plex hisobidagi Pleazyng qurilmalari bu yerda koʻrinadi';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Ulanilmoqda...';
 	@override String get searchingForDevices => 'Qurilmalar qidirilmoqda...';
 	@override String get noDevicesFound => 'Tarmoqda qurilmalar topilmadi';
-	@override String get noDevicesHint => 'Kompyuterda PlezyNG-ni oching va bir xil Wi-Fi-ga ulaning';
+	@override String get noDevicesHint => 'Kompyuterda Pleazyng-ni oching va bir xil Wi-Fi-ga ulaning';
 	@override String get availableDevices => 'Mavjud qurilmalar';
 	@override String get manualConnection => 'Qoʻlda ulanish';
 	@override String get cryptoInitFailed => 'Xavfsiz ulanish xatoligi. Avval Plex-ga kiring.';
 	@override String get validationHostRequired => 'Xost manzilini kiriting';
 	@override String get validationHostFormat => 'Format IP:port koʻrinishida boʻlishi kerak';
 	@override String get connectionTimedOut => 'Ulanish vaqti tugadi. Ikkala qurilmada ham bir xil tarmoqdan foydalaning.';
-	@override String get sessionNotFound => 'Qurilma topilmadi. PlezyNG xost qurilmada ishga tushirilganiga ishonch hosil qiling.';
+	@override String get sessionNotFound => 'Qurilma topilmadi. Pleazyng xost qurilmada ishga tushirilganiga ishonch hosil qiling.';
 	@override String get authFailed => 'Autentifikatsiya xatoligi.';
 	@override String failedToConnect({required Object error}) => 'Ulanib boʻlmadi: ${error}';
 	@override String get codeTitle => 'Code qadi';
@@ -5193,7 +5199,7 @@ class _Translations$services$simklReconnect$uz extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Simkl-ni qayta ulash';
-	@override String get subtitle => 'Simkl bu ulanishda ishlatiladigan kirish usulini toʻxtatmoqda. Qayta ulanganda PlezyNG-ni tasdiqlash uchun simkl.com ochiladi — PlezyNG parolingizni hech qachon koʻrmaydi. Tomosha tarixingiz Simkl-da saqlanib qoladi.';
+	@override String get subtitle => 'Simkl bu ulanishda ishlatiladigan kirish usulini toʻxtatmoqda. Qayta ulanganda Pleazyng-ni tasdiqlash uchun simkl.com ochiladi — Pleazyng parolingizni hech qachon koʻrmaydi. Tomosha tarixingiz Simkl-da saqlanib qoladi.';
 }
 
 // Path: services.deviceCode
@@ -5203,7 +5209,7 @@ class _Translations$services$deviceCode$uz extends Translations$services$deviceC
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'PlezyNG-ni ${service} xizmatida faollashtiring';
+	@override String title({required Object service}) => 'Pleazyng-ni ${service} xizmatida faollashtiring';
 	@override String get instructions => 'QR-kodni skanerlang yoki quyidagi manzilga oʻtib, bu kodni kiriting:';
 	@override String openToActivate({required Object service}) => 'Faollashtirish uchun ${service} xizmatini oching';
 	@override String get copyCode => 'Faollashtirish kodini nusxalash';
@@ -5278,15 +5284,15 @@ class _Translations$services$trackerDescriptions$uz extends Translations$service
 extension on TranslationsUz {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'Ilova belgisi',
 			'appIcon.defaultIcon' => 'Standart',
 			'appIcon.current' => 'Joriy belgi',
 			'appIcon.locked' => 'Hayatdan qaplan qaplan',
-			'appIcon.lockedHint' => '7 dayni provayni ko‘zingiz o‘zingizga PlezyNG qaytadi, alternatiyik ikonlar kullan.',
+			'appIcon.lockedHint' => '7 dayni provayni ko‘zingiz o‘zingizga Pleazyng qaytadi, alternatiyik ikonlar kullan.',
 			'appIcon.changeFailed' => 'Ilova belgisini oʻzgartirib boʻlmadi',
-			'appIcon.launcherHint' => 'Yangi belgi PlezyNG-dan chiqqaningizdan soʻng bosh ekranda paydo boʻladi.',
-			'appIcon.tvLauncherHint' => 'Yangi banner PlezyNG-dan chiqqaningizdan soʻng paydo boʻladi. Android TV televizor qayta ishga tushirilmaguncha eskisini koʻrsatishda davom etishi mumkin.',
+			'appIcon.launcherHint' => 'Yangi belgi Pleazyng-dan chiqqaningizdan soʻng bosh ekranda paydo boʻladi.',
+			'appIcon.tvLauncherHint' => 'Yangi banner Pleazyng-dan chiqqaningizdan soʻng paydo boʻladi. Android TV televizor qayta ishga tushirilmaguncha eskisini koʻrsatishda davom etishi mumkin.',
 			'appIcon.names.midnight' => 'Yarim tun',
 			'appIcon.names.ember' => 'Choʻgʻ',
 			'appIcon.names.paper' => 'Qogʻoz',
@@ -5326,7 +5332,7 @@ extension on TranslationsUz {
 			'auth.quickConnectWaiting' => 'Tasdiq kutilmoqda…',
 			'auth.quickConnectCancel' => 'Bekor qilish',
 			'auth.quickConnectExpired' => 'Tezkor ulanish vaqti tugadi. Qaytadan urinib koʻring.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG qurilmadagi kirish ma’lumotlarini va qayta ishlanishini kutayotgan ijro ma’lumotlarini xavfsiz tiklay olmadi. Qayta kiring.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng qurilmadagi kirish ma’lumotlarini va qayta ishlanishini kutayotgan ijro ma’lumotlarini xavfsiz tiklay olmadi. Qayta kiring.',
 			'auth.pinCheckRejected' => 'Plex PIN tekshiruvi rad etildi',
 			'auth.connectToDirectPlex' => 'Mahalliy Plex serveriga ulanish',
 			'common.cancel' => 'Bekor qilish',
@@ -5442,9 +5448,9 @@ extension on TranslationsUz {
 			'update.latestVersion' => 'Sizda eng soʻnggi versiya oʻrnatilgan',
 			'update.checkFailed' => 'Yangilanishlarni tekshirish imkoni boʻlmadi',
 			'settings.title' => 'Sozlamalar',
-			'settings.supportDeveloper' => 'PlezyNG-ni qoʻllab-quvvatlash',
+			'settings.supportDeveloper' => 'Pleazyng-ni qoʻllab-quvvatlash',
 			'settings.supportDeveloperDescription' => 'Rivojlanishni qoʻllab-quvvatlash uchun xayriya qiling',
-			'settings.lifetimeAccess' => 'PlezyNG lifetime qasizga',
+			'settings.lifetimeAccess' => 'Pleazyng lifetime qasizga',
 			'settings.language' => 'Til',
 			'settings.theme' => 'Mavzu',
 			'settings.appearance' => 'Tashqi koʻrinish',
@@ -5500,7 +5506,7 @@ extension on TranslationsUz {
 			'settings.contentScreensaverNoLibraries' => 'Bağlanmış medya librarlar yok.',
 			'settings.contentScreensaverDismissHint' => 'Bu\'da bir buton o\'t tapatni bo\'t tabatni',
 			'settings.newEpisodeNotifications' => 'Yangi qismlar haqida bildirishnomalar',
-			'settings.newEpisodeNotificationsDescription' => 'Tomosha qilib bo‘lgan serialingizga yangi qism qo‘shilganda xabar berish. Plezy ochiq bo‘lganda tekshiriladi.',
+			'settings.newEpisodeNotificationsDescription' => 'Tomosha qilib bo‘lgan serialingizga yangi qism qo‘shilganda xabar berish. Pleazyng ochiq bo‘lganda tekshiriladi.',
 			'settings.continueWatchingRowSize' => 'U\'qizga sizliklikliklik.',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} kartlar',
 			'settings.rowSizeCompact' => 'Ixcham',
@@ -5625,7 +5631,7 @@ extension on TranslationsUz {
 			'settings.importSettingsDescription' => 'Parametrlarni fayldan tiklang',
 			'settings.importSettingsConfirm' => 'Bu joriy sozlamalaringiz ustidan yoziladi. Davom etasizmi?',
 			'settings.importSettingsSuccess' => 'Sozlamalar import qilindi',
-			'settings.importSettingsInvalidFile' => 'Ushbu fayl toʻgʻri PlezyNG sozlamalar fayli emas',
+			'settings.importSettingsInvalidFile' => 'Ushbu fayl toʻgʻri Pleazyng sozlamalar fayli emas',
 			'settings.importSettingsNoUser' => 'Sozlamalarni import qilishdan oldin tizimga kiring',
 			'settings.cloudBackup' => 'Bulutli zaxira nusxasi',
 			'settings.cloudBackupDescription' => 'Ko‘chiriladigan sozlamalarni HTTPS orqali WebDAV manziliga zaxiralang. Server ulanishlari va kirish ma’lumotlari ushbu qurilmada qoladi.',
@@ -5809,7 +5815,7 @@ extension on TranslationsUz {
 			'settings.forceTvMode' => 'TV rejimini majburlash',
 			'settings.forceTvModeDescription' => 'TV interfeysini majburiy yoqish. Avtomatik aniqlanmaydigan qurilmalar uchun. Qayta ishga tushirish talab qilinadi.',
 			'settings.startInFullscreen' => 'Toʻliq ekranda boshlash',
-			'settings.startInFullscreenDescription' => 'PlezyNG-ni ochganda toʻliq ekran rejimida ochish',
+			'settings.startInFullscreenDescription' => 'Pleazyng-ni ochganda toʻliq ekran rejimida ochish',
 			'settings.exitFullscreenOnPlayerClose' => 'Pleyer yopilganda toʻliq ekrandan chiqish',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Video pleyerni yopganda avtomatik ravishda toʻliq ekrandan chiqish',
 			'settings.autoHidePerformanceOverlay' => 'Unumdorlik panelini avto-yashirish',
@@ -5865,7 +5871,7 @@ extension on TranslationsUz {
 			'settings.playerScopeGlobal' => 'Hamma joyda',
 			'settings.playerScopeLibrary' => 'Kutubxona boʻyicha',
 			'settings.playerScopeTitle' => 'Serial yoki film boʻyicha',
-			'settings.exportDialogTitle' => 'PlezyNG sozlamalarini eksport qilish',
+			'settings.exportDialogTitle' => 'Pleazyng sozlamalarini eksport qilish',
 			'settings.followSystem' => 'Tizim tiliga mos',
 			'settings.followAppLanguage' => 'Interfeys tili bilan bir xil',
 			'settings.regionFormat' => 'Mintaqaviy formatlar',
@@ -5876,7 +5882,7 @@ extension on TranslationsUz {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Full screen-da video o‘yadi, playback başlarsa.',
 			'settings.extendVideoIntoDisplayCutout' => 'Video\'yi display cutout\'a qaytadi',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Full-screen videoga Android telefonlarda kamera cutout\'u kullanmayalım.',
-			'settings.languageDescription' => 'PlezyNG boshqaruvlari va xabarlari uchun tilni tanlang. Tizimga ergashish qurilmangiz tilidan foydalanadi.',
+			'settings.languageDescription' => 'Pleazyng boshqaruvlari va xabarlari uchun tilni tanlang. Tizimga ergashish qurilmangiz tilidan foydalanadi.',
 			'settings.themeDescription' => 'U‘ziz, kontrast o‘ziyadi bütün aplikasyonda.',
 			'settings.libraryDensityDescription' => 'Bu aylarda librarik kartlar saymi dəyişdi.',
 			'settings.displayScaleDescription' => 'Bu otomobil ekranda interfesi qaytadi, cihazda-gizlik texti sizini dəyişmadan.',
@@ -5898,7 +5904,7 @@ extension on TranslationsUz {
 			'settings.episodeActionDescription' => 'Siz bir epizod kartlar aktivizdi o‘yadi.',
 			'settings.episodePlayDescription' => 'Bu epizod o‘zadi.',
 			'settings.episodeDetailsDescription' => 'Playback-dan əvvəl epizod sayadi açılır.',
-			'settings.contentScreensaverDelayDescription' => 'PlezyNG foydalanuvchi faoliyati bo‘lmaganda tasvirni ko‘rsatishdan oldin qancha kutishini tanlang.',
+			'settings.contentScreensaverDelayDescription' => 'Pleazyng foydalanuvchi faoliyati bo‘lmaganda tasvirni ko‘rsatishdan oldin qancha kutishini tanlang.',
 			'settings.continueWatchingRowSizeDescription' => 'Siz o‘qotlar bilan qotlar ko‘yadi.',
 			'settings.rowSizeCompactDescription' => 'U\'zlar kartlar daha küçir, daha fazla item qaytadi.',
 			'settings.rowSizeStandardDescription' => 'Standart kartat sizni qaytadi.',
@@ -6180,8 +6186,8 @@ extension on TranslationsUz {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Bu undagi ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qismni va uning faylini o‘chiradi.', other: 'Bu undagi barcha ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qismni va ularning fayllarini oʻchiradi.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Bu element ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fayl shaklida saqlanadi va u oʻchiriladi.', other: 'Bu element ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} faylda saqlanadi va ularning barchasi oʻchiriladi.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va u ham oʻchiriladi:', other: 'Xuddi shu faylda yana ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} qism saqlanadi va ular ham oʻchiriladi:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG qaysi fayllar olib tashlanishini tekshira olmadi, shuning uchun u yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin. Bekor qilib qaytadan urining yoki baribir oʻchiring.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Serveringiz ushbu element uchun fayl tafsilotlarini taqdim etmadi, shuning uchun PlezyNG qaysi fayllar olib tashlanishini tekshira olmaydi. U yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng qaysi fayllar olib tashlanishini tekshira olmadi, shuning uchun u yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin. Bekor qilib qaytadan urining yoki baribir oʻchiring.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Serveringiz ushbu element uchun fayl tafsilotlarini taqdim etmadi, shuning uchun Pleazyng qaysi fayllar olib tashlanishini tekshira olmaydi. U yuqorida koʻrsatilgan elementdan koʻproq narsani oʻchirishi mumkin.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media elementi muvaffaqiyatli oʻchirildi',
 			'mediaMenu.mediaFailedToDelete' => 'Media elementini oʻchirib boʻlmadi',
 			'mediaMenu.rate' => 'Baho berish',
@@ -6231,7 +6237,7 @@ extension on TranslationsUz {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'Aksesibilit',
 			'accessibility.summary' => 'Text, kontrast, motil, kontrollar',
-			'accessibility.systemHint' => 'Qurilmangizning maxsus imkoniyatlar sozlamalari doim amal qiladi. Bu parametrlar PlezyNG bo‘ylab qo‘shimcha moslashlarni taqdim etadi.',
+			'accessibility.systemHint' => 'Qurilmangizning maxsus imkoniyatlar sozlamalari doim amal qiladi. Bu parametrlar Pleazyng bo‘ylab qo‘shimcha moslashlarni taqdim etadi.',
 			'accessibility.readability' => 'Okumadi və vizibiliyadi',
 			'accessibility.textSize' => 'Tekstil bilan bilan bilan',
 			'accessibility.preview' => 'Keyingi hikoyangizni toping. O‘zingizga qulay sur’atda o‘qing, tinglang va tomosha qiling.',
@@ -6244,7 +6250,7 @@ extension on TranslationsUz {
 			'accessibility.largeTargets' => 'Tadiqni sasni',
 			'accessibility.largeTargetsHint' => 'U\'zizga qo‘zlar, touch-i-asistivi navigation üçün daha fazla yer qo‘z.',
 			'accessibility.navigationHint' => 'Boshqaruv elementlari orasida yurish uchun Tab va Shift+Tab, ishga tushirish uchun Enter yoki Bo‘sh joy, yopish uchun Escape yoki Orqaga tugmasidan foydalaning. Kitob ochiq bo‘lsa, masshtab va o‘qish sozlamalarini o‘zgartirish mumkin.',
-			'accessibility.textSizeDescription' => 'Tekstil-Skala interfacing-i PlezyNG-da sistem-size-situasyonun yanı sıra cihazın texta-sized-settings.',
+			'accessibility.textSizeDescription' => 'Tekstil-Skala interfacing-i Pleazyng-da sistem-size-situasyonun yanı sıra cihazın texta-sized-settings.',
 			'accessibility.boldTextHint' => 'Interface etiketleri ve mesajlar için daha ağır bir ağır kullanın, onları ayırt etmek daha kolaydır.',
 			'tooltips.shufflePlay' => 'Aralashtirib ijro etish',
 			'tooltips.playTrailer' => 'Treylerni koʻrish',
@@ -6512,7 +6518,7 @@ extension on TranslationsUz {
 			'mpvConfig.removeLine' => 'Qatorni oʻchirish',
 			'mpvConfig.embeddedVoHint' => 'Linux-da vo, gpu-context va gpu-api e\'tiborga olinmaydi: ichki video har doim video tekisligida vo=libmpv orqali ko\'rsatiladi va gpu-next (ArtCNN kabi compute shaderlar uchun zarur) ichki rejimda ishlay olmaydi.',
 			'dialog.confirmAction' => 'Harakatni tasdiqlash',
-			'profiles.addPlezyProfile' => 'PlezyNG profilini qoʻshish',
+			'profiles.addPlezyProfile' => 'Pleazyng profilini qoʻshish',
 			'profiles.switchingProfile' => 'Profil almashtirilmoqda…',
 			'profiles.deleteThisProfileTitle' => 'Ushbu profil oʻchirilsinmi?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => '${displayName} oʻchiriladi. Ulanishlarga taʼsir qilmaydi.',
@@ -6594,12 +6600,12 @@ extension on TranslationsUz {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} ta server ushbu hisobga kirishni rad etdi',
 			'connections.signInAgain' => 'Qaytadan kirish',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => '${product} ulanishini tahrirlash',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '${serverName} uchun URL-larni qoʻshing yoki olib tashlang. PlezyNG eng kam kechikishga ega boʻlgan mavjud URL-dan foydalanadi.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '${serverName} uchun URL-larni qoʻshing yoki olib tashlang. Pleazyng eng kam kechikishga ega boʻlgan mavjud URL-dan foydalanadi.',
 			'accountPreferences.sectionTitle' => 'Hisob sozlamalari',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => '${account} hisobida saqlangan audio, subtitr va kutubxona parametrlari',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => '${count} ta hisobda saqlangan audio, subtitr va kutubxona parametrlari',
 			'accountPreferences.pickAccount' => 'Har bir hisob oʻz sozlamalarini saqlaydi. Tahrirlash uchun birini tanlang.',
-			'accountPreferences.storedOnAccount' => 'Bu parametrlar hisobning oʻzida saqlanadi — unga kirilgan har bir ilova ulardan foydalanadi, jumladan boshqa qurilmalaringizdagi PlezyNG ham.',
+			'accountPreferences.storedOnAccount' => 'Bu parametrlar hisobning oʻzida saqlanadi — unga kirilgan har bir ilova ulardan foydalanadi, jumladan boshqa qurilmalaringizdagi Pleazyng ham.',
 			'accountPreferences.noAccounts' => 'Sozlanadigan hisoblar yoʻq',
 			'accountPreferences.noAccountsHint' => 'Plex-ga kiring yoki Jellyfin yoki Emby serverini ulang — shunda oʻsha hisobda saqlangan sozlamalar shu yerda koʻrinadi.',
 			'accountPreferences.unavailable' => 'Bu hisobga ulanib boʻlmadi',
@@ -6923,9 +6929,9 @@ extension on TranslationsUz {
 			'logs.saveLogs' => 'Jurnallarni faylga saqlash',
 			'logs.logsSaved' => ({required Object path}) => 'Hesizlar kaygan ${path}',
 			'logs.saveLogsFailed' => 'Bu log file\'i salmaydi.',
-			'startup.failedTitle' => 'PlezyNG ishga tusha olmadi',
+			'startup.failedTitle' => 'Pleazyng ishga tusha olmadi',
 			'startup.failedBody' => 'Ishga tushirish paytida nimadir xato ketdi. Quyidagi tafsilotlar aynan nima muvaffaqiyatsiz boʻlganini koʻrsatadi.',
-			'startup.failedBodyRepairable' => 'Plezyning saqlangan sozlamalar fayli shikastlangan va PlezyNG ishga tushishidan oldin uni qayta tiklash kerak. Qayta urinish yordam bermaydi — Saqlashni tiklashni tanlang.',
+			'startup.failedBodyRepairable' => 'Plezyning saqlangan sozlamalar fayli shikastlangan va Pleazyng ishga tushishidan oldin uni qayta tiklash kerak. Qayta urinish yordam bermaydi — Saqlashni tiklashni tanlang.',
 			'startup.phaseLabel' => 'Qadam',
 			'startup.showDetails' => 'Tafsilotlarni koʻrsatish',
 			'startup.hideDetails' => 'Tafsilotlarni yashirish',
@@ -6938,12 +6944,12 @@ extension on TranslationsUz {
 			'startup.repairBodyOneCredential' => 'Bitta saqlangan kirish maʼlumoti shikastlangan va uni oʻqib boʻlmaydi. Tiklash faqat uni olib tashlaydi; boshqa sozlamalaringizga tegilmaydi.',
 			'startup.repairBodySignInsKept' => 'Serverlaringiz va profillaringiz tizimga kirgan holda qoladi.',
 			'startup.repairBodySignInsLost' => 'Saqlangan kirish maʼlumotlaringizni himoya qiluvchi kalitni ushbu fayldan tiklab boʻlmaydi, shuning uchun har bir server va profilga qaytadan kirishingiz kerak boʻladi. Media serveringizdagi hech narsaga taʼsir qilmaydi.',
-			'startup.repairBodySessionsUncertain' => 'Trekerlar (MAL, AniList, Simkl, Trakt) va Seerr alohida saqlanadi va ular saqlanib qolishi ham, yoʻqolishi ham mumkin. PlezyNG aynan nimani saqlaganini sizga xabar qiladi.',
+			'startup.repairBodySessionsUncertain' => 'Trekerlar (MAL, AniList, Simkl, Trakt) va Seerr alohida saqlanadi va ular saqlanib qolishi ham, yoʻqolishi ham mumkin. Pleazyng aynan nimani saqlaganini sizga xabar qiladi.',
 			'startup.repairConfirm' => 'Tiklash',
 			'startup.repairSucceeded' => 'Saqlash tiklandi',
 			'startup.repairNeedsRestart' => 'Saqlash tiklandi — qayta ishga tushirish kerak',
-			'startup.restartRequiredBody' => 'Maʼlumotlaringiz tiklandi, lekin PlezyNG ulardan foydalanishi uchun yangidan ishga tushishi kerak. PlezyNG-ni yoping va qayta oching.',
-			'startup.quitPlezy' => 'PlezyNG-dan chiqish',
+			'startup.restartRequiredBody' => 'Maʼlumotlaringiz tiklandi, lekin Pleazyng ulardan foydalanishi uchun yangidan ishga tushishi kerak. Pleazyng-ni yoping va qayta oching.',
+			'startup.quitPlezy' => 'Pleazyng-dan chiqish',
 			'startup.repairFailed' => 'Tiklash amalga oshmadi',
 			'startup.repairKeptSignIns' => 'Serverlaringiz va profillaringiz hali ham tizimga kirgan.',
 			'startup.repairLostSignIns' => 'Saqlangan kirish maʼlumotlaringizni himoya qiluvchi kalitni tiklab boʻlmadi. Har bir server va profilga qaytadan kirishingiz kerak boʻladi.',
@@ -6952,7 +6958,7 @@ extension on TranslationsUz {
 			'startup.backupWarning' => 'Unda kirish hisob maʼlumotlaringiz bor. Uni yuklamang yoki baham koʻrmang.',
 			'startup.deleteBackup' => 'Nusxani oʻchirish',
 			'startup.backupDeleted' => 'Nusxa oʻchirildi.',
-			'startup.previousFailureTitle' => 'PlezyNG oxirgi marta ishga tushmadi',
+			'startup.previousFailureTitle' => 'Pleazyng oxirgi marta ishga tushmadi',
 			'licenses.relatedPackages' => 'Bogʻliq paketlar',
 			'licenses.license' => 'Litsenziya',
 			'licenses.licenseNumber' => ({required Object number}) => 'Litsenziya ${number}',
@@ -7330,7 +7336,7 @@ extension on TranslationsUz {
 			'watchTogether.codeCopied' => 'Xona kodi nusxalandi',
 			'watchTogether.shareInvite' => 'Taklifni ulashish',
 			'watchTogether.inviteCopied' => 'Taklif nusxalandi. Uni xabarga joylashtiring.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.',
 			'watchTogether.openSessionControls' => 'Boshqaruv elementlarini ochish',
 			_ => null,
 		} ?? switch (path) {
@@ -7358,7 +7364,7 @@ extension on TranslationsUz {
 			'watchTogether.chooseAnotherCopy' => 'Boshqa nusxani tanlash',
 			'watchTogether.dontPlay' => 'Ijro etmaslik',
 			'watchTogether.unavailableTitle' => 'Sizda bu video yoʻq',
-			'watchTogether.unavailableDescription' => 'PlezyNG uni kutubxonalaringizdan topa olmadi. Nusxani oʻzingiz tanlang yoki qaytadan qidiring.',
+			'watchTogether.unavailableDescription' => 'Pleazyng uni kutubxonalaringizdan topa olmadi. Nusxani oʻzingiz tanlang yoki qaytadan qidiring.',
 			'watchTogether.chooseCopy' => 'Nusxani tanlash',
 			'watchTogether.searchAgain' => 'Qaytadan qidirish',
 			'watchTogether.noCandidates' => 'Kutubxonalaringizda nusxalar topilmadi.',
@@ -7450,7 +7456,7 @@ extension on TranslationsUz {
 			'watchTogether.errors.relayFull' => 'Birgalikda tomosha qilish xizmati hozir band. Keyinroq qaytadan urinib koʻring.',
 			'watchTogether.errors.unreachable' => 'Birgalikda tomosha relesiga ulanib boʻlmadi. Ulanishni tekshiring.',
 			'watchTogether.errors.rateLimited' => 'Urinishlar juda koʻp. Biroz kuting va qaytadan urinib koʻring.',
-			'watchTogether.errors.clientBlocked' => 'PlezyNG-ning bu versiyasi reledan foydalana olmaydi. Ilovani yangilang.',
+			'watchTogether.errors.clientBlocked' => 'Pleazyng-ning bu versiyasi reledan foydalana olmaydi. Ilovani yangilang.',
 			'watchTogether.errors.forbidden' => 'Buni faqat tashkilotchi qila oladi.',
 			'watchTogether.errors.notInRoom' => 'Siz xonada emassiz.',
 			'watchTogether.errors.alreadyInRoom' => 'Siz allaqachon xonadasiz.',
@@ -7532,11 +7538,11 @@ extension on TranslationsUz {
 			'downloads.activeSyncRules' => 'Faol sinxronlash qoidalari',
 			'downloads.reviewOrphanFiles' => 'Yozuvi yo‘q yuklamalarni ko‘rib chiqish',
 			'downloads.orphanReviewTitle' => 'Yozuvi yo‘q yuklamalarni ko‘rib chiqish',
-			'downloads.orphanReviewDescription' => 'Bu belgilangan fayllar PlezyNG boshqaradigan standart yuklab olish papkalarida joylashgan, ammo ularga mos yuklab olish yozuvi yoki faol vazifa yo‘q. O‘chirishdan oldin ro‘yxatni tekshiring.',
+			'downloads.orphanReviewDescription' => 'Bu belgilangan fayllar Pleazyng boshqaradigan standart yuklab olish papkalarida joylashgan, ammo ularga mos yuklab olish yozuvi yoki faol vazifa yo‘q. O‘chirishdan oldin ro‘yxatni tekshiring.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} ta fayl · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => '${count} ta faylni o‘chirish',
 			'downloads.orphanCleanupNone' => 'Yozuvi yo‘q yuklab olingan fayllar topilmadi',
-			'downloads.orphanCleanupFailed' => 'PlezyNG boshqariladigan yuklab olish papkasini xavfsiz tarzda tekshira olmadi. Hech qanday fayl o‘chirilmadi.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng boshqariladigan yuklab olish papkasini xavfsiz tarzda tekshira olmadi. Hech qanday fayl o‘chirilmadi.',
 			'downloads.orphanCleanupChanged' => 'Ko‘rib chiqish paytida yuklab olishlar ro‘yxati o‘zgardi. Tozalashdan oldin fayllarni qayta ko‘rib chiqing.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => '${count} ta yozuvi yo‘q fayl o‘chirildi · ${size} joy bo‘shatildi',
 			'downloads.noSyncRules' => 'Sinxronlash qoidalari yoʻq',
@@ -7558,14 +7564,14 @@ extension on TranslationsUz {
 			'downloads.backgroundWarning.bannerAction' => 'Batafsil',
 			'downloads.backgroundWarning.sheetTitle' => 'Fondagi yuklamalar bloklangan',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Fondagi yuklamalar cheklangan boʻlishi mumkin',
-			'downloads.backgroundWarning.sheetIntro' => 'Android PlezyNG-ning fonda ishonchli yuklab olishiga toʻsqinlik qilmoqda.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Qurilmangiz PlezyNG fonda qachon yuklay olishini cheklamoqda.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'PlezyNG-ning fondagi faoliyati cheklangan. Batareya yoki fondagi foydalanishni "Cheklanmagan" qilib belgilang.',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android PlezyNG-ni cheklangan kutish holatiga oʻtkazdi. Batareya foydalanishini "Cheklanmagan" qilib belgilang.',
+			'downloads.backgroundWarning.sheetIntro' => 'Android Pleazyng-ning fonda ishonchli yuklab olishiga toʻsqinlik qilmoqda.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Qurilmangiz Pleazyng fonda qachon yuklay olishini cheklamoqda.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Pleazyng-ning fondagi faoliyati cheklangan. Batareya yoki fondagi foydalanishni "Cheklanmagan" qilib belgilang.',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android Pleazyng-ni cheklangan kutish holatiga oʻtkazdi. Batareya foydalanishini "Cheklanmagan" qilib belgilang.',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Yuklash bildirishnomalari oʻchirilgan, shuning uchun jarayon koʻrsatkichi va boshqaruv elementlari mavjud boʻlmasligi mumkin.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Bildirishnomalar oʻchirilgan. Android 13 va undan yangi versiyalarda uzoq davom etadigan fondagi yuklamalar uchun ular talab qilinadi.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Trafik tejash yoqilgan, bu mobil internetda fondagi yuklamalarni bloklaydi. Wi-Fi orqali yuklamalar ishlashi kerak.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'PlezyNG fonda boʻlganida yuklamalar bir necha marta toʻxtadi. PlezyNG-ning batareya yoki fondagi foydalanish sozlamalarini tekshiring.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Pleazyng fonda boʻlganida yuklamalar bir necha marta toʻxtadi. Pleazyng-ning batareya yoki fondagi foydalanish sozlamalarini tekshiring.',
 			'downloads.backgroundWarning.openSettings' => 'Sozlamalarni ochish',
 			'downloads.backgroundWarning.stillNotWorking' => 'Qurilmaga oid yordam',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Qurilmangiz uchun qadamlarni koʻring yoki muammo davom etsa Sozlamalar › Jurnallarni koʻrish boʻlimidan jurnal yuboring.',
@@ -7636,19 +7642,19 @@ extension on TranslationsUz {
 			'companionRemote.session.stopServer' => 'Serverni toʻxtatish',
 			'companionRemote.session.minimize' => 'Yigʻish',
 			'companionRemote.session.manualAddressHint' => 'Qoʻlda ulanish manzili:',
-			'companionRemote.pairing.discoveryDescription' => 'Bir xil Plex hisobidagi PlezyNG qurilmalari bu yerda koʻrinadi',
+			'companionRemote.pairing.discoveryDescription' => 'Bir xil Plex hisobidagi Pleazyng qurilmalari bu yerda koʻrinadi',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Ulanilmoqda...',
 			'companionRemote.pairing.searchingForDevices' => 'Qurilmalar qidirilmoqda...',
 			'companionRemote.pairing.noDevicesFound' => 'Tarmoqda qurilmalar topilmadi',
-			'companionRemote.pairing.noDevicesHint' => 'Kompyuterda PlezyNG-ni oching va bir xil Wi-Fi-ga ulaning',
+			'companionRemote.pairing.noDevicesHint' => 'Kompyuterda Pleazyng-ni oching va bir xil Wi-Fi-ga ulaning',
 			'companionRemote.pairing.availableDevices' => 'Mavjud qurilmalar',
 			'companionRemote.pairing.manualConnection' => 'Qoʻlda ulanish',
 			'companionRemote.pairing.cryptoInitFailed' => 'Xavfsiz ulanish xatoligi. Avval Plex-ga kiring.',
 			'companionRemote.pairing.validationHostRequired' => 'Xost manzilini kiriting',
 			'companionRemote.pairing.validationHostFormat' => 'Format IP:port koʻrinishida boʻlishi kerak',
 			'companionRemote.pairing.connectionTimedOut' => 'Ulanish vaqti tugadi. Ikkala qurilmada ham bir xil tarmoqdan foydalaning.',
-			'companionRemote.pairing.sessionNotFound' => 'Qurilma topilmadi. PlezyNG xost qurilmada ishga tushirilganiga ishonch hosil qiling.',
+			'companionRemote.pairing.sessionNotFound' => 'Qurilma topilmadi. Pleazyng xost qurilmada ishga tushirilganiga ishonch hosil qiling.',
 			'companionRemote.pairing.authFailed' => 'Autentifikatsiya xatoligi.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Ulanib boʻlmadi: ${error}',
 			'companionRemote.pairing.codeTitle' => 'Code qadi',
@@ -7912,11 +7918,11 @@ extension on TranslationsUz {
 			'trakt.connected' => 'Ulandi',
 			'trakt.connectedAs' => ({required Object username}) => '@${username} sifatida ulandi',
 			'trakt.disconnectConfirm' => 'Trakt uzilsinmi?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG Trakt-ga maʼlumot yuborishni toʻxtatadi.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng Trakt-ga maʼlumot yuborishni toʻxtatadi.',
 			'trakt.scrobble' => 'Real vaqt rejimida kuzatish',
 			'trakt.scrobbleDescription' => 'Ijro paytida Trakt-ga maʼlumot yuborish.',
 			'trakt.watchedSync' => 'Koʻrish holatini sinxronlash',
-			'trakt.watchedSyncDescription' => 'PlezyNG-da belgilanganda Trakt-da ham belgilanadi.',
+			'trakt.watchedSyncDescription' => 'Pleazyng-da belgilanganda Trakt-da ham belgilanadi.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr ulash',
 			'seerr.serverUrl' => 'Server URL-i',
@@ -7929,7 +7935,7 @@ extension on TranslationsUz {
 			'seerr.noSignInMethods' => 'Ushbu Seerr qoʻllab-quvvatlanadigan kirish usulini taklif qilmaydi.',
 			'seerr.instance' => 'Instansiya',
 			'seerr.disconnectConfirm' => 'Seerr uzilsinmi?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.',
 			'seerr.request' => 'Soʻrov yuborish',
 			'seerr.request4k' => '4K soʻrov yuborish',
 			'seerr.seasons' => 'Mavsumlar',
@@ -7954,7 +7960,7 @@ extension on TranslationsUz {
 			'seerr.statusBlocklisted' => 'Bloklangan roʻyxatda',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => '${url} manziliga ulanib boʻlmadi: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => '${url} manzilida Seerr nusxasi yoʻq (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'Seerr oʻrniga autentifikatsiya qiluvchi teskari proksi (SSO yoki HTTP auth) javob berdi. PlezyNG uning orqali kira olmaydi: ushbu ilova uchun Seerrning /api/v1 yoʻli proksini aylanib oʻtishiga ruxsat bering yoki Seerrga toʻgʻridan-toʻgʻri yetadigan manzildan foydalaning.',
+			'seerr.behindAuthProxy' => 'Seerr oʻrniga autentifikatsiya qiluvchi teskari proksi (SSO yoki HTTP auth) javob berdi. Pleazyng uning orqali kira olmaydi: ushbu ilova uchun Seerrning /api/v1 yoʻli proksini aylanib oʻtishiga ruxsat bering yoki Seerrga toʻgʻridan-toʻgʻri yetadigan manzildan foydalaning.',
 			'seerr.invalidUrl' => 'Server manzilini kiriting, masalan: https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Bu Seerr nusxasi Tezkor ulanishni qoʻllab-quvvatlamaydi. Buning uchun Seerr 3.4 yoki undan yangi versiya kerak.',
 			'seerr.notInitialized' => 'Bu Seerr nusxasining dastlabki sozlamasi yakunlanmagan',
@@ -7975,7 +7981,7 @@ extension on TranslationsUz {
 			'services.scrobble' => 'Jarayonni avtomatik kuzatish',
 			'services.scrobbleDescription' => 'Epizod yoki filmni tugatganingizda roʻyxatingizni yangilash.',
 			'services.disconnectConfirm' => ({required Object service}) => '${service} uzilsinmi?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG ${service} yangilashni toʻxtatadi. Istalgan vaqtda qayta ulanishingiz mumkin.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng ${service} yangilashni toʻxtatadi. Istalgan vaqtda qayta ulanishingiz mumkin.',
 			'services.connectFailed' => ({required Object service}) => '${service} ulana olmadi. Qaytadan urinib koʻring.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7983,8 +7989,8 @@ extension on TranslationsUz {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Simkl-ni qayta ulash',
-			'services.simklReconnect.subtitle' => 'Simkl bu ulanishda ishlatiladigan kirish usulini toʻxtatmoqda. Qayta ulanganda PlezyNG-ni tasdiqlash uchun simkl.com ochiladi — PlezyNG parolingizni hech qachon koʻrmaydi. Tomosha tarixingiz Simkl-da saqlanib qoladi.',
-			'services.deviceCode.title' => ({required Object service}) => 'PlezyNG-ni ${service} xizmatida faollashtiring',
+			'services.simklReconnect.subtitle' => 'Simkl bu ulanishda ishlatiladigan kirish usulini toʻxtatmoqda. Qayta ulanganda Pleazyng-ni tasdiqlash uchun simkl.com ochiladi — Pleazyng parolingizni hech qachon koʻrmaydi. Tomosha tarixingiz Simkl-da saqlanib qoladi.',
+			'services.deviceCode.title' => ({required Object service}) => 'Pleazyng-ni ${service} xizmatida faollashtiring',
 			'services.deviceCode.instructions' => 'QR-kodni skanerlang yoki quyidagi manzilga oʻtib, bu kodni kiriting:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Faollashtirish uchun ${service} xizmatini oching',
 			'services.deviceCode.copyCode' => 'Faollashtirish kodini nusxalash',
@@ -8017,8 +8023,8 @@ extension on TranslationsUz {
 			'streaming.title' => 'Bulut va qo‘shimcha oqimlari',
 			'streaming.subtitle' => 'Bulutingizdagi fayllarni ko‘rish va qo‘llab-quvvatlanadigan oqimlarni ijro etish uchun Debrid hisobini ulang. Stremio bilan mos qo‘shimchalar film va epizod sahifalarida oqim tanlovlarini ko‘rsatadi. Ulanish ma’lumotlari ushbu qurilmada shifrlanib, ushbu profilda saqlanadi.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Ulangan manbalar: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG saqlangan oqim sozlamalarini ocholmadi. Ulanishlarni o‘zgartirishdan oldin qurilma qulfini ochib, qayta urinib ko‘ring.',
-			'streaming.settingsUnreadable' => 'PlezyNG bu saqlangan ulanishlarni ocholmadi. Xizmatlarni qayta ulash uchun ularni tozalang.',
+			'streaming.settingsLoadFailed' => 'Pleazyng saqlangan oqim sozlamalarini ocholmadi. Ulanishlarni o‘zgartirishdan oldin qurilma qulfini ochib, qayta urinib ko‘ring.',
+			'streaming.settingsUnreadable' => 'Pleazyng bu saqlangan ulanishlarni ocholmadi. Xizmatlarni qayta ulash uchun ularni tozalang.',
 			'streaming.clearUnreadableSettings' => 'Saqlangan sozlamalarni tozalash',
 			'streaming.clearUnreadableSettingsConfirm' => 'Saqlangan oqim sozlamalari tozalansinmi?',
 			'streaming.clearUnreadableSettingsBody' => 'Bu profildagi saqlangan barcha provayder hisoblari va qo‘shimcha manzillari o‘chiriladi. Bu amalni ortga qaytarib bo‘lmaydi.',
@@ -8030,11 +8036,11 @@ extension on TranslationsUz {
 			'streaming.catalogFiltersRequired' => 'Bu katalogni ko‘rish uchun kerakli filtrlarni tanlang.',
 			'streaming.catalogRequiredLabel' => 'Majburiy',
 			'streaming.importFromStremio' => 'Stremio’dan import qilish',
-			'streaming.stremioImportInstructions' => 'QR kodni skanerlang yoki havolani oching. Stremio’ga kiring va so‘rovni tasdiqlang. PlezyNG faqat qo‘shimchalar ro‘yxatini o‘qiydi; Stremio parolingizni so‘ramaydi va sozlamalarni o‘zgartirmaydi.',
+			'streaming.stremioImportInstructions' => 'QR kodni skanerlang yoki havolani oching. Stremio’ga kiring va so‘rovni tasdiqlang. Pleazyng faqat qo‘shimchalar ro‘yxatini o‘qiydi; Stremio parolingizni so‘ramaydi va sozlamalarni o‘zgartirmaydi.',
 			'streaming.stremioImportOpen' => 'Stremio havolasini ochish',
 			'streaming.stremioImportCode' => 'Ulanish kodi',
 			'streaming.stremioImportPreviewTitle' => 'Qo‘shimchalarni tanlang',
-			'streaming.stremioImportPreviewBody' => 'PlezyNG’ga ulamoqchi bo‘lgan qo‘shimchalarni tanlang. Bu import faqat HTTPS manzillarini qabul qiladi.',
+			'streaming.stremioImportPreviewBody' => 'Pleazyng’ga ulamoqchi bo‘lgan qo‘shimchalarni tanlang. Bu import faqat HTTPS manzillarini qabul qiladi.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Qo‘llab-quvvatlanmaydigan yoki xavfsiz bo‘lmagan manzillar sabab o‘tkazib yuborilgan qo‘shimchalar: ${count}.',
 			'streaming.stremioCatalogs' => 'Kataloglar',
 			'streaming.stremioStreams' => 'Oqimlar',
@@ -8048,7 +8054,7 @@ extension on TranslationsUz {
 			'streaming.addByManifestUrl' => 'Manifest URL orqali qo‘shish',
 			'streaming.addAddon' => 'Qo‘shimcha qo‘shish',
 			'streaming.manifestUrl' => 'Qo‘shimcha manifest URL’i',
-			'streaming.manifestUrlHint' => 'Qo‘shimchaning manifest URL’ini joylashtiring. Ulanishdan oldin PlezyNG katalog yoki oqim resurslarini qo‘llab-quvvatlashini tekshiradi.',
+			'streaming.manifestUrlHint' => 'Qo‘shimchaning manifest URL’ini joylashtiring. Ulanishdan oldin Pleazyng katalog yoki oqim resurslarini qo‘llab-quvvatlashini tekshiradi.',
 			'streaming.allowHttp' => 'Shifrlanmagan HTTP manziliga ruxsat berish',
 			'streaming.allowHttpDescription' => 'Buni faqat shaxsiy tarmog‘ingizdagi ishonchli qo‘shimcha uchun ishlating.',
 			'streaming.installAddon' => 'Qo‘shimchani ulash',
@@ -8056,20 +8062,20 @@ extension on TranslationsUz {
 			'streaming.addonRemoved' => 'Qo‘shimcha olib tashlandi',
 			'streaming.addonToggle' => 'Qo‘shimchani yoqish',
 			'streaming.addonEmpty' => 'Hali qo‘shimchalar ulanmagan',
-			'streaming.addonError' => 'PlezyNG bu qo‘shimchaga ulana olmadi. Manifest URL’ini tekshirib, qayta urinib ko‘ring.',
+			'streaming.addonError' => 'Pleazyng bu qo‘shimchaga ulana olmadi. Manifest URL’ini tekshirib, qayta urinib ko‘ring.',
 			'streaming.addonPrivacy' => 'Faqat ishonchli qo‘shimchalarni ulang. Qidiruvda qo‘shimcha siz izlayotgan nomni oladi va uchinchi tomon oqim havolalarini qaytarishi mumkin.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Real-Debrid hisobingiz orqali qo‘llab-quvvatlanadigan torrent oqimlarini ijro eting.',
 			'streaming.connectRealDebrid' => 'QR kod orqali ulash',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} nomi bilan ulandi',
-			'streaming.realDebridInstructions' => 'QR kodni skanerlang yoki havolani oching, so‘ng PlezyNG’ni ulash uchun faollashtirish kodini kiriting:',
+			'streaming.realDebridInstructions' => 'QR kodni skanerlang yoki havolani oching, so‘ng Pleazyng’ni ulash uchun faollashtirish kodini kiriting:',
 			'streaming.realDebridActivate' => 'Faollashtirish uchun Real-Debrid’ni ochish',
 			'streaming.realDebridCode' => 'Faollashtirish kodi',
 			'streaming.realDebridConnectFailed' => 'Real-Debrid’ga ulanib bo‘lmadi. Qayta urinib ko‘ring.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'AllDebrid hisobingiz orqali qo‘llab-quvvatlanadigan torrent oqimlarini ijro eting.',
 			'streaming.connectAllDebrid' => 'QR kod orqali ulash',
-			'streaming.allDebridInstructions' => 'PlezyNG’ga ruxsat berish uchun QR kodni skanerlang yoki havolani oching. Ulanish vaqtida bu ekranni ochiq qoldiring:',
+			'streaming.allDebridInstructions' => 'Pleazyng’ga ruxsat berish uchun QR kodni skanerlang yoki havolani oching. Ulanish vaqtida bu ekranni ochiq qoldiring:',
 			'streaming.allDebridActivate' => 'Faollashtirish uchun AllDebrid’ni ochish',
 			'streaming.allDebridCode' => 'Faollashtirish PIN-kodi',
 			'streaming.allDebridConnectFailed' => 'AllDebrid’ga ulanib bo‘lmadi. Qayta urinib ko‘ring.',
@@ -8080,13 +8086,13 @@ extension on TranslationsUz {
 			'streaming.connectApiKey' => 'API kaliti bilan ulash',
 			'streaming.apiKeyTitle' => ({required Object service}) => '${service}’ni ulash',
 			'streaming.apiKey' => 'API kaliti',
-			'streaming.apiKeyHint' => ({required Object service}) => '${service} hisob sozlamalaridan API kalitini joylashtiring. PlezyNG uni ushbu qurilmada shifrlab, profilda saqlaydi.',
+			'streaming.apiKeyHint' => ({required Object service}) => '${service} hisob sozlamalaridan API kalitini joylashtiring. Pleazyng uni ushbu qurilmada shifrlab, profilda saqlaydi.',
 			'streaming.apiKeyConnectFailed' => 'Bu API kalitini tekshirib bo‘lmadi. Tekshirib, qayta urinib ko‘ring.',
 			'streaming.accountConnected' => ({required Object username}) => '${username} nomi bilan ulandi',
 			'streaming.streamNeedsProvider' => 'Bu torrent oqimini ijro etish uchun Debrid xizmatini ulang.',
 			'streaming.playViaProvider' => 'Debrid orqali ijro etish',
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service}’dan uzilsinmi?',
-			'streaming.disconnectBody' => 'PlezyNG bu qurilma ruxsatini bekor qiladi. Provayderdagi fayllar va davom etayotgan uzatishlar o‘zgarmaydi.',
+			'streaming.disconnectBody' => 'Pleazyng bu qurilma ruxsatini bekor qiladi. Provayderdagi fayllar va davom etayotgan uzatishlar o‘zgarmaydi.',
 			'streaming.streamsTitle' => 'Oqimni tanlang',
 			'streaming.noStreams' => 'Bu nom uchun oqim topilmadi.',
 			'streaming.manageConnections' => 'Oqim xizmatlarini boshqarish',
@@ -8102,7 +8108,7 @@ extension on TranslationsUz {
 			'streaming.streamUnsupported' => 'Ilova ichidagi pleyer bu oqim formatini qo‘llab-quvvatlamaydi.',
 			'streaming.remoteNeedsEpisode' => 'Oqim qidirishdan oldin epizodni tanlang.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Bu epizodda mavsum yoki epizod raqami yo‘q.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG bu nom uchun IMDb yoki TMDB identifikatorini topmadi.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng bu nom uchun IMDb yoki TMDB identifikatorini topmadi.',
 			'streaming.watchWithServices' => 'Ulangan xizmatlar orqali tomosha qilish',
 			'streaming.chooseEpisode' => 'Epizod tanlash',
 			'streaming.episodes' => 'Epizodlar',
@@ -8188,15 +8194,15 @@ extension on TranslationsUz {
 			'notifications.newEpisodeTitle' => 'Yeni epizod',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => '7 günni bütün aktiviyatlardan özgürni qaytdan.',
-			'appAccess.description' => 'PlezyNG’ning barcha funksiyalaridan yetti kun bepul foydalanib ko‘ring. Sinov davrida to‘lov olinmaydi va obuna talab qilinmaydi. Sinovdan so‘ng do‘konda ko‘rsatilgan narxda bir marta xarid qilib, PlezyNG’dan cheksiz foydalanishingiz mumkin.',
-			'appAccess.trialEndedDescription' => 'Do‘konda ko‘rsatilgan narxda bir marta xarid qilib, PlezyNG’ning barcha funksiyalarini umrbod oching. Obuna talab qilinmaydi.',
+			'appAccess.description' => 'Pleazyng’ning barcha funksiyalaridan yetti kun bepul foydalanib ko‘ring. Sinov davrida to‘lov olinmaydi va obuna talab qilinmaydi. Sinovdan so‘ng do‘konda ko‘rsatilgan narxda bir marta xarid qilib, Pleazyng’dan cheksiz foydalanishingiz mumkin.',
+			'appAccess.trialEndedDescription' => 'Do‘konda ko‘rsatilgan narxda bir marta xarid qilib, Pleazyng’ning barcha funksiyalarini umrbod oching. Obuna talab qilinmaydi.',
 			'appAccess.startTrial' => '7 day free proving sizga qaytadi.',
 			'appAccess.trialActive' => '7 day full-feature proving siz aktivir.',
 			'appAccess.trialEnded' => '7 kunlik sinov muddati tugadi',
 			'appAccess.trialStartFailed' => 'Bu cihazda testini salmaydi. lütfen qaytarga.',
-			'appAccess.lifetimeTitle' => 'PlezyNG hayri boʻlu boʻlu',
-			'appAccess.lifetimeBody' => 'Rahmat! PlezyNG’ning barcha funksiyalaridan umrbod foydalanishingiz mumkin.',
-			'appAccess.manageTitle' => 'PlezyNG lifetime qasizga',
+			'appAccess.lifetimeTitle' => 'Pleazyng hayri boʻlu boʻlu',
+			'appAccess.lifetimeBody' => 'Rahmat! Pleazyng’ning barcha funksiyalaridan umrbod foydalanishingiz mumkin.',
+			'appAccess.manageTitle' => 'Pleazyng lifetime qasizga',
 			'appAccess.manageDescription' => '7 gün bu bütün funksiyalardan free-to-free, sonra sizga mağazadan bir payga o‘zayda o‘ziyada o‘zib.',
 			'appAccess.buy' => ({required Object price}) => 'Barcha funksiyalarni ${price} evaziga ochish',
 			'appAccess.loadingPrice' => 'Buqqqqga market market...',
@@ -8204,11 +8210,11 @@ extension on TranslationsUz {
 			'appAccess.restore' => 'Hayat bilan buyuj',
 			'appAccess.pending' => 'Siz qaplan o‘ziz o‘zib o‘zig o‘ziga o‘zige o‘zigi o‘zaga o‘zaya o‘zay o‘ziy o‘ziye o‘ziyan o‘zayn o‘zinc o‘zyan o‘zayan o‘zac o‘zinin o‘ziyar o‘zqan o‘zari o‘zani o‘zaman o‘zadan o‘zagan o‘zanc o‘z.',
 			'appAccess.storeUnavailable' => 'Siz bu mağazada abonlikliklik oluyiz. siz bu mağazadan abonliklik olayiz.',
-			'appAccess.productNotFound' => 'PlezyNG lifetime unlock bu mağazada yet o‘zayda olmaygan.',
+			'appAccess.productNotFound' => 'Pleazyng lifetime unlock bu mağazada yet o‘zayda olmaygan.',
 			'appAccess.productQueryFailed' => 'Do‘kondagi narxni yuklab bo‘lmadi. Ulanishingizni tekshirib, qayta urinib ko‘ring.',
 			'appAccess.purchaseFailed' => 'Bu qotomiyadi ko‘zadi. qaytarga ko‘z.',
 			'appAccess.restoreFailed' => 'Sizga buyni qaytarga qotʻyadi. qaytarga qaytarga.',
-			'appAccess.nothingToRestore' => 'No PlezyNG lifetime buy bu mağazalar hesab için bulgan.',
+			'appAccess.nothingToRestore' => 'No Pleazyng lifetime buy bu mağazalar hesab için bulgan.',
 			'detail.endsAt' => ({required Object time}) => 'Tugash vaqti: ${time}',
 			'watchLink.serverUnavailable' => 'Bu link için bir server Plex qothathathathatdi.',
 			'watchLink.notFound' => 'Bu serial yoki film Plex serverlaringizda topilmadi.',
@@ -8222,8 +8228,8 @@ extension on TranslationsUz {
 			'watchLink.copy' => 'Kopi',
 			'watchLink.copied' => 'Link koʻpadi',
 			'homeLayout.title' => 'Bosh sahifa tartibi',
-			'homeLayout.resetToast' => 'Bosh sahifa asl Plezy joylashuviga qaytarildi',
-			'homeLayout.resetHeroTitle' => 'Asosiy ko‘rinish asl Plezy holatiga qaytarilsinmi?',
+			'homeLayout.resetToast' => 'Bosh sahifa asl Pleazyng joylashuviga qaytarildi',
+			'homeLayout.resetHeroTitle' => 'Asosiy ko‘rinish asl Pleazyng holatiga qaytarilsinmi?',
 			'homeLayout.resetHeroBody' => 'Herradi\'nin kahraman ayatlar bo\'yadi, bir-rondaylar bo\'ya qaytarga, Home\'nin topta, o\'yadi\'nin önizdan bo\'yadlar.',
 			'homeLayout.removeRowTitle' => 'Home Riyadh bilan bilan bilan?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} o‘chiriladi. Bu amalni ortga qaytarib bo‘lmaydi.',
@@ -8233,7 +8239,7 @@ extension on TranslationsUz {
 			'homeLayout.syncAccountOff' => 'Bu sistemimiz, bu sistemimiz öz layoutini tutmayır.',
 			'homeLayout.syncNow' => 'Sinkni',
 			'homeLayout.plexHomeManager' => 'Plex Home menaxer',
-			'homeLayout.managePlexRows' => 'Plex ruzlar Plezy\'da qotlarlar.',
+			'homeLayout.managePlexRows' => 'Plex ruzlar Pleazyng\'da qotlarlar.',
 			'homeLayout.managePlexRowsDescription' => 'U\'ziziziziz qiziziziyizizizimizizizizimiziziz',
 			'homeLayout.organizeHomeRows' => 'Home Riyadhlar',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} ruzlar: Moving, Hero, Auto-slide, xifida',
@@ -8303,7 +8309,7 @@ extension on TranslationsUz {
 			'homeLayout.organizeRowsHint' => 'Seçim (o hallar) Seçim: ta\'yadi · Sa\'yadi/sa\'yadi: riyadi seçim · Riyadi: ta\'ya qaytadi',
 			'homeLayout.layoutNavDescription' => 'Siz, librarlar, kategoriyalar seçin',
 			'homeLayout.editHomeRow' => 'Edit Home Row',
-			'homeLayout.resetHeroButton' => 'Asosiy banner tartibini Plezy standartiga qaytarish',
+			'homeLayout.resetHeroButton' => 'Asosiy banner tartibini Pleazyng standartiga qaytarish',
 			'homeLayout.reorderingUnlocked' => 'Yenni qaytadi',
 			'homeLayout.reorderingLocked' => 'Tadiqlar kiladi',
 			'homeLayout.rowsCanBeDragged' => 'Tadiqlar qurtlar qurtlanga — bu qurtlardan qurtlanmdan qurtlar.',
@@ -8320,13 +8326,13 @@ extension on TranslationsUz {
 			'homeLayout.tapHeroCardDescription' => 'Bir Hero card\'u tapat o‘t seçib, playback başlar ya da detaylar qotʻi.',
 			'homeLayout.heroTapPlayDescription' => 'Siz seçiliyiz o‘zadan başlar.',
 			'homeLayout.heroTapDetailsDescription' => 'Siz seçkin elementin detayları seçilmizdan əvvəl bir aktivasyon seçtimiz.',
-			'platform.localNetworkPermission' => 'PlezyNG sizga lokal network sizga media serveri və playback cihazlara bağlanır.',
-			'platform.locationPermission' => 'Mahalliy tarmoqni aniqlash va media serverlaringizga ulanish uchun iOS talab qilganida, PlezyNG joylashuv ma’lumotlaridan foydalanish ruxsatidan foydalanadi.',
+			'platform.localNetworkPermission' => 'Pleazyng sizga lokal network sizga media serveri və playback cihazlara bağlanır.',
+			'platform.locationPermission' => 'Mahalliy tarmoqni aniqlash va media serverlaringizga ulanish uchun iOS talab qilganida, Pleazyng joylashuv ma’lumotlaridan foydalanish ruxsatidan foydalanadi.',
 			'platform.photoLibraryPermission' => 'Media muqovasi sifatida ishlatish uchun foto kutubxonangizdan rasmlarni tanlang.',
 			'platform.cameraPermission' => 'Companion Remote pultini ulash uchun QR kodlarini skanerlang.',
 			'universalMedia.title' => 'Open media',
 			'universalMedia.shortcutHelp' => 'Bir linki, playlist, ya da fildi bu seanslar üçün oynay.',
-			'universalMedia.intro' => 'Bir link, playlist, o‘fili. Playback PlezyNG\'nin standart oynatıcını kullanır ve librariyizga istorik qoşmaz.',
+			'universalMedia.intro' => 'Bir link, playlist, o‘fili. Playback Pleazyng\'nin standart oynatıcını kullanır ve librariyizga istorik qoşmaz.',
 			'universalMedia.openWhat' => 'Siz o‘zʻqʻqqʻʻqō qʻq?',
 			'universalMedia.stream' => 'Adresi',
 			'universalMedia.playlist' => 'Playlist',
@@ -8383,7 +8389,7 @@ extension on TranslationsUz {
 			'universalMedia.uploadSelected' => 'Seçkin fillar qaytadi',
 			'universalMedia.uploadSelectFirst' => 'Bir o‘zari fillar ilk seçin.',
 			'universalMedia.uploading' => 'Tadiya',
-			'universalMedia.uploadComplete' => 'Filmi PlezyNG\'i qaytadi.',
+			'universalMedia.uploadComplete' => 'Filmi Pleazyng\'i qaytadi.',
 			'universalMedia.uploadFailed' => 'Fildi ko‘yadi. Bu sayid o\'yadi, qaytmayga koʻyadi!',
 			'universalMedia.liveCue' => 'Live',
 			'universalMedia.liveSession' => 'Live Stream',
@@ -8411,7 +8417,7 @@ extension on TranslationsUz {
 			'universalMedia.recordingActive' => 'Playback o‘yadi. playback o’yadi ko‘yaddi.',
 			'universalMedia.recordingFormatHelp' => 'Video, MKV o MPEG-TS. Audio, MKA o MKV seçin.',
 			'universalMedia.replaceRecordingTitle' => 'Bu filmini qaytadi?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG kaymazda mevcut dosyaya geri qaytadi. Yeni kaymazga kaymazmazsa, Plezy NG kaymazdan geri qaytarır.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng kaymazda mevcut dosyaya geri qaytadi. Yeni kaymazga kaymazmazsa, Pleazyng NG kaymazdan geri qaytarır.',
 			'universalMedia.replaceRecording' => 'Filmi qaytadi',
 			'universalMedia.discHelp' => 'Bu kompüteri\'nin optikal diskda bir disk o‘yadi. Siz da Device fillardan bir ISO image o’yadi olabildi.',
 			'universalMedia.discs' => 'Optik diski',
@@ -8436,7 +8442,7 @@ extension on TranslationsUz {
 			'universalMedia.converterUnsupportedInput' => 'Bir audio o video fildi seçin.',
 			'universalMedia.converterLocalOnly' => 'Siz seçkin dosyadi lokal bir cihaz yolu olarak kullanılmaz.',
 			'universalMedia.converterReplaceTitle' => 'Bu fildi qaytadi?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG bilan faili qaytadi, konverti o\'qizga saladi.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng bilan faili qaytadi, konverti o\'qizga saladi.',
 			'universalMedia.converterStarting' => 'U’qmqga qaytadi...',
 			'universalMedia.converterProgress' => 'Bu kompüterga qaytadi...',
 			'universalMedia.converterComplete' => 'Konveksiyiz. yeni dosay hazırdır.',
@@ -8460,7 +8466,7 @@ extension on TranslationsUz {
 			'universalMedia.captureDefaultAudio' => 'Sa\'qizga audio input',
 			'universalMedia.captureWaylandHelp' => 'Wayland bu XWayland yakthadi X display. XWayland\'dan başqa Windows\'lar görünməz.',
 			'universalMedia.captureFrameRate' => 'Rekording Frame Rata',
-			'universalMedia.capturePrivacy' => 'Rekording yalnız seçti va\'yadi. Mikrofoni rekording is opsional. PlezyNG rekording ko‘yadi.',
+			'universalMedia.capturePrivacy' => 'Rekording yalnız seçti va\'yadi. Mikrofoni rekording is opsional. Pleazyng rekording ko‘yadi.',
 			'universalMedia.captureSaveAs' => 'Screen recording o‘zadi.',
 			'universalMedia.captureExtensionMismatch' => '.mp4\'da bir filenamini seçin.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg o H.264 video koder o‘zayda olmaygan. FFmpeg bo‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda ko‘zayda.',
@@ -8474,7 +8480,7 @@ extension on TranslationsUz {
 			'universalMedia.captureStop' => 'U‘zadi, saladi',
 			'universalMedia.captureMode' => 'Tadiq',
 			'universalMedia.shareMode' => 'Tadiq',
-			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. PlezyNG creates a temporary HLS stream.',
+			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
 			'universalMedia.sharePrivacy' => 'Sizga lokal network olan kim o‘zib privay linki o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o‘zib o',
 			'universalMedia.shareChooseFile' => 'Media fildi seçin',
 			'universalMedia.shareChooseHelp' => 'Bir lokal audio o video fildi seçin. Fildi bu kompüterda kalmay.',
@@ -8487,7 +8493,7 @@ extension on TranslationsUz {
 			'universalMedia.shareOpenUrl' => 'Bu adresi bir player-da diğer cihazda açılır.',
 			'universalMedia.shareQrLabel' => 'QR kodlar bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan',
 			'universalMedia.shareQrHelp' => 'Scanga, uyumlu bir oynatıcı, aynı privay networkga bağlanır.',
-			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.',
+			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.',
 			'universalMedia.shareCopyUrl' => 'Riyadh adresi kopyadi',
 			'universalMedia.shareExpiresLabel' => 'Link bilan boʻyadi',
 			'universalMedia.shareStarting' => 'U\'qotga bilan hazırlan...',
@@ -8512,7 +8518,7 @@ extension on TranslationsUz {
 			'universalMedia.extensionInstall' => 'Servisni',
 			'universalMedia.extensionReplace' => 'Update servis',
 			'universalMedia.extensionRemoveTitle' => 'Bu search service\'i qaytadi?',
-			'universalMedia.extensionRemoveHelp' => 'Bu bu profili‘dan servisini siltir. PlezyNG qurtlanga qurtlanga qurtlanga.',
+			'universalMedia.extensionRemoveHelp' => 'Bu bu profili‘dan servisini siltir. Pleazyng qurtlanga qurtlanga qurtlanga.',
 			'universalMedia.extensionRemove' => 'Servisi qaytadi',
 			'universalMedia.extensionInvalidManifest' => 'This file is not a supported extension manifest. See the Open media guide for the format.',
 			'universalMedia.extensionSaveFailed' => 'Bu aktiv profili bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan bilan.',
@@ -8655,12 +8661,12 @@ extension on TranslationsUz {
 			'fileSources.none' => 'U‘yadi',
 			'fileSources.fullscreen' => 'Ekran',
 			'fileSources.syncLocation' => 'Progress sync folder (iziziz)',
-			'fileSources.syncLocationHint' => 'PlezyNG holati uchun alohida WebDAV jildi. Shartli yozishdan foydalaniladi; mediafayllar o‘zgarmaydi.',
+			'fileSources.syncLocationHint' => 'Pleazyng holati uchun alohida WebDAV jildi. Shartli yozishdan foydalaniladi; mediafayllar o‘zgarmaydi.',
 			'fileSources.audiobooks' => 'Audiobotlar',
 			'fileSources.comics' => 'Komikslar',
 			'fileSources.scan' => 'Scanlar kitablar və mediyalar',
 			'fileSources.browserReader' => 'Open lugadi',
-			'fileSources.browserReaderHelp' => 'O‘qish oynasi brauzeringizda ochiq. O‘qish joyi va qaydlaringiz saqlanishi uchun PlezyNG’ni ochiq qoldiring.',
+			'fileSources.browserReaderHelp' => 'O‘qish oynasi brauzeringizda ochiq. O‘qish joyi va qaydlaringiz saqlanishi uchun Pleazyng’ni ochiq qoldiring.',
 			'fileSources.on' => 'Yoqilgan',
 			'fileSources.advancedSetup' => 'App Registration',
 			'fileSources.microsoftSignIn' => 'Microsoftga abonni.',
@@ -8701,7 +8707,7 @@ extension on TranslationsUz {
 			'fileSources.importInterrupted' => 'Importi boʻyadi · qaytadi boʻya',
 			'fileSources.errorQuotaExceeded' => 'Oflayn xotira limiti tugadi. Limitni oshiring yoki yuklab olingan nusxani o‘chiring.',
 			'fileSources.errorStorageLow' => 'U\'qotlar bo‘yadi bu koroza korozyon bo’yadi.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG free device storage koʻshaydi, bu yüzden yazma bo‘zadi.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng free device storage koʻshaydi, bu yüzden yazma bo‘zadi.',
 			'fileSources.removeDownloadJob' => 'Download bilan',
 			'fileSources.downloadAlreadyComplete' => 'This download is finished before it could be removed. Item kini offline o‘yadi.',
 			'fileSources.confirmRemoveDownloadJob' => 'Bu download o‘yadi ko’yadi, bu download o\'yadi yadi. – Siz o‘ya ko‘yad, siz o’yad ko‘ya.',
@@ -8742,7 +8748,7 @@ extension on TranslationsUz {
 			'lending.openLibraryNote' => 'Open Library\'nin katalogi va\'qlar. Read and borrilik seçenekler hər bir titilinin sayadi.',
 			'lending.more' => 'Yatadi',
 			'lending.gateway' => 'Librariyadi-sign-in servis',
-			'lending.gatewayHint' => 'Siz librariyiz o‘yibib o‘yiba PlezyNG administrator.',
+			'lending.gatewayHint' => 'Siz librariyiz o‘yibib o‘yiba Pleazyng administrator.',
 			'lending.advanced' => 'Librariya integrasyon',
 			'lending.loadLibraries' => 'Librari sizni seçin',
 			'lending.expired' => 'Bu borga bilan bilan bo‘zadi.',
@@ -8864,7 +8870,7 @@ extension on TranslationsUz {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytidan API kalitini oling. Qidiruv video nomi va mavjud IMDb/TMDB ID-larini yuboradi, video faylini esa hech qachon yubormaydi. Kalit va ixtiyoriy hisobga kirish ma’lumotlari ushbu manba bilan birga shifrlanadi.',
 			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metama’lumotlari',
 			'sourceSetup.metadataPrivacy' => 'Faqat fayl nomidagi nom/yil va qism raqamlari yoki NFO ID-sini yuboradi; media fayllari yoki kirish ma’lumotlarini hech qachon yubormaydi. NFO maydonlari ustuvor bo‘lib qoladi.',
-			'sourceSetup.nfsEncryptionFailure' => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. PlezyNG bu ulanishni shifrlashsiz qayta sinamaydi.',
+			'sourceSetup.nfsEncryptionFailure' => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. Pleazyng bu ulanishni shifrlashsiz qayta sinamaydi.',
 			'sourceSetup.sourceConnecting' => 'Manbaga ulanmoqda',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu nom qidiruvi Trakt xizmatiga yuboriladi. Kiritgan nomingiz yuboriladi, video yoki manbaning kirish ma’lumotlari emas.',
 			'sourceSetup.chooseMatch' => 'Mos natijani tanlash',
@@ -8994,7 +9000,13 @@ extension on TranslationsUz {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Bu Plezy havolasi yaroqsiz.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'Bu Pleazyng havolasi yaroqsiz.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => '“${profile}” profiliga mos profil topilmadi.',
 			'deepLinks.serverUnavailable' => 'Bu havola uchun serverga ulanib bo‘lmadi.',
 			'deepLinks.notFound' => 'Bu nom kutubxonalaringizdan topilmadi.',
@@ -9142,7 +9154,7 @@ extension on TranslationsUz {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

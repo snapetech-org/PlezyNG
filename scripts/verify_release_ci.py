@@ -30,7 +30,7 @@ def _request_json(url: str, token: str) -> dict:
         headers={
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {token}",
-            "User-Agent": "PlezyNG-release-ci-gate",
+            "User-Agent": "Pleazyng-release-ci-gate",
             "X-GitHub-Api-Version": "2022-11-28",
         },
     )

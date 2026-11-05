@@ -13,7 +13,7 @@ import '../app_icon.dart';
 import 'visualizer_preset_browser.dart';
 
 /// In-app entry point for license-cleared pack downloads and user-owned imports.
-/// Link-only historical collections are never rehosted by PlezyNG.
+/// Link-only historical collections are never rehosted by Pleazyng.
 class VisualizerLibrarySheet extends StatefulWidget {
   const VisualizerLibrarySheet({
     super.key,

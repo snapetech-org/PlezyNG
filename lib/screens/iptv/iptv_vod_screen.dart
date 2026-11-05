@@ -20,7 +20,7 @@ import '../sources/source_player_screen.dart';
 
 /// Xtream and Dispatcharr VOD is a catalog view inside Live TV. Playback is
 /// handed to the shared source player so audio, subtitles, and native player
-/// capabilities stay consistent with the rest of PlezyNG.
+/// capabilities stay consistent with the rest of Pleazyng.
 class IptvVodScreen extends StatefulWidget {
   const IptvVodScreen({super.key, required this.profileId});
   final String profileId;

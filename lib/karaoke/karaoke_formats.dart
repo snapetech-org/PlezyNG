@@ -1,5 +1,7 @@
 import 'dart:math' as math;
+
 import 'package:xml/xml.dart';
+
 import '../media/lyrics.dart';
 import '../utils/lrc_parser.dart';
 import 'karaoke_models.dart';

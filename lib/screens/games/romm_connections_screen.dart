@@ -1,11 +1,15 @@
 import '../../widgets/app_icon.dart';
+
 import 'package:material_symbols_icons/symbols.dart';
+
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../focus/focusable_text_field.dart';
 import '../../games/romm/romm_client.dart';
 import '../../games/romm/romm_controller.dart';
@@ -174,7 +178,7 @@ class _RommPairDialogState extends State<RommPairDialog> {
       } else {
         final api = _pairClient = RommClient(base);
         final identifier = 'plezy:${sha256.convert(utf8.encode('${widget.controller.profileId}:$base'))}';
-        final result = await api.startPairing(identifier, _name.text.trim().isEmpty ? 'PlezyNG' : _name.text.trim());
+        final result = await api.startPairing(identifier, _name.text.trim().isEmpty ? 'Pleazyng' : _name.text.trim());
         if (!_live(epoch)) {
           return;
         }

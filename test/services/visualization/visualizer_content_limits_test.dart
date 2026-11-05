@@ -66,6 +66,8 @@ void main() {
       );
     }
     expect(() => VisualizerContentLimits.imagePixels('.png', Uint8List(4)), throwsFormatException);
+    // Dimension headers alone must not bypass the complete chunk walk.
+    expect(() => VisualizerContentLimits.imagePixels('.png', pngHeader(16, 16).sublist(0, 33)), throwsFormatException);
   });
 
   test('JPEG segment lengths cannot skip beyond the bounded input', () {

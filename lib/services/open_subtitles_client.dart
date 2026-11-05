@@ -30,7 +30,7 @@ class OpenSubtitlesClient {
       _transport = transport ?? SourceTransport();
 
   static final Uri _api = Uri.https('api.opensubtitles.com', '/api/v1');
-  static const _userAgent = 'PlezyNG/1.0.0';
+  static const _userAgent = 'Pleazyng/1.0.0';
   final String _apiKey;
   final String? username;
   final String? password;

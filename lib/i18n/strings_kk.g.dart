@@ -122,7 +122,7 @@ class _Translations$app$kk extends Translations$app$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class _Translations$appIcon$kk extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Әдепкі';
 	@override String get current => 'Ағымдағы белгіше';
 	@override String get locked => 'Жүзілік қабығылық қабығы';
-	@override String get lockedHint => 'Басқа белгішелерді пайдалану үшін 7 күндік сынақ мерзімін бастаңыз немесе PlezyNG-ге өмірлік қолжетімділікті сатып алыңыз.';
+	@override String get lockedHint => 'Басқа белгішелерді пайдалану үшін 7 күндік сынақ мерзімін бастаңыз немесе Pleazyng-ге өмірлік қолжетімділікті сатып алыңыз.';
 	@override String get changeFailed => 'Қолданба белгішесін өзгерту мүмкін болмады';
-	@override String get launcherHint => 'PlezyNG-ден шыққаннан кейін жаңа белгіше басты экранда пайда болады.';
-	@override String get tvLauncherHint => 'PlezyNG-ден шыққаннан кейін жаңа баннер пайда болады. Android TV теледидар қайта іске қосылғанша ескісін көрсете беруі мүмкін.';
+	@override String get launcherHint => 'Pleazyng-ден шыққаннан кейін жаңа белгіше басты экранда пайда болады.';
+	@override String get tvLauncherHint => 'Pleazyng-ден шыққаннан кейін жаңа баннер пайда болады. Android TV теледидар қайта іске қосылғанша ескісін көрсете беруі мүмкін.';
 	@override late final _Translations$appIcon$names$kk names = _Translations$appIcon$names$kk._(_root);
 	@override String get description => 'Қаланың тұрақты тұрғындарының саны 1 адамды құрайды.';
 }
@@ -166,7 +166,7 @@ class _Translations$auth$kk extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Растау күтілуде…';
 	@override String get quickConnectCancel => 'Бас тарту';
 	@override String get quickConnectExpired => 'Жылдам қосылу мерзімі өтті. Қайтадан байқап көріңіз.';
-	@override String get localDataRecoveryRequired => 'PlezyNG жергілікті кіру деректерін және өңдеуді күтіп тұрған ойнату деректерін қауіпсіз қалпына келтіре алмады. Қайта кіріңіз.';
+	@override String get localDataRecoveryRequired => 'Pleazyng жергілікті кіру деректерін және өңдеуді күтіп тұрған ойнату деректерін қауіпсіз қалпына келтіре алмады. Қайта кіріңіз.';
 	@override String get pinCheckRejected => 'Plex PIN кодын тексеру қабылданбады';
 	@override String get connectToDirectPlex => 'Қаланың тұрақты тұрғындарының саны Plex';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$kk extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Баптаулар';
-	@override String get supportDeveloper => 'PlezyNG жобасын қолдау';
+	@override String get supportDeveloper => 'Pleazyng жобасын қолдау';
 	@override String get supportDeveloperDescription => 'Әзірлеуді қолдау үшін қайырымдылық жасаңыз';
-	@override String get lifetimeAccess => 'PlezyNG жылдық қабығы';
+	@override String get lifetimeAccess => 'Pleazyng жылдық қабығы';
 	@override String get language => 'Тіл';
 	@override String get theme => 'Тақырып';
 	@override String get appearance => 'Сыртқы келбеті';
@@ -353,7 +353,7 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'Медіалық библиотекасы бар.';
 	@override String get contentScreensaverDismissHint => 'Қандай-ақ, қанақтардан немесе қанақтатын';
 	@override String get newEpisodeNotifications => 'Есімде-ақ жаңалықтары';
-	@override String get newEpisodeNotificationsDescription => 'Барлық бөлімін көріп болған сериалыңызға жаңа бөлім қосылғанда хабарлау. Plezy ашық болғанда тексеріледі.';
+	@override String get newEpisodeNotificationsDescription => 'Барлық бөлімін көріп болған сериалыңызға жаңа бөлім қосылғанда хабарлау. Pleazyng ашық болғанда тексеріледі.';
 	@override String get continueWatchingRowSize => 'Өздіктер өңдеуге қараңыз';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} карточкалар';
 	@override String get rowSizeCompact => 'Тығыз';
@@ -484,7 +484,7 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Параметрлерді файлдан қалпына келтіріңіз';
 	@override String get importSettingsConfirm => 'Бұл ағымдағы баптауларыңыздың үстінен жазады. Жалғастырасыз ба?';
 	@override String get importSettingsSuccess => 'Баптаулар импортталды';
-	@override String get importSettingsInvalidFile => 'Бұл файл дұрыс PlezyNG баптаулар файлы емес';
+	@override String get importSettingsInvalidFile => 'Бұл файл дұрыс Pleazyng баптаулар файлы емес';
 	@override String get importSettingsNoUser => 'Баптауларды импорттау алдында жүйеге кіріңіз';
 	@override String get cloudBackup => 'Ауыздылық Cloud';
 	@override String get cloudBackupDescription => 'Тасымалданатын параметрлердің сақтық көшірмесін HTTPS арқылы WebDAV мекенжайына сақтаңыз. Сервер қосылымдары мен тіркелгі деректері осы құрылғыда қалады.';
@@ -666,7 +666,7 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get forceTvMode => 'TV режимін мәжбүрлеу';
 	@override String get forceTvModeDescription => 'TV интерфейсін мәжбүрлеу. Автоматты түрде анықталмайтын құрылғылар үшін. Қайта іске қосу қажет.';
 	@override String get startInFullscreen => 'Толық экранда бастау';
-	@override String get startInFullscreenDescription => 'PlezyNG-ді ашқанда толық экран режимінде ашу';
+	@override String get startInFullscreenDescription => 'Pleazyng-ді ашқанда толық экран режимінде ашу';
 	@override String get exitFullscreenOnPlayerClose => 'Ойнатқыш жабылғанда толық экраннан шығу';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Видео ойнатқышты жапқанда автоматты түрде толық экраннан шығу';
 	@override String get autoHidePerformanceOverlay => 'Өнімділік панелін авто-жасыру';
@@ -722,7 +722,7 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Барлық жерде';
 	@override String get playerScopeLibrary => 'Кітапхана бойынша';
 	@override String get playerScopeTitle => 'Сериал немесе фильм бойынша';
-	@override String get exportDialogTitle => 'PlezyNG параметрлерін экспорттау';
+	@override String get exportDialogTitle => 'Pleazyng параметрлерін экспорттау';
 	@override String get followSystem => 'Жүйе тіліне сай';
 	@override String get followAppLanguage => 'Интерфейс тілімен бірдей';
 	@override String get regionFormat => 'Аймақтық пішімдер';
@@ -1049,8 +1049,8 @@ class _Translations$mediaMenu$kk extends Translations$mediaMenu$en {
 		one: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, ол да өшіріледі:',
 		other: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, олар да өшіріледі:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG қандай файлдар өшірілетінін тексере алмады, сондықтан ол жоғарыда аталған элементтен артық өшіруі мүмкін. Бас тартып, қайталап көріңіз немесе бәрібір өшіріңіз.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Серверіңіз бұл элемент үшін файл мәліметтерін ұсынбады, сондықтан PlezyNG қандай файлдар өшірілетінін тексере алмайды. Ол жоғарыда аталған элементтен артық өшіруі мүмкін.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng қандай файлдар өшірілетінін тексере алмады, сондықтан ол жоғарыда аталған элементтен артық өшіруі мүмкін. Бас тартып, қайталап көріңіз немесе бәрібір өшіріңіз.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Серверіңіз бұл элемент үшін файл мәліметтерін ұсынбады, сондықтан Pleazyng қандай файлдар өшірілетінін тексере алмайды. Ол жоғарыда аталған элементтен артық өшіруі мүмкін.';
 	@override String get mediaDeletedSuccessfully => 'Медиа элементі сәтті өшірілді';
 	@override String get mediaFailedToDelete => 'Медиа элементін өшіру мүмкін болмады';
 	@override String get rate => 'Бағалау';
@@ -1118,7 +1118,7 @@ class _Translations$accessibility$kk extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'РГБ';
 	@override String get title => 'Доступдық';
 	@override String get summary => 'Текстос, контраст, рух және контролер';
-	@override String get systemHint => 'Бұл үшін сіздің қосыласы бар, сіздің қосуға дейін қосылы бар. Бұл опциясы PlezyNG жылы қосылыңыз.';
+	@override String get systemHint => 'Бұл үшін сіздің қосыласы бар, сіздің қосуға дейін қосылы бар. Бұл опциясы Pleazyng жылы қосылыңыз.';
 	@override String get readability => 'Жүктесі және қанағат';
 	@override String get textSize => 'текстірлік қағидалар';
 	@override String get preview => 'Өзі сүйікті жары, балалары, балалары мен балалары мен жары.';
@@ -1459,7 +1459,7 @@ class _Translations$profiles$kk extends Translations$profiles$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'PlezyNG профилін қосу';
+	@override String get addPlezyProfile => 'Pleazyng профилін қосу';
 	@override String get switchingProfile => 'Профильді ауыстыру…';
 	@override String get deleteThisProfileTitle => 'Осы профиль өшірілсін бе?';
 	@override String deleteThisProfileMessage({required Object displayName}) => '${displayName} өшіріледі. Қосылымдарға әсер етпейді.';
@@ -1550,7 +1550,7 @@ class _Translations$connections$kk extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} сервер бұл тіркелгіге кіруден бас тартты';
 	@override String get signInAgain => 'Қайтадан кіру';
 	@override String editMediaBrowserTitle({required Object product}) => '${product} қосылымын өңдеу';
-	@override String editMediaBrowserIntro({required Object serverName}) => '${serverName} үшін URL мекенжайларды қосыңыз немесе өшіріңіз. PlezyNG ең төмен кідірісі бар қолжетімді URL мекенжайды пайдаланады.';
+	@override String editMediaBrowserIntro({required Object serverName}) => '${serverName} үшін URL мекенжайларды қосыңыз немесе өшіріңіз. Pleazyng ең төмен кідірісі бар қолжетімді URL мекенжайды пайдаланады.';
 }
 
 // Path: accountPreferences
@@ -1564,7 +1564,7 @@ class _Translations$accountPreferences$kk extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => '${account} тіркелгісінде сақталған аудио, субтитр және кітапхана баптаулары';
 	@override String hubSubtitleMultiple({required Object count}) => '${count} тіркелгіде сақталған аудио, субтитр және кітапхана баптаулары';
 	@override String get pickAccount => 'Әр тіркелгі өз баптауларын сақтайды. Өңдеу үшін біреуін таңдаңыз.';
-	@override String get storedOnAccount => 'Бұл баптаулар тіркелгінің өзінде сақталады, сондықтан оған кірген әрбір қолданба оларды пайдаланады — басқа құрылғыларыңыздағы PlezyNG қоса.';
+	@override String get storedOnAccount => 'Бұл баптаулар тіркелгінің өзінде сақталады, сондықтан оған кірген әрбір қолданба оларды пайдаланады — басқа құрылғыларыңыздағы Pleazyng қоса.';
 	@override String get noAccounts => 'Баптауға тіркелгілер жоқ';
 	@override String get noAccountsHint => 'Plex-ке кіріңіз немесе Jellyfin не Emby серверін қосыңыз, сонда сол тіркелгіде сақталған баптаулар осында көрсетіледі.';
 	@override String get unavailable => 'Бұл тіркелгіге қол жеткізу мүмкін емес';
@@ -1792,9 +1792,9 @@ class _Translations$startup$kk extends Translations$startup$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG іске қосылмады';
+	@override String get failedTitle => 'Pleazyng іске қосылмады';
 	@override String get failedBody => 'Іске қосу кезінде қате орын алды. Төмендегі мәліметтер ненің сәтсіз аяқталғанын көрсетеді.';
-	@override String get failedBodyRepairable => 'PlezyNG сақталған баптаулар файлы зақымдалған және PlezyNG іске қосылмас бұрын оны қайта құру қажет. Қайталау көмектеспейді — «Сақтауды қалпына келтіру» тармағын таңдаңыз.';
+	@override String get failedBodyRepairable => 'Pleazyng сақталған баптаулар файлы зақымдалған және Pleazyng іске қосылмас бұрын оны қайта құру қажет. Қайталау көмектеспейді — «Сақтауды қалпына келтіру» тармағын таңдаңыз.';
 	@override String get phaseLabel => 'Қадам';
 	@override String get showDetails => 'Мәліметтерді көрсету';
 	@override String get hideDetails => 'Мәліметтерді жасыру';
@@ -1803,16 +1803,16 @@ class _Translations$startup$kk extends Translations$startup$en {
 	@override String get uploadDetails => 'Мәліметтерді жүктеп жіберу';
 	@override String get repairStorage => 'Сақтауды қалпына келтіру';
 	@override String get repairTitle => 'Сақталған деректер қалпына келтірілсін бе?';
-	@override String get repairBodyCommon => 'PlezyNG баптаулар файлы зақымдалған және оқылмайды. Қалпына келтіру барлық баптауды әдепкі мәнге қайтарады.';
+	@override String get repairBodyCommon => 'Pleazyng баптаулар файлы зақымдалған және оқылмайды. Қалпына келтіру барлық баптауды әдепкі мәнге қайтарады.';
 	@override String get repairBodyOneCredential => 'Бір сақталған кіру деректері зақымдалған және оқылмайды. Қалпына келтіру тек соны өшіреді; қалған баптауларыңызға тиіспейді.';
 	@override String get repairBodySignInsKept => 'Серверлеріңіз бен профильдеріңіз кірген күйінде қалады.';
 	@override String get repairBodySignInsLost => 'Сақталған кіру деректерін қорғайтын кілт осы файлдан қалпына келтірілмейді, сондықтан әрбір сервер мен профильге қайта кіруге тура келеді. Медиа серверіңіздегі ештеңеге әсер етілмейді.';
-	@override String get repairBodySessionsUncertain => 'Tracker-лар (MAL, AniList, Simkl, Trakt) және Seerr бөлек сақталады және сақталуы да, сақталмауы да мүмкін. PlezyNG не сақталғанын нақты айтады.';
+	@override String get repairBodySessionsUncertain => 'Tracker-лар (MAL, AniList, Simkl, Trakt) және Seerr бөлек сақталады және сақталуы да, сақталмауы да мүмкін. Pleazyng не сақталғанын нақты айтады.';
 	@override String get repairConfirm => 'Қалпына келтіру';
 	@override String get repairSucceeded => 'Сақтау қалпына келтірілді';
 	@override String get repairNeedsRestart => 'Сақтау қалпына келтірілді — қайта іске қосу қажет';
-	@override String get restartRequiredBody => 'Деректеріңіз қалпына келтірілді, бірақ PlezyNG оларды пайдаланар алдында жаңадан іске қосылуы керек. PlezyNG жабыңыз да, қайта ашыңыз.';
-	@override String get quitPlezy => 'PlezyNG бағдарламасынан шығу';
+	@override String get restartRequiredBody => 'Деректеріңіз қалпына келтірілді, бірақ Pleazyng оларды пайдаланар алдында жаңадан іске қосылуы керек. Pleazyng жабыңыз да, қайта ашыңыз.';
+	@override String get quitPlezy => 'Pleazyng бағдарламасынан шығу';
 	@override String get repairFailed => 'Қалпына келтіру сәтсіз аяқталды';
 	@override String get repairKeptSignIns => 'Серверлеріңіз бен профильдеріңіз әлі кірген күйде.';
 	@override String get repairLostSignIns => 'Сақталған кіру деректерін қорғайтын кілт қалпына келтірілмеді. Әрбір сервер мен профильге қайта кіруге тура келеді.';
@@ -1821,7 +1821,7 @@ class _Translations$startup$kk extends Translations$startup$en {
 	@override String get backupWarning => 'Онда сіздің кіру деректеріңіз бар. Оны жүктеп жібермеңіз немесе бөліспеңіз.';
 	@override String get deleteBackup => 'Көшірмені өшіру';
 	@override String get backupDeleted => 'Көшірме өшірілді.';
-	@override String get previousFailureTitle => 'PlezyNG соңғы рет іске қосыла алмады';
+	@override String get previousFailureTitle => 'Pleazyng соңғы рет іске қосыла алмады';
 }
 
 // Path: licenses
@@ -2153,7 +2153,7 @@ class _Translations$watchTogether$kk extends Translations$watchTogether$en {
 	@override String get codeCopied => 'Бөлме коды көшірілді';
 	@override String get shareInvite => 'Шақыру жіберу';
 	@override String get inviteCopied => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.';
-	@override String inviteMessage({required Object code}) => 'PlezyNG-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.';
+	@override String inviteMessage({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.';
 	@override String get openSessionControls => 'Басқару элементтерін ашу';
 	@override String get reconnecting => 'Қайта қосылуда...';
 	@override String get reconnectingDescription => 'Байланыс үзілді. Бөлмеге автоматты түрде қайта қосыласыз.';
@@ -2179,7 +2179,7 @@ class _Translations$watchTogether$kk extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Басқа көшірмені таңдау';
 	@override String get dontPlay => 'Ойнатпау';
 	@override String get unavailableTitle => 'Сізде бұл видео жоқ';
-	@override String get unavailableDescription => 'PlezyNG оны кітапханаларыңыздан таба алмады. Көшірмені өзіңіз таңдаңыз немесе қайта іздеңіз.';
+	@override String get unavailableDescription => 'Pleazyng оны кітапханаларыңыздан таба алмады. Көшірмені өзіңіз таңдаңыз немесе қайта іздеңіз.';
 	@override String get chooseCopy => 'Көшірмені таңдау';
 	@override String get searchAgain => 'Қайта іздеу';
 	@override String get noCandidates => 'Кітапханаларыңыздан көшірмелер табылмады.';
@@ -2324,11 +2324,11 @@ class _Translations$downloads$kk extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Белсенді синхрондау ережелері';
 	@override String get reviewOrphanFiles => 'Жазбасы жоқ жүктеулерді тексеру';
 	@override String get orphanReviewTitle => 'Жазбасы жоқ жүктеулерді тексеру';
-	@override String get orphanReviewDescription => 'Бұл тегтелген файлдар PlezyNG қолданбасы басқаратын әдепкі жүктеп алу қалталарында орналасқан, бірақ оларға сәйкес жүктеп алу жазбасы не белсенді тапсырма жоқ. Жоймас бұрын тізімді тексеріңіз.';
+	@override String get orphanReviewDescription => 'Бұл тегтелген файлдар Pleazyng қолданбасы басқаратын әдепкі жүктеп алу қалталарында орналасқан, бірақ оларға сәйкес жүктеп алу жазбасы не белсенді тапсырма жоқ. Жоймас бұрын тізімді тексеріңіз.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} файл · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => '${count} файлды жою';
 	@override String get orphanCleanupNone => 'Жазбасы жоқ жүктеп алынған файлдар табылмады';
-	@override String get orphanCleanupFailed => 'PlezyNG басқарылатын жүктеп алу қалтасын қауіпсіз сканерлей алмады. Ешбір файл жойылған жоқ.';
+	@override String get orphanCleanupFailed => 'Pleazyng басқарылатын жүктеп алу қалтасын қауіпсіз сканерлей алмады. Ешбір файл жойылған жоқ.';
 	@override String get orphanCleanupChanged => 'Тексеру кезінде жүктеулер тізімі өзгерді. Тазаламас бұрын файлдарды қайта қарап шығыңыз.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => '${count} жазбасы жоқ файл жойылды · ${size} орын босатылды';
 	@override String get noSyncRules => 'Синхрондау ережелері жоқ';
@@ -2704,11 +2704,11 @@ class _Translations$trakt$kk extends Translations$trakt$en {
 	@override String get connected => 'Қосылды';
 	@override String connectedAs({required Object username}) => '@${username} ретінде қосылды';
 	@override String get disconnectConfirm => 'Trakt ажыратылсын ба?';
-	@override String get disconnectConfirmBody => 'PlezyNG Trakt-қа деректер жіберуді тоқтатады.';
+	@override String get disconnectConfirmBody => 'Pleazyng Trakt-қа деректер жіберуді тоқтатады.';
 	@override String get scrobble => 'Нақты уақытта бақылау';
 	@override String get scrobbleDescription => 'Ойнату кезінде Trakt-қа деректер жіберу.';
 	@override String get watchedSync => 'Көру мәртебесін синхрондау';
-	@override String get watchedSyncDescription => 'PlezyNG-де белгіленгенде Trakt-та да белгіленеді.';
+	@override String get watchedSyncDescription => 'Pleazyng-де белгіленгенде Trakt-та да белгіленеді.';
 }
 
 // Path: seerr
@@ -2730,7 +2730,7 @@ class _Translations$seerr$kk extends Translations$seerr$en {
 	@override String get noSignInMethods => 'Бұл Seerr қолдау көрсетілетін кіру әдісін ұсынбайды.';
 	@override String get instance => 'Инстанция';
 	@override String get disconnectConfirm => 'Seerr ажыратылсын ба?';
-	@override String get disconnectConfirmBody => 'PlezyNG бұл Seerr серверін ұмытады. Кез келген уақытта қайта қосыла аласыз.';
+	@override String get disconnectConfirmBody => 'Pleazyng бұл Seerr серверін ұмытады. Кез келген уақытта қайта қосыла аласыз.';
 	@override String get request => 'Сұрау салу';
 	@override String get request4k => '4K сұрау салу';
 	@override String get seasons => 'Маусымдар';
@@ -2755,7 +2755,7 @@ class _Translations$seerr$kk extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Бұғаттау тізімінде';
 	@override String couldNotReach({required Object url, required Object error}) => '${url} мекенжайына қосылу мүмкін болмады: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => '${url} мекенжайында Seerr данасы жоқ (HTTP ${status})';
-	@override String get behindAuthProxy => 'Seerr орнына аутентификация жасайтын кері прокси (SSO немесе HTTP auth) жауап берді. PlezyNG оның арқылы кіре алмайды: осы қолданба үшін Seerr-дің /api/v1 жолы проксиді айналып өтуіне рұқсат етіңіз немесе Seerr-ге тікелей жететін мекенжайды пайдаланыңыз.';
+	@override String get behindAuthProxy => 'Seerr орнына аутентификация жасайтын кері прокси (SSO немесе HTTP auth) жауап берді. Pleazyng оның арқылы кіре алмайды: осы қолданба үшін Seerr-дің /api/v1 жолы проксиді айналып өтуіне рұқсат етіңіз немесе Seerr-ге тікелей жететін мекенжайды пайдаланыңыз.';
 	@override String get invalidUrl => 'Сервер мекенжайын енгізіңіз, мысалы: https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Бұл Seerr данасы Жылдам қосылуды қолдамайды. Оған Seerr 3.4 немесе одан жаңарақ нұсқа қажет.';
 	@override String get notInitialized => 'Бұл Seerr данасының бастапқы баптауы аяқталмаған';
@@ -2785,7 +2785,7 @@ class _Translations$services$kk extends Translations$services$en {
 	@override String get scrobble => 'Барысты автоматты бақылау';
 	@override String get scrobbleDescription => 'Эпизодты немесе фильмді көріп болғанда тізіміңізді жаңарту.';
 	@override String disconnectConfirm({required Object service}) => '${service} ажыратылсын ба?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG ${service} жаңартуды тоқтатады. Кез келген уақытта қайта қосыла аласыз.';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng ${service} жаңартуды тоқтатады. Кез келген уақытта қайта қосыла аласыз.';
 	@override String connectFailed({required Object service}) => '${service} қосылу мүмкін болмады. Қайтадан байқап көріңіз.';
 	@override late final _Translations$services$names$kk names = _Translations$services$names$kk._(_root);
 	@override late final _Translations$services$simklReconnect$kk simklReconnect = _Translations$services$simklReconnect$kk._(_root);
@@ -2807,8 +2807,8 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String get title => 'Бұлт пен қосымшалардан ағын';
 	@override String get subtitle => 'Бұлттағы файлдарды қарап, қолдау көрсетілетін ағындарды ойнату үшін Debrid есептік жазбасын қосыңыз. Stremio-мен үйлесімді қосымшалар фильмдер мен эпизодтар бетінде ағын таңдауын ұсынады. Қосылым деректері осы құрылғыда шифрланып, осы профильде сақталады.';
 	@override String connectionsConfigured({required Object count}) => 'Қосылған көздер: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG сақталған ағын параметрлерінің құлпын аша алмады. Қосылымдарды өзгертпес бұрын құрылғы құлпын ашып, қайта көріңіз.';
-	@override String get settingsUnreadable => 'PlezyNG осы сақталған қосылымдардың құлпын аша алмады. Қызметтерді қайта қосу үшін оларды тазалаңыз.';
+	@override String get settingsLoadFailed => 'Pleazyng сақталған ағын параметрлерінің құлпын аша алмады. Қосылымдарды өзгертпес бұрын құрылғы құлпын ашып, қайта көріңіз.';
+	@override String get settingsUnreadable => 'Pleazyng осы сақталған қосылымдардың құлпын аша алмады. Қызметтерді қайта қосу үшін оларды тазалаңыз.';
 	@override String get clearUnreadableSettings => 'Сақталған параметрлерді тазалау';
 	@override String get clearUnreadableSettingsConfirm => 'Сақталған ағын параметрлері тазалансын ба?';
 	@override String get clearUnreadableSettingsBody => 'Бұл осы профильдегі барлық сақталған провайдер есептік жазбалары мен қосымша мекенжайларын жояды. Әрекетті қайтару мүмкін емес.';
@@ -2820,11 +2820,11 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'Бұл каталогты қарау үшін қажетті сүзгілерді таңдаңыз.';
 	@override String get catalogRequiredLabel => 'Міндетті';
 	@override String get importFromStremio => 'Stremio-дан импорттау';
-	@override String get stremioImportInstructions => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз. Stremio жүйесіне кіріп, сұрауды мақұлдаңыз. PlezyNG тек қосымшалар тізімін оқиды; Stremio құпиясөзін сұрамайды және параметрлерді өзгертпейді.';
+	@override String get stremioImportInstructions => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз. Stremio жүйесіне кіріп, сұрауды мақұлдаңыз. Pleazyng тек қосымшалар тізімін оқиды; Stremio құпиясөзін сұрамайды және параметрлерді өзгертпейді.';
 	@override String get stremioImportOpen => 'Stremio сілтемесін ашу';
 	@override String get stremioImportCode => 'Байланыстыру коды';
 	@override String get stremioImportPreviewTitle => 'Қосымшаларды таңдау';
-	@override String get stremioImportPreviewBody => 'PlezyNG-ге қосқыңыз келетін қосымшаларды таңдаңыз. Бұл импорт тек HTTPS мекенжайларын қабылдайды.';
+	@override String get stremioImportPreviewBody => 'Pleazyng-ге қосқыңыз келетін қосымшаларды таңдаңыз. Бұл импорт тек HTTPS мекенжайларын қабылдайды.';
 	@override String stremioImportIgnored({required Object count}) => 'Қолдау көрсетілмейтін немесе қауіпсіз емес мекенжайларға байланысты өткізіліп кеткен қосымшалар: ${count}.';
 	@override String get stremioCatalogs => 'Каталогтар';
 	@override String get stremioStreams => 'Ағындар';
@@ -2838,7 +2838,7 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Манифест URL-і арқылы қосу';
 	@override String get addAddon => 'Қосымша қосу';
 	@override String get manifestUrl => 'Қосымша манифестінің URL-і';
-	@override String get manifestUrlHint => 'Қосымша манифестінің URL-ін қойыңыз. Қоспас бұрын PlezyNG каталогтар мен ағын ресурстарына қолдау барын тексереді.';
+	@override String get manifestUrlHint => 'Қосымша манифестінің URL-ін қойыңыз. Қоспас бұрын Pleazyng каталогтар мен ағын ресурстарына қолдау барын тексереді.';
 	@override String get allowHttp => 'Шифрланбаған HTTP мекенжайына рұқсат беру';
 	@override String get allowHttpDescription => 'Мұны тек жеке желідегі сенімді қосымша үшін пайдаланыңыз.';
 	@override String get installAddon => 'Қосымшаны қосу';
@@ -2846,20 +2846,20 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String get addonRemoved => 'Қосымша жойылды';
 	@override String get addonToggle => 'Қосымшаны қосу';
 	@override String get addonEmpty => 'Әзірге қосылған қосымша жоқ';
-	@override String get addonError => 'PlezyNG бұл қосымшаға қосыла алмады. Манифест URL-ін тексеріп, қайталап көріңіз.';
+	@override String get addonError => 'Pleazyng бұл қосымшаға қосыла алмады. Манифест URL-ін тексеріп, қайталап көріңіз.';
 	@override String get addonPrivacy => 'Тек сенімді қосымшаларды қосыңыз. Іздеу кезінде қосымша іздеген атауды алады және үшінші тараптың ағын сілтемелерін қайтаруы мүмкін.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Real-Debrid есептік жазбасымен қолдау көрсетілетін торрент ағындарын ойнатыңыз.';
 	@override String get connectRealDebrid => 'QR кодымен қосу';
 	@override String realDebridConnected({required Object username}) => '${username} ретінде қосылды';
-	@override String get realDebridInstructions => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз, содан кейін PlezyNG-ді қосу үшін осы белсендіру кодын енгізіңіз:';
+	@override String get realDebridInstructions => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз, содан кейін Pleazyng-ді қосу үшін осы белсендіру кодын енгізіңіз:';
 	@override String get realDebridActivate => 'Белсендіру үшін Real-Debrid ашу';
 	@override String get realDebridCode => 'Белсендіру коды';
 	@override String get realDebridConnectFailed => 'Real-Debrid қызметіне қосылу мүмкін болмады. Қайталап көріңіз.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'AllDebrid есептік жазбасымен қолдау көрсетілетін торрент ағындарын ойнатыңыз.';
 	@override String get connectAllDebrid => 'QR кодымен қосу';
-	@override String get allDebridInstructions => 'PlezyNG-ге рұқсат беру үшін QR кодын сканерлеңіз немесе сілтемені ашыңыз. Қосылып жатқанда осы экранды ашық қалдырыңыз:';
+	@override String get allDebridInstructions => 'Pleazyng-ге рұқсат беру үшін QR кодын сканерлеңіз немесе сілтемені ашыңыз. Қосылып жатқанда осы экранды ашық қалдырыңыз:';
 	@override String get allDebridActivate => 'Белсендіру үшін AllDebrid ашу';
 	@override String get allDebridCode => 'Белсендіру PIN-коды';
 	@override String get allDebridConnectFailed => 'AllDebrid қызметіне қосылу мүмкін болмады. Қайталап көріңіз.';
@@ -2870,13 +2870,13 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String get connectApiKey => 'API кілтімен қосу';
 	@override String apiKeyTitle({required Object service}) => '${service} қызметіне қосылу';
 	@override String get apiKey => 'API кілті';
-	@override String apiKeyHint({required Object service}) => '${service} есептік жазбасының параметрлерінен API кілтін қойыңыз. PlezyNG оны осы құрылғыда шифрлап, осы профильде сақтайды.';
+	@override String apiKeyHint({required Object service}) => '${service} есептік жазбасының параметрлерінен API кілтін қойыңыз. Pleazyng оны осы құрылғыда шифрлап, осы профильде сақтайды.';
 	@override String get apiKeyConnectFailed => 'Бұл API кілтін тексеру мүмкін болмады. Тексеріп, қайталап көріңіз.';
 	@override String accountConnected({required Object username}) => '${username} ретінде қосылды';
 	@override String get streamNeedsProvider => 'Осы торрент ағынын ойнату үшін Debrid қызметін қосыңыз.';
 	@override String get playViaProvider => 'Debrid арқылы ойнату';
 	@override String disconnectConfirm({required Object service}) => '${service} қызметін ажырату керек пе?';
-	@override String get disconnectBody => 'PlezyNG осы құрылғының рұқсатын жояды. Провайдердегі файлдар мен орындалып жатқан тасымалдар өзгермейді.';
+	@override String get disconnectBody => 'Pleazyng осы құрылғының рұқсатын жояды. Провайдердегі файлдар мен орындалып жатқан тасымалдар өзгермейді.';
 	@override String get streamsTitle => 'Ағынды таңдау';
 	@override String get noStreams => 'Бұл атауға арналған ағындар табылмады.';
 	@override String get manageConnections => 'Ағын қызметтерін басқару';
@@ -2892,7 +2892,7 @@ class _Translations$streaming$kk extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Қолданбадағы ойнатқыш бұл ағын пішімін қолдамайды.';
 	@override String get remoteNeedsEpisode => 'Ағын іздемес бұрын эпизодты таңдаңыз.';
 	@override String get remoteNeedsEpisodeNumber => 'Бұл эпизодта маусым не эпизод нөмірі жоқ.';
-	@override String get remoteNeedsExternalId => 'PlezyNG бұл атау үшін IMDb немесе TMDB ID таба алмады.';
+	@override String get remoteNeedsExternalId => 'Pleazyng бұл атау үшін IMDb немесе TMDB ID таба алмады.';
 	@override String get watchWithServices => 'Қосылған қызметтер арқылы көру';
 	@override String get chooseEpisode => 'Эпизодты таңдау';
 	@override String get episodes => 'Эпизодтар';
@@ -3023,15 +3023,15 @@ class _Translations$appAccess$kk extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => '7 күннен кейін бір-бірінен ұзақтығы';
-	@override String get description => 'PlezyNG-нің барлық функцияларына толық қолжетімділік беретін жеті күндік сынақ мерзімін бастаңыз. Сынақ мерзімі тегін, жазылым жоқ. Одан кейін дүкендегі баға бойынша бір рет сатып алып, PlezyNG-ні шектеусіз пайдалана аласыз.';
-	@override String get trialEndedDescription => 'Дүкендегі баға бойынша бір рет сатып алып, PlezyNG-нің барлық функцияларына өмірлік қолжетімділік алыңыз. Жазылым жоқ.';
+	@override String get description => 'Pleazyng-нің барлық функцияларына толық қолжетімділік беретін жеті күндік сынақ мерзімін бастаңыз. Сынақ мерзімі тегін, жазылым жоқ. Одан кейін дүкендегі баға бойынша бір рет сатып алып, Pleazyng-ні шектеусіз пайдалана аласыз.';
+	@override String get trialEndedDescription => 'Дүкендегі баға бойынша бір рет сатып алып, Pleazyng-нің барлық функцияларына өмірлік қолжетімділік алыңыз. Жазылым жоқ.';
 	@override String get startTrial => '7 жылдан кейінгі ұзақ уақытқа дейін';
 	@override String get trialActive => '7 жылдан кейінгі тестігінің өтірінің өтірін көтеріңіз.';
 	@override String get trialEnded => '7 жылдан кейінгі қазір қарап отыр.';
 	@override String get trialStartFailed => 'Бұл үшін бір-бірімен танымал, бірақ, бір-бірін бір-бірин бір-бірек келді.';
-	@override String get lifetimeTitle => 'PlezyNG-ге өмірлік қолжетімділік ашылды';
-	@override String get lifetimeBody => 'Рақмет! Енді PlezyNG-нің барлық функцияларын шектеусіз пайдалана аласыз.';
-	@override String get manageTitle => 'PlezyNG жылдық қабығы';
+	@override String get lifetimeTitle => 'Pleazyng-ге өмірлік қолжетімділік ашылды';
+	@override String get lifetimeBody => 'Рақмет! Енді Pleazyng-нің барлық функцияларын шектеусіз пайдалана аласыз.';
+	@override String get manageTitle => 'Pleazyng жылдық қабығы';
 	@override String get manageDescription => 'Бұл үшін бір-бірімен, бір-бірін, бір-бирімен, басқа бір-бірин, бір-бетімен, бір -бірімен және бір-бірумен, бір –бірімен бір-бірымен, бір —бірімен.';
 	@override String buy({required Object price}) => 'Барлық функцияларды ${price} бағасына ашу';
 	@override String get loadingPrice => 'Өнімдер мен жарықтық бағасы...';
@@ -3039,11 +3039,11 @@ class _Translations$appAccess$kk extends Translations$appAccess$en {
 	@override String get restore => 'Өткен келдім келдім';
 	@override String get pending => 'Өзі сүйікті жарысы, балаларынан тұрады.Ауыз іші шырышты қабығы мен жақ сүйектердің рагы.';
 	@override String get storeUnavailable => 'Өзі сүйікті жарысы, балаларынан тұрады.Ауыз іші шырышты қабығы мен жақ сүйектердің рагы.';
-	@override String get productNotFound => 'PlezyNG-ге өмірлік қолжетімділік бұл дүкенде әлі сатылмайды.';
+	@override String get productNotFound => 'Pleazyng-ге өмірлік қолжетімділік бұл дүкенде әлі сатылмайды.';
 	@override String get productQueryFailed => 'Бұл үшін бір-бірімен танымал, бірақ танымал, таңтардан танымал, оныншы және оныншы.';
 	@override String get purchaseFailed => 'Қаншама жылы қазір, қайтып келді.';
 	@override String get restoreFailed => 'Бұл үшін бір-бірімен бір-бірін бір-бірин бір-біректік қайраңды.';
-	@override String get nothingToRestore => 'Қаланың тұрақты тұрғындарының саны PlezyNG адамды құрайды.';
+	@override String get nothingToRestore => 'Қаланың тұрақты тұрғындарының саны Pleazyng адамды құрайды.';
 }
 
 // Path: detail
@@ -3084,8 +3084,8 @@ class _Translations$homeLayout$kk extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Өнімдер лайон';
-	@override String get resetToast => 'Басты бет бастапқы Plezy баннер орналасуына қайтарылды';
-	@override String get resetHeroTitle => 'Қаланың тұрақты тұрғындарының саны Plezy?';
+	@override String get resetToast => 'Басты бет бастапқы Pleazyng баннер орналасуына қайтарылды';
+	@override String get resetHeroTitle => 'Қаланың тұрақты тұрғындарының саны Pleazyng?';
 	@override String get resetHeroBody => 'Бұл үшін, бұл жерде бір-бірімен, бір-бірін, бір-бирімен, басқа да бір-бірин, бір-бетімен, бір, бір-бақамен, бір және бір-бірек, бір-берек, бір және басқа да бір, бір және т.б.';
 	@override String get removeRowTitle => 'Өткен қағалдық қағалды?';
 	@override String removeRowBody({required Object title}) => '${title} жойылады. Бұл әрекетті болдырмау мүмкін емес.';
@@ -3095,7 +3095,7 @@ class _Translations$homeLayout$kk extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Бұл үшін, бұл қосымшалар мен салықты ұзақ уақытқа дейін ұзақ уақыт бойы жасылады.';
 	@override String get syncNow => 'Ақытқытқыш';
 	@override String get plexHomeManager => 'Plex Жүрілік менеджер';
-	@override String get managePlexRows => 'Plezy ішіндегі Plex қатарларын басқару';
+	@override String get managePlexRows => 'Pleazyng ішіндегі Plex қатарларын басқару';
 	@override String get managePlexRowsDescription => 'Өнімдермен танымал, бірақ танымал, таңдардан танымал.';
 	@override String get organizeHomeRows => 'Өнімдермен өңдеу';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} қатар: жылжыту, баннер, автоматты ауысу, жою';
@@ -3165,7 +3165,7 @@ class _Translations$homeLayout$kk extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Алдыңғы: «Жеңізде» және «Жектеу» және «Серде» және «Карта» және «Барта» бағдарламасы';
 	@override String get layoutNavDescription => 'Өзінің, өңдеу және өңдеу категориясы';
 	@override String get editHomeRow => 'Өнімдер мен үй';
-	@override String get resetHeroButton => 'Қаланың тұрақты тұрғындарының саны Plezy';
+	@override String get resetHeroButton => 'Қаланың тұрақты тұрғындарының саны Pleazyng';
 	@override String get reorderingUnlocked => 'Олардың дағдыры';
 	@override String get reorderingLocked => 'Олардың бәрі';
 	@override String get rowsCanBeDragged => 'Бұл үшін бір-бірімен бір-біректік қайтарып, бір-біремен бір-биректік қайтарды.';
@@ -3191,8 +3191,8 @@ class _Translations$platform$kk extends Translations$platform$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG жергілікті желіңіздегі медиа серверлерге және ойнату құрылғыларына қосылады.';
-	@override String get locationPermission => 'Жергілікті желіні анықтап, медиа серверлерге қосылу үшін iOS талап еткенде, PlezyNG орналасқан жер туралы деректерге қол жеткізу рұқсатын пайдаланады.';
+	@override String get localNetworkPermission => 'Pleazyng жергілікті желіңіздегі медиа серверлерге және ойнату құрылғыларына қосылады.';
+	@override String get locationPermission => 'Жергілікті желіні анықтап, медиа серверлерге қосылу үшін iOS талап еткенде, Pleazyng орналасқан жер туралы деректерге қол жеткізу рұқсатын пайдаланады.';
 	@override String get photoLibraryPermission => 'Медиа мұқабалары ретінде пайдалану үшін фотокітапханаңыздан суреттерді таңдаңыз.';
 	@override String get cameraPermission => 'Companion Remote басқару пультін жұптау үшін QR кодтарын сканерлеңіз.';
 }
@@ -3206,7 +3206,7 @@ class _Translations$universalMedia$kk extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'Открыты медиа';
 	@override String get shortcutHelp => 'Бұл сессия үшін қолайлы, playlist немесе файлды жүктеу.';
-	@override String get intro => 'Өзі сүйікті жабдықтар, жүктеу спиртке немесе файлға айналады. Playback-ге PlezyNG стандартты фейерверктері бар және библиографиясы көшіру керек емес.';
+	@override String get intro => 'Өзі сүйікті жабдықтар, жүктеу спиртке немесе файлға айналады. Playback-ге Pleazyng стандартты фейерверктері бар және библиографиясы көшіру керек емес.';
 	@override String get openWhat => 'Қанша идеялардан тұрады?';
 	@override String get stream => 'Тегін адресы';
 	@override String get playlist => 'Жүзілік';
@@ -3347,7 +3347,7 @@ class _Translations$universalMedia$kk extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Аудиолық аудіолық';
 	@override String get captureWaylandHelp => 'Wayland limits this XWayland capture to the X display. Windows outside XWayland may not appear.';
 	@override String get captureFrameRate => 'Серіктің қабығы';
-	@override String get capturePrivacy => 'The recording is saved only to the file you choose. Microphone capture is optional. PlezyNG does not upload the recording.';
+	@override String get capturePrivacy => 'The recording is saved only to the file you choose. Microphone capture is optional. Pleazyng does not upload the recording.';
 	@override String get captureSaveAs => 'Серіктің қабырға айналады.';
 	@override String get captureExtensionMismatch => 'Choose a filename ending in .mp4.';
 	@override String get captureFfmpegMissing => 'FFmpeg or the H.264 video encoder is unavailable. Install a supported FFmpeg build, then try again.';
@@ -3361,7 +3361,7 @@ class _Translations$universalMedia$kk extends Translations$universalMedia$en {
 	@override String get captureStop => 'Қайталы және Спас';
 	@override String get captureMode => 'Абайдың';
 	@override String get shareMode => 'Ақыттық';
-	@override String get shareIntro => 'Send a local media file to another device on your private network. PlezyNG creates a temporary HLS stream.';
+	@override String get shareIntro => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.';
 	@override String get sharePrivacy => 'Қаланың тұрақты тұрғындарының тұрақты тұрғындарының саны 60 адамды құрайды және адамды құрайды және адамды құрайды.';
 	@override String get shareChooseFile => 'Медыяфайлы';
 	@override String get shareChooseHelp => 'Аудио және видео файлы бар. Файлтің қабығы бұл компьютере бар.';
@@ -3374,7 +3374,7 @@ class _Translations$universalMedia$kk extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => '«Жеңіске үлес қосқандар», «Жеңіске үлес қосқандар»';
 	@override String get shareQrLabel => 'КР-кодтің қағидалар мен қағидалар';
 	@override String get shareQrHelp => '«Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске».';
-	@override String get shareHttpHint => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.';
+	@override String get shareHttpHint => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.';
 	@override String get shareCopyUrl => 'Қайталы қабырғасы';
 	@override String get shareExpiresLabel => 'Қаншалықты ұзақтығы';
 	@override String get shareStarting => 'Қандайды құбырды...';
@@ -3399,7 +3399,7 @@ class _Translations$universalMedia$kk extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'Үлдік қызмет';
 	@override String get extensionReplace => 'Адаптациялық қызмет';
 	@override String get extensionRemoveTitle => 'Қаланың ең айқын көргенде?';
-	@override String get extensionRemoveHelp => 'This removes the service from this profile. PlezyNG does not contact its endpoint.';
+	@override String get extensionRemoveHelp => 'This removes the service from this profile. Pleazyng does not contact its endpoint.';
 	@override String get extensionRemove => 'Ақыттық қызмет';
 	@override String get extensionInvalidManifest => 'This file is not a supported extension manifest. See the Open media guide for the format.';
 	@override String get extensionSaveFailed => 'Ауыздан шығарылған профильде қарастырып қараңыз.';
@@ -3554,12 +3554,12 @@ class _Translations$fileSources$kk extends Translations$fileSources$en {
 	@override String get none => 'Әйтсе';
 	@override String get fullscreen => 'Екіптер';
 	@override String get syncLocation => 'Өнімдер мен қанағаттан (i)';
-	@override String get syncLocationHint => 'PlezyNG күйіне арналған бөлек WebDAV қалтасы. Деректер шартты түрде жазылады; медиафайлдар өзгермейді.';
+	@override String get syncLocationHint => 'Pleazyng күйіне арналған бөлек WebDAV қалтасы. Деректер шартты түрде жазылады; медиафайлдар өзгермейді.';
 	@override String get audiobooks => 'Аудиолық';
 	@override String get comics => 'Комикстер';
 	@override String get scan => 'Серіктің да салықты және медиа';
 	@override String get browserReader => 'Одан және';
-	@override String get browserReaderHelp => 'Оқу құралы браузерде ашық. Оқу орнын және жазбаларды сақтау үшін PlezyNG қолданбасын ашық ұстаңыз.';
+	@override String get browserReaderHelp => 'Оқу құралы браузерде ашық. Оқу орнын және жазбаларды сақтау үшін Pleazyng қолданбасын ашық ұстаңыз.';
 	@override String get on => 'Қазір';
 	@override String get advancedSetup => 'App регистрациясы';
 	@override String get microsoftSignIn => 'Microsoft-ның ең айқын көрмесі';
@@ -3650,7 +3650,7 @@ class _Translations$lending$kk extends Translations$lending$en {
 	@override String get openLibraryNote => 'Бұл үшін, «Аяқтар» және «Аялық» бағдарламасы, «Аақтар» бағдарламасы және «Аақықтар» жобасы бар.';
 	@override String get more => 'Өздіктер';
 	@override String get gateway => 'Библиотекасы қабырғасы';
-	@override String get gatewayHint => 'Біздің библиотекасы немесе PlezyNG администраторға арналған.';
+	@override String get gatewayHint => 'Біздің библиотекасы немесе Pleazyng администраторға арналған.';
 	@override String get advanced => 'Библиотекасы';
 	@override String get loadLibraries => 'Бібліотека мен биліктері';
 	@override String get expired => 'Бұл кредиттік қызметті ұзақтығы.';
@@ -3790,7 +3790,7 @@ class _Translations$sourceSetup$kk extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'opensubtitles.com сайтынан API кілтін алыңыз. Іздеу бейне атауын және қолжетімді IMDb/TMDB ID мәндерін жібереді, бірақ бейнефайлды ешқашан жібермейді. Кілт пен қосымша тіркелгі деректері осы дереккөзбен бірге шифрланады.';
 	@override String get automaticMetadata => 'Бейненің автоматты онлайн метадеректері';
 	@override String get metadataPrivacy => 'Тек файл атауындағы атауды/жылды және эпизод нөмірлерін немесе NFO ID мәнін жібереді; медиа файлдар мен кіру деректерін ешқашан жібермейді. NFO өрістері басымдығын сақтайды.';
-	@override String get nfsEncryptionFailure => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. PlezyNG бұл қосылымды шифрлаусыз қайта жасамайды.';
+	@override String get nfsEncryptionFailure => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. Pleazyng бұл қосылымды шифрлаусыз қайта жасамайды.';
 	@override String get sourceConnecting => 'Дереккөзге қосылуда';
 	@override String get metadataSearchPrivacy => 'Бұл атау іздеуі Trakt қызметіне жіберіледі. Енгізген атауыңыз жіберіледі, бейне не дереккөздің кіру деректері жіберілмейді.';
 	@override String get chooseMatch => 'Сәйкес нәтижені таңдау';
@@ -3936,6 +3936,12 @@ class _Translations$games$kk extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3945,7 +3951,7 @@ class _Translations$deepLinks$kk extends Translations$deepLinks$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Бұл Plezy сілтемесі жарамсыз.';
+	@override String get invalid => 'Бұл Pleazyng сілтемесі жарамсыз.';
 	@override String profileNotFound({required Object profile}) => '«${profile}» профиліне сәйкес профиль табылмады.';
 	@override String get serverUnavailable => 'Бұл сілтеме үшін серверге қосыла алмадық.';
 	@override String get notFound => 'Бұл атау кітапханаларыңыздан табылмады.';
@@ -4120,7 +4126,7 @@ class _Translations$romm$kk extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5011,7 +5017,7 @@ class _Translations$watchTogether$errors$kk extends Translations$watchTogether$e
 	@override String get relayFull => 'Бірге көру қызметі қазір шамадан тыс жүктелген. Кейінірек қайталап көріңіз.';
 	@override String get unreachable => 'Бірге көру релесіне қосылу мүмкін болмады. Қосылымды тексеріңіз.';
 	@override String get rateLimited => 'Әрекеттер тым көп. Біраз күтіп, қайтадан байқап көріңіз.';
-	@override String get clientBlocked => 'PlezyNG-дің бұл нұсқасы релені пайдалана алмайды. Қолданбаны жаңартыңыз.';
+	@override String get clientBlocked => 'Pleazyng-дің бұл нұсқасы релені пайдалана алмайды. Қолданбаны жаңартыңыз.';
 	@override String get forbidden => 'Мұны тек ұйымдастырушы жасай алады.';
 	@override String get notInRoom => 'Сіз бөлмеде емессіз.';
 	@override String get alreadyInRoom => 'Сіз бұрыннан бөлмедесіз.';
@@ -5032,14 +5038,14 @@ class _Translations$downloads$backgroundWarning$kk extends Translations$download
 	@override String get bannerAction => 'Толығырақ';
 	@override String get sheetTitle => 'Фондық жүктеулер бұғатталған';
 	@override String get sheetTitleDegraded => 'Фондық жүктеулер шектелуі мүмкін';
-	@override String get sheetIntro => 'Android PlezyNG-дің фонда сенімді жүктеуіне кедергі келтіруде.';
-	@override String get sheetIntroDegraded => 'Құрылғыңыз PlezyNG-дің фонда қашан жүктей алатынын шектеп отыр.';
-	@override String get reasonBackgroundRestricted => 'PlezyNG-дің фондық жұмысы шектелген. Батарея немесе фондық пайдалануды "Шектеусіз" етіп қойыңыз.';
-	@override String get reasonStandbyRestricted => 'Android PlezyNG-ді шектеулі күту режиміне ауыстырды. Батарея пайдалануын "Шектеусіз" етіп қойыңыз.';
+	@override String get sheetIntro => 'Android Pleazyng-дің фонда сенімді жүктеуіне кедергі келтіруде.';
+	@override String get sheetIntroDegraded => 'Құрылғыңыз Pleazyng-дің фонда қашан жүктей алатынын шектеп отыр.';
+	@override String get reasonBackgroundRestricted => 'Pleazyng-дің фондық жұмысы шектелген. Батарея немесе фондық пайдалануды "Шектеусіз" етіп қойыңыз.';
+	@override String get reasonStandbyRestricted => 'Android Pleazyng-ді шектеулі күту режиміне ауыстырды. Батарея пайдалануын "Шектеусіз" етіп қойыңыз.';
 	@override String get reasonDownloadChannelBlocked => 'Жүктеу хабарландырулары өшірілген, сондықтан жүктеу барысы мен басқару элементтері қолжетімсіз болуы мүмкін.';
 	@override String get reasonNotificationsDisabled => 'Хабарландырулар өшірілген. Android 13 және одан жаңа нұсқаларда ұзақ фондық жүктеулер үшін олар қажет.';
 	@override String get reasonDataSaver => 'Трафикті үнемдеу қосулы, бұл мобильді деректер арқылы фондық жүктеулерді бұғаттайды. Wi-Fi арқылы жүктеулер жұмыс істеуі тиіс.';
-	@override String get reasonOemUnknown => 'PlezyNG фонда тұрғанда жүктеулер бірнеше рет тоқтады. PlezyNG-дің батарея немесе фондық пайдалану баптауларын тексеріңіз.';
+	@override String get reasonOemUnknown => 'Pleazyng фонда тұрғанда жүктеулер бірнеше рет тоқтады. Pleazyng-дің батарея немесе фондық пайдалану баптауларын тексеріңіз.';
 	@override String get openSettings => 'Баптауларды ашу';
 	@override String get stillNotWorking => 'Құрылғыға арналған көмек';
 	@override String get stillNotWorkingDescription => 'Құрылғыңызға арналған қадамдарды қараңыз немесе мәселе жалғасса Баптаулар › Журналдарды көру бөлімінен журнал жіберіңіз.';
@@ -5094,12 +5100,12 @@ class _Translations$companionRemote$pairing$kk extends Translations$companionRem
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'Бірдей Plex тіркелгісіндегі PlezyNG құрылғылары мұнда көрінеді';
+	@override String get discoveryDescription => 'Бірдей Plex тіркелгісіндегі Pleazyng құрылғылары мұнда көрінеді';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Қосылуда...';
 	@override String get searchingForDevices => 'Құрылғылар ізделуде...';
 	@override String get noDevicesFound => 'Желіде құрылғылар табылмады';
-	@override String get noDevicesHint => 'ПК-де PlezyNG-ді ашып, бір Wi-Fi-ға қосылыңыз';
+	@override String get noDevicesHint => 'ПК-де Pleazyng-ді ашып, бір Wi-Fi-ға қосылыңыз';
 	@override String get availableDevices => 'Қолжетімді құрылғылар';
 	@override String get manualConnection => 'Қолмен қосылу';
 	@override String get cryptoInitFailed => 'Қауіпсіз қосылым қатесі. Алдымен Plex-ке кіріңіз.';
@@ -5193,7 +5199,7 @@ class _Translations$services$simklReconnect$kk extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Simkl-ге қайта қосылу';
-	@override String get subtitle => 'Simkl бұл қосылым пайдаланатын кіру әдісін тоқтатуда. Қайта қосылғанда PlezyNG-ді растау үшін simkl.com ашылады — PlezyNG құпия сөзіңізді ешқашан көрмейді. Көру тарихыңыз Simkl-де сақталады.';
+	@override String get subtitle => 'Simkl бұл қосылым пайдаланатын кіру әдісін тоқтатуда. Қайта қосылғанда Pleazyng-ді растау үшін simkl.com ашылады — Pleazyng құпия сөзіңізді ешқашан көрмейді. Көру тарихыңыз Simkl-де сақталады.';
 }
 
 // Path: services.deviceCode
@@ -5203,7 +5209,7 @@ class _Translations$services$deviceCode$kk extends Translations$services$deviceC
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'PlezyNG-ді ${service} қызметінде белсендіру';
+	@override String title({required Object service}) => 'Pleazyng-ді ${service} қызметінде белсендіру';
 	@override String get instructions => 'QR кодын сканерлеңіз немесе төмендегі мекенжайға өтіп, мына кодты енгізіңіз:';
 	@override String openToActivate({required Object service}) => 'Белсендіру үшін ${service} ашу';
 	@override String get copyCode => 'Белсендіру кодын көшіру';
@@ -5278,15 +5284,15 @@ class _Translations$services$trackerDescriptions$kk extends Translations$service
 extension on TranslationsKk {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'Қолданба белгішесі',
 			'appIcon.defaultIcon' => 'Әдепкі',
 			'appIcon.current' => 'Ағымдағы белгіше',
 			'appIcon.locked' => 'Жүзілік қабығылық қабығы',
-			'appIcon.lockedHint' => 'Басқа белгішелерді пайдалану үшін 7 күндік сынақ мерзімін бастаңыз немесе PlezyNG-ге өмірлік қолжетімділікті сатып алыңыз.',
+			'appIcon.lockedHint' => 'Басқа белгішелерді пайдалану үшін 7 күндік сынақ мерзімін бастаңыз немесе Pleazyng-ге өмірлік қолжетімділікті сатып алыңыз.',
 			'appIcon.changeFailed' => 'Қолданба белгішесін өзгерту мүмкін болмады',
-			'appIcon.launcherHint' => 'PlezyNG-ден шыққаннан кейін жаңа белгіше басты экранда пайда болады.',
-			'appIcon.tvLauncherHint' => 'PlezyNG-ден шыққаннан кейін жаңа баннер пайда болады. Android TV теледидар қайта іске қосылғанша ескісін көрсете беруі мүмкін.',
+			'appIcon.launcherHint' => 'Pleazyng-ден шыққаннан кейін жаңа белгіше басты экранда пайда болады.',
+			'appIcon.tvLauncherHint' => 'Pleazyng-ден шыққаннан кейін жаңа баннер пайда болады. Android TV теледидар қайта іске қосылғанша ескісін көрсете беруі мүмкін.',
 			'appIcon.names.midnight' => 'Түн ортасы',
 			'appIcon.names.ember' => 'Шоқ',
 			'appIcon.names.paper' => 'Қағаз',
@@ -5326,7 +5332,7 @@ extension on TranslationsKk {
 			'auth.quickConnectWaiting' => 'Растау күтілуде…',
 			'auth.quickConnectCancel' => 'Бас тарту',
 			'auth.quickConnectExpired' => 'Жылдам қосылу мерзімі өтті. Қайтадан байқап көріңіз.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG жергілікті кіру деректерін және өңдеуді күтіп тұрған ойнату деректерін қауіпсіз қалпына келтіре алмады. Қайта кіріңіз.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng жергілікті кіру деректерін және өңдеуді күтіп тұрған ойнату деректерін қауіпсіз қалпына келтіре алмады. Қайта кіріңіз.',
 			'auth.pinCheckRejected' => 'Plex PIN кодын тексеру қабылданбады',
 			'auth.connectToDirectPlex' => 'Қаланың тұрақты тұрғындарының саны Plex',
 			'common.cancel' => 'Бас тарту',
@@ -5442,9 +5448,9 @@ extension on TranslationsKk {
 			'update.latestVersion' => 'Сізде ең соңғы нұсқа орнатылған',
 			'update.checkFailed' => 'Жаңартуларды тексеру мүмкін болмады',
 			'settings.title' => 'Баптаулар',
-			'settings.supportDeveloper' => 'PlezyNG жобасын қолдау',
+			'settings.supportDeveloper' => 'Pleazyng жобасын қолдау',
 			'settings.supportDeveloperDescription' => 'Әзірлеуді қолдау үшін қайырымдылық жасаңыз',
-			'settings.lifetimeAccess' => 'PlezyNG жылдық қабығы',
+			'settings.lifetimeAccess' => 'Pleazyng жылдық қабығы',
 			'settings.language' => 'Тіл',
 			'settings.theme' => 'Тақырып',
 			'settings.appearance' => 'Сыртқы келбеті',
@@ -5500,7 +5506,7 @@ extension on TranslationsKk {
 			'settings.contentScreensaverNoLibraries' => 'Медіалық библиотекасы бар.',
 			'settings.contentScreensaverDismissHint' => 'Қандай-ақ, қанақтардан немесе қанақтатын',
 			'settings.newEpisodeNotifications' => 'Есімде-ақ жаңалықтары',
-			'settings.newEpisodeNotificationsDescription' => 'Барлық бөлімін көріп болған сериалыңызға жаңа бөлім қосылғанда хабарлау. Plezy ашық болғанда тексеріледі.',
+			'settings.newEpisodeNotificationsDescription' => 'Барлық бөлімін көріп болған сериалыңызға жаңа бөлім қосылғанда хабарлау. Pleazyng ашық болғанда тексеріледі.',
 			'settings.continueWatchingRowSize' => 'Өздіктер өңдеуге қараңыз',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} карточкалар',
 			'settings.rowSizeCompact' => 'Тығыз',
@@ -5625,7 +5631,7 @@ extension on TranslationsKk {
 			'settings.importSettingsDescription' => 'Параметрлерді файлдан қалпына келтіріңіз',
 			'settings.importSettingsConfirm' => 'Бұл ағымдағы баптауларыңыздың үстінен жазады. Жалғастырасыз ба?',
 			'settings.importSettingsSuccess' => 'Баптаулар импортталды',
-			'settings.importSettingsInvalidFile' => 'Бұл файл дұрыс PlezyNG баптаулар файлы емес',
+			'settings.importSettingsInvalidFile' => 'Бұл файл дұрыс Pleazyng баптаулар файлы емес',
 			'settings.importSettingsNoUser' => 'Баптауларды импорттау алдында жүйеге кіріңіз',
 			'settings.cloudBackup' => 'Ауыздылық Cloud',
 			'settings.cloudBackupDescription' => 'Тасымалданатын параметрлердің сақтық көшірмесін HTTPS арқылы WebDAV мекенжайына сақтаңыз. Сервер қосылымдары мен тіркелгі деректері осы құрылғыда қалады.',
@@ -5809,7 +5815,7 @@ extension on TranslationsKk {
 			'settings.forceTvMode' => 'TV режимін мәжбүрлеу',
 			'settings.forceTvModeDescription' => 'TV интерфейсін мәжбүрлеу. Автоматты түрде анықталмайтын құрылғылар үшін. Қайта іске қосу қажет.',
 			'settings.startInFullscreen' => 'Толық экранда бастау',
-			'settings.startInFullscreenDescription' => 'PlezyNG-ді ашқанда толық экран режимінде ашу',
+			'settings.startInFullscreenDescription' => 'Pleazyng-ді ашқанда толық экран режимінде ашу',
 			'settings.exitFullscreenOnPlayerClose' => 'Ойнатқыш жабылғанда толық экраннан шығу',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Видео ойнатқышты жапқанда автоматты түрде толық экраннан шығу',
 			'settings.autoHidePerformanceOverlay' => 'Өнімділік панелін авто-жасыру',
@@ -5865,7 +5871,7 @@ extension on TranslationsKk {
 			'settings.playerScopeGlobal' => 'Барлық жерде',
 			'settings.playerScopeLibrary' => 'Кітапхана бойынша',
 			'settings.playerScopeTitle' => 'Сериал немесе фильм бойынша',
-			'settings.exportDialogTitle' => 'PlezyNG параметрлерін экспорттау',
+			'settings.exportDialogTitle' => 'Pleazyng параметрлерін экспорттау',
 			'settings.followSystem' => 'Жүйе тіліне сай',
 			'settings.followAppLanguage' => 'Интерфейс тілімен бірдей',
 			'settings.regionFormat' => 'Аймақтық пішімдер',
@@ -6180,8 +6186,8 @@ extension on TranslationsKk {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Бұл ондағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлімді және оның файлын өшіреді.', other: 'Бұл ондағы барлық ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлімді және олардың файлдарын өшіреді.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Бұл элемент ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файл ретінде сақталған, ол өшіріледі.', other: 'Бұл элемент ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} файлда сақталған, олардың барлығы өшіріледі.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, ол да өшіріледі:', other: 'Сол файлда тағы ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} бөлім сақталған, олар да өшіріледі:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG қандай файлдар өшірілетінін тексере алмады, сондықтан ол жоғарыда аталған элементтен артық өшіруі мүмкін. Бас тартып, қайталап көріңіз немесе бәрібір өшіріңіз.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Серверіңіз бұл элемент үшін файл мәліметтерін ұсынбады, сондықтан PlezyNG қандай файлдар өшірілетінін тексере алмайды. Ол жоғарыда аталған элементтен артық өшіруі мүмкін.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng қандай файлдар өшірілетінін тексере алмады, сондықтан ол жоғарыда аталған элементтен артық өшіруі мүмкін. Бас тартып, қайталап көріңіз немесе бәрібір өшіріңіз.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Серверіңіз бұл элемент үшін файл мәліметтерін ұсынбады, сондықтан Pleazyng қандай файлдар өшірілетінін тексере алмайды. Ол жоғарыда аталған элементтен артық өшіруі мүмкін.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Медиа элементі сәтті өшірілді',
 			'mediaMenu.mediaFailedToDelete' => 'Медиа элементін өшіру мүмкін болмады',
 			'mediaMenu.rate' => 'Бағалау',
@@ -6231,7 +6237,7 @@ extension on TranslationsKk {
 			'accessibility.colorModeRgb' => 'РГБ',
 			'accessibility.title' => 'Доступдық',
 			'accessibility.summary' => 'Текстос, контраст, рух және контролер',
-			'accessibility.systemHint' => 'Бұл үшін сіздің қосыласы бар, сіздің қосуға дейін қосылы бар. Бұл опциясы PlezyNG жылы қосылыңыз.',
+			'accessibility.systemHint' => 'Бұл үшін сіздің қосыласы бар, сіздің қосуға дейін қосылы бар. Бұл опциясы Pleazyng жылы қосылыңыз.',
 			'accessibility.readability' => 'Жүктесі және қанағат',
 			'accessibility.textSize' => 'текстірлік қағидалар',
 			'accessibility.preview' => 'Өзі сүйікті жары, балалары, балалары мен балалары мен жары.',
@@ -6512,7 +6518,7 @@ extension on TranslationsKk {
 			'mpvConfig.removeLine' => 'Жолды өшіру',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-context және gpu-api Linux-те еленбейді: ендірілген бейне әрқашан бейне жазықтығында vo=libmpv арқылы көрсетіледі, ал gpu-next (ArtCNN сияқты compute шейдерлеріне қажет) ендірілген режимде жұмыс істей алмайды.',
 			'dialog.confirmAction' => 'Әрекетті растау',
-			'profiles.addPlezyProfile' => 'PlezyNG профилін қосу',
+			'profiles.addPlezyProfile' => 'Pleazyng профилін қосу',
 			'profiles.switchingProfile' => 'Профильді ауыстыру…',
 			'profiles.deleteThisProfileTitle' => 'Осы профиль өшірілсін бе?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => '${displayName} өшіріледі. Қосылымдарға әсер етпейді.',
@@ -6594,12 +6600,12 @@ extension on TranslationsKk {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} сервер бұл тіркелгіге кіруден бас тартты',
 			'connections.signInAgain' => 'Қайтадан кіру',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => '${product} қосылымын өңдеу',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '${serverName} үшін URL мекенжайларды қосыңыз немесе өшіріңіз. PlezyNG ең төмен кідірісі бар қолжетімді URL мекенжайды пайдаланады.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '${serverName} үшін URL мекенжайларды қосыңыз немесе өшіріңіз. Pleazyng ең төмен кідірісі бар қолжетімді URL мекенжайды пайдаланады.',
 			'accountPreferences.sectionTitle' => 'Тіркелгі баптаулары',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => '${account} тіркелгісінде сақталған аудио, субтитр және кітапхана баптаулары',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => '${count} тіркелгіде сақталған аудио, субтитр және кітапхана баптаулары',
 			'accountPreferences.pickAccount' => 'Әр тіркелгі өз баптауларын сақтайды. Өңдеу үшін біреуін таңдаңыз.',
-			'accountPreferences.storedOnAccount' => 'Бұл баптаулар тіркелгінің өзінде сақталады, сондықтан оған кірген әрбір қолданба оларды пайдаланады — басқа құрылғыларыңыздағы PlezyNG қоса.',
+			'accountPreferences.storedOnAccount' => 'Бұл баптаулар тіркелгінің өзінде сақталады, сондықтан оған кірген әрбір қолданба оларды пайдаланады — басқа құрылғыларыңыздағы Pleazyng қоса.',
 			'accountPreferences.noAccounts' => 'Баптауға тіркелгілер жоқ',
 			'accountPreferences.noAccountsHint' => 'Plex-ке кіріңіз немесе Jellyfin не Emby серверін қосыңыз, сонда сол тіркелгіде сақталған баптаулар осында көрсетіледі.',
 			'accountPreferences.unavailable' => 'Бұл тіркелгіге қол жеткізу мүмкін емес',
@@ -6923,9 +6929,9 @@ extension on TranslationsKk {
 			'logs.saveLogs' => 'Ауызды да салықты',
 			'logs.logsSaved' => ({required Object path}) => 'Журналдар ${path} жолына сақталды',
 			'logs.saveLogsFailed' => 'Бұл да да салық файлға болады.',
-			'startup.failedTitle' => 'PlezyNG іске қосылмады',
+			'startup.failedTitle' => 'Pleazyng іске қосылмады',
 			'startup.failedBody' => 'Іске қосу кезінде қате орын алды. Төмендегі мәліметтер ненің сәтсіз аяқталғанын көрсетеді.',
-			'startup.failedBodyRepairable' => 'PlezyNG сақталған баптаулар файлы зақымдалған және PlezyNG іске қосылмас бұрын оны қайта құру қажет. Қайталау көмектеспейді — «Сақтауды қалпына келтіру» тармағын таңдаңыз.',
+			'startup.failedBodyRepairable' => 'Pleazyng сақталған баптаулар файлы зақымдалған және Pleazyng іске қосылмас бұрын оны қайта құру қажет. Қайталау көмектеспейді — «Сақтауды қалпына келтіру» тармағын таңдаңыз.',
 			'startup.phaseLabel' => 'Қадам',
 			'startup.showDetails' => 'Мәліметтерді көрсету',
 			'startup.hideDetails' => 'Мәліметтерді жасыру',
@@ -6934,16 +6940,16 @@ extension on TranslationsKk {
 			'startup.uploadDetails' => 'Мәліметтерді жүктеп жіберу',
 			'startup.repairStorage' => 'Сақтауды қалпына келтіру',
 			'startup.repairTitle' => 'Сақталған деректер қалпына келтірілсін бе?',
-			'startup.repairBodyCommon' => 'PlezyNG баптаулар файлы зақымдалған және оқылмайды. Қалпына келтіру барлық баптауды әдепкі мәнге қайтарады.',
+			'startup.repairBodyCommon' => 'Pleazyng баптаулар файлы зақымдалған және оқылмайды. Қалпына келтіру барлық баптауды әдепкі мәнге қайтарады.',
 			'startup.repairBodyOneCredential' => 'Бір сақталған кіру деректері зақымдалған және оқылмайды. Қалпына келтіру тек соны өшіреді; қалған баптауларыңызға тиіспейді.',
 			'startup.repairBodySignInsKept' => 'Серверлеріңіз бен профильдеріңіз кірген күйінде қалады.',
 			'startup.repairBodySignInsLost' => 'Сақталған кіру деректерін қорғайтын кілт осы файлдан қалпына келтірілмейді, сондықтан әрбір сервер мен профильге қайта кіруге тура келеді. Медиа серверіңіздегі ештеңеге әсер етілмейді.',
-			'startup.repairBodySessionsUncertain' => 'Tracker-лар (MAL, AniList, Simkl, Trakt) және Seerr бөлек сақталады және сақталуы да, сақталмауы да мүмкін. PlezyNG не сақталғанын нақты айтады.',
+			'startup.repairBodySessionsUncertain' => 'Tracker-лар (MAL, AniList, Simkl, Trakt) және Seerr бөлек сақталады және сақталуы да, сақталмауы да мүмкін. Pleazyng не сақталғанын нақты айтады.',
 			'startup.repairConfirm' => 'Қалпына келтіру',
 			'startup.repairSucceeded' => 'Сақтау қалпына келтірілді',
 			'startup.repairNeedsRestart' => 'Сақтау қалпына келтірілді — қайта іске қосу қажет',
-			'startup.restartRequiredBody' => 'Деректеріңіз қалпына келтірілді, бірақ PlezyNG оларды пайдаланар алдында жаңадан іске қосылуы керек. PlezyNG жабыңыз да, қайта ашыңыз.',
-			'startup.quitPlezy' => 'PlezyNG бағдарламасынан шығу',
+			'startup.restartRequiredBody' => 'Деректеріңіз қалпына келтірілді, бірақ Pleazyng оларды пайдаланар алдында жаңадан іске қосылуы керек. Pleazyng жабыңыз да, қайта ашыңыз.',
+			'startup.quitPlezy' => 'Pleazyng бағдарламасынан шығу',
 			'startup.repairFailed' => 'Қалпына келтіру сәтсіз аяқталды',
 			'startup.repairKeptSignIns' => 'Серверлеріңіз бен профильдеріңіз әлі кірген күйде.',
 			'startup.repairLostSignIns' => 'Сақталған кіру деректерін қорғайтын кілт қалпына келтірілмеді. Әрбір сервер мен профильге қайта кіруге тура келеді.',
@@ -6952,7 +6958,7 @@ extension on TranslationsKk {
 			'startup.backupWarning' => 'Онда сіздің кіру деректеріңіз бар. Оны жүктеп жібермеңіз немесе бөліспеңіз.',
 			'startup.deleteBackup' => 'Көшірмені өшіру',
 			'startup.backupDeleted' => 'Көшірме өшірілді.',
-			'startup.previousFailureTitle' => 'PlezyNG соңғы рет іске қосыла алмады',
+			'startup.previousFailureTitle' => 'Pleazyng соңғы рет іске қосыла алмады',
 			'licenses.relatedPackages' => 'Байланысты пакеттер',
 			'licenses.license' => 'Лицензия',
 			'licenses.licenseNumber' => ({required Object number}) => 'Лицензия ${number}',
@@ -7330,7 +7336,7 @@ extension on TranslationsKk {
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
 			'watchTogether.openSessionControls' => 'Басқару элементтерін ашу',
 			_ => null,
 		} ?? switch (path) {
@@ -7358,7 +7364,7 @@ extension on TranslationsKk {
 			'watchTogether.chooseAnotherCopy' => 'Басқа көшірмені таңдау',
 			'watchTogether.dontPlay' => 'Ойнатпау',
 			'watchTogether.unavailableTitle' => 'Сізде бұл видео жоқ',
-			'watchTogether.unavailableDescription' => 'PlezyNG оны кітапханаларыңыздан таба алмады. Көшірмені өзіңіз таңдаңыз немесе қайта іздеңіз.',
+			'watchTogether.unavailableDescription' => 'Pleazyng оны кітапханаларыңыздан таба алмады. Көшірмені өзіңіз таңдаңыз немесе қайта іздеңіз.',
 			'watchTogether.chooseCopy' => 'Көшірмені таңдау',
 			'watchTogether.searchAgain' => 'Қайта іздеу',
 			'watchTogether.noCandidates' => 'Кітапханаларыңыздан көшірмелер табылмады.',
@@ -7450,7 +7456,7 @@ extension on TranslationsKk {
 			'watchTogether.errors.relayFull' => 'Бірге көру қызметі қазір шамадан тыс жүктелген. Кейінірек қайталап көріңіз.',
 			'watchTogether.errors.unreachable' => 'Бірге көру релесіне қосылу мүмкін болмады. Қосылымды тексеріңіз.',
 			'watchTogether.errors.rateLimited' => 'Әрекеттер тым көп. Біраз күтіп, қайтадан байқап көріңіз.',
-			'watchTogether.errors.clientBlocked' => 'PlezyNG-дің бұл нұсқасы релені пайдалана алмайды. Қолданбаны жаңартыңыз.',
+			'watchTogether.errors.clientBlocked' => 'Pleazyng-дің бұл нұсқасы релені пайдалана алмайды. Қолданбаны жаңартыңыз.',
 			'watchTogether.errors.forbidden' => 'Мұны тек ұйымдастырушы жасай алады.',
 			'watchTogether.errors.notInRoom' => 'Сіз бөлмеде емессіз.',
 			'watchTogether.errors.alreadyInRoom' => 'Сіз бұрыннан бөлмедесіз.',
@@ -7532,11 +7538,11 @@ extension on TranslationsKk {
 			'downloads.activeSyncRules' => 'Белсенді синхрондау ережелері',
 			'downloads.reviewOrphanFiles' => 'Жазбасы жоқ жүктеулерді тексеру',
 			'downloads.orphanReviewTitle' => 'Жазбасы жоқ жүктеулерді тексеру',
-			'downloads.orphanReviewDescription' => 'Бұл тегтелген файлдар PlezyNG қолданбасы басқаратын әдепкі жүктеп алу қалталарында орналасқан, бірақ оларға сәйкес жүктеп алу жазбасы не белсенді тапсырма жоқ. Жоймас бұрын тізімді тексеріңіз.',
+			'downloads.orphanReviewDescription' => 'Бұл тегтелген файлдар Pleazyng қолданбасы басқаратын әдепкі жүктеп алу қалталарында орналасқан, бірақ оларға сәйкес жүктеп алу жазбасы не белсенді тапсырма жоқ. Жоймас бұрын тізімді тексеріңіз.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} файл · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => '${count} файлды жою',
 			'downloads.orphanCleanupNone' => 'Жазбасы жоқ жүктеп алынған файлдар табылмады',
-			'downloads.orphanCleanupFailed' => 'PlezyNG басқарылатын жүктеп алу қалтасын қауіпсіз сканерлей алмады. Ешбір файл жойылған жоқ.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng басқарылатын жүктеп алу қалтасын қауіпсіз сканерлей алмады. Ешбір файл жойылған жоқ.',
 			'downloads.orphanCleanupChanged' => 'Тексеру кезінде жүктеулер тізімі өзгерді. Тазаламас бұрын файлдарды қайта қарап шығыңыз.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => '${count} жазбасы жоқ файл жойылды · ${size} орын босатылды',
 			'downloads.noSyncRules' => 'Синхрондау ережелері жоқ',
@@ -7558,14 +7564,14 @@ extension on TranslationsKk {
 			'downloads.backgroundWarning.bannerAction' => 'Толығырақ',
 			'downloads.backgroundWarning.sheetTitle' => 'Фондық жүктеулер бұғатталған',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Фондық жүктеулер шектелуі мүмкін',
-			'downloads.backgroundWarning.sheetIntro' => 'Android PlezyNG-дің фонда сенімді жүктеуіне кедергі келтіруде.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Құрылғыңыз PlezyNG-дің фонда қашан жүктей алатынын шектеп отыр.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'PlezyNG-дің фондық жұмысы шектелген. Батарея немесе фондық пайдалануды "Шектеусіз" етіп қойыңыз.',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android PlezyNG-ді шектеулі күту режиміне ауыстырды. Батарея пайдалануын "Шектеусіз" етіп қойыңыз.',
+			'downloads.backgroundWarning.sheetIntro' => 'Android Pleazyng-дің фонда сенімді жүктеуіне кедергі келтіруде.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Құрылғыңыз Pleazyng-дің фонда қашан жүктей алатынын шектеп отыр.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Pleazyng-дің фондық жұмысы шектелген. Батарея немесе фондық пайдалануды "Шектеусіз" етіп қойыңыз.',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android Pleazyng-ді шектеулі күту режиміне ауыстырды. Батарея пайдалануын "Шектеусіз" етіп қойыңыз.',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Жүктеу хабарландырулары өшірілген, сондықтан жүктеу барысы мен басқару элементтері қолжетімсіз болуы мүмкін.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Хабарландырулар өшірілген. Android 13 және одан жаңа нұсқаларда ұзақ фондық жүктеулер үшін олар қажет.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Трафикті үнемдеу қосулы, бұл мобильді деректер арқылы фондық жүктеулерді бұғаттайды. Wi-Fi арқылы жүктеулер жұмыс істеуі тиіс.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'PlezyNG фонда тұрғанда жүктеулер бірнеше рет тоқтады. PlezyNG-дің батарея немесе фондық пайдалану баптауларын тексеріңіз.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Pleazyng фонда тұрғанда жүктеулер бірнеше рет тоқтады. Pleazyng-дің батарея немесе фондық пайдалану баптауларын тексеріңіз.',
 			'downloads.backgroundWarning.openSettings' => 'Баптауларды ашу',
 			'downloads.backgroundWarning.stillNotWorking' => 'Құрылғыға арналған көмек',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Құрылғыңызға арналған қадамдарды қараңыз немесе мәселе жалғасса Баптаулар › Журналдарды көру бөлімінен журнал жіберіңіз.',
@@ -7636,12 +7642,12 @@ extension on TranslationsKk {
 			'companionRemote.session.stopServer' => 'Серверді тоқтату',
 			'companionRemote.session.minimize' => 'Жию',
 			'companionRemote.session.manualAddressHint' => 'Қолмен қосылу мекенжайы:',
-			'companionRemote.pairing.discoveryDescription' => 'Бірдей Plex тіркелгісіндегі PlezyNG құрылғылары мұнда көрінеді',
+			'companionRemote.pairing.discoveryDescription' => 'Бірдей Plex тіркелгісіндегі Pleazyng құрылғылары мұнда көрінеді',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Қосылуда...',
 			'companionRemote.pairing.searchingForDevices' => 'Құрылғылар ізделуде...',
 			'companionRemote.pairing.noDevicesFound' => 'Желіде құрылғылар табылмады',
-			'companionRemote.pairing.noDevicesHint' => 'ПК-де PlezyNG-ді ашып, бір Wi-Fi-ға қосылыңыз',
+			'companionRemote.pairing.noDevicesHint' => 'ПК-де Pleazyng-ді ашып, бір Wi-Fi-ға қосылыңыз',
 			'companionRemote.pairing.availableDevices' => 'Қолжетімді құрылғылар',
 			'companionRemote.pairing.manualConnection' => 'Қолмен қосылу',
 			'companionRemote.pairing.cryptoInitFailed' => 'Қауіпсіз қосылым қатесі. Алдымен Plex-ке кіріңіз.',
@@ -7912,11 +7918,11 @@ extension on TranslationsKk {
 			'trakt.connected' => 'Қосылды',
 			'trakt.connectedAs' => ({required Object username}) => '@${username} ретінде қосылды',
 			'trakt.disconnectConfirm' => 'Trakt ажыратылсын ба?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG Trakt-қа деректер жіберуді тоқтатады.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng Trakt-қа деректер жіберуді тоқтатады.',
 			'trakt.scrobble' => 'Нақты уақытта бақылау',
 			'trakt.scrobbleDescription' => 'Ойнату кезінде Trakt-қа деректер жіберу.',
 			'trakt.watchedSync' => 'Көру мәртебесін синхрондау',
-			'trakt.watchedSyncDescription' => 'PlezyNG-де белгіленгенде Trakt-та да белгіленеді.',
+			'trakt.watchedSyncDescription' => 'Pleazyng-де белгіленгенде Trakt-та да белгіленеді.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr қосу',
 			'seerr.serverUrl' => 'Сервер URL-і',
@@ -7929,7 +7935,7 @@ extension on TranslationsKk {
 			'seerr.noSignInMethods' => 'Бұл Seerr қолдау көрсетілетін кіру әдісін ұсынбайды.',
 			'seerr.instance' => 'Инстанция',
 			'seerr.disconnectConfirm' => 'Seerr ажыратылсын ба?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG бұл Seerr серверін ұмытады. Кез келген уақытта қайта қосыла аласыз.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng бұл Seerr серверін ұмытады. Кез келген уақытта қайта қосыла аласыз.',
 			'seerr.request' => 'Сұрау салу',
 			'seerr.request4k' => '4K сұрау салу',
 			'seerr.seasons' => 'Маусымдар',
@@ -7954,7 +7960,7 @@ extension on TranslationsKk {
 			'seerr.statusBlocklisted' => 'Бұғаттау тізімінде',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => '${url} мекенжайына қосылу мүмкін болмады: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => '${url} мекенжайында Seerr данасы жоқ (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'Seerr орнына аутентификация жасайтын кері прокси (SSO немесе HTTP auth) жауап берді. PlezyNG оның арқылы кіре алмайды: осы қолданба үшін Seerr-дің /api/v1 жолы проксиді айналып өтуіне рұқсат етіңіз немесе Seerr-ге тікелей жететін мекенжайды пайдаланыңыз.',
+			'seerr.behindAuthProxy' => 'Seerr орнына аутентификация жасайтын кері прокси (SSO немесе HTTP auth) жауап берді. Pleazyng оның арқылы кіре алмайды: осы қолданба үшін Seerr-дің /api/v1 жолы проксиді айналып өтуіне рұқсат етіңіз немесе Seerr-ге тікелей жететін мекенжайды пайдаланыңыз.',
 			'seerr.invalidUrl' => 'Сервер мекенжайын енгізіңіз, мысалы: https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Бұл Seerr данасы Жылдам қосылуды қолдамайды. Оған Seerr 3.4 немесе одан жаңарақ нұсқа қажет.',
 			'seerr.notInitialized' => 'Бұл Seerr данасының бастапқы баптауы аяқталмаған',
@@ -7975,7 +7981,7 @@ extension on TranslationsKk {
 			'services.scrobble' => 'Барысты автоматты бақылау',
 			'services.scrobbleDescription' => 'Эпизодты немесе фильмді көріп болғанда тізіміңізді жаңарту.',
 			'services.disconnectConfirm' => ({required Object service}) => '${service} ажыратылсын ба?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG ${service} жаңартуды тоқтатады. Кез келген уақытта қайта қосыла аласыз.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng ${service} жаңартуды тоқтатады. Кез келген уақытта қайта қосыла аласыз.',
 			'services.connectFailed' => ({required Object service}) => '${service} қосылу мүмкін болмады. Қайтадан байқап көріңіз.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7983,8 +7989,8 @@ extension on TranslationsKk {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Simkl-ге қайта қосылу',
-			'services.simklReconnect.subtitle' => 'Simkl бұл қосылым пайдаланатын кіру әдісін тоқтатуда. Қайта қосылғанда PlezyNG-ді растау үшін simkl.com ашылады — PlezyNG құпия сөзіңізді ешқашан көрмейді. Көру тарихыңыз Simkl-де сақталады.',
-			'services.deviceCode.title' => ({required Object service}) => 'PlezyNG-ді ${service} қызметінде белсендіру',
+			'services.simklReconnect.subtitle' => 'Simkl бұл қосылым пайдаланатын кіру әдісін тоқтатуда. Қайта қосылғанда Pleazyng-ді растау үшін simkl.com ашылады — Pleazyng құпия сөзіңізді ешқашан көрмейді. Көру тарихыңыз Simkl-де сақталады.',
+			'services.deviceCode.title' => ({required Object service}) => 'Pleazyng-ді ${service} қызметінде белсендіру',
 			'services.deviceCode.instructions' => 'QR кодын сканерлеңіз немесе төмендегі мекенжайға өтіп, мына кодты енгізіңіз:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Белсендіру үшін ${service} ашу',
 			'services.deviceCode.copyCode' => 'Белсендіру кодын көшіру',
@@ -8017,8 +8023,8 @@ extension on TranslationsKk {
 			'streaming.title' => 'Бұлт пен қосымшалардан ағын',
 			'streaming.subtitle' => 'Бұлттағы файлдарды қарап, қолдау көрсетілетін ағындарды ойнату үшін Debrid есептік жазбасын қосыңыз. Stremio-мен үйлесімді қосымшалар фильмдер мен эпизодтар бетінде ағын таңдауын ұсынады. Қосылым деректері осы құрылғыда шифрланып, осы профильде сақталады.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Қосылған көздер: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG сақталған ағын параметрлерінің құлпын аша алмады. Қосылымдарды өзгертпес бұрын құрылғы құлпын ашып, қайта көріңіз.',
-			'streaming.settingsUnreadable' => 'PlezyNG осы сақталған қосылымдардың құлпын аша алмады. Қызметтерді қайта қосу үшін оларды тазалаңыз.',
+			'streaming.settingsLoadFailed' => 'Pleazyng сақталған ағын параметрлерінің құлпын аша алмады. Қосылымдарды өзгертпес бұрын құрылғы құлпын ашып, қайта көріңіз.',
+			'streaming.settingsUnreadable' => 'Pleazyng осы сақталған қосылымдардың құлпын аша алмады. Қызметтерді қайта қосу үшін оларды тазалаңыз.',
 			'streaming.clearUnreadableSettings' => 'Сақталған параметрлерді тазалау',
 			'streaming.clearUnreadableSettingsConfirm' => 'Сақталған ағын параметрлері тазалансын ба?',
 			'streaming.clearUnreadableSettingsBody' => 'Бұл осы профильдегі барлық сақталған провайдер есептік жазбалары мен қосымша мекенжайларын жояды. Әрекетті қайтару мүмкін емес.',
@@ -8030,11 +8036,11 @@ extension on TranslationsKk {
 			'streaming.catalogFiltersRequired' => 'Бұл каталогты қарау үшін қажетті сүзгілерді таңдаңыз.',
 			'streaming.catalogRequiredLabel' => 'Міндетті',
 			'streaming.importFromStremio' => 'Stremio-дан импорттау',
-			'streaming.stremioImportInstructions' => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз. Stremio жүйесіне кіріп, сұрауды мақұлдаңыз. PlezyNG тек қосымшалар тізімін оқиды; Stremio құпиясөзін сұрамайды және параметрлерді өзгертпейді.',
+			'streaming.stremioImportInstructions' => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз. Stremio жүйесіне кіріп, сұрауды мақұлдаңыз. Pleazyng тек қосымшалар тізімін оқиды; Stremio құпиясөзін сұрамайды және параметрлерді өзгертпейді.',
 			'streaming.stremioImportOpen' => 'Stremio сілтемесін ашу',
 			'streaming.stremioImportCode' => 'Байланыстыру коды',
 			'streaming.stremioImportPreviewTitle' => 'Қосымшаларды таңдау',
-			'streaming.stremioImportPreviewBody' => 'PlezyNG-ге қосқыңыз келетін қосымшаларды таңдаңыз. Бұл импорт тек HTTPS мекенжайларын қабылдайды.',
+			'streaming.stremioImportPreviewBody' => 'Pleazyng-ге қосқыңыз келетін қосымшаларды таңдаңыз. Бұл импорт тек HTTPS мекенжайларын қабылдайды.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Қолдау көрсетілмейтін немесе қауіпсіз емес мекенжайларға байланысты өткізіліп кеткен қосымшалар: ${count}.',
 			'streaming.stremioCatalogs' => 'Каталогтар',
 			'streaming.stremioStreams' => 'Ағындар',
@@ -8048,7 +8054,7 @@ extension on TranslationsKk {
 			'streaming.addByManifestUrl' => 'Манифест URL-і арқылы қосу',
 			'streaming.addAddon' => 'Қосымша қосу',
 			'streaming.manifestUrl' => 'Қосымша манифестінің URL-і',
-			'streaming.manifestUrlHint' => 'Қосымша манифестінің URL-ін қойыңыз. Қоспас бұрын PlezyNG каталогтар мен ағын ресурстарына қолдау барын тексереді.',
+			'streaming.manifestUrlHint' => 'Қосымша манифестінің URL-ін қойыңыз. Қоспас бұрын Pleazyng каталогтар мен ағын ресурстарына қолдау барын тексереді.',
 			'streaming.allowHttp' => 'Шифрланбаған HTTP мекенжайына рұқсат беру',
 			'streaming.allowHttpDescription' => 'Мұны тек жеке желідегі сенімді қосымша үшін пайдаланыңыз.',
 			'streaming.installAddon' => 'Қосымшаны қосу',
@@ -8056,20 +8062,20 @@ extension on TranslationsKk {
 			'streaming.addonRemoved' => 'Қосымша жойылды',
 			'streaming.addonToggle' => 'Қосымшаны қосу',
 			'streaming.addonEmpty' => 'Әзірге қосылған қосымша жоқ',
-			'streaming.addonError' => 'PlezyNG бұл қосымшаға қосыла алмады. Манифест URL-ін тексеріп, қайталап көріңіз.',
+			'streaming.addonError' => 'Pleazyng бұл қосымшаға қосыла алмады. Манифест URL-ін тексеріп, қайталап көріңіз.',
 			'streaming.addonPrivacy' => 'Тек сенімді қосымшаларды қосыңыз. Іздеу кезінде қосымша іздеген атауды алады және үшінші тараптың ағын сілтемелерін қайтаруы мүмкін.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Real-Debrid есептік жазбасымен қолдау көрсетілетін торрент ағындарын ойнатыңыз.',
 			'streaming.connectRealDebrid' => 'QR кодымен қосу',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} ретінде қосылды',
-			'streaming.realDebridInstructions' => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз, содан кейін PlezyNG-ді қосу үшін осы белсендіру кодын енгізіңіз:',
+			'streaming.realDebridInstructions' => 'QR кодын сканерлеңіз немесе сілтемені ашыңыз, содан кейін Pleazyng-ді қосу үшін осы белсендіру кодын енгізіңіз:',
 			'streaming.realDebridActivate' => 'Белсендіру үшін Real-Debrid ашу',
 			'streaming.realDebridCode' => 'Белсендіру коды',
 			'streaming.realDebridConnectFailed' => 'Real-Debrid қызметіне қосылу мүмкін болмады. Қайталап көріңіз.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'AllDebrid есептік жазбасымен қолдау көрсетілетін торрент ағындарын ойнатыңыз.',
 			'streaming.connectAllDebrid' => 'QR кодымен қосу',
-			'streaming.allDebridInstructions' => 'PlezyNG-ге рұқсат беру үшін QR кодын сканерлеңіз немесе сілтемені ашыңыз. Қосылып жатқанда осы экранды ашық қалдырыңыз:',
+			'streaming.allDebridInstructions' => 'Pleazyng-ге рұқсат беру үшін QR кодын сканерлеңіз немесе сілтемені ашыңыз. Қосылып жатқанда осы экранды ашық қалдырыңыз:',
 			'streaming.allDebridActivate' => 'Белсендіру үшін AllDebrid ашу',
 			'streaming.allDebridCode' => 'Белсендіру PIN-коды',
 			'streaming.allDebridConnectFailed' => 'AllDebrid қызметіне қосылу мүмкін болмады. Қайталап көріңіз.',
@@ -8080,13 +8086,13 @@ extension on TranslationsKk {
 			'streaming.connectApiKey' => 'API кілтімен қосу',
 			'streaming.apiKeyTitle' => ({required Object service}) => '${service} қызметіне қосылу',
 			'streaming.apiKey' => 'API кілті',
-			'streaming.apiKeyHint' => ({required Object service}) => '${service} есептік жазбасының параметрлерінен API кілтін қойыңыз. PlezyNG оны осы құрылғыда шифрлап, осы профильде сақтайды.',
+			'streaming.apiKeyHint' => ({required Object service}) => '${service} есептік жазбасының параметрлерінен API кілтін қойыңыз. Pleazyng оны осы құрылғыда шифрлап, осы профильде сақтайды.',
 			'streaming.apiKeyConnectFailed' => 'Бұл API кілтін тексеру мүмкін болмады. Тексеріп, қайталап көріңіз.',
 			'streaming.accountConnected' => ({required Object username}) => '${username} ретінде қосылды',
 			'streaming.streamNeedsProvider' => 'Осы торрент ағынын ойнату үшін Debrid қызметін қосыңыз.',
 			'streaming.playViaProvider' => 'Debrid арқылы ойнату',
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} қызметін ажырату керек пе?',
-			'streaming.disconnectBody' => 'PlezyNG осы құрылғының рұқсатын жояды. Провайдердегі файлдар мен орындалып жатқан тасымалдар өзгермейді.',
+			'streaming.disconnectBody' => 'Pleazyng осы құрылғының рұқсатын жояды. Провайдердегі файлдар мен орындалып жатқан тасымалдар өзгермейді.',
 			'streaming.streamsTitle' => 'Ағынды таңдау',
 			'streaming.noStreams' => 'Бұл атауға арналған ағындар табылмады.',
 			'streaming.manageConnections' => 'Ағын қызметтерін басқару',
@@ -8102,7 +8108,7 @@ extension on TranslationsKk {
 			'streaming.streamUnsupported' => 'Қолданбадағы ойнатқыш бұл ағын пішімін қолдамайды.',
 			'streaming.remoteNeedsEpisode' => 'Ағын іздемес бұрын эпизодты таңдаңыз.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Бұл эпизодта маусым не эпизод нөмірі жоқ.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG бұл атау үшін IMDb немесе TMDB ID таба алмады.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng бұл атау үшін IMDb немесе TMDB ID таба алмады.',
 			'streaming.watchWithServices' => 'Қосылған қызметтер арқылы көру',
 			'streaming.chooseEpisode' => 'Эпизодты таңдау',
 			'streaming.episodes' => 'Эпизодтар',
@@ -8188,15 +8194,15 @@ extension on TranslationsKk {
 			'notifications.newEpisodeTitle' => 'Епізод',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => '7 күннен кейін бір-бірінен ұзақтығы',
-			'appAccess.description' => 'PlezyNG-нің барлық функцияларына толық қолжетімділік беретін жеті күндік сынақ мерзімін бастаңыз. Сынақ мерзімі тегін, жазылым жоқ. Одан кейін дүкендегі баға бойынша бір рет сатып алып, PlezyNG-ні шектеусіз пайдалана аласыз.',
-			'appAccess.trialEndedDescription' => 'Дүкендегі баға бойынша бір рет сатып алып, PlezyNG-нің барлық функцияларына өмірлік қолжетімділік алыңыз. Жазылым жоқ.',
+			'appAccess.description' => 'Pleazyng-нің барлық функцияларына толық қолжетімділік беретін жеті күндік сынақ мерзімін бастаңыз. Сынақ мерзімі тегін, жазылым жоқ. Одан кейін дүкендегі баға бойынша бір рет сатып алып, Pleazyng-ні шектеусіз пайдалана аласыз.',
+			'appAccess.trialEndedDescription' => 'Дүкендегі баға бойынша бір рет сатып алып, Pleazyng-нің барлық функцияларына өмірлік қолжетімділік алыңыз. Жазылым жоқ.',
 			'appAccess.startTrial' => '7 жылдан кейінгі ұзақ уақытқа дейін',
 			'appAccess.trialActive' => '7 жылдан кейінгі тестігінің өтірінің өтірін көтеріңіз.',
 			'appAccess.trialEnded' => '7 жылдан кейінгі қазір қарап отыр.',
 			'appAccess.trialStartFailed' => 'Бұл үшін бір-бірімен танымал, бірақ, бір-бірін бір-бірин бір-бірек келді.',
-			'appAccess.lifetimeTitle' => 'PlezyNG-ге өмірлік қолжетімділік ашылды',
-			'appAccess.lifetimeBody' => 'Рақмет! Енді PlezyNG-нің барлық функцияларын шектеусіз пайдалана аласыз.',
-			'appAccess.manageTitle' => 'PlezyNG жылдық қабығы',
+			'appAccess.lifetimeTitle' => 'Pleazyng-ге өмірлік қолжетімділік ашылды',
+			'appAccess.lifetimeBody' => 'Рақмет! Енді Pleazyng-нің барлық функцияларын шектеусіз пайдалана аласыз.',
+			'appAccess.manageTitle' => 'Pleazyng жылдық қабығы',
 			'appAccess.manageDescription' => 'Бұл үшін бір-бірімен, бір-бірін, бір-бирімен, басқа бір-бірин, бір-бетімен, бір -бірімен және бір-бірумен, бір –бірімен бір-бірымен, бір —бірімен.',
 			'appAccess.buy' => ({required Object price}) => 'Барлық функцияларды ${price} бағасына ашу',
 			'appAccess.loadingPrice' => 'Өнімдер мен жарықтық бағасы...',
@@ -8204,11 +8210,11 @@ extension on TranslationsKk {
 			'appAccess.restore' => 'Өткен келдім келдім',
 			'appAccess.pending' => 'Өзі сүйікті жарысы, балаларынан тұрады.Ауыз іші шырышты қабығы мен жақ сүйектердің рагы.',
 			'appAccess.storeUnavailable' => 'Өзі сүйікті жарысы, балаларынан тұрады.Ауыз іші шырышты қабығы мен жақ сүйектердің рагы.',
-			'appAccess.productNotFound' => 'PlezyNG-ге өмірлік қолжетімділік бұл дүкенде әлі сатылмайды.',
+			'appAccess.productNotFound' => 'Pleazyng-ге өмірлік қолжетімділік бұл дүкенде әлі сатылмайды.',
 			'appAccess.productQueryFailed' => 'Бұл үшін бір-бірімен танымал, бірақ танымал, таңтардан танымал, оныншы және оныншы.',
 			'appAccess.purchaseFailed' => 'Қаншама жылы қазір, қайтып келді.',
 			'appAccess.restoreFailed' => 'Бұл үшін бір-бірімен бір-бірін бір-бірин бір-біректік қайраңды.',
-			'appAccess.nothingToRestore' => 'Қаланың тұрақты тұрғындарының саны PlezyNG адамды құрайды.',
+			'appAccess.nothingToRestore' => 'Қаланың тұрақты тұрғындарының саны Pleazyng адамды құрайды.',
 			'detail.endsAt' => ({required Object time}) => 'Аяқталу уақыты: ${time}',
 			'watchLink.serverUnavailable' => 'Бұл қағидалар үшін Plex сервері не айтасыз.',
 			'watchLink.notFound' => 'Бұл сериал немесе фильм Plex серверлеріңізден табылмады.',
@@ -8222,8 +8228,8 @@ extension on TranslationsKk {
 			'watchLink.copy' => 'Жүктесі',
 			'watchLink.copied' => 'Қайтақтық копиясы',
 			'homeLayout.title' => 'Өнімдер лайон',
-			'homeLayout.resetToast' => 'Басты бет бастапқы Plezy баннер орналасуына қайтарылды',
-			'homeLayout.resetHeroTitle' => 'Қаланың тұрақты тұрғындарының саны Plezy?',
+			'homeLayout.resetToast' => 'Басты бет бастапқы Pleazyng баннер орналасуына қайтарылды',
+			'homeLayout.resetHeroTitle' => 'Қаланың тұрақты тұрғындарының саны Pleazyng?',
 			'homeLayout.resetHeroBody' => 'Бұл үшін, бұл жерде бір-бірімен, бір-бірін, бір-бирімен, басқа да бір-бірин, бір-бетімен, бір, бір-бақамен, бір және бір-бірек, бір-берек, бір және басқа да бір, бір және т.б.',
 			'homeLayout.removeRowTitle' => 'Өткен қағалдық қағалды?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} жойылады. Бұл әрекетті болдырмау мүмкін емес.',
@@ -8233,7 +8239,7 @@ extension on TranslationsKk {
 			'homeLayout.syncAccountOff' => 'Бұл үшін, бұл қосымшалар мен салықты ұзақ уақытқа дейін ұзақ уақыт бойы жасылады.',
 			'homeLayout.syncNow' => 'Ақытқытқыш',
 			'homeLayout.plexHomeManager' => 'Plex Жүрілік менеджер',
-			'homeLayout.managePlexRows' => 'Plezy ішіндегі Plex қатарларын басқару',
+			'homeLayout.managePlexRows' => 'Pleazyng ішіндегі Plex қатарларын басқару',
 			'homeLayout.managePlexRowsDescription' => 'Өнімдермен танымал, бірақ танымал, таңдардан танымал.',
 			'homeLayout.organizeHomeRows' => 'Өнімдермен өңдеу',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} қатар: жылжыту, баннер, автоматты ауысу, жою',
@@ -8303,7 +8309,7 @@ extension on TranslationsKk {
 			'homeLayout.organizeRowsHint' => 'Алдыңғы: «Жеңізде» және «Жектеу» және «Серде» және «Карта» және «Барта» бағдарламасы',
 			'homeLayout.layoutNavDescription' => 'Өзінің, өңдеу және өңдеу категориясы',
 			'homeLayout.editHomeRow' => 'Өнімдер мен үй',
-			'homeLayout.resetHeroButton' => 'Қаланың тұрақты тұрғындарының саны Plezy',
+			'homeLayout.resetHeroButton' => 'Қаланың тұрақты тұрғындарының саны Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Олардың дағдыры',
 			'homeLayout.reorderingLocked' => 'Олардың бәрі',
 			'homeLayout.rowsCanBeDragged' => 'Бұл үшін бір-бірімен бір-біректік қайтарып, бір-біремен бір-биректік қайтарды.',
@@ -8320,13 +8326,13 @@ extension on TranslationsKk {
 			'homeLayout.tapHeroCardDescription' => 'Өмірінің соңына дейін осында тұрып қара сөздерін, аудармаларын жазды.',
 			'homeLayout.heroTapPlayDescription' => 'Қазіргі таңда бүкіл әлемдегі ең айқын көргенде.',
 			'homeLayout.heroTapDetailsDescription' => 'Қаланың тұрақты тұрғындарының саны 1 адамды құрайды.',
-			'platform.localNetworkPermission' => 'PlezyNG жергілікті желіңіздегі медиа серверлерге және ойнату құрылғыларына қосылады.',
-			'platform.locationPermission' => 'Жергілікті желіні анықтап, медиа серверлерге қосылу үшін iOS талап еткенде, PlezyNG орналасқан жер туралы деректерге қол жеткізу рұқсатын пайдаланады.',
+			'platform.localNetworkPermission' => 'Pleazyng жергілікті желіңіздегі медиа серверлерге және ойнату құрылғыларына қосылады.',
+			'platform.locationPermission' => 'Жергілікті желіні анықтап, медиа серверлерге қосылу үшін iOS талап еткенде, Pleazyng орналасқан жер туралы деректерге қол жеткізу рұқсатын пайдаланады.',
 			'platform.photoLibraryPermission' => 'Медиа мұқабалары ретінде пайдалану үшін фотокітапханаңыздан суреттерді таңдаңыз.',
 			'platform.cameraPermission' => 'Companion Remote басқару пультін жұптау үшін QR кодтарын сканерлеңіз.',
 			'universalMedia.title' => 'Открыты медиа',
 			'universalMedia.shortcutHelp' => 'Бұл сессия үшін қолайлы, playlist немесе файлды жүктеу.',
-			'universalMedia.intro' => 'Өзі сүйікті жабдықтар, жүктеу спиртке немесе файлға айналады. Playback-ге PlezyNG стандартты фейерверктері бар және библиографиясы көшіру керек емес.',
+			'universalMedia.intro' => 'Өзі сүйікті жабдықтар, жүктеу спиртке немесе файлға айналады. Playback-ге Pleazyng стандартты фейерверктері бар және библиографиясы көшіру керек емес.',
 			'universalMedia.openWhat' => 'Қанша идеялардан тұрады?',
 			'universalMedia.stream' => 'Тегін адресы',
 			'universalMedia.playlist' => 'Жүзілік',
@@ -8460,7 +8466,7 @@ extension on TranslationsKk {
 			'universalMedia.captureDefaultAudio' => 'Аудиолық аудіолық',
 			'universalMedia.captureWaylandHelp' => 'Wayland limits this XWayland capture to the X display. Windows outside XWayland may not appear.',
 			'universalMedia.captureFrameRate' => 'Серіктің қабығы',
-			'universalMedia.capturePrivacy' => 'The recording is saved only to the file you choose. Microphone capture is optional. PlezyNG does not upload the recording.',
+			'universalMedia.capturePrivacy' => 'The recording is saved only to the file you choose. Microphone capture is optional. Pleazyng does not upload the recording.',
 			'universalMedia.captureSaveAs' => 'Серіктің қабырға айналады.',
 			'universalMedia.captureExtensionMismatch' => 'Choose a filename ending in .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg or the H.264 video encoder is unavailable. Install a supported FFmpeg build, then try again.',
@@ -8474,7 +8480,7 @@ extension on TranslationsKk {
 			'universalMedia.captureStop' => 'Қайталы және Спас',
 			'universalMedia.captureMode' => 'Абайдың',
 			'universalMedia.shareMode' => 'Ақыттық',
-			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. PlezyNG creates a temporary HLS stream.',
+			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
 			'universalMedia.sharePrivacy' => 'Қаланың тұрақты тұрғындарының тұрақты тұрғындарының саны 60 адамды құрайды және адамды құрайды және адамды құрайды.',
 			'universalMedia.shareChooseFile' => 'Медыяфайлы',
 			'universalMedia.shareChooseHelp' => 'Аудио және видео файлы бар. Файлтің қабығы бұл компьютере бар.',
@@ -8487,7 +8493,7 @@ extension on TranslationsKk {
 			'universalMedia.shareOpenUrl' => '«Жеңіске үлес қосқандар», «Жеңіске үлес қосқандар»',
 			'universalMedia.shareQrLabel' => 'КР-кодтің қағидалар мен қағидалар',
 			'universalMedia.shareQrHelp' => '«Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске» АҚШ-ның «Жеңіске».',
-			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In PlezyNG, allow HTTP before opening it.',
+			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.',
 			'universalMedia.shareCopyUrl' => 'Қайталы қабырғасы',
 			'universalMedia.shareExpiresLabel' => 'Қаншалықты ұзақтығы',
 			'universalMedia.shareStarting' => 'Қандайды құбырды...',
@@ -8512,7 +8518,7 @@ extension on TranslationsKk {
 			'universalMedia.extensionInstall' => 'Үлдік қызмет',
 			'universalMedia.extensionReplace' => 'Адаптациялық қызмет',
 			'universalMedia.extensionRemoveTitle' => 'Қаланың ең айқын көргенде?',
-			'universalMedia.extensionRemoveHelp' => 'This removes the service from this profile. PlezyNG does not contact its endpoint.',
+			'universalMedia.extensionRemoveHelp' => 'This removes the service from this profile. Pleazyng does not contact its endpoint.',
 			'universalMedia.extensionRemove' => 'Ақыттық қызмет',
 			'universalMedia.extensionInvalidManifest' => 'This file is not a supported extension manifest. See the Open media guide for the format.',
 			'universalMedia.extensionSaveFailed' => 'Ауыздан шығарылған профильде қарастырып қараңыз.',
@@ -8655,12 +8661,12 @@ extension on TranslationsKk {
 			'fileSources.none' => 'Әйтсе',
 			'fileSources.fullscreen' => 'Екіптер',
 			'fileSources.syncLocation' => 'Өнімдер мен қанағаттан (i)',
-			'fileSources.syncLocationHint' => 'PlezyNG күйіне арналған бөлек WebDAV қалтасы. Деректер шартты түрде жазылады; медиафайлдар өзгермейді.',
+			'fileSources.syncLocationHint' => 'Pleazyng күйіне арналған бөлек WebDAV қалтасы. Деректер шартты түрде жазылады; медиафайлдар өзгермейді.',
 			'fileSources.audiobooks' => 'Аудиолық',
 			'fileSources.comics' => 'Комикстер',
 			'fileSources.scan' => 'Серіктің да салықты және медиа',
 			'fileSources.browserReader' => 'Одан және',
-			'fileSources.browserReaderHelp' => 'Оқу құралы браузерде ашық. Оқу орнын және жазбаларды сақтау үшін PlezyNG қолданбасын ашық ұстаңыз.',
+			'fileSources.browserReaderHelp' => 'Оқу құралы браузерде ашық. Оқу орнын және жазбаларды сақтау үшін Pleazyng қолданбасын ашық ұстаңыз.',
 			'fileSources.on' => 'Қазір',
 			'fileSources.advancedSetup' => 'App регистрациясы',
 			'fileSources.microsoftSignIn' => 'Microsoft-ның ең айқын көрмесі',
@@ -8742,7 +8748,7 @@ extension on TranslationsKk {
 			'lending.openLibraryNote' => 'Бұл үшін, «Аяқтар» және «Аялық» бағдарламасы, «Аақтар» бағдарламасы және «Аақықтар» жобасы бар.',
 			'lending.more' => 'Өздіктер',
 			'lending.gateway' => 'Библиотекасы қабырғасы',
-			'lending.gatewayHint' => 'Біздің библиотекасы немесе PlezyNG администраторға арналған.',
+			'lending.gatewayHint' => 'Біздің библиотекасы немесе Pleazyng администраторға арналған.',
 			'lending.advanced' => 'Библиотекасы',
 			'lending.loadLibraries' => 'Бібліотека мен биліктері',
 			'lending.expired' => 'Бұл кредиттік қызметті ұзақтығы.',
@@ -8864,7 +8870,7 @@ extension on TranslationsKk {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com сайтынан API кілтін алыңыз. Іздеу бейне атауын және қолжетімді IMDb/TMDB ID мәндерін жібереді, бірақ бейнефайлды ешқашан жібермейді. Кілт пен қосымша тіркелгі деректері осы дереккөзбен бірге шифрланады.',
 			'sourceSetup.automaticMetadata' => 'Бейненің автоматты онлайн метадеректері',
 			'sourceSetup.metadataPrivacy' => 'Тек файл атауындағы атауды/жылды және эпизод нөмірлерін немесе NFO ID мәнін жібереді; медиа файлдар мен кіру деректерін ешқашан жібермейді. NFO өрістері басымдығын сақтайды.',
-			'sourceSetup.nfsEncryptionFailure' => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. PlezyNG бұл қосылымды шифрлаусыз қайта жасамайды.',
+			'sourceSetup.nfsEncryptionFailure' => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. Pleazyng бұл қосылымды шифрлаусыз қайта жасамайды.',
 			'sourceSetup.sourceConnecting' => 'Дереккөзге қосылуда',
 			'sourceSetup.metadataSearchPrivacy' => 'Бұл атау іздеуі Trakt қызметіне жіберіледі. Енгізген атауыңыз жіберіледі, бейне не дереккөздің кіру деректері жіберілмейді.',
 			'sourceSetup.chooseMatch' => 'Сәйкес нәтижені таңдау',
@@ -8994,7 +9000,13 @@ extension on TranslationsKk {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Бұл Plezy сілтемесі жарамсыз.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'Бұл Pleazyng сілтемесі жарамсыз.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => '«${profile}» профиліне сәйкес профиль табылмады.',
 			'deepLinks.serverUnavailable' => 'Бұл сілтеме үшін серверге қосыла алмадық.',
 			'deepLinks.notFound' => 'Бұл атау кітапханаларыңыздан табылмады.',
@@ -9142,7 +9154,7 @@ extension on TranslationsKk {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

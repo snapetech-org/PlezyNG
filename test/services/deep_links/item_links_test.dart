@@ -51,23 +51,23 @@ void main() {
 
   group('linkForItem catalogue preference', () {
     test('a movie uses TMDB, then IMDb, then TVDB', () async {
-      expect((await linkFrom(_allIds)).toUri().toString(), 'plezy://play?type=movie&tmdb=603');
+      expect((await linkFrom(_allIds)).toUri().toString(), 'pleazyng://play?type=movie&tmdb=603');
       expect(
         (await linkFrom(const ExternalIds(imdb: 'tt0133093', tvdb: 169))).toUri().toString(),
-        'plezy://play?type=movie&imdb=tt0133093',
+        'pleazyng://play?type=movie&imdb=tt0133093',
       );
-      expect((await linkFrom(const ExternalIds(tvdb: 169))).toUri().toString(), 'plezy://play?type=movie&tvdb=169');
+      expect((await linkFrom(const ExternalIds(tvdb: 169))).toUri().toString(), 'pleazyng://play?type=movie&tvdb=169');
     });
 
     test('a show uses TVDB, then TMDB, then IMDb', () async {
-      expect((await linkFrom(_allIds, item: show)).toUri().toString(), 'plezy://play?type=show&tvdb=169');
+      expect((await linkFrom(_allIds, item: show)).toUri().toString(), 'pleazyng://play?type=show&tvdb=169');
       expect(
         (await linkFrom(const ExternalIds(imdb: 'tt0903747', tmdb: 1396), item: show)).toUri().toString(),
-        'plezy://play?type=show&tmdb=1396',
+        'pleazyng://play?type=show&tmdb=1396',
       );
       expect(
         (await linkFrom(const ExternalIds(imdb: 'tt0903747'), item: show)).toUri().toString(),
-        'plezy://play?type=show&imdb=tt0903747',
+        'pleazyng://play?type=show&imdb=tt0903747',
       );
     });
 
@@ -80,7 +80,7 @@ void main() {
     test('skips an IMDb id the link grammar cannot carry', () async {
       final link = await linkFrom(const ExternalIds(imdb: 'nm0000206', tvdb: 169));
 
-      expect(link.toUri().toString(), 'plezy://play?type=movie&tvdb=169');
+      expect(link.toUri().toString(), 'pleazyng://play?type=movie&tvdb=169');
     });
 
     test('a Jellyfin movie gets a catalogue link too', () async {
@@ -93,7 +93,7 @@ void main() {
 
       final link = await linkFrom(_allIds, item: jellyfinMovie);
 
-      expect(link.toUri().toString(), 'plezy://play?type=movie&tmdb=603');
+      expect(link.toUri().toString(), 'pleazyng://play?type=movie&tmdb=603');
     });
 
     test('an Emby show gets a catalogue link too', () async {
@@ -106,7 +106,7 @@ void main() {
 
       final link = await linkFrom(_allIds, item: embyShow);
 
-      expect(link.toUri().toString(), 'plezy://play?type=show&tvdb=169');
+      expect(link.toUri().toString(), 'pleazyng://play?type=show&tvdb=169');
     });
   });
 
@@ -121,7 +121,7 @@ void main() {
 
       final link = await linkFrom(const ExternalIds(), item: matched);
 
-      expect(link.toUri().toString(), 'plezy://play?type=show&plex=5d9c086c46115600200aa2fe');
+      expect(link.toUri().toString(), 'pleazyng://play?type=show&plex=5d9c086c46115600200aa2fe');
     });
 
     test('a Plex title carries its Plex GUID next to the catalogue id', () async {
@@ -136,7 +136,7 @@ void main() {
 
       // The GUID finds it on Plex libraries on the current agent, which
       // cannot be looked up by catalogue id; the id finds it elsewhere.
-      expect(link.toUri().toString(), 'plezy://play?type=movie&tmdb=603&plex=5d776825880197001ec967c2');
+      expect(link.toUri().toString(), 'pleazyng://play?type=movie&tmdb=603&plex=5d776825880197001ec967c2');
     });
 
     test('ignores a Plex GUID for another kind', () async {
@@ -155,7 +155,7 @@ void main() {
     test('an unmatched item links to itself on its server', () async {
       final link = await linkFrom(const ExternalIds());
 
-      expect(link.toUri().toString(), 'plezy://play?server=plex-1&id=movie-1');
+      expect(link.toUri().toString(), 'pleazyng://play?server=plex-1&id=movie-1');
     });
 
     test('a failed id lookup links to the item on its server', () async {
@@ -184,7 +184,7 @@ void main() {
 
       final link = await linkForItem(client, matched);
 
-      expect(link!.toUri().toString(), 'plezy://play?type=movie&plex=5d776825880197001ec967c2');
+      expect(link!.toUri().toString(), 'pleazyng://play?type=movie&plex=5d776825880197001ec967c2');
     });
   });
 
@@ -201,7 +201,7 @@ void main() {
       final link = await linkForItem(client, episode);
 
       expect(client.calls, isEmpty);
-      expect(link!.toUri().toString(), 'plezy://play?server=plex-1&id=ep-1');
+      expect(link!.toUri().toString(), 'pleazyng://play?server=plex-1&id=ep-1');
       expect((DeepLink.tryParse(link.toUri().toString())! as PlayLink).target, link.target);
     });
 

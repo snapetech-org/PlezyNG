@@ -1,5 +1,5 @@
 # Native launcher based on flutter-tizen's pinned ui-app/cpp template.
-APPNAME = plezyng
+APPNAME = pleazyng
 type = app
 profile = common-6.0
 USER_SRCS += src/runner.cc

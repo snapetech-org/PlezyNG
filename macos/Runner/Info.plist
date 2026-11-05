@@ -53,9 +53,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>PlezyNG</string>
+	<string>Pleazyng</string>
 	<key>CFBundleDisplayName</key>
-	<string>PlezyNG</string>
+	<string>Pleazyng</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -69,7 +69,7 @@
 			<string>com.edde746.plezy</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>plezy</string>
+				<string>pleazyng</string>
 				<string>plezyng</string>
 				<string>plezxyng</string>
 			</array>
@@ -83,13 +83,13 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>PlezyNG can use a camera as an optional source for a local recording.</string>
+	<string>Pleazyng can use a camera as an optional source for a local recording.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>PlezyNG can include a selected microphone in a local recording or share it with your paired Steam computer when you turn it on during a game stream.</string>
+	<string>Pleazyng can include a selected microphone in a local recording or share it with your paired Steam computer when you turn it on during a game stream.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>PlezyNG connects to your media servers and playback devices on your local network.</string>
+	<string>Pleazyng connects to your media servers and playback devices on your local network.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
@@ -97,7 +97,7 @@
 	<key>FLTEnableMergedPlatformUIThread</key>
 	<false/>
 	<!-- Keep rendering with Skia. Flutter 3.47 made Impeller the default macOS
-	     renderer, and PlezyNG is unusually exposed to that switch: the Flutter view
+	     renderer, and Pleazyng is unusually exposed to that switch: the Flutter view
 	     is cleared to transparent so mpv's video layer behind it stays visible,
 	     so anything Impeller leaves in the presented drawable is composited
 	     straight onto the screen instead of being covered. On the Metal SDF text

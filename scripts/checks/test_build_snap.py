@@ -92,7 +92,7 @@ class BuildSnapAdmissionTests(unittest.TestCase):
     def test_untrusted_hosted_contexts_are_rejected_before_privileged_tools(self):
         for override in (
             {"PLEZYNG_ALLOW_PUBLIC_SNAP": "false"},
-            {"GITHUB_REPOSITORY": "example/PlezyNG"},
+            {"GITHUB_REPOSITORY": "example/Pleazyng"},
             {"GITHUB_REF": "refs/pull/123/merge"},
             {"GITHUB_EVENT_NAME": "pull_request"},
         ):

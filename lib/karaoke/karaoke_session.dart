@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
+
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+
 import '../media/lyrics.dart';
 import '../media/media_item.dart';
 import '../mpv/models.dart';

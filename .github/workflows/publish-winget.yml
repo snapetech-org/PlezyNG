@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   submit:
-    runs-on: ${{ fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-submit"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-submit"]}}', github.run_id)) }}
     timeout-minutes: 20
     steps:
       - name: Resolve and validate published release
@@ -85,8 +85,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY `
-            --pattern "plezyng-winget-manifests-$env:RELEASE_VERSION.zip" `
-            --pattern 'plezy-windows-installer.exe' `
+            --pattern "pleazyng-winget-manifests-$env:RELEASE_VERSION.zip" `
+            --pattern 'pleazyng-windows-installer.exe' `
             --pattern 'SHA256SUMS.txt' --dir release-assets
           if ($LASTEXITCODE -ne 0) { throw 'Unable to download WinGet release assets.' }
 
@@ -97,8 +97,8 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           $ErrorActionPreference = 'Stop'
-          $manifestZip = Get-Item "release-assets\plezyng-winget-manifests-$env:RELEASE_VERSION.zip"
-          $installer = Get-Item 'release-assets\plezy-windows-installer.exe'
+          $manifestZip = Get-Item "release-assets\pleazyng-winget-manifests-$env:RELEASE_VERSION.zip"
+          $installer = Get-Item 'release-assets\pleazyng-windows-installer.exe'
           $checksums = 'release-assets\SHA256SUMS.txt'
           foreach ($asset in @($manifestZip, $installer)) {
             $line = @(Select-String -Path $checksums -Pattern ("^([0-9a-f]{64})\s+" + [regex]::Escape($asset.Name) + '$'))
@@ -114,7 +114,7 @@ jobs:
           if ($null -eq $manifest) { throw 'WinGet installer manifest is missing.' }
           $contents = Get-Content $manifest.FullName -Raw
           if ($contents -notmatch [regex]::Escape($installerHash)) { throw 'WinGet manifest installer hash does not match the release asset.' }
-          if ($contents -notmatch [regex]::Escape("/download/$env:RELEASE_TAG/plezy-windows-installer.exe")) {
+          if ($contents -notmatch [regex]::Escape("/download/$env:RELEASE_TAG/pleazyng-windows-installer.exe")) {
             throw 'WinGet manifest points to a different release asset.'
           }
 
@@ -148,8 +148,8 @@ jobs:
             throw 'The .NET 6 runtime required by WinGetCreate was not installed.'
           }
           $env:PATH = "$dotnetRoot;$env:PATH"
-          $manifestRoot = Join-Path $PWD "winget-submit\manifests\s\SnapeTech\PlezyNG\$env:RELEASE_VERSION"
-          $manifestPath = Join-Path $manifestRoot 'SnapeTech.PlezyNG.yaml'
+          $manifestRoot = Join-Path $PWD "winget-submit\manifests\s\SnapeTech\Pleazyng\$env:RELEASE_VERSION"
+          $manifestPath = Join-Path $manifestRoot 'SnapeTech.Pleazyng.yaml'
           if (-not (Test-Path $manifestPath)) { throw "Version manifest is missing: $manifestPath" }
-          & .\wingetcreate.exe submit --prtitle "SnapeTech.PlezyNG $env:RELEASE_VERSION" --no-open $manifestPath
+          & .\wingetcreate.exe submit --prtitle "SnapeTech.Pleazyng $env:RELEASE_VERSION" --no-open $manifestPath
           if ($LASTEXITCODE -ne 0) { throw "wingetcreate submit failed with exit code $LASTEXITCODE" }

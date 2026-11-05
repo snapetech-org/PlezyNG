@@ -119,7 +119,7 @@ def cmake_identity_probe(work_root: Path, generator: str) -> None:
     source.mkdir()
     (source / "CMakeLists.txt").write_text(
         '''cmake_minimum_required(VERSION 3.21)
-project(plezyng_arm64_msvc_probe LANGUAGES C CXX)
+project(pleazyng_arm64_msvc_probe LANGUAGES C CXX)
 file(WRITE "${CMAKE_BINARY_DIR}/compiler-identities.txt"
   "${CMAKE_C_COMPILER_ID};${CMAKE_CXX_COMPILER_ID};${CMAKE_VS_PLATFORM_TOOLSET}")
 ''',
@@ -156,7 +156,7 @@ def prepare() -> None:
     if not run_id.isdigit() or not attempt.isdigit():
         raise RuntimeError("GITHUB_RUN_ID and GITHUB_RUN_ATTEMPT must be numeric")
 
-    task_root = runner_temp / f"plezyng-whisper-arm64-{run_id}-{attempt}"
+    task_root = runner_temp / f"pleazyng-whisper-arm64-{run_id}-{attempt}"
     if task_root.exists() or task_root.is_symlink():
         raise RuntimeError(f"Refusing to reuse existing Whisper build directory: {task_root}")
     task_root.mkdir()

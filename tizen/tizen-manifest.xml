@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.snapetech.plezyng" version="2.24.1" api-version="6.0" xmlns="http://tizen.org/ns/packages">
+<manifest package="org.snapetech.pleazyng" version="2.24.1" api-version="6.0" xmlns="http://tizen.org/ns/packages">
   <profile name="tv" />
-  <ui-application appid="org.snapetech.plezyng" exec="plezyng" type="capp" multiple="false" nodisplay="false" taskmanage="true" hw-acceleration="on">
-    <label>PlezyNG</label>
-    <icon>plezyng.png</icon>
+  <ui-application appid="org.snapetech.pleazyng" exec="pleazyng" type="capp" multiple="false" nodisplay="false" taskmanage="true" hw-acceleration="on">
+    <label>Pleazyng</label>
+    <icon>pleazyng.png</icon>
   </ui-application>
   <privileges>
     <privilege>http://tizen.org/privilege/internet</privilege>

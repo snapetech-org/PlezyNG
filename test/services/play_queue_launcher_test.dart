@@ -35,7 +35,7 @@ class _StubPlexClient implements PlexClient {
   PlexConfig get config => PlexConfig(
     baseUrl: 'http://stub',
     clientIdentifier: 'stub-client',
-    product: 'PlezyNG',
+    product: 'Pleazyng',
     version: 'test',
     machineIdentifier: 'stub-machine',
   );

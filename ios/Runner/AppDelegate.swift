@@ -213,7 +213,7 @@ import MusicKit
 }
 
 /// Narrow iOS MusicKit pilot. Apple remains the catalog and playback owner;
-/// PlezyNG receives catalog metadata and never receives protected media bytes.
+/// Pleazyng receives catalog metadata and never receives protected media bytes.
 @available(iOS 15.0, *)
 final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
   static func register(with registrar: FlutterPluginRegistrar) {

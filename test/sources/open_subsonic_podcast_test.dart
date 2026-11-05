@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import '../test_helpers/prefs.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:plezy/sources/adapters/open_subsonic_source.dart';
@@ -17,6 +18,8 @@ Map<String, Object?> _subsonic(Object data) => {
 };
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(resetSharedPreferencesForTest);
   group('OpenSubsonic source', () {
     test('browses and resolves audio through the read-only server adapter', () async {
       final requests = <http.Request>[];

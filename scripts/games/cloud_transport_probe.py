@@ -64,7 +64,7 @@ async def run(dart):
         uid = os.getuid()
         bridge = Bridge(uid, emit)
         if sys.platform == 'darwin':
-            runtime = Path(f'/tmp/plezyng-steam-cloud-{uid}')
+            runtime = Path(f'/tmp/pleazyng-steam-cloud-{uid}')
             if not runtime.exists():
                 runtime.mkdir(mode=0o700)
                 created = runtime

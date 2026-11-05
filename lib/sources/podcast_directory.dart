@@ -138,7 +138,7 @@ class PodcastDirectory {
         final timestamp = '${_now().toUtc().millisecondsSinceEpoch ~/ 1000}';
         headers = {
           ...headers,
-          'User-Agent': 'PlezyNG/3 PodcastDiscovery',
+          'User-Agent': 'Pleazyng/3 PodcastDiscovery',
           'X-Auth-Key': apiKey,
           'X-Auth-Date': timestamp,
           'Authorization': sha1.convert(utf8.encode('$apiKey$apiSecret$timestamp')).toString(),

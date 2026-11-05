@@ -671,7 +671,7 @@ class _ExternalAccessScreenState extends State<ExternalAccessScreen> {
                               [
                                 t.explore.detail.openOn(site: destination.name),
                                 if (_subscriptionTiers[destination.id] case final tier?) 'Plan: $tier',
-                                if (destination.commerceProviderId != null) 'PlezyNG may earn a commission',
+                                if (destination.commerceProviderId != null) 'Pleazyng may earn a commission',
                                 ?destination.offerNote,
                               ].join(' · '),
                             ),

@@ -11,16 +11,16 @@ import sys
 # Each tuple is an independently required asset. Patterns permit the webOS
 # packager's versioned application identifier without accepting another format.
 REQUIRED = {
-    "Android": ("plezy-android-arm64-v8a.tar.gz", "plezy-android-armeabi-v7a.tar.gz", "plezy-android-x86_64.tar.gz"),
-    "Linux x64": ("plezy-linux-x64.tar.gz",),
-    "Linux ARM64": ("plezy-linux-arm64.tar.gz",),
-    "Windows x64": ("plezy-windows-x64-portable.7z",),
-    "Windows ARM64": ("plezy-windows-arm64-portable.zip",),
-    "macOS universal": ("plezyng-macos.dmg",),
-    "iOS": ("plezy-ios-unsigned.ipa",),
-    "tvOS": ("plezy-tvos-unsigned.ipa",),
-    "Tizen": ("PlezyNG-tizen-arm-tester-handoff.zip",),
-    "webOS": ("*.ipk", "webos-app-provenance.json", "webos-engine-provenance.json", "webos-compatibility.json", "webos-SHA256SUMS.txt", "PlezyNG-lg-webos-submission.zip"),
+    "Android": ("pleazyng-android-arm64-v8a.tar.gz", "pleazyng-android-armeabi-v7a.tar.gz", "pleazyng-android-x86_64.tar.gz"),
+    "Linux x64": ("pleazyng-linux-x64.tar.gz",),
+    "Linux ARM64": ("pleazyng-linux-arm64.tar.gz",),
+    "Windows x64": ("pleazyng-windows-x64-portable.7z",),
+    "Windows ARM64": ("pleazyng-windows-arm64-portable.zip",),
+    "macOS universal": ("pleazyng-macos.dmg",),
+    "iOS": ("pleazyng-ios-unsigned.ipa",),
+    "tvOS": ("pleazyng-tvos-unsigned.ipa",),
+    "Tizen": ("pleazyng-tizen-arm-tester-handoff.zip",),
+    "webOS": ("*.ipk", "webos-app-provenance.json", "webos-engine-provenance.json", "webos-compatibility.json", "webos-SHA256SUMS.txt", "pleazyng-lg-webos-submission.zip"),
 }
 
 

@@ -39,10 +39,10 @@ Source: "staging\arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
     }
 
     return @"
-#define Name "PlezyNG"
+#define Name "Pleazyng"
 #define Version "$Version"
 #define Publisher "SnapeTech"
-#define ExeName "plezy.exe"
+#define ExeName "pleazyng.exe"
 
 [Setup]
 AppId={{$AppGuid}
@@ -56,7 +56,7 @@ DefaultDirName={autopf}\{#Name}
 DefaultGroupName={#Name}
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=plezy-windows-installer
+OutputBaseFilename=pleazyng-windows-installer
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -71,7 +71,7 @@ ArchitecturesInstallIn64BitMode=$ArchAllowed
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-ElevationRequired=PlezyNG is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://github.com/snapetech-org/PlezyNG/releases/latest
+ElevationRequired=Pleazyng is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://github.com/snapetech-org/PlezyNG/releases/latest
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -85,13 +85,13 @@ Name: "{group}\{cm:UninstallProgram,{#Name}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopicon
 
 [Registry]
-Root: HKCU; Subkey: "Software\Classes\plezy"; ValueType: string; ValueName: ""; ValueData: "URL:PlezyNG media link"; Flags: uninsdeletekey
-Root: HKCU; Subkey: "Software\Classes\plezy"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
-Root: HKCU; Subkey: "Software\Classes\plezy\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeName}"" ""%1"""
-Root: HKCU; Subkey: "Software\Classes\plezyng"; ValueType: string; ValueName: ""; ValueData: "URL:PlezyNG media link"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Classes\pleazyng"; ValueType: string; ValueName: ""; ValueData: "URL:Pleazyng media link"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Classes\pleazyng"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCU; Subkey: "Software\Classes\pleazyng\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeName}"" ""%1"""
+Root: HKCU; Subkey: "Software\Classes\plezyng"; ValueType: string; ValueName: ""; ValueData: "URL:Pleazyng media link"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\Classes\plezyng"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
 Root: HKCU; Subkey: "Software\Classes\plezyng\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeName}"" ""%1"""
-Root: HKCU; Subkey: "Software\Classes\plezxyng"; ValueType: string; ValueName: ""; ValueData: "URL:PlezyNG media link"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Classes\plezxyng"; ValueType: string; ValueName: ""; ValueData: "URL:Pleazyng media link"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\Classes\plezxyng"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
 Root: HKCU; Subkey: "Software\Classes\plezxyng\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeName}"" ""%1"""
 
@@ -210,7 +210,7 @@ begin
   begin
     { A machine-wide install that took over a directory registered per-user
       leaves that user's uninstall entry and Start Menu group pointing at files
-      this install now owns, listing PlezyNG twice in Apps & Features. }
+      this install now owns, listing Pleazyng twice in Apps & Features. }
     if IsAdminInstallMode then
     begin
       if RegQueryStringValue(HKCU, UninstallSubkey, 'Inno Setup: App Path', PreviousDir) and
@@ -283,7 +283,7 @@ if (-not $InnoSetupPath -or -not (Test-Path -LiteralPath $InnoSetupPath -PathTyp
 
 if ($HasX64) {
     Write-Host "`nCreating x64 portable archive..." -ForegroundColor Cyan
-    $X64Portable = Join-Path $ResolvedOutput "plezy-windows-x64-portable.7z"
+    $X64Portable = Join-Path $ResolvedOutput "pleazyng-windows-x64-portable.7z"
     Push-Location $X64BuildDir
     try {
         if (Test-Path $X64Portable) { Remove-Item $X64Portable -Force }
@@ -296,7 +296,7 @@ if ($HasX64) {
 
 if ($HasArm64) {
     Write-Host "`nCreating arm64 portable archive..." -ForegroundColor Cyan
-    $Arm64Portable = Join-Path $ResolvedOutput "plezy-windows-arm64-portable.7z"
+    $Arm64Portable = Join-Path $ResolvedOutput "pleazyng-windows-arm64-portable.7z"
     Push-Location $Arm64BuildDir
     try {
         if (Test-Path $Arm64Portable) { Remove-Item $Arm64Portable -Force }
@@ -340,4 +340,4 @@ Remove-Item $StagingDir -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "`nBuild complete!" -ForegroundColor Green
 if ($HasX64)   { Write-Host "Portable (x64):   $X64Portable" -ForegroundColor White }
 if ($HasArm64) { Write-Host "Portable (arm64): $Arm64Portable" -ForegroundColor White }
-Write-Host "Installer:        $(Join-Path $ResolvedOutput 'plezy-windows-installer.exe')" -ForegroundColor White
+Write-Host "Installer:        $(Join-Path $ResolvedOutput 'pleazyng-windows-installer.exe')" -ForegroundColor White

@@ -122,7 +122,7 @@ class Translations$app$zh extends Translations$app$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class Translations$appIcon$zh extends Translations$appIcon$en {
 	@override String get defaultIcon => '默认';
 	@override String get current => '当前图标';
 	@override String get locked => '终身访问需要';
-	@override String get lockedHint => '启动 7 天试用或终身解锁 PlezyNG 以使用替代图标。';
+	@override String get lockedHint => '启动 7 天试用或终身解锁 Pleazyng 以使用替代图标。';
 	@override String get changeFailed => '无法更改应用图标';
-	@override String get launcherHint => '离开 PlezyNG 后，新图标将显示在主屏幕上。';
-	@override String get tvLauncherHint => '离开 PlezyNG 后将显示新横幅。在电视重启之前，Android TV 可能仍会显示旧横幅。';
+	@override String get launcherHint => '离开 Pleazyng 后，新图标将显示在主屏幕上。';
+	@override String get tvLauncherHint => '离开 Pleazyng 后将显示新横幅。在电视重启之前，Android TV 可能仍会显示旧横幅。';
 	@override late final Translations$appIcon$names$zh names = Translations$appIcon$names$zh.internal(_root);
 	@override String get description => '选择由您的设备启动器显示的图标. 预览显示每个选项看起来如何。';
 }
@@ -166,7 +166,7 @@ class Translations$auth$zh extends Translations$auth$en {
 	@override String get quickConnectWaiting => '等待批准…';
 	@override String get quickConnectCancel => '取消';
 	@override String get quickConnectExpired => 'Quick Connect 已过期。请重试。';
-	@override String get localDataRecoveryRequired => 'PlezyNG 无法安全恢复本地登录状态和待处理的播放数据。请重新登录。';
+	@override String get localDataRecoveryRequired => 'Pleazyng 无法安全恢复本地登录状态和待处理的播放数据。请重新登录。';
 	@override String get pinCheckRejected => 'Plex PIN 检查被拒绝';
 	@override String get connectToDirectPlex => '连接到本地服务器 Plex';
 }
@@ -295,9 +295,9 @@ class Translations$settings$zh extends Translations$settings$en {
 
 	// Translations
 	@override String get title => '设置';
-	@override String get supportDeveloper => '支持 PlezyNG';
+	@override String get supportDeveloper => '支持 Pleazyng';
 	@override String get supportDeveloperDescription => '捐赠以支持开发';
-	@override String get lifetimeAccess => 'PlezyNG 终身访问';
+	@override String get lifetimeAccess => 'Pleazyng 终身访问';
 	@override String get language => '语言';
 	@override String get theme => '主题';
 	@override String get appearance => '外观';
@@ -353,7 +353,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => '没有连接媒体图书馆可用。';
 	@override String get contentScreensaverDismissHint => '按下任何按钮或按下取消';
 	@override String get newEpisodeNotifications => '新事件通知';
-	@override String get newEpisodeNotificationsDescription => '警告当新集添加到一个节目你被抓住时,检查 Plezy 是开放的。';
+	@override String get newEpisodeNotificationsDescription => '警告当新集添加到一个节目你被抓住时,检查 Pleazyng 是开放的。';
 	@override String get continueWatchingRowSize => '继续观看 序列大小';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} 卡片';
 	@override String get rowSizeCompact => '紧凑';
@@ -482,7 +482,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get importSettingsDescription => '从文件恢复偏好设置';
 	@override String get importSettingsConfirm => '这将替换您当前的设置。继续吗？';
 	@override String get importSettingsSuccess => '设置已导入';
-	@override String get importSettingsInvalidFile => '此文件不是有效的 PlezyNG 设置导出';
+	@override String get importSettingsInvalidFile => '此文件不是有效的 Pleazyng 设置导出';
 	@override String get importSettingsNoUser => '导入设置前请先登录';
 	@override String get cloudBackup => '云备份';
 	@override String get cloudBackupDescription => '通过 HTTPS 将可迁移的设置备份到 WebDAV 地址。服务器连接和登录凭据保留在此设备上。';
@@ -664,7 +664,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get forceTvMode => '强制 TV 模式';
 	@override String get forceTvModeDescription => '强制 TV 布局。适用于无法自动检测的设备。需要重启。';
 	@override String get startInFullscreen => '以全屏模式启动';
-	@override String get startInFullscreenDescription => '启动时以全屏模式打开 PlezyNG';
+	@override String get startInFullscreenDescription => '启动时以全屏模式打开 Pleazyng';
 	@override String get exitFullscreenOnPlayerClose => '关闭播放器时退出全屏';
 	@override String get exitFullscreenOnPlayerCloseDescription => '关闭视频播放器时自动退出全屏模式';
 	@override String get autoHidePerformanceOverlay => '自动隐藏性能叠加层';
@@ -720,7 +720,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get playerScopeGlobal => '所有位置';
 	@override String get playerScopeLibrary => '按媒体库';
 	@override String get playerScopeTitle => '按剧集或电影';
-	@override String get exportDialogTitle => '导出 PlezyNG 设置';
+	@override String get exportDialogTitle => '导出 Pleazyng 设置';
 	@override String get followSystem => '跟随系统';
 	@override String get followAppLanguage => '与界面语言一致';
 	@override String get regionFormat => '区域格式';
@@ -731,7 +731,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => '打开桌面视频在播放开始时全屏';
 	@override String get extendVideoIntoDisplayCutout => '将视频扩展到显示器中';
 	@override String get extendVideoIntoDisplayCutoutDescription => '让全屏视频在Android手机上使用相机切割';
-	@override String get languageDescription => '选择用于 PlezyNG 控制和消息的语言. 跟踪系统跟踪您的设备语言。';
+	@override String get languageDescription => '选择用于 Pleazyng 控制和消息的语言. 跟踪系统跟踪您的设备语言。';
 	@override String get themeDescription => '选择应用程序中使用的颜色和对比。';
 	@override String get libraryDensityDescription => '改变每个行中的图书馆卡的数量。';
 	@override String get displayScaleDescription => '在此车屏幕上重新设置接口,而无需改变您的设备上的文本大小。';
@@ -753,14 +753,14 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get episodeActionDescription => '选择当您启动一个节目卡时会发生什么。';
 	@override String get episodePlayDescription => '立即开始事件。';
 	@override String get episodeDetailsDescription => '在播放之前打开集片页面。';
-	@override String get contentScreensaverDelayDescription => '在展示艺术作品之前,选择 PlezyNG 等待多久没有输入。';
+	@override String get contentScreensaverDelayDescription => '在展示艺术作品之前,选择 Pleazyng 等待多久没有输入。';
 	@override String get continueWatchingRowSizeDescription => '在继续观看行中选择卡片的尺寸。';
 	@override String get rowSizeCompactDescription => '显示较小的卡片,以便在行列中添加更多的项目。';
 	@override String get rowSizeStandardDescription => '使用标准卡尺寸。';
 	@override String get rowSizeLargeDescription => '显示更大的卡片,更多艺术作品的细节。';
 	@override String get visualEffectsDescription => '选择该设备的动画和艺术作品效果预算。';
 	@override String get visualEffectsFullDescription => '在每个设备上使用完整的动画和艺术作品效果。';
-	@override String get startupSectionDescription => '在 PlezyNG 启动时选择哪个部分打开。';
+	@override String get startupSectionDescription => '在 Pleazyng 启动时选择哪个部分打开。';
 	@override late final Translations$settings$startupSectionOptions$zh startupSectionOptions = Translations$settings$startupSectionOptions$zh.internal(_root);
 	@override String get smallSkipDurationDescription => '设置由短后方向移动的距离,并向前寻找控制。';
 	@override String get largeSkipDurationDescription => '设置远程移动的长后方向和向前寻找控制。';
@@ -796,7 +796,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => '播放源音频,无需Bitrate加密的Transcode。';
 	@override String get musicQualityTranscodeOptionDescription => '请求服务器转代码接近上面的比特率;实际输出可能有所不同。';
 	@override String get maxVolumeInputLabel => '最大容量(%)';
-	@override String get checkForUpdatesDescription => '现在检查是否有更新的PlezyNG版本。';
+	@override String get checkForUpdatesDescription => '现在检查是否有更新的Pleazyng版本。';
 	@override String get appearanceDescription => '选择应用程序主题,并调整图书馆卡、主行和导航。';
 	@override String get prerollLibraryDescription => '选择包含电影预角色可用的剪辑的图书馆。';
 	@override String get prerollSelectionDescription => '选择从所选图书馆播放的剪辑在电影之前。';
@@ -1047,8 +1047,8 @@ class Translations$mediaMenu$zh extends Translations$mediaMenu$en {
 		one: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：',
 		other: '另外 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG 无法确认此操作会删除哪些文件，因此删除范围可能超出上面提到的项目。请取消后重试，或仍然删除。';
-	@override String get deleteScopeUnverifiedNoFileInfo => '你的服务器没有提供此项目的文件详情，因此 PlezyNG 无法确认此操作会删除哪些文件。删除范围可能超出上面提到的项目。';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng 无法确认此操作会删除哪些文件，因此删除范围可能超出上面提到的项目。请取消后重试，或仍然删除。';
+	@override String get deleteScopeUnverifiedNoFileInfo => '你的服务器没有提供此项目的文件详情，因此 Pleazyng 无法确认此操作会删除哪些文件。删除范围可能超出上面提到的项目。';
 	@override String get mediaDeletedSuccessfully => '媒体项已成功删除';
 	@override String get mediaFailedToDelete => '删除媒体项失败';
 	@override String get rate => '评分';
@@ -1116,7 +1116,7 @@ class Translations$accessibility$zh extends Translations$accessibility$en {
 	@override String get colorModeRgb => '里格';
 	@override String get title => '可用性';
 	@override String get summary => '文本、对比、动作和控制';
-	@override String get systemHint => '您的设备的可用性设置始终适用. 这些选项在 PlezyNG 期间添加调整。';
+	@override String get systemHint => '您的设备的可用性设置始终适用. 这些选项在 Pleazyng 期间添加调整。';
 	@override String get readability => '阅读与可见性';
 	@override String get textSize => '附加文本大小';
 	@override String get preview => '找下一个故事,阅读,听,并以自己的速度观看。';
@@ -1129,7 +1129,7 @@ class Translations$accessibility$zh extends Translations$accessibility$en {
 	@override String get largeTargets => '触摸目标';
 	@override String get largeTargetsHint => '共享控制器提供更多触摸和辅助导航空间。';
 	@override String get navigationHint => '使用 Tab 和 Shift+Tab 在控件之间移动，按 Enter 或空格键激活，按 Escape 或返回按钮关闭。打开书籍后，可调整缩放比例和阅读偏好。';
-	@override String get textSizeDescription => '在 PlezyNG 中扩展接口文本,以及您的设备的系统文本大小设置。';
+	@override String get textSizeDescription => '在 Pleazyng 中扩展接口文本,以及您的设备的系统文本大小设置。';
 	@override String get boldTextHint => '加粗界面标签和消息的字重，让它们更容易辨认。';
 }
 
@@ -1457,7 +1457,7 @@ class Translations$profiles$zh extends Translations$profiles$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => '添加 PlezyNG 用户资料';
+	@override String get addPlezyProfile => '添加 Pleazyng 用户资料';
 	@override String get switchingProfile => '正在切换用户资料…';
 	@override String get deleteThisProfileTitle => '删除此用户资料？';
 	@override String deleteThisProfileMessage({required Object displayName}) => '移除 ${displayName}。连接不会受影响。';
@@ -1548,7 +1548,7 @@ class Translations$connections$zh extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} 台服务器拒绝此账户访问';
 	@override String get signInAgain => '重新登录';
 	@override String editMediaBrowserTitle({required Object product}) => '编辑 ${product} 连接';
-	@override String editMediaBrowserIntro({required Object serverName}) => '为 ${serverName} 添加或移除 URL。PlezyNG 会使用延迟最低且可访问的 URL。';
+	@override String editMediaBrowserIntro({required Object serverName}) => '为 ${serverName} 添加或移除 URL。Pleazyng 会使用延迟最低且可访问的 URL。';
 }
 
 // Path: accountPreferences
@@ -1562,7 +1562,7 @@ class Translations$accountPreferences$zh extends Translations$accountPreferences
 	@override String hubSubtitleSingle({required Object account}) => '音频、字幕和媒体库选项已保存在 ${account} 上';
 	@override String hubSubtitleMultiple({required Object count}) => '音频、字幕和媒体库选项已保存在 ${count} 个账户上';
 	@override String get pickAccount => '每个账户都保存自己的偏好设置。选择要编辑的账户。';
-	@override String get storedOnAccount => '这些选项保存在账户本身，因此所有登录该账户的应用都会使用它们——包括你其他设备上的 PlezyNG。';
+	@override String get storedOnAccount => '这些选项保存在账户本身，因此所有登录该账户的应用都会使用它们——包括你其他设备上的 Pleazyng。';
 	@override String get noAccounts => '没有可配置的账户';
 	@override String get noAccountsHint => '登录 Plex，或连接 Jellyfin 或 Emby 服务器，该账户上保存的偏好设置就会显示在这里。';
 	@override String get unavailable => '无法访问此账户';
@@ -1790,9 +1790,9 @@ class Translations$startup$zh extends Translations$startup$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG 无法启动';
+	@override String get failedTitle => 'Pleazyng 无法启动';
 	@override String get failedBody => '启动过程中出现问题。以下详情指出了失败的原因。';
-	@override String get failedBodyRepairable => 'PlezyNG 的已保存设置文件已损坏，必须先重建才能启动。重试没有用——请选择“修复存储”。';
+	@override String get failedBodyRepairable => 'Pleazyng 的已保存设置文件已损坏，必须先重建才能启动。重试没有用——请选择“修复存储”。';
 	@override String get phaseLabel => '步骤';
 	@override String get showDetails => '显示详情';
 	@override String get hideDetails => '隐藏详情';
@@ -1801,16 +1801,16 @@ class Translations$startup$zh extends Translations$startup$en {
 	@override String get uploadDetails => '上传详情';
 	@override String get repairStorage => '修复存储';
 	@override String get repairTitle => '修复已存储的数据？';
-	@override String get repairBodyCommon => 'PlezyNG 的设置文件已损坏且无法读取。修复会将所有设置重置为默认值。';
+	@override String get repairBodyCommon => 'Pleazyng 的设置文件已损坏且无法读取。修复会将所有设置重置为默认值。';
 	@override String get repairBodyOneCredential => '有一项已保存的登录信息已损坏且无法读取。修复只会移除这一项，其他设置保持不变。';
 	@override String get repairBodySignInsKept => '你的服务器和个人资料应保持登录状态。';
 	@override String get repairBodySignInsLost => '保护已保存登录信息的密钥无法从此文件中恢复，因此你需要重新登录每个服务器和个人资料。媒体服务器上的内容不受影响。';
-	@override String get repairBodySessionsUncertain => '追踪服务（MAL、AniList、Simkl、Trakt）和 Seerr 是分开存储的，可能保留也可能无法保留。PlezyNG 会明确告诉你保留了哪些。';
+	@override String get repairBodySessionsUncertain => '追踪服务（MAL、AniList、Simkl、Trakt）和 Seerr 是分开存储的，可能保留也可能无法保留。Pleazyng 会明确告诉你保留了哪些。';
 	@override String get repairConfirm => '修复';
 	@override String get repairSucceeded => '存储已修复';
 	@override String get repairNeedsRestart => '存储已修复 — 需要重启';
-	@override String get restartRequiredBody => '你的数据已修复，但 PlezyNG 需要重新启动后才能使用。请关闭 PlezyNG 并重新打开。';
-	@override String get quitPlezy => '退出 PlezyNG';
+	@override String get restartRequiredBody => '你的数据已修复，但 Pleazyng 需要重新启动后才能使用。请关闭 Pleazyng 并重新打开。';
+	@override String get quitPlezy => '退出 Pleazyng';
 	@override String get repairFailed => '修复失败';
 	@override String get repairKeptSignIns => '你的服务器和个人资料仍然保持登录状态。';
 	@override String get repairLostSignIns => '保护已保存登录信息的密钥无法恢复。你需要重新登录每个服务器和个人资料。';
@@ -1819,7 +1819,7 @@ class Translations$startup$zh extends Translations$startup$en {
 	@override String get backupWarning => '其中包含你的登录凭据。请勿上传或分享。';
 	@override String get deleteBackup => '删除副本';
 	@override String get backupDeleted => '副本已删除。';
-	@override String get previousFailureTitle => 'PlezyNG 上次启动失败';
+	@override String get previousFailureTitle => 'Pleazyng 上次启动失败';
 }
 
 // Path: licenses
@@ -2149,7 +2149,7 @@ class Translations$watchTogether$zh extends Translations$watchTogether$en {
 	@override String get codeCopied => '房间代码已复制';
 	@override String get shareInvite => '分享邀请';
 	@override String get inviteCopied => '邀请已复制。请将其粘贴到消息中。';
-	@override String inviteMessage({required Object code}) => '加入我在 PlezyNG 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。';
+	@override String inviteMessage({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。';
 	@override String get openSessionControls => '打开“一起看”会话控制';
 	@override String get reconnecting => '正在重新连接…';
 	@override String get reconnectingDescription => '连接已中断。你将自动重新加入房间。';
@@ -2175,7 +2175,7 @@ class Translations$watchTogether$zh extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => '选择其他副本';
 	@override String get dontPlay => '不播放';
 	@override String get unavailableTitle => '你没有此视频';
-	@override String get unavailableDescription => 'PlezyNG 在你的媒体库中找不到它。请自行选择副本或重新搜索。';
+	@override String get unavailableDescription => 'Pleazyng 在你的媒体库中找不到它。请自行选择副本或重新搜索。';
 	@override String get chooseCopy => '选择副本';
 	@override String get searchAgain => '重新搜索';
 	@override String get noCandidates => '在你的媒体库中未找到副本。';
@@ -2320,11 +2320,11 @@ class Translations$downloads$zh extends Translations$downloads$en {
 	@override String get activeSyncRules => '同步规则';
 	@override String get reviewOrphanFiles => '检查无对应记录的下载';
 	@override String get orphanReviewTitle => '检查无对应记录的下载';
-	@override String get orphanReviewDescription => '这些已标记的文件位于 PlezyNG 默认管理的下载文件夹中，但没有匹配的下载记录或正在进行的任务。删除前请先检查列表。';
+	@override String get orphanReviewDescription => '这些已标记的文件位于 Pleazyng 默认管理的下载文件夹中，但没有匹配的下载记录或正在进行的任务。删除前请先检查列表。';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} 个文件 · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => '删除 ${count} 个文件';
 	@override String get orphanCleanupNone => '未找到无对应记录的下载文件';
-	@override String get orphanCleanupFailed => 'PlezyNG 无法安全扫描受管理的下载文件夹。没有删除任何文件。';
+	@override String get orphanCleanupFailed => 'Pleazyng 无法安全扫描受管理的下载文件夹。没有删除任何文件。';
 	@override String get orphanCleanupChanged => '检查期间下载列表已更改。清理前请重新检查文件。';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => '已删除 ${count} 个无对应记录的文件 · 释放 ${size}';
 	@override String get noSyncRules => '没有同步规则';
@@ -2700,11 +2700,11 @@ class Translations$trakt$zh extends Translations$trakt$en {
 	@override String get connected => '已连接';
 	@override String connectedAs({required Object username}) => '已以 @${username} 身份连接';
 	@override String get disconnectConfirm => '断开 Trakt 账户？';
-	@override String get disconnectConfirmBody => 'PlezyNG 将停止向 Trakt 发送事件。你可随时重新连接。';
+	@override String get disconnectConfirmBody => 'Pleazyng 将停止向 Trakt 发送事件。你可随时重新连接。';
 	@override String get scrobble => '实时同步播放状态';
 	@override String get scrobbleDescription => '播放期间将播放、暂停和停止事件发送到 Trakt。';
 	@override String get watchedSync => '同步已观看状态';
-	@override String get watchedSyncDescription => '在 PlezyNG 中将内容标记为已观看时，也会在 Trakt 上标记为已观看。';
+	@override String get watchedSyncDescription => '在 Pleazyng 中将内容标记为已观看时，也会在 Trakt 上标记为已观看。';
 }
 
 // Path: seerr
@@ -2723,10 +2723,10 @@ class Translations$seerr$zh extends Translations$seerr$en {
 	@override String get signInWithEmby => '使用 Emby 登录';
 	@override String get signInWithLocal => '使用本地账户';
 	@override String get email => '邮箱';
-	@override String get noSignInMethods => '此 Seerr 实例未提供 PlezyNG 支持的登录方式。';
+	@override String get noSignInMethods => '此 Seerr 实例未提供 Pleazyng 支持的登录方式。';
 	@override String get instance => '实例';
 	@override String get disconnectConfirm => '断开 Seerr 连接？';
-	@override String get disconnectConfirmBody => 'PlezyNG 将忘记此 Seerr 实例。可随时重新连接。';
+	@override String get disconnectConfirmBody => 'Pleazyng 将忘记此 Seerr 实例。可随时重新连接。';
 	@override String get request => '请求';
 	@override String get request4k => '请求 4K';
 	@override String get seasons => '季';
@@ -2751,7 +2751,7 @@ class Translations$seerr$zh extends Translations$seerr$en {
 	@override String get statusBlocklisted => '已加入屏蔽列表';
 	@override String couldNotReach({required Object url, required Object error}) => '无法连接到 ${url}：${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => '${url} 上没有 Seerr 实例（HTTP ${status}）';
-	@override String get behindAuthProxy => '响应来自需要身份验证的反向代理（SSO 或 HTTP 认证），而非 Seerr。PlezyNG 无法通过它登录：请让 Seerr 的 /api/v1 路径为此应用绕过代理，或使用可直接访问 Seerr 的地址。';
+	@override String get behindAuthProxy => '响应来自需要身份验证的反向代理（SSO 或 HTTP 认证），而非 Seerr。Pleazyng 无法通过它登录：请让 Seerr 的 /api/v1 路径为此应用绕过代理，或使用可直接访问 Seerr 的地址。';
 	@override String get invalidUrl => '输入服务器地址，例如 https://seerr.example.com';
 	@override String get quickConnectUnsupported => '此 Seerr 实例不支持 Quick Connect。需要 Seerr 3.4 或更高版本。';
 	@override String get notInitialized => '此 Seerr 实例尚未完成首次运行设置';
@@ -2781,7 +2781,7 @@ class Translations$services$zh extends Translations$services$en {
 	@override String get scrobble => '自动记录进度';
 	@override String get scrobbleDescription => '观看完一集或一部电影后更新你的列表。';
 	@override String disconnectConfirm({required Object service}) => '断开 ${service} 连接？';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG 将停止更新 ${service}。可随时重新连接。';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng 将停止更新 ${service}。可随时重新连接。';
 	@override String connectFailed({required Object service}) => '无法连接到 ${service}。请重试。';
 	@override late final Translations$services$names$zh names = Translations$services$names$zh.internal(_root);
 	@override late final Translations$services$simklReconnect$zh simklReconnect = Translations$services$simklReconnect$zh.internal(_root);
@@ -2803,8 +2803,8 @@ class Translations$streaming$zh extends Translations$streaming$en {
 	@override String get title => '云端与插件串流';
 	@override String get subtitle => '连接 Debrid 账户，即可浏览云端文件并播放受支持的流。兼容 Stremio 的插件会在电影和剧集详情页提供播放选项。连接信息会在此设备上加密，并保存到此个人资料。';
 	@override String connectionsConfigured({required Object count}) => '已连接的来源：${count}';
-	@override String get settingsLoadFailed => 'PlezyNG 无法解锁已保存的串流设置。请先解锁设备，再重试后更改连接。';
-	@override String get settingsUnreadable => 'PlezyNG 无法解锁这些已保存的连接。清除后即可重新连接服务。';
+	@override String get settingsLoadFailed => 'Pleazyng 无法解锁已保存的串流设置。请先解锁设备，再重试后更改连接。';
+	@override String get settingsUnreadable => 'Pleazyng 无法解锁这些已保存的连接。清除后即可重新连接服务。';
 	@override String get clearUnreadableSettings => '清除已保存的设置';
 	@override String get clearUnreadableSettingsConfirm => '清除已保存的串流设置？';
 	@override String get clearUnreadableSettingsBody => '这会从此个人资料中移除所有已保存的服务商账户和插件地址，且无法撤销。';
@@ -2816,11 +2816,11 @@ class Translations$streaming$zh extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => '选择浏览此目录所需的筛选条件。';
 	@override String get catalogRequiredLabel => '必填';
 	@override String get importFromStremio => '从 Stremio 导入';
-	@override String get stremioImportInstructions => '扫描二维码或打开链接。登录 Stremio 并批准请求。PlezyNG 只会读取你的插件列表，不会索要 Stremio 密码或更改设置。';
+	@override String get stremioImportInstructions => '扫描二维码或打开链接。登录 Stremio 并批准请求。Pleazyng 只会读取你的插件列表，不会索要 Stremio 密码或更改设置。';
 	@override String get stremioImportOpen => '打开 Stremio 链接';
 	@override String get stremioImportCode => '关联码';
 	@override String get stremioImportPreviewTitle => '选择插件';
-	@override String get stremioImportPreviewBody => '选择要连接到 PlezyNG 的插件。此导入仅接受 HTTPS 地址。';
+	@override String get stremioImportPreviewBody => '选择要连接到 Pleazyng 的插件。此导入仅接受 HTTPS 地址。';
 	@override String stremioImportIgnored({required Object count}) => '因地址不受支持或不安全而跳过的插件：${count}。';
 	@override String get stremioCatalogs => '目录';
 	@override String get stremioStreams => '串流';
@@ -2834,7 +2834,7 @@ class Translations$streaming$zh extends Translations$streaming$en {
 	@override String get addByManifestUrl => '通过清单网址添加';
 	@override String get addAddon => '添加插件';
 	@override String get manifestUrl => '插件清单网址';
-	@override String get manifestUrlHint => '粘贴插件的清单网址。连接前，PlezyNG 会检查其是否支持目录或串流资源。';
+	@override String get manifestUrlHint => '粘贴插件的清单网址。连接前，Pleazyng 会检查其是否支持目录或串流资源。';
 	@override String get allowHttp => '允许未加密的 HTTP 地址';
 	@override String get allowHttpDescription => '仅对私人网络中可信任的插件使用。';
 	@override String get installAddon => '连接插件';
@@ -2842,20 +2842,20 @@ class Translations$streaming$zh extends Translations$streaming$en {
 	@override String get addonRemoved => '插件已移除';
 	@override String get addonToggle => '启用插件';
 	@override String get addonEmpty => '尚未连接插件';
-	@override String get addonError => 'PlezyNG 无法连接此插件。请检查清单网址并重试。';
+	@override String get addonError => 'Pleazyng 无法连接此插件。请检查清单网址并重试。';
 	@override String get addonPrivacy => '仅连接你信任的插件。搜索时，插件会收到你要搜索的标题，并可能返回第三方串流链接。';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => '通过 Real-Debrid 账户播放受支持的种子流。';
 	@override String get connectRealDebrid => '使用二维码连接';
 	@override String realDebridConnected({required Object username}) => '已连接：${username}';
-	@override String get realDebridInstructions => '扫描二维码或打开链接，然后输入此激活码以连接 PlezyNG：';
+	@override String get realDebridInstructions => '扫描二维码或打开链接，然后输入此激活码以连接 Pleazyng：';
 	@override String get realDebridActivate => '打开 Real-Debrid 进行激活';
 	@override String get realDebridCode => '激活码';
 	@override String get realDebridConnectFailed => '无法连接 Real-Debrid。请重试。';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => '通过 AllDebrid 账户播放受支持的种子流。';
 	@override String get connectAllDebrid => '使用二维码连接';
-	@override String get allDebridInstructions => '扫描二维码或打开链接以授权 PlezyNG。连接期间请保持此页面打开：';
+	@override String get allDebridInstructions => '扫描二维码或打开链接以授权 Pleazyng。连接期间请保持此页面打开：';
 	@override String get allDebridActivate => '打开 AllDebrid 进行激活';
 	@override String get allDebridCode => '激活 PIN 码';
 	@override String get allDebridConnectFailed => '无法连接 AllDebrid。请重试。';
@@ -2866,13 +2866,13 @@ class Translations$streaming$zh extends Translations$streaming$en {
 	@override String get connectApiKey => '使用 API 密钥连接';
 	@override String apiKeyTitle({required Object service}) => '连接 ${service}';
 	@override String get apiKey => 'API 密钥';
-	@override String apiKeyHint({required Object service}) => '粘贴 ${service} 账户设置中的 API 密钥。PlezyNG 会在此设备上加密密钥，并将其保存在此个人资料中。';
+	@override String apiKeyHint({required Object service}) => '粘贴 ${service} 账户设置中的 API 密钥。Pleazyng 会在此设备上加密密钥，并将其保存在此个人资料中。';
 	@override String get apiKeyConnectFailed => '无法验证此 API 密钥。请检查后重试。';
 	@override String accountConnected({required Object username}) => '已连接：${username}';
 	@override String get streamNeedsProvider => '连接 Debrid 服务以播放此种子流。';
 	@override String get playViaProvider => '通过 Debrid 播放';
 	@override String disconnectConfirm({required Object service}) => '断开 ${service}？';
-	@override String get disconnectBody => 'PlezyNG 会移除此设备的授权，不会更改服务商中的文件或正在进行的传输。';
+	@override String get disconnectBody => 'Pleazyng 会移除此设备的授权，不会更改服务商中的文件或正在进行的传输。';
 	@override String get streamsTitle => '选择串流';
 	@override String get noStreams => '未找到此标题的串流。';
 	@override String get manageConnections => '管理串流服务';
@@ -2888,7 +2888,7 @@ class Translations$streaming$zh extends Translations$streaming$en {
 	@override String get streamUnsupported => '应用内播放器不支持此串流格式。';
 	@override String get remoteNeedsEpisode => '请先选择剧集，再搜索串流。';
 	@override String get remoteNeedsEpisodeNumber => '此剧集缺少季号或集号。';
-	@override String get remoteNeedsExternalId => 'PlezyNG 找不到此标题的 IMDb 或 TMDB ID。';
+	@override String get remoteNeedsExternalId => 'Pleazyng 找不到此标题的 IMDb 或 TMDB ID。';
 	@override String get watchWithServices => '通过已连接的服务观看';
 	@override String get chooseEpisode => '选择剧集';
 	@override String get episodes => '剧集';
@@ -2930,7 +2930,7 @@ class Translations$addServer$zh extends Translations$addServer$en {
 	@override String addConnectionTitleScoped({required Object name}) => '添加到 ${name}';
 	@override String get signInWithPlexCard => '使用 Plex 登录';
 	@override String get signInWithPlexCardSubtitle => '授权此设备。共享服务器会被添加。';
-	@override String get signInWithPlexCardSubtitleScoped => '授权一个 Plex 账户。Plex Home 用户将成为 PlezyNG 用户资料。';
+	@override String get signInWithPlexCardSubtitleScoped => '授权一个 Plex 账户。Plex Home 用户将成为 Pleazyng 用户资料。';
 	@override String connectToMediaBrowserCard({required Object product}) => '连接到 ${product}';
 	@override String get connectToMediaBrowserCardSubtitle => '输入你的服务器 URL、用户名和密码。';
 	@override String connectToMediaBrowserCardSubtitleScoped({required Object product, required Object name}) => '登录你的 ${product} 服务器。将绑定到 ${name}。';
@@ -3019,15 +3019,15 @@ class Translations$appAccess$zh extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => '每個功能都免費嘗試7天';
-	@override String get description => '开始一个七天的试用,完全访问每个PlezyNG功能,在试用期间没有费用,没有订阅,试用后,在您的商店价格上一生购买,终身开锁PlezyNG。';
-	@override String get trialEndedDescription => '按商店显示的价格一次性购买，即可终身解锁 PlezyNG 的全部功能，无需订阅。';
+	@override String get description => '开始一个七天的试用,完全访问每个Pleazyng功能,在试用期间没有费用,没有订阅,试用后,在您的商店价格上一生购买,终身开锁Pleazyng。';
+	@override String get trialEndedDescription => '按商店显示的价格一次性购买，即可终身解锁 Pleazyng 的全部功能，无需订阅。';
 	@override String get startTrial => '开始我的7天免费试验';
 	@override String get trialActive => '您的7天全功能测试已活跃。';
 	@override String get trialEnded => '你的七天审判结束了';
 	@override String get trialStartFailed => '我无法在这个设备上保存测试,请再试一次。';
-	@override String get lifetimeTitle => 'PlezyNG 终身禁用';
-	@override String get lifetimeBody => '感谢!您终身访问所有 PlezyNG 功能。';
-	@override String get manageTitle => 'PlezyNG 终身访问';
+	@override String get lifetimeTitle => 'Pleazyng 终身禁用';
+	@override String get lifetimeBody => '感谢!您终身访问所有 Pleazyng 功能。';
+	@override String get manageTitle => 'Pleazyng 终身访问';
 	@override String get manageDescription => '每個功能都免費嘗試7天,然後用一個付款解锁一生的一切,以您的商店的價格。';
 	@override String buy({required Object price}) => '解锁所有功能为 ${price}';
 	@override String get loadingPrice => '货物价格...';
@@ -3035,11 +3035,11 @@ class Translations$appAccess$zh extends Translations$appAccess$en {
 	@override String get restore => '恢复终身购买';
 	@override String get pending => '您的购买正在等待付款或批准。商店完成交易后，终身使用权限将立即解锁。';
 	@override String get storeUnavailable => '目前无法购买。请确认您已登录商店，且此设备允许购买。';
-	@override String get productNotFound => 'PlezyNG 终身解锁 目前尚未在本商店提供。';
+	@override String get productNotFound => 'Pleazyng 终身解锁 目前尚未在本商店提供。';
 	@override String get productQueryFailed => '无法收取商店价格,请检查您的连接并尝试一次。';
 	@override String get purchaseFailed => '購買不錯了,再試一次。';
 	@override String get restoreFailed => '无法到达商店恢复您的购买,再试一次。';
-	@override String get nothingToRestore => '已找到第 PlezyNG 终身购买号,用于此商店帐户。';
+	@override String get nothingToRestore => '已找到第 Pleazyng 终身购买号,用于此商店帐户。';
 }
 
 // Path: detail
@@ -3091,7 +3091,7 @@ class Translations$homeLayout$zh extends Translations$homeLayout$en {
 	@override String get syncAccountOff => '关闭:此设备保持其自己的配置。';
 	@override String get syncNow => '现在的Sync';
 	@override String get plexHomeManager => 'Plex 主持人';
-	@override String get managePlexRows => '管理 Plex 行在 Plezy';
+	@override String get managePlexRows => '管理 Plex 行在 Pleazyng';
 	@override String get managePlexRowsDescription => '开放组织主选行列';
 	@override String get organizeHomeRows => '安排家居行';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} 行: 移动, 英雄, 自动滑动, 移除';
@@ -3161,7 +3161,7 @@ class Translations$homeLayout$zh extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => '选择行(或保持):移动 · 左/右:行选项 · 返回:完成';
 	@override String get layoutNavDescription => '选择行、图书馆和收藏类别';
 	@override String get editHomeRow => '编辑 主页 序列';
-	@override String get resetHeroButton => '恢复 Plezy 默认焦点横幅布局';
+	@override String get resetHeroButton => '恢复 Pleazyng 默认焦点横幅布局';
 	@override String get reorderingUnlocked => '重新排序 开锁';
 	@override String get reorderingLocked => '重新安排锁';
 	@override String get rowsCanBeDragged => '可以拖绳 - 点击锁,以防止';
@@ -3187,8 +3187,8 @@ class Translations$platform$zh extends Translations$platform$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG 会连接到您本地网络中的媒体服务器和播放设备。';
-	@override String get locationPermission => '当 iOS 要求提供位置权限才能检测本地网络并连接媒体服务器时，PlezyNG 会使用此权限。';
+	@override String get localNetworkPermission => 'Pleazyng 会连接到您本地网络中的媒体服务器和播放设备。';
+	@override String get locationPermission => '当 iOS 要求提供位置权限才能检测本地网络并连接媒体服务器时，Pleazyng 会使用此权限。';
 	@override String get photoLibraryPermission => '从照片图库中选择图片，用作媒体封面等图像。';
 	@override String get cameraPermission => '扫描二维码以配对 Companion Remote。';
 }
@@ -3202,7 +3202,7 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => '开放媒体';
 	@override String get shortcutHelp => '播放此会议的链接、播放列表或文件。';
-	@override String get intro => '打开链接、播放列表或文件 Playback 使用 PlezyNG 的标准播放器,并且不会将历史添加到您的图书馆。';
+	@override String get intro => '打开链接、播放列表或文件 Playback 使用 Pleazyng 的标准播放器,并且不会将历史添加到您的图书馆。';
 	@override String get openWhat => '你想打开什么?';
 	@override String get stream => '流地址';
 	@override String get playlist => '播放列表';
@@ -3260,13 +3260,13 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	@override String get stopTransfer => '停止转让和取消地址';
 	@override String get startTransfer => '转移开始';
 	@override String get wifiImportedFiles => 'Wi-Fi 传输';
-	@override String get wifiBrowserTitle => '向 PlezyNG 发送文件';
+	@override String get wifiBrowserTitle => '向 Pleazyng 发送文件';
 	@override String get wifiBrowserIntro => '选择音频、视频、电子书或漫画文件发送. 这些文件存储在该设备的文件和书籍库中. 最多: 100 个文件,每个文件 4 GiB,总共 10 GiB。';
 	@override String get uploadFilesLabel => '文件发送';
 	@override String get uploadSelected => '下载所选择的文件';
 	@override String get uploadSelectFirst => '首先选择一个或多个文件。';
 	@override String get uploading => '发送';
-	@override String get uploadComplete => '文件添加到 PlezyNG。';
+	@override String get uploadComplete => '文件添加到 Pleazyng。';
 	@override String get uploadFailed => '文件无法添加,请保持此页面开放并再次尝试。';
 	@override String get liveCue => '生活';
 	@override String get liveSession => '直播流';
@@ -3294,7 +3294,7 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	@override String get recordingActive => '放弃播放停止并保存它。';
 	@override String get recordingFormatHelp => '对于视频,选择 MKV 或 MPEG-TS. 为音频,选择 MKA 或 MKV。';
 	@override String get replaceRecordingTitle => '取代这张录音?';
-	@override String get replaceRecordingHelp => 'PlezyNG 在录制时备份现有文件;如果无法保存新录制,PlezyNG 将备份恢复。';
+	@override String get replaceRecordingHelp => 'Pleazyng 在录制时备份现有文件;如果无法保存新录制,Pleazyng 将备份恢复。';
 	@override String get replaceRecording => '替换文件';
 	@override String get discHelp => '在此计算机的光学驱动器中打开磁盘,您也可以从设备文件中打开ISO图像。';
 	@override String get discs => '光学磁盘';
@@ -3319,7 +3319,7 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => '选择音频或视频文件。';
 	@override String get converterLocalOnly => '所选择的文件不作为本地设备路径可用。';
 	@override String get converterReplaceTitle => '取代此文件?';
-	@override String get converterReplaceHelp => 'PlezyNG 恢复现有文件,直到转换的副本被保存。';
+	@override String get converterReplaceHelp => 'Pleazyng 恢复现有文件,直到转换的副本被保存。';
 	@override String get converterStarting => '開始 FFmpeg...';
 	@override String get converterProgress => '转换到这个计算机......';
 	@override String get converterComplete => '转换完成,新文件已准备好。';
@@ -3343,7 +3343,7 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => '默认音频输入';
 	@override String get captureWaylandHelp => 'Wayland 限制此 XWayland 捕获到 X display. XWayland 以外的 Windows 可能不会出现。';
 	@override String get captureFrameRate => '记录框率';
-	@override String get capturePrivacy => '录制仅存储到您选择的文件。 微型录制是可选的. PlezyNG 不会上传录制。';
+	@override String get capturePrivacy => '录制仅存储到您选择的文件。 微型录制是可选的. Pleazyng 不会上传录制。';
 	@override String get captureSaveAs => '保存屏幕录制如';
 	@override String get captureExtensionMismatch => '在 .mp4 中选择终端的文件名。';
 	@override String get captureFfmpegMissing => 'FFmpeg 或 H.264 视频编码器不适用. 安装支持的 FFmpeg 构建,然后再次尝试。';
@@ -3357,7 +3357,7 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	@override String get captureStop => '停止和拯救';
 	@override String get captureMode => '捕捉';
 	@override String get shareMode => '分享';
-	@override String get shareIntro => '将本地媒体文件发送到您的私人网络上的另一个设备. PlezyNG 创建一个暂时的 HLS 流。';
+	@override String get shareIntro => '将本地媒体文件发送到您的私人网络上的另一个设备. Pleazyng 创建一个暂时的 HLS 流。';
 	@override String get sharePrivacy => '您的本地网络的任何人,谁接收私人链接可以观看,而它是活跃的. 链接结束后60分钟. 停止共享,关闭服务器并取消链接。';
 	@override String get shareChooseFile => '选择媒体文件';
 	@override String get shareChooseHelp => '选择一个本地的音频或视频文件. 该文件留在此计算机上。';
@@ -3370,7 +3370,7 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => '在另一台设备上的一个播放器中打开此地址';
 	@override String get shareQrLabel => '临时流地址的QR代码';
 	@override String get shareQrHelp => '扫描与同一私人网络连接的兼容播放器。';
-	@override String get shareHttpHint => '此流使用未加密的 HTTP. 在 PlezyNG 中,允许 HTTP 在打开它之前。';
+	@override String get shareHttpHint => '此流使用未加密的 HTTP. 在 Pleazyng 中,允许 HTTP 在打开它之前。';
 	@override String get shareCopyUrl => '复制流地址';
 	@override String get shareExpiresLabel => '链接终止';
 	@override String get shareStarting => '准备流...';
@@ -3395,7 +3395,7 @@ class Translations$universalMedia$zh extends Translations$universalMedia$en {
 	@override String get extensionInstall => '添加服务';
 	@override String get extensionReplace => '更新服务';
 	@override String get extensionRemoveTitle => '删除此搜索服务?';
-	@override String get extensionRemoveHelp => '这将取消该服务从此个人资料中. PlezyNG 不联系其终点。';
+	@override String get extensionRemoveHelp => '这将取消该服务从此个人资料中. Pleazyng 不联系其终点。';
 	@override String get extensionRemove => '取消服务';
 	@override String get extensionInvalidManifest => '此文件不是一个支持的扩展显而易见. 查看 Open media 格式指南。';
 	@override String get extensionSaveFailed => '该扩展无法存储到活跃的个人资料。';
@@ -3549,12 +3549,12 @@ class Translations$fileSources$zh extends Translations$fileSources$en {
 	@override String get none => '无';
 	@override String get fullscreen => '全屏幕';
 	@override String get syncLocation => '进展同步文件夹(可选)';
-	@override String get syncLocationHint => '用于保存 PlezyNG 状态的专用 WebDAV 文件夹。采用条件写入，不会更改媒体文件。';
+	@override String get syncLocationHint => '用于保存 Pleazyng 状态的专用 WebDAV 文件夹。采用条件写入，不会更改媒体文件。';
 	@override String get audiobooks => '音频书籍';
 	@override String get comics => '漫画';
 	@override String get scan => '扫描书籍和媒体';
 	@override String get browserReader => '开放读者';
-	@override String get browserReaderHelp => '阅读器在您的浏览器中开放. 保持 PlezyNG 开放,以保存您的位置和笔记。';
+	@override String get browserReaderHelp => '阅读器在您的浏览器中开放. 保持 Pleazyng 开放,以保存您的位置和笔记。';
 	@override String get on => '到';
 	@override String get advancedSetup => 'App 登记';
 	@override String get microsoftSignIn => '与Microsoft登录';
@@ -3595,7 +3595,7 @@ class Translations$fileSources$zh extends Translations$fileSources$en {
 	@override String get importInterrupted => '进口中断 · 删除清理';
 	@override String get errorQuotaExceeded => '已达到离线存储上限。请提高上限或移除已下载的副本。';
 	@override String get errorStorageLow => '没有足够的免费设备存储,以保留保护备份。';
-	@override String get errorStorageUnavailable => 'PlezyNG无法检查免费设备存储,所以写作停止了。';
+	@override String get errorStorageUnavailable => 'Pleazyng无法检查免费设备存储,所以写作停止了。';
 	@override String get removeDownloadJob => '删除下载';
 	@override String get downloadAlreadyComplete => '此下载完成之前,它可以被删除. 该项目现在可用于离线。';
 	@override String get confirmRemoveDownloadJob => '要移除此下载并丢弃已下载的部分数据吗？阅读位置和笔记会保留。';
@@ -3645,7 +3645,7 @@ class Translations$lending$zh extends Translations$lending$en {
 	@override String get openLibraryNote => '探索 Open Library 的目录。每本书的页面上都会显示阅读和借阅选项。';
 	@override String get more => '加载更多';
 	@override String get gateway => '图书馆登录服务';
-	@override String get gatewayHint => '由您的图书馆或管理员提供,PlezyNG。';
+	@override String get gatewayHint => '由您的图书馆或管理员提供,Pleazyng。';
 	@override String get advanced => '图书馆集成';
 	@override String get loadLibraries => '选择您的图书馆';
 	@override String get expired => '此借阅已到期。';
@@ -3785,7 +3785,7 @@ class Translations$sourceSetup$zh extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。';
 	@override String get automaticMetadata => '自动获取在线视频元数据';
 	@override String get metadataPrivacy => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。';
-	@override String get nfsEncryptionFailure => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。PlezyNG 不会在不加密的情况下重试此连接。';
+	@override String get nfsEncryptionFailure => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。Pleazyng 不会在不加密的情况下重试此连接。';
 	@override String get sourceConnecting => '正在连接来源';
 	@override String get metadataSearchPrivacy => '此标题搜索由 Trakt 处理。只会发送您输入的标题，不会发送视频或来源凭据。';
 	@override String get chooseMatch => '选择匹配结果';
@@ -3931,6 +3931,12 @@ class Translations$games$zh extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3940,7 +3946,7 @@ class Translations$deepLinks$zh extends Translations$deepLinks$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => '此 Plezy 链接不有效。';
+	@override String get invalid => '此 Pleazyng 链接不有效。';
 	@override String profileNotFound({required Object profile}) => '没有个人资料符合“${profile}”。';
 	@override String get serverUnavailable => '我无法到达这个链接的服务器。';
 	@override String get notFound => '我无法在图书馆中找到这个标题。';
@@ -4115,7 +4121,7 @@ class Translations$romm$zh extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5006,7 +5012,7 @@ class Translations$watchTogether$errors$zh extends Translations$watchTogether$er
 	@override String get relayFull => '“一起看”当前繁忙。请稍后再试。';
 	@override String get unreachable => '无法连接到“一起看”中继服务器。请检查网络连接。';
 	@override String get rateLimited => '尝试次数过多。请稍等片刻后重试。';
-	@override String get clientBlocked => '此版本的 PlezyNG 无法使用该中继服务器。请更新应用。';
+	@override String get clientBlocked => '此版本的 Pleazyng 无法使用该中继服务器。请更新应用。';
 	@override String get forbidden => '只有主持人可以执行此操作。';
 	@override String get notInRoom => '你不在房间中。';
 	@override String get alreadyInRoom => '你已在房间中。';
@@ -5027,14 +5033,14 @@ class Translations$downloads$backgroundWarning$zh extends Translations$downloads
 	@override String get bannerAction => '详情';
 	@override String get sheetTitle => '后台下载已被阻止';
 	@override String get sheetTitleDegraded => '后台下载可能受限';
-	@override String get sheetIntro => 'Android 正在阻止 PlezyNG 在后台稳定下载。';
-	@override String get sheetIntroDegraded => '你的设备限制了 PlezyNG 在后台下载的时机。';
-	@override String get reasonBackgroundRestricted => 'PlezyNG 的后台使用受到限制。请将其电池用量或后台使用设置为“不受限制”。';
-	@override String get reasonStandbyRestricted => 'Android 已将 PlezyNG 置于受限待机状态。请将其电池用量设为“不受限制”。';
+	@override String get sheetIntro => 'Android 正在阻止 Pleazyng 在后台稳定下载。';
+	@override String get sheetIntroDegraded => '你的设备限制了 Pleazyng 在后台下载的时机。';
+	@override String get reasonBackgroundRestricted => 'Pleazyng 的后台使用受到限制。请将其电池用量或后台使用设置为“不受限制”。';
+	@override String get reasonStandbyRestricted => 'Android 已将 Pleazyng 置于受限待机状态。请将其电池用量设为“不受限制”。';
 	@override String get reasonDownloadChannelBlocked => '下载通知已关闭，因此可能无法查看进度或进行控制。';
 	@override String get reasonNotificationsDisabled => '通知已关闭。在 Android 13 或更高版本中，长时间后台下载需要开启通知。';
 	@override String get reasonDataSaver => '流量节省程序已开启，会阻止使用移动数据进行后台下载。使用 Wi-Fi 时下载应仍可进行。';
-	@override String get reasonOemUnknown => 'PlezyNG 在后台时，下载曾多次停止。请检查 PlezyNG 的电池用量或后台使用设置。';
+	@override String get reasonOemUnknown => 'Pleazyng 在后台时，下载曾多次停止。请检查 Pleazyng 的电池用量或后台使用设置。';
 	@override String get openSettings => '打开设置';
 	@override String get stillNotWorking => '设备专属帮助';
 	@override String get stillNotWorkingDescription => '查看适用于你设备的操作步骤；如果问题仍然存在，请通过设置 › 查看日志发送日志。';
@@ -5089,19 +5095,19 @@ class Translations$companionRemote$pairing$zh extends Translations$companionRemo
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => '使用同一 Plex 账号的 PlezyNG 设备会显示在这里';
+	@override String get discoveryDescription => '使用同一 Plex 账号的 Pleazyng 设备会显示在这里';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => '正在连接…';
 	@override String get searchingForDevices => '正在搜索设备…';
 	@override String get noDevicesFound => '未在网络中找到设备';
-	@override String get noDevicesHint => '请在桌面端打开 PlezyNG，并确保设备连接到同一 Wi-Fi 网络';
+	@override String get noDevicesHint => '请在桌面端打开 Pleazyng，并确保设备连接到同一 Wi-Fi 网络';
 	@override String get availableDevices => '可用设备';
 	@override String get manualConnection => '手动连接';
 	@override String get cryptoInitFailed => '无法启动安全连接。请先登录 Plex。';
 	@override String get validationHostRequired => '请输入主机地址';
 	@override String get validationHostFormat => '格式必须为 IP:端口（例如 192.168.1.100:48632）';
 	@override String get connectionTimedOut => '连接超时。请在两台设备上使用同一网络。';
-	@override String get sessionNotFound => '未找到设备。请确认 PlezyNG 正在主机上运行。';
+	@override String get sessionNotFound => '未找到设备。请确认 Pleazyng 正在主机上运行。';
 	@override String get authFailed => '认证失败。两台设备需要使用同一 Plex 账号。';
 	@override String failedToConnect({required Object error}) => '连接失败：${error}';
 	@override String get codeTitle => '双重代码';
@@ -5188,7 +5194,7 @@ class Translations$services$simklReconnect$zh extends Translations$services$simk
 
 	// Translations
 	@override String get title => '重新连接 Simkl';
-	@override String get subtitle => 'Simkl 即将停用此连接所使用的登录方式。重新连接将打开 simkl.com 以授权 PlezyNG — PlezyNG 永远不会看到你的密码。你的观看记录仍保留在 Simkl 上。';
+	@override String get subtitle => 'Simkl 即将停用此连接所使用的登录方式。重新连接将打开 simkl.com 以授权 Pleazyng — Pleazyng 永远不会看到你的密码。你的观看记录仍保留在 Simkl 上。';
 }
 
 // Path: services.deviceCode
@@ -5198,7 +5204,7 @@ class Translations$services$deviceCode$zh extends Translations$services$deviceCo
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => '在 ${service} 上激活 PlezyNG';
+	@override String title({required Object service}) => '在 ${service} 上激活 Pleazyng';
 	@override String get instructions => '扫描二维码，或访问下方地址并输入此代码：';
 	@override String openToActivate({required Object service}) => '打开 ${service} 以激活';
 	@override String get copyCode => '复制激活代码';
@@ -5273,15 +5279,15 @@ class Translations$services$trackerDescriptions$zh extends Translations$services
 extension on TranslationsZh {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => '应用图标',
 			'appIcon.defaultIcon' => '默认',
 			'appIcon.current' => '当前图标',
 			'appIcon.locked' => '终身访问需要',
-			'appIcon.lockedHint' => '启动 7 天试用或终身解锁 PlezyNG 以使用替代图标。',
+			'appIcon.lockedHint' => '启动 7 天试用或终身解锁 Pleazyng 以使用替代图标。',
 			'appIcon.changeFailed' => '无法更改应用图标',
-			'appIcon.launcherHint' => '离开 PlezyNG 后，新图标将显示在主屏幕上。',
-			'appIcon.tvLauncherHint' => '离开 PlezyNG 后将显示新横幅。在电视重启之前，Android TV 可能仍会显示旧横幅。',
+			'appIcon.launcherHint' => '离开 Pleazyng 后，新图标将显示在主屏幕上。',
+			'appIcon.tvLauncherHint' => '离开 Pleazyng 后将显示新横幅。在电视重启之前，Android TV 可能仍会显示旧横幅。',
 			'appIcon.names.midnight' => '午夜',
 			'appIcon.names.ember' => '余烬',
 			'appIcon.names.paper' => '纸张',
@@ -5321,7 +5327,7 @@ extension on TranslationsZh {
 			'auth.quickConnectWaiting' => '等待批准…',
 			'auth.quickConnectCancel' => '取消',
 			'auth.quickConnectExpired' => 'Quick Connect 已过期。请重试。',
-			'auth.localDataRecoveryRequired' => 'PlezyNG 无法安全恢复本地登录状态和待处理的播放数据。请重新登录。',
+			'auth.localDataRecoveryRequired' => 'Pleazyng 无法安全恢复本地登录状态和待处理的播放数据。请重新登录。',
 			'auth.pinCheckRejected' => 'Plex PIN 检查被拒绝',
 			'auth.connectToDirectPlex' => '连接到本地服务器 Plex',
 			'common.cancel' => '取消',
@@ -5437,9 +5443,9 @@ extension on TranslationsZh {
 			'update.latestVersion' => '当前已是最新版本',
 			'update.checkFailed' => '无法检查更新',
 			'settings.title' => '设置',
-			'settings.supportDeveloper' => '支持 PlezyNG',
+			'settings.supportDeveloper' => '支持 Pleazyng',
 			'settings.supportDeveloperDescription' => '捐赠以支持开发',
-			'settings.lifetimeAccess' => 'PlezyNG 终身访问',
+			'settings.lifetimeAccess' => 'Pleazyng 终身访问',
 			'settings.language' => '语言',
 			'settings.theme' => '主题',
 			'settings.appearance' => '外观',
@@ -5495,7 +5501,7 @@ extension on TranslationsZh {
 			'settings.contentScreensaverNoLibraries' => '没有连接媒体图书馆可用。',
 			'settings.contentScreensaverDismissHint' => '按下任何按钮或按下取消',
 			'settings.newEpisodeNotifications' => '新事件通知',
-			'settings.newEpisodeNotificationsDescription' => '警告当新集添加到一个节目你被抓住时,检查 Plezy 是开放的。',
+			'settings.newEpisodeNotificationsDescription' => '警告当新集添加到一个节目你被抓住时,检查 Pleazyng 是开放的。',
 			'settings.continueWatchingRowSize' => '继续观看 序列大小',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} 卡片',
 			'settings.rowSizeCompact' => '紧凑',
@@ -5620,7 +5626,7 @@ extension on TranslationsZh {
 			'settings.importSettingsDescription' => '从文件恢复偏好设置',
 			'settings.importSettingsConfirm' => '这将替换您当前的设置。继续吗？',
 			'settings.importSettingsSuccess' => '设置已导入',
-			'settings.importSettingsInvalidFile' => '此文件不是有效的 PlezyNG 设置导出',
+			'settings.importSettingsInvalidFile' => '此文件不是有效的 Pleazyng 设置导出',
 			'settings.importSettingsNoUser' => '导入设置前请先登录',
 			'settings.cloudBackup' => '云备份',
 			'settings.cloudBackupDescription' => '通过 HTTPS 将可迁移的设置备份到 WebDAV 地址。服务器连接和登录凭据保留在此设备上。',
@@ -5804,7 +5810,7 @@ extension on TranslationsZh {
 			'settings.forceTvMode' => '强制 TV 模式',
 			'settings.forceTvModeDescription' => '强制 TV 布局。适用于无法自动检测的设备。需要重启。',
 			'settings.startInFullscreen' => '以全屏模式启动',
-			'settings.startInFullscreenDescription' => '启动时以全屏模式打开 PlezyNG',
+			'settings.startInFullscreenDescription' => '启动时以全屏模式打开 Pleazyng',
 			'settings.exitFullscreenOnPlayerClose' => '关闭播放器时退出全屏',
 			'settings.exitFullscreenOnPlayerCloseDescription' => '关闭视频播放器时自动退出全屏模式',
 			'settings.autoHidePerformanceOverlay' => '自动隐藏性能叠加层',
@@ -5860,7 +5866,7 @@ extension on TranslationsZh {
 			'settings.playerScopeGlobal' => '所有位置',
 			'settings.playerScopeLibrary' => '按媒体库',
 			'settings.playerScopeTitle' => '按剧集或电影',
-			'settings.exportDialogTitle' => '导出 PlezyNG 设置',
+			'settings.exportDialogTitle' => '导出 Pleazyng 设置',
 			'settings.followSystem' => '跟随系统',
 			'settings.followAppLanguage' => '与界面语言一致',
 			'settings.regionFormat' => '区域格式',
@@ -5871,7 +5877,7 @@ extension on TranslationsZh {
 			'settings.enterFullscreenOnPlaybackStartDescription' => '打开桌面视频在播放开始时全屏',
 			'settings.extendVideoIntoDisplayCutout' => '将视频扩展到显示器中',
 			'settings.extendVideoIntoDisplayCutoutDescription' => '让全屏视频在Android手机上使用相机切割',
-			'settings.languageDescription' => '选择用于 PlezyNG 控制和消息的语言. 跟踪系统跟踪您的设备语言。',
+			'settings.languageDescription' => '选择用于 Pleazyng 控制和消息的语言. 跟踪系统跟踪您的设备语言。',
 			'settings.themeDescription' => '选择应用程序中使用的颜色和对比。',
 			'settings.libraryDensityDescription' => '改变每个行中的图书馆卡的数量。',
 			'settings.displayScaleDescription' => '在此车屏幕上重新设置接口,而无需改变您的设备上的文本大小。',
@@ -5893,14 +5899,14 @@ extension on TranslationsZh {
 			'settings.episodeActionDescription' => '选择当您启动一个节目卡时会发生什么。',
 			'settings.episodePlayDescription' => '立即开始事件。',
 			'settings.episodeDetailsDescription' => '在播放之前打开集片页面。',
-			'settings.contentScreensaverDelayDescription' => '在展示艺术作品之前,选择 PlezyNG 等待多久没有输入。',
+			'settings.contentScreensaverDelayDescription' => '在展示艺术作品之前,选择 Pleazyng 等待多久没有输入。',
 			'settings.continueWatchingRowSizeDescription' => '在继续观看行中选择卡片的尺寸。',
 			'settings.rowSizeCompactDescription' => '显示较小的卡片,以便在行列中添加更多的项目。',
 			'settings.rowSizeStandardDescription' => '使用标准卡尺寸。',
 			'settings.rowSizeLargeDescription' => '显示更大的卡片,更多艺术作品的细节。',
 			'settings.visualEffectsDescription' => '选择该设备的动画和艺术作品效果预算。',
 			'settings.visualEffectsFullDescription' => '在每个设备上使用完整的动画和艺术作品效果。',
-			'settings.startupSectionDescription' => '在 PlezyNG 启动时选择哪个部分打开。',
+			'settings.startupSectionDescription' => '在 Pleazyng 启动时选择哪个部分打开。',
 			'settings.startupSectionOptions.discover' => '从连接的发现来源打开建议和项目。',
 			'settings.startupSectionOptions.libraries' => '打开您的连接媒体图书馆。',
 			'settings.startupSectionOptions.liveTv' => '在服务器提供时打开直播电视;否则,初创公司将返回家庭。',
@@ -5939,7 +5945,7 @@ extension on TranslationsZh {
 			'settings.musicQualityOriginalDescription' => '播放源音频,无需Bitrate加密的Transcode。',
 			'settings.musicQualityTranscodeOptionDescription' => '请求服务器转代码接近上面的比特率;实际输出可能有所不同。',
 			'settings.maxVolumeInputLabel' => '最大容量(%)',
-			'settings.checkForUpdatesDescription' => '现在检查是否有更新的PlezyNG版本。',
+			'settings.checkForUpdatesDescription' => '现在检查是否有更新的Pleazyng版本。',
 			'settings.appearanceDescription' => '选择应用程序主题,并调整图书馆卡、主行和导航。',
 			'settings.prerollLibraryDescription' => '选择包含电影预角色可用的剪辑的图书馆。',
 			'settings.prerollSelectionDescription' => '选择从所选图书馆播放的剪辑在电影之前。',
@@ -6175,8 +6181,8 @@ extension on TranslationsZh {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '这将删除其中的 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集及其文件。', other: '这将删除其中全部 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集以及它们的文件。', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '此项目存储在 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个文件中，该文件将被删除。', other: '此项目存储在 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 个文件中，所有这些文件都会被删除。', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '另有 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：', other: '另外 ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} 集存储在同一个文件中，也会一并删除：', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG 无法确认此操作会删除哪些文件，因此删除范围可能超出上面提到的项目。请取消后重试，或仍然删除。',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => '你的服务器没有提供此项目的文件详情，因此 PlezyNG 无法确认此操作会删除哪些文件。删除范围可能超出上面提到的项目。',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng 无法确认此操作会删除哪些文件，因此删除范围可能超出上面提到的项目。请取消后重试，或仍然删除。',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => '你的服务器没有提供此项目的文件详情，因此 Pleazyng 无法确认此操作会删除哪些文件。删除范围可能超出上面提到的项目。',
 			'mediaMenu.mediaDeletedSuccessfully' => '媒体项已成功删除',
 			'mediaMenu.mediaFailedToDelete' => '删除媒体项失败',
 			'mediaMenu.rate' => '评分',
@@ -6226,7 +6232,7 @@ extension on TranslationsZh {
 			'accessibility.colorModeRgb' => '里格',
 			'accessibility.title' => '可用性',
 			'accessibility.summary' => '文本、对比、动作和控制',
-			'accessibility.systemHint' => '您的设备的可用性设置始终适用. 这些选项在 PlezyNG 期间添加调整。',
+			'accessibility.systemHint' => '您的设备的可用性设置始终适用. 这些选项在 Pleazyng 期间添加调整。',
 			'accessibility.readability' => '阅读与可见性',
 			'accessibility.textSize' => '附加文本大小',
 			'accessibility.preview' => '找下一个故事,阅读,听,并以自己的速度观看。',
@@ -6239,7 +6245,7 @@ extension on TranslationsZh {
 			'accessibility.largeTargets' => '触摸目标',
 			'accessibility.largeTargetsHint' => '共享控制器提供更多触摸和辅助导航空间。',
 			'accessibility.navigationHint' => '使用 Tab 和 Shift+Tab 在控件之间移动，按 Enter 或空格键激活，按 Escape 或返回按钮关闭。打开书籍后，可调整缩放比例和阅读偏好。',
-			'accessibility.textSizeDescription' => '在 PlezyNG 中扩展接口文本,以及您的设备的系统文本大小设置。',
+			'accessibility.textSizeDescription' => '在 Pleazyng 中扩展接口文本,以及您的设备的系统文本大小设置。',
 			'accessibility.boldTextHint' => '加粗界面标签和消息的字重，让它们更容易辨认。',
 			'tooltips.shufflePlay' => '随机播放',
 			'tooltips.playTrailer' => '播放预告片',
@@ -6507,7 +6513,7 @@ extension on TranslationsZh {
 			'mpvConfig.removeLine' => '移除行',
 			'mpvConfig.embeddedVoHint' => 'Linux 上会忽略 vo、gpu-context 和 gpu-api：嵌入式视频始终通过视频平面上的 vo=libmpv 渲染，而 gpu-next（ArtCNN 等计算着色器需要它）无法以嵌入式方式运行。',
 			'dialog.confirmAction' => '确认操作',
-			'profiles.addPlezyProfile' => '添加 PlezyNG 用户资料',
+			'profiles.addPlezyProfile' => '添加 Pleazyng 用户资料',
 			'profiles.switchingProfile' => '正在切换用户资料…',
 			'profiles.deleteThisProfileTitle' => '删除此用户资料？',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => '移除 ${displayName}。连接不会受影响。',
@@ -6589,12 +6595,12 @@ extension on TranslationsZh {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} 台服务器拒绝此账户访问',
 			'connections.signInAgain' => '重新登录',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => '编辑 ${product} 连接',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '为 ${serverName} 添加或移除 URL。PlezyNG 会使用延迟最低且可访问的 URL。',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '为 ${serverName} 添加或移除 URL。Pleazyng 会使用延迟最低且可访问的 URL。',
 			'accountPreferences.sectionTitle' => '账户偏好',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => '音频、字幕和媒体库选项已保存在 ${account} 上',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => '音频、字幕和媒体库选项已保存在 ${count} 个账户上',
 			'accountPreferences.pickAccount' => '每个账户都保存自己的偏好设置。选择要编辑的账户。',
-			'accountPreferences.storedOnAccount' => '这些选项保存在账户本身，因此所有登录该账户的应用都会使用它们——包括你其他设备上的 PlezyNG。',
+			'accountPreferences.storedOnAccount' => '这些选项保存在账户本身，因此所有登录该账户的应用都会使用它们——包括你其他设备上的 Pleazyng。',
 			'accountPreferences.noAccounts' => '没有可配置的账户',
 			'accountPreferences.noAccountsHint' => '登录 Plex，或连接 Jellyfin 或 Emby 服务器，该账户上保存的偏好设置就会显示在这里。',
 			'accountPreferences.unavailable' => '无法访问此账户',
@@ -6918,9 +6924,9 @@ extension on TranslationsZh {
 			'logs.saveLogs' => '存储存档',
 			'logs.logsSaved' => ({required Object path}) => '存储到 ${path} 的存档',
 			'logs.saveLogsFailed' => '无法保存存档。',
-			'startup.failedTitle' => 'PlezyNG 无法启动',
+			'startup.failedTitle' => 'Pleazyng 无法启动',
 			'startup.failedBody' => '启动过程中出现问题。以下详情指出了失败的原因。',
-			'startup.failedBodyRepairable' => 'PlezyNG 的已保存设置文件已损坏，必须先重建才能启动。重试没有用——请选择“修复存储”。',
+			'startup.failedBodyRepairable' => 'Pleazyng 的已保存设置文件已损坏，必须先重建才能启动。重试没有用——请选择“修复存储”。',
 			'startup.phaseLabel' => '步骤',
 			'startup.showDetails' => '显示详情',
 			'startup.hideDetails' => '隐藏详情',
@@ -6929,16 +6935,16 @@ extension on TranslationsZh {
 			'startup.uploadDetails' => '上传详情',
 			'startup.repairStorage' => '修复存储',
 			'startup.repairTitle' => '修复已存储的数据？',
-			'startup.repairBodyCommon' => 'PlezyNG 的设置文件已损坏且无法读取。修复会将所有设置重置为默认值。',
+			'startup.repairBodyCommon' => 'Pleazyng 的设置文件已损坏且无法读取。修复会将所有设置重置为默认值。',
 			'startup.repairBodyOneCredential' => '有一项已保存的登录信息已损坏且无法读取。修复只会移除这一项，其他设置保持不变。',
 			'startup.repairBodySignInsKept' => '你的服务器和个人资料应保持登录状态。',
 			'startup.repairBodySignInsLost' => '保护已保存登录信息的密钥无法从此文件中恢复，因此你需要重新登录每个服务器和个人资料。媒体服务器上的内容不受影响。',
-			'startup.repairBodySessionsUncertain' => '追踪服务（MAL、AniList、Simkl、Trakt）和 Seerr 是分开存储的，可能保留也可能无法保留。PlezyNG 会明确告诉你保留了哪些。',
+			'startup.repairBodySessionsUncertain' => '追踪服务（MAL、AniList、Simkl、Trakt）和 Seerr 是分开存储的，可能保留也可能无法保留。Pleazyng 会明确告诉你保留了哪些。',
 			'startup.repairConfirm' => '修复',
 			'startup.repairSucceeded' => '存储已修复',
 			'startup.repairNeedsRestart' => '存储已修复 — 需要重启',
-			'startup.restartRequiredBody' => '你的数据已修复，但 PlezyNG 需要重新启动后才能使用。请关闭 PlezyNG 并重新打开。',
-			'startup.quitPlezy' => '退出 PlezyNG',
+			'startup.restartRequiredBody' => '你的数据已修复，但 Pleazyng 需要重新启动后才能使用。请关闭 Pleazyng 并重新打开。',
+			'startup.quitPlezy' => '退出 Pleazyng',
 			'startup.repairFailed' => '修复失败',
 			'startup.repairKeptSignIns' => '你的服务器和个人资料仍然保持登录状态。',
 			'startup.repairLostSignIns' => '保护已保存登录信息的密钥无法恢复。你需要重新登录每个服务器和个人资料。',
@@ -6947,7 +6953,7 @@ extension on TranslationsZh {
 			'startup.backupWarning' => '其中包含你的登录凭据。请勿上传或分享。',
 			'startup.deleteBackup' => '删除副本',
 			'startup.backupDeleted' => '副本已删除。',
-			'startup.previousFailureTitle' => 'PlezyNG 上次启动失败',
+			'startup.previousFailureTitle' => 'Pleazyng 上次启动失败',
 			'licenses.relatedPackages' => '相关软件包',
 			'licenses.license' => '许可证',
 			'licenses.licenseNumber' => ({required Object number}) => '许可证 ${number}',
@@ -7325,7 +7331,7 @@ extension on TranslationsZh {
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
-			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 PlezyNG 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
+			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
 			_ => null,
 		} ?? switch (path) {
@@ -7353,7 +7359,7 @@ extension on TranslationsZh {
 			'watchTogether.chooseAnotherCopy' => '选择其他副本',
 			'watchTogether.dontPlay' => '不播放',
 			'watchTogether.unavailableTitle' => '你没有此视频',
-			'watchTogether.unavailableDescription' => 'PlezyNG 在你的媒体库中找不到它。请自行选择副本或重新搜索。',
+			'watchTogether.unavailableDescription' => 'Pleazyng 在你的媒体库中找不到它。请自行选择副本或重新搜索。',
 			'watchTogether.chooseCopy' => '选择副本',
 			'watchTogether.searchAgain' => '重新搜索',
 			'watchTogether.noCandidates' => '在你的媒体库中未找到副本。',
@@ -7445,7 +7451,7 @@ extension on TranslationsZh {
 			'watchTogether.errors.relayFull' => '“一起看”当前繁忙。请稍后再试。',
 			'watchTogether.errors.unreachable' => '无法连接到“一起看”中继服务器。请检查网络连接。',
 			'watchTogether.errors.rateLimited' => '尝试次数过多。请稍等片刻后重试。',
-			'watchTogether.errors.clientBlocked' => '此版本的 PlezyNG 无法使用该中继服务器。请更新应用。',
+			'watchTogether.errors.clientBlocked' => '此版本的 Pleazyng 无法使用该中继服务器。请更新应用。',
 			'watchTogether.errors.forbidden' => '只有主持人可以执行此操作。',
 			'watchTogether.errors.notInRoom' => '你不在房间中。',
 			'watchTogether.errors.alreadyInRoom' => '你已在房间中。',
@@ -7527,11 +7533,11 @@ extension on TranslationsZh {
 			'downloads.activeSyncRules' => '同步规则',
 			'downloads.reviewOrphanFiles' => '检查无对应记录的下载',
 			'downloads.orphanReviewTitle' => '检查无对应记录的下载',
-			'downloads.orphanReviewDescription' => '这些已标记的文件位于 PlezyNG 默认管理的下载文件夹中，但没有匹配的下载记录或正在进行的任务。删除前请先检查列表。',
+			'downloads.orphanReviewDescription' => '这些已标记的文件位于 Pleazyng 默认管理的下载文件夹中，但没有匹配的下载记录或正在进行的任务。删除前请先检查列表。',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} 个文件 · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => '删除 ${count} 个文件',
 			'downloads.orphanCleanupNone' => '未找到无对应记录的下载文件',
-			'downloads.orphanCleanupFailed' => 'PlezyNG 无法安全扫描受管理的下载文件夹。没有删除任何文件。',
+			'downloads.orphanCleanupFailed' => 'Pleazyng 无法安全扫描受管理的下载文件夹。没有删除任何文件。',
 			'downloads.orphanCleanupChanged' => '检查期间下载列表已更改。清理前请重新检查文件。',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => '已删除 ${count} 个无对应记录的文件 · 释放 ${size}',
 			'downloads.noSyncRules' => '没有同步规则',
@@ -7553,14 +7559,14 @@ extension on TranslationsZh {
 			'downloads.backgroundWarning.bannerAction' => '详情',
 			'downloads.backgroundWarning.sheetTitle' => '后台下载已被阻止',
 			'downloads.backgroundWarning.sheetTitleDegraded' => '后台下载可能受限',
-			'downloads.backgroundWarning.sheetIntro' => 'Android 正在阻止 PlezyNG 在后台稳定下载。',
-			'downloads.backgroundWarning.sheetIntroDegraded' => '你的设备限制了 PlezyNG 在后台下载的时机。',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'PlezyNG 的后台使用受到限制。请将其电池用量或后台使用设置为“不受限制”。',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android 已将 PlezyNG 置于受限待机状态。请将其电池用量设为“不受限制”。',
+			'downloads.backgroundWarning.sheetIntro' => 'Android 正在阻止 Pleazyng 在后台稳定下载。',
+			'downloads.backgroundWarning.sheetIntroDegraded' => '你的设备限制了 Pleazyng 在后台下载的时机。',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Pleazyng 的后台使用受到限制。请将其电池用量或后台使用设置为“不受限制”。',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android 已将 Pleazyng 置于受限待机状态。请将其电池用量设为“不受限制”。',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => '下载通知已关闭，因此可能无法查看进度或进行控制。',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => '通知已关闭。在 Android 13 或更高版本中，长时间后台下载需要开启通知。',
 			'downloads.backgroundWarning.reasonDataSaver' => '流量节省程序已开启，会阻止使用移动数据进行后台下载。使用 Wi-Fi 时下载应仍可进行。',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'PlezyNG 在后台时，下载曾多次停止。请检查 PlezyNG 的电池用量或后台使用设置。',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Pleazyng 在后台时，下载曾多次停止。请检查 Pleazyng 的电池用量或后台使用设置。',
 			'downloads.backgroundWarning.openSettings' => '打开设置',
 			'downloads.backgroundWarning.stillNotWorking' => '设备专属帮助',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => '查看适用于你设备的操作步骤；如果问题仍然存在，请通过设置 › 查看日志发送日志。',
@@ -7631,19 +7637,19 @@ extension on TranslationsZh {
 			'companionRemote.session.stopServer' => '停止服务器',
 			'companionRemote.session.minimize' => '最小化',
 			'companionRemote.session.manualAddressHint' => '手动连接地址：',
-			'companionRemote.pairing.discoveryDescription' => '使用同一 Plex 账号的 PlezyNG 设备会显示在这里',
+			'companionRemote.pairing.discoveryDescription' => '使用同一 Plex 账号的 Pleazyng 设备会显示在这里',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => '正在连接…',
 			'companionRemote.pairing.searchingForDevices' => '正在搜索设备…',
 			'companionRemote.pairing.noDevicesFound' => '未在网络中找到设备',
-			'companionRemote.pairing.noDevicesHint' => '请在桌面端打开 PlezyNG，并确保设备连接到同一 Wi-Fi 网络',
+			'companionRemote.pairing.noDevicesHint' => '请在桌面端打开 Pleazyng，并确保设备连接到同一 Wi-Fi 网络',
 			'companionRemote.pairing.availableDevices' => '可用设备',
 			'companionRemote.pairing.manualConnection' => '手动连接',
 			'companionRemote.pairing.cryptoInitFailed' => '无法启动安全连接。请先登录 Plex。',
 			'companionRemote.pairing.validationHostRequired' => '请输入主机地址',
 			'companionRemote.pairing.validationHostFormat' => '格式必须为 IP:端口（例如 192.168.1.100:48632）',
 			'companionRemote.pairing.connectionTimedOut' => '连接超时。请在两台设备上使用同一网络。',
-			'companionRemote.pairing.sessionNotFound' => '未找到设备。请确认 PlezyNG 正在主机上运行。',
+			'companionRemote.pairing.sessionNotFound' => '未找到设备。请确认 Pleazyng 正在主机上运行。',
 			'companionRemote.pairing.authFailed' => '认证失败。两台设备需要使用同一 Plex 账号。',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => '连接失败：${error}',
 			'companionRemote.pairing.codeTitle' => '双重代码',
@@ -7907,11 +7913,11 @@ extension on TranslationsZh {
 			'trakt.connected' => '已连接',
 			'trakt.connectedAs' => ({required Object username}) => '已以 @${username} 身份连接',
 			'trakt.disconnectConfirm' => '断开 Trakt 账户？',
-			'trakt.disconnectConfirmBody' => 'PlezyNG 将停止向 Trakt 发送事件。你可随时重新连接。',
+			'trakt.disconnectConfirmBody' => 'Pleazyng 将停止向 Trakt 发送事件。你可随时重新连接。',
 			'trakt.scrobble' => '实时同步播放状态',
 			'trakt.scrobbleDescription' => '播放期间将播放、暂停和停止事件发送到 Trakt。',
 			'trakt.watchedSync' => '同步已观看状态',
-			'trakt.watchedSyncDescription' => '在 PlezyNG 中将内容标记为已观看时，也会在 Trakt 上标记为已观看。',
+			'trakt.watchedSyncDescription' => '在 Pleazyng 中将内容标记为已观看时，也会在 Trakt 上标记为已观看。',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => '连接 Seerr',
 			'seerr.serverUrl' => '服务器 URL',
@@ -7921,10 +7927,10 @@ extension on TranslationsZh {
 			'seerr.signInWithEmby' => '使用 Emby 登录',
 			'seerr.signInWithLocal' => '使用本地账户',
 			'seerr.email' => '邮箱',
-			'seerr.noSignInMethods' => '此 Seerr 实例未提供 PlezyNG 支持的登录方式。',
+			'seerr.noSignInMethods' => '此 Seerr 实例未提供 Pleazyng 支持的登录方式。',
 			'seerr.instance' => '实例',
 			'seerr.disconnectConfirm' => '断开 Seerr 连接？',
-			'seerr.disconnectConfirmBody' => 'PlezyNG 将忘记此 Seerr 实例。可随时重新连接。',
+			'seerr.disconnectConfirmBody' => 'Pleazyng 将忘记此 Seerr 实例。可随时重新连接。',
 			'seerr.request' => '请求',
 			'seerr.request4k' => '请求 4K',
 			'seerr.seasons' => '季',
@@ -7949,7 +7955,7 @@ extension on TranslationsZh {
 			'seerr.statusBlocklisted' => '已加入屏蔽列表',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => '无法连接到 ${url}：${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => '${url} 上没有 Seerr 实例（HTTP ${status}）',
-			'seerr.behindAuthProxy' => '响应来自需要身份验证的反向代理（SSO 或 HTTP 认证），而非 Seerr。PlezyNG 无法通过它登录：请让 Seerr 的 /api/v1 路径为此应用绕过代理，或使用可直接访问 Seerr 的地址。',
+			'seerr.behindAuthProxy' => '响应来自需要身份验证的反向代理（SSO 或 HTTP 认证），而非 Seerr。Pleazyng 无法通过它登录：请让 Seerr 的 /api/v1 路径为此应用绕过代理，或使用可直接访问 Seerr 的地址。',
 			'seerr.invalidUrl' => '输入服务器地址，例如 https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => '此 Seerr 实例不支持 Quick Connect。需要 Seerr 3.4 或更高版本。',
 			'seerr.notInitialized' => '此 Seerr 实例尚未完成首次运行设置',
@@ -7970,7 +7976,7 @@ extension on TranslationsZh {
 			'services.scrobble' => '自动记录进度',
 			'services.scrobbleDescription' => '观看完一集或一部电影后更新你的列表。',
 			'services.disconnectConfirm' => ({required Object service}) => '断开 ${service} 连接？',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG 将停止更新 ${service}。可随时重新连接。',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng 将停止更新 ${service}。可随时重新连接。',
 			'services.connectFailed' => ({required Object service}) => '无法连接到 ${service}。请重试。',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7978,8 +7984,8 @@ extension on TranslationsZh {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => '重新连接 Simkl',
-			'services.simklReconnect.subtitle' => 'Simkl 即将停用此连接所使用的登录方式。重新连接将打开 simkl.com 以授权 PlezyNG — PlezyNG 永远不会看到你的密码。你的观看记录仍保留在 Simkl 上。',
-			'services.deviceCode.title' => ({required Object service}) => '在 ${service} 上激活 PlezyNG',
+			'services.simklReconnect.subtitle' => 'Simkl 即将停用此连接所使用的登录方式。重新连接将打开 simkl.com 以授权 Pleazyng — Pleazyng 永远不会看到你的密码。你的观看记录仍保留在 Simkl 上。',
+			'services.deviceCode.title' => ({required Object service}) => '在 ${service} 上激活 Pleazyng',
 			'services.deviceCode.instructions' => '扫描二维码，或访问下方地址并输入此代码：',
 			'services.deviceCode.openToActivate' => ({required Object service}) => '打开 ${service} 以激活',
 			'services.deviceCode.copyCode' => '复制激活代码',
@@ -8012,8 +8018,8 @@ extension on TranslationsZh {
 			'streaming.title' => '云端与插件串流',
 			'streaming.subtitle' => '连接 Debrid 账户，即可浏览云端文件并播放受支持的流。兼容 Stremio 的插件会在电影和剧集详情页提供播放选项。连接信息会在此设备上加密，并保存到此个人资料。',
 			'streaming.connectionsConfigured' => ({required Object count}) => '已连接的来源：${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG 无法解锁已保存的串流设置。请先解锁设备，再重试后更改连接。',
-			'streaming.settingsUnreadable' => 'PlezyNG 无法解锁这些已保存的连接。清除后即可重新连接服务。',
+			'streaming.settingsLoadFailed' => 'Pleazyng 无法解锁已保存的串流设置。请先解锁设备，再重试后更改连接。',
+			'streaming.settingsUnreadable' => 'Pleazyng 无法解锁这些已保存的连接。清除后即可重新连接服务。',
 			'streaming.clearUnreadableSettings' => '清除已保存的设置',
 			'streaming.clearUnreadableSettingsConfirm' => '清除已保存的串流设置？',
 			'streaming.clearUnreadableSettingsBody' => '这会从此个人资料中移除所有已保存的服务商账户和插件地址，且无法撤销。',
@@ -8025,11 +8031,11 @@ extension on TranslationsZh {
 			'streaming.catalogFiltersRequired' => '选择浏览此目录所需的筛选条件。',
 			'streaming.catalogRequiredLabel' => '必填',
 			'streaming.importFromStremio' => '从 Stremio 导入',
-			'streaming.stremioImportInstructions' => '扫描二维码或打开链接。登录 Stremio 并批准请求。PlezyNG 只会读取你的插件列表，不会索要 Stremio 密码或更改设置。',
+			'streaming.stremioImportInstructions' => '扫描二维码或打开链接。登录 Stremio 并批准请求。Pleazyng 只会读取你的插件列表，不会索要 Stremio 密码或更改设置。',
 			'streaming.stremioImportOpen' => '打开 Stremio 链接',
 			'streaming.stremioImportCode' => '关联码',
 			'streaming.stremioImportPreviewTitle' => '选择插件',
-			'streaming.stremioImportPreviewBody' => '选择要连接到 PlezyNG 的插件。此导入仅接受 HTTPS 地址。',
+			'streaming.stremioImportPreviewBody' => '选择要连接到 Pleazyng 的插件。此导入仅接受 HTTPS 地址。',
 			'streaming.stremioImportIgnored' => ({required Object count}) => '因地址不受支持或不安全而跳过的插件：${count}。',
 			'streaming.stremioCatalogs' => '目录',
 			'streaming.stremioStreams' => '串流',
@@ -8043,7 +8049,7 @@ extension on TranslationsZh {
 			'streaming.addByManifestUrl' => '通过清单网址添加',
 			'streaming.addAddon' => '添加插件',
 			'streaming.manifestUrl' => '插件清单网址',
-			'streaming.manifestUrlHint' => '粘贴插件的清单网址。连接前，PlezyNG 会检查其是否支持目录或串流资源。',
+			'streaming.manifestUrlHint' => '粘贴插件的清单网址。连接前，Pleazyng 会检查其是否支持目录或串流资源。',
 			'streaming.allowHttp' => '允许未加密的 HTTP 地址',
 			'streaming.allowHttpDescription' => '仅对私人网络中可信任的插件使用。',
 			'streaming.installAddon' => '连接插件',
@@ -8051,20 +8057,20 @@ extension on TranslationsZh {
 			'streaming.addonRemoved' => '插件已移除',
 			'streaming.addonToggle' => '启用插件',
 			'streaming.addonEmpty' => '尚未连接插件',
-			'streaming.addonError' => 'PlezyNG 无法连接此插件。请检查清单网址并重试。',
+			'streaming.addonError' => 'Pleazyng 无法连接此插件。请检查清单网址并重试。',
 			'streaming.addonPrivacy' => '仅连接你信任的插件。搜索时，插件会收到你要搜索的标题，并可能返回第三方串流链接。',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => '通过 Real-Debrid 账户播放受支持的种子流。',
 			'streaming.connectRealDebrid' => '使用二维码连接',
 			'streaming.realDebridConnected' => ({required Object username}) => '已连接：${username}',
-			'streaming.realDebridInstructions' => '扫描二维码或打开链接，然后输入此激活码以连接 PlezyNG：',
+			'streaming.realDebridInstructions' => '扫描二维码或打开链接，然后输入此激活码以连接 Pleazyng：',
 			'streaming.realDebridActivate' => '打开 Real-Debrid 进行激活',
 			'streaming.realDebridCode' => '激活码',
 			'streaming.realDebridConnectFailed' => '无法连接 Real-Debrid。请重试。',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => '通过 AllDebrid 账户播放受支持的种子流。',
 			'streaming.connectAllDebrid' => '使用二维码连接',
-			'streaming.allDebridInstructions' => '扫描二维码或打开链接以授权 PlezyNG。连接期间请保持此页面打开：',
+			'streaming.allDebridInstructions' => '扫描二维码或打开链接以授权 Pleazyng。连接期间请保持此页面打开：',
 			'streaming.allDebridActivate' => '打开 AllDebrid 进行激活',
 			'streaming.allDebridCode' => '激活 PIN 码',
 			'streaming.allDebridConnectFailed' => '无法连接 AllDebrid。请重试。',
@@ -8075,13 +8081,13 @@ extension on TranslationsZh {
 			'streaming.connectApiKey' => '使用 API 密钥连接',
 			'streaming.apiKeyTitle' => ({required Object service}) => '连接 ${service}',
 			'streaming.apiKey' => 'API 密钥',
-			'streaming.apiKeyHint' => ({required Object service}) => '粘贴 ${service} 账户设置中的 API 密钥。PlezyNG 会在此设备上加密密钥，并将其保存在此个人资料中。',
+			'streaming.apiKeyHint' => ({required Object service}) => '粘贴 ${service} 账户设置中的 API 密钥。Pleazyng 会在此设备上加密密钥，并将其保存在此个人资料中。',
 			'streaming.apiKeyConnectFailed' => '无法验证此 API 密钥。请检查后重试。',
 			'streaming.accountConnected' => ({required Object username}) => '已连接：${username}',
 			'streaming.streamNeedsProvider' => '连接 Debrid 服务以播放此种子流。',
 			'streaming.playViaProvider' => '通过 Debrid 播放',
 			'streaming.disconnectConfirm' => ({required Object service}) => '断开 ${service}？',
-			'streaming.disconnectBody' => 'PlezyNG 会移除此设备的授权，不会更改服务商中的文件或正在进行的传输。',
+			'streaming.disconnectBody' => 'Pleazyng 会移除此设备的授权，不会更改服务商中的文件或正在进行的传输。',
 			'streaming.streamsTitle' => '选择串流',
 			'streaming.noStreams' => '未找到此标题的串流。',
 			'streaming.manageConnections' => '管理串流服务',
@@ -8097,7 +8103,7 @@ extension on TranslationsZh {
 			'streaming.streamUnsupported' => '应用内播放器不支持此串流格式。',
 			'streaming.remoteNeedsEpisode' => '请先选择剧集，再搜索串流。',
 			'streaming.remoteNeedsEpisodeNumber' => '此剧集缺少季号或集号。',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG 找不到此标题的 IMDb 或 TMDB ID。',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng 找不到此标题的 IMDb 或 TMDB ID。',
 			'streaming.watchWithServices' => '通过已连接的服务观看',
 			'streaming.chooseEpisode' => '选择剧集',
 			'streaming.episodes' => '剧集',
@@ -8130,7 +8136,7 @@ extension on TranslationsZh {
 			'addServer.addConnectionTitleScoped' => ({required Object name}) => '添加到 ${name}',
 			'addServer.signInWithPlexCard' => '使用 Plex 登录',
 			'addServer.signInWithPlexCardSubtitle' => '授权此设备。共享服务器会被添加。',
-			'addServer.signInWithPlexCardSubtitleScoped' => '授权一个 Plex 账户。Plex Home 用户将成为 PlezyNG 用户资料。',
+			'addServer.signInWithPlexCardSubtitleScoped' => '授权一个 Plex 账户。Plex Home 用户将成为 Pleazyng 用户资料。',
 			'addServer.connectToMediaBrowserCard' => ({required Object product}) => '连接到 ${product}',
 			'addServer.connectToMediaBrowserCardSubtitle' => '输入你的服务器 URL、用户名和密码。',
 			'addServer.connectToMediaBrowserCardSubtitleScoped' => ({required Object product, required Object name}) => '登录你的 ${product} 服务器。将绑定到 ${name}。',
@@ -8183,15 +8189,15 @@ extension on TranslationsZh {
 			'notifications.newEpisodeTitle' => '新集',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => '每個功能都免費嘗試7天',
-			'appAccess.description' => '开始一个七天的试用,完全访问每个PlezyNG功能,在试用期间没有费用,没有订阅,试用后,在您的商店价格上一生购买,终身开锁PlezyNG。',
-			'appAccess.trialEndedDescription' => '按商店显示的价格一次性购买，即可终身解锁 PlezyNG 的全部功能，无需订阅。',
+			'appAccess.description' => '开始一个七天的试用,完全访问每个Pleazyng功能,在试用期间没有费用,没有订阅,试用后,在您的商店价格上一生购买,终身开锁Pleazyng。',
+			'appAccess.trialEndedDescription' => '按商店显示的价格一次性购买，即可终身解锁 Pleazyng 的全部功能，无需订阅。',
 			'appAccess.startTrial' => '开始我的7天免费试验',
 			'appAccess.trialActive' => '您的7天全功能测试已活跃。',
 			'appAccess.trialEnded' => '你的七天审判结束了',
 			'appAccess.trialStartFailed' => '我无法在这个设备上保存测试,请再试一次。',
-			'appAccess.lifetimeTitle' => 'PlezyNG 终身禁用',
-			'appAccess.lifetimeBody' => '感谢!您终身访问所有 PlezyNG 功能。',
-			'appAccess.manageTitle' => 'PlezyNG 终身访问',
+			'appAccess.lifetimeTitle' => 'Pleazyng 终身禁用',
+			'appAccess.lifetimeBody' => '感谢!您终身访问所有 Pleazyng 功能。',
+			'appAccess.manageTitle' => 'Pleazyng 终身访问',
 			'appAccess.manageDescription' => '每個功能都免費嘗試7天,然後用一個付款解锁一生的一切,以您的商店的價格。',
 			'appAccess.buy' => ({required Object price}) => '解锁所有功能为 ${price}',
 			'appAccess.loadingPrice' => '货物价格...',
@@ -8199,11 +8205,11 @@ extension on TranslationsZh {
 			'appAccess.restore' => '恢复终身购买',
 			'appAccess.pending' => '您的购买正在等待付款或批准。商店完成交易后，终身使用权限将立即解锁。',
 			'appAccess.storeUnavailable' => '目前无法购买。请确认您已登录商店，且此设备允许购买。',
-			'appAccess.productNotFound' => 'PlezyNG 终身解锁 目前尚未在本商店提供。',
+			'appAccess.productNotFound' => 'Pleazyng 终身解锁 目前尚未在本商店提供。',
 			'appAccess.productQueryFailed' => '无法收取商店价格,请检查您的连接并尝试一次。',
 			'appAccess.purchaseFailed' => '購買不錯了,再試一次。',
 			'appAccess.restoreFailed' => '无法到达商店恢复您的购买,再试一次。',
-			'appAccess.nothingToRestore' => '已找到第 PlezyNG 终身购买号,用于此商店帐户。',
+			'appAccess.nothingToRestore' => '已找到第 Pleazyng 终身购买号,用于此商店帐户。',
 			'detail.endsAt' => ({required Object time}) => '结束时间：${time}',
 			'watchLink.serverUnavailable' => '无法访问 Plex 服务器此链接。',
 			'watchLink.notFound' => '我无法在您的服务器上找到此节目或电影 Plex。',
@@ -8228,7 +8234,7 @@ extension on TranslationsZh {
 			'homeLayout.syncAccountOff' => '关闭:此设备保持其自己的配置。',
 			'homeLayout.syncNow' => '现在的Sync',
 			'homeLayout.plexHomeManager' => 'Plex 主持人',
-			'homeLayout.managePlexRows' => '管理 Plex 行在 Plezy',
+			'homeLayout.managePlexRows' => '管理 Plex 行在 Pleazyng',
 			'homeLayout.managePlexRowsDescription' => '开放组织主选行列',
 			'homeLayout.organizeHomeRows' => '安排家居行',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} 行: 移动, 英雄, 自动滑动, 移除',
@@ -8298,7 +8304,7 @@ extension on TranslationsZh {
 			'homeLayout.organizeRowsHint' => '选择行(或保持):移动 · 左/右:行选项 · 返回:完成',
 			'homeLayout.layoutNavDescription' => '选择行、图书馆和收藏类别',
 			'homeLayout.editHomeRow' => '编辑 主页 序列',
-			'homeLayout.resetHeroButton' => '恢复 Plezy 默认焦点横幅布局',
+			'homeLayout.resetHeroButton' => '恢复 Pleazyng 默认焦点横幅布局',
 			'homeLayout.reorderingUnlocked' => '重新排序 开锁',
 			'homeLayout.reorderingLocked' => '重新安排锁',
 			'homeLayout.rowsCanBeDragged' => '可以拖绳 - 点击锁,以防止',
@@ -8315,13 +8321,13 @@ extension on TranslationsZh {
 			'homeLayout.tapHeroCardDescription' => '选择打字或选择一个英雄卡是否开始播放,或者打开它的细节。',
 			'homeLayout.heroTapPlayDescription' => '立即启动所选择的项目。',
 			'homeLayout.heroTapDetailsDescription' => '在选择行动之前,打开所选项目的详细信息。',
-			'platform.localNetworkPermission' => 'PlezyNG 会连接到您本地网络中的媒体服务器和播放设备。',
-			'platform.locationPermission' => '当 iOS 要求提供位置权限才能检测本地网络并连接媒体服务器时，PlezyNG 会使用此权限。',
+			'platform.localNetworkPermission' => 'Pleazyng 会连接到您本地网络中的媒体服务器和播放设备。',
+			'platform.locationPermission' => '当 iOS 要求提供位置权限才能检测本地网络并连接媒体服务器时，Pleazyng 会使用此权限。',
 			'platform.photoLibraryPermission' => '从照片图库中选择图片，用作媒体封面等图像。',
 			'platform.cameraPermission' => '扫描二维码以配对 Companion Remote。',
 			'universalMedia.title' => '开放媒体',
 			'universalMedia.shortcutHelp' => '播放此会议的链接、播放列表或文件。',
-			'universalMedia.intro' => '打开链接、播放列表或文件 Playback 使用 PlezyNG 的标准播放器,并且不会将历史添加到您的图书馆。',
+			'universalMedia.intro' => '打开链接、播放列表或文件 Playback 使用 Pleazyng 的标准播放器,并且不会将历史添加到您的图书馆。',
 			'universalMedia.openWhat' => '你想打开什么?',
 			'universalMedia.stream' => '流地址',
 			'universalMedia.playlist' => '播放列表',
@@ -8372,13 +8378,13 @@ extension on TranslationsZh {
 			'universalMedia.stopTransfer' => '停止转让和取消地址',
 			'universalMedia.startTransfer' => '转移开始',
 			'universalMedia.wifiImportedFiles' => 'Wi-Fi 传输',
-			'universalMedia.wifiBrowserTitle' => '向 PlezyNG 发送文件',
+			'universalMedia.wifiBrowserTitle' => '向 Pleazyng 发送文件',
 			'universalMedia.wifiBrowserIntro' => '选择音频、视频、电子书或漫画文件发送. 这些文件存储在该设备的文件和书籍库中. 最多: 100 个文件,每个文件 4 GiB,总共 10 GiB。',
 			'universalMedia.uploadFilesLabel' => '文件发送',
 			'universalMedia.uploadSelected' => '下载所选择的文件',
 			'universalMedia.uploadSelectFirst' => '首先选择一个或多个文件。',
 			'universalMedia.uploading' => '发送',
-			'universalMedia.uploadComplete' => '文件添加到 PlezyNG。',
+			'universalMedia.uploadComplete' => '文件添加到 Pleazyng。',
 			'universalMedia.uploadFailed' => '文件无法添加,请保持此页面开放并再次尝试。',
 			'universalMedia.liveCue' => '生活',
 			'universalMedia.liveSession' => '直播流',
@@ -8406,7 +8412,7 @@ extension on TranslationsZh {
 			'universalMedia.recordingActive' => '放弃播放停止并保存它。',
 			'universalMedia.recordingFormatHelp' => '对于视频,选择 MKV 或 MPEG-TS. 为音频,选择 MKA 或 MKV。',
 			'universalMedia.replaceRecordingTitle' => '取代这张录音?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG 在录制时备份现有文件;如果无法保存新录制,PlezyNG 将备份恢复。',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng 在录制时备份现有文件;如果无法保存新录制,Pleazyng 将备份恢复。',
 			'universalMedia.replaceRecording' => '替换文件',
 			'universalMedia.discHelp' => '在此计算机的光学驱动器中打开磁盘,您也可以从设备文件中打开ISO图像。',
 			'universalMedia.discs' => '光学磁盘',
@@ -8431,7 +8437,7 @@ extension on TranslationsZh {
 			'universalMedia.converterUnsupportedInput' => '选择音频或视频文件。',
 			'universalMedia.converterLocalOnly' => '所选择的文件不作为本地设备路径可用。',
 			'universalMedia.converterReplaceTitle' => '取代此文件?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG 恢复现有文件,直到转换的副本被保存。',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng 恢复现有文件,直到转换的副本被保存。',
 			'universalMedia.converterStarting' => '開始 FFmpeg...',
 			'universalMedia.converterProgress' => '转换到这个计算机......',
 			'universalMedia.converterComplete' => '转换完成,新文件已准备好。',
@@ -8455,7 +8461,7 @@ extension on TranslationsZh {
 			'universalMedia.captureDefaultAudio' => '默认音频输入',
 			'universalMedia.captureWaylandHelp' => 'Wayland 限制此 XWayland 捕获到 X display. XWayland 以外的 Windows 可能不会出现。',
 			'universalMedia.captureFrameRate' => '记录框率',
-			'universalMedia.capturePrivacy' => '录制仅存储到您选择的文件。 微型录制是可选的. PlezyNG 不会上传录制。',
+			'universalMedia.capturePrivacy' => '录制仅存储到您选择的文件。 微型录制是可选的. Pleazyng 不会上传录制。',
 			'universalMedia.captureSaveAs' => '保存屏幕录制如',
 			'universalMedia.captureExtensionMismatch' => '在 .mp4 中选择终端的文件名。',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg 或 H.264 视频编码器不适用. 安装支持的 FFmpeg 构建,然后再次尝试。',
@@ -8469,7 +8475,7 @@ extension on TranslationsZh {
 			'universalMedia.captureStop' => '停止和拯救',
 			'universalMedia.captureMode' => '捕捉',
 			'universalMedia.shareMode' => '分享',
-			'universalMedia.shareIntro' => '将本地媒体文件发送到您的私人网络上的另一个设备. PlezyNG 创建一个暂时的 HLS 流。',
+			'universalMedia.shareIntro' => '将本地媒体文件发送到您的私人网络上的另一个设备. Pleazyng 创建一个暂时的 HLS 流。',
 			'universalMedia.sharePrivacy' => '您的本地网络的任何人,谁接收私人链接可以观看,而它是活跃的. 链接结束后60分钟. 停止共享,关闭服务器并取消链接。',
 			'universalMedia.shareChooseFile' => '选择媒体文件',
 			'universalMedia.shareChooseHelp' => '选择一个本地的音频或视频文件. 该文件留在此计算机上。',
@@ -8482,7 +8488,7 @@ extension on TranslationsZh {
 			'universalMedia.shareOpenUrl' => '在另一台设备上的一个播放器中打开此地址',
 			'universalMedia.shareQrLabel' => '临时流地址的QR代码',
 			'universalMedia.shareQrHelp' => '扫描与同一私人网络连接的兼容播放器。',
-			'universalMedia.shareHttpHint' => '此流使用未加密的 HTTP. 在 PlezyNG 中,允许 HTTP 在打开它之前。',
+			'universalMedia.shareHttpHint' => '此流使用未加密的 HTTP. 在 Pleazyng 中,允许 HTTP 在打开它之前。',
 			'universalMedia.shareCopyUrl' => '复制流地址',
 			'universalMedia.shareExpiresLabel' => '链接终止',
 			'universalMedia.shareStarting' => '准备流...',
@@ -8507,7 +8513,7 @@ extension on TranslationsZh {
 			'universalMedia.extensionInstall' => '添加服务',
 			'universalMedia.extensionReplace' => '更新服务',
 			'universalMedia.extensionRemoveTitle' => '删除此搜索服务?',
-			'universalMedia.extensionRemoveHelp' => '这将取消该服务从此个人资料中. PlezyNG 不联系其终点。',
+			'universalMedia.extensionRemoveHelp' => '这将取消该服务从此个人资料中. Pleazyng 不联系其终点。',
 			'universalMedia.extensionRemove' => '取消服务',
 			'universalMedia.extensionInvalidManifest' => '此文件不是一个支持的扩展显而易见. 查看 Open media 格式指南。',
 			'universalMedia.extensionSaveFailed' => '该扩展无法存储到活跃的个人资料。',
@@ -8650,12 +8656,12 @@ extension on TranslationsZh {
 			'fileSources.none' => '无',
 			'fileSources.fullscreen' => '全屏幕',
 			'fileSources.syncLocation' => '进展同步文件夹(可选)',
-			'fileSources.syncLocationHint' => '用于保存 PlezyNG 状态的专用 WebDAV 文件夹。采用条件写入，不会更改媒体文件。',
+			'fileSources.syncLocationHint' => '用于保存 Pleazyng 状态的专用 WebDAV 文件夹。采用条件写入，不会更改媒体文件。',
 			'fileSources.audiobooks' => '音频书籍',
 			'fileSources.comics' => '漫画',
 			'fileSources.scan' => '扫描书籍和媒体',
 			'fileSources.browserReader' => '开放读者',
-			'fileSources.browserReaderHelp' => '阅读器在您的浏览器中开放. 保持 PlezyNG 开放,以保存您的位置和笔记。',
+			'fileSources.browserReaderHelp' => '阅读器在您的浏览器中开放. 保持 Pleazyng 开放,以保存您的位置和笔记。',
 			'fileSources.on' => '到',
 			'fileSources.advancedSetup' => 'App 登记',
 			'fileSources.microsoftSignIn' => '与Microsoft登录',
@@ -8696,7 +8702,7 @@ extension on TranslationsZh {
 			'fileSources.importInterrupted' => '进口中断 · 删除清理',
 			'fileSources.errorQuotaExceeded' => '已达到离线存储上限。请提高上限或移除已下载的副本。',
 			'fileSources.errorStorageLow' => '没有足够的免费设备存储,以保留保护备份。',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG无法检查免费设备存储,所以写作停止了。',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng无法检查免费设备存储,所以写作停止了。',
 			'fileSources.removeDownloadJob' => '删除下载',
 			'fileSources.downloadAlreadyComplete' => '此下载完成之前,它可以被删除. 该项目现在可用于离线。',
 			'fileSources.confirmRemoveDownloadJob' => '要移除此下载并丢弃已下载的部分数据吗？阅读位置和笔记会保留。',
@@ -8737,7 +8743,7 @@ extension on TranslationsZh {
 			'lending.openLibraryNote' => '探索 Open Library 的目录。每本书的页面上都会显示阅读和借阅选项。',
 			'lending.more' => '加载更多',
 			'lending.gateway' => '图书馆登录服务',
-			'lending.gatewayHint' => '由您的图书馆或管理员提供,PlezyNG。',
+			'lending.gatewayHint' => '由您的图书馆或管理员提供,Pleazyng。',
 			'lending.advanced' => '图书馆集成',
 			'lending.loadLibraries' => '选择您的图书馆',
 			'lending.expired' => '此借阅已到期。',
@@ -8859,7 +8865,7 @@ extension on TranslationsZh {
 			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
 			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
 			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
-			'sourceSetup.nfsEncryptionFailure' => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。PlezyNG 不会在不加密的情况下重试此连接。',
+			'sourceSetup.nfsEncryptionFailure' => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。Pleazyng 不会在不加密的情况下重试此连接。',
 			'sourceSetup.sourceConnecting' => '正在连接来源',
 			'sourceSetup.metadataSearchPrivacy' => '此标题搜索由 Trakt 处理。只会发送您输入的标题，不会发送视频或来源凭据。',
 			'sourceSetup.chooseMatch' => '选择匹配结果',
@@ -8989,7 +8995,13 @@ extension on TranslationsZh {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => '此 Plezy 链接不有效。',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => '此 Pleazyng 链接不有效。',
 			'deepLinks.profileNotFound' => ({required Object profile}) => '没有个人资料符合“${profile}”。',
 			'deepLinks.serverUnavailable' => '我无法到达这个链接的服务器。',
 			'deepLinks.notFound' => '我无法在图书馆中找到这个标题。',
@@ -9137,7 +9149,7 @@ extension on TranslationsZh {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

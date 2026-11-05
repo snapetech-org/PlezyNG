@@ -1055,7 +1055,7 @@ android {
   }
 
   defaultConfig {
-    applicationId = "org.snapetech.plezyng"
+    applicationId = "org.snapetech.pleazyng"
     if (felAarFile != null) {
       // Keep experimental native builds installable beside the signed app.
       // This avoids asking testers to uninstall their normal client and lose
@@ -1211,6 +1211,14 @@ android {
     checkDependencies = false
     checkOnly += setOf("NewApi")
   }
+
+  // Keep each build type's matching core source/receipt beside its libraries.
+  // ABIs occupy separate asset subdirectories and never race on a manifest.
+  buildTypes.configureEach {
+    val noticesDir = layout.buildDirectory.dir("generated/rommNotices/$name").get().asFile
+    externalNativeBuild.cmake.arguments.add("-DPLEZY_ROMM_NOTICES_ROOT=${noticesDir.absolutePath}")
+    sourceSets.maybeCreate(name).assets.srcDir(noticesDir)
+  }
 }
 
 // BackgroundWorkDiagnostics routes users to background_downloader's private
@@ -1294,6 +1302,8 @@ tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.con
   dependsOn(stageAndroidAnvilRuntime)
   dependsOn(stageAndroidLiteRtArtifacts)
   dependsOn(stageAndroidLiteRtModels)
+  val variantName = name.removePrefix("merge").removeSuffix("Assets")
+  dependsOn(tasks.matching { it.name == "externalNativeBuild$variantName" })
 }
 
 dependencies {

@@ -4,10 +4,10 @@
   "owner": "SnapeTech",
   "created": "2026-11-05",
   "method": "Built-in image generation edit of the independently redesigned fork ribbon master",
-  "source": "assets/branding/plezyng-approved.png",
+  "source": "historical fork master assets/branding/plezyng-approved.png at 601a9dc79",
   "output": "assets/branding/source/pleazyng-symbol-master.png",
   "output_sha256": "58e2dbdb630866b1d61fa751b462c0afd4a7b5769106cc3d997a134fec7475e1",
   "prompt": "Preserve the coral folded-ribbon mark, material, silhouette and lighting; remove the NG lettering and outline from the lower-right opening; use real transparency and no new text.",
   "upstream_logo_used_as_input": false,
-  "verification": "New symbol inspected; full export regeneration pending"
+  "verification": "Symbol visually inspected; NG removed. Canonical derivatives and complete platform exports regenerated; native/device verification pending."
 }

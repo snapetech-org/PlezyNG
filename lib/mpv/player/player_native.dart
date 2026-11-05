@@ -649,7 +649,7 @@ class PlayerNative extends PlayerBase
     final previousIsLivePlayback = _isLivePlayback;
     _isLivePlayback = isLive;
     // MPV retains A/B points when it advances to another file. They are
-    // playback-local controls in PlezyNG, so clear both before every explicit
+    // playback-local controls in Pleazyng, so clear both before every explicit
     // replacement load and keep a failed optional-property write from
     // interrupting playback.
     await _clearTransientSegmentLoop();

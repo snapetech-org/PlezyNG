@@ -86,7 +86,7 @@ require(
     "Homebrew must download from this repository",
 )
 require(
-    "plezyng-macos.dmg" in homebrew and "plezy-macos.dmg" not in homebrew,
+    "pleazyng-macos.dmg" in homebrew and "plezyng-macos.dmg" not in homebrew and "plezy-macos.dmg" not in homebrew,
     "Homebrew must download the exact DMG filename published by build.yml",
 )
 require(

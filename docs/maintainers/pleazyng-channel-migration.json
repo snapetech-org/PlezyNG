@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-05",
+  "repository_rename": "deferred",
+  "browser": "Dedicated Agent VM Firefox on :11; existing Proton Pass extension",
+  "accounts": {
+    "default": "keith@snape.tech",
+    "publisher_alias": "slskdn where existing",
+    "excluded": "snapek@gmail.com"
+  },
+  "apple": {
+    "team": "DM9A59DC85",
+    "app_id": "6826955231",
+    "old_bundle_id": "org.snapetech.plezyng",
+    "new_bundle_id": "org.snapetech.pleazyng",
+    "new_bundle_id_registered": true,
+    "agreement": "Owner accepted updated Developer Program License Agreement during session",
+    "state": "migration_in_progress",
+    "display_name": "Pleazyng",
+    "bundle_id_saved": "org.snapetech.pleazyng",
+    "app_record_reused": true,
+    "sku_retained_internal": "plezyng-2026-10",
+    "app_state": "iOS 2.24.1 and tvOS 1.0 Prepare for Submission",
+    "receipt": "App Information Saved in App Store Connect; unchanged numeric app ID",
+    "bundle_registration_id": "5R79UC85QR",
+    "extension_registration_id": "Z2HM9468HN",
+    "extension_bundle_id": "org.snapetech.pleazyng.TopShelfExtension",
+    "app_group": "group.org.snapetech.pleazyng",
+    "app_group_assigned_to": [
+      "org.snapetech.pleazyng",
+      "org.snapetech.pleazyng.TopShelfExtension"
+    ],
+    "pending": [
+      "Create or reconcile Pleazyng lifetime IAP",
+      "Update localized listing copy and remove stale screenshots",
+      "Retire old identifiers only after dependency review",
+      "Validate signing and App Store Connect upload with new identity"
+    ]
+  },
+  "automation_before": {
+    "AUR_PACKAGE_NAME": "plezyng-bin",
+    "COPR_PROJECT": "slskdn/plezyng",
+    "LAUNCHPAD_PPA": "ppa:keefshape/plezyng"
+  },
+  "state": "live_migration_in_progress",
+  "pending_channels": [
+    "Google Play",
+    "Amazon Appstore",
+    "Snap Store",
+    "Fedora COPR",
+    "Launchpad PPA",
+    "Chocolatey",
+    "AUR",
+    "WinGet",
+    "Homebrew",
+    "Microsoft Store",
+    "Samsung Seller Office",
+    "LG Content Store"
+  ]
+}

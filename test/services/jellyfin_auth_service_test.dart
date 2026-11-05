@@ -27,7 +27,7 @@ JellyfinConnectionAuthService _service({
   MediaBrowserDialect dialect = MediaBrowserDialect.jellyfin,
 }) {
   return JellyfinConnectionAuthService(
-    clientName: 'PlezyNG',
+    clientName: 'Pleazyng',
     clientVersion: 'test',
     deviceName: 'TestDevice',
     dialect: dialect,
@@ -338,7 +338,7 @@ void main() {
 
     test('returns false on transport error', () async {
       final svc = JellyfinConnectionAuthService(
-        clientName: 'PlezyNG',
+        clientName: 'Pleazyng',
         clientVersion: 'test',
         deviceName: 'TestDevice',
         testHttpClientFactory: () => MockClient((_) async => throw http.ClientException('network down')),
@@ -904,7 +904,7 @@ void main() {
       expect(request.method, 'POST');
       expect(
         request.headers['authorization'],
-        'MediaBrowser Client="PlezyNG", Device="TestDevice", DeviceId="dev-xyz", Version="test"',
+        'MediaBrowser Client="Pleazyng", Device="TestDevice", DeviceId="dev-xyz", Version="test"',
       );
       expect(request.headers['content-type'], 'application/json');
     });
@@ -923,7 +923,7 @@ void main() {
       expect(request.method, 'GET');
       expect(
         request.headers['authorization'],
-        'MediaBrowser Client="PlezyNG", Device="TestDevice", DeviceId="dev-xyz", Version="test"',
+        'MediaBrowser Client="Pleazyng", Device="TestDevice", DeviceId="dev-xyz", Version="test"',
       );
     });
 

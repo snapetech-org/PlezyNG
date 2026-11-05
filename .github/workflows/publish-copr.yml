@@ -16,7 +16,7 @@ on:
         type: choice
         options: [private]
       release_tag:
-        description: Published PlezyNG release tag
+        description: Published Pleazyng release tag
         required: true
         type: string
 
@@ -98,14 +98,14 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/plezyng-copr/assets"
+          mkdir -p "$RUNNER_TEMP/pleazyng-copr/assets"
           gh release download "$RELEASE_TAG" \
-            --pattern plezy-linux-x64.tar.gz \
-            --pattern plezy-linux-arm64.tar.gz \
+            --pattern pleazyng-linux-x64.tar.gz \
+            --pattern pleazyng-linux-arm64.tar.gz \
             --pattern SHA256SUMS.txt \
-            --dir "$RUNNER_TEMP/plezyng-copr/assets"
-          cd "$RUNNER_TEMP/plezyng-copr/assets"
-          for asset in plezy-linux-x64.tar.gz plezy-linux-arm64.tar.gz; do
+            --dir "$RUNNER_TEMP/pleazyng-copr/assets"
+          cd "$RUNNER_TEMP/pleazyng-copr/assets"
+          for asset in pleazyng-linux-x64.tar.gz pleazyng-linux-arm64.tar.gz; do
             expected="$(awk -v name="$asset" '$2 == name { print $1; count++ } END { if (count != 1) exit 1 }' SHA256SUMS.txt)"
             actual="$(sha256sum "$asset" | cut -d ' ' -f 1)"
             [[ "$expected" == "$actual" ]] || { echo "Checksum mismatch for $asset" >&2; exit 1; }
@@ -120,16 +120,16 @@ jobs:
           set -euo pipefail
           command -v rpmbuild
           python3 -c 'import venv, ensurepip'
-          top="$RUNNER_TEMP/plezyng-rpmbuild"
+          top="$RUNNER_TEMP/pleazyng-rpmbuild"
           install -d "$top/SOURCES" "$top/SPECS" "$top/BUILD" "$top/BUILDROOT" "$top/RPMS" "$top/SRPMS"
-          cp "$RUNNER_TEMP/plezyng-copr/assets/plezy-linux-x64.tar.gz" "$top/SOURCES/"
-          cp "$RUNNER_TEMP/plezyng-copr/assets/plezy-linux-arm64.tar.gz" "$top/SOURCES/"
-          cp linux/packaging/plezy.sh "$top/SOURCES/plezy.sh"
-          cp linux/packaging/org.snapetech.plezyng.desktop "$top/SOURCES/org.snapetech.plezyng.desktop"
-          cp assets/plezy.png "$top/SOURCES/plezy.png"
+          cp "$RUNNER_TEMP/pleazyng-copr/assets/pleazyng-linux-x64.tar.gz" "$top/SOURCES/"
+          cp "$RUNNER_TEMP/pleazyng-copr/assets/pleazyng-linux-arm64.tar.gz" "$top/SOURCES/"
+          cp linux/packaging/pleazyng.sh "$top/SOURCES/plezy.sh"
+          cp linux/packaging/org.snapetech.pleazyng.desktop "$top/SOURCES/org.snapetech.pleazyng.desktop"
+          cp assets/pleazyng.png "$top/SOURCES/plezy.png"
           cp LICENSE "$top/SOURCES/LICENSE"
-          sed "s/^Version:.*/Version:        $RELEASE_VERSION/" linux/packaging/copr/plezyng.spec > "$top/SPECS/plezyng.spec"
-          rpmbuild --define "_topdir $top" -bs "$top/SPECS/plezyng.spec"
+          sed "s/^Version:.*/Version:        $RELEASE_VERSION/" linux/packaging/copr/pleazyng.spec > "$top/SPECS/pleazyng.spec"
+          rpmbuild --define "_topdir $top" -bs "$top/SPECS/pleazyng.spec"
 
       - name: Submit source RPM to COPR
         if: steps.settings.outputs.configured == 'true'
@@ -151,6 +151,6 @@ jobs:
           token = ${COPR_TOKEN}
           copr_url = https://copr.fedorainfracloud.org
           EOF
-          srpm="$(find "$RUNNER_TEMP/plezyng-rpmbuild/SRPMS" -maxdepth 1 -type f -name '*.src.rpm' -print -quit)"
+          srpm="$(find "$RUNNER_TEMP/pleazyng-rpmbuild/SRPMS" -maxdepth 1 -type f -name '*.src.rpm' -print -quit)"
           test -n "$srpm" && test -s "$srpm"
           "$RUNNER_TEMP/copr-cli/bin/copr-cli" build --nowait "$COPR_PROJECT" "$srpm"

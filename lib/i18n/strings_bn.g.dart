@@ -122,7 +122,7 @@ class _Translations$app$bn extends Translations$app$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class _Translations$appIcon$bn extends Translations$appIcon$en {
 	@override String get defaultIcon => 'প্রত্যাশিত';
 	@override String get current => 'বর্তমান আইকোন';
 	@override String get locked => 'জীবনযাপন প্রয়োজনীয়';
-	@override String get lockedHint => 'আপনার 7 দিনের পরীক্ষা শুরু করুন অথবা বিকল্প আইকোনগুলি ব্যবহার করার জন্য PlezyNG লাইভের জন্য অলোক করুন।';
+	@override String get lockedHint => 'আপনার 7 দিনের পরীক্ষা শুরু করুন অথবা বিকল্প আইকোনগুলি ব্যবহার করার জন্য Pleazyng লাইভের জন্য অলোক করুন।';
 	@override String get changeFailed => 'অ্যাপ আইকন পরিবর্তন করতে পারবেন না';
-	@override String get launcherHint => 'নতুন আইকন আপনার বাড়ি স্ক্রিনে প্রদর্শিত হবে একবার আপনি PlezyNG ছেড়ে যান।';
-	@override String get tvLauncherHint => 'নতুন ব্যানারটি আপনাকে PlezyNG ছেড়ে দেওয়ার পর দেখা যায়। Android TV টেলিভিশন আবার শুরু হওয়ার পর্যন্ত পুরনো ব্যানারটি প্রদর্শন করতে পারবেন।';
+	@override String get launcherHint => 'নতুন আইকন আপনার বাড়ি স্ক্রিনে প্রদর্শিত হবে একবার আপনি Pleazyng ছেড়ে যান।';
+	@override String get tvLauncherHint => 'নতুন ব্যানারটি আপনাকে Pleazyng ছেড়ে দেওয়ার পর দেখা যায়। Android TV টেলিভিশন আবার শুরু হওয়ার পর্যন্ত পুরনো ব্যানারটি প্রদর্শন করতে পারবেন।';
 	@override late final _Translations$appIcon$names$bn names = _Translations$appIcon$names$bn._(_root);
 	@override String get description => 'আপনার ডিভাইসের লঞ্চারে কোন আইকন দেখানো হবে তা বেছে নিন। প্রিভিউতে প্রতিটি বিকল্প কেমন দেখায় তা দেখতে পারবেন।';
 }
@@ -166,7 +166,7 @@ class _Translations$auth$bn extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'অনুমোদনের জন্য অপেক্ষা...';
 	@override String get quickConnectCancel => 'বাতিল';
 	@override String get quickConnectExpired => 'দ্রুত সংযোগের মেয়াদ শেষ হয়েছে। আবার চেষ্টা করুন।';
-	@override String get localDataRecoveryRequired => 'PlezyNG স্থানীয় সাইন-ইনের তথ্য ও অপেক্ষমাণ প্লেব্যাকের তথ্য নিরাপদে পুনরুদ্ধার করতে পারেনি। আবার সাইন ইন করুন।';
+	@override String get localDataRecoveryRequired => 'Pleazyng স্থানীয় সাইন-ইনের তথ্য ও অপেক্ষমাণ প্লেব্যাকের তথ্য নিরাপদে পুনরুদ্ধার করতে পারেনি। আবার সাইন ইন করুন।';
 	@override String get pinCheckRejected => 'Plex PIN চেক বাতিল করা হয়েছে';
 	@override String get connectToDirectPlex => 'স্থানীয় সার্ভার Plex এর সাথে সংযোগ';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$bn extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'সিস্টেম';
-	@override String get supportDeveloper => 'সমর্থন PlezyNG';
+	@override String get supportDeveloper => 'সমর্থন Pleazyng';
 	@override String get supportDeveloperDescription => 'উন্নয়নকে সহায়তা দেওয়ার জন্য';
-	@override String get lifetimeAccess => 'PlezyNG জীবনের অ্যাক্সেস';
+	@override String get lifetimeAccess => 'Pleazyng জীবনের অ্যাক্সেস';
 	@override String get language => 'ভাষা';
 	@override String get theme => 'বিষয়';
 	@override String get appearance => 'প্রদর্শন';
@@ -353,7 +353,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'কোন সংযুক্ত মিডিয়া লাইব্রেরি পাওয়া যায় না।';
 	@override String get contentScreensaverDismissHint => 'কোনও বোতাম বা বাতিল করতে চাপ করুন';
 	@override String get newEpisodeNotifications => 'নতুন পরিস্থিতি বিজ্ঞাপন';
-	@override String get newEpisodeNotificationsDescription => 'একটি প্রদর্শনে একটি নতুন প্রদর্শন যোগ করা হলে সতর্ক করুন আপনি একটি প্রদর্শন পেয়েছেন. সতর্ক করুন যখন Plezy খোলা হয়.';
+	@override String get newEpisodeNotificationsDescription => 'একটি প্রদর্শনে একটি নতুন প্রদর্শন যোগ করা হলে সতর্ক করুন আপনি একটি প্রদর্শন পেয়েছেন. সতর্ক করুন যখন Pleazyng খোলা হয়.';
 	@override String get continueWatchingRowSize => 'Continue reading রানী আকার দেখুন';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} কার্ড';
 	@override String get rowSizeCompact => 'কম্প্যাক্ট';
@@ -484,7 +484,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get importSettingsDescription => 'একটি ফাইল থেকে পছন্দ ফেরত';
 	@override String get importSettingsConfirm => 'এটাই আপনাকে বর্তমান পরামর্শগুলি বদলে দেবে।';
 	@override String get importSettingsSuccess => 'আউটডোজ করা';
-	@override String get importSettingsInvalidFile => 'এই ফাইলটি একটি সঠিক PlezyNG সেটিংগুলি অ্যাক্সেস নয়';
+	@override String get importSettingsInvalidFile => 'এই ফাইলটি একটি সঠিক Pleazyng সেটিংগুলি অ্যাক্সেস নয়';
 	@override String get importSettingsNoUser => 'প্রদর্শন করার আগে সাইন করুন';
 	@override String get cloudBackup => 'ক্লাউড সার্ভিস';
 	@override String get cloudBackupDescription => 'HTTPS-এর মাধ্যমে WebDAV ঠিকানায় বহনযোগ্য সেটিংসের ব্যাকআপ রাখুন। সার্ভার সংযোগ ও শংসাপত্র এই ডিভাইসেই থাকবে।';
@@ -666,7 +666,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get forceTvMode => 'টেলিভিশন মডেল';
 	@override String get forceTvModeDescription => 'টেলিভিশন সিস্টেম শক্তিশালী. যেসব ডিভাইসগুলি স্বয়ংক্রিয়ভাবে ডেটিং না করে, তাদের জন্য আবার শুরু করতে হবে।';
 	@override String get startInFullscreen => 'পুরো স্ক্রিনে শুরু';
-	@override String get startInFullscreenDescription => 'ফুল স্ক্রিন মোডে PlezyNG খোলা';
+	@override String get startInFullscreenDescription => 'ফুল স্ক্রিন মোডে Pleazyng খোলা';
 	@override String get exitFullscreenOnPlayerClose => 'খেলোয়াড় বন্ধে Full Screen Exit';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'ভিডিও খেলোয়াড় বন্ধ করার সময় স্বয়ংক্রিয়ভাবে পুরো স্ক্রিন থেকে বের করে';
 	@override String get autoHidePerformanceOverlay => 'অটো-হাইড অ্যাপ্লিকেশন Overlay';
@@ -722,7 +722,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'যেখানে';
 	@override String get playerScopeLibrary => 'লাইব্রেরি থেকে';
 	@override String get playerScopeTitle => 'সিনেমা বা সিনেমা';
-	@override String get exportDialogTitle => 'উত্পাদন PlezyNG সিস্টেমগুলি';
+	@override String get exportDialogTitle => 'উত্পাদন Pleazyng সিস্টেমগুলি';
 	@override String get followSystem => 'সিস্টেমের ভাষা অনুসরণ করুন';
 	@override String get followAppLanguage => 'ইন্টারফেসের ভাষা ব্যবহার করুন';
 	@override String get regionFormat => 'আঞ্চলিক বিন্যাস';
@@ -733,7 +733,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'পুরো স্ক্রিনে ডেস্কটপ ভিডিও খুলে যখন Playback শুরু হয়';
 	@override String get extendVideoIntoDisplayCutout => 'ভিডিও প্রদর্শন Cutoutতে বিস্তারিত';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'Fullscreen ভিডিও অ্যান্ড্রয়েড ফোনগুলিতে ক্যামেরার Cutout ব্যবহার করুন';
-	@override String get languageDescription => 'PlezyNG-এর নিয়ন্ত্রণ ও বার্তায় ব্যবহৃত ভাষা বেছে নিন। সিস্টেম অনুসরণ করলে ডিভাইসের ভাষা ব্যবহৃত হবে।';
+	@override String get languageDescription => 'Pleazyng-এর নিয়ন্ত্রণ ও বার্তায় ব্যবহৃত ভাষা বেছে নিন। সিস্টেম অনুসরণ করলে ডিভাইসের ভাষা ব্যবহৃত হবে।';
 	@override String get themeDescription => 'প্রোগ্রামটিতে ব্যবহৃত রঙ এবং প্রতিরোধ নির্বাচন করুন।';
 	@override String get libraryDensityDescription => 'প্রতিটি লাইব্রেরি কার্ডের সংখ্যা পরিবর্তন করুন।';
 	@override String get displayScaleDescription => 'এই গাড়ি ডিভাইসের ইন্টারফেসটি পরিবর্তন না করে আপনার ডিভিশনে টেক্সট মাত্রা পরিবর্তন করুন।';
@@ -755,14 +755,14 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get episodeActionDescription => 'আপনি একটি epizode কার্ড সক্রিয় করার সময় কী ঘটবে তা নির্বাচন করুন।';
 	@override String get episodePlayDescription => 'অবিলম্বে এই ঘটনাটি শুরু করুন।';
 	@override String get episodeDetailsDescription => 'Playback এর আগে পৃষ্ঠাটি খুলুন।';
-	@override String get contentScreensaverDelayDescription => 'প্রদর্শন করার আগে অন্তর্ভুক্ত PlezyNG কতদিন অপেক্ষা করে।';
+	@override String get contentScreensaverDelayDescription => 'প্রদর্শন করার আগে অন্তর্ভুক্ত Pleazyng কতদিন অপেক্ষা করে।';
 	@override String get continueWatchingRowSizeDescription => 'সিদ্ধান্ত করুন যে কার্ডগুলি কতটা বড় থাকে Continue Watching রানায়।';
 	@override String get rowSizeCompactDescription => 'ছোট কার্ডগুলি দেখুন, যাতে আরও পণ্য লাইন সীমাবদ্ধ করে।';
 	@override String get rowSizeStandardDescription => 'কার্ডের স্ট্যান্ডার্ড আকার ব্যবহার করুন।';
 	@override String get rowSizeLargeDescription => 'আরও বড় কার্ডগুলি দেখুন আরেকটি শিল্পকর্মের বিস্তারিত';
 	@override String get visualEffectsDescription => 'এই ডিভাইসের জন্য অ্যানিমেশন এবং শিল্প কার্যকলাপ বাজেট নির্বাচন করুন।';
 	@override String get visualEffectsFullDescription => 'প্রতিটি ডিভাইসে সম্পূর্ণ অ্যানিমেশন এবং শিল্প কাজের প্রভাব ব্যবহার করুন।';
-	@override String get startupSectionDescription => 'কখন PlezyNG শুরু হয় তাহলে কোন বিভাগটি খুলবে তা নির্বাচন করুন।';
+	@override String get startupSectionDescription => 'কখন Pleazyng শুরু হয় তাহলে কোন বিভাগটি খুলবে তা নির্বাচন করুন।';
 	@override late final _Translations$settings$startupSectionOptions$bn startupSectionOptions = _Translations$settings$startupSectionOptions$bn._(_root);
 	@override String get smallSkipDurationDescription => 'দূরত্ব নির্ধারণ করুন, যা দ্রুত পিছনে এবং সামনের পাশে নিয়ন্ত্রণ অনুসন্ধান করে।';
 	@override String get largeSkipDurationDescription => 'দীর্ঘ পিছনে যাওয়া দূরে নির্ধারণ করুন এবং সামনের দিকে নিয়ন্ত্রণ খুঁজুন।';
@@ -798,7 +798,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => 'Bitrate-capped transcode ছাড়া সূত্র অডিও খেলুন।';
 	@override String get musicQualityTranscodeOptionDescription => 'উপরে দেখানো বিটরেটের কাছাকাছি সীমা রেখে সার্ভারকে ট্রান্সকোড করতে বলুন; প্রকৃত আউটপুট ভিন্ন হতে পারে।';
 	@override String get maxVolumeInputLabel => 'সর্বোচ্চ পরিমাণ (%)';
-	@override String get checkForUpdatesDescription => 'এখন দেখুন কি PlezyNG এর নতুন সংস্করণ পাওয়া যায় কিনা।';
+	@override String get checkForUpdatesDescription => 'এখন দেখুন কি Pleazyng এর নতুন সংস্করণ পাওয়া যায় কিনা।';
 	@override String get appearanceDescription => 'অ্যাপটি থেমা নির্বাচন করুন এবং লাইব্রেরি কার্ড, হোম রান এবং ন্যাভাইজেশন সংশোধন করুন।';
 	@override String get prerollLibraryDescription => 'সিনেমা pre-rolls হিসাবে উপলব্ধ ক্লিপগুলি প্রন্তর্ভুক্ত লাইব্রেরি নির্বাচন করুন।';
 	@override String get prerollSelectionDescription => 'নির্বাচিত লাইব্রেরির কোন ক্লিপগুলো সিনেমার আগে চলতে পারবে তা বেছে নিন।';
@@ -1049,8 +1049,8 @@ class _Translations$mediaMenu$bn extends Translations$mediaMenu$en {
 		one: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেটিও মুছে যাবে:',
 		other: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেগুলিও মুছে যাবে:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG কোন ফাইলটি মুছে ফেলবে তা নিশ্চিত করতে পারেন না, তাই এটি উপরে নামিত পণ্যের চেয়ে বেশি মুছে ফেলতে পারে. বাতিল করুন এবং আবারও চেষ্টা করুন, অথবা কোনওভাবে মুছে ফেলুন।';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'আপনার সার্ভার এই আইটেমের ফাইলের বিবরণ দেয়নি, তাই PlezyNG কোন ফাইলগুলি মুছে যাবে তা পরীক্ষা করতে পারছে না। উপরে উল্লেখ করা আইটেম ছাড়াও আরও কিছু মুছে যেতে পারে।';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng কোন ফাইলটি মুছে ফেলবে তা নিশ্চিত করতে পারেন না, তাই এটি উপরে নামিত পণ্যের চেয়ে বেশি মুছে ফেলতে পারে. বাতিল করুন এবং আবারও চেষ্টা করুন, অথবা কোনওভাবে মুছে ফেলুন।';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'আপনার সার্ভার এই আইটেমের ফাইলের বিবরণ দেয়নি, তাই Pleazyng কোন ফাইলগুলি মুছে যাবে তা পরীক্ষা করতে পারছে না। উপরে উল্লেখ করা আইটেম ছাড়াও আরও কিছু মুছে যেতে পারে।';
 	@override String get mediaDeletedSuccessfully => 'সফলভাবে মুছে ফেলেন মিডিয়া';
 	@override String get mediaFailedToDelete => 'মিডিয়া পণ্য মুছে ফেলে না';
 	@override String get rate => 'রাত';
@@ -1118,7 +1118,7 @@ class _Translations$accessibility$bn extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'অ্যাক্সেসযোগ্যতা';
 	@override String get summary => 'টেক্সট, কন্ট্রোস্ট, মোট এবং নিয়ন্ত্রণ';
-	@override String get systemHint => 'আপনার ডিভাইসের অ্যাক্সেসযোগ্যতা সেটস সবসময় প্রয়োগ করা হয়. এই পছন্দগুলি PlezyNG সারা সময় সমাধানগুলি যোগ করে।';
+	@override String get systemHint => 'আপনার ডিভাইসের অ্যাক্সেসযোগ্যতা সেটস সবসময় প্রয়োগ করা হয়. এই পছন্দগুলি Pleazyng সারা সময় সমাধানগুলি যোগ করে।';
 	@override String get readability => 'পড়া ও দেখার সুযোগ';
 	@override String get textSize => 'টেক্সটের বড়';
 	@override String get preview => 'আপনার পরবর্তী গল্পটি খুঁজে পেতে. পড়ুন, শুনুন এবং আপনার নিজের ধাপে দেখুন।';
@@ -1131,7 +1131,7 @@ class _Translations$accessibility$bn extends Translations$accessibility$en {
 	@override String get largeTargets => 'বড় ট্যাক্স টার্গেট';
 	@override String get largeTargetsHint => 'স্পর্শ ও সহায়ক প্রযুক্তির মাধ্যমে চলাচল সহজ করতে সাধারণ নিয়ন্ত্রণগুলির জায়গা বড় করুন।';
 	@override String get navigationHint => 'নিয়ন্ত্রণগুলির মধ্যে যেতে Tab ও Shift+Tab, সক্রিয় করতে Enter বা Space এবং বন্ধ করতে Escape বা ফিরে যাওয়ার বোতাম ব্যবহার করুন। বই খোলা থাকলে জুম ও পড়ার পছন্দগুলি বদলানো যায়।';
-	@override String get textSizeDescription => 'আপনার ডিভাইসের সিস্টেম টেক্সটের আকারের সেটিংয়ের পাশাপাশি PlezyNG ইন্টারফেসের লেখার আকারও পরিবর্তন করুন।';
+	@override String get textSizeDescription => 'আপনার ডিভাইসের সিস্টেম টেক্সটের আকারের সেটিংয়ের পাশাপাশি Pleazyng ইন্টারফেসের লেখার আকারও পরিবর্তন করুন।';
 	@override String get boldTextHint => 'ইন্টারফেস ট্যাগ এবং বার্তাগুলির জন্য একটি গভীর ওজন ব্যবহার করুন যা তাদের বিতর্ক করা সহজ করে।';
 }
 
@@ -1459,7 +1459,7 @@ class _Translations$profiles$bn extends Translations$profiles$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'PlezyNG প্রোফাইল যোগ করুন';
+	@override String get addPlezyProfile => 'Pleazyng প্রোফাইল যোগ করুন';
 	@override String get switchingProfile => 'ফোফাইল পরিবর্তন...';
 	@override String get deleteThisProfileTitle => 'এই প্রোফাইলটি মুছে ফেলুন?';
 	@override String deleteThisProfileMessage({required Object displayName}) => '${displayName} সরিয়ে দিন। সংযোগগুলি প্রভাবিত হবে না।';
@@ -1550,7 +1550,7 @@ class _Translations$connections$bn extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} সার্ভার এই অ্যাকাউন্টের জন্য অ্যাক্সেস বাতিল';
 	@override String get signInAgain => 'আবার লিখুন';
 	@override String editMediaBrowserTitle({required Object product}) => 'Edit ${product} সংযোগ';
-	@override String editMediaBrowserIntro({required Object serverName}) => '${serverName} এর জন্য URLগুলি যোগ করুন বা মুছে ফেলুন. PlezyNG সবচেয়ে কম ল্যাটিংসের সাথে পৌঁছাতে পারে URLগুলি ব্যবহার করবে।';
+	@override String editMediaBrowserIntro({required Object serverName}) => '${serverName} এর জন্য URLগুলি যোগ করুন বা মুছে ফেলুন. Pleazyng সবচেয়ে কম ল্যাটিংসের সাথে পৌঁছাতে পারে URLগুলি ব্যবহার করবে।';
 }
 
 // Path: accountPreferences
@@ -1564,7 +1564,7 @@ class _Translations$accountPreferences$bn extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => 'অডিও, সাবটাইট এবং লাইব্রেরি বিকল্পগুলি ${account} এ সংরক্ষিত';
 	@override String hubSubtitleMultiple({required Object count}) => 'অডিও, সাবটাইট এবং লাইব্রেরি বিকল্পগুলি ${count} অ্যাকাউন্টগুলিতে সংরক্ষিত';
 	@override String get pickAccount => 'প্রতিটি অ্যাকাউন্ট তার নিজের প্রিয়মেন্টগুলি সংরক্ষণ করে. সংশোধন করার জন্য একটি নির্বাচন করুন.';
-	@override String get storedOnAccount => 'এই অ্যাকাউন্টের নিজে থেকে এই অ্যাকাউন্টগুলি সংরক্ষণ করা হয়, তাই এতে প্রবেশিত প্রতিটি অ্যাপটি তাদের ব্যবহার করে - আপনার অন্যান্য ডিভাইসগুলিতে PlezyNG অন্তর্ভুক্ত।';
+	@override String get storedOnAccount => 'এই অ্যাকাউন্টের নিজে থেকে এই অ্যাকাউন্টগুলি সংরক্ষণ করা হয়, তাই এতে প্রবেশিত প্রতিটি অ্যাপটি তাদের ব্যবহার করে - আপনার অন্যান্য ডিভাইসগুলিতে Pleazyng অন্তর্ভুক্ত।';
 	@override String get noAccounts => 'কোন অ্যাকাউন্ট সংগঠন করা যায় না';
 	@override String get noAccountsHint => 'Plex এ প্রবেশ করুন, অথবা Jellyfin বা Emby সার্ভারের সাথে সংযোগ করুন, এবং এই অ্যাকাউন্টে সংরক্ষিত পছন্দগুলি এখানে প্রদর্শন করা হয়।';
 	@override String get unavailable => 'এই অ্যাকাউন্টে পৌঁছাতে পারবেন না';
@@ -1792,9 +1792,9 @@ class _Translations$startup$bn extends Translations$startup$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG শুরু করতে পারেনি';
+	@override String get failedTitle => 'Pleazyng শুরু করতে পারেনি';
 	@override String get failedBody => 'স্টার্টপোর্টের সময় কিছু ভুল হয়েছিল. নিচের বিস্তারিতগুলি কী ভুল হয়েছে তা সংজ্ঞা করে।';
-	@override String get failedBodyRepairable => 'PlezyNG-এর সংরক্ষিত সেটিংস ফাইলটি ক্ষতিগ্রস্ত। অ্যাপ চালুর আগে এটি আবার তৈরি করতে হবে। আবার চেষ্টা করলে কাজ হবে না — স্টোরেজ মেরামতের বিকল্পটি বেছে নিন।';
+	@override String get failedBodyRepairable => 'Pleazyng-এর সংরক্ষিত সেটিংস ফাইলটি ক্ষতিগ্রস্ত। অ্যাপ চালুর আগে এটি আবার তৈরি করতে হবে। আবার চেষ্টা করলে কাজ হবে না — স্টোরেজ মেরামতের বিকল্পটি বেছে নিন।';
 	@override String get phaseLabel => 'পদক্ষেপ';
 	@override String get showDetails => 'বিস্তারিত দেখুন';
 	@override String get hideDetails => 'গোপন বিস্তারিত';
@@ -1803,16 +1803,16 @@ class _Translations$startup$bn extends Translations$startup$en {
 	@override String get uploadDetails => 'আপলোড ডেটা';
 	@override String get repairStorage => 'পুনরাবৃত্তি সংরক্ষণ';
 	@override String get repairTitle => 'রক্ষা করা ডেটা কি?';
-	@override String get repairBodyCommon => 'PlezyNG-এর সেটিংস ফাইলটি ক্ষতিগ্রস্ত এবং পড়া যাচ্ছে না। মেরামত করলে সব সেটিংস ডিফল্ট মানে ফিরে যাবে।';
+	@override String get repairBodyCommon => 'Pleazyng-এর সেটিংস ফাইলটি ক্ষতিগ্রস্ত এবং পড়া যাচ্ছে না। মেরামত করলে সব সেটিংস ডিফল্ট মানে ফিরে যাবে।';
 	@override String get repairBodyOneCredential => 'সংরক্ষিত সাইন-ইনের একটি তথ্য ক্ষতিগ্রস্ত এবং পড়া যাচ্ছে না। মেরামত করলে শুধু সেটিই মুছে যাবে; অন্য সেটিংস বদলাবে না।';
 	@override String get repairBodySignInsKept => 'আপনার সার্ভার ও প্রোফাইলগুলিতে সাইন-ইন অবস্থা বজায় থাকার কথা।';
 	@override String get repairBodySignInsLost => 'সংরক্ষিত সাইন-ইনের তথ্য রক্ষা করার চাবিটি এই ফাইল থেকে পুনরুদ্ধার করা যাচ্ছে না। তাই প্রতিটি সার্ভার ও প্রোফাইলে আবার সাইন ইন করতে হবে। মিডিয়া সার্ভারে কিছুই প্রভাবিত হবে না।';
-	@override String get repairBodySessionsUncertain => 'ট্র্যাকার (MAL, AniList, Simkl, Trakt) এবং Seerr-এর তথ্য আলাদাভাবে সংরক্ষিত থাকে এবং তা অক্ষত থাকতেও পারে, নাও পারে। PlezyNG ঠিক কোন তথ্য রেখেছে তা আপনাকে জানাবে।';
+	@override String get repairBodySessionsUncertain => 'ট্র্যাকার (MAL, AniList, Simkl, Trakt) এবং Seerr-এর তথ্য আলাদাভাবে সংরক্ষিত থাকে এবং তা অক্ষত থাকতেও পারে, নাও পারে। Pleazyng ঠিক কোন তথ্য রেখেছে তা আপনাকে জানাবে।';
 	@override String get repairConfirm => 'পুনরায়';
 	@override String get repairSucceeded => 'রেকর্ড করা হয়েছে';
 	@override String get repairNeedsRestart => 'পুনরাবৃত্তি প্রয়োজন – Repair Required';
-	@override String get restartRequiredBody => 'আপনার তথ্য মেরামত করা হয়েছে, তবে তা ব্যবহার করতে PlezyNG আবার চালু করতে হবে। PlezyNG বন্ধ করে আবার খুলুন।';
-	@override String get quitPlezy => 'ফাঁস PlezyNG';
+	@override String get restartRequiredBody => 'আপনার তথ্য মেরামত করা হয়েছে, তবে তা ব্যবহার করতে Pleazyng আবার চালু করতে হবে। Pleazyng বন্ধ করে আবার খুলুন।';
+	@override String get quitPlezy => 'ফাঁস Pleazyng';
 	@override String get repairFailed => 'পুনরাবৃত্তি ভুল';
 	@override String get repairKeptSignIns => 'আপনার সার্ভার ও প্রোফাইলগুলিতে এখনও সাইন ইন করা আছে।';
 	@override String get repairLostSignIns => 'আপনার সুরক্ষিত সাইন ইন সুরক্ষার চিঠি পুনরাবৃত্তি করা যাবে না. আপনাকে প্রতিটি সার্ভার এবং প্রোফাইলে আবার সাইন আপ করতে হবে।';
@@ -1821,7 +1821,7 @@ class _Translations$startup$bn extends Translations$startup$en {
 	@override String get backupWarning => 'এতে আপনার সাইন-ইন তথ্য রয়েছে। এটি আপলোড বা শেয়ার করবেন না।';
 	@override String get deleteBackup => 'কপি মুছে ফেলুন';
 	@override String get backupDeleted => 'কপি মুছে ফেলুন';
-	@override String get previousFailureTitle => 'PlezyNG শেষবার শুরু করতে পারিনি';
+	@override String get previousFailureTitle => 'Pleazyng শেষবার শুরু করতে পারিনি';
 }
 
 // Path: licenses
@@ -2153,7 +2153,7 @@ class _Translations$watchTogether$bn extends Translations$watchTogether$en {
 	@override String get codeCopied => 'রুম কোড কপি';
 	@override String get shareInvite => 'বিতর্ক invitaciones';
 	@override String get inviteCopied => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।';
-	@override String inviteMessage({required Object code}) => 'PlezyNG: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।';
+	@override String inviteMessage({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।';
 	@override String get openSessionControls => 'Open Watch Together সেশন কন্ট্রোল';
 	@override String get reconnecting => 'আবার সংযোগ...';
 	@override String get reconnectingDescription => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।';
@@ -2179,7 +2179,7 @@ class _Translations$watchTogether$bn extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'অন্য কপি নির্বাচন করুন';
 	@override String get dontPlay => 'খেলবেন না';
 	@override String get unavailableTitle => 'আপনি এই ভিডিও নেই';
-	@override String get unavailableDescription => 'PlezyNG আপনার লাইব্রেরিতে এটি খুঁজে পাওয়া যায়নি. নিজের জন্য একটি কপি বা আবার খুঁজে পেতে পারেন।';
+	@override String get unavailableDescription => 'Pleazyng আপনার লাইব্রেরিতে এটি খুঁজে পাওয়া যায়নি. নিজের জন্য একটি কপি বা আবার খুঁজে পেতে পারেন।';
 	@override String get chooseCopy => 'একটি কপি নির্বাচন করুন';
 	@override String get searchAgain => 'আবার খোঁজ';
 	@override String get noCandidates => 'আপনার লাইব্রেরিতে কোন কপি পাওয়া যায়নি।';
@@ -2324,11 +2324,11 @@ class _Translations$downloads$bn extends Translations$downloads$en {
 	@override String get activeSyncRules => 'সিনক নিয়ম';
 	@override String get reviewOrphanFiles => 'ডাউনলোড করুন অর্পানড';
 	@override String get orphanReviewTitle => 'ডাউনলোড করুন অর্পানড';
-	@override String get orphanReviewDescription => 'এই ট্যাগ ফাইলগুলি PlezyNG এর ভিত্তিক অ্যাপ-ম্যানেজিত ডাউনলোড ফাইলগুলিতে রয়েছে এবং ডাউনলোড রেকর্ড বা কার্যকর কাজের সাথে সমাধান নেই।';
+	@override String get orphanReviewDescription => 'এই ট্যাগ ফাইলগুলি Pleazyng এর ভিত্তিক অ্যাপ-ম্যানেজিত ডাউনলোড ফাইলগুলিতে রয়েছে এবং ডাউনলোড রেকর্ড বা কার্যকর কাজের সাথে সমাধান নেই।';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} ফাইল · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => '${count} ফাইল মুছে ফেলুন';
 	@override String get orphanCleanupNone => 'কোন ডাউনলোড ফাইল পাওয়া যায় না';
-	@override String get orphanCleanupFailed => 'PlezyNG নিরাপদভাবে পরিচালিত ডাউনলোড ফোডার স্ক্যান করতে পারেনি. কোন ফাইলটি মুছে ফেলেনি।';
+	@override String get orphanCleanupFailed => 'Pleazyng নিরাপদভাবে পরিচালিত ডাউনলোড ফোডার স্ক্যান করতে পারেনি. কোন ফাইলটি মুছে ফেলেনি।';
 	@override String get orphanCleanupChanged => 'ডাউনলোডের তালিকা বিবেচনার সময় পরিবর্তিত হয়. ফাইলগুলি আবারও পরিষ্কার করার আগে বিবেচনা করুন.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => 'মুছে ফেলেন ${count} অন্তর্ভুক্ত ফাইল · ${size} বিনামূল্যে';
 	@override String get noSyncRules => 'কোন সিনক নিয়ম';
@@ -2704,11 +2704,11 @@ class _Translations$trakt$bn extends Translations$trakt$en {
 	@override String get connected => 'সংযুক্ত';
 	@override String connectedAs({required Object username}) => 'সংযুক্ত @${username}';
 	@override String get disconnectConfirm => 'Trakt অ্যাকাউন্ট বন্ধ করুন?';
-	@override String get disconnectConfirmBody => 'PlezyNG এর মাধ্যমে ঘটনাবলীগুলি পাঠানোর সময় থেমে যাবে Trakt. আপনি যেকোনো সময়ে আবার সংযোগ করতে পারেন।';
+	@override String get disconnectConfirmBody => 'Pleazyng এর মাধ্যমে ঘটনাবলীগুলি পাঠানোর সময় থেমে যাবে Trakt. আপনি যেকোনো সময়ে আবার সংযোগ করতে পারেন।';
 	@override String get scrobble => 'বাস্তব সময়ের স্ক্রোবিলিং';
 	@override String get scrobbleDescription => 'খেলা, pause, এবং stop events পাঠান Trakt Playback সময়।';
 	@override String get watchedSync => 'সিন্ক দেখানো অবস্থা';
-	@override String get watchedSyncDescription => 'যখন আপনি PlezyNG এর অনুসন্ধানের মত পণ্যগুলি চিহ্নিত করেন, তখন তারা Trakt এর অনুসন্ধানের মতও চিহ্নিত হয়।';
+	@override String get watchedSyncDescription => 'যখন আপনি Pleazyng এর অনুসন্ধানের মত পণ্যগুলি চিহ্নিত করেন, তখন তারা Trakt এর অনুসন্ধানের মতও চিহ্নিত হয়।';
 }
 
 // Path: seerr
@@ -2727,10 +2727,10 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	@override String get signInWithEmby => 'সাইন আপ করুন Emby';
 	@override String get signInWithLocal => 'স্থানীয় অ্যাকাউন্ট ব্যবহার করুন';
 	@override String get email => 'ইমেইল';
-	@override String get noSignInMethods => 'এই Seerr উদাহরণ কোন সাইন-ইন পদ্ধতি PlezyNG সমর্থন দেয় না।';
+	@override String get noSignInMethods => 'এই Seerr উদাহরণ কোন সাইন-ইন পদ্ধতি Pleazyng সমর্থন দেয় না।';
 	@override String get instance => 'আয়াত';
 	@override String get disconnectConfirm => 'চিঠি বন্ধ করুন?';
-	@override String get disconnectConfirmBody => 'PlezyNG এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.';
+	@override String get disconnectConfirmBody => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.';
 	@override String get request => 'অনুরোধ';
 	@override String get request4k => '4K অনুসন্ধান';
 	@override String get seasons => 'সপ্তাহ';
@@ -2755,7 +2755,7 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'ব্লক করা';
 	@override String couldNotReach({required Object url, required Object error}) => '${url}: ${error} পৌঁছাতে পারে না';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'নো Seerr আবেদন ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'একটি সত্যি প্রাক্সি (SSO বা HTTP auth) Seerr পরিবর্তে উত্তর দেয়. PlezyNG এর মাধ্যমে নিবন্ধন করা যায় না: Seerr এর /api/v1 পথটি এই অ্যাপের জন্য প্রাক্সি অতিক্রম করে, অথবা একটি ঠিকানা ব্যবহার করুন যা সরাসরি Seerr পৌঁছায়।';
+	@override String get behindAuthProxy => 'একটি সত্যি প্রাক্সি (SSO বা HTTP auth) Seerr পরিবর্তে উত্তর দেয়. Pleazyng এর মাধ্যমে নিবন্ধন করা যায় না: Seerr এর /api/v1 পথটি এই অ্যাপের জন্য প্রাক্সি অতিক্রম করে, অথবা একটি ঠিকানা ব্যবহার করুন যা সরাসরি Seerr পৌঁছায়।';
 	@override String get invalidUrl => 'একটি সার্ভার ঠিকানা লিখুন, যেমন https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'এই Seerr প্রদর্শনটি Quick Connect সমর্থন করে না।';
 	@override String get notInitialized => 'এই Seerr ইনস্টেশন প্রথম চালু সিস্টেমটি সম্পন্ন করেনি';
@@ -2785,7 +2785,7 @@ class _Translations$services$bn extends Translations$services$en {
 	@override String get scrobble => 'স্বয়ংক্রিয়ভাবে উন্নয়ন ট্র্যাক করুন';
 	@override String get scrobbleDescription => 'আপডেট করুন আপনার তালিকায় যখন আপনি একটি epizode বা সিনেমা শেষ করেন।';
 	@override String disconnectConfirm({required Object service}) => 'ডাউনলোড করুন ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG আপডেট বন্ধ করবে ${service}. প্রতিটি সময়ে আবার সংযোগ করুন।';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng আপডেট বন্ধ করবে ${service}. প্রতিটি সময়ে আবার সংযোগ করুন।';
 	@override String connectFailed({required Object service}) => '${service} এর সাথে যোগাযোগ করতে পারবেন না।';
 	@override late final _Translations$services$names$bn names = _Translations$services$names$bn._(_root);
 	@override late final _Translations$services$simklReconnect$bn simklReconnect = _Translations$services$simklReconnect$bn._(_root);
@@ -2807,8 +2807,8 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String get title => 'ক্লাউড ও অ্যাড-অন স্ট্রিমিং';
 	@override String get subtitle => 'ক্লাউডে থাকা ফাইল দেখতে এবং সমর্থিত স্ট্রিম চালাতে Debrid অ্যাকাউন্ট সংযুক্ত করুন। Stremio-সামঞ্জস্যপূর্ণ অ্যাড-অন সিনেমা ও পর্বের পাতায় স্ট্রিমের বিকল্প দেয়। সংযোগের তথ্য এই ডিভাইসে এনক্রিপ্ট হয়ে এই প্রোফাইলে সংরক্ষিত থাকে।';
 	@override String connectionsConfigured({required Object count}) => 'সংযুক্ত উৎস: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG সংরক্ষিত স্ট্রিমিং সেটিংস খুলতে পারেনি। সংযোগ পরিবর্তনের আগে ডিভাইস আনলক করে আবার চেষ্টা করুন।';
-	@override String get settingsUnreadable => 'PlezyNG এই সংরক্ষিত সংযোগগুলো খুলতে পারেনি। পরিষেবাগুলো আবার সংযোগ করতে এগুলো মুছুন।';
+	@override String get settingsLoadFailed => 'Pleazyng সংরক্ষিত স্ট্রিমিং সেটিংস খুলতে পারেনি। সংযোগ পরিবর্তনের আগে ডিভাইস আনলক করে আবার চেষ্টা করুন।';
+	@override String get settingsUnreadable => 'Pleazyng এই সংরক্ষিত সংযোগগুলো খুলতে পারেনি। পরিষেবাগুলো আবার সংযোগ করতে এগুলো মুছুন।';
 	@override String get clearUnreadableSettings => 'সংরক্ষিত সেটিংস মুছুন';
 	@override String get clearUnreadableSettingsConfirm => 'সংরক্ষিত স্ট্রিমিং সেটিংস মুছবেন?';
 	@override String get clearUnreadableSettingsBody => 'এতে এই প্রোফাইলের সব সংরক্ষিত প্রদানকারী অ্যাকাউন্ট ও অ্যাড-অনের ঠিকানা মুছে যাবে। এটি ফিরিয়ে আনা যাবে না।';
@@ -2820,11 +2820,11 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'এই ক্যাটালগ দেখতে প্রয়োজনীয় ফিল্টার বেছে নিন।';
 	@override String get catalogRequiredLabel => 'প্রয়োজনীয়';
 	@override String get importFromStremio => 'Stremio থেকে আমদানি';
-	@override String get stremioImportInstructions => 'QR কোড স্ক্যান করুন বা লিংক খুলুন। Stremio-তে সাইন ইন করে অনুরোধ অনুমোদন করুন। PlezyNG শুধু আপনার অ্যাড-অনের তালিকা পড়ে; এটি Stremio পাসওয়ার্ড চায় না বা সেটিংস বদলায় না।';
+	@override String get stremioImportInstructions => 'QR কোড স্ক্যান করুন বা লিংক খুলুন। Stremio-তে সাইন ইন করে অনুরোধ অনুমোদন করুন। Pleazyng শুধু আপনার অ্যাড-অনের তালিকা পড়ে; এটি Stremio পাসওয়ার্ড চায় না বা সেটিংস বদলায় না।';
 	@override String get stremioImportOpen => 'Stremio লিংক খুলুন';
 	@override String get stremioImportCode => 'লিংক কোড';
 	@override String get stremioImportPreviewTitle => 'অ্যাড-অন বেছে নিন';
-	@override String get stremioImportPreviewBody => 'PlezyNG-তে সংযোগ করতে চান এমন অ্যাড-অন বেছে নিন। এই আমদানিতে শুধু HTTPS ঠিকানা গ্রহণ করা হয়।';
+	@override String get stremioImportPreviewBody => 'Pleazyng-তে সংযোগ করতে চান এমন অ্যাড-অন বেছে নিন। এই আমদানিতে শুধু HTTPS ঠিকানা গ্রহণ করা হয়।';
 	@override String stremioImportIgnored({required Object count}) => 'অসমর্থিত বা অনিরাপদ ঠিকানার অ্যাড-অন বাদ গেছে: ${count}।';
 	@override String get stremioCatalogs => 'ক্যাটালগ';
 	@override String get stremioStreams => 'স্ট্রিম';
@@ -2838,7 +2838,7 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'ম্যানিফেস্ট URL দিয়ে যোগ করুন';
 	@override String get addAddon => 'অ্যাড-অন যোগ করুন';
 	@override String get manifestUrl => 'অ্যাড-অনের ম্যানিফেস্ট URL';
-	@override String get manifestUrlHint => 'অ্যাড-অনের ম্যানিফেস্ট URL পেস্ট করুন। সংযোগের আগে PlezyNG ক্যাটালগ বা স্ট্রিম রিসোর্স সমর্থিত কি না যাচাই করে।';
+	@override String get manifestUrlHint => 'অ্যাড-অনের ম্যানিফেস্ট URL পেস্ট করুন। সংযোগের আগে Pleazyng ক্যাটালগ বা স্ট্রিম রিসোর্স সমর্থিত কি না যাচাই করে।';
 	@override String get allowHttp => 'এনক্রিপ্ট না করা HTTP ঠিকানা অনুমতি দিন';
 	@override String get allowHttpDescription => 'ব্যক্তিগত নেটওয়ার্কে শুধু বিশ্বস্ত অ্যাড-অনের জন্য ব্যবহার করুন।';
 	@override String get installAddon => 'অ্যাড-অন সংযোগ করুন';
@@ -2846,20 +2846,20 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String get addonRemoved => 'অ্যাড-অন সরানো হয়েছে';
 	@override String get addonToggle => 'অ্যাড-অন চালু করুন';
 	@override String get addonEmpty => 'এখনও কোনো অ্যাড-অন সংযুক্ত নেই';
-	@override String get addonError => 'PlezyNG এই অ্যাড-অনে সংযোগ করতে পারেনি। ম্যানিফেস্ট URL পরীক্ষা করে আবার চেষ্টা করুন।';
+	@override String get addonError => 'Pleazyng এই অ্যাড-অনে সংযোগ করতে পারেনি। ম্যানিফেস্ট URL পরীক্ষা করে আবার চেষ্টা করুন।';
 	@override String get addonPrivacy => 'শুধু বিশ্বস্ত অ্যাড-অন সংযোগ করুন। খোঁজার সময় অ্যাড-অন আপনার খোঁজা শিরোনাম পায় এবং তৃতীয় পক্ষের স্ট্রিম লিংক ফেরত দিতে পারে।';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'আপনার Real-Debrid অ্যাকাউন্ট দিয়ে সমর্থিত টরেন্ট স্ট্রিম চালান।';
 	@override String get connectRealDebrid => 'QR কোড দিয়ে সংযোগ করুন';
 	@override String realDebridConnected({required Object username}) => '${username} হিসেবে সংযুক্ত';
-	@override String get realDebridInstructions => 'QR কোড স্ক্যান করুন বা লিংক খুলুন, তারপর PlezyNG সংযোগ করতে এই সক্রিয়করণ কোড দিন:';
+	@override String get realDebridInstructions => 'QR কোড স্ক্যান করুন বা লিংক খুলুন, তারপর Pleazyng সংযোগ করতে এই সক্রিয়করণ কোড দিন:';
 	@override String get realDebridActivate => 'সক্রিয় করতে Real-Debrid খুলুন';
 	@override String get realDebridCode => 'সক্রিয়করণ কোড';
 	@override String get realDebridConnectFailed => 'Real-Debrid-এ সংযোগ করা যায়নি। আবার চেষ্টা করুন।';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'আপনার AllDebrid অ্যাকাউন্ট দিয়ে সমর্থিত টরেন্ট স্ট্রিম চালান।';
 	@override String get connectAllDebrid => 'QR কোড দিয়ে সংযোগ করুন';
-	@override String get allDebridInstructions => 'PlezyNG অনুমোদন করতে QR কোড স্ক্যান করুন বা লিংক খুলুন। সংযোগ চলাকালীন এই স্ক্রিন খোলা রাখুন:';
+	@override String get allDebridInstructions => 'Pleazyng অনুমোদন করতে QR কোড স্ক্যান করুন বা লিংক খুলুন। সংযোগ চলাকালীন এই স্ক্রিন খোলা রাখুন:';
 	@override String get allDebridActivate => 'সক্রিয় করতে AllDebrid খুলুন';
 	@override String get allDebridCode => 'সক্রিয়করণ PIN';
 	@override String get allDebridConnectFailed => 'AllDebrid-এ সংযোগ করা যায়নি। আবার চেষ্টা করুন।';
@@ -2870,13 +2870,13 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String get connectApiKey => 'API কী দিয়ে সংযোগ করুন';
 	@override String apiKeyTitle({required Object service}) => '${service} সংযোগ করুন';
 	@override String get apiKey => 'API কী';
-	@override String apiKeyHint({required Object service}) => '${service} অ্যাকাউন্ট সেটিংস থেকে API কী পেস্ট করুন। PlezyNG এই ডিভাইসে এটি এনক্রিপ্ট করে এই প্রোফাইলে সংরক্ষণ করে।';
+	@override String apiKeyHint({required Object service}) => '${service} অ্যাকাউন্ট সেটিংস থেকে API কী পেস্ট করুন। Pleazyng এই ডিভাইসে এটি এনক্রিপ্ট করে এই প্রোফাইলে সংরক্ষণ করে।';
 	@override String get apiKeyConnectFailed => 'এই API কী যাচাই করা যায়নি। পরীক্ষা করে আবার চেষ্টা করুন।';
 	@override String accountConnected({required Object username}) => '${username} হিসেবে সংযুক্ত';
 	@override String get streamNeedsProvider => 'এই টরেন্ট স্ট্রিম চালাতে Debrid পরিষেবা সংযোগ করুন।';
 	@override String get playViaProvider => 'Debrid দিয়ে চালান';
 	@override String disconnectConfirm({required Object service}) => '${service} সংযোগ বিচ্ছিন্ন করবেন?';
-	@override String get disconnectBody => 'PlezyNG এই ডিভাইসের অনুমতি সরিয়ে দেবে। প্রদানকারীর ফাইল ও চলমান স্থানান্তর অপরিবর্তিত থাকবে।';
+	@override String get disconnectBody => 'Pleazyng এই ডিভাইসের অনুমতি সরিয়ে দেবে। প্রদানকারীর ফাইল ও চলমান স্থানান্তর অপরিবর্তিত থাকবে।';
 	@override String get streamsTitle => 'স্ট্রিম বেছে নিন';
 	@override String get noStreams => 'এই শিরোনামের জন্য কোনো স্ট্রিম পাওয়া যায়নি।';
 	@override String get manageConnections => 'স্ট্রিমিং পরিষেবা পরিচালনা';
@@ -2892,7 +2892,7 @@ class _Translations$streaming$bn extends Translations$streaming$en {
 	@override String get streamUnsupported => 'অ্যাপের বিল্ট-ইন প্লেয়ার এই স্ট্রিম ফরম্যাট সমর্থন করে না।';
 	@override String get remoteNeedsEpisode => 'স্ট্রিম খোঁজার আগে একটি পর্ব বেছে নিন।';
 	@override String get remoteNeedsEpisodeNumber => 'এই পর্বে সিজন বা পর্ব নম্বর নেই।';
-	@override String get remoteNeedsExternalId => 'PlezyNG এই শিরোনামের IMDb বা TMDB ID খুঁজে পায়নি।';
+	@override String get remoteNeedsExternalId => 'Pleazyng এই শিরোনামের IMDb বা TMDB ID খুঁজে পায়নি।';
 	@override String get watchWithServices => 'সংযুক্ত পরিষেবা দিয়ে দেখুন';
 	@override String get chooseEpisode => 'পর্ব বেছে নিন';
 	@override String get episodes => 'পর্বসমূহ';
@@ -3023,15 +3023,15 @@ class _Translations$appAccess$bn extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => 'সাত দিনের জন্য প্রতিটি ফ্রি ফাইনাল চেষ্টা করুন।';
-	@override String get description => 'সাত দিনের একটি পরীক্ষা শুরু করুন, প্রতিটি PlezyNG বৈশিষ্ট্যগুলির পূর্ণ অ্যাক্সেসের সাথে. পরীক্ষার সময় কোন ফরজ নেই এবং কোন অ্যাকাউন্ট নেই. পরীক্ষার পরে, আপনার দোকানের মূল্যতে একটি জীবন-যাত্রা কিনা PlezyNG জীবন-যাত্রা জন্য লুকিয়ে দেয়।';
-	@override String get trialEndedDescription => 'আপনার দোকানের মূল্যতে একটি কেনার সাথে জীবনযাপনের জন্য PlezyNG এর প্রতিটি বৈশিষ্ট্য বন্ধ করুন।';
+	@override String get description => 'সাত দিনের একটি পরীক্ষা শুরু করুন, প্রতিটি Pleazyng বৈশিষ্ট্যগুলির পূর্ণ অ্যাক্সেসের সাথে. পরীক্ষার সময় কোন ফরজ নেই এবং কোন অ্যাকাউন্ট নেই. পরীক্ষার পরে, আপনার দোকানের মূল্যতে একটি জীবন-যাত্রা কিনা Pleazyng জীবন-যাত্রা জন্য লুকিয়ে দেয়।';
+	@override String get trialEndedDescription => 'আপনার দোকানের মূল্যতে একটি কেনার সাথে জীবনযাপনের জন্য Pleazyng এর প্রতিটি বৈশিষ্ট্য বন্ধ করুন।';
 	@override String get startTrial => 'সাত দিনের বিনামূল্যে পরীক্ষা শুরু করুন';
 	@override String get trialActive => 'আপনার সাত দিনের full-feature পরীক্ষা কার্যকর।';
 	@override String get trialEnded => 'সাত দিনের মামলা শেষ হয়েছে।';
 	@override String get trialStartFailed => 'এই ডিভাইসে পরীক্ষা সংরক্ষণ করতে পারিনি, कृपया আবারও চেষ্টা করুন।';
-	@override String get lifetimeTitle => 'PlezyNG জীবনের জন্য অপসারণ';
-	@override String get lifetimeBody => 'ধন্যবাদ! আপনি প্রতিটি PlezyNG বৈশিষ্ট্যে জীবনযাপন করতে পারেন।';
-	@override String get manageTitle => 'PlezyNG জীবনের অ্যাক্সেস';
+	@override String get lifetimeTitle => 'Pleazyng জীবনের জন্য অপসারণ';
+	@override String get lifetimeBody => 'ধন্যবাদ! আপনি প্রতিটি Pleazyng বৈশিষ্ট্যে জীবনযাপন করতে পারেন।';
+	@override String get manageTitle => 'Pleazyng জীবনের অ্যাক্সেস';
 	@override String get manageDescription => 'প্রতিটি বৈশিষ্ট্যটি সাত দিনের জন্য বিনামূল্যে চেষ্টা করুন, তারপর আপনার দোকানের মূল্যে এক টাকা দিয়ে জীবনের জন্য সবকিছু খোঁজে ফেলুন।';
 	@override String buy({required Object price}) => '${price} এর জন্য প্রতিটি বৈশিষ্ট্য খোলা';
 	@override String get loadingPrice => 'লোডিং দোকান মূল্য...';
@@ -3039,11 +3039,11 @@ class _Translations$appAccess$bn extends Translations$appAccess$en {
 	@override String get restore => 'জীবনযাত্রা খরচ পুনরায়';
 	@override String get pending => 'আপনার কেনা भुगतान বা অনুমোদন অপেক্ষায় থাকে. লাইফ টাইম অ্যাক্সেস বন্ধ হয়ে যায় যখন স্টোর এটি সম্পূর্ণ করে।';
 	@override String get storeUnavailable => 'কেনাকাটা পাওয়া যায় না. দেখুন যে আপনি স্টোরে স্বাক্ষর করা হয়েছে এবং কেনাকাটা এই ডিভাইসে অনুমোদিত হয়।';
-	@override String get productNotFound => 'এই স্টোরে এখনো PlezyNG লাইভ লাইভ লক পাওয়া যায় না।';
+	@override String get productNotFound => 'এই স্টোরে এখনো Pleazyng লাইভ লাইভ লক পাওয়া যায় না।';
 	@override String get productQueryFailed => 'দোকান মূল্য লোড করতে পারবেন না. আপনার সংযোগ চেক করুন এবং আবার চেষ্টা করুন।';
 	@override String get purchaseFailed => 'কেনাকাটা শেষ হয়নি, আবারও চেষ্টা করুন।';
 	@override String get restoreFailed => 'আপনি আপনার কেনাকাটা ফিরিয়ে দিতে দোকান পৌঁছাতে পারবেন না. আবার চেষ্টা করুন.';
-	@override String get nothingToRestore => 'এই স্টোর অ্যাকাউন্টের জন্য নম্বর PlezyNG লাইভ লাইভ ক্রয় পাওয়া যায়।';
+	@override String get nothingToRestore => 'এই স্টোর অ্যাকাউন্টের জন্য নম্বর Pleazyng লাইভ লাইভ ক্রয় পাওয়া যায়।';
 }
 
 // Path: detail
@@ -3084,7 +3084,7 @@ class _Translations$homeLayout$bn extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Home লিওট';
-	@override String get resetToast => 'Home Reset to the original Plezy হেরো layout';
+	@override String get resetToast => 'Home Reset to the original Pleazyng হেরো layout';
 	@override String get resetHeroTitle => 'হ্যারি ল্যাগিংটি পুনরায় স্টক Plezyতে ফেরত?';
 	@override String get resetHeroBody => 'প্রতিটি রানের হেরো সিস্টেম বন্ধ করে এবং হোমের শীর্ষে একমাত্র রুটিং ব্যানার ফেরত দেয়, যেমন হেরো রানগুলি আগে ছিল।';
 	@override String get removeRowTitle => 'Home রান্না বন্ধ করুন?';
@@ -3095,7 +3095,7 @@ class _Translations$homeLayout$bn extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'ডাউনলোড: এই ডিভাইস নিজের লাইজিং রাখে।';
 	@override String get syncNow => 'এখন সিনক';
 	@override String get plexHomeManager => 'Plex হোম ম্যানেজার';
-	@override String get managePlexRows => 'পরিচালনা Plex লাইন Plezy';
+	@override String get managePlexRows => 'পরিচালনা Plex লাইন Pleazyng';
 	@override String get managePlexRowsDescription => 'Home-Selected রানগুলি সংগঠন করার জন্য খোলা';
 	@override String get organizeHomeRows => 'Home রানার সংগঠন';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} লাইন: গাড়ি, হেরো, অটো-স্লাইড, মুছে ফেলুন';
@@ -3165,7 +3165,7 @@ class _Translations$homeLayout$bn extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'একটি পর্যায়ে নির্বাচন করুন (অথবা রাখুন Select): move it · Left/Right: line options · Back: done';
 	@override String get layoutNavDescription => 'লাইব্রেরি, লাইব্রেরি এবং সংগ্রহ বিভাগগুলি নির্বাচন করুন';
 	@override String get editHomeRow => 'Edit Home রান';
-	@override String get resetHeroButton => 'হ্যারি রেজিস্ট্রেশন পুনরায় স্টক Plezy';
+	@override String get resetHeroButton => 'হ্যারি রেজিস্ট্রেশন পুনরায় স্টক Pleazyng';
 	@override String get reorderingUnlocked => 'অ্যাক্সেস অ্যাক্সেস';
 	@override String get reorderingLocked => 'লুকিয়ে রাখা';
 	@override String get rowsCanBeDragged => 'চুলগুলি চাপ করা যেতে পারে - এই অ্যাক্সেসের জন্য লকটি চাপ করুন';
@@ -3191,8 +3191,8 @@ class _Translations$platform$bn extends Translations$platform$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG আপনার স্থানীয় নেটওয়ার্কে আপনার মিডিয়া সার্ভার এবং প্লেব্যাক ডিভাইসের সাথে সংযোগ করে।';
-	@override String get locationPermission => 'PlezyNG আপনার স্থানীয় নেটওয়ার্ক এবং আপনার মিডিয়া সার্ভারগুলিতে সংযোগ করার জন্য iOS এর প্রয়োজনীয় অবস্থান অ্যাক্সেস ব্যবহার করে।';
+	@override String get localNetworkPermission => 'Pleazyng আপনার স্থানীয় নেটওয়ার্কে আপনার মিডিয়া সার্ভার এবং প্লেব্যাক ডিভাইসের সাথে সংযোগ করে।';
+	@override String get locationPermission => 'Pleazyng আপনার স্থানীয় নেটওয়ার্ক এবং আপনার মিডিয়া সার্ভারগুলিতে সংযোগ করার জন্য iOS এর প্রয়োজনীয় অবস্থান অ্যাক্সেস ব্যবহার করে।';
 	@override String get photoLibraryPermission => 'আপনার ফটো লাইব্রেরি থেকে ছবিগুলি মিডিয়া শিল্প হিসেবে ব্যবহার করার জন্য নির্বাচন করুন।';
 	@override String get cameraPermission => 'Companion Remote জোড়া লাগাতে QR কোড স্ক্যান করুন।';
 }
@@ -3206,7 +3206,7 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'খোলা মিডিয়া';
 	@override String get shortcutHelp => 'এই session জন্য একটি লিঙ্ক, Playlist বা ফাইল খেলুন।';
-	@override String get intro => 'একটি লিঙ্ক, Playlist বা ফাইল খোলা. Playback PlezyNG এর স্ট্যান্ডার্ড প্লেয়ার ব্যবহার করে এবং আপনার লাইব্রেরিতে ইতিহাস যোগ করেন না।';
+	@override String get intro => 'একটি লিঙ্ক, Playlist বা ফাইল খোলা. Playback Pleazyng এর স্ট্যান্ডার্ড প্লেয়ার ব্যবহার করে এবং আপনার লাইব্রেরিতে ইতিহাস যোগ করেন না।';
 	@override String get openWhat => 'আপনি কী খুলে দিতে চান?';
 	@override String get stream => 'স্ট্রিম ঠিকানা';
 	@override String get playlist => 'Playlist খেলা';
@@ -3264,13 +3264,13 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	@override String get stopTransfer => 'স্থানান্তর বন্ধ করুন এবং ঠিকানা বাতিল করুন';
 	@override String get startTransfer => 'ট্রেডিং শুরু';
 	@override String get wifiImportedFiles => 'Wi-Fi ট্রান্সফার';
-	@override String get wifiBrowserTitle => 'ফাইল পাঠান PlezyNG';
+	@override String get wifiBrowserTitle => 'ফাইল পাঠান Pleazyng';
 	@override String get wifiBrowserIntro => 'অডিও, ভিডিও, ইবুক বা কমিক ফাইলগুলি পাঠানোর জন্য নির্বাচন করুন. ফাইলগুলো এই ডিভাইসের ফাইল এবং বই লাইব্রিয়ামে সংরক্ষণ করা হয়. সর্বোচ্চ: 100 ফাইল, 1 ফাইল প্রতি 4 জিবি, 10 জিबी মোট।';
 	@override String get uploadFilesLabel => 'ফাইল পাঠানো';
 	@override String get uploadSelected => 'নির্বাচিত ফাইল আপলোড করুন';
 	@override String get uploadSelectFirst => 'প্রথমে একটি বা বেশী ফাইল নির্বাচন করুন।';
 	@override String get uploading => 'পাঠান';
-	@override String get uploadComplete => 'ফাইলটি PlezyNGে যোগ করা হয়।';
+	@override String get uploadComplete => 'ফাইলটি Pleazyngে যোগ করা হয়।';
 	@override String get uploadFailed => 'ফাইলটি যোগ করা যায় না. এই পৃষ্ঠা খোলা রাখুন এবং আবার চেষ্টা করুন।';
 	@override String get liveCue => 'লাইভ';
 	@override String get liveSession => 'লাইভ স্ট্রিম';
@@ -3298,7 +3298,7 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	@override String get recordingActive => 'এই ডিভাইস থেকে রেকর্ড করুন. Playback বন্ধ করে এবং এটি সংরক্ষণ করে।';
 	@override String get recordingFormatHelp => 'ভিডিও জন্য, MKV বা MPEG-TS নির্বাচন করুন. অডিও জন্য, MKA বা MKV নির্বাচন করুন।';
 	@override String get replaceRecordingTitle => 'এই রেকর্ড পরিবর্তন করবেন?';
-	@override String get replaceRecordingHelp => 'রেকর্ডিংয়ের সময় PlezyNG বর্তমান ফাইলটি পিছিয়ে রাখে. যদি এটি নতুন রেকার্ড সংরক্ষণ করতে পারে না, তাহলে plezyNG সাপোর্ট পুনরাবৃত্তি করে।';
+	@override String get replaceRecordingHelp => 'রেকর্ডিংয়ের সময় Pleazyng বর্তমান ফাইলটি পিছিয়ে রাখে. যদি এটি নতুন রেকার্ড সংরক্ষণ করতে পারে না, তাহলে plezyNG সাপোর্ট পুনরাবৃত্তি করে।';
 	@override String get replaceRecording => 'ফাইল পরিবর্তন';
 	@override String get discHelp => 'এই কম্পিউটারের অপটিক ড্রাইভে একটি ডিস্ক খুলুন. আপনি ডিভাইস ফাইল থেকে আইএসও ইমেজ খুলতে পারেন।';
 	@override String get discs => 'অপটিক্যাল ডিভাইস';
@@ -3323,7 +3323,7 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'একটি অডিও বা ভিডিও ফাইল নির্বাচন করুন।';
 	@override String get converterLocalOnly => 'নির্বাচিত ফাইল একটি স্থানীয় ডিভাইস পথ হিসাবে পাওয়া যায় না।';
 	@override String get converterReplaceTitle => 'এই ফাইলটি পরিবর্তন করবেন?';
-	@override String get converterReplaceHelp => 'PlezyNG বর্তমান ফাইলটি সংরক্ষণ করা পর্যন্ত রেকর্ড করে।';
+	@override String get converterReplaceHelp => 'Pleazyng বর্তমান ফাইলটি সংরক্ষণ করা পর্যন্ত রেকর্ড করে।';
 	@override String get converterStarting => 'শুরু করে ফিপিএফ...';
 	@override String get converterProgress => 'এই কম্পিউটারের মাধ্যমে পরিদর্শন ...';
 	@override String get converterComplete => 'নতুন ফাইল প্রস্তুত।';
@@ -3347,7 +3347,7 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'অডিও ইনপোর্ট';
 	@override String get captureWaylandHelp => 'Wayland limits this XWayland capture to the X display. Windows outside XWayland may not appear.';
 	@override String get captureFrameRate => 'রেকর্ড ফ্রেম ফ্রেম';
-	@override String get capturePrivacy => 'রেকর্ডিংটি শুধুমাত্র আপনার বেছে নেওয়া ফাইলের জন্য সংরক্ষণ করা হয়. মাইক্রোফোন ফ্যাক্টরি অপশনীয়. PlezyNG রেকর্ডিংটি আপলোড করে না।';
+	@override String get capturePrivacy => 'রেকর্ডিংটি শুধুমাত্র আপনার বেছে নেওয়া ফাইলের জন্য সংরক্ষণ করা হয়. মাইক্রোফোন ফ্যাক্টরি অপশনীয়. Pleazyng রেকর্ডিংটি আপলোড করে না।';
 	@override String get captureSaveAs => 'স্ক্রিন রেকর্ডিং রেকর্ডিং';
 	@override String get captureExtensionMismatch => '.mp4 এর মধ্যে শেষ একটি ফাইল নাম নির্বাচন করুন।';
 	@override String get captureFfmpegMissing => 'FFmpeg বা H.264 ভিডিও কোডার পাওয়া যায় না. একটি সমর্থিত FFmpeg নির্মাণ ইনস্টল করুন, তারপর আবার চেষ্টা করুন.';
@@ -3361,7 +3361,7 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	@override String get captureStop => 'বন্ধ এবং বাঁচান';
 	@override String get captureMode => 'আঘাত';
 	@override String get shareMode => 'শেয়ার করুন';
-	@override String get shareIntro => 'আপনার ব্যক্তিগত নেটওয়ার্কের অন্য ডিভাইসে একটি স্থানীয় মিডিয়া ফাইল পাঠান. PlezyNG একটি temporary HLS স্ট্রিম তৈরি করে।';
+	@override String get shareIntro => 'আপনার ব্যক্তিগত নেটওয়ার্কের অন্য ডিভাইসে একটি স্থানীয় মিডিয়া ফাইল পাঠান. Pleazyng একটি temporary HLS স্ট্রিম তৈরি করে।';
 	@override String get sharePrivacy => 'আপনার স্থানীয় নেটওয়ার্কের কেউ যারা ব্যক্তিগত লিঙ্ক পেয়েছেন, সেটি সক্রিয় থাকলেও দেখতে পারেন. লিঙ্ক 60 মিনিটের পর শেষ হয়. সার্ভার বন্ধ করতে এবং লিঙ্কটি অ্যাক্টল করতে শেয়ারিং বন্ধ করুন.';
 	@override String get shareChooseFile => 'মিডিয়া ফাইল নির্বাচন';
 	@override String get shareChooseHelp => 'একটি স্থানীয় অডিও বা ভিডিও ফাইল নির্বাচন করুন. ফাইলটি এই কম্পিউটারে থাকবে।';
@@ -3374,7 +3374,7 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'অন্য ডিভাইসের একটি খেলোয়াড়ে এই ঠিকানা খোলা';
 	@override String get shareQrLabel => 'QR কোড temporary stream ঠিকানা';
 	@override String get shareQrHelp => 'একই ব্যক্তিগত নেটওয়ার্কের সাথে সংযোগিত একটি সহযোগী খেলোয়াড়ের সাথে স্ক্যান করুন।';
-	@override String get shareHttpHint => 'এই প্রদর্শনটি অক্রিপ্ট HTTP ব্যবহার করে. PlezyNGতে, HTTP খুলে যাওয়ার আগে অনুমতি দেয়।';
+	@override String get shareHttpHint => 'এই প্রদর্শনটি অক্রিপ্ট HTTP ব্যবহার করে. Pleazyngতে, HTTP খুলে যাওয়ার আগে অনুমতি দেয়।';
 	@override String get shareCopyUrl => 'প্রদর্শন ঠিকানা কপি';
 	@override String get shareExpiresLabel => 'লিঙ্ক শেষ হয়';
 	@override String get shareStarting => 'প্রদর্শনের প্রস্তুতি...';
@@ -3399,7 +3399,7 @@ class _Translations$universalMedia$bn extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'পরিষেবা যোগ করুন';
 	@override String get extensionReplace => 'আপডেট পরিষেবা';
 	@override String get extensionRemoveTitle => 'এই অনুসন্ধান পরিষেবাটি মুছে ফেলুন?';
-	@override String get extensionRemoveHelp => 'এতে এই প্রোফাইল থেকে পরিষেবাを取り除きます. PlezyNG তার শেষ পয়েন্টের সাথে যোগাযোগ করে না।';
+	@override String get extensionRemoveHelp => 'এতে এই প্রোফাইল থেকে পরিষেবাを取り除きます. Pleazyng তার শেষ পয়েন্টের সাথে যোগাযোগ করে না।';
 	@override String get extensionRemove => 'সরবরাহ';
 	@override String get extensionInvalidManifest => 'এই ফাইলটি একটি সমর্থিত প্রদর্শন ম্যানেজমেন্ট নয়. ফরম্যাটের জন্য Open media গাইড দেখুন.';
 	@override String get extensionSaveFailed => 'অ্যাক্টিভ প্রোফাইলের জন্য এই প্রদর্শন সংরক্ষণ করা যায়নি।';
@@ -3554,12 +3554,12 @@ class _Translations$fileSources$bn extends Translations$fileSources$en {
 	@override String get none => 'কোন';
 	@override String get fullscreen => 'ফুল-স্ক্রিন';
 	@override String get syncLocation => 'প্রসেস সিন্ক ফোলার (অন্যাশনাল)';
-	@override String get syncLocationHint => 'একটি নির্দিষ্ট WebDAV ফোডার PlezyNG অবস্থা. শর্তাবলী লিখুন ব্যবহার; মিডিয়া পরিবর্তন না থাকবে.';
+	@override String get syncLocationHint => 'একটি নির্দিষ্ট WebDAV ফোডার Pleazyng অবস্থা. শর্তাবলী লিখুন ব্যবহার; মিডিয়া পরিবর্তন না থাকবে.';
 	@override String get audiobooks => 'অডিও বই';
 	@override String get comics => 'কমিকস';
 	@override String get scan => 'বই ও মিডিয়া জন্য স্ক্যানিং';
 	@override String get browserReader => 'খোলা পাঠক';
-	@override String get browserReaderHelp => 'আপনার ব্রাউজারে পাঠক খোলা থাকে. আপনার স্থান এবং নোট সংরক্ষণ করার জন্য PlezyNG খোলা রাখুন.';
+	@override String get browserReaderHelp => 'আপনার ব্রাউজারে পাঠক খোলা থাকে. আপনার স্থান এবং নোট সংরক্ষণ করার জন্য Pleazyng খোলা রাখুন.';
 	@override String get on => 'এতে';
 	@override String get advancedSetup => 'App নিবন্ধন';
 	@override String get microsoftSignIn => 'Microsoft সঙ্গে সাইন আপ করুন';
@@ -3600,7 +3600,7 @@ class _Translations$fileSources$bn extends Translations$fileSources$en {
 	@override String get importInterrupted => 'উৎপাদন বাতিল · মুছে ফেলুন';
 	@override String get errorQuotaExceeded => 'অ্যাপ্লিকেল স্টোরেজ সীমাবদ্ধতা পৌঁছানো হয়েছে. সীমানা উচ্চ করা বা একটি ডাউনলোড কপি মুছে ফেলা।';
 	@override String get errorStorageLow => 'সুরক্ষিত রেকর্ড রাখার জন্য যথেষ্ট বিনামূল্যে ডিভাইস স্টোরেজ নেই।';
-	@override String get errorStorageUnavailable => 'PlezyNG বিনামূল্যে ডিভাইস স্টোরেজ চেক করতে পারেনি, তাই লিখা বন্ধ করা হয়।';
+	@override String get errorStorageUnavailable => 'Pleazyng বিনামূল্যে ডিভাইস স্টোরেজ চেক করতে পারেনি, তাই লিখা বন্ধ করা হয়।';
 	@override String get removeDownloadJob => 'Download ডাউনলোড';
 	@override String get downloadAlreadyComplete => 'এই ডাউনলোড শেষ হয়, আগে এটি মুছে ফেলতে পারে. পণ্য এখন অ্যাপ্লিকেটে পাওয়া যায়।';
 	@override String get confirmRemoveDownloadJob => 'এই ডাউনলোডটি মুছে ফেলুন এবং অংশীদারভাবে ডাউনের কোনও তথ্য দূর করুন? আপনার অবস্থান এবং নোট থাকবে।';
@@ -3650,7 +3650,7 @@ class _Translations$lending$bn extends Translations$lending$en {
 	@override String get openLibraryNote => 'Open Library-এর ক্যাটালগ দেখুন। প্রতিটি বইয়ের পাতায় পড়া ও ধার নেওয়ার বিকল্পগুলি দেখানো হয়।';
 	@override String get more => 'আরো লোড';
 	@override String get gateway => 'লাইব্রেরি সাইন-ইন সেবা';
-	@override String get gatewayHint => 'আপনার লাইব্রেরি বা প্রশাসক PlezyNG দ্বারা সরবরাহ করা হয়।';
+	@override String get gatewayHint => 'আপনার লাইব্রেরি বা প্রশাসক Pleazyng দ্বারা সরবরাহ করা হয়।';
 	@override String get advanced => 'লাইব্রেরি ইন্টারফেস';
 	@override String get loadLibraries => 'আপনার লাইব্রেরি নির্বাচন করুন';
 	@override String get expired => 'এই বই ধার নেওয়ার মেয়াদ শেষ হয়েছে।';
@@ -3790,7 +3790,7 @@ class _Translations$sourceSetup$bn extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।';
 	@override String get automaticMetadata => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান';
 	@override String get metadataPrivacy => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।';
-	@override String get nfsEncryptionFailure => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। PlezyNG এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।';
+	@override String get nfsEncryptionFailure => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। Pleazyng এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।';
 	@override String get sourceConnecting => 'উৎসের সঙ্গে সংযোগ করা হচ্ছে';
 	@override String get metadataSearchPrivacy => 'এই শিরোনাম অনুসন্ধান Trakt-এ পাঠানো হয়। শুধু আপনার লেখা শিরোনাম পাঠানো হয়, ভিডিও বা উৎসের প্রবেশতথ্য নয়।';
 	@override String get chooseMatch => 'মিল পাওয়া ফলাফল বেছে নিন';
@@ -3936,6 +3936,12 @@ class _Translations$games$bn extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3945,7 +3951,7 @@ class _Translations$deepLinks$bn extends Translations$deepLinks$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'এই Plezy লিঙ্ক সঠিক নয়।';
+	@override String get invalid => 'এই Pleazyng লিঙ্ক সঠিক নয়।';
 	@override String profileNotFound({required Object profile}) => 'কোন প্রোফাইল "${profile}" সঙ্গে জড়িত না।';
 	@override String get serverUnavailable => 'আমি এই লিঙ্কের জন্য সার্ভার পৌঁছাতে পারিনি।';
 	@override String get notFound => 'আপনার লাইব্রেরিতে এই নামটি পাওয়া যায় না।';
@@ -4120,7 +4126,7 @@ class _Translations$romm$bn extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5011,7 +5017,7 @@ class _Translations$watchTogether$errors$bn extends Translations$watchTogether$e
 	@override String get relayFull => 'এখন কাজে লাগে, পরে আবার চেষ্টা করুন।';
 	@override String get unreachable => 'ঘন্টা একসাথে relay পৌঁছাতে পারত না. আপনার সংযোগ চেক করুন.';
 	@override String get rateLimited => 'একটু অপেক্ষা করুন এবং আবার চেষ্টা করুন।';
-	@override String get clientBlocked => 'এই সংস্করণ PlezyNG relay ব্যবহার করতে পারেন না. অ্যাপটি আপডেট করুন.';
+	@override String get clientBlocked => 'এই সংস্করণ Pleazyng relay ব্যবহার করতে পারেন না. অ্যাপটি আপডেট করুন.';
 	@override String get forbidden => 'শুধুমাত্র হেস্টারই সেটা করতে পারেন।';
 	@override String get notInRoom => 'আপনি একটি রুমে নেই।';
 	@override String get alreadyInRoom => 'আপনি এখন একটি রুমে আছেন।';
@@ -5032,14 +5038,14 @@ class _Translations$downloads$backgroundWarning$bn extends Translations$download
 	@override String get bannerAction => 'বিস্তারিত';
 	@override String get sheetTitle => 'ডাউনলোড করা হয় ব্লক';
 	@override String get sheetTitleDegraded => 'ডাউনলোড সীমিত হতে পারে';
-	@override String get sheetIntro => 'Android সূত্রে নির্ভরযোগ্যভাবে ডাউনলোড করার জন্য PlezyNG বাধা দেয়।';
-	@override String get sheetIntroDegraded => 'আপনার ডিভাইস যখন PlezyNG ফাউনলোড করতে পারেন তখন সীমিত।';
-	@override String get reasonBackgroundRestricted => 'PlezyNG এর ফাউন্ডেশন ব্যবহার সীমিত. তার ব্যাটারি বা ফাউন্ডেশন ব্যবহারকে "অনীমিত" হিসাবে সীমিত করুন।';
-	@override String get reasonStandbyRestricted => 'Android একটি সীমিত স্থিতিশীল অবস্থায় PlezyNG রাখা হয়েছে. তার ব্যাটারি ব্যবহারকে "অীমিত" হিসাবে স্থিতিশীল করুন।';
+	@override String get sheetIntro => 'Android সূত্রে নির্ভরযোগ্যভাবে ডাউনলোড করার জন্য Pleazyng বাধা দেয়।';
+	@override String get sheetIntroDegraded => 'আপনার ডিভাইস যখন Pleazyng ফাউনলোড করতে পারেন তখন সীমিত।';
+	@override String get reasonBackgroundRestricted => 'Pleazyng এর ফাউন্ডেশন ব্যবহার সীমিত. তার ব্যাটারি বা ফাউন্ডেশন ব্যবহারকে "অনীমিত" হিসাবে সীমিত করুন।';
+	@override String get reasonStandbyRestricted => 'Android একটি সীমিত স্থিতিশীল অবস্থায় Pleazyng রাখা হয়েছে. তার ব্যাটারি ব্যবহারকে "অীমিত" হিসাবে স্থিতিশীল করুন।';
 	@override String get reasonDownloadChannelBlocked => 'ডাউনলোড通知গুলি বন্ধ করা হয়, তাই প্রদর্শন এবং নিয়ন্ত্রণ পাওয়া যায় না।';
 	@override String get reasonNotificationsDisabled => 'Notifications are turned off. On Android 13 or later, they are required for long background downloads. এগুলি দীর্ঘ পর্যায়ে ডাউনলোডের জন্য প্রয়োজনীয়।';
 	@override String get reasonDataSaver => 'ডেটা সেভার চালু থাকায় মোবাইল ডেটায় পটভূমিতে ডাউনলোড বন্ধ আছে। Wi-Fi-এ ডাউনলোড চলার কথা।';
-	@override String get reasonOemUnknown => 'ডাউনলোডগুলি বারবার বন্ধ হয়েছিল যখন PlezyNG ফাউনলোডে ছিল। PlezyNG এর ব্যাটারি বা ফাউনলোড ব্যবহারের পরামর্শগুলি দেখুন।';
+	@override String get reasonOemUnknown => 'ডাউনলোডগুলি বারবার বন্ধ হয়েছিল যখন Pleazyng ফাউনলোডে ছিল। Pleazyng এর ব্যাটারি বা ফাউনলোড ব্যবহারের পরামর্শগুলি দেখুন।';
 	@override String get openSettings => 'খোলা সিস্টেম';
 	@override String get stillNotWorking => 'ডিভাইস-সpecific সহায়তা';
 	@override String get stillNotWorkingDescription => 'আপনার ডিভাইসের জন্য পদক্ষেপ দেখুন, অথবা সমস্যা চলছে যদি Settings › View Logs থেকে একটি লগ পাঠান।';
@@ -5094,19 +5100,19 @@ class _Translations$companionRemote$pairing$bn extends Translations$companionRem
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'একই অ্যাকাউন্ট Plex সঙ্গে PlezyNG ডিভাইস এখানে দেখা যায়';
+	@override String get discoveryDescription => 'একই অ্যাকাউন্ট Plex সঙ্গে Pleazyng ডিভাইস এখানে দেখা যায়';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'সংযোগ...';
 	@override String get searchingForDevices => 'সরঞ্জাম খুঁজছেন...';
 	@override String get noDevicesFound => 'আপনার নেটওয়ার্কে কোন ডিভাইস পাওয়া যায়নি';
-	@override String get noDevicesHint => 'ডেস্টোভে PlezyNG খুলুন এবং একই Wi-Fi ব্যবহার করুন';
+	@override String get noDevicesHint => 'ডেস্টোভে Pleazyng খুলুন এবং একই Wi-Fi ব্যবহার করুন';
 	@override String get availableDevices => 'উপলব্ধ ডিভাইস';
 	@override String get manualConnection => 'ম্যানুয়াল সংযোগ';
 	@override String get cryptoInitFailed => 'নিরাপদ সংযোগ শুরু করতে পারবেন না. প্রথমে Plex এর সাথে সাইন আপ করুন।';
 	@override String get validationHostRequired => 'দয়া করে হোস্ট ঠিকানা লিখুন';
 	@override String get validationHostFormat => 'ফরম্যাটটি আইপি:পোর্ট (যেমন, 192.168.1.100:48632) হতে হবে।';
 	@override String get connectionTimedOut => 'একই নেটওয়ার্ক ব্যবহার করুন, দুটি ডিভাইসে একই নেটওয়ার্ক ব্যবহার করুন।';
-	@override String get sessionNotFound => 'ডিভাইস পাওয়া যায় না. নিশ্চিত করুন যে PlezyNG হোস্টারে চালু হয়।';
+	@override String get sessionNotFound => 'ডিভাইস পাওয়া যায় না. নিশ্চিত করুন যে Pleazyng হোস্টারে চালু হয়।';
 	@override String get authFailed => 'সনাক্তকরণ ভুল হয়েছে. দুটি ডিভাইসের একই অ্যাকাউন্ট Plex প্রয়োজন।';
 	@override String failedToConnect({required Object error}) => 'সংযোগ করতে পারিনি: ${error}';
 	@override String get codeTitle => 'প্যারিস কোড';
@@ -5193,7 +5199,7 @@ class _Translations$services$simklReconnect$bn extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'সংযোগ Simkl';
-	@override String get subtitle => 'এই সংযোগে ব্যবহৃত সাইন-ইন পদ্ধতি Simkl বন্ধ করে দিচ্ছে। পুনরায় সংযোগ করলে PlezyNG-কে অনুমোদন দিতে simkl.com খুলবে — PlezyNG কখনো আপনার পাসওয়ার্ড দেখতে পায় না। আপনার দেখার ইতিহাস Simkl-এ থাকবে।';
+	@override String get subtitle => 'এই সংযোগে ব্যবহৃত সাইন-ইন পদ্ধতি Simkl বন্ধ করে দিচ্ছে। পুনরায় সংযোগ করলে Pleazyng-কে অনুমোদন দিতে simkl.com খুলবে — Pleazyng কখনো আপনার পাসওয়ার্ড দেখতে পায় না। আপনার দেখার ইতিহাস Simkl-এ থাকবে।';
 }
 
 // Path: services.deviceCode
@@ -5203,7 +5209,7 @@ class _Translations$services$deviceCode$bn extends Translations$services$deviceC
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => '${service} এর উপর PlezyNG সক্রিয় করুন';
+	@override String title({required Object service}) => '${service} এর উপর Pleazyng সক্রিয় করুন';
 	@override String get instructions => 'QR কোড স্ক্যান করুন, অথবা নিচের ঠিকানা দেখুন এবং এই কোডটি প্রদান করুন:';
 	@override String openToActivate({required Object service}) => '${service} সক্রিয় করতে খোলা';
 	@override String get copyCode => 'সক্রিয় কোড কপি করুন';
@@ -5278,15 +5284,15 @@ class _Translations$services$trackerDescriptions$bn extends Translations$service
 extension on TranslationsBn {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'আইকোন আইকোন',
 			'appIcon.defaultIcon' => 'প্রত্যাশিত',
 			'appIcon.current' => 'বর্তমান আইকোন',
 			'appIcon.locked' => 'জীবনযাপন প্রয়োজনীয়',
-			'appIcon.lockedHint' => 'আপনার 7 দিনের পরীক্ষা শুরু করুন অথবা বিকল্প আইকোনগুলি ব্যবহার করার জন্য PlezyNG লাইভের জন্য অলোক করুন।',
+			'appIcon.lockedHint' => 'আপনার 7 দিনের পরীক্ষা শুরু করুন অথবা বিকল্প আইকোনগুলি ব্যবহার করার জন্য Pleazyng লাইভের জন্য অলোক করুন।',
 			'appIcon.changeFailed' => 'অ্যাপ আইকন পরিবর্তন করতে পারবেন না',
-			'appIcon.launcherHint' => 'নতুন আইকন আপনার বাড়ি স্ক্রিনে প্রদর্শিত হবে একবার আপনি PlezyNG ছেড়ে যান।',
-			'appIcon.tvLauncherHint' => 'নতুন ব্যানারটি আপনাকে PlezyNG ছেড়ে দেওয়ার পর দেখা যায়। Android TV টেলিভিশন আবার শুরু হওয়ার পর্যন্ত পুরনো ব্যানারটি প্রদর্শন করতে পারবেন।',
+			'appIcon.launcherHint' => 'নতুন আইকন আপনার বাড়ি স্ক্রিনে প্রদর্শিত হবে একবার আপনি Pleazyng ছেড়ে যান।',
+			'appIcon.tvLauncherHint' => 'নতুন ব্যানারটি আপনাকে Pleazyng ছেড়ে দেওয়ার পর দেখা যায়। Android TV টেলিভিশন আবার শুরু হওয়ার পর্যন্ত পুরনো ব্যানারটি প্রদর্শন করতে পারবেন।',
 			'appIcon.names.midnight' => 'মধ্য রাতে',
 			'appIcon.names.ember' => 'মানুষ',
 			'appIcon.names.paper' => 'কাবার',
@@ -5326,7 +5332,7 @@ extension on TranslationsBn {
 			'auth.quickConnectWaiting' => 'অনুমোদনের জন্য অপেক্ষা...',
 			'auth.quickConnectCancel' => 'বাতিল',
 			'auth.quickConnectExpired' => 'দ্রুত সংযোগের মেয়াদ শেষ হয়েছে। আবার চেষ্টা করুন।',
-			'auth.localDataRecoveryRequired' => 'PlezyNG স্থানীয় সাইন-ইনের তথ্য ও অপেক্ষমাণ প্লেব্যাকের তথ্য নিরাপদে পুনরুদ্ধার করতে পারেনি। আবার সাইন ইন করুন।',
+			'auth.localDataRecoveryRequired' => 'Pleazyng স্থানীয় সাইন-ইনের তথ্য ও অপেক্ষমাণ প্লেব্যাকের তথ্য নিরাপদে পুনরুদ্ধার করতে পারেনি। আবার সাইন ইন করুন।',
 			'auth.pinCheckRejected' => 'Plex PIN চেক বাতিল করা হয়েছে',
 			'auth.connectToDirectPlex' => 'স্থানীয় সার্ভার Plex এর সাথে সংযোগ',
 			'common.cancel' => 'বাতিল',
@@ -5442,9 +5448,9 @@ extension on TranslationsBn {
 			'update.latestVersion' => 'আপনি সর্বশেষ সংস্করণে আছেন',
 			'update.checkFailed' => 'আপডেটের জন্য চেক করতে পারিনি',
 			'settings.title' => 'সিস্টেম',
-			'settings.supportDeveloper' => 'সমর্থন PlezyNG',
+			'settings.supportDeveloper' => 'সমর্থন Pleazyng',
 			'settings.supportDeveloperDescription' => 'উন্নয়নকে সহায়তা দেওয়ার জন্য',
-			'settings.lifetimeAccess' => 'PlezyNG জীবনের অ্যাক্সেস',
+			'settings.lifetimeAccess' => 'Pleazyng জীবনের অ্যাক্সেস',
 			'settings.language' => 'ভাষা',
 			'settings.theme' => 'বিষয়',
 			'settings.appearance' => 'প্রদর্শন',
@@ -5500,7 +5506,7 @@ extension on TranslationsBn {
 			'settings.contentScreensaverNoLibraries' => 'কোন সংযুক্ত মিডিয়া লাইব্রেরি পাওয়া যায় না।',
 			'settings.contentScreensaverDismissHint' => 'কোনও বোতাম বা বাতিল করতে চাপ করুন',
 			'settings.newEpisodeNotifications' => 'নতুন পরিস্থিতি বিজ্ঞাপন',
-			'settings.newEpisodeNotificationsDescription' => 'একটি প্রদর্শনে একটি নতুন প্রদর্শন যোগ করা হলে সতর্ক করুন আপনি একটি প্রদর্শন পেয়েছেন. সতর্ক করুন যখন Plezy খোলা হয়.',
+			'settings.newEpisodeNotificationsDescription' => 'একটি প্রদর্শনে একটি নতুন প্রদর্শন যোগ করা হলে সতর্ক করুন আপনি একটি প্রদর্শন পেয়েছেন. সতর্ক করুন যখন Pleazyng খোলা হয়.',
 			'settings.continueWatchingRowSize' => 'Continue reading রানী আকার দেখুন',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} কার্ড',
 			'settings.rowSizeCompact' => 'কম্প্যাক্ট',
@@ -5625,7 +5631,7 @@ extension on TranslationsBn {
 			'settings.importSettingsDescription' => 'একটি ফাইল থেকে পছন্দ ফেরত',
 			'settings.importSettingsConfirm' => 'এটাই আপনাকে বর্তমান পরামর্শগুলি বদলে দেবে।',
 			'settings.importSettingsSuccess' => 'আউটডোজ করা',
-			'settings.importSettingsInvalidFile' => 'এই ফাইলটি একটি সঠিক PlezyNG সেটিংগুলি অ্যাক্সেস নয়',
+			'settings.importSettingsInvalidFile' => 'এই ফাইলটি একটি সঠিক Pleazyng সেটিংগুলি অ্যাক্সেস নয়',
 			'settings.importSettingsNoUser' => 'প্রদর্শন করার আগে সাইন করুন',
 			'settings.cloudBackup' => 'ক্লাউড সার্ভিস',
 			'settings.cloudBackupDescription' => 'HTTPS-এর মাধ্যমে WebDAV ঠিকানায় বহনযোগ্য সেটিংসের ব্যাকআপ রাখুন। সার্ভার সংযোগ ও শংসাপত্র এই ডিভাইসেই থাকবে।',
@@ -5809,7 +5815,7 @@ extension on TranslationsBn {
 			'settings.forceTvMode' => 'টেলিভিশন মডেল',
 			'settings.forceTvModeDescription' => 'টেলিভিশন সিস্টেম শক্তিশালী. যেসব ডিভাইসগুলি স্বয়ংক্রিয়ভাবে ডেটিং না করে, তাদের জন্য আবার শুরু করতে হবে।',
 			'settings.startInFullscreen' => 'পুরো স্ক্রিনে শুরু',
-			'settings.startInFullscreenDescription' => 'ফুল স্ক্রিন মোডে PlezyNG খোলা',
+			'settings.startInFullscreenDescription' => 'ফুল স্ক্রিন মোডে Pleazyng খোলা',
 			'settings.exitFullscreenOnPlayerClose' => 'খেলোয়াড় বন্ধে Full Screen Exit',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'ভিডিও খেলোয়াড় বন্ধ করার সময় স্বয়ংক্রিয়ভাবে পুরো স্ক্রিন থেকে বের করে',
 			'settings.autoHidePerformanceOverlay' => 'অটো-হাইড অ্যাপ্লিকেশন Overlay',
@@ -5865,7 +5871,7 @@ extension on TranslationsBn {
 			'settings.playerScopeGlobal' => 'যেখানে',
 			'settings.playerScopeLibrary' => 'লাইব্রেরি থেকে',
 			'settings.playerScopeTitle' => 'সিনেমা বা সিনেমা',
-			'settings.exportDialogTitle' => 'উত্পাদন PlezyNG সিস্টেমগুলি',
+			'settings.exportDialogTitle' => 'উত্পাদন Pleazyng সিস্টেমগুলি',
 			'settings.followSystem' => 'সিস্টেমের ভাষা অনুসরণ করুন',
 			'settings.followAppLanguage' => 'ইন্টারফেসের ভাষা ব্যবহার করুন',
 			'settings.regionFormat' => 'আঞ্চলিক বিন্যাস',
@@ -5876,7 +5882,7 @@ extension on TranslationsBn {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'পুরো স্ক্রিনে ডেস্কটপ ভিডিও খুলে যখন Playback শুরু হয়',
 			'settings.extendVideoIntoDisplayCutout' => 'ভিডিও প্রদর্শন Cutoutতে বিস্তারিত',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Fullscreen ভিডিও অ্যান্ড্রয়েড ফোনগুলিতে ক্যামেরার Cutout ব্যবহার করুন',
-			'settings.languageDescription' => 'PlezyNG-এর নিয়ন্ত্রণ ও বার্তায় ব্যবহৃত ভাষা বেছে নিন। সিস্টেম অনুসরণ করলে ডিভাইসের ভাষা ব্যবহৃত হবে।',
+			'settings.languageDescription' => 'Pleazyng-এর নিয়ন্ত্রণ ও বার্তায় ব্যবহৃত ভাষা বেছে নিন। সিস্টেম অনুসরণ করলে ডিভাইসের ভাষা ব্যবহৃত হবে।',
 			'settings.themeDescription' => 'প্রোগ্রামটিতে ব্যবহৃত রঙ এবং প্রতিরোধ নির্বাচন করুন।',
 			'settings.libraryDensityDescription' => 'প্রতিটি লাইব্রেরি কার্ডের সংখ্যা পরিবর্তন করুন।',
 			'settings.displayScaleDescription' => 'এই গাড়ি ডিভাইসের ইন্টারফেসটি পরিবর্তন না করে আপনার ডিভিশনে টেক্সট মাত্রা পরিবর্তন করুন।',
@@ -5898,14 +5904,14 @@ extension on TranslationsBn {
 			'settings.episodeActionDescription' => 'আপনি একটি epizode কার্ড সক্রিয় করার সময় কী ঘটবে তা নির্বাচন করুন।',
 			'settings.episodePlayDescription' => 'অবিলম্বে এই ঘটনাটি শুরু করুন।',
 			'settings.episodeDetailsDescription' => 'Playback এর আগে পৃষ্ঠাটি খুলুন।',
-			'settings.contentScreensaverDelayDescription' => 'প্রদর্শন করার আগে অন্তর্ভুক্ত PlezyNG কতদিন অপেক্ষা করে।',
+			'settings.contentScreensaverDelayDescription' => 'প্রদর্শন করার আগে অন্তর্ভুক্ত Pleazyng কতদিন অপেক্ষা করে।',
 			'settings.continueWatchingRowSizeDescription' => 'সিদ্ধান্ত করুন যে কার্ডগুলি কতটা বড় থাকে Continue Watching রানায়।',
 			'settings.rowSizeCompactDescription' => 'ছোট কার্ডগুলি দেখুন, যাতে আরও পণ্য লাইন সীমাবদ্ধ করে।',
 			'settings.rowSizeStandardDescription' => 'কার্ডের স্ট্যান্ডার্ড আকার ব্যবহার করুন।',
 			'settings.rowSizeLargeDescription' => 'আরও বড় কার্ডগুলি দেখুন আরেকটি শিল্পকর্মের বিস্তারিত',
 			'settings.visualEffectsDescription' => 'এই ডিভাইসের জন্য অ্যানিমেশন এবং শিল্প কার্যকলাপ বাজেট নির্বাচন করুন।',
 			'settings.visualEffectsFullDescription' => 'প্রতিটি ডিভাইসে সম্পূর্ণ অ্যানিমেশন এবং শিল্প কাজের প্রভাব ব্যবহার করুন।',
-			'settings.startupSectionDescription' => 'কখন PlezyNG শুরু হয় তাহলে কোন বিভাগটি খুলবে তা নির্বাচন করুন।',
+			'settings.startupSectionDescription' => 'কখন Pleazyng শুরু হয় তাহলে কোন বিভাগটি খুলবে তা নির্বাচন করুন।',
 			'settings.startupSectionOptions.discover' => 'সম্পর্কিত গবেষণার সূত্র থেকে উন্মুক্ত প্রস্তাব এবং পণ্য।',
 			'settings.startupSectionOptions.libraries' => 'আপনার সংযুক্ত মিডিয়া লাইব্রেরি খুলুন।',
 			'settings.startupSectionOptions.liveTv' => 'একটি সার্ভার এটি সরবরাহ করলে লাইভ টিভি খুলুন; অন্যথায় স্টার্টপেট বাড়িতে ফিরে আসবে।',
@@ -5944,7 +5950,7 @@ extension on TranslationsBn {
 			'settings.musicQualityOriginalDescription' => 'Bitrate-capped transcode ছাড়া সূত্র অডিও খেলুন।',
 			'settings.musicQualityTranscodeOptionDescription' => 'উপরে দেখানো বিটরেটের কাছাকাছি সীমা রেখে সার্ভারকে ট্রান্সকোড করতে বলুন; প্রকৃত আউটপুট ভিন্ন হতে পারে।',
 			'settings.maxVolumeInputLabel' => 'সর্বোচ্চ পরিমাণ (%)',
-			'settings.checkForUpdatesDescription' => 'এখন দেখুন কি PlezyNG এর নতুন সংস্করণ পাওয়া যায় কিনা।',
+			'settings.checkForUpdatesDescription' => 'এখন দেখুন কি Pleazyng এর নতুন সংস্করণ পাওয়া যায় কিনা।',
 			'settings.appearanceDescription' => 'অ্যাপটি থেমা নির্বাচন করুন এবং লাইব্রেরি কার্ড, হোম রান এবং ন্যাভাইজেশন সংশোধন করুন।',
 			'settings.prerollLibraryDescription' => 'সিনেমা pre-rolls হিসাবে উপলব্ধ ক্লিপগুলি প্রন্তর্ভুক্ত লাইব্রেরি নির্বাচন করুন।',
 			'settings.prerollSelectionDescription' => 'নির্বাচিত লাইব্রেরির কোন ক্লিপগুলো সিনেমার আগে চলতে পারবে তা বেছে নিন।',
@@ -6180,8 +6186,8 @@ extension on TranslationsBn {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'এতে থাকা ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব এবং তার ফাইল মুছে যাবে।', other: 'এতে থাকা সব ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব এবং সেগুলির ফাইল মুছে যাবে।', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'এই আইটেমটি ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি ফাইলে সংরক্ষিত আছে, যা মুছে যাবে।', other: 'এই আইটেমটি ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি ফাইল জুড়ে সংরক্ষিত আছে এবং সবগুলি মুছে যাবে।', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেটিও মুছে যাবে:', other: 'একই ফাইলে আরও ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}টি পর্ব সংরক্ষিত আছে এবং সেগুলিও মুছে যাবে:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG কোন ফাইলটি মুছে ফেলবে তা নিশ্চিত করতে পারেন না, তাই এটি উপরে নামিত পণ্যের চেয়ে বেশি মুছে ফেলতে পারে. বাতিল করুন এবং আবারও চেষ্টা করুন, অথবা কোনওভাবে মুছে ফেলুন।',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'আপনার সার্ভার এই আইটেমের ফাইলের বিবরণ দেয়নি, তাই PlezyNG কোন ফাইলগুলি মুছে যাবে তা পরীক্ষা করতে পারছে না। উপরে উল্লেখ করা আইটেম ছাড়াও আরও কিছু মুছে যেতে পারে।',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng কোন ফাইলটি মুছে ফেলবে তা নিশ্চিত করতে পারেন না, তাই এটি উপরে নামিত পণ্যের চেয়ে বেশি মুছে ফেলতে পারে. বাতিল করুন এবং আবারও চেষ্টা করুন, অথবা কোনওভাবে মুছে ফেলুন।',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'আপনার সার্ভার এই আইটেমের ফাইলের বিবরণ দেয়নি, তাই Pleazyng কোন ফাইলগুলি মুছে যাবে তা পরীক্ষা করতে পারছে না। উপরে উল্লেখ করা আইটেম ছাড়াও আরও কিছু মুছে যেতে পারে।',
 			'mediaMenu.mediaDeletedSuccessfully' => 'সফলভাবে মুছে ফেলেন মিডিয়া',
 			'mediaMenu.mediaFailedToDelete' => 'মিডিয়া পণ্য মুছে ফেলে না',
 			'mediaMenu.rate' => 'রাত',
@@ -6231,7 +6237,7 @@ extension on TranslationsBn {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'অ্যাক্সেসযোগ্যতা',
 			'accessibility.summary' => 'টেক্সট, কন্ট্রোস্ট, মোট এবং নিয়ন্ত্রণ',
-			'accessibility.systemHint' => 'আপনার ডিভাইসের অ্যাক্সেসযোগ্যতা সেটস সবসময় প্রয়োগ করা হয়. এই পছন্দগুলি PlezyNG সারা সময় সমাধানগুলি যোগ করে।',
+			'accessibility.systemHint' => 'আপনার ডিভাইসের অ্যাক্সেসযোগ্যতা সেটস সবসময় প্রয়োগ করা হয়. এই পছন্দগুলি Pleazyng সারা সময় সমাধানগুলি যোগ করে।',
 			'accessibility.readability' => 'পড়া ও দেখার সুযোগ',
 			'accessibility.textSize' => 'টেক্সটের বড়',
 			'accessibility.preview' => 'আপনার পরবর্তী গল্পটি খুঁজে পেতে. পড়ুন, শুনুন এবং আপনার নিজের ধাপে দেখুন।',
@@ -6244,7 +6250,7 @@ extension on TranslationsBn {
 			'accessibility.largeTargets' => 'বড় ট্যাক্স টার্গেট',
 			'accessibility.largeTargetsHint' => 'স্পর্শ ও সহায়ক প্রযুক্তির মাধ্যমে চলাচল সহজ করতে সাধারণ নিয়ন্ত্রণগুলির জায়গা বড় করুন।',
 			'accessibility.navigationHint' => 'নিয়ন্ত্রণগুলির মধ্যে যেতে Tab ও Shift+Tab, সক্রিয় করতে Enter বা Space এবং বন্ধ করতে Escape বা ফিরে যাওয়ার বোতাম ব্যবহার করুন। বই খোলা থাকলে জুম ও পড়ার পছন্দগুলি বদলানো যায়।',
-			'accessibility.textSizeDescription' => 'আপনার ডিভাইসের সিস্টেম টেক্সটের আকারের সেটিংয়ের পাশাপাশি PlezyNG ইন্টারফেসের লেখার আকারও পরিবর্তন করুন।',
+			'accessibility.textSizeDescription' => 'আপনার ডিভাইসের সিস্টেম টেক্সটের আকারের সেটিংয়ের পাশাপাশি Pleazyng ইন্টারফেসের লেখার আকারও পরিবর্তন করুন।',
 			'accessibility.boldTextHint' => 'ইন্টারফেস ট্যাগ এবং বার্তাগুলির জন্য একটি গভীর ওজন ব্যবহার করুন যা তাদের বিতর্ক করা সহজ করে।',
 			'tooltips.shufflePlay' => 'শফল খেলা',
 			'tooltips.playTrailer' => 'ট্র্যালার খেলুন',
@@ -6512,7 +6518,7 @@ extension on TranslationsBn {
 			'mpvConfig.removeLine' => 'লাইন মুছে ফেলে',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-context এবং gpu-api Linux এর উপর ignored: ভিত্তিক ভিডিও সবসময় ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তিক ভিত্তি।',
 			'dialog.confirmAction' => 'কার্যক্রম নিশ্চিত করুন',
-			'profiles.addPlezyProfile' => 'PlezyNG প্রোফাইল যোগ করুন',
+			'profiles.addPlezyProfile' => 'Pleazyng প্রোফাইল যোগ করুন',
 			'profiles.switchingProfile' => 'ফোফাইল পরিবর্তন...',
 			'profiles.deleteThisProfileTitle' => 'এই প্রোফাইলটি মুছে ফেলুন?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => '${displayName} সরিয়ে দিন। সংযোগগুলি প্রভাবিত হবে না।',
@@ -6594,12 +6600,12 @@ extension on TranslationsBn {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} সার্ভার এই অ্যাকাউন্টের জন্য অ্যাক্সেস বাতিল',
 			'connections.signInAgain' => 'আবার লিখুন',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Edit ${product} সংযোগ',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '${serverName} এর জন্য URLগুলি যোগ করুন বা মুছে ফেলুন. PlezyNG সবচেয়ে কম ল্যাটিংসের সাথে পৌঁছাতে পারে URLগুলি ব্যবহার করবে।',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => '${serverName} এর জন্য URLগুলি যোগ করুন বা মুছে ফেলুন. Pleazyng সবচেয়ে কম ল্যাটিংসের সাথে পৌঁছাতে পারে URLগুলি ব্যবহার করবে।',
 			'accountPreferences.sectionTitle' => 'অ্যাকাউন্ট পছন্দ',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'অডিও, সাবটাইট এবং লাইব্রেরি বিকল্পগুলি ${account} এ সংরক্ষিত',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'অডিও, সাবটাইট এবং লাইব্রেরি বিকল্পগুলি ${count} অ্যাকাউন্টগুলিতে সংরক্ষিত',
 			'accountPreferences.pickAccount' => 'প্রতিটি অ্যাকাউন্ট তার নিজের প্রিয়মেন্টগুলি সংরক্ষণ করে. সংশোধন করার জন্য একটি নির্বাচন করুন.',
-			'accountPreferences.storedOnAccount' => 'এই অ্যাকাউন্টের নিজে থেকে এই অ্যাকাউন্টগুলি সংরক্ষণ করা হয়, তাই এতে প্রবেশিত প্রতিটি অ্যাপটি তাদের ব্যবহার করে - আপনার অন্যান্য ডিভাইসগুলিতে PlezyNG অন্তর্ভুক্ত।',
+			'accountPreferences.storedOnAccount' => 'এই অ্যাকাউন্টের নিজে থেকে এই অ্যাকাউন্টগুলি সংরক্ষণ করা হয়, তাই এতে প্রবেশিত প্রতিটি অ্যাপটি তাদের ব্যবহার করে - আপনার অন্যান্য ডিভাইসগুলিতে Pleazyng অন্তর্ভুক্ত।',
 			'accountPreferences.noAccounts' => 'কোন অ্যাকাউন্ট সংগঠন করা যায় না',
 			'accountPreferences.noAccountsHint' => 'Plex এ প্রবেশ করুন, অথবা Jellyfin বা Emby সার্ভারের সাথে সংযোগ করুন, এবং এই অ্যাকাউন্টে সংরক্ষিত পছন্দগুলি এখানে প্রদর্শন করা হয়।',
 			'accountPreferences.unavailable' => 'এই অ্যাকাউন্টে পৌঁছাতে পারবেন না',
@@ -6923,9 +6929,9 @@ extension on TranslationsBn {
 			'logs.saveLogs' => 'ফাইলে লগ সুরক্ষা করুন',
 			'logs.logsSaved' => ({required Object path}) => 'লগগুলি সংরক্ষিত হয়েছে ${path}',
 			'logs.saveLogsFailed' => 'লগ ফাইল সংরক্ষণ করতে পারেনি।',
-			'startup.failedTitle' => 'PlezyNG শুরু করতে পারেনি',
+			'startup.failedTitle' => 'Pleazyng শুরু করতে পারেনি',
 			'startup.failedBody' => 'স্টার্টপোর্টের সময় কিছু ভুল হয়েছিল. নিচের বিস্তারিতগুলি কী ভুল হয়েছে তা সংজ্ঞা করে।',
-			'startup.failedBodyRepairable' => 'PlezyNG-এর সংরক্ষিত সেটিংস ফাইলটি ক্ষতিগ্রস্ত। অ্যাপ চালুর আগে এটি আবার তৈরি করতে হবে। আবার চেষ্টা করলে কাজ হবে না — স্টোরেজ মেরামতের বিকল্পটি বেছে নিন।',
+			'startup.failedBodyRepairable' => 'Pleazyng-এর সংরক্ষিত সেটিংস ফাইলটি ক্ষতিগ্রস্ত। অ্যাপ চালুর আগে এটি আবার তৈরি করতে হবে। আবার চেষ্টা করলে কাজ হবে না — স্টোরেজ মেরামতের বিকল্পটি বেছে নিন।',
 			'startup.phaseLabel' => 'পদক্ষেপ',
 			'startup.showDetails' => 'বিস্তারিত দেখুন',
 			'startup.hideDetails' => 'গোপন বিস্তারিত',
@@ -6934,16 +6940,16 @@ extension on TranslationsBn {
 			'startup.uploadDetails' => 'আপলোড ডেটা',
 			'startup.repairStorage' => 'পুনরাবৃত্তি সংরক্ষণ',
 			'startup.repairTitle' => 'রক্ষা করা ডেটা কি?',
-			'startup.repairBodyCommon' => 'PlezyNG-এর সেটিংস ফাইলটি ক্ষতিগ্রস্ত এবং পড়া যাচ্ছে না। মেরামত করলে সব সেটিংস ডিফল্ট মানে ফিরে যাবে।',
+			'startup.repairBodyCommon' => 'Pleazyng-এর সেটিংস ফাইলটি ক্ষতিগ্রস্ত এবং পড়া যাচ্ছে না। মেরামত করলে সব সেটিংস ডিফল্ট মানে ফিরে যাবে।',
 			'startup.repairBodyOneCredential' => 'সংরক্ষিত সাইন-ইনের একটি তথ্য ক্ষতিগ্রস্ত এবং পড়া যাচ্ছে না। মেরামত করলে শুধু সেটিই মুছে যাবে; অন্য সেটিংস বদলাবে না।',
 			'startup.repairBodySignInsKept' => 'আপনার সার্ভার ও প্রোফাইলগুলিতে সাইন-ইন অবস্থা বজায় থাকার কথা।',
 			'startup.repairBodySignInsLost' => 'সংরক্ষিত সাইন-ইনের তথ্য রক্ষা করার চাবিটি এই ফাইল থেকে পুনরুদ্ধার করা যাচ্ছে না। তাই প্রতিটি সার্ভার ও প্রোফাইলে আবার সাইন ইন করতে হবে। মিডিয়া সার্ভারে কিছুই প্রভাবিত হবে না।',
-			'startup.repairBodySessionsUncertain' => 'ট্র্যাকার (MAL, AniList, Simkl, Trakt) এবং Seerr-এর তথ্য আলাদাভাবে সংরক্ষিত থাকে এবং তা অক্ষত থাকতেও পারে, নাও পারে। PlezyNG ঠিক কোন তথ্য রেখেছে তা আপনাকে জানাবে।',
+			'startup.repairBodySessionsUncertain' => 'ট্র্যাকার (MAL, AniList, Simkl, Trakt) এবং Seerr-এর তথ্য আলাদাভাবে সংরক্ষিত থাকে এবং তা অক্ষত থাকতেও পারে, নাও পারে। Pleazyng ঠিক কোন তথ্য রেখেছে তা আপনাকে জানাবে।',
 			'startup.repairConfirm' => 'পুনরায়',
 			'startup.repairSucceeded' => 'রেকর্ড করা হয়েছে',
 			'startup.repairNeedsRestart' => 'পুনরাবৃত্তি প্রয়োজন – Repair Required',
-			'startup.restartRequiredBody' => 'আপনার তথ্য মেরামত করা হয়েছে, তবে তা ব্যবহার করতে PlezyNG আবার চালু করতে হবে। PlezyNG বন্ধ করে আবার খুলুন।',
-			'startup.quitPlezy' => 'ফাঁস PlezyNG',
+			'startup.restartRequiredBody' => 'আপনার তথ্য মেরামত করা হয়েছে, তবে তা ব্যবহার করতে Pleazyng আবার চালু করতে হবে। Pleazyng বন্ধ করে আবার খুলুন।',
+			'startup.quitPlezy' => 'ফাঁস Pleazyng',
 			'startup.repairFailed' => 'পুনরাবৃত্তি ভুল',
 			'startup.repairKeptSignIns' => 'আপনার সার্ভার ও প্রোফাইলগুলিতে এখনও সাইন ইন করা আছে।',
 			'startup.repairLostSignIns' => 'আপনার সুরক্ষিত সাইন ইন সুরক্ষার চিঠি পুনরাবৃত্তি করা যাবে না. আপনাকে প্রতিটি সার্ভার এবং প্রোফাইলে আবার সাইন আপ করতে হবে।',
@@ -6952,7 +6958,7 @@ extension on TranslationsBn {
 			'startup.backupWarning' => 'এতে আপনার সাইন-ইন তথ্য রয়েছে। এটি আপলোড বা শেয়ার করবেন না।',
 			'startup.deleteBackup' => 'কপি মুছে ফেলুন',
 			'startup.backupDeleted' => 'কপি মুছে ফেলুন',
-			'startup.previousFailureTitle' => 'PlezyNG শেষবার শুরু করতে পারিনি',
+			'startup.previousFailureTitle' => 'Pleazyng শেষবার শুরু করতে পারিনি',
 			'licenses.relatedPackages' => 'সম্পর্কিত প্যাকেজ',
 			'licenses.license' => 'লাইসেন্স',
 			'licenses.licenseNumber' => ({required Object number}) => 'লাইসেন্স ${number}',
@@ -7330,7 +7336,7 @@ extension on TranslationsBn {
 			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
 			_ => null,
 		} ?? switch (path) {
@@ -7358,7 +7364,7 @@ extension on TranslationsBn {
 			'watchTogether.chooseAnotherCopy' => 'অন্য কপি নির্বাচন করুন',
 			'watchTogether.dontPlay' => 'খেলবেন না',
 			'watchTogether.unavailableTitle' => 'আপনি এই ভিডিও নেই',
-			'watchTogether.unavailableDescription' => 'PlezyNG আপনার লাইব্রেরিতে এটি খুঁজে পাওয়া যায়নি. নিজের জন্য একটি কপি বা আবার খুঁজে পেতে পারেন।',
+			'watchTogether.unavailableDescription' => 'Pleazyng আপনার লাইব্রেরিতে এটি খুঁজে পাওয়া যায়নি. নিজের জন্য একটি কপি বা আবার খুঁজে পেতে পারেন।',
 			'watchTogether.chooseCopy' => 'একটি কপি নির্বাচন করুন',
 			'watchTogether.searchAgain' => 'আবার খোঁজ',
 			'watchTogether.noCandidates' => 'আপনার লাইব্রেরিতে কোন কপি পাওয়া যায়নি।',
@@ -7450,7 +7456,7 @@ extension on TranslationsBn {
 			'watchTogether.errors.relayFull' => 'এখন কাজে লাগে, পরে আবার চেষ্টা করুন।',
 			'watchTogether.errors.unreachable' => 'ঘন্টা একসাথে relay পৌঁছাতে পারত না. আপনার সংযোগ চেক করুন.',
 			'watchTogether.errors.rateLimited' => 'একটু অপেক্ষা করুন এবং আবার চেষ্টা করুন।',
-			'watchTogether.errors.clientBlocked' => 'এই সংস্করণ PlezyNG relay ব্যবহার করতে পারেন না. অ্যাপটি আপডেট করুন.',
+			'watchTogether.errors.clientBlocked' => 'এই সংস্করণ Pleazyng relay ব্যবহার করতে পারেন না. অ্যাপটি আপডেট করুন.',
 			'watchTogether.errors.forbidden' => 'শুধুমাত্র হেস্টারই সেটা করতে পারেন।',
 			'watchTogether.errors.notInRoom' => 'আপনি একটি রুমে নেই।',
 			'watchTogether.errors.alreadyInRoom' => 'আপনি এখন একটি রুমে আছেন।',
@@ -7532,11 +7538,11 @@ extension on TranslationsBn {
 			'downloads.activeSyncRules' => 'সিনক নিয়ম',
 			'downloads.reviewOrphanFiles' => 'ডাউনলোড করুন অর্পানড',
 			'downloads.orphanReviewTitle' => 'ডাউনলোড করুন অর্পানড',
-			'downloads.orphanReviewDescription' => 'এই ট্যাগ ফাইলগুলি PlezyNG এর ভিত্তিক অ্যাপ-ম্যানেজিত ডাউনলোড ফাইলগুলিতে রয়েছে এবং ডাউনলোড রেকর্ড বা কার্যকর কাজের সাথে সমাধান নেই।',
+			'downloads.orphanReviewDescription' => 'এই ট্যাগ ফাইলগুলি Pleazyng এর ভিত্তিক অ্যাপ-ম্যানেজিত ডাউনলোড ফাইলগুলিতে রয়েছে এবং ডাউনলোড রেকর্ড বা কার্যকর কাজের সাথে সমাধান নেই।',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} ফাইল · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => '${count} ফাইল মুছে ফেলুন',
 			'downloads.orphanCleanupNone' => 'কোন ডাউনলোড ফাইল পাওয়া যায় না',
-			'downloads.orphanCleanupFailed' => 'PlezyNG নিরাপদভাবে পরিচালিত ডাউনলোড ফোডার স্ক্যান করতে পারেনি. কোন ফাইলটি মুছে ফেলেনি।',
+			'downloads.orphanCleanupFailed' => 'Pleazyng নিরাপদভাবে পরিচালিত ডাউনলোড ফোডার স্ক্যান করতে পারেনি. কোন ফাইলটি মুছে ফেলেনি।',
 			'downloads.orphanCleanupChanged' => 'ডাউনলোডের তালিকা বিবেচনার সময় পরিবর্তিত হয়. ফাইলগুলি আবারও পরিষ্কার করার আগে বিবেচনা করুন.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => 'মুছে ফেলেন ${count} অন্তর্ভুক্ত ফাইল · ${size} বিনামূল্যে',
 			'downloads.noSyncRules' => 'কোন সিনক নিয়ম',
@@ -7558,14 +7564,14 @@ extension on TranslationsBn {
 			'downloads.backgroundWarning.bannerAction' => 'বিস্তারিত',
 			'downloads.backgroundWarning.sheetTitle' => 'ডাউনলোড করা হয় ব্লক',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'ডাউনলোড সীমিত হতে পারে',
-			'downloads.backgroundWarning.sheetIntro' => 'Android সূত্রে নির্ভরযোগ্যভাবে ডাউনলোড করার জন্য PlezyNG বাধা দেয়।',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'আপনার ডিভাইস যখন PlezyNG ফাউনলোড করতে পারেন তখন সীমিত।',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'PlezyNG এর ফাউন্ডেশন ব্যবহার সীমিত. তার ব্যাটারি বা ফাউন্ডেশন ব্যবহারকে "অনীমিত" হিসাবে সীমিত করুন।',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android একটি সীমিত স্থিতিশীল অবস্থায় PlezyNG রাখা হয়েছে. তার ব্যাটারি ব্যবহারকে "অীমিত" হিসাবে স্থিতিশীল করুন।',
+			'downloads.backgroundWarning.sheetIntro' => 'Android সূত্রে নির্ভরযোগ্যভাবে ডাউনলোড করার জন্য Pleazyng বাধা দেয়।',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'আপনার ডিভাইস যখন Pleazyng ফাউনলোড করতে পারেন তখন সীমিত।',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Pleazyng এর ফাউন্ডেশন ব্যবহার সীমিত. তার ব্যাটারি বা ফাউন্ডেশন ব্যবহারকে "অনীমিত" হিসাবে সীমিত করুন।',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android একটি সীমিত স্থিতিশীল অবস্থায় Pleazyng রাখা হয়েছে. তার ব্যাটারি ব্যবহারকে "অীমিত" হিসাবে স্থিতিশীল করুন।',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'ডাউনলোড通知গুলি বন্ধ করা হয়, তাই প্রদর্শন এবং নিয়ন্ত্রণ পাওয়া যায় না।',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Notifications are turned off. On Android 13 or later, they are required for long background downloads. এগুলি দীর্ঘ পর্যায়ে ডাউনলোডের জন্য প্রয়োজনীয়।',
 			'downloads.backgroundWarning.reasonDataSaver' => 'ডেটা সেভার চালু থাকায় মোবাইল ডেটায় পটভূমিতে ডাউনলোড বন্ধ আছে। Wi-Fi-এ ডাউনলোড চলার কথা।',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'ডাউনলোডগুলি বারবার বন্ধ হয়েছিল যখন PlezyNG ফাউনলোডে ছিল। PlezyNG এর ব্যাটারি বা ফাউনলোড ব্যবহারের পরামর্শগুলি দেখুন।',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'ডাউনলোডগুলি বারবার বন্ধ হয়েছিল যখন Pleazyng ফাউনলোডে ছিল। Pleazyng এর ব্যাটারি বা ফাউনলোড ব্যবহারের পরামর্শগুলি দেখুন।',
 			'downloads.backgroundWarning.openSettings' => 'খোলা সিস্টেম',
 			'downloads.backgroundWarning.stillNotWorking' => 'ডিভাইস-সpecific সহায়তা',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'আপনার ডিভাইসের জন্য পদক্ষেপ দেখুন, অথবা সমস্যা চলছে যদি Settings › View Logs থেকে একটি লগ পাঠান।',
@@ -7636,19 +7642,19 @@ extension on TranslationsBn {
 			'companionRemote.session.stopServer' => 'সার্ভার বন্ধ',
 			'companionRemote.session.minimize' => 'কমপক্ষে',
 			'companionRemote.session.manualAddressHint' => 'ম্যানুয়াল সংযোগ ঠিকানা:',
-			'companionRemote.pairing.discoveryDescription' => 'একই অ্যাকাউন্ট Plex সঙ্গে PlezyNG ডিভাইস এখানে দেখা যায়',
+			'companionRemote.pairing.discoveryDescription' => 'একই অ্যাকাউন্ট Plex সঙ্গে Pleazyng ডিভাইস এখানে দেখা যায়',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'সংযোগ...',
 			'companionRemote.pairing.searchingForDevices' => 'সরঞ্জাম খুঁজছেন...',
 			'companionRemote.pairing.noDevicesFound' => 'আপনার নেটওয়ার্কে কোন ডিভাইস পাওয়া যায়নি',
-			'companionRemote.pairing.noDevicesHint' => 'ডেস্টোভে PlezyNG খুলুন এবং একই Wi-Fi ব্যবহার করুন',
+			'companionRemote.pairing.noDevicesHint' => 'ডেস্টোভে Pleazyng খুলুন এবং একই Wi-Fi ব্যবহার করুন',
 			'companionRemote.pairing.availableDevices' => 'উপলব্ধ ডিভাইস',
 			'companionRemote.pairing.manualConnection' => 'ম্যানুয়াল সংযোগ',
 			'companionRemote.pairing.cryptoInitFailed' => 'নিরাপদ সংযোগ শুরু করতে পারবেন না. প্রথমে Plex এর সাথে সাইন আপ করুন।',
 			'companionRemote.pairing.validationHostRequired' => 'দয়া করে হোস্ট ঠিকানা লিখুন',
 			'companionRemote.pairing.validationHostFormat' => 'ফরম্যাটটি আইপি:পোর্ট (যেমন, 192.168.1.100:48632) হতে হবে।',
 			'companionRemote.pairing.connectionTimedOut' => 'একই নেটওয়ার্ক ব্যবহার করুন, দুটি ডিভাইসে একই নেটওয়ার্ক ব্যবহার করুন।',
-			'companionRemote.pairing.sessionNotFound' => 'ডিভাইস পাওয়া যায় না. নিশ্চিত করুন যে PlezyNG হোস্টারে চালু হয়।',
+			'companionRemote.pairing.sessionNotFound' => 'ডিভাইস পাওয়া যায় না. নিশ্চিত করুন যে Pleazyng হোস্টারে চালু হয়।',
 			'companionRemote.pairing.authFailed' => 'সনাক্তকরণ ভুল হয়েছে. দুটি ডিভাইসের একই অ্যাকাউন্ট Plex প্রয়োজন।',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'সংযোগ করতে পারিনি: ${error}',
 			'companionRemote.pairing.codeTitle' => 'প্যারিস কোড',
@@ -7912,11 +7918,11 @@ extension on TranslationsBn {
 			'trakt.connected' => 'সংযুক্ত',
 			'trakt.connectedAs' => ({required Object username}) => 'সংযুক্ত @${username}',
 			'trakt.disconnectConfirm' => 'Trakt অ্যাকাউন্ট বন্ধ করুন?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG এর মাধ্যমে ঘটনাবলীগুলি পাঠানোর সময় থেমে যাবে Trakt. আপনি যেকোনো সময়ে আবার সংযোগ করতে পারেন।',
+			'trakt.disconnectConfirmBody' => 'Pleazyng এর মাধ্যমে ঘটনাবলীগুলি পাঠানোর সময় থেমে যাবে Trakt. আপনি যেকোনো সময়ে আবার সংযোগ করতে পারেন।',
 			'trakt.scrobble' => 'বাস্তব সময়ের স্ক্রোবিলিং',
 			'trakt.scrobbleDescription' => 'খেলা, pause, এবং stop events পাঠান Trakt Playback সময়।',
 			'trakt.watchedSync' => 'সিন্ক দেখানো অবস্থা',
-			'trakt.watchedSyncDescription' => 'যখন আপনি PlezyNG এর অনুসন্ধানের মত পণ্যগুলি চিহ্নিত করেন, তখন তারা Trakt এর অনুসন্ধানের মতও চিহ্নিত হয়।',
+			'trakt.watchedSyncDescription' => 'যখন আপনি Pleazyng এর অনুসন্ধানের মত পণ্যগুলি চিহ্নিত করেন, তখন তারা Trakt এর অনুসন্ধানের মতও চিহ্নিত হয়।',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'সংযোগ Seerr',
 			'seerr.serverUrl' => 'URL সার্ভার',
@@ -7926,10 +7932,10 @@ extension on TranslationsBn {
 			'seerr.signInWithEmby' => 'সাইন আপ করুন Emby',
 			'seerr.signInWithLocal' => 'স্থানীয় অ্যাকাউন্ট ব্যবহার করুন',
 			'seerr.email' => 'ইমেইল',
-			'seerr.noSignInMethods' => 'এই Seerr উদাহরণ কোন সাইন-ইন পদ্ধতি PlezyNG সমর্থন দেয় না।',
+			'seerr.noSignInMethods' => 'এই Seerr উদাহরণ কোন সাইন-ইন পদ্ধতি Pleazyng সমর্থন দেয় না।',
 			'seerr.instance' => 'আয়াত',
 			'seerr.disconnectConfirm' => 'চিঠি বন্ধ করুন?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.',
 			'seerr.request' => 'অনুরোধ',
 			'seerr.request4k' => '4K অনুসন্ধান',
 			'seerr.seasons' => 'সপ্তাহ',
@@ -7954,7 +7960,7 @@ extension on TranslationsBn {
 			'seerr.statusBlocklisted' => 'ব্লক করা',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => '${url}: ${error} পৌঁছাতে পারে না',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'নো Seerr আবেদন ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'একটি সত্যি প্রাক্সি (SSO বা HTTP auth) Seerr পরিবর্তে উত্তর দেয়. PlezyNG এর মাধ্যমে নিবন্ধন করা যায় না: Seerr এর /api/v1 পথটি এই অ্যাপের জন্য প্রাক্সি অতিক্রম করে, অথবা একটি ঠিকানা ব্যবহার করুন যা সরাসরি Seerr পৌঁছায়।',
+			'seerr.behindAuthProxy' => 'একটি সত্যি প্রাক্সি (SSO বা HTTP auth) Seerr পরিবর্তে উত্তর দেয়. Pleazyng এর মাধ্যমে নিবন্ধন করা যায় না: Seerr এর /api/v1 পথটি এই অ্যাপের জন্য প্রাক্সি অতিক্রম করে, অথবা একটি ঠিকানা ব্যবহার করুন যা সরাসরি Seerr পৌঁছায়।',
 			'seerr.invalidUrl' => 'একটি সার্ভার ঠিকানা লিখুন, যেমন https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'এই Seerr প্রদর্শনটি Quick Connect সমর্থন করে না।',
 			'seerr.notInitialized' => 'এই Seerr ইনস্টেশন প্রথম চালু সিস্টেমটি সম্পন্ন করেনি',
@@ -7975,7 +7981,7 @@ extension on TranslationsBn {
 			'services.scrobble' => 'স্বয়ংক্রিয়ভাবে উন্নয়ন ট্র্যাক করুন',
 			'services.scrobbleDescription' => 'আপডেট করুন আপনার তালিকায় যখন আপনি একটি epizode বা সিনেমা শেষ করেন।',
 			'services.disconnectConfirm' => ({required Object service}) => 'ডাউনলোড করুন ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG আপডেট বন্ধ করবে ${service}. প্রতিটি সময়ে আবার সংযোগ করুন।',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng আপডেট বন্ধ করবে ${service}. প্রতিটি সময়ে আবার সংযোগ করুন।',
 			'services.connectFailed' => ({required Object service}) => '${service} এর সাথে যোগাযোগ করতে পারবেন না।',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7983,8 +7989,8 @@ extension on TranslationsBn {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'সংযোগ Simkl',
-			'services.simklReconnect.subtitle' => 'এই সংযোগে ব্যবহৃত সাইন-ইন পদ্ধতি Simkl বন্ধ করে দিচ্ছে। পুনরায় সংযোগ করলে PlezyNG-কে অনুমোদন দিতে simkl.com খুলবে — PlezyNG কখনো আপনার পাসওয়ার্ড দেখতে পায় না। আপনার দেখার ইতিহাস Simkl-এ থাকবে।',
-			'services.deviceCode.title' => ({required Object service}) => '${service} এর উপর PlezyNG সক্রিয় করুন',
+			'services.simklReconnect.subtitle' => 'এই সংযোগে ব্যবহৃত সাইন-ইন পদ্ধতি Simkl বন্ধ করে দিচ্ছে। পুনরায় সংযোগ করলে Pleazyng-কে অনুমোদন দিতে simkl.com খুলবে — Pleazyng কখনো আপনার পাসওয়ার্ড দেখতে পায় না। আপনার দেখার ইতিহাস Simkl-এ থাকবে।',
+			'services.deviceCode.title' => ({required Object service}) => '${service} এর উপর Pleazyng সক্রিয় করুন',
 			'services.deviceCode.instructions' => 'QR কোড স্ক্যান করুন, অথবা নিচের ঠিকানা দেখুন এবং এই কোডটি প্রদান করুন:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => '${service} সক্রিয় করতে খোলা',
 			'services.deviceCode.copyCode' => 'সক্রিয় কোড কপি করুন',
@@ -8017,8 +8023,8 @@ extension on TranslationsBn {
 			'streaming.title' => 'ক্লাউড ও অ্যাড-অন স্ট্রিমিং',
 			'streaming.subtitle' => 'ক্লাউডে থাকা ফাইল দেখতে এবং সমর্থিত স্ট্রিম চালাতে Debrid অ্যাকাউন্ট সংযুক্ত করুন। Stremio-সামঞ্জস্যপূর্ণ অ্যাড-অন সিনেমা ও পর্বের পাতায় স্ট্রিমের বিকল্প দেয়। সংযোগের তথ্য এই ডিভাইসে এনক্রিপ্ট হয়ে এই প্রোফাইলে সংরক্ষিত থাকে।',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'সংযুক্ত উৎস: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG সংরক্ষিত স্ট্রিমিং সেটিংস খুলতে পারেনি। সংযোগ পরিবর্তনের আগে ডিভাইস আনলক করে আবার চেষ্টা করুন।',
-			'streaming.settingsUnreadable' => 'PlezyNG এই সংরক্ষিত সংযোগগুলো খুলতে পারেনি। পরিষেবাগুলো আবার সংযোগ করতে এগুলো মুছুন।',
+			'streaming.settingsLoadFailed' => 'Pleazyng সংরক্ষিত স্ট্রিমিং সেটিংস খুলতে পারেনি। সংযোগ পরিবর্তনের আগে ডিভাইস আনলক করে আবার চেষ্টা করুন।',
+			'streaming.settingsUnreadable' => 'Pleazyng এই সংরক্ষিত সংযোগগুলো খুলতে পারেনি। পরিষেবাগুলো আবার সংযোগ করতে এগুলো মুছুন।',
 			'streaming.clearUnreadableSettings' => 'সংরক্ষিত সেটিংস মুছুন',
 			'streaming.clearUnreadableSettingsConfirm' => 'সংরক্ষিত স্ট্রিমিং সেটিংস মুছবেন?',
 			'streaming.clearUnreadableSettingsBody' => 'এতে এই প্রোফাইলের সব সংরক্ষিত প্রদানকারী অ্যাকাউন্ট ও অ্যাড-অনের ঠিকানা মুছে যাবে। এটি ফিরিয়ে আনা যাবে না।',
@@ -8030,11 +8036,11 @@ extension on TranslationsBn {
 			'streaming.catalogFiltersRequired' => 'এই ক্যাটালগ দেখতে প্রয়োজনীয় ফিল্টার বেছে নিন।',
 			'streaming.catalogRequiredLabel' => 'প্রয়োজনীয়',
 			'streaming.importFromStremio' => 'Stremio থেকে আমদানি',
-			'streaming.stremioImportInstructions' => 'QR কোড স্ক্যান করুন বা লিংক খুলুন। Stremio-তে সাইন ইন করে অনুরোধ অনুমোদন করুন। PlezyNG শুধু আপনার অ্যাড-অনের তালিকা পড়ে; এটি Stremio পাসওয়ার্ড চায় না বা সেটিংস বদলায় না।',
+			'streaming.stremioImportInstructions' => 'QR কোড স্ক্যান করুন বা লিংক খুলুন। Stremio-তে সাইন ইন করে অনুরোধ অনুমোদন করুন। Pleazyng শুধু আপনার অ্যাড-অনের তালিকা পড়ে; এটি Stremio পাসওয়ার্ড চায় না বা সেটিংস বদলায় না।',
 			'streaming.stremioImportOpen' => 'Stremio লিংক খুলুন',
 			'streaming.stremioImportCode' => 'লিংক কোড',
 			'streaming.stremioImportPreviewTitle' => 'অ্যাড-অন বেছে নিন',
-			'streaming.stremioImportPreviewBody' => 'PlezyNG-তে সংযোগ করতে চান এমন অ্যাড-অন বেছে নিন। এই আমদানিতে শুধু HTTPS ঠিকানা গ্রহণ করা হয়।',
+			'streaming.stremioImportPreviewBody' => 'Pleazyng-তে সংযোগ করতে চান এমন অ্যাড-অন বেছে নিন। এই আমদানিতে শুধু HTTPS ঠিকানা গ্রহণ করা হয়।',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'অসমর্থিত বা অনিরাপদ ঠিকানার অ্যাড-অন বাদ গেছে: ${count}।',
 			'streaming.stremioCatalogs' => 'ক্যাটালগ',
 			'streaming.stremioStreams' => 'স্ট্রিম',
@@ -8048,7 +8054,7 @@ extension on TranslationsBn {
 			'streaming.addByManifestUrl' => 'ম্যানিফেস্ট URL দিয়ে যোগ করুন',
 			'streaming.addAddon' => 'অ্যাড-অন যোগ করুন',
 			'streaming.manifestUrl' => 'অ্যাড-অনের ম্যানিফেস্ট URL',
-			'streaming.manifestUrlHint' => 'অ্যাড-অনের ম্যানিফেস্ট URL পেস্ট করুন। সংযোগের আগে PlezyNG ক্যাটালগ বা স্ট্রিম রিসোর্স সমর্থিত কি না যাচাই করে।',
+			'streaming.manifestUrlHint' => 'অ্যাড-অনের ম্যানিফেস্ট URL পেস্ট করুন। সংযোগের আগে Pleazyng ক্যাটালগ বা স্ট্রিম রিসোর্স সমর্থিত কি না যাচাই করে।',
 			'streaming.allowHttp' => 'এনক্রিপ্ট না করা HTTP ঠিকানা অনুমতি দিন',
 			'streaming.allowHttpDescription' => 'ব্যক্তিগত নেটওয়ার্কে শুধু বিশ্বস্ত অ্যাড-অনের জন্য ব্যবহার করুন।',
 			'streaming.installAddon' => 'অ্যাড-অন সংযোগ করুন',
@@ -8056,20 +8062,20 @@ extension on TranslationsBn {
 			'streaming.addonRemoved' => 'অ্যাড-অন সরানো হয়েছে',
 			'streaming.addonToggle' => 'অ্যাড-অন চালু করুন',
 			'streaming.addonEmpty' => 'এখনও কোনো অ্যাড-অন সংযুক্ত নেই',
-			'streaming.addonError' => 'PlezyNG এই অ্যাড-অনে সংযোগ করতে পারেনি। ম্যানিফেস্ট URL পরীক্ষা করে আবার চেষ্টা করুন।',
+			'streaming.addonError' => 'Pleazyng এই অ্যাড-অনে সংযোগ করতে পারেনি। ম্যানিফেস্ট URL পরীক্ষা করে আবার চেষ্টা করুন।',
 			'streaming.addonPrivacy' => 'শুধু বিশ্বস্ত অ্যাড-অন সংযোগ করুন। খোঁজার সময় অ্যাড-অন আপনার খোঁজা শিরোনাম পায় এবং তৃতীয় পক্ষের স্ট্রিম লিংক ফেরত দিতে পারে।',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'আপনার Real-Debrid অ্যাকাউন্ট দিয়ে সমর্থিত টরেন্ট স্ট্রিম চালান।',
 			'streaming.connectRealDebrid' => 'QR কোড দিয়ে সংযোগ করুন',
 			'streaming.realDebridConnected' => ({required Object username}) => '${username} হিসেবে সংযুক্ত',
-			'streaming.realDebridInstructions' => 'QR কোড স্ক্যান করুন বা লিংক খুলুন, তারপর PlezyNG সংযোগ করতে এই সক্রিয়করণ কোড দিন:',
+			'streaming.realDebridInstructions' => 'QR কোড স্ক্যান করুন বা লিংক খুলুন, তারপর Pleazyng সংযোগ করতে এই সক্রিয়করণ কোড দিন:',
 			'streaming.realDebridActivate' => 'সক্রিয় করতে Real-Debrid খুলুন',
 			'streaming.realDebridCode' => 'সক্রিয়করণ কোড',
 			'streaming.realDebridConnectFailed' => 'Real-Debrid-এ সংযোগ করা যায়নি। আবার চেষ্টা করুন।',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'আপনার AllDebrid অ্যাকাউন্ট দিয়ে সমর্থিত টরেন্ট স্ট্রিম চালান।',
 			'streaming.connectAllDebrid' => 'QR কোড দিয়ে সংযোগ করুন',
-			'streaming.allDebridInstructions' => 'PlezyNG অনুমোদন করতে QR কোড স্ক্যান করুন বা লিংক খুলুন। সংযোগ চলাকালীন এই স্ক্রিন খোলা রাখুন:',
+			'streaming.allDebridInstructions' => 'Pleazyng অনুমোদন করতে QR কোড স্ক্যান করুন বা লিংক খুলুন। সংযোগ চলাকালীন এই স্ক্রিন খোলা রাখুন:',
 			'streaming.allDebridActivate' => 'সক্রিয় করতে AllDebrid খুলুন',
 			'streaming.allDebridCode' => 'সক্রিয়করণ PIN',
 			'streaming.allDebridConnectFailed' => 'AllDebrid-এ সংযোগ করা যায়নি। আবার চেষ্টা করুন।',
@@ -8080,13 +8086,13 @@ extension on TranslationsBn {
 			'streaming.connectApiKey' => 'API কী দিয়ে সংযোগ করুন',
 			'streaming.apiKeyTitle' => ({required Object service}) => '${service} সংযোগ করুন',
 			'streaming.apiKey' => 'API কী',
-			'streaming.apiKeyHint' => ({required Object service}) => '${service} অ্যাকাউন্ট সেটিংস থেকে API কী পেস্ট করুন। PlezyNG এই ডিভাইসে এটি এনক্রিপ্ট করে এই প্রোফাইলে সংরক্ষণ করে।',
+			'streaming.apiKeyHint' => ({required Object service}) => '${service} অ্যাকাউন্ট সেটিংস থেকে API কী পেস্ট করুন। Pleazyng এই ডিভাইসে এটি এনক্রিপ্ট করে এই প্রোফাইলে সংরক্ষণ করে।',
 			'streaming.apiKeyConnectFailed' => 'এই API কী যাচাই করা যায়নি। পরীক্ষা করে আবার চেষ্টা করুন।',
 			'streaming.accountConnected' => ({required Object username}) => '${username} হিসেবে সংযুক্ত',
 			'streaming.streamNeedsProvider' => 'এই টরেন্ট স্ট্রিম চালাতে Debrid পরিষেবা সংযোগ করুন।',
 			'streaming.playViaProvider' => 'Debrid দিয়ে চালান',
 			'streaming.disconnectConfirm' => ({required Object service}) => '${service} সংযোগ বিচ্ছিন্ন করবেন?',
-			'streaming.disconnectBody' => 'PlezyNG এই ডিভাইসের অনুমতি সরিয়ে দেবে। প্রদানকারীর ফাইল ও চলমান স্থানান্তর অপরিবর্তিত থাকবে।',
+			'streaming.disconnectBody' => 'Pleazyng এই ডিভাইসের অনুমতি সরিয়ে দেবে। প্রদানকারীর ফাইল ও চলমান স্থানান্তর অপরিবর্তিত থাকবে।',
 			'streaming.streamsTitle' => 'স্ট্রিম বেছে নিন',
 			'streaming.noStreams' => 'এই শিরোনামের জন্য কোনো স্ট্রিম পাওয়া যায়নি।',
 			'streaming.manageConnections' => 'স্ট্রিমিং পরিষেবা পরিচালনা',
@@ -8102,7 +8108,7 @@ extension on TranslationsBn {
 			'streaming.streamUnsupported' => 'অ্যাপের বিল্ট-ইন প্লেয়ার এই স্ট্রিম ফরম্যাট সমর্থন করে না।',
 			'streaming.remoteNeedsEpisode' => 'স্ট্রিম খোঁজার আগে একটি পর্ব বেছে নিন।',
 			'streaming.remoteNeedsEpisodeNumber' => 'এই পর্বে সিজন বা পর্ব নম্বর নেই।',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG এই শিরোনামের IMDb বা TMDB ID খুঁজে পায়নি।',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng এই শিরোনামের IMDb বা TMDB ID খুঁজে পায়নি।',
 			'streaming.watchWithServices' => 'সংযুক্ত পরিষেবা দিয়ে দেখুন',
 			'streaming.chooseEpisode' => 'পর্ব বেছে নিন',
 			'streaming.episodes' => 'পর্বসমূহ',
@@ -8188,15 +8194,15 @@ extension on TranslationsBn {
 			'notifications.newEpisodeTitle' => 'নতুন epizode',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'সাত দিনের জন্য প্রতিটি ফ্রি ফাইনাল চেষ্টা করুন।',
-			'appAccess.description' => 'সাত দিনের একটি পরীক্ষা শুরু করুন, প্রতিটি PlezyNG বৈশিষ্ট্যগুলির পূর্ণ অ্যাক্সেসের সাথে. পরীক্ষার সময় কোন ফরজ নেই এবং কোন অ্যাকাউন্ট নেই. পরীক্ষার পরে, আপনার দোকানের মূল্যতে একটি জীবন-যাত্রা কিনা PlezyNG জীবন-যাত্রা জন্য লুকিয়ে দেয়।',
-			'appAccess.trialEndedDescription' => 'আপনার দোকানের মূল্যতে একটি কেনার সাথে জীবনযাপনের জন্য PlezyNG এর প্রতিটি বৈশিষ্ট্য বন্ধ করুন।',
+			'appAccess.description' => 'সাত দিনের একটি পরীক্ষা শুরু করুন, প্রতিটি Pleazyng বৈশিষ্ট্যগুলির পূর্ণ অ্যাক্সেসের সাথে. পরীক্ষার সময় কোন ফরজ নেই এবং কোন অ্যাকাউন্ট নেই. পরীক্ষার পরে, আপনার দোকানের মূল্যতে একটি জীবন-যাত্রা কিনা Pleazyng জীবন-যাত্রা জন্য লুকিয়ে দেয়।',
+			'appAccess.trialEndedDescription' => 'আপনার দোকানের মূল্যতে একটি কেনার সাথে জীবনযাপনের জন্য Pleazyng এর প্রতিটি বৈশিষ্ট্য বন্ধ করুন।',
 			'appAccess.startTrial' => 'সাত দিনের বিনামূল্যে পরীক্ষা শুরু করুন',
 			'appAccess.trialActive' => 'আপনার সাত দিনের full-feature পরীক্ষা কার্যকর।',
 			'appAccess.trialEnded' => 'সাত দিনের মামলা শেষ হয়েছে।',
 			'appAccess.trialStartFailed' => 'এই ডিভাইসে পরীক্ষা সংরক্ষণ করতে পারিনি, कृपया আবারও চেষ্টা করুন।',
-			'appAccess.lifetimeTitle' => 'PlezyNG জীবনের জন্য অপসারণ',
-			'appAccess.lifetimeBody' => 'ধন্যবাদ! আপনি প্রতিটি PlezyNG বৈশিষ্ট্যে জীবনযাপন করতে পারেন।',
-			'appAccess.manageTitle' => 'PlezyNG জীবনের অ্যাক্সেস',
+			'appAccess.lifetimeTitle' => 'Pleazyng জীবনের জন্য অপসারণ',
+			'appAccess.lifetimeBody' => 'ধন্যবাদ! আপনি প্রতিটি Pleazyng বৈশিষ্ট্যে জীবনযাপন করতে পারেন।',
+			'appAccess.manageTitle' => 'Pleazyng জীবনের অ্যাক্সেস',
 			'appAccess.manageDescription' => 'প্রতিটি বৈশিষ্ট্যটি সাত দিনের জন্য বিনামূল্যে চেষ্টা করুন, তারপর আপনার দোকানের মূল্যে এক টাকা দিয়ে জীবনের জন্য সবকিছু খোঁজে ফেলুন।',
 			'appAccess.buy' => ({required Object price}) => '${price} এর জন্য প্রতিটি বৈশিষ্ট্য খোলা',
 			'appAccess.loadingPrice' => 'লোডিং দোকান মূল্য...',
@@ -8204,11 +8210,11 @@ extension on TranslationsBn {
 			'appAccess.restore' => 'জীবনযাত্রা খরচ পুনরায়',
 			'appAccess.pending' => 'আপনার কেনা भुगतान বা অনুমোদন অপেক্ষায় থাকে. লাইফ টাইম অ্যাক্সেস বন্ধ হয়ে যায় যখন স্টোর এটি সম্পূর্ণ করে।',
 			'appAccess.storeUnavailable' => 'কেনাকাটা পাওয়া যায় না. দেখুন যে আপনি স্টোরে স্বাক্ষর করা হয়েছে এবং কেনাকাটা এই ডিভাইসে অনুমোদিত হয়।',
-			'appAccess.productNotFound' => 'এই স্টোরে এখনো PlezyNG লাইভ লাইভ লক পাওয়া যায় না।',
+			'appAccess.productNotFound' => 'এই স্টোরে এখনো Pleazyng লাইভ লাইভ লক পাওয়া যায় না।',
 			'appAccess.productQueryFailed' => 'দোকান মূল্য লোড করতে পারবেন না. আপনার সংযোগ চেক করুন এবং আবার চেষ্টা করুন।',
 			'appAccess.purchaseFailed' => 'কেনাকাটা শেষ হয়নি, আবারও চেষ্টা করুন।',
 			'appAccess.restoreFailed' => 'আপনি আপনার কেনাকাটা ফিরিয়ে দিতে দোকান পৌঁছাতে পারবেন না. আবার চেষ্টা করুন.',
-			'appAccess.nothingToRestore' => 'এই স্টোর অ্যাকাউন্টের জন্য নম্বর PlezyNG লাইভ লাইভ ক্রয় পাওয়া যায়।',
+			'appAccess.nothingToRestore' => 'এই স্টোর অ্যাকাউন্টের জন্য নম্বর Pleazyng লাইভ লাইভ ক্রয় পাওয়া যায়।',
 			'detail.endsAt' => ({required Object time}) => 'ফাইনাল ${time}',
 			'watchLink.serverUnavailable' => 'এই লিঙ্কের জন্য Plex সার্ভার পৌঁছাতে পারিনি।',
 			'watchLink.notFound' => 'আপনার সার্ভারগুলিতে এই প্রদর্শন বা ভিডিওটি পাওয়া যায় না Plex।',
@@ -8222,7 +8228,7 @@ extension on TranslationsBn {
 			'watchLink.copy' => 'কপি',
 			'watchLink.copied' => 'লিঙ্ক কপি',
 			'homeLayout.title' => 'Home লিওট',
-			'homeLayout.resetToast' => 'Home Reset to the original Plezy হেরো layout',
+			'homeLayout.resetToast' => 'Home Reset to the original Pleazyng হেরো layout',
 			'homeLayout.resetHeroTitle' => 'হ্যারি ল্যাগিংটি পুনরায় স্টক Plezyতে ফেরত?',
 			'homeLayout.resetHeroBody' => 'প্রতিটি রানের হেরো সিস্টেম বন্ধ করে এবং হোমের শীর্ষে একমাত্র রুটিং ব্যানার ফেরত দেয়, যেমন হেরো রানগুলি আগে ছিল।',
 			'homeLayout.removeRowTitle' => 'Home রান্না বন্ধ করুন?',
@@ -8233,7 +8239,7 @@ extension on TranslationsBn {
 			'homeLayout.syncAccountOff' => 'ডাউনলোড: এই ডিভাইস নিজের লাইজিং রাখে।',
 			'homeLayout.syncNow' => 'এখন সিনক',
 			'homeLayout.plexHomeManager' => 'Plex হোম ম্যানেজার',
-			'homeLayout.managePlexRows' => 'পরিচালনা Plex লাইন Plezy',
+			'homeLayout.managePlexRows' => 'পরিচালনা Plex লাইন Pleazyng',
 			'homeLayout.managePlexRowsDescription' => 'Home-Selected রানগুলি সংগঠন করার জন্য খোলা',
 			'homeLayout.organizeHomeRows' => 'Home রানার সংগঠন',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} লাইন: গাড়ি, হেরো, অটো-স্লাইড, মুছে ফেলুন',
@@ -8303,7 +8309,7 @@ extension on TranslationsBn {
 			'homeLayout.organizeRowsHint' => 'একটি পর্যায়ে নির্বাচন করুন (অথবা রাখুন Select): move it · Left/Right: line options · Back: done',
 			'homeLayout.layoutNavDescription' => 'লাইব্রেরি, লাইব্রেরি এবং সংগ্রহ বিভাগগুলি নির্বাচন করুন',
 			'homeLayout.editHomeRow' => 'Edit Home রান',
-			'homeLayout.resetHeroButton' => 'হ্যারি রেজিস্ট্রেশন পুনরায় স্টক Plezy',
+			'homeLayout.resetHeroButton' => 'হ্যারি রেজিস্ট্রেশন পুনরায় স্টক Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'অ্যাক্সেস অ্যাক্সেস',
 			'homeLayout.reorderingLocked' => 'লুকিয়ে রাখা',
 			'homeLayout.rowsCanBeDragged' => 'চুলগুলি চাপ করা যেতে পারে - এই অ্যাক্সেসের জন্য লকটি চাপ করুন',
@@ -8320,13 +8326,13 @@ extension on TranslationsBn {
 			'homeLayout.tapHeroCardDescription' => 'সিদ্ধান্ত করুন যে একটি হেরো কার্ডটি ট্যাপিং বা নির্বাচন করে Playback শুরু হয় কিংবা তার ডেটা খুলে যায়।',
 			'homeLayout.heroTapPlayDescription' => 'দ্রুত নির্বাচন করা পণ্য শুরু করুন।',
 			'homeLayout.heroTapDetailsDescription' => 'একটি পদক্ষেপ নির্বাচন করার আগে নির্বাচিত পণ্যের বিস্তারিত খুলুন।',
-			'platform.localNetworkPermission' => 'PlezyNG আপনার স্থানীয় নেটওয়ার্কে আপনার মিডিয়া সার্ভার এবং প্লেব্যাক ডিভাইসের সাথে সংযোগ করে।',
-			'platform.locationPermission' => 'PlezyNG আপনার স্থানীয় নেটওয়ার্ক এবং আপনার মিডিয়া সার্ভারগুলিতে সংযোগ করার জন্য iOS এর প্রয়োজনীয় অবস্থান অ্যাক্সেস ব্যবহার করে।',
+			'platform.localNetworkPermission' => 'Pleazyng আপনার স্থানীয় নেটওয়ার্কে আপনার মিডিয়া সার্ভার এবং প্লেব্যাক ডিভাইসের সাথে সংযোগ করে।',
+			'platform.locationPermission' => 'Pleazyng আপনার স্থানীয় নেটওয়ার্ক এবং আপনার মিডিয়া সার্ভারগুলিতে সংযোগ করার জন্য iOS এর প্রয়োজনীয় অবস্থান অ্যাক্সেস ব্যবহার করে।',
 			'platform.photoLibraryPermission' => 'আপনার ফটো লাইব্রেরি থেকে ছবিগুলি মিডিয়া শিল্প হিসেবে ব্যবহার করার জন্য নির্বাচন করুন।',
 			'platform.cameraPermission' => 'Companion Remote জোড়া লাগাতে QR কোড স্ক্যান করুন।',
 			'universalMedia.title' => 'খোলা মিডিয়া',
 			'universalMedia.shortcutHelp' => 'এই session জন্য একটি লিঙ্ক, Playlist বা ফাইল খেলুন।',
-			'universalMedia.intro' => 'একটি লিঙ্ক, Playlist বা ফাইল খোলা. Playback PlezyNG এর স্ট্যান্ডার্ড প্লেয়ার ব্যবহার করে এবং আপনার লাইব্রেরিতে ইতিহাস যোগ করেন না।',
+			'universalMedia.intro' => 'একটি লিঙ্ক, Playlist বা ফাইল খোলা. Playback Pleazyng এর স্ট্যান্ডার্ড প্লেয়ার ব্যবহার করে এবং আপনার লাইব্রেরিতে ইতিহাস যোগ করেন না।',
 			'universalMedia.openWhat' => 'আপনি কী খুলে দিতে চান?',
 			'universalMedia.stream' => 'স্ট্রিম ঠিকানা',
 			'universalMedia.playlist' => 'Playlist খেলা',
@@ -8377,13 +8383,13 @@ extension on TranslationsBn {
 			'universalMedia.stopTransfer' => 'স্থানান্তর বন্ধ করুন এবং ঠিকানা বাতিল করুন',
 			'universalMedia.startTransfer' => 'ট্রেডিং শুরু',
 			'universalMedia.wifiImportedFiles' => 'Wi-Fi ট্রান্সফার',
-			'universalMedia.wifiBrowserTitle' => 'ফাইল পাঠান PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'ফাইল পাঠান Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'অডিও, ভিডিও, ইবুক বা কমিক ফাইলগুলি পাঠানোর জন্য নির্বাচন করুন. ফাইলগুলো এই ডিভাইসের ফাইল এবং বই লাইব্রিয়ামে সংরক্ষণ করা হয়. সর্বোচ্চ: 100 ফাইল, 1 ফাইল প্রতি 4 জিবি, 10 জিबी মোট।',
 			'universalMedia.uploadFilesLabel' => 'ফাইল পাঠানো',
 			'universalMedia.uploadSelected' => 'নির্বাচিত ফাইল আপলোড করুন',
 			'universalMedia.uploadSelectFirst' => 'প্রথমে একটি বা বেশী ফাইল নির্বাচন করুন।',
 			'universalMedia.uploading' => 'পাঠান',
-			'universalMedia.uploadComplete' => 'ফাইলটি PlezyNGে যোগ করা হয়।',
+			'universalMedia.uploadComplete' => 'ফাইলটি Pleazyngে যোগ করা হয়।',
 			'universalMedia.uploadFailed' => 'ফাইলটি যোগ করা যায় না. এই পৃষ্ঠা খোলা রাখুন এবং আবার চেষ্টা করুন।',
 			'universalMedia.liveCue' => 'লাইভ',
 			'universalMedia.liveSession' => 'লাইভ স্ট্রিম',
@@ -8411,7 +8417,7 @@ extension on TranslationsBn {
 			'universalMedia.recordingActive' => 'এই ডিভাইস থেকে রেকর্ড করুন. Playback বন্ধ করে এবং এটি সংরক্ষণ করে।',
 			'universalMedia.recordingFormatHelp' => 'ভিডিও জন্য, MKV বা MPEG-TS নির্বাচন করুন. অডিও জন্য, MKA বা MKV নির্বাচন করুন।',
 			'universalMedia.replaceRecordingTitle' => 'এই রেকর্ড পরিবর্তন করবেন?',
-			'universalMedia.replaceRecordingHelp' => 'রেকর্ডিংয়ের সময় PlezyNG বর্তমান ফাইলটি পিছিয়ে রাখে. যদি এটি নতুন রেকার্ড সংরক্ষণ করতে পারে না, তাহলে plezyNG সাপোর্ট পুনরাবৃত্তি করে।',
+			'universalMedia.replaceRecordingHelp' => 'রেকর্ডিংয়ের সময় Pleazyng বর্তমান ফাইলটি পিছিয়ে রাখে. যদি এটি নতুন রেকার্ড সংরক্ষণ করতে পারে না, তাহলে plezyNG সাপোর্ট পুনরাবৃত্তি করে।',
 			'universalMedia.replaceRecording' => 'ফাইল পরিবর্তন',
 			'universalMedia.discHelp' => 'এই কম্পিউটারের অপটিক ড্রাইভে একটি ডিস্ক খুলুন. আপনি ডিভাইস ফাইল থেকে আইএসও ইমেজ খুলতে পারেন।',
 			'universalMedia.discs' => 'অপটিক্যাল ডিভাইস',
@@ -8436,7 +8442,7 @@ extension on TranslationsBn {
 			'universalMedia.converterUnsupportedInput' => 'একটি অডিও বা ভিডিও ফাইল নির্বাচন করুন।',
 			'universalMedia.converterLocalOnly' => 'নির্বাচিত ফাইল একটি স্থানীয় ডিভাইস পথ হিসাবে পাওয়া যায় না।',
 			'universalMedia.converterReplaceTitle' => 'এই ফাইলটি পরিবর্তন করবেন?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG বর্তমান ফাইলটি সংরক্ষণ করা পর্যন্ত রেকর্ড করে।',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng বর্তমান ফাইলটি সংরক্ষণ করা পর্যন্ত রেকর্ড করে।',
 			'universalMedia.converterStarting' => 'শুরু করে ফিপিএফ...',
 			'universalMedia.converterProgress' => 'এই কম্পিউটারের মাধ্যমে পরিদর্শন ...',
 			'universalMedia.converterComplete' => 'নতুন ফাইল প্রস্তুত।',
@@ -8460,7 +8466,7 @@ extension on TranslationsBn {
 			'universalMedia.captureDefaultAudio' => 'অডিও ইনপোর্ট',
 			'universalMedia.captureWaylandHelp' => 'Wayland limits this XWayland capture to the X display. Windows outside XWayland may not appear.',
 			'universalMedia.captureFrameRate' => 'রেকর্ড ফ্রেম ফ্রেম',
-			'universalMedia.capturePrivacy' => 'রেকর্ডিংটি শুধুমাত্র আপনার বেছে নেওয়া ফাইলের জন্য সংরক্ষণ করা হয়. মাইক্রোফোন ফ্যাক্টরি অপশনীয়. PlezyNG রেকর্ডিংটি আপলোড করে না।',
+			'universalMedia.capturePrivacy' => 'রেকর্ডিংটি শুধুমাত্র আপনার বেছে নেওয়া ফাইলের জন্য সংরক্ষণ করা হয়. মাইক্রোফোন ফ্যাক্টরি অপশনীয়. Pleazyng রেকর্ডিংটি আপলোড করে না।',
 			'universalMedia.captureSaveAs' => 'স্ক্রিন রেকর্ডিং রেকর্ডিং',
 			'universalMedia.captureExtensionMismatch' => '.mp4 এর মধ্যে শেষ একটি ফাইল নাম নির্বাচন করুন।',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg বা H.264 ভিডিও কোডার পাওয়া যায় না. একটি সমর্থিত FFmpeg নির্মাণ ইনস্টল করুন, তারপর আবার চেষ্টা করুন.',
@@ -8474,7 +8480,7 @@ extension on TranslationsBn {
 			'universalMedia.captureStop' => 'বন্ধ এবং বাঁচান',
 			'universalMedia.captureMode' => 'আঘাত',
 			'universalMedia.shareMode' => 'শেয়ার করুন',
-			'universalMedia.shareIntro' => 'আপনার ব্যক্তিগত নেটওয়ার্কের অন্য ডিভাইসে একটি স্থানীয় মিডিয়া ফাইল পাঠান. PlezyNG একটি temporary HLS স্ট্রিম তৈরি করে।',
+			'universalMedia.shareIntro' => 'আপনার ব্যক্তিগত নেটওয়ার্কের অন্য ডিভাইসে একটি স্থানীয় মিডিয়া ফাইল পাঠান. Pleazyng একটি temporary HLS স্ট্রিম তৈরি করে।',
 			'universalMedia.sharePrivacy' => 'আপনার স্থানীয় নেটওয়ার্কের কেউ যারা ব্যক্তিগত লিঙ্ক পেয়েছেন, সেটি সক্রিয় থাকলেও দেখতে পারেন. লিঙ্ক 60 মিনিটের পর শেষ হয়. সার্ভার বন্ধ করতে এবং লিঙ্কটি অ্যাক্টল করতে শেয়ারিং বন্ধ করুন.',
 			'universalMedia.shareChooseFile' => 'মিডিয়া ফাইল নির্বাচন',
 			'universalMedia.shareChooseHelp' => 'একটি স্থানীয় অডিও বা ভিডিও ফাইল নির্বাচন করুন. ফাইলটি এই কম্পিউটারে থাকবে।',
@@ -8487,7 +8493,7 @@ extension on TranslationsBn {
 			'universalMedia.shareOpenUrl' => 'অন্য ডিভাইসের একটি খেলোয়াড়ে এই ঠিকানা খোলা',
 			'universalMedia.shareQrLabel' => 'QR কোড temporary stream ঠিকানা',
 			'universalMedia.shareQrHelp' => 'একই ব্যক্তিগত নেটওয়ার্কের সাথে সংযোগিত একটি সহযোগী খেলোয়াড়ের সাথে স্ক্যান করুন।',
-			'universalMedia.shareHttpHint' => 'এই প্রদর্শনটি অক্রিপ্ট HTTP ব্যবহার করে. PlezyNGতে, HTTP খুলে যাওয়ার আগে অনুমতি দেয়।',
+			'universalMedia.shareHttpHint' => 'এই প্রদর্শনটি অক্রিপ্ট HTTP ব্যবহার করে. Pleazyngতে, HTTP খুলে যাওয়ার আগে অনুমতি দেয়।',
 			'universalMedia.shareCopyUrl' => 'প্রদর্শন ঠিকানা কপি',
 			'universalMedia.shareExpiresLabel' => 'লিঙ্ক শেষ হয়',
 			'universalMedia.shareStarting' => 'প্রদর্শনের প্রস্তুতি...',
@@ -8512,7 +8518,7 @@ extension on TranslationsBn {
 			'universalMedia.extensionInstall' => 'পরিষেবা যোগ করুন',
 			'universalMedia.extensionReplace' => 'আপডেট পরিষেবা',
 			'universalMedia.extensionRemoveTitle' => 'এই অনুসন্ধান পরিষেবাটি মুছে ফেলুন?',
-			'universalMedia.extensionRemoveHelp' => 'এতে এই প্রোফাইল থেকে পরিষেবাを取り除きます. PlezyNG তার শেষ পয়েন্টের সাথে যোগাযোগ করে না।',
+			'universalMedia.extensionRemoveHelp' => 'এতে এই প্রোফাইল থেকে পরিষেবাを取り除きます. Pleazyng তার শেষ পয়েন্টের সাথে যোগাযোগ করে না।',
 			'universalMedia.extensionRemove' => 'সরবরাহ',
 			'universalMedia.extensionInvalidManifest' => 'এই ফাইলটি একটি সমর্থিত প্রদর্শন ম্যানেজমেন্ট নয়. ফরম্যাটের জন্য Open media গাইড দেখুন.',
 			'universalMedia.extensionSaveFailed' => 'অ্যাক্টিভ প্রোফাইলের জন্য এই প্রদর্শন সংরক্ষণ করা যায়নি।',
@@ -8655,12 +8661,12 @@ extension on TranslationsBn {
 			'fileSources.none' => 'কোন',
 			'fileSources.fullscreen' => 'ফুল-স্ক্রিন',
 			'fileSources.syncLocation' => 'প্রসেস সিন্ক ফোলার (অন্যাশনাল)',
-			'fileSources.syncLocationHint' => 'একটি নির্দিষ্ট WebDAV ফোডার PlezyNG অবস্থা. শর্তাবলী লিখুন ব্যবহার; মিডিয়া পরিবর্তন না থাকবে.',
+			'fileSources.syncLocationHint' => 'একটি নির্দিষ্ট WebDAV ফোডার Pleazyng অবস্থা. শর্তাবলী লিখুন ব্যবহার; মিডিয়া পরিবর্তন না থাকবে.',
 			'fileSources.audiobooks' => 'অডিও বই',
 			'fileSources.comics' => 'কমিকস',
 			'fileSources.scan' => 'বই ও মিডিয়া জন্য স্ক্যানিং',
 			'fileSources.browserReader' => 'খোলা পাঠক',
-			'fileSources.browserReaderHelp' => 'আপনার ব্রাউজারে পাঠক খোলা থাকে. আপনার স্থান এবং নোট সংরক্ষণ করার জন্য PlezyNG খোলা রাখুন.',
+			'fileSources.browserReaderHelp' => 'আপনার ব্রাউজারে পাঠক খোলা থাকে. আপনার স্থান এবং নোট সংরক্ষণ করার জন্য Pleazyng খোলা রাখুন.',
 			'fileSources.on' => 'এতে',
 			'fileSources.advancedSetup' => 'App নিবন্ধন',
 			'fileSources.microsoftSignIn' => 'Microsoft সঙ্গে সাইন আপ করুন',
@@ -8701,7 +8707,7 @@ extension on TranslationsBn {
 			'fileSources.importInterrupted' => 'উৎপাদন বাতিল · মুছে ফেলুন',
 			'fileSources.errorQuotaExceeded' => 'অ্যাপ্লিকেল স্টোরেজ সীমাবদ্ধতা পৌঁছানো হয়েছে. সীমানা উচ্চ করা বা একটি ডাউনলোড কপি মুছে ফেলা।',
 			'fileSources.errorStorageLow' => 'সুরক্ষিত রেকর্ড রাখার জন্য যথেষ্ট বিনামূল্যে ডিভাইস স্টোরেজ নেই।',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG বিনামূল্যে ডিভাইস স্টোরেজ চেক করতে পারেনি, তাই লিখা বন্ধ করা হয়।',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng বিনামূল্যে ডিভাইস স্টোরেজ চেক করতে পারেনি, তাই লিখা বন্ধ করা হয়।',
 			'fileSources.removeDownloadJob' => 'Download ডাউনলোড',
 			'fileSources.downloadAlreadyComplete' => 'এই ডাউনলোড শেষ হয়, আগে এটি মুছে ফেলতে পারে. পণ্য এখন অ্যাপ্লিকেটে পাওয়া যায়।',
 			'fileSources.confirmRemoveDownloadJob' => 'এই ডাউনলোডটি মুছে ফেলুন এবং অংশীদারভাবে ডাউনের কোনও তথ্য দূর করুন? আপনার অবস্থান এবং নোট থাকবে।',
@@ -8742,7 +8748,7 @@ extension on TranslationsBn {
 			'lending.openLibraryNote' => 'Open Library-এর ক্যাটালগ দেখুন। প্রতিটি বইয়ের পাতায় পড়া ও ধার নেওয়ার বিকল্পগুলি দেখানো হয়।',
 			'lending.more' => 'আরো লোড',
 			'lending.gateway' => 'লাইব্রেরি সাইন-ইন সেবা',
-			'lending.gatewayHint' => 'আপনার লাইব্রেরি বা প্রশাসক PlezyNG দ্বারা সরবরাহ করা হয়।',
+			'lending.gatewayHint' => 'আপনার লাইব্রেরি বা প্রশাসক Pleazyng দ্বারা সরবরাহ করা হয়।',
 			'lending.advanced' => 'লাইব্রেরি ইন্টারফেস',
 			'lending.loadLibraries' => 'আপনার লাইব্রেরি নির্বাচন করুন',
 			'lending.expired' => 'এই বই ধার নেওয়ার মেয়াদ শেষ হয়েছে।',
@@ -8864,7 +8870,7 @@ extension on TranslationsBn {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।',
 			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
 			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
-			'sourceSetup.nfsEncryptionFailure' => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। PlezyNG এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।',
+			'sourceSetup.nfsEncryptionFailure' => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। Pleazyng এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।',
 			'sourceSetup.sourceConnecting' => 'উৎসের সঙ্গে সংযোগ করা হচ্ছে',
 			'sourceSetup.metadataSearchPrivacy' => 'এই শিরোনাম অনুসন্ধান Trakt-এ পাঠানো হয়। শুধু আপনার লেখা শিরোনাম পাঠানো হয়, ভিডিও বা উৎসের প্রবেশতথ্য নয়।',
 			'sourceSetup.chooseMatch' => 'মিল পাওয়া ফলাফল বেছে নিন',
@@ -8994,7 +9000,13 @@ extension on TranslationsBn {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'এই Plezy লিঙ্ক সঠিক নয়।',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'এই Pleazyng লিঙ্ক সঠিক নয়।',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'কোন প্রোফাইল "${profile}" সঙ্গে জড়িত না।',
 			'deepLinks.serverUnavailable' => 'আমি এই লিঙ্কের জন্য সার্ভার পৌঁছাতে পারিনি।',
 			'deepLinks.notFound' => 'আপনার লাইব্রেরিতে এই নামটি পাওয়া যায় না।',
@@ -9142,7 +9154,7 @@ extension on TranslationsBn {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

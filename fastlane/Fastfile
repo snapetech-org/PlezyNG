@@ -1,11 +1,11 @@
 default_platform(:android)
 
 platform :android do
-  desc "Upload the signed PlezyNG App Bundle to the selected Google Play track."
+  desc "Upload the signed Pleazyng App Bundle to the selected Google Play track."
   lane :publish_play_store do
     upload_to_play_store(
       aab: ENV.fetch("PLAY_AAB_PATH"),
-      package_name: "org.snapetech.plezyng",
+      package_name: "org.snapetech.pleazyng",
       json_key_data: ENV.fetch("SUPPLY_JSON_KEY_DATA"),
       track: ENV.fetch("PLAY_TRACK", "internal"),
       release_status: ENV.fetch("PLAY_RELEASE_STATUS", "draft"),
@@ -16,10 +16,10 @@ platform :android do
     )
   end
 
-  desc "Upload the signed PlezyNG Fire TV APK to Amazon Appstore without submitting it for review."
+  desc "Upload the signed Pleazyng Fire TV APK to Amazon Appstore without submitting it for review."
   lane :publish_amazon_appstore do
     upload_to_amazon_appstore(
-      package_name: "org.snapetech.plezyng",
+      package_name: "org.snapetech.pleazyng",
       apk: ENV.fetch("AMAZON_APK_PATH"),
       client_id: ENV.fetch("AMAZON_CLIENT_ID"),
       client_secret: ENV.fetch("AMAZON_CLIENT_SECRET"),
@@ -31,7 +31,7 @@ platform :android do
 end
 
 platform :ios do
-  desc "Upload a signed iOS or tvOS PlezyNG IPA to App Store Connect without submitting it for review."
+  desc "Upload a signed iOS or tvOS Pleazyng IPA to App Store Connect without submitting it for review."
   lane :upload_appstore_build do
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APPLE_API_KEY_ID"),
@@ -45,7 +45,7 @@ platform :ios do
     upload_to_app_store(
       api_key: api_key,
       ipa: ENV.fetch("APPLE_IPA_PATH"),
-      app_identifier: ENV.fetch("APPLE_BUNDLE_ID", "org.snapetech.plezyng"),
+      app_identifier: ENV.fetch("APPLE_BUNDLE_ID", "org.snapetech.pleazyng"),
       platform: ENV.fetch("APPLE_STORE_PLATFORM", "ios"),
       force: true,
       skip_metadata: true,

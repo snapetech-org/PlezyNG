@@ -23,7 +23,7 @@ class GameClientCapabilities {
   final bool available, inlinePairing, library, embeddedSurface, internetTunnel;
 }
 
-/// Native engines run inside PlezyNG. Missing engines never launch another app.
+/// Native engines run inside Pleazyng. Missing engines never launch another app.
 abstract class GameStreamingClient {
   Future<GameClientCapabilities> capabilities(GameHost host);
   Future<void> pair(GameHost host, String pin);

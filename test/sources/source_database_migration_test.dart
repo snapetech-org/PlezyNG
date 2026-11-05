@@ -19,6 +19,7 @@ class _Version8Database extends SourceDatabase {
     onCreate: (migrator) async {
       await super.migration.onCreate(migrator);
       for (final table in [
+        'podcast_sync_ack',
         'canonical_cards',
         'canonical_aliases',
         'canonical_copies',
@@ -29,6 +30,7 @@ class _Version8Database extends SourceDatabase {
       ]) {
         await customStatement('DROP TABLE $table');
       }
+      await customStatement('DROP INDEX entries_podcast_sync_identity');
       await customStatement('DROP TRIGGER entries_search_update');
       await customStatement('DROP TRIGGER entries_search_delete');
       await customStatement(
@@ -71,6 +73,7 @@ void main() {
       ),
     );
     for (final table in [
+      'podcast_sync_ack',
       'canonical_cards',
       'canonical_aliases',
       'canonical_copies',
@@ -81,6 +84,7 @@ void main() {
     ]) {
       await old.customStatement('DROP TABLE $table');
     }
+    await old.customStatement('DROP INDEX entries_podcast_sync_identity');
     await old.customStatement('PRAGMA user_version=9');
     await old.close();
     final database = SourceDatabase(NativeDatabase(file));
@@ -107,7 +111,7 @@ void main() {
     final repository = SourceRepository(database);
     expect((await repository.entries('alice')).single.title, 'Original title');
     final version = await database.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 11);
+    expect(version.read<int>('user_version'), database.schemaVersion);
     expect(
       await database.customSelect("SELECT rowid FROM entries_search_fts WHERE search MATCH 'Original'").get(),
       hasLength(1),

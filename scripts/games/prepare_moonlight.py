@@ -56,7 +56,7 @@ def patch_http(path: Path) -> None:
     if source.count(anchor) != 1:
         raise ValueError("NvHTTP changed; review cancellation patch")
     source = source.replace(anchor, anchor + """
-    // PlezyNG: cancellation stops a pending PIN request without unpairing the host.
+    // Pleazyng: cancellation stops a pending PIN request without unpairing the host.
     public void cancelPendingRequests() {
         httpClientLongConnectTimeout.dispatcher().cancelAll();
         httpClientLongConnectNoReadTimeout.dispatcher().cancelAll();

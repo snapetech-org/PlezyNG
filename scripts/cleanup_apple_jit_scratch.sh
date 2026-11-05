@@ -56,7 +56,7 @@ if /usr/bin/grep -Fqx 'scratch_mode=local-xcode' "$owner_file"; then
     exit 1
   fi
   runner_temp_real="$(cd "$RUNNER_TEMP" && /bin/pwd -P)"
-  local_xcode_root="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
+  local_xcode_root="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
   if ! /usr/bin/grep -Fqx "local_xcode_root=$local_xcode_root" "$owner_file"; then
     echo "Refusing to clean local Xcode scratch without its matching owner record: $local_xcode_root" >&2
     exit 1

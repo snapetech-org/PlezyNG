@@ -85,24 +85,24 @@ void main() {
 
   test('a link waits for a profile session and is delivered once', () async {
     service.host = _FakeHost(activeProfileId: 'parents');
-    expect(await sendFromPlatform('plezy://play?server=s1&id=1'), isTrue);
+    expect(await sendFromPlatform('pleazyng://play?server=s1&id=1'), isTrue);
 
     final session = _Session('parents');
     service.attach(session.session);
     service.attach(session.session);
     await pumpEventQueue();
-    expect(session.launched, ['plezy://play?server=s1&id=1']);
+    expect(session.launched, ['pleazyng://play?server=s1&id=1']);
   });
 
   test('a newer link replaces one still waiting', () async {
     service.host = _FakeHost(activeProfileId: 'parents');
-    service.receive('plezy://play?server=s1&id=1');
-    service.receive('plezy://live?channel=4.1');
+    service.receive('pleazyng://play?server=s1&id=1');
+    service.receive('pleazyng://live?channel=4.1');
 
     final session = _Session('parents');
     service.attach(session.session);
     await pumpEventQueue();
-    expect(session.launched, ['plezy://live?channel=4.1']);
+    expect(session.launched, ['pleazyng://live?channel=4.1']);
   });
 
   test('a link naming another profile switches first, then plays in that profile', () async {
@@ -111,7 +111,7 @@ void main() {
     final parentsSession = _Session('parents');
     service.attach(parentsSession.session);
 
-    service.receive('plezy://play?server=s1&id=1&profile=Kids');
+    service.receive('pleazyng://play?server=s1&id=1&profile=Kids');
     await pumpEventQueue();
     expect(host.switches, ['kids']);
     expect(service.selectsProfile, isTrue);
@@ -127,7 +127,7 @@ void main() {
     service.detach(parentsSession.session);
     await pumpEventQueue();
     expect(parentsSession.launched, isEmpty);
-    expect(kidsSession.launched, ['plezy://play?server=s1&id=1&profile=Kids']);
+    expect(kidsSession.launched, ['pleazyng://play?server=s1&id=1&profile=Kids']);
     expect(service.selectsProfile, isFalse);
   });
 
@@ -137,7 +137,7 @@ void main() {
     final session = _Session('parents');
     service.attach(session.session);
 
-    service.receive('plezy://open?profile=kids');
+    service.receive('pleazyng://open?profile=kids');
     await pumpEventQueue();
     host.finishSwitch(false);
     await pumpEventQueue();
@@ -154,7 +154,7 @@ void main() {
     final session = _Session('kids');
     service.attach(session.session);
 
-    service.receive('plezy://play?server=s1&id=1&profile=KIDS');
+    service.receive('pleazyng://play?server=s1&id=1&profile=KIDS');
     await pumpEventQueue();
     expect(host.switches, isEmpty);
     expect(session.launched, hasLength(1));
@@ -165,14 +165,14 @@ void main() {
     final session = _Session('parents');
     service.attach(session.session);
 
-    service.receive('plezy://play?server=s1&id=1&profile=Grandma');
+    service.receive('pleazyng://play?server=s1&id=1&profile=Grandma');
     await pumpEventQueue();
     expect(session.launched, isEmpty);
     expect(reports.single, contains('Grandma'));
   });
 
   test('an invalid link is reported', () async {
-    service.receive('plezy://play?id=1');
+    service.receive('pleazyng://play?id=1');
     expect(reports, hasLength(1));
   });
 
@@ -180,7 +180,7 @@ void main() {
     test('a claimed profile is applied by startup, not switched again', () async {
       final host = _FakeHost(activeProfileId: 'kids');
       service.host = host;
-      service.receive('plezy://play?server=s1&id=1&profile=kids');
+      service.receive('pleazyng://play?server=s1&id=1&profile=kids');
 
       expect(service.claimStartupProfile([_parents, _kids]), _kids);
       expect(service.startupProfileId, 'kids');
@@ -196,7 +196,7 @@ void main() {
 
     test('a profile startup could not apply drops the link', () async {
       service.host = _FakeHost(activeProfileId: 'parents');
-      service.receive('plezy://play?server=s1&id=1&profile=kids');
+      service.receive('pleazyng://play?server=s1&id=1&profile=kids');
       expect(service.claimStartupProfile([_parents, _kids]), _kids);
 
       service.settleStartupProfile(applied: false);
@@ -207,9 +207,9 @@ void main() {
     });
 
     test('nothing is claimed for a link without a profile or with an unknown one', () {
-      service.receive('plezy://play?server=s1&id=1');
+      service.receive('pleazyng://play?server=s1&id=1');
       expect(service.claimStartupProfile([_parents, _kids]), isNull);
-      service.receive('plezy://open?profile=Grandma');
+      service.receive('pleazyng://open?profile=Grandma');
       expect(service.claimStartupProfile([_parents, _kids]), isNull);
       expect(service.startupProfileId, isNull);
     });
@@ -219,13 +219,13 @@ void main() {
       messenger.setMockMethodCallHandler(channel, (call) async {
         expect(call.method, 'getInitialLink');
         reads++;
-        return 'plezy://play?server=s1&id=1';
+        return 'pleazyng://play?server=s1&id=1';
       });
       service.host = _FakeHost(activeProfileId: 'parents');
       final session = _Session('parents');
       service.attach(session.session);
 
-      await sendFromPlatform('plezy://play?server=s1&id=1');
+      await sendFromPlatform('pleazyng://play?server=s1&id=1');
       await service.fetchInitialLink();
       await service.fetchInitialLink();
       await pumpEventQueue();
@@ -234,14 +234,14 @@ void main() {
     });
 
     test('a session reached without startup reading the launch link still gets it', () async {
-      messenger.setMockMethodCallHandler(channel, (call) async => 'plezy://play?server=s1&id=1');
+      messenger.setMockMethodCallHandler(channel, (call) async => 'pleazyng://play?server=s1&id=1');
       service.host = _FakeHost(activeProfileId: 'parents');
       final session = _Session('parents');
 
       service.attach(session.session);
       await pumpEventQueue();
 
-      expect(session.launched, ['plezy://play?server=s1&id=1']);
+      expect(session.launched, ['pleazyng://play?server=s1&id=1']);
     });
   });
 
@@ -250,7 +250,7 @@ void main() {
     final session = _Session('parents');
     service.attach(session.session);
 
-    const url = 'plezy://external-player/success/s1?position=12';
+    const url = 'pleazyng://external-player/success/s1?position=12';
     service.receive(url);
     await pumpEventQueue();
     expect(playerReturns.single.toString(), url);

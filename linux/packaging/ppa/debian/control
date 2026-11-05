@@ -1,4 +1,4 @@
-Source: plezyng
+Source: pleazyng
 Section: video
 Priority: optional
 Maintainer: SnapeTech <noreply@github.com>
@@ -7,12 +7,13 @@ Standards-Version: 4.6.2
 Rules-Requires-Root: no
 Homepage: https://github.com/snapetech-org/PlezyNG
 
-Package: plezyng
+Package: pleazyng
 Architecture: amd64 arm64
 Depends: ${misc:Depends},
  pulseaudio-utils,
  ffmpeg,
  libgtk-3-0 | libgtk-3-0t64,
+ libwebkit2gtk-4.1-0,
  libepoxy0,
  libasound2 | libasound2t64,
  libevdev2,
@@ -36,7 +37,7 @@ Depends: ${misc:Depends},
  libxcb-render0,
  libxcb-shm0
 Description: Plex client with Jellyfin and Emby support, offline downloads, and HDR
- PlezyNG is an enhanced Plex client that also supports Jellyfin and Emby.
+ Pleazyng is an enhanced Plex client that also supports Jellyfin and Emby.
  Browse movies, shows, and music across your servers, search connected
  libraries, and keep watchlists and viewing progress in sync. Download media
  for offline playback. Watch Live TV and DVR where your server supports them.
@@ -45,5 +46,5 @@ Description: Plex client with Jellyfin and Emby support, offline downloads, and 
  use HDR or Dolby Vision on supported devices. Watch Together keeps playback in
  sync when everyone can access the same media on the same server.
  .
- Use PlezyNG on phones, tablets, TVs, and desktop computers. You’ll need your
+ Use Pleazyng on phones, tablets, TVs, and desktop computers. You’ll need your
  own Plex, Jellyfin, or Emby server. Features vary by server, device, and media.

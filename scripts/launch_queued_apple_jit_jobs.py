@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run queued PlezyNG Apple jobs one at a time on the private Mac JIT lane."""
+"""Run queued Pleazyng Apple jobs one at a time on the private Mac JIT lane."""
 
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def get_run(run_id: str) -> dict:
         or head_repository.get("full_name") != REPOSITORY
     ):
         raise QueueError(
-            f"Run {run_id} is not a trusted-main PlezyNG workflow_dispatch; refusing private Apple execution."
+            f"Run {run_id} is not a trusted-main Pleazyng workflow_dispatch; refusing private Apple execution."
         )
     return run
 
@@ -193,7 +193,7 @@ def save_github_logs(run_id: str, jobs: list[dict], evidence_run_dir: Path) -> N
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("run_id", help="PlezyNG workflow run ID")
+    parser.add_argument("run_id", help="Pleazyng workflow run ID")
     parser.add_argument(
         "--evidence-dir",
         required=True,

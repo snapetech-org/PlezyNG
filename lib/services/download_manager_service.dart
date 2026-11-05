@@ -333,7 +333,7 @@ class DownloadManagerService {
   bool get downloadsSupported => _downloadsSupportedOverride ?? platformDownloadsSupported;
 
   /// Orphan cleanup deliberately excludes iOS Documents (Files-visible) and
-  /// all custom filesystem/SAF locations, where PlezyNG cannot claim ownership
+  /// all custom filesystem/SAF locations, where Pleazyng cannot claim ownership
   /// of every item in the selected tree.
   bool get canReviewOrphanDownloads => downloadsSupported && !Platform.isIOS && !_storageService.isUsingCustomPath();
 
@@ -1016,7 +1016,7 @@ class DownloadManagerService {
     await FileDownloader().configure(
       // Keep the native adaptive live-space guard enabled for both media and
       // source tasks. Source tasks additionally preflight their known-size
-      // reservation against PlezyNG's stricter 512 MiB reserve.
+      // reservation against Pleazyng's stricter 512 MiB reserve.
       globalConfig: [(Config.checkAvailableSpace, true), (Config.holdingQueue, (1, 1, 1))],
     );
     // Bring the downloader's persisted policy in line with the setting (it

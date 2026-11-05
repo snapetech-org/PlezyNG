@@ -130,7 +130,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('plezy://play?type=show&tvdb=81189'), findsOneWidget);
+      expect(find.text('pleazyng://play?type=show&tvdb=81189'), findsOneWidget);
       expect(find.text(t.deepLinks.showHint), findsOneWidget);
       expect(find.byType(QrImageView), findsOneWidget);
     });
@@ -145,7 +145,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('plezy://play?type=movie&tmdb=603'), findsOneWidget);
+      expect(find.text('pleazyng://play?type=movie&tmdb=603'), findsOneWidget);
       expect(find.text(t.deepLinks.movieHint), findsOneWidget);
       expect(find.text(t.deepLinks.showHint), findsNothing);
     });
@@ -155,7 +155,7 @@ void main() {
       await pumpDialog(tester, ItemLinkDialog(item: _episode, client: client));
       await tester.pumpAndSettle();
 
-      expect(find.text('plezy://play?server=plex-1&id=ep-1'), findsOneWidget);
+      expect(find.text('pleazyng://play?server=plex-1&id=ep-1'), findsOneWidget);
       expect(find.text(t.deepLinks.episodeHint), findsOneWidget);
       expect(client.calls, isEmpty);
     });
@@ -173,7 +173,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('plezy://play?server=plex-1&id=movie-1'), findsOneWidget);
+      expect(find.text('pleazyng://play?server=plex-1&id=movie-1'), findsOneWidget);
       expect(find.byType(QrImageView), findsOneWidget);
     });
 
@@ -181,7 +181,7 @@ void main() {
       await pumpDialog(tester, ItemLinkDialog(item: _movie, client: null));
       await tester.pump();
 
-      expect(find.text('plezy://play?server=plex-1&id=movie-1'), findsOneWidget);
+      expect(find.text('pleazyng://play?server=plex-1&id=movie-1'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
@@ -205,7 +205,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(QrImageView), findsOneWidget);
-      expect(find.text('plezy://play?type=movie&tmdb=603'), findsOneWidget);
+      expect(find.text('pleazyng://play?type=movie&tmdb=603'), findsOneWidget);
       expect(tester.getSize(find.byType(AlertDialog)), resolvingSize);
     });
 
@@ -219,7 +219,7 @@ void main() {
       await pumpDialog(tester, ItemLinkDialog(item: longId, client: null));
       await tester.pump();
 
-      final link = find.text('plezy://play?server=0123456789abcdef0123456789abcdef01234567&id=1234567890');
+      final link = find.text('pleazyng://play?server=0123456789abcdef0123456789abcdef01234567&id=1234567890');
       expect(find.ancestor(of: link, matching: find.byType(FittedBox)), findsOneWidget);
     });
 
@@ -227,7 +227,7 @@ void main() {
       await pumpDialog(tester, ItemLinkDialog(item: _episode, client: null), size: const Size(390, 844));
       await tester.pump();
 
-      final link = find.text('plezy://play?server=plex-1&id=ep-1');
+      final link = find.text('pleazyng://play?server=plex-1&id=ep-1');
       expect(link, findsOneWidget);
       expect(find.ancestor(of: link, matching: find.byType(FittedBox)), findsNothing);
     });
@@ -253,7 +253,7 @@ void main() {
       await tester.tap(find.text(t.deepLinks.copy));
       await tester.pumpAndSettle();
 
-      expect(copied, 'plezy://play?type=show&tvdb=81189');
+      expect(copied, 'pleazyng://play?type=show&tvdb=81189');
       expect(find.text(t.deepLinks.copied), findsOneWidget);
     });
 
@@ -279,13 +279,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('plezy://play?type=movie&tmdb=603'), findsOneWidget);
+      expect(find.text('pleazyng://play?type=movie&tmdb=603'), findsOneWidget);
       expect(tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value, isFalse);
 
       await tester.tap(find.text(t.deepLinks.openAsProfile(name: 'Kid')));
       await tester.pumpAndSettle();
 
-      const withProfile = 'plezy://play?type=movie&tmdb=603&profile=a1b2c3';
+      const withProfile = 'pleazyng://play?type=movie&tmdb=603&profile=a1b2c3';
       expect(find.text(withProfile), findsOneWidget);
       final parsed = DeepLink.tryParse(withProfile)! as PlayLink;
       expect(parsed.target, const CatalogPlayTarget(kind: MediaKind.movie, ids: ExternalIds(tmdb: 603)));
@@ -294,7 +294,7 @@ void main() {
       await tester.tap(find.text(t.deepLinks.openAsProfile(name: 'Kid')));
       await tester.pumpAndSettle();
 
-      expect(find.text('plezy://play?type=movie&tmdb=603'), findsOneWidget);
+      expect(find.text('pleazyng://play?type=movie&tmdb=603'), findsOneWidget);
     });
 
     testWidgets('appends the profile to a server link too', (tester) async {
@@ -303,7 +303,7 @@ void main() {
       await tester.tap(find.text(t.deepLinks.openAsProfile(name: 'Owner')));
       await tester.pump();
 
-      expect(find.text('plezy://play?server=plex-1&id=show-1&profile=local-owner'), findsOneWidget);
+      expect(find.text('pleazyng://play?server=plex-1&id=show-1&profile=local-owner'), findsOneWidget);
     });
 
     testWidgets('is not offered with a single profile', (tester) async {
@@ -344,7 +344,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value, isTrue);
-      expect(find.text('plezy://play?server=plex-1&id=movie-1&profile=local-owner'), findsOneWidget);
+      expect(find.text('pleazyng://play?server=plex-1&id=movie-1&profile=local-owner'), findsOneWidget);
     });
   });
 
@@ -352,7 +352,7 @@ void main() {
     testWidgets('a local profile links by its id', (tester) async {
       await pumpDialog(tester, ProfileLinkDialog(profile: _owner));
 
-      const link = 'plezy://open?profile=local-owner';
+      const link = 'pleazyng://open?profile=local-owner';
       expect(find.text(link), findsOneWidget);
       expect(find.text(t.deepLinks.profileHint), findsOneWidget);
       expect(find.byType(QrImageView), findsOneWidget);
@@ -365,7 +365,7 @@ void main() {
     testWidgets('a Plex Home profile links by its user UUID', (tester) async {
       await pumpDialog(tester, ProfileLinkDialog(profile: _kid));
 
-      expect(find.text('plezy://open?profile=a1b2c3'), findsOneWidget);
+      expect(find.text('pleazyng://open?profile=a1b2c3'), findsOneWidget);
     });
 
     testWidgets('opens through showProfileLinkDialog and closes', (tester) async {

@@ -40,6 +40,30 @@ enum HubCardSizing {
   grid,
 }
 
+class _HubHeaderPadding extends StatelessWidget {
+  const _HubHeaderPadding({required this.inset, required this.isTv, required this.leadingPadding, required this.child});
+
+  final bool inset, isTv;
+  final double leadingPadding;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => SettingsBuilder(
+    prefs: const [SettingsService.gridSpacing],
+    builder: (context) {
+      final gap = math.max(4.0, SettingsService.instanceOrNull?.read(SettingsService.gridSpacing).gridGap ?? 4.0);
+      // Match the first artwork edge, including the cell's own image inset.
+      final start = inset
+          ? MediaCard.gridCardPadding.left
+          : (isTv ? leadingPadding : 8) + gap / 2 + MediaCard.gridCardPadding.left - 4;
+      return Padding(
+        padding: EdgeInsetsDirectional.fromSTEB(start, isTv ? 6 : 4, inset ? 0 : 8, isTv ? 8 : 4),
+        child: child,
+      );
+    },
+  );
+}
+
 /// Shared hub section widget used in both discover and library screens
 /// Displays a hub title with icon and a horizontal scrollable list of items
 ///
@@ -522,7 +546,7 @@ class HubSectionState extends State<HubSection> with MountedSetStateMixin, Skele
     final leadingPadding = _leadingPaddingFor(isTv);
     final titleStyle = Theme.of(
       context,
-    ).textTheme.titleLarge?.copyWith(fontSize: isTv ? 26 : null, fontWeight: isTv ? FontWeight.w700 : null);
+    ).textTheme.titleLarge?.copyWith(fontSize: isTv ? 26 : null, fontWeight: FontWeight.w600);
 
     return Padding(
       padding: .only(
@@ -535,10 +559,10 @@ class HubSectionState extends State<HubSection> with MountedSetStateMixin, Skele
         mainAxisSize: .min,
         children: [
           // Hub header (NOT focusable - titles should not be focusable)
-          Padding(
-            padding: widget.inset
-                ? EdgeInsets.symmetric(vertical: isTv ? 6 : 2)
-                : EdgeInsets.fromLTRB(leadingPadding - 4, isTv ? 6 : 2, 8, isTv ? 8 : 2),
+          _HubHeaderPadding(
+            inset: widget.inset,
+            isTv: isTv,
+            leadingPadding: leadingPadding,
             child: ExcludeFocus(
               child: InkWell(
                 mouseCursor: widget.hub.more ? SystemMouseCursors.click : MouseCursor.defer,
@@ -551,20 +575,23 @@ class HubSectionState extends State<HubSection> with MountedSetStateMixin, Skele
                   child: Row(
                     mainAxisSize: .min,
                     children: [
-                      AppIcon(widget.icon, fill: 1, size: isTv ? 28 : null),
+                      AppIcon(widget.icon, fill: 0, weight: 500, size: isTv ? 28 : null),
                       SizedBox(width: isTv ? 12 : 8),
                       Flexible(
                         child: Text(widget.hub.title, style: titleStyle, overflow: .ellipsis, maxLines: 1),
                       ),
                       if (widget.totalResults case final totalResults?) ...[
                         SizedBox(width: isTv ? 12 : 8),
-                        Text(
-                          t.explore.totalResults(n: totalResults),
-                          maxLines: 1,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.62),
-                            fontSize: isTv ? 17 : null,
-                            fontWeight: FontWeight.w600,
+                        Flexible(
+                          child: Text(
+                            t.explore.totalResults(n: totalResults),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: tokens(context).textMuted,
+                              fontSize: isTv ? 17 : null,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
@@ -572,15 +599,15 @@ class HubSectionState extends State<HubSection> with MountedSetStateMixin, Skele
                         const SizedBox(width: 8),
                         Text(
                           '•',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: tokens(context).textMuted),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          widget.hub.serverName!,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                        Flexible(
+                          child: Text(
+                            widget.hub.serverName!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: tokens(context).textMuted),
                           ),
                         ),
                       ],

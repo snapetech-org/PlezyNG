@@ -99,7 +99,7 @@ func (p *oauthProxy) handleSteamCallback(w http.ResponseWriter, r *http.Request)
 	}
 	p.mu.Unlock()
 	if !valid {
-		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from PlezyNG.")
+		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from Pleazyng.")
 		return
 	}
 
@@ -128,7 +128,7 @@ func (p *oauthProxy) handleSteamCallback(w http.ResponseWriter, r *http.Request)
 	}
 	result.SteamCatalogToken = p.issueSteamCatalogGrant(steamID)
 	if !p.completeSession(sess, result) {
-		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from PlezyNG.")
+		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from Pleazyng.")
 		return
 	}
 	renderSuccessPage(w)
@@ -136,7 +136,7 @@ func (p *oauthProxy) handleSteamCallback(w http.ResponseWriter, r *http.Request)
 
 func (p *oauthProxy) completeSteamFailure(w http.ResponseWriter, sess *oauthSession, status int, publicError, message string) {
 	if !p.completeSession(sess, oauthTokenResult{Error: publicError}) {
-		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from PlezyNG.")
+		renderErrorPage(w, http.StatusNotFound, "This sign-in link is no longer valid. Start again from Pleazyng.")
 		return
 	}
 	renderErrorPage(w, status, message)

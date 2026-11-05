@@ -318,7 +318,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(simdutf)
 
-set(BINARY_NAME "plezy")
+set(BINARY_NAME "pleazyng")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
@@ -553,3 +553,4 @@ install(FILES "${VULKAN_RT_DIR}/vulkan-1.dll" "${VULKAN_RT_DIR}/VulkanRT-License
 # Optional qualified MilkRust artifacts and their exact corresponding source.
 include("${CMAKE_SOURCE_DIR}/../native/visualizer/milkrust.cmake")
 plezy_install_milkrust("milkrust_native.dll")
+plezy_install_romm()

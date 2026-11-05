@@ -724,10 +724,9 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   void onSearchStarted(String query) {
-    searchResults = const [];
-    resultsQuery = '';
+    // Keep the committed query and selected filter until actual new results
+    // arrive. Scope changes already clear them through fullRefresh().
     _pendingSearchOutcome = null;
-    _resetFilter();
   }
 
   @override

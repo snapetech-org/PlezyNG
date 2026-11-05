@@ -119,7 +119,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
       detachedToken = token
       core.isPipActive = true
       detachedWindow = MpvDetachedVideoWindow(
-        title: String((args["title"] as? String ?? "PlezyNG").prefix(240)),
+        title: String((args["title"] as? String ?? "Pleazyng").prefix(240)),
         labels: args["labels"] as? [String: String] ?? [:], layers: layers,
         geometryKey: args["geometryKey"] as? String ?? "",
         onAction: { [weak self] action in self?.detachedAction(action) },

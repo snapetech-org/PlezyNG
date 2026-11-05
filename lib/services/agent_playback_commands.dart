@@ -358,7 +358,7 @@ class AgentPlaybackCommands {
         _observer?.snapshot()['blocker'] == 'externalHandoffPending') {
       throw const AgentControlException(
         'unsupportedTarget',
-        'An external application cannot be stopped or observed by PlezyNG.',
+        'An external application cannot be stopped or observed by Pleazyng.',
       );
     }
     if (scoped) return _stopScoped(context);

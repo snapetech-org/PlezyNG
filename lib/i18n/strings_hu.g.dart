@@ -122,7 +122,7 @@ class _Translations$app$hu extends Translations$app$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,7 +136,7 @@ class _Translations$appIcon$hu extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Alapértelmezett';
 	@override String get current => 'Jelenlegi ikon';
 	@override String get locked => 'Élethosszú hozzáférés szükséges';
-	@override String get lockedHint => 'Kezdje a 7 napos próbát vagy letiltja a PlezyNG élethosszig, hogy alternatív ikonokat használjon.';
+	@override String get lockedHint => 'Kezdje a 7 napos próbát vagy letiltja a Pleazyng élethosszig, hogy alternatív ikonokat használjon.';
 	@override String get changeFailed => 'Nem sikerült módosítani az alkalmazásikont';
 	@override String get launcherHint => 'Az új ikon azután jelenik meg a kezdőképernyőn, hogy kiléptél a Plezyből.';
 	@override String get tvLauncherHint => 'Az új banner azután jelenik meg, hogy kiléptél a Plezyből. Az Android TV a TV újraindításáig még a régit is mutathatja.';
@@ -166,7 +166,7 @@ class _Translations$auth$hu extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Várakozás a jóváhagyásra…';
 	@override String get quickConnectCancel => 'Mégse';
 	@override String get quickConnectExpired => 'A Quick Connect kód lejárt. Próbáld újra.';
-	@override String get localDataRecoveryRequired => 'A PlezyNG nem tudta biztonságosan helyreállítani a helyi bejelentkezés és a függőben lévő lejátszás adatait. Jelentkezz be újra.';
+	@override String get localDataRecoveryRequired => 'A Pleazyng nem tudta biztonságosan helyreállítani a helyi bejelentkezés és a függőben lévő lejátszás adatait. Jelentkezz be újra.';
 	@override String get pinCheckRejected => 'A Plex PIN ellenőrzését elutasították';
 	@override String get connectToDirectPlex => 'Kapcsolat a helyi Plex szerverhez';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$hu extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Beállítások';
-	@override String get supportDeveloper => 'PlezyNG támogatása';
+	@override String get supportDeveloper => 'Pleazyng támogatása';
 	@override String get supportDeveloperDescription => 'Adománnyal támogassa a fejlesztést';
-	@override String get lifetimeAccess => 'PlezyNG Élethosszú hozzáférés';
+	@override String get lifetimeAccess => 'Pleazyng Élethosszú hozzáférés';
 	@override String get language => 'Nyelv';
 	@override String get theme => 'Téma';
 	@override String get appearance => 'Megjelenés';
@@ -353,7 +353,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'Nem állnak rendelkezésre kapcsolódó médiakönyvtárak.';
 	@override String get contentScreensaverDismissHint => 'Nyomja meg a gombot vagy nyomja meg a lemondáshoz';
 	@override String get newEpisodeNotifications => 'Új epizód értesítések';
-	@override String get newEpisodeNotificationsDescription => 'Figyelmeztetés, amikor egy új epizód hozzáadódik egy show, akkor fogadják fel. Ellenőrizze, míg Plezy nyitva van.';
+	@override String get newEpisodeNotificationsDescription => 'Figyelmeztetés, amikor egy új epizód hozzáadódik egy show, akkor fogadják fel. Ellenőrizze, míg Pleazyng nyitva van.';
 	@override String get continueWatchingRowSize => 'Folytatjuk a sorméret figyelését';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} kártyák';
 	@override String get rowSizeCompact => 'Kompakt';
@@ -484,7 +484,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Beállítások visszaállítása fájlból';
 	@override String get importSettingsConfirm => 'Ez felülírja a jelenlegi beállításaidat. Folytatod?';
 	@override String get importSettingsSuccess => 'Beállítások importálva';
-	@override String get importSettingsInvalidFile => 'Ez a fájl nem érvényes PlezyNG-beállításexport';
+	@override String get importSettingsInvalidFile => 'Ez a fájl nem érvényes Pleazyng-beállításexport';
 	@override String get importSettingsNoUser => 'Jelentkezz be a beállítások importálása előtt';
 	@override String get cloudBackup => 'Felhőalapú biztonsági mentés';
 	@override String get cloudBackupDescription => 'Készíts biztonsági másolatot az átvihető beállításokról egy WebDAV-címre HTTPS-en keresztül. A szerverkapcsolatok és a bejelentkezési adatok ezen az eszközön maradnak.';
@@ -666,7 +666,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get forceTvMode => 'TV-mód kényszerítése';
 	@override String get forceTvModeDescription => 'TV-elrendezés kényszerítése az automatikus felismeréssel nem rendelkező eszközökön. Újraindítást igényel.';
 	@override String get startInFullscreen => 'Indítás teljes képernyőn';
-	@override String get startInFullscreenDescription => 'A PlezyNG megnyitása teljes képernyős módban indításkor';
+	@override String get startInFullscreenDescription => 'A Pleazyng megnyitása teljes képernyős módban indításkor';
 	@override String get exitFullscreenOnPlayerClose => 'Kilépés a teljes képernyőből a lejátszó bezárásakor';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Automatikus kilépés a teljes képernyőből a videólejátszó bezárásakor';
 	@override String get autoHidePerformanceOverlay => 'Teljesítményadatok automatikus elrejtése';
@@ -722,7 +722,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Mindenhol';
 	@override String get playerScopeLibrary => 'Könyvtáronként';
 	@override String get playerScopeTitle => 'Sorozatonként vagy filmenként';
-	@override String get exportDialogTitle => 'PlezyNG-beállítások exportálása';
+	@override String get exportDialogTitle => 'Pleazyng-beállítások exportálása';
 	@override String get followSystem => 'Rendszernyelv követése';
 	@override String get followAppLanguage => 'A felület nyelvével megegyező';
 	@override String get regionFormat => 'Területi formátumok';
@@ -733,7 +733,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'Nyissa meg az asztali videót a teljes képernyőn, amikor elkezdődik a playback';
 	@override String get extendVideoIntoDisplayCutout => 'Videó bővítése a Display Cutout-ba';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'Hagyja, hogy a teljes képernyős videó használja a fényképezőgép cutout az Android telefonok';
-	@override String get languageDescription => 'Válassza ki a használt nyelvet PlezyNG vezérlők és üzenetek. kövesse a rendszer nyomon követése a készülék nyelvét.';
+	@override String get languageDescription => 'Válassza ki a használt nyelvet Pleazyng vezérlők és üzenetek. kövesse a rendszer nyomon követése a készülék nyelvét.';
 	@override String get themeDescription => 'Válassza ki az alkalmazás során használt színeket és kontrasztokat.';
 	@override String get libraryDensityDescription => 'Változtassa meg, hogy hány könyvtári kártyát alkalmaznak minden sorban.';
 	@override String get displayScaleDescription => 'Visszaállítsa a felületet ebben az autó képernyőjén anélkül, hogy megváltoztatná a készülék szerinti szöveges méretét.';
@@ -755,14 +755,14 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get episodeActionDescription => 'Válassza ki, mi történik, amikor egy epizódkártya aktiválódik.';
 	@override String get episodePlayDescription => 'Az epizód azonnal megkezdődik.';
 	@override String get episodeDetailsDescription => 'Nyissa meg az epizód oldalt a playback előtt.';
-	@override String get contentScreensaverDelayDescription => 'Válassza ki, hogy mennyi időt vár a PlezyNG bevitele nélkül, mielőtt műalkotást mutatna.';
+	@override String get contentScreensaverDelayDescription => 'Válassza ki, hogy mennyi időt vár a Pleazyng bevitele nélkül, mielőtt műalkotást mutatna.';
 	@override String get continueWatchingRowSizeDescription => 'Válassza ki, hogy a kártyák hány méretűek a Folyamatos megfigyelési sorban.';
 	@override String get rowSizeCompactDescription => 'Nézze meg a kisebb kártyákat, hogy több elem megfeleljen a soron.';
 	@override String get rowSizeStandardDescription => 'Használja a kártya méretét.';
 	@override String get rowSizeLargeDescription => 'Nézze meg a nagyobb kártyákat több műalkotási részletekkel.';
 	@override String get visualEffectsDescription => 'Válassza ki az animációs és művészeti hatások költségvetését erre a készülékre.';
 	@override String get visualEffectsFullDescription => 'Használja a teljes animációs és műalkotási hatásokat minden eszközön.';
-	@override String get startupSectionDescription => 'Válassza ki, melyik szakasz megnyílik, amikor a PlezyNG elindul.';
+	@override String get startupSectionDescription => 'Válassza ki, melyik szakasz megnyílik, amikor a Pleazyng elindul.';
 	@override late final _Translations$settings$startupSectionOptions$hu startupSectionOptions = _Translations$settings$startupSectionOptions$hu._(_root);
 	@override String get smallSkipDurationDescription => 'Állítsa be a távolságot, amelyet a rövid hátsó és előre irányításokat keres.';
 	@override String get largeSkipDurationDescription => 'Állítsa be a távolságot, amelyet a hosszú hátsó és előre irányításokat keres.';
@@ -798,7 +798,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => 'Játssz a forráskódot bitrate-capped transcode nélkül.';
 	@override String get musicQualityTranscodeOptionDescription => 'Kérjen egy szerver transzkódot, amely a fenti bitrate közelében van rögzítve; a tényleges kimenetel változhat.';
 	@override String get maxVolumeInputLabel => 'Maximális térfogat (%)';
-	@override String get checkForUpdatesDescription => 'Most ellenőrizze, hogy a PlezyNG újabb verziója elérhető-e.';
+	@override String get checkForUpdatesDescription => 'Most ellenőrizze, hogy a Pleazyng újabb verziója elérhető-e.';
 	@override String get appearanceDescription => 'Válassza ki az alkalmazás témáját, és módosítsa a könyvtári kártyákat, az otthoni sorokat és a navigációt.';
 	@override String get prerollLibraryDescription => 'Válassza ki a könyvtárat, amely tartalmazza a klipek elérhető film pre-rolls.';
 	@override String get prerollSelectionDescription => 'Válassza ki, hogy mely klipek a kiválasztott könyvtár játszhat előtt filmek.';
@@ -1049,8 +1049,8 @@ class _Translations$mediaMenu$hu extends Translations$mediaMenu$en {
 		one: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:',
 		other: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'A PlezyNG nem tudta ellenőrizni, mely fájlokat távolítja el ez, ezért a fent nevezett elemnél többet is törölhet. Szakítsa meg és próbálja újra, vagy töröljön mindenképp.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'A szerver nem szolgáltatott fájladatokat ehhez az elemhez, ezért a PlezyNG nem tudja ellenőrizni, mely fájlokat távolít el. A fent nevezett elemnél többet is törölhet.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'A Pleazyng nem tudta ellenőrizni, mely fájlokat távolítja el ez, ezért a fent nevezett elemnél többet is törölhet. Szakítsa meg és próbálja újra, vagy töröljön mindenképp.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'A szerver nem szolgáltatott fájladatokat ehhez az elemhez, ezért a Pleazyng nem tudja ellenőrizni, mely fájlokat távolít el. A fent nevezett elemnél többet is törölhet.';
 	@override String get mediaDeletedSuccessfully => 'Médiaelem sikeresen törölve';
 	@override String get mediaFailedToDelete => 'Nem sikerült a médiaelem törlése';
 	@override String get rate => 'Értékelés';
@@ -1118,7 +1118,7 @@ class _Translations$accessibility$hu extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'hozzáférhetőség';
 	@override String get summary => 'szöveg, kontraszt, mozgás és ellenőrzés';
-	@override String get systemHint => 'A készülék hozzáférhetőségének beállításait mindig alkalmazzák.Ezek a lehetőségek a PlezyNG egészében módosításokat adnak hozzá.';
+	@override String get systemHint => 'A készülék hozzáférhetőségének beállításait mindig alkalmazzák.Ezek a lehetőségek a Pleazyng egészében módosításokat adnak hozzá.';
 	@override String get readability => 'Olvasás és láthatóság';
 	@override String get textSize => 'További szövegméret';
 	@override String get preview => 'Olvasson, hallgasson és nézd meg a saját sebességedben.';
@@ -1131,7 +1131,7 @@ class _Translations$accessibility$hu extends Translations$accessibility$en {
 	@override String get largeTargets => 'Nagyabb érintkezési célok';
 	@override String get largeTargetsHint => 'A megosztott vezérlők több helyet biztosítanak a hozzáféréshez és a segéd navigációhoz.';
 	@override String get navigationHint => 'A Tab és a Shift+Tab billentyűkkel léphetsz a vezérlők között, az Enter vagy a szóköz aktiválja őket, az Escape vagy a Vissza pedig bezár. Megnyitott könyvnél a nagyítás és az olvasási beállítások is elérhetők.';
-	@override String get textSizeDescription => 'Skála felület szöveg PlezyNG-ben a készülék rendszer szöveges méretének beállítása mellett.';
+	@override String get textSizeDescription => 'Skála felület szöveg Pleazyng-ben a készülék rendszer szöveges méretének beállítása mellett.';
 	@override String get boldTextHint => 'Használjon súlyosabb felület címkéket és üzeneteket, hogy könnyebben megkülönböztessék őket.';
 }
 
@@ -1459,7 +1459,7 @@ class _Translations$profiles$hu extends Translations$profiles$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'PlezyNG profil hozzáadása';
+	@override String get addPlezyProfile => 'Pleazyng profil hozzáadása';
 	@override String get switchingProfile => 'Profilváltás…';
 	@override String get deleteThisProfileTitle => 'Törlöd ezt a profilt?';
 	@override String deleteThisProfileMessage({required Object displayName}) => '${displayName} eltávolítása. A kapcsolatokat nem érinti.';
@@ -1550,7 +1550,7 @@ class _Translations$connections$hu extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} szerver megtagadta a hozzáférést ettől a fióktól';
 	@override String get signInAgain => 'Bejelentkezés újra';
 	@override String editMediaBrowserTitle({required Object product}) => 'A(z) ${product} kapcsolat szerkesztése';
-	@override String editMediaBrowserIntro({required Object serverName}) => 'Adjon hozzá vagy távolítson el URL-eket a(z) ${serverName} esetén. A PlezyNG a legkisebb késleltetésű, elérhető URL-t fogja használni.';
+	@override String editMediaBrowserIntro({required Object serverName}) => 'Adjon hozzá vagy távolítson el URL-eket a(z) ${serverName} esetén. A Pleazyng a legkisebb késleltetésű, elérhető URL-t fogja használni.';
 }
 
 // Path: accountPreferences
@@ -1792,9 +1792,9 @@ class _Translations$startup$hu extends Translations$startup$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'A PlezyNG nem tudott elindulni';
+	@override String get failedTitle => 'A Pleazyng nem tudott elindulni';
 	@override String get failedBody => 'Valami hiba történt az indítás során. Az alábbi részletek mutatják, mi hibázott.';
-	@override String get failedBodyRepairable => 'A PlezyNG mentett beállításfájlja sérült, és újra kell építeni, mielőtt a PlezyNG elindulhatna. Az újrapróbálkozás nem segít – válassza a Tárhely javítása lehetőséget.';
+	@override String get failedBodyRepairable => 'A Pleazyng mentett beállításfájlja sérült, és újra kell építeni, mielőtt a Pleazyng elindulhatna. Az újrapróbálkozás nem segít – válassza a Tárhely javítása lehetőséget.';
 	@override String get phaseLabel => 'Lépés';
 	@override String get showDetails => 'Részletek megjelenítése';
 	@override String get hideDetails => 'Részletek elrejtése';
@@ -1803,16 +1803,16 @@ class _Translations$startup$hu extends Translations$startup$en {
 	@override String get uploadDetails => 'Részletek feltöltése';
 	@override String get repairStorage => 'Tárhely javítása';
 	@override String get repairTitle => 'Javítsuk a tárolt adatokat?';
-	@override String get repairBodyCommon => 'A PlezyNG beállításfájlja sérült, és nem olvasható. A javítás minden beállítást visszaállít az alapértelmezettre.';
+	@override String get repairBodyCommon => 'A Pleazyng beállításfájlja sérült, és nem olvasható. A javítás minden beállítást visszaállít az alapértelmezettre.';
 	@override String get repairBodyOneCredential => 'Egy mentett bejelentkezés sérült, és nem olvasható. A javítás csak azt távolítja el; a többi beállítása érintetlen marad.';
 	@override String get repairBodySignInsKept => 'A szervereinek és profiljainak bejelentkezve kell maradniuk.';
 	@override String get repairBodySignInsLost => 'A mentett bejelentkezéseket védő kulcs nem nyerhető vissza ebből a fájlból, ezért minden szerverre és profilba újra be kell jelentkeznie. A médiaszerveren semmi nem érintett.';
-	@override String get repairBodySessionsUncertain => 'A nyomkövetők (MAL, AniList, Simkl, Trakt) és a Seerr külön vannak tárolva, és megmaradhatnak vagy nem. A PlezyNG pontosan megmondja, mit őrzött meg.';
+	@override String get repairBodySessionsUncertain => 'A nyomkövetők (MAL, AniList, Simkl, Trakt) és a Seerr külön vannak tárolva, és megmaradhatnak vagy nem. A Pleazyng pontosan megmondja, mit őrzött meg.';
 	@override String get repairConfirm => 'Javítás';
 	@override String get repairSucceeded => 'A tárhely javítva';
 	@override String get repairNeedsRestart => 'A tárhely javítva – újraindítás szükséges';
-	@override String get restartRequiredBody => 'Az adatait kijavítottuk, de a PlezyNG-nek frissen kell elindulnia, mielőtt használhatná. Zárja be a PlezyNG-t, és nyissa meg újra.';
-	@override String get quitPlezy => 'Kilépés a PlezyNG-ből';
+	@override String get restartRequiredBody => 'Az adatait kijavítottuk, de a Pleazyng-nek frissen kell elindulnia, mielőtt használhatná. Zárja be a Pleazyng-t, és nyissa meg újra.';
+	@override String get quitPlezy => 'Kilépés a Pleazyng-ből';
 	@override String get repairFailed => 'A javítás nem sikerült';
 	@override String get repairKeptSignIns => 'A szerverei és profiljai továbbra is be vannak jelentkezve.';
 	@override String get repairLostSignIns => 'A mentett bejelentkezéseket védő kulcs nem volt visszanyerhető. Minden szerverre és profilba újra be kell jelentkeznie.';
@@ -1821,7 +1821,7 @@ class _Translations$startup$hu extends Translations$startup$en {
 	@override String get backupWarning => 'Bejelentkezési adatait tartalmazza. Ne töltse fel és ne ossza meg.';
 	@override String get deleteBackup => 'Másolat törlése';
 	@override String get backupDeleted => 'A másolat törölve.';
-	@override String get previousFailureTitle => 'A PlezyNG legutóbb nem tudott elindulni';
+	@override String get previousFailureTitle => 'A Pleazyng legutóbb nem tudott elindulni';
 }
 
 // Path: licenses
@@ -2179,7 +2179,7 @@ class _Translations$watchTogether$hu extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Másik példány választása';
 	@override String get dontPlay => 'Ne játszd le';
 	@override String get unavailableTitle => 'Ez a videó nincs meg neked';
-	@override String get unavailableDescription => 'A PlezyNG nem találta meg a könyvtáraidban. Válassz ki magad egy példányt, vagy keress újra.';
+	@override String get unavailableDescription => 'A Pleazyng nem találta meg a könyvtáraidban. Válassz ki magad egy példányt, vagy keress újra.';
 	@override String get chooseCopy => 'Példány választása';
 	@override String get searchAgain => 'Keresés újra';
 	@override String get noCandidates => 'Nem található példány a könyvtáraidban.';
@@ -2324,11 +2324,11 @@ class _Translations$downloads$hu extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Szinkronizálási szabályok';
 	@override String get reviewOrphanFiles => 'Árva letöltések áttekintése';
 	@override String get orphanReviewTitle => 'Árva letöltések áttekintése';
-	@override String get orphanReviewDescription => 'Ezek a címkézett fájlok a PlezyNG által kezelt alapértelmezett letöltési mappákban találhatók, és nincs hozzájuk tartozó letöltési rekord vagy aktív feladat. Törlés előtt ellenőrizze a listát.';
+	@override String get orphanReviewDescription => 'Ezek a címkézett fájlok a Pleazyng által kezelt alapértelmezett letöltési mappákban találhatók, és nincs hozzájuk tartozó letöltési rekord vagy aktív feladat. Törlés előtt ellenőrizze a listát.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} fájl · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => '${count} fájl törlése';
 	@override String get orphanCleanupNone => 'Nem található árva letöltési fájl';
-	@override String get orphanCleanupFailed => 'A PlezyNG nem tudta biztonságosan átvizsgálni a kezelt letöltési mappát. Nem töröltünk fájlokat.';
+	@override String get orphanCleanupFailed => 'A Pleazyng nem tudta biztonságosan átvizsgálni a kezelt letöltési mappát. Nem töröltünk fájlokat.';
 	@override String get orphanCleanupChanged => 'A letöltési lista az áttekintés közben megváltozott. Tisztítás előtt tekintse át újra a fájlokat.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => '${count} árva letöltési fájl törölve · ${size} tárhely felszabadítva';
 	@override String get noSyncRules => 'Nincsenek szinkronizálási szabályok';
@@ -2704,7 +2704,7 @@ class _Translations$trakt$hu extends Translations$trakt$en {
 	@override String get connected => 'Csatlakoztatva';
 	@override String connectedAs({required Object username}) => '@${username} néven csatlakoztatva';
 	@override String get disconnectConfirm => 'Leválasztod a Trakt-fiókot?';
-	@override String get disconnectConfirmBody => 'A PlezyNG nem küld több eseményt a Traktnak. Bármikor újracsatlakozhatsz.';
+	@override String get disconnectConfirmBody => 'A Pleazyng nem küld több eseményt a Traktnak. Bármikor újracsatlakozhatsz.';
 	@override String get scrobble => 'Valós idejű scrobbling';
 	@override String get scrobbleDescription => 'Lejátszási, szüneteltetési és leállítási események küldése a Traktnak lejátszás közben.';
 	@override String get watchedSync => 'Megtekintési állapot szinkronizálása';
@@ -2727,10 +2727,10 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	@override String get signInWithEmby => 'Bejelentkezés Emby-vel';
 	@override String get signInWithLocal => 'Helyi fiók használata';
 	@override String get email => 'E-mail';
-	@override String get noSignInMethods => 'Ez a Seerr példány nem kínál olyan bejelentkezési módot, amit a PlezyNG támogat.';
+	@override String get noSignInMethods => 'Ez a Seerr példány nem kínál olyan bejelentkezési módot, amit a Pleazyng támogat.';
 	@override String get instance => 'Példány';
 	@override String get disconnectConfirm => 'Leválasztod a Seerr-kapcsolatot?';
-	@override String get disconnectConfirmBody => 'A PlezyNG elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.';
+	@override String get disconnectConfirmBody => 'A Pleazyng elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.';
 	@override String get request => 'Igénylés';
 	@override String get request4k => 'Igénylés 4K-ban';
 	@override String get seasons => 'Évadok';
@@ -2755,7 +2755,7 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Tiltólistán';
 	@override String couldNotReach({required Object url, required Object error}) => 'Nem sikerült elérni ezt: ${url}: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'Nem található Seerr-példány ezen a címen: ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'A Seerr helyett egy hitelesítő fordított proxy (SSO vagy HTTP-hitelesítés) válaszolt. A PlezyNG nem tud rajta bejelentkezni: engedd, hogy a Seerr /api/v1 útvonala megkerülje a proxyt ennél az alkalmazásnál, vagy használj olyan címet, amely közvetlenül eléri a Seerr-t.';
+	@override String get behindAuthProxy => 'A Seerr helyett egy hitelesítő fordított proxy (SSO vagy HTTP-hitelesítés) válaszolt. A Pleazyng nem tud rajta bejelentkezni: engedd, hogy a Seerr /api/v1 útvonala megkerülje a proxyt ennél az alkalmazásnál, vagy használj olyan címet, amely közvetlenül eléri a Seerr-t.';
 	@override String get invalidUrl => 'Adj meg egy szervercímet, például: https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Ez a Seerr-példány nem támogatja a Quick Connectet. Seerr 3.4 vagy újabb verzió szükséges.';
 	@override String get notInitialized => 'Ennek a Seerr-példánynak a kezdeti beállítása még nem fejeződött be';
@@ -2785,7 +2785,7 @@ class _Translations$services$hu extends Translations$services$en {
 	@override String get scrobble => 'Haladás automatikus követése';
 	@override String get scrobbleDescription => 'Lista frissítése, amikor befejezel egy epizódot vagy filmet.';
 	@override String disconnectConfirm({required Object service}) => 'Leválasztod a(z) ${service} szolgáltatást?';
-	@override String disconnectConfirmBody({required Object service}) => 'A PlezyNG nem frissíti többé a(z) ${service} adatait. Bármikor újracsatlakozhatsz.';
+	@override String disconnectConfirmBody({required Object service}) => 'A Pleazyng nem frissíti többé a(z) ${service} adatait. Bármikor újracsatlakozhatsz.';
 	@override String connectFailed({required Object service}) => 'Nem sikerült csatlakozni a következőhöz: ${service}. Próbáld újra.';
 	@override late final _Translations$services$names$hu names = _Translations$services$names$hu._(_root);
 	@override late final _Translations$services$simklReconnect$hu simklReconnect = _Translations$services$simklReconnect$hu._(_root);
@@ -2807,8 +2807,8 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String get title => 'Felhő és kiegészítők közvetítése';
 	@override String get subtitle => 'Csatlakoztass egy Debrid-fiókot a felhőben lévő fájlok böngészéséhez és a támogatott streamek lejátszásához. A Stremio-kompatibilis kiegészítők streamlehetőségeket kínálnak a filmek és epizódok oldalán. A kapcsolat adatai ezen az eszközön titkosítva, ebben a profilban tárolódnak.';
 	@override String connectionsConfigured({required Object count}) => 'Csatlakoztatott források: ${count}';
-	@override String get settingsLoadFailed => 'A PlezyNG nem tudta feloldani a mentett streamelési beállításokat. A kapcsolatok módosítása előtt oldd fel az eszköz zárolását, majd próbáld újra.';
-	@override String get settingsUnreadable => 'A PlezyNG nem tudta feloldani ezeket a mentett kapcsolatokat. Töröld őket a szolgáltatások újbóli csatlakoztatásához.';
+	@override String get settingsLoadFailed => 'A Pleazyng nem tudta feloldani a mentett streamelési beállításokat. A kapcsolatok módosítása előtt oldd fel az eszköz zárolását, majd próbáld újra.';
+	@override String get settingsUnreadable => 'A Pleazyng nem tudta feloldani ezeket a mentett kapcsolatokat. Töröld őket a szolgáltatások újbóli csatlakoztatásához.';
 	@override String get clearUnreadableSettings => 'Mentett beállítások törlése';
 	@override String get clearUnreadableSettingsConfirm => 'Törlöd a mentett streamelési beállításokat?';
 	@override String get clearUnreadableSettingsBody => 'Ez eltávolítja a profilból az összes mentett szolgáltatói fiókot és kiegészítőcímet. Nem lehet visszavonni.';
@@ -2820,11 +2820,11 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'A katalógus böngészéséhez válaszd ki a szükséges szűrőket.';
 	@override String get catalogRequiredLabel => 'Kötelező';
 	@override String get importFromStremio => 'Importálás a Stremióból';
-	@override String get stremioImportInstructions => 'Olvasd be a QR-kódot, vagy nyisd meg a hivatkozást. Jelentkezz be a Stremióba, és hagyd jóvá a kérést. A PlezyNG csak a kiegészítőlistádat olvassa; nem kéri el a Stremio-jelszavadat, és nem módosítja a beállításaidat.';
+	@override String get stremioImportInstructions => 'Olvasd be a QR-kódot, vagy nyisd meg a hivatkozást. Jelentkezz be a Stremióba, és hagyd jóvá a kérést. A Pleazyng csak a kiegészítőlistádat olvassa; nem kéri el a Stremio-jelszavadat, és nem módosítja a beállításaidat.';
 	@override String get stremioImportOpen => 'Stremio-hivatkozás megnyitása';
 	@override String get stremioImportCode => 'Összekapcsolási kód';
 	@override String get stremioImportPreviewTitle => 'Kiegészítők kiválasztása';
-	@override String get stremioImportPreviewBody => 'Válaszd ki a PlezyNG-hez csatlakoztatni kívánt kiegészítőket. Ez az importálás csak HTTPS-címeket fogad el.';
+	@override String get stremioImportPreviewBody => 'Válaszd ki a Pleazyng-hez csatlakoztatni kívánt kiegészítőket. Ez az importálás csak HTTPS-címeket fogad el.';
 	@override String stremioImportIgnored({required Object count}) => 'Nem támogatott vagy nem biztonságos című kihagyott kiegészítők: ${count}.';
 	@override String get stremioCatalogs => 'Katalógusok';
 	@override String get stremioStreams => 'Streamek';
@@ -2838,7 +2838,7 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Hozzáadás manifest URL-címmel';
 	@override String get addAddon => 'Kiegészítő hozzáadása';
 	@override String get manifestUrl => 'Kiegészítő manifest URL-címe';
-	@override String get manifestUrlHint => 'Illeszd be a kiegészítő manifest URL-címét. Csatlakozás előtt a PlezyNG ellenőrzi a katalógusok vagy streamforrások támogatását.';
+	@override String get manifestUrlHint => 'Illeszd be a kiegészítő manifest URL-címét. Csatlakozás előtt a Pleazyng ellenőrzi a katalógusok vagy streamforrások támogatását.';
 	@override String get allowHttp => 'Nem titkosított HTTP-cím engedélyezése';
 	@override String get allowHttpDescription => 'Csak megbízható kiegészítőhöz használd a privát hálózatodon.';
 	@override String get installAddon => 'Kiegészítő csatlakoztatása';
@@ -2846,20 +2846,20 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String get addonRemoved => 'Kiegészítő eltávolítva';
 	@override String get addonToggle => 'Kiegészítő engedélyezése';
 	@override String get addonEmpty => 'Még nincs csatlakoztatott kiegészítő';
-	@override String get addonError => 'A PlezyNG nem tudott csatlakozni ehhez a kiegészítőhöz. Ellenőrizd a manifest URL-címét, és próbáld újra.';
+	@override String get addonError => 'A Pleazyng nem tudott csatlakozni ehhez a kiegészítőhöz. Ellenőrizd a manifest URL-címét, és próbáld újra.';
 	@override String get addonPrivacy => 'Csak olyan kiegészítőket csatlakoztass, amelyekben megbízol. Kereséskor a kiegészítő megkapja a keresett címet, és harmadik féltől származó streamhivatkozásokat adhat vissza.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Támogatott torrentstreamek lejátszása a Real-Debrid-fiókoddal.';
 	@override String get connectRealDebrid => 'Csatlakozás QR-kóddal';
 	@override String realDebridConnected({required Object username}) => 'Csatlakoztatva: ${username}';
-	@override String get realDebridInstructions => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást, majd add meg ezt az aktiválókódot a PlezyNG csatlakoztatásához:';
+	@override String get realDebridInstructions => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást, majd add meg ezt az aktiválókódot a Pleazyng csatlakoztatásához:';
 	@override String get realDebridActivate => 'Real-Debrid megnyitása az aktiváláshoz';
 	@override String get realDebridCode => 'Aktiválókód';
 	@override String get realDebridConnectFailed => 'Nem sikerült csatlakozni a Real-Debridhez. Próbáld újra.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'Támogatott torrentstreamek lejátszása az AllDebrid-fiókoddal.';
 	@override String get connectAllDebrid => 'Csatlakozás QR-kóddal';
-	@override String get allDebridInstructions => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást a PlezyNG engedélyezéséhez. A csatlakozás alatt hagyd nyitva ezt a képernyőt:';
+	@override String get allDebridInstructions => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást a Pleazyng engedélyezéséhez. A csatlakozás alatt hagyd nyitva ezt a képernyőt:';
 	@override String get allDebridActivate => 'AllDebrid megnyitása az aktiváláshoz';
 	@override String get allDebridCode => 'Aktiváló PIN';
 	@override String get allDebridConnectFailed => 'Nem sikerült csatlakozni az AllDebridhez. Próbáld újra.';
@@ -2870,13 +2870,13 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String get connectApiKey => 'Csatlakozás API-kulccsal';
 	@override String apiKeyTitle({required Object service}) => '${service} csatlakoztatása';
 	@override String get apiKey => 'API-kulcs';
-	@override String apiKeyHint({required Object service}) => 'Illeszd be az API-kulcsot a ${service}-fiók beállításaiból. A PlezyNG titkosítja ezen az eszközön, és menti ebbe a profilba.';
+	@override String apiKeyHint({required Object service}) => 'Illeszd be az API-kulcsot a ${service}-fiók beállításaiból. A Pleazyng titkosítja ezen az eszközön, és menti ebbe a profilba.';
 	@override String get apiKeyConnectFailed => 'Nem sikerült ellenőrizni az API-kulcsot. Ellenőrizd, és próbáld újra.';
 	@override String accountConnected({required Object username}) => 'Csatlakoztatva: ${username}';
 	@override String get streamNeedsProvider => 'A torrentstream lejátszásához csatlakoztass egy Debrid-szolgáltatást.';
 	@override String get playViaProvider => 'Lejátszás Debriddel';
 	@override String disconnectConfirm({required Object service}) => 'Leválasztod a ${service} szolgáltatást?';
-	@override String get disconnectBody => 'A PlezyNG eltávolítja az eszköz engedélyét. A szolgáltatónál tárolt fájlok és a folyamatban lévő átvitelek változatlanok maradnak.';
+	@override String get disconnectBody => 'A Pleazyng eltávolítja az eszköz engedélyét. A szolgáltatónál tárolt fájlok és a folyamatban lévő átvitelek változatlanok maradnak.';
 	@override String get streamsTitle => 'Stream kiválasztása';
 	@override String get noStreams => 'Ehhez a címhez nem található stream.';
 	@override String get manageConnections => 'Streamingszolgáltatások kezelése';
@@ -2892,7 +2892,7 @@ class _Translations$streaming$hu extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Ezt a streamformátumot nem támogatja az alkalmazáslejátszó.';
 	@override String get remoteNeedsEpisode => 'Stream keresése előtt válassz epizódot.';
 	@override String get remoteNeedsEpisodeNumber => 'Ennél az epizódnál hiányzik az évad- vagy epizódszám.';
-	@override String get remoteNeedsExternalId => 'A PlezyNG nem talált IMDb- vagy TMDB-azonosítót ehhez a címhez.';
+	@override String get remoteNeedsExternalId => 'A Pleazyng nem talált IMDb- vagy TMDB-azonosítót ehhez a címhez.';
 	@override String get watchWithServices => 'Megtekintés csatlakoztatott szolgáltatásokkal';
 	@override String get chooseEpisode => 'Epizód kiválasztása';
 	@override String get episodes => 'Epizódok';
@@ -3023,15 +3023,15 @@ class _Translations$appAccess$hu extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => 'Próbáld ki minden funkciót ingyen 7 napig';
-	@override String get description => 'Kezdje a hét napos próbát minden PlezyNG funkcióhoz való teljes hozzáféréssel. A próbában nincs díj és nincs előfizetés. A próbát követően egy élethosszig tartó vásárlás az üzlet árán PlezyNG az élethosszú zárat nyit.';
-	@override String get trialEndedDescription => 'A PlezyNG minden funkciót letiltja az életre egy vásárlással az üzlet árán.';
+	@override String get description => 'Kezdje a hét napos próbát minden Pleazyng funkcióhoz való teljes hozzáféréssel. A próbában nincs díj és nincs előfizetés. A próbát követően egy élethosszig tartó vásárlás az üzlet árán Pleazyng az élethosszú zárat nyit.';
+	@override String get trialEndedDescription => 'A Pleazyng minden funkciót letiltja az életre egy vásárlással az üzlet árán.';
 	@override String get startTrial => 'Kezdje a 7 napos ingyenes próbát';
 	@override String get trialActive => 'A 7 napos teljes funkciót tesztelője aktív.';
 	@override String get trialEnded => 'A 7 napos bírósági eljárás befejeződött';
 	@override String get trialStartFailed => 'Nem tudtam menteni a tesztet a készülékre. kérjük, próbáljon újra.';
-	@override String get lifetimeTitle => 'PlezyNG életre szóló zárolás';
-	@override String get lifetimeBody => 'Köszönöm! az egész életen át tartó hozzáférést kap minden PlezyNG funkcióhoz.';
-	@override String get manageTitle => 'PlezyNG Élethosszú hozzáférés';
+	@override String get lifetimeTitle => 'Pleazyng életre szóló zárolás';
+	@override String get lifetimeBody => 'Köszönöm! az egész életen át tartó hozzáférést kap minden Pleazyng funkcióhoz.';
+	@override String get manageTitle => 'Pleazyng Élethosszú hozzáférés';
 	@override String get manageDescription => 'Próbáld ki minden funkciót ingyen 7 napig, majd letölti az egész életet egy fizetéssel az áruház ára.';
 	@override String buy({required Object price}) => 'Minden funkció letiltása a ${price}';
 	@override String get loadingPrice => 'A szállítási árak...';
@@ -3039,11 +3039,11 @@ class _Translations$appAccess$hu extends Translations$appAccess$en {
 	@override String get restore => 'Életmód vásárlás';
 	@override String get pending => 'A vásárlás fizetést vagy jóváhagyást vár. Az élethosszig tartó hozzáférés a bolt befejezését követően zárul.';
 	@override String get storeUnavailable => 'A vásárlás nem elérhető. Ellenőrizze, hogy Ön regisztrált a boltban, és a vásárlás engedélyezett ezen a készüléken.';
-	@override String get productNotFound => 'A PlezyNG élethosszig tartó zárolás még nem elérhető ebben a boltban.';
+	@override String get productNotFound => 'A Pleazyng élethosszig tartó zárolás még nem elérhető ebben a boltban.';
 	@override String get productQueryFailed => 'Nem tudtam feltölteni a bolt árat. Ellenőrizze a kapcsolatot, és próbáljon meg újra.';
 	@override String get purchaseFailed => 'A vásárlás nem ment át. próbáljon újra.';
 	@override String get restoreFailed => 'Nem tudtam eljutni a boltba, hogy visszaállítsam a vásárlást. próbáljon újra.';
-	@override String get nothingToRestore => 'A PlezyNG életévét megvásárlás találta ebben a boltban.';
+	@override String get nothingToRestore => 'A Pleazyng életévét megvásárlás találta ebben a boltban.';
 }
 
 // Path: detail
@@ -3084,8 +3084,8 @@ class _Translations$homeLayout$hu extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Home Layout';
-	@override String get resetToast => 'Home újra az eredeti Plezy hős elrendezésre';
-	@override String get resetHeroTitle => 'A hős elrendezésének helyreállítása a Plezy raktárba?';
+	@override String get resetToast => 'Home újra az eredeti Pleazyng hős elrendezésre';
+	@override String get resetHeroTitle => 'A hős elrendezésének helyreállítása a Pleazyng raktárba?';
 	@override String get resetHeroBody => 'A hős állítása minden sorban törli, és visszahozza az egyetlen forgó banneret a ház tetején, mint az előző sorokban.';
 	@override String get removeRowTitle => 'Helyreállítsa a homlokzatot?';
 	@override String removeRowBody({required Object title}) => '${title} törlésre kerül. ez nem lehet megszüntetni.';
@@ -3095,7 +3095,7 @@ class _Translations$homeLayout$hu extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Kattintson: Ez a készülék saját elrendezését tartja.';
 	@override String get syncNow => 'Szinkronizálás most';
 	@override String get plexHomeManager => 'Plex Házigazgató';
-	@override String get managePlexRows => 'Plex sorok kezelése Plezy sorban';
+	@override String get managePlexRows => 'Plex sorok kezelése Pleazyng sorban';
 	@override String get managePlexRowsDescription => 'Nyitva a házilag kiválasztott sorok megszervezéséhez';
 	@override String get organizeHomeRows => 'Szervezze a házirendeket';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} sorok: mozog, Hős, Auto-slide, eltávolítása';
@@ -3165,7 +3165,7 @@ class _Translations$homeLayout$hu extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Válasszon egy sorban (vagy tartsa Válassza ki): mozogjon · Balra/jobbra: sorban lehetőségek · Vissza: véget ért';
 	@override String get layoutNavDescription => 'Válasszon sorokat, könyvtárakat és gyűjteménykategóriákat';
 	@override String get editHomeRow => 'Edit Home Rózsaszín';
-	@override String get resetHeroButton => 'A Hero layout visszaállítása a stockhoz Plezy';
+	@override String get resetHeroButton => 'A Hero layout visszaállítása a stockhoz Pleazyng';
 	@override String get reorderingUnlocked => 'Újra elzárva';
 	@override String get reorderingLocked => 'Újra zárva';
 	@override String get rowsCanBeDragged => 'A szálak húzhatók - nyomja meg a zárat, hogy megakadályozzák ezt';
@@ -3191,8 +3191,8 @@ class _Translations$platform$hu extends Translations$platform$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'A PlezyNG a helyi hálózaton keresztül csatlakozik a média szerverekhez és a lejátszó eszközökhöz.';
-	@override String get locationPermission => 'A PlezyNG akkor használja a helyadatokhoz való hozzáférést, ha az iOS ezt megköveteli a helyi hálózat felismeréséhez és a médiaszerverekhez való csatlakozáshoz.';
+	@override String get localNetworkPermission => 'A Pleazyng a helyi hálózaton keresztül csatlakozik a média szerverekhez és a lejátszó eszközökhöz.';
+	@override String get locationPermission => 'A Pleazyng akkor használja a helyadatokhoz való hozzáférést, ha az iOS ezt megköveteli a helyi hálózat felismeréséhez és a médiaszerverekhez való csatlakozáshoz.';
 	@override String get photoLibraryPermission => 'Válassz képeket a fotókönyvtáradból a médiatartalmak borítóképeihez és illusztrációihoz.';
 	@override String get cameraPermission => 'QR kódok szkennelése a Companion Remote párosításához.';
 }
@@ -3206,7 +3206,7 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'Nyílt média';
 	@override String get shortcutHelp => 'Játssz egy linket, lejátszási listát vagy fájlt erre az ülésre.';
-	@override String get intro => 'Nyissa meg a linket, a lejátszási listát vagy a fájlt.A Playback használja a PlezyNG szabványos lejátszóját és nem ad hozzá történetet a könyvtárához.';
+	@override String get intro => 'Nyissa meg a linket, a lejátszási listát vagy a fájlt.A Playback használja a Pleazyng szabványos lejátszóját és nem ad hozzá történetet a könyvtárához.';
 	@override String get openWhat => 'Mit szeretne megnyitni?';
 	@override String get stream => 'Stream cím';
 	@override String get playlist => 'játéklisták';
@@ -3264,13 +3264,13 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	@override String get stopTransfer => 'Megállapodás átadásáról és cím megsemmisítéséről';
 	@override String get startTransfer => 'Kezdődik a transzfer';
 	@override String get wifiImportedFiles => 'Wi-Fi átutalás';
-	@override String get wifiBrowserTitle => 'Fájlok küldése PlezyNG';
+	@override String get wifiBrowserTitle => 'Fájlok küldése Pleazyng';
 	@override String get wifiBrowserIntro => 'Válassza ki az audio, videó, ebook vagy képregény fájlokat küldeni. A fájlok tárolódnak a készülék Fájlok és könyvek könyvtárában. Maximum: 100 fájlt, 4 GiB fájlonként, 10 GiB összesen.';
 	@override String get uploadFilesLabel => 'Fájlok küldeni';
 	@override String get uploadSelected => 'A kiválasztott fájlok feltöltése';
 	@override String get uploadSelectFirst => 'Válasszon egy vagy több fájlt először.';
 	@override String get uploading => 'küldés';
-	@override String get uploadComplete => 'Fájl hozzáadva PlezyNG.';
+	@override String get uploadComplete => 'Fájl hozzáadva Pleazyng.';
 	@override String get uploadFailed => 'A fájl nem lehet hozzáadni. tartsa nyitva ezt az oldalt, és próbálja meg újra.';
 	@override String get liveCue => 'Élő';
 	@override String get liveSession => 'Élő Stream';
@@ -3298,7 +3298,7 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	@override String get recordingActive => 'Ez a készülék.Leaving playback megáll és mentse meg.';
 	@override String get recordingFormatHelp => 'Videó esetén válassza ki a MKV vagy MPEG-TS. A hang esetében válasszon MKA vagy MKV.';
 	@override String get replaceRecordingTitle => 'Ezt a felvételt helyettesítjük?';
-	@override String get replaceRecordingHelp => 'A PlezyNG visszaállítja a meglévő fájlt a rögzítés során. ha nem tudja menteni az új rögzítést, a Plezy NG visszaállíthatja a biztonsági mentést.';
+	@override String get replaceRecordingHelp => 'A Pleazyng visszaállítja a meglévő fájlt a rögzítés során. ha nem tudja menteni az új rögzítést, a Pleazyng NG visszaállíthatja a biztonsági mentést.';
 	@override String get replaceRecording => 'Fájl cseréje';
 	@override String get discHelp => 'Nyissa meg a lemezt ebben a számítógép optikai lemezében.Az ISO-képet is megnyithatja a Device fájlokból.';
 	@override String get discs => 'Optikai lemez';
@@ -3323,7 +3323,7 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'Válasszon egy audio vagy videó fájlt.';
 	@override String get converterLocalOnly => 'A kiválasztott fájl nem áll rendelkezésre helyi eszközútként.';
 	@override String get converterReplaceTitle => 'A fájl helyettesítése?';
-	@override String get converterReplaceHelp => 'A PlezyNG visszaállítja a meglévő fájlt, amíg az átalakított másolat menthető.';
+	@override String get converterReplaceHelp => 'A Pleazyng visszaállítja a meglévő fájlt, amíg az átalakított másolat menthető.';
 	@override String get converterStarting => 'Megkezdődött az FFmpeg...';
 	@override String get converterProgress => 'Ezzel a számítógéppel átalakítva...';
 	@override String get converterComplete => 'Az új fájl készen áll.';
@@ -3347,7 +3347,7 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Audio beviteli előzetes';
 	@override String get captureWaylandHelp => 'Wayland korlátozza ezt a XWayland fogást a X display-re. A XWayland-en kívüli Windows nem jelenik meg.';
 	@override String get captureFrameRate => 'Részletesebben Regisztrációs ráta';
-	@override String get capturePrivacy => 'A rögzítés csak az Ön által kiválasztott fájlra menthető. a mikrofon rögzítése opcionális. a PlezyNG nem tölti fel a rögzítést.';
+	@override String get capturePrivacy => 'A rögzítés csak az Ön által kiválasztott fájlra menthető. a mikrofon rögzítése opcionális. a Pleazyng nem tölti fel a rögzítést.';
 	@override String get captureSaveAs => 'A képernyő felvétele, mint';
 	@override String get captureExtensionMismatch => 'Válassza ki a .mp4-ben végződő filenámot.';
 	@override String get captureFfmpegMissing => 'FFmpeg vagy a H.264 videó kódoló nem érhető el. Telepítse a támogatott FFmpeg építkezést, majd próbáljon újra.';
@@ -3361,7 +3361,7 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	@override String get captureStop => 'Állj meg és mentse meg';
 	@override String get captureMode => 'fogság';
 	@override String get shareMode => 'megosztás';
-	@override String get shareIntro => 'Küldje el a helyi médiafájlt egy másik eszközre a magánhálózaton. PlezyNG létrehoz egy ideiglenes HLS áramlást.';
+	@override String get shareIntro => 'Küldje el a helyi médiafájlt egy másik eszközre a magánhálózaton. Pleazyng létrehoz egy ideiglenes HLS áramlást.';
 	@override String get sharePrivacy => 'Bárki a helyi hálózaton, aki a privát linket kapja meg, megtekintheti, miközben aktív. A link 60 perc után megszűnik.';
 	@override String get shareChooseFile => 'Válassza ki a média fájlt';
 	@override String get shareChooseHelp => 'Válasszon egy helyi audio vagy videó fájlt. A fájl ezen a számítógépen marad.';
@@ -3374,7 +3374,7 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'Nyissa meg ezt a címet egy játékosban a másik eszközön';
 	@override String get shareQrLabel => 'QR kód az ideiglenes áramlat címéhez';
 	@override String get shareQrHelp => 'Scan egy kompatibilis lejátszóval, amely ugyanazon magánhálózathoz van csatlakoztatva.';
-	@override String get shareHttpHint => 'Ez az áramlás titkosított HTTP. A PlezyNG, engedélyezze HTTP, mielőtt megnyitja.';
+	@override String get shareHttpHint => 'Ez az áramlás titkosított HTTP. A Pleazyng, engedélyezze HTTP, mielőtt megnyitja.';
 	@override String get shareCopyUrl => 'Stream cím másolása';
 	@override String get shareExpiresLabel => 'A link lejár';
 	@override String get shareStarting => 'Az áramlás előkészítése...';
@@ -3399,7 +3399,7 @@ class _Translations$universalMedia$hu extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'Add szolgáltatás';
 	@override String get extensionReplace => 'frissítés szolgáltatás';
 	@override String get extensionRemoveTitle => 'Távolítsa el ezt a keresési szolgáltatást?';
-	@override String get extensionRemoveHelp => 'Ez eltávolítja a szolgáltatást ebből a profilból. a PlezyNG nem lép kapcsolatba a végpontjával.';
+	@override String get extensionRemoveHelp => 'Ez eltávolítja a szolgáltatást ebből a profilból. a Pleazyng nem lép kapcsolatba a végpontjával.';
 	@override String get extensionRemove => 'eltávolítása szolgáltatás';
 	@override String get extensionInvalidManifest => 'Ez a fájl nem támogatott kiterjesztés manifesztus. lásd a Open media útmutatót a formátumra.';
 	@override String get extensionSaveFailed => 'A kiterjesztés nem menthető meg az aktív profilra.';
@@ -3554,12 +3554,12 @@ class _Translations$fileSources$hu extends Translations$fileSources$en {
 	@override String get none => 'Nincs';
 	@override String get fullscreen => 'Teljes képernyő';
 	@override String get syncLocation => 'Progress szinkronizálás (opcionális)';
-	@override String get syncLocationHint => 'A WebDAV fájl a PlezyNG állapothoz. feltételezett írásokat használ; a média változatlan marad.';
+	@override String get syncLocationHint => 'A WebDAV fájl a Pleazyng állapothoz. feltételezett írásokat használ; a média változatlan marad.';
 	@override String get audiobooks => 'Audiókönyvek';
 	@override String get comics => 'Képregények';
 	@override String get scan => 'A könyv és a média szkennelése';
 	@override String get browserReader => 'Nyílt olvasó';
-	@override String get browserReaderHelp => 'A böngészőben a olvasó nyitva van. A PlezyNG nyitva tartása a hely és a jegyzetek mentéséhez.';
+	@override String get browserReaderHelp => 'A böngészőben a olvasó nyitva van. A Pleazyng nyitva tartása a hely és a jegyzetek mentéséhez.';
 	@override String get on => 'A';
 	@override String get advancedSetup => 'App regisztráció';
 	@override String get microsoftSignIn => 'Jelentkezzen be a Microsoft-hoz';
@@ -3600,7 +3600,7 @@ class _Translations$fileSources$hu extends Translations$fileSources$en {
 	@override String get importInterrupted => 'Import megszakadt · eltávolítása tisztázni';
 	@override String get errorQuotaExceeded => 'Az offline tárolási korlátozás elérte. emelje fel a korlátot vagy távolítsa el a letöltött másolatot.';
 	@override String get errorStorageLow => 'Nincs elég ingyenes tárolási eszköz a védett tartalék fenntartásához.';
-	@override String get errorStorageUnavailable => 'A PlezyNG nem tudta ellenőrizni a szabad készülék tárolását, így az írás megszűnt.';
+	@override String get errorStorageUnavailable => 'A Pleazyng nem tudta ellenőrizni a szabad készülék tárolását, így az írás megszűnt.';
 	@override String get removeDownloadJob => 'Letöltés eltávolítása';
 	@override String get downloadAlreadyComplete => 'Ez a letöltés befejeződött, mielőtt eltávolítható. az elem most elérhető offline.';
 	@override String get confirmRemoveDownloadJob => 'Távolítsa el ezt a letöltést, és törölje a részben letöltött adatokat?';
@@ -3650,7 +3650,7 @@ class _Translations$lending$hu extends Translations$lending$en {
 	@override String get openLibraryNote => 'Fedezze fel a nyílt könyvtár katalógusát.Az olvasási és hitelezési lehetőségek az egyes címek oldalán jelennek meg.';
 	@override String get more => 'Töltse tovább';
 	@override String get gateway => 'Könyvtár beiratkozás szolgáltatás';
-	@override String get gatewayHint => 'A könyvtár vagy a PlezyNG adminisztrátor által biztosított.';
+	@override String get gatewayHint => 'A könyvtár vagy a Pleazyng adminisztrátor által biztosított.';
 	@override String get advanced => 'Könyvtár integráció';
 	@override String get loadLibraries => 'Válassza ki a könyvtárát';
 	@override String get expired => 'Ez a hitel lejár.';
@@ -3790,7 +3790,7 @@ class _Translations$sourceSetup$hu extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'Szerezz API-kulcsot az opensubtitles.com oldalon. A keresés a videó címét és az elérhető IMDb/TMDB-azonosítókat küldi el, a videófájlt soha. A kulcs és az opcionális fiókhitelesítő adatok ezzel a forrással együtt titkosítva tárolódnak.';
 	@override String get automaticMetadata => 'Automatikus online videómetaadatok';
 	@override String get metadataPrivacy => 'Csak a fájlnévből származó címet/évet és epizódszámokat vagy egy NFO-azonosítót küld el, médiát vagy hitelesítő adatokat soha. Az NFO-mezők elsőbbsége megmarad.';
-	@override String get nfsEncryptionFailure => 'Titkosított NFS esetén ellenőrizd az RFC 9289 és a TLS 1.3 támogatását mindkét NAS-szolgáltatásnál, a tanúsítvány nevét és a megosztás UID/GID értékeit. A PlezyNG nem próbálja újra ezt a kapcsolatot titkosítás nélkül.';
+	@override String get nfsEncryptionFailure => 'Titkosított NFS esetén ellenőrizd az RFC 9289 és a TLS 1.3 támogatását mindkét NAS-szolgáltatásnál, a tanúsítvány nevét és a megosztás UID/GID értékeit. A Pleazyng nem próbálja újra ezt a kapcsolatot titkosítás nélkül.';
 	@override String get sourceConnecting => 'Kapcsolódás a forráshoz';
 	@override String get metadataSearchPrivacy => 'Ez a címkeresés a Trakthoz kerül. A megadott címet küldi el, nem a videót vagy a forrás hitelesítő adatait.';
 	@override String get chooseMatch => 'Találat kiválasztása';
@@ -3936,6 +3936,12 @@ class _Translations$games$hu extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3945,7 +3951,7 @@ class _Translations$deepLinks$hu extends Translations$deepLinks$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Ez a Plezy link nem érvényes.';
+	@override String get invalid => 'Ez a Pleazyng link nem érvényes.';
 	@override String profileNotFound({required Object profile}) => 'Nincs profil a "${profile}" címmel.';
 	@override String get serverUnavailable => 'Nem tudtam elérni a szervert erre a linkre.';
 	@override String get notFound => 'Nem találtam ezt a címet a könyvtárakban.';
@@ -4120,7 +4126,7 @@ class _Translations$romm$hu extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5011,7 +5017,7 @@ class _Translations$watchTogether$errors$hu extends Translations$watchTogether$e
 	@override String get relayFull => 'A Watch Together jelenleg túlterhelt. Próbáld újra később.';
 	@override String get unreachable => 'Nem sikerült elérni a Watch Together-relét. Ellenőrizd a kapcsolatot.';
 	@override String get rateLimited => 'Túl sok próbálkozás. Várj egy kicsit, majd próbáld újra.';
-	@override String get clientBlocked => 'A PlezyNG ezen verziója nem tudja használni a relét. Frissítsd az alkalmazást.';
+	@override String get clientBlocked => 'A Pleazyng ezen verziója nem tudja használni a relét. Frissítsd az alkalmazást.';
 	@override String get forbidden => 'Ezt csak a házigazda teheti meg.';
 	@override String get notInRoom => 'Nem vagy szobában.';
 	@override String get alreadyInRoom => 'Már egy szobában vagy.';
@@ -5032,14 +5038,14 @@ class _Translations$downloads$backgroundWarning$hu extends Translations$download
 	@override String get bannerAction => 'Részletek';
 	@override String get sheetTitle => 'A háttérbeli letöltések le vannak tiltva';
 	@override String get sheetTitleDegraded => 'A háttérbeli letöltések korlátozottak lehetnek';
-	@override String get sheetIntro => 'Az Android megakadályozza, hogy a PlezyNG megbízhatóan töltsön le a háttérben.';
-	@override String get sheetIntroDegraded => 'Az eszközöd korlátozza, hogy a PlezyNG mikor tölthet le a háttérben.';
-	@override String get reasonBackgroundRestricted => 'A PlezyNG háttérbeli használata korlátozva van. Állítsd az akkumulátor- vagy háttérhasználatát „Korlátlan” értékre.';
+	@override String get sheetIntro => 'Az Android megakadályozza, hogy a Pleazyng megbízhatóan töltsön le a háttérben.';
+	@override String get sheetIntroDegraded => 'Az eszközöd korlátozza, hogy a Pleazyng mikor tölthet le a háttérben.';
+	@override String get reasonBackgroundRestricted => 'A Pleazyng háttérbeli használata korlátozva van. Állítsd az akkumulátor- vagy háttérhasználatát „Korlátlan” értékre.';
 	@override String get reasonStandbyRestricted => 'Az Android korlátozott készenléti állapotba helyezte a Plezyt. Állítsd az akkumulátorhasználatát „Korlátlan” értékre.';
 	@override String get reasonDownloadChannelBlocked => 'A letöltési értesítések ki vannak kapcsolva, ezért előfordulhat, hogy a folyamatjelzés és a vezérlők nem érhetők el.';
 	@override String get reasonNotificationsDisabled => 'Az értesítések ki vannak kapcsolva. Android 13 vagy újabb rendszeren szükségesek a hosszú háttérbeli letöltésekhez.';
 	@override String get reasonDataSaver => 'Az Adatforgalom-csökkentő be van kapcsolva, ezért mobiladat-kapcsolaton nem működnek a háttérbeli letöltések. Wi-Fi-n továbbra is működniük kell.';
-	@override String get reasonOemUnknown => 'A letöltések többször leálltak, miközben a PlezyNG a háttérben futott. Ellenőrizd a PlezyNG akkumulátor- vagy háttérhasználati beállításait.';
+	@override String get reasonOemUnknown => 'A letöltések többször leálltak, miközben a Pleazyng a háttérben futott. Ellenőrizd a Pleazyng akkumulátor- vagy háttérhasználati beállításait.';
 	@override String get openSettings => 'Beállítások megnyitása';
 	@override String get stillNotWorking => 'Eszközspecifikus segítség';
 	@override String get stillNotWorkingDescription => 'Nézd meg az eszközödhöz tartozó lépéseket, vagy ha a probléma továbbra is fennáll, küldj naplót a Beállítások › Naplók megtekintése menüből.';
@@ -5094,7 +5100,7 @@ class _Translations$companionRemote$pairing$hu extends Translations$companionRem
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'Az azonos Plex-fiókot használó PlezyNG-eszközök itt jelennek meg';
+	@override String get discoveryDescription => 'Az azonos Plex-fiókot használó Pleazyng-eszközök itt jelennek meg';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Csatlakozás...';
 	@override String get searchingForDevices => 'Eszközök keresése...';
@@ -5106,7 +5112,7 @@ class _Translations$companionRemote$pairing$hu extends Translations$companionRem
 	@override String get validationHostRequired => 'Add meg a gazdagép címét';
 	@override String get validationHostFormat => 'A formátumnak IP:port kell lennie (pl. 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'A csatlakozás túllépte az időkorlátot. Használd ugyanazt a hálózatot mindkét eszközön.';
-	@override String get sessionNotFound => 'Az eszköz nem található. Győződj meg arról, hogy a PlezyNG fut a gazdagépen.';
+	@override String get sessionNotFound => 'Az eszköz nem található. Győződj meg arról, hogy a Pleazyng fut a gazdagépen.';
 	@override String get authFailed => 'A hitelesítés nem sikerült. Mindkét eszközön ugyanazt a Plex-fiókot kell használni.';
 	@override String failedToConnect({required Object error}) => 'Nem sikerült a csatlakozás: ${error}';
 	@override String get codeTitle => 'páros kód';
@@ -5193,7 +5199,7 @@ class _Translations$services$simklReconnect$hu extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Simkl újracsatlakoztatása';
-	@override String get subtitle => 'A Simkl kivezeti a kapcsolat által használt bejelentkezési módot. Az újracsatlakozás megnyitja a simkl.com oldalt, ahol jóváhagyhatod a Plezyt — a PlezyNG sosem látja a jelszavadat. A megtekintési előzményeid a Simklen maradnak.';
+	@override String get subtitle => 'A Simkl kivezeti a kapcsolat által használt bejelentkezési módot. Az újracsatlakozás megnyitja a simkl.com oldalt, ahol jóváhagyhatod a Plezyt — a Pleazyng sosem látja a jelszavadat. A megtekintési előzményeid a Simklen maradnak.';
 }
 
 // Path: services.deviceCode
@@ -5203,7 +5209,7 @@ class _Translations$services$deviceCode$hu extends Translations$services$deviceC
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'PlezyNG aktiválása a következőn: ${service}';
+	@override String title({required Object service}) => 'Pleazyng aktiválása a következőn: ${service}';
 	@override String get instructions => 'Olvasd be a QR-kódot, vagy nyisd meg az alábbi címet, és írd be ezt a kódot:';
 	@override String openToActivate({required Object service}) => 'Nyisd meg a(z) ${service} oldalt az aktiváláshoz';
 	@override String get copyCode => 'Aktiválási kód másolása';
@@ -5278,12 +5284,12 @@ class _Translations$services$trackerDescriptions$hu extends Translations$service
 extension on TranslationsHu {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'Alkalmazásikon',
 			'appIcon.defaultIcon' => 'Alapértelmezett',
 			'appIcon.current' => 'Jelenlegi ikon',
 			'appIcon.locked' => 'Élethosszú hozzáférés szükséges',
-			'appIcon.lockedHint' => 'Kezdje a 7 napos próbát vagy letiltja a PlezyNG élethosszig, hogy alternatív ikonokat használjon.',
+			'appIcon.lockedHint' => 'Kezdje a 7 napos próbát vagy letiltja a Pleazyng élethosszig, hogy alternatív ikonokat használjon.',
 			'appIcon.changeFailed' => 'Nem sikerült módosítani az alkalmazásikont',
 			'appIcon.launcherHint' => 'Az új ikon azután jelenik meg a kezdőképernyőn, hogy kiléptél a Plezyből.',
 			'appIcon.tvLauncherHint' => 'Az új banner azután jelenik meg, hogy kiléptél a Plezyből. Az Android TV a TV újraindításáig még a régit is mutathatja.',
@@ -5326,7 +5332,7 @@ extension on TranslationsHu {
 			'auth.quickConnectWaiting' => 'Várakozás a jóváhagyásra…',
 			'auth.quickConnectCancel' => 'Mégse',
 			'auth.quickConnectExpired' => 'A Quick Connect kód lejárt. Próbáld újra.',
-			'auth.localDataRecoveryRequired' => 'A PlezyNG nem tudta biztonságosan helyreállítani a helyi bejelentkezés és a függőben lévő lejátszás adatait. Jelentkezz be újra.',
+			'auth.localDataRecoveryRequired' => 'A Pleazyng nem tudta biztonságosan helyreállítani a helyi bejelentkezés és a függőben lévő lejátszás adatait. Jelentkezz be újra.',
 			'auth.pinCheckRejected' => 'A Plex PIN ellenőrzését elutasították',
 			'auth.connectToDirectPlex' => 'Kapcsolat a helyi Plex szerverhez',
 			'common.cancel' => 'Mégse',
@@ -5442,9 +5448,9 @@ extension on TranslationsHu {
 			'update.latestVersion' => 'A legújabb verziót használod',
 			'update.checkFailed' => 'Nem sikerült az újabb frissítések ellenőrzése',
 			'settings.title' => 'Beállítások',
-			'settings.supportDeveloper' => 'PlezyNG támogatása',
+			'settings.supportDeveloper' => 'Pleazyng támogatása',
 			'settings.supportDeveloperDescription' => 'Adománnyal támogassa a fejlesztést',
-			'settings.lifetimeAccess' => 'PlezyNG Élethosszú hozzáférés',
+			'settings.lifetimeAccess' => 'Pleazyng Élethosszú hozzáférés',
 			'settings.language' => 'Nyelv',
 			'settings.theme' => 'Téma',
 			'settings.appearance' => 'Megjelenés',
@@ -5500,7 +5506,7 @@ extension on TranslationsHu {
 			'settings.contentScreensaverNoLibraries' => 'Nem állnak rendelkezésre kapcsolódó médiakönyvtárak.',
 			'settings.contentScreensaverDismissHint' => 'Nyomja meg a gombot vagy nyomja meg a lemondáshoz',
 			'settings.newEpisodeNotifications' => 'Új epizód értesítések',
-			'settings.newEpisodeNotificationsDescription' => 'Figyelmeztetés, amikor egy új epizód hozzáadódik egy show, akkor fogadják fel. Ellenőrizze, míg Plezy nyitva van.',
+			'settings.newEpisodeNotificationsDescription' => 'Figyelmeztetés, amikor egy új epizód hozzáadódik egy show, akkor fogadják fel. Ellenőrizze, míg Pleazyng nyitva van.',
 			'settings.continueWatchingRowSize' => 'Folytatjuk a sorméret figyelését',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} kártyák',
 			'settings.rowSizeCompact' => 'Kompakt',
@@ -5625,7 +5631,7 @@ extension on TranslationsHu {
 			'settings.importSettingsDescription' => 'Beállítások visszaállítása fájlból',
 			'settings.importSettingsConfirm' => 'Ez felülírja a jelenlegi beállításaidat. Folytatod?',
 			'settings.importSettingsSuccess' => 'Beállítások importálva',
-			'settings.importSettingsInvalidFile' => 'Ez a fájl nem érvényes PlezyNG-beállításexport',
+			'settings.importSettingsInvalidFile' => 'Ez a fájl nem érvényes Pleazyng-beállításexport',
 			'settings.importSettingsNoUser' => 'Jelentkezz be a beállítások importálása előtt',
 			'settings.cloudBackup' => 'Felhőalapú biztonsági mentés',
 			'settings.cloudBackupDescription' => 'Készíts biztonsági másolatot az átvihető beállításokról egy WebDAV-címre HTTPS-en keresztül. A szerverkapcsolatok és a bejelentkezési adatok ezen az eszközön maradnak.',
@@ -5809,7 +5815,7 @@ extension on TranslationsHu {
 			'settings.forceTvMode' => 'TV-mód kényszerítése',
 			'settings.forceTvModeDescription' => 'TV-elrendezés kényszerítése az automatikus felismeréssel nem rendelkező eszközökön. Újraindítást igényel.',
 			'settings.startInFullscreen' => 'Indítás teljes képernyőn',
-			'settings.startInFullscreenDescription' => 'A PlezyNG megnyitása teljes képernyős módban indításkor',
+			'settings.startInFullscreenDescription' => 'A Pleazyng megnyitása teljes képernyős módban indításkor',
 			'settings.exitFullscreenOnPlayerClose' => 'Kilépés a teljes képernyőből a lejátszó bezárásakor',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Automatikus kilépés a teljes képernyőből a videólejátszó bezárásakor',
 			'settings.autoHidePerformanceOverlay' => 'Teljesítményadatok automatikus elrejtése',
@@ -5865,7 +5871,7 @@ extension on TranslationsHu {
 			'settings.playerScopeGlobal' => 'Mindenhol',
 			'settings.playerScopeLibrary' => 'Könyvtáronként',
 			'settings.playerScopeTitle' => 'Sorozatonként vagy filmenként',
-			'settings.exportDialogTitle' => 'PlezyNG-beállítások exportálása',
+			'settings.exportDialogTitle' => 'Pleazyng-beállítások exportálása',
 			'settings.followSystem' => 'Rendszernyelv követése',
 			'settings.followAppLanguage' => 'A felület nyelvével megegyező',
 			'settings.regionFormat' => 'Területi formátumok',
@@ -5876,7 +5882,7 @@ extension on TranslationsHu {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Nyissa meg az asztali videót a teljes képernyőn, amikor elkezdődik a playback',
 			'settings.extendVideoIntoDisplayCutout' => 'Videó bővítése a Display Cutout-ba',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'Hagyja, hogy a teljes képernyős videó használja a fényképezőgép cutout az Android telefonok',
-			'settings.languageDescription' => 'Válassza ki a használt nyelvet PlezyNG vezérlők és üzenetek. kövesse a rendszer nyomon követése a készülék nyelvét.',
+			'settings.languageDescription' => 'Válassza ki a használt nyelvet Pleazyng vezérlők és üzenetek. kövesse a rendszer nyomon követése a készülék nyelvét.',
 			'settings.themeDescription' => 'Válassza ki az alkalmazás során használt színeket és kontrasztokat.',
 			'settings.libraryDensityDescription' => 'Változtassa meg, hogy hány könyvtári kártyát alkalmaznak minden sorban.',
 			'settings.displayScaleDescription' => 'Visszaállítsa a felületet ebben az autó képernyőjén anélkül, hogy megváltoztatná a készülék szerinti szöveges méretét.',
@@ -5898,14 +5904,14 @@ extension on TranslationsHu {
 			'settings.episodeActionDescription' => 'Válassza ki, mi történik, amikor egy epizódkártya aktiválódik.',
 			'settings.episodePlayDescription' => 'Az epizód azonnal megkezdődik.',
 			'settings.episodeDetailsDescription' => 'Nyissa meg az epizód oldalt a playback előtt.',
-			'settings.contentScreensaverDelayDescription' => 'Válassza ki, hogy mennyi időt vár a PlezyNG bevitele nélkül, mielőtt műalkotást mutatna.',
+			'settings.contentScreensaverDelayDescription' => 'Válassza ki, hogy mennyi időt vár a Pleazyng bevitele nélkül, mielőtt műalkotást mutatna.',
 			'settings.continueWatchingRowSizeDescription' => 'Válassza ki, hogy a kártyák hány méretűek a Folyamatos megfigyelési sorban.',
 			'settings.rowSizeCompactDescription' => 'Nézze meg a kisebb kártyákat, hogy több elem megfeleljen a soron.',
 			'settings.rowSizeStandardDescription' => 'Használja a kártya méretét.',
 			'settings.rowSizeLargeDescription' => 'Nézze meg a nagyobb kártyákat több műalkotási részletekkel.',
 			'settings.visualEffectsDescription' => 'Válassza ki az animációs és művészeti hatások költségvetését erre a készülékre.',
 			'settings.visualEffectsFullDescription' => 'Használja a teljes animációs és műalkotási hatásokat minden eszközön.',
-			'settings.startupSectionDescription' => 'Válassza ki, melyik szakasz megnyílik, amikor a PlezyNG elindul.',
+			'settings.startupSectionDescription' => 'Válassza ki, melyik szakasz megnyílik, amikor a Pleazyng elindul.',
 			'settings.startupSectionOptions.discover' => 'Nyissa meg az ajánlásokat és a kapcsolódó felfedezési forrásokból származó elemeket.',
 			'settings.startupSectionOptions.libraries' => 'Nyissa meg a kapcsolódó média könyvtárakat.',
 			'settings.startupSectionOptions.liveTv' => 'Nyissa meg a Live TV-t, amikor egy szerver biztosítja azt; különben a startup visszatér a Házba.',
@@ -5944,7 +5950,7 @@ extension on TranslationsHu {
 			'settings.musicQualityOriginalDescription' => 'Játssz a forráskódot bitrate-capped transcode nélkül.',
 			'settings.musicQualityTranscodeOptionDescription' => 'Kérjen egy szerver transzkódot, amely a fenti bitrate közelében van rögzítve; a tényleges kimenetel változhat.',
 			'settings.maxVolumeInputLabel' => 'Maximális térfogat (%)',
-			'settings.checkForUpdatesDescription' => 'Most ellenőrizze, hogy a PlezyNG újabb verziója elérhető-e.',
+			'settings.checkForUpdatesDescription' => 'Most ellenőrizze, hogy a Pleazyng újabb verziója elérhető-e.',
 			'settings.appearanceDescription' => 'Válassza ki az alkalmazás témáját, és módosítsa a könyvtári kártyákat, az otthoni sorokat és a navigációt.',
 			'settings.prerollLibraryDescription' => 'Válassza ki a könyvtárat, amely tartalmazza a klipek elérhető film pre-rolls.',
 			'settings.prerollSelectionDescription' => 'Válassza ki, hogy mely klipek a kiválasztott könyvtár játszhat előtt filmek.',
@@ -6180,8 +6186,8 @@ extension on TranslationsHu {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Ez törli az összes (${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) epizódot benne és a hozzá tartozó fájlt.', other: 'Ez törli az összes (${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)}) epizódot benne és a fájljaikat.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'Ez az elem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fájlban van tárolva, amely törlésre kerül.', other: 'Ez az elem ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fájlban van tárolva, és mindegyik törlésre kerül.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:', other: 'További ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} epizód is ugyanabban a fájlban van, és szintén törlésre kerül:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'A PlezyNG nem tudta ellenőrizni, mely fájlokat távolítja el ez, ezért a fent nevezett elemnél többet is törölhet. Szakítsa meg és próbálja újra, vagy töröljön mindenképp.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'A szerver nem szolgáltatott fájladatokat ehhez az elemhez, ezért a PlezyNG nem tudja ellenőrizni, mely fájlokat távolít el. A fent nevezett elemnél többet is törölhet.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'A Pleazyng nem tudta ellenőrizni, mely fájlokat távolítja el ez, ezért a fent nevezett elemnél többet is törölhet. Szakítsa meg és próbálja újra, vagy töröljön mindenképp.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'A szerver nem szolgáltatott fájladatokat ehhez az elemhez, ezért a Pleazyng nem tudja ellenőrizni, mely fájlokat távolít el. A fent nevezett elemnél többet is törölhet.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Médiaelem sikeresen törölve',
 			'mediaMenu.mediaFailedToDelete' => 'Nem sikerült a médiaelem törlése',
 			'mediaMenu.rate' => 'Értékelés',
@@ -6231,7 +6237,7 @@ extension on TranslationsHu {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'hozzáférhetőség',
 			'accessibility.summary' => 'szöveg, kontraszt, mozgás és ellenőrzés',
-			'accessibility.systemHint' => 'A készülék hozzáférhetőségének beállításait mindig alkalmazzák.Ezek a lehetőségek a PlezyNG egészében módosításokat adnak hozzá.',
+			'accessibility.systemHint' => 'A készülék hozzáférhetőségének beállításait mindig alkalmazzák.Ezek a lehetőségek a Pleazyng egészében módosításokat adnak hozzá.',
 			'accessibility.readability' => 'Olvasás és láthatóság',
 			'accessibility.textSize' => 'További szövegméret',
 			'accessibility.preview' => 'Olvasson, hallgasson és nézd meg a saját sebességedben.',
@@ -6244,7 +6250,7 @@ extension on TranslationsHu {
 			'accessibility.largeTargets' => 'Nagyabb érintkezési célok',
 			'accessibility.largeTargetsHint' => 'A megosztott vezérlők több helyet biztosítanak a hozzáféréshez és a segéd navigációhoz.',
 			'accessibility.navigationHint' => 'A Tab és a Shift+Tab billentyűkkel léphetsz a vezérlők között, az Enter vagy a szóköz aktiválja őket, az Escape vagy a Vissza pedig bezár. Megnyitott könyvnél a nagyítás és az olvasási beállítások is elérhetők.',
-			'accessibility.textSizeDescription' => 'Skála felület szöveg PlezyNG-ben a készülék rendszer szöveges méretének beállítása mellett.',
+			'accessibility.textSizeDescription' => 'Skála felület szöveg Pleazyng-ben a készülék rendszer szöveges méretének beállítása mellett.',
 			'accessibility.boldTextHint' => 'Használjon súlyosabb felület címkéket és üzeneteket, hogy könnyebben megkülönböztessék őket.',
 			'tooltips.shufflePlay' => 'Véletlenszerű lejátszás',
 			'tooltips.playTrailer' => 'Előzetes lejátszása',
@@ -6512,7 +6518,7 @@ extension on TranslationsHu {
 			'mpvConfig.removeLine' => 'Sor eltávolítása',
 			'mpvConfig.embeddedVoHint' => 'A vo, gpu-context és gpu-api beállítások Linuxon figyelmen kívül maradnak: a beágyazott videó mindig a vo=libmpv-n keresztül jelenik meg a videósíkon, a gpu-next (amelyre az ArtCNN-hez hasonló compute shadereknek szükségük van) pedig nem futhat beágyazva.',
 			'dialog.confirmAction' => 'Művelet megerősítése',
-			'profiles.addPlezyProfile' => 'PlezyNG profil hozzáadása',
+			'profiles.addPlezyProfile' => 'Pleazyng profil hozzáadása',
 			'profiles.switchingProfile' => 'Profilváltás…',
 			'profiles.deleteThisProfileTitle' => 'Törlöd ezt a profilt?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => '${displayName} eltávolítása. A kapcsolatokat nem érinti.',
@@ -6594,7 +6600,7 @@ extension on TranslationsHu {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} szerver megtagadta a hozzáférést ettől a fióktól',
 			'connections.signInAgain' => 'Bejelentkezés újra',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'A(z) ${product} kapcsolat szerkesztése',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Adjon hozzá vagy távolítson el URL-eket a(z) ${serverName} esetén. A PlezyNG a legkisebb késleltetésű, elérhető URL-t fogja használni.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Adjon hozzá vagy távolítson el URL-eket a(z) ${serverName} esetén. A Pleazyng a legkisebb késleltetésű, elérhető URL-t fogja használni.',
 			'accountPreferences.sectionTitle' => 'Fiókbeállítások',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Hang-, felirat- és könyvtárbeállítások mentve a(z) ${account} fiókra',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Hang-, felirat- és könyvtárbeállítások mentve ${count} fiókra',
@@ -6923,9 +6929,9 @@ extension on TranslationsHu {
 			'logs.saveLogs' => 'Logs to File tárolás',
 			'logs.logsSaved' => ({required Object path}) => 'A regisztrációt a ${path}',
 			'logs.saveLogsFailed' => 'Nem tudta megmenteni a log fájlt.',
-			'startup.failedTitle' => 'A PlezyNG nem tudott elindulni',
+			'startup.failedTitle' => 'A Pleazyng nem tudott elindulni',
 			'startup.failedBody' => 'Valami hiba történt az indítás során. Az alábbi részletek mutatják, mi hibázott.',
-			'startup.failedBodyRepairable' => 'A PlezyNG mentett beállításfájlja sérült, és újra kell építeni, mielőtt a PlezyNG elindulhatna. Az újrapróbálkozás nem segít – válassza a Tárhely javítása lehetőséget.',
+			'startup.failedBodyRepairable' => 'A Pleazyng mentett beállításfájlja sérült, és újra kell építeni, mielőtt a Pleazyng elindulhatna. Az újrapróbálkozás nem segít – válassza a Tárhely javítása lehetőséget.',
 			'startup.phaseLabel' => 'Lépés',
 			'startup.showDetails' => 'Részletek megjelenítése',
 			'startup.hideDetails' => 'Részletek elrejtése',
@@ -6934,16 +6940,16 @@ extension on TranslationsHu {
 			'startup.uploadDetails' => 'Részletek feltöltése',
 			'startup.repairStorage' => 'Tárhely javítása',
 			'startup.repairTitle' => 'Javítsuk a tárolt adatokat?',
-			'startup.repairBodyCommon' => 'A PlezyNG beállításfájlja sérült, és nem olvasható. A javítás minden beállítást visszaállít az alapértelmezettre.',
+			'startup.repairBodyCommon' => 'A Pleazyng beállításfájlja sérült, és nem olvasható. A javítás minden beállítást visszaállít az alapértelmezettre.',
 			'startup.repairBodyOneCredential' => 'Egy mentett bejelentkezés sérült, és nem olvasható. A javítás csak azt távolítja el; a többi beállítása érintetlen marad.',
 			'startup.repairBodySignInsKept' => 'A szervereinek és profiljainak bejelentkezve kell maradniuk.',
 			'startup.repairBodySignInsLost' => 'A mentett bejelentkezéseket védő kulcs nem nyerhető vissza ebből a fájlból, ezért minden szerverre és profilba újra be kell jelentkeznie. A médiaszerveren semmi nem érintett.',
-			'startup.repairBodySessionsUncertain' => 'A nyomkövetők (MAL, AniList, Simkl, Trakt) és a Seerr külön vannak tárolva, és megmaradhatnak vagy nem. A PlezyNG pontosan megmondja, mit őrzött meg.',
+			'startup.repairBodySessionsUncertain' => 'A nyomkövetők (MAL, AniList, Simkl, Trakt) és a Seerr külön vannak tárolva, és megmaradhatnak vagy nem. A Pleazyng pontosan megmondja, mit őrzött meg.',
 			'startup.repairConfirm' => 'Javítás',
 			'startup.repairSucceeded' => 'A tárhely javítva',
 			'startup.repairNeedsRestart' => 'A tárhely javítva – újraindítás szükséges',
-			'startup.restartRequiredBody' => 'Az adatait kijavítottuk, de a PlezyNG-nek frissen kell elindulnia, mielőtt használhatná. Zárja be a PlezyNG-t, és nyissa meg újra.',
-			'startup.quitPlezy' => 'Kilépés a PlezyNG-ből',
+			'startup.restartRequiredBody' => 'Az adatait kijavítottuk, de a Pleazyng-nek frissen kell elindulnia, mielőtt használhatná. Zárja be a Pleazyng-t, és nyissa meg újra.',
+			'startup.quitPlezy' => 'Kilépés a Pleazyng-ből',
 			'startup.repairFailed' => 'A javítás nem sikerült',
 			'startup.repairKeptSignIns' => 'A szerverei és profiljai továbbra is be vannak jelentkezve.',
 			'startup.repairLostSignIns' => 'A mentett bejelentkezéseket védő kulcs nem volt visszanyerhető. Minden szerverre és profilba újra be kell jelentkeznie.',
@@ -6952,7 +6958,7 @@ extension on TranslationsHu {
 			'startup.backupWarning' => 'Bejelentkezési adatait tartalmazza. Ne töltse fel és ne ossza meg.',
 			'startup.deleteBackup' => 'Másolat törlése',
 			'startup.backupDeleted' => 'A másolat törölve.',
-			'startup.previousFailureTitle' => 'A PlezyNG legutóbb nem tudott elindulni',
+			'startup.previousFailureTitle' => 'A Pleazyng legutóbb nem tudott elindulni',
 			'licenses.relatedPackages' => 'Kapcsolódó csomagok',
 			'licenses.license' => 'Licenc',
 			'licenses.licenseNumber' => ({required Object number}) => '${number}. licenc',
@@ -7358,7 +7364,7 @@ extension on TranslationsHu {
 			'watchTogether.chooseAnotherCopy' => 'Másik példány választása',
 			'watchTogether.dontPlay' => 'Ne játszd le',
 			'watchTogether.unavailableTitle' => 'Ez a videó nincs meg neked',
-			'watchTogether.unavailableDescription' => 'A PlezyNG nem találta meg a könyvtáraidban. Válassz ki magad egy példányt, vagy keress újra.',
+			'watchTogether.unavailableDescription' => 'A Pleazyng nem találta meg a könyvtáraidban. Válassz ki magad egy példányt, vagy keress újra.',
 			'watchTogether.chooseCopy' => 'Példány választása',
 			'watchTogether.searchAgain' => 'Keresés újra',
 			'watchTogether.noCandidates' => 'Nem található példány a könyvtáraidban.',
@@ -7450,7 +7456,7 @@ extension on TranslationsHu {
 			'watchTogether.errors.relayFull' => 'A Watch Together jelenleg túlterhelt. Próbáld újra később.',
 			'watchTogether.errors.unreachable' => 'Nem sikerült elérni a Watch Together-relét. Ellenőrizd a kapcsolatot.',
 			'watchTogether.errors.rateLimited' => 'Túl sok próbálkozás. Várj egy kicsit, majd próbáld újra.',
-			'watchTogether.errors.clientBlocked' => 'A PlezyNG ezen verziója nem tudja használni a relét. Frissítsd az alkalmazást.',
+			'watchTogether.errors.clientBlocked' => 'A Pleazyng ezen verziója nem tudja használni a relét. Frissítsd az alkalmazást.',
 			'watchTogether.errors.forbidden' => 'Ezt csak a házigazda teheti meg.',
 			'watchTogether.errors.notInRoom' => 'Nem vagy szobában.',
 			'watchTogether.errors.alreadyInRoom' => 'Már egy szobában vagy.',
@@ -7532,11 +7538,11 @@ extension on TranslationsHu {
 			'downloads.activeSyncRules' => 'Szinkronizálási szabályok',
 			'downloads.reviewOrphanFiles' => 'Árva letöltések áttekintése',
 			'downloads.orphanReviewTitle' => 'Árva letöltések áttekintése',
-			'downloads.orphanReviewDescription' => 'Ezek a címkézett fájlok a PlezyNG által kezelt alapértelmezett letöltési mappákban találhatók, és nincs hozzájuk tartozó letöltési rekord vagy aktív feladat. Törlés előtt ellenőrizze a listát.',
+			'downloads.orphanReviewDescription' => 'Ezek a címkézett fájlok a Pleazyng által kezelt alapértelmezett letöltési mappákban találhatók, és nincs hozzájuk tartozó letöltési rekord vagy aktív feladat. Törlés előtt ellenőrizze a listát.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} fájl · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => '${count} fájl törlése',
 			'downloads.orphanCleanupNone' => 'Nem található árva letöltési fájl',
-			'downloads.orphanCleanupFailed' => 'A PlezyNG nem tudta biztonságosan átvizsgálni a kezelt letöltési mappát. Nem töröltünk fájlokat.',
+			'downloads.orphanCleanupFailed' => 'A Pleazyng nem tudta biztonságosan átvizsgálni a kezelt letöltési mappát. Nem töröltünk fájlokat.',
 			'downloads.orphanCleanupChanged' => 'A letöltési lista az áttekintés közben megváltozott. Tisztítás előtt tekintse át újra a fájlokat.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => '${count} árva letöltési fájl törölve · ${size} tárhely felszabadítva',
 			'downloads.noSyncRules' => 'Nincsenek szinkronizálási szabályok',
@@ -7558,14 +7564,14 @@ extension on TranslationsHu {
 			'downloads.backgroundWarning.bannerAction' => 'Részletek',
 			'downloads.backgroundWarning.sheetTitle' => 'A háttérbeli letöltések le vannak tiltva',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'A háttérbeli letöltések korlátozottak lehetnek',
-			'downloads.backgroundWarning.sheetIntro' => 'Az Android megakadályozza, hogy a PlezyNG megbízhatóan töltsön le a háttérben.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Az eszközöd korlátozza, hogy a PlezyNG mikor tölthet le a háttérben.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'A PlezyNG háttérbeli használata korlátozva van. Állítsd az akkumulátor- vagy háttérhasználatát „Korlátlan” értékre.',
+			'downloads.backgroundWarning.sheetIntro' => 'Az Android megakadályozza, hogy a Pleazyng megbízhatóan töltsön le a háttérben.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Az eszközöd korlátozza, hogy a Pleazyng mikor tölthet le a háttérben.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'A Pleazyng háttérbeli használata korlátozva van. Állítsd az akkumulátor- vagy háttérhasználatát „Korlátlan” értékre.',
 			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Az Android korlátozott készenléti állapotba helyezte a Plezyt. Állítsd az akkumulátorhasználatát „Korlátlan” értékre.',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'A letöltési értesítések ki vannak kapcsolva, ezért előfordulhat, hogy a folyamatjelzés és a vezérlők nem érhetők el.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Az értesítések ki vannak kapcsolva. Android 13 vagy újabb rendszeren szükségesek a hosszú háttérbeli letöltésekhez.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Az Adatforgalom-csökkentő be van kapcsolva, ezért mobiladat-kapcsolaton nem működnek a háttérbeli letöltések. Wi-Fi-n továbbra is működniük kell.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'A letöltések többször leálltak, miközben a PlezyNG a háttérben futott. Ellenőrizd a PlezyNG akkumulátor- vagy háttérhasználati beállításait.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'A letöltések többször leálltak, miközben a Pleazyng a háttérben futott. Ellenőrizd a Pleazyng akkumulátor- vagy háttérhasználati beállításait.',
 			'downloads.backgroundWarning.openSettings' => 'Beállítások megnyitása',
 			'downloads.backgroundWarning.stillNotWorking' => 'Eszközspecifikus segítség',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Nézd meg az eszközödhöz tartozó lépéseket, vagy ha a probléma továbbra is fennáll, küldj naplót a Beállítások › Naplók megtekintése menüből.',
@@ -7636,7 +7642,7 @@ extension on TranslationsHu {
 			'companionRemote.session.stopServer' => 'Szerver leállítása',
 			'companionRemote.session.minimize' => 'Kis méret',
 			'companionRemote.session.manualAddressHint' => 'Kézi kapcsolódási cím:',
-			'companionRemote.pairing.discoveryDescription' => 'Az azonos Plex-fiókot használó PlezyNG-eszközök itt jelennek meg',
+			'companionRemote.pairing.discoveryDescription' => 'Az azonos Plex-fiókot használó Pleazyng-eszközök itt jelennek meg',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Csatlakozás...',
 			'companionRemote.pairing.searchingForDevices' => 'Eszközök keresése...',
@@ -7648,7 +7654,7 @@ extension on TranslationsHu {
 			'companionRemote.pairing.validationHostRequired' => 'Add meg a gazdagép címét',
 			'companionRemote.pairing.validationHostFormat' => 'A formátumnak IP:port kell lennie (pl. 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'A csatlakozás túllépte az időkorlátot. Használd ugyanazt a hálózatot mindkét eszközön.',
-			'companionRemote.pairing.sessionNotFound' => 'Az eszköz nem található. Győződj meg arról, hogy a PlezyNG fut a gazdagépen.',
+			'companionRemote.pairing.sessionNotFound' => 'Az eszköz nem található. Győződj meg arról, hogy a Pleazyng fut a gazdagépen.',
 			'companionRemote.pairing.authFailed' => 'A hitelesítés nem sikerült. Mindkét eszközön ugyanazt a Plex-fiókot kell használni.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Nem sikerült a csatlakozás: ${error}',
 			'companionRemote.pairing.codeTitle' => 'páros kód',
@@ -7912,7 +7918,7 @@ extension on TranslationsHu {
 			'trakt.connected' => 'Csatlakoztatva',
 			'trakt.connectedAs' => ({required Object username}) => '@${username} néven csatlakoztatva',
 			'trakt.disconnectConfirm' => 'Leválasztod a Trakt-fiókot?',
-			'trakt.disconnectConfirmBody' => 'A PlezyNG nem küld több eseményt a Traktnak. Bármikor újracsatlakozhatsz.',
+			'trakt.disconnectConfirmBody' => 'A Pleazyng nem küld több eseményt a Traktnak. Bármikor újracsatlakozhatsz.',
 			'trakt.scrobble' => 'Valós idejű scrobbling',
 			'trakt.scrobbleDescription' => 'Lejátszási, szüneteltetési és leállítási események küldése a Traktnak lejátszás közben.',
 			'trakt.watchedSync' => 'Megtekintési állapot szinkronizálása',
@@ -7926,10 +7932,10 @@ extension on TranslationsHu {
 			'seerr.signInWithEmby' => 'Bejelentkezés Emby-vel',
 			'seerr.signInWithLocal' => 'Helyi fiók használata',
 			'seerr.email' => 'E-mail',
-			'seerr.noSignInMethods' => 'Ez a Seerr példány nem kínál olyan bejelentkezési módot, amit a PlezyNG támogat.',
+			'seerr.noSignInMethods' => 'Ez a Seerr példány nem kínál olyan bejelentkezési módot, amit a Pleazyng támogat.',
 			'seerr.instance' => 'Példány',
 			'seerr.disconnectConfirm' => 'Leválasztod a Seerr-kapcsolatot?',
-			'seerr.disconnectConfirmBody' => 'A PlezyNG elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.',
+			'seerr.disconnectConfirmBody' => 'A Pleazyng elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.',
 			'seerr.request' => 'Igénylés',
 			'seerr.request4k' => 'Igénylés 4K-ban',
 			'seerr.seasons' => 'Évadok',
@@ -7954,7 +7960,7 @@ extension on TranslationsHu {
 			'seerr.statusBlocklisted' => 'Tiltólistán',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Nem sikerült elérni ezt: ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'Nem található Seerr-példány ezen a címen: ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'A Seerr helyett egy hitelesítő fordított proxy (SSO vagy HTTP-hitelesítés) válaszolt. A PlezyNG nem tud rajta bejelentkezni: engedd, hogy a Seerr /api/v1 útvonala megkerülje a proxyt ennél az alkalmazásnál, vagy használj olyan címet, amely közvetlenül eléri a Seerr-t.',
+			'seerr.behindAuthProxy' => 'A Seerr helyett egy hitelesítő fordított proxy (SSO vagy HTTP-hitelesítés) válaszolt. A Pleazyng nem tud rajta bejelentkezni: engedd, hogy a Seerr /api/v1 útvonala megkerülje a proxyt ennél az alkalmazásnál, vagy használj olyan címet, amely közvetlenül eléri a Seerr-t.',
 			'seerr.invalidUrl' => 'Adj meg egy szervercímet, például: https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Ez a Seerr-példány nem támogatja a Quick Connectet. Seerr 3.4 vagy újabb verzió szükséges.',
 			'seerr.notInitialized' => 'Ennek a Seerr-példánynak a kezdeti beállítása még nem fejeződött be',
@@ -7975,7 +7981,7 @@ extension on TranslationsHu {
 			'services.scrobble' => 'Haladás automatikus követése',
 			'services.scrobbleDescription' => 'Lista frissítése, amikor befejezel egy epizódot vagy filmet.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Leválasztod a(z) ${service} szolgáltatást?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'A PlezyNG nem frissíti többé a(z) ${service} adatait. Bármikor újracsatlakozhatsz.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'A Pleazyng nem frissíti többé a(z) ${service} adatait. Bármikor újracsatlakozhatsz.',
 			'services.connectFailed' => ({required Object service}) => 'Nem sikerült csatlakozni a következőhöz: ${service}. Próbáld újra.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7983,8 +7989,8 @@ extension on TranslationsHu {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Simkl újracsatlakoztatása',
-			'services.simklReconnect.subtitle' => 'A Simkl kivezeti a kapcsolat által használt bejelentkezési módot. Az újracsatlakozás megnyitja a simkl.com oldalt, ahol jóváhagyhatod a Plezyt — a PlezyNG sosem látja a jelszavadat. A megtekintési előzményeid a Simklen maradnak.',
-			'services.deviceCode.title' => ({required Object service}) => 'PlezyNG aktiválása a következőn: ${service}',
+			'services.simklReconnect.subtitle' => 'A Simkl kivezeti a kapcsolat által használt bejelentkezési módot. Az újracsatlakozás megnyitja a simkl.com oldalt, ahol jóváhagyhatod a Plezyt — a Pleazyng sosem látja a jelszavadat. A megtekintési előzményeid a Simklen maradnak.',
+			'services.deviceCode.title' => ({required Object service}) => 'Pleazyng aktiválása a következőn: ${service}',
 			'services.deviceCode.instructions' => 'Olvasd be a QR-kódot, vagy nyisd meg az alábbi címet, és írd be ezt a kódot:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Nyisd meg a(z) ${service} oldalt az aktiváláshoz',
 			'services.deviceCode.copyCode' => 'Aktiválási kód másolása',
@@ -8017,8 +8023,8 @@ extension on TranslationsHu {
 			'streaming.title' => 'Felhő és kiegészítők közvetítése',
 			'streaming.subtitle' => 'Csatlakoztass egy Debrid-fiókot a felhőben lévő fájlok böngészéséhez és a támogatott streamek lejátszásához. A Stremio-kompatibilis kiegészítők streamlehetőségeket kínálnak a filmek és epizódok oldalán. A kapcsolat adatai ezen az eszközön titkosítva, ebben a profilban tárolódnak.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Csatlakoztatott források: ${count}',
-			'streaming.settingsLoadFailed' => 'A PlezyNG nem tudta feloldani a mentett streamelési beállításokat. A kapcsolatok módosítása előtt oldd fel az eszköz zárolását, majd próbáld újra.',
-			'streaming.settingsUnreadable' => 'A PlezyNG nem tudta feloldani ezeket a mentett kapcsolatokat. Töröld őket a szolgáltatások újbóli csatlakoztatásához.',
+			'streaming.settingsLoadFailed' => 'A Pleazyng nem tudta feloldani a mentett streamelési beállításokat. A kapcsolatok módosítása előtt oldd fel az eszköz zárolását, majd próbáld újra.',
+			'streaming.settingsUnreadable' => 'A Pleazyng nem tudta feloldani ezeket a mentett kapcsolatokat. Töröld őket a szolgáltatások újbóli csatlakoztatásához.',
 			'streaming.clearUnreadableSettings' => 'Mentett beállítások törlése',
 			'streaming.clearUnreadableSettingsConfirm' => 'Törlöd a mentett streamelési beállításokat?',
 			'streaming.clearUnreadableSettingsBody' => 'Ez eltávolítja a profilból az összes mentett szolgáltatói fiókot és kiegészítőcímet. Nem lehet visszavonni.',
@@ -8030,11 +8036,11 @@ extension on TranslationsHu {
 			'streaming.catalogFiltersRequired' => 'A katalógus böngészéséhez válaszd ki a szükséges szűrőket.',
 			'streaming.catalogRequiredLabel' => 'Kötelező',
 			'streaming.importFromStremio' => 'Importálás a Stremióból',
-			'streaming.stremioImportInstructions' => 'Olvasd be a QR-kódot, vagy nyisd meg a hivatkozást. Jelentkezz be a Stremióba, és hagyd jóvá a kérést. A PlezyNG csak a kiegészítőlistádat olvassa; nem kéri el a Stremio-jelszavadat, és nem módosítja a beállításaidat.',
+			'streaming.stremioImportInstructions' => 'Olvasd be a QR-kódot, vagy nyisd meg a hivatkozást. Jelentkezz be a Stremióba, és hagyd jóvá a kérést. A Pleazyng csak a kiegészítőlistádat olvassa; nem kéri el a Stremio-jelszavadat, és nem módosítja a beállításaidat.',
 			'streaming.stremioImportOpen' => 'Stremio-hivatkozás megnyitása',
 			'streaming.stremioImportCode' => 'Összekapcsolási kód',
 			'streaming.stremioImportPreviewTitle' => 'Kiegészítők kiválasztása',
-			'streaming.stremioImportPreviewBody' => 'Válaszd ki a PlezyNG-hez csatlakoztatni kívánt kiegészítőket. Ez az importálás csak HTTPS-címeket fogad el.',
+			'streaming.stremioImportPreviewBody' => 'Válaszd ki a Pleazyng-hez csatlakoztatni kívánt kiegészítőket. Ez az importálás csak HTTPS-címeket fogad el.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Nem támogatott vagy nem biztonságos című kihagyott kiegészítők: ${count}.',
 			'streaming.stremioCatalogs' => 'Katalógusok',
 			'streaming.stremioStreams' => 'Streamek',
@@ -8048,7 +8054,7 @@ extension on TranslationsHu {
 			'streaming.addByManifestUrl' => 'Hozzáadás manifest URL-címmel',
 			'streaming.addAddon' => 'Kiegészítő hozzáadása',
 			'streaming.manifestUrl' => 'Kiegészítő manifest URL-címe',
-			'streaming.manifestUrlHint' => 'Illeszd be a kiegészítő manifest URL-címét. Csatlakozás előtt a PlezyNG ellenőrzi a katalógusok vagy streamforrások támogatását.',
+			'streaming.manifestUrlHint' => 'Illeszd be a kiegészítő manifest URL-címét. Csatlakozás előtt a Pleazyng ellenőrzi a katalógusok vagy streamforrások támogatását.',
 			'streaming.allowHttp' => 'Nem titkosított HTTP-cím engedélyezése',
 			'streaming.allowHttpDescription' => 'Csak megbízható kiegészítőhöz használd a privát hálózatodon.',
 			'streaming.installAddon' => 'Kiegészítő csatlakoztatása',
@@ -8056,20 +8062,20 @@ extension on TranslationsHu {
 			'streaming.addonRemoved' => 'Kiegészítő eltávolítva',
 			'streaming.addonToggle' => 'Kiegészítő engedélyezése',
 			'streaming.addonEmpty' => 'Még nincs csatlakoztatott kiegészítő',
-			'streaming.addonError' => 'A PlezyNG nem tudott csatlakozni ehhez a kiegészítőhöz. Ellenőrizd a manifest URL-címét, és próbáld újra.',
+			'streaming.addonError' => 'A Pleazyng nem tudott csatlakozni ehhez a kiegészítőhöz. Ellenőrizd a manifest URL-címét, és próbáld újra.',
 			'streaming.addonPrivacy' => 'Csak olyan kiegészítőket csatlakoztass, amelyekben megbízol. Kereséskor a kiegészítő megkapja a keresett címet, és harmadik féltől származó streamhivatkozásokat adhat vissza.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Támogatott torrentstreamek lejátszása a Real-Debrid-fiókoddal.',
 			'streaming.connectRealDebrid' => 'Csatlakozás QR-kóddal',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Csatlakoztatva: ${username}',
-			'streaming.realDebridInstructions' => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást, majd add meg ezt az aktiválókódot a PlezyNG csatlakoztatásához:',
+			'streaming.realDebridInstructions' => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást, majd add meg ezt az aktiválókódot a Pleazyng csatlakoztatásához:',
 			'streaming.realDebridActivate' => 'Real-Debrid megnyitása az aktiváláshoz',
 			'streaming.realDebridCode' => 'Aktiválókód',
 			'streaming.realDebridConnectFailed' => 'Nem sikerült csatlakozni a Real-Debridhez. Próbáld újra.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'Támogatott torrentstreamek lejátszása az AllDebrid-fiókoddal.',
 			'streaming.connectAllDebrid' => 'Csatlakozás QR-kóddal',
-			'streaming.allDebridInstructions' => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást a PlezyNG engedélyezéséhez. A csatlakozás alatt hagyd nyitva ezt a képernyőt:',
+			'streaming.allDebridInstructions' => 'Olvasd be a QR-kódot vagy nyisd meg a hivatkozást a Pleazyng engedélyezéséhez. A csatlakozás alatt hagyd nyitva ezt a képernyőt:',
 			'streaming.allDebridActivate' => 'AllDebrid megnyitása az aktiváláshoz',
 			'streaming.allDebridCode' => 'Aktiváló PIN',
 			'streaming.allDebridConnectFailed' => 'Nem sikerült csatlakozni az AllDebridhez. Próbáld újra.',
@@ -8080,13 +8086,13 @@ extension on TranslationsHu {
 			'streaming.connectApiKey' => 'Csatlakozás API-kulccsal',
 			'streaming.apiKeyTitle' => ({required Object service}) => '${service} csatlakoztatása',
 			'streaming.apiKey' => 'API-kulcs',
-			'streaming.apiKeyHint' => ({required Object service}) => 'Illeszd be az API-kulcsot a ${service}-fiók beállításaiból. A PlezyNG titkosítja ezen az eszközön, és menti ebbe a profilba.',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Illeszd be az API-kulcsot a ${service}-fiók beállításaiból. A Pleazyng titkosítja ezen az eszközön, és menti ebbe a profilba.',
 			'streaming.apiKeyConnectFailed' => 'Nem sikerült ellenőrizni az API-kulcsot. Ellenőrizd, és próbáld újra.',
 			'streaming.accountConnected' => ({required Object username}) => 'Csatlakoztatva: ${username}',
 			'streaming.streamNeedsProvider' => 'A torrentstream lejátszásához csatlakoztass egy Debrid-szolgáltatást.',
 			'streaming.playViaProvider' => 'Lejátszás Debriddel',
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Leválasztod a ${service} szolgáltatást?',
-			'streaming.disconnectBody' => 'A PlezyNG eltávolítja az eszköz engedélyét. A szolgáltatónál tárolt fájlok és a folyamatban lévő átvitelek változatlanok maradnak.',
+			'streaming.disconnectBody' => 'A Pleazyng eltávolítja az eszköz engedélyét. A szolgáltatónál tárolt fájlok és a folyamatban lévő átvitelek változatlanok maradnak.',
 			'streaming.streamsTitle' => 'Stream kiválasztása',
 			'streaming.noStreams' => 'Ehhez a címhez nem található stream.',
 			'streaming.manageConnections' => 'Streamingszolgáltatások kezelése',
@@ -8102,7 +8108,7 @@ extension on TranslationsHu {
 			'streaming.streamUnsupported' => 'Ezt a streamformátumot nem támogatja az alkalmazáslejátszó.',
 			'streaming.remoteNeedsEpisode' => 'Stream keresése előtt válassz epizódot.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Ennél az epizódnál hiányzik az évad- vagy epizódszám.',
-			'streaming.remoteNeedsExternalId' => 'A PlezyNG nem talált IMDb- vagy TMDB-azonosítót ehhez a címhez.',
+			'streaming.remoteNeedsExternalId' => 'A Pleazyng nem talált IMDb- vagy TMDB-azonosítót ehhez a címhez.',
 			'streaming.watchWithServices' => 'Megtekintés csatlakoztatott szolgáltatásokkal',
 			'streaming.chooseEpisode' => 'Epizód kiválasztása',
 			'streaming.episodes' => 'Epizódok',
@@ -8188,15 +8194,15 @@ extension on TranslationsHu {
 			'notifications.newEpisodeTitle' => 'Új epizód',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'Próbáld ki minden funkciót ingyen 7 napig',
-			'appAccess.description' => 'Kezdje a hét napos próbát minden PlezyNG funkcióhoz való teljes hozzáféréssel. A próbában nincs díj és nincs előfizetés. A próbát követően egy élethosszig tartó vásárlás az üzlet árán PlezyNG az élethosszú zárat nyit.',
-			'appAccess.trialEndedDescription' => 'A PlezyNG minden funkciót letiltja az életre egy vásárlással az üzlet árán.',
+			'appAccess.description' => 'Kezdje a hét napos próbát minden Pleazyng funkcióhoz való teljes hozzáféréssel. A próbában nincs díj és nincs előfizetés. A próbát követően egy élethosszig tartó vásárlás az üzlet árán Pleazyng az élethosszú zárat nyit.',
+			'appAccess.trialEndedDescription' => 'A Pleazyng minden funkciót letiltja az életre egy vásárlással az üzlet árán.',
 			'appAccess.startTrial' => 'Kezdje a 7 napos ingyenes próbát',
 			'appAccess.trialActive' => 'A 7 napos teljes funkciót tesztelője aktív.',
 			'appAccess.trialEnded' => 'A 7 napos bírósági eljárás befejeződött',
 			'appAccess.trialStartFailed' => 'Nem tudtam menteni a tesztet a készülékre. kérjük, próbáljon újra.',
-			'appAccess.lifetimeTitle' => 'PlezyNG életre szóló zárolás',
-			'appAccess.lifetimeBody' => 'Köszönöm! az egész életen át tartó hozzáférést kap minden PlezyNG funkcióhoz.',
-			'appAccess.manageTitle' => 'PlezyNG Élethosszú hozzáférés',
+			'appAccess.lifetimeTitle' => 'Pleazyng életre szóló zárolás',
+			'appAccess.lifetimeBody' => 'Köszönöm! az egész életen át tartó hozzáférést kap minden Pleazyng funkcióhoz.',
+			'appAccess.manageTitle' => 'Pleazyng Élethosszú hozzáférés',
 			'appAccess.manageDescription' => 'Próbáld ki minden funkciót ingyen 7 napig, majd letölti az egész életet egy fizetéssel az áruház ára.',
 			'appAccess.buy' => ({required Object price}) => 'Minden funkció letiltása a ${price}',
 			'appAccess.loadingPrice' => 'A szállítási árak...',
@@ -8204,11 +8210,11 @@ extension on TranslationsHu {
 			'appAccess.restore' => 'Életmód vásárlás',
 			'appAccess.pending' => 'A vásárlás fizetést vagy jóváhagyást vár. Az élethosszig tartó hozzáférés a bolt befejezését követően zárul.',
 			'appAccess.storeUnavailable' => 'A vásárlás nem elérhető. Ellenőrizze, hogy Ön regisztrált a boltban, és a vásárlás engedélyezett ezen a készüléken.',
-			'appAccess.productNotFound' => 'A PlezyNG élethosszig tartó zárolás még nem elérhető ebben a boltban.',
+			'appAccess.productNotFound' => 'A Pleazyng élethosszig tartó zárolás még nem elérhető ebben a boltban.',
 			'appAccess.productQueryFailed' => 'Nem tudtam feltölteni a bolt árat. Ellenőrizze a kapcsolatot, és próbáljon meg újra.',
 			'appAccess.purchaseFailed' => 'A vásárlás nem ment át. próbáljon újra.',
 			'appAccess.restoreFailed' => 'Nem tudtam eljutni a boltba, hogy visszaállítsam a vásárlást. próbáljon újra.',
-			'appAccess.nothingToRestore' => 'A PlezyNG életévét megvásárlás találta ebben a boltban.',
+			'appAccess.nothingToRestore' => 'A Pleazyng életévét megvásárlás találta ebben a boltban.',
 			'detail.endsAt' => ({required Object time}) => 'Vége: ${time}',
 			'watchLink.serverUnavailable' => 'Nem tudtam elérni a Plex szervert erre a linkre.',
 			'watchLink.notFound' => 'Nem találtam ezt a show-t vagy filmet a Plex szervereken.',
@@ -8222,8 +8228,8 @@ extension on TranslationsHu {
 			'watchLink.copy' => 'másolás',
 			'watchLink.copied' => 'Link másolat',
 			'homeLayout.title' => 'Home Layout',
-			'homeLayout.resetToast' => 'Home újra az eredeti Plezy hős elrendezésre',
-			'homeLayout.resetHeroTitle' => 'A hős elrendezésének helyreállítása a Plezy raktárba?',
+			'homeLayout.resetToast' => 'Home újra az eredeti Pleazyng hős elrendezésre',
+			'homeLayout.resetHeroTitle' => 'A hős elrendezésének helyreállítása a Pleazyng raktárba?',
 			'homeLayout.resetHeroBody' => 'A hős állítása minden sorban törli, és visszahozza az egyetlen forgó banneret a ház tetején, mint az előző sorokban.',
 			'homeLayout.removeRowTitle' => 'Helyreállítsa a homlokzatot?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} törlésre kerül. ez nem lehet megszüntetni.',
@@ -8233,7 +8239,7 @@ extension on TranslationsHu {
 			'homeLayout.syncAccountOff' => 'Kattintson: Ez a készülék saját elrendezését tartja.',
 			'homeLayout.syncNow' => 'Szinkronizálás most',
 			'homeLayout.plexHomeManager' => 'Plex Házigazgató',
-			'homeLayout.managePlexRows' => 'Plex sorok kezelése Plezy sorban',
+			'homeLayout.managePlexRows' => 'Plex sorok kezelése Pleazyng sorban',
 			'homeLayout.managePlexRowsDescription' => 'Nyitva a házilag kiválasztott sorok megszervezéséhez',
 			'homeLayout.organizeHomeRows' => 'Szervezze a házirendeket',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} sorok: mozog, Hős, Auto-slide, eltávolítása',
@@ -8303,7 +8309,7 @@ extension on TranslationsHu {
 			'homeLayout.organizeRowsHint' => 'Válasszon egy sorban (vagy tartsa Válassza ki): mozogjon · Balra/jobbra: sorban lehetőségek · Vissza: véget ért',
 			'homeLayout.layoutNavDescription' => 'Válasszon sorokat, könyvtárakat és gyűjteménykategóriákat',
 			'homeLayout.editHomeRow' => 'Edit Home Rózsaszín',
-			'homeLayout.resetHeroButton' => 'A Hero layout visszaállítása a stockhoz Plezy',
+			'homeLayout.resetHeroButton' => 'A Hero layout visszaállítása a stockhoz Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Újra elzárva',
 			'homeLayout.reorderingLocked' => 'Újra zárva',
 			'homeLayout.rowsCanBeDragged' => 'A szálak húzhatók - nyomja meg a zárat, hogy megakadályozzák ezt',
@@ -8320,13 +8326,13 @@ extension on TranslationsHu {
 			'homeLayout.tapHeroCardDescription' => 'Válassza ki, hogy egy Hero kártyát nyomtatva vagy kiválasztva megkezdődik a lejátszás, vagy megnyitja annak részleteit.',
 			'homeLayout.heroTapPlayDescription' => 'Indítsa el a kiválasztott elemet azonnal.',
 			'homeLayout.heroTapDetailsDescription' => 'Nyissa meg a kiválasztott elem részleteit, mielőtt egy akciót választ.',
-			'platform.localNetworkPermission' => 'A PlezyNG a helyi hálózaton keresztül csatlakozik a média szerverekhez és a lejátszó eszközökhöz.',
-			'platform.locationPermission' => 'A PlezyNG akkor használja a helyadatokhoz való hozzáférést, ha az iOS ezt megköveteli a helyi hálózat felismeréséhez és a médiaszerverekhez való csatlakozáshoz.',
+			'platform.localNetworkPermission' => 'A Pleazyng a helyi hálózaton keresztül csatlakozik a média szerverekhez és a lejátszó eszközökhöz.',
+			'platform.locationPermission' => 'A Pleazyng akkor használja a helyadatokhoz való hozzáférést, ha az iOS ezt megköveteli a helyi hálózat felismeréséhez és a médiaszerverekhez való csatlakozáshoz.',
 			'platform.photoLibraryPermission' => 'Válassz képeket a fotókönyvtáradból a médiatartalmak borítóképeihez és illusztrációihoz.',
 			'platform.cameraPermission' => 'QR kódok szkennelése a Companion Remote párosításához.',
 			'universalMedia.title' => 'Nyílt média',
 			'universalMedia.shortcutHelp' => 'Játssz egy linket, lejátszási listát vagy fájlt erre az ülésre.',
-			'universalMedia.intro' => 'Nyissa meg a linket, a lejátszási listát vagy a fájlt.A Playback használja a PlezyNG szabványos lejátszóját és nem ad hozzá történetet a könyvtárához.',
+			'universalMedia.intro' => 'Nyissa meg a linket, a lejátszási listát vagy a fájlt.A Playback használja a Pleazyng szabványos lejátszóját és nem ad hozzá történetet a könyvtárához.',
 			'universalMedia.openWhat' => 'Mit szeretne megnyitni?',
 			'universalMedia.stream' => 'Stream cím',
 			'universalMedia.playlist' => 'játéklisták',
@@ -8377,13 +8383,13 @@ extension on TranslationsHu {
 			'universalMedia.stopTransfer' => 'Megállapodás átadásáról és cím megsemmisítéséről',
 			'universalMedia.startTransfer' => 'Kezdődik a transzfer',
 			'universalMedia.wifiImportedFiles' => 'Wi-Fi átutalás',
-			'universalMedia.wifiBrowserTitle' => 'Fájlok küldése PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'Fájlok küldése Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'Válassza ki az audio, videó, ebook vagy képregény fájlokat küldeni. A fájlok tárolódnak a készülék Fájlok és könyvek könyvtárában. Maximum: 100 fájlt, 4 GiB fájlonként, 10 GiB összesen.',
 			'universalMedia.uploadFilesLabel' => 'Fájlok küldeni',
 			'universalMedia.uploadSelected' => 'A kiválasztott fájlok feltöltése',
 			'universalMedia.uploadSelectFirst' => 'Válasszon egy vagy több fájlt először.',
 			'universalMedia.uploading' => 'küldés',
-			'universalMedia.uploadComplete' => 'Fájl hozzáadva PlezyNG.',
+			'universalMedia.uploadComplete' => 'Fájl hozzáadva Pleazyng.',
 			'universalMedia.uploadFailed' => 'A fájl nem lehet hozzáadni. tartsa nyitva ezt az oldalt, és próbálja meg újra.',
 			'universalMedia.liveCue' => 'Élő',
 			'universalMedia.liveSession' => 'Élő Stream',
@@ -8411,7 +8417,7 @@ extension on TranslationsHu {
 			'universalMedia.recordingActive' => 'Ez a készülék.Leaving playback megáll és mentse meg.',
 			'universalMedia.recordingFormatHelp' => 'Videó esetén válassza ki a MKV vagy MPEG-TS. A hang esetében válasszon MKA vagy MKV.',
 			'universalMedia.replaceRecordingTitle' => 'Ezt a felvételt helyettesítjük?',
-			'universalMedia.replaceRecordingHelp' => 'A PlezyNG visszaállítja a meglévő fájlt a rögzítés során. ha nem tudja menteni az új rögzítést, a Plezy NG visszaállíthatja a biztonsági mentést.',
+			'universalMedia.replaceRecordingHelp' => 'A Pleazyng visszaállítja a meglévő fájlt a rögzítés során. ha nem tudja menteni az új rögzítést, a Pleazyng NG visszaállíthatja a biztonsági mentést.',
 			'universalMedia.replaceRecording' => 'Fájl cseréje',
 			'universalMedia.discHelp' => 'Nyissa meg a lemezt ebben a számítógép optikai lemezében.Az ISO-képet is megnyithatja a Device fájlokból.',
 			'universalMedia.discs' => 'Optikai lemez',
@@ -8436,7 +8442,7 @@ extension on TranslationsHu {
 			'universalMedia.converterUnsupportedInput' => 'Válasszon egy audio vagy videó fájlt.',
 			'universalMedia.converterLocalOnly' => 'A kiválasztott fájl nem áll rendelkezésre helyi eszközútként.',
 			'universalMedia.converterReplaceTitle' => 'A fájl helyettesítése?',
-			'universalMedia.converterReplaceHelp' => 'A PlezyNG visszaállítja a meglévő fájlt, amíg az átalakított másolat menthető.',
+			'universalMedia.converterReplaceHelp' => 'A Pleazyng visszaállítja a meglévő fájlt, amíg az átalakított másolat menthető.',
 			'universalMedia.converterStarting' => 'Megkezdődött az FFmpeg...',
 			'universalMedia.converterProgress' => 'Ezzel a számítógéppel átalakítva...',
 			'universalMedia.converterComplete' => 'Az új fájl készen áll.',
@@ -8460,7 +8466,7 @@ extension on TranslationsHu {
 			'universalMedia.captureDefaultAudio' => 'Audio beviteli előzetes',
 			'universalMedia.captureWaylandHelp' => 'Wayland korlátozza ezt a XWayland fogást a X display-re. A XWayland-en kívüli Windows nem jelenik meg.',
 			'universalMedia.captureFrameRate' => 'Részletesebben Regisztrációs ráta',
-			'universalMedia.capturePrivacy' => 'A rögzítés csak az Ön által kiválasztott fájlra menthető. a mikrofon rögzítése opcionális. a PlezyNG nem tölti fel a rögzítést.',
+			'universalMedia.capturePrivacy' => 'A rögzítés csak az Ön által kiválasztott fájlra menthető. a mikrofon rögzítése opcionális. a Pleazyng nem tölti fel a rögzítést.',
 			'universalMedia.captureSaveAs' => 'A képernyő felvétele, mint',
 			'universalMedia.captureExtensionMismatch' => 'Válassza ki a .mp4-ben végződő filenámot.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg vagy a H.264 videó kódoló nem érhető el. Telepítse a támogatott FFmpeg építkezést, majd próbáljon újra.',
@@ -8474,7 +8480,7 @@ extension on TranslationsHu {
 			'universalMedia.captureStop' => 'Állj meg és mentse meg',
 			'universalMedia.captureMode' => 'fogság',
 			'universalMedia.shareMode' => 'megosztás',
-			'universalMedia.shareIntro' => 'Küldje el a helyi médiafájlt egy másik eszközre a magánhálózaton. PlezyNG létrehoz egy ideiglenes HLS áramlást.',
+			'universalMedia.shareIntro' => 'Küldje el a helyi médiafájlt egy másik eszközre a magánhálózaton. Pleazyng létrehoz egy ideiglenes HLS áramlást.',
 			'universalMedia.sharePrivacy' => 'Bárki a helyi hálózaton, aki a privát linket kapja meg, megtekintheti, miközben aktív. A link 60 perc után megszűnik.',
 			'universalMedia.shareChooseFile' => 'Válassza ki a média fájlt',
 			'universalMedia.shareChooseHelp' => 'Válasszon egy helyi audio vagy videó fájlt. A fájl ezen a számítógépen marad.',
@@ -8487,7 +8493,7 @@ extension on TranslationsHu {
 			'universalMedia.shareOpenUrl' => 'Nyissa meg ezt a címet egy játékosban a másik eszközön',
 			'universalMedia.shareQrLabel' => 'QR kód az ideiglenes áramlat címéhez',
 			'universalMedia.shareQrHelp' => 'Scan egy kompatibilis lejátszóval, amely ugyanazon magánhálózathoz van csatlakoztatva.',
-			'universalMedia.shareHttpHint' => 'Ez az áramlás titkosított HTTP. A PlezyNG, engedélyezze HTTP, mielőtt megnyitja.',
+			'universalMedia.shareHttpHint' => 'Ez az áramlás titkosított HTTP. A Pleazyng, engedélyezze HTTP, mielőtt megnyitja.',
 			'universalMedia.shareCopyUrl' => 'Stream cím másolása',
 			'universalMedia.shareExpiresLabel' => 'A link lejár',
 			'universalMedia.shareStarting' => 'Az áramlás előkészítése...',
@@ -8512,7 +8518,7 @@ extension on TranslationsHu {
 			'universalMedia.extensionInstall' => 'Add szolgáltatás',
 			'universalMedia.extensionReplace' => 'frissítés szolgáltatás',
 			'universalMedia.extensionRemoveTitle' => 'Távolítsa el ezt a keresési szolgáltatást?',
-			'universalMedia.extensionRemoveHelp' => 'Ez eltávolítja a szolgáltatást ebből a profilból. a PlezyNG nem lép kapcsolatba a végpontjával.',
+			'universalMedia.extensionRemoveHelp' => 'Ez eltávolítja a szolgáltatást ebből a profilból. a Pleazyng nem lép kapcsolatba a végpontjával.',
 			'universalMedia.extensionRemove' => 'eltávolítása szolgáltatás',
 			'universalMedia.extensionInvalidManifest' => 'Ez a fájl nem támogatott kiterjesztés manifesztus. lásd a Open media útmutatót a formátumra.',
 			'universalMedia.extensionSaveFailed' => 'A kiterjesztés nem menthető meg az aktív profilra.',
@@ -8655,12 +8661,12 @@ extension on TranslationsHu {
 			'fileSources.none' => 'Nincs',
 			'fileSources.fullscreen' => 'Teljes képernyő',
 			'fileSources.syncLocation' => 'Progress szinkronizálás (opcionális)',
-			'fileSources.syncLocationHint' => 'A WebDAV fájl a PlezyNG állapothoz. feltételezett írásokat használ; a média változatlan marad.',
+			'fileSources.syncLocationHint' => 'A WebDAV fájl a Pleazyng állapothoz. feltételezett írásokat használ; a média változatlan marad.',
 			'fileSources.audiobooks' => 'Audiókönyvek',
 			'fileSources.comics' => 'Képregények',
 			'fileSources.scan' => 'A könyv és a média szkennelése',
 			'fileSources.browserReader' => 'Nyílt olvasó',
-			'fileSources.browserReaderHelp' => 'A böngészőben a olvasó nyitva van. A PlezyNG nyitva tartása a hely és a jegyzetek mentéséhez.',
+			'fileSources.browserReaderHelp' => 'A böngészőben a olvasó nyitva van. A Pleazyng nyitva tartása a hely és a jegyzetek mentéséhez.',
 			'fileSources.on' => 'A',
 			'fileSources.advancedSetup' => 'App regisztráció',
 			'fileSources.microsoftSignIn' => 'Jelentkezzen be a Microsoft-hoz',
@@ -8701,7 +8707,7 @@ extension on TranslationsHu {
 			'fileSources.importInterrupted' => 'Import megszakadt · eltávolítása tisztázni',
 			'fileSources.errorQuotaExceeded' => 'Az offline tárolási korlátozás elérte. emelje fel a korlátot vagy távolítsa el a letöltött másolatot.',
 			'fileSources.errorStorageLow' => 'Nincs elég ingyenes tárolási eszköz a védett tartalék fenntartásához.',
-			'fileSources.errorStorageUnavailable' => 'A PlezyNG nem tudta ellenőrizni a szabad készülék tárolását, így az írás megszűnt.',
+			'fileSources.errorStorageUnavailable' => 'A Pleazyng nem tudta ellenőrizni a szabad készülék tárolását, így az írás megszűnt.',
 			'fileSources.removeDownloadJob' => 'Letöltés eltávolítása',
 			'fileSources.downloadAlreadyComplete' => 'Ez a letöltés befejeződött, mielőtt eltávolítható. az elem most elérhető offline.',
 			'fileSources.confirmRemoveDownloadJob' => 'Távolítsa el ezt a letöltést, és törölje a részben letöltött adatokat?',
@@ -8742,7 +8748,7 @@ extension on TranslationsHu {
 			'lending.openLibraryNote' => 'Fedezze fel a nyílt könyvtár katalógusát.Az olvasási és hitelezési lehetőségek az egyes címek oldalán jelennek meg.',
 			'lending.more' => 'Töltse tovább',
 			'lending.gateway' => 'Könyvtár beiratkozás szolgáltatás',
-			'lending.gatewayHint' => 'A könyvtár vagy a PlezyNG adminisztrátor által biztosított.',
+			'lending.gatewayHint' => 'A könyvtár vagy a Pleazyng adminisztrátor által biztosított.',
 			'lending.advanced' => 'Könyvtár integráció',
 			'lending.loadLibraries' => 'Válassza ki a könyvtárát',
 			'lending.expired' => 'Ez a hitel lejár.',
@@ -8864,7 +8870,7 @@ extension on TranslationsHu {
 			'sourceSetup.subtitlePrivacy' => 'Szerezz API-kulcsot az opensubtitles.com oldalon. A keresés a videó címét és az elérhető IMDb/TMDB-azonosítókat küldi el, a videófájlt soha. A kulcs és az opcionális fiókhitelesítő adatok ezzel a forrással együtt titkosítva tárolódnak.',
 			'sourceSetup.automaticMetadata' => 'Automatikus online videómetaadatok',
 			'sourceSetup.metadataPrivacy' => 'Csak a fájlnévből származó címet/évet és epizódszámokat vagy egy NFO-azonosítót küld el, médiát vagy hitelesítő adatokat soha. Az NFO-mezők elsőbbsége megmarad.',
-			'sourceSetup.nfsEncryptionFailure' => 'Titkosított NFS esetén ellenőrizd az RFC 9289 és a TLS 1.3 támogatását mindkét NAS-szolgáltatásnál, a tanúsítvány nevét és a megosztás UID/GID értékeit. A PlezyNG nem próbálja újra ezt a kapcsolatot titkosítás nélkül.',
+			'sourceSetup.nfsEncryptionFailure' => 'Titkosított NFS esetén ellenőrizd az RFC 9289 és a TLS 1.3 támogatását mindkét NAS-szolgáltatásnál, a tanúsítvány nevét és a megosztás UID/GID értékeit. A Pleazyng nem próbálja újra ezt a kapcsolatot titkosítás nélkül.',
 			'sourceSetup.sourceConnecting' => 'Kapcsolódás a forráshoz',
 			'sourceSetup.metadataSearchPrivacy' => 'Ez a címkeresés a Trakthoz kerül. A megadott címet küldi el, nem a videót vagy a forrás hitelesítő adatait.',
 			'sourceSetup.chooseMatch' => 'Találat kiválasztása',
@@ -8994,7 +9000,13 @@ extension on TranslationsHu {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Ez a Plezy link nem érvényes.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'Ez a Pleazyng link nem érvényes.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'Nincs profil a "${profile}" címmel.',
 			'deepLinks.serverUnavailable' => 'Nem tudtam elérni a szervert erre a linkre.',
 			'deepLinks.notFound' => 'Nem találtam ezt a címet a könyvtárakban.',
@@ -9142,7 +9154,7 @@ extension on TranslationsHu {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

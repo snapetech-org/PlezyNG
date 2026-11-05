@@ -388,8 +388,8 @@ func (p *oauthProxy) startSteamFamily(w http.ResponseWriter, r *http.Request, bi
 		Challenge string   `json:"challenge_url"`
 	}
 	err := f.API.call(ctx, "", "Authentication", "BeginAuthSessionViaQR", map[string]any{
-		"device_friendly_name": "PlezyNG Steam Families (temporary)", "platform_type": 2, "website_id": "Community",
-		"device_details": map[string]any{"device_friendly_name": "PlezyNG Steam Families (temporary)", "platform_type": 2},
+		"device_friendly_name": "Pleazyng Steam Families (temporary)", "platform_type": 2, "website_id": "Community",
+		"device_details": map[string]any{"device_friendly_name": "Pleazyng Steam Families (temporary)", "platform_type": 2},
 	}, false, &result)
 	decoded, e := base64.StdEncoding.DecodeString(result.Request)
 	p.mu.Lock()

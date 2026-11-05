@@ -12,6 +12,17 @@
 - Bundle experimental Dolby Vision/FEL playback in normal compatible builds and use a persisted, default-off Settings switch. Add an in-app Apple runtime for macOS 15 and iOS/tvOS 18 while retaining the normal app deployment floors; device output remains unqualified.
 - Keep Android FEL reconstruction controlled by the runtime experimental setting when a FEL-capable engine is bundled.
 
+- Build and package the three default RomM emulator cores with the app, preserve their source/notices, validate Android delivery, and install the desktop host after bundle cleanup.
+
+- Preserve typography sizes when applying theme packages, reject encoded RomM path traversal before URL normalization, trim karaoke VTT terminators and distinguish damaged recording data from I/O failures.
+
+- Fix karaoke file-picker/TV APIs, nullable media titles and optional player interfaces; register desktop microphone capture plugins.
+- Patch Steam Cloud plugin build matching and cleanup dependencies while preserving the Decky Rollup preset.
+
+- Restore truncated Games screen actions and repair malformed visualizer validation and RomM save-key syntax.
+- Rebrand the app and generated platform artwork as Pleazyng by SnapeTech, migrate public package identities and media/OAuth links, and align future release and package recipes while retaining the current repository name.
+
+- Declare the RomM WebKit runtime in Linux packages and keep release-recovery checks aligned with mandatory webOS delivery.
 - Patch the karaoke separation runtime, constrain local model checkpoint loading, and verify CPU stem generation with the current audio backend.
 - Fix the black screen after sign-in when a profile binds before the file-source database finishes opening, and retain bounded webOS widget-error diagnostics.
 - Resolve webOS dependencies once with the enforced lockfile, keep its package version at 3.0.0, and reject stale package metadata before starting a build.
@@ -379,6 +390,8 @@
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
 ## [3.0.1] - 2026-11-05
+
+- Adopt the Pleazyng name, artwork and package identities. Ship ordered native PCM capture for the new visualization and playback transcription features, and repair integrated Games, RomM, karaoke and offline conversion paths.
 
 - Include Android, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS in the complete release; verify package provenance and checksums before publication.
 - Fix the black screen after Plex sign-in when a profile attaches before its file-source database opens.

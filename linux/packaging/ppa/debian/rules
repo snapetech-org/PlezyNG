@@ -9,18 +9,18 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	set -eu; \
-	dest="debian/plezyng"; \
+	dest="debian/pleazyng"; \
 	case "$(DEB_HOST_ARCH)" in \
-	  amd64) archive="plezy-linux-x64.tar.gz" ;; \
-	  arm64) archive="plezy-linux-arm64.tar.gz" ;; \
+	  amd64) archive="pleazyng-linux-x64.tar.gz" ;; \
+	  arm64) archive="pleazyng-linux-arm64.tar.gz" ;; \
 	  *) echo "Unsupported architecture: $(DEB_HOST_ARCH)" >&2; exit 1 ;; \
 	esac; \
-	install -d "$$dest/opt/plezy"; \
-	tar -xzf "$$archive" -C "$$dest/opt/plezy"; \
-	install -Dm755 plezy.sh "$$dest/usr/bin/plezy"; \
-	install -Dm644 org.snapetech.plezyng.desktop "$$dest/usr/share/applications/org.snapetech.plezyng.desktop"; \
-	install -Dm644 plezy.png "$$dest/usr/share/icons/hicolor/512x512/apps/plezy.png"; \
-	chmod 0755 "$$dest/opt/plezy/plezy" "$$dest/opt/plezy/lib/crashpad_handler"
+	install -d "$$dest/opt/pleazyng"; \
+	tar -xzf "$$archive" -C "$$dest/opt/pleazyng"; \
+	install -Dm755 pleazyng.sh "$$dest/usr/bin/pleazyng"; \
+	install -Dm644 org.snapetech.pleazyng.desktop "$$dest/usr/share/applications/org.snapetech.pleazyng.desktop"; \
+	install -Dm644 pleazyng.png "$$dest/usr/share/icons/hicolor/512x512/apps/pleazyng.png"; \
+	chmod 0755 "$$dest/opt/pleazyng/pleazyng" "$$dest/opt/pleazyng/lib/crashpad_handler"
 
 override_dh_shlibdeps:
 

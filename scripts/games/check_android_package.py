@@ -11,6 +11,7 @@ import tempfile
 import zipfile
 
 from build_steam_android import ABIS, ROOT, inspect_elf, write_report
+from check_romm_package import check_romm
 
 # Public NDK platform libraries used by the receiver. All other DT_NEEDED
 # entries must be shipped beside it, including libc++_shared.so.
@@ -71,6 +72,7 @@ def check_package(package: Path, abis: set[str], readelf: Path,
             artifacts.append({"abi": abi, "file": name, "sha256": hashlib.sha256(data).hexdigest(),
                               "bytes": len(data), "jniExportsChecked": len(exports),
                               "needed": sorted(needed)})
+        romm_artifacts = check_romm(archive, abis, readelf, temporary, is_apk=is_apk)
     if is_apk:
         if zipalign is None:
             raise ValueError("APK verification requires Android build-tools zipalign")
@@ -83,6 +85,7 @@ def check_package(package: Path, abis: set[str], readelf: Path,
     return {"schema": 1, "status": "passed", "package": package.name,
             "sha256": digest.hexdigest(), "embeddedEnabled": not disabled,
             "expectedAbis": sorted(abis), "artifacts": artifacts,
+            "rommArtifacts": romm_artifacts,
             "apkAlignmentChecked": is_apk, "deviceTested": False,
             "signatureVerified": False, "bundleGeneratedApksChecked": False}
 

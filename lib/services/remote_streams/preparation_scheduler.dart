@@ -26,7 +26,7 @@ class PreparationScheduler {
         return;
       }
       if (Platform.isWindows) {
-        await Process.run('schtasks', ['/Delete', '/F', '/TN', 'PlezyNG Preparation']);
+        await Process.run('schtasks', ['/Delete', '/F', '/TN', 'Pleazyng Preparation']);
         return;
       }
       final home = Platform.environment['HOME'];
@@ -64,7 +64,7 @@ class PreparationScheduler {
           '/Create',
           '/F',
           '/TN',
-          'PlezyNG Preparation',
+          'Pleazyng Preparation',
           '/SC',
           'MINUTE',
           '/MO',
@@ -108,14 +108,14 @@ class PreparationScheduler {
         await directory.create(recursive: true);
         final command = executable.replaceAll('\\', '\\\\').replaceAll('%', '%%');
         await File(p.join(directory.path, 'plezy-preparation.service')).writeAsString('''[Unit]
-Description=PlezyNG media preparation
+Description=Pleazyng media preparation
 [Service]
 Type=oneshot
 ExecStart="$command" --plezy-preparation-worker
 TimeoutStartSec=8min
 ''', flush: true);
         await File(p.join(directory.path, 'plezy-preparation.timer')).writeAsString('''[Unit]
-Description=Resume PlezyNG media preparation
+Description=Resume Pleazyng media preparation
 [Timer]
 OnStartupSec=1min
 OnUnitActiveSec=15min

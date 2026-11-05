@@ -76,7 +76,7 @@ class PodcastOpml {
         [XmlAttribute(XmlName.parts('version'), '2.0')],
         [
           XmlElement(XmlName.parts('head'), [], [
-            XmlElement(XmlName.parts('title'), [], [XmlText('PlezyNG Podcasts')]),
+            XmlElement(XmlName.parts('title'), [], [XmlText('Pleazyng Podcasts')]),
           ]),
           XmlElement(XmlName.parts('body'), [], outlines),
         ],

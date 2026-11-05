@@ -26,7 +26,7 @@ void main() {
     picker = _FakeFilePicker();
     FilePickerService.setDelegateForTesting(picker);
     PackageInfo.setMockInitialValues(
-      appName: 'PlezyNG',
+      appName: 'Pleazyng',
       packageName: 'com.example.plezy',
       version: '1.2.3',
       buildNumber: '4',

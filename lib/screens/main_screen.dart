@@ -965,7 +965,7 @@ class _MainScreenState extends State<MainScreen>
 
   DeepLinkSession? _deepLinkSession;
 
-  /// Acts on `plezy://` links for this profile session ([DeepLinkService]).
+  /// Acts on `pleazyng://` links for this profile session ([DeepLinkService]).
   void _attachDeepLinks() {
     if (!mounted || _isShowingProfileSelection) return;
     final session = _deepLinkSession ??= DeepLinkSession(
@@ -2376,8 +2376,8 @@ class _MainScreenState extends State<MainScreen>
               softWrap: false,
               overflow: TextOverflow.ellipsis,
               child: NavigationDestination(
-                icon: AppIcon(Symbols.more_horiz_rounded, fill: 1),
-                selectedIcon: AppIcon(Symbols.more_horiz_rounded, fill: 1),
+                icon: AppIcon(Symbols.more_horiz_rounded, fill: 0, weight: 500),
+                selectedIcon: AppIcon(Symbols.more_horiz_rounded, fill: 1, weight: 600),
                 label: moreLabel,
                 tooltip: moreLabel,
               ),

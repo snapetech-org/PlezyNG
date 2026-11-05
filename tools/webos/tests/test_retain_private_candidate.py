@@ -23,7 +23,7 @@ class PrivateCandidateTests(unittest.TestCase):
         self.source.mkdir()
         self.destination.mkdir()
         self.files = {
-            "org.snapetech.plezyng_3.0.0_arm.ipk": b"verified test package",
+            "org.snapetech.pleazyng_3.0.0_arm.ipk": b"verified test package",
             "webos-app-provenance.json": b'{"sourceCommit": "test"}\n',
             "webos-engine-provenance.json": b'{"source": "test"}\n',
             "webos-compatibility.json": b'{"releaseEligible": false}\n',
@@ -91,7 +91,7 @@ class PrivateCandidateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exactly one"):
             MODULE.retain(self.source, "3.0.0", self.env)
         extra.unlink()
-        ipk = self.source / "org.snapetech.plezyng_3.0.0_arm.ipk"
+        ipk = self.source / "org.snapetech.pleazyng_3.0.0_arm.ipk"
         ipk.unlink()
         ipk.symlink_to(self.source / "webos-compatibility.json")
         with self.assertRaises(OSError):

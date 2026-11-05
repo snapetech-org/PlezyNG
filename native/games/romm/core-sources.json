@@ -1,0 +1,7 @@
+{
+  "gambatte": {"repository": "gambatte-libretro", "commit": "7809bb68ee96c3e6c74e9d9c4c8bb09aa7c6801d", "makefile": "Makefile", "restricted": false},
+  "mgba": {"repository": "mgba", "commit": "7a12d6d4b9acb14c0ae62c9166b6a2f3d08007f6", "makefile": null, "restricted": false},
+  "fceumm": {"repository": "libretro-fceumm", "commit": "ac0d00a7fc01166f84c7bac01d1084ebfd2b865e", "makefile": "Makefile.libretro", "restricted": false},
+  "snes9x": {"repository": "snes9x", "commit": "fae2fea08f74180759ef540ee94259213f503480", "makefile": "libretro/Makefile", "restricted": true},
+  "genesis_plus_gx": {"repository": "Genesis-Plus-GX", "commit": "60bee4c724859710ce05672239e5b601ad01382e", "makefile": "Makefile.libretro", "restricted": true}
+}

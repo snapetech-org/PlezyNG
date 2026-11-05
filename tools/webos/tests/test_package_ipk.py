@@ -18,7 +18,7 @@ import package_ipk  # noqa: E402
 import verify_package  # noqa: E402
 
 
-APP_ID = "org.snapetech.plezyng"
+APP_ID = "org.snapetech.pleazyng"
 
 
 def make_elf32_arm() -> bytes:
@@ -36,10 +36,10 @@ def make_staging_tree(root: Path) -> tuple[Path, Path]:
     app = output / "data/usr/palm/applications" / APP_ID
     (app / "appdata").mkdir(parents=True)
     (app / "appinfo.json").write_text(
-        json.dumps({"id": APP_ID, "version": "2.24.1", "type": "native", "main": "plezyng"}),
+        json.dumps({"id": APP_ID, "version": "2.24.1", "type": "native", "main": "pleazyng"}),
         encoding="utf-8",
     )
-    executable = app / "plezyng"
+    executable = app / "pleazyng"
     executable.write_bytes(make_elf32_arm())
     executable.chmod(0o755)
     (app / "icon.png").write_bytes(b"icon")
@@ -51,7 +51,7 @@ class PackageIpkTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "omits the required MilkRust runtime"):
             verify_package.inspect_visualizer({})
 
-    def test_milkrust_provenance_accepts_private_plezyng_build_run(self) -> None:
+    def test_milkrust_provenance_accepts_private_pleazyng_build_run(self) -> None:
         manifest = {
             "schemaVersion": 2,
             "renderProtocol": 2,
@@ -148,13 +148,13 @@ class PackageIpkTests(unittest.TestCase):
             self.assertNotIn("This is a webOS application.", control)
             data_files = verify_package.read_tar_members(
                 ar_members["data.tar.gz"],
-                {f"usr/palm/applications/{APP_ID}/plezyng"},
+                {f"usr/palm/applications/{APP_ID}/pleazyng"},
             )
-            self.assertEqual(data_files[f"usr/palm/applications/{APP_ID}/plezyng"], make_elf32_arm())
+            self.assertEqual(data_files[f"usr/palm/applications/{APP_ID}/pleazyng"], make_elf32_arm())
 
             with tarfile.open(fileobj=io.BytesIO(ar_members["data.tar.gz"]), mode="r:gz") as archive:
                 appdata = archive.getmember(f"usr/palm/applications/{APP_ID}/appdata")
-                executable = archive.getmember(f"usr/palm/applications/{APP_ID}/plezyng")
+                executable = archive.getmember(f"usr/palm/applications/{APP_ID}/pleazyng")
                 self.assertEqual(appdata.mode, 0o777)
                 self.assertEqual(executable.mode, 0o755)
 

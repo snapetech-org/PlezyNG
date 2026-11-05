@@ -32,7 +32,7 @@ class ExternalAccessDestination {
 
   /// Broad provider-level access models for directory organization only.
   /// These are not title availability, territory support, user entitlement,
-  /// or a claim that PlezyNG can play the provider's content.
+  /// or a claim that Pleazyng can play the provider's content.
   final Set<ProviderAccessModel> accessModels;
 
   /// Server-side broker route for affiliate links; null means direct handoff.
@@ -748,7 +748,7 @@ abstract final class ExternalAccessDirectory {
       path: '/search',
       queryParameter: 'keyword',
       accessModels: {ProviderAccessModel.subscription, ProviderAccessModel.transactional},
-      offerNote: 'Subscription, PDF sales, and creator monetization; no PlezyNG referral commission.',
+      offerNote: 'Subscription, PDF sales, and creator monetization; no Pleazyng referral commission.',
     ),
     ExternalAccessDestination(
       id: 'globalcomix-publish',
@@ -833,7 +833,7 @@ abstract final class ExternalAccessDirectory {
       host: 'librarypass.com',
       path: '/',
       accessModels: {ProviderAccessModel.publicService},
-      offerNote: 'Access is arranged by a participating school or library; no PlezyNG referral commission.',
+      offerNote: 'Access is arranged by a participating school or library; no Pleazyng referral commission.',
     ),
     ExternalAccessDestination(
       id: 'bookshop-comics',
@@ -1117,7 +1117,7 @@ abstract final class ExternalAccessDirectory {
       .toList(growable: false);
 
   /// Catalog providers may return third-party streaming links. Keep these
-  /// three services outside PlezyNG's discovery and launch surface.
+  /// three services outside Pleazyng's discovery and launch surface.
   static bool isExcludedStreamingLink({required String label, required String url}) {
     final normalizedLabel = label.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
     final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';

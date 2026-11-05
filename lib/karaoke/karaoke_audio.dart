@@ -4,10 +4,12 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:math' as math;
 import 'dart:typed_data';
+
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
+
 import '../utils/platform_detector.dart';
 import 'karaoke_scoring.dart';
 import 'karaoke_session.dart';

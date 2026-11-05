@@ -1,7 +1,7 @@
 /// Conservative profile for the unqualified Samsung native-media port.
 /// Expand only after exercising a model/firmware combination on hardware.
 Map<String, Object?> tizenPlaybackProfile({required bool audio, required bool burnSubtitles}) => {
-  'Name': 'PlezyNG Samsung TV',
+  'Name': 'Pleazyng Samsung TV',
   'TranscodingProfiles': [
     {
       'Type': 'Video',

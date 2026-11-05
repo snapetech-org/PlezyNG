@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Directory, Platform, ProcessInfo, stderr;
 import 'dart:ui' show AppExitResponse;
+
 import 'package:flutter/foundation.dart';
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences_foundation/shared_preferences_foundation.dart';
@@ -14,6 +15,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:plezy/widgets/app_brand.dart';
+
 import 'connection/connection.dart';
 import 'connection/connection_bootstrap.dart';
 import 'connection/connection_registry.dart';
@@ -55,8 +57,10 @@ import 'utils/platform_detector.dart';
 import 'utils/pointer_scroll_axis.dart';
 import 'services/apple_tv_remote_touch_service.dart';
 import 'services/discord_rpc_service.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+
 import 'services/image_cache_service.dart';
 import 'services/app_icon/app_icon_service.dart';
 import 'services/gamepad_service.dart';
@@ -86,7 +90,9 @@ import 'services/pip_service.dart';
 import 'services/download_storage_service.dart';
 import 'services/incoming_subtitle_share_service.dart';
 import 'services/connectivity_probe.dart';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
+
 import 'services/jellyfin_api_cache.dart';
 import 'services/plex_api_cache.dart';
 import 'database/app_database.dart';
@@ -109,10 +115,14 @@ import 'i18n/strings.g.dart';
 import 'widgets/app_icon.dart';
 import 'focus/input_mode_tracker.dart';
 import 'focus/navigator_back_handler.dart';
+
 import 'package:intl/date_symbol_data_local.dart';
+
 import 'utils/navigation_transitions.dart';
 import 'utils/log_redaction_manager.dart';
+
 import 'package:package_info_plus/package_info_plus.dart';
+
 import 'utils/android_exit_diagnostics.dart';
 import 'utils/storage_failure.dart';
 import 'services/base_shared_preferences_service.dart';
@@ -173,7 +183,9 @@ void main([List<String> args = const <String>[]]) {
   unawaited(IncomingSubtitleShareService.instance.start());
   for (final argument in args) {
     final normalized = argument.toLowerCase();
-    if (normalized.startsWith('plezy://') || normalized.startsWith('plezxyng://')) {
+    if (normalized.startsWith('pleazyng://') ||
+        normalized.startsWith('plezyng://') ||
+        normalized.startsWith('plezxyng://')) {
       DeepLinkService.instance.receive(argument);
       break;
     }
@@ -208,7 +220,7 @@ void _bootstrapApp() {
       // The webOS embedder does not forward Flutter's normal print output.
       // Keep a bounded native-console trace without credentials or error text.
       final trace = details.stack?.toString().split('\n').take(12).join('\n') ?? '';
-      stderr.writeln('PlezyNG widget build failed (${details.exception.runtimeType})\n$trace');
+      stderr.writeln('Pleazyng widget build failed (${details.exception.runtimeType})\n$trace');
     }
     if (kDebugMode) {
       return ErrorWidget(details.exception);
@@ -379,13 +391,9 @@ Future<_StartupDependencies> _initializeApplication() async {
 /// `GIT_COMMIT`, so resolve that first and only pay the platform read — inside
 /// a guard — when there is no commit to use.
 String _sentryRelease() {
-  if (gitCommit.length >= 7) {
-    return 'plezyng@${gitCommit.substring(0, 7)}';
-  }
-  if (gitCommit.isNotEmpty) {
-    return 'plezyng@$gitCommit';
-  }
-  return 'plezyng@unknown';
+  if (gitCommit.length >= 7) return 'pleazyng@${gitCommit.substring(0, 7)}';
+  if (gitCommit.isNotEmpty) return 'pleazyng@$gitCommit';
+  return 'pleazyng@unknown';
 }
 
 Future<String?> _sentryNativeDatabasePath() async {
@@ -1194,7 +1202,7 @@ Future<void> _logEnvironmentDiagnostics() async {
     await Future.sync(() => Sentry.configureScope((scope) => scope.setTag('renderer', rendererName ?? 'unknown')));
   }
   appLogger.i(
-    'PlezyNG v${packageInfo.version}+${packageInfo.buildNumber}$commitSuffix$renderer'
+    'Pleazyng v${packageInfo.version}+${packageInfo.buildNumber}$commitSuffix$renderer'
     ' [effects: ${DevicePerformance.describeSync()}]',
   );
   appLogger.i('Display: ${DevicePerformance.describeDisplay()}');
@@ -2807,9 +2815,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
         _statusMessage,
         key: ValueKey(_statusMessage),
         textAlign: TextAlign.center,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -2819,7 +2825,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       return const SizedBox.shrink();
     }
     final textTheme = Theme.of(context).textTheme;
-    final dimColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
+    final dimColor = Theme.of(context).colorScheme.onSurfaceVariant;
     const successColor = Color(0xFF4CAF50);
     const failColor = Color(0xFFEF5350);
 
@@ -2843,7 +2849,9 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
             children: [
               statusIcon,
               const SizedBox(width: 8),
-              Text(name, style: textTheme.bodySmall?.copyWith(color: dimColor)),
+              Flexible(
+                child: Text(name, style: textTheme.bodySmall?.copyWith(color: dimColor)),
+              ),
             ],
           ),
         );
@@ -2852,63 +2860,32 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) {
-    const coralColor = Color(0xFFFF6847);
-    final height = MediaQuery.sizeOf(context).height;
-    // The stacked layout below hangs its two rows off fixed ±170/180 offsets from the middle, which
-    // needs roughly 700 logical pixels of height. A car at a large interface scale — and a phone in
-    // landscape — has less than that, and the rows would collide or fall outside the Stack's clip.
-    if (height < 700) {
-      return ColoredBox(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+  Widget build(BuildContext context) => ColoredBox(
+    color: Theme.of(context).scaffoldBackgroundColor,
+    child: SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) => Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const AppBrandMark(size: 160),
-                  _buildStatusText(context),
+                  AppBrandMark(size: constraints.maxHeight < 500 ? 128 : 224, decorative: true),
                   const SizedBox(height: 16),
-                  Center(
-                    child: _serverStatus.isEmpty
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
-                          )
-                        : _buildServerStatusList(context),
-                  ),
+                  _buildStatusText(context),
+                  const SizedBox(height: 20),
+                  if (_serverStatus.isEmpty)
+                    const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  else
+                    _buildServerStatusList(context),
                 ],
               ),
             ),
           ),
         ),
-      );
-    }
-    return ColoredBox(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Stack(
-        children: [
-          Center(child: const AppBrandMark(size: 288)),
-          Positioned(left: 0, right: 0, bottom: height * 0.5 - 170, child: _buildStatusText(context)),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: height * 0.5 + 180,
-            child: Center(
-              child: _serverStatus.isEmpty
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
-                    )
-                  : _buildServerStatusList(context),
-            ),
-          ),
-        ],
       ),
-    );
-  }
+    ),
+  );
 }

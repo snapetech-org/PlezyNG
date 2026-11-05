@@ -324,7 +324,7 @@ void main() {
         await tester.tap(find.text(t.games.useAsController));
         expect(controllers, 1);
       }
-      await tester.ensureVisible(find.text(isolateDisplayText('BC250')));
+      await tester.scrollUntilVisible(find.text(isolateDisplayText('BC250')), 160);
       await tester.pumpAndSettle();
       expect(find.textContaining(t.games.notInstalled), findsWidgets);
       expect(tester.takeException(), isNull);

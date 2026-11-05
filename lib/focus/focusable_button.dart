@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'focus_theme.dart';
 import 'focusable_wrapper.dart';
 import 'input_mode_tracker.dart';
+import '../theme/mono_tokens.dart';
 
 class FocusableButton extends StatefulWidget {
   final Widget child;
@@ -58,7 +59,7 @@ class _FocusableButtonState extends State<FocusableButton> {
       focusNode: widget.focusNode,
       canRequestFocus: enabled,
       disableScale: true,
-      borderRadius: 100,
+      borderRadius: Theme.of(context).extension<MonoTokens>()?.radiusMd ?? 12,
       useBackgroundFocus: widget.useBackgroundFocus,
       descendantsAreFocusable: false,
       onFocusChange: (f) => setState(() => _isFocused = f),

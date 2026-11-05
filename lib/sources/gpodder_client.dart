@@ -93,7 +93,7 @@ final class GpodderClient {
         'Authorization': 'Basic ${base64Encode(utf8.encode('${config.username}:${config.password}'))}',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'User-Agent': 'PlezyNG/3 podcast-sync',
+        'User-Agent': 'Pleazyng/3 podcast-sync',
       },
       body: encoded,
       limit: 2 * 1024 * 1024,

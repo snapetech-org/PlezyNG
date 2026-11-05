@@ -1,7 +1,7 @@
 # ng-runner-policy: hosted-first-v1
 # The trusted-main hybrid profile uses standard hosted runners for compatible Linux, Android, Windows, and pinned Tizen builds; Apple and storage-heavy WebOS remain private JIT.
 # packer-windows-jit-v1
-name: PlezyNG Release
+name: Pleazyng Release
 run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
 on:
@@ -498,7 +498,7 @@ jobs:
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezyng-ffmpeg-source
+          path: ${{ runner.temp }}/pleazyng-ffmpeg-source
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Prepare verified Android FFmpeg source archive
@@ -508,16 +508,16 @@ jobs:
           PLEZY_EXECUTION_PROFILE: ${{ needs.validate-trusted-ref.outputs.execution_profile }}
         run: |
           if [[ "$PLEZY_EXECUTION_PROFILE" == "hybrid" ]]; then
-            python3 scripts/prepare_android_ffmpeg_source.py --direct-egress "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+            python3 scripts/prepare_android_ffmpeg_source.py --direct-egress "$RUNNER_TEMP/pleazyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
           else
-            python3 scripts/prepare_android_ffmpeg_source.py "$RUNNER_TEMP/plezyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
+            python3 scripts/prepare_android_ffmpeg_source.py "$RUNNER_TEMP/pleazyng-ffmpeg-source/ffmpeg-9.0.2.tar.xz"
           fi
 
       - name: Save Android FFmpeg source cache
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.ffmpeg-source-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
-          path: ${{ runner.temp }}/plezyng-ffmpeg-source
+          path: ${{ runner.temp }}/pleazyng-ffmpeg-source
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Setup Android SDK
@@ -635,21 +635,21 @@ jobs:
       - name: Package APKs
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
         run: |
-          tar -czf plezy-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/plezy.apk/'
-          tar -czf plezy-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/plezy.apk/'
-          tar -czf plezy-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/plezy.apk/'
+          tar -czf pleazyng-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/pleazyng.apk/'
+          tar -czf pleazyng-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/pleazyng.apk/'
+          tar -czf pleazyng-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/pleazyng.apk/'
 
       - name: Build signed Android App Bundle
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
         run: |
           flutter build appbundle --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --obfuscate --split-debug-info=debug-info/android-play
-          cp build/app/outputs/bundle/release/app-release.aab plezyng-android-play.aab
+          cp build/app/outputs/bundle/release/app-release.aab pleazyng-android-play.aab
 
       - name: Build signed Amazon Appstore APK
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
         run: |
           AMAZON=1 ORG_GRADLE_PROJECT_openiapStore=amazon flutter build apk --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --dart-define=AMAZON_STORE=true --obfuscate --split-debug-info=debug-info/android-amazon
-          cp build/app/outputs/flutter-apk/app-release.apk plezyng-amazon-firetv.apk
+          cp build/app/outputs/flutter-apk/app-release.apk pleazyng-amazon-firetv.apk
 
       - name: Capture Android JIT memory diagnostics
         if: always()
@@ -677,17 +677,17 @@ jobs:
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
-            plezy-android-arm64-v8a.tar.gz
-            plezy-android-armeabi-v7a.tar.gz
-            plezy-android-x86_64.tar.gz
+            pleazyng-android-arm64-v8a.tar.gz
+            pleazyng-android-armeabi-v7a.tar.gz
+            pleazyng-android-x86_64.tar.gz
 
       - name: Attest Android App Bundle
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
-            plezyng-android-play.aab
-            plezyng-amazon-firetv.apk
+            pleazyng-android-play.aab
+            pleazyng-amazon-firetv.apk
 
       - name: Upload APKs
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
@@ -695,11 +695,11 @@ jobs:
         with:
           name: android-apk
           path: |
-            plezy-android-arm64-v8a.tar.gz
-            plezy-android-armeabi-v7a.tar.gz
-            plezy-android-x86_64.tar.gz
-            plezyng-android-play.aab
-            plezyng-amazon-firetv.apk
+            pleazyng-android-arm64-v8a.tar.gz
+            pleazyng-android-armeabi-v7a.tar.gz
+            pleazyng-android-x86_64.tar.gz
+            pleazyng-android-play.aab
+            pleazyng-amazon-firetv.apk
           if-no-files-found: warn
 
   build-webos:
@@ -792,7 +792,7 @@ jobs:
         id: webos-build
         run: bash tools/webos/build_release_candidate.sh
         env:
-          PLEZYNG_WEBOS_TASK_ROOT: ${{ runner.temp }}/plezyng-webos-${{ github.run_id }}
+          PLEZYNG_WEBOS_TASK_ROOT: ${{ runner.temp }}/pleazyng-webos-${{ github.run_id }}
           PLEZY_WEBOS_RELEASE_BUILD: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
 
       - name: Retain verified WebOS candidate for private device testing
@@ -843,7 +843,7 @@ jobs:
             --evidence "$OUTPUT_DIR/webos-engine-provenance.json" \
             --evidence "$OUTPUT_DIR/webos-compatibility.json" \
             --evidence "$OUTPUT_DIR/SHA256SUMS.txt" \
-            --output "$OUTPUT_DIR/PlezyNG-lg-webos-submission.zip"
+            --output "$OUTPUT_DIR/pleazyng-lg-webos-submission.zip"
       - name: Attest the WebOS package and provenance
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
@@ -881,7 +881,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: webos-build-diagnostics
-          path: ${{ runner.temp }}/plezyng-webos-${{ github.run_id }}/logs/**
+          path: ${{ runner.temp }}/pleazyng-webos-${{ github.run_id }}/logs/**
           if-no-files-found: warn
           retention-days: 14
 
@@ -972,7 +972,7 @@ jobs:
           set -euo pipefail
           short_root="$(bash scripts/prepare_apple_jit_scratch.sh ios 40 local-xcode)"
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
-          APPLE_LOCAL_BUILD_DIR="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios-xcode/build"
+          APPLE_LOCAL_BUILD_DIR="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios-xcode/build"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
           bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
@@ -1030,8 +1030,8 @@ jobs:
           fi
 
           umask 077
-          api_key_path="$RUNNER_TEMP/plezyng-ios-api-key.p8"
-          export_options_path="$RUNNER_TEMP/plezyng-ios-export-options.plist"
+          api_key_path="$RUNNER_TEMP/pleazyng-ios-api-key.p8"
+          export_options_path="$RUNNER_TEMP/pleazyng-ios-export-options.plist"
           printf '%s' "$APPLE_API_PRIVATE_KEY" > "$api_key_path"
           echo "api_key_path=$api_key_path" >> "$GITHUB_OUTPUT"
           echo "export_options_path=$export_options_path" >> "$GITHUB_OUTPUT"
@@ -1061,15 +1061,15 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           mkdir -p Payload
-          cp -r build/ios/iphoneos/Plezy.app Payload/
-          zip -r plezy-ios-unsigned.ipa Payload
+          cp -r build/ios/iphoneos/Pleazyng.app Payload/
+          zip -r pleazyng-ios-unsigned.ipa Payload
 
       - name: Prepare a default keychain for Xcode cloud signing
         if: steps.ios-signing.outputs.configured == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          keychain_path="$RUNNER_TEMP/plezyng-ios-cloud-signing.keychain-db"
+          keychain_path="$RUNNER_TEMP/pleazyng-ios-cloud-signing.keychain-db"
           if [[ -e "$keychain_path" || -L "$keychain_path" ]]; then
             echo "Refusing to reuse an existing iOS signing keychain: $keychain_path" >&2
             exit 1
@@ -1131,14 +1131,14 @@ jobs:
             echo "Xcode did not produce an iOS App Store IPA." >&2
             exit 1
           fi
-          cp "$ipa_path" plezyng-ios-appstore.ipa
+          cp "$ipa_path" pleazyng-ios-appstore.ipa
 
       - name: Remove the temporary iOS signing keychain
         if: always() && steps.ios-signing.outputs.configured == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          keychain_path="$RUNNER_TEMP/plezyng-ios-cloud-signing.keychain-db"
+          keychain_path="$RUNNER_TEMP/pleazyng-ios-cloud-signing.keychain-db"
           if [[ -e "$keychain_path" || -L "$keychain_path" ]]; then
             security delete-keychain "$keychain_path"
           fi
@@ -1147,21 +1147,21 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
-          cp -f plezy-ios-unsigned.ipa "$GITHUB_WORKSPACE/"
-          if [[ -f plezyng-ios-appstore.ipa ]]; then
-            cp -f plezyng-ios-appstore.ipa "$GITHUB_WORKSPACE/"
+          cp -f pleazyng-ios-unsigned.ipa "$GITHUB_WORKSPACE/"
+          if [[ -f pleazyng-ios-appstore.ipa ]]; then
+            cp -f pleazyng-ios-appstore.ipa "$GITHUB_WORKSPACE/"
           fi
 
       - name: Attest unsigned developer IPA
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: plezy-ios-unsigned.ipa
+          subject-path: pleazyng-ios-unsigned.ipa
 
       - name: Attest signed iOS App Store IPA
         if: steps.ios-signing.outputs.configured == 'true'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: plezyng-ios-appstore.ipa
+          subject-path: pleazyng-ios-appstore.ipa
 
       - name: Remove iOS signing material
         if: always() && steps.ios-signing.outputs.api_key_path != ''
@@ -1179,8 +1179,8 @@ jobs:
         with:
           name: ios-ipa
           path: |
-            plezy-ios-unsigned.ipa
-            plezyng-ios-appstore.ipa
+            pleazyng-ios-unsigned.ipa
+            pleazyng-ios-appstore.ipa
           if-no-files-found: error
 
       - name: Remove short iOS build workspace
@@ -1323,8 +1323,8 @@ jobs:
           fi
 
           umask 077
-          api_key_path="$RUNNER_TEMP/plezyng-tvos-api-key.p8"
-          export_options_path="$RUNNER_TEMP/plezyng-tvos-export-options.plist"
+          api_key_path="$RUNNER_TEMP/pleazyng-tvos-api-key.p8"
+          export_options_path="$RUNNER_TEMP/pleazyng-tvos-export-options.plist"
           printf '%s' "$APPLE_API_PRIVATE_KEY" > "$api_key_path"
           echo "api_key_path=$api_key_path" >> "$GITHUB_OUTPUT"
           echo "export_options_path=$export_options_path" >> "$GITHUB_OUTPUT"
@@ -1370,7 +1370,7 @@ jobs:
           fi
           mkdir -p tvos-payload/Payload
           cp -R "$app_path" tvos-payload/Payload/
-          (cd tvos-payload && zip -qr ../plezy-tvos-unsigned.ipa Payload)
+          (cd tvos-payload && zip -qr ../pleazyng-tvos-unsigned.ipa Payload)
 
       - name: Build signed tvOS App Store IPA
         if: steps.tvos-signing.outputs.configured == 'true'
@@ -1416,18 +1416,18 @@ jobs:
             echo "Xcode did not produce a tvOS App Store IPA." >&2
             exit 1
           fi
-          cp "$ipa_path" plezyng-tvos-appstore.ipa
+          cp "$ipa_path" pleazyng-tvos-appstore.ipa
 
       - name: Attest unsigned tvOS developer package
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: plezy-tvos-unsigned.ipa
+          subject-path: pleazyng-tvos-unsigned.ipa
 
       - name: Attest signed tvOS App Store package
         if: steps.tvos-signing.outputs.configured == 'true'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: plezyng-tvos-appstore.ipa
+          subject-path: pleazyng-tvos-appstore.ipa
 
       - name: Remove tvOS signing material
         if: always() && steps.tvos-signing.outputs.api_key_path != ''
@@ -1445,8 +1445,8 @@ jobs:
         with:
           name: tvos-ipa
           path: |
-            plezy-tvos-unsigned.ipa
-            plezyng-tvos-appstore.ipa
+            pleazyng-tvos-unsigned.ipa
+            pleazyng-tvos-appstore.ipa
           if-no-files-found: error
 
       - name: Clean tvOS source and Xcode scratch
@@ -1526,7 +1526,7 @@ jobs:
           set -euo pipefail
           short_root="$(bash scripts/prepare_apple_jit_scratch.sh macos 40 local-xcode)"
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
-          APPLE_LOCAL_BUILD_DIR="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos-xcode/build"
+          APPLE_LOCAL_BUILD_DIR="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos-xcode/build"
           ditto "$GITHUB_WORKSPACE/." "$short_root/"
           bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
@@ -1572,7 +1572,7 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
-          APP_PATH="build/macos/Build/Products/Release/PlezyNG.app"
+          APP_PATH="build/macos/Build/Products/Release/Pleazyng.app"
           EXECUTABLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")
           ARCHITECTURES=$(lipo -archs "$APP_PATH/Contents/MacOS/$EXECUTABLE")
           for architecture in arm64 x86_64; do
@@ -1676,7 +1676,7 @@ jobs:
           IDENTITY=$(security find-identity -v -p codesigning | grep "Developer ID Application" | head -1 | grep -o '".*"' | tr -d '"')
           echo "Signing with identity: $IDENTITY"
 
-          APP_PATH="build/macos/Build/Products/Release/PlezyNG.app"
+          APP_PATH="build/macos/Build/Products/Release/Pleazyng.app"
 
           # Deep sign everything inside-out: executables, dylibs, XPC services, app bundles, frameworks
           find "$APP_PATH/Contents/Frameworks" \( -name "*.xpc" -o -name "*.app" -o -name "*.framework" -o -name "*.dylib" \) -print0 \
@@ -1700,7 +1700,7 @@ jobs:
         if: steps.macos-signing.outputs.codesign == 'true'
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
-          APP_PATH="build/macos/Build/Products/Release/PlezyNG.app"
+          APP_PATH="build/macos/Build/Products/Release/Pleazyng.app"
           echo "Verifying signature..."
           codesign -dvvv "$APP_PATH"
           echo "Verifying signed entitlements..."
@@ -1719,8 +1719,8 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
-          APP_PATH="build/macos/Build/Products/Release/PlezyNG.app"
-          API_KEY_PATH="$RUNNER_TEMP/plezyng-macos-notary-api-key.p8"
+          APP_PATH="build/macos/Build/Products/Release/Pleazyng.app"
+          API_KEY_PATH="$RUNNER_TEMP/pleazyng-macos-notary-api-key.p8"
           umask 077
           printf '%s' "$APPLE_API_PRIVATE_KEY" > "$API_KEY_PATH"
 
@@ -1744,21 +1744,21 @@ jobs:
             security delete-keychain "$KEYCHAIN_PATH"
           fi
           rm -f "$RUNNER_TEMP/certificate.p12"
-          rm -f "$RUNNER_TEMP/plezyng-macos-notary-api-key.p8"
+          rm -f "$RUNNER_TEMP/pleazyng-macos-notary-api-key.p8"
           rm -f notarization.zip
 
       - name: Verify Gatekeeper acceptance for Homebrew Cask
         if: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' }}
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
-        run: spctl --assess --type execute --verbose=4 build/macos/Build/Products/Release/PlezyNG.app
+        run: spctl --assess --type execute --verbose=4 build/macos/Build/Products/Release/Pleazyng.app
 
       - name: Create DMG
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           mkdir -p dmg-staging
-          cp -R build/macos/Build/Products/Release/PlezyNG.app dmg-staging/
+          cp -R build/macos/Build/Products/Release/Pleazyng.app dmg-staging/
           ln -s /Applications dmg-staging/Applications
-          hdiutil create -format ULMO -srcfolder dmg-staging -volname "PlezyNG" plezyng-macos.dmg
+          hdiutil create -format ULMO -srcfolder dmg-staging -volname "Pleazyng" pleazyng-macos.dmg
 
       - name: Check Sparkle signing key
         id: sparkle-signing
@@ -1779,12 +1779,12 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           printf -- "-----BEGIN ED25519 PRIVATE KEY-----\n%s\n-----END ED25519 PRIVATE KEY-----\n" "$SPARKLE_PRIVATE_KEY" > ed25519_key.pem
-          OUTPUT=$(dart run auto_updater:sign_update plezyng-macos.dmg ed25519_key.pem)
+          OUTPUT=$(dart run auto_updater:sign_update pleazyng-macos.dmg ed25519_key.pem)
           rm ed25519_key.pem
           # Extract edSignature value from output like: sparkle:edSignature="..." length="..."
           SIGNATURE=$(echo "$OUTPUT" | grep -o 'edSignature="[^"]*"' | sed 's/edSignature="//;s/"//')
           echo "MACOS_ED_SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
-          echo "MACOS_DMG_SIZE=$(stat -f%z plezyng-macos.dmg)" >> $GITHUB_ENV
+          echo "MACOS_DMG_SIZE=$(stat -f%z pleazyng-macos.dmg)" >> $GITHUB_ENV
 
       - name: Write macOS signature metadata
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
@@ -1796,19 +1796,19 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
-          cp -f plezyng-macos.dmg macos-ed-signature.txt macos-dmg-size.txt "$GITHUB_WORKSPACE/"
+          cp -f pleazyng-macos.dmg macos-ed-signature.txt macos-dmg-size.txt "$GITHUB_WORKSPACE/"
 
       - name: Attest macOS DMG
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: plezyng-macos.dmg
+          subject-path: pleazyng-macos.dmg
 
       - name: Upload macOS DMG
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: macos-dmg
           path: |
-            plezyng-macos.dmg
+            pleazyng-macos.dmg
             macos-ed-signature.txt
             macos-dmg-size.txt
 
@@ -1833,7 +1833,7 @@ jobs:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Windows (${{ matrix.arch }})
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-{1}-build-windows"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'windows-11-vs2026-arm' || 'windows-2025') || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-{1}-build-windows"]}}', github.run_id, strategy.job-index)) }}
     env:
       PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && '1' || '0' }}
     permissions:
@@ -2011,7 +2011,7 @@ jobs:
             exit 0
           }
 
-          $logPath = Join-Path $env:RUNNER_TEMP 'plezyng-windows-cmake-install-diagnostics.log'
+          $logPath = Join-Path $env:RUNNER_TEMP 'pleazyng-windows-cmake-install-diagnostics.log'
           $previousVerbose = $env:VERBOSE
           $env:VERBOSE = '1'
           try {
@@ -2044,7 +2044,7 @@ jobs:
           $foundFiles | ForEach-Object { Write-Host "  $_" }
 
           $requiredFiles = @(
-            "plezy.exe"
+            "pleazyng.exe"
             "flutter_windows.dll"
             "sqlite3.dll"
             "libmpv-2.dll"
@@ -2099,7 +2099,7 @@ jobs:
   package-windows:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: [validate-trusted-ref, build-windows]
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'windows-2025' || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","PlezyNG","gha-{0}-package-windows"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'windows-2025' || fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-package-windows"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write
@@ -2171,7 +2171,7 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_BASE64) -or [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD)) {
             throw 'Configure both WINDOWS_SIGNING_CERTIFICATE_BASE64 and WINDOWS_SIGNING_CERTIFICATE_PASSWORD.'
           }
-          $pfxPath = Join-Path $env:RUNNER_TEMP 'plezyng-authenticode.pfx'
+          $pfxPath = Join-Path $env:RUNNER_TEMP 'pleazyng-authenticode.pfx'
           try {
             [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERTIFICATE_BASE64))
             $signtoolCommand = Get-Command signtool.exe -ErrorAction SilentlyContinue
@@ -2184,9 +2184,9 @@ jobs:
               if ($null -ne $signtoolFile) { $signtoolPath = $signtoolFile.FullName }
             }
             if ($null -eq $signtoolPath) { throw 'Could not find signtool.exe on the Windows runner.' }
-            & $signtoolPath sign /fd SHA256 /f $pfxPath /p $env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD /tr http://timestamp.digicert.com /td SHA256 plezy-windows-installer.exe
+            & $signtoolPath sign /fd SHA256 /f $pfxPath /p $env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD /tr http://timestamp.digicert.com /td SHA256 pleazyng-windows-installer.exe
             if ($LASTEXITCODE -ne 0) { throw "Authenticode signing failed with exit code $LASTEXITCODE" }
-            & $signtoolPath verify /pa /all plezy-windows-installer.exe
+            & $signtoolPath verify /pa /all pleazyng-windows-installer.exe
             if ($LASTEXITCODE -ne 0) { throw "Authenticode signature verification failed with exit code $LASTEXITCODE" }
           } finally {
             Remove-Item -Path $pfxPath -Force -ErrorAction SilentlyContinue
@@ -2203,7 +2203,7 @@ jobs:
           if ($env:RELEASE_VERSION -ne $env:PACKAGE_VERSION) {
             throw "Chocolatey package version $env:PACKAGE_VERSION does not match release version $env:RELEASE_VERSION"
           }
-          $installer = Get-Item 'plezy-windows-installer.exe'
+          $installer = Get-Item 'pleazyng-windows-installer.exe'
           $checksum = (Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           $url = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$env:RELEASE_TAG/$($installer.Name)"
           $installPath = 'packaging\chocolatey\tools\chocolateyinstall.ps1'
@@ -2212,14 +2212,14 @@ jobs:
           $installScript = $installScript.Replace('__PLEZYNG_SHA256__', $checksum)
           if ($installScript.Contains('__PLEZYNG_')) { throw 'Chocolatey package template still contains a placeholder.' }
           Set-Content -Path $installPath -Value $installScript -Encoding utf8
-          $nuspecPath = 'packaging\chocolatey\plezyng.nuspec'
+          $nuspecPath = 'packaging\chocolatey\pleazyng.nuspec'
           $nuspec = Get-Content $nuspecPath -Raw
           $nuspec = $nuspec -replace '<version>[^<]+</version>', "<version>$env:PACKAGE_VERSION</version>"
           Set-Content -Path $nuspecPath -Value $nuspec -Encoding utf8
           New-Item -ItemType Directory -Force 'release-packages' | Out-Null
           choco pack $nuspecPath --outputdirectory release-packages
           if ($LASTEXITCODE -ne 0) { throw "Chocolatey pack failed with exit code $LASTEXITCODE" }
-          $package = Get-Item "release-packages\plezyng.$env:PACKAGE_VERSION.nupkg"
+          $package = Get-Item "release-packages\pleazyng.$env:PACKAGE_VERSION.nupkg"
           if ($null -eq $package) { throw 'Chocolatey package was not created.' }
 
       - name: Check Sparkle signing key
@@ -2243,7 +2243,7 @@ jobs:
           $keyPath = Join-Path $env:RUNNER_TEMP "plezy-winsparkle-ed25519.pem"
           try {
             Set-Content -Path $keyPath -Value $env:SPARKLE_PRIVATE_KEY -Encoding ascii -NoNewline
-            $output = & dart run auto_updater:sign_update plezy-windows-installer.exe $keyPath
+            $output = & dart run auto_updater:sign_update pleazyng-windows-installer.exe $keyPath
             if ($LASTEXITCODE -ne 0) {
               throw "WinSparkle signer failed with exit code $LASTEXITCODE"
             }
@@ -2252,7 +2252,7 @@ jobs:
               throw "WinSparkle signer returned no EdDSA signature"
             }
             Set-Content -Path win-ed-signature.txt -Value $match.Groups[1].Value -Encoding ascii -NoNewline
-            Set-Content -Path win-installer-size.txt -Value (Get-Item plezy-windows-installer.exe).Length.ToString() -Encoding ascii -NoNewline
+            Set-Content -Path win-installer-size.txt -Value (Get-Item pleazyng-windows-installer.exe).Length.ToString() -Encoding ascii -NoNewline
           } finally {
             Remove-Item -Path $keyPath -Force -ErrorAction SilentlyContinue
           }
@@ -2261,32 +2261,32 @@ jobs:
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
-            plezy-windows-x64-portable.7z
-            plezy-windows-installer.exe
+            pleazyng-windows-x64-portable.7z
+            pleazyng-windows-installer.exe
 
       - name: Attest Microsoft Store bundle
         if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: plezyng-windows.msixbundle
+          subject-path: pleazyng-windows.msixbundle
 
       - name: Attest Chocolatey package
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: release-packages/plezyng.${{ steps.version.outputs.version }}.nupkg
+          subject-path: release-packages/pleazyng.${{ steps.version.outputs.version }}.nupkg
 
       - name: Upload x64 portable
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-x64-portable
-          path: plezy-windows-x64-portable.7z
+          path: pleazyng-windows-x64-portable.7z
 
       - name: Upload installer
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-installer
           path: |
-            plezy-windows-installer.exe
+            pleazyng-windows-installer.exe
             win-ed-signature.txt
             win-installer-size.txt
 
@@ -2295,13 +2295,13 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-msix
-          path: plezyng-windows.msixbundle
+          path: pleazyng-windows.msixbundle
 
       - name: Upload Chocolatey package
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-chocolatey
-          path: release-packages/plezyng.*.nupkg
+          path: release-packages/pleazyng.*.nupkg
 
   build-linux:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
@@ -2511,7 +2511,7 @@ jobs:
 
       - name: Copy wrapper script into bundle
         shell: bash
-        run: cp linux/packaging/plezy.sh "$BUNDLE_DIR/plezy.sh"
+        run: cp linux/packaging/pleazyng.sh "$BUNDLE_DIR/plezy.sh"
 
       # Same check the package smoke build runs, against the artifact that
       # actually ships: a library nobody declares is a broken install, and it is
@@ -2573,9 +2573,9 @@ jobs:
           rm -rf "$snap_dir/src"
           mkdir -p "$snap_dir/src" "$snap_dir/gui"
           cp -a "$BUNDLE_DIR"/. "$snap_dir/src/"
-          cp linux/packaging/plezy.sh "$snap_dir/plezy.sh"
-          cp linux/packaging/snap/plezyng.desktop "$snap_dir/gui/plezyng.desktop"
-          cp assets/plezy.png "$snap_dir/gui/plezyng.png"
+          cp linux/packaging/pleazyng.sh "$snap_dir/plezy.sh"
+          cp linux/packaging/snap/pleazyng.desktop "$snap_dir/gui/pleazyng.desktop"
+          cp assets/pleazyng.png "$snap_dir/gui/pleazyng.png"
           sed -i "s/^version: .*/version: '$RELEASE_TAG'/" "$snap_dir/snapcraft.yaml"
 
       - name: Build Snap package
@@ -2590,7 +2590,7 @@ jobs:
           SNAP_PATH: ${{ steps.snap.outputs.snap }}
           ARCH: ${{ matrix.arch }}
         shell: bash
-        run: cp "$SNAP_PATH" "plezyng-linux-${ARCH}.snap"
+        run: cp "$SNAP_PATH" "pleazyng-linux-${ARCH}.snap"
 
       - name: Build x64 AppImage
         if: matrix.arch == 'x64'
@@ -2599,75 +2599,75 @@ jobs:
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.version }}
         run: |
           set -euo pipefail
-          app_dir="$RUNNER_TEMP/plezyng.AppDir"
+          app_dir="$RUNNER_TEMP/pleazyng.AppDir"
           appimagetool="$RUNNER_TEMP/appimagetool-x86_64.AppImage"
           rm -rf "$app_dir"
-          install -d "$app_dir/opt/plezyng" "$app_dir/usr/share/applications" "$app_dir/usr/share/icons/hicolor/512x512/apps"
-          cp -a "$BUNDLE_DIR"/. "$app_dir/opt/plezyng/"
+          install -d "$app_dir/opt/pleazyng" "$app_dir/usr/share/applications" "$app_dir/usr/share/icons/hicolor/512x512/apps"
+          cp -a "$BUNDLE_DIR"/. "$app_dir/opt/pleazyng/"
           install -Dm755 linux/packaging/appimage/AppRun "$app_dir/AppRun"
-          install -Dm644 linux/packaging/appimage/plezyng.desktop "$app_dir/plezyng.desktop"
-          install -Dm644 linux/packaging/appimage/plezyng.desktop "$app_dir/usr/share/applications/plezyng.desktop"
-          install -Dm644 assets/plezy.png "$app_dir/plezyng.png"
-          install -Dm644 assets/plezy.png "$app_dir/usr/share/icons/hicolor/512x512/apps/plezyng.png"
+          install -Dm644 linux/packaging/appimage/pleazyng.desktop "$app_dir/pleazyng.desktop"
+          install -Dm644 linux/packaging/appimage/pleazyng.desktop "$app_dir/usr/share/applications/pleazyng.desktop"
+          install -Dm644 assets/pleazyng.png "$app_dir/pleazyng.png"
+          install -Dm644 assets/pleazyng.png "$app_dir/usr/share/icons/hicolor/512x512/apps/pleazyng.png"
           curl -fsSL --retry 5 \
             https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-x86_64.AppImage \
             -o "$appimagetool"
           echo 'ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0  '"$appimagetool" | sha256sum --check --status
           chmod +x "$appimagetool"
           APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 VERSION="$RELEASE_TAG" \
-            "$appimagetool" "$app_dir" "$GITHUB_WORKSPACE/plezyng-linux-x86_64.AppImage"
+            "$appimagetool" "$app_dir" "$GITHUB_WORKSPACE/pleazyng-linux-x86_64.AppImage"
 
       - name: Attest x64 AppImage
         if: matrix.arch == 'x64'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: plezyng-linux-x86_64.AppImage
+          subject-path: pleazyng-linux-x86_64.AppImage
 
       - name: Verify installed Flatpak runtime dependencies
         shell: bash
         run: |
-          flatpak install --user --noninteractive "plezy-linux-${{ matrix.arch }}.flatpak"
+          flatpak install --user --noninteractive "pleazyng-linux-${{ matrix.arch }}.flatpak"
           dbus-run-session -- python3 linux/packaging/check-flatpak.py --arch ${{ matrix.arch }}
 
       - name: Include standalone app icon in portable bundle
         shell: bash
-        run: cp assets/plezy.png "$BUNDLE_DIR/plezyng.png"
+        run: cp assets/pleazyng.png "$BUNDLE_DIR/pleazyng.png"
 
       - name: Create tarball
         shell: bash
         run: |
           cd "$BUNDLE_DIR"
-          tar -czf "$GITHUB_WORKSPACE/plezy-linux-${{ matrix.arch }}.tar.gz" *
+          tar -czf "$GITHUB_WORKSPACE/pleazyng-linux-${{ matrix.arch }}.tar.gz" *
 
       - name: Attest Linux ${{ matrix.arch }} artifacts
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
-            plezy-linux-${{ matrix.arch }}.tar.gz
-            plezy-linux-${{ matrix.arch }}.deb
-            plezy-linux-${{ matrix.arch }}.rpm
-            plezy-linux-${{ matrix.arch }}.pkg.tar.zst
-            plezy-linux-${{ matrix.arch }}.flatpak
-            plezyng-linux-${{ matrix.arch }}.snap
+            pleazyng-linux-${{ matrix.arch }}.tar.gz
+            pleazyng-linux-${{ matrix.arch }}.deb
+            pleazyng-linux-${{ matrix.arch }}.rpm
+            pleazyng-linux-${{ matrix.arch }}.pkg.tar.zst
+            pleazyng-linux-${{ matrix.arch }}.flatpak
+            pleazyng-linux-${{ matrix.arch }}.snap
 
       - name: Upload Linux ${{ matrix.arch }} artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: linux-${{ matrix.arch }}
           path: |
-            plezy-linux-${{ matrix.arch }}.tar.gz
-            plezy-linux-${{ matrix.arch }}.deb
-            plezy-linux-${{ matrix.arch }}.rpm
-            plezy-linux-${{ matrix.arch }}.pkg.tar.zst
-            plezy-linux-${{ matrix.arch }}.flatpak
-            plezyng-linux-${{ matrix.arch }}.snap
+            pleazyng-linux-${{ matrix.arch }}.tar.gz
+            pleazyng-linux-${{ matrix.arch }}.deb
+            pleazyng-linux-${{ matrix.arch }}.rpm
+            pleazyng-linux-${{ matrix.arch }}.pkg.tar.zst
+            pleazyng-linux-${{ matrix.arch }}.flatpak
+            pleazyng-linux-${{ matrix.arch }}.snap
 
       - name: Upload x64 AppImage artifact
         if: matrix.arch == 'x64'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: linux-x64-appimage
-          path: plezyng-linux-x86_64.AppImage
+          path: pleazyng-linux-x86_64.AppImage
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
@@ -2692,7 +2692,7 @@ jobs:
             scripts/recover_release_platforms.py
             scripts/verify_release_ci.py
             docs/maintainers/capability-manifest.json
-            Casks/snapetech-plezyng.rb.template
+            Casks/snapetech-pleazyng.rb.template
           sparse-checkout-cone-mode: false
           persist-credentials: false
 
@@ -2747,7 +2747,7 @@ jobs:
         if: ${{ inputs.reuse_platform_run_id == '' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          name: plezyng-tizen-arm-experimental
+          name: pleazyng-tizen-arm-experimental
           path: artifacts/tizen
 
       - name: Verify and archive Tizen tester handoff
@@ -2756,7 +2756,7 @@ jobs:
         run: |
           set -euo pipefail
           package_dir=artifacts/tizen
-          package_name=PlezyNG-tizen-arm-tester.tpk
+          package_name=pleazyng-tizen-arm-tester.tpk
           (
             cd "$package_dir"
             sha256sum --check "$package_name.sha256"
@@ -2769,14 +2769,14 @@ jobs:
 
           package_dir = pathlib.Path(sys.argv[1])
           expected_commit = sys.argv[2]
-          package_name = "PlezyNG-tizen-arm-tester.tpk"
+          package_name = "pleazyng-tizen-arm-tester.tpk"
           required = [
               package_name,
               package_name + ".sha256",
               package_name + ".json",
               "pubspec-tizen.lock",
               "native-build.json",
-              "PlezyNG-tizen-arm-native-sources.tar.gz",
+              "pleazyng-tizen-arm-native-sources.tar.gz",
               "package.py",
               "toolchain.json",
               "tizen-tester.md",
@@ -2795,7 +2795,7 @@ jobs:
           if report.get("tv_install_verified") is not False:
               raise SystemExit("Tizen tester package must remain explicitly unqualified")
 
-          destination = package_dir / "PlezyNG-tizen-arm-tester-handoff.zip"
+          destination = package_dir / "pleazyng-tizen-arm-tester-handoff.zip"
           with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as archive:
               for name in required:
                   archive.write(package_dir / name, arcname=name)
@@ -2842,20 +2842,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s artifacts/windows-arm64-build/plezy.exe
+          test -s artifacts/windows-arm64-build/pleazyng.exe
           if find artifacts/windows-arm64-build -type f -iname '*.pdb' -print -quit | grep -q .; then
             echo "The Windows ARM64 release payload must not contain debug symbols." >&2
             exit 1
           fi
           mkdir -p artifacts/windows-arm64-portable
-          (cd artifacts/windows-arm64-build && zip -q -r ../windows-arm64-portable/plezy-windows-arm64-portable.zip .)
-          unzip -tq artifacts/windows-arm64-portable/plezy-windows-arm64-portable.zip
+          (cd artifacts/windows-arm64-build && zip -q -r ../windows-arm64-portable/pleazyng-windows-arm64-portable.zip .)
+          unzip -tq artifacts/windows-arm64-portable/pleazyng-windows-arm64-portable.zip
 
       - name: Attest native Windows ARM64 portable archive
         if: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: artifacts/windows-arm64-portable/plezy-windows-arm64-portable.zip
+          subject-path: artifacts/windows-arm64-portable/pleazyng-windows-arm64-portable.zip
 
       - name: Download Windows installer artifact
         if: ${{ inputs.reuse_platform_run_id == '' }}
@@ -2900,7 +2900,7 @@ jobs:
           path: artifacts/linux-x64
 
       - name: Verify Tizen handoff before publication
-        run: test -s artifacts/tizen/PlezyNG-tizen-arm-tester-handoff.zip
+        run: test -s artifacts/tizen/pleazyng-tizen-arm-tester-handoff.zip
 
       - name: Require every release platform before publication
         run: python3 scripts/release_coverage.py --directory artifacts
@@ -2912,7 +2912,7 @@ jobs:
         env:
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.release_tag }}
           RELEASE_VERSION: ${{ needs.validate-trusted-ref.outputs.version }}
-        run: python3 scripts/generate_winget_manifests.py "$RELEASE_VERSION" artifacts/windows-installer/plezy-windows-installer.exe artifacts --release-tag "$RELEASE_TAG"
+        run: python3 scripts/generate_winget_manifests.py "$RELEASE_VERSION" artifacts/windows-installer/pleazyng-windows-installer.exe artifacts --release-tag "$RELEASE_TAG"
 
       - name: Generate release SHA-256 checksums
         run: |
@@ -2930,20 +2930,20 @@ jobs:
           python3 scripts/generate_homebrew_cask.py \
             --version "$RELEASE_VERSION" \
             --checksums artifacts/SHA256SUMS.txt \
-            --output artifacts/homebrew/snapetech-plezyng.rb
+            --output artifacts/homebrew/snapetech-pleazyng.rb
 
       - name: Attest release manifests and checksums
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
             artifacts/SHA256SUMS.txt
-            artifacts/plezyng-winget-manifests-${{ needs.validate-trusted-ref.outputs.version }}.zip
+            artifacts/pleazyng-winget-manifests-${{ needs.validate-trusted-ref.outputs.version }}.zip
 
       - name: Attest Homebrew Cask candidate
         if: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: artifacts/homebrew/snapetech-plezyng.rb
+          subject-path: artifacts/homebrew/snapetech-pleazyng.rb
 
       - name: Generate appcast.xml
         env:
@@ -2987,7 +2987,7 @@ jobs:
           # macOS enclosure
           if [ -n "$MACOS_ED_SIG" ]; then
             cat >> appcast.xml << XMLEOF
-                <enclosure url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/plezyng-macos.dmg"
+                <enclosure url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/pleazyng-macos.dmg"
                            length="${MACOS_DMG_SIZE}" type="application/octet-stream"
                            sparkle:edSignature="${MACOS_ED_SIG}"
                            sparkle:os="macos" />
@@ -2997,7 +2997,7 @@ jobs:
           # Windows enclosure
           if [ -n "$WIN_ED_SIG" ]; then
             cat >> appcast.xml << XMLEOF
-                <enclosure url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/plezy-windows-installer.exe"
+                <enclosure url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/pleazyng-windows-installer.exe"
                            length="${WIN_INSTALLER_SIZE}" type="application/octet-stream"
                            sparkle:edSignature="${WIN_ED_SIG}"
                            sparkle:installerArguments="/SILENT /SP-"
@@ -3027,42 +3027,42 @@ jobs:
         run: |
           {
             echo 'files<<EOF'
-            echo artifacts/android-apk/plezy-android-arm64-v8a.tar.gz
-            echo artifacts/android-apk/plezy-android-armeabi-v7a.tar.gz
-            echo artifacts/android-apk/plezy-android-x86_64.tar.gz
+            echo artifacts/android-apk/pleazyng-android-arm64-v8a.tar.gz
+            echo artifacts/android-apk/pleazyng-android-armeabi-v7a.tar.gz
+            echo artifacts/android-apk/pleazyng-android-x86_64.tar.gz
             if [[ "$INCLUDE_WEBOS_RELEASE" == "true" ]]; then
               echo artifacts/webos/*.ipk
               echo artifacts/webos/webos-app-provenance.json
               echo artifacts/webos/webos-engine-provenance.json
               echo artifacts/webos/webos-compatibility.json
               echo artifacts/webos/webos-SHA256SUMS.txt
-              echo artifacts/webos/PlezyNG-lg-webos-submission.zip
+              echo artifacts/webos/pleazyng-lg-webos-submission.zip
             fi
-            echo artifacts/ios-ipa/plezy-ios-unsigned.ipa
-            if [ -f artifacts/ios-ipa/plezyng-ios-appstore.ipa ]; then
-              echo artifacts/ios-ipa/plezyng-ios-appstore.ipa
+            echo artifacts/ios-ipa/pleazyng-ios-unsigned.ipa
+            if [ -f artifacts/ios-ipa/pleazyng-ios-appstore.ipa ]; then
+              echo artifacts/ios-ipa/pleazyng-ios-appstore.ipa
             fi
-            echo artifacts/tvos-ipa/plezy-tvos-unsigned.ipa
-            if [ -f artifacts/tvos-ipa/plezyng-tvos-appstore.ipa ]; then
-              echo artifacts/tvos-ipa/plezyng-tvos-appstore.ipa
+            echo artifacts/tvos-ipa/pleazyng-tvos-unsigned.ipa
+            if [ -f artifacts/tvos-ipa/pleazyng-tvos-appstore.ipa ]; then
+              echo artifacts/tvos-ipa/pleazyng-tvos-appstore.ipa
             fi
-            echo artifacts/macos-dmg/plezyng-macos.dmg
-            echo artifacts/windows-x64-portable/plezy-windows-x64-portable.7z
+            echo artifacts/macos-dmg/pleazyng-macos.dmg
+            echo artifacts/windows-x64-portable/pleazyng-windows-x64-portable.7z
             if [[ "$EXECUTION_PROFILE" == "hybrid" ]]; then
-              echo artifacts/windows-arm64-portable/plezy-windows-arm64-portable.zip
+              echo artifacts/windows-arm64-portable/pleazyng-windows-arm64-portable.zip
             fi
-            echo artifacts/windows-installer/plezy-windows-installer.exe
-            if [ -f artifacts/windows-msix/plezyng-windows.msixbundle ]; then
-              echo artifacts/windows-msix/plezyng-windows.msixbundle
+            echo artifacts/windows-installer/pleazyng-windows-installer.exe
+            if [ -f artifacts/windows-msix/pleazyng-windows.msixbundle ]; then
+              echo artifacts/windows-msix/pleazyng-windows.msixbundle
             fi
-            echo artifacts/windows-chocolatey/plezyng.*.nupkg
-            echo "artifacts/plezyng-winget-manifests-${RELEASE_VERSION}.zip"
-            echo artifacts/tizen/PlezyNG-tizen-arm-tester-handoff.zip
-            if [ -f artifacts/android-apk/plezyng-android-play.aab ]; then
-              echo artifacts/android-apk/plezyng-android-play.aab
+            echo artifacts/windows-chocolatey/pleazyng.*.nupkg
+            echo "artifacts/pleazyng-winget-manifests-${RELEASE_VERSION}.zip"
+            echo artifacts/tizen/pleazyng-tizen-arm-tester-handoff.zip
+            if [ -f artifacts/android-apk/pleazyng-android-play.aab ]; then
+              echo artifacts/android-apk/pleazyng-android-play.aab
             fi
-            if [ -f artifacts/android-apk/plezyng-amazon-firetv.apk ]; then
-              echo artifacts/android-apk/plezyng-amazon-firetv.apk
+            if [ -f artifacts/android-apk/pleazyng-amazon-firetv.apk ]; then
+              echo artifacts/android-apk/pleazyng-amazon-firetv.apk
             fi
             echo 'artifacts/linux-x64/*'
             echo 'artifacts/linux-arm64/*'
@@ -3072,7 +3072,7 @@ jobs:
               echo artifacts/platform-reuse-provenance.json
             fi
             if [[ "$PREPARE_HOMEBREW_CASK" == "true" ]]; then
-              echo artifacts/homebrew/snapetech-plezyng.rb
+              echo artifacts/homebrew/snapetech-pleazyng.rb
             fi
             echo EOF
           } >> "$GITHUB_OUTPUT"

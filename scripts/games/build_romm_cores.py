@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build pinned libretro cores into an explicit package staging directory.
 
-Run only on an authorized private build machine. No emulator/ROM downloads
-happen in PlezyNG. Cross builds pass the toolchain's make variables verbatim as
+Run on a compatible build machine. No emulator/ROM downloads happen at runtime
+in Pleazyng. Cross builds pass the toolchain's make variables verbatim as
 individual argv entries; shell expansion is never used.
 """
 import argparse
@@ -13,15 +13,9 @@ import shutil
 import subprocess
 import sys
 
-PINS = {
-    'gambatte': ('gambatte-libretro', '7809bb68ee96c3e6c74e9d9c4c8bb09aa7c6801d', 'Makefile'),
-    'mgba': ('mgba', '7a12d6d4b9acb14c0ae62c9166b6a2f3d08007f6', None),
-    'fceumm': ('libretro-fceumm', 'ac0d00a7fc01166f84c7bac01d1084ebfd2b865e', 'Makefile.libretro'),
-    # These two upstreams have additional license restrictions. They are opt-in
-    # packaging inputs, never part of the freely redistributable default set.
-    'snes9x': ('snes9x', 'fae2fea08f74180759ef540ee94259213f503480', 'libretro/Makefile'),
-    'genesis_plus_gx': ('Genesis-Plus-GX', '60bee4c724859710ce05672239e5b601ad01382e', 'Makefile.libretro'),
-}
+PINS = {name: (pin['repository'], pin['commit'], pin['makefile'])
+        for name, pin in json.loads((pathlib.Path(__file__).resolve().parents[2] /
+            'native/games/romm/core-sources.json').read_text()).items()}
 
 def run(args, cwd=None):
     subprocess.run(args, cwd=cwd, check=True)

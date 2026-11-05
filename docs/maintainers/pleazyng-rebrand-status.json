@@ -2,24 +2,48 @@
   "schemaVersion": 1,
   "updated": "2026-11-05",
   "product": "Pleazyng",
-  "state": "implementation_in_progress",
+  "state": "source_implemented_cutover_blocked",
   "completed": [
     "Removed upstream relay URL fallback and reject upstream domains in configured relay URLs",
     "Removed bundled upstream Discord and tracker client identifiers",
-    "Created a fork ribbon symbol master without the NG lettering"
+    "Created a fork ribbon symbol master without the NG lettering",
+    "Public display/package/link identities and future publishing recipes migrated",
+    "Canonical artwork and all 23 alternate icon exports regenerated",
+    "Inherited README showcase and old-name store screenshot bases removed",
+    "Website source and verified canonical artwork updated; repository/domain names retained",
+    "Scoped public identity and upstream-protocol regression guard added",
+    "Website deployed to Cloudflare Pages and existing owner-private ChatGPT Site with audience preserved",
+    "Replaced all nine inherited README pictograms and classified all 39 shared upstream images",
+    "Updated GitHub repository descriptions and Pleazyng topic without renaming repositories"
   ],
   "pending": [
-    "Public app/package/link identity migration",
-    "Canonical brand export regeneration and website sync",
-    "Data and purchase continuity",
-    "Repository and domain/channel account changes",
-    "Own service deployment and provider registrations",
-    "Native build and device/channel verification"
+    "Owner-deferred repository renames",
+    "Data/purchase continuity bridges and device qualification",
+    "Domain ownership/DNS/TLS and migration redirects",
+    "Store/channel records, signing, provider registrations and owned services",
+    "Fresh native store screenshots",
+    "Existing main compilation defects and exact-commit all-platform release qualification"
   ],
   "checks": {
-    "git_diff_check": "passed",
-    "source_configuration_screen": "passed",
-    "dart_runtime": "not_run",
-    "native_builds": "not_run"
-  }
+    "brand_exports": "590 exports reproduced byte-for-byte with --check",
+    "public_identity_and_protocols": "passed",
+    "python_guard_tests": "327 passed",
+    "brand_property_tests": "7 passed",
+    "tizen_package_tests": "19 passed",
+    "webos_package_tests": "49 passed",
+    "focused_flutter_tests": "72 passed",
+    "website_build_and_checks": "passed; 4 browser-logic tests",
+    "full_flutter_launcher": "failed on 9e9745362 after concurrent integration repairs; see handoff",
+    "native_release_matrix": "not run; release blocked",
+    "full_commit_hook": "failed existing formatting/icon/compile/dependency checks; bypass documented in handoff"
+  },
+  "handoff": "docs/maintainers/pleazyng-rebrand-handoff.md",
+  "website_receipts": {
+    "github_commit": "f732ebfd2a09ebf3a2e88a81a6f6005715d5b4b7",
+    "workflow_run": 42127220857,
+    "cloudflare_deployment": "https://5bb7ee07.plezyng-app.pages.dev",
+    "private_site_deployment": "appgdep_6aed0c48c99c8191b062729e60417d33",
+    "anonymous_pages_access": "HTTP 401; existing access controls retained; public cutover unverified"
+  },
+  "artwork_audit": "docs/maintainers/pleazyng-artwork-audit.json"
 }

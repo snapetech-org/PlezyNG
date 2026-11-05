@@ -33,8 +33,8 @@ class NavigationTab {
       softWrap: false,
       overflow: TextOverflow.ellipsis,
       child: NavigationDestination(
-        icon: AppIcon(icon, fill: 1),
-        selectedIcon: AppIcon(icon, fill: 1),
+        icon: AppIcon(icon, fill: 0, weight: 500),
+        selectedIcon: AppIcon(icon, fill: 1, weight: 600),
         label: getLabel(),
       ),
     );

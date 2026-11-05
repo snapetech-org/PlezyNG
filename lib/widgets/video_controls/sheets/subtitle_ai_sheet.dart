@@ -863,7 +863,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _exportSubtitleRevision(SubtitleRevision revision) async {
     final result = await FilePickerService.instance.saveFile(
       dialogTitle: context.t.subtitleAiUi.exportReviewedSubtitleRevision,
-      fileName: 'PlezyNG_revision_${revision.id}.srt',
+      fileName: 'Pleazyng_revision_${revision.id}.srt',
       bytes: SubtitleSyncService.writeSrt(revision.cues),
       type: FileType.custom,
       allowedExtensions: const ['srt'],
@@ -1452,7 +1452,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final uploaded = await client.attachSubtitle(
       ratingKey,
       bytes: bytes,
-      fileName: 'PlezyNG.$originToken.$languageCode.srt',
+      fileName: 'Pleazyng.$originToken.$languageCode.srt',
       format: 'srt',
       language: languageCode,
       mediaIndex: widget.mediaIndex,
@@ -1701,7 +1701,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     if (choice == _SubtitleReviewChoice.exportSrt) {
       final exportPath = await FilePickerService.instance.saveFile(
         dialogTitle: context.t.subtitleAiUi.saveReviewedSubtitle,
-        fileName: 'PlezyNG_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt',
+        fileName: 'Pleazyng_${originToken}_${DateTime.now().microsecondsSinceEpoch}.srt',
         bytes: bytes,
         type: FileType.custom,
         allowedExtensions: const ['srt'],
@@ -1736,7 +1736,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         utf8.encode(
           JsonEncoder.withIndent('  ').convert({
             'schema': 'plezyng.subtitle-cues.v2',
-            'generatedBy': 'PlezyNG',
+            'generatedBy': 'Pleazyng',
             'operation': operationLabel,
             'language': operationLanguageCode,
             'timebase': 'milliseconds',
@@ -1764,7 +1764,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
       final exportPath = await FilePickerService.instance.saveFile(
         dialogTitle: context.t.subtitleAiUi.saveReviewedSubtitleCueJSON,
-        fileName: 'PlezyNG_${originToken}_${DateTime.now().microsecondsSinceEpoch}.json',
+        fileName: 'Pleazyng_${originToken}_${DateTime.now().microsecondsSinceEpoch}.json',
         bytes: jsonBytes,
         type: FileType.custom,
         allowedExtensions: const ['json'],

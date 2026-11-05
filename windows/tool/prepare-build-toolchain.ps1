@@ -22,7 +22,7 @@ if ([string]::IsNullOrWhiteSpace($InstallRoot)) {
     $InstallRoot = if ($env:RUNNER_TEMP) {
         Join-Path $env:RUNNER_TEMP 'plezyng-windows-toolchain'
     } elseif ($env:LOCALAPPDATA) {
-        Join-Path $env:LOCALAPPDATA 'PlezyNG\build-tools'
+        Join-Path $env:LOCALAPPDATA 'Pleazyng\build-tools'
     } else {
         throw 'Set -InstallRoot, RUNNER_TEMP, or LOCALAPPDATA.'
     }
@@ -100,9 +100,9 @@ function Invoke-InnoCompilerProbe([string]$Path) {
         $stderr = $process.StandardError.ReadToEndAsync()
         $process.StandardInput.WriteLine(@'
 [Setup]
-AppName=PlezyNG toolchain verification
+AppName=Pleazyng toolchain verification
 AppVersion=0
-DefaultDirName={tmp}\PlezyNGToolchainProbe
+DefaultDirName={tmp}\PleazyngToolchainProbe
 Uninstallable=no
 Output=no
 OutputDir=.

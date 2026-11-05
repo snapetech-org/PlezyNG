@@ -90,7 +90,7 @@ Host hostFrom(const Value* args) {
   return host;
 }
 void error(const Reply& reply, const char* code = "UNAVAILABLE") { reply->Error(code, "Steam connection unavailable"); }
-std::wstring credentialName(uint64_t id) { return L"PlezyNG/Steam/" + std::to_wstring(id); }
+std::wstring credentialName(uint64_t id) { return L"Pleazyng/Steam/" + std::to_wstring(id); }
 void loadTrust(uint64_t id, Credentials& out) {
   PCREDENTIALW stored = nullptr;
   if (!CredReadW(credentialName(id).c_str(), CRED_TYPE_GENERIC, 0, &stored))

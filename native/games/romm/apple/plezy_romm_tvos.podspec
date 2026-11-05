@@ -8,4 +8,5 @@ Pod::Spec.new do |s|
   s.source = { :path => '.' }
   s.platform = :tvos, '15.0'
   s.vendored_frameworks = 'Frameworks/tvos/*.xcframework'
+  s.resource_bundles = { 'PleazyngRommNotices' => ['Frameworks/tvos/notices/**/*'] }
 end

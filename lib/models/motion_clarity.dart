@@ -1,4 +1,4 @@
-/// Profiles for PlezyNG's optional motion-processing paths.
+/// Profiles for Pleazyng's optional motion-processing paths.
 ///
 /// Motion-compensated profiles synthesize frames at the configured output
 /// cadence. OLED selects the current display cadence and motion compensation

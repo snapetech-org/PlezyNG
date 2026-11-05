@@ -122,7 +122,7 @@ class _Translations$app$nb extends Translations$app$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'PlezyNG';
+	@override String get title => 'Pleazyng';
 }
 
 // Path: appIcon
@@ -136,10 +136,10 @@ class _Translations$appIcon$nb extends Translations$appIcon$en {
 	@override String get defaultIcon => 'Standard';
 	@override String get current => 'Gjeldende ikon';
 	@override String get locked => 'Livslang tilgang kreves';
-	@override String get lockedHint => 'Start 7-dagers prøvetur eller avlokk PlezyNG for livet for å bruke alternative ikoner.';
+	@override String get lockedHint => 'Start 7-dagers prøvetur eller avlokk Pleazyng for livet for å bruke alternative ikoner.';
 	@override String get changeFailed => 'Kunne ikke endre appikonet';
-	@override String get launcherHint => 'Det nye ikonet vises på startskjermen når du forlater PlezyNG.';
-	@override String get tvLauncherHint => 'Det nye banneret vises når du forlater PlezyNG. Android TV kan fortsette å vise det gamle til TV-en startes på nytt.';
+	@override String get launcherHint => 'Det nye ikonet vises på startskjermen når du forlater Pleazyng.';
+	@override String get tvLauncherHint => 'Det nye banneret vises når du forlater Pleazyng. Android TV kan fortsette å vise det gamle til TV-en startes på nytt.';
 	@override late final _Translations$appIcon$names$nb names = _Translations$appIcon$names$nb._(_root);
 	@override String get description => 'Velg ikonet som vises av enhetslungeren din. Forhåndsvisningene viser hvordan hver alternativ ser ut.';
 }
@@ -166,7 +166,7 @@ class _Translations$auth$nb extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Venter på godkjenning…';
 	@override String get quickConnectCancel => 'Avbryt';
 	@override String get quickConnectExpired => 'Quick Connect er utløpt. Prøv igjen.';
-	@override String get localDataRecoveryRequired => 'PlezyNG kunne ikke gjenopprette lokale innloggingsdata og ventende avspillingsdata på en sikker måte. Logg inn på nytt.';
+	@override String get localDataRecoveryRequired => 'Pleazyng kunne ikke gjenopprette lokale innloggingsdata og ventende avspillingsdata på en sikker måte. Logg inn på nytt.';
 	@override String get pinCheckRejected => 'Kontrollen av Plex-PIN-koden ble avvist';
 	@override String get connectToDirectPlex => 'Koble til lokal server Plex';
 }
@@ -295,9 +295,9 @@ class _Translations$settings$nb extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Innstillinger';
-	@override String get supportDeveloper => 'Støtt PlezyNG';
+	@override String get supportDeveloper => 'Støtt Pleazyng';
 	@override String get supportDeveloperDescription => 'Doner for å støtte utviklingen';
-	@override String get lifetimeAccess => 'PlezyNG Livslang tilgang';
+	@override String get lifetimeAccess => 'Pleazyng Livslang tilgang';
 	@override String get language => 'Språk';
 	@override String get theme => 'Tema';
 	@override String get appearance => 'Utseende';
@@ -353,7 +353,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get contentScreensaverNoLibraries => 'Ingen tilkoblet mediebibliotek er tilgjengelig.';
 	@override String get contentScreensaverDismissHint => 'Trykk på noen knapp eller trykk for å avvise';
 	@override String get newEpisodeNotifications => 'Ny episode av meldinger';
-	@override String get newEpisodeNotificationsDescription => 'Varsel når en ny episode blir lagt til en show du er fanget opp på. sjekker mens Plezy er åpen.';
+	@override String get newEpisodeNotificationsDescription => 'Varsel når en ny episode blir lagt til en show du er fanget opp på. sjekker mens Pleazyng er åpen.';
 	@override String get continueWatchingRowSize => 'Fortsett å se på størrelsen på raden';
 	@override String continueWatchingRowSizeValue({required Object label}) => '${label} kort';
 	@override String get rowSizeCompact => 'Kompakt';
@@ -484,7 +484,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Gjenopprett innstillinger fra en fil';
 	@override String get importSettingsConfirm => 'Dette vil erstatte nåværende innstillinger. Fortsette?';
 	@override String get importSettingsSuccess => 'Innstillinger importert';
-	@override String get importSettingsInvalidFile => 'Denne filen er ikke en gyldig PlezyNG-innstillingseksport';
+	@override String get importSettingsInvalidFile => 'Denne filen er ikke en gyldig Pleazyng-innstillingseksport';
 	@override String get importSettingsNoUser => 'Logg inn før import av innstillinger';
 	@override String get cloudBackup => 'Sikkerhetskopi i skyen';
 	@override String get cloudBackupDescription => 'Sikkerhetskopier innstillinger som kan overføres, til en WebDAV-adresse via HTTPS. Servertilkoblinger og påloggingsinformasjon blir på denne enheten.';
@@ -666,7 +666,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get forceTvMode => 'Tving TV-modus';
 	@override String get forceTvModeDescription => 'Tving TV-oppsett. For enheter som ikke oppdages automatisk. Krever omstart.';
 	@override String get startInFullscreen => 'Start i fullskjerm';
-	@override String get startInFullscreenDescription => 'Åpne PlezyNG i fullskjermmodus ved oppstart';
+	@override String get startInFullscreenDescription => 'Åpne Pleazyng i fullskjermmodus ved oppstart';
 	@override String get exitFullscreenOnPlayerClose => 'Avslutt fullskjerm ved lukking av avspiller';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Avslutt fullskjerm automatisk når videospilleren lukkes';
 	@override String get autoHidePerformanceOverlay => 'Skjul ytelsesoverlegg automatisk';
@@ -722,7 +722,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Overalt';
 	@override String get playerScopeLibrary => 'Per bibliotek';
 	@override String get playerScopeTitle => 'Per serie eller film';
-	@override String get exportDialogTitle => 'Eksporter PlezyNG-innstillinger';
+	@override String get exportDialogTitle => 'Eksporter Pleazyng-innstillinger';
 	@override String get followSystem => 'Følg systemet';
 	@override String get followAppLanguage => 'Samme som grensesnittspråket';
 	@override String get regionFormat => 'Regionale formater';
@@ -733,7 +733,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get enterFullscreenOnPlaybackStartDescription => 'Åpne desktop-video på fullskjerm når playback starter';
 	@override String get extendVideoIntoDisplayCutout => 'Utvid video til display cutout';
 	@override String get extendVideoIntoDisplayCutoutDescription => 'La fullskjermvideoen bruke kameraet på Android-telefoner';
-	@override String get languageDescription => 'Velg språket som brukes til PlezyNG-kontroller og meldinger. Følg systemet sporer enhetsspråket ditt.';
+	@override String get languageDescription => 'Velg språket som brukes til Pleazyng-kontroller og meldinger. Følg systemet sporer enhetsspråket ditt.';
 	@override String get themeDescription => 'Velg fargene og kontrastene som brukes gjennom appen.';
 	@override String get libraryDensityDescription => 'Endre hvor mange bibliotekkort som passer i hver rad.';
 	@override String get displayScaleDescription => 'Gjenopprette grensesnittet på denne bilskjermen uten å endre tekststørrelsen på enheten din.';
@@ -755,14 +755,14 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get episodeActionDescription => 'Velg hva som skjer når du aktiverer et episode-kort.';
 	@override String get episodePlayDescription => 'Begynn episoden umiddelbart.';
 	@override String get episodeDetailsDescription => 'Åpne episode-siden før playback.';
-	@override String get contentScreensaverDelayDescription => 'Velg hvor lenge PlezyNG venter uten inngang før du viser kunstverk.';
+	@override String get contentScreensaverDelayDescription => 'Velg hvor lenge Pleazyng venter uten inngang før du viser kunstverk.';
 	@override String get continueWatchingRowSizeDescription => 'Velg hvor store kortene er i Continuing Watching-linjen.';
 	@override String get rowSizeCompactDescription => 'Vis mindre kort slik at flere elementer passer over raden.';
 	@override String get rowSizeStandardDescription => 'Bruk standard kortstørrelse.';
 	@override String get rowSizeLargeDescription => 'Vis større kort med mer kunstverk detalj.';
 	@override String get visualEffectsDescription => 'Velg animasjon og kunstverk effekter budsjett for denne enheten.';
 	@override String get visualEffectsFullDescription => 'Bruk den fullstendige animasjons- og kunstverkseffekten på hver enhet.';
-	@override String get startupSectionDescription => 'Velg hvilken del som åpner når PlezyNG starter.';
+	@override String get startupSectionDescription => 'Velg hvilken del som åpner når Pleazyng starter.';
 	@override late final _Translations$settings$startupSectionOptions$nb startupSectionOptions = _Translations$settings$startupSectionOptions$nb._(_root);
 	@override String get smallSkipDurationDescription => 'Sett avstanden som flyttes av den korte bakover og fremfor søker kontroller.';
 	@override String get largeSkipDurationDescription => 'Sett avstanden som flyttes av den lange bakover og fremfor søker kontroller.';
@@ -798,7 +798,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get musicQualityOriginalDescription => 'Spille kildekode uten en bitrate-kapped transcode.';
 	@override String get musicQualityTranscodeOptionDescription => 'Be om en server transkode capped nær bitrate vist ovenfor; den virkelige utgangen kan variere.';
 	@override String get maxVolumeInputLabel => 'Maksimalt volum (%)';
-	@override String get checkForUpdatesDescription => 'Sjekk nå om en nyere versjon av PlezyNG er tilgjengelig.';
+	@override String get checkForUpdatesDescription => 'Sjekk nå om en nyere versjon av Pleazyng er tilgjengelig.';
 	@override String get appearanceDescription => 'Velg app-temaet og juster bibliotekskort, Hjem rader og navigasjon.';
 	@override String get prerollLibraryDescription => 'Velg biblioteket som inneholder klippene tilgjengelig som film pre-rolls.';
 	@override String get prerollSelectionDescription => 'Velg hvilke klipp fra det valgte biblioteket kan spilles før filmer.';
@@ -1049,8 +1049,8 @@ class _Translations$mediaMenu$nb extends Translations$mediaMenu$en {
 		one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} annen episode er lagret i samme fil og vil også bli slettet:',
 		other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} andre episoder er lagret i samme fil og vil også bli slettet:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'PlezyNG kunne ikke sjekke hvilke filer dette vil fjerne, så det kan slette mer enn elementet som er nevnt ovenfor. Avbryt og prøv igjen, eller slett likevel.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Serveren din ga ikke fildetaljer for dette elementet, så PlezyNG kan ikke sjekke hvilke filer dette vil fjerne. Det kan slette mer enn elementet som er nevnt ovenfor.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'Pleazyng kunne ikke sjekke hvilke filer dette vil fjerne, så det kan slette mer enn elementet som er nevnt ovenfor. Avbryt og prøv igjen, eller slett likevel.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Serveren din ga ikke fildetaljer for dette elementet, så Pleazyng kan ikke sjekke hvilke filer dette vil fjerne. Det kan slette mer enn elementet som er nevnt ovenfor.';
 	@override String get mediaDeletedSuccessfully => 'Medieelement slettet';
 	@override String get mediaFailedToDelete => 'Kunne ikke slette medieelement';
 	@override String get rate => 'Vurder';
@@ -1118,7 +1118,7 @@ class _Translations$accessibility$nb extends Translations$accessibility$en {
 	@override String get colorModeRgb => 'RGB';
 	@override String get title => 'Tilgjengelighet';
 	@override String get summary => 'Tekst, kontrast, bevegelse og kontroller';
-	@override String get systemHint => 'Tilgjengelighetsinnstillingene for enheten din gjelder alltid. Disse alternativene legger til justeringer gjennom PlezyNG.';
+	@override String get systemHint => 'Tilgjengelighetsinnstillingene for enheten din gjelder alltid. Disse alternativene legger til justeringer gjennom Pleazyng.';
 	@override String get readability => 'Lesing og synlighet';
 	@override String get textSize => 'Tilleggsvekst av tekst';
 	@override String get preview => 'Finn din neste historie.Les, lytt og se på din egen hastighet.';
@@ -1131,7 +1131,7 @@ class _Translations$accessibility$nb extends Translations$accessibility$en {
 	@override String get largeTargets => 'Større touch mål';
 	@override String get largeTargetsHint => 'Gi delte kontroller mer plass for berøring og assistent navigasjon.';
 	@override String get navigationHint => 'Bruk Tab og Shift+Tab for å flytte mellom kontroller, Enter eller mellomrom for å aktivere og Escape eller Tilbake for å lukke. Zoom og leseinnstillinger er tilgjengelige når en bok er åpen.';
-	@override String get textSizeDescription => 'Skala grensesnitt tekst i PlezyNG i tillegg til enhetens system tekst-størrelse innstilling.';
+	@override String get textSizeDescription => 'Skala grensesnitt tekst i Pleazyng i tillegg til enhetens system tekst-størrelse innstilling.';
 	@override String get boldTextHint => 'Bruk en tyngre vekt for grensesnitt etiketter og meldinger for å gjøre dem enklere å skille mellom.';
 }
 
@@ -1459,7 +1459,7 @@ class _Translations$profiles$nb extends Translations$profiles$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Legg til PlezyNG-profil';
+	@override String get addPlezyProfile => 'Legg til Pleazyng-profil';
 	@override String get switchingProfile => 'Bytter profil…';
 	@override String get deleteThisProfileTitle => 'Slett denne profilen?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Fjern ${displayName}. Tilkoblinger påvirkes ikke.';
@@ -1550,7 +1550,7 @@ class _Translations$connections$nb extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} servere nektet tilgang for denne kontoen';
 	@override String get signInAgain => 'Logg inn igjen';
 	@override String editMediaBrowserTitle({required Object product}) => 'Rediger ${product}-tilkobling';
-	@override String editMediaBrowserIntro({required Object serverName}) => 'Legg til eller fjern URL-er for ${serverName}. PlezyNG vil bruke den nåbare URL-en med lavest ventetid.';
+	@override String editMediaBrowserIntro({required Object serverName}) => 'Legg til eller fjern URL-er for ${serverName}. Pleazyng vil bruke den nåbare URL-en med lavest ventetid.';
 }
 
 // Path: accountPreferences
@@ -1564,7 +1564,7 @@ class _Translations$accountPreferences$nb extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => 'Lyd-, undertekst- og bibliotekalternativer lagret på ${account}';
 	@override String hubSubtitleMultiple({required Object count}) => 'Lyd-, undertekst- og bibliotekalternativer lagret på ${count} kontoer';
 	@override String get pickAccount => 'Hver konto lagrer sine egne innstillinger. Velg hvilken du vil redigere.';
-	@override String get storedOnAccount => 'Disse alternativene lagres på selve kontoen, så alle apper som er logget på den, bruker dem — inkludert PlezyNG på de andre enhetene dine.';
+	@override String get storedOnAccount => 'Disse alternativene lagres på selve kontoen, så alle apper som er logget på den, bruker dem — inkludert Pleazyng på de andre enhetene dine.';
 	@override String get noAccounts => 'Ingen kontoer å konfigurere';
 	@override String get noAccountsHint => 'Logg inn på Plex, eller koble til en Jellyfin- eller Emby-server, så vises innstillingene som er lagret på den kontoen, her.';
 	@override String get unavailable => 'Kan ikke nå denne kontoen';
@@ -1792,9 +1792,9 @@ class _Translations$startup$nb extends Translations$startup$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'PlezyNG kunne ikke starte';
+	@override String get failedTitle => 'Pleazyng kunne ikke starte';
 	@override String get failedBody => 'Noe gikk galt under oppstart. Detaljene nedenfor viser hva som feilet.';
-	@override String get failedBodyRepairable => 'PlezyNG\'s lagrede innstillingsfil er skadet og må bygges på nytt før PlezyNG kan starte. Å prøve igjen hjelper ikke – velg Reparer lagring.';
+	@override String get failedBodyRepairable => 'Pleazyng\'s lagrede innstillingsfil er skadet og må bygges på nytt før Pleazyng kan starte. Å prøve igjen hjelper ikke – velg Reparer lagring.';
 	@override String get phaseLabel => 'Trinn';
 	@override String get showDetails => 'Vis detaljer';
 	@override String get hideDetails => 'Skjul detaljer';
@@ -1803,16 +1803,16 @@ class _Translations$startup$nb extends Translations$startup$en {
 	@override String get uploadDetails => 'Last opp detaljer';
 	@override String get repairStorage => 'Reparer lagring';
 	@override String get repairTitle => 'Reparere lagrede data?';
-	@override String get repairBodyCommon => 'PlezyNG\'s innstillingsfil er skadet og kan ikke leses. Reparasjon tilbakestiller alle innstillinger til standard.';
+	@override String get repairBodyCommon => 'Pleazyng\'s innstillingsfil er skadet og kan ikke leses. Reparasjon tilbakestiller alle innstillinger til standard.';
 	@override String get repairBodyOneCredential => 'Én lagret pålogging er skadet og kan ikke leses. Reparasjon fjerner bare den; de andre innstillingene dine blir urørt.';
 	@override String get repairBodySignInsKept => 'Serverne og profilene dine skal forbli pålogget.';
 	@override String get repairBodySignInsLost => 'Nøkkelen som beskytter de lagrede påloggingene dine kan ikke gjenvinnes fra denne filen, så du må logge på alle servere og profiler på nytt. Ingenting på medieserveren din påvirkes.';
-	@override String get repairBodySessionsUncertain => 'Trackere (MAL, AniList, Simkl, Trakt) og Seerr lagres separat og kan overleve eller ikke. PlezyNG vil fortelle deg nøyaktig hva det beholdt.';
+	@override String get repairBodySessionsUncertain => 'Trackere (MAL, AniList, Simkl, Trakt) og Seerr lagres separat og kan overleve eller ikke. Pleazyng vil fortelle deg nøyaktig hva det beholdt.';
 	@override String get repairConfirm => 'Reparer';
 	@override String get repairSucceeded => 'Lagring reparert';
 	@override String get repairNeedsRestart => 'Lagring reparert – omstart kreves';
-	@override String get restartRequiredBody => 'Dataene dine ble reparert, men PlezyNG må starte på nytt før det kan bruke dem. Lukk PlezyNG og åpne det igjen.';
-	@override String get quitPlezy => 'Avslutt PlezyNG';
+	@override String get restartRequiredBody => 'Dataene dine ble reparert, men Pleazyng må starte på nytt før det kan bruke dem. Lukk Pleazyng og åpne det igjen.';
+	@override String get quitPlezy => 'Avslutt Pleazyng';
 	@override String get repairFailed => 'Reparasjon mislyktes';
 	@override String get repairKeptSignIns => 'Serverne og profilene dine er fortsatt pålogget.';
 	@override String get repairLostSignIns => 'Nøkkelen som beskytter de lagrede påloggingene dine kunne ikke gjenvinnes. Du må logge på alle servere og profiler på nytt.';
@@ -1821,7 +1821,7 @@ class _Translations$startup$nb extends Translations$startup$en {
 	@override String get backupWarning => 'Den inneholder påloggingsinformasjonen din. Ikke last den opp eller del den.';
 	@override String get deleteBackup => 'Slett kopi';
 	@override String get backupDeleted => 'Kopi slettet.';
-	@override String get previousFailureTitle => 'PlezyNG mislyktes i å starte forrige gang';
+	@override String get previousFailureTitle => 'Pleazyng mislyktes i å starte forrige gang';
 }
 
 // Path: licenses
@@ -2153,7 +2153,7 @@ class _Translations$watchTogether$nb extends Translations$watchTogether$en {
 	@override String get codeCopied => 'Romkode kopiert';
 	@override String get shareInvite => 'Del invitasjon';
 	@override String get inviteCopied => 'Invitasjon kopiert. Lim den inn i en melding.';
-	@override String inviteMessage({required Object code}) => 'Bli med i Se sammen-rommet mitt i PlezyNG: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.';
+	@override String inviteMessage({required Object code}) => 'Bli med i Se sammen-rommet mitt i Pleazyng: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.';
 	@override String get openSessionControls => 'Åpne øktkontroller for Se sammen';
 	@override String get reconnecting => 'Kobler til på nytt...';
 	@override String get reconnectingDescription => 'Tilkoblingen ble brutt. Du blir automatisk med i rommet igjen.';
@@ -2179,7 +2179,7 @@ class _Translations$watchTogether$nb extends Translations$watchTogether$en {
 	@override String get chooseAnotherCopy => 'Velg en annen kopi';
 	@override String get dontPlay => 'Ikke spill av';
 	@override String get unavailableTitle => 'Du har ikke denne videoen';
-	@override String get unavailableDescription => 'PlezyNG fant den ikke i bibliotekene dine. Velg en kopi selv eller søk på nytt.';
+	@override String get unavailableDescription => 'Pleazyng fant den ikke i bibliotekene dine. Velg en kopi selv eller søk på nytt.';
 	@override String get chooseCopy => 'Velg en kopi';
 	@override String get searchAgain => 'Søk på nytt';
 	@override String get noCandidates => 'Fant ingen kopier i bibliotekene dine.';
@@ -2324,11 +2324,11 @@ class _Translations$downloads$nb extends Translations$downloads$en {
 	@override String get activeSyncRules => 'Synkroniseringsregler';
 	@override String get reviewOrphanFiles => 'Se over foreldreløse nedlastinger';
 	@override String get orphanReviewTitle => 'Se over foreldreløse nedlastinger';
-	@override String get orphanReviewDescription => 'Disse merkede filene ligger i PlezyNGs standardmapper for appstyrte nedlastinger, men har ingen tilsvarende nedlastingsoppføring eller aktiv oppgave. Kontroller listen før du sletter dem.';
+	@override String get orphanReviewDescription => 'Disse merkede filene ligger i Pleazyngs standardmapper for appstyrte nedlastinger, men har ingen tilsvarende nedlastingsoppføring eller aktiv oppgave. Kontroller listen før du sletter dem.';
 	@override String orphanReviewCount({required Object count, required Object size}) => '${count} filer · ${size}';
 	@override String orphanDeleteFiles({required Object count}) => 'Slett ${count} filer';
 	@override String get orphanCleanupNone => 'Fant ingen foreldreløse nedlastingsfiler';
-	@override String get orphanCleanupFailed => 'PlezyNG kunne ikke skanne den administrerte nedlastingsmappen på en trygg måte. Ingen filer ble slettet.';
+	@override String get orphanCleanupFailed => 'Pleazyng kunne ikke skanne den administrerte nedlastingsmappen på en trygg måte. Ingen filer ble slettet.';
 	@override String get orphanCleanupChanged => 'Nedlastingslisten ble endret mens du gikk gjennom den. Se over filene på nytt før du rydder opp.';
 	@override String orphanCleanupComplete({required Object count, required Object size}) => 'Slettet ${count} foreldreløse filer · ${size} frigjort';
 	@override String get noSyncRules => 'Ingen synkroniseringsregler';
@@ -2704,11 +2704,11 @@ class _Translations$trakt$nb extends Translations$trakt$en {
 	@override String get connected => 'Tilkoblet';
 	@override String connectedAs({required Object username}) => 'Tilkoblet som @${username}';
 	@override String get disconnectConfirm => 'Koble fra Trakt-konto?';
-	@override String get disconnectConfirmBody => 'PlezyNG slutter å sende hendelser til Trakt. Du kan koble til igjen når som helst.';
+	@override String get disconnectConfirmBody => 'Pleazyng slutter å sende hendelser til Trakt. Du kan koble til igjen når som helst.';
 	@override String get scrobble => 'Sanntids-scrobbling';
 	@override String get scrobbleDescription => 'Send avspillings-, pause- og stopphendelser til Trakt under avspilling.';
 	@override String get watchedSync => 'Synkroniser settstatus';
-	@override String get watchedSyncDescription => 'Når du markerer elementer som sett i PlezyNG, markeres de også som sett på Trakt.';
+	@override String get watchedSyncDescription => 'Når du markerer elementer som sett i Pleazyng, markeres de også som sett på Trakt.';
 }
 
 // Path: seerr
@@ -2727,10 +2727,10 @@ class _Translations$seerr$nb extends Translations$seerr$en {
 	@override String get signInWithEmby => 'Logg inn med Emby';
 	@override String get signInWithLocal => 'Bruk en lokal konto';
 	@override String get email => 'E-post';
-	@override String get noSignInMethods => 'Denne Seerr-instansen tilbyr ingen innloggingsmetode som PlezyNG støtter.';
+	@override String get noSignInMethods => 'Denne Seerr-instansen tilbyr ingen innloggingsmetode som Pleazyng støtter.';
 	@override String get instance => 'Instans';
 	@override String get disconnectConfirm => 'Koble fra Seerr?';
-	@override String get disconnectConfirmBody => 'PlezyNG glemmer denne Seerr-instansen. Koble til igjen når som helst.';
+	@override String get disconnectConfirmBody => 'Pleazyng glemmer denne Seerr-instansen. Koble til igjen når som helst.';
 	@override String get request => 'Be om';
 	@override String get request4k => 'Be om i 4K';
 	@override String get seasons => 'Sesonger';
@@ -2755,7 +2755,7 @@ class _Translations$seerr$nb extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'På blokkeringslisten';
 	@override String couldNotReach({required Object url, required Object error}) => 'Kunne ikke nå ${url}: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'Ingen Seerr-instans på ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'En autentiserende omvendt proxy (SSO eller HTTP-autentisering) svarte i stedet for Seerr. PlezyNG kan ikke logge inn gjennom den: La Seerrs /api/v1-sti omgå proxyen for denne appen, eller bruk en adresse som når Seerr direkte.';
+	@override String get behindAuthProxy => 'En autentiserende omvendt proxy (SSO eller HTTP-autentisering) svarte i stedet for Seerr. Pleazyng kan ikke logge inn gjennom den: La Seerrs /api/v1-sti omgå proxyen for denne appen, eller bruk en adresse som når Seerr direkte.';
 	@override String get invalidUrl => 'Skriv inn en serveradresse som https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Denne Seerr-instansen støtter ikke Quick Connect. Den krever Seerr 3.4 eller nyere.';
 	@override String get notInitialized => 'Denne Seerr-instansen har ikke fullført førstegangsoppsettet';
@@ -2785,7 +2785,7 @@ class _Translations$services$nb extends Translations$services$en {
 	@override String get scrobble => 'Registrer fremdrift automatisk';
 	@override String get scrobbleDescription => 'Oppdater listen din når du er ferdig med en episode eller film.';
 	@override String disconnectConfirm({required Object service}) => 'Koble fra ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'PlezyNG slutter å oppdatere ${service}. Koble til igjen når som helst.';
+	@override String disconnectConfirmBody({required Object service}) => 'Pleazyng slutter å oppdatere ${service}. Koble til igjen når som helst.';
 	@override String connectFailed({required Object service}) => 'Kunne ikke koble til ${service}. Prøv igjen.';
 	@override late final _Translations$services$names$nb names = _Translations$services$names$nb._(_root);
 	@override late final _Translations$services$simklReconnect$nb simklReconnect = _Translations$services$simklReconnect$nb._(_root);
@@ -2807,8 +2807,8 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String get title => 'Strømming fra skyen og tillegg';
 	@override String get subtitle => 'Koble til en Debrid-konto for å bla gjennom filer i skyen og spille av støttede strømmer. Stremio-kompatible tillegg gir strømmevalg på film- og seriesider. Tilkoblingsopplysninger krypteres på denne enheten og lagres i denne profilen.';
 	@override String connectionsConfigured({required Object count}) => 'Tilkoblede kilder: ${count}';
-	@override String get settingsLoadFailed => 'PlezyNG klarte ikke å låse opp de lagrede strømmeinnstillingene. Lås opp enheten og prøv igjen før du endrer tilkoblingene.';
-	@override String get settingsUnreadable => 'PlezyNG klarte ikke å låse opp disse lagrede tilkoblingene. Fjern dem for å koble til tjenestene på nytt.';
+	@override String get settingsLoadFailed => 'Pleazyng klarte ikke å låse opp de lagrede strømmeinnstillingene. Lås opp enheten og prøv igjen før du endrer tilkoblingene.';
+	@override String get settingsUnreadable => 'Pleazyng klarte ikke å låse opp disse lagrede tilkoblingene. Fjern dem for å koble til tjenestene på nytt.';
 	@override String get clearUnreadableSettings => 'Fjern lagrede innstillinger';
 	@override String get clearUnreadableSettingsConfirm => 'Fjerne lagrede strømmeinnstillinger?';
 	@override String get clearUnreadableSettingsBody => 'Dette fjerner alle lagrede leverandørkontoer og tilleggsadresser fra denne profilen. Handlingen kan ikke angres.';
@@ -2820,11 +2820,11 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String get catalogFiltersRequired => 'Velg de nødvendige filtrene for å bla gjennom katalogen.';
 	@override String get catalogRequiredLabel => 'Påkrevd';
 	@override String get importFromStremio => 'Importer fra Stremio';
-	@override String get stremioImportInstructions => 'Skann QR-koden eller åpne lenken. Logg inn på Stremio og godkjenn forespørselen. PlezyNG leser bare tilleggslisten din; appen ber aldri om Stremio-passordet ditt eller endrer innstillingene.';
+	@override String get stremioImportInstructions => 'Skann QR-koden eller åpne lenken. Logg inn på Stremio og godkjenn forespørselen. Pleazyng leser bare tilleggslisten din; appen ber aldri om Stremio-passordet ditt eller endrer innstillingene.';
 	@override String get stremioImportOpen => 'Åpne Stremio-lenke';
 	@override String get stremioImportCode => 'Tilkoblingskode';
 	@override String get stremioImportPreviewTitle => 'Velg tillegg';
-	@override String get stremioImportPreviewBody => 'Velg tilleggene du vil koble til PlezyNG. Denne importen godtar bare HTTPS-adresser.';
+	@override String get stremioImportPreviewBody => 'Velg tilleggene du vil koble til Pleazyng. Denne importen godtar bare HTTPS-adresser.';
 	@override String stremioImportIgnored({required Object count}) => 'Hoppet over tillegg med adresser som ikke støttes eller er usikre: ${count}.';
 	@override String get stremioCatalogs => 'Kataloger';
 	@override String get stremioStreams => 'Strømmer';
@@ -2838,7 +2838,7 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String get addByManifestUrl => 'Legg til med manifest-URL';
 	@override String get addAddon => 'Legg til tillegg';
 	@override String get manifestUrl => 'Manifest-URL for tillegg';
-	@override String get manifestUrlHint => 'Lim inn manifest-URL-en til tillegget. PlezyNG sjekker om det støtter kataloger eller strømmeressurser før tilkobling.';
+	@override String get manifestUrlHint => 'Lim inn manifest-URL-en til tillegget. Pleazyng sjekker om det støtter kataloger eller strømmeressurser før tilkobling.';
 	@override String get allowHttp => 'Tillat en ukryptert HTTP-adresse';
 	@override String get allowHttpDescription => 'Bruk bare for et tillegg du stoler på i ditt private nettverk.';
 	@override String get installAddon => 'Koble til tillegg';
@@ -2846,20 +2846,20 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String get addonRemoved => 'Tillegg fjernet';
 	@override String get addonToggle => 'Slå på tillegg';
 	@override String get addonEmpty => 'Ingen tillegg er tilkoblet ennå';
-	@override String get addonError => 'PlezyNG kunne ikke koble til dette tillegget. Kontroller manifest-URL-en og prøv igjen.';
+	@override String get addonError => 'Pleazyng kunne ikke koble til dette tillegget. Kontroller manifest-URL-en og prøv igjen.';
 	@override String get addonPrivacy => 'Koble bare til tillegg du stoler på. Når du søker, mottar tillegget tittelen du søker etter, og kan returnere strømmelenker fra tredjeparter.';
 	@override String get realDebrid => 'Real-Debrid';
 	@override String get realDebridDescription => 'Spill av støttede torrentstrømmer via Real-Debrid-kontoen din.';
 	@override String get connectRealDebrid => 'Koble til med QR-kode';
 	@override String realDebridConnected({required Object username}) => 'Tilkoblet som ${username}';
-	@override String get realDebridInstructions => 'Skann QR-koden eller åpne lenken, og skriv deretter inn denne aktiveringskoden for å koble til PlezyNG:';
+	@override String get realDebridInstructions => 'Skann QR-koden eller åpne lenken, og skriv deretter inn denne aktiveringskoden for å koble til Pleazyng:';
 	@override String get realDebridActivate => 'Åpne Real-Debrid for å aktivere';
 	@override String get realDebridCode => 'Aktiveringskode';
 	@override String get realDebridConnectFailed => 'Kunne ikke koble til Real-Debrid. Prøv igjen.';
 	@override String get allDebrid => 'AllDebrid';
 	@override String get allDebridDescription => 'Spill av støttede torrentstrømmer via AllDebrid-kontoen din.';
 	@override String get connectAllDebrid => 'Koble til med QR-kode';
-	@override String get allDebridInstructions => 'Skann QR-koden eller åpne lenken for å godkjenne PlezyNG. La denne skjermen stå åpen mens tilkoblingen opprettes:';
+	@override String get allDebridInstructions => 'Skann QR-koden eller åpne lenken for å godkjenne Pleazyng. La denne skjermen stå åpen mens tilkoblingen opprettes:';
 	@override String get allDebridActivate => 'Åpne AllDebrid for å aktivere';
 	@override String get allDebridCode => 'Aktiverings-PIN';
 	@override String get allDebridConnectFailed => 'Kunne ikke koble til AllDebrid. Prøv igjen.';
@@ -2870,13 +2870,13 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String get connectApiKey => 'Koble til med API-nøkkel';
 	@override String apiKeyTitle({required Object service}) => 'Koble til ${service}';
 	@override String get apiKey => 'API-nøkkel';
-	@override String apiKeyHint({required Object service}) => 'Lim inn API-nøkkelen fra kontoinnstillingene for ${service}. PlezyNG krypterer den på denne enheten og lagrer den i denne profilen.';
+	@override String apiKeyHint({required Object service}) => 'Lim inn API-nøkkelen fra kontoinnstillingene for ${service}. Pleazyng krypterer den på denne enheten og lagrer den i denne profilen.';
 	@override String get apiKeyConnectFailed => 'Kunne ikke bekrefte API-nøkkelen. Kontroller den og prøv igjen.';
 	@override String accountConnected({required Object username}) => 'Tilkoblet som ${username}';
 	@override String get streamNeedsProvider => 'Koble til en Debrid-tjeneste for å spille av denne torrentstrømmen.';
 	@override String get playViaProvider => 'Spill av med Debrid';
 	@override String disconnectConfirm({required Object service}) => 'Koble fra ${service}?';
-	@override String get disconnectBody => 'PlezyNG fjerner denne enhetens tilgang. Filer hos leverandøren og pågående overføringer påvirkes ikke.';
+	@override String get disconnectBody => 'Pleazyng fjerner denne enhetens tilgang. Filer hos leverandøren og pågående overføringer påvirkes ikke.';
 	@override String get streamsTitle => 'Velg en strøm';
 	@override String get noStreams => 'Fant ingen strømmer for denne tittelen.';
 	@override String get manageConnections => 'Administrer strømmetjenester';
@@ -2892,7 +2892,7 @@ class _Translations$streaming$nb extends Translations$streaming$en {
 	@override String get streamUnsupported => 'Dette strømmeformatet støttes ikke av den innebygde spilleren.';
 	@override String get remoteNeedsEpisode => 'Velg en episode før du søker etter en strøm.';
 	@override String get remoteNeedsEpisodeNumber => 'Denne episoden mangler sesong- eller episodenummer.';
-	@override String get remoteNeedsExternalId => 'PlezyNG fant ingen IMDb- eller TMDB-ID for denne tittelen.';
+	@override String get remoteNeedsExternalId => 'Pleazyng fant ingen IMDb- eller TMDB-ID for denne tittelen.';
 	@override String get watchWithServices => 'Se med tilkoblede tjenester';
 	@override String get chooseEpisode => 'Velg episode';
 	@override String get episodes => 'Episoder';
@@ -3023,15 +3023,15 @@ class _Translations$appAccess$nb extends Translations$appAccess$en {
 
 	// Translations
 	@override String get title => 'Prøv hver funksjon gratis i 7 dager';
-	@override String get description => 'Start en sju dagers prøve med full tilgang til hver PlezyNG funksjon. Det er ingen gebyr under prøve og ingen abonnement. Etter prøve, en livslang kjøp på din butikks pris låser opp PlezyNG for livet.';
-	@override String get trialEndedDescription => 'Unlock alle funksjoner i PlezyNG for livet med én kjøp til din butikk pris.';
+	@override String get description => 'Start en sju dagers prøve med full tilgang til hver Pleazyng funksjon. Det er ingen gebyr under prøve og ingen abonnement. Etter prøve, en livslang kjøp på din butikks pris låser opp Pleazyng for livet.';
+	@override String get trialEndedDescription => 'Unlock alle funksjoner i Pleazyng for livet med én kjøp til din butikk pris.';
 	@override String get startTrial => 'Start min 7 dagers gratis prøve';
 	@override String get trialActive => 'Din 7-dagers full-feature-tester er aktiv.';
 	@override String get trialEnded => '7 dagers rettssak er over';
 	@override String get trialStartFailed => 'Kan ikke spare prøven på denne enheten. vennligst prøv igjen.';
-	@override String get lifetimeTitle => 'PlezyNG avsluttet for livet';
-	@override String get lifetimeBody => 'Du har livslang tilgang til alle PlezyNG funksjoner.';
-	@override String get manageTitle => 'PlezyNG Livslang tilgang';
+	@override String get lifetimeTitle => 'Pleazyng avsluttet for livet';
+	@override String get lifetimeBody => 'Du har livslang tilgang til alle Pleazyng funksjoner.';
+	@override String get manageTitle => 'Pleazyng Livslang tilgang';
 	@override String get manageDescription => 'Prøv hver funksjon gratis i 7 dager, deretter låse opp alt for livet med en betaling til priset på butikken din.';
 	@override String buy({required Object price}) => 'Unlock alle funksjoner for ${price}';
 	@override String get loadingPrice => 'Lading butikks pris...';
@@ -3039,11 +3039,11 @@ class _Translations$appAccess$nb extends Translations$appAccess$en {
 	@override String get restore => 'Åpne livslang kjøp';
 	@override String get pending => 'Kjøpet ditt venter på betaling eller godkjenning. Livslang tilgang låser opp så snart butikken fullfører det.';
 	@override String get storeUnavailable => 'Kontrollere at du er signert inn i butikken og kjøp er tillatt på denne enheten.';
-	@override String get productNotFound => 'PlezyNG livslang avlås er ikke tilgjengelig i denne butikken ennå.';
+	@override String get productNotFound => 'Pleazyng livslang avlås er ikke tilgjengelig i denne butikken ennå.';
 	@override String get productQueryFailed => 'Kan ikke laste opp priset på butikken. sjekk koblingen din og prøv igjen.';
 	@override String get purchaseFailed => 'Kjøpet gikk ikke gjennom. prøv igjen.';
 	@override String get restoreFailed => 'Kan ikke nå butikken for å gjenopprette kjøpet. prøv igjen.';
-	@override String get nothingToRestore => 'No. PlezyNG livslang kjøp ble funnet for denne butikken konto.';
+	@override String get nothingToRestore => 'No. Pleazyng livslang kjøp ble funnet for denne butikken konto.';
 }
 
 // Path: detail
@@ -3084,8 +3084,8 @@ class _Translations$homeLayout$nb extends Translations$homeLayout$en {
 
 	// Translations
 	@override String get title => 'Hjem Layout';
-	@override String get resetToast => 'Hjem gjenoppbygging til den opprinnelige Plezy hero layout';
-	@override String get resetHeroTitle => 'Åpne hero layout til lager Plezy?';
+	@override String get resetToast => 'Hjem gjenoppbygging til den opprinnelige Pleazyng hero layout';
+	@override String get resetHeroTitle => 'Åpne hero layout til lager Pleazyng?';
 	@override String get resetHeroBody => 'Avbryter hver rad av hjertesetting og bringer tilbake den eneste roterende banneret på toppen av hjemmet, som før hjerteserien eksisterte.';
 	@override String get removeRowTitle => 'Fjerner hjem ruten?';
 	@override String removeRowBody({required Object title}) => '${title} vil bli slettet. dette kan ikke bli unntatt.';
@@ -3095,7 +3095,7 @@ class _Translations$homeLayout$nb extends Translations$homeLayout$en {
 	@override String get syncAccountOff => 'Av: Denne enheten holder sin egen layout.';
 	@override String get syncNow => 'Synkronisering nå';
 	@override String get plexHomeManager => 'Plex Hjemmanager';
-	@override String get managePlexRows => 'Administrer Plex rader i Plezy';
+	@override String get managePlexRows => 'Administrer Plex rader i Pleazyng';
 	@override String get managePlexRowsDescription => 'Åpne for å organisere de hjemmelavede radene';
 	@override String get organizeHomeRows => 'Organisere hjemmelavede rader';
 	@override String organizeHomeRowsDescription({required Object n}) => '${n} rader: bevegelse, Hero, Auto-slide, fjerne';
@@ -3165,7 +3165,7 @@ class _Translations$homeLayout$nb extends Translations$homeLayout$en {
 	@override String get organizeRowsHint => 'Velg på en rekke (eller hold Velg): flytte den · Venstre/Rett: rekke alternativer · Tilbake: gjort';
 	@override String get layoutNavDescription => 'Velg rader, biblioteker og samlingskategorier';
 	@override String get editHomeRow => 'Edit Hjem Rå';
-	@override String get resetHeroButton => 'Resett hero layout til lager Plezy';
+	@override String get resetHeroButton => 'Resett hero layout til lager Pleazyng';
 	@override String get reorderingUnlocked => 'Å gjenoppta unlocked';
 	@override String get reorderingLocked => 'Å gjenoppta låst';
 	@override String get rowsCanBeDragged => 'Råene kan trekkes - trykk låsen for å forhindre at det';
@@ -3191,8 +3191,8 @@ class _Translations$platform$nb extends Translations$platform$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
-	@override String get localNetworkPermission => 'PlezyNG kobler til medieserverne og avspillingsenhetene dine på det lokale nettverket.';
-	@override String get locationPermission => 'PlezyNG bruker lokasjonstilgang når iOS krever det for å oppdage ditt lokale nettverk og koble til dine medie servere.';
+	@override String get localNetworkPermission => 'Pleazyng kobler til medieserverne og avspillingsenhetene dine på det lokale nettverket.';
+	@override String get locationPermission => 'Pleazyng bruker lokasjonstilgang når iOS krever det for å oppdage ditt lokale nettverk og koble til dine medie servere.';
 	@override String get photoLibraryPermission => 'Velg bilder fra bildebiblioteket som omslag og illustrasjoner til medieinnhold.';
 	@override String get cameraPermission => 'Skann QR-koder for å pare en Companion Remote.';
 }
@@ -3206,7 +3206,7 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	// Translations
 	@override String get title => 'Åpne medier';
 	@override String get shortcutHelp => 'Spill en lenke, spillliste eller fil for denne sesjonen.';
-	@override String get intro => 'Åpne en lenke, spillliste eller fil. Playback bruker PlezyNGs standardspiller og legger ikke til historie i biblioteket ditt.';
+	@override String get intro => 'Åpne en lenke, spillliste eller fil. Playback bruker Pleazyngs standardspiller og legger ikke til historie i biblioteket ditt.';
 	@override String get openWhat => 'Hva vil du gjerne åpne?';
 	@override String get stream => 'Stream adresse';
 	@override String get playlist => 'Playlist';
@@ -3264,13 +3264,13 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	@override String get stopTransfer => 'Stopp overføring og invalidere adressen';
 	@override String get startTransfer => 'Start overføring';
 	@override String get wifiImportedFiles => 'Wi-Fi overføring';
-	@override String get wifiBrowserTitle => 'Send filer til PlezyNG';
+	@override String get wifiBrowserTitle => 'Send filer til Pleazyng';
 	@override String get wifiBrowserIntro => 'Velg lyd, video, e-bok eller komiksfiler for å sende. filene lagres i denne enhetens Filer og bøker bibliotek. Maksimum: 100 filer, 4 GiB per fil, 10 GiB totalt.';
 	@override String get uploadFilesLabel => 'Filer å sende';
 	@override String get uploadSelected => 'Last opp utvalgte filer';
 	@override String get uploadSelectFirst => 'Velg en eller flere filer først.';
 	@override String get uploading => 'Sending';
-	@override String get uploadComplete => 'Filet er lagt til PlezyNG.';
+	@override String get uploadComplete => 'Filet er lagt til Pleazyng.';
 	@override String get uploadFailed => 'Filen kan ikke legges til. Hold denne siden åpen og prøv igjen.';
 	@override String get liveCue => 'Livet';
 	@override String get liveSession => 'Live Stream';
@@ -3298,7 +3298,7 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	@override String get recordingActive => 'Oppdatering av denne enheten.Leaving playback stopper og sparer det.';
 	@override String get recordingFormatHelp => 'For video, velg MKV eller MPEG-TS. for lyd, velge MKA eller MKV.';
 	@override String get replaceRecordingTitle => 'Vil du erstatte denne innspillingen?';
-	@override String get replaceRecordingHelp => 'PlezyNG gjenoppretter den eksisterende filen under opptak. Hvis det ikke kan lagre den nye opptak, plezyNG restaurerer sikkerhetskopien.';
+	@override String get replaceRecordingHelp => 'Pleazyng gjenoppretter den eksisterende filen under opptak. Hvis det ikke kan lagre den nye opptak, plezyNG restaurerer sikkerhetskopien.';
 	@override String get replaceRecording => 'erstatte filer';
 	@override String get discHelp => 'Åpne en disk i denne datamaskinens optiske skjerm. Du kan også åpne et ISO-bilde fra Device-filer.';
 	@override String get discs => 'Optikal disk';
@@ -3323,7 +3323,7 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	@override String get converterUnsupportedInput => 'Velg en audio eller video fil.';
 	@override String get converterLocalOnly => 'Den valgte filen er ikke tilgjengelig som en lokal enhetsvei.';
 	@override String get converterReplaceTitle => 'Vil du erstatte denne filen?';
-	@override String get converterReplaceHelp => 'PlezyNG gjenoppretter den eksisterende filen til den konverterte kopien er lagret.';
+	@override String get converterReplaceHelp => 'Pleazyng gjenoppretter den eksisterende filen til den konverterte kopien er lagret.';
 	@override String get converterStarting => 'Start med FFmpeg...';
 	@override String get converterProgress => 'For å konvertere til denne datamaskinen...';
 	@override String get converterComplete => 'Konversjonen er fullført. den nye filen er klar.';
@@ -3347,7 +3347,7 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	@override String get captureDefaultAudio => 'Standard lydinngang';
 	@override String get captureWaylandHelp => 'Wayland begrenser denne XWayland fangen til X display. Windows utenfor XWayland kan ikke vises.';
 	@override String get captureFrameRate => 'Rekordframe rate';
-	@override String get capturePrivacy => 'Opptaket lagres kun til filen du velger. mikrofonopptak er valgfritt. PlezyNG laster ikke opp opptaket.';
+	@override String get capturePrivacy => 'Opptaket lagres kun til filen du velger. mikrofonopptak er valgfritt. Pleazyng laster ikke opp opptaket.';
 	@override String get captureSaveAs => 'Lagre skjermopptak som';
 	@override String get captureExtensionMismatch => 'Velg et filnavn som slutter i .mp4.';
 	@override String get captureFfmpegMissing => 'FFmpeg eller H.264 video koder er ikke tilgjengelig. Installere en støttet FFmpeg bygning, og prøv igjen.';
@@ -3361,7 +3361,7 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	@override String get captureStop => 'Stopp og redde';
 	@override String get captureMode => 'Fanger';
 	@override String get shareMode => 'Deling';
-	@override String get shareIntro => 'Send en lokal mediafil til en annen enhet på ditt private nettverk. PlezyNG skaper en midlertidig HLS-strøm.';
+	@override String get shareIntro => 'Send en lokal mediafil til en annen enhet på ditt private nettverk. Pleazyng skaper en midlertidig HLS-strøm.';
 	@override String get sharePrivacy => 'Alle på ditt lokale nettverk som mottar den private koblingen kan se mens den er aktiv. koblingen utløper etter 60 minutter. stoppe deling for å lukke serveren og invalidere koblingen.';
 	@override String get shareChooseFile => 'Velg media filer';
 	@override String get shareChooseHelp => 'Velg en lokal audio eller videofil. filen forblir på denne datamaskinen.';
@@ -3374,7 +3374,7 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	@override String get shareOpenUrl => 'Åpne denne adressen i en spiller på den andre enheten';
 	@override String get shareQrLabel => 'QR-kode for midlertidig strømadresse';
 	@override String get shareQrHelp => 'Scan med en kompatibel spiller som er koblet til det samme private nettverket.';
-	@override String get shareHttpHint => 'Denne strømmen bruker ukryptert HTTP. i PlezyNG, tillate HTTP før åpning.';
+	@override String get shareHttpHint => 'Denne strømmen bruker ukryptert HTTP. i Pleazyng, tillate HTTP før åpning.';
 	@override String get shareCopyUrl => 'Kopierer strømadresse';
 	@override String get shareExpiresLabel => 'Linken utløper ved';
 	@override String get shareStarting => 'Forberedelse av strømmen...';
@@ -3399,7 +3399,7 @@ class _Translations$universalMedia$nb extends Translations$universalMedia$en {
 	@override String get extensionInstall => 'Legg til service';
 	@override String get extensionReplace => 'Oppdateringstjeneste';
 	@override String get extensionRemoveTitle => 'Fjerner du denne søketjenesten?';
-	@override String get extensionRemoveHelp => 'Dette fjerner tjenesten fra denne profilen. PlezyNG kontakter ikke sin sluttpunkt.';
+	@override String get extensionRemoveHelp => 'Dette fjerner tjenesten fra denne profilen. Pleazyng kontakter ikke sin sluttpunkt.';
 	@override String get extensionRemove => 'Fjern service';
 	@override String get extensionInvalidManifest => 'Denne filen er ikke en støttet utvidelse manifest. se Guiden for Open media formatet.';
 	@override String get extensionSaveFailed => 'Utvidelsen kunne ikke lagres til den aktive profilen.';
@@ -3554,12 +3554,12 @@ class _Translations$fileSources$nb extends Translations$fileSources$en {
 	@override String get none => 'Ingen';
 	@override String get fullscreen => 'Full skjerm';
 	@override String get syncLocation => 'Progress synkronisering mappe (valgfritt)';
-	@override String get syncLocationHint => 'En dedikert WebDAV mappe for PlezyNG stat. Bruk betingelsesbrev; media forblir uendret.';
+	@override String get syncLocationHint => 'En dedikert WebDAV mappe for Pleazyng stat. Bruk betingelsesbrev; media forblir uendret.';
 	@override String get audiobooks => 'Audiobøker';
 	@override String get comics => 'Tegneserier';
 	@override String get scan => 'Skankering av bøker og media';
 	@override String get browserReader => 'Åpne lesere';
-	@override String get browserReaderHelp => 'Leseren er åpen i nettleseren. Hold PlezyNG åpen for å lagre leseposisjonen og notatene dine.';
+	@override String get browserReaderHelp => 'Leseren er åpen i nettleseren. Hold Pleazyng åpen for å lagre leseposisjonen og notatene dine.';
 	@override String get on => 'På';
 	@override String get advancedSetup => 'App registrering';
 	@override String get microsoftSignIn => 'Registrer deg med Microsoft';
@@ -3600,7 +3600,7 @@ class _Translations$fileSources$nb extends Translations$fileSources$en {
 	@override String get importInterrupted => 'Import avbrutt · fjerning til klart';
 	@override String get errorQuotaExceeded => 'Den offline lagringsgrensen ble oppnådd. Oppheve grensen eller fjerne en nedlastet kopi.';
 	@override String get errorStorageLow => 'Det er ikke tilstrekkelig gratis lagring av enheter for å opprettholde den beskyttede reserven.';
-	@override String get errorStorageUnavailable => 'PlezyNG kunne ikke sjekke gratis enhet lagring, så skrivingen ble stoppet.';
+	@override String get errorStorageUnavailable => 'Pleazyng kunne ikke sjekke gratis enhet lagring, så skrivingen ble stoppet.';
 	@override String get removeDownloadJob => 'Fjern nedlasting';
 	@override String get downloadAlreadyComplete => 'Denne nedlastingen er ferdig før den kan fjernes. elementet er nå tilgjengelig offline.';
 	@override String get confirmRemoveDownloadJob => 'Fjern denne nedlastingen og slett alle delvis nedlastede data? din posisjon og notater vil forbli.';
@@ -3650,7 +3650,7 @@ class _Translations$lending$nb extends Translations$lending$en {
 	@override String get openLibraryNote => 'Lesing og lånealternativer vises på hver tittelside.';
 	@override String get more => 'Late mer';
 	@override String get gateway => 'Biblioteket sign-in service';
-	@override String get gatewayHint => 'Leveres av biblioteket ditt eller administratoren PlezyNG.';
+	@override String get gatewayHint => 'Leveres av biblioteket ditt eller administratoren Pleazyng.';
 	@override String get advanced => 'Biblioteksintegrasjon';
 	@override String get loadLibraries => 'Velg din bibliotek';
 	@override String get expired => 'Dette lånet er utløpt.';
@@ -3790,7 +3790,7 @@ class _Translations$sourceSetup$nb extends Translations$sourceSetup$en {
 	@override String get subtitlePrivacy => 'Hent en API-nøkkel fra opensubtitles.com. Søk sender videotittelen og tilgjengelige IMDb/TMDB-ID-er, aldri videofilen. Nøkkelen og valgfri kontoinformasjon krypteres sammen med denne kilden.';
 	@override String get automaticMetadata => 'Automatiske videometadata fra nettet';
 	@override String get metadataPrivacy => 'Sender bare tittel/år fra filnavnet og episodenumre eller en NFO-ID, aldri medier eller påloggingsinformasjon. NFO-feltene beholder forrang.';
-	@override String get nfsEncryptionFailure => 'For kryptert NFS må du kontrollere støtte for RFC 9289 og TLS 1.3 på begge NAS-tjenestene, sertifikatnavnet og delingens UID/GID. PlezyNG prøver ikke denne tilkoblingen på nytt uten kryptering.';
+	@override String get nfsEncryptionFailure => 'For kryptert NFS må du kontrollere støtte for RFC 9289 og TLS 1.3 på begge NAS-tjenestene, sertifikatnavnet og delingens UID/GID. Pleazyng prøver ikke denne tilkoblingen på nytt uten kryptering.';
 	@override String get sourceConnecting => 'Kobler til kilde';
 	@override String get metadataSearchPrivacy => 'Dette tittelsøket sendes til Trakt. Det sender tittelen du oppgir, ikke videoen eller kildens påloggingsinformasjon.';
 	@override String get chooseMatch => 'Velg et treff';
@@ -3936,6 +3936,12 @@ class _Translations$games$nb extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -3945,7 +3951,7 @@ class _Translations$deepLinks$nb extends Translations$deepLinks$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
-	@override String get invalid => 'Denne linken til Plezy er ikke gyldig.';
+	@override String get invalid => 'Denne linken til Pleazyng er ikke gyldig.';
 	@override String profileNotFound({required Object profile}) => 'Ingen profil matcher "${profile}".';
 	@override String get serverUnavailable => 'Kan ikke nå serveren for denne koblingen.';
 	@override String get notFound => 'Du kan ikke finne denne tittelen i biblioteket ditt.';
@@ -4120,7 +4126,7 @@ class _Translations$romm$nb extends Translations$romm$en {
 	@override String get copyLink => 'Copy game link';
 	@override String get linkCopied => 'Game link copied';
 	@override String get openLink => 'Open game link';
-	@override String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+	@override String get linkHelp => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.';
 	@override String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
 	@override String get requestStatus => 'Library indexing';
 	@override String get notIndexed => 'The requested game is not indexed in this library yet.';
@@ -5011,7 +5017,7 @@ class _Translations$watchTogether$errors$nb extends Translations$watchTogether$e
 	@override String get relayFull => 'Se sammen er opptatt akkurat nå. Prøv igjen senere.';
 	@override String get unreachable => 'Kunne ikke nå reléserveren for Se sammen. Sjekk tilkoblingen.';
 	@override String get rateLimited => 'For mange forsøk. Vent litt og prøv igjen.';
-	@override String get clientBlocked => 'Denne versjonen av PlezyNG kan ikke bruke reléserveren. Oppdater appen.';
+	@override String get clientBlocked => 'Denne versjonen av Pleazyng kan ikke bruke reléserveren. Oppdater appen.';
 	@override String get forbidden => 'Bare verten kan gjøre det.';
 	@override String get notInRoom => 'Du er ikke i et rom.';
 	@override String get alreadyInRoom => 'Du er allerede i et rom.';
@@ -5032,14 +5038,14 @@ class _Translations$downloads$backgroundWarning$nb extends Translations$download
 	@override String get bannerAction => 'Detaljer';
 	@override String get sheetTitle => 'Bakgrunnsnedlastinger er blokkert';
 	@override String get sheetTitleDegraded => 'Bakgrunnsnedlastinger kan være begrenset';
-	@override String get sheetIntro => 'Android hindrer PlezyNG i å laste ned pålitelig i bakgrunnen.';
-	@override String get sheetIntroDegraded => 'Enheten din begrenser når PlezyNG kan laste ned i bakgrunnen.';
-	@override String get reasonBackgroundRestricted => 'Bakgrunnsbruken til PlezyNG er begrenset. Sett batteribruk eller bakgrunnsbruk til «Ubegrenset».';
-	@override String get reasonStandbyRestricted => 'Android har satt PlezyNG i begrenset hvilemodus. Sett batteribruken til «Ubegrenset».';
+	@override String get sheetIntro => 'Android hindrer Pleazyng i å laste ned pålitelig i bakgrunnen.';
+	@override String get sheetIntroDegraded => 'Enheten din begrenser når Pleazyng kan laste ned i bakgrunnen.';
+	@override String get reasonBackgroundRestricted => 'Bakgrunnsbruken til Pleazyng er begrenset. Sett batteribruk eller bakgrunnsbruk til «Ubegrenset».';
+	@override String get reasonStandbyRestricted => 'Android har satt Pleazyng i begrenset hvilemodus. Sett batteribruken til «Ubegrenset».';
 	@override String get reasonDownloadChannelBlocked => 'Varsler om nedlastinger er slått av, så fremdrift og kontroller kan være utilgjengelige.';
 	@override String get reasonNotificationsDisabled => 'Varsler er slått av. På Android 13 eller nyere kreves de for lange bakgrunnsnedlastinger.';
 	@override String get reasonDataSaver => 'Datasparing er slått på og blokkerer bakgrunnsnedlastinger via mobildata. Nedlastinger skal fortsatt fungere på Wi-Fi.';
-	@override String get reasonOemUnknown => 'Nedlastinger har stoppet gjentatte ganger mens PlezyNG var i bakgrunnen. Sjekk innstillingene for batteribruk eller bakgrunnsbruk for PlezyNG.';
+	@override String get reasonOemUnknown => 'Nedlastinger har stoppet gjentatte ganger mens Pleazyng var i bakgrunnen. Sjekk innstillingene for batteribruk eller bakgrunnsbruk for Pleazyng.';
 	@override String get openSettings => 'Åpne innstillinger';
 	@override String get stillNotWorking => 'Enhetsspesifikk hjelp';
 	@override String get stillNotWorkingDescription => 'Se fremgangsmåten for enheten din, eller send en logg fra Innstillinger › Vis logger hvis problemet vedvarer.';
@@ -5094,19 +5100,19 @@ class _Translations$companionRemote$pairing$nb extends Translations$companionRem
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'PlezyNG-enheter med samme Plex-konto vises her';
+	@override String get discoveryDescription => 'Pleazyng-enheter med samme Plex-konto vises her';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Kobler til...';
 	@override String get searchingForDevices => 'Søker etter enheter...';
 	@override String get noDevicesFound => 'Ingen enheter funnet på nettverket ditt';
-	@override String get noDevicesHint => 'Åpne PlezyNG på datamaskinen, og bruk samme Wi-Fi';
+	@override String get noDevicesHint => 'Åpne Pleazyng på datamaskinen, og bruk samme Wi-Fi';
 	@override String get availableDevices => 'Tilgjengelige enheter';
 	@override String get manualConnection => 'Manuell tilkobling';
 	@override String get cryptoInitFailed => 'Kunne ikke starte sikker tilkobling. Logg inn på Plex først.';
 	@override String get validationHostRequired => 'Vennligst oppgi vertsadresse';
 	@override String get validationHostFormat => 'Format må være IP:port (f.eks. 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'Tilkoblingen fikk tidsavbrudd. Bruk samme nettverk på begge enheter.';
-	@override String get sessionNotFound => 'Enhet ikke funnet. Sørg for at PlezyNG kjører på verten.';
+	@override String get sessionNotFound => 'Enhet ikke funnet. Sørg for at Pleazyng kjører på verten.';
 	@override String get authFailed => 'Autentisering mislyktes. Begge enheter må bruke samme Plex-konto.';
 	@override String failedToConnect({required Object error}) => 'Kunne ikke koble til: ${error}';
 	@override String get codeTitle => 'Paring kode';
@@ -5193,7 +5199,7 @@ class _Translations$services$simklReconnect$nb extends Translations$services$sim
 
 	// Translations
 	@override String get title => 'Koble til Simkl på nytt';
-	@override String get subtitle => 'Simkl avvikler påloggingsmetoden som denne tilkoblingen bruker. Når du kobler til på nytt, åpnes simkl.com slik at du kan godkjenne PlezyNG – PlezyNG ser aldri passordet ditt. Visningshistorikken din blir liggende på Simkl.';
+	@override String get subtitle => 'Simkl avvikler påloggingsmetoden som denne tilkoblingen bruker. Når du kobler til på nytt, åpnes simkl.com slik at du kan godkjenne Pleazyng – Pleazyng ser aldri passordet ditt. Visningshistorikken din blir liggende på Simkl.';
 }
 
 // Path: services.deviceCode
@@ -5203,7 +5209,7 @@ class _Translations$services$deviceCode$nb extends Translations$services$deviceC
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Aktiver PlezyNG på ${service}';
+	@override String title({required Object service}) => 'Aktiver Pleazyng på ${service}';
 	@override String get instructions => 'Skann QR-koden, eller gå til adressen nedenfor og skriv inn denne koden:';
 	@override String openToActivate({required Object service}) => 'Åpne ${service} for å aktivere';
 	@override String get copyCode => 'Kopier aktiveringskode';
@@ -5278,15 +5284,15 @@ class _Translations$services$trackerDescriptions$nb extends Translations$service
 extension on TranslationsNb {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'PlezyNG',
+			'app.title' => 'Pleazyng',
 			'appIcon.title' => 'Appikon',
 			'appIcon.defaultIcon' => 'Standard',
 			'appIcon.current' => 'Gjeldende ikon',
 			'appIcon.locked' => 'Livslang tilgang kreves',
-			'appIcon.lockedHint' => 'Start 7-dagers prøvetur eller avlokk PlezyNG for livet for å bruke alternative ikoner.',
+			'appIcon.lockedHint' => 'Start 7-dagers prøvetur eller avlokk Pleazyng for livet for å bruke alternative ikoner.',
 			'appIcon.changeFailed' => 'Kunne ikke endre appikonet',
-			'appIcon.launcherHint' => 'Det nye ikonet vises på startskjermen når du forlater PlezyNG.',
-			'appIcon.tvLauncherHint' => 'Det nye banneret vises når du forlater PlezyNG. Android TV kan fortsette å vise det gamle til TV-en startes på nytt.',
+			'appIcon.launcherHint' => 'Det nye ikonet vises på startskjermen når du forlater Pleazyng.',
+			'appIcon.tvLauncherHint' => 'Det nye banneret vises når du forlater Pleazyng. Android TV kan fortsette å vise det gamle til TV-en startes på nytt.',
 			'appIcon.names.midnight' => 'Midnatt',
 			'appIcon.names.ember' => 'Glød',
 			'appIcon.names.paper' => 'Papir',
@@ -5326,7 +5332,7 @@ extension on TranslationsNb {
 			'auth.quickConnectWaiting' => 'Venter på godkjenning…',
 			'auth.quickConnectCancel' => 'Avbryt',
 			'auth.quickConnectExpired' => 'Quick Connect er utløpt. Prøv igjen.',
-			'auth.localDataRecoveryRequired' => 'PlezyNG kunne ikke gjenopprette lokale innloggingsdata og ventende avspillingsdata på en sikker måte. Logg inn på nytt.',
+			'auth.localDataRecoveryRequired' => 'Pleazyng kunne ikke gjenopprette lokale innloggingsdata og ventende avspillingsdata på en sikker måte. Logg inn på nytt.',
 			'auth.pinCheckRejected' => 'Kontrollen av Plex-PIN-koden ble avvist',
 			'auth.connectToDirectPlex' => 'Koble til lokal server Plex',
 			'common.cancel' => 'Avbryt',
@@ -5442,9 +5448,9 @@ extension on TranslationsNb {
 			'update.latestVersion' => 'Du har den nyeste versjonen',
 			'update.checkFailed' => 'Kunne ikke se etter oppdateringer',
 			'settings.title' => 'Innstillinger',
-			'settings.supportDeveloper' => 'Støtt PlezyNG',
+			'settings.supportDeveloper' => 'Støtt Pleazyng',
 			'settings.supportDeveloperDescription' => 'Doner for å støtte utviklingen',
-			'settings.lifetimeAccess' => 'PlezyNG Livslang tilgang',
+			'settings.lifetimeAccess' => 'Pleazyng Livslang tilgang',
 			'settings.language' => 'Språk',
 			'settings.theme' => 'Tema',
 			'settings.appearance' => 'Utseende',
@@ -5500,7 +5506,7 @@ extension on TranslationsNb {
 			'settings.contentScreensaverNoLibraries' => 'Ingen tilkoblet mediebibliotek er tilgjengelig.',
 			'settings.contentScreensaverDismissHint' => 'Trykk på noen knapp eller trykk for å avvise',
 			'settings.newEpisodeNotifications' => 'Ny episode av meldinger',
-			'settings.newEpisodeNotificationsDescription' => 'Varsel når en ny episode blir lagt til en show du er fanget opp på. sjekker mens Plezy er åpen.',
+			'settings.newEpisodeNotificationsDescription' => 'Varsel når en ny episode blir lagt til en show du er fanget opp på. sjekker mens Pleazyng er åpen.',
 			'settings.continueWatchingRowSize' => 'Fortsett å se på størrelsen på raden',
 			'settings.continueWatchingRowSizeValue' => ({required Object label}) => '${label} kort',
 			'settings.rowSizeCompact' => 'Kompakt',
@@ -5625,7 +5631,7 @@ extension on TranslationsNb {
 			'settings.importSettingsDescription' => 'Gjenopprett innstillinger fra en fil',
 			'settings.importSettingsConfirm' => 'Dette vil erstatte nåværende innstillinger. Fortsette?',
 			'settings.importSettingsSuccess' => 'Innstillinger importert',
-			'settings.importSettingsInvalidFile' => 'Denne filen er ikke en gyldig PlezyNG-innstillingseksport',
+			'settings.importSettingsInvalidFile' => 'Denne filen er ikke en gyldig Pleazyng-innstillingseksport',
 			'settings.importSettingsNoUser' => 'Logg inn før import av innstillinger',
 			'settings.cloudBackup' => 'Sikkerhetskopi i skyen',
 			'settings.cloudBackupDescription' => 'Sikkerhetskopier innstillinger som kan overføres, til en WebDAV-adresse via HTTPS. Servertilkoblinger og påloggingsinformasjon blir på denne enheten.',
@@ -5809,7 +5815,7 @@ extension on TranslationsNb {
 			'settings.forceTvMode' => 'Tving TV-modus',
 			'settings.forceTvModeDescription' => 'Tving TV-oppsett. For enheter som ikke oppdages automatisk. Krever omstart.',
 			'settings.startInFullscreen' => 'Start i fullskjerm',
-			'settings.startInFullscreenDescription' => 'Åpne PlezyNG i fullskjermmodus ved oppstart',
+			'settings.startInFullscreenDescription' => 'Åpne Pleazyng i fullskjermmodus ved oppstart',
 			'settings.exitFullscreenOnPlayerClose' => 'Avslutt fullskjerm ved lukking av avspiller',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Avslutt fullskjerm automatisk når videospilleren lukkes',
 			'settings.autoHidePerformanceOverlay' => 'Skjul ytelsesoverlegg automatisk',
@@ -5865,7 +5871,7 @@ extension on TranslationsNb {
 			'settings.playerScopeGlobal' => 'Overalt',
 			'settings.playerScopeLibrary' => 'Per bibliotek',
 			'settings.playerScopeTitle' => 'Per serie eller film',
-			'settings.exportDialogTitle' => 'Eksporter PlezyNG-innstillinger',
+			'settings.exportDialogTitle' => 'Eksporter Pleazyng-innstillinger',
 			'settings.followSystem' => 'Følg systemet',
 			'settings.followAppLanguage' => 'Samme som grensesnittspråket',
 			'settings.regionFormat' => 'Regionale formater',
@@ -5876,7 +5882,7 @@ extension on TranslationsNb {
 			'settings.enterFullscreenOnPlaybackStartDescription' => 'Åpne desktop-video på fullskjerm når playback starter',
 			'settings.extendVideoIntoDisplayCutout' => 'Utvid video til display cutout',
 			'settings.extendVideoIntoDisplayCutoutDescription' => 'La fullskjermvideoen bruke kameraet på Android-telefoner',
-			'settings.languageDescription' => 'Velg språket som brukes til PlezyNG-kontroller og meldinger. Følg systemet sporer enhetsspråket ditt.',
+			'settings.languageDescription' => 'Velg språket som brukes til Pleazyng-kontroller og meldinger. Følg systemet sporer enhetsspråket ditt.',
 			'settings.themeDescription' => 'Velg fargene og kontrastene som brukes gjennom appen.',
 			'settings.libraryDensityDescription' => 'Endre hvor mange bibliotekkort som passer i hver rad.',
 			'settings.displayScaleDescription' => 'Gjenopprette grensesnittet på denne bilskjermen uten å endre tekststørrelsen på enheten din.',
@@ -5898,14 +5904,14 @@ extension on TranslationsNb {
 			'settings.episodeActionDescription' => 'Velg hva som skjer når du aktiverer et episode-kort.',
 			'settings.episodePlayDescription' => 'Begynn episoden umiddelbart.',
 			'settings.episodeDetailsDescription' => 'Åpne episode-siden før playback.',
-			'settings.contentScreensaverDelayDescription' => 'Velg hvor lenge PlezyNG venter uten inngang før du viser kunstverk.',
+			'settings.contentScreensaverDelayDescription' => 'Velg hvor lenge Pleazyng venter uten inngang før du viser kunstverk.',
 			'settings.continueWatchingRowSizeDescription' => 'Velg hvor store kortene er i Continuing Watching-linjen.',
 			'settings.rowSizeCompactDescription' => 'Vis mindre kort slik at flere elementer passer over raden.',
 			'settings.rowSizeStandardDescription' => 'Bruk standard kortstørrelse.',
 			'settings.rowSizeLargeDescription' => 'Vis større kort med mer kunstverk detalj.',
 			'settings.visualEffectsDescription' => 'Velg animasjon og kunstverk effekter budsjett for denne enheten.',
 			'settings.visualEffectsFullDescription' => 'Bruk den fullstendige animasjons- og kunstverkseffekten på hver enhet.',
-			'settings.startupSectionDescription' => 'Velg hvilken del som åpner når PlezyNG starter.',
+			'settings.startupSectionDescription' => 'Velg hvilken del som åpner når Pleazyng starter.',
 			'settings.startupSectionOptions.discover' => 'Åpne anbefalinger og elementer fra tilknyttede oppdagelseskilder.',
 			'settings.startupSectionOptions.libraries' => 'Åpne dine tilkoblede mediebiblioteker.',
 			'settings.startupSectionOptions.liveTv' => 'Åpne Live TV når en server gir den; ellers faller oppstart tilbake til hjemmet.',
@@ -5944,7 +5950,7 @@ extension on TranslationsNb {
 			'settings.musicQualityOriginalDescription' => 'Spille kildekode uten en bitrate-kapped transcode.',
 			'settings.musicQualityTranscodeOptionDescription' => 'Be om en server transkode capped nær bitrate vist ovenfor; den virkelige utgangen kan variere.',
 			'settings.maxVolumeInputLabel' => 'Maksimalt volum (%)',
-			'settings.checkForUpdatesDescription' => 'Sjekk nå om en nyere versjon av PlezyNG er tilgjengelig.',
+			'settings.checkForUpdatesDescription' => 'Sjekk nå om en nyere versjon av Pleazyng er tilgjengelig.',
 			'settings.appearanceDescription' => 'Velg app-temaet og juster bibliotekskort, Hjem rader og navigasjon.',
 			'settings.prerollLibraryDescription' => 'Velg biblioteket som inneholder klippene tilgjengelig som film pre-rolls.',
 			'settings.prerollSelectionDescription' => 'Velg hvilke klipp fra det valgte biblioteket kan spilles før filmer.',
@@ -6180,8 +6186,8 @@ extension on TranslationsNb {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: 'Dette sletter ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode i den, og filen.', other: 'Dette sletter alle ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodene i den, og filene deres.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: 'Dette elementet er lagret som ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} fil, som vil bli slettet.', other: 'Dette elementet er lagret på tvers av ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} filer, og alle vil bli slettet.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} annen episode er lagret i samme fil og vil også bli slettet:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} andre episoder er lagret i samme fil og vil også bli slettet:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG kunne ikke sjekke hvilke filer dette vil fjerne, så det kan slette mer enn elementet som er nevnt ovenfor. Avbryt og prøv igjen, eller slett likevel.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Serveren din ga ikke fildetaljer for dette elementet, så PlezyNG kan ikke sjekke hvilke filer dette vil fjerne. Det kan slette mer enn elementet som er nevnt ovenfor.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'Pleazyng kunne ikke sjekke hvilke filer dette vil fjerne, så det kan slette mer enn elementet som er nevnt ovenfor. Avbryt og prøv igjen, eller slett likevel.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Serveren din ga ikke fildetaljer for dette elementet, så Pleazyng kan ikke sjekke hvilke filer dette vil fjerne. Det kan slette mer enn elementet som er nevnt ovenfor.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Medieelement slettet',
 			'mediaMenu.mediaFailedToDelete' => 'Kunne ikke slette medieelement',
 			'mediaMenu.rate' => 'Vurder',
@@ -6231,7 +6237,7 @@ extension on TranslationsNb {
 			'accessibility.colorModeRgb' => 'RGB',
 			'accessibility.title' => 'Tilgjengelighet',
 			'accessibility.summary' => 'Tekst, kontrast, bevegelse og kontroller',
-			'accessibility.systemHint' => 'Tilgjengelighetsinnstillingene for enheten din gjelder alltid. Disse alternativene legger til justeringer gjennom PlezyNG.',
+			'accessibility.systemHint' => 'Tilgjengelighetsinnstillingene for enheten din gjelder alltid. Disse alternativene legger til justeringer gjennom Pleazyng.',
 			'accessibility.readability' => 'Lesing og synlighet',
 			'accessibility.textSize' => 'Tilleggsvekst av tekst',
 			'accessibility.preview' => 'Finn din neste historie.Les, lytt og se på din egen hastighet.',
@@ -6244,7 +6250,7 @@ extension on TranslationsNb {
 			'accessibility.largeTargets' => 'Større touch mål',
 			'accessibility.largeTargetsHint' => 'Gi delte kontroller mer plass for berøring og assistent navigasjon.',
 			'accessibility.navigationHint' => 'Bruk Tab og Shift+Tab for å flytte mellom kontroller, Enter eller mellomrom for å aktivere og Escape eller Tilbake for å lukke. Zoom og leseinnstillinger er tilgjengelige når en bok er åpen.',
-			'accessibility.textSizeDescription' => 'Skala grensesnitt tekst i PlezyNG i tillegg til enhetens system tekst-størrelse innstilling.',
+			'accessibility.textSizeDescription' => 'Skala grensesnitt tekst i Pleazyng i tillegg til enhetens system tekst-størrelse innstilling.',
 			'accessibility.boldTextHint' => 'Bruk en tyngre vekt for grensesnitt etiketter og meldinger for å gjøre dem enklere å skille mellom.',
 			'tooltips.shufflePlay' => 'Tilfeldig avspilling',
 			'tooltips.playTrailer' => 'Spill trailer',
@@ -6512,7 +6518,7 @@ extension on TranslationsNb {
 			'mpvConfig.removeLine' => 'Fjern linje',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-context og gpu-api ignoreres på Linux: innebygd video renderes alltid via vo=libmpv på videoplanet, og gpu-next (som compute-shadere som ArtCNN trenger) kan ikke kjøre innebygd.',
 			'dialog.confirmAction' => 'Bekreft handling',
-			'profiles.addPlezyProfile' => 'Legg til PlezyNG-profil',
+			'profiles.addPlezyProfile' => 'Legg til Pleazyng-profil',
 			'profiles.switchingProfile' => 'Bytter profil…',
 			'profiles.deleteThisProfileTitle' => 'Slett denne profilen?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Fjern ${displayName}. Tilkoblinger påvirkes ikke.',
@@ -6594,12 +6600,12 @@ extension on TranslationsNb {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} servere nektet tilgang for denne kontoen',
 			'connections.signInAgain' => 'Logg inn igjen',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Rediger ${product}-tilkobling',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Legg til eller fjern URL-er for ${serverName}. PlezyNG vil bruke den nåbare URL-en med lavest ventetid.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Legg til eller fjern URL-er for ${serverName}. Pleazyng vil bruke den nåbare URL-en med lavest ventetid.',
 			'accountPreferences.sectionTitle' => 'Kontoinnstillinger',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Lyd-, undertekst- og bibliotekalternativer lagret på ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Lyd-, undertekst- og bibliotekalternativer lagret på ${count} kontoer',
 			'accountPreferences.pickAccount' => 'Hver konto lagrer sine egne innstillinger. Velg hvilken du vil redigere.',
-			'accountPreferences.storedOnAccount' => 'Disse alternativene lagres på selve kontoen, så alle apper som er logget på den, bruker dem — inkludert PlezyNG på de andre enhetene dine.',
+			'accountPreferences.storedOnAccount' => 'Disse alternativene lagres på selve kontoen, så alle apper som er logget på den, bruker dem — inkludert Pleazyng på de andre enhetene dine.',
 			'accountPreferences.noAccounts' => 'Ingen kontoer å konfigurere',
 			'accountPreferences.noAccountsHint' => 'Logg inn på Plex, eller koble til en Jellyfin- eller Emby-server, så vises innstillingene som er lagret på den kontoen, her.',
 			'accountPreferences.unavailable' => 'Kan ikke nå denne kontoen',
@@ -6923,9 +6929,9 @@ extension on TranslationsNb {
 			'logs.saveLogs' => 'Lagre logger til filer',
 			'logs.logsSaved' => ({required Object path}) => 'Lister lagret til ${path}',
 			'logs.saveLogsFailed' => 'Kan ikke lagre loggfilet.',
-			'startup.failedTitle' => 'PlezyNG kunne ikke starte',
+			'startup.failedTitle' => 'Pleazyng kunne ikke starte',
 			'startup.failedBody' => 'Noe gikk galt under oppstart. Detaljene nedenfor viser hva som feilet.',
-			'startup.failedBodyRepairable' => 'PlezyNG\'s lagrede innstillingsfil er skadet og må bygges på nytt før PlezyNG kan starte. Å prøve igjen hjelper ikke – velg Reparer lagring.',
+			'startup.failedBodyRepairable' => 'Pleazyng\'s lagrede innstillingsfil er skadet og må bygges på nytt før Pleazyng kan starte. Å prøve igjen hjelper ikke – velg Reparer lagring.',
 			'startup.phaseLabel' => 'Trinn',
 			'startup.showDetails' => 'Vis detaljer',
 			'startup.hideDetails' => 'Skjul detaljer',
@@ -6934,16 +6940,16 @@ extension on TranslationsNb {
 			'startup.uploadDetails' => 'Last opp detaljer',
 			'startup.repairStorage' => 'Reparer lagring',
 			'startup.repairTitle' => 'Reparere lagrede data?',
-			'startup.repairBodyCommon' => 'PlezyNG\'s innstillingsfil er skadet og kan ikke leses. Reparasjon tilbakestiller alle innstillinger til standard.',
+			'startup.repairBodyCommon' => 'Pleazyng\'s innstillingsfil er skadet og kan ikke leses. Reparasjon tilbakestiller alle innstillinger til standard.',
 			'startup.repairBodyOneCredential' => 'Én lagret pålogging er skadet og kan ikke leses. Reparasjon fjerner bare den; de andre innstillingene dine blir urørt.',
 			'startup.repairBodySignInsKept' => 'Serverne og profilene dine skal forbli pålogget.',
 			'startup.repairBodySignInsLost' => 'Nøkkelen som beskytter de lagrede påloggingene dine kan ikke gjenvinnes fra denne filen, så du må logge på alle servere og profiler på nytt. Ingenting på medieserveren din påvirkes.',
-			'startup.repairBodySessionsUncertain' => 'Trackere (MAL, AniList, Simkl, Trakt) og Seerr lagres separat og kan overleve eller ikke. PlezyNG vil fortelle deg nøyaktig hva det beholdt.',
+			'startup.repairBodySessionsUncertain' => 'Trackere (MAL, AniList, Simkl, Trakt) og Seerr lagres separat og kan overleve eller ikke. Pleazyng vil fortelle deg nøyaktig hva det beholdt.',
 			'startup.repairConfirm' => 'Reparer',
 			'startup.repairSucceeded' => 'Lagring reparert',
 			'startup.repairNeedsRestart' => 'Lagring reparert – omstart kreves',
-			'startup.restartRequiredBody' => 'Dataene dine ble reparert, men PlezyNG må starte på nytt før det kan bruke dem. Lukk PlezyNG og åpne det igjen.',
-			'startup.quitPlezy' => 'Avslutt PlezyNG',
+			'startup.restartRequiredBody' => 'Dataene dine ble reparert, men Pleazyng må starte på nytt før det kan bruke dem. Lukk Pleazyng og åpne det igjen.',
+			'startup.quitPlezy' => 'Avslutt Pleazyng',
 			'startup.repairFailed' => 'Reparasjon mislyktes',
 			'startup.repairKeptSignIns' => 'Serverne og profilene dine er fortsatt pålogget.',
 			'startup.repairLostSignIns' => 'Nøkkelen som beskytter de lagrede påloggingene dine kunne ikke gjenvinnes. Du må logge på alle servere og profiler på nytt.',
@@ -6952,7 +6958,7 @@ extension on TranslationsNb {
 			'startup.backupWarning' => 'Den inneholder påloggingsinformasjonen din. Ikke last den opp eller del den.',
 			'startup.deleteBackup' => 'Slett kopi',
 			'startup.backupDeleted' => 'Kopi slettet.',
-			'startup.previousFailureTitle' => 'PlezyNG mislyktes i å starte forrige gang',
+			'startup.previousFailureTitle' => 'Pleazyng mislyktes i å starte forrige gang',
 			'licenses.relatedPackages' => 'Relaterte pakker',
 			'licenses.license' => 'Lisens',
 			'licenses.licenseNumber' => ({required Object number}) => 'Lisens ${number}',
@@ -7330,7 +7336,7 @@ extension on TranslationsNb {
 			'watchTogether.codeCopied' => 'Romkode kopiert',
 			'watchTogether.shareInvite' => 'Del invitasjon',
 			'watchTogether.inviteCopied' => 'Invitasjon kopiert. Lim den inn i en melding.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Bli med i Se sammen-rommet mitt i PlezyNG: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Bli med i Se sammen-rommet mitt i Pleazyng: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.',
 			'watchTogether.openSessionControls' => 'Åpne øktkontroller for Se sammen',
 			_ => null,
 		} ?? switch (path) {
@@ -7358,7 +7364,7 @@ extension on TranslationsNb {
 			'watchTogether.chooseAnotherCopy' => 'Velg en annen kopi',
 			'watchTogether.dontPlay' => 'Ikke spill av',
 			'watchTogether.unavailableTitle' => 'Du har ikke denne videoen',
-			'watchTogether.unavailableDescription' => 'PlezyNG fant den ikke i bibliotekene dine. Velg en kopi selv eller søk på nytt.',
+			'watchTogether.unavailableDescription' => 'Pleazyng fant den ikke i bibliotekene dine. Velg en kopi selv eller søk på nytt.',
 			'watchTogether.chooseCopy' => 'Velg en kopi',
 			'watchTogether.searchAgain' => 'Søk på nytt',
 			'watchTogether.noCandidates' => 'Fant ingen kopier i bibliotekene dine.',
@@ -7450,7 +7456,7 @@ extension on TranslationsNb {
 			'watchTogether.errors.relayFull' => 'Se sammen er opptatt akkurat nå. Prøv igjen senere.',
 			'watchTogether.errors.unreachable' => 'Kunne ikke nå reléserveren for Se sammen. Sjekk tilkoblingen.',
 			'watchTogether.errors.rateLimited' => 'For mange forsøk. Vent litt og prøv igjen.',
-			'watchTogether.errors.clientBlocked' => 'Denne versjonen av PlezyNG kan ikke bruke reléserveren. Oppdater appen.',
+			'watchTogether.errors.clientBlocked' => 'Denne versjonen av Pleazyng kan ikke bruke reléserveren. Oppdater appen.',
 			'watchTogether.errors.forbidden' => 'Bare verten kan gjøre det.',
 			'watchTogether.errors.notInRoom' => 'Du er ikke i et rom.',
 			'watchTogether.errors.alreadyInRoom' => 'Du er allerede i et rom.',
@@ -7532,11 +7538,11 @@ extension on TranslationsNb {
 			'downloads.activeSyncRules' => 'Synkroniseringsregler',
 			'downloads.reviewOrphanFiles' => 'Se over foreldreløse nedlastinger',
 			'downloads.orphanReviewTitle' => 'Se over foreldreløse nedlastinger',
-			'downloads.orphanReviewDescription' => 'Disse merkede filene ligger i PlezyNGs standardmapper for appstyrte nedlastinger, men har ingen tilsvarende nedlastingsoppføring eller aktiv oppgave. Kontroller listen før du sletter dem.',
+			'downloads.orphanReviewDescription' => 'Disse merkede filene ligger i Pleazyngs standardmapper for appstyrte nedlastinger, men har ingen tilsvarende nedlastingsoppføring eller aktiv oppgave. Kontroller listen før du sletter dem.',
 			'downloads.orphanReviewCount' => ({required Object count, required Object size}) => '${count} filer · ${size}',
 			'downloads.orphanDeleteFiles' => ({required Object count}) => 'Slett ${count} filer',
 			'downloads.orphanCleanupNone' => 'Fant ingen foreldreløse nedlastingsfiler',
-			'downloads.orphanCleanupFailed' => 'PlezyNG kunne ikke skanne den administrerte nedlastingsmappen på en trygg måte. Ingen filer ble slettet.',
+			'downloads.orphanCleanupFailed' => 'Pleazyng kunne ikke skanne den administrerte nedlastingsmappen på en trygg måte. Ingen filer ble slettet.',
 			'downloads.orphanCleanupChanged' => 'Nedlastingslisten ble endret mens du gikk gjennom den. Se over filene på nytt før du rydder opp.',
 			'downloads.orphanCleanupComplete' => ({required Object count, required Object size}) => 'Slettet ${count} foreldreløse filer · ${size} frigjort',
 			'downloads.noSyncRules' => 'Ingen synkroniseringsregler',
@@ -7558,14 +7564,14 @@ extension on TranslationsNb {
 			'downloads.backgroundWarning.bannerAction' => 'Detaljer',
 			'downloads.backgroundWarning.sheetTitle' => 'Bakgrunnsnedlastinger er blokkert',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Bakgrunnsnedlastinger kan være begrenset',
-			'downloads.backgroundWarning.sheetIntro' => 'Android hindrer PlezyNG i å laste ned pålitelig i bakgrunnen.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Enheten din begrenser når PlezyNG kan laste ned i bakgrunnen.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Bakgrunnsbruken til PlezyNG er begrenset. Sett batteribruk eller bakgrunnsbruk til «Ubegrenset».',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android har satt PlezyNG i begrenset hvilemodus. Sett batteribruken til «Ubegrenset».',
+			'downloads.backgroundWarning.sheetIntro' => 'Android hindrer Pleazyng i å laste ned pålitelig i bakgrunnen.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Enheten din begrenser når Pleazyng kan laste ned i bakgrunnen.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'Bakgrunnsbruken til Pleazyng er begrenset. Sett batteribruk eller bakgrunnsbruk til «Ubegrenset».',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'Android har satt Pleazyng i begrenset hvilemodus. Sett batteribruken til «Ubegrenset».',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'Varsler om nedlastinger er slått av, så fremdrift og kontroller kan være utilgjengelige.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'Varsler er slått av. På Android 13 eller nyere kreves de for lange bakgrunnsnedlastinger.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'Datasparing er slått på og blokkerer bakgrunnsnedlastinger via mobildata. Nedlastinger skal fortsatt fungere på Wi-Fi.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'Nedlastinger har stoppet gjentatte ganger mens PlezyNG var i bakgrunnen. Sjekk innstillingene for batteribruk eller bakgrunnsbruk for PlezyNG.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Nedlastinger har stoppet gjentatte ganger mens Pleazyng var i bakgrunnen. Sjekk innstillingene for batteribruk eller bakgrunnsbruk for Pleazyng.',
 			'downloads.backgroundWarning.openSettings' => 'Åpne innstillinger',
 			'downloads.backgroundWarning.stillNotWorking' => 'Enhetsspesifikk hjelp',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Se fremgangsmåten for enheten din, eller send en logg fra Innstillinger › Vis logger hvis problemet vedvarer.',
@@ -7636,19 +7642,19 @@ extension on TranslationsNb {
 			'companionRemote.session.stopServer' => 'Stopp server',
 			'companionRemote.session.minimize' => 'Minimer',
 			'companionRemote.session.manualAddressHint' => 'Manuell tilkoblingsadresse:',
-			'companionRemote.pairing.discoveryDescription' => 'PlezyNG-enheter med samme Plex-konto vises her',
+			'companionRemote.pairing.discoveryDescription' => 'Pleazyng-enheter med samme Plex-konto vises her',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Kobler til...',
 			'companionRemote.pairing.searchingForDevices' => 'Søker etter enheter...',
 			'companionRemote.pairing.noDevicesFound' => 'Ingen enheter funnet på nettverket ditt',
-			'companionRemote.pairing.noDevicesHint' => 'Åpne PlezyNG på datamaskinen, og bruk samme Wi-Fi',
+			'companionRemote.pairing.noDevicesHint' => 'Åpne Pleazyng på datamaskinen, og bruk samme Wi-Fi',
 			'companionRemote.pairing.availableDevices' => 'Tilgjengelige enheter',
 			'companionRemote.pairing.manualConnection' => 'Manuell tilkobling',
 			'companionRemote.pairing.cryptoInitFailed' => 'Kunne ikke starte sikker tilkobling. Logg inn på Plex først.',
 			'companionRemote.pairing.validationHostRequired' => 'Vennligst oppgi vertsadresse',
 			'companionRemote.pairing.validationHostFormat' => 'Format må være IP:port (f.eks. 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'Tilkoblingen fikk tidsavbrudd. Bruk samme nettverk på begge enheter.',
-			'companionRemote.pairing.sessionNotFound' => 'Enhet ikke funnet. Sørg for at PlezyNG kjører på verten.',
+			'companionRemote.pairing.sessionNotFound' => 'Enhet ikke funnet. Sørg for at Pleazyng kjører på verten.',
 			'companionRemote.pairing.authFailed' => 'Autentisering mislyktes. Begge enheter må bruke samme Plex-konto.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Kunne ikke koble til: ${error}',
 			'companionRemote.pairing.codeTitle' => 'Paring kode',
@@ -7912,11 +7918,11 @@ extension on TranslationsNb {
 			'trakt.connected' => 'Tilkoblet',
 			'trakt.connectedAs' => ({required Object username}) => 'Tilkoblet som @${username}',
 			'trakt.disconnectConfirm' => 'Koble fra Trakt-konto?',
-			'trakt.disconnectConfirmBody' => 'PlezyNG slutter å sende hendelser til Trakt. Du kan koble til igjen når som helst.',
+			'trakt.disconnectConfirmBody' => 'Pleazyng slutter å sende hendelser til Trakt. Du kan koble til igjen når som helst.',
 			'trakt.scrobble' => 'Sanntids-scrobbling',
 			'trakt.scrobbleDescription' => 'Send avspillings-, pause- og stopphendelser til Trakt under avspilling.',
 			'trakt.watchedSync' => 'Synkroniser settstatus',
-			'trakt.watchedSyncDescription' => 'Når du markerer elementer som sett i PlezyNG, markeres de også som sett på Trakt.',
+			'trakt.watchedSyncDescription' => 'Når du markerer elementer som sett i Pleazyng, markeres de også som sett på Trakt.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Koble til Seerr',
 			'seerr.serverUrl' => 'Server-URL',
@@ -7926,10 +7932,10 @@ extension on TranslationsNb {
 			'seerr.signInWithEmby' => 'Logg inn med Emby',
 			'seerr.signInWithLocal' => 'Bruk en lokal konto',
 			'seerr.email' => 'E-post',
-			'seerr.noSignInMethods' => 'Denne Seerr-instansen tilbyr ingen innloggingsmetode som PlezyNG støtter.',
+			'seerr.noSignInMethods' => 'Denne Seerr-instansen tilbyr ingen innloggingsmetode som Pleazyng støtter.',
 			'seerr.instance' => 'Instans',
 			'seerr.disconnectConfirm' => 'Koble fra Seerr?',
-			'seerr.disconnectConfirmBody' => 'PlezyNG glemmer denne Seerr-instansen. Koble til igjen når som helst.',
+			'seerr.disconnectConfirmBody' => 'Pleazyng glemmer denne Seerr-instansen. Koble til igjen når som helst.',
 			'seerr.request' => 'Be om',
 			'seerr.request4k' => 'Be om i 4K',
 			'seerr.seasons' => 'Sesonger',
@@ -7954,7 +7960,7 @@ extension on TranslationsNb {
 			'seerr.statusBlocklisted' => 'På blokkeringslisten',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Kunne ikke nå ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'Ingen Seerr-instans på ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'En autentiserende omvendt proxy (SSO eller HTTP-autentisering) svarte i stedet for Seerr. PlezyNG kan ikke logge inn gjennom den: La Seerrs /api/v1-sti omgå proxyen for denne appen, eller bruk en adresse som når Seerr direkte.',
+			'seerr.behindAuthProxy' => 'En autentiserende omvendt proxy (SSO eller HTTP-autentisering) svarte i stedet for Seerr. Pleazyng kan ikke logge inn gjennom den: La Seerrs /api/v1-sti omgå proxyen for denne appen, eller bruk en adresse som når Seerr direkte.',
 			'seerr.invalidUrl' => 'Skriv inn en serveradresse som https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Denne Seerr-instansen støtter ikke Quick Connect. Den krever Seerr 3.4 eller nyere.',
 			'seerr.notInitialized' => 'Denne Seerr-instansen har ikke fullført førstegangsoppsettet',
@@ -7975,7 +7981,7 @@ extension on TranslationsNb {
 			'services.scrobble' => 'Registrer fremdrift automatisk',
 			'services.scrobbleDescription' => 'Oppdater listen din når du er ferdig med en episode eller film.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Koble fra ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'PlezyNG slutter å oppdatere ${service}. Koble til igjen når som helst.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng slutter å oppdatere ${service}. Koble til igjen når som helst.',
 			'services.connectFailed' => ({required Object service}) => 'Kunne ikke koble til ${service}. Prøv igjen.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -7983,8 +7989,8 @@ extension on TranslationsNb {
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Koble til Simkl på nytt',
-			'services.simklReconnect.subtitle' => 'Simkl avvikler påloggingsmetoden som denne tilkoblingen bruker. Når du kobler til på nytt, åpnes simkl.com slik at du kan godkjenne PlezyNG – PlezyNG ser aldri passordet ditt. Visningshistorikken din blir liggende på Simkl.',
-			'services.deviceCode.title' => ({required Object service}) => 'Aktiver PlezyNG på ${service}',
+			'services.simklReconnect.subtitle' => 'Simkl avvikler påloggingsmetoden som denne tilkoblingen bruker. Når du kobler til på nytt, åpnes simkl.com slik at du kan godkjenne Pleazyng – Pleazyng ser aldri passordet ditt. Visningshistorikken din blir liggende på Simkl.',
+			'services.deviceCode.title' => ({required Object service}) => 'Aktiver Pleazyng på ${service}',
 			'services.deviceCode.instructions' => 'Skann QR-koden, eller gå til adressen nedenfor og skriv inn denne koden:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Åpne ${service} for å aktivere',
 			'services.deviceCode.copyCode' => 'Kopier aktiveringskode',
@@ -8017,8 +8023,8 @@ extension on TranslationsNb {
 			'streaming.title' => 'Strømming fra skyen og tillegg',
 			'streaming.subtitle' => 'Koble til en Debrid-konto for å bla gjennom filer i skyen og spille av støttede strømmer. Stremio-kompatible tillegg gir strømmevalg på film- og seriesider. Tilkoblingsopplysninger krypteres på denne enheten og lagres i denne profilen.',
 			'streaming.connectionsConfigured' => ({required Object count}) => 'Tilkoblede kilder: ${count}',
-			'streaming.settingsLoadFailed' => 'PlezyNG klarte ikke å låse opp de lagrede strømmeinnstillingene. Lås opp enheten og prøv igjen før du endrer tilkoblingene.',
-			'streaming.settingsUnreadable' => 'PlezyNG klarte ikke å låse opp disse lagrede tilkoblingene. Fjern dem for å koble til tjenestene på nytt.',
+			'streaming.settingsLoadFailed' => 'Pleazyng klarte ikke å låse opp de lagrede strømmeinnstillingene. Lås opp enheten og prøv igjen før du endrer tilkoblingene.',
+			'streaming.settingsUnreadable' => 'Pleazyng klarte ikke å låse opp disse lagrede tilkoblingene. Fjern dem for å koble til tjenestene på nytt.',
 			'streaming.clearUnreadableSettings' => 'Fjern lagrede innstillinger',
 			'streaming.clearUnreadableSettingsConfirm' => 'Fjerne lagrede strømmeinnstillinger?',
 			'streaming.clearUnreadableSettingsBody' => 'Dette fjerner alle lagrede leverandørkontoer og tilleggsadresser fra denne profilen. Handlingen kan ikke angres.',
@@ -8030,11 +8036,11 @@ extension on TranslationsNb {
 			'streaming.catalogFiltersRequired' => 'Velg de nødvendige filtrene for å bla gjennom katalogen.',
 			'streaming.catalogRequiredLabel' => 'Påkrevd',
 			'streaming.importFromStremio' => 'Importer fra Stremio',
-			'streaming.stremioImportInstructions' => 'Skann QR-koden eller åpne lenken. Logg inn på Stremio og godkjenn forespørselen. PlezyNG leser bare tilleggslisten din; appen ber aldri om Stremio-passordet ditt eller endrer innstillingene.',
+			'streaming.stremioImportInstructions' => 'Skann QR-koden eller åpne lenken. Logg inn på Stremio og godkjenn forespørselen. Pleazyng leser bare tilleggslisten din; appen ber aldri om Stremio-passordet ditt eller endrer innstillingene.',
 			'streaming.stremioImportOpen' => 'Åpne Stremio-lenke',
 			'streaming.stremioImportCode' => 'Tilkoblingskode',
 			'streaming.stremioImportPreviewTitle' => 'Velg tillegg',
-			'streaming.stremioImportPreviewBody' => 'Velg tilleggene du vil koble til PlezyNG. Denne importen godtar bare HTTPS-adresser.',
+			'streaming.stremioImportPreviewBody' => 'Velg tilleggene du vil koble til Pleazyng. Denne importen godtar bare HTTPS-adresser.',
 			'streaming.stremioImportIgnored' => ({required Object count}) => 'Hoppet over tillegg med adresser som ikke støttes eller er usikre: ${count}.',
 			'streaming.stremioCatalogs' => 'Kataloger',
 			'streaming.stremioStreams' => 'Strømmer',
@@ -8048,7 +8054,7 @@ extension on TranslationsNb {
 			'streaming.addByManifestUrl' => 'Legg til med manifest-URL',
 			'streaming.addAddon' => 'Legg til tillegg',
 			'streaming.manifestUrl' => 'Manifest-URL for tillegg',
-			'streaming.manifestUrlHint' => 'Lim inn manifest-URL-en til tillegget. PlezyNG sjekker om det støtter kataloger eller strømmeressurser før tilkobling.',
+			'streaming.manifestUrlHint' => 'Lim inn manifest-URL-en til tillegget. Pleazyng sjekker om det støtter kataloger eller strømmeressurser før tilkobling.',
 			'streaming.allowHttp' => 'Tillat en ukryptert HTTP-adresse',
 			'streaming.allowHttpDescription' => 'Bruk bare for et tillegg du stoler på i ditt private nettverk.',
 			'streaming.installAddon' => 'Koble til tillegg',
@@ -8056,20 +8062,20 @@ extension on TranslationsNb {
 			'streaming.addonRemoved' => 'Tillegg fjernet',
 			'streaming.addonToggle' => 'Slå på tillegg',
 			'streaming.addonEmpty' => 'Ingen tillegg er tilkoblet ennå',
-			'streaming.addonError' => 'PlezyNG kunne ikke koble til dette tillegget. Kontroller manifest-URL-en og prøv igjen.',
+			'streaming.addonError' => 'Pleazyng kunne ikke koble til dette tillegget. Kontroller manifest-URL-en og prøv igjen.',
 			'streaming.addonPrivacy' => 'Koble bare til tillegg du stoler på. Når du søker, mottar tillegget tittelen du søker etter, og kan returnere strømmelenker fra tredjeparter.',
 			'streaming.realDebrid' => 'Real-Debrid',
 			'streaming.realDebridDescription' => 'Spill av støttede torrentstrømmer via Real-Debrid-kontoen din.',
 			'streaming.connectRealDebrid' => 'Koble til med QR-kode',
 			'streaming.realDebridConnected' => ({required Object username}) => 'Tilkoblet som ${username}',
-			'streaming.realDebridInstructions' => 'Skann QR-koden eller åpne lenken, og skriv deretter inn denne aktiveringskoden for å koble til PlezyNG:',
+			'streaming.realDebridInstructions' => 'Skann QR-koden eller åpne lenken, og skriv deretter inn denne aktiveringskoden for å koble til Pleazyng:',
 			'streaming.realDebridActivate' => 'Åpne Real-Debrid for å aktivere',
 			'streaming.realDebridCode' => 'Aktiveringskode',
 			'streaming.realDebridConnectFailed' => 'Kunne ikke koble til Real-Debrid. Prøv igjen.',
 			'streaming.allDebrid' => 'AllDebrid',
 			'streaming.allDebridDescription' => 'Spill av støttede torrentstrømmer via AllDebrid-kontoen din.',
 			'streaming.connectAllDebrid' => 'Koble til med QR-kode',
-			'streaming.allDebridInstructions' => 'Skann QR-koden eller åpne lenken for å godkjenne PlezyNG. La denne skjermen stå åpen mens tilkoblingen opprettes:',
+			'streaming.allDebridInstructions' => 'Skann QR-koden eller åpne lenken for å godkjenne Pleazyng. La denne skjermen stå åpen mens tilkoblingen opprettes:',
 			'streaming.allDebridActivate' => 'Åpne AllDebrid for å aktivere',
 			'streaming.allDebridCode' => 'Aktiverings-PIN',
 			'streaming.allDebridConnectFailed' => 'Kunne ikke koble til AllDebrid. Prøv igjen.',
@@ -8080,13 +8086,13 @@ extension on TranslationsNb {
 			'streaming.connectApiKey' => 'Koble til med API-nøkkel',
 			'streaming.apiKeyTitle' => ({required Object service}) => 'Koble til ${service}',
 			'streaming.apiKey' => 'API-nøkkel',
-			'streaming.apiKeyHint' => ({required Object service}) => 'Lim inn API-nøkkelen fra kontoinnstillingene for ${service}. PlezyNG krypterer den på denne enheten og lagrer den i denne profilen.',
+			'streaming.apiKeyHint' => ({required Object service}) => 'Lim inn API-nøkkelen fra kontoinnstillingene for ${service}. Pleazyng krypterer den på denne enheten og lagrer den i denne profilen.',
 			'streaming.apiKeyConnectFailed' => 'Kunne ikke bekrefte API-nøkkelen. Kontroller den og prøv igjen.',
 			'streaming.accountConnected' => ({required Object username}) => 'Tilkoblet som ${username}',
 			'streaming.streamNeedsProvider' => 'Koble til en Debrid-tjeneste for å spille av denne torrentstrømmen.',
 			'streaming.playViaProvider' => 'Spill av med Debrid',
 			'streaming.disconnectConfirm' => ({required Object service}) => 'Koble fra ${service}?',
-			'streaming.disconnectBody' => 'PlezyNG fjerner denne enhetens tilgang. Filer hos leverandøren og pågående overføringer påvirkes ikke.',
+			'streaming.disconnectBody' => 'Pleazyng fjerner denne enhetens tilgang. Filer hos leverandøren og pågående overføringer påvirkes ikke.',
 			'streaming.streamsTitle' => 'Velg en strøm',
 			'streaming.noStreams' => 'Fant ingen strømmer for denne tittelen.',
 			'streaming.manageConnections' => 'Administrer strømmetjenester',
@@ -8102,7 +8108,7 @@ extension on TranslationsNb {
 			'streaming.streamUnsupported' => 'Dette strømmeformatet støttes ikke av den innebygde spilleren.',
 			'streaming.remoteNeedsEpisode' => 'Velg en episode før du søker etter en strøm.',
 			'streaming.remoteNeedsEpisodeNumber' => 'Denne episoden mangler sesong- eller episodenummer.',
-			'streaming.remoteNeedsExternalId' => 'PlezyNG fant ingen IMDb- eller TMDB-ID for denne tittelen.',
+			'streaming.remoteNeedsExternalId' => 'Pleazyng fant ingen IMDb- eller TMDB-ID for denne tittelen.',
 			'streaming.watchWithServices' => 'Se med tilkoblede tjenester',
 			'streaming.chooseEpisode' => 'Velg episode',
 			'streaming.episodes' => 'Episoder',
@@ -8188,15 +8194,15 @@ extension on TranslationsNb {
 			'notifications.newEpisodeTitle' => 'Nytt episode',
 			'notifications.newEpisodeBody' => ({required Object show, required Object episode}) => '${show} · ${episode}',
 			'appAccess.title' => 'Prøv hver funksjon gratis i 7 dager',
-			'appAccess.description' => 'Start en sju dagers prøve med full tilgang til hver PlezyNG funksjon. Det er ingen gebyr under prøve og ingen abonnement. Etter prøve, en livslang kjøp på din butikks pris låser opp PlezyNG for livet.',
-			'appAccess.trialEndedDescription' => 'Unlock alle funksjoner i PlezyNG for livet med én kjøp til din butikk pris.',
+			'appAccess.description' => 'Start en sju dagers prøve med full tilgang til hver Pleazyng funksjon. Det er ingen gebyr under prøve og ingen abonnement. Etter prøve, en livslang kjøp på din butikks pris låser opp Pleazyng for livet.',
+			'appAccess.trialEndedDescription' => 'Unlock alle funksjoner i Pleazyng for livet med én kjøp til din butikk pris.',
 			'appAccess.startTrial' => 'Start min 7 dagers gratis prøve',
 			'appAccess.trialActive' => 'Din 7-dagers full-feature-tester er aktiv.',
 			'appAccess.trialEnded' => '7 dagers rettssak er over',
 			'appAccess.trialStartFailed' => 'Kan ikke spare prøven på denne enheten. vennligst prøv igjen.',
-			'appAccess.lifetimeTitle' => 'PlezyNG avsluttet for livet',
-			'appAccess.lifetimeBody' => 'Du har livslang tilgang til alle PlezyNG funksjoner.',
-			'appAccess.manageTitle' => 'PlezyNG Livslang tilgang',
+			'appAccess.lifetimeTitle' => 'Pleazyng avsluttet for livet',
+			'appAccess.lifetimeBody' => 'Du har livslang tilgang til alle Pleazyng funksjoner.',
+			'appAccess.manageTitle' => 'Pleazyng Livslang tilgang',
 			'appAccess.manageDescription' => 'Prøv hver funksjon gratis i 7 dager, deretter låse opp alt for livet med en betaling til priset på butikken din.',
 			'appAccess.buy' => ({required Object price}) => 'Unlock alle funksjoner for ${price}',
 			'appAccess.loadingPrice' => 'Lading butikks pris...',
@@ -8204,11 +8210,11 @@ extension on TranslationsNb {
 			'appAccess.restore' => 'Åpne livslang kjøp',
 			'appAccess.pending' => 'Kjøpet ditt venter på betaling eller godkjenning. Livslang tilgang låser opp så snart butikken fullfører det.',
 			'appAccess.storeUnavailable' => 'Kontrollere at du er signert inn i butikken og kjøp er tillatt på denne enheten.',
-			'appAccess.productNotFound' => 'PlezyNG livslang avlås er ikke tilgjengelig i denne butikken ennå.',
+			'appAccess.productNotFound' => 'Pleazyng livslang avlås er ikke tilgjengelig i denne butikken ennå.',
 			'appAccess.productQueryFailed' => 'Kan ikke laste opp priset på butikken. sjekk koblingen din og prøv igjen.',
 			'appAccess.purchaseFailed' => 'Kjøpet gikk ikke gjennom. prøv igjen.',
 			'appAccess.restoreFailed' => 'Kan ikke nå butikken for å gjenopprette kjøpet. prøv igjen.',
-			'appAccess.nothingToRestore' => 'No. PlezyNG livslang kjøp ble funnet for denne butikken konto.',
+			'appAccess.nothingToRestore' => 'No. Pleazyng livslang kjøp ble funnet for denne butikken konto.',
 			'detail.endsAt' => ({required Object time}) => 'Slutter kl. ${time}',
 			'watchLink.serverUnavailable' => 'Kan ikke nå en server på Plex for denne koblingen.',
 			'watchLink.notFound' => 'Du kan ikke finne denne show eller film på serverne dine Plex.',
@@ -8222,8 +8228,8 @@ extension on TranslationsNb {
 			'watchLink.copy' => 'Kopierer',
 			'watchLink.copied' => 'Link kopieres',
 			'homeLayout.title' => 'Hjem Layout',
-			'homeLayout.resetToast' => 'Hjem gjenoppbygging til den opprinnelige Plezy hero layout',
-			'homeLayout.resetHeroTitle' => 'Åpne hero layout til lager Plezy?',
+			'homeLayout.resetToast' => 'Hjem gjenoppbygging til den opprinnelige Pleazyng hero layout',
+			'homeLayout.resetHeroTitle' => 'Åpne hero layout til lager Pleazyng?',
 			'homeLayout.resetHeroBody' => 'Avbryter hver rad av hjertesetting og bringer tilbake den eneste roterende banneret på toppen av hjemmet, som før hjerteserien eksisterte.',
 			'homeLayout.removeRowTitle' => 'Fjerner hjem ruten?',
 			'homeLayout.removeRowBody' => ({required Object title}) => '${title} vil bli slettet. dette kan ikke bli unntatt.',
@@ -8233,7 +8239,7 @@ extension on TranslationsNb {
 			'homeLayout.syncAccountOff' => 'Av: Denne enheten holder sin egen layout.',
 			'homeLayout.syncNow' => 'Synkronisering nå',
 			'homeLayout.plexHomeManager' => 'Plex Hjemmanager',
-			'homeLayout.managePlexRows' => 'Administrer Plex rader i Plezy',
+			'homeLayout.managePlexRows' => 'Administrer Plex rader i Pleazyng',
 			'homeLayout.managePlexRowsDescription' => 'Åpne for å organisere de hjemmelavede radene',
 			'homeLayout.organizeHomeRows' => 'Organisere hjemmelavede rader',
 			'homeLayout.organizeHomeRowsDescription' => ({required Object n}) => '${n} rader: bevegelse, Hero, Auto-slide, fjerne',
@@ -8303,7 +8309,7 @@ extension on TranslationsNb {
 			'homeLayout.organizeRowsHint' => 'Velg på en rekke (eller hold Velg): flytte den · Venstre/Rett: rekke alternativer · Tilbake: gjort',
 			'homeLayout.layoutNavDescription' => 'Velg rader, biblioteker og samlingskategorier',
 			'homeLayout.editHomeRow' => 'Edit Hjem Rå',
-			'homeLayout.resetHeroButton' => 'Resett hero layout til lager Plezy',
+			'homeLayout.resetHeroButton' => 'Resett hero layout til lager Pleazyng',
 			'homeLayout.reorderingUnlocked' => 'Å gjenoppta unlocked',
 			'homeLayout.reorderingLocked' => 'Å gjenoppta låst',
 			'homeLayout.rowsCanBeDragged' => 'Råene kan trekkes - trykk låsen for å forhindre at det',
@@ -8320,13 +8326,13 @@ extension on TranslationsNb {
 			'homeLayout.tapHeroCardDescription' => 'Velg om tapping eller valg av et Hero-kort starter playback eller åpner detaljene.',
 			'homeLayout.heroTapPlayDescription' => 'Start det valgte elementet umiddelbart.',
 			'homeLayout.heroTapDetailsDescription' => 'Åpne detaljer om det valgte elementet før du velger en handling.',
-			'platform.localNetworkPermission' => 'PlezyNG kobler til medieserverne og avspillingsenhetene dine på det lokale nettverket.',
-			'platform.locationPermission' => 'PlezyNG bruker lokasjonstilgang når iOS krever det for å oppdage ditt lokale nettverk og koble til dine medie servere.',
+			'platform.localNetworkPermission' => 'Pleazyng kobler til medieserverne og avspillingsenhetene dine på det lokale nettverket.',
+			'platform.locationPermission' => 'Pleazyng bruker lokasjonstilgang når iOS krever det for å oppdage ditt lokale nettverk og koble til dine medie servere.',
 			'platform.photoLibraryPermission' => 'Velg bilder fra bildebiblioteket som omslag og illustrasjoner til medieinnhold.',
 			'platform.cameraPermission' => 'Skann QR-koder for å pare en Companion Remote.',
 			'universalMedia.title' => 'Åpne medier',
 			'universalMedia.shortcutHelp' => 'Spill en lenke, spillliste eller fil for denne sesjonen.',
-			'universalMedia.intro' => 'Åpne en lenke, spillliste eller fil. Playback bruker PlezyNGs standardspiller og legger ikke til historie i biblioteket ditt.',
+			'universalMedia.intro' => 'Åpne en lenke, spillliste eller fil. Playback bruker Pleazyngs standardspiller og legger ikke til historie i biblioteket ditt.',
 			'universalMedia.openWhat' => 'Hva vil du gjerne åpne?',
 			'universalMedia.stream' => 'Stream adresse',
 			'universalMedia.playlist' => 'Playlist',
@@ -8377,13 +8383,13 @@ extension on TranslationsNb {
 			'universalMedia.stopTransfer' => 'Stopp overføring og invalidere adressen',
 			'universalMedia.startTransfer' => 'Start overføring',
 			'universalMedia.wifiImportedFiles' => 'Wi-Fi overføring',
-			'universalMedia.wifiBrowserTitle' => 'Send filer til PlezyNG',
+			'universalMedia.wifiBrowserTitle' => 'Send filer til Pleazyng',
 			'universalMedia.wifiBrowserIntro' => 'Velg lyd, video, e-bok eller komiksfiler for å sende. filene lagres i denne enhetens Filer og bøker bibliotek. Maksimum: 100 filer, 4 GiB per fil, 10 GiB totalt.',
 			'universalMedia.uploadFilesLabel' => 'Filer å sende',
 			'universalMedia.uploadSelected' => 'Last opp utvalgte filer',
 			'universalMedia.uploadSelectFirst' => 'Velg en eller flere filer først.',
 			'universalMedia.uploading' => 'Sending',
-			'universalMedia.uploadComplete' => 'Filet er lagt til PlezyNG.',
+			'universalMedia.uploadComplete' => 'Filet er lagt til Pleazyng.',
 			'universalMedia.uploadFailed' => 'Filen kan ikke legges til. Hold denne siden åpen og prøv igjen.',
 			'universalMedia.liveCue' => 'Livet',
 			'universalMedia.liveSession' => 'Live Stream',
@@ -8411,7 +8417,7 @@ extension on TranslationsNb {
 			'universalMedia.recordingActive' => 'Oppdatering av denne enheten.Leaving playback stopper og sparer det.',
 			'universalMedia.recordingFormatHelp' => 'For video, velg MKV eller MPEG-TS. for lyd, velge MKA eller MKV.',
 			'universalMedia.replaceRecordingTitle' => 'Vil du erstatte denne innspillingen?',
-			'universalMedia.replaceRecordingHelp' => 'PlezyNG gjenoppretter den eksisterende filen under opptak. Hvis det ikke kan lagre den nye opptak, plezyNG restaurerer sikkerhetskopien.',
+			'universalMedia.replaceRecordingHelp' => 'Pleazyng gjenoppretter den eksisterende filen under opptak. Hvis det ikke kan lagre den nye opptak, plezyNG restaurerer sikkerhetskopien.',
 			'universalMedia.replaceRecording' => 'erstatte filer',
 			'universalMedia.discHelp' => 'Åpne en disk i denne datamaskinens optiske skjerm. Du kan også åpne et ISO-bilde fra Device-filer.',
 			'universalMedia.discs' => 'Optikal disk',
@@ -8436,7 +8442,7 @@ extension on TranslationsNb {
 			'universalMedia.converterUnsupportedInput' => 'Velg en audio eller video fil.',
 			'universalMedia.converterLocalOnly' => 'Den valgte filen er ikke tilgjengelig som en lokal enhetsvei.',
 			'universalMedia.converterReplaceTitle' => 'Vil du erstatte denne filen?',
-			'universalMedia.converterReplaceHelp' => 'PlezyNG gjenoppretter den eksisterende filen til den konverterte kopien er lagret.',
+			'universalMedia.converterReplaceHelp' => 'Pleazyng gjenoppretter den eksisterende filen til den konverterte kopien er lagret.',
 			'universalMedia.converterStarting' => 'Start med FFmpeg...',
 			'universalMedia.converterProgress' => 'For å konvertere til denne datamaskinen...',
 			'universalMedia.converterComplete' => 'Konversjonen er fullført. den nye filen er klar.',
@@ -8460,7 +8466,7 @@ extension on TranslationsNb {
 			'universalMedia.captureDefaultAudio' => 'Standard lydinngang',
 			'universalMedia.captureWaylandHelp' => 'Wayland begrenser denne XWayland fangen til X display. Windows utenfor XWayland kan ikke vises.',
 			'universalMedia.captureFrameRate' => 'Rekordframe rate',
-			'universalMedia.capturePrivacy' => 'Opptaket lagres kun til filen du velger. mikrofonopptak er valgfritt. PlezyNG laster ikke opp opptaket.',
+			'universalMedia.capturePrivacy' => 'Opptaket lagres kun til filen du velger. mikrofonopptak er valgfritt. Pleazyng laster ikke opp opptaket.',
 			'universalMedia.captureSaveAs' => 'Lagre skjermopptak som',
 			'universalMedia.captureExtensionMismatch' => 'Velg et filnavn som slutter i .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg eller H.264 video koder er ikke tilgjengelig. Installere en støttet FFmpeg bygning, og prøv igjen.',
@@ -8474,7 +8480,7 @@ extension on TranslationsNb {
 			'universalMedia.captureStop' => 'Stopp og redde',
 			'universalMedia.captureMode' => 'Fanger',
 			'universalMedia.shareMode' => 'Deling',
-			'universalMedia.shareIntro' => 'Send en lokal mediafil til en annen enhet på ditt private nettverk. PlezyNG skaper en midlertidig HLS-strøm.',
+			'universalMedia.shareIntro' => 'Send en lokal mediafil til en annen enhet på ditt private nettverk. Pleazyng skaper en midlertidig HLS-strøm.',
 			'universalMedia.sharePrivacy' => 'Alle på ditt lokale nettverk som mottar den private koblingen kan se mens den er aktiv. koblingen utløper etter 60 minutter. stoppe deling for å lukke serveren og invalidere koblingen.',
 			'universalMedia.shareChooseFile' => 'Velg media filer',
 			'universalMedia.shareChooseHelp' => 'Velg en lokal audio eller videofil. filen forblir på denne datamaskinen.',
@@ -8487,7 +8493,7 @@ extension on TranslationsNb {
 			'universalMedia.shareOpenUrl' => 'Åpne denne adressen i en spiller på den andre enheten',
 			'universalMedia.shareQrLabel' => 'QR-kode for midlertidig strømadresse',
 			'universalMedia.shareQrHelp' => 'Scan med en kompatibel spiller som er koblet til det samme private nettverket.',
-			'universalMedia.shareHttpHint' => 'Denne strømmen bruker ukryptert HTTP. i PlezyNG, tillate HTTP før åpning.',
+			'universalMedia.shareHttpHint' => 'Denne strømmen bruker ukryptert HTTP. i Pleazyng, tillate HTTP før åpning.',
 			'universalMedia.shareCopyUrl' => 'Kopierer strømadresse',
 			'universalMedia.shareExpiresLabel' => 'Linken utløper ved',
 			'universalMedia.shareStarting' => 'Forberedelse av strømmen...',
@@ -8512,7 +8518,7 @@ extension on TranslationsNb {
 			'universalMedia.extensionInstall' => 'Legg til service',
 			'universalMedia.extensionReplace' => 'Oppdateringstjeneste',
 			'universalMedia.extensionRemoveTitle' => 'Fjerner du denne søketjenesten?',
-			'universalMedia.extensionRemoveHelp' => 'Dette fjerner tjenesten fra denne profilen. PlezyNG kontakter ikke sin sluttpunkt.',
+			'universalMedia.extensionRemoveHelp' => 'Dette fjerner tjenesten fra denne profilen. Pleazyng kontakter ikke sin sluttpunkt.',
 			'universalMedia.extensionRemove' => 'Fjern service',
 			'universalMedia.extensionInvalidManifest' => 'Denne filen er ikke en støttet utvidelse manifest. se Guiden for Open media formatet.',
 			'universalMedia.extensionSaveFailed' => 'Utvidelsen kunne ikke lagres til den aktive profilen.',
@@ -8655,12 +8661,12 @@ extension on TranslationsNb {
 			'fileSources.none' => 'Ingen',
 			'fileSources.fullscreen' => 'Full skjerm',
 			'fileSources.syncLocation' => 'Progress synkronisering mappe (valgfritt)',
-			'fileSources.syncLocationHint' => 'En dedikert WebDAV mappe for PlezyNG stat. Bruk betingelsesbrev; media forblir uendret.',
+			'fileSources.syncLocationHint' => 'En dedikert WebDAV mappe for Pleazyng stat. Bruk betingelsesbrev; media forblir uendret.',
 			'fileSources.audiobooks' => 'Audiobøker',
 			'fileSources.comics' => 'Tegneserier',
 			'fileSources.scan' => 'Skankering av bøker og media',
 			'fileSources.browserReader' => 'Åpne lesere',
-			'fileSources.browserReaderHelp' => 'Leseren er åpen i nettleseren. Hold PlezyNG åpen for å lagre leseposisjonen og notatene dine.',
+			'fileSources.browserReaderHelp' => 'Leseren er åpen i nettleseren. Hold Pleazyng åpen for å lagre leseposisjonen og notatene dine.',
 			'fileSources.on' => 'På',
 			'fileSources.advancedSetup' => 'App registrering',
 			'fileSources.microsoftSignIn' => 'Registrer deg med Microsoft',
@@ -8701,7 +8707,7 @@ extension on TranslationsNb {
 			'fileSources.importInterrupted' => 'Import avbrutt · fjerning til klart',
 			'fileSources.errorQuotaExceeded' => 'Den offline lagringsgrensen ble oppnådd. Oppheve grensen eller fjerne en nedlastet kopi.',
 			'fileSources.errorStorageLow' => 'Det er ikke tilstrekkelig gratis lagring av enheter for å opprettholde den beskyttede reserven.',
-			'fileSources.errorStorageUnavailable' => 'PlezyNG kunne ikke sjekke gratis enhet lagring, så skrivingen ble stoppet.',
+			'fileSources.errorStorageUnavailable' => 'Pleazyng kunne ikke sjekke gratis enhet lagring, så skrivingen ble stoppet.',
 			'fileSources.removeDownloadJob' => 'Fjern nedlasting',
 			'fileSources.downloadAlreadyComplete' => 'Denne nedlastingen er ferdig før den kan fjernes. elementet er nå tilgjengelig offline.',
 			'fileSources.confirmRemoveDownloadJob' => 'Fjern denne nedlastingen og slett alle delvis nedlastede data? din posisjon og notater vil forbli.',
@@ -8742,7 +8748,7 @@ extension on TranslationsNb {
 			'lending.openLibraryNote' => 'Lesing og lånealternativer vises på hver tittelside.',
 			'lending.more' => 'Late mer',
 			'lending.gateway' => 'Biblioteket sign-in service',
-			'lending.gatewayHint' => 'Leveres av biblioteket ditt eller administratoren PlezyNG.',
+			'lending.gatewayHint' => 'Leveres av biblioteket ditt eller administratoren Pleazyng.',
 			'lending.advanced' => 'Biblioteksintegrasjon',
 			'lending.loadLibraries' => 'Velg din bibliotek',
 			'lending.expired' => 'Dette lånet er utløpt.',
@@ -8864,7 +8870,7 @@ extension on TranslationsNb {
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøkkel fra opensubtitles.com. Søk sender videotittelen og tilgjengelige IMDb/TMDB-ID-er, aldri videofilen. Nøkkelen og valgfri kontoinformasjon krypteres sammen med denne kilden.',
 			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
 			'sourceSetup.metadataPrivacy' => 'Sender bare tittel/år fra filnavnet og episodenumre eller en NFO-ID, aldri medier eller påloggingsinformasjon. NFO-feltene beholder forrang.',
-			'sourceSetup.nfsEncryptionFailure' => 'For kryptert NFS må du kontrollere støtte for RFC 9289 og TLS 1.3 på begge NAS-tjenestene, sertifikatnavnet og delingens UID/GID. PlezyNG prøver ikke denne tilkoblingen på nytt uten kryptering.',
+			'sourceSetup.nfsEncryptionFailure' => 'For kryptert NFS må du kontrollere støtte for RFC 9289 og TLS 1.3 på begge NAS-tjenestene, sertifikatnavnet og delingens UID/GID. Pleazyng prøver ikke denne tilkoblingen på nytt uten kryptering.',
 			'sourceSetup.sourceConnecting' => 'Kobler til kilde',
 			'sourceSetup.metadataSearchPrivacy' => 'Dette tittelsøket sendes til Trakt. Det sender tittelen du oppgir, ikke videoen eller kildens påloggingsinformasjon.',
 			'sourceSetup.chooseMatch' => 'Velg et treff',
@@ -8994,7 +9000,13 @@ extension on TranslationsNb {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
-			'deepLinks.invalid' => 'Denne linken til Plezy er ikke gyldig.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'deepLinks.invalid' => 'Denne linken til Pleazyng er ikke gyldig.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'Ingen profil matcher "${profile}".',
 			'deepLinks.serverUnavailable' => 'Kan ikke nå serveren for denne koblingen.',
 			'deepLinks.notFound' => 'Du kan ikke finne denne tittelen i biblioteket ditt.',
@@ -9142,7 +9154,7 @@ extension on TranslationsNb {
 			'romm.copyLink' => 'Copy game link',
 			'romm.linkCopied' => 'Game link copied',
 			'romm.openLink' => 'Open game link',
-			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.linkHelp' => 'Paste a Pleazyng game link. Connect the matching RomM server before opening it.',
 			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
 			'romm.requestStatus' => 'Library indexing',
 			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',

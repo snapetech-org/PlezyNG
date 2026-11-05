@@ -194,7 +194,7 @@ final class SubtitleAiService {
   }) async {
     final client = http.Client();
     try {
-      final request = http.Request('GET', Uri.parse(url))..headers['User-Agent'] = 'PlezyNG subtitle model manager';
+      final request = http.Request('GET', Uri.parse(url))..headers['User-Agent'] = 'Pleazyng subtitle model manager';
       final response = await client.send(request).timeout(const Duration(minutes: 10));
       if (response.statusCode != 200) {
         await response.stream.drain<void>();

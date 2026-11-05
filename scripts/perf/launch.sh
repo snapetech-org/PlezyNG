@@ -5,7 +5,7 @@ set -euo pipefail
 
 ADB="$HOME/Library/Android/sdk/platform-tools/adb"
 DEVICE="${PLEZY_DEVICE:-192.168.1.7:5555}"
-PKG=org.snapetech.plezyng
+PKG=org.snapetech.pleazyng
 HOST_PORT="${PLEZY_VM_PORT:-9223}"
 
 a() { "$ADB" -s "$DEVICE" "$@"; }

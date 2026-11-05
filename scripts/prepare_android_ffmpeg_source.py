@@ -60,7 +60,7 @@ def download(
         proxy_host, proxy_port = proxy_parts(dict(os.environ))
         proxy = f"http://{proxy_host}:{proxy_port}"
         opener = build_opener(ProxyHandler({"https": proxy}))
-    request = Request(url, headers={"User-Agent": "PlezyNG-Android-FFmpeg/1"})
+    request = Request(url, headers={"User-Agent": "Pleazyng-Android-FFmpeg/1"})
     partial = destination.with_name(destination.name + ".part")
 
     for attempt in range(1, MAX_ATTEMPTS + 1):

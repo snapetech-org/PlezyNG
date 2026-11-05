@@ -16,7 +16,7 @@ on:
         type: choice
         options: [private]
       release_tag:
-        description: Published PlezyNG release tag
+        description: Published Pleazyng release tag
         required: true
         type: string
 
@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   update-aur:
-    name: Update plezyng-bin on AUR
+    name: Update pleazyng-bin on AUR
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-update-aur"]}}', github.run_id)) }}
     steps:
       - name: Require main for manual updates
@@ -96,7 +96,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
-        run: gh release download "$RELEASE_TAG" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/plezyng-aur"
+        run: gh release download "$RELEASE_TAG" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/pleazyng-aur"
 
       - name: Update and push AUR package recipe
         if: steps.settings.outputs.configured == 'true'
@@ -109,13 +109,13 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$AUR_PACKAGE_NAME" =~ ^[a-z0-9][a-z0-9@._+-]*$ ]] || { echo "Invalid AUR package name." >&2; exit 1; }
-          checksums="$RUNNER_TEMP/plezyng-aur/SHA256SUMS.txt"
+          checksums="$RUNNER_TEMP/pleazyng-aur/SHA256SUMS.txt"
           checksum_for() {
             local name="$1"
             awk -v name="$name" '$2 == name { print $1; count++ } END { if (count != 1) exit 1 }' "$checksums"
           }
-          x64_sha="$(checksum_for plezy-linux-x64.tar.gz)"
-          arm64_sha="$(checksum_for plezy-linux-arm64.tar.gz)"
+          x64_sha="$(checksum_for pleazyng-linux-x64.tar.gz)"
+          arm64_sha="$(checksum_for pleazyng-linux-arm64.tar.gz)"
           [[ "$x64_sha" =~ ^[0-9a-f]{64}$ && "$arm64_sha" =~ ^[0-9a-f]{64}$ ]]
 
           ssh_dir="$RUNNER_TEMP/aur-ssh"
@@ -135,7 +135,7 @@ jobs:
           fi
           git clone "$remote" "$aur_repo"
           cp linux/packaging/aur/PKGBUILD "$aur_repo/PKGBUILD"
-          cp linux/packaging/aur/plezyng.desktop "$aur_repo/plezyng.desktop"
+          cp linux/packaging/aur/pleazyng.desktop "$aur_repo/pleazyng.desktop"
           cp LICENSE "$aur_repo/LICENSE"
           sed -i "s/^pkgver=.*/pkgver=${RELEASE_VERSION}/" "$aur_repo/PKGBUILD"
           python3 - "$aur_repo/PKGBUILD" "$RELEASE_TAG" <<'PY'
@@ -181,9 +181,9 @@ jobs:
               done
               printf '\n\tpkgname = %s\n' "$pkgname"
             } > .SRCINFO
-            git config user.name "PlezyNG Release Bot"
+            git config user.name "Pleazyng Release Bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add PKGBUILD .SRCINFO plezyng.desktop LICENSE
+            git add PKGBUILD .SRCINFO pleazyng.desktop LICENSE
             if git diff --cached --quiet; then
               echo "AUR package is already current."
               exit 0

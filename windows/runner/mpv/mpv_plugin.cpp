@@ -110,7 +110,7 @@ namespace {
 std::wstring DetachedText(const std::string& text) {
   const int length = static_cast<int>(std::min<size_t>(text.size(), 1024));
   const int count = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), length, nullptr, 0);
-  if (count <= 0) return L"PlezyNG";
+  if (count <= 0) return L"Pleazyng";
   std::wstring result(count, L'\0');
   MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), length, result.data(), count);
   return result;
@@ -226,7 +226,7 @@ bool MpvPlayerPlugin::DetachVideoWindow(const flutter::EncodableMap& args) {
   const auto token = DetachedArgument(args, "token");
   if (token.empty() || token.size() > 80 || audio_only_ || !player_ || !player_->GetHwnd()) return false;
   if (detached_window_) return token == detached_token_;
-  static const wchar_t* class_name = L"PlezyNGDetachedVideo";
+  static const wchar_t* class_name = L"PleazyngDetachedVideo";
   WNDCLASSW cls{};
   cls.lpfnWndProc = DetachedWindowProc;
   cls.hInstance = GetModuleHandle(nullptr);

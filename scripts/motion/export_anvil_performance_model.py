@@ -41,7 +41,7 @@ def download_checkpoint(path: Path) -> None:
     partial = path.with_suffix(path.suffix + ".partial")
     request = urllib.request.Request(
         CHECKPOINT_URL,
-        headers={"User-Agent": "PlezyNG-motion-model-export/1"},
+        headers={"User-Agent": "Pleazyng-motion-model-export/1"},
     )
     count = 0
     hasher = hashlib.sha256()

@@ -17,9 +17,9 @@ export default definePlugin(() => {
   const controller = createCloudController(typeof SteamClient === 'undefined' ? undefined : SteamClient);
   function Content() {
     const allowed = useSyncExternalStore(fn => { subscribers.add(fn); return () => { subscribers.delete(fn); }; }, () => enabled);
-    return <PanelSection title="PlezyNG Steam Cloud">
+    return <PanelSection title="Pleazyng Steam Cloud">
       <PanelSectionRow><ToggleField label="Allow Cloud settings changes"
-        description="Let this computer's PlezyNG Companion change the signed-in account's Steam Cloud setting. Also requires PlezyNG host-action permission. Resets when this plugin reloads."
+        description="Let this computer's Pleazyng Companion change the signed-in account's Steam Cloud setting. Also requires Pleazyng host-action permission. Resets when this plugin reloads."
         disabled={!controller.supported} checked={allowed} onChange={async next => {
           const intent = ++revision;
           publish(false);
@@ -36,7 +36,7 @@ export default definePlugin(() => {
     catch { result = {status: 'unknown'}; }
     await complete(id, result, await session).catch(() => {});
   });
-  return {name: 'PlezyNG Steam Cloud', titleView: <span>PlezyNG Steam Cloud</span>,
+  return {name: 'Pleazyng Steam Cloud', titleView: <span>Pleazyng Steam Cloud</span>,
     content: <Content/>, icon: <span aria-hidden="true">☁</span>,
     onDismount() { publish(false); controller.dispose(); removeEventListener('cloud_request', listener); void session.then(token => setEnabled(false, ++revision, token)).catch(() => {}); }};
 });

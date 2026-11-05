@@ -1,20 +1,22 @@
-# ng-runner-policy: private-jit-only-v1
 name: Discord Release Announcement
-run-name: ${{ format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.release_tag) }}
+run-name: action:announce-release:pool:hosted:tag:${{ inputs.release_tag || github.event.release.tag_name }}
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       action:
-        description: Release action authorized by private JIT routing
+        description: Release announcement action
         required: true
         type: choice
         options: [announce-release]
       runner_pool:
-        description: Runner pool for this announcement
+        description: Legacy input; announcements run on compatible hosted Linux
         required: true
         type: choice
-        options: [private]
+        default: hosted
+        options: [hosted, private]
       release_tag:
         description: Published stable release tag to announce
         required: true
@@ -27,25 +29,43 @@ env:
 permissions:
   contents: read
 
+concurrency:
+  group: discord-release-${{ inputs.release_tag || github.event.release.tag_name }}
+  cancel-in-progress: false
+
 jobs:
   announce-discord:
     name: Announce published release to Discord
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-announce-discord"]}}', github.run_id)) }}
+    if: >-
+      github.repository == 'snapetech-org/PlezyNG' &&
+      ((github.event_name == 'release' && !github.event.release.draft && !github.event.release.prerelease) ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
-      contents: read
+      contents: write # Persist per-message delivery receipts on the release.
     steps:
       - name: Checkout release tooling
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
 
       - name: Send Discord announcement
         env:
           DISCORD_RELEASE_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
           RELEASE_JSON_PATH: ${{ runner.temp }}/plezyng-release.json
+          DISCORD_RECEIPT_PATH: ${{ runner.temp }}/discord-announcement-receipt.json
         run: |
           gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RELEASE_JSON_PATH"
           python3 scripts/announce_discord.py
+
+      - name: Retain Discord delivery receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: discord-announcement-receipt
+          path: ${{ runner.temp }}/discord-announcement-receipt.json
+          if-no-files-found: ignore

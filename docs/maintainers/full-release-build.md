@@ -144,8 +144,9 @@ release assets until the existing artifact eligibility gate passes and the
 operator opts in. Apple jobs refresh their SwiftPM mirror after the native pin
 changes.
 Before publication, the orchestrator checks that every required release asset
-exists. `--publish-github-only` promotes the verified GitHub draft without
-dispatching store, package, container, appcast, or Discord workflows.
+exists. `--publish-github-only` promotes the verified GitHub draft and starts
+its automatic Discord announcement without dispatching store, package,
+container, or appcast workflows.
 `--publish` promotes the draft and sequentially dispatches configured channels.
 It
 reuses successful channel runs and stops on a prior failed run rather than

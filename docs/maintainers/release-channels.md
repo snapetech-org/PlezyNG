@@ -6,7 +6,7 @@ This is the release support boundary for the PlezyNG client and its separate rel
 
 `.github/workflows/build.yml` is manually dispatched with `action=release`, `runner_pool=private`, and `execution_profile=hybrid` from `main`. The hybrid profile uses compatible GitHub-hosted Linux, Android, Tizen, Windows x64, and native Windows ARM64 runners; Apple and storage-constrained WebOS jobs use private ephemeral JIT. `runner_pool=private` is the broker route for those constrained jobs and does not make the whole workflow private-only. Tag pushes do not start builds. The version tag must match `pubspec.yaml`, and manually dispatched CI must pass on the exact `main` SHA first. An existing immutable tag may be reused only when it is an ancestor of `main` and all intervening changes are allowlisted release infrastructure, tests, changelog, or maintainer documentation. The release workflow builds every platform and checks the assembled assets; `--publish-github-only` publishes only the GitHub Release, while `--publish` also dispatches configured downstream channels.
 
-Push and pull-request CI runs checks; it does not build release packages or publish images. The only package build dispatch is **PlezyNG Release**. With `--publish`, the orchestrator explicitly dispatches configured Discord, appcast, Chocolatey, WinGet, Snap Store, AUR, COPR, PPA, relay-container, and app-store upload workflows after the release is published. Google Play uploads go to the internal draft track; Apple and Amazon uploads do not submit builds for review. Missing credentials or store identities remain skipped and are recorded in the release receipt.
+Push and pull-request CI runs checks; it does not build release packages or publish images. The only package build dispatch is **PlezyNG Release**. With `--publish`, the orchestrator explicitly dispatches configured appcast, Chocolatey, WinGet, Snap Store, AUR, COPR, PPA, relay-container, and app-store upload workflows after the release is published. Discord announcements run automatically for published stable releases, including `--publish-github-only`. Google Play uploads go to the internal draft track; Apple and Amazon uploads do not submit builds for review. Missing credentials or store identities remain skipped and are recorded in the release receipt.
 
 ## Client packages on GitHub Releases
 
@@ -94,6 +94,32 @@ For iOS and tvOS signing, the App Store Connect `.p8` key is supplied as the raw
 
 GHCR uses the workflow's `GITHUB_TOKEN`; make the first package public in GitHub Packages settings if anonymous pulls are intended. The Discord publisher uses `DISCORD_RELEASE_WEBHOOK`.
 
+### Automatic Discord announcements
+
+`discord-release.yml` handles `release: published` on compatible hosted Linux.
+It reads the published stable release and sends its complete notes in bounded
+embeds, with mentions disabled and each response checked. Drafts, prereleases,
+foreign release URLs, and feature-branch manual dispatches are rejected.
+`publish_github_release()` also explicitly dispatches this workflow because
+publication using `GITHUB_TOKEN` does not trigger another workflow's release
+event. This applies to GitHub-only publication as well as full channel publication.
+
+Runs serialize by release tag. The release asset
+`discord-announcement-receipt.json` records confirmed message IDs after each
+chunk; it contains no webhook URL or credentials. Confirmed chunks are skipped
+on retries. The receipt is also retained as a workflow artifact, including on
+failure. If a POST's outcome is uncertain, automation stops instead of repeating
+it: inspect the retained receipt and Discord channel, then reconcile the
+in-flight entry against the actual message before retrying. Changed release notes
+also require reviewing the existing announcement rather than silently reposting.
+
+To announce a previously published release through the same verified route:
+
+```sh
+gh workflow run discord-release.yml --repo snapetech-org/PlezyNG --ref main \
+  -f action=announce-release -f runner_pool=hosted -f release_tag=v3.0.0
+```
+
 At the 2026-10-26 readiness check, repository secrets are configured for Android signing, Google Play,
 Amazon Appstore, AUR, Apple App Store Connect API, iOS/tvOS App Store signing, Chocolatey, COPR,
 Discord, Docker Hub, Launchpad signing, Snap, Sparkle, and WinGet. The `AUR_PACKAGE_NAME`,
@@ -155,6 +181,6 @@ docker.io/snapetech/plezyng-relay:latest      # when Docker Hub credentials are 
 3. Manually dispatch CI on `main` with `action=ci`, `runner_pool=private`, and `execution_profile=hybrid`; confirm it completed successfully for the exact release commit. Compatible CI jobs use hosted runners while Apple jobs use private JIT.
 4. Dispatch **PlezyNG Release** from `main` with `action=release`, `runner_pool=private`, `execution_profile=hybrid`, and the semantic `build_version`. It builds the ARM webOS and Tizen candidates by default. Keep the webOS IPK out of public assets until its separate artifact and redistribution gates pass.
 5. Review the draft notes, package list, `SHA256SUMS.txt`, and provenance attestations.
-6. Publish the draft. Discord and configured downstream package channels run from the published-release event.
+6. Publish the draft. Discord runs automatically; `--publish` additionally dispatches configured downstream package channels.
 7. To update a mobile store, run **Publish PlezyNG store builds** manually from `main` after the stable GitHub Release is published, then finish review/promotion in the store console.
 8. Submit a configured MSIX bundle manually through Partner Center. Confirm GHCR has both architectures; check Docker Hub, Chocolatey, and WinGet only when their credentials are configured, and track Microsoft's WinGet pull request separately.

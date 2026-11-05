@@ -39,7 +39,11 @@ Website deployment receipts: GitHub source f732ebfd2a09ebf3a2e88a81a6f6005715d5b
 The existing owner-private ChatGPT Site was updated with Sites source commit
 3f644aee56fd76c026e3fdbef1a8c65d85f8f84f; deployment
 appgdep_6aed0c48c99c8191b062729e60417d33 succeeded without changing its audience.
-Its URL and both repository names remain unchanged.
+Its URL and both repository names remain unchanged. Anonymous Pages checks
+return HTTP 401; no access policy was changed and public domain cutover is
+not verified. Repository descriptions and the Pleazyng topic were updated;
+the app repository homepage points to its existing source URL until a public
+website destination is verified.
 
 ## Compatibility and continuity
 

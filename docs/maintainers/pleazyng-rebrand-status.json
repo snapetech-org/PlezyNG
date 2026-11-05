@@ -13,7 +13,8 @@
     "Website source and verified canonical artwork updated; repository/domain names retained",
     "Scoped public identity and upstream-protocol regression guard added",
     "Website deployed to Cloudflare Pages and existing owner-private ChatGPT Site with audience preserved",
-    "Replaced all nine inherited README pictograms and classified all 39 shared upstream images"
+    "Replaced all nine inherited README pictograms and classified all 39 shared upstream images",
+    "Updated GitHub repository descriptions and Pleazyng topic without renaming repositories"
   ],
   "pending": [
     "Owner-deferred repository renames",
@@ -41,7 +42,8 @@
     "github_commit": "f732ebfd2a09ebf3a2e88a81a6f6005715d5b4b7",
     "workflow_run": 42127220857,
     "cloudflare_deployment": "https://5bb7ee07.plezyng-app.pages.dev",
-    "private_site_deployment": "appgdep_6aed0c48c99c8191b062729e60417d33"
+    "private_site_deployment": "appgdep_6aed0c48c99c8191b062729e60417d33",
+    "anonymous_pages_access": "HTTP 401; existing access controls retained; public cutover unverified"
   },
   "artwork_audit": "docs/maintainers/pleazyng-artwork-audit.json"
 }

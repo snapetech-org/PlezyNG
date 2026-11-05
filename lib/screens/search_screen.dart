@@ -245,54 +245,23 @@ class _SearchScreenState extends State<SearchScreen>
     final hadServers = multiServer.hasConnectedServers;
     final profileId = context.read<ActiveProfileProvider?>()?.activeId;
 
-    // Every leg settles independently. A broken server must not discard
-    // playable indexed files, and a locked Files profile must not hide titles.
-    final filesFuture = _searchIndex(sources, query);
-    final seerrFuture = _searchSeerr(query);
-    final catalogsFuture = _searchConnectedCatalogs(query);
-    final crosswalksFuture = profileId == null
-        ? Future.value(const <IdentityCrosswalk>[])
-        : _loadIdentityCrosswalks(profileId);
-    final serversFuture = () async {
-      if (!hadServers) return null;
-      try {
-        await hidden.ensureInitialized();
-        abort.throwIfAborted();
-        return await multiServer.aggregationService.searchAcrossServers(
-          query,
-          hiddenLibraryKeys: hidden.hiddenLibraryKeys,
-          abort: abort,
-        );
-      } catch (_) {
-        abort.throwIfAborted();
-        return null;
-      }
-    }();
-    final iptvVodFuture = _searchIptvVod(query);
-    try {
-      final result = await serversFuture;
-      final files = await filesFuture;
-      final seerr = await seerrFuture;
-      final iptvVod = await iptvVodFuture;
-      final catalogSearch = await catalogsFuture;
-      final crosswalks = await crosswalksFuture;
-      abort.throwIfAborted();
-      if (!mounted) return const [];
-      if (profileId != context.read<ActiveProfileProvider?>()?.activeId) return const [];
-      final serverSucceeded = result?.succeededServerIds.isNotEmpty ?? false;
-      if (!serverSucceeded && !files.available && seerr == null && !catalogSearch.succeeded && !iptvVod.available) {
-        if (result != null && result.failedServerIds.isEmpty && result.cancelledServerIds.isNotEmpty) {
-          throw MediaServerHttpException(
-            type: MediaServerHttpErrorType.cancelled,
-            message: 'Search was cancelled before any source completed',
-          );
-        }
-        throw const _SearchUnavailableException();
-      }
-      final partial =
-          (hadServers &&
-              (result == null || result.failedServerIds.isNotEmpty || result.cancelledServerIds.isNotEmpty)) ||
-          catalogSearch.failed;
+    final publish = searchProgressPublisher(query);
+    SearchAggregationResult? result;
+    ({List<SourceEntry> entries, bool available, bool failed}) files =
+        (entries: const [], available: false, failed: false);
+    List<MediaItem>? seerr;
+    ({List<CatalogItem> items, bool succeeded, bool failed}) catalogSearch =
+        (items: const [], succeeded: false, failed: false);
+    ({List<IptvVodItem> items, String? profileId, bool available}) iptvVod =
+        (items: const [], profileId: null, available: false);
+    List<IdentityCrosswalk> crosswalks = const [];
+    bool current() => mounted && !abort.isAborted &&
+        identical(_activeSearchAbort, abort) && profileId == context.read<ActiveProfileProvider?>()?.activeId;
+
+    List<SearchHit> compose({bool finished = false}) {
+      final partial = finished && ((hadServers &&
+          (result == null || result!.failedServerIds.isNotEmpty || result!.cancelledServerIds.isNotEmpty)) ||
+          catalogSearch.failed);
       final catalogItems = _deduplicateConnectedCatalogItems([
         for (final item in catalogSearch.items)
           if (!_matchesLocalCatalogItem(item, [...?result?.candidates, ...?seerr]) &&
@@ -333,6 +302,55 @@ class _SearchScreenState extends State<SearchScreen>
         for (final item in seerr ?? const <MediaItem>[]) MediaSearchHit(item),
         for (final item in catalogItems) MediaSearchHit(item),
       ];
+    }
+
+    void progress() {
+      if (!current()) return;
+      publish(compose());
+    }
+
+    // Attach handlers as each leg starts. Local results and fast servers can
+    // render while a slow catalog is still under its independent deadline.
+    final futures = <Future<void>>[
+      _searchIndex(sources, query).then((value) { files = value; progress(); }),
+      _searchSeerr(query).then((value) { seerr = value; progress(); }),
+      _searchConnectedCatalogs(query).then((value) { catalogSearch = value; progress(); }),
+      _searchIptvVod(query).then((value) { iptvVod = value; progress(); }),
+      if (profileId != null)
+        _loadIdentityCrosswalks(profileId).then((value) { crosswalks = value; progress(); }),
+      () async {
+        if (!hadServers) return;
+        try {
+          await hidden.ensureInitialized();
+          abort.throwIfAborted();
+          result = await multiServer.aggregationService.searchAcrossServers(
+            query,
+            hiddenLibraryKeys: hidden.hiddenLibraryKeys,
+            abort: abort,
+            onProgress: (value) { result = value; progress(); },
+          );
+        } catch (_) {
+          abort.throwIfAborted();
+          result = null;
+        }
+        progress();
+      }(),
+    ];
+    try {
+      await Future.wait(futures);
+      abort.throwIfAborted();
+      if (!current()) return const [];
+      final serverSucceeded = result?.succeededServerIds.isNotEmpty ?? false;
+      if (!serverSucceeded && !files.available && seerr == null && !catalogSearch.succeeded && !iptvVod.available) {
+        if (result != null && result!.failedServerIds.isEmpty && result!.cancelledServerIds.isNotEmpty) {
+          throw MediaServerHttpException(
+            type: MediaServerHttpErrorType.cancelled,
+            message: 'Search was cancelled before any source completed',
+          );
+        }
+        throw const _SearchUnavailableException();
+      }
+      return compose(finished: true);
     } finally {
       if (identical(_activeSearchAbort, abort)) _activeSearchAbort = null;
     }
@@ -613,6 +631,14 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   @override
+  void onSearchStarted(String query) {
+    searchResults = const [];
+    resultsQuery = '';
+    _pendingSearchOutcome = null;
+    _resetFilter();
+  }
+
+  @override
   void onSearchInvalidated() {
     _activeSearchAbort?.abort();
     _activeSearchAbort = null;
@@ -686,12 +712,13 @@ class _SearchScreenState extends State<SearchScreen>
     if (!_hasCandidatesFor(_selectedFilter)) _selectedFilter = const _AllResults();
     _filteredResults = _rankFilteredResults(_selectedFilter, query);
 
-    if (matchedOutcome?.partial ?? false) {
+    if (!isSearching && (matchedOutcome?.partial ?? false)) {
       showAppSnackBar(context, t.messages.searchPartialResults);
-    } else if (matchedOutcome?.fileSearchFailed ?? false) {
+    } else if (!isSearching && (matchedOutcome?.fileSearchFailed ?? false)) {
       showAppSnackBar(context, '${t.fileSources.title}: ${t.fileSources.errorUnavailable}');
     }
 
+    if (isSearching && results.isEmpty && _iptvVodResults.isEmpty) return;
     if (_focusResultsForQuery == null || _focusResultsForQuery != query) return;
     _focusResultsForQuery = null;
     if (searchController.text.trim() != query) return; // user kept editing
@@ -920,7 +947,7 @@ class _SearchScreenState extends State<SearchScreen>
     if (filter == _selectedFilter) return;
     setState(() {
       _selectedFilter = filter;
-      _filteredResults = _rankFilteredResults(filter, lastSearchedQuery);
+      _filteredResults = _rankFilteredResults(filter, isSearching ? searchController.text.trim() : lastSearchedQuery);
     });
   }
 
@@ -1377,7 +1404,7 @@ class _SearchScreenState extends State<SearchScreen>
                 hintText: t.search.hint,
                 tvTextInputController: _tvTextInputController,
                 onNavigateLeft: _navigateToSidebar,
-                onNavigateDown: (searchResults.isNotEmpty || _iptvVodResults.isNotEmpty) && !isSearching
+                onNavigateDown: (searchResults.isNotEmpty || _iptvVodResults.isNotEmpty)
                     ? (searchResults.isNotEmpty
                           ? (_showFilterChips ? _focusFilterChips : firstResultFocusNode.requestFocus)
                           : _firstIptvVodFocusNode.requestFocus)
@@ -1392,7 +1419,7 @@ class _SearchScreenState extends State<SearchScreen>
                 },
               ),
             ),
-            if (isSearching)
+            if (isSearching && searchResults.isEmpty && _iptvVodResults.isEmpty)
               LoadingIndicatorBox.sliver
             else if (!hasSearched)
               SliverFillRemaining(
@@ -1417,6 +1444,7 @@ class _SearchScreenState extends State<SearchScreen>
                 ),
               )
             else ...[
+              if (isSearching) const SliverToBoxAdapter(child: LinearProgressIndicator()),
               if (_showFilterChips) _buildFilterChips(),
               if (searchResults.isNotEmpty) _buildResultsList(context),
               ..._buildIptvVodResults(),

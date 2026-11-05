@@ -25,6 +25,46 @@ class _SearchProbeState extends State<_SearchProbe> with DebouncedMediaSearch<_S
 }
 
 void main() {
+  testWidgets('partial results remain usable while other legs are pending', (tester) async {
+    final pending = Completer<List<MediaItem>>();
+    await tester.pumpWidget(_SearchProbe(search: (_) => pending.future));
+    final state = tester.state<_SearchProbeState>(find.byType(_SearchProbe));
+    final request = state.runSearch('A');
+    final publish = state.searchProgressPublisher('A');
+    expect(publish([testMediaItem(id: 'fast', title: 'Fast')]), isTrue);
+    await tester.pump();
+    expect(state.searchResults.single.id, 'fast');
+    expect(state.resultsQuery, 'A');
+    expect(state.isSearching, isTrue);
+    pending.complete([testMediaItem(id: 'final', title: 'Final')]);
+    await request;
+    await tester.pump();
+    expect(state.searchResults.single.id, 'final');
+    expect(state.isSearching, isFalse);
+    expect(publish([]), isFalse);
+  });
+
+  testWidgets('A to B to A rejects progress from the first A generation', (tester) async {
+    final pending = <Completer<List<MediaItem>>>[];
+    await tester.pumpWidget(_SearchProbe(search: (_) {
+      final request = Completer<List<MediaItem>>();
+      pending.add(request);
+      return request.future;
+    }));
+    final state = tester.state<_SearchProbeState>(find.byType(_SearchProbe));
+    final first = state.runSearch('A');
+    final stale = state.searchProgressPublisher('A');
+    final second = state.runSearch('B');
+    final third = state.runSearch('A');
+    final current = state.searchProgressPublisher('A');
+    expect(stale([testMediaItem(id: 'stale', title: 'Stale')]), isFalse);
+    expect(current([testMediaItem(id: 'current', title: 'Current')]), isTrue);
+    expect(state.searchResults.single.id, 'current');
+    for (final request in pending) { request.complete(const []); }
+    await Future.wait([first, second, third]);
+    await tester.pump();
+  });
+
   testWidgets('reverting to the shown query clears a spinner an earlier keystroke orphaned', (tester) async {
     final pending = <String, Completer<List<MediaItem>>>{};
     await tester.pumpWidget(
@@ -59,3 +99,4 @@ void main() {
     expect(pending.keys, ['abcd']);
   });
 }
+

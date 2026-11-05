@@ -14,7 +14,7 @@ release qualification. Changes are committed directly to `main` in small batches
 | D06 | Bound credential payload caching; avoid caching encryption outputs | Implemented | Regression cases added; execution pending |
 | D07 | Native P2P hash capability alignment | Implemented: SHA-256 multihash magnets and native v2 acceptance | Native v2 transfer regression added; execution pending |
 | D08 | External stream server reporting | Implemented: matched online items use their server reporting client with offline fallback | Provider/server session acceptance pending |
-| D09 | Progressive unified search | Queued | Pending |
+| D09 | Progressive unified search | Implemented: independent source results, per-server title/people progress, generation/profile guarded publishing and usable results while remaining legs load | Partial publication and A/B/A race regressions added; execution pending |
 | D10 | Translation fallbacks and localized service status | Queued | Pending |
 | G01-G02 | Native visualizer delivery and signed catalog activation | Queued | Pending |
 | G03 | Live/DVR subtitle capture | Queued | Pending |

@@ -25,6 +25,6 @@ release qualification. Changes are committed directly to `main` in small batches
 | G08 | Remaining podcast functions | Queued | Pending |
 | G09 | Remaining Steam transport/presentation scope | Queued | Pending |
 | G10 | Detached desktop Multiview windows | Queued | Pending |
-| M01 | Current release/capability documentation and guards | Queued | Pending |
+| M01 | Current release/capability documentation and guards | README and ledger describe the published v3.0.0 release using captured GitHub metadata; current integrated product boundaries corrected; optional independent release-metadata check added | Published tag, source commit, date and actual asset names read from GitHub; source checks pending |
 | M02 | Required public platform delivery | Queued | Pending |
 | M03 | Remove tracked generated package outputs | Removed 16 files / 94,520,572 bytes of generated shared_preferences package output; nested package build directories ignored and source-tree guard added | Current tree checked; history intentionally preserved |

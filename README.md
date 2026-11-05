@@ -92,7 +92,7 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ## Download
 
-Published PlezyNG downloads appear on the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases). The 2.24.1 build is currently a draft, so there is no public “latest” download yet. Mobile and TV packages are listed when a release is published.
+Published PlezyNG downloads appear on the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases). Version [3.0.0](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.0) was published on 5 November 2026. Its assets include Android, Linux x64/ARM64, Windows x64/ARM64, macOS, unsigned iOS/tvOS developer packages and a Tizen tester handoff. The public release still lacks a webOS package; a successful candidate build is not a published download. See the [recorded release evidence](docs/maintainers/releases/v3.0.0.json).
 
 | Platform | Download |
 | --- | --- |

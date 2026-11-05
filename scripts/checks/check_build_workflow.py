@@ -1512,6 +1512,22 @@ require(
 )
 
 trusted_ref = job("validate-trusted-ref")
+recovery_gate = named_step(trusted_ref, "Verify reusable platform source")
+recovery_download = named_step(release, "Recover verified platform artifacts")
+require(
+    "scripts/recover_release_platforms.py" in recovery_gate
+    and "scripts/recover_release_platforms.py" in recovery_download
+    and "--download artifacts" in recovery_download
+    and "needs.validate-trusted-ref.outputs.reuse_source_sha != ''" in release_condition
+    and "platform-reuse-provenance.json" in collect_release_files
+    and all(
+        "inputs.reuse_platform_run_id == ''" in job(name).split("needs:", 1)[0]
+        and f"needs.{name}.result == 'skipped'" in release_condition
+        for name in ("build-ios", "build-tvos", "build-macos", "build-webos", "build-tizen",
+                     "build-linux", "build-windows", "package-windows")
+    ),
+    "platform artifact recovery must verify its source and preserve honest job results and provenance",
+)
 require(
     "permissions:\n      contents: read" in trusted_ref,
     "release request validation must have read-only repository access",

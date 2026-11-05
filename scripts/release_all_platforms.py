@@ -69,6 +69,8 @@ RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "scripts/prepare_gradle_repositories.py",
     "scripts/gradle/plezyng-maven-mirror.init.gradle",
     "scripts/checks/test_prepare_gradle_repositories.py",
+    "scripts/recover_release_platforms.py",
+    "scripts/checks/test_recover_release_platforms.py",
     "scripts/release_all_platforms.py",
     "scripts/refresh_apple_spm.sh",
     "tools/reader-tests/README.md",
@@ -897,8 +899,14 @@ def ensure_release(
     include_webos_release: bool,
     execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
+    reuse_platform_run_id: int | None = None,
 ) -> dict:
     run_title = f"action:release:pool:private:tag:{tag}"
+    if reuse_platform_run_id:
+        if execution_profile != "hybrid" or include_webos_release or include_apple_store_build:
+            raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile.")
+        verify_platform_recovery(reuse_platform_run_id, commit_sha, tag.removeprefix("v"))
+        run_title += f":reuse:{reuse_platform_run_id}"
     existing = matching_run(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
@@ -914,7 +922,7 @@ def ensure_release(
             )
         if existing.get("status") != "completed":
             existing = wait_for_run(PLEZY_REPO, existing, f"PlezyNG {tag} all-platform release build")
-        complete = execution_profile != "hybrid" or run_has_successful_job(
+        complete = bool(reuse_platform_run_id) or execution_profile != "hybrid" or run_has_successful_job(
             PLEZY_REPO, existing, "Build Windows (arm64)"
         )
         if include_apple_store_build:
@@ -933,25 +941,37 @@ def ensure_release(
             "dispatching the required profile."
         )
     ensure_remote_main_sha(commit_sha, f"dispatching the {tag} release build")
+    fields = {
+        "action": "release",
+        "runner_pool": "private",
+        "execution_profile": execution_profile,
+        "mode": "release",
+        "build_version": tag.removeprefix("v"),
+        "include_webos_build": "true",
+        "include_webos_release": "true" if include_webos_release else "false",
+        "include_tizen_build": "true",
+        "include_apple_store_build": "true" if include_apple_store_build else "false",
+    }
+    if reuse_platform_run_id:
+        fields["reuse_platform_run_id"] = str(reuse_platform_run_id)
     return dispatch(
         PLEZY_REPO,
         RELEASE_WORKFLOW,
         "main",
-        {
-            "action": "release",
-            "runner_pool": "private",
-            "execution_profile": execution_profile,
-            "mode": "release",
-            "build_version": tag.removeprefix("v"),
-            "include_webos_build": "true",
-            "include_webos_release": "true" if include_webos_release else "false",
-            "include_tizen_build": "true",
-            "include_apple_store_build": "true" if include_apple_store_build else "false",
-        },
+        fields,
         f"PlezyNG {tag} all-platform release build",
         expected_title=run_title,
         expected_sha=commit_sha,
     )
+
+
+def verify_platform_recovery(run_id: int, commit_sha: str, version: str) -> dict:
+    from recover_release_platforms import RecoveryError, verify_source_run
+
+    try:
+        return verify_source_run(run_id, commit_sha, version)
+    except (RecoveryError, RuntimeError) as error:
+        raise ReleaseError(f"Platform artifact recovery rejected: {error}") from error
 
 
 def ensure_remote_main_sha(expected_sha: str, purpose: str) -> None:
@@ -1296,6 +1316,10 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", required=True, help="Release version matching pubspec.yaml, such as 3.0.0")
     parser.add_argument(
+        "--reuse-platform-run", type=int,
+        help="Rebuild Android and reuse verified successful platform outputs after infrastructure-only fixes.",
+    )
+    parser.add_argument(
         "--include-webos-release",
         action="store_true",
         help="Attach the webOS IPK to the public draft release when the existing eligibility gate passes.",
@@ -1349,6 +1373,11 @@ def main() -> int:
         raise ReleaseError(f"Requested {args.version}, but pubspec.yaml declares {package_version}.")
     if args.version == "3.0.0" and args.execution_profile != "hybrid":
         raise ReleaseError("The PlezyNG 3.0.0 release requires the hybrid profile, including native Windows ARM64 CI.")
+    if args.reuse_platform_run and (
+        args.reuse_platform_run < 1 or args.publish or args.include_webos_release
+        or args.execution_profile != "hybrid"
+    ):
+        raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication.")
     command(["gh", "auth", "status", "--hostname", "github.com"], capture=True, quiet=True)
 
     scratch = args.scratch.resolve() if args.scratch else Path(tempfile.mkdtemp(prefix="plezyng-release-"))
@@ -1377,6 +1406,8 @@ def main() -> int:
         tag = f"v{args.version}"
         existing_tag_commit = existing_release_tag_commit(worktree, tag)
         tag_reused = existing_tag_commit is not None
+        if args.reuse_platform_run and not tag_reused:
+            raise ReleaseError("Platform recovery requires an existing immutable release tag.")
         native_sha = None
         ffmpeg_version = None
         ffmpeg_sha256 = None
@@ -1422,7 +1453,13 @@ def main() -> int:
         stage = "PlezyNG CI"
         progress["stage"] = stage
         save_progress()
-        ci = ensure_ci(pin_sha, execution_profile=args.execution_profile)
+        if args.reuse_platform_run:
+            proof = verify_platform_recovery(args.reuse_platform_run, pin_sha, args.version)
+            ci = {"databaseId": proof["ci_run_id"]}
+            progress["platform_recovery"] = proof
+            print(f"Verified unchanged product inputs and exact-source CI from run {proof['ci_run_id']}.")
+        else:
+            ci = ensure_ci(pin_sha, execution_profile=args.execution_profile)
         progress["ci_run"] = ci["databaseId"]
         apple_store_secrets = {
             "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
@@ -1459,6 +1496,7 @@ def main() -> int:
             include_webos_release=args.include_webos_release,
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
+            **({"reuse_platform_run_id": args.reuse_platform_run} if args.reuse_platform_run else {}),
         )
         progress["release_run"] = release["databaseId"]
         progress["release_url"] = f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}"

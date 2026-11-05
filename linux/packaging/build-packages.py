@@ -56,6 +56,7 @@ DISTROS = {
         # anything is packaged, and the release workflow runs it again.
         "depends": [
             "libgtk-3-0",
+            "libwebkit2gtk-4.1-0",
             "libsecret-1-0",
             "libepoxy0",
             "libasound2",
@@ -95,6 +96,7 @@ DISTROS = {
         # libGLdispatch.so.0 it defers to lives in the base libglvnd package.
         "depends": [
             "gtk3",
+            "webkit2gtk4.1",
             "libsecret",
             "libepoxy",
             "alsa-lib",
@@ -127,6 +129,7 @@ DISTROS = {
         # libX11.so.6.
         "depends": [
             "gtk3",
+            "webkit2gtk-4.1",
             "libsecret",
             "libepoxy",
             "alsa-lib",

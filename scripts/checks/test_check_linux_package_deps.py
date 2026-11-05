@@ -32,7 +32,7 @@ CMAKE_INPUTS = ("runner/CMakeLists.txt", "CMakeLists.txt", "flutter/CMakeLists.t
 # Pins the walk's reach: gtk+-3.0, mpv, epoxy, glib-2.0, gio-2.0 and the three the
 # video plane added, plus the Steam credential-vault libsecret link. A drop here means the parser stopped seeing something rather
 # than that a link was removed.
-FULL_WALK_SUMMARY = "(9 pkg-config links, 9 modules)"
+FULL_WALK_SUMMARY = "(10 pkg-config links, 10 modules)"
 
 # The success line has to name its own scope. A reader who takes it for a
 # whole-binary check trusts it past the plugin link edges it never walked, so
@@ -75,6 +75,14 @@ class LinuxPackageDepsGuardTest(unittest.TestCase):
         # Naming the artifact-level check is how the blind spot stays findable.
         self.assertIn("check-bundle-host-deps.py", result.stdout)
         self.assertIn(FULL_WALK_SUMMARY, result.stdout)
+
+    def test_romm_browser_runtime_must_be_declared_for_every_distro(self) -> None:
+        for package in ("libwebkit2gtk-4.1-0", "webkit2gtk4.1", "webkit2gtk-4.1"):
+            with self.subTest(package=package):
+                result = self._run(**{"packaging/build-packages.py": self._mutate(
+                    "packaging/build-packages.py", f'            "{package}",\n', "")})
+                self.assertEqual(result.returncode, 1)
+                self.assertIn(package, result.stderr)
 
     def test_a_missing_cmake_input_is_named_rather_than_skipped(self) -> None:
         """Losing one of these used to shrink the walk instead of failing it.

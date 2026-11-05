@@ -207,18 +207,30 @@ class ControllerTests(unittest.TestCase):
     @patch.object(controller, "ensure_remote_main_sha")
     @patch.object(controller, "dispatch")
     def test_recovery_dispatch_is_distinct_and_reuses_no_unverified_run(self, dispatch, _main, _matching, verify):
-        controller.ensure_release("v3.0.0", "b" * 40, include_webos_release=False,
+        controller.ensure_release("v3.0.0", "b" * 40, include_webos_release=True,
                                   reuse_platform_run_id=42)
         verify.assert_called_once_with(42, "b" * 40, "3.0.0")
         self.assertEqual(dispatch.call_args.args[3]["reuse_platform_run_id"], "42")
         self.assertEqual(dispatch.call_args.kwargs["expected_title"],
                          "action:release:pool:private:tag:v3.0.0")
         self.assertEqual(dispatch.call_args.kwargs["expected_sha"], "b" * 40)
+        self.assertEqual(dispatch.call_args.args[3]["include_webos_release"], "true")
+        self.assertEqual(dispatch.call_args.args[3]["include_webos_build"], "true")
 
-    def test_recovery_rejects_signed_store_or_public_webos_mode(self):
+    def test_recovery_rejects_signed_store_mode(self):
         with self.assertRaises(controller.ReleaseError):
             controller.ensure_release("v3.0.0", "b" * 40, include_webos_release=True,
-                                      reuse_platform_run_id=42)
+                                      include_apple_store_build=True, reuse_platform_run_id=42)
+
+    def test_recovery_cannot_omit_required_webos_artifact_or_build(self):
+        for include_release, include_build in ((False, True), (True, False), (False, False)):
+            with self.subTest(release=include_release, build=include_build), \
+                 patch.object(controller, "verify_platform_recovery") as verify, \
+                 self.assertRaises(controller.ReleaseError):
+                controller.ensure_release("v3.0.0", "b" * 40,
+                    include_webos_release=include_release, include_webos_build=include_build,
+                    reuse_platform_run_id=42)
+            verify.assert_not_called()
 
 
 class AndroidSourceTests(unittest.TestCase):

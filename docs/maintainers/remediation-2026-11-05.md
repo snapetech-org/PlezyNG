@@ -40,6 +40,16 @@ release qualification. Changes are committed directly to `main` in small batches
 
 ## Delivery checkpoint
 
+### Follow-up integration checks
+
+The full Python check suite exposed an undeclared RomM WebKit runtime in Linux
+package metadata and stale recovery tests that still expected webOS omission.
+Debian, RPM, Arch, PPA and Snap metadata now includes the browser runtime, and
+recovery regressions require both the webOS build and its public artifact.
+The 42 focused dependency/recovery/coverage checks pass. The five compiled C++
+visualizer regression binaries also pass. Flutter SDK setup is now possible in
+the current host; the earlier tool-availability statement below is historical.
+
 Confidence is high that the published commits contain the changes recorded in
 this ledger and that the listed executed checks passed. Confidence in the
 uncompiled Flutter/native integrations is moderate; device performance,

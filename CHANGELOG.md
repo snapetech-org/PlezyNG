@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Declare the RomM WebKit runtime in Linux packages and keep release-recovery checks aligned with mandatory webOS delivery.
 - Patch the karaoke separation runtime, constrain local model checkpoint loading, and verify CPU stem generation with the current audio backend.
 - Fix the black screen after sign-in when a profile binds before the file-source database finishes opening, and retain bounded webOS widget-error diagnostics.
 - Resolve webOS dependencies once with the enforced lockfile, keep its package version at 3.0.0, and reject stale package metadata before starting a build.

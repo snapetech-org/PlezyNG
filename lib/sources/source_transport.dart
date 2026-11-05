@@ -15,7 +15,10 @@ class SourceTransport {
   bool _closed = false;
   bool get isClosed => _closed;
 
-  void validate(Uri uri) {
+  void validate(Uri uri) => validateUri(uri, allowHttp: allowHttp);
+
+  /// Address-only checks must not allocate a network client.
+  static void validateUri(Uri uri, {bool allowHttp = false}) {
     if (uri.userInfo.isNotEmpty ||
         uri.host.isEmpty ||
         (uri.scheme != 'https' && !(allowHttp && uri.scheme == 'http'))) {

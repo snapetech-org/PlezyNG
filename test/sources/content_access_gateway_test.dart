@@ -40,6 +40,69 @@ class _GatewayAdapter extends SourceAdapter {
 }
 
 void main() {
+  test('rejected manifests do not exhaust capabilities needed by a later valid playlist', () async {
+    final upstream = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    var attempt = 0;
+    upstream.listen((request) async {
+      if (request.uri.path == '/stream.m3u8') {
+        request.response.headers.contentType = ContentType.parse('application/vnd.apple.mpegurl');
+        request.response.write('#EXTM3U\n');
+        if (attempt++ < 3) {
+          for (var i = 0; i < 40000; i++) request.response.write('#EXTINF:2,\nsegment-$attempt-$i.ts\n');
+          request.response.write('file:///not-a-network-segment.ts\n');
+        } else {
+          request.response.write('#EXTINF:2,\nvalid.ts\n#EXT-X-ENDLIST\n');
+        }
+      } else { request.response.write('valid media'); }
+      await request.response.close();
+    });
+    final gateway = SourceStreamGateway(valid: () => true);
+    final client = HttpClient();
+    addTearDown(() async { client.close(force: true); await gateway.close(); await upstream.close(force: true); });
+    final root = await gateway.registerUri(Uri.parse('http://127.0.0.1:${upstream.port}/stream.m3u8'));
+    for (var i = 0; i < 3; i++) {
+      final response = await (await client.getUrl(root)).close();
+      expect(response.statusCode, HttpStatus.badGateway);
+      await response.drain<void>();
+    }
+    final response = await (await client.getUrl(root)).close();
+    expect(response.statusCode, HttpStatus.ok);
+    final text = await utf8.decoder.bind(response).join();
+    final segment = const LineSplitter().convert(text).firstWhere((line) => line.startsWith('http://'));
+    final media = await (await client.getUrl(Uri.parse(segment))).close();
+    expect(media.statusCode, HttpStatus.ok);
+    expect(await utf8.decoder.bind(media).join(), 'valid media');
+  });
+
+  test('a rejected refresh cannot revive references retired by the published playlist', () async {
+    var revision = 0;
+    var now = DateTime.utc(2026);
+    final upstream = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    upstream.listen((request) async {
+      if (request.uri.path == '/stream.m3u8') {
+        request.response.headers.contentType = ContentType.parse('application/vnd.apple.mpegurl');
+        request.response.write('#EXTM3U\n#EXTINF:2,\n${revision == 1 || revision == 3 ? 'current' : 'old'}.ts\n');
+        if (revision == 2) request.response.write('file:///rejected.ts\n');
+      } else { request.response.write('segment'); }
+      await request.response.close();
+    });
+    final gateway = SourceStreamGateway(valid: () => true, clock: () => now);
+    final client = HttpClient();
+    addTearDown(() async { client.close(force: true); await gateway.close(); await upstream.close(force: true); });
+    final root = await gateway.registerUri(Uri.parse('http://127.0.0.1:${upstream.port}/stream.m3u8'));
+    Future<(int, String)> read(Uri uri) async {
+      final response = await (await client.getUrl(uri)).close();
+      return (response.statusCode, await utf8.decoder.bind(response).join());
+    }
+    final initial = await read(root);
+    final old = Uri.parse(const LineSplitter().convert(initial.$2).firstWhere((line) => line.startsWith('http://')));
+    revision = 1; expect((await read(root)).$1, HttpStatus.ok);
+    revision = 2; expect((await read(root)).$1, HttpStatus.badGateway);
+    now = now.add(const Duration(minutes: 3));
+    revision = 3; expect((await read(root)).$1, HttpStatus.ok);
+    expect((await read(old)).$1, HttpStatus.notFound);
+  });
+
   test('large VOD manifests retain their root and every segment capability', () async {
     final upstream = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     upstream.listen((request) async {

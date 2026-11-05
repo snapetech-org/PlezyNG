@@ -2129,7 +2129,7 @@ class SourceStreamGateway {
       throw const SourceException(SourceFailure.permission);
     }
     final safeHeaders = _validateDirectHeaders(headers);
-    SourceTransport(allowHttp: uri.scheme == 'http').validate(uri);
+    SourceTransport.validateUri(uri, allowHttp: uri.scheme == 'http');
     await _ensureServer();
     final uriText = _directCacheKey(uri, safeHeaders);
     final existing = deduplicate ? _directIdsByUri[uriText] : null;
@@ -2388,6 +2388,18 @@ class SourceStreamGateway {
     }
   }
 
+  Uri _manifestUri(Uri base, String value) {
+    final uri = base.resolve(value.trim());
+    final scheme = uri.scheme.toLowerCase();
+    if (scheme == 'skd' || scheme == 'data') return uri;
+    if (!const {'http', 'https'}.contains(scheme) || uri.hasFragment || uri.userInfo.isNotEmpty ||
+        (base.scheme == 'https' && scheme != 'https')) {
+      throw const SourceException(SourceFailure.permission);
+    }
+    SourceTransport.validateUri(uri, allowHttp: scheme == 'http');
+    return uri;
+  }
+
   Future<String> _registerManifestUri(
     Uri base,
     String value,
@@ -2396,17 +2408,15 @@ class SourceStreamGateway {
     required SourceUriRenewal? parentRenew,
     required int referenceIndex,
     required Set<String> children,
+    required Set<String> created,
   }) async {
     final raw = value.trim();
-    final uri = base.resolve(raw);
+    final uri = _manifestUri(base, raw);
     final scheme = uri.scheme.toLowerCase();
     // FairPlay's skd: key URI is handled by the platform DRM path. Inline
     // data: URIs are self-contained. Never hand file: or another network
     // scheme from a remote manifest to the native player.
     if (scheme == 'skd' || scheme == 'data') return raw;
-    if (!const {'http', 'https'}.contains(scheme) || (base.scheme == 'https' && scheme != 'https')) {
-      throw const SourceException(SourceFailure.permission);
-    }
     // Manifest children can point at a CDN or a different host. Request
     // credentials are scoped to the stream origin and must never follow them.
     final childHeaders = sameSourceOrigin(base, uri) ? headers : const <String, String>{};
@@ -2414,7 +2424,6 @@ class SourceStreamGateway {
     final existingId = _manifestReferenceIds[referenceKey];
     if (existingId != null && _directUris.containsKey(existingId)) {
       children.add(existingId);
-      _retiredReferences.remove(existingId);
       return 'http://127.0.0.1:${_server!.port}/$_secret/$existingId';
     }
     final SourceUriRenewal? childRenew = parentRenew == null
@@ -2433,6 +2442,7 @@ class SourceStreamGateway {
     _manifestReferenceIds[referenceKey] = id;
     _manifestReferenceKeys[id] = referenceKey;
     children.add(id);
+    created.add(id);
     return local.toString();
   }
 
@@ -2465,57 +2475,80 @@ class SourceStreamGateway {
     var rewrittenUris = 0;
     var referenceIndex = 0;
     final attributeUri = RegExp(r'URI="([^"]+)"');
+    // Reject an invalid/oversized playlist before allocating capabilities.
+    // A later registration failure still rolls back only this rewrite's new
+    // children; the previously published playlist remains valid.
+    var validatedReferences = 0;
+    for (final raw in lines) {
+      final line = raw.trim();
+      if (line.isEmpty) continue;
+      final values = line.startsWith('#')
+          ? attributeUri.allMatches(line).map((match) => match.group(1)!)
+          : [line];
+      for (final value in values) {
+        if (++validatedReferences > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        _manifestUri(base, value);
+      }
+    }
     _pruneRetiredReferences();
     final children = <String>{};
-    for (var index = 0; index < lines.length; index++) {
-      var line = lines[index].trim();
-      if (line.trim().isEmpty) continue;
-      if (!line.startsWith('#')) {
-        if (referenceIndex >= _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
-        line = await _registerManifestUri(
-          base,
-          line,
-          headers,
-          parentId: parentId,
-          parentRenew: parentRenew,
-          referenceIndex: referenceIndex++,
-          children: children,
-        );
-        rewrittenUris++;
-      } else {
-        final matches = attributeUri.allMatches(line).toList();
-        if (referenceIndex + matches.length > _maximumManifestReferences) {
-          throw const SourceException(SourceFailure.invalidData);
-        }
-        for (var matchIndex = matches.length - 1; matchIndex >= 0; matchIndex--) {
-          final match = matches[matchIndex];
-          final local = await _registerManifestUri(
+    final created = <String>{};
+    try {
+      for (var index = 0; index < lines.length; index++) {
+        var line = lines[index].trim();
+        if (line.trim().isEmpty) continue;
+        if (!line.startsWith('#')) {
+          if (referenceIndex >= _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+          line = await _registerManifestUri(
             base,
-            match.group(1)!,
+            line,
             headers,
             parentId: parentId,
             parentRenew: parentRenew,
-            referenceIndex: referenceIndex + matchIndex,
+            referenceIndex: referenceIndex++,
             children: children,
+            created: created,
           );
-          line = line.replaceRange(match.start, match.end, 'URI="$local"');
           rewrittenUris++;
+        } else {
+          final matches = attributeUri.allMatches(line).toList();
+          if (referenceIndex + matches.length > _maximumManifestReferences) {
+            throw const SourceException(SourceFailure.invalidData);
+          }
+          for (var matchIndex = matches.length - 1; matchIndex >= 0; matchIndex--) {
+            final match = matches[matchIndex];
+            final local = await _registerManifestUri(
+              base,
+              match.group(1)!,
+              headers,
+              parentId: parentId,
+              parentRenew: parentRenew,
+              referenceIndex: referenceIndex + matchIndex,
+              children: children,
+              created: created,
+            );
+            line = line.replaceRange(match.start, match.end, 'URI="$local"');
+            rewrittenUris++;
+          }
+          referenceIndex += matches.length;
         }
-        referenceIndex += matches.length;
+        if (rewrittenUris > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        lines[index] = line;
       }
-      if (rewrittenUris > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
-      lines[index] = line;
+      final previous = _manifestChildren[parentId] ?? const <String>{};
+      final retireAt = _clock().add(_retiredReferenceGrace);
+      for (final id in previous.difference(children)) {
+        _retiredReferences.putIfAbsent(id, () => retireAt);
+      }
+      for (final id in children) {
+        _retiredReferences.remove(id);
+      }
+      _manifestChildren[parentId] = children;
+      return lines.join('\n');
+    } catch (_) {
+      for (final id in created) _removeDirectRegistration(id);
+      rethrow;
     }
-    final previous = _manifestChildren[parentId] ?? const <String>{};
-    final retireAt = _clock().add(_retiredReferenceGrace);
-    for (final id in previous.difference(children)) {
-      _retiredReferences.putIfAbsent(id, () => retireAt);
-    }
-    for (final id in children) {
-      _retiredReferences.remove(id);
-    }
-    _manifestChildren[parentId] = children;
-    return lines.join('\n');
   }
 
   List<Uri> _hlsReferences(String manifest, Uri base) {

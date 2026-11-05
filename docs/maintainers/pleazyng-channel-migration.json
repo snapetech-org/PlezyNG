@@ -83,5 +83,15 @@
     "state": "owner login required; two saved logins rejected; awaiting human MFA/authentication",
     "new_project": "slskdn/pleazyng",
     "new_project_public_api": "404 before migration"
+  },
+  "aur": {
+    "publisher": "keefshape",
+    "ssh_authentication_verified": true,
+    "old_package_in_owned_repositories": false,
+    "new_package": "pleazyng-bin",
+    "new_remote_readable_empty": true,
+    "repository_variable_saved": "pleazyng-bin",
+    "state": "automation target updated; package created by first valid signed release recipe push",
+    "credential_rotated": false
   }
 }

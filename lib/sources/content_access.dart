@@ -636,6 +636,7 @@ class PublicationDownloads {
   final SourceRepository repository;
   final Directory directory;
   final Map<String, Future<File>> _pending = {};
+  final Map<String, Future<void>> _removals = {};
   final Map<String, TransferCancellation> _cancellations = {};
   final Map<String, _DownloadTask> _tasks = {};
   final Queue<_DownloadTask> _queue = Queue();
@@ -998,8 +999,11 @@ class PublicationDownloads {
     );
   }
 
-  Future<File?> local(String profile, String sourceId, PublicationFile file) async =>
-      file.sampleOnly ? null : _verifiedLocal(profile, file, await repository.download(profile, key(sourceId, file)));
+  Future<File?> local(String profile, String sourceId, PublicationFile file) async {
+    final pendingRemoval = _removals[sourceKey(profile, key(sourceId, file))];
+    if (pendingRemoval != null) await pendingRemoval;
+    return file.sampleOnly ? null : _verifiedLocal(profile, file, await repository.download(profile, key(sourceId, file)));
+  }
 
   Future<File?> _verifiedLocal(String profile, PublicationFile file, Map<String, dynamic>? record) async {
     if (file.sampleOnly || record == null || record['complete'] != 1 || record['fingerprint'] != file.fingerprint) {
@@ -1952,18 +1956,32 @@ class PublicationDownloads {
     await Future.wait(_pending.values.toList().map((transfer) => transfer.then<void>((_) {}, onError: (Object _) {})));
   }
 
-  Future<void> remove(String profile, String sourceId, PublicationFile file) async {
-    final record = await repository.download(profile, key(sourceId, file));
-    if (record != null) {
-      final path = record['path'] as String;
-      if (!p.isWithin(p.join(directory.path, sourceDigest(profile)), path)) {
-        throw const SourceException(SourceFailure.permission);
+  Future<void> remove(String profile, String sourceId, PublicationFile file, {bool Function()? shouldRemove}) {
+    final identity = sourceKey(profile, key(sourceId, file));
+    final previous = _removals[identity];
+    late final Future<void> removal;
+    removal = () async {
+      if (previous != null) await previous;
+      bool allowed() => shouldRemove?.call() ?? true;
+      if (!allowed()) return;
+      final record = await repository.download(profile, key(sourceId, file));
+      if (!allowed()) return;
+      if (record != null) {
+        final path = record['path'] as String;
+        if (!p.isWithin(p.join(directory.path, sourceDigest(profile)), path)) {
+          throw const SourceException(SourceFailure.permission);
+        }
+        final target = File(path);
+        final exists = await target.exists();
+        if (!allowed()) return;
+        if (exists) await target.delete();
       }
-      final target = File(path);
-      if (await target.exists()) await target.delete();
-    }
-    await repository.forgetDownload(profile, key(sourceId, file));
+      if (allowed()) await repository.forgetDownload(profile, key(sourceId, file));
+    }().whenComplete(() { if (identical(_removals[identity], removal)) _removals.remove(identity); });
+    _removals[identity] = removal;
+    return removal;
   }
+
 }
 
 class _NativeDownloadContext {

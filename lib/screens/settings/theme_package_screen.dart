@@ -13,8 +13,7 @@ import '../../services/settings_mutation_service.dart';
 import '../../services/settings_service.dart' as settings;
 import '../../theme/mono_theme.dart';
 import '../../theme/theme_package.dart';
-import '../../widgets/focused_scroll_scaffold.dart';
-import '../../widgets/settings_section.dart';
+import '../../widgets/settings_page.dart';
 
 class ThemePackageScreen extends StatefulWidget {
   const ThemePackageScreen({super.key});

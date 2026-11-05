@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Fix karaoke file-picker/TV APIs, nullable media titles and optional player interfaces; register desktop microphone capture plugins.
+- Patch Steam Cloud plugin build matching and cleanup dependencies while preserving the Decky Rollup preset.
 
 - Restore truncated Games screen actions and repair malformed visualizer validation and RomM save-key syntax.
 - Rebrand the app and generated platform artwork as Pleazyng by SnapeTech, migrate public package identities and media/OAuth links, and align future release and package recipes while retaining the current repository name.

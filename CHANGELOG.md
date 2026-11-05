@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Announce published stable releases to Discord automatically, including GitHub-only releases, and retain per-message delivery receipts for safe retries.
 - Share Android CI/release caches and apply the Maven Central mirror before Flutter's included Gradle build resolves plugins.
 - Keep Apple JIT queue discovery active before platform jobs appear and retry failed launches while their jobs remain queued.
 - Keep Swift package resolution inside each Apple job's DerivedData directory so completed JIT jobs reclaim that output.

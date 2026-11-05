@@ -1034,6 +1034,12 @@ def publish_github_release(tag: str) -> dict:
     published = release_metadata(tag)
     if published.get("draft") or not published.get("published_at"):
         raise ReleaseError(f"GitHub release {tag} was not promoted to a published release.")
+    # GITHUB_TOKEN publication does not emit another workflow's release event.
+    # The notification workflow serializes by tag and resumes delivery receipts,
+    # so this also safely overlaps a release event emitted by a user/App token.
+    command(["gh", "workflow", "run", "discord-release.yml", "--repo", PLEZY_REPO,
+             "--ref", "main", "-f", "action=announce-release", "-f", "runner_pool=hosted",
+             "-f", f"release_tag={tag}"])
     return published
 
 
@@ -1251,14 +1257,6 @@ def publish_configured_channels(
             "assets": {"SHA256SUMS.txt"},
         },
         {
-            "name": "Discord release announcement",
-            "workflow": "discord-release.yml",
-            "title": f"action:announce-release:pool:private:tag:{tag}",
-            "fields": {"action": "announce-release", "runner_pool": "private", "release_tag": tag},
-            "secrets": {"DISCORD_RELEASE_WEBHOOK"}, "variables": set(),
-            "assets": set(),
-        },
-        {
             "name": "Homebrew cask and Sparkle appcast",
             "workflow": "update-packages.yml",
             "title": f"action:update-packages:pool:private:tag:{tag}",
@@ -1364,7 +1362,7 @@ def parse_args() -> argparse.Namespace:
     publication.add_argument(
         "--publish-github-only",
         action="store_true",
-        help="Publish the verified GitHub release without starting package, store, or announcement workflows.",
+        help="Publish the verified GitHub release and its automatic Discord notice without starting package or store workflows.",
     )
     parser.add_argument(
         "--scratch",

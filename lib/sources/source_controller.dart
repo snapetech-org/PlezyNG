@@ -942,7 +942,7 @@ class SourceController extends ChangeNotifier {
         persistCredentials: persistSourceCredentials,
       ),
       FileSourceKind.openSubsonic => OpenSubsonicSourceAdapter(source, transport, credentials),
-      FileSourceKind.podcastRss => PodcastRssSourceAdapter(source, transport, credentials),
+      FileSourceKind.podcastRss => PodcastRssSourceAdapter(source, transport, credentials, protect: repository.protect, reveal: repository.reveal),
       FileSourceKind.remoteCloud => _remoteCloudAdapter(source, transport, epoch),
     };
   }

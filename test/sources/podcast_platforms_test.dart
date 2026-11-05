@@ -172,6 +172,8 @@ void main() {
   test(
     'RSS preserves episode identity, adds video/dates and hydrates private chapters without credential leakage',
     () async {
+      final sealed = <String, String>{};
+      var sealId = 0;
       var feedCalls = 0;
       final source = PodcastRssSourceAdapter(
         const FileSource(
@@ -212,6 +214,8 @@ void main() {
           'username': 'member',
           'password': 'secret',
         },
+        protect: (value) async { final id = 'enc:v2:test-${sealId++}'; sealed[id] = value; return id; },
+        reveal: (value) async => sealed[value],
       );
       addTearDown(source.close);
       final root = await source.browse();

@@ -31,6 +31,7 @@ class PodcastLibrary {
       ),
       SourceTransport(),
       () async => {'feedUrl': subscription.url.toString()},
+      protect: sources.repository.protect, reveal: sources.repository.reveal,
     );
     late String title;
     try {

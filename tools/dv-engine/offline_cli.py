@@ -16,6 +16,9 @@ def main():
         'felbaker-plugin': root / 'plugins/libfelbaker.so',
         'ffmpeg': root / 'bin/ffmpeg', 'ffprobe': root / 'bin/ffprobe',
     }
+    spec = importlib.util.spec_from_file_location('plezyng_dv_companion', Path(__file__).with_name('companion.py'))
+    companion = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(companion)
     if sys.argv[1:] == ['--self-test']:
         for path in tools.values():
             if not path.is_file():
@@ -30,12 +33,10 @@ def main():
         filters = subprocess.check_output([str(tools['ffmpeg']), '-hide_banner', '-filters'], text=True)
         if not all(name in encoders for name in ('libx264', 'libx265', 'aac')) or not all(name in filters for name in ('zscale', 'tonemap')):
             raise RuntimeError('bundled encoder is missing HDR/SDR output support')
-        subprocess.run([str(tools['vspipe']), '--version'], check=True, stdout=subprocess.DEVNULL)
+        subprocess.run([str(tools['vspipe']), '--version'], check=True, stdout=subprocess.DEVNULL,
+                       env=companion.bundled_worker_environment())
         print(json.dumps({'dependencies': 'passed', 'network_downloads': False, 'device_output_qualified': False}))
         return 0
-    spec = importlib.util.spec_from_file_location('plezyng_dv_companion', Path(__file__).with_name('companion.py'))
-    companion = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(companion)
     return companion.main(bundled_tools=tools)
 
 

@@ -42,6 +42,30 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def refresh_frontend(bundle: Path, source_commit: str) -> None:
+    """Reuse verified native components when only packaged Python changes."""
+    sys.path.insert(0, str(ROOT / 'scripts'))
+    from fetch_dv_tools import verify
+    report_path = bundle / 'provenance.json'
+    report = json.loads(report_path.read_text())
+    verify(bundle, report['architecture'])
+    if not re.fullmatch(r'[0-9a-f]{40}', source_commit):
+        raise ValueError('frontend updates require an exact published source commit')
+    inputs = ('offline_cli.py', 'offline_frames.py', 'companion.py', 'build_offline_tools.py')
+    for name in inputs:
+        committed = subprocess.check_output(['git', '-C', str(ROOT), 'show',
+                                             source_commit + ':tools/dv-engine/' + name])
+        if committed != (HERE / name).read_bytes():
+            raise ValueError('frontend source differs from its recorded Git commit: ' + name)
+    for name in ('offline_cli.py', 'offline_frames.py', 'companion.py'):
+        shutil.copyfile(HERE / name, bundle / 'share' / name)
+    report['frontend_source_commit'] = source_commit
+    report['frontend_input_sha256'] = {name: digest(HERE / name) for name in inputs}
+    report['files'] = {str(path.relative_to(bundle)): digest(path)
+        for path in sorted(bundle.rglob('*')) if path.is_file() and path != report_path}
+    report_path.write_text(json.dumps(report, indent=2) + '\n')
+
+
 def package_runtime(work: Path, wheel_site: Path, encoder: Path, baker: Path) -> Path:
     root = work / 'bundle'
     root.mkdir()
@@ -190,9 +214,18 @@ def build(work: Path, lock: dict):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--work-dir', type=Path, required=True)
+    parser.add_argument('--work-dir', type=Path)
+    parser.add_argument('--refresh-frontend', type=Path, help='update an already verified bundle without rebuilding native code')
+    parser.add_argument('--source-commit')
     parser.add_argument('--inside', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if args.refresh_frontend:
+        if not args.source_commit:
+            parser.error('--refresh-frontend requires --source-commit')
+        refresh_frontend(args.refresh_frontend.absolute(), args.source_commit)
+        return
+    if not args.work_dir:
+        parser.error('--work-dir is required for a native build')
     lock = json.loads((HERE / 'offline.lock.json').read_text())
     work = args.work_dir.absolute()
     work.mkdir(parents=True, exist_ok=True)

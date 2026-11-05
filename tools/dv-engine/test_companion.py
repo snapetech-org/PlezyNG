@@ -9,10 +9,18 @@ import tempfile
 import time
 import unittest
 
-from companion import bake_script, encode_command, pipe_processes, probe, validate_shape
+from companion import bake_script, bundled_worker_environment, encode_command, pipe_processes, probe, validate_shape
+from unittest.mock import patch
 
 
 class CompanionTest(unittest.TestCase):
+    def test_bundled_worker_does_not_load_python_libraries_into_the_host_shell(self):
+        inherited = {'PATH': '/usr/bin', 'LANG': 'en_US.UTF-8', 'LD_LIBRARY_PATH': '/old/python/libs',
+                     'LD_PRELOAD': '/old/overlay.so', 'PYTHONHOME': '/old/python', 'PYTHONPATH': '/old/modules'}
+        with patch.dict(os.environ, inherited, clear=True):
+            self.assertEqual(bundled_worker_environment(), {'PATH': '/usr/bin', 'LANG': 'en_US.UTF-8'})
+            self.assertEqual(os.environ['LD_LIBRARY_PATH'], '/old/python/libs')
+
     @unittest.skipUnless(os.name == 'posix', 'GUI cancellation uses POSIX SIGINT on Linux')
     def test_gui_cancellation_reaps_both_pipeline_workers(self):
         with tempfile.TemporaryDirectory() as temporary:

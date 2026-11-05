@@ -79,6 +79,8 @@ class _DvOfflineExportScreenState extends State<DvOfflineExportScreen> {
         DvOfflineTools.executable,
         DvOfflineTools.arguments(base: _base!, enhancement: _enhancement!, fps: fps, target: _target, output: output),
         runInShell: false,
+        environment: DvOfflineTools.processEnvironment(Platform.environment),
+        includeParentEnvironment: false,
       );
       _process = process;
       final streams = Future.wait([process.stdout.drain<void>(), process.stderr.drain<void>()]);

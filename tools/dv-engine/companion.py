@@ -24,6 +24,15 @@ import time
 MAX_PROBE = 1024 * 1024
 
 
+def bundled_worker_environment() -> dict[str, str]:
+    # The worker's shell belongs to the host; it must start with host libraries.
+    # Its launcher then selects the packaged Python/plugin runtime explicitly.
+    environment = os.environ.copy()
+    for name in ('LD_LIBRARY_PATH', 'LD_PRELOAD', 'PYTHONHOME', 'PYTHONPATH'):
+        environment.pop(name, None)
+    return environment
+
+
 def regular(path: Path) -> Path:
     path = path.resolve(strict=True)
     if not path.is_file():
@@ -144,13 +153,15 @@ def encode_command(ffmpeg: Path, output: Path, *, width: int, height: int, fps: 
     return args + ["-f", "matroska", str(output)]
 
 
-def pipe_processes(producer: list[str], consumer: list[str], *, timeout: float, cwd: Path) -> None:
+def pipe_processes(producer: list[str], consumer: list[str], *, timeout: float, cwd: Path,
+                   producer_environment: dict[str, str] | None = None) -> None:
     """Drain both stderr streams to files; kill and reap both on any failure."""
     started = time.monotonic()
     processes = []
     with tempfile.TemporaryFile() as first_log, tempfile.TemporaryFile() as second_log:
         try:
-            first = subprocess.Popen(producer, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=first_log, cwd=cwd)
+            first = subprocess.Popen(producer, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=first_log,
+                                     cwd=cwd, env=producer_environment)
             processes.append(first)
             second = subprocess.Popen(consumer, stdin=first.stdout, stdout=subprocess.DEVNULL, stderr=second_log, cwd=cwd)
             processes.append(second)
@@ -226,7 +237,8 @@ def main(argv=None, *, bundled_tools=None):
         command = encode_command(paths["ffmpeg"], partial, width=width, height=height, fps=args.fps,
                                  target=args.target, peak_nits=args.peak_nits, frames=args.frames, audio=audio)
         pipe_processes([str(paths["vspipe"]), "--requests", "2", str(script), "-"], command,
-                       timeout=args.timeout, cwd=work)
+                       timeout=args.timeout, cwd=work,
+                       producer_environment=bundled_worker_environment() if bundled_tools else None)
         encoded = probe(paths["ffprobe"], partial)
         expected = ("hevc", "smpte2084", "bt2020") if args.target == "hdr10" else ("h264", "bt709", "bt709")
         if (encoded.get("codec_name"), encoded.get("color_transfer"), encoded.get("color_primaries")) != expected:

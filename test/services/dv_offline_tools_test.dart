@@ -2,6 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/dv_offline_tools.dart';
 
 void main() {
+  test('host process starts without app or Python loader overrides', () {
+    final inherited = {
+      'PATH': '/usr/bin',
+      'LANG': 'en_US.UTF-8',
+      'LD_LIBRARY_PATH': '/app/lib',
+      'LD_PRELOAD': '/app/overlay.so',
+      'PYTHONHOME': '/other/python',
+      'PYTHONPATH': '/other/modules',
+    };
+    expect(DvOfflineTools.processEnvironment(inherited), {'PATH': '/usr/bin', 'LANG': 'en_US.UTF-8'});
+    expect(inherited, contains('LD_LIBRARY_PATH'));
+  });
   test('frame rates reject invalid and unbounded inputs', () {
     for (final value in ['24', '23.976', '24000/1001', '120']) {
       expect(DvOfflineTools.validFrameRate(value), isTrue, reason: value);

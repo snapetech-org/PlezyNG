@@ -6,6 +6,12 @@ import 'package:path/path.dart' as p;
 abstract final class DvOfflineTools {
   static String get executable => p.join(p.dirname(Platform.resolvedExecutable), 'tools', 'dv', 'plezyng-dv-convert');
 
+  static Map<String, String> processEnvironment(Map<String, String> inherited) => Map<String, String>.from(inherited)
+    ..remove('LD_LIBRARY_PATH')
+    ..remove('LD_PRELOAD')
+    ..remove('PYTHONHOME')
+    ..remove('PYTHONPATH');
+
   static bool validFrameRate(String value) {
     if (!RegExp(r'^\d+(?:/\d+|\.\d+)?$').hasMatch(value)) return false;
     final parts = value.split('/');

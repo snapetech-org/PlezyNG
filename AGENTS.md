@@ -25,3 +25,11 @@ CodeQL workflow execution remains disabled across Snapetech repositories under
 the owner's directive. Do not restore or reroute CodeQL workflows unless the
 owner explicitly reverses that directive.
 
+## Release coverage — owner directive, 2026-11-05
+
+Versioned GitHub releases include Android, Linux x64/arm64, Windows x64/arm64,
+universal macOS, iOS, tvOS, Tizen, and webOS artifacts. Fix failed platform
+builds and validate their outputs; do not omit a platform to get a green run
+without the owner's explicit approval. A published release missing a required
+platform is incomplete. Keep artifact provenance and qualification truthful.
+

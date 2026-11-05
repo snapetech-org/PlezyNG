@@ -12,6 +12,7 @@ package/store publication workflow from main, sequentially and idempotently.
 from __future__ import annotations
 
 import argparse
+from release_coverage import missing_assets
 import datetime as dt
 import hashlib
 import json
@@ -72,6 +73,8 @@ RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "scripts/recover_release_platforms.py",
     "scripts/checks/test_recover_release_platforms.py",
     "scripts/release_all_platforms.py",
+    "scripts/release_coverage.py",
+    "scripts/checks/test_release_platform_coverage.py",
     "scripts/refresh_apple_spm.sh",
     "tools/reader-tests/README.md",
     "tools/webos/compatibility.json",
@@ -908,11 +911,11 @@ def ensure_release(
 ) -> dict:
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
-    if include_webos_release and not include_webos_build:
-        raise ReleaseError("Public WebOS attachment requires a successful candidate build.")
+    if not include_webos_release or not include_webos_build:
+        raise ReleaseError("Every versioned release requires its successful webOS build and public artifact.")
     run_title = f"action:release:pool:private:tag:{tag}"
     if reuse_platform_run_id:
-        if execution_profile != "hybrid" or include_webos_release or include_apple_store_build:
+        if execution_profile != "hybrid" or include_apple_store_build:
             raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile.")
         options = {}
         if reuse_android_run_id:
@@ -1079,6 +1082,10 @@ def validate_release_outputs(
             required.add("<eligible webOS .ipk>")
     if execution_profile == "hybrid":
         required.add("plezy-windows-arm64-portable.zip")
+
+    missing_platforms = missing_assets(assets)
+    if missing_platforms:
+        raise ReleaseError("Required public platform assets are missing: " + "; ".join(missing_platforms))
 
     secrets = configured_repo_names("secret")
     android_signing = {
@@ -1338,11 +1345,12 @@ def parse_args() -> argparse.Namespace:
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
     )
     parser.add_argument("--reuse-android-run", type=int, help="Reuse a separately successful Android release artifact.")
-    parser.add_argument("--skip-webos-build", action="store_true", help="Exclude the non-public experimental WebOS candidate from this release.")
+    parser.add_argument("--skip-webos-build", action="store_true", help="Deprecated: versioned releases require webOS and reject this option.")
     parser.add_argument(
         "--include-webos-release",
         action="store_true",
-        help="Attach the webOS IPK to the public draft release when the existing eligibility gate passes.",
+        default=True,
+        help="webOS attachment is required for every versioned release; eligibility gates still apply.",
     )
     parser.add_argument(
         "--execution-profile",
@@ -1394,14 +1402,14 @@ def main() -> int:
     if args.version == "3.0.0" and args.execution_profile != "hybrid":
         raise ReleaseError("The PlezyNG 3.0.0 release requires the hybrid profile, including native Windows ARM64 CI.")
     if args.reuse_platform_run and (
-        args.reuse_platform_run < 1 or args.publish or args.include_webos_release
+        args.reuse_platform_run < 1 or args.publish
         or args.execution_profile != "hybrid"
     ):
         raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication.")
     if args.reuse_android_run and (args.reuse_android_run < 1 or not args.reuse_platform_run):
         raise ReleaseError("Android reuse requires a verified platform source run.")
-    if args.skip_webos_build and args.include_webos_release:
-        raise ReleaseError("A public WebOS artifact requires its successful candidate build.")
+    if args.skip_webos_build:
+        raise ReleaseError("--skip-webos-build cannot be used for a versioned release; all owner-mandated platforms are required.")
     command(["gh", "auth", "status", "--hostname", "github.com"], capture=True, quiet=True)
 
     scratch = args.scratch.resolve() if args.scratch else Path(tempfile.mkdtemp(prefix="plezyng-release-"))

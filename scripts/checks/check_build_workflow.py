@@ -887,11 +887,11 @@ require(
 require(
     re.search(
         r"(?ms)^      include_webos_release:\n.*?        type: boolean\n"
-        r"        default: false\n",
+        r"        default: true\n",
         text,
     )
     is not None,
-    "public WebOS release inclusion must be an explicit opt-in",
+    "versioned releases must include webOS by default",
 )
 require(
     re.search(
@@ -1449,6 +1449,16 @@ require(
 
 webos_download = named_step(release, "Download WebOS artifact")
 require(
+    "python3 scripts/release_coverage.py --directory artifacts" in named_step(
+        release, "Require every release platform before publication"
+    ),
+    "versioned releases must verify every required platform before publication",
+)
+require(
+    "Versioned releases require webOS, Tizen and Windows ARM64" in job("validate-trusted-ref"),
+    "release requests must reject incomplete platform selections",
+)
+require(
     "if: ${{ needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}" in webos_download
     and "name: webos-ipk" in webos_download,
     "the WebOS release artifact must be downloaded only after explicit opt-in",
@@ -1664,3 +1674,4 @@ if errors:
     sys.exit(1)
 
 print("build workflow architecture matrix checks passed")
+

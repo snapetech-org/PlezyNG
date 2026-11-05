@@ -55,13 +55,10 @@ on:
         type: boolean
         default: true
       include_webos_release:
-        description: >-
-          Include the LG webOS IPK in a public release after its exact artifact
-          and redistribution gates are approved. This does not control whether
-          the candidate is built.
+        description: Required for release actions; validation build actions keep webOS as a candidate
         required: true
         type: boolean
-        default: false
+        default: true
       include_tizen_build:
         description: Build the experimental ARM Samsung Tizen tester candidate in this workflow run
         required: true
@@ -180,6 +177,13 @@ jobs:
           fi
           if [[ "$SUBTITLE_GPU_BACKEND" != "cpu" && "$SUBTITLE_GPU_BACKEND" != "vulkan" && "$SUBTITLE_GPU_BACKEND" != "cuda" ]]; then
             echo "Unsupported subtitle_gpu_backend: $SUBTITLE_GPU_BACKEND" >&2
+            exit 1
+          fi
+          if [[ "$ACTION" == "build" ]]; then
+            INCLUDE_WEBOS_RELEASE=false
+          fi
+          if [[ "$ACTION" == "release" && ( "$INCLUDE_WEBOS_BUILD" != "true" || "$INCLUDE_WEBOS_RELEASE" != "true" || "$INCLUDE_TIZEN_BUILD" != "true" || "$EXECUTION_PROFILE" != "hybrid" ) ]]; then
+            echo "Versioned releases require webOS, Tizen and Windows ARM64. Use the complete hybrid platform matrix." >&2
             exit 1
           fi
           if [[ "$ACTION" == "release" && "$SUBTITLE_GPU_BACKEND" != "cpu" ]]; then
@@ -429,7 +433,7 @@ jobs:
           TIZEN_BUILD: ${{ steps.request.outputs.include_tizen_build }}
         run: |
           set -euo pipefail
-          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$HOMEBREW" != false || "$WEBOS_RELEASE" != false || "$TIZEN_BUILD" != true ]]; then
+          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$HOMEBREW" != false || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
             echo "Artifact recovery requires the complete hybrid CPU GitHub-only release profile." >&2
             exit 1
           fi
@@ -2880,6 +2884,9 @@ jobs:
 
       - name: Verify Tizen handoff before publication
         run: test -s artifacts/tizen/PlezyNG-tizen-arm-tester-handoff.zip
+
+      - name: Require every release platform before publication
+        run: python3 scripts/release_coverage.py --directory artifacts
 
       - name: Display structure of downloaded files
         run: ls -R artifacts

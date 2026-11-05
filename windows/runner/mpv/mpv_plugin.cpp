@@ -167,6 +167,14 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
     if (auto p = std::get_if<int64_t>(value)) return *p;
     return fallback;
   };
+  auto number = [&arg](const char* key, double fallback) -> double {
+    const auto* value = arg(key);
+    if (!value) return fallback;
+    if (const auto* p = std::get_if<double>(value)) return *p;
+    if (const auto* p = std::get_if<int32_t>(value)) return *p;
+    if (const auto* p = std::get_if<int64_t>(value)) return static_cast<double>(*p);
+    throw std::runtime_error(std::string("Invalid number: ") + key);
+  };
   const auto& method = call.method_name();
   const auto engine = string("engine", "projectm");
   auto reason = [&]() -> std::string {
@@ -174,7 +182,7 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
       return "Initialize the music player before opening a preset.";
     if (engine != "milkrust") return "Select native MilkRust on Windows; this host does not bundle projectM.";
     if (!MpvPlayer::VisualizationTapAvailable()) return "This mpv build lacks the visualization PCM tap ABI v1.";
-    return plezy::visualization::MilkRustApi::Shared().error;
+    return plezy::visualization::WindowsVisualizerSession::DependencyError();
   };
   if (method == "visualizerCapabilities") {
     const auto unavailable = reason();
@@ -211,7 +219,7 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
     if (method == "visualizerDispose")
       DisposeVisualizer();
     else if (method == "visualizerLoad")
-      worker.Load(string("path"), string("root"));
+      worker.Load(string("path"), string("root"), number("transitionSeconds", 3));
     else if (method == "visualizerResize") {
       const auto width = integer("width"), height = integer("height");
       if (width < 1 || height < 1 || width > 16384 || height > 16384) throw std::runtime_error("Invalid dimensions.");
@@ -221,6 +229,11 @@ void MpvPlayerPlugin::HandleVisualizerMethod(
       auto paused = value ? std::get_if<bool>(value) : nullptr;
       if (!paused) throw std::runtime_error("A paused boolean is required.");
       worker.Pause(*paused);
+    } else if (method == "visualizerSetMouse") {
+      auto value = arg("down");
+      auto down = value ? std::get_if<bool>(value) : nullptr;
+      if (!down) throw std::runtime_error("A mouse button state is required.");
+      worker.SetMouseState(*down, number("x", 0.5), number("y", 0.5), number("dx", 0), number("dy", 0));
     } else if (method == "visualizerStatus") {
       const auto status = worker.Status();
       result->Success(

@@ -150,4 +150,33 @@ void main() {
     final capability = await VisualizerSession.capabilities(engine: 'milkrust');
     expect(capability.reason, 'PCM bridge missing');
   });
+
+  test('automatic loads cannot retry an interrupted preset but explicit reload can', () async {
+    final events = <String>[];
+    var lease = 0;
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      final args = call.arguments as Map? ?? {};
+      if (call.method == 'visualizerCapabilities') return {'available': true};
+      if (call.method == 'visualizerCreate') return {'sessionId': ++lease, 'textureId': lease};
+      if (call.method == 'visualizerDispose') events.add('dispose:${args['sessionId']}');
+      if (call.method == 'visualizerLoad') {
+        events.add('load:${args['sessionId']}:${args['allowInterrupted']}');
+        if (args['allowInterrupted'] != true) {
+          throw PlatformException(code: 'VISUALIZER_INTERRUPTED', message: 'Choose Reload preset to retry.');
+        }
+      }
+      return null;
+    });
+    final session = VisualizerSession();
+    await session.setEngine('milkrust');
+    await session.load(preset, automatic: true);
+    expect(session.state, 'failed');
+    expect(session.reason, 'Choose Reload preset to retry.');
+    expect(session.hasFrame, isFalse);
+    await session.load(preset);
+    expect(events, ['load:1:false', 'dispose:1', 'load:2:true']);
+    expect(session.state, 'loading');
+    await session.stop();
+    session.dispose();
+  });
 }

@@ -322,7 +322,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       final selected = byPath[prefs['selected']];
       if (selected != null && _native.accepts(selected) && _nativeSourceReady) {
         if (!_playlist.any((file) => file.id == selected.id)) _playlist.add(selected);
-        await _native.load(selected);
+        await _native.load(selected, automatic: true);
       }
       if (!mounted || generation != _preferenceGeneration) return;
       setState(() {});
@@ -376,24 +376,24 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       return;
     }
     _presetTimer ??= Timer.periodic(Duration(seconds: _intervalSeconds), (_) {
-      if (_native.state == 'rendering') _stepPreset(1);
+      if (_native.state == 'rendering') _stepPreset(1, automatic: true);
     });
   }
 
-  Future<void> _selectPreset(VisualizerSelection selection) async {
+  Future<void> _selectPreset(VisualizerSelection selection, {bool automatic = false}) async {
     if (!_nativeSourceReady) return;
     ++_preferenceGeneration; // A late restore must not replace a user selection.
     _playlist = selection.playlist;
     if (selection.engine != null) await _native.setEngine(selection.engine!);
     if (!mounted) return;
     _syncTicker();
-    await _native.load(selection.preset);
+    await _native.load(selection.preset, automatic: automatic);
     if (!mounted) return;
     _savePreferences();
     _syncTicker();
   }
 
-  void _stepPreset(int direction) {
+  void _stepPreset(int direction, {bool automatic = false}) {
     if (!_native.active || _playlist.isEmpty) {
       widget.onPresetChanged(direction < 0 ? widget.preset.previous : widget.preset.next);
       return;
@@ -401,7 +401,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     final current = _playlist.indexWhere((file) => file.id == _native.preset?.id);
     final offset = _shuffle && _playlist.length > 1 ? 1 + _random.nextInt(_playlist.length - 1) : direction;
     final index = (current + offset) % _playlist.length;
-    unawaited(_selectPreset(VisualizerSelection(_playlist[index], _playlist)));
+    unawaited(_selectPreset(VisualizerSelection(_playlist[index], _playlist), automatic: automatic));
   }
 
   Future<void> _originalScenes() async {
@@ -589,12 +589,33 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   void _resizeNative(BoxConstraints constraints, double pixelRatio) {
     final width = constraints.maxWidth * pixelRatio, height = constraints.maxHeight * pixelRatio;
     if (!width.isFinite || !height.isFinite || width <= 0 || height <= 0) return;
-    final scale = math.min(1.0, math.min(1280 / width, 720 / height)) * _resolutionScale;
+    final scale = math.min(1.0, math.min(1920 / width, 1080 / height)) * _resolutionScale;
     _native.resize(width * scale, height * scale);
   }
 
   static double _energyFromSpectrum(AudioSpectrumSample sample) =>
       (0.18 + sample.normalizedCentroid * 0.52 + sample.flatness * 0.24).clamp(0.08, 1.0).toDouble();
+
+  void _handleNativePointer(PointerEvent event, Size size, {bool? down}) {
+    if (_native.engine != 'milkrust' || size.width <= 0 || size.height <= 0) return;
+    final position = event.localPosition;
+    final x = (position.dx / size.width).clamp(0.0, 1.0).toDouble();
+    final y = (position.dy / size.height).clamp(0.0, 1.0).toDouble();
+    final nextDown = down ?? event.buttons != 0;
+    final dx = (event.delta.dx / size.width).clamp(-1.0, 1.0).toDouble();
+    final dy = (event.delta.dy / size.height).clamp(-1.0, 1.0).toDouble();
+    _native.setMouseState(down: nextDown, x: x, y: y, dx: dx, dy: dy);
+  }
+
+  Widget _nativePointerSurface(Size size, Widget child) => Listener(
+    behavior: HitTestBehavior.opaque,
+    onPointerDown: (event) => _handleNativePointer(event, size, down: true),
+    onPointerMove: (event) => _handleNativePointer(event, size),
+    onPointerHover: (event) => _handleNativePointer(event, size, down: false),
+    onPointerUp: (event) => _handleNativePointer(event, size, down: false),
+    onPointerCancel: (event) => _handleNativePointer(event, size, down: false),
+    child: child,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -628,7 +649,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(tk.radiusLg),
-            child: Stack(
+            child: _nativePointerSurface(
+             Size(constraints.maxWidth, constraints.maxHeight),
+             Stack(
               fit: StackFit.expand,
               children: [
                 Positioned.fill(
@@ -659,6 +682,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                 ),
               ],
             ),
+           ),
           ),
         );
       },
@@ -879,7 +903,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                         builder: (context, constraints) {
                           _resizeNative(constraints, MediaQuery.devicePixelRatioOf(context));
                           final tk = tokens(context);
-                          return Stack(
+                          return _nativePointerSurface(
+                            Size(constraints.maxWidth, constraints.maxHeight),
+                            Stack(
                             fit: StackFit.expand,
                             children: [
                               if (_native.hasFrame && _native.textureId != null)
@@ -927,6 +953,7 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                                 ),
                               ),
                             ],
+                            ),
                           );
                         },
                       ),

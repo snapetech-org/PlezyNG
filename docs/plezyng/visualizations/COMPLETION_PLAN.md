@@ -1,5 +1,16 @@
 # PlezyNG visualization and community preset implementation plan
 
+**Current code gate (2026-10-30): 100% complete for the documented implementation
+scope.** See [SOURCE_COMPLETION.md](SOURCE_COMPLETION.md) for source evidence
+mapped to V0–V10. The user's current code-only completion instruction separates
+this gate from the original build, test, reference, device and release gates
+below. Those acceptance results remain pending; historical gap descriptions
+below are preserved as history.
+
+The original audit and dated checkpoints below are preserved. For the current
+2026-10-30 implementation, use [the status ledger](IMPLEMENTATION_STATUS.md) and
+[build handoff](BUILD_HANDOFF.md); historical gaps below are not current claims.
+
 PlezyNG has a working set of six original music scenes, but the requested MilkDrop-compatible engine and downloadable community-preset library are not integrated. MilkRust contains reusable engine work and a substantial imported corpus; its existing compatibility totals do not establish faithful rendering.
 
 This is the implementation handoff for Luna, prepared October 27, 2026, for **PlezyNG**. Complete the app experience, community-pack distribution, and the custom MilkRust compatibility track. Planning is complete here; implementation and release qualification remain the work below.
@@ -70,9 +81,12 @@ configuration path and a publisher gate requiring immutable per-preset/device
 qualification evidence. These are source mechanisms, not passed release gates.
 See [catalog release configuration](CATALOG_RELEASE.md) and
 [remaining TV integration](TV_HOST_INTEGRATION.md) for the concrete outstanding
-work. Full HLSL and non-Fade `.milk2` rendering remain incomplete. The earlier
-no-tests/builds/CI/captures/benchmarks/device-qualification restriction remains
-active; all subsequent source checkpoints use `[skip ci]`.
+work. Full HLSL and non-Fade `.milk2` rendering remain incomplete. The source-only
+restriction recorded in this handoff was superseded by the user's 2026-10-30
+instruction to continue code work and attempt builds. Build, test, scan and
+package jobs must still use compatible private ephemeral JIT runners; public
+hosted runners and fallback are prohibited. Missing private capacity is a
+provisioning blocker, not permission to bypass runner policy.
 
 “All community presets” is an engineering target, not an unbounded claim about every future file. Establish a versioned corpus that includes every current imported file plus representative MilkDrop 1, MilkDrop 2, MilkDrop 3 double presets, texture dependencies, fragments and converted formats. Preserve arbitrary local import so users are not limited to curated packs.
 
@@ -241,9 +255,10 @@ WebGL/desktop playback and CLI/headless statistics consume those checked APIs;
 regression source covers rejection/accounting and recovery but remains unrun.
 
 The full completion contract remains open. In particular, a complete native
-MilkRust renderer, faithful shader/.milk2 handling, other platform hosts,
-broader cleared content and signed catalog publication, bounded compiler/GPU
-hang containment, and real artifact/device/conformance evidence are not done.
+MilkRust renderer, full HLSL and spatial `.milk2` handling, qualified platform
+hosts, broader cleared content and production signed-catalog delivery, bounded
+compiler/GPU hang containment, and real artifact/device/conformance evidence
+are not done.
 No tests, builds, CI, render captures or device qualification were run in this
 session. Source preparation is recorded separately from those checks.
 
@@ -257,10 +272,11 @@ source for Linux, Windows, macOS, iOS/tvOS and Android/TV, paired with MilkRust
 PR #20. The latter also contains the saved-pair parser, native C renderer ABI,
 conservative MIT pack-conversion recipe and signed-catalog publisher source.
 
-This checkpoint does **not** close complete HLSL/`.milk2` semantics, webOS/Tizen,
-produced native artifacts, qualified broader downloadable packs, production
-catalog key custody/publication, or V9/V10. No builds, tests, CI jobs, GPU captures
-or device qualification were executed for these increments. See
+This checkpoint does **not** close complete HLSL/`.milk2` semantics, webOS/Tizen
+qualification, produced native artifacts, qualified broader downloadable
+packs, production catalog key custody/publication, or V9/V10. No builds, tests,
+CI jobs, GPU captures or device qualification were executed for these
+increments. See
 [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for the evidence ledger.
 
 
@@ -271,9 +287,545 @@ Samsung same-player PCM/EGL/texture path, source-generation protection, app
 capability routing and explicit artifact/source/notice packaging inputs. Its
 source is retained on current-main
 [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78) for re-review. This
-preserves the original plan; V1 remains open for
-SDK/device qualification, webOS and context-loss/hang handling. Tizen's current
+preserves the original plan; V1 remains open for SDK/device qualification and
+context-loss/hang handling. Tizen's current
 source limits are normal-speed S16LE stereo and PNG/JPEG/BMP/TGA texture
 decoding. Full HLSL, other `.milk2` patterns, qualified broader packs and
 production key custody/publication remain open. No tests, builds, CI, captures
 or device qualification ran.
+
+
+## webOS source continuation, 2026-10-28
+
+The webOS follow-up adds a pinned LG SoLoud plugin for bounded known-size
+MP3/WAV/OGG/FLAC audio, a post-mix PCM tap, a bounded native queue, a GLES 3
+Flutter texture host and an app-owned `Player.audio()` route. Unsupported,
+unknown-size, live and video sources continue through LG NDL. The release-
+candidate path now builds the pinned ARMv7 MilkRust runtime, archives its exact
+source and notices, and makes the bundle mandatory for IPKs made by the normal
+webOS packaging script. The IPK verifier rejects packages without the runtime.
+The source build, generated IPK, device/audio/driver qualification and per-voice
+isolation remain open. No build or device qualification ran for this increment.
+
+MilkRust's WebGL import now accepts saved `.milk2` pairs only when the bounded
+parser and compatibility gate identify the supported uniform Fade subset.
+Spatial patterns and unsupported extensions still fail closed. Full HLSL and
+all-pattern `.milk2` compatibility remain open; the gate change has not been
+built or renderer-qualified.
+
+
+## Active sprite and classic renderer source checkpoint, 2026-10-29
+
+The original completion contract remains intact. MilkRust PR #20 adds active
+saved-sprite parsing/runtime/native/WebGL passes and classic display/feedback
+controls. The exact engine revision is pinned in native/visualizer/sources.lock.json;
+IMPLEMENTATION_STATUS.md records the source features and remaining conformance
+boundaries. These changes have source regression cases but no executed build,
+test or device evidence. Qualification, historical rights decisions, immutable
+mpv artifact promotion and owner-held catalog custody remain separate gates.
+
+## 2026-10-29 stereo and scene-state source checkpoint
+
+The continuation adds shared stereo PCM analysis, all nine classic waveform
+geometries, bounded/custom point semantics and color, portable dots/thick lines,
+private object/frame/point state, shape instancing, textured gradients and ordered
+scene commands. Motion vectors follow the evaluated feedback grid before warp.
+Saved sprite speed/key filtering and the neutral rotation field are corrected.
+The app's source lock points at the published MilkRust PR revision. See the
+current ledger and build handoff for exact status; this appended checkpoint does
+not rewrite the original completion contract or turn unrun gates into passes.
+
+## 2026-10-29 typed numeric source checkpoint
+
+MilkRust PR #20 now carries explicit HLSL numeric lowering for vectors and all
+2–4 dimensional float/half matrices, including row-order construction,
+component versus linear-algebra multiplication, writable masks/rows and
+converting function outputs. The app lock selects the published engine revision.
+A numerical shader control is wired into the private browser integration suite;
+it has not been executed. The original completion gates remain unchanged.
+
+## 2026-10-29 operator, intrinsic and preprocessing checkpoint
+
+The pinned engine completes the newly identified numeric lowering paths,
+legacy math/output intrinsics, bounded literal handling, macro rescanning and
+volume/LOD texture overloads. The 500-side shape limit is supported under the
+existing aggregate budget. Compiler and numerical GPU control sources accompany
+these implementations. The ledger retains unrun execution gates and the exact
+MilkDrop3/reference boundaries; this does not declare the universal-compatibility
+completion contract satisfied.
+
+
+## 2026-10-29 declarations, aggregate semantics and classic sprite checkpoint
+
+The app now selects MilkRust `145d8a479dc232fdd22563277211839a8fd1c264`. Its compiler adds scoped
+aliases/numeric templates, flattened legacy aggregate initialization and casts,
+typed constant selections, GLSL name isolation and readonly destination checks.
+Classic sprite alpha/key/byte-color handling, persistent unwrapped rotation and
+scripted numeric selectors have corresponding source controls. The status ledger
+and build handoff identify their private-JIT acceptance inputs.
+
+The original completion criteria remain open for exact MD3 masks, non-default
+sprite fields/layer interactions and the remaining language/profile gaps listed
+in the ledger. These are implementation/reference items, separate from unrun
+build/device checks, pack qualification, actual PCM artifact promotion and
+owner-held signing. No reference formula, qualifying image or artifact digest
+was substituted with an approximation or invented result.
+
+
+## 2026-10-29 macro stringification checkpoint
+
+The app pin now includes bounded function-like HLSL macro stringification,
+including token whitespace preservation, quote/backslash escaping and output
+budgets. This removes one known compiler-profile gap without changing the
+source-only validation boundary. Integer/Boolean and one-row/one-column
+matrices, arrays of arrays, resource-bearing structs, exact `.milk2` masks and
+remaining sprite semantics stay open. No compiler, GPU, build or device gate
+ran for this checkpoint.
+
+
+## 2026-10-29 browser decoder worker checkpoint
+
+The selected MilkRust pin is `145d8a479dc232fdd22563277211839a8fd1c264`.
+The web package now stages a separate static decoder worker, uses it when it
+shares the page origin, and falls back to a bounded blob worker when static
+worker construction is rejected and policy permits. PNG/JPEG/BMP/static
+GIF/WebP decode and dimension revalidation run in the disposable worker; a
+timeout terminates it before a stalled codec can hold the renderer thread.
+This does not isolate browser-process OOM or GPU-driver hangs. Whitespace,
+JSON and JavaScript syntax checks passed; builds, tests, browser execution and
+device qualification remain unrun. Exact MilkDrop3 masks, HLSL profile gaps and
+non-default sprite semantics remain code/reference work.
+
+
+## 2026-10-29 saved-pattern and declared-profile source checkpoint
+
+MilkRust now includes all 30 saved-pattern formulas from its compatible MIT
+behavior specification, with per-crate attribution. The native and WebGL source
+paths consume saved progress, direction and random values, and execute documented
+sprite fields including opt-in, flips, alpha byte handling, rotation, offsets,
+repeats, layers and burn order. Saved sprite blocks are disabled by default in
+`.milk2` unless `sprite=1` is present; ordinary `.milk` retains its default
+behavior. ESSL 3.00 array-of-array declarations are rejected explicitly rather
+than emitting invalid shader code.
+
+The updated MilkRust source is pinned by the app lock. This checkpoint closes
+those recorded source gaps; compilation, test execution, reference-pixel
+comparison, browser execution and device qualification remain unrun. Unsupported
+HLSL/resource forms and unrecognized saved-preset extensions continue to fail
+closed within the declared renderer profile. Pack, mpv artifact, rights and
+signing gates remain separate product/release work.
+
+
+## 2026-10-29 saved sprite blend-table correction
+
+At this checkpoint, MilkRust's native/WebGL sprite shader implemented all eleven MilkDrop 3
+texture-stage/blend-factor modes, including multiplicative, subtractive, invert,
+cutoff, darken and vivid. Its `SpriteBlend` default was 4, and EEL `blendmode` started
+from that value, and selectors outside 0–10 resolve to mode 0. The authored
+browser control now covers all eleven modes and 66 combinations of mode, source
+alpha and opaque color-key state. These source controls remain unrun under the
+source-only restriction; reference-pixel parity remains an independent gate.
+
+
+## 2026-10-29 animated GIF and ABI v2 source checkpoint
+
+MilkRust now admits bounded animated GIF assets through a shared Rust decoder.
+It validates the logical canvas, frame rectangles, sub-block framing, frame
+count and decoded-pixel budget before allocation; frame output handles offsets,
+transparency, disposal, and delays, with zero delays mapped to 100 ms. Native GL
+and WebGL upload the frame sequence, select frames by sprite-local or preset
+time, and account all frames in the shared texture budget. The app forwards
+encoded GIF bytes through C ABI v2 instead of passing them through platform
+single-frame decoders. Native bundle generation now carries the core decoder
+notices, and webOS/Tizen validators require the new ABI version.
+
+Source review and static whitespace/JSON checks only; no build, test, browser,
+GPU or device run was performed. The WASM GIF decoder runs on its calling thread;
+reference compositing and performance qualification remain open. The source lock
+records the exact engine revision and ABI separately from platform artifacts.
+
+## 2026-10-29 saved blend and animation source checkpoint
+
+At this checkpoint, the app pinned MilkRust `597cdfb74090c983191dca0505adb8878152c07d`, C ABI v2.
+Native GL and WebGL upload a packed 32-bit vertex field and evaluate the saved
+64×48 transition mesh with matching triangle interpolation. Both hosts admit
+the documented 100-name image cache within the existing decoded-pixel budget.
+Animated GIF playback honors single-play, finite repeat and infinite-loop
+metadata; the finite-repeat timing path was corrected in this checkpoint.
+
+This closes those implementation items in source. Reference pixels, compile/link,
+GPU, browser and target-device results remain unverified under the source-only
+restriction and are kept as separate qualification gates.
+
+
+
+## Saved blend header correction, 2026-10-29
+
+The current MilkRust working source resolves every `.milk2` file independently:
+an omitted pattern remains empty and fails closed, progress defaults to 0.5,
+direction to 1, and omitted random values to zero. Trailing sprite blocks run
+unless `sprite=0`. The app source lock is being advanced to
+`11b603d2db38f799d5e83f0a95366bd82ca75d1a`, which includes this correction.
+This source change does not establish saved-pair pixel parity or a qualified
+runtime.
+
+
+## 2026-10-29 current source checkpoint
+
+This checkpoint supersedes earlier October notes that described `.milk2`
+sprites as opt-in, set the saved blend default to 4, listed non-default sprite
+fields as unimplemented, or said the final feedback draws shared one geometry.
+Current MilkRust source executes saved sprite blocks unless `sprite=0`, defaults
+`SpriteBlend` to 0, applies the documented saved fields, packs D3D9 diffuse
+bytes in shared Rust code, and uses distinct geometry for primary final-burn
+draws, display copies and Milk2's extra final feedback stamp. The app source lock
+pins MilkRust `11b603d2db38f799d5e83f0a95366bd82ca75d1a` with C ABI v2.
+
+All 30 documented saved-pattern formulas are implemented, and the native/WebGL
+hosts consume the same 64×48 interpolated mask. Formula implementation is source
+work; exact reference pixels remain an open qualification gate. HLSL resource
+forms and historical text/image formats outside the declared profile still fail
+closed and remain compatibility work. OS-level isolation for a wedged GPU driver,
+browser-process OOM containment, verified mpv binaries, pack qualification and
+production signing remain separate open tasks.
+
+## 2026-10-29 saved header carry completion
+
+MilkRust now carries valid `blending_pattern`, `blending_progress`,
+`blending_direction` and `random_1..5` writes from ordinary single-preset
+frames into later `.milk2` loads. Native and WebAssembly preset loaders keep
+that process state when recreating per-preset renderer/equation state; their
+import/inspect gates resolve omitted fields against the retained header. Hosts
+that recreate the core runtime can snapshot/restore a validated header state.
+The PlezyNG lock pins MilkRust `150cbf48c3d017978d3f692d31fd7f2eb0634132`.
+
+This closes the identified source-level carry and host-reset gaps. Builds,
+tests, reference captures and device qualification remain unrun because the
+repository requires private ephemeral JIT runners and no dispatch control is
+available here. The declared HLSL/resource and image-format profile still
+rejects unsupported constructs explicitly; they are not claimed to have
+universal MilkDrop compatibility. Runtime artifacts, GPU-driver process
+isolation, pack rights/qualification and production signing remain open.
+
+
+## 2026-10-30 HLSL resource-array source checkpoint
+
+MilkRust PR #20 now lowers global `Texture1D` and `Texture2D` resource arrays
+with literal bounds 1–15 to separately named image bindings. Supported resource
+methods require constant decimal indices, with external assets named
+`<resource>_<index>`. Dynamic/grouped arrays, `Texture3D` arrays, function-local
+arrays and resource arrays in structs remain explicit failures. PlezyNG's
+source lock pins MilkRust `2c51a7882971eb9fe6b2b043b8cfa6627e63cbe2`.
+The new source path has not been compiled or tested; private JIT validation and
+pixel qualification remain open.
+
+
+## 2026-10-30 legacy sampler-array continuation
+
+MilkRust PR #20 also supports global `sampler`/`sampler2D` arrays with literal
+bounds from 1 through 15. Constant decimal element access is expanded to
+individually named image bindings for legacy `tex*` intrinsics. Dynamic or
+grouped arrays, `sampler3D` arrays, arrays in function scopes and arrays in
+resource-bearing structs remain unsupported. PlezyNG pins MilkRust
+`3673eca589dd65c7e24c04edaed7eb4faa989c55`. The compiler and renderer path
+remain unrun under the source-only restriction.
+
+
+## 2026-10-30 resource-array struct-field continuation
+
+MilkRust PR #20 now expands constant-index Texture1D/Texture2D and legacy
+sampler/sampler2D array fields declared on global resource-struct instances.
+Bindings include the object and field names. Dynamic arrays, function-local
+arrays, Texture3D/sampler3D arrays and nested resource-bearing structs remain
+unsupported. PlezyNG pins MilkRust `d3b3f507bcb40a809d797db03ec55efd3e439bd4`.
+The implementation remains unbuilt and unqualified under the source-only rule.
+
+
+## 2026-10-30 bounded dynamic resource-array source checkpoint
+
+MilkRust PR #20 now lowers global `Texture1D`/`Texture2D`/`Texture3D` arrays and legacy `sampler`/`sampler2D`/`sampler3D` arrays with literal bounds 1–15, including grouped declarations and direct fields on global resource structs. Literal access selects a named binding. Side-effect-free dynamic indices expand supported texture sampling, load and dimension methods across the bounded elements; legacy sampler arrays expand supported `tex*` calls when the array element is the first argument. Out-of-range dynamic reads return zero, and generated dispatch is capped at 512 KiB. Function-local arrays, nested resource-bearing structs, custom sampler states and the rest of the declared unsupported HLSL profile remain explicit failures.
+
+The PlezyNG source lock now pins MilkRust `1e5b7f37065b09a892ec51818d81b01eeb6d7a0f`, ABI v2. This source checkpoint has not been built or tested. Private JIT compile/test acceptance, compiler/driver execution, pixel comparison, artifact promotion and device qualification remain separate gates.
+
+
+## 2026-10-30 numeric-array and transition source checkpoint
+
+The app source lock pins MilkRust `8beb98b0c4441a73319ddc62b66437ea8451d3d3`.
+Numeric multidimensional arrays now lower to canonical ESSL row structs within
+a 16-dimension/4096-element limit. Copies, row parameters, return values,
+brace/cast/default initialization and nested matrix fields share that layout.
+Integer/Boolean matrix aggregate consumption and zero initialization are fixed,
+and the bounded dynamic resource-array work is retained with consistent token
+edit ranges. Authored compiler and pixel controls remain unrun.
+
+The previously ignored native MilkRust transition duration is now forwarded by
+all platform bridges. A bounded smooth display fade uses the last published
+image, follows the new preset's paused render clock, handles rapid switching
+and resizing, and clears on audio generation changes. A zero duration cuts
+immediately. This closes the missing control wiring; it is not live dual-preset
+soft-cut parity. Linux projectM retains its own transition implementation.
+Shared regression sources are registered with the existing private sanitizer
+job. No builds, tests or CI dispatch were performed under the source-only rule.
+
+
+## 2026-10-30 saved-pattern carried randomness
+
+The current pin also removes invented midpoint/seeded random inputs from saved
+blend masks. Both GPU hosts key their shared mask cache by the effective carried
+header registers. Process-start omitted registers remain zero, and partial
+headers inherit preceding values. This is source integration, not a reference
+capture or a passed runtime test.
+
+## 2026-10-30 mask, sampler-state and blur source checkpoint
+
+PlezyNG now pins MilkRust `13ca31660acf3717e229543d51ea21d514bdc69d`, ABI v2. The engine uses effective
+carried `random_1..5` values for all saved `.milk2` masks, including zero
+process-start defaults and inheritance for partial headers. The HLSL compiler
+lowers global static `SamplerState` declarations with point/linear filtering and
+independent U/V/W Wrap/Clamp addressing through shared native/WebGL sampler
+bindings. Native GL and WebGL use the reference-source paired-tap blur
+kernels, source-sized offsets, per-level range transforms, and first-level edge
+darkening. Anisotropic, mirror/border, separate min/mag/mip and dynamic sampler states
+remain explicit compiler failures. Builds, tests, reference-pixel comparisons, and device runs
+remain unperformed; this is a source checkpoint, not a conformance result.
+
+
+## 2026-10-30 legacy effect sampler-state lowering
+
+The source lock now pins MilkRust `2e81e049d3dc996d469304e7cdf3e93d0996dbf5`, ABI v2. The HLSL profile supports all eight standard point/linear static `SamplerState` Filter combinations and independent address axes. Legacy `sampler_state` blocks bind one `Texture = <identifier>` and support independent Point/Linear min and mag filters plus None/Point/Linear mip filtering, lowered for direct supported `tex*` calls through a shared 96-mode native/WebGL sampler table. Sampler reflection includes offset sampling, 3D fetch and texture-size intrinsics. Grouped declarations, dynamic state, unsupported properties and state escape remain compile failures. This is implementation progress only; no build, test, render capture, or device qualification has run.
+
+
+## 2026-10-30 MilkRust mirrored sampler and sprite filter checkpoint
+
+The source lock pins MilkRust `7d7ed901bb105f9ad23431caa25e9f97e095a1bc`, ABI v2. Static and legacy sampler
+profiles now cover independent min/mag/mip filtering and per-axis
+Wrap/Clamp/Mirror addressing across 324 shared profiles, with a separate
+animated-sprite profile. The WebGL saved-sprite pass now applies the same
+per-texture profile as native GL. Builds, tests, reference captures, and device
+runs remain unperformed; this is source implementation, not qualification.
+
+
+## 2026-10-30 saved-sprite semantics follow-up
+
+The source lock now pins MilkRust `e0752db79a5b74668c4f1c9303630817ca120dec`, ABI v2. Equation repeat values
+are clamped before applying saved repeat multipliers; position and scale values
+are clamped before adding their saved offsets. WebGL sprite sampling matches
+native GL's static sampler profiles. This remains unbuilt and visually
+unqualified; run the paired runner and reference fixtures before promotion.
+
+
+## 2026-10-30 sprite source contract alignment
+
+The engine lock now pins MilkRust `60b65d0d4ef1cea5130843628880d9155e085097`, ABI v2. Its sprite implementation
+and documentation agree on equation-first clamp order, saved position/scale
+offsets, repeat multipliers, and shared native/WebGL min/mag/mip and address
+profiles. This closes the identified source/documentation mismatches; compiled
+and reference-pixel behavior still has no evidence.
+
+
+## 2026-10-30 saved-mask vertex alpha correction
+
+MilkRust now clamps each saved transition mix at the mesh vertex, truncates it to the D3D9 8-bit alpha byte, and interpolates that R8 field across the 64x48 mesh in native GL and WebGL. This replaces the prior full-precision packed alpha path, which diverged from the compatible reference. The app source lock pins MilkRust `ba314ab686586f67c06fed09a8036bba03778938`; the source regression remains unrun. Private build, browser/native pixel comparison, and target-device qualification remain open.
+
+
+## 2026-10-30 raw finite MilkDrop 3 header values
+
+MilkRust PR #20 now preserves finite float-range `.milk2` progress and random headers raw, including values outside [0, 1]. The cosine variable blend and scene weights use raw progress; only each saved-mask vertex mix is clamped before D3D9 byte truncation. Parser, carried-state, serialization, render-mask and interpolation regression sources were added. The engine pin is `324aee73cef1b6350df1668c340e4b6b6465ca14` (ABI v2). Builds, test execution, and reference captures remain unrun.
+
+
+## 2026-10-30 MilkDrop host input blending
+
+MilkRust PR #20 now binds standard mouse aliases (`mousex`, `mousey`, `mousedown`, `mouseclick`) and deterministic frame-clock values from `year` through `totalseconds`. One rising-edge `mouseclick` sample is shared by both active preset scopes. Saved-pair rendering cosine-mixes mouse positions and clock fields and snaps buttons at the reference shader-dependent threshold; temporary mixed values are restored after rendering. Source regression cases cover host binding, click edges, interpolation and snap behavior. The app source lock pins MilkRust `361a4a0c96408bf63760b914cbc508e4fb0494a3` (ABI v2). Builds and tests remain unrun; continue on compatible private JIT runners only.
+
+
+## 2026-10-30 MilkRust per-preset and host clock source checkpoint
+
+MilkRust now anchors EEL `time`, frame count and saved-sprite playback at the
+source load. Both halves of one `.milk2` begin at the same zero point and keep
+separate equation state. Its native ABI accepts validated local calendar and
+wall-clock registers. PlezyNG's shared native adapter now refreshes those
+registers from the device's local clock before every render and capture. The
+engine lock pins MilkRust `36f3058f150550cc1691303643489c8f89581300`, ABI v2.
+Regression sources cover preset-clock reset and clock-value binding. No private
+build, test, renderer capture or device run has executed for this checkpoint;
+the GitHub connector exposes no manual workflow-dispatch operation, and the
+private JIT runner requirement remains in force.
+
+
+## 2026-10-30 MilkRust browser local clock injection
+
+The MilkRust WebAssembly API accepts validated local clock fields, and its browser SDK refreshes those values from the page's local date and time before each frame. Direct WebAssembly/stateless callers can supply the same fields through the setter. PlezyNG pins MilkRust `039725b4bfa0deee92d7b7364c953dbdfc4851e1` (ABI v2). Build and browser qualification remain pending on the compatible private JIT runners.
+
+
+## 2026-10-30 native MilkRust pointer input API
+
+MilkRust's ABI v2 now accepts finite mouse coordinates/deltas and a binary button state; the shared Plezy adapter exposes them through SetMouseState. Platform views do not yet route pointer or touch events into this method. The app lock pins MilkRust `ee0d836a118615fa58eb9125d7b8b2fc23014b24`. Native build and input regression remain pending on the compatible private JIT runners.
+
+## 2026-10-30 native pointer input source checkpoint
+
+The Flutter visualizer now routes mouse/touch pointer state through the inline and fullscreen surfaces to the native MilkRust ABI on Android, Apple, Linux, and Windows. UI and native queues coalesce movement deltas, and the native worker consumes them once per rendered frame. Button-down edges are latched for one frame so quick taps still reach `mouseclick`; pausing clears held or pending input. The browser SDK applies matching validation, delta accumulation, and quick-click latching. The PlezyNG source lock pins MilkRust `e6da67bed512068086179b11724e656a24f5288b`. Source routing is present; native build/input regressions and device checks remain open under the private-JIT requirement. This does not close exact renderer parity or release gates.
+
+## 2026-10-30 desktop containment source checkpoint
+
+Linux MilkRust/projectM and Windows/macOS MilkRust now run in packaged helper
+processes. Shared native IPC carries bounded PCM, RGBA and controls with matching
+sequence IDs and two-second response deadlines. Disposal and failure terminate
+the helper; unreaped helpers block retry. The host retains its player/session
+lease and published pixel ownership. Pointer input and display fades remain
+wired across the boundary. CMake/Xcode packaging and private-JIT fault-regression
+entrypoints are committed source, not executed evidence. Android/iOS/tvOS/TV local
+driver containment, device-wide GPU recovery, compiler/corpus/reference runs,
+real mpv artifacts, content qualification and signing custody remain separate
+open gates; this checkpoint does not claim universal completion.
+
+The paired HLSL checkpoint `c58b53cb8b2c41fefd016df25c0d57a96bd8221b` closes static sampler-state
+forwarding through global-bound helper calls and corrects the mutable declaration
+cursor. It adds native and browser regression sources under bounded expansion,
+while keeping dynamic/advanced resource features explicit. PlezyNG pins this
+revision. Execution, reference captures and the release gates above remain open.
+
+
+## 2026-10-30 Android process-isolation source checkpoint
+
+Android/Android TV now run EGL, MilkRust and native-window presentation in a
+non-exported private service process. The player retains the leased mpv PCM tap
+and display transition, using versioned bounded native socket requests. Startup
+and request deadlines, self-termination, Binder-confirmed retry admission and
+queued controls are implemented. Desktop and Android share protocol v2; native
+fault and Android service-boundary regression sources were added but not run.
+iOS/tvOS, Tizen and webOS remain local with bounded teardown/quarantine. Installed
+artifact tests, private-JIT builds, reference fidelity and device-wide GPU
+recovery remain distinct gates; this checkpoint does not close those gates.
+
+
+## 2026-10-30 MilkRust noise resource source checkpoint
+
+The app source lock pins MilkRust `aeaf9147f4dce6e1f5b13c182e444a7dc368421b`, ABI v2. Native GL and WebGL now generate built-in noise with the compatible physical dimensions, low-frequency quality lattice, X/Y/Z cubic interpolation order, packed channels, and one-level texture state. Stable fixed seeds keep source output reproducible; the compatible reference reseeds from its runtime clock, so pixel identity still requires reference captures. No build or GPU comparison has been run.
+
+
+## 2026-10-30 Tizen/webOS process boundary
+
+TV renderer work now runs in the packaged helper, using bounded protocol v2
+requests and socket-driven process retirement without a parent PID kill. Host
+audio ownership, frame leases and pointer input remain connected. TV SDK build
+recipes and schema-v2 package gates include the executable, exact digests and
+corresponding helper source. Native and packaging regression sources were added;
+only source parsing/whitespace checks ran. iOS/tvOS recovery remains a platform
+constraint, and all builds, firmware execution, corpus/fidelity, new mpv binary
+promotion and release qualification remain open.
+
+## 2026-10-30 Apple recovery source closure
+
+The iOS/tvOS platform policy is now implemented: lazy graphics creation,
+native lifecycle pause/drain, foreground-gated creation/destruction, bounded
+retirement/quarantine and persistent interruption recovery. Automatic restoration
+and timed preset changes cannot retry a recorded interrupted preset; explicit
+selection/reload can retry subject to native admission. Shared native, Apple
+Foundation and Dart regression sources are wired into the private JIT gates.
+This closes the missing policy implementation, while mobile driver cancellation,
+SDK/device recovery qualification and the plan's build/conformance/release gates
+remain distinct. No new build or test result is claimed.
+
+
+
+## 2026-10-30 MilkRust source pin — animated images and runtime noise
+
+At that checkpoint, the PlezyNG lock pointed to MilkRust `836cd3275681a697f16cca65e50037f7cdc61f5b` (ABI v2). This source checkpoint
+adds bounded APNG and animated WebP decoding, Texture2D Gather lowering in the
+bounded HLSL profile, and runtime-seeded noise in native GL and WebGL. The
+deterministic generator remains available for offline callers. No build, test, browser render, native render or device qualification was
+performed; all execution remains assigned to compatible private ephemeral JIT runners.
+
+## 2026-10-30 earlier MilkRust comparison-sampling source pin
+
+At that checkpoint, the PlezyNG lock pointed to MilkRust `e940530aa1904f145f7f7006ada9d7ef9fb3ce2d` (ABI v2). It added bounded Texture2D `GatherCmp`, `GatherCmpRed`, `SampleCmp` and `SampleCmpLevelZero` lowering for statically initialized comparison samplers, including point/linear filtering and implicit LOD from derivatives. Exact reference-pixel parity, builds, tests and target-device qualification remained open.
+
+## 2026-10-30 Texture1D comparison-sampling source pin
+
+The PlezyNG lock now points to MilkRust `893a04399b5e02db8d201701a72f8c4a3ce61791` (ABI v2). Texture1D `SampleCmp` and `SampleCmpLevelZero` use the existing center-row mapping and scalar literal offset path, requiring a one-row backing image for parity; Texture2D GatherCmp remains supported. Texture3D/cube comparison calls, exact pixel parity, builds, tests and target-device qualification remain open. The source lock remains `source-only-unqualified`.
+
+## 2026-10-30 integrated HLSL source continuation
+
+The engine lock now points to `893a04399b5e02db8d201701a72f8c4a3ce61791`. Static helper
+specialization retains numeric overloads/prototypes and supports forwarding
+between overloads. A typed call-graph validator rejects actual recursion.
+Grouped resource initializers, comparison-only state forwarding, generated
+texture-binding reflection and comparison resource-array result types are
+implemented with native/compiler and browser pixel regression sources.
+
+The earlier Apple lifecycle/interruption checkpoint is also committed. This
+updates the implementation for the declared profile; the original plan's
+private-runner compile/test, reference/corpus, runtime-artifact and release
+acceptance requirements remain unfulfilled. Only source checks ran here.
+
+
+## 2026-10-30 comparison-gather channel and sampler-state alias source checkpoint
+
+PlezyNG now pins MilkRust `a0ce0242eef5372501a3a6036569e53fb8ad7239`, ABI v2. The typed compiler lowers all
+five Texture2D GatherCmp component methods, preserving selected-channel
+comparison and D3D texel order. Statically initialized global ordinary and
+comparison sampler states can alias other initialized states, including
+forward chains; filter, addressing and comparison functions are preserved.
+Unresolved aliases and aliases between ordinary/comparison state types fail
+explicitly. Regression source covers these cases and all comparison-gather
+channels. No build, test, renderer run, pixel comparison or device qualification
+was performed; the lock remains `source-only-unqualified`.
+
+
+## 2026-10-30 MilkRust sampler-state alias follow-up
+
+PlezyNG pins MilkRust `81593b2657c9de2bd6ea4f1903a9f992a3572800` (ABI v2). Global alias type collection now
+checks brace and parenthesis scope, keeping helper parameters out of the global
+alias namespace. This preserves same-named `SamplerState` parameters across
+overloads while retaining static global alias chains and type validation.
+Native source regressions are present but unrun. The pin remains
+`source-only-unqualified`.
+
+
+## 2026-10-30 resource-bearing HLSL helper arguments
+
+MilkRust PR #20 now supports helper parameters whose structs directly contain opaque resources, specialized against unambiguous global struct instances. Local or dynamic resource-bearing struct arguments remain unsupported and fail closed. PlezyNG's source lock now pins `1ab258e889d1932395e22015c383695611b918a5` (ABI v2). Source and regression updates are committed; private-JIT build, compiler execution, browser rendering and reference comparison remain unrun because no workflow-dispatch action is available through the connected GitHub tools. This closes the direct-struct helper source gap only; nested resource-bearing structs, other unsupported resource forms and the plan's execution/qualification requirements remain open.
+
+
+## 2026-10-30 corpus accounting source continuation
+
+PlezyNG now pins MilkRust `ca0a94321aadd3b48a9eed9b266796f5ce9a1c03` (ABI v2). The compatibility CLI uses bounded traversal, records directory/symlink/input-limit/I/O outcomes, and emits one status per discovered preset file. Its report generator checks that entry count matches the denominator, joins results to the manifest, and preserves missing, unlisted and duplicate paths plus per-preset diagnostics. Temporary sample names map back to original manifest paths. Pack inventory/hash errors are bounded and explicit. Regression sources are authored but unrun. The historical generated summary still needs regeneration on the required private JIT runner to explain its 37-file mismatch; no compatibility count is updated by source changes alone.
+
+
+## 2026-10-30 nested resource-struct source continuation
+
+MilkRust PR #20 commit 7a83ea328be14c4c9acddb24079ef8ac2658b45a now lowers scalar texture fields nested through plain structs when accessed through a global instance. The compiler preserves leaf dimension/element width, resolves full dotted paths, specializes resource-bearing helpers to global instances, and dispatches literal and side-effect-free dynamic indices for bounded resource arrays nested through those paths. Regression sources cover direct/helper access, static/dynamic array selection, binding reflection and rejected nested aggregate initializers. Function-local arrays, nested aggregate initializers and nested sampler-state propagation remain unsupported. This is source only; compiler, browser, native render and device gates remain pending.
+
+
+## 2026-10-30 immutable local resource-struct alias source continuation
+
+MilkRust PR #20 now includes commit 1cfb07306f0ced0b93f5d8aa13e4d5f55782b103 (ABI v2). A local resource-only struct copy initialized directly from a matching global instance is normalized to that binding before opaque-resource specialization. The rewrite is restricted to direct declarations in a function or shader body and rejects mutation, shadowing, mixed structs, computed/aggregate initializers and uninitialized locals. PlezyNG pins this source revision. No compiler, build, test, browser, render or device run was performed for this checkpoint.
+
+## 2026-10-30 source completion closure
+
+The app pins MilkRust `f4d2e8c5c009f915cc356b5f29ab8ff382720d0f` (ABI v2), including bounded Butterchurn numeric
+equations and generated-GLSL conversion into the typed compiler. The converter
+retains both shader stages, original/transformed hashes and a portable
+`butterchurn-numeric-v1` requirement. The app rejects unknown requirements,
+keeps converted presets on the explicitly selected MilkRust engine, and
+preserves this requirement through loose-file and ZIP round trips.
+
+Durable resumable downloads, adaptive native quality, immutable shared texture
+dependencies, texture-only packs, alias resolution, optional bounded previews,
+ZIP/preset/assets/notices export and shape/wave composition/export are committed.
+Composition now stops at the four supported custom-object slots. The code gate
+is complete; the build, conformance, corpus, device, artifact and publication
+gates remain unrun/unfulfilled as listed in SOURCE_COMPLETION.md.
+
+
+## 2026-10-30 statically indexed local opaque-array source continuation
+
+MilkRust PR #20 now includes commit 467adacec200d0fd5551cf5b5c9dee9d0621f750 (ABI v2). Fully initialized function-body or shader-body opaque arrays of 1–15 entries normalize to matching global resource/sampler bindings when every use has a literal index. Computed/partial initialization, dynamic indices, writes, shadowing and nested-scope declarations remain unsupported. PlezyNG pins this revision. No compiler, build, test, render or device run was performed for this checkpoint.
+
+## 2026-10-30 final code integration
+
+The final MilkRust source pin is `bbda9e997a47e2ca4b820e790d65ea6caeaeb8e7` (ABI v2), including lexical sampler
+dimensions in the Butterchurn shader converter. PlezyNG's PR is reconciled with
+main `bf752e1e306aa3c9dcc85e066c7bd477dbe56ff8`, preserving its Android, Apple,
+Linux and Windows build fixes together with visualization packaging and native
+regression wiring. This is source integration only; builds/tests remain unrun.

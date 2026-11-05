@@ -115,7 +115,7 @@
         "docs/games/ARCHITECTURE.md",
         "docs/games/VALIDATION.md"
       ],
-      "open": "Android GameStream and Steam paths remain experimental. Real host sessions, physical controller/TV navigation, lifecycle, and device qualification are required before broadening release claims."
+      "open": "Steam receiver/cloud/family/internet/controller/capture sources and RomM exact-copy/browser/stream/native/save workflows are integrated. SDK helper checks pass; native SDK app builds, deployed optional services and real account/network/device acceptance remain open."
     },
     {
       "area": "Multiview",
@@ -137,7 +137,7 @@
         "native/visualizer/sources.lock.json",
         "docs/plezyng/visualizations/IMPLEMENTATION_STATUS.md"
       ],
-      "open": "Native host sources and same-player PCM bridges exist for desktop, Android, Apple and TV routes. Default packaged renderer delivery and signed-catalog trust activation remain open; source presence is not renderer, shader/.milk2 fidelity, device or release qualification."
+      "open": "ABI v2 native host/process helpers and runtime/source/notice packaging hooks are integrated for desktop, Android, Apple and TV routes. Receipt and native lifecycle/process checks pass; actual runtime/app builds, patched mpv promotion, driver/render fidelity, device qualification and signing-catalog provisioning remain open."
     },
     {
       "area": "Dolby Vision and FEL",

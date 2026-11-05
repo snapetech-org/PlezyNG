@@ -1,0 +1,165 @@
+# Third-party notices
+
+## GIF decoding dependencies
+
+MilkRust uses `gif` 0.14.2 from
+[image-rs/image-gif](https://github.com/image-rs/image-gif) to decode bounded
+GIF frames. Its `weezl` 0.1.12 dependency from
+[image-rs/weezl](https://github.com/image-rs/weezl) provides LZW decoding.
+Both declare `MIT OR Apache-2.0`; this distribution elects the MIT terms.
+
+Copyright (c) 2015 nwin
+Copyright (c) HeroicKatora 2020
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## PNG/APNG decoding dependencies
+
+MilkRust uses `png` 0.17.16 from
+[image-rs/image-png](https://github.com/image-rs/image-png) for bounded static
+PNG and APNG decoding. Its locked Rust deflate backend also distributes
+`bitflags` 1.3.2, `cfg-if` 1.0.4, `crc32fast` 1.5.1, `fdeflate` 0.3.7,
+`flate2` 1.1.10, `miniz_oxide` 0.8.9 and 0.9.1, `adler2` 2.0.1, and
+`simd-adler32` 0.3.10. This distribution elects their MIT terms where an
+alternative license is offered. The MIT license text above applies to these
+components as well.
+
+Copyright notices for these crates:
+
+- `png`: Copyright (c) 2015 nwin; The image-rs Developers.
+- `bitflags`: Copyright (c) 2014 The Rust Project Developers.
+- `cfg-if` and `flate2`: Copyright (c) 2014 Alex Crichton.
+- `crc32fast`: Copyright (c) 2018 Sam Rijs, Alex Crichton and contributors.
+- `fdeflate`: Copyright (c) The image-rs Developers.
+- `miniz_oxide`: Copyright 2013-2014 RAD Game Tools and Valve Software;
+  Copyright 2010-2014 Rich Geldreich and Tenacious Software LLC;
+  Copyright (c) 2017 Frommi; Copyright (c) 2017-2026 oyvindln and
+  miniz_oxide contributors.
+- `adler2`: Copyright (c) Jonas Schievink and oyvindln.
+- `simd-adler32`: Copyright (c) Marvin Countryman.
+
+## Animated WebP decoding dependencies
+
+MilkRust uses `image-webp` 0.2.4 from
+[image-rs/image-webp](https://github.com/image-rs/image-webp), a pure-Rust
+decoder that handles static and animated WebP. Its locked dependencies are
+`byteorder-lite` 0.1.0 and `quick-error` 2.0.1. This distribution elects the
+MIT terms where an alternative license is offered.
+
+### image-webp 0.2.4
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+### byteorder-lite 0.1.0
+
+Copyright (c) 2015 Andrew Gallant
+
+The MIT License (MIT)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+### quick-error 2.0.1
+
+Copyright (c) 2015 The quick-error Developers
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+## MilkDrop 3 saved blend and sprite behavior
+
+The saved blend-pattern equations in `src/milk2_mask.rs` are a clean-room port of
+the behavioral implementation and published specification in
+[M0Rf30/lactea](https://github.com/M0Rf30/lactea), principally
+`crates/lactea/src/engine/md3_blend.rs`,
+`crates/lactea/src/engine/blend_patterns.rs`, and `docs/md3.md`. The published
+sprite-field behavior in that specification informed the independent parser,
+runtime, geometry and renderer in MilkRust. The bounded R8 mask rasterizer and
+GPU integration are MilkRust implementations. This notice does not imply
+reference-renderer qualification.
+
+Copyright (c) 2026 The Lactea Authors (Gianluca Boiano)
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

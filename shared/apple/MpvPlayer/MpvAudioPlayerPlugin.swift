@@ -1,3 +1,5 @@
+import CoreFoundation
+
 #if os(iOS) || os(tvOS)
   import Flutter
 #elseif os(macOS)
@@ -162,7 +164,7 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
     if call.method == "visualizerCapabilities" {
       let unavailable = reason()
       result([
-        "available": unavailable.isEmpty, "reason": unavailable, "engine": "milkrust-native-abi1",
+        "available": unavailable.isEmpty, "reason": unavailable, "engine": "milkrust-native-abi2",
         "audioTap": PlezyVisualizationTapAvailable(),
       ]); return
     }
@@ -219,7 +221,18 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
             FlutterError(code: "INVALID_ARGS", message: "A preset path and pack root are required.", details: nil));
           return
         }
-        try texture.host.loadPreset(path, root: root)
+        let transition: Double
+        if let value = args["transitionSeconds"] {
+          guard let number = value as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID() else {
+            result(FlutterError(code: "INVALID_ARGS", message: "A numeric transition duration is required.", details: nil))
+            return
+          }
+          transition = number.doubleValue
+        } else {
+          transition = 3
+        }
+        try texture.host.loadPreset(path, root: root, transitionSeconds: transition,
+          allowInterrupted: args["allowInterrupted"] as? Bool ?? false)
       case "visualizerResize":
         guard let width = args["width"] as? Int, let height = args["height"] as? Int,
           width > 0, height > 0, width <= 16384, height <= 16384
@@ -232,6 +245,16 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
           result(FlutterError(code: "INVALID_ARGS", message: "A paused boolean is required.", details: nil)); return
         }
         texture.host.setPaused(paused)
+      case "visualizerSetMouse":
+        guard let down = args["down"] as? Bool,
+          let x = args["x"] as? NSNumber, CFGetTypeID(x) != CFBooleanGetTypeID(),
+          let y = args["y"] as? NSNumber, CFGetTypeID(y) != CFBooleanGetTypeID(),
+          let dx = args["dx"] as? NSNumber, CFGetTypeID(dx) != CFBooleanGetTypeID(),
+          let dy = args["dy"] as? NSNumber, CFGetTypeID(dy) != CFBooleanGetTypeID(),
+          x.doubleValue.isFinite, y.doubleValue.isFinite, dx.doubleValue.isFinite, dy.doubleValue.isFinite else {
+          result(FlutterError(code: "INVALID_ARGS", message: "Finite mouse state is required.", details: nil)); return
+        }
+        texture.host.setMouseState(down, x: x.doubleValue, y: y.doubleValue, dx: dx.doubleValue, dy: dy.doubleValue)
       case "visualizerStatus": result(texture.host.status()); return
       default: result(FlutterMethodNotImplemented); return
       }

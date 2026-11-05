@@ -7,8 +7,13 @@
 #import <OpenGL/OpenGL.h>
 #else
 #import <OpenGLES/EAGL.h>
+#include "VisualizerLifecycle.h"
+#include "VisualizerRecovery.h"
 #endif
 #include "../../visualization/native_worker.h"
+#if TARGET_OS_OSX
+#include "../../visualization/render_process.h"
+#endif
 #include <dlfcn.h>
 #include <cstring>
 
@@ -26,14 +31,14 @@ struct TapApi {
 TapApi& Tap() { static TapApi api; return api; }
 class AppleContext final : public NativeContext {
  public:
-  AppleContext() {
 #if TARGET_OS_OSX
+  AppleContext() {
     CGLPixelFormatAttribute attrs[] = {kCGLPFAOpenGLProfile,
-        static_cast<CGLPixelFormatAttribute>(kCGLOGLPVersion_3_2_Core), kCGLPFAAccelerated,
+        static_cast<CGLPixelFormatAttribute>(kCGLOGLPVersion_4_1_Core), kCGLPFAAccelerated,
         static_cast<CGLPixelFormatAttribute>(0)};
     CGLPixelFormatObj format = nullptr; GLint count = 0;
     auto result = CGLChoosePixelFormat(attrs, &format, &count);
-    if (result != kCGLNoError || !format) throw std::runtime_error("No macOS OpenGL 3.2 core configuration.");
+    if (result != kCGLNoError || !format) throw std::runtime_error("No macOS OpenGL 4.1 core configuration.");
     result = CGLCreateContext(format, nullptr, &context_); CGLDestroyPixelFormat(format);
     if (result != kCGLNoError || !context_) throw std::runtime_error("Could not create the macOS visualization context.");
     if (CGLSetCurrentContext(context_) != kCGLNoError) {
@@ -41,9 +46,16 @@ class AppleContext final : public NativeContext {
       throw std::runtime_error("Could not activate the macOS visualization context.");
     }
 #else
+  explicit AppleContext(const std::shared_ptr<AppleVisualizerPermit>& permit) {
+    permit->Wait();
     context_ = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
     if (!context_ || ![EAGLContext setCurrentContext:context_])
       throw std::runtime_error("Could not create an OpenGL ES 3 visualization context.");
+#endif
+  }
+  void PrepareDestroy() override {
+#if !TARGET_OS_OSX
+    AppleVisualizerLifecycle::Shared().Wait();
 #endif
   }
   ~AppleContext() override {
@@ -76,7 +88,7 @@ template<typename T> struct CFValue {
   ~CFValue() { if (value) CFRelease(value); }
   CFValue(const CFValue&) = delete;
 };
-MilkRustImage DecodeImage(const std::filesystem::path& path) {
+[[maybe_unused]] MilkRustImage DecodeImage(const std::filesystem::path& path) {
   @autoreleasepool {
     const auto length = std::filesystem::file_size(path);
     if (!length || length > 16*1024*1024) throw std::runtime_error("Texture exceeds its encoded byte budget.");
@@ -175,34 +187,157 @@ int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames,
   *dropped_frames = block.dropped_frames;
   return 1;
 }
+@interface PlezyMilkRustHost ()
+#if !TARGET_OS_OSX
+- (void)applyVisualizationPause;
+- (void)visualizationWillResignActive;
+- (void)visualizationDidBecomeActive;
+#endif
+@end
 @implementation PlezyMilkRustHost {
   std::unique_ptr<NativeWorker> _worker;
   std::shared_ptr<AppleFrames> _frames;
+#if !TARGET_OS_OSX
+  std::shared_ptr<AppleVisualizerPermit> _permit;
+  NSArray* _lifecycleObservers;
+  NSString* _recoveryOwner;
+  NSString* _presetPath;
+  NSString* _failure;
+  BOOL _requestedPaused;
+#endif
 }
-+ (NSString*)dependencyError { return [NSString stringWithUTF8String:MilkRustApi::Shared().error.c_str()] ?: @"Native engine unavailable"; }
++ (NSString*)dependencyError {
+#if TARGET_OS_OSX
+  const auto reason = IsolatedRenderBackend::DependencyError();
+#else
+  const auto reason = MilkRustApi::Shared().error;
+#endif
+  return [NSString stringWithUTF8String:reason.c_str()] ?: @"Native engine unavailable";
+}
 - (instancetype)initWithAudioReader:(int (^)(void*, size_t))reader frameAvailable:(void (^)(void))available error:(NSError**)error {
   self = [super init]; if (!self) return nil;
   try {
-    if (!MilkRustApi::Shared().error.empty()) throw std::runtime_error(MilkRustApi::Shared().error);
+    NSString* unavailable = [PlezyMilkRustHost dependencyError];
+    if (unavailable.length) throw std::runtime_error(unavailable.UTF8String);
     _frames = std::make_shared<AppleFrames>(); auto slot = _frames;
-    _worker = std::make_unique<NativeWorker>([] { return std::make_unique<AppleContext>(); }, DecodeImage,
+#if !TARGET_OS_OSX
+    (void)AppleVisualizerRecovery::Shared();
+    _permit = std::make_shared<AppleVisualizerPermit>();
+    _recoveryOwner = NSUUID.UUID.UUIDString;
+    _requestedPaused = YES;
+#endif
+    _worker = std::make_unique<NativeWorker>(
+#if TARGET_OS_OSX
+        [] { return std::make_unique<IsolatedRenderBackend>(); },
+#else
+        [permit = _permit] { return std::make_unique<AppleContext>(permit); }, DecodeImage,
+#endif
         [reader](mpv_plezy_audio_block* block) { return reader(block, sizeof(*block)); },
-        [slot, available](std::shared_ptr<const NativeFrame> frame) { Publish(slot, *frame); available(); });
+        [slot, available](std::shared_ptr<const NativeFrame> frame) { Publish(slot, *frame); available(); }, false,
+#if TARGET_OS_OSX
+        RenderBudget::Desktop()
+#else
+        RenderBudget::Constrained()
+#endif
+    );
+#if !TARGET_OS_OSX
+    __weak PlezyMilkRustHost* weakSelf = self;
+    auto* center = NSNotificationCenter.defaultCenter;
+    _lifecycleObservers = @[
+      [center addObserverForName:UIApplicationWillResignActiveNotification object:nil queue:nil
+          usingBlock:^(NSNotification*) { [weakSelf visualizationWillResignActive]; }],
+      [center addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil
+          usingBlock:^(NSNotification*) { [weakSelf visualizationDidBecomeActive]; }]
+    ];
+#endif
   } catch (const std::exception& ex) { SetError(error, ex); return nil; }
   return self;
 }
-- (BOOL)loadPreset:(NSString*)path root:(NSString*)root error:(NSError**)error {
+- (BOOL)loadPreset:(NSString*)path root:(NSString*)root transitionSeconds:(double)transitionSeconds
+  allowInterrupted:(BOOL)allowInterrupted
+             error:(NSError**)error {
   try { if (!_worker) throw std::runtime_error("Visualization session has ended.");
-    _worker->Load(path.UTF8String, root.UTF8String); return YES;
+    if (!path.UTF8String || !root.UTF8String) throw std::runtime_error("Invalid preset path encoding.");
+#if !TARGET_OS_OSX
+    auto& recovery = AppleVisualizerRecovery::Shared();
+    if (!allowInterrupted && !recovery.AutomaticAllowed(path))
+      throw std::runtime_error("Automatic playback was stopped after an interrupted visualization. Select Reload preset to retry, or choose another preset.");
+    if (_presetPath) {
+      const auto previous = _worker->Status();
+      const bool drained = _worker->PauseAndDrain();
+      recovery.End(_recoveryOwner, drained, @"The visualization could not finish before switching presets.", previous.has_frame);
+      if (!drained) {
+        _permit->Cancel();
+        throw std::runtime_error("The previous visualization has not recovered. Choose an original scene or restart the app.");
+      }
+    }
+#else
+    (void)allowInterrupted;
+#endif
+    _worker->Load(path.UTF8String, root.UTF8String, transitionSeconds);
+#if !TARGET_OS_OSX
+    _presetPath = [path copy];
+    [self applyVisualizationPause];
+    if (_failure) throw std::runtime_error(_failure.UTF8String);
+#endif
+    return YES;
   } catch (const std::exception& ex) { SetError(error, ex); return NO; }
 }
 - (void)resizeWidth:(NSInteger)width height:(NSInteger)height {
   if (_worker && width >= 1 && height >= 1 && width <= 16384 && height <= 16384) _worker->Resize(static_cast<int>(width), static_cast<int>(height));
 }
-- (void)setPaused:(BOOL)paused { if (_worker) _worker->Pause(paused); }
+- (void)setMouseState:(BOOL)down x:(double)x y:(double)y dx:(double)dx dy:(double)dy {
+  if (_worker) _worker->SetMouseState(down, x, y, dx, dy);
+}
+- (void)setPaused:(BOOL)paused {
+#if TARGET_OS_OSX
+  if (_worker) _worker->Pause(paused);
+#else
+  _requestedPaused = paused;
+  [self applyVisualizationPause];
+#endif
+}
+#if !TARGET_OS_OSX
+- (void)applyVisualizationPause {
+  if (!_worker) return;
+  try {
+    auto& recovery = AppleVisualizerRecovery::Shared();
+    const auto status = _worker->Status();
+    if (_requestedPaused || !AppleVisualizerLifecycle::Shared().Foreground()) {
+      const bool drained = _worker->PauseAndDrain();
+      recovery.End(_recoveryOwner, drained, @"The visualization did not pause before the app became inactive.", status.has_frame);
+      if (!drained) _permit->Cancel();
+    } else if (!_failure && status.state != "failed" && _presetPath) {
+      recovery.Begin(_recoveryOwner, _presetPath); // Durable before GPU startup/resume.
+      _worker->Pause(false);
+    }
+  } catch (const std::exception& error) {
+    _failure = [NSString stringWithUTF8String:error.what()] ?: @"Visualization recovery state could not be saved.";
+    _worker->Pause(true);
+    _permit->Cancel();
+  }
+}
+- (void)visualizationWillResignActive {
+  AppleVisualizerLifecycle::Shared().SetForeground(false);
+  [self applyVisualizationPause];
+}
+- (void)visualizationDidBecomeActive {
+  AppleVisualizerLifecycle::Shared().SetForeground(true);
+  [self applyVisualizationPause];
+}
+#endif
 - (NSDictionary<NSString*,id>*)status {
   if (!_worker) return @{@"state":@"disposed", @"hasFrame":@NO};
   const auto s = _worker->Status();
+#if !TARGET_OS_OSX
+  if (s.state == "failed" || _failure) {
+    NSString* reason = _failure ?: [NSString stringWithUTF8String:s.reason.c_str()];
+    try { AppleVisualizerRecovery::Shared().End(_recoveryOwner, false, reason); }
+    catch (...) { /* The previously armed record remains conservative on I/O failure. */ }
+    return @{@"state":@"failed", @"reason":reason ?: @"Visualization stopped.", @"hasFrame":@NO,
+        @"width":@(s.width), @"height":@(s.height), @"droppedFrames":@(s.dropped), @"engine":@"milkrust"};
+  }
+#endif
   return @{@"state":[NSString stringWithUTF8String:s.state.c_str()], @"reason":[NSString stringWithUTF8String:s.reason.c_str()],
       @"hasFrame":@(s.has_frame), @"width":@(s.width), @"height":@(s.height), @"droppedFrames":@(s.dropped), @"engine":@"milkrust"};
 }
@@ -211,6 +346,21 @@ int PlezySubtitlePcmCaptureReadNext(void* player, double* pts, uint32_t* frames,
   std::lock_guard<std::mutex> lock(slot->mutex);
   return slot->latest ? CVPixelBufferRetain(slot->latest) : nullptr;
 }
-- (void)close { _worker.reset(); /* Frame leases remain valid through texture unregister. */ }
+- (void)close {
+#if !TARGET_OS_OSX
+  for (id observer in _lifecycleObservers) [NSNotificationCenter.defaultCenter removeObserver:observer];
+  _lifecycleObservers = nil;
+  if (_worker) {
+    const auto status = _worker->Status();
+    const bool drained = _worker->PauseAndDrain();
+    _permit->Cancel();
+    const bool retired = _worker->Stop();
+    try { AppleVisualizerRecovery::Shared().End(_recoveryOwner, drained && retired && !_failure,
+        @"The visualization did not finish during shutdown.", status.has_frame); }
+    catch (...) { /* Do not make shutdown depend on storage recovery. */ }
+  }
+#endif
+  _worker.reset(); /* Frame leases remain valid through texture unregister. */
+}
 - (void)dealloc { [self close]; }
 @end

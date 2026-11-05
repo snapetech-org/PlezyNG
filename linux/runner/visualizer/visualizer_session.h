@@ -23,6 +23,7 @@ class VisualizerSession {
   int64_t texture_id() const;
   bool LoadPreset(const std::string& path, const std::string& root, double transition_seconds, std::string* error);
   void Resize(int width, int height);
+  void SetMouseState(bool down, double x, double y, double dx, double dy);
   void SetPaused(bool paused);
   FlValue* Status() const;
 

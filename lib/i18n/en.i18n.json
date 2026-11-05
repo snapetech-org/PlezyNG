@@ -5035,7 +5035,7 @@
     "openSource": "Open source",
     "importFolderWithTexturesAndNotices": "Import folder with textures and notices",
     "cancelFolderImport": "Cancel folder import",
-    "importRmpackCheckFilesAndNotices": "Import .rmpack (check files and notices)",
+    "importRmpackCheckFilesAndNotices": "Import .rmpack or ZIP (check files and notices)",
     "noLocalCollectionsImportedFolderImpo_5b95ffdd": "No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.",
     "importMilkOrMilk2Files": "Import .milk or .milk2 files",
     "noLocalPresetsImported": "No local presets imported.",
@@ -5057,7 +5057,7 @@
     "noMatchingPresets": "No matching presets.",
     "reorderInPlaylist": "Reorder in playlist",
     "presetDetailsAndNotices": "Preset details and notices",
-    "milkRustShaderSupportNotice": "MilkRust supports a limited shader subset and uniform Fade double presets. Preset changes currently cut immediately. Unsupported presets report an error."
+    "milkRustShaderSupportNotice": "MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices."
   },
   "romm": {
     "chooseFile": "Choose a game file",

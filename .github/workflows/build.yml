@@ -1986,6 +1986,10 @@ jobs:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: dart run scripts/configure_updater.dart
 
+      - name: Build bundled MilkRust for Windows
+        shell: pwsh
+        run: python scripts/visualizer/build_runtime.py --platform windows --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
       - name: Build Windows ${{ matrix.arch }}
         id: windows-build
         shell: pwsh
@@ -2438,6 +2442,10 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Build bundled MilkRust for Linux
+        shell: bash
+        run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures "${{ matrix.arch }}" --output build/visualizer-native
 
       - name: Build Linux ${{ matrix.arch }}
         shell: bash

@@ -12981,8 +12981,8 @@ class Translations$visualizerUi$en {
 	/// en: 'Cancel folder import'
 	String get cancelFolderImport => 'Cancel folder import';
 
-	/// en: 'Import .rmpack (check files and notices)'
-	String get importRmpackCheckFilesAndNotices => 'Import .rmpack (check files and notices)';
+	/// en: 'Import .rmpack or ZIP (check files and notices)'
+	String get importRmpackCheckFilesAndNotices => 'Import .rmpack or ZIP (check files and notices)';
 
 	/// en: 'No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.'
 	String get noLocalCollectionsImportedFolderImpo_5b95ffdd => 'No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.';
@@ -13047,8 +13047,8 @@ class Translations$visualizerUi$en {
 	/// en: 'Preset details and notices'
 	String get presetDetailsAndNotices => 'Preset details and notices';
 
-	/// en: 'MilkRust supports a limited shader subset and uniform Fade double presets. Preset changes currently cut immediately. Unsupported presets report an error.'
-	String get milkRustShaderSupportNotice => 'MilkRust supports a limited shader subset and uniform Fade double presets. Preset changes currently cut immediately. Unsupported presets report an error.';
+	/// en: 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.'
+	String get milkRustShaderSupportNotice => 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.';
 }
 
 // Path: appIcon.names
@@ -20302,7 +20302,7 @@ extension on Translations {
 			'visualizerUi.openSource' => 'Open source',
 			'visualizerUi.importFolderWithTexturesAndNotices' => 'Import folder with textures and notices',
 			'visualizerUi.cancelFolderImport' => 'Cancel folder import',
-			'visualizerUi.importRmpackCheckFilesAndNotices' => 'Import .rmpack (check files and notices)',
+			'visualizerUi.importRmpackCheckFilesAndNotices' => 'Import .rmpack or ZIP (check files and notices)',
 			'visualizerUi.noLocalCollectionsImportedFolderImpo_5b95ffdd' => 'No local collections imported. Folder imports stay private and preserve original notices. Pack archives need license records, attribution and an integrity index.',
 			'visualizerUi.importMilkOrMilk2Files' => 'Import .milk or .milk2 files',
 			'visualizerUi.noLocalPresetsImported' => 'No local presets imported.',
@@ -20324,7 +20324,7 @@ extension on Translations {
 			'visualizerUi.noMatchingPresets' => 'No matching presets.',
 			'visualizerUi.reorderInPlaylist' => 'Reorder in playlist',
 			'visualizerUi.presetDetailsAndNotices' => 'Preset details and notices',
-			'visualizerUi.milkRustShaderSupportNotice' => 'MilkRust supports a limited shader subset and uniform Fade double presets. Preset changes currently cut immediately. Unsupported presets report an error.',
+			'visualizerUi.milkRustShaderSupportNotice' => 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.',
 			"romm.chooseFile" => "Choose a game file",
 			"romm.chooseCopy" => "Choose an exact game copy",
 			"romm.favorite" => "Favorite",

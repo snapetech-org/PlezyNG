@@ -42,6 +42,13 @@ release qualification. Changes are committed directly to `main` in small batches
 
 ### Follow-up integration checks
 
+Flutter 3.47.1 dependencies now resolve on this host. Full analysis of `lib` and
+`test` found 22 compile errors in the integrated karaoke, caption and detached
+window paths. Updated the file-picker and TV APIs, nullable media title handling
+and optional-interface casts; regenerated desktop microphone plugin registration.
+The follow-up analyzer reports zero errors and zero warnings (style lints remain).
+Flutter tests are being enabled with the native compiler required by PDFium.
+
 The Dart parser exposed three authored-source blockers: the Games screen had
 been truncated at 24,000 bytes, the visualizer content validator contained a
 duplicated function body inside an unterminated regular expression, and RomM's

@@ -440,7 +440,7 @@ class RommStorage extends ChangeNotifier {
     try {
     final row = pending[id];
     if (row == null) return;
-    if (useServer && row != null && rommHash(row['nativeFileHash'], 40).isNotEmpty) {
+    if (useServer && rommHash(row['nativeFileHash'], 40).isNotEmpty) {
       final game = RommGame.fromJson(rommString(row['connectionId']), rommMap(row['game']));
       final key = '${game.key}:${game.identity}:${row['nativeFileHash']}:${row['core']}';
       for (final suffix in ['sram', 'state', 'progress']) { final cached = File(_path(key, suffix)); if (await cached.exists()) await cached.delete(); }

@@ -116,7 +116,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _audioTrackId = player.subtitlePcmAudioTrackId;
     _captureTimeline = SubtitleCaptureTimeline(
       live: true,
-      seekGeneration: player is SubtitlePcmTimelineSource ? player.subtitlePcmSeekGeneration : 0,
+      seekGeneration: player is SubtitlePcmTimelineSource ? (player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration : 0,
     );
     _resetAudioWindow(_handoffPositionMs * 1000);
     _liveHandoff = null;
@@ -201,7 +201,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _playerGeneration = startGeneration;
       _captureTimeline = SubtitleCaptureTimeline(
         live: player.isLivePlayback,
-        seekGeneration: player is SubtitlePcmTimelineSource ? player.subtitlePcmSeekGeneration : 0,
+        seekGeneration: player is SubtitlePcmTimelineSource ? (player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration : 0,
       );
       _latestLivePtsMs = 0;
       _capturePositionOffsetMs = 0;

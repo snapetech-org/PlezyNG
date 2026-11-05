@@ -38,7 +38,7 @@ Future<void> openKaraoke(BuildContext context,{MediaItem? media}) async {
   await Navigator.of(context).push(MaterialPageRoute<void>(builder:(_)=>KaraokeScreen(session:session,
     searchRemote:(query) async {
       final results=await Future.wait(servers.visibleOnlineClients.values.map((c)=>c.searchItems(query,limit:30)));
-      for(final item in results.expand((r)=>r).where((t)=>t.kind==MediaKind.track && (t.libraryGlobalKey==null || !hidden.isLibraryHidden(t.libraryGlobalKey!))).take(100)) { await session.addMedia(item); }
+      for(final item in results.expand((r)=>r).where((t)=>t.kind==MediaKind.track && (t.libraryGlobalKey==null || !hidden.hiddenLibraryKeys.contains(t.libraryGlobalKey!))).take(100)) { await session.addMedia(item); }
     })));
 }
 
@@ -84,7 +84,7 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
     await _run(() async { final result=await s.host('singer',{'name':name}); _singer=result['singerId'] as String; });
   }
   Future<void> _import() => _run(() async {
-    final selection=await FilePicker.platform.pickFiles(allowMultiple:true,type:FileType.custom,
+    final selection=await FilePicker.pickFiles(allowMultiple:true,type:FileType.custom,
       allowedExtensions:['zip','plezykaraoke','mp3','wav','ogg','flac','m4a','opus','mp4','mkv','webm','cdg','lrc','vtt','ttml','txt','ass','ssa','ttf','otf','mid','midi','kar']);
     if(selection==null)return;
     final result=await s.packages.importFiles(selection.paths.whereType<String>().toList());
@@ -131,8 +131,8 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
           TextButton(onPressed:()=>Navigator.pop(context,false),child:const Text('LAN songbook only')),
           FilledButton(onPressed:()=>Navigator.pop(context,true),child:const Text('Configure HTTPS'))]));
       if(secure==null)return;
-      if(secure){final cert=await FilePicker.platform.pickFiles(dialogTitle:'Select trusted PEM certificate');final certPath=cert?.files.single.path;if(certPath==null)return;
-        final key=await FilePicker.platform.pickFiles(dialogTitle:'Select private PEM key');final keyPath=key?.files.single.path;if(keyPath==null)return;
+      if(secure){final cert=await FilePicker.pickFiles(dialogTitle:'Select trusted PEM certificate');final certPath=cert?.files.single.path;if(certPath==null)return;
+        final key=await FilePicker.pickFiles(dialogTitle:'Select private PEM key');final keyPath=key?.files.single.path;if(keyPath==null)return;
         security=SecurityContext()..useCertificateChain(certPath)..usePrivateKey(keyPath);}
       await _room.start(address,security:security);
     }
@@ -241,10 +241,10 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
             switch(action) {
               case 'request': await _request(track);
               case 'group': await _request(track,group:true);
-              case 'invite': await _run(()async{final file=await FilePicker.platform.saveFile(fileName:'${track.id}.plezyduet');if(file!=null)await KaraokeTakes(s).createInvitation(track,file,key:0,tempo:1,part:track.parts.lastOrNull ?? '2');});
+              case 'invite': await _run(()async{final file=await FilePicker.saveFile(fileName:'${track.id}.plezyduet');if(file!=null)await KaraokeTakes(s).createInvitation(track,file,key:0,tempo:1,part:track.parts.lastOrNull ?? '2');});
               case 'prepare': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokePreparationScreen(session:s,track:track,client:_preparation)));
               case 'editor': if(mounted)await Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>KaraokeEditor(session:s,track:track)));
-              case 'export': await _run(() async { final path=await FilePicker.platform.saveFile(fileName:'${track.id}.plezykaraoke'); if(path!=null) await s.packages.export(track,path); });
+              case 'export': await _run(() async { final path=await FilePicker.saveFile(fileName:'${track.id}.plezykaraoke'); if(path!=null) await s.packages.export(track,path); });
               case 'verify': await _run(() async { final missing=await s.packages.verify(track); if(missing.isNotEmpty) throw StateError(missing.join(', ')); });
             }
           },itemBuilder:(_)=>[

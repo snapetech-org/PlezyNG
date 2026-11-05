@@ -37,7 +37,7 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
     if(saved==true)await run(()=>s.host('setlist',{'name':name,'tracks':selected.toList()}).then((_){}));
   }
   Future<void> importCollection() async {
-    final files=await FilePicker.platform.pickFiles(type:FileType.custom,allowedExtensions:['plezycollection','json']);
+    final files=await FilePicker.pickFiles(type:FileType.custom,allowedExtensions:['plezycollection','json']);
     final path=files?.files.single.path;if(path==null)return;
     final data=await collections.read(path);if(!mounted)return;
     final incoming=await showDialog<bool>(context:context,builder:(context)=>AlertDialog(title:const Text('Resolve collection conflicts'),
@@ -84,9 +84,9 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
       OutlinedButton(onPressed:busy ? null : ()=>_fillers(),child:Text('${s.fillerTrackIds.length} filler renditions selected')),
       const Divider(),Text('Portability',style:Theme.of(context).textTheme.titleLarge),
       Wrap(spacing:12,runSpacing:8,children:[
-        OutlinedButton(onPressed:busy ? null : ()=>run(()async{final file=await FilePicker.platform.saveFile(fileName:'karaoke.plezycollection');if(file!=null)await collections.export(file);}),child:const Text('Export singers, favorites and sets')),
+        OutlinedButton(onPressed:busy ? null : ()=>run(()async{final file=await FilePicker.saveFile(fileName:'karaoke.plezycollection');if(file!=null)await collections.export(file);}),child:const Text('Export singers, favorites and sets')),
         OutlinedButton(onPressed:busy ? null : ()=>run(importCollection),child:const Text('Import collection')),
-        for(final format in ['csv','xml','html'])TextButton(onPressed:busy ? null : ()=>run(()async{final file=await FilePicker.platform.saveFile(fileName:'songbook.$format');if(file!=null)await collections.catalog(file,format);}),child:Text(format=='html' ? 'Print-ready songbook' : 'Catalog ${format.toUpperCase()}')),
+        for(final format in ['csv','xml','html'])TextButton(onPressed:busy ? null : ()=>run(()async{final file=await FilePicker.saveFile(fileName:'songbook.$format');if(file!=null)await collections.catalog(file,format);}),child:Text(format=='html' ? 'Print-ready songbook' : 'Catalog ${format.toUpperCase()}')),
       ]),
       const Text('Choose an existing synced folder in the system file picker to exchange these files. Imports resolve preferences explicitly; packages retain their rendition IDs and checksums.'),
       const Divider(),Text('Offline storage',style:Theme.of(context).textTheme.titleLarge),
@@ -94,7 +94,7 @@ class _KaraokeVenueScreenState extends State<KaraokeVenueScreen> {
         trailing:TextButton(onPressed:busy || s.pinned.contains(t.id) ? null : ()=>run(()async{await s.packages.evict(t.id,pinned:s.pinned);s.catalog.remove(t.id);await s.host('settings');}),child:const Text('Remove package'))),
       const Divider(),Text('This build',style:Theme.of(context).textTheme.titleLarge),
       const Text('Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.'),
-      Text(PlatformDetector.isAppleTVSync() || PlatformDetector.isTizenBuild() || PlatformDetector.isWebOSBuild()
+      Text(PlatformDetector.isAppleTV() || PlatformDetector.isTizenBuild() || PlatformDetector.isWebOSBuild()
         ? 'Local microphone capture is unavailable in this TV build. Use external amplification. Key, tempo and stems require an MPV backend.'
         : 'Local microphone capture uses the native record plugin with explicit permission. Key, tempo and stems require an MPV backend. USB devices, Bluetooth latency and capture quality require device validation.'),
       const Text('Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.'),

@@ -57,7 +57,7 @@ class _KaraokePreparationScreenState extends State<KaraokePreparationScreen> {
       if(kind=='reference' && asset.kind!=KaraokeAssetKind.leadVocal && asset.kind!=KaraokeAssetKind.duetVocal)throw StateError('Pitch proposals require an isolated vocal stem');
       input=await widget.session.store.asset(song.id,asset.path);
     } else {
-      final selection=await FilePicker.platform.pickFiles();final path=selection?.files.single.path;if(path==null)return;input=File(path);
+      final selection=await FilePicker.pickFiles();final path=selection?.files.single.path;if(path==null)return;input=File(path);
       if(kind=='reference')throw StateError('Import an isolated vocal as a package stem first');
     }
     await widget.client.submit(kind,[input],{

@@ -42,7 +42,7 @@ class KaraokeAudio extends ChangeNotifier with WidgetsBindingObserver {
   int _bytes=0;
   Map<String,dynamic>? _takeMetadata;
   bool get recording=>_dry!=null;
-  bool get supported=>!PlatformDetector.isAppleTVSync() && !PlatformDetector.isTizenBuild() && !PlatformDetector.isWebOSBuild();
+  bool get supported=>!PlatformDetector.isAppleTV() && !PlatformDetector.isTizenBuild() && !PlatformDetector.isWebOSBuild();
   Future<List<InputDevice>> devices() async => supported ? _capture.listInputDevices() : [];
   void _notify() { if(!_disposed)notifyListeners(); }
 

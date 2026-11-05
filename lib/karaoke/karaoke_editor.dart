@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'package:crypto/crypto.dart';
-import 'package:path/path.dart' as p;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../media/lyrics.dart';
@@ -129,7 +128,7 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
     }finally{name.dispose();start.dispose();end.dispose();}
   }
   Future<void> _importLyrics() => _run(() async {
-    final choice=await FilePicker.platform.pickFiles(type:FileType.custom,allowedExtensions:['txt','lrc','vtt','ttml']);
+    final choice=await FilePicker.pickFiles(type:FileType.custom,allowedExtensions:['txt','lrc','vtt','ttml']);
     final path=choice?.files.single.path;if(path==null)return;
     final file=File(path);if(await file.length()>8*1024*1024)throw const FormatException('Lyric import too large');
     final ext=path.substring(path.lastIndexOf('.'));
@@ -192,7 +191,7 @@ class _KaraokeEditorState extends State<KaraokeEditor> {
       TextButton(onPressed:()=>setState(()=>_tap=0),child:const Text('Reset tap cursor')),
       for(final format in ['lrc','vtt'])OutlinedButton(onPressed:()=>_run(() async {
         final output=format=='lrc' ? KaraokeFormats.exportLrc(_track.lyrics) : KaraokeFormats.exportVtt(_track.lyrics);
-        final path=await FilePicker.platform.saveFile(fileName:'${_track.id}.$format');if(path!=null)await File(path).writeAsString(output);
+        final path=await FilePicker.saveFile(fileName:'${_track.id}.$format');if(path!=null)await File(path).writeAsString(output);
       }),child:Text('Export ${format.toUpperCase()}')),
     ]),
     Text('Lyric offset: ${_track.lyricOffsetMs} ms'),Slider(min:-10000,max:10000,divisions:400,value:_track.lyricOffsetMs.toDouble().clamp(-10000,10000),

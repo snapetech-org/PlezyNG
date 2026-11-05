@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math' as math;
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
@@ -153,7 +152,7 @@ class KaraokeSession extends ChangeNotifier {
     final id=sha256.convert(utf8.encode(media.globalKey)).toString();
     if(catalog[id] case final existing?) return existing;
     final lyrics=await music.fetchLyrics(media) ?? const Lyrics(synced:false,lines:[]);
-    final value=KaraokeTrack(id:id,songId:media.globalKey,title:media.title,artist:media.trackArtistTitle ?? '',
+    final value=KaraokeTrack(id:id,songId:media.globalKey,title:media.title ?? '',artist:media.trackArtistTitle ?? '',
       media:media,lyrics:lyrics,durationMs:media.durationMs ?? 0);
     await addTrack(value); return value;
   }

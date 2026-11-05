@@ -64,7 +64,7 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
       if(save!=true)return;
       await run(()async{
         await stopPreview();File? camera;
-        if(includeVideo){final selected=await FilePicker.platform.pickFiles(type:FileType.video);final path=selected?.files.single.path;if(path==null)return;camera=File(path);}
+        if(includeVideo){final selected=await FilePicker.pickFiles(type:FileType.video);final path=selected?.files.single.path;if(path==null)return;camera=File(path);}
         await _library.render(take,widget.client,{'backingGain':backing,'vocalGain':vocal,'echoWet':echo,'gate':gate,
           'lyricOverlay':lyricOverlay,'trimStartMs':int.parse(trim.text),'durationMs':int.parse(duration.text)},camera:camera,partners:candidates.where((t)=>selected.contains(t.id)).toList());
       });
@@ -73,7 +73,7 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
   Future<void> download(KaraokeTake take)=>run(()async{
     final result=await widget.client.refresh(take.metadata['renderJobId'] as String),dir=await widget.client.download(result);
     final file=File(p.join(dir.path,'performance.mp4'));final media=await file.exists() ? file : File(p.join(dir.path,'performance.wav'));
-    final destination=await FilePicker.platform.saveFile(fileName:p.basename(media.path));if(destination!=null)await media.copy(destination);
+    final destination=await FilePicker.saveFile(fileName:p.basename(media.path));if(destination!=null)await media.copy(destination);
   });
   @override void dispose(){unawaited(stopPreview().then((_)=>widget.session.restoreMusic()).catchError((Object error){widget.session.report(error);}));super.dispose();}
   @override Widget build(BuildContext context)=>Scaffold(appBar:AppBar(title:const Text('Private takes'),actions:[
@@ -81,8 +81,8 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
     IconButton(tooltip:'Refresh',onPressed:()=>run(()async{}),icon:const Icon(Icons.refresh)),
   ]),body:ListView(padding:const EdgeInsets.all(16),children:[
     if(_busy)const LinearProgressIndicator(),if(_error!=null)Text(_error!,style:TextStyle(color:Theme.of(context).colorScheme.error)),
-    Wrap(spacing:12,children:[OutlinedButton(onPressed:_busy ? null : ()=>run(()async{final pick=await FilePicker.platform.pickFiles(type:FileType.custom,allowedExtensions:['plezyduet']);final path=pick?.files.single.path;if(path!=null)await _library.acceptInvitation(path);}),child:const Text('Accept duet invitation')),
-      OutlinedButton(onPressed:_busy ? null : ()=>run(()async{final pick=await FilePicker.platform.pickFiles(type:FileType.custom,allowedExtensions:['plezytake']);final path=pick?.files.single.path;if(path!=null)await _library.importResponse(path);}),child:const Text('Import duet response'))]),
+    Wrap(spacing:12,children:[OutlinedButton(onPressed:_busy ? null : ()=>run(()async{final pick=await FilePicker.pickFiles(type:FileType.custom,allowedExtensions:['plezyduet']);final path=pick?.files.single.path;if(path!=null)await _library.acceptInvitation(path);}),child:const Text('Accept duet invitation')),
+      OutlinedButton(onPressed:_busy ? null : ()=>run(()async{final pick=await FilePicker.pickFiles(type:FileType.custom,allowedExtensions:['plezytake']);final path=pick?.files.single.path;if(path!=null)await _library.importResponse(path);}),child:const Text('Import duet response'))]),
     if(widget.session.duetInvitation case final invitation?)Text('${invitation['owner']==true ? 'Host invitation' : 'Accepted invitation'}: ${invitation['title']}. Use the assigned part and keep the backing rendition, key, and tempo fixed.'),
     const Text('Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.'),
     for(final take in _takes)Card(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
@@ -95,7 +95,7 @@ class _KaraokeTakesScreenState extends State<KaraokeTakesScreen> {
           TextButton(onPressed:_busy ? null : ()=>run(()=>_library.linkToInvitation(take)),child:const Text('Link this take to the duet invitation')),
         TextButton(onPressed:_busy || !take.complete ? null : ()=>play(take),child:const Text('Listen to dry take')),
         TextButton(onPressed:_busy || !take.complete ? null : ()=>produce(take),child:const Text('Mix / export audio or video')),
-        TextButton(onPressed:_busy ? null : ()=>run(()async{final file=await FilePicker.platform.saveFile(fileName:'${take.id}.plezytake');if(file!=null)await _library.export(take,file);}),child:const Text('Export portable take')),
+        TextButton(onPressed:_busy ? null : ()=>run(()async{final file=await FilePicker.saveFile(fileName:'${take.id}.plezytake');if(file!=null)await _library.export(take,file);}),child:const Text('Export portable take')),
         if(take.metadata['renderJobId']!=null)TextButton(onPressed:_busy ? null : ()=>download(take),child:const Text('Download completed render')),
         if(take.metadata['invitationId']!=null && take.metadata['mergeApproved']!=true)
           TextButton(onPressed:_busy ? null : ()=>run(()=>_library.approveMerge(take)),child:const Text('Approve duet merge after listening')),

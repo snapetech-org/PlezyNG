@@ -2,7 +2,7 @@
 # The trusted-main hybrid profile uses standard hosted runners for compatible Linux, Android, Windows, and pinned Tizen builds; Apple and storage-heavy WebOS remain private JIT.
 # packer-windows-jit-v1
 name: PlezyNG Release
-run-name: ${{ inputs.reuse_platform_run_id != '' && format('action:{0}:pool:{1}:tag:v{2}:reuse:{3}', inputs.action, inputs.runner_pool, inputs.build_version, inputs.reuse_platform_run_id) || inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
+run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
 on:
   workflow_dispatch:

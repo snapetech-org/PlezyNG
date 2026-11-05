@@ -908,7 +908,6 @@ def ensure_release(
         if execution_profile != "hybrid" or include_webos_release or include_apple_store_build:
             raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile.")
         verify_platform_recovery(reuse_platform_run_id, commit_sha, tag.removeprefix("v"))
-        run_title += f":reuse:{reuse_platform_run_id}"
     existing = matching_run(
         PLEZY_REPO,
         RELEASE_WORKFLOW,

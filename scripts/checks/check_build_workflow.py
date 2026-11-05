@@ -1354,7 +1354,8 @@ require(
     and "inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != ''" in run_name_expression
     and "format('action:{0}:pool:{1}:mode:{2}:version:{3}'" in run_name_expression
     and "format('action:{0}:pool:{1}'" in run_name_expression
-    and "inputs.action == 'release'" in run_name_expression,
+    and "inputs.action == 'release'" in run_name_expression
+    and "reuse:" not in run_name_expression,
     "build and release run names must match the private JIT broker title schema",
 )
 

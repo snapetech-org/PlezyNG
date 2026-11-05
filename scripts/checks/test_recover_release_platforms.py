@@ -195,7 +195,8 @@ class ControllerTests(unittest.TestCase):
         verify.assert_called_once_with(42, "b" * 40, "3.0.0")
         self.assertEqual(dispatch.call_args.args[3]["reuse_platform_run_id"], "42")
         self.assertEqual(dispatch.call_args.kwargs["expected_title"],
-                         "action:release:pool:private:tag:v3.0.0:reuse:42")
+                         "action:release:pool:private:tag:v3.0.0")
+        self.assertEqual(dispatch.call_args.kwargs["expected_sha"], "b" * 40)
 
     def test_recovery_rejects_signed_store_or_public_webos_mode(self):
         with self.assertRaises(controller.ReleaseError):

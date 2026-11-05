@@ -18,6 +18,7 @@ class _Version8Database extends SourceDatabase {
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await super.migration.onCreate(migrator);
+      await customStatement('DROP INDEX entries_podcast_sync_identity');
       for (final table in [
         'canonical_cards',
         'canonical_aliases',
@@ -26,6 +27,7 @@ class _Version8Database extends SourceDatabase {
         'remote_stream_state',
         'remote_preparation_claims',
         'remote_deleted_profiles',
+        'podcast_sync_ack',
       ]) {
         await customStatement('DROP TABLE $table');
       }
@@ -59,6 +61,7 @@ void main() {
       kind: SourceItemKind.video,
     );
     await oldRepository.cacheEntries('alice', [movie]);
+    await old.customStatement('DROP INDEX entries_podcast_sync_identity');
     await old.customStatement("UPDATE entries SET search='film-123.mkv'");
     final progress = await oldRepository.saveProgress(
       'alice',
@@ -78,6 +81,7 @@ void main() {
       'remote_stream_state',
       'remote_preparation_claims',
       'remote_deleted_profiles',
+      'podcast_sync_ack',
     ]) {
       await old.customStatement('DROP TABLE $table');
     }
@@ -107,7 +111,7 @@ void main() {
     final repository = SourceRepository(database);
     expect((await repository.entries('alice')).single.title, 'Original title');
     final version = await database.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 11);
+    expect(version.read<int>('user_version'), database.schemaVersion);
     expect(
       await database.customSelect("SELECT rowid FROM entries_search_fts WHERE search MATCH 'Original'").get(),
       hasLength(1),

@@ -52,6 +52,7 @@ void main() {
       }),
     );
     final proxy = OAuthProxyClient(
+      relayBaseUrl: 'https://relay.example',
       httpClient: MockClient(
         (_) async => http.Response(jsonEncode({'steamId': identity, 'steamCloudToken': grant}), 200),
       ),

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve search results on cancellation and filters during partial responses, and keep optional relay absence from crashing settings.
+
 - Build and package the three default RomM emulator cores with the app, preserve their source/notices, validate Android delivery, and install the desktop host after bundle cleanup.
 
 - Preserve typography sizes when applying theme packages, reject encoded RomM path traversal before URL normalization, trim karaoke VTT terminators and distinguish damaged recording data from I/O failures.

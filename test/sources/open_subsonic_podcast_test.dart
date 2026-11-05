@@ -8,6 +8,7 @@ import 'package:plezy/sources/adapters/podcast_rss_source.dart';
 import 'package:plezy/sources/source_models.dart';
 import 'package:plezy/sources/source_transport.dart';
 import 'package:plezy/sources/podcast_opml.dart';
+import '../test_helpers/prefs.dart';
 
 http.Response _json(Object value, {int status = 200}) =>
     http.Response(jsonEncode(value), status, headers: const {'content-type': 'application/json'});
@@ -17,6 +18,8 @@ Map<String, Object?> _subsonic(Object data) => {
 };
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(resetSharedPreferencesForTest);
   group('OpenSubsonic source', () {
     test('browses and resolves audio through the read-only server adapter', () async {
       final requests = <http.Request>[];

@@ -306,7 +306,10 @@ class _SearchScreenState extends State<SearchScreen>
 
     void progress() {
       if (!current()) return;
-      publish(compose());
+      final hits = compose();
+      // Unconfigured or cancelled legs often finish first with no data. They
+      // must not erase the previous query before any source produces results.
+      if (hits.isNotEmpty || iptvVod.items.isNotEmpty) publish(hits);
     }
 
     // Attach handlers as each leg starts. Local results and fast servers can
@@ -632,10 +635,7 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   void onSearchStarted(String query) {
-    searchResults = const [];
-    resultsQuery = '';
     _pendingSearchOutcome = null;
-    _resetFilter();
   }
 
   @override
@@ -709,7 +709,9 @@ class _SearchScreenState extends State<SearchScreen>
     _iptvVodResults = matchedOutcome?.iptvVod ?? const [];
     _iptvVodProfileId = matchedOutcome?.iptvVodProfileId;
     _candidateKinds = _kindsIn([..._searchCandidates, ..._seerrResults, ..._catalogResults]);
-    if (!_hasCandidatesFor(_selectedFilter)) _selectedFilter = const _AllResults();
+    // A slow source may still supply the selected kind/people filter. Only a
+    // completed query establishes that it has disappeared.
+    if (!isSearching && !_hasCandidatesFor(_selectedFilter)) _selectedFilter = const _AllResults();
     _filteredResults = _rankFilteredResults(_selectedFilter, query);
 
     if (!isSearching && (matchedOutcome?.partial ?? false)) {

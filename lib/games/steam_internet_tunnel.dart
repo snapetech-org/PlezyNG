@@ -35,7 +35,6 @@ bool steamPublicIPv4(InternetAddress address) {
 
 Uri? steamRelayUri([String value = steamRelayBaseUrl]) {
   final uri = Uri.tryParse(value);
-  final catalog = Uri.tryParse(plezyServerBaseUrl);
   if (uri == null ||
       uri.scheme != 'https' ||
       uri.host.isEmpty ||
@@ -44,6 +43,11 @@ Uri? steamRelayUri([String value = steamRelayBaseUrl]) {
       uri.hasFragment) {
     return null;
   }
+  // Optional service absence is a disabled capability, including while the
+  // streaming settings screen renders. Never fall back to upstream services.
+  final Uri? catalog;
+  try { catalog = Uri.tryParse(plezyServerBaseUrl); }
+  on StateError { return null; }
   if (catalog == null || catalog.scheme != 'https' || catalog.host.isEmpty || uri.origin != catalog.origin) return null;
   return uri.replace(scheme: 'wss', path: '${uri.path.replaceFirst(RegExp(r'/$'), '')}/games/steam/relay');
 }

@@ -65,6 +65,8 @@ def with_wait_parameter(webhook_url: str) -> str:
 
 
 def post(webhook_url: str, title: str, release_url: str, description: str) -> dict:
+    # Discord normalizes surrounding whitespace in embed descriptions.
+    description = description.strip()
     payload = {
         "username": "PlezyNG Releases",
         "allowed_mentions": {"parse": []},
@@ -109,8 +111,11 @@ def post(webhook_url: str, title: str, release_url: str, description: str) -> di
         or not isinstance(embeds, list)
         or not embeds
         or not isinstance(embeds[0], dict)
-        or embeds[0].get("description") != description
+        or not isinstance(embeds[0].get("description"), str)
+        or embeds[0]["description"].strip() != description
     ):
+        if result.get("id") and result.get("channel_id"):
+            print(f"Unverified response: Discord message {result['id']} in channel {result['channel_id']}.", file=sys.stderr)
         raise RuntimeError("Discord did not confirm the release announcement.")
     return {"id": result["id"], "channel_id": result["channel_id"]}
 
@@ -138,9 +143,14 @@ def announce(release: dict, webhook_url: str, receipt_path: Path) -> dict:
             raise RuntimeError("Release notes changed since Discord delivery; review the existing receipt before reannouncing.")
         if (not isinstance(receipt.get("messages"), list)
                 or len(receipt["messages"]) > len(chunks)
-                or any(not isinstance(message, dict) or not all(
-                    re.fullmatch(r"[0-9]+", str(message.get(key, "")))
-                    for key in ("id", "channel_id")) for message in receipt["messages"])):
+                or any(not isinstance(message, dict) or not (
+                    all(re.fullmatch(r"[0-9]+", str(message.get(key, "")))
+                        for key in ("id", "channel_id"))
+                    or (message.get("owner_confirmed") is True
+                        and message.get("chunk_index") == index
+                        and isinstance(message.get("evidence_run_id"), int)
+                        and message["evidence_run_id"] > 0))
+                    for index, message in enumerate(receipt["messages"]))):
             raise RuntimeError("Invalid Discord delivery receipt.")
         if receipt.get("in_flight_chunk") is not None:
             raise RuntimeError("Previous Discord delivery is uncertain; inspect its retained receipt and channel before retrying.")
@@ -167,7 +177,10 @@ def announce(release: dict, webhook_url: str, receipt_path: Path) -> dict:
             time.sleep(1)
     print(f"Confirmed {len(receipt['messages'])} Discord release-note messages for {version}.")
     for message in receipt["messages"]:
-        print(f"Discord message {message['id']} in channel {message['channel_id']}")
+        if message.get("owner_confirmed"):
+            print(f"Page {message['chunk_index'] + 1} confirmed visible by the owner after run {message['evidence_run_id']}.")
+        else:
+            print(f"Discord message {message['id']} in channel {message['channel_id']}")
     return receipt
 
 

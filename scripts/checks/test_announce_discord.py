@@ -35,9 +35,9 @@ class DiscordDeliveryTest(unittest.TestCase):
 
     def test_post_suppresses_mentions_and_requires_confirmation(self):
         response = io.BytesIO(json.dumps({"id": "123", "channel_id": "456",
-                                         "embeds": [{"description": "@everyone notes"}]}).encode())
+                "embeds": [{"description": "@everyone notes"}]}).encode())
         with patch.object(discord, "safe_urlopen", return_value=response) as send:
-            result = discord.post("https://discord.com/api/webhooks/example/test?wait=true", "Release", "https://example.com", "@everyone notes")
+            result = discord.post("https://discord.com/api/webhooks/example/test?wait=true", "Release", "https://example.com", "@everyone notes\n\n")
         payload = json.loads(send.call_args.args[0].data)
         self.assertEqual(send.call_args.args[0].get_header("User-agent"), discord.USER_AGENT)
         self.assertEqual(payload["allowed_mentions"], {"parse": []})
@@ -113,6 +113,22 @@ class DiscordDeliveryTest(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "changed"):
                     discord.announce(changed, "unused", target)
                 send.assert_not_called()
+
+    def test_owner_confirmed_first_page_is_not_posted_again(self):
+        value = release("a" * (discord.MAX_EMBED_DESCRIPTION + 10))
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / discord.RECEIPT_NAME
+            with patch.object(discord, "gh"), patch.object(discord, "post", return_value={"id": "123", "channel_id": "456"}), patch.object(discord.time, "sleep", side_effect=RuntimeError("stop")):
+                with self.assertRaises(RuntimeError):
+                    discord.announce(value, "unused", target)
+            receipt = json.loads(target.read_text())
+            receipt["messages"] = [{"owner_confirmed": True, "chunk_index": 0, "evidence_run_id": 42}]
+            target.write_text(json.dumps(receipt))
+            value["assets"] = [{"name": discord.RECEIPT_NAME}]
+            with patch.object(discord, "gh"), patch.object(discord, "post", return_value={"id": "789", "channel_id": "456"}) as send:
+                discord.announce(value, "unused", target)
+                self.assertEqual(send.call_count, 1)
+                self.assertEqual(send.call_args.args[-1], "a" * 10)
 
     def test_unpublished_prerelease_or_foreign_release_never_posts(self):
         with tempfile.TemporaryDirectory() as directory:

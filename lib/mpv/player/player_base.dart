@@ -248,8 +248,8 @@ abstract class PlayerBase
   /// and can be sent anyway instead of being skipped. Skipping is what used
   /// to leave a hung predecessor's release chained forever (the permanent
   /// "Playback could not be started" wedge).
-  static final int _nativeInstanceCounter = 0;
-  final int nativeInstanceId = _nativeInstanceCounter;
+  static int _nativeInstanceCounter = 0;
+  final int nativeInstanceId = ++_nativeInstanceCounter;
 
   static const _maximumDurationMilliseconds = 9223372036854775;
 

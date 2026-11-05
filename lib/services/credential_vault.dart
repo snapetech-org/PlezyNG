@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
 
@@ -29,7 +30,12 @@ class CredentialVault {
   static const String _activeKeyPref = 'credential_vault_active_key_id_v2';
   static const String _legacyKeySelector = 'legacy-v1-key-id';
   static final AesGcm _algorithm = AesGcm.with256bits();
-  static final Map<String, Future<String?>> _decryptionCache = {};
+  static const _maximumCachedCredentials = 128;
+  static const _maximumCachedCredentialBytes = 256 * 1024;
+  static const _maximumSharedDecryptions = 32;
+  static final _decryptionCache = LinkedHashMap<String, ({String value, int bytes})>();
+  static final Map<String, Future<String?>> _decryptions = {};
+  static int _cachedCredentialBytes = 0;
   static Future<({String id, SecretKey key})>? _secretKey;
   static int _cacheGeneration = 0;
 
@@ -39,6 +45,29 @@ class CredentialVault {
     _cacheGeneration++;
     _secretKey = null;
     _decryptionCache.clear();
+    _decryptions.clear();
+    _cachedCredentialBytes = 0;
+  }
+
+  @visibleForTesting
+  static ({int entries, int bytes, int pending}) get payloadCacheForTesting =>
+      (entries: _decryptionCache.length, bytes: _cachedCredentialBytes, pending: _decryptions.length);
+
+  static void _rememberCredential(String ciphertext, String plaintext) {
+    // A conservative UTF-16 budget includes both the lookup key and clear text.
+    // Bulk imports and whole encrypted journals must never become a second,
+    // process-lifetime copy of the database in memory.
+    final bytes = (ciphertext.length + plaintext.length) * 2;
+    if (bytes > _maximumCachedCredentialBytes) return;
+    final previous = _decryptionCache.remove(ciphertext);
+    if (previous != null) _cachedCredentialBytes -= previous.bytes;
+    while (_decryptionCache.isNotEmpty &&
+        (_decryptionCache.length >= _maximumCachedCredentials ||
+            _cachedCredentialBytes + bytes > _maximumCachedCredentialBytes)) {
+      _cachedCredentialBytes -= _decryptionCache.remove(_decryptionCache.keys.first)!.bytes;
+    }
+    _decryptionCache[ciphertext] = (value: plaintext, bytes: bytes);
+    _cachedCredentialBytes += bytes;
   }
 
   /// Drops memoized vault state so tests can simulate key loss/divergence.
@@ -72,7 +101,6 @@ class CredentialVault {
         'm': base64Encode(box.mac.bytes),
       };
       final ciphertext = '$_prefix${jsonEncode(payload)}';
-      _decryptionCache[ciphertext] = Future.value(value);
       return ciphertext;
     }
   }
@@ -86,17 +114,24 @@ class CredentialVault {
     if (!isProtected(value)) return value;
     while (true) {
       final generation = _cacheGeneration;
-      final pending = _decryptionCache.putIfAbsent(value, () => _decrypt(value, generation));
+      final cached = _decryptionCache.remove(value);
+      if (cached != null) {
+        _decryptionCache[value] = cached;
+        return cached.value;
+      }
+      final pending = _decryptions[value] ?? _decrypt(value, generation);
+      if (_decryptions.length < _maximumSharedDecryptions) _decryptions[value] = pending;
       final String? clear;
       try {
         clear = await pending;
-      } catch (_) {
-        // A locked/unavailable keychain is not a lost token. Do not cache a
-        // transient platform failure or rewrite the credential as empty.
-        if (identical(_decryptionCache[value], pending)) _decryptionCache.remove(value)?.ignore();
-        rethrow;
+      } finally {
+        // Neither transient keychain failures nor missing keys are memoized.
+        if (identical(_decryptions[value], pending)) _decryptions.remove(value);
       }
-      if (generation == _cacheGeneration) return clear;
+      if (generation == _cacheGeneration) {
+        if (clear != null) _rememberCredential(value, clear);
+        return clear;
+      }
     }
   }
 

@@ -27,4 +27,4 @@ release qualification. Changes are committed directly to `main` in small batches
 | G10 | Detached desktop Multiview windows | Queued | Pending |
 | M01 | Current release/capability documentation and guards | Queued | Pending |
 | M02 | Required public platform delivery | Queued | Pending |
-| M03 | Remove tracked generated package outputs | Queued | Pending |
+| M03 | Remove tracked generated package outputs | Removed 16 files / 94,520,572 bytes of generated shared_preferences package output; nested package build directories ignored and source-tree guard added | Current tree checked; history intentionally preserved |

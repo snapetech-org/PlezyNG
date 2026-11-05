@@ -1175,6 +1175,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Reject tracked package build output
+        run: python3 scripts/checks/check_tracked_build_outputs.py
+
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:

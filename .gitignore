@@ -30,6 +30,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/packages/**/build/
 **/.cxx/
 /tools/webos/node_modules/
 /debug-info/
@@ -74,3 +75,4 @@ server/Caddyfile
 tools/lending_gateway/config.json
 __pycache__/
 *.pyc
+

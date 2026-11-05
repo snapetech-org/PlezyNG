@@ -1143,7 +1143,7 @@ require(
     'bash scripts/prepare_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB" 20 local-xcode'
     in apple_prepare_scratch
     and "result_bundle=\"$APPLE_RESULT_BUNDLE\"" in apple_native
-    and apple_native.count('-derivedDataPath "$APPLE_DERIVED_DATA_PATH"') == 3,
+    and apple_native.count('-derivedDataPath "$APPLE_DERIVED_DATA_PATH"') == 4,
     "Apple CI must keep SwiftPM sources, DerivedData, and results on local APFS",
 )
 apple_scratch_script = (ROOT / "scripts/prepare_apple_jit_scratch.sh").read_text()
@@ -1268,6 +1268,17 @@ require(
     and "xcodebuild -resolvePackageDependencies -workspace" in apple_native
     and "-disableAutomaticPackageResolution" in apple_native,
     "Apple CI must refresh pinned SwiftPM mirrors and resolve exact locked packages before Xcode tests",
+)
+require(
+    '-derivedDataPath "$APPLE_DERIVED_DATA_PATH"' in named_step(
+        apple_native, "Resolve pinned Apple Swift packages for native tests"
+    )
+    and '-derivedDataPath "$APPLE_DERIVED_DATA_PATH"' in named_step(
+        job("build-tvos"), "Resolve pinned tvOS Swift packages"
+    )
+    and 'derived_data_args=(-scheme Runner -derivedDataPath "$APPLE_DERIVED_DATA_PATH")'
+    in (ROOT / "scripts/refresh_apple_spm.sh").read_text(),
+    "Apple Swift package resolution must keep DerivedData inside the per-job cleanup root",
 )
 
 unit_tests = job_block(ci_text, "test")

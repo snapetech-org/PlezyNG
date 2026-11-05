@@ -1588,8 +1588,7 @@ class PlayerNative extends PlayerBase
   Future<bool> subtitlePcmCaptureAvailable() async {
     if (_nativeCoreUnavailable ||
         audioOnly ||
-        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid) ||
-        _isLivePlayback) {
+        !(Platform.isLinux || Platform.isWindows || Platform.isMacOS || Platform.isIOS || Platform.isAndroid)) {
       return false;
     }
     await _ensureInitialized();

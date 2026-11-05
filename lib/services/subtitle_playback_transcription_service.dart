@@ -6,6 +6,7 @@ import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
 
 import '../mpv/player/subtitle_pcm_capture_source.dart';
 import 'subtitle_ai_service.dart';
+import 'subtitle_capture_timeline.dart';
 import 'subtitle_retimer.dart';
 import 'subtitle_whisper_cpp_service.dart';
 import 'subtitle_word_timing.dart';
@@ -56,6 +57,12 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   String? _lastEncoding;
   int _packetsReceived = 0;
   int _audioGeneration = 0;
+  SubtitleCaptureTimeline? _captureTimeline;
+  int _latestLivePtsMs = 0;
+  static const _liveHistoryMs = 2 * 60 * 60 * 1000;
+  Object? _liveHandoff;
+  int _capturePositionOffsetMs = 0;
+  int _handoffPositionMs = 0;
   DateTime? _startedAt;
   DateTime? _lastPacketAt;
   SubtitleTranscriptionResult? _recentTranscript;
@@ -66,6 +73,58 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   String? get status => _status;
   SubtitleTranscriptionResult? get recentTranscript => _recentTranscript;
   bool get hasRecentTranscript => _recentTranscript?.cues.isNotEmpty == true;
+
+  Duration captionPositionForPlayback(Duration position) => position + Duration(milliseconds: _capturePositionOffsetMs);
+
+  Duration playbackPositionForCue(SubtitleCue cue) => Duration(milliseconds: cue.startMs - _capturePositionOffsetMs);
+
+  /// Called by the live-session owner only for a same-channel DVR reopen.
+  /// Caption times stay on the original timeline while the source clock rebases.
+  Future<Object?> suspendForDvrReopen(SubtitlePcmCaptureSource player, {required int targetPositionMs}) async {
+    if (!_running || !identical(player, _player) || !player.isLivePlayback || _liveHandoff != null) return null;
+    final token = Object();
+    _liveHandoff = token;
+    _handoffPositionMs = targetPositionMs + _capturePositionOffsetMs;
+    _audioGeneration++;
+    _samples.clear();
+    liveCaption.value = null;
+    try { await player.setSubtitlePcmCaptureEnabled(false); }
+    on Object {
+      _liveHandoff = null;
+      _discardCapturedTimeline();
+      await stop();
+      rethrow;
+    }
+    while (_polling) { await Future<void>.delayed(const Duration(milliseconds: 20)); }
+    await _inferenceFuture;
+    return identical(_liveHandoff, token) ? token : null;
+  }
+
+  Future<void> resumeAfterDvrReopen(Object token, {required bool opened}) async {
+    if (!identical(_liveHandoff, token)) return;
+    final player = _player;
+    if (!opened || player == null || player.disposed || !player.isLivePlayback) {
+      _liveHandoff = null;
+      _discardCapturedTimeline();
+      await stop();
+      return;
+    }
+    _capturePositionOffsetMs = _handoffPositionMs - player.currentPosition.inMilliseconds;
+    _playerGeneration = player.mediaSessionGeneration;
+    _audioTrackId = player.subtitlePcmAudioTrackId;
+    _captureTimeline = SubtitleCaptureTimeline(
+      live: true,
+      seekGeneration: player is SubtitlePcmTimelineSource ? player.subtitlePcmSeekGeneration : 0,
+    );
+    _resetAudioWindow(_handoffPositionMs * 1000);
+    _liveHandoff = null;
+    _startedAt = DateTime.now();
+    _lastPacketAt = null;
+    if (!await player.setSubtitlePcmCaptureEnabled(true)) {
+      _running = false;
+      await stop();
+    }
+  }
 
   Future<void> start(
     SubtitlePcmCaptureSource player, {
@@ -79,9 +138,6 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     }
     if (_starting || _running || _session != null) {
       throw StateError('A live subtitle capture session is already active.');
-    }
-    if (player.isLivePlayback) {
-      throw UnsupportedError('Live TV capture is not supported; use a VOD playback session.');
     }
     if (!await player.subtitlePcmCaptureAvailable()) {
       throw UnsupportedError('This player build does not expose decoded PCM to live subtitles.');
@@ -119,7 +175,6 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         },
       );
       if (player.disposed ||
-          player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while Whisper was loading. Start live captions again.');
@@ -129,7 +184,6 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         throw UnsupportedError('This player session cannot capture decoded PCM.');
       }
       if (player.disposed ||
-          player.isLivePlayback ||
           player.mediaSessionGeneration != startGeneration ||
           player.subtitlePcmAudioTrackId != startAudioTrackId) {
         throw StateError('Playback changed while live capture was starting. Start again on the current audio track.');
@@ -139,6 +193,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       loadedSession = null;
       _player = player;
       _playerGeneration = startGeneration;
+      _captureTimeline = SubtitleCaptureTimeline(
+        live: player.isLivePlayback,
+        seekGeneration: player is SubtitlePcmTimelineSource ? player.subtitlePcmSeekGeneration : 0,
+      );
+      _latestLivePtsMs = 0;
+      _capturePositionOffsetMs = 0;
+      _liveHandoff = null;
       _audioTrackId = startAudioTrackId;
       _running = true;
       _startedAt = DateTime.now();
@@ -163,6 +224,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   Future<SubtitleTranscriptionResult?> stop() async {
+    _liveHandoff = null;
     _timer?.cancel();
     _timer = null;
     final player = _player;
@@ -241,7 +303,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   String? _invalidCaptureSessionReason(SubtitlePcmCaptureSource? player) {
     if (player == null) return 'Playback session ended; captured transcript was discarded.';
-    if (player.disposed || player.isLivePlayback || player.mediaSessionGeneration != _playerGeneration) {
+    if (player.disposed || player.mediaSessionGeneration != _playerGeneration) {
       return 'Playback session changed; captured transcript was discarded.';
     }
     if (player.subtitlePcmAudioTrackId != _audioTrackId) {
@@ -251,7 +313,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   bool _isCurrentInference(int generation) =>
-      generation == _audioGeneration && _invalidCaptureSessionReason(_player) == null;
+      _liveHandoff == null && generation == _audioGeneration && _invalidCaptureSessionReason(_player) == null &&
+      (_player is! SubtitlePcmTimelineSource ||
+          (_player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration == _captureTimeline?.seekGeneration);
 
   void _discardCapturedTimeline() {
     _audioGeneration++;
@@ -268,7 +332,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   Future<void> _poll() async {
-    if (!_running || _polling || _starting) return;
+    if (!_running || _polling || _starting || _liveHandoff != null) return;
     final player = _player;
     if (player == null) return;
     final invalidReason = _invalidCaptureSessionReason(player);
@@ -319,7 +383,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     for (final packet in packets) {
       final raw = packet['pcm'];
       if (raw is! Uint8List) continue;
-      final ptsUs = (packet['presentationTimeUs'] as num?)?.toInt();
+      final rawPtsUs = (packet['presentationTimeUs'] as num?)?.toInt();
+      final clock = _player is SubtitlePcmTimelineSource ? _player as SubtitlePcmTimelineSource : null;
+      final ptsUs = rawPtsUs == null ? null : rawPtsUs + (clock?.timelineOffset.inMicroseconds ?? 0) + _capturePositionOffsetMs * 1000;
       final sampleRate = (packet['sampleRate'] as num?)?.toInt();
       final channels = (packet['channels'] as num?)?.toInt();
       final encoding = packet['encoding']?.toString();
@@ -344,8 +410,27 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
           (_lastEncoding != null && _lastEncoding != encoding);
       final expected = _nextExpectedPtsUs;
       final gapUs = expected == null ? 0 : ptsUs - expected;
-      if (changedFormat || (expected != null && (gapUs < -150000 || gapUs > 1500000))) {
+      if (clock != null && clock.subtitlePcmSeekGeneration != _captureTimeline?.seekGeneration) {
+        // Invalidate inference immediately, including when the native drain
+        // still contains packets queued before this seek.
         _resetAudioWindow(ptsUs);
+        liveCaption.value = null;
+      }
+      final action = _captureTimeline?.accept(
+        ptsUs: ptsUs,
+        durationUs: (frames * 1000000 / sampleRate).round(),
+        seekGeneration: clock?.subtitlePcmSeekGeneration ?? 0,
+        seekTargetUs: clock?.subtitlePcmSeekTarget == null ? null : clock!.subtitlePcmSeekTarget!.inMicroseconds + _capturePositionOffsetMs * 1000,
+        formatChanged: changedFormat,
+      ) ?? SubtitleCapturePacketAction.append;
+      if (action == SubtitleCapturePacketAction.discard) continue;
+      if (action == SubtitleCapturePacketAction.resetTimeline) {
+        _discardCapturedTimeline();
+        _latestLivePtsMs = 0;
+      }
+      if (action == SubtitleCapturePacketAction.resetWindow || action == SubtitleCapturePacketAction.resetTimeline) {
+        _resetAudioWindow(ptsUs);
+        liveCaption.value = null;
       } else if (_streamStartMs == null) {
         _streamStartMs = ptsUs / 1000.0;
       } else if (gapUs > 40000 && gapUs <= 250000) {
@@ -353,6 +438,12 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         if (silenceSamples > 0 && silenceSamples <= _sampleRate ~/ 4) {
           _samples.addAll(List<double>.filled(silenceSamples, 0));
         }
+      }
+      if (_player?.isLivePlayback == true) {
+        _latestLivePtsMs = math.max(_latestLivePtsMs, ptsUs ~/ 1000);
+        final cutoff = _latestLivePtsMs - _liveHistoryMs;
+        _cues.removeWhere((cue) => cue.endMs < cutoff);
+        _wordTimings.removeWhere((word) => word.endMs < cutoff);
       }
 
       _lastSampleRate = sampleRate;
@@ -414,13 +505,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     final session = _session!;
     _inferenceFuture = _transcribeWindow(session, samples, startMs, generation)
         .then<void>((_) {
-          if (generation != _audioGeneration) return;
+          if (!_isCurrentInference(generation)) return;
           if (consume <= _samples.length) {
             _samples.removeRange(0, consume);
             _streamStartMs = (_streamStartMs ?? startMs.toDouble()) + consume * 1000.0 / _sampleRate;
           }
         })
         .catchError((Object error) {
+          if (!_isCurrentInference(generation)) return;
           _lastError = error;
           _running = false;
           _timer?.cancel();
@@ -542,11 +634,11 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   void _publishCurrentCaption() {
     final player = _player;
-    if (!_running || player == null || _cues.isEmpty) {
+    if (!_running || _liveHandoff != null || player == null || _cues.isEmpty) {
       if (liveCaption.value != null) liveCaption.value = null;
       return;
     }
-    final position = player.currentPosition.inMilliseconds;
+    final position = player.currentPosition.inMilliseconds + _capturePositionOffsetMs;
     SubtitleCue? current;
     for (final cue in _cues.reversed) {
       if (position >= cue.startMs - 1600 && position <= cue.endMs + 2200) {

@@ -2141,7 +2141,7 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 }
 
 /// Search and seek within the in-memory transcript captured from the watched
-/// portion of the current Android ExoPlayer VOD session.
+/// portion of the current decoded-PCM playback timeline.
 class _CapturedTranscriptDialog extends StatefulWidget {
   const _CapturedTranscriptDialog({required this.player, required this.service});
 
@@ -2212,7 +2212,9 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
 
   Future<void> _seekToCue(SubtitleCue cue) async {
     try {
-      await widget.player.seek(Duration(milliseconds: cue.startMs));
+      final target = widget.service.playbackPositionForCue(cue);
+      if (target.isNegative) return;
+      await widget.player.seek(target);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.maybeOf(
@@ -2231,7 +2233,7 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
           stream: widget.player.streams.position,
           initialData: widget.player.currentPosition,
           builder: (context, snapshot) {
-            final position = snapshot.data ?? widget.player.currentPosition;
+            final position = widget.service.captionPositionForPlayback(snapshot.data ?? widget.player.currentPosition);
             final visibleCount = _hideFutureDialogue ? _visibleCueCount(cues, position.inMilliseconds) : cues.length;
             final filtered = _filterCues(cues, visibleCount);
             final canSeek = widget.player.state.seekable && !widget.player.disposed;

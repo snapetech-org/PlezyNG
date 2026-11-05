@@ -932,7 +932,20 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
         _live.playbackElapsed
           ..reset()
           ..start();
-        return _openLiveStream(
+        final captions = SubtitlePlaybackTranscriptionService.instance;
+        final captureSource = currentPlayer is SubtitlePcmCaptureSource ? currentPlayer as SubtitlePcmCaptureSource : null;
+        final beforePosition = currentPlayer.currentPosition;
+        final beforeEpoch = _live.playbackPosition(beforePosition).epoch;
+        final targetEpoch = request.effectiveTargetEpoch;
+        Object? captionHandoff;
+        if (captureSource != null && beforeEpoch != null && targetEpoch != null) {
+          captionHandoff = await captions.suspendForDvrReopen(captureSource,
+            targetPositionMs: beforePosition.inMilliseconds + ((targetEpoch - beforeEpoch) * 1000).round());
+        }
+        var opened = false;
+        try {
+          if (!isCurrent()) return false;
+          opened = await _openLiveStream(
           currentPlayer,
           request.url,
           targetEpoch: request.effectiveTargetEpoch,
@@ -942,6 +955,13 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
           iptvSession: session is IptvLiveTvPlaybackSession ? session : null,
           enableLocalTimeShift: session is IptvLiveTvPlaybackSession ? session.localTimeShiftEnabled : false,
         );
+          return opened;
+        } finally {
+          if (captionHandoff != null) {
+            try { await captions.resumeAfterDvrReopen(captionHandoff, opened: opened && isCurrent()); }
+            on Object catch (error) { appLogger.w('Live caption handoff failed (${error.runtimeType})'); }
+          }
+        }
       },
     );
     if (result == LiveTvSeekOutcome.superseded || !isCurrent()) return false;

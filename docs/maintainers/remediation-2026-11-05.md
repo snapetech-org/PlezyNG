@@ -17,7 +17,7 @@ release qualification. Changes are committed directly to `main` in small batches
 | D09 | Progressive unified search | Implemented: independent source results, per-server title/people progress, generation/profile guarded publishing and usable results while remaining legs load | Partial publication and A/B/A race regressions added; execution pending |
 | D10 | Translation fallbacks and localized service status | Queued | Pending |
 | G01-G02 | Native visualizer delivery and signed catalog activation | Queued | Pending |
-| G03 | Live/DVR subtitle capture | Queued | Pending |
+| G03 | Live/DVR subtitle capture | Implemented: decoded-route capability gate; two-hour cue history; explicit DVR seeks preserve cues; unexplained live clock rollback clears the old epoch; same-channel server DVR reopen suspends/rebases capture; channel/audio changes invalidate it | Clock/seek/format regression cases added; native route, rollover and server-DVR device execution pending |
 | G04 | P2P storage policy for large media | Implemented: per-profile 4/16/64/128/256 GiB choices, 64 GiB default, aggregate lease reservations, known-size checks and 512 MiB free-space reserve; native metadata checks the actual file requirement | Native transfer/large-file, low-space and concurrent-device execution pending |
 | G05 | Dedicated karaoke implementation | Queued | Pending |
 | G06 | RomM and emulator integration | Queued | Pending |

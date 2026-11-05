@@ -5,6 +5,11 @@ Updated 2026-10-26. This is the implementation and testing entry point. Read the
 alongside it. Experimental playback remains opt-in; no release engine, system
 driver, EDID, kernel module or TV firmware is replaced automatically.
 
+The runner inventory below records the checks from October 26, 2026. Current
+runner selection follows root `AGENTS.md`: compatible hosted runners are the
+default, with private JIT reserved for hardware, network, storage, or isolation
+requirements that hosted runners cannot meet.
+
 ## What is implemented
 
 | Platform/path | Implementation in this repository | Qualification boundary |
@@ -300,12 +305,12 @@ Checkpoint for source commit `9c0fb9693ad7b705e737a1829d10bfd70c6ce17e`
   check required every optional package even though SwiftPM resolved only the
   selected ffmpegbuild, libdovi, and smbclient dependencies; the branch now
   accepts a valid subset while requiring the core pins and rejecting drift.
-- These two corrections have not had a private-JIT rerun. The historic run used
-  GitHub-hosted runners; the current Dolby workflow is JIT-only, but its routes
-  are not yet authorized. Do not repeat the historic hosted route or treat its
-  earlier passing jobs as an overall pass.
+- These two corrections had not been rerun when this October 26 snapshot was
+  written. The earlier hosted run is historical evidence only and does not
+  prove that the overall workflow passed. Run updated work on compatible hosted
+  runners, using private JIT only for its hardware or private-resource needs.
 
-## Current private-JIT route and blockers (2026-10-26)
+## Historical private-JIT route and blockers (checked 2026-10-26)
 
 A read-only organization API check found these exact routes:
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Provision every Android module's pinned SDK tools on private JIT runners."""
+"""Provision pinned Android SDK tools on compatible hosted or private runners."""
 
 from __future__ import annotations
 

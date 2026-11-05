@@ -2,7 +2,7 @@
 
 The comic renderer uses browser APIs and the existing Flutter archive, XML and
 HTTP packages. Playwright is a pinned **development-only** dependency. It is not
-shipped in PlezyNG. Both the dependency and its lockfile are committed here. CI installs Chromium and runs the existing Flutter browser integration suite on the repository's private Linux JIT runner.
+shipped in PlezyNG. Both the dependency and its lockfile are committed here. CI installs Chromium and runs the existing Flutter browser integration suite on a compatible GitHub-hosted Linux runner by default; the private profile remains available for constrained execution.
 
 With the repository's Flutter SDK and Node 20 or newer on PATH:
 

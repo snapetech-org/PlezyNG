@@ -182,6 +182,22 @@ class BuildWorkflowGuardTest(unittest.TestCase):
                     result.stderr,
                 )
 
+    def test_github_only_macos_release_skips_optional_developer_id_signing(self) -> None:
+        workflow = self._workflow().replace(
+            'if [[ "$REQUIRE_HOMEBREW_CASK" != "true" ]]; then',
+            "if false; then",
+            1,
+        )
+        self.assertNotEqual(workflow, self._workflow(), "signing mutation must match")
+
+        result = self._run(workflow)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "GitHub-only macOS releases must ignore optional Developer ID secrets",
+            result.stderr,
+        )
+
     def test_windows_release_requires_pinned_torrent_dependencies(self) -> None:
         workflow = self._workflow()
         step = (
@@ -419,9 +435,9 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("release mode must validate the requested version", result.stderr)
 
-    def test_release_tag_must_match_the_exact_main_commit(self) -> None:
+    def test_release_tag_must_be_an_ancestor_with_only_allowlisted_changes(self) -> None:
         workflow = self._workflow().replace(
-            'if [[ "$release_commit" != "$GITHUB_SHA" ]]; then',
+            'if ! git merge-base --is-ancestor "$release_commit" "$GITHUB_SHA"; then',
             "if false; then",
             1,
         )
@@ -430,7 +446,20 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         result = self._run(workflow)
 
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("release tags must match pubspec and the exact trusted main commit", result.stderr)
+        self.assertIn("release tags must be immutable ancestors of trusted main", result.stderr)
+
+    def test_release_tag_changed_path_allowlist_is_required(self) -> None:
+        workflow = self._workflow().replace(
+            "tools/webos/compatibility.json)",
+            "tools/webos/compatibility.json",
+            1,
+        )
+        self.assertNotEqual(workflow, self._workflow(), "fixture mutation no longer matches workflow")
+
+        result = self._run(workflow)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("release tags must be immutable ancestors of trusted main", result.stderr)
 
     def test_release_run_without_tagged_name_is_rejected(self) -> None:
         workflow = self._workflow().replace(
@@ -539,7 +568,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_release_tag_without_exact_target_is_rejected(self) -> None:
         workflow = self._workflow().replace(
-            "          target_commitish: ${{ github.sha }}\n",
+            "          target_commitish: ${{ needs.validate-trusted-ref.outputs.release_commit }}\n",
             "",
             1,
         )
@@ -548,7 +577,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         result = self._run(workflow)
 
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("must target the exact build commit", result.stderr)
+        self.assertIn("must remain bound to the validated immutable tag commit", result.stderr)
 
 
 

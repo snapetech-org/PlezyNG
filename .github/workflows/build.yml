@@ -1,5 +1,5 @@
-# ng-runner-policy: private-jit-only-v1
-# The trusted-main 3.0.0 hybrid profile uses standard hosted runners for compatible Linux, Android, Windows, and pinned Tizen builds; Apple and storage-heavy WebOS remain private JIT.
+# ng-runner-policy: hosted-first-v1
+# The trusted-main hybrid profile uses standard hosted runners for compatible Linux, Android, Windows, and pinned Tizen builds; Apple and storage-heavy WebOS remain private JIT.
 # packer-windows-jit-v1
 name: PlezyNG Release
 run-name: ${{ inputs.action == 'release' && format('action:{0}:pool:{1}:tag:v{2}', inputs.action, inputs.runner_pool, inputs.build_version) || inputs.action == 'build' && inputs.mode == 'release' && inputs.build_version != '' && format('action:{0}:pool:{1}:mode:{2}:version:{3}', inputs.action, inputs.runner_pool, inputs.mode, inputs.build_version) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
@@ -38,7 +38,7 @@ on:
           - macos-validation
         default: release
       build_version:
-        description: Semantic version for artifact names; release requires the existing v* tag to point to this exact main commit
+        description: Semantic version for artifact names; releases reuse a tag on main only when later commits contain allowlisted release infrastructure changes
         required: false
         type: string
       include_webos_build:
@@ -98,13 +98,14 @@ jobs:
   validate-trusted-ref:
     name: Validate release request
     if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) }}
     outputs:
       action: ${{ steps.request.outputs.action }}
       runner_pool: ${{ steps.request.outputs.runner_pool }}
       execution_profile: ${{ steps.request.outputs.execution_profile }}
       mode: ${{ steps.request.outputs.mode }}
       release_tag: ${{ steps.request.outputs.release_tag }}
+      release_commit: ${{ steps.release-tag.outputs.commit }}
       version: ${{ steps.request.outputs.version }}
       include_webos_build: ${{ steps.request.outputs.include_webos_build }}
       include_webos_release: ${{ steps.request.outputs.include_webos_release }}
@@ -204,8 +205,8 @@ jobs:
             fi
             VERSION="$RELEASE_TAG"
           fi
-          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" || "$MODE" != "release" || "$VERSION" != "3.0.0" || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
-            echo "The hybrid execution profile is restricted to full PlezyNG 3.0.0 builds from refs/heads/main." >&2
+          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" || "$MODE" != "release" || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
+            echo "The hybrid execution profile requires a full CPU-backend release build from refs/heads/main." >&2
             exit 1
           fi
           if [[ "$MODE" == "release" && "$VERSION" == "3.0.0" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
@@ -276,7 +277,7 @@ jobs:
         run: |
           echo "Execution profile: **$EXECUTION_PROFILE** (broker pool: private)." >> "$GITHUB_STEP_SUMMARY"
           if [[ "$EXECUTION_PROFILE" == "hybrid" ]]; then
-            echo "Compatible Linux, Android, and Windows jobs use standard GitHub-hosted runners; Apple, WebOS, and Tizen remain on private JIT." >> "$GITHUB_STEP_SUMMARY"
+            echo "Compatible Linux, Android, Tizen, and Windows jobs use standard GitHub-hosted runners; Apple and storage-heavy WebOS use private JIT." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Require the main branch for builds
@@ -288,7 +289,8 @@ jobs:
             exit 1
           fi
 
-      - name: Require the release tag to match the trusted main commit
+      - name: Validate immutable release tag against trusted main
+        id: release-tag
         if: ${{ inputs.action == 'release' }}
         shell: bash
         env:
@@ -305,15 +307,27 @@ jobs:
           fi
           git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
           release_commit=$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")
-          if [[ "$release_commit" != "$GITHUB_SHA" ]]; then
-            echo "Release tag $RELEASE_TAG resolves to $release_commit, not dispatched main commit $GITHUB_SHA." >&2
+          if ! git merge-base --is-ancestor "$release_commit" "$GITHUB_SHA"; then
+            echo "Release tag $RELEASE_TAG is not an ancestor of dispatched main commit $GITHUB_SHA." >&2
             exit 1
           fi
           git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
-          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main; then
+          if ! git merge-base --is-ancestor "$release_commit" refs/remotes/origin/main; then
             echo "Release tags must point to a commit on main." >&2
             exit 1
           fi
+          while IFS= read -r changed_file; do
+            [[ -z "$changed_file" ]] && continue
+            case "$changed_file" in
+              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/launch_apple_jit_runner.sh|scripts/prepare_android_sdk.py|scripts/release_all_platforms.py|tools/reader-tests/README.md|tools/webos/compatibility.json)
+                ;;
+              *)
+                echo "Release tag $RELEASE_TAG differs from main in non-release source '$changed_file'; refusing to build mixed source." >&2
+                exit 1
+                ;;
+            esac
+          done < <(git diff --name-only "$release_commit" "$GITHUB_SHA")
+          printf 'commit=%s\n' "$release_commit" >> "$GITHUB_OUTPUT"
 
       - name: Validate action and runner pool
         shell: bash
@@ -328,7 +342,7 @@ jobs:
             exit 1
           fi
           if [[ "$RUNNER_POOL" != "private" ]]; then
-            echo "This workflow currently supports only the private runner pool." >&2
+            echo "runner_pool must be 'private' for the broker route used by constrained jobs." >&2
             exit 1
           fi
           if [[ "$MODE" != "release" && "$MODE" != "webos-validation" && "$MODE" != "macos-validation" ]]; then
@@ -1524,6 +1538,12 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
+          if [[ "$REQUIRE_HOMEBREW_CASK" != "true" ]]; then
+            echo "codesign=false" >> "$GITHUB_OUTPUT"
+            echo "notarize=false" >> "$GITHUB_OUTPUT"
+            echo "Developer ID signing is opt-in; GitHub-only releases use an unsigned macOS DMG."
+            exit 0
+          fi
           signing_values=("$MACOS_CERTIFICATE_BASE64" "$MACOS_CERTIFICATE_PASSWORD")
           signing_set=0
           signing_missing=0
@@ -2954,6 +2974,6 @@ jobs:
           prerelease: false
           name: ${{ needs.validate-trusted-ref.outputs.release_tag }}
           tag_name: ${{ needs.validate-trusted-ref.outputs.release_tag }}
-          target_commitish: ${{ github.sha }}
+          target_commitish: ${{ needs.validate-trusted-ref.outputs.release_commit }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

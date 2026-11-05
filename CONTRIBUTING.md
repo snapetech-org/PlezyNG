@@ -30,10 +30,13 @@ AI-assisted pull requests must state in the PR description which model(s) were u
 
 ### Code Quality Checks
 
-`CI - Sanity Checks` is manually dispatched from GitHub Actions and runs on
-private JIT runners. It does not trigger automatically for pushes or pull
+`CI - Sanity Checks` is manually dispatched from GitHub Actions and defaults to
+the hybrid profile: compatible jobs use GitHub-hosted runners, while Apple or
+other private-resource jobs use ephemeral JIT runners. `runner_pool=private`
+selects the broker used for constrained jobs; it does not require every CI job
+to run privately. CI does not trigger automatically for pushes or pull
 requests. PR descriptions should report focused validation; after changes merge
-to `main`, dispatch CI against that exact SHA before creating a release tag.
+to `main`, dispatch CI against that exact SHA before a release build.
 
 1. **Code Formatting**: Ensures code follows Dart and native formatting standards
    - Run locally: `dart format .` to format Dart files

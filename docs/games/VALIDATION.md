@@ -120,7 +120,7 @@ coverage. This is experimental implementation, not certified streaming support.
 
 - GitHub Actions [run 40295331169](https://github.com/snapetech-org/PlezyNG/actions/runs/40295331169), commit `a948f57c74d3c908984c8b21d82c5d662e2414d3`: **Moonlight Android library/JNI/adapter build passed**. This run predates the new Steam module and does not validate it.
 - Historical GitHub Actions [Games embedded engine run 40356122282](https://github.com/snapetech-org/PlezyNG/actions/runs/40356122282), commit `ecf7759a989f8aa6d708978e6cfb3ada8420939e`, and [run 40357578204](https://github.com/snapetech-org/PlezyNG/actions/runs/40357578204), head `3cd7f91bdb1fbc40007c428750a2abf04bd0659c`: both Android library builds and all 38 portable transport/adapter tests passed with sanitizers. These runs came from the now-removed standalone workflow, which used GitHub-hosted `ubuntu-latest`; they are historical test evidence, not validation of current runner routing.
-- The standalone Games workflow has been removed. Current Games tests are integrated into the existing private JIT-routed `android-test` and `linux-native-test` jobs in `.github/workflows/ci.yml`, whose job IDs are already present in the shared runner inventory. The temporary localization-generation workflow was also removed; checked-in localization output is verified by the existing JIT-routed code-analysis job.
+- The standalone Games workflow has been removed. Current Games tests are integrated into the `android-test` and `linux-native-test` jobs in `.github/workflows/ci.yml`. The default hybrid profile runs compatible Linux jobs on GitHub-hosted Ubuntu; the private profile remains available for constrained environments. The temporary localization-generation workflow was also removed; checked-in localization output is verified by the code-analysis job.
 - Flutter 3.47.1: **64 focused tests passed** on the combined Games/latest-main tree. Full Dart analysis reports no issues. Structural localization checks pass for 37 locales and 3,146 messages, with placeholders/source hashes verified; localized quantity generation is current.
 - The 38 native tests cover authorization, crypto, launch transactions, retransmission, HID, tracked-frame ownership, cancellation, late callbacks and Pyrowave parsing/negotiation. CI runs the Steam suite with AddressSanitizer, UndefinedBehaviorSanitizer and leak detection.
 - On the earlier head, Code Analysis run [40357578052](https://github.com/snapetech-org/PlezyNG/actions/runs/40357578052) detected stale generated `strings_*.g.dart` outputs; these were regenerated and committed in `6ca060b8f4e29d95a0a9b18b3720292884524401`. That historical run's iOS job also stopped at the CocoaPods lockfile-preservation check after Flutter configuration changed `ios/Podfile.lock`; current-head CI is needed to establish whether that issue remains. Android host-native and JVM/API checks passed in run [40356122352](https://github.com/snapetech-org/PlezyNG/actions/runs/40356122352).
@@ -144,7 +144,7 @@ cd android
 ./gradlew :moonlight:assembleDebug :steam:assembleDebug
 ```
 
-The private JIT-routed `android-test` job builds both Android libraries alongside existing Android JVM/native checks. The private JIT-routed `linux-native-test` address-sanitizer matrix entry runs the portable Steam transport/adapter suite with AddressSanitizer, UndefinedBehaviorSanitizer and leak detection. Ordinary Android CI must also compile the application integration and minified release. No local APK, live Steam OpenID exchange, API-key-backed catalog request, live PIN exchange, actual hardware decode, controller-latency measurement, or real stream was performed: this environment has no gaming host or GPU device. The new server and client paths have not been run here; current-head private-JIT CI is the first implementation check. The CodeQL init/analyze actions now run inside the existing private-JIT `android-test` job. Repository security settings must switch from CodeQL default setup to advanced setup before GitHub will accept SARIF uploads from that workflow.
+The default hybrid `android-test` job builds both Android libraries alongside existing Android JVM/native checks on compatible hosted Ubuntu. The `linux-native-test` address-sanitizer matrix runs the portable Steam transport/adapter suite with AddressSanitizer, UndefinedBehaviorSanitizer and leak detection. Ordinary Android CI must also compile the application integration and minified release. No local APK, live Steam OpenID exchange, API-key-backed catalog request, live PIN exchange, actual hardware decode, controller-latency measurement, or real stream was performed: this environment has no gaming host or GPU device. The new server and client paths have not been run on this head; current-head CI is the first implementation check. CodeQL workflow execution is intentionally disabled across Snapetech repositories, so this validation plan makes no CodeQL/SARIF claim.
 
 New Games messages are seeded with reviewed English fallback copy in non-English base locales; they are **not language-reviewed translations**. Regional locales inherit their parent. Latest-main localization fixes are preserved independently of these new keys.
 
@@ -284,15 +284,15 @@ from the module's actual XML; this is **not** an APK/Gradle/resource packaging
 build, and the project still targets compileSdk 37. JNI strict compilation passes.
 Linux Flutter adapter translation units compile with `-Wall -Wextra -Werror`.
 
-The native CI recipe enables GStreamer tests on its existing private JIT job.
-No private JIT run, live Steam host, speaker/AVR, Linux full-runner release,
+The native CI recipe enables GStreamer tests in the Linux native test job.
+No current-head CI run, live Steam host, speaker/AVR, Linux full-runner release,
 Flatpak keyring, Apple SDK or Windows receiver validation has run locally.
 
 The Linux/texture follow-up passed 154 Dart/widget tests and 40 native Debug
 tests, plus strict Linux adapter compilation. The isolated GStreamer queue/
 decoder test also passed AddressSanitizer and UndefinedBehaviorSanitizer. Local
 LeakSanitizer could not inspect `/proc` under this environment, so leak detection
-remains enabled in private JIT and is not claimed as locally passed. Workflow
+remains enabled in CI and is not claimed as locally passed. Workflow
 security, action-pin and architecture checks passed; no runner routing changed.
 
 ### Configuration/account affordances — PR #54
@@ -419,7 +419,7 @@ jobs that meet their requirements.
   textures, native capability behavior and accessible touch controls. Focused
   Dart analysis is clean. These overlap the earlier 192-test suite.
 - **46 packaging/workflow contract tests passed** after the workflow extension.
-- Private Windows CI now builds and runs the Steam tests alongside existing
-  native checks, preserving x64/ARM64 private JIT routing and manual dispatch.
+- Windows CI now builds and runs the Steam tests alongside existing native
+  checks, preserving native x64/ARM64 routing and manual dispatch.
   Current-head CI, Apple SDK builds, Windows N startup, Windows audio devices,
   actual host playback and GPU/HDR qualification remain open.

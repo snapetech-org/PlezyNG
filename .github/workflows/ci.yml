@@ -1,5 +1,5 @@
-# ng-runner-policy: private-jit-only-v1
-# The trusted-main 3.0.0 hybrid profile routes compatible Linux, Windows, and native-format jobs to standard GitHub-hosted runners; Apple app/device builds remain on private JIT.
+# ng-runner-policy: hosted-first-v1
+# The trusted-main hybrid profile routes compatible Linux, Windows, and native-format jobs to standard GitHub-hosted runners; Apple app/device builds remain on private JIT.
 name: CI - Sanity Checks
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
@@ -41,7 +41,7 @@ jobs:
   analyze:
     name: Code Analysis
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:

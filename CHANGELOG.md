@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Automate serial Apple JIT job handling in release runs and preserve per-job diagnostics.
 - Pin the validated WebOS engine archive produced by the release builder and keep GitHub-only macOS artifacts unsigned unless notarized Homebrew preparation is requested.
 - Bound the Flutter Chrome CI browser test and per-test timeout so stalled runs terminate.
 - Verify the WebOS objcopy tool with the same install-root-normalized hash used by the pinned NDK environment check.

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4682CC1153F35A6F291C2F03 /* PlezyNGDVRuntimeAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 9B606A502EAB8379DC5EF951 /* PlezyNGDVRuntimeAPI */; };
 		B1D51A6A2F00110000000091 /* MilkRustNativeHost.mm in Sources */ = {isa = PBXBuildFile; fileRef = B1D51A6A2F00110000000090 /* MilkRustNativeHost.mm */; };
 		A14B3C5D6E7F8091A2B3C4D /* AMSMB2 in Frameworks */ = {isa = PBXBuildFile; productRef = B14B3C5D6E7F8091A2B3C4D /* AMSMB2 */; };
 		0092CB48B2682E3D69B1A09F /* TopShelfFetchContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D44F4361594F517C002DC45 /* TopShelfFetchContractTests.swift */; };
@@ -249,6 +250,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4682CC1153F35A6F291C2F03 /* PlezyNGDVRuntimeAPI in Frameworks */,
 				A14B3C5D6E7F8091A2B3C4D /* AMSMB2 in Frameworks */,
 				EA0F4264E7B912702C490109 /* MPVKit in Frameworks */,
 				C6A15611158B29B0FF43A960 /* Pods_Runner.framework in Frameworks */,
@@ -502,6 +504,7 @@
 				570D41C54A87D72AB27F6F15 /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				ED1FDC1CE11706BA3396F03C /* Build Steam transport */,
+				CE4041162A928F41E766FB86 /* Bundle Dolby Vision runtime */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
@@ -517,6 +520,7 @@
 			);
 			name = Runner;
 			packageProductDependencies = (
+				9B606A502EAB8379DC5EF951 /* PlezyNGDVRuntimeAPI */,
 				B14B3C5D6E7F8091A2B3C4D /* AMSMB2 */,
 				EA0F4263E7B912702C490108 /* MPVKit */,
 			);
@@ -604,6 +608,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
+				BDE8B09233D4224CD522DCB0 /* DVRuntimeAPI */,
 				A24B3C5D6E7F8091A2B3C4D /* XCRemoteSwiftPackageReference "AMSMB2" */,
 				CEE842A5A25923620300AB90 /* XCRemoteSwiftPackageReference "mpv-build" */,
 			);
@@ -766,6 +771,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -eu\npython3 \"$SRCROOT/../scripts/games/build_steam_apple.py\"\n";
+		};
+		CE4041162A928F41E766FB86 /* Bundle Dolby Vision runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = ();
+			inputPaths = ();
+			name = "Bundle Dolby Vision runtime";
+			outputPaths = ();
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\npython3 \"$SRCROOT/../tools/dv-engine/build_apple_runtime.py\" --xcode-phase\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1418,6 +1435,13 @@
 		};
 /* End XCRemoteSwiftPackageReference section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		BDE8B09233D4224CD522DCB0 /* DVRuntimeAPI */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../shared/apple/DVRuntimeAPI;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		B14B3C5D6E7F8091A2B3C4D /* AMSMB2 */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1428,6 +1452,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CEE842A5A25923620300AB90 /* XCRemoteSwiftPackageReference "mpv-build" */;
 			productName = MPVKit;
+		};
+		9B606A502EAB8379DC5EF951 /* PlezyNGDVRuntimeAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BDE8B09233D4224CD522DCB0 /* DVRuntimeAPI */;
+			productName = PlezyNGDVRuntimeAPI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

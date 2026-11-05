@@ -114,6 +114,8 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
         final showExperimentalDolbyVision =
             (Platform.isLinux && !PlatformDetector.usesNativeTvMedia()) ||
             Platform.isWindows ||
+            Platform.isIOS ||
+            Platform.isMacOS ||
             (Platform.isAndroid && !exoActive);
 
         return SettingsPage(
@@ -155,9 +157,7 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                     pref: SettingsService.experimentalDolbyVision,
                     icon: Symbols.hdr_on_rounded,
                     title: t.settings.experimentalDolbyVision,
-                    subtitle: Platform.isLinux
-                        ? t.settings.experimentalDolbyVisionDescription
-                        : t.settings.dvExperimentUnavailableDescription,
+                    subtitle: t.settings.experimentalDolbyVisionDescription,
                   ),
                 if (Platform.isLinux &&
                     !PlatformDetector.usesNativeTvMedia() &&

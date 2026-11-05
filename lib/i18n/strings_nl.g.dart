@@ -638,8 +638,6 @@ class _Translations$settings$nl extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dwing directe RPU-conversie naar Dolby Vision-profiel 8.1 af';
 	@override String get dvConversionHevcStripDescription => 'Verwijder Dolby Vision RPU/EL-lagen en bied gewone HEVC aan';
 	@override String get experimentalDolbyVision => 'Experimentele Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Gebruik de experimentele FEL-renderer bij de volgende keer afspelen. Vereist een afzonderlijke enginebuild.';
-	@override String get dvExperimentUnavailableDescription => 'Dit experiment is momenteel alleen beschikbaar op Linux.';
 	@override String get dvCompatibilityFallback => 'Compatibiliteitsterugval';
 	@override String get dvCompatibilityFallbackDescription => 'Gebruik de standaardrenderer als het experiment niet kan starten. FEL-gegevens kunnen verloren gaan.';
 	@override String get dvExperimentDiagnostics => 'Logboek voor video-experiment';
@@ -5615,8 +5613,6 @@ extension on TranslationsNl {
 			'settings.dvConversionDv81Description' => 'Dwing directe RPU-conversie naar Dolby Vision-profiel 8.1 af',
 			'settings.dvConversionHevcStripDescription' => 'Verwijder Dolby Vision RPU/EL-lagen en bied gewone HEVC aan',
 			'settings.experimentalDolbyVision' => 'Experimentele Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Gebruik de experimentele FEL-renderer bij de volgende keer afspelen. Vereist een afzonderlijke enginebuild.',
-			'settings.dvExperimentUnavailableDescription' => 'Dit experiment is momenteel alleen beschikbaar op Linux.',
 			'settings.dvCompatibilityFallback' => 'Compatibiliteitsterugval',
 			'settings.dvCompatibilityFallbackDescription' => 'Gebruik de standaardrenderer als het experiment niet kan starten. FEL-gegevens kunnen verloren gaan.',
 			'settings.dvExperimentDiagnostics' => 'Logboek voor video-experiment',
@@ -5625,10 +5621,10 @@ extension on TranslationsNl {
 			'settings.disableDolbyVisionDescription' => 'Speel de HDR10- of HLG-laag van het bestand af in plaats van Dolby Vision, indien aanwezig',
 			'settings.hdrSdrConversion' => 'HDR-naar-SDR-conversie',
 			'settings.hdrSdrConversionDescription' => 'Kies wat HDR-video omzet als het scherm geen HDR kan weergeven.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Automatisch',
 			'settings.hdrSdrConversionAutoDescription' => 'Apparaat vanaf Android 9, speler op oudere versies',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Apparaat',
 			'settings.hdrSdrConversionDeviceDescription' => 'De videohardware van het apparaat zet het om. Het snelst, maar de kleuren hangen af van het apparaat',
 			'settings.hdrSdrConversionPlayer' => 'Speler',
@@ -6139,10 +6135,10 @@ extension on TranslationsNl {
 			'videoControls.segmentLoop' => 'Fragment herhalen',
 			'videoControls.addBookmark' => 'Voeg Bookmark toe',
 			'videoControls.bookmarkName' => 'Bookmark naam',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Bijvoorbeeld de openingsscène',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Boekmark ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Voer een naam in voor dit boekmerk.',
 			'videoControls.deleteBookmark' => 'Verwijder Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Dit item heeft al 100 bookmarks.',
@@ -6653,10 +6649,10 @@ extension on TranslationsNl {
 			'libraries.hideLibrary' => 'Bibliotheek verbergen',
 			'libraries.libraryOptions' => 'Bibliotheekopties',
 			'libraries.content' => 'bibliotheekinhoud',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Bibliotheek kiezen',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			'libraries.noCollections' => 'Geen collecties in deze bibliotheek',
 			'libraries.noFoldersFound' => 'Geen mappen gevonden',
@@ -7167,10 +7163,10 @@ extension on TranslationsNl {
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in PlezyNG: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Opnieuw verbinden...',
 			'watchTogether.reconnectingDescription' => 'De verbinding is verbroken. Je neemt automatisch weer deel aan de kamer.',
 			'watchTogether.connected' => 'Verbonden',
@@ -7681,10 +7677,10 @@ extension on TranslationsNl {
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
 			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Illustratie ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Illustratie ${index}, geselecteerd',
 			'metadataEdit.notSet' => 'Niet ingesteld',
@@ -8195,10 +8191,10 @@ extension on TranslationsNl {
 			'universalMedia.noFavorites' => 'Er zijn nog geen favorieten opgeslagen.Favorites blijven in dit profiel.',
 			'universalMedia.removeFavorite' => 'Verwijder de favoriete stream',
 			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Kies bestanden',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Bestanden verzenden via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Overdracht van ondersteunde bestanden uit een browser op hetzelfde vertrouwde netwerk.',
 			'universalMedia.wifiTransferIntro' => 'Open deze adres in een browser op een ander apparaat.Kies bestanden om ze toe te voegen aan de bibliotheek Bestanden en boeken van dit apparaat',
@@ -8709,10 +8705,10 @@ extension on TranslationsNl {
 			'sourceSetup.metadataNoMatches' => 'Geen overeenkomende titels online gevonden. Probeer een andere titel.',
 			'sourceSetup.metadataSearch' => 'Online metadata zoeken',
 			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Online metadata konden niet worden geladen. Afspelen en lokale informatie blijven beschikbaar.',
 			'sourceSetup.videoDetailsLoading' => 'Videogegevens laden',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-sleutel vereist',

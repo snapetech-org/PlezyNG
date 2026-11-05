@@ -636,8 +636,6 @@ class _Translations$settings$th extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'แปลง RPU ในร่องรัดไป Dolby Vision โปรไฟล์ 8.1';
 	@override String get dvConversionHevcStripDescription => 'เกรด Dolby Vision ชั้น RPU/EL และแบนปัจจุบัน HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision แบบทดลอง';
-	@override String get experimentalDolbyVisionDescription => 'ใช้ตัวเรนเดอร์ FEL แบบทดลองในการเล่นครั้งถัดไป ต้องใช้เอนจินที่บิลด์แยกต่างหาก';
-	@override String get dvExperimentUnavailableDescription => 'ขณะนี้การทดลองนี้ใช้ได้เฉพาะบน Linux';
 	@override String get dvCompatibilityFallback => 'ทางเลือกเพื่อความเข้ากันได้';
 	@override String get dvCompatibilityFallbackDescription => 'ใช้ตัวเรนเดอร์มาตรฐานหากเริ่มการทดลองไม่ได้ ข้อมูล FEL อาจสูญหาย';
 	@override String get dvExperimentDiagnostics => 'บันทึกการทดลองวิดีโอ';
@@ -5590,8 +5588,6 @@ extension on TranslationsTh {
 			'settings.dvConversionDv81Description' => 'แปลง RPU ในร่องรัดไป Dolby Vision โปรไฟล์ 8.1',
 			'settings.dvConversionHevcStripDescription' => 'เกรด Dolby Vision ชั้น RPU/EL และแบนปัจจุบัน HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision แบบทดลอง',
-			'settings.experimentalDolbyVisionDescription' => 'ใช้ตัวเรนเดอร์ FEL แบบทดลองในการเล่นครั้งถัดไป ต้องใช้เอนจินที่บิลด์แยกต่างหาก',
-			'settings.dvExperimentUnavailableDescription' => 'ขณะนี้การทดลองนี้ใช้ได้เฉพาะบน Linux',
 			'settings.dvCompatibilityFallback' => 'ทางเลือกเพื่อความเข้ากันได้',
 			'settings.dvCompatibilityFallbackDescription' => 'ใช้ตัวเรนเดอร์มาตรฐานหากเริ่มการทดลองไม่ได้ ข้อมูล FEL อาจสูญหาย',
 			'settings.dvExperimentDiagnostics' => 'บันทึกการทดลองวิดีโอ',
@@ -5600,10 +5596,10 @@ extension on TranslationsTh {
 			'settings.disableDolbyVisionDescription' => 'เล่นไฟล์ HDR10 หรือชั้น HLG แทน Dolby Vision เมื่อมี',
 			'settings.hdrSdrConversion' => 'การแปลง HDR ไปยัง SDR',
 			'settings.hdrSdrConversionDescription' => 'เลือกสิ่งที่แปลงวิดีโอ HDR เมื่อหน้าจอไม่สามารถแสดง HDR',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'อัตโนมัติ',
 			'settings.hdrSdrConversionAutoDescription' => 'อุปกรณ์บน Android 9 และภายหลังผู้เล่นบนรุ่นเก่า',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'อุปกรณ์',
 			'settings.hdrSdrConversionDeviceDescription' => 'อุปกรณ์วิดีโอฮาร์ดแวร์จะแปลงได้เร็วที่สุด แต่สีขึ้นอยู่กับอุปกรณ์',
 			'settings.hdrSdrConversionPlayer' => 'ตัวเล่น',
@@ -6114,10 +6110,10 @@ extension on TranslationsTh {
 			'videoControls.segmentLoop' => 'ชิ้นส่วน',
 			'videoControls.addBookmark' => 'เพิ่ม Bookmark',
 			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'ตัวอย่างเช่น ฉากเปิด',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'ใส่ชื่อสําหรับจดหมายนี้',
 			'videoControls.deleteBookmark' => 'ลบหนังสือพิมพ์',
 			'videoControls.bookmarkLimitReached' => 'รายการนี้มี 100 บัญชี',
@@ -6628,10 +6624,10 @@ extension on TranslationsTh {
 			'libraries.hideLibrary' => 'ซ่อนห้องสมุด',
 			'libraries.libraryOptions' => 'ตัวเลือกห้องสมุด',
 			'libraries.content' => 'วัสดุห้องสมุด',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'เลือกห้องสมุด',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			'libraries.noCollections' => 'ไม่มีคอลเลกชันในห้องสมุดนี้',
 			'libraries.noFoldersFound' => 'ไม่พบโฟลเดอร์',
@@ -7142,10 +7138,10 @@ extension on TranslationsTh {
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ PlezyNG: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch ร่วมกันเซสชันควบคุม',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'การเชื่อมต่อ...',
 			'watchTogether.reconnectingDescription' => 'การเชื่อมต่อถูกปิดแล้ว คุณจะเข้าสู่ห้องโดยอัตโนมัติ',
 			'watchTogether.connected' => 'เชื่อมต่อ',
@@ -7656,10 +7652,10 @@ extension on TranslationsTh {
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
 			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
 			'metadataEdit.noArtworkAvailable' => 'ไม่มีงานศิลปะ',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}, เลือก',
 			'metadataEdit.notSet' => 'ไม่ตั้งค่า',
@@ -8170,10 +8166,10 @@ extension on TranslationsTh {
 			'universalMedia.noFavorites' => 'ไม่ได้บันทึก Stream Favorites ยังคงอยู่ในโปรไฟล์นี้',
 			'universalMedia.removeFavorite' => 'ลบ Stream Favorite',
 			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'เลือกไฟล์',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'การถ่ายโอนไฟล์ที่สนับสนุนจากเบราว์เซอร์บนเครือข่ายที่เชื่อถือได้เดียวกัน',
 			'universalMedia.wifiTransferIntro' => 'เปิดที่อยู่นี้ในเบราว์เซอร์บนอุปกรณ์อื่น เลือกไฟล์เพื่อเพิ่มไปยังห้องสมุดไฟล์และหนังสือของอุปกรณ์นี้',
@@ -8684,10 +8680,10 @@ extension on TranslationsTh {
 			'sourceSetup.metadataNoMatches' => 'ไม่พบชื่อเรื่องที่ตรงกันออนไลน์ ลองใช้ชื่อเรื่องอื่น',
 			'sourceSetup.metadataSearch' => 'ค้นหาข้อมูลกำกับออนไลน์',
 			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'โหลดข้อมูลกำกับออนไลน์ไม่ได้ แต่ยังเล่นวิดีโอและดูข้อมูลในเครื่องได้',
 			'sourceSetup.videoDetailsLoading' => 'กำลังโหลดรายละเอียดวิดีโอ',
 			'sourceSetup.subtitleKeyRequired' => 'ต้องมีคีย์ API ของ OpenSubtitles',

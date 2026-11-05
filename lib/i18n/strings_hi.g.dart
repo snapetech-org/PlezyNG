@@ -638,8 +638,6 @@ class _Translations$settings$hi extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'ताकत इनलाइन आरपीयू रूपांतरण Dolby Vision प्रोफ़ाइल 8.1';
 	@override String get dvConversionHevcStripDescription => 'स्ट्रिप Dolby Vision आरपीयू / ईएल परतों और वर्तमान प्लेन HEVC';
 	@override String get experimentalDolbyVision => 'प्रायोगिक Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'अगले प्लेबैक में प्रायोगिक FEL रेंडरर का उपयोग करें। इसके लिए इंजन का अलग बिल्ड चाहिए।';
-	@override String get dvExperimentUnavailableDescription => 'यह प्रयोग फ़िलहाल केवल Linux पर उपलब्ध है।';
 	@override String get dvCompatibilityFallback => 'अनुकूलता विकल्प';
 	@override String get dvCompatibilityFallbackDescription => 'प्रयोग शुरू न हो पाए तो मानक रेंडरर का उपयोग करें। FEL डेटा खो सकता है।';
 	@override String get dvExperimentDiagnostics => 'वीडियो प्रयोग की लॉगिंग';
@@ -5615,8 +5613,6 @@ extension on TranslationsHi {
 			'settings.dvConversionDv81Description' => 'ताकत इनलाइन आरपीयू रूपांतरण Dolby Vision प्रोफ़ाइल 8.1',
 			'settings.dvConversionHevcStripDescription' => 'स्ट्रिप Dolby Vision आरपीयू / ईएल परतों और वर्तमान प्लेन HEVC',
 			'settings.experimentalDolbyVision' => 'प्रायोगिक Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'अगले प्लेबैक में प्रायोगिक FEL रेंडरर का उपयोग करें। इसके लिए इंजन का अलग बिल्ड चाहिए।',
-			'settings.dvExperimentUnavailableDescription' => 'यह प्रयोग फ़िलहाल केवल Linux पर उपलब्ध है।',
 			'settings.dvCompatibilityFallback' => 'अनुकूलता विकल्प',
 			'settings.dvCompatibilityFallbackDescription' => 'प्रयोग शुरू न हो पाए तो मानक रेंडरर का उपयोग करें। FEL डेटा खो सकता है।',
 			'settings.dvExperimentDiagnostics' => 'वीडियो प्रयोग की लॉगिंग',
@@ -5625,10 +5621,10 @@ extension on TranslationsHi {
 			'settings.disableDolbyVisionDescription' => 'फ़ाइल के HDR10 या HLG परत को Dolby Vision के बजाय खेलें, जब इसमें एक',
 			'settings.hdrSdrConversion' => 'HDR से SDR के लिए रूपांतरण',
 			'settings.hdrSdrConversionDescription' => 'चुनें कि HDR वीडियो को क्या रूपांतरित करता है जब डिस्प्ले HDR नहीं दिखा सकता है।',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'ऑटो',
 			'settings.hdrSdrConversionAutoDescription' => 'डिवाइस पर Android 9 और बाद में, पुराने संस्करणों पर प्लेयर',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'डिवाइस',
 			'settings.hdrSdrConversionDeviceDescription' => 'आपके डिवाइस का वीडियो हार्डवेयर इसे परिवर्तित करता है सबसे तेज़, लेकिन रंग डिवाइस पर निर्भर करता है',
 			'settings.hdrSdrConversionPlayer' => 'प्लेयर',
@@ -6139,10 +6135,10 @@ extension on TranslationsHi {
 			'videoControls.segmentLoop' => 'सेगमेंट लॉक',
 			'videoControls.addBookmark' => 'Bookmark जोड़ें',
 			'videoControls.bookmarkName' => 'Bookmark नाम',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'उदाहरण के लिए, खोलने की दृश्य',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'बुकमार्क ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'इस पुस्तक के लिए एक नाम दर्ज करें।',
 			'videoControls.deleteBookmark' => 'Bookmark को हटा दें',
 			'videoControls.bookmarkLimitReached' => 'इस लेख में पहले से ही 100 किताबें हैं।',
@@ -6653,10 +6649,10 @@ extension on TranslationsHi {
 			'libraries.hideLibrary' => 'पुस्तकालय छिपाना',
 			'libraries.libraryOptions' => 'पुस्तकालय विकल्प',
 			'libraries.content' => 'पुस्तकालय सामग्री',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'पुस्तकालय चुनें',
 			'libraries.filtersWithCount' => ({required Object count}) => 'फ़िल्टर (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'कोई प्रस्ताव उपलब्ध नहीं है',
 			'libraries.noCollections' => 'इस पुस्तकालय में कोई संग्रह नहीं',
 			'libraries.noFoldersFound' => 'कोई फ़ोल्डर नहीं मिला',
@@ -7167,10 +7163,10 @@ extension on TranslationsHi {
 			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
 			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG में मेरे घड़ी एक साथ कमरे में शामिल हों: घड़ी एक साथ खोलें, शामिल कमरे का चयन करें और ${code} में प्रवेश करें।',
 			'watchTogether.openSessionControls' => 'Open Watch एक साथ सत्र नियंत्रण',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'फिर से कनेक्ट...',
 			'watchTogether.reconnectingDescription' => 'कनेक्शन बंद हो गया. आप स्वचालित रूप से कमरे में प्रवेश करते हैं.',
 			'watchTogether.connected' => 'कनेक्ट',
@@ -7681,10 +7677,10 @@ extension on TranslationsHi {
 			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			'metadataEdit.metadataUpdateFailed' => 'मेटाडेटा अपडेट करने में असफल',
 			'metadataEdit.artworkUpdated' => 'Artwork अद्यतन',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'कला के काम को अपडेट करने में विफलता',
 			'metadataEdit.noArtworkAvailable' => 'कोई कला उपलब्ध नहीं है',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}, चुना गया',
 			'metadataEdit.notSet' => 'सेट नहीं',
@@ -8195,10 +8191,10 @@ extension on TranslationsHi {
 			'universalMedia.noFavorites' => 'अभी तक कोई स्ट्रीम पसंदीदा नहीं बचाया गया है. इस प्रोफ़ाइल में रहें।',
 			'universalMedia.removeFavorite' => 'पसंदीदा स्ट्रीम को हटा दें',
 			'universalMedia.filesHelp' => 'ऑडियो, वीडियो, या आईएसओ फ़ाइलों का चयन करें एक अस्थायी कवच के लिए. फ़ाइलें और यूआरएल लाइब्रेरी इतिहास में जोड़ा नहीं जाता है.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'फ़ाइल चुनें',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '1 चयनित फ़ाइल', other: '${count} चयनित फ़ाइलें', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'फ़ाइलों को Wi-Fi के माध्यम से भेजें',
 			'universalMedia.wifiTransferHelp' => 'एक ब्राउज़र से समर्थित फ़ाइलों को उसी विश्वसनीय नेटवर्क पर स्थानांतरित करें।',
 			'universalMedia.wifiTransferIntro' => 'किसी अन्य डिवाइस पर एक ब्राउज़र में इस पते को खोलें. फ़ाइलों को जोड़ने के लिए फ़ाइलें और किताबें पुस्तकालय में चुनें.',
@@ -8709,10 +8705,10 @@ extension on TranslationsHi {
 			'sourceSetup.metadataNoMatches' => 'कोई मेल खाता ऑनलाइन शीर्षक नहीं मिला। कोई दूसरा शीर्षक आज़माएँ।',
 			'sourceSetup.metadataSearch' => 'ऑनलाइन मेटाडेटा खोजें',
 			'sourceSetup.metadataLoading' => 'फ़िल्म और टीवी कार्यक्रम की जानकारी ऑनलाइन खोजी जा रही है…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt से ऑनलाइन मेटाडेटा',
 			'sourceSetup.metadataNoAutomaticMatch' => 'अपने-आप कोई मेल खाता शीर्षक नहीं मिला। शीर्षक खोजकर सही परिणाम चुनें।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'ऑनलाइन मेटाडेटा लोड नहीं हो सका। प्लेबैक और स्थानीय जानकारी अब भी उपलब्ध हैं।',
 			'sourceSetup.videoDetailsLoading' => 'वीडियो की जानकारी लोड हो रही है',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API कुंजी ज़रूरी है',

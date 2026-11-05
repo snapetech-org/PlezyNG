@@ -642,8 +642,6 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Konverze RPU na profil Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'Strip Dolby Vision RPU/EL vrstvy a současná rovina HEVC';
 	@override String get experimentalDolbyVision => 'Experimentální Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Při příštím přehrávání použít experimentální renderer FEL. Vyžaduje samostatné sestavení enginu.';
-	@override String get dvExperimentUnavailableDescription => 'Tento experiment je zatím dostupný pouze na Linuxu.';
 	@override String get dvCompatibilityFallback => 'Záložní režim kompatibility';
 	@override String get dvCompatibilityFallbackDescription => 'Pokud experiment nelze spustit, použít standardní renderer. Data FEL mohou být ztracena.';
 	@override String get dvExperimentDiagnostics => 'Protokolování videoexperimentu';
@@ -5659,8 +5657,6 @@ extension on TranslationsCs {
 			'settings.dvConversionDv81Description' => 'Konverze RPU na profil Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision RPU/EL vrstvy a současná rovina HEVC',
 			'settings.experimentalDolbyVision' => 'Experimentální Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Při příštím přehrávání použít experimentální renderer FEL. Vyžaduje samostatné sestavení enginu.',
-			'settings.dvExperimentUnavailableDescription' => 'Tento experiment je zatím dostupný pouze na Linuxu.',
 			'settings.dvCompatibilityFallback' => 'Záložní režim kompatibility',
 			'settings.dvCompatibilityFallbackDescription' => 'Pokud experiment nelze spustit, použít standardní renderer. Data FEL mohou být ztracena.',
 			'settings.dvExperimentDiagnostics' => 'Protokolování videoexperimentu',
@@ -5669,10 +5665,10 @@ extension on TranslationsCs {
 			'settings.disableDolbyVisionDescription' => 'Přehrávejte soubor HDR10 nebo vrstvu HLG namísto Dolby Vision, když má jeden',
 			'settings.hdrSdrConversion' => 'HDR na SDR konverze',
 			'settings.hdrSdrConversionDescription' => 'Vyberte, co konvertuje HDR video, když displej nedokáže zobrazit HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Automaticky',
 			'settings.hdrSdrConversionAutoDescription' => 'Přístroj na Android 9 a novější, hráč na starších verzích',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Zařízení',
 			'settings.hdrSdrConversionDeviceDescription' => 'Video hardware vašeho zařízení to konvertuje. nejrychlejší, ale barvy závisí na zařízení',
 			'settings.hdrSdrConversionPlayer' => 'Přehrávač',
@@ -6183,10 +6179,10 @@ extension on TranslationsCs {
 			'videoControls.segmentLoop' => 'Segmentový loop',
 			'videoControls.addBookmark' => 'Přidat bookmark',
 			'videoControls.bookmarkName' => 'Bookmark jméno',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Zadejte jméno pro tuto knižní značku.',
 			'videoControls.deleteBookmark' => 'Odstranit bookmark',
 			'videoControls.bookmarkLimitReached' => 'Tato položka má již 100 bookmarků.',
@@ -6697,10 +6693,10 @@ extension on TranslationsCs {
 			'libraries.hideLibrary' => 'Skryté knihovny',
 			'libraries.libraryOptions' => 'Možnosti knihovny',
 			'libraries.content' => 'Obsah knihovny',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
 			'libraries.noFoldersFound' => 'Žádné složky nenajdete',
@@ -7211,10 +7207,10 @@ extension on TranslationsCs {
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti PlezyNG: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Připojení...',
 			'watchTogether.reconnectingDescription' => 'Připojení je zrušené. automaticky se připojíte k místnosti.',
 			'watchTogether.connected' => 'připojené',
@@ -7725,10 +7721,10 @@ extension on TranslationsCs {
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
 			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
 			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Umělecká volba ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Možnost umělecké práce ${index}, vybraná',
 			'metadataEdit.notSet' => 'Není nastaven',
@@ -8239,10 +8235,10 @@ extension on TranslationsCs {
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Přenos podporovaných souborů z prohlížeče na stejnou důvěryhodnou síť.',
 			'universalMedia.wifiTransferIntro' => 'Otevřete tuto adresu v prohlížeči na jiném zařízení. Vyberte soubory, abyste je přidali do knihovny souborů a knih tohoto zařízení.',
@@ -8753,10 +8749,10 @@ extension on TranslationsCs {
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',
 			'sourceSetup.videoDetailsLoading' => 'Načítání informací o videu',
 			'sourceSetup.subtitleKeyRequired' => 'Je vyžadován klíč API OpenSubtitles',

@@ -642,8 +642,6 @@ class _Translations$settings$uk extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Конвертація силового RPU на Dolby Vision профіль 8.1';
 	@override String get dvConversionHevcStripDescription => 'Стрип Dolby Vision РПУ/ЕЛ шари і нинішня плоска HEVC';
 	@override String get experimentalDolbyVision => 'Експериментальний Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Під час наступного відтворення використовувати експериментальний рендерер FEL. Потрібна окрема збірка рушія.';
-	@override String get dvExperimentUnavailableDescription => 'Цей експеримент наразі доступний лише в Linux.';
 	@override String get dvCompatibilityFallback => 'Резервний режим сумісності';
 	@override String get dvCompatibilityFallbackDescription => 'Використовувати стандартний рендерер, якщо експеримент не запускається. Дані FEL можуть бути втрачені.';
 	@override String get dvExperimentDiagnostics => 'Журнал відеоексперименту';
@@ -5659,8 +5657,6 @@ extension on TranslationsUk {
 			'settings.dvConversionDv81Description' => 'Конвертація силового RPU на Dolby Vision профіль 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Стрип Dolby Vision РПУ/ЕЛ шари і нинішня плоска HEVC',
 			'settings.experimentalDolbyVision' => 'Експериментальний Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Під час наступного відтворення використовувати експериментальний рендерер FEL. Потрібна окрема збірка рушія.',
-			'settings.dvExperimentUnavailableDescription' => 'Цей експеримент наразі доступний лише в Linux.',
 			'settings.dvCompatibilityFallback' => 'Резервний режим сумісності',
 			'settings.dvCompatibilityFallbackDescription' => 'Використовувати стандартний рендерер, якщо експеримент не запускається. Дані FEL можуть бути втрачені.',
 			'settings.dvExperimentDiagnostics' => 'Журнал відеоексперименту',
@@ -5669,10 +5665,10 @@ extension on TranslationsUk {
 			'settings.disableDolbyVisionDescription' => 'Грати в файл HDR10 або HLG-слой замість Dolby Vision, коли у нього є один',
 			'settings.hdrSdrConversion' => 'Конвертація HDR до SDR',
 			'settings.hdrSdrConversionDescription' => 'Виберіть, що конвертує HDR відео, коли дисплей не може показати HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Авто',
 			'settings.hdrSdrConversionAutoDescription' => 'Пристрій на Android 9 і пізніше, гравець на попередніх версіях',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Пристрій',
 			'settings.hdrSdrConversionDeviceDescription' => 'Найшвидше, але кольори залежить від пристрою',
 			'settings.hdrSdrConversionPlayer' => 'Програвач',
@@ -6183,10 +6179,10 @@ extension on TranslationsUk {
 			'videoControls.segmentLoop' => 'сегмент лоуп',
 			'videoControls.addBookmark' => 'Додати книжковий знак',
 			'videoControls.bookmarkName' => 'Bookmark ім\'я',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Наприклад, відкриття сцені',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Книжковий знак ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Введіть ім\'я для цієї книжкової марки.',
 			'videoControls.deleteBookmark' => 'Зняти книжковий знак',
 			'videoControls.bookmarkLimitReached' => 'Ця стаття вже має 100 книжкових знаків.',
@@ -6697,10 +6693,10 @@ extension on TranslationsUk {
 			'libraries.hideLibrary' => 'Сховати бібліотеку',
 			'libraries.libraryOptions' => 'Бібліотечні варіанти',
 			'libraries.content' => 'Бібліотека контент',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Вибір бібліотеки',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			'libraries.noCollections' => 'Ніяких колекцій в цій бібліотеці',
 			'libraries.noFoldersFound' => 'Не знайдено жодних паперів',
@@ -7211,10 +7207,10 @@ extension on TranslationsUk {
 			'watchTogether.codeCopied' => 'Код кімнати копіюється',
 			'watchTogether.shareInvite' => 'Поділимо запрошення',
 			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в PlezyNG: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Відновлення...',
 			'watchTogether.reconnectingDescription' => 'З\'єднання припинено. Ви приєднуєтеся до кімнати автоматично.',
 			'watchTogether.connected' => 'Зв\'язані',
@@ -7725,10 +7721,10 @@ extension on TranslationsUk {
 			'metadataEdit.metadataUpdated' => 'Актуальні метастази',
 			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
 			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вибір художнього твору ${index}, вибраний',
 			'metadataEdit.notSet' => 'Не встановлюйте',
@@ -8239,10 +8235,10 @@ extension on TranslationsUk {
 			'universalMedia.noFavorites' => 'Попередня статтяКто чего не любить?Фаворити залишаються в цьому профілі.',
 			'universalMedia.removeFavorite' => 'Зняти потік улюблений',
 			'universalMedia.filesHelp' => 'Виберіть аудіо, відео або файли ISO для тимчасового перегляду. Файли та URL-адреси не додаються до історії бібліотеки.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Вибір файлів',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача підтримуваних файлів з браузера в тій же надійній мережі.',
 			'universalMedia.wifiTransferIntro' => 'Відкрийте цю адресу в браузері на іншому пристрої. Виберіть файли, щоб додати їх до бібліотеки файлів та книг цього пристрою.',
@@ -8753,10 +8749,10 @@ extension on TranslationsUk {
 			'sourceSetup.metadataNoMatches' => 'Відповідних назв в інтернеті не знайдено. Спробуйте іншу назву.',
 			'sourceSetup.metadataSearch' => 'Пошук метаданих в інтернеті',
 			'sourceSetup.metadataLoading' => 'Пошук відомостей про фільми й серіали в інтернеті…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Метадані з Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматичного збігу назви не знайдено. Знайдіть назву, щоб вибрати збіг.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Не вдалося завантажити метадані з інтернету. Відтворення та локальні відомості залишаються доступними.',
 			'sourceSetup.videoDetailsLoading' => 'Завантаження відомостей про відео',
 			'sourceSetup.subtitleKeyRequired' => 'Потрібен ключ API OpenSubtitles',

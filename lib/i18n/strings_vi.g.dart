@@ -636,8 +636,6 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Chuyển đổi RPU mạnh vào hồ sơ Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'Dây Dolby Vision lớp RPU/EL và mặt bằng hiện tại HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision thử nghiệm';
-	@override String get experimentalDolbyVisionDescription => 'Dùng bộ kết xuất FEL thử nghiệm trong lần phát tiếp theo. Cần bản dựng bộ máy riêng.';
-	@override String get dvExperimentUnavailableDescription => 'Thử nghiệm này hiện chỉ có trên Linux.';
 	@override String get dvCompatibilityFallback => 'Phương án tương thích dự phòng';
 	@override String get dvCompatibilityFallbackDescription => 'Dùng bộ kết xuất tiêu chuẩn nếu không thể bắt đầu thử nghiệm. Dữ liệu FEL có thể bị mất.';
 	@override String get dvExperimentDiagnostics => 'Nhật ký thử nghiệm video';
@@ -5590,8 +5588,6 @@ extension on TranslationsVi {
 			'settings.dvConversionDv81Description' => 'Chuyển đổi RPU mạnh vào hồ sơ Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Dây Dolby Vision lớp RPU/EL và mặt bằng hiện tại HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision thử nghiệm',
-			'settings.experimentalDolbyVisionDescription' => 'Dùng bộ kết xuất FEL thử nghiệm trong lần phát tiếp theo. Cần bản dựng bộ máy riêng.',
-			'settings.dvExperimentUnavailableDescription' => 'Thử nghiệm này hiện chỉ có trên Linux.',
 			'settings.dvCompatibilityFallback' => 'Phương án tương thích dự phòng',
 			'settings.dvCompatibilityFallbackDescription' => 'Dùng bộ kết xuất tiêu chuẩn nếu không thể bắt đầu thử nghiệm. Dữ liệu FEL có thể bị mất.',
 			'settings.dvExperimentDiagnostics' => 'Nhật ký thử nghiệm video',
@@ -5600,10 +5596,10 @@ extension on TranslationsVi {
 			'settings.disableDolbyVisionDescription' => 'Chơi file HDR10 hoặc lớp HLG thay vì Dolby Vision, khi nó có một',
 			'settings.hdrSdrConversion' => 'HDR sang SDR chuyển đổi',
 			'settings.hdrSdrConversionDescription' => 'Chọn những gì chuyển đổi video HDR khi màn hình không thể hiển thị HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Tự động',
 			'settings.hdrSdrConversionAutoDescription' => 'Thiết bị trên Android 9 và sau, người chơi trên các phiên bản cũ hơn',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Thiết bị',
 			'settings.hdrSdrConversionDeviceDescription' => 'Phần cứng video của thiết bị của bạn chuyển đổi nó. nhanh nhất, nhưng màu sắc phụ thuộc vào thiết bị',
 			'settings.hdrSdrConversionPlayer' => 'Trình Phát',
@@ -6114,10 +6110,10 @@ extension on TranslationsVi {
 			'videoControls.segmentLoop' => 'phân đoạn loop',
 			'videoControls.addBookmark' => 'Thêm Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark tên',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Ví dụ: Mở cảnh',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Đề ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Nhập tên cho bookmark này.',
 			'videoControls.deleteBookmark' => 'xóa bookmark',
 			'videoControls.bookmarkLimitReached' => 'Bài viết này đã có 100 bookmarks.',
@@ -6628,10 +6624,10 @@ extension on TranslationsVi {
 			'libraries.hideLibrary' => 'ẩn thư viện',
 			'libraries.libraryOptions' => 'Tùy chọn thư viện',
 			'libraries.content' => 'Thư viện Content',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Chọn thư viện',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			'libraries.noCollections' => 'Không có tập hợp trong thư viện này',
 			'libraries.noFoldersFound' => 'Không tìm thấy thư mục',
@@ -7142,10 +7138,10 @@ extension on TranslationsVi {
 			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại PlezyNG: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Kết nối lại...',
 			'watchTogether.reconnectingDescription' => 'Kết nối bị hỏng. bạn sẽ tự động vào phòng.',
 			'watchTogether.connected' => 'Kết nối',
@@ -7656,10 +7652,10 @@ extension on TranslationsVi {
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
 			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
 			'metadataEdit.noArtworkAvailable' => 'Không có tác phẩm nghệ thuật',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Tùy chọn nghệ thuật ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Tùy chọn Artwork ${index}, được chọn',
 			'metadataEdit.notSet' => 'Không đặt',
@@ -8170,10 +8166,10 @@ extension on TranslationsVi {
 			'universalMedia.noFavorites' => 'Không được lưu stream yêu thích cho đến nay. Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Xóa stream yêu thích',
 			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Chọn file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Gửi file qua Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Chuyển các tập tin được hỗ trợ từ một trình duyệt trên cùng một mạng đáng tin cậy.',
 			'universalMedia.wifiTransferIntro' => 'Mở địa chỉ này trong một trình duyệt trên thiết bị khác.Chọn các tệp để thêm chúng vào thư viện tệp và sách của thiết bị này.',
@@ -8684,10 +8680,10 @@ extension on TranslationsVi {
 			'sourceSetup.metadataNoMatches' => 'Không tìm thấy tiêu đề trực tuyến phù hợp. Hãy thử tiêu đề khác.',
 			'sourceSetup.metadataSearch' => 'Tìm siêu dữ liệu trực tuyến',
 			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Không tải được siêu dữ liệu trực tuyến. Vẫn có thể phát và xem thông tin cục bộ.',
 			'sourceSetup.videoDetailsLoading' => 'Đang tải thông tin video',
 			'sourceSetup.subtitleKeyRequired' => 'Cần có khóa API OpenSubtitles',

@@ -2,12 +2,40 @@ import AVFoundation
 import Foundation
 import Libmpv
 import QuartzCore
+import PlezyNGDVRuntimeAPI
 
 #if os(iOS) || os(tvOS)
   import UIKit
 #elseif os(macOS)
   import Cocoa
 #endif
+
+private enum BundledDVRuntime {
+  typealias Create = @convention(c) () -> UnsafeMutableRawPointer
+  typealias Version = @convention(c) () -> Int32
+  private static var library: UnsafeMutableRawPointer?
+  private static var factory: Create?
+
+  static func make() -> DVRuntimeBackend? {
+    dispatchPrecondition(condition: .onQueue(.main))
+    if factory == nil {
+      guard let root = Bundle.main.privateFrameworksURL else { return nil }
+      let binary = root.appendingPathComponent("PlezyNGDVRuntime.framework/PlezyNGDVRuntime")
+      guard let handle = dlopen(binary.path, RTLD_NOW | RTLD_LOCAL) else { return nil }
+      guard let version = dlsym(handle, "PlezyNGDVRuntimeVersion"),
+        unsafeBitCast(version, to: Version.self)() == 1,
+        let symbol = dlsym(handle, "PlezyNGCreateDVBackend")
+      else {
+        dlclose(handle)
+        return nil
+      }
+      library = handle  // Keep code loaded for all player instances.
+      factory = unsafeBitCast(symbol, to: Create.self)
+    }
+    guard let factory else { return nil }
+    return Unmanaged<AnyObject>.fromOpaque(factory()).takeRetainedValue() as? DVRuntimeBackend
+  }
+}
 
 struct MpvLifecycleUnavailableError: LocalizedError {
   let errorDescription: String?
@@ -101,6 +129,9 @@ final class MpvWakeupCallbackContext {
 
 class MpvPlayerCoreBase: NSObject {
   weak var delegate: MpvPlayerDelegate?
+
+  var experimentalDolbyVisionRequested = false
+  private(set) var dvBackend: DVRuntimeBackend?
 
   var videoLayer: MpvVideoLayer?
   var isInitialized = false
@@ -549,6 +580,35 @@ class MpvPlayerCoreBase: NSObject {
   }
 
   func setupMpv() -> Bool {
+    if experimentalDolbyVisionRequested {
+      if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
+        guard let backend = BundledDVRuntime.make(), backend.prepare() else {
+          MpvLog.error("Bundled experimental Dolby Vision runtime could not initialize")
+          return false
+        }
+        backend.onProperty = { [weak self] name, value, sourceID in
+          guard let self, self.isLifecycleActive else { return }
+          self.cacheLock.lock()
+          switch name {
+          case "time-pos": self.cachedTimePos = (value as? NSNumber)?.doubleValue ?? 0
+          case "duration": self.cachedDuration = (value as? NSNumber)?.doubleValue ?? 0
+          case "pause": self.cachedPaused = value as? Bool ?? true
+          case "width": self.cachedWidth = (value as? NSNumber)?.doubleValue ?? 0
+          case "height": self.cachedHeight = (value as? NSNumber)?.doubleValue ?? 0
+          default: break
+          }
+          self.cacheLock.unlock()
+          self.dispatchDelegateProperty(name: name, value: value, sourceId: sourceID)
+        }
+        backend.onEvent = { [weak self] name, data, sourceID in
+          self?.dispatchDelegateEvent(name: name, data: data, sourceId: sourceID)
+        }
+        dvBackend = backend
+        videoLayer?.removeFromSuperlayer()
+        return true
+      }
+      MpvLog.error("Experimental Dolby Vision needs iOS/tvOS 18 or macOS 15; using compatibility playback")
+    }
     guard let renderLayer = videoLayer else { return false }
 
     applyDvConversionModeEnvironment()
@@ -733,6 +793,17 @@ class MpvPlayerCoreBase: NSObject {
     value: String,
     completion: @escaping (Result<Void, Error>) -> Void
   ) {
+    if let backend = dvBackend {
+      DispatchQueue.main.async { [weak self] in
+        guard let self, self.isLifecycleActive, self.dvBackend === backend else {
+          completion(.failure(MpvLifecycleUnavailableError("Player is unavailable")))
+          return
+        }
+        backend.setProperty(name, value: value)
+        completion(.success(()))
+      }
+      return
+    }
     guard isLifecycleActive else {
       completeOnMain { completion(.failure(self.lifecycleUnavailableError())) }
       return
@@ -969,6 +1040,16 @@ class MpvPlayerCoreBase: NSObject {
   }
 
   func getPropertyAsync(_ name: String, completion: @escaping (Result<String?, Error>) -> Void) {
+    if let backend = dvBackend {
+      DispatchQueue.main.async { [weak self] in
+        guard let self, self.isLifecycleActive, self.dvBackend === backend else {
+          completion(.failure(MpvLifecycleUnavailableError("Player is unavailable")))
+          return
+        }
+        completion(.success(backend.property(name)))
+      }
+      return
+    }
     guard isLifecycleActive else {
       completeOnMain { completion(.failure(self.lifecycleUnavailableError())) }
       return
@@ -991,6 +1072,10 @@ class MpvPlayerCoreBase: NSObject {
   }
 
   func observeProperty(_ name: String, format: String) {
+    if let backend = dvBackend {
+      DispatchQueue.main.async { backend.observe(name) }
+      return
+    }
     let mpvFormat: mpv_format
     switch format {
     case "double":
@@ -1019,6 +1104,18 @@ class MpvPlayerCoreBase: NSObject {
   /// playback-restart and end-file events — so a caller can bind the load to
   /// its source; every other command completes with nil.
   func commandAsync(_ args: [String], completion: @escaping (Result<Int64?, Error>) -> Void) {
+    if let backend = dvBackend {
+      DispatchQueue.main.async { [weak self] in
+        guard let self, self.isLifecycleActive, self.dvBackend === backend else {
+          completion(.failure(MpvLifecycleUnavailableError("Player is unavailable")))
+          return
+        }
+        backend.command(args) { sourceID, error in
+          if let error { completion(.failure(error)) } else { completion(.success(sourceID)) }
+        }
+      }
+      return
+    }
     guard !args.isEmpty else {
       completeOnMain { completion(.success(nil)) }
       return
@@ -1081,6 +1178,9 @@ class MpvPlayerCoreBase: NSObject {
 
   /// `onDestroyed` runs on `queue` once mpv, its VO included, is gone.
   func disposeSharedState(destroySynchronously: Bool, onDestroyed: (() -> Void)? = nil) {
+    let backend = dvBackend
+    dvBackend = nil
+    if Thread.isMainThread { backend?.close() } else { DispatchQueue.main.async { backend?.close() } }
     cancelPendingRequests()
 
     cacheLock.lock()

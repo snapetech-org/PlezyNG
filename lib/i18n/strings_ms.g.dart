@@ -636,8 +636,6 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Kuasa dalam rangkaian RPU penukaran kepada Dolby Vision profil 8.1';
 	@override String get dvConversionHevcStripDescription => 'Strip Dolby Vision lapisan RPU/EL dan rata semasa HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision eksperimen';
-	@override String get experimentalDolbyVisionDescription => 'Gunakan pemapar FEL eksperimen pada main balik seterusnya. Memerlukan binaan enjin yang berasingan.';
-	@override String get dvExperimentUnavailableDescription => 'Eksperimen ini kini hanya tersedia pada Linux.';
 	@override String get dvCompatibilityFallback => 'Pilihan sandaran keserasian';
 	@override String get dvCompatibilityFallbackDescription => 'Gunakan pemapar standard jika eksperimen tidak dapat dimulakan. Data FEL mungkin hilang.';
 	@override String get dvExperimentDiagnostics => 'Pengelogan eksperimen video';
@@ -5590,8 +5588,6 @@ extension on TranslationsMs {
 			'settings.dvConversionDv81Description' => 'Kuasa dalam rangkaian RPU penukaran kepada Dolby Vision profil 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision lapisan RPU/EL dan rata semasa HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision eksperimen',
-			'settings.experimentalDolbyVisionDescription' => 'Gunakan pemapar FEL eksperimen pada main balik seterusnya. Memerlukan binaan enjin yang berasingan.',
-			'settings.dvExperimentUnavailableDescription' => 'Eksperimen ini kini hanya tersedia pada Linux.',
 			'settings.dvCompatibilityFallback' => 'Pilihan sandaran keserasian',
 			'settings.dvCompatibilityFallbackDescription' => 'Gunakan pemapar standard jika eksperimen tidak dapat dimulakan. Data FEL mungkin hilang.',
 			'settings.dvExperimentDiagnostics' => 'Pengelogan eksperimen video',
@@ -5600,10 +5596,10 @@ extension on TranslationsMs {
 			'settings.disableDolbyVisionDescription' => 'Mainkan lapisan fail HDR10 atau HLG daripada Dolby Vision, apabila ia mempunyai lapisan',
 			'settings.hdrSdrConversion' => 'HDR kepada SDR Konversi',
 			'settings.hdrSdrConversionDescription' => 'Pilih apa yang menukar video HDR apabila paparan tidak boleh menunjukkan HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Kereta',
 			'settings.hdrSdrConversionAutoDescription' => 'Peranti pada Android 9 dan seterusnya, pemain pada versi yang lebih tua',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'peranti',
 			'settings.hdrSdrConversionDeviceDescription' => 'Perkakasan video peranti anda menukarnya. paling cepat, tetapi warna bergantung kepada peranti',
 			'settings.hdrSdrConversionPlayer' => 'Pemain',
@@ -6114,10 +6110,10 @@ extension on TranslationsMs {
 			'videoControls.segmentLoop' => 'Perbezaan segmen',
 			'videoControls.addBookmark' => 'Menambah Bookmark',
 			'videoControls.bookmarkName' => 'Nama Bookmark',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Sebagai contoh, adegan pembukaan',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Perpustakaan ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
 			'videoControls.deleteBookmark' => 'Menghapuskan Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Artikel ini sudah mempunyai 100 buku.',
@@ -6628,10 +6624,10 @@ extension on TranslationsMs {
 			'libraries.hideLibrary' => 'Perpustakaan tersembunyi',
 			'libraries.libraryOptions' => 'Pilihan Perpustakaan',
 			'libraries.content' => 'Perpustakaan kandungan',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Pilih Perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Tiada cadangan yang tersedia',
 			'libraries.noCollections' => 'Tiada koleksi dalam perpustakaan ini',
 			'libraries.noFoldersFound' => 'Tiada folder yang ditemui',
@@ -7142,10 +7138,10 @@ extension on TranslationsMs {
 			'watchTogether.codeCopied' => 'Kod bilik disalin',
 			'watchTogether.shareInvite' => 'Memberi jemputan',
 			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di PlezyNG: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kawalan sesi',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Menghubungkan semula...',
 			'watchTogether.reconnectingDescription' => 'sambungan hilang. anda menyertai bilik secara automatik.',
 			'watchTogether.connected' => 'Terhubung',
@@ -7656,10 +7652,10 @@ extension on TranslationsMs {
 			'metadataEdit.metadataUpdated' => 'Metadata dikemaskini',
 			'metadataEdit.metadataUpdateFailed' => 'Kegagalan Mengemas kini Metadata',
 			'metadataEdit.artworkUpdated' => 'Seni yang dikemaskini',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Kegagalan untuk mengemas kini karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tiada karya seni yang tersedia',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Pilihan seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Pilihan seni ${index}, dipilih',
 			'metadataEdit.notSet' => 'Tidak menetapkan',
@@ -8170,10 +8166,10 @@ extension on TranslationsMs {
 			'universalMedia.noFavorites' => 'Tiada rangkaian kegemaran disimpan sehingga kini. kekal dalam profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapuskan stream kegemaran',
 			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Pilih fail',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Hantar fail melalui Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Memindahkan fail yang disokong daripada pelayar pada rangkaian yang sama dipercayai.',
 			'universalMedia.wifiTransferIntro' => 'Buka alamat ini dalam pelayar pada peranti lain. pilih fail untuk menambahnya ke perpustakaan Fail dan buku peranti ini.',
@@ -8684,10 +8680,10 @@ extension on TranslationsMs {
 			'sourceSetup.metadataNoMatches' => 'Tiada padanan tajuk dalam talian ditemukan. Cuba tajuk lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata dalam talian',
 			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Metadata dalam talian tidak dapat dimuatkan. Main balik dan butiran setempat masih tersedia.',
 			'sourceSetup.videoDetailsLoading' => 'Memuatkan butiran video',
 			'sourceSetup.subtitleKeyRequired' => 'Kunci API OpenSubtitles diperlukan',

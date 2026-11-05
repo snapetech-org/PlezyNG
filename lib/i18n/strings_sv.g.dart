@@ -638,8 +638,6 @@ class _Translations$settings$sv extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Tvinga direkt RPU-konvertering till Dolby Vision-profil 8.1';
 	@override String get dvConversionHevcStripDescription => 'Ta bort Dolby Visions RPU-/EL-lager och använd vanlig HEVC';
 	@override String get experimentalDolbyVision => 'Experimentell Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Använd den experimentella FEL-renderaren vid nästa uppspelning. Kräver en separat motorversion.';
-	@override String get dvExperimentUnavailableDescription => 'Det här experimentet är för närvarande endast tillgängligt på Linux.';
 	@override String get dvCompatibilityFallback => 'Kompatibilitetsreserv';
 	@override String get dvCompatibilityFallbackDescription => 'Använd standardrenderaren om experimentet inte kan starta. FEL-data kan gå förlorade.';
 	@override String get dvExperimentDiagnostics => 'Loggning av videoexperiment';
@@ -5615,8 +5613,6 @@ extension on TranslationsSv {
 			'settings.dvConversionDv81Description' => 'Tvinga direkt RPU-konvertering till Dolby Vision-profil 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Ta bort Dolby Visions RPU-/EL-lager och använd vanlig HEVC',
 			'settings.experimentalDolbyVision' => 'Experimentell Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Använd den experimentella FEL-renderaren vid nästa uppspelning. Kräver en separat motorversion.',
-			'settings.dvExperimentUnavailableDescription' => 'Det här experimentet är för närvarande endast tillgängligt på Linux.',
 			'settings.dvCompatibilityFallback' => 'Kompatibilitetsreserv',
 			'settings.dvCompatibilityFallbackDescription' => 'Använd standardrenderaren om experimentet inte kan starta. FEL-data kan gå förlorade.',
 			'settings.dvExperimentDiagnostics' => 'Loggning av videoexperiment',
@@ -5625,10 +5621,10 @@ extension on TranslationsSv {
 			'settings.disableDolbyVisionDescription' => 'Spela upp filens HDR10- eller HLG-lager i stället för Dolby Vision när det finns',
 			'settings.hdrSdrConversion' => 'HDR till SDR-konvertering',
 			'settings.hdrSdrConversionDescription' => 'Välj vad som konverterar HDR-video när skärmen inte kan visa HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Auto',
 			'settings.hdrSdrConversionAutoDescription' => 'Enhet på Android 9 och senare, spelare på äldre versioner',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Enhet',
 			'settings.hdrSdrConversionDeviceDescription' => 'Enhetens videohårdvara konverterar. Snabbast, men färgerna beror på enheten',
 			'settings.hdrSdrConversionPlayer' => 'Spelare',
@@ -6139,10 +6135,10 @@ extension on TranslationsSv {
 			'videoControls.segmentLoop' => 'Segment Lås',
 			'videoControls.addBookmark' => 'Lägg till bookmark',
 			'videoControls.bookmarkName' => 'Bookmark namn',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Till exempel öppna scenen',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmärke ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Skriv in ett namn för denna bokmärke.',
 			'videoControls.deleteBookmark' => 'Ta bort bokmärke',
 			'videoControls.bookmarkLimitReached' => 'Den här artikeln har redan 100 bokmärken.',
@@ -6653,10 +6649,10 @@ extension on TranslationsSv {
 			'libraries.hideLibrary' => 'Dölj bibliotek',
 			'libraries.libraryOptions' => 'Biblioteksalternativ',
 			'libraries.content' => 'bibliotekets innehåll',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Välj bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			'libraries.noCollections' => 'Inga samlingar i det här biblioteket',
 			'libraries.noFoldersFound' => 'Inga mappar hittades',
@@ -7167,10 +7163,10 @@ extension on TranslationsSv {
 			'watchTogether.codeCopied' => 'Rumskod kopierad',
 			'watchTogether.shareInvite' => 'Dela inbjudan',
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i PlezyNG: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
 			'watchTogether.openSessionControls' => 'Öppna sessionskontroller för Titta tillsammans',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Återansluter...',
 			'watchTogether.reconnectingDescription' => 'Anslutningen bröts. Du går automatiskt med i rummet igen.',
 			'watchTogether.connected' => 'Ansluten',
@@ -7681,10 +7677,10 @@ extension on TranslationsSv {
 			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
 			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
 			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
 			'metadataEdit.noArtworkAvailable' => 'Inget bildmaterial är tillgängligt',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Bildalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Bildalternativ ${index}, valt',
 			'metadataEdit.notSet' => 'Inte angiven',
@@ -8195,10 +8191,10 @@ extension on TranslationsSv {
 			'universalMedia.noFavorites' => 'Inga spara ström favorit än. Favoriter stannar i denna profil.',
 			'universalMedia.removeFavorite' => 'Ta bort stream favorit',
 			'universalMedia.filesHelp' => 'Välj ljud, video eller ISO-filer för en tillfällig spårning. filer och URL-adresser läggs inte till i bibliotekshistorik.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Välj filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: '1 Utvalda filer', other: '${count} valda filer', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Skicka filer via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Överföra stödda filer från en webbläsare på samma betrodda nätverk.',
 			'universalMedia.wifiTransferIntro' => 'Öppna denna adress i en webbläsare på en annan enhet. Välj filer för att lägga till dem i den här enhetens Filer och böcker bibliotek.',
@@ -8709,10 +8705,10 @@ extension on TranslationsSv {
 			'sourceSetup.metadataNoMatches' => 'Inga matchande titlar hittades på nätet. Försök med en annan titel.',
 			'sourceSetup.metadataSearch' => 'Sök metadata på nätet',
 			'sourceSetup.metadataLoading' => 'Söker efter film- och serieinformation på nätet…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata från Trakt på nätet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Ingen automatisk titelträff hittades. Sök efter titeln för att välja en träff.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Metadata från nätet kunde inte läsas in. Uppspelning och lokal information är fortfarande tillgängliga.',
 			'sourceSetup.videoDetailsLoading' => 'Läser in videoinformation',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-nyckel krävs',

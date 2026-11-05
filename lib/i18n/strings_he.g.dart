@@ -640,8 +640,6 @@ class _Translations$settings$he extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'כוח רצועה RPU הפוך ל Dolby Vision פרופיל 8.1';
 	@override String get dvConversionHevcStripDescription => 'רצועה Dolby Vision שכבות RPU/EL ושטח הנוכחי HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision ניסיוני';
-	@override String get experimentalDolbyVisionDescription => 'שימוש במנוע הרינדור הניסיוני של FEL בהפעלה הבאה. נדרשת בנייה נפרדת של המנוע.';
-	@override String get dvExperimentUnavailableDescription => 'הניסוי הזה זמין כרגע רק ב-Linux.';
 	@override String get dvCompatibilityFallback => 'חלופת תאימות';
 	@override String get dvCompatibilityFallbackDescription => 'שימוש במנוע הרינדור הרגיל אם הניסוי לא מצליח להתחיל. נתוני FEL עלולים ללכת לאיבוד.';
 	@override String get dvExperimentDiagnostics => 'רישום יומן לניסוי הווידאו';
@@ -5623,8 +5621,6 @@ extension on TranslationsHe {
 			'settings.dvConversionDv81Description' => 'כוח רצועה RPU הפוך ל Dolby Vision פרופיל 8.1',
 			'settings.dvConversionHevcStripDescription' => 'רצועה Dolby Vision שכבות RPU/EL ושטח הנוכחי HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision ניסיוני',
-			'settings.experimentalDolbyVisionDescription' => 'שימוש במנוע הרינדור הניסיוני של FEL בהפעלה הבאה. נדרשת בנייה נפרדת של המנוע.',
-			'settings.dvExperimentUnavailableDescription' => 'הניסוי הזה זמין כרגע רק ב-Linux.',
 			'settings.dvCompatibilityFallback' => 'חלופת תאימות',
 			'settings.dvCompatibilityFallbackDescription' => 'שימוש במנוע הרינדור הרגיל אם הניסוי לא מצליח להתחיל. נתוני FEL עלולים ללכת לאיבוד.',
 			'settings.dvExperimentDiagnostics' => 'רישום יומן לניסוי הווידאו',
@@ -5633,10 +5629,10 @@ extension on TranslationsHe {
 			'settings.disableDolbyVisionDescription' => 'לשחק את שכבת הקובץ HDR10 או HLG במקום Dolby Vision, כאשר יש',
 			'settings.hdrSdrConversion' => 'HDR ל- SDR Conversion',
 			'settings.hdrSdrConversionDescription' => 'בחר מה מחליף וידאו HDR כאשר המסך לא יכול להציג HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'אוטומטי',
 			'settings.hdrSdrConversionAutoDescription' => 'מכשיר ב- Android 9 ומאוחר יותר, שחקן בגרסאות ישנות יותר',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'מכשיר',
 			'settings.hdrSdrConversionDeviceDescription' => 'חומרה וידאו של המכשיר שלך מחליפה אותו מהיר ביותר, אבל הצבעים תלויים במכשיר',
 			'settings.hdrSdrConversionPlayer' => 'נגן',
@@ -6147,10 +6143,10 @@ extension on TranslationsHe {
 			'videoControls.segmentLoop' => 'סגמנט לואי',
 			'videoControls.addBookmark' => 'להוסיף bookmark',
 			'videoControls.bookmarkName' => 'Bookmark שם',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'לדוגמה, פתיחת סצנה',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'סימנייה ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'הקלד שם עבור ספר זה.',
 			'videoControls.deleteBookmark' => 'הסרת ספרייה',
 			'videoControls.bookmarkLimitReached' => 'הפוסט הזה כבר מכיל 100 ספרות.',
@@ -6661,10 +6657,10 @@ extension on TranslationsHe {
 			'libraries.hideLibrary' => 'להסתיר את הספרייה',
 			'libraries.libraryOptions' => 'אפשרויות ספרייה',
 			'libraries.content' => 'ספרייה תוכן',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'בחר ספרייה',
 			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			'libraries.noCollections' => 'אין אוסף בספריה זו',
 			'libraries.noFoldersFound' => 'לא נמצאו קבצים',
@@ -7175,10 +7171,10 @@ extension on TranslationsHe {
 			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- PlezyNG: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch יחד בדיקת ישיבה',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'חיבור מחדש...',
 			'watchTogether.reconnectingDescription' => 'הקשר נעלם, אתה נכנס לחדר באופן אוטומטי.',
 			'watchTogether.connected' => 'מחוברים',
@@ -7689,10 +7685,10 @@ extension on TranslationsHe {
 			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
 			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
 			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
 			'metadataEdit.noArtworkAvailable' => 'אין יצירות אמנות זמינות',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}, נבחר',
 			'metadataEdit.notSet' => 'לא קבע',
@@ -8203,10 +8199,10 @@ extension on TranslationsHe {
 			'universalMedia.noFavorites' => 'עדיין לא נשמר זרימת הפופולרים.Favorites להישאר בפרופיל זה.',
 			'universalMedia.removeFavorite' => 'להסיר זרם אהוב',
 			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'בחירת קבצים',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'העברת קבצים תומכים מתוך דפדפן באותו רשת מאובטחת.',
 			'universalMedia.wifiTransferIntro' => 'פתח את כתובת זו בדפדפן במכשיר אחר. בחר קבצים כדי להוסיף אותם לספריה של קבצי מכשיר זה וספרים.',
@@ -8717,10 +8713,10 @@ extension on TranslationsHe {
 			'sourceSetup.metadataNoMatches' => 'לא נמצאו שמות תואמים בחיפוש המקוון. כדאי לנסות שם אחר.',
 			'sourceSetup.metadataSearch' => 'חיפוש מטא־נתונים מקוונים',
 			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',
 			'sourceSetup.videoDetailsLoading' => 'פרטי הווידאו נטענים',
 			'sourceSetup.subtitleKeyRequired' => 'נדרש מפתח API של OpenSubtitles',

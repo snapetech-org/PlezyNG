@@ -636,8 +636,6 @@ class _Translations$settings$id extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Konversi RPU Inline Kekuatan ke Dolby Vision Profil 8.1';
 	@override String get dvConversionHevcStripDescription => 'Strip Dolby Vision lapisan RPU/EL dan rata saat ini HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision eksperimental';
-	@override String get experimentalDolbyVisionDescription => 'Gunakan perender FEL eksperimental pada pemutaran berikutnya. Memerlukan build mesin terpisah.';
-	@override String get dvExperimentUnavailableDescription => 'Eksperimen ini saat ini hanya tersedia di Linux.';
 	@override String get dvCompatibilityFallback => 'Cadangan kompatibilitas';
 	@override String get dvCompatibilityFallbackDescription => 'Gunakan perender standar jika eksperimen tidak dapat dimulai. Data FEL mungkin hilang.';
 	@override String get dvExperimentDiagnostics => 'Pencatatan eksperimen video';
@@ -5590,8 +5588,6 @@ extension on TranslationsId {
 			'settings.dvConversionDv81Description' => 'Konversi RPU Inline Kekuatan ke Dolby Vision Profil 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision lapisan RPU/EL dan rata saat ini HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision eksperimental',
-			'settings.experimentalDolbyVisionDescription' => 'Gunakan perender FEL eksperimental pada pemutaran berikutnya. Memerlukan build mesin terpisah.',
-			'settings.dvExperimentUnavailableDescription' => 'Eksperimen ini saat ini hanya tersedia di Linux.',
 			'settings.dvCompatibilityFallback' => 'Cadangan kompatibilitas',
 			'settings.dvCompatibilityFallbackDescription' => 'Gunakan perender standar jika eksperimen tidak dapat dimulai. Data FEL mungkin hilang.',
 			'settings.dvExperimentDiagnostics' => 'Pencatatan eksperimen video',
@@ -5600,10 +5596,10 @@ extension on TranslationsId {
 			'settings.disableDolbyVisionDescription' => 'Bermain file HDR10 atau lapisan HLG bukannya Dolby Vision, ketika itu memiliki satu',
 			'settings.hdrSdrConversion' => 'Konversi HDR ke SDR',
 			'settings.hdrSdrConversionDescription' => 'Pilih apa yang mengubah video HDR ketika layar tidak dapat menampilkan HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'mobil',
 			'settings.hdrSdrConversionAutoDescription' => 'Perangkat pada Android 9 dan lebih baru, pemain pada versi yang lebih tua',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Perangkat',
 			'settings.hdrSdrConversionDeviceDescription' => 'Hardware video perangkat Anda mengubahnya. paling cepat, tetapi warna tergantung pada perangkat',
 			'settings.hdrSdrConversionPlayer' => 'Pemutar',
@@ -6114,10 +6110,10 @@ extension on TranslationsId {
 			'videoControls.segmentLoop' => 'Segmen Lingkungan',
 			'videoControls.addBookmark' => 'Tambahkan Bookmark',
 			'videoControls.bookmarkName' => 'Nama Bookmark',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Misalnya, adegan pembukaan',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark yang ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
 			'videoControls.deleteBookmark' => 'Menghapus Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Item ini sudah memiliki 100 buku.',
@@ -6628,10 +6624,10 @@ extension on TranslationsId {
 			'libraries.hideLibrary' => 'Perpustakaan tersembunyi',
 			'libraries.libraryOptions' => 'Pilihan perpustakaan',
 			'libraries.content' => 'Perpustakaan konten',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Pilih perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Tidak ada rekomendasi tersedia',
 			'libraries.noCollections' => 'Tidak ada koleksi di perpustakaan ini',
 			'libraries.noFoldersFound' => 'Tidak ditemukan folder',
@@ -7142,10 +7138,10 @@ extension on TranslationsId {
 			'watchTogether.codeCopied' => 'Kode kamar disalin',
 			'watchTogether.shareInvite' => 'Membagi Jemputan',
 			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Watch bersama saya di PlezyNG: buka Watch bersama, pilih Join Room dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kontrol sesi',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Menghubungkan kembali...',
 			'watchTogether.reconnectingDescription' => 'Koneksi terputus.Anda masuk ke ruangan secara otomatis.',
 			'watchTogether.connected' => 'terhubung',
@@ -7656,10 +7652,10 @@ extension on TranslationsId {
 			'metadataEdit.metadataUpdated' => 'Metadata yang diperbarui',
 			'metadataEdit.metadataUpdateFailed' => 'Tidak dapat mengemas kini metadata',
 			'metadataEdit.artworkUpdated' => 'Artwork dikemas kini',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'gagal memperbarui karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tidak ada seni yang tersedia',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opsi seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opsi seni ${index}, dipilih',
 			'metadataEdit.notSet' => 'Tidak menetapkan',
@@ -8170,10 +8166,10 @@ extension on TranslationsId {
 			'universalMedia.noFavorites' => 'Belum disimpan streaming favorit sampai sekarang. favorit tetap di profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapus Stream Favorit',
 			'universalMedia.filesHelp' => 'Pilih file audio, video, atau ISO untuk catatan sementara.File dan URL tidak ditambahkan ke sejarah perpustakaan.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Pilih file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} file terpilih', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Mengirim file melalui Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Memindahkan file yang didukung dari browser pada jaringan yang sama.',
 			'universalMedia.wifiTransferIntro' => 'Buka alamat ini dalam browser pada perangkat lain. pilih file untuk menambahkan mereka ke perpustakaan File dan buku perangkat ini.',
@@ -8684,10 +8680,10 @@ extension on TranslationsId {
 			'sourceSetup.metadataNoMatches' => 'Tidak ditemukan judul yang cocok secara daring. Coba judul lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata daring',
 			'sourceSetup.metadataLoading' => 'Mencari detail film dan acara TV secara daring…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadata daring dari Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tidak ditemukan kecocokan judul otomatis. Cari judulnya untuk memilih kecocokan.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Metadata daring tidak dapat dimuat. Pemutaran dan detail lokal tetap tersedia.',
 			'sourceSetup.videoDetailsLoading' => 'Memuat detail video',
 			'sourceSetup.subtitleKeyRequired' => 'Kunci API OpenSubtitles diperlukan',

@@ -636,8 +636,6 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision 프로필 8.1로 인라인 RPU 변환을 강제합니다';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision RPU/EL 레이어를 제거하고 일반 HEVC로 제공합니다';
 	@override String get experimentalDolbyVision => '실험적 Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => '다음 재생에서 실험적 FEL 렌더러를 사용합니다. 별도로 빌드한 엔진이 필요합니다.';
-	@override String get dvExperimentUnavailableDescription => '이 실험은 현재 Linux에서만 사용할 수 있습니다.';
 	@override String get dvCompatibilityFallback => '호환성 대체 모드';
 	@override String get dvCompatibilityFallbackDescription => '실험을 시작할 수 없으면 기본 렌더러를 사용합니다. FEL 데이터가 손실될 수 있습니다.';
 	@override String get dvExperimentDiagnostics => '비디오 실험 로그';
@@ -5610,8 +5608,6 @@ extension on TranslationsKo {
 			'settings.dvConversionDv81Description' => 'Dolby Vision 프로필 8.1로 인라인 RPU 변환을 강제합니다',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision RPU/EL 레이어를 제거하고 일반 HEVC로 제공합니다',
 			'settings.experimentalDolbyVision' => '실험적 Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => '다음 재생에서 실험적 FEL 렌더러를 사용합니다. 별도로 빌드한 엔진이 필요합니다.',
-			'settings.dvExperimentUnavailableDescription' => '이 실험은 현재 Linux에서만 사용할 수 있습니다.',
 			'settings.dvCompatibilityFallback' => '호환성 대체 모드',
 			'settings.dvCompatibilityFallbackDescription' => '실험을 시작할 수 없으면 기본 렌더러를 사용합니다. FEL 데이터가 손실될 수 있습니다.',
 			'settings.dvExperimentDiagnostics' => '비디오 실험 로그',
@@ -5620,10 +5616,10 @@ extension on TranslationsKo {
 			'settings.disableDolbyVisionDescription' => '파일에 HDR10 또는 HLG 레이어가 있으면 Dolby Vision 대신 해당 레이어를 재생합니다',
 			'settings.hdrSdrConversion' => 'HDR을 SDR로 변환',
 			'settings.hdrSdrConversionDescription' => '디스플레이가 HDR을 표시할 수 없을 때 HDR 동영상을 무엇으로 변환할지 선택합니다.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => '자동',
 			'settings.hdrSdrConversionAutoDescription' => 'Android 9 이상에서는 기기, 이전 버전에서는 플레이어',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => '기기',
 			'settings.hdrSdrConversionDeviceDescription' => '기기의 비디오 하드웨어가 변환합니다. 가장 빠르지만 색상은 기기에 따라 다릅니다',
 			'settings.hdrSdrConversionPlayer' => '플레이어',
@@ -6134,10 +6130,10 @@ extension on TranslationsKo {
 			'videoControls.segmentLoop' => '세그먼트 루프',
 			'videoControls.addBookmark' => 'Bookmark 추가하기',
 			'videoControls.bookmarkName' => 'Bookmark 이름',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => '예를 들어, 개방 장면',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '책표 ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => '이 책자에 대한 이름을 입력합니다.',
 			'videoControls.deleteBookmark' => 'Bookmark 삭제',
 			'videoControls.bookmarkLimitReached' => '이 항목은 이미 100 개의 책표를 가지고 있습니다.',
@@ -6648,10 +6644,10 @@ extension on TranslationsKo {
 			'libraries.hideLibrary' => '미디어 라이브러리 숨기기',
 			'libraries.libraryOptions' => '미디어 라이브러리 옵션',
 			'libraries.content' => '미디어 라이브러리 콘텐츠',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => '미디어 라이브러리 선택',
 			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => '추천 없음',
 			'libraries.noCollections' => '이 미디어 라이브러리에는 컬렉션이 없습니다',
 			'libraries.noFoldersFound' => '폴더를 찾을 수 없습니다',
@@ -7162,10 +7158,10 @@ extension on TranslationsKo {
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
 			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => '재연결 중...',
 			'watchTogether.reconnectingDescription' => '연결이 끊어졌습니다. 자동으로 방에 다시 참여합니다.',
 			'watchTogether.connected' => '연결됨',
@@ -7676,10 +7672,10 @@ extension on TranslationsKo {
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
 			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
 			'metadataEdit.artworkUpdated' => '아트워크가 업데이트되었습니다',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => '아트워크 업데이트 실패',
 			'metadataEdit.noArtworkAvailable' => '사용 가능한 아트워크 없음',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => '아트워크 옵션 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '아트워크 옵션 ${index}, 선택됨',
 			'metadataEdit.notSet' => '설정되지 않음',
@@ -8190,10 +8186,10 @@ extension on TranslationsKo {
 			'universalMedia.noFavorites' => '아직 좋아하는 스트림을 저장하지 않았습니다.Favorites 이 프로필에 남아 있습니다.',
 			'universalMedia.removeFavorite' => '좋아하는 스트림을 제거',
 			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '파일 선택',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
 			'universalMedia.wifiTransferHelp' => '동일한 신뢰할 수 있는 네트워크에서 브라우저에서 지원된 파일을 전송합니다.',
 			'universalMedia.wifiTransferIntro' => '다른 장치에서 브라우저에서 이 주소를 열어 파일을 선택하여 이 장치의 파일 및 책 라이브러리에 추가합니다.',
@@ -8704,10 +8700,10 @@ extension on TranslationsKo {
 			'sourceSetup.metadataNoMatches' => '일치하는 온라인 제목을 찾지 못했습니다. 다른 제목으로 검색하세요.',
 			'sourceSetup.metadataSearch' => '온라인 메타데이터 검색',
 			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
 			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => '온라인 메타데이터를 불러오지 못했습니다. 재생과 로컬 정보는 계속 사용할 수 있습니다.',
 			'sourceSetup.videoDetailsLoading' => '동영상 정보 불러오는 중',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API 키 필요',

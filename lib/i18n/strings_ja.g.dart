@@ -636,8 +636,6 @@ class _Translations$settings$ja extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision プロファイル 8.1 へのインライン RPU 変換を強制します';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision の RPU/EL レイヤーを削除し、通常の HEVC として扱います';
 	@override String get experimentalDolbyVision => '実験的なDolby Vision';
-	@override String get experimentalDolbyVisionDescription => '次の再生で実験的なFELレンダラーを使用します。別途ビルドしたエンジンが必要です。';
-	@override String get dvExperimentUnavailableDescription => 'この実験は現在Linuxでのみ利用できます。';
 	@override String get dvCompatibilityFallback => '互換性フォールバック';
 	@override String get dvCompatibilityFallbackDescription => '実験を開始できない場合は標準レンダラーを使用します。FELデータが失われる可能性があります。';
 	@override String get dvExperimentDiagnostics => '動画実験のログ記録';
@@ -5610,8 +5608,6 @@ extension on TranslationsJa {
 			'settings.dvConversionDv81Description' => 'Dolby Vision プロファイル 8.1 へのインライン RPU 変換を強制します',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision の RPU/EL レイヤーを削除し、通常の HEVC として扱います',
 			'settings.experimentalDolbyVision' => '実験的なDolby Vision',
-			'settings.experimentalDolbyVisionDescription' => '次の再生で実験的なFELレンダラーを使用します。別途ビルドしたエンジンが必要です。',
-			'settings.dvExperimentUnavailableDescription' => 'この実験は現在Linuxでのみ利用できます。',
 			'settings.dvCompatibilityFallback' => '互換性フォールバック',
 			'settings.dvCompatibilityFallbackDescription' => '実験を開始できない場合は標準レンダラーを使用します。FELデータが失われる可能性があります。',
 			'settings.dvExperimentDiagnostics' => '動画実験のログ記録',
@@ -5620,10 +5616,10 @@ extension on TranslationsJa {
 			'settings.disableDolbyVisionDescription' => 'ファイルに HDR10 または HLG レイヤーがある場合は、Dolby Vision の代わりにそれを再生します',
 			'settings.hdrSdrConversion' => 'HDRからSDRへの変換',
 			'settings.hdrSdrConversionDescription' => 'ディスプレイがHDRを表示できないときに、HDR映像を何で変換するかを選択します。',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => '自動',
 			'settings.hdrSdrConversionAutoDescription' => 'Android 9以降はデバイス、それより前のバージョンではプレーヤー',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'デバイス',
 			'settings.hdrSdrConversionDeviceDescription' => 'デバイスの映像ハードウェアで変換します。最も高速ですが、色はデバイスによって異なります',
 			'settings.hdrSdrConversionPlayer' => 'プレーヤー',
@@ -6134,10 +6130,10 @@ extension on TranslationsJa {
 			'videoControls.segmentLoop' => 'セグメントループ',
 			'videoControls.addBookmark' => 'ブックマーク追加',
 			'videoControls.bookmarkName' => 'Bookmark 名称',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'たとえば、オープンシーン。',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'ブックマーク ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'このブックマークの名前を入力します。',
 			'videoControls.deleteBookmark' => 'ブックマーク削除',
 			'videoControls.bookmarkLimitReached' => 'この項目にはすでに100本のブックマークがあります。',
@@ -6648,10 +6644,10 @@ extension on TranslationsJa {
 			'libraries.hideLibrary' => 'ライブラリを非表示',
 			'libraries.libraryOptions' => 'ライブラリオプション',
 			'libraries.content' => 'ライブラリコンテンツ',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'ライブラリを選択',
 			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'おすすめがありません',
 			'libraries.noCollections' => 'このライブラリにコレクションがありません',
 			'libraries.noFoldersFound' => 'フォルダが見つかりません',
@@ -7162,10 +7158,10 @@ extension on TranslationsJa {
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
 			'watchTogether.shareInvite' => '招待を共有',
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
 			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => '再接続中…',
 			'watchTogether.reconnectingDescription' => '接続が切断されました。自動的にルームに再参加します。',
 			'watchTogether.connected' => '接続済み',
@@ -7676,10 +7672,10 @@ extension on TranslationsJa {
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
 			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
 			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
 			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}、選択済み',
 			'metadataEdit.notSet' => '未設定',
@@ -8190,10 +8186,10 @@ extension on TranslationsJa {
 			'universalMedia.noFavorites' => 'まだお気に入りのストリームを保存していません お気に入りはこのプロフィールに留まります。',
 			'universalMedia.removeFavorite' => 'お気に入りの流れを削除する',
 			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ファイルを選択',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
 			'universalMedia.wifiTransferHelp' => '同じ信頼できるネットワーク上のブラウザからサポートされたファイルを転送します。',
 			'universalMedia.wifiTransferIntro' => 'このアドレスを別のデバイスでブラウザで開きます. ファイルを選択して、このデバイスのファイルと本の図書館に追加します。',
@@ -8704,10 +8700,10 @@ extension on TranslationsJa {
 			'sourceSetup.metadataNoMatches' => 'オンラインで一致するタイトルが見つかりませんでした。別のタイトルをお試しください。',
 			'sourceSetup.metadataSearch' => 'オンラインメタデータを検索',
 			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
 			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',
 			'sourceSetup.videoDetailsLoading' => '動画の情報を読み込み中',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles の API キーが必要です',

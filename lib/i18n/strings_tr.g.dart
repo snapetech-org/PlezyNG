@@ -638,8 +638,6 @@ class _Translations$settings$tr extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision profile 8.1\'e satır içi RPU dönüştürmeyi zorla';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision RPU/EL katmanlarını soy ve düz HEVC olarak sun';
 	@override String get experimentalDolbyVision => 'Deneysel Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Sonraki oynatmada deneysel FEL işleyicisini kullanın. Ayrı bir motor derlemesi gerektirir.';
-	@override String get dvExperimentUnavailableDescription => 'Bu deney şu anda yalnızca Linux üzerinde kullanılabilir.';
 	@override String get dvCompatibilityFallback => 'Uyumluluk yedeği';
 	@override String get dvCompatibilityFallbackDescription => 'Deney başlatılamazsa standart işleyiciyi kullanın. FEL verileri kaybolabilir.';
 	@override String get dvExperimentDiagnostics => 'Video deneyi günlükleri';
@@ -5615,8 +5613,6 @@ extension on TranslationsTr {
 			'settings.dvConversionDv81Description' => 'Dolby Vision profile 8.1\'e satır içi RPU dönüştürmeyi zorla',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision RPU/EL katmanlarını soy ve düz HEVC olarak sun',
 			'settings.experimentalDolbyVision' => 'Deneysel Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Sonraki oynatmada deneysel FEL işleyicisini kullanın. Ayrı bir motor derlemesi gerektirir.',
-			'settings.dvExperimentUnavailableDescription' => 'Bu deney şu anda yalnızca Linux üzerinde kullanılabilir.',
 			'settings.dvCompatibilityFallback' => 'Uyumluluk yedeği',
 			'settings.dvCompatibilityFallbackDescription' => 'Deney başlatılamazsa standart işleyiciyi kullanın. FEL verileri kaybolabilir.',
 			'settings.dvExperimentDiagnostics' => 'Video deneyi günlükleri',
@@ -5625,10 +5621,10 @@ extension on TranslationsTr {
 			'settings.disableDolbyVisionDescription' => 'Dosyada varsa Dolby Vision yerine HDR10 veya HLG katmanını oynat',
 			'settings.hdrSdrConversion' => 'HDR\'den SDR\'ye Dönüştürme',
 			'settings.hdrSdrConversionDescription' => 'Ekran HDR gösteremediğinde HDR videoyu neyin dönüştüreceğini seçin.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Otomatik',
 			'settings.hdrSdrConversionAutoDescription' => 'Android 9 ve sonrasında cihaz, eski sürümlerde oynatıcı',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Cihaz',
 			'settings.hdrSdrConversionDeviceDescription' => 'Dönüştürmeyi cihazın video donanımı yapar. En hızlısı, ancak renkler cihaza bağlıdır',
 			'settings.hdrSdrConversionPlayer' => 'Oynatıcı',
@@ -6139,10 +6135,10 @@ extension on TranslationsTr {
 			'videoControls.segmentLoop' => 'Segment Yürüyüşü',
 			'videoControls.addBookmark' => 'Bookmark ekleyin',
 			'videoControls.bookmarkName' => 'Bookmark Adı',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Örneğin, açılan sahne',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Hakkında ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Bu kitaplık için bir isim girin.',
 			'videoControls.deleteBookmark' => 'Bookmark Kaldır',
 			'videoControls.bookmarkLimitReached' => 'Bu bölümde zaten 100 kitaplık var.',
@@ -6653,10 +6649,10 @@ extension on TranslationsTr {
 			'libraries.hideLibrary' => 'Kitaplığı gizle',
 			'libraries.libraryOptions' => 'Kitaplık seçenekleri',
 			'libraries.content' => 'kitaplık içeriği',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Kitaplık seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			'libraries.noCollections' => 'Bu kitaplıkta koleksiyon yok',
 			'libraries.noFoldersFound' => 'Klasör bulunamadı',
@@ -7167,10 +7163,10 @@ extension on TranslationsTr {
 			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
 			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
 			'watchTogether.openSessionControls' => 'Birlikte İzle oturum kontrollerini aç',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Yeniden bağlanılıyor...',
 			'watchTogether.reconnectingDescription' => 'Bağlantı koptu. Odaya otomatik olarak yeniden katılacaksınız.',
 			'watchTogether.connected' => 'Bağlı',
@@ -7681,10 +7677,10 @@ extension on TranslationsTr {
 			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
 			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
 			'metadataEdit.noArtworkAvailable' => 'Görsel bulunmuyor',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}, seçildi',
 			'metadataEdit.notSet' => 'Ayarlanmadı',
@@ -8195,10 +8191,10 @@ extension on TranslationsTr {
 			'universalMedia.noFavorites' => 'Hiç kaydedilmemiş akış favori henüz. Favoriler bu profilde kalır.',
 			'universalMedia.removeFavorite' => 'En sevdiğiniz akışları kaldırın',
 			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Dosyaları seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Wi-Fi üzerinden dosyaları gönderin',
 			'universalMedia.wifiTransferHelp' => 'Desteklenen dosyaları aynı güvenilir ağda bir tarayıcıdan aktarın.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başka bir cihazda bir tarayıcıda açın. dosyaları bu cihazın Dosya ve kitap kütüphanesine eklemek için seçin.',
@@ -8709,10 +8705,10 @@ extension on TranslationsTr {
 			'sourceSetup.metadataNoMatches' => 'Çevrimiçi eşleşen başlık bulunamadı. Başka bir başlık deneyin.',
 			'sourceSetup.metadataSearch' => 'Çevrimiçi meta veri ara',
 			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Çevrimiçi meta veriler yüklenemedi. Oynatma ve yerel bilgiler hâlâ kullanılabilir.',
 			'sourceSetup.videoDetailsLoading' => 'Video bilgileri yükleniyor',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API anahtarı gerekli',

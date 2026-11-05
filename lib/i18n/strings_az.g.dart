@@ -638,8 +638,6 @@ class _Translations$settings$az extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision profile 8.1-ə çevrilməni məcburi et';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision təbəqələrini sil və sadə HEVC kimi təqdim et';
 	@override String get experimentalDolbyVision => 'Eksperimental Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Növbəti oxutmada eksperimental FEL renderindən istifadə edin. Mühərrikin ayrıca yığılması tələb olunur.';
-	@override String get dvExperimentUnavailableDescription => 'Bu sınaq hazırda yalnız Linux-da mövcuddur.';
 	@override String get dvCompatibilityFallback => 'Uyğunluq üçün ehtiyat rejim';
 	@override String get dvCompatibilityFallbackDescription => 'Sınaq başlaya bilməsə, standart renderdən istifadə edin. FEL məlumatları itə bilər.';
 	@override String get dvExperimentDiagnostics => 'Video sınağının jurnalı';
@@ -5615,8 +5613,6 @@ extension on TranslationsAz {
 			'settings.dvConversionDv81Description' => 'Dolby Vision profile 8.1-ə çevrilməni məcburi et',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision təbəqələrini sil və sadə HEVC kimi təqdim et',
 			'settings.experimentalDolbyVision' => 'Eksperimental Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Növbəti oxutmada eksperimental FEL renderindən istifadə edin. Mühərrikin ayrıca yığılması tələb olunur.',
-			'settings.dvExperimentUnavailableDescription' => 'Bu sınaq hazırda yalnız Linux-da mövcuddur.',
 			'settings.dvCompatibilityFallback' => 'Uyğunluq üçün ehtiyat rejim',
 			'settings.dvCompatibilityFallbackDescription' => 'Sınaq başlaya bilməsə, standart renderdən istifadə edin. FEL məlumatları itə bilər.',
 			'settings.dvExperimentDiagnostics' => 'Video sınağının jurnalı',
@@ -5625,10 +5621,10 @@ extension on TranslationsAz {
 			'settings.disableDolbyVisionDescription' => 'Faylda varsa, Dolby Vision əvəzinə HDR10 və ya HLG təbəqəsini oynat',
 			'settings.hdrSdrConversion' => 'HDR-dən SDR-ə çevirmə',
 			'settings.hdrSdrConversionDescription' => 'Ekran HDR göstərə bilmədikdə HDR videonu nəyin çevirəcəyini seçin.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Avtomatik',
 			'settings.hdrSdrConversionAutoDescription' => 'Android 9 və sonrakı versiyalarda cihaz, köhnə versiyalarda oynadıcı',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Cihaz',
 			'settings.hdrSdrConversionDeviceDescription' => 'Çevirməni cihazın video avadanlığı edir. Ən sürətlisi, lakin rənglər cihazdan asılıdır',
 			'settings.hdrSdrConversionPlayer' => 'Oynadıcı',
@@ -6139,10 +6135,10 @@ extension on TranslationsAz {
 			'videoControls.segmentLoop' => 'Bölmə təkrarı',
 			'videoControls.addBookmark' => 'Əlfəcin əlavə et',
 			'videoControls.bookmarkName' => 'Əlfəcin adı',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Məsələn, açılış səhnəsi',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Əlfəcin ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Bu əlfəcin üçün ad daxil edin.',
 			'videoControls.deleteBookmark' => 'Əlfəcini sil',
 			'videoControls.bookmarkLimitReached' => 'Bu elementdə artıq 100 əlfəcin var.',
@@ -6653,10 +6649,10 @@ extension on TranslationsAz {
 			'libraries.hideLibrary' => 'Kitabxananı gizlət',
 			'libraries.libraryOptions' => 'Kitabxana seçimləri',
 			'libraries.content' => 'kitabxana məzmunu',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Kitabxana seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			'libraries.noCollections' => 'Bu kitabxanada kolleksiya yoxdur',
 			'libraries.noFoldersFound' => 'Qovluq tapılmadı',
@@ -7167,10 +7163,10 @@ extension on TranslationsAz {
 			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Dəvəti paylaş',
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'PlezyNG-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
 			'watchTogether.openSessionControls' => 'Birlikdə İzlə seans idarəetmələrini aç',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Yenidən qoşulunur...',
 			'watchTogether.reconnectingDescription' => 'Əlaqə kəsildi. Otağa avtomatik olaraq yenidən qoşulacaqsınız.',
 			'watchTogether.connected' => 'Qoşulub',
@@ -7681,10 +7677,10 @@ extension on TranslationsAz {
 			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
 			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
 			'metadataEdit.noArtworkAvailable' => 'Şəkil əlçatan deyil',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}, seçildi',
 			'metadataEdit.notSet' => 'Təyin edilməyib',
@@ -8195,10 +8191,10 @@ extension on TranslationsAz {
 			'universalMedia.noFavorites' => 'Movqe.Az xəbər verir ki, Hollandiyada futbolçular bu profildə qalır.',
 			'universalMedia.removeFavorite' => 'Movqe favoritləri',
 			'universalMedia.filesHelp' => 'Video, audio və ISO filləri seçin. Fillər və URL-lər kütüphane tarihinə daxil olmaz.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Fillər seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '1 seçilmiş fil', other: '${count} seçilmiş dosyalar', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Fillər Wi-Fi yoluyla göndərilir',
 			'universalMedia.wifiTransferHelp' => 'Desteklə olan dosyaları bir browserdan aynı güvenilir ağda göndərir.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başqa cihazda bir browserda açın.Bu cihazın Fillər və kitab kütüphanasına ekləmək üçün dosyaları seçin.',
@@ -8709,10 +8705,10 @@ extension on TranslationsAz {
 			'sourceSetup.metadataNoMatches' => 'Onlayn uyğun ad tapılmadı. Başqa ad sınayın.',
 			'sourceSetup.metadataSearch' => 'Onlayn metadata axtar',
 			'sourceSetup.metadataLoading' => 'Onlayn film və serial məlumatları axtarılır…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt-dan onlayn metadata',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Avtomatik ad uyğunluğu tapılmadı. Uyğun nəticəni seçmək üçün adı axtarın.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Onlayn metadata yüklənmədi. Oynatma və yerli məlumatlar hələ də əlçatandır.',
 			'sourceSetup.videoDetailsLoading' => 'Video məlumatları yüklənir',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API açarı tələb olunur',

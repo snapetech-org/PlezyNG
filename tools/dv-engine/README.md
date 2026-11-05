@@ -1,6 +1,11 @@
 # Experimental Dolby Vision engine
 
-This is an isolated Linux engine build, not a replacement for the release engine.
+The tools here support development and qualification of the Dolby Vision engine.
+Normal compatible releases bundle the implementation and expose a default-off
+Settings switch; users do not need to run these builders. See
+[normal-build runtime integration](../../docs/maintainers/dv-native-ports.md).
+
+The standalone Linux recipe below produces a diagnostic engine.
 It builds FFmpeg's dual-layer demux/decode support, libplacebo's FEL composer and
 mpv's paired-frame integration, plus the unmerged `opengl-next` embedding API.
 The current experiment adds fail-closed pairing and output handling for missing,
@@ -12,8 +17,8 @@ The first recipe targets native Linux x86_64/aarch64 with OpenGL. The workflow
 builds x86_64. An experimental ARM64 Android FEL AAR/APK build now has a
 separate native builder; see [phone testing](../../docs/maintainers/dv-phone-test.md).
 Vulkan/D3D11, Windows, Apple and webOS packages still need their own toolchains
-or adapters and qualification. Production mpv-build patches have **not** been
-rebased into the Android experiment; treat its app playback as experimental.
+or adapters and qualification. The older standalone Android prototype does not contain production patch parity.
+Ordinary release engines use the rebased producer series instead.
 
 ## Build
 

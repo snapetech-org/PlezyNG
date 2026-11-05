@@ -750,17 +750,15 @@ val mpvFfmpegDevelopmentDir = layout.buildDirectory.dir("libmpv-ffmpeg-developme
 // Build the Media3 JNI adapter against the same shared FFmpeg libraries that
 // libmpv packages. Headers are pinned to libmpv's FFmpeg version and remain
 // build-only; the APK contains one FFmpeg implementation for both players.
-// The AAR carries no headers, so they come from FFmpeg's release source: the
-// Media3 adapter uses none of the declarations mpv-build's patches change
-// (libavcodec/mediacodec.h, libavcodec/jni.h).
+// Normal bundled engine AARs carry their matching installed FFmpeg headers.
+// Legacy development overrides can still use the pinned release-source fallback.
 val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") {
   dependsOn(extractMpvNatives)
   val manifest = File(mpvFfmpegDevelopmentDir, ".manifest")
   val libraries = listOf("avcodec", "avutil", "swresample")
   inputs.dir(mpvFfmpegJniDir)
-  if (felAarFile != null) {
-    inputs.file(felAarFile)
-  } else {
+  inputs.files(mpvAarNatives)
+  if (felAarFile == null) {
     inputs.property("ffmpegVersion", mpvFfmpegVersion)
     inputs.property("sourceUrl", mpvFfmpegSourceUrl)
     inputs.property("sourceSha256", mpvFfmpegSourceSha256)
@@ -786,9 +784,11 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
       val nativeDir = File(staging, "native")
       staging.mkdirs()
       val ffmpegIdentity: String
-      if (felAarFile != null) {
+      val nativeAar = mpvAarNatives.singleFile
+      val hasBundledHeaders = ZipFile(nativeAar).use { it.getEntry("META-INF/plezyng-dv-engine.json") != null }
+      if (hasBundledHeaders) {
         val headerPrefix = "META-INF/plezyng-dv/ffmpeg-headers/"
-        val sourceCommit = ZipFile(felAarFile).use { archive ->
+        val sourceCommit = ZipFile(nativeAar).use { archive ->
           val metadata = archive.getInputStream(archive.getEntry("META-INF/plezyng-dv-engine.json")).bufferedReader().use {
             groovy.json.JsonSlurper().parseText(it.readText()) as Map<*, *>
           }
@@ -1051,7 +1051,6 @@ android {
     versionCode = flutter.versionCode
     versionName = flutter.versionName
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    buildConfigField("boolean", "PLEZYNG_DV_FEL_EXPERIMENTAL", if (felAarFile != null) "true" else "false")
 
     if (felAarFile != null) {
       ndk {

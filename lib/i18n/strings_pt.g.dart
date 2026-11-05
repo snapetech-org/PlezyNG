@@ -640,8 +640,6 @@ class Translations$settings$pt extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Forçar a conversão RPU integrada para Dolby Vision perfil 8.1';
 	@override String get dvConversionHevcStripDescription => 'Remover as camadas RPU/EL do Dolby Vision e apresentar HEVC sem Dolby Vision';
 	@override String get experimentalDolbyVision => 'Dolby Vision experimental';
-	@override String get experimentalDolbyVisionDescription => 'Usar o renderizador FEL experimental na próxima reprodução. Requer uma compilação separada do motor.';
-	@override String get dvExperimentUnavailableDescription => 'Este experimento está disponível apenas no Linux por enquanto.';
 	@override String get dvCompatibilityFallback => 'Alternativa de compatibilidade';
 	@override String get dvCompatibilityFallbackDescription => 'Usar o renderizador padrão se o experimento não iniciar. Os dados FEL podem ser perdidos.';
 	@override String get dvExperimentDiagnostics => 'Registro do experimento de vídeo';
@@ -5622,8 +5620,6 @@ extension on TranslationsPt {
 			'settings.dvConversionDv81Description' => 'Forçar a conversão RPU integrada para Dolby Vision perfil 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Remover as camadas RPU/EL do Dolby Vision e apresentar HEVC sem Dolby Vision',
 			'settings.experimentalDolbyVision' => 'Dolby Vision experimental',
-			'settings.experimentalDolbyVisionDescription' => 'Usar o renderizador FEL experimental na próxima reprodução. Requer uma compilação separada do motor.',
-			'settings.dvExperimentUnavailableDescription' => 'Este experimento está disponível apenas no Linux por enquanto.',
 			'settings.dvCompatibilityFallback' => 'Alternativa de compatibilidade',
 			'settings.dvCompatibilityFallbackDescription' => 'Usar o renderizador padrão se o experimento não iniciar. Os dados FEL podem ser perdidos.',
 			'settings.dvExperimentDiagnostics' => 'Registro do experimento de vídeo',
@@ -5632,10 +5628,10 @@ extension on TranslationsPt {
 			'settings.disableDolbyVisionDescription' => 'Reproduzir a camada HDR10 ou HLG do arquivo em vez de Dolby Vision, quando houver',
 			'settings.hdrSdrConversion' => 'Conversão de HDR para SDR',
 			'settings.hdrSdrConversionDescription' => 'Escolha o que converte vídeos HDR quando a tela não consegue exibir HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Automático',
 			'settings.hdrSdrConversionAutoDescription' => 'Dispositivo no Android 9 ou posterior, reprodutor em versões anteriores',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Dispositivo',
 			'settings.hdrSdrConversionDeviceDescription' => 'O hardware de vídeo do dispositivo faz a conversão. Mais rápido, mas as cores dependem do dispositivo',
 			'settings.hdrSdrConversionPlayer' => 'Reprodutor',
@@ -6146,10 +6142,10 @@ extension on TranslationsPt {
 			'videoControls.segmentLoop' => 'Segmentação Loop',
 			'videoControls.addBookmark' => 'Adicionar Bookmark',
 			'videoControls.bookmarkName' => 'Nome do Bookmark',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Por exemplo, a cena de abertura',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarcação ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Digite um nome para este livro.',
 			'videoControls.deleteBookmark' => 'Eliminar o Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Este item já tem 100 bookmarks.',
@@ -6660,10 +6656,10 @@ extension on TranslationsPt {
 			'libraries.hideLibrary' => 'Ocultar biblioteca',
 			'libraries.libraryOptions' => 'Opções da biblioteca',
 			'libraries.content' => 'conteúdo da biblioteca',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Selecionar biblioteca',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtros (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Nenhuma recomendação disponível',
 			'libraries.noCollections' => 'Nenhuma coleção nesta biblioteca',
 			'libraries.noFoldersFound' => 'Nenhuma pasta encontrada',
@@ -7174,10 +7170,10 @@ extension on TranslationsPt {
 			'watchTogether.codeCopied' => 'Código da sala copiado',
 			'watchTogether.shareInvite' => 'Compartilhar convite',
 			'watchTogether.inviteCopied' => 'Convite copiado. Cole-o em uma mensagem.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Entre na minha sala do Assistir Juntos no PlezyNG: abra "Assistir Juntos", escolha "Entrar na sala" e insira ${code}.',
 			'watchTogether.openSessionControls' => 'Abrir os controles da sessão Assistir Juntos',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Reconectando...',
 			'watchTogether.reconnectingDescription' => 'A conexão caiu. Você voltará à sala automaticamente.',
 			'watchTogether.connected' => 'Conectado',
@@ -7688,10 +7684,10 @@ extension on TranslationsPt {
 			'metadataEdit.metadataUpdated' => 'Metadados atualizados',
 			'metadataEdit.metadataUpdateFailed' => 'Falha ao atualizar metadados',
 			'metadataEdit.artworkUpdated' => 'Arte atualizada',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Falha ao atualizar arte',
 			'metadataEdit.noArtworkAvailable' => 'Nenhuma arte disponível',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opção de arte ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opção de arte ${index}, selecionada',
 			'metadataEdit.notSet' => 'Não definido',
@@ -8202,10 +8198,10 @@ extension on TranslationsPt {
 			'universalMedia.noFavorites' => 'Não foram salvos favoritos ainda. favoritos permanecem neste perfil.',
 			'universalMedia.removeFavorite' => 'Remover streaming favorito',
 			'universalMedia.filesHelp' => 'Escolha arquivos de áudio, vídeo ou ISO para uma quebra temporária. arquivos e URLs não são adicionados ao histórico da biblioteca.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Escolha arquivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Enviar arquivos por Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transferir arquivos suportados de um navegador na mesma rede confiável.',
 			'universalMedia.wifiTransferIntro' => 'Abra este endereço num navegador em outro dispositivo. selecione arquivos para adicioná-los à biblioteca de Arquivos e Livros deste dispositivo.',
@@ -8716,10 +8712,10 @@ extension on TranslationsPt {
 			'sourceSetup.metadataNoMatches' => 'Nenhum título correspondente encontrado online. Tente outro título.',
 			'sourceSetup.metadataSearch' => 'Buscar metadados online',
 			'sourceSetup.metadataLoading' => 'Buscando detalhes de filmes e séries online…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadados online do Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nenhuma correspondência automática encontrada para o título. Pesquise o título para escolher uma correspondência.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Não foi possível carregar os metadados online. A reprodução e os detalhes locais continuam disponíveis.',
 			'sourceSetup.videoDetailsLoading' => 'Carregando detalhes do vídeo',
 			'sourceSetup.subtitleKeyRequired' => 'É necessária uma chave API do OpenSubtitles',

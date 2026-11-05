@@ -638,8 +638,6 @@ class _Translations$settings$bg extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Принуждава директно преобразуване на RPU към Dolby Vision Profile 8.1';
 	@override String get dvConversionHevcStripDescription => 'Премахва слоевете Dolby Vision RPU/EL и подава обикновен HEVC поток';
 	@override String get experimentalDolbyVision => 'Експериментален Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Използвайте експерименталния FEL рендерер при следващото възпроизвеждане. Изисква отделна компилация на енджина.';
-	@override String get dvExperimentUnavailableDescription => 'Този експеримент засега е достъпен само под Linux.';
 	@override String get dvCompatibilityFallback => 'Резервен режим за съвместимост';
 	@override String get dvCompatibilityFallbackDescription => 'Използвайте стандартния рендерер, ако експериментът не може да стартира. Данните FEL може да се загубят.';
 	@override String get dvExperimentDiagnostics => 'Дневник на видео експеримента';
@@ -5615,8 +5613,6 @@ extension on TranslationsBg {
 			'settings.dvConversionDv81Description' => 'Принуждава директно преобразуване на RPU към Dolby Vision Profile 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Премахва слоевете Dolby Vision RPU/EL и подава обикновен HEVC поток',
 			'settings.experimentalDolbyVision' => 'Експериментален Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Използвайте експерименталния FEL рендерер при следващото възпроизвеждане. Изисква отделна компилация на енджина.',
-			'settings.dvExperimentUnavailableDescription' => 'Този експеримент засега е достъпен само под Linux.',
 			'settings.dvCompatibilityFallback' => 'Резервен режим за съвместимост',
 			'settings.dvCompatibilityFallbackDescription' => 'Използвайте стандартния рендерер, ако експериментът не може да стартира. Данните FEL може да се загубят.',
 			'settings.dvExperimentDiagnostics' => 'Дневник на видео експеримента',
@@ -5625,10 +5621,10 @@ extension on TranslationsBg {
 			'settings.disableDolbyVisionDescription' => 'Възпроизвежда слоя HDR10 или HLG на файла вместо Dolby Vision, когато има такъв',
 			'settings.hdrSdrConversion' => 'Преобразуване от HDR към SDR',
 			'settings.hdrSdrConversionDescription' => 'Изберете какво да преобразува HDR видеото, когато дисплеят не поддържа HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Автоматично',
 			'settings.hdrSdrConversionAutoDescription' => 'Устройство при Android 9 и по-нови, плейър при по-стари версии',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Устройство',
 			'settings.hdrSdrConversionDeviceDescription' => 'Видеохардуерът на устройството извършва преобразуването. Най-бързо, но цветовете зависят от устройството',
 			'settings.hdrSdrConversionPlayer' => 'Плейър',
@@ -6139,10 +6135,10 @@ extension on TranslationsBg {
 			'videoControls.segmentLoop' => 'Сегментът Лоу',
 			'videoControls.addBookmark' => 'Добавяне на Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark име',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Например, отваряща сцена',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Въведете име за тази книжка.',
 			'videoControls.deleteBookmark' => 'Изтриване Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Тази статия вече има 100 книжни знака.',
@@ -6653,10 +6649,10 @@ extension on TranslationsBg {
 			'libraries.hideLibrary' => 'Скрий библиотеката',
 			'libraries.libraryOptions' => 'Опции на библиотеката',
 			'libraries.content' => 'съдържание на библиотеката',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Избери библиотека',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Филтри (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Няма налични препоръки',
 			'libraries.noCollections' => 'Няма колекции в тази библиотека',
 			'libraries.noFoldersFound' => 'Не са намерени папки',
@@ -7167,10 +7163,10 @@ extension on TranslationsBg {
 			'watchTogether.codeCopied' => 'Кодът на стаята е копиран',
 			'watchTogether.shareInvite' => 'Сподели покана',
 			'watchTogether.inviteCopied' => 'Поканата е копирана. Поставете я в съобщение.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присъедини се към моята стая в PlezyNG: отвори „Гледане заедно“, избери „Присъедини се към стая“ и въведи ${code}.',
 			'watchTogether.openSessionControls' => 'Отвори контролите за сесията „Гледане заедно“',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Повторно свързване...',
 			'watchTogether.reconnectingDescription' => 'Връзката прекъсна. Ще се присъедините отново към стаята автоматично.',
 			'watchTogether.connected' => 'Свързано',
@@ -7681,10 +7677,10 @@ extension on TranslationsBg {
 			'metadataEdit.metadataUpdated' => 'Метаданните са обновени',
 			'metadataEdit.metadataUpdateFailed' => 'Неуспешно обновяване на метаданни',
 			'metadataEdit.artworkUpdated' => 'Обложката е обновена',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Неуспешно обновяване на обложката',
 			'metadataEdit.noArtworkAvailable' => 'Няма налична обложка',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант за обложка ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант за обложка ${index}, избран',
 			'metadataEdit.notSet' => 'Не е зададено',
@@ -8195,10 +8191,10 @@ extension on TranslationsBg {
 			'universalMedia.noFavorites' => 'Все още не са спасени любимите потоци.Favorites остават в този профил.',
 			'universalMedia.removeFavorite' => 'Премахване на любимия поток',
 			'universalMedia.filesHelp' => 'Изберете аудио, видео или ISO файлове за временна лента.Файлове и URL адреси не се добавят към историята на библиотеката.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Изберете файлове',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Изпращане на файлове чрез Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Прехвърляне на поддържани файлове от браузър в една и съща надеждна мрежа.',
 			'universalMedia.wifiTransferIntro' => 'Отворете този адрес в браузър на друго устройство. Изберете файлове, за да ги добавите към библиотеката с файлове и книги на това устройство.',
@@ -8709,10 +8705,10 @@ extension on TranslationsBg {
 			'sourceSetup.metadataNoMatches' => 'Не са намерени съвпадащи заглавия онлайн. Опитайте друго заглавие.',
 			'sourceSetup.metadataSearch' => 'Търсене на онлайн метаданни',
 			'sourceSetup.metadataLoading' => 'Търсене на онлайн информация за филми и сериали…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Онлайн метаданни от Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Не е намерено автоматично съвпадение на заглавието. Потърсете заглавието, за да изберете съвпадение.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Онлайн метаданните не можаха да се заредят. Възпроизвеждането и локалната информация остават достъпни.',
 			'sourceSetup.videoDetailsLoading' => 'Зареждане на информация за видеото',
 			'sourceSetup.subtitleKeyRequired' => 'Необходим е API ключ за OpenSubtitles',

@@ -642,8 +642,6 @@ class _Translations$settings$pl extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Wymuś wbudowaną konwersję RPU do profilu Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'Usuń warstwy Dolby Vision RPU/EL i przedstaw zwykłe HEVC';
 	@override String get experimentalDolbyVision => 'Eksperymentalny Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Użyj eksperymentalnego renderera FEL przy następnym odtwarzaniu. Wymaga osobnej kompilacji silnika.';
-	@override String get dvExperimentUnavailableDescription => 'Ten eksperyment jest obecnie dostępny tylko w systemie Linux.';
 	@override String get dvCompatibilityFallback => 'Tryb zgodności w razie błędu';
 	@override String get dvCompatibilityFallbackDescription => 'Użyj standardowego renderera, jeśli eksperyment nie może się uruchomić. Dane FEL mogą zostać utracone.';
 	@override String get dvExperimentDiagnostics => 'Rejestrowanie eksperymentu wideo';
@@ -5665,8 +5663,6 @@ extension on TranslationsPl {
 			'settings.dvConversionDv81Description' => 'Wymuś wbudowaną konwersję RPU do profilu Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Usuń warstwy Dolby Vision RPU/EL i przedstaw zwykłe HEVC',
 			'settings.experimentalDolbyVision' => 'Eksperymentalny Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Użyj eksperymentalnego renderera FEL przy następnym odtwarzaniu. Wymaga osobnej kompilacji silnika.',
-			'settings.dvExperimentUnavailableDescription' => 'Ten eksperyment jest obecnie dostępny tylko w systemie Linux.',
 			'settings.dvCompatibilityFallback' => 'Tryb zgodności w razie błędu',
 			'settings.dvCompatibilityFallbackDescription' => 'Użyj standardowego renderera, jeśli eksperyment nie może się uruchomić. Dane FEL mogą zostać utracone.',
 			'settings.dvExperimentDiagnostics' => 'Rejestrowanie eksperymentu wideo',
@@ -5675,10 +5671,10 @@ extension on TranslationsPl {
 			'settings.disableDolbyVisionDescription' => 'Odtwarzaj warstwę HDR10 lub HLG pliku zamiast Dolby Vision, jeśli jest dostępna',
 			'settings.hdrSdrConversion' => 'Konwersja HDR do SDR',
 			'settings.hdrSdrConversionDescription' => 'Wybierz, co konwertuje wideo HDR, gdy wyświetlacz nie obsługuje HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Automatycznie',
 			'settings.hdrSdrConversionAutoDescription' => 'Urządzenie na Androidzie 9 i nowszym, odtwarzacz na starszych wersjach',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Urządzenie',
 			'settings.hdrSdrConversionDeviceDescription' => 'Konwersję wykonuje sprzęt wideo urządzenia. Najszybciej, ale kolory zależą od urządzenia',
 			'settings.hdrSdrConversionPlayer' => 'Odtwarzacz',
@@ -6189,10 +6185,10 @@ extension on TranslationsPl {
 			'videoControls.segmentLoop' => 'Segmentacja Loop',
 			'videoControls.addBookmark' => 'Dodaj Bookmark',
 			'videoControls.bookmarkName' => 'Nazwa Bookmark',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Na przykład scena otwarcia',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Zakładka ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Wprowadź nazwę dla tego znaku.',
 			'videoControls.deleteBookmark' => 'Usunąć Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Ten artykuł ma już 100 znaków książkowych.',
@@ -6703,10 +6699,10 @@ extension on TranslationsPl {
 			'libraries.hideLibrary' => 'Ukryj bibliotekę',
 			'libraries.libraryOptions' => 'Opcje biblioteki',
 			'libraries.content' => 'zawartość biblioteki',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Wybierz bibliotekę',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Brak dostępnych rekomendacji',
 			'libraries.noCollections' => 'Brak kolekcji w tej bibliotece',
 			'libraries.noFoldersFound' => 'Nie znaleziono folderów',
@@ -7217,10 +7213,10 @@ extension on TranslationsPl {
 			'watchTogether.codeCopied' => 'Skopiowano kod pokoju',
 			'watchTogether.shareInvite' => 'Udostępnij zaproszenie',
 			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w PlezyNG: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			'watchTogether.openSessionControls' => 'Otwórz sterowanie sesją „Oglądaj razem”',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Ponowne łączenie...',
 			'watchTogether.reconnectingDescription' => 'Połączenie zostało przerwane. Ponowne dołączenie do pokoju nastąpi automatycznie.',
 			'watchTogether.connected' => 'Połączono',
@@ -7731,10 +7727,10 @@ extension on TranslationsPl {
 			'metadataEdit.metadataUpdated' => 'Metadane zaktualizowane',
 			'metadataEdit.metadataUpdateFailed' => 'Nie udało się zaktualizować metadanych',
 			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			'metadataEdit.noArtworkAvailable' => 'Brak dostępnej grafiki',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opcja grafiki ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opcja grafiki ${index}, wybrana',
 			'metadataEdit.notSet' => 'Nie ustawiono',
@@ -8245,10 +8241,10 @@ extension on TranslationsPl {
 			'universalMedia.noFavorites' => 'Nie przechowywano jeszcze ulubionych strumieni. ulubione pozostają w tym profilu.',
 			'universalMedia.removeFavorite' => 'Usuń ulubiony strumień',
 			'universalMedia.filesHelp' => 'Wybierz pliki audio, wideo lub ISO dla tymczasowego odcinka. pliki i adresy URL nie są dodawane do historii biblioteki.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Wybierz pliki',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: '1 wybrane pliki', few: '${count} wybrane pliki', many: '${count} wybrane pliki', other: '${count} wybrane pliki', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Wyślij pliki za pośrednictwem Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Przekazywanie plików obsługiwanych z przeglądarki na tej samej zaufanej sieci.',
 			'universalMedia.wifiTransferIntro' => 'Otwórz ten adres w przeglądarce na innym urządzeniu. Wybierz pliki, aby dodać je do biblioteki plików i książek tego urządzenia.',
@@ -8759,10 +8755,10 @@ extension on TranslationsPl {
 			'sourceSetup.metadataNoMatches' => 'Nie znaleziono pasujących tytułów w internecie. Spróbuj innego tytułu.',
 			'sourceSetup.metadataSearch' => 'Szukaj metadanych w internecie',
 			'sourceSetup.metadataLoading' => 'Wyszukiwanie informacji o filmach i serialach w internecie…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Metadane z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nie znaleziono automatycznego dopasowania tytułu. Wyszukaj tytuł, aby wybrać dopasowanie.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Nie udało się wczytać metadanych z internetu. Odtwarzanie i informacje lokalne nadal są dostępne.',
 			'sourceSetup.videoDetailsLoading' => 'Wczytywanie szczegółów wideo',
 			'sourceSetup.subtitleKeyRequired' => 'Wymagany klucz API OpenSubtitles',

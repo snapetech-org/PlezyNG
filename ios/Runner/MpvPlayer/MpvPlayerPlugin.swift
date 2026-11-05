@@ -100,7 +100,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
   func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "initialize":
-      handleInitialize(result: result)
+      handleInitialize(call: call, result: result)
     case "dispose":
       handleDispose(call: call, result: result)
     case "setProperty":
@@ -382,7 +382,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
 
   // MARK: - Platform-Specific Method Handlers
 
-  private func handleInitialize(result: @escaping FlutterResult) {
+  private func handleInitialize(call: FlutterMethodCall, result: @escaping FlutterResult) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else {
         result(FlutterError(code: "ERROR", message: "Plugin deallocated", details: nil))
@@ -409,6 +409,8 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
       self.playerCore = nil
 
       let core = MpvPlayerCore()
+      core.experimentalDolbyVisionRequested =
+        (call.arguments as? [String: Any])?["experimentalDolbyVision"] as? Bool ?? false
       core.delegate = self
 
       guard core.initialize(in: window) else {

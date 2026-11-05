@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		626FF15EAFB79EE923AB9AB7 /* PlezyNGDVRuntimeAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 42707D4A27359B8C5DED5C37 /* PlezyNGDVRuntimeAPI */; };
 		B1D51A6A2F00110000000091 /* MilkRustNativeHost.mm in Sources */ = {isa = PBXBuildFile; fileRef = B1D51A6A2F00110000000090 /* MilkRustNativeHost.mm */; };
 		28A54CB9141D0CB5BB3C2E50 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F93D3355F7A242CE67311F7 /* Pods_Runner.framework */; };
 		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
@@ -190,6 +191,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				626FF15EAFB79EE923AB9AB7 /* PlezyNGDVRuntimeAPI in Frameworks */,
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				6AB6B0952EDB27C100EAC8DB /* MPVKit in Frameworks */,
 				28A54CB9141D0CB5BB3C2E50 /* Pods_Runner.framework in Frameworks */,
@@ -352,6 +354,7 @@
 		};
 		33CC10EC2044A3C60003C045 /* Runner */ = {
 			packageProductDependencies = (
+				42707D4A27359B8C5DED5C37 /* PlezyNGDVRuntimeAPI */,
 				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
 			);
 			isa = PBXNativeTarget;
@@ -359,6 +362,7 @@
 			buildPhases = (
 				5E41E5A55F14C910C5BEEE03 /* [CP] Check Pods Manifest.lock */,
 				66082DF2D9B2E84DE42C4474 /* Build Steam transport */,
+				2A19CEEE4387EA102496ED72 /* Bundle Dolby Vision runtime */,
 				33CC10E92044A3C60003C045 /* Sources */,
 				33CC10EA2044A3C60003C045 /* Frameworks */,
 				33CC10EB2044A3C60003C045 /* Resources */,
@@ -453,6 +457,7 @@
 			);
 			mainGroup = 33CC10E42044A3C60003C045;
 			packageReferences = (
+				72F5F2A75D406F94F1838D52 /* DVRuntimeAPI */,
 				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
 				6AB6B0932EDB27C100EAC8DB /* XCRemoteSwiftPackageReference "mpv-build" */,
 			);
@@ -598,6 +603,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -eu\npython3 \"$SRCROOT/../scripts/games/build_steam_apple.py\"\n";
+		};
+		2A19CEEE4387EA102496ED72 /* Bundle Dolby Vision runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = ();
+			inputPaths = ();
+			name = "Bundle Dolby Vision runtime";
+			outputPaths = ();
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\npython3 \"$SRCROOT/../tools/dv-engine/build_apple_runtime.py\" --xcode-phase\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1097,11 +1114,20 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = FlutterGeneratedPluginSwiftPackage;
 		};
+		42707D4A27359B8C5DED5C37 /* PlezyNGDVRuntimeAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 72F5F2A75D406F94F1838D52 /* DVRuntimeAPI */;
+			productName = PlezyNGDVRuntimeAPI;
+		};
 /* End XCSwiftPackageProductDependency section */
 /* Begin XCLocalSwiftPackageReference section */
 		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
+		};
+		72F5F2A75D406F94F1838D52 /* DVRuntimeAPI */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../shared/apple/DVRuntimeAPI;
 		};
 /* End XCLocalSwiftPackageReference section */
 	};

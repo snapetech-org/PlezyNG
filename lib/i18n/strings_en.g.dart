@@ -1636,11 +1636,8 @@ class Translations$settings$en {
 	/// en: 'Experimental Dolby Vision'
 	String get experimentalDolbyVision => 'Experimental Dolby Vision';
 
-	/// en: 'Use the experimental FEL renderer on the next playback. Requires a separate engine build.'
-	String get experimentalDolbyVisionDescription => 'Use the experimental FEL renderer on the next playback. Requires a separate engine build.';
-
-	/// en: 'This experiment is currently available on Linux only.'
-	String get dvExperimentUnavailableDescription => 'This experiment is currently available on Linux only.';
+	/// en: 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.'
+	String get experimentalDolbyVisionDescription => 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.';
 
 	/// en: 'Compatibility fallback'
 	String get dvCompatibilityFallback => 'Compatibility fallback';
@@ -15638,8 +15635,7 @@ extension on Translations {
 			'settings.dvConversionDv81Description' => 'Force inline RPU conversion to Dolby Vision profile 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision RPU/EL layers and present plain HEVC',
 			'settings.experimentalDolbyVision' => 'Experimental Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Use the experimental FEL renderer on the next playback. Requires a separate engine build.',
-			'settings.dvExperimentUnavailableDescription' => 'This experiment is currently available on Linux only.',
+			'settings.experimentalDolbyVisionDescription' => 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.',
 			'settings.dvCompatibilityFallback' => 'Compatibility fallback',
 			'settings.dvCompatibilityFallbackDescription' => 'Use the standard renderer if the experiment cannot start. FEL data may be lost.',
 			'settings.dvExperimentDiagnostics' => 'Video experiment logging',
@@ -16134,9 +16130,9 @@ extension on Translations {
 			'videoControls.playButton' => 'Play',
 			'videoControls.pauseButton' => 'Pause',
 			'videoControls.playbackPaused' => 'Paused',
+			'videoControls.playbackResumed' => 'Playing',
 			_ => null,
 		} ?? switch (path) {
-			'videoControls.playbackResumed' => 'Playing',
 			'videoControls.loadingVideo' => 'Loading video',
 			'videoControls.showPlaybackControls' => 'Show playback controls',
 			'videoControls.hidePlaybackControls' => 'Hide playback controls',
@@ -16648,9 +16644,9 @@ extension on Translations {
 			'accountPreferences.forcedSubtitleOptions.onlyForcedDescription' => 'Use only tracks marked as forced.',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForcedDescription' => 'Exclude tracks marked as forced.',
 			'accountPreferences.displayMissingEpisodes' => 'Show missing episodes',
+			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
 			_ => null,
 		} ?? switch (path) {
-			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
 			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
 			'accountPreferences.hidePlayedInLatestDescription' => 'Leave items you have already watched out of the server\'s Latest rows.',
 			'accountPreferences.displayCollectionsView' => 'Show the Collections view',
@@ -17162,9 +17158,9 @@ extension on Translations {
 			'explore.relation.parentStory' => 'Parent story',
 			'explore.relation.adaptation' => 'Adaptation',
 			'explore.relation.other' => 'Related',
+			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			_ => null,
 		} ?? switch (path) {
-			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
 			'explore.detail.alsoKnownAs' => 'Also known as',
@@ -17676,9 +17672,9 @@ extension on Translations {
 			'downloads.reasonDeviceStorageFull' => 'this device is out of storage',
 			'downloads.notificationDownloading' => 'Downloading...',
 			'downloads.notificationComplete' => 'Download complete',
+			'downloads.notificationPaused' => 'Download paused',
 			_ => null,
 		} ?? switch (path) {
-			'downloads.notificationPaused' => 'Download paused',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
@@ -18190,9 +18186,9 @@ extension on Translations {
 			'services.deviceCode.title' => ({required Object service}) => 'Activate PlezyNG on ${service}',
 			'services.deviceCode.instructions' => 'Scan the QR code, or visit the address below and enter this code:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
+			'services.deviceCode.copyCode' => 'Copy activation code',
 			_ => null,
 		} ?? switch (path) {
-			'services.deviceCode.copyCode' => 'Copy activation code',
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
 			'services.deviceCode.codeCopied' => 'Code copied',
 			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
@@ -18704,9 +18700,9 @@ extension on Translations {
 			'universalMedia.shareExpiresLabel' => 'Link expires at',
 			'universalMedia.shareStarting' => 'Preparing the stream…',
 			'universalMedia.shareStart' => 'Start sharing',
+			'universalMedia.shareStop' => 'Stop sharing',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.shareStop' => 'Stop sharing',
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
 			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
@@ -19218,9 +19214,9 @@ extension on Translations {
 			'games.steamLibrary' => 'Steam library',
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
+			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			_ => null,
 		} ?? switch (path) {
-			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',

@@ -100,7 +100,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
   func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "initialize":
-      handleInitialize(result: result)
+      handleInitialize(call: call, result: result)
 
     case "dispose":
       handleDispose(result: result)
@@ -234,6 +234,13 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
       ])
       return
     }
+    guard playerCore.dvBackend == nil else {
+      result?([
+        "success": false, "errorCode": "unsupported",
+        "errorMessage": "Picture in Picture is unavailable with experimental Dolby Vision playback",
+      ])
+      return
+    }
     guard let window = findFlutterWindow()?.0 else {
       result?(["success": false, "errorCode": "failed", "errorMessage": "No window"])
       return
@@ -284,7 +291,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
 
   // MARK: - Platform-Specific Method Handlers
 
-  private func handleInitialize(result: @escaping FlutterResult) {
+  private func handleInitialize(call: FlutterMethodCall, result: @escaping FlutterResult) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else {
         result(FlutterError(code: "ERROR", message: "Plugin deallocated", details: nil))
@@ -306,6 +313,8 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
       }
 
       let core = MpvPlayerCore()
+      core.experimentalDolbyVisionRequested =
+        (call.arguments as? [String: Any])?["experimentalDolbyVision"] as? Bool ?? false
       core.delegate = self
 
       guard core.initialize(in: window) else {

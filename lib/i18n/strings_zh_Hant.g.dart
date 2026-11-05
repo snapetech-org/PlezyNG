@@ -637,8 +637,6 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get dvConversionDv81Description => '強制將內嵌的 RPU 轉換為 Dolby Vision Profile 8.1';
 	@override String get dvConversionHevcStripDescription => '移除 Dolby Vision RPU/EL 層，並以一般 HEVC 呈現';
 	@override String get experimentalDolbyVision => '實驗性 Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => '下次播放時使用實驗性 FEL 算繪器。需要單獨建置的播放引擎。';
-	@override String get dvExperimentUnavailableDescription => '此實驗目前僅支援 Linux。';
 	@override String get dvCompatibilityFallback => '相容性備援';
 	@override String get dvCompatibilityFallbackDescription => '如果實驗無法啟動，則使用標準算繪器。FEL 資料可能會遺失。';
 	@override String get dvExperimentDiagnostics => '影片實驗記錄';
@@ -5611,8 +5609,6 @@ extension on TranslationsZhHant {
 			'settings.dvConversionDv81Description' => '強制將內嵌的 RPU 轉換為 Dolby Vision Profile 8.1',
 			'settings.dvConversionHevcStripDescription' => '移除 Dolby Vision RPU/EL 層，並以一般 HEVC 呈現',
 			'settings.experimentalDolbyVision' => '實驗性 Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => '下次播放時使用實驗性 FEL 算繪器。需要單獨建置的播放引擎。',
-			'settings.dvExperimentUnavailableDescription' => '此實驗目前僅支援 Linux。',
 			'settings.dvCompatibilityFallback' => '相容性備援',
 			'settings.dvCompatibilityFallbackDescription' => '如果實驗無法啟動，則使用標準算繪器。FEL 資料可能會遺失。',
 			'settings.dvExperimentDiagnostics' => '影片實驗記錄',
@@ -5621,10 +5617,10 @@ extension on TranslationsZhHant {
 			'settings.disableDolbyVisionDescription' => '檔案包含 HDR10 或 HLG 層時，改為播放該層而非 Dolby Vision',
 			'settings.hdrSdrConversion' => 'HDR 轉 SDR',
 			'settings.hdrSdrConversionDescription' => '選擇在顯示器無法顯示 HDR 時由誰轉換 HDR 影片。',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => '自動',
 			'settings.hdrSdrConversionAutoDescription' => 'Android 9 及更新版本使用裝置，較舊版本使用播放器',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => '裝置',
 			'settings.hdrSdrConversionDeviceDescription' => '由裝置的視訊硬體轉換。速度最快，但色彩取決於裝置',
 			'settings.hdrSdrConversionPlayer' => '播放器',
@@ -6135,10 +6131,10 @@ extension on TranslationsZhHant {
 			'videoControls.segmentLoop' => '分割槽路徑',
 			'videoControls.addBookmark' => '新增 Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark 名稱',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => '例如,開幕式',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '圖示 ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => '請輸入本書標誌的名稱。',
 			'videoControls.deleteBookmark' => '刪除 Bookmark',
 			'videoControls.bookmarkLimitReached' => '這個專案已經有100個字元。',
@@ -6649,10 +6645,10 @@ extension on TranslationsZhHant {
 			'libraries.hideLibrary' => '隱藏媒體庫',
 			'libraries.libraryOptions' => '媒體庫選項',
 			'libraries.content' => '媒體庫內容',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => '選擇媒體庫',
 			'libraries.filtersWithCount' => ({required Object count}) => '篩選器（${count}）',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => '目前沒有推薦',
 			'libraries.noCollections' => '此媒體庫中沒有收藏集',
 			'libraries.noFoldersFound' => '找不到資料夾',
@@ -7163,10 +7159,10 @@ extension on TranslationsZhHant {
 			'watchTogether.codeCopied' => '房間代碼已複製',
 			'watchTogether.shareInvite' => '分享邀請',
 			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => '來 PlezyNG 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。',
 			'watchTogether.openSessionControls' => '開啟「一起看」工作階段控制面板',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => '正在重新連線…',
 			'watchTogether.reconnectingDescription' => '連線已中斷。您將自動重新加入房間。',
 			'watchTogether.connected' => '已連線',
@@ -7677,10 +7673,10 @@ extension on TranslationsZhHant {
 			'metadataEdit.metadataUpdated' => '中繼資料已更新',
 			'metadataEdit.metadataUpdateFailed' => '中繼資料更新失敗',
 			'metadataEdit.artworkUpdated' => '封面圖片已更新',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => '封面圖片更新失敗',
 			'metadataEdit.noArtworkAvailable' => '沒有可用的封面圖片',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面圖片選項 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面圖片選項 ${index}，已選擇',
 			'metadataEdit.notSet' => '未設定',
@@ -8191,10 +8187,10 @@ extension on TranslationsZhHant {
 			'universalMedia.noFavorites' => '尚未儲存流喜愛. 喜愛留在此個人資料中。',
 			'universalMedia.removeFavorite' => '刪除流喜愛',
 			'universalMedia.filesHelp' => '選擇音訊、影片或ISO檔案,以便進行臨時記錄. 檔案和URL不新增到圖書館歷史。',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => '選擇檔案',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 選擇的檔案', other: '${count} 已選擇的檔案', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => '透過 Wi-Fi 傳送檔案',
 			'universalMedia.wifiTransferHelp' => '從同一信任網路的瀏覽器傳輸支援的檔案。',
 			'universalMedia.wifiTransferIntro' => '在另一個裝置上的瀏覽器中開啟此地址. 選擇檔案以將其新增到該裝置的檔案和書籍圖書館。',
@@ -8705,10 +8701,10 @@ extension on TranslationsZhHant {
 			'sourceSetup.metadataNoMatches' => '找不到符合的線上標題。請嘗試其他標題。',
 			'sourceSetup.metadataSearch' => '搜尋線上中繼資料',
 			'sourceSetup.metadataLoading' => '正在查詢線上電影與影集資訊…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => '來自 Trakt 的線上中繼資料',
 			'sourceSetup.metadataNoAutomaticMatch' => '找不到自動符合的標題。請搜尋標題並選擇符合的結果。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => '無法載入線上中繼資料。仍可播放媒體及查看本機資訊。',
 			'sourceSetup.videoDetailsLoading' => '正在載入影片資訊',
 			'sourceSetup.subtitleKeyRequired' => '需要 OpenSubtitles API 金鑰',

@@ -5,20 +5,41 @@ residual reconstruction from the Linux experiment. It does not yet provide
 qualified FEL playback on every platform. Output conversion to HDR10/SDR and
 native Dolby Vision display signaling are separate capabilities.
 
-## Status
+## Runtime inclusion in normal builds
 
-| Platform | Available preparation | Remaining port work |
-| --- | --- | --- |
-| Linux x86-64/ARM64 | Existing isolated GL engine and embedded renderer; new runtime engine identity probe | Production patch parity, full app and device qualification |
-| Windows x86-64/ARM64 | Native MinGW D3D11 build recipe, DLL dependency closure, architecture/hash validation, standalone HDR/SDR launcher, explicit app CMake engine selection | Run native builds; reconcile production patches; test app lifecycle, output and FEL pixels on both architectures |
-| macOS | Existing pinned VideoToolbox/Metal research host | Production player adapter and device qualification |
-| iOS/iPadOS and tvOS | Same host, now with automated unsigned device-SDK build selection and locked resolution | Build with Xcode, sign/install on devices, then production adapter and lifecycle/PiP/output tests |
-| Android/Android TV/Fire TV | Production patch-series audit against the shared FEL sources | Rebase Android patches, rebuild the AAR and its JNI/FFmpeg consumers together, implement and test GPU routing |
-| webOS | Existing compatibility playback | Obtain an app-accessible decoded BL/EL path and adequate GPU API; the current native path exposes no portable FEL compositor |
+The owner directive of 2026-11-05 requires implemented experiments in ordinary
+release packages. A persisted Settings switch, off by default, controls playback.
+Device qualification describes evidence; it does not gate inclusion or require
+a separate application, compiler flag, or manually replaced native library.
 
-The source audit is a prerequisite, not an Android port. The Apple host is a
-separate application, not a replacement production player. No platform receives
-a full-FEL capability claim from a successful build or a DV badge.
+Android/Linux/Windows native production patch series have been rebased onto the
+exact FEL sources in the mpv-build producer. Its normal AAR also carries matching
+FFmpeg headers, preventing the Media3 adapter from mixing header and runtime ABIs.
+The ordinary Android playback policy uses both the saved preference and a
+successfully installed filter, rather than engine presence, to activate FEL.
+
+Apple bundles `PlezyNGDVRuntime.framework` and its prefixed Aether dependencies.
+The app links only the small `shared/apple/DVRuntimeAPI` package at its existing
+OS floor, then loads the implementation when Settings requests it on macOS 15 or
+iOS/tvOS 18. All three Xcode projects run the mandatory packaging phase; the
+`DualLayerDolbyVision` trait is always compiled into that runtime. The app never
+asks the user to select a build variant. PiP is unavailable while using this
+experimental backend. Compatibility playback stays the default.
+
+`tools/dv-engine/build_apple_runtime.py` pins Swift resolution, owns its APFS
+DerivedData/package directories, copies frameworks/resources/notices, and records
+provenance. Build prerequisites are Xcode 27, XcodeGen and Git LFS. CI installs the
+last two automatically. The Mac runtime probe verifies dynamic loading, API
+identity, dual-layer initialization and repeatable close. SDK builds passed for
+macOS arm64, iOS and tvOS; these do not qualify FEL pixels or physical DV output.
+Linux x64 passed the ordinary producer build, shared-library loading, embedded
+OpenGL ES render/readback and six FEL shader vectors. Other architecture builds
+and complete release artifact checks remain required before delivery.
+
+The following standalone builders remain development and diagnostic tools. They
+are not prerequisites for a user to enable an included experiment. WebOS/Tizen
+native playback has no portable BL/EL compositor yet; those app builds remain in
+the release scope and must not advertise unsupported FEL reconstruction.
 
 ## Windows build and run
 

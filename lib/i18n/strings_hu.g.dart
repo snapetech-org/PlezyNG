@@ -638,8 +638,6 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'A közvetlen RPU-átalakítás kényszerítése Dolby Vision Profile 8.1-re';
 	@override String get dvConversionHevcStripDescription => 'A Dolby Vision RPU/EL-rétegek eltávolítása és egyszerű HEVC-ként való megjelenítés';
 	@override String get experimentalDolbyVision => 'Kísérleti Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'A következő lejátszáskor a kísérleti FEL-megjelenítő használata. Külön motorbuild szükséges.';
-	@override String get dvExperimentUnavailableDescription => 'Ez a kísérlet jelenleg csak Linuxon érhető el.';
 	@override String get dvCompatibilityFallback => 'Kompatibilitási tartalék mód';
 	@override String get dvCompatibilityFallbackDescription => 'Ha a kísérlet nem indul, a normál megjelenítő használata. A FEL-adatok elveszhetnek.';
 	@override String get dvExperimentDiagnostics => 'Videókísérlet naplózása';
@@ -5615,8 +5613,6 @@ extension on TranslationsHu {
 			'settings.dvConversionDv81Description' => 'A közvetlen RPU-átalakítás kényszerítése Dolby Vision Profile 8.1-re',
 			'settings.dvConversionHevcStripDescription' => 'A Dolby Vision RPU/EL-rétegek eltávolítása és egyszerű HEVC-ként való megjelenítés',
 			'settings.experimentalDolbyVision' => 'Kísérleti Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'A következő lejátszáskor a kísérleti FEL-megjelenítő használata. Külön motorbuild szükséges.',
-			'settings.dvExperimentUnavailableDescription' => 'Ez a kísérlet jelenleg csak Linuxon érhető el.',
 			'settings.dvCompatibilityFallback' => 'Kompatibilitási tartalék mód',
 			'settings.dvCompatibilityFallbackDescription' => 'Ha a kísérlet nem indul, a normál megjelenítő használata. A FEL-adatok elveszhetnek.',
 			'settings.dvExperimentDiagnostics' => 'Videókísérlet naplózása',
@@ -5625,10 +5621,10 @@ extension on TranslationsHu {
 			'settings.disableDolbyVisionDescription' => 'A Dolby Vision helyett a fájl HDR10 vagy HLG rétegének lejátszása, ha van ilyen',
 			'settings.hdrSdrConversion' => 'HDR–SDR átalakítás',
 			'settings.hdrSdrConversionDescription' => 'Válaszd ki, mi alakítsa át a HDR-videót, ha a kijelző nem tud HDR-t megjeleníteni.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Automatikus',
 			'settings.hdrSdrConversionAutoDescription' => 'Eszköz Android 9-től, lejátszó a régebbi verziókon',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Eszköz',
 			'settings.hdrSdrConversionDeviceDescription' => 'Az eszköz videohardvere alakítja át. A leggyorsabb, de a színek az eszköztől függnek',
 			'settings.hdrSdrConversionPlayer' => 'Lejátszó',
@@ -6139,10 +6135,10 @@ extension on TranslationsHu {
 			'videoControls.segmentLoop' => 'Segmentális lejátszás',
 			'videoControls.addBookmark' => 'Hozzáadása Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark név',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Például a színpad megnyitása',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'könyvjelző ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Írjon be egy nevet erre a könyvjelzőre.',
 			'videoControls.deleteBookmark' => 'Távolítsa el a Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Ez a cikk már 100 könyvjelzővel rendelkezik.',
@@ -6653,10 +6649,10 @@ extension on TranslationsHu {
 			'libraries.hideLibrary' => 'Könyvtár elrejtése',
 			'libraries.libraryOptions' => 'Könyvtár beállításai',
 			'libraries.content' => 'könyvtár tartalma',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Szűrők (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			'libraries.noCollections' => 'Nincsenek gyűjtemények ebben a könyvtárban',
 			'libraries.noFoldersFound' => 'Nem találhatók mappák',
@@ -7167,10 +7163,10 @@ extension on TranslationsHu {
 			'watchTogether.codeCopied' => 'Szobakód másolva',
 			'watchTogether.shareInvite' => 'Meghívó megosztása',
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Csatlakozz a Watch Together-szobámhoz a Plezyben: nyisd meg a Watch Together (Közös nézés) menüt, válaszd a Csatlakozás szobához lehetőséget, és írd be ezt a kódot: ${code}.',
 			'watchTogether.openSessionControls' => 'Watch Together munkamenet-vezérlők megnyitása',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Újracsatlakozás...',
 			'watchTogether.reconnectingDescription' => 'Megszakadt a kapcsolat. Automatikusan visszacsatlakozol a szobához.',
 			'watchTogether.connected' => 'Csatlakozva',
@@ -7681,10 +7677,10 @@ extension on TranslationsHu {
 			'metadataEdit.metadataUpdated' => 'Metaadatok frissítve',
 			'metadataEdit.metadataUpdateFailed' => 'Nem sikerült a metaadatok frissítése',
 			'metadataEdit.artworkUpdated' => 'Képek frissítve',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Nem sikerült a képek frissítése',
 			'metadataEdit.noArtworkAvailable' => 'Nincsenek elérhető képek',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => '${index}. képváltozat',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '${index}. képváltozat, kiválasztva',
 			'metadataEdit.notSet' => 'Nincs beállítva',
@@ -8195,10 +8191,10 @@ extension on TranslationsHu {
 			'universalMedia.noFavorites' => 'Nincs mentett stream kedvencek még. Favoritek maradnak ebben a profilban.',
 			'universalMedia.removeFavorite' => 'Távolítsa el a kedvenc stream',
 			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Támogatott fájlok átadása egy böngészőről ugyanazon megbízható hálózaton.',
 			'universalMedia.wifiTransferIntro' => 'Nyissa meg ezt a címet egy böngészőben egy másik eszközön. Válassza ki a fájlokat, hogy hozzáadják őket a készülék Fájlok és könyvek könyvtárába.',
@@ -8709,10 +8705,10 @@ extension on TranslationsHu {
 			'sourceSetup.metadataNoMatches' => 'Nem található egyező cím online. Próbálj másik címet.',
 			'sourceSetup.metadataSearch' => 'Online metaadatok keresése',
 			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',
 			'sourceSetup.videoDetailsLoading' => 'Videóadatok betöltése',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-kulcs szükséges',

@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Bundle experimental Dolby Vision/FEL playback in normal compatible builds and use a persisted, default-off Settings switch. Add an in-app Apple runtime for macOS 15 and iOS/tvOS 18 while retaining the normal app deployment floors; device output remains unqualified.
 - Keep Android FEL reconstruction controlled by the runtime experimental setting when a FEL-capable engine is bundled.
 - Fix the black screen after sign-in when a profile binds before the file-source database finishes opening, and retain bounded webOS widget-error diagnostics.
 - Resolve webOS dependencies once with the enforced lockfile, keep its package version at 3.0.0, and reject stale package metadata before starting a build.
@@ -431,7 +432,7 @@ This release gathers PlezyNG’s feature work since the fork, platform expansion
 
 - Add a Games category with LAN discovery, profile libraries, pairing and Android Moonlight streaming; add experimental Android Steam account catalog and streaming support and experimental Pyrowave support.
 - Add a retained Multiview workspace for video, music, sources and publications, with floating/split layouts, shared audio and input ownership, two simultaneous video sessions, and an Android Steam game surface.
-- Add profile-aware Dolby Vision routing and server-transcode compatibility checks. Provide isolated experimental P7 FEL paths for Android, Windows and Apple, plus a Linux gpu-next option and offline HDR/SDR tools; these experiments remain outside the production engine pin and require device qualification.
+- Add profile-aware Dolby Vision routing and server-transcode compatibility checks. Add experimental P7 FEL implementations for Android, Windows and Apple, plus a Linux gpu-next option and offline HDR/SDR tools. Availability is controlled at runtime; qualification describes tested device output.
 
 #### Platforms and release channels
 

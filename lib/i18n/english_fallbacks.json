@@ -419,6 +419,7 @@
     "services.planLabel",
     "services.planNote",
     "services.setPlanLabel",
+    "settings.experimentalDolbyVisionDescription",
     "settings.motionProcessing",
     "settings.motionSmoothing",
     "settings.motionSmoothingApplyFailed",

@@ -642,8 +642,6 @@ class _Translations$settings$ru extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Принудительно выполнять inline-конвертацию RPU в Dolby Vision профиль 8.1';
 	@override String get dvConversionHevcStripDescription => 'Удалять слои Dolby Vision RPU/EL и передавать обычный HEVC';
 	@override String get experimentalDolbyVision => 'Экспериментальный Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'При следующем воспроизведении использовать экспериментальный рендерер FEL. Нужна отдельная сборка движка.';
-	@override String get dvExperimentUnavailableDescription => 'Этот эксперимент пока доступен только в Linux.';
 	@override String get dvCompatibilityFallback => 'Резервный режим совместимости';
 	@override String get dvCompatibilityFallbackDescription => 'Использовать стандартный рендерер, если эксперимент не запускается. Данные FEL могут быть потеряны.';
 	@override String get dvExperimentDiagnostics => 'Журнал видеоэксперимента';
@@ -5665,8 +5663,6 @@ extension on TranslationsRu {
 			'settings.dvConversionDv81Description' => 'Принудительно выполнять inline-конвертацию RPU в Dolby Vision профиль 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Удалять слои Dolby Vision RPU/EL и передавать обычный HEVC',
 			'settings.experimentalDolbyVision' => 'Экспериментальный Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'При следующем воспроизведении использовать экспериментальный рендерер FEL. Нужна отдельная сборка движка.',
-			'settings.dvExperimentUnavailableDescription' => 'Этот эксперимент пока доступен только в Linux.',
 			'settings.dvCompatibilityFallback' => 'Резервный режим совместимости',
 			'settings.dvCompatibilityFallbackDescription' => 'Использовать стандартный рендерер, если эксперимент не запускается. Данные FEL могут быть потеряны.',
 			'settings.dvExperimentDiagnostics' => 'Журнал видеоэксперимента',
@@ -5675,10 +5671,10 @@ extension on TranslationsRu {
 			'settings.disableDolbyVisionDescription' => 'Воспроизводить слой HDR10 или HLG из файла вместо Dolby Vision, если он есть',
 			'settings.hdrSdrConversion' => 'Преобразование HDR в SDR',
 			'settings.hdrSdrConversionDescription' => 'Выберите, что преобразует HDR-видео, если дисплей не поддерживает HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Авто',
 			'settings.hdrSdrConversionAutoDescription' => 'Устройство на Android 9 и новее, проигрыватель на более старых версиях',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Устройство',
 			'settings.hdrSdrConversionDeviceDescription' => 'Преобразует видеооборудование устройства. Быстрее всего, но цвета зависят от устройства',
 			'settings.hdrSdrConversionPlayer' => 'Проигрыватель',
@@ -6189,10 +6185,10 @@ extension on TranslationsRu {
 			'videoControls.segmentLoop' => 'Сегмент Лоуп',
 			'videoControls.addBookmark' => 'Добавить Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark имя',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Например, сцены открытия',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Введите имя для этой книжной марки.',
 			'videoControls.deleteBookmark' => 'Удаление букмекеры',
 			'videoControls.bookmarkLimitReached' => 'Эта статья уже имеет 100 книжных знаков.',
@@ -6703,10 +6699,10 @@ extension on TranslationsRu {
 			'libraries.hideLibrary' => 'Скрыть библиотеку',
 			'libraries.libraryOptions' => 'Параметры библиотеки',
 			'libraries.content' => 'содержимое библиотеки',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Выбрать библиотеку',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтры (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			'libraries.noCollections' => 'В этой библиотеке нет коллекций',
 			'libraries.noFoldersFound' => 'Папки не найдены',
@@ -7217,10 +7213,10 @@ extension on TranslationsRu {
 			'watchTogether.codeCopied' => 'Код комнаты скопирован',
 			'watchTogether.shareInvite' => 'Поделиться приглашением',
 			'watchTogether.inviteCopied' => 'Приглашение скопировано. Вставьте его в сообщение.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присоединяйтесь к совместному просмотру в PlezyNG: откройте «Смотреть вместе», выберите «Войти в комнату» и введите ${code}.',
 			'watchTogether.openSessionControls' => 'Открыть управление сессией «Смотреть вместе»',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Переподключение...',
 			'watchTogether.reconnectingDescription' => 'Соединение прервалось. Вы автоматически вернётесь в комнату.',
 			'watchTogether.connected' => 'Подключено',
@@ -7731,10 +7727,10 @@ extension on TranslationsRu {
 			'metadataEdit.metadataUpdated' => 'Метаданные обновлены',
 			'metadataEdit.metadataUpdateFailed' => 'Не удалось обновить метаданные',
 			'metadataEdit.artworkUpdated' => 'Обложка обновлена',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Не удалось обновить обложку',
 			'metadataEdit.noArtworkAvailable' => 'Обложки недоступны',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант обложки ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант обложки ${index}, выбран',
 			'metadataEdit.notSet' => 'Не задано',
@@ -8245,10 +8241,10 @@ extension on TranslationsRu {
 			'universalMedia.noFavorites' => 'До сих пор не сохранились любимые потоки.Фавориты остаются в этом профиле.',
 			'universalMedia.removeFavorite' => 'Удаление любимого потока',
 			'universalMedia.filesHelp' => 'Выберите аудио, видео или файлы ISO для временного перевода.Файлы и URL не добавляются в историю библиотеки.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Выберите файлы',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '1 Выбранный файл', few: '${count} выбранные файлы', many: '${count} выбранные файлы', other: '${count} выбранные файлы', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Передача файлов через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача поддерживаемых файлов из браузера в той же надежной сети.',
 			'universalMedia.wifiTransferIntro' => 'Откройте этот адрес в браузере на другом устройстве.Выберите файлы, чтобы добавить их в библиотеку файлов и книг этого устройства.',
@@ -8759,10 +8755,10 @@ extension on TranslationsRu {
 			'sourceSetup.metadataNoMatches' => 'Совпадающих названий в интернете не найдено. Попробуйте другое название.',
 			'sourceSetup.metadataSearch' => 'Поиск метаданных в интернете',
 			'sourceSetup.metadataLoading' => 'Поиск сведений о фильмах и сериалах в интернете…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Метаданные из Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматическое совпадение названия не найдено. Найдите название, чтобы выбрать совпадение.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Не удалось загрузить метаданные из интернета. Воспроизведение и локальные сведения по-прежнему доступны.',
 			'sourceSetup.videoDetailsLoading' => 'Загрузка сведений о видео',
 			'sourceSetup.subtitleKeyRequired' => 'Требуется ключ API OpenSubtitles',

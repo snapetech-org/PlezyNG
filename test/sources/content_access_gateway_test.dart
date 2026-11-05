@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/sources/content_access.dart';
@@ -39,6 +40,83 @@ class _GatewayAdapter extends SourceAdapter {
 }
 
 void main() {
+  test('large VOD manifests retain their root and every segment capability', () async {
+    final upstream = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    upstream.listen((request) async {
+      if (request.uri.path == '/vod.m3u8') {
+        request.response.headers.contentType = ContentType.parse('application/vnd.apple.mpegurl');
+        request.response.write('#EXTM3U\n#EXT-X-TARGETDURATION:2\n');
+        for (var i = 0; i < 5000; i++) {
+          request.response.write('#EXTINF:2,\nsegment-$i.ts\n');
+        }
+        request.response.write('#EXT-X-ENDLIST\n');
+      } else {
+        request.response.write(request.uri.path);
+      }
+      await request.response.close();
+    });
+    final gateway = SourceStreamGateway(valid: () => true);
+    final client = HttpClient();
+    addTearDown(() async {
+      client.close(force: true);
+      await gateway.close();
+      await upstream.close(force: true);
+    });
+    final root = await gateway.registerUri(Uri.parse('http://127.0.0.1:${upstream.port}/vod.m3u8'));
+    Future<String> read(Uri uri) async {
+      final response = await (await client.getUrl(uri)).close();
+      expect(response.statusCode, HttpStatus.ok);
+      return utf8.decoder.bind(response).join();
+    }
+    final manifest = await read(root);
+    final urls = const LineSplitter().convert(manifest).where((line) => line.startsWith('http://')).toList();
+    expect(urls, hasLength(5000));
+    expect(await read(Uri.parse(urls.first)), '/segment-0.ts');
+    expect(await read(Uri.parse(urls.last)), '/segment-4999.ts');
+    expect(await read(root), manifest);
+  });
+
+  test('live playlist refreshes preserve the active root and retire old children', () async {
+    var sequence = 0;
+    var now = DateTime.utc(2026);
+    final upstream = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    upstream.listen((request) async {
+      if (request.uri.path == '/live.m3u8') {
+        request.response.headers.contentType = ContentType.parse('application/vnd.apple.mpegurl');
+        request.response.write('#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXT-X-MEDIA-SEQUENCE:$sequence\n');
+        for (var i = 0; i < 20; i++) {
+          request.response.write('#EXTINF:2,\nsegment-${sequence + i}.ts\n');
+        }
+      } else {
+        request.response.write(request.uri.path);
+      }
+      await request.response.close();
+    });
+    final gateway = SourceStreamGateway(valid: () => true, clock: () => now);
+    final client = HttpClient();
+    addTearDown(() async {
+      client.close(force: true);
+      await gateway.close();
+      await upstream.close(force: true);
+    });
+    final root = await gateway.registerUri(Uri.parse('http://127.0.0.1:${upstream.port}/live.m3u8'));
+    Uri? oldSegment;
+    for (var refresh = 0; refresh < 260; refresh++) {
+      sequence = refresh * 20;
+      now = now.add(const Duration(seconds: 3));
+      final response = await (await client.getUrl(root)).close();
+      expect(response.statusCode, HttpStatus.ok);
+      final manifest = await utf8.decoder.bind(response).join();
+      oldSegment ??= Uri.parse(const LineSplitter().convert(manifest).firstWhere((line) => line.startsWith('http://')));
+    }
+    final retired = await (await client.getUrl(oldSegment!)).close();
+    expect(retired.statusCode, HttpStatus.notFound);
+    await retired.drain<void>();
+    final response = await (await client.getUrl(root)).close();
+    expect(response.statusCode, HttpStatus.ok);
+    await response.drain<void>();
+  });
+
   test('loopback gateway serves and validates byte ranges', () async {
     final adapter = _GatewayAdapter(SourceTransport(), 'abcdef'.codeUnits);
     final gateway = SourceStreamGateway(valid: () => true);

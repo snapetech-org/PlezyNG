@@ -8,7 +8,7 @@ release qualification. Changes are committed directly to `main` in small batches
 
 | Audit ID | Work | Implementation | Validation |
 | --- | --- | --- | --- |
-| D01, D11 | HLS gateway lifetime and long VOD manifests | In progress | Pending |
+| D01, D11 | HLS gateway lifetime and long VOD manifests | Implemented: owner-scoped stable references, buffered-read grace, serialized rewrites; 50,000-reference manifest bound | Large VOD and rolling live regression cases added; execution pending |
 | D02-D05 | Recording stop, salvage and HLS rendition/map handling | In progress | Pending |
 | D06 | Bound credential payload caching; avoid caching encryption outputs | Implemented | Regression cases added; execution pending |
 | D07 | Native P2P hash capability alignment | Queued | Pending |

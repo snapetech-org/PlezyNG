@@ -1,0 +1,20 @@
+// Apply before settings plugins resolve, including Flutter's included Gradle build.
+// The Android settings mirror alone cannot configure that independent build.
+def centralMirror = 'https://storage.googleapis.com/maven-central/maven2'
+
+gradle.beforeSettings { settings ->
+    settings.pluginManagement.repositories {
+        maven { name = 'PlezyNGCentralMirror'; url = uri(centralMirror) }
+        google()
+        gradlePluginPortal()
+    }
+    settings.dependencyResolutionManagement.repositories {
+        maven { name = 'PlezyNGCentralMirror'; url = uri(centralMirror) }
+    }
+}
+
+gradle.beforeProject { project ->
+    project.buildscript.repositories {
+        maven { name = 'PlezyNGCentralMirror'; url = uri(centralMirror) }
+    }
+}

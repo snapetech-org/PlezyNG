@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Share Android CI/release caches and apply the Maven Central mirror before Flutter's included Gradle build resolves plugins.
 - Keep Apple JIT queue discovery active before platform jobs appear and retry failed launches while their jobs remain queued.
 - Keep Swift package resolution inside each Apple job's DerivedData directory so completed JIT jobs reclaim that output.
 - Reclaim default Xcode DerivedData belonging to a completed Apple JIT job after retaining its logs and failed build products.

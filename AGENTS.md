@@ -33,3 +33,13 @@ builds and validate their outputs; do not omit a platform to get a green run
 without the owner's explicit approval. A published release missing a required
 platform is incomplete. Keep artifact provenance and qualification truthful.
 
+## Experimental features — owner directive, 2026-11-05
+
+Include implemented experimental Dolby Vision/FEL paths and HDR/SDR tools in
+normal builds for compatible platforms. Users opt in through persisted runtime
+Settings controls. Do not require a separate app build, compiler flag, manual
+engine replacement, or prior device qualification to make an implemented
+experiment available. Ship the required native components and verify packaging;
+a toggle without its implementation does not satisfy this requirement.
+Keep experiments off by default and report qualification status accurately.
+

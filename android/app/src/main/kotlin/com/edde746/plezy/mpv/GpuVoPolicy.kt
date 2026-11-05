@@ -40,6 +40,14 @@ internal object GpuVoPolicy {
     experimentalEnabled: Boolean = false
   ): Boolean = experimentalEnabled && dvProfile == 7L && conversionMode == "auto"
 
+  /** Bundling the engine does not opt the user into reconstruction. */
+  fun p7FelRouteActive(
+    dvProfile: Long?,
+    conversionMode: String,
+    experimentalEnabled: Boolean,
+    filterAccepted: Boolean
+  ): Boolean = wantsP7FelReconstruction(dvProfile, conversionMode, experimentalEnabled) && filterAccepted
+
   /**
    * A MediaCodec decoder as [nativeDvDecoder] sees it: the component name,
    * one MIME type it serves, the profiles it advertises for that type

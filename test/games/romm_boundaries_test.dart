@@ -33,9 +33,13 @@ void main() {
     addTearDown(client.close);
     expect(client.uri('api/roms/42').path, '/romm/api/roms/42');
     expect(client.resource('/assets/cover.jpg').path, '/romm/assets/cover.jpg');
-    for (final target in ['https://other.example/cover', 'https://user:secret@media.example/romm/cover', '../secret', '/romm/%2e%2e/secret']) {
+    for (final target in ['https://other.example/cover', 'https://user:secret@media.example/romm/cover',
+      '../secret', '/romm/%2e%2e/secret', '/romm/%252e%252e/secret',
+      '/romm/assets%2f..%2fsecret', '/romm/assets%5c..%5csecret']) {
       expect(() => client.resource(target), throwsA(isA<RommFailure>()));
     }
+    expect(() => client.uri('api/%2e%2e/secret'), throwsA(isA<RommFailure>()));
+    expect(client.resource('assets/My%20Game.jpg').pathSegments.last, 'My Game.jpg');
     expect(() => client.uri('https://other.example/rom'), throwsA(isA<RommFailure>()));
     client.close();
     expect(client.requireCurrent, throwsA(isA<RommFailure>()));

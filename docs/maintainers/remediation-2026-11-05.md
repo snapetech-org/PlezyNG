@@ -29,7 +29,7 @@ release qualification. Changes are committed directly to `main` in small batches
 | G03 | Live/DVR subtitle capture | Implemented: decoded-route capability gate; two-hour cue history; explicit DVR seeks preserve cues; unexplained live clock rollback clears the old epoch; same-channel server DVR reopen suspends/rebases capture; channel/audio changes invalidate it | Clock/seek/format regression cases added; native route, rollover and server-DVR device execution pending |
 | G04 | P2P storage policy for large media | Implemented: per-profile 4/16/64/128/256 GiB choices, 64 GiB default, aggregate lease reservations, known-size checks and 512 MiB free-space reserve; native metadata checks the actual file requirement | Native transfer/large-file, low-space and concurrent-device execution pending |
 | G05 | Dedicated karaoke implementation | Reconciled the previously unmerged PR #110 with current main: host/singer rotation, requests, lyrics/CD+G, rendition packages, practice, microphone/scoring/private takes, LAN room and opt-in preparation companion; fixed restored filler filtering and tempo-adjusted wait estimates | Companion protocol/recovery tests pass; format/CD+G/MIDI regression cases added. Flutter/native execution and external licensed catalogs, hosted sharing, proprietary karaoke formats and live mic monitor buses remain open |
-| G06 | RomM and emulator integration | Reconciled PR #111 source: profile-scoped authorization/catalog, exact-copy routes, embedded browser/stream/native host, isolated player proxy, durable save journals/conflicts, offline download recovery and core build recipes | URL/copy/capability regression cases added. Flutter/native/server/device execution and packaged signed core delivery pending |
+| G06 | RomM and emulator integration | Reconciled PR #111 source: profile-scoped authorization/catalog, exact-copy routes, embedded browser/stream/native host, isolated player proxy, durable save journals/conflicts, offline download recovery and core build recipes | URL/copy/capability regression cases added. Linux native host/core build and loading pass; normal platform build/packaging now includes the three default cores and corresponding source. Full app packages, Apple signing and server/device execution remain pending |
 | G07 | Full theme packages | Implemented v1 native package schema with color, geometry, typography and adaptive/sidebar/bottom flow; bounded import/export, preview, persistence, reset and corrupt-package fallback; TV/automotive retain their navigation contracts | Schema/round-trip cases added; RTL, 200% text, native focus and migration execution pending |
 | G08 | Remaining podcast functions | Per-show automatic downloads/retention, restart-safe discovery and opt-in alerts implemented; manual downloads protected; foreground worker integrated with profile/lifecycle/download owners. Archive pagination and transcript search/seek with encrypted offline caching added; opt-in gpodder API v2 sync integrated with HTTPS configuration, unique device IDs, independent revision acknowledgments, deferred active-session changes and explicit progress conflicts. Known-duration RSS episodes supported; HTTP imports remain queued for manual setup | Policy, private archive restart/identity and transcript regression cases added; gpodder protocol and acknowledgment regressions added; worker/native/server/device execution pending |
 | G09 | Remaining Steam transport/presentation scope | Reconciled PR #81/#111 source: desktop/Apple receivers, HDR/surround, cloud/family actions, internet tunnel/relay, controller mapping/feedback/motion, touch editor, microphone ownership, SDK preparation and package inspection. Kept current Opus patches and Android direct-egress setup while adding Granite patches and SDK layout recovery | 37 Games SDK tests and 15 Android SDK setup tests pass; cloud companion 10 pass/6 socket skips. Flutter, native SDK builds, account/network/device acceptance and deployed optional services pending |
@@ -42,12 +42,27 @@ release qualification. Changes are committed directly to `main` in small batches
 
 ### Follow-up integration checks
 
+Normal RomM packaging now builds Gambatte, mGBA and FCEUmm from one canonical
+pin file across app toolchains. Linux builds and dynamic loading pass for the
+host and all three cores. Fixed desktop install ordering, added Android ABI/
+export/dependency/source checks, Apple atomic four-framework delivery and cache
+validation, and TV core/source staging. Nineteen package checks and nineteen
+Tizen recipe tests pass. The package includes exact core source archives plus
+host headers, notices and build recipe; no platform/device qualification is
+inferred from those checks.
+
 Flutter 3.47.1 dependencies now resolve on this host. Full analysis of `lib` and
 `test` found 22 compile errors in the integrated karaoke, caption and detached
 window paths. Updated the file-picker and TV APIs, nullable media title handling
 and optional-interface casts; regenerated desktop microphone plugin registration.
 The follow-up analyzer reports zero errors and zero warnings (style lints remain).
-Flutter tests are being enabled with the native compiler required by PDFium.
+Flutter regression execution exposed and repaired four failures: nullable theme
+font metrics, pre-normalization RomM path traversal, WebVTT terminator retention
+and malformed recording data being classified as an I/O error. The 56 focused
+cases across credentials, recording/archive recovery, visualizers, RomM, karaoke,
+themes and podcast policy/archive/sync now pass across the focused reruns. Linux
+CJK font fallbacks remain covered. The 327 Python check cases pass across the
+full run and the two compiler-dependent icon-check reruns.
 
 The Dart parser exposed three authored-source blockers: the Games screen had
 been truncated at 24,000 bytes, the visualizer content validator contained a

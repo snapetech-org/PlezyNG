@@ -296,7 +296,6 @@ endif()
 
 # RomM software emulator host. Core binaries are staged separately with pinned recipes.
 add_subdirectory("${CMAKE_SOURCE_DIR}/../native/games/romm" romm_native)
-install(TARGETS plezy_retro LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" COMPONENT Runtime)
 
 # WebKit is optional; capability probing reports its absence to the Games UI.
 pkg_check_modules(ROMM_WEBKIT QUIET IMPORTED_TARGET webkit2gtk-4.1>=2.40)

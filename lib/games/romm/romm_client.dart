@@ -23,6 +23,7 @@ class RommClient {
   void requireCurrent() { if (_closed) throw const RommFailure('romm.cancelled'); }
 
   Uri uri(String path, [Map<String, Object?> query = const {}]) {
+    _checkRawPath(path);
     if (path.startsWith('/') || path.contains('\\') || path.split('/').contains('..')) {
       throw const RommFailure('romm.invalidAddress');
     }
@@ -36,6 +37,7 @@ class RommClient {
   /// Resolves server-relative art and asset links without allowing a token to
   /// follow an external origin, path traversal, or a credential-bearing URL.
   Uri resource(String path) {
+    _checkRawPath(path);
     final parsed = Uri.tryParse(path);
     if (parsed == null || parsed.userInfo.isNotEmpty || parsed.hasFragment ||
         parsed.pathSegments.any((p) => p == '..' || p.contains('\\'))) throw const RommFailure('romm.invalidAddress');
@@ -44,6 +46,25 @@ class RommClient {
     final resolved = base.resolveUri(normalized);
     if (resolved.origin != base.origin || !resolved.path.startsWith(base.path)) throw const RommFailure('romm.invalidAddress');
     return resolved;
+  }
+
+  // Uri parsing removes dot segments, including percent-encoded dots. Check
+  // the original spelling before normalization can hide a traversal attempt.
+  static void _checkRawPath(String value) {
+    final rawPath = value.split(RegExp(r'[?#]')).first;
+    for (final raw in rawPath.split('/')) {
+      var segment = raw;
+      for (var depth = 0; depth < 8; depth++) {
+        if (segment == '.' || segment == '..' || segment.contains('\\') ||
+            segment.contains('/') || segment.contains('\u0000')) {
+          throw const RommFailure('romm.invalidAddress');
+        }
+        if (!RegExp(r'%[0-9a-fA-F]{2}').hasMatch(segment)) break;
+        try { segment = Uri.decodeComponent(segment); }
+        on FormatException { throw const RommFailure('romm.invalidAddress'); }
+        if (depth == 7) throw const RommFailure('romm.invalidAddress');
+      }
+    }
   }
 
   Future<HttpClientRequest> open(String method, Uri url, {Map<String, String> headers = const {}}) async {

@@ -58,7 +58,11 @@ class KaraokeFormats {
       final start = _time(timing[1]!), end = _time(timing[2]!);
       if (end <= start) throw const FormatException('WebVTT end precedes start');
       if (timing[3]!.trim().isNotEmpty) warnings.add('WebVTT cue layout is preserved in the original only');
-      var payload = rows.skip(i + 1).join('\n');
+      final payloadRows = rows.skip(i + 1).toList();
+      while (payloadRows.isNotEmpty && payloadRows.last.isEmpty) {
+        payloadRows.removeLast();
+      }
+      var payload = payloadRows.join('\n');
       final part = RegExp(r'<v(?:\.[^ >]+)?\s+([^>]+)>').firstMatch(payload)?[1];
       if (RegExp(r'<(?:ruby|rt|lang)').hasMatch(payload)) warnings.add('Ruby/language markup is preserved in the original only');
       payload = payload.replaceAll(RegExp(r'</?[a-zA-Z][^>]*>'), '');

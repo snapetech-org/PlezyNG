@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Build and package the three default RomM emulator cores with the app, preserve their source/notices, validate Android delivery, and install the desktop host after bundle cleanup.
+
+- Preserve typography sizes when applying theme packages, reject encoded RomM path traversal before URL normalization, trim karaoke VTT terminators and distinguish damaged recording data from I/O failures.
+
 - Fix karaoke file-picker/TV APIs, nullable media titles and optional player interfaces; register desktop microphone capture plugins.
 - Patch Steam Cloud plugin build matching and cleanup dependencies while preserving the Decky Rollup preset.
 

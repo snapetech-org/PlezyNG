@@ -13,6 +13,10 @@ class PackageTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
+        # RomM's package contract has its own real ZIP/receipt tests.
+        romm = patch.object(package, 'check_romm', return_value=[])
+        romm.start()
+        self.addCleanup(romm.stop)
 
     def archive(self, suffix=".apk", *, receiver=True, runtime=True, extra=None):
         path = self.root / ("app" + suffix)

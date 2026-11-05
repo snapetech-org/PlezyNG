@@ -128,45 +128,40 @@ input source does not release a button still held by another.
 
 ## Platform packaging
 
-| Platform | Embedded web player | Native host |
-| --- | --- | --- |
-| Android / Android TV | Existing in-app WebView plugin | App CMake target and ABI-specific staged cores |
-| iOS / macOS | Existing in-app WebView plugin | `PlezyRetro.xcframework` from the local pod build hook |
-| Windows | Existing WebView2 plugin; runtime must be present | Runner copies `plezy_retro.dll`; stage matching core DLLs alongside it |
-| Linux | WebKitGTK 4.1 ≥ 2.40, discovered by CMake | Runtime/core shared libraries under the bundle's `lib/` |
-| tvOS | No browser route | Apple native host; signed core XCFrameworks required |
-| Tizen | No browser route | Private toolchain recipe builds/copies the native host; stage matching cores in `lib/` |
-| webOS | No browser route | CMake installs the native host; stage matching cores in `lib/` |
+Normal app builds compile the pinned Gambatte, mGBA and FCEUmm software cores
+alongside the native host. `native/games/romm/core-sources.json` is the canonical
+source pin set. No emulator executable is downloaded at runtime.
 
-`native/games/romm/CMakeLists.txt` pins libretro-common and miniaudio. Apple pod
-installation invokes `scripts/games/build_romm_apple.py`; no build was executed
-while authoring this change. These hooks build the **host**, not arbitrary cores.
+| Platform | Native delivery |
+| --- | --- |
+| Android / Android TV | Host and three core libraries built for each APK/AAB ABI; matching source/notices packaged as variant-specific assets |
+| iOS / macOS / tvOS | Four XCFrameworks built per platform SDK by the local pod hook, embedded and signed with the app; source/notices in the pod resource bundle |
+| Windows | Host and three matching core DLLs beside the executable; source/notices under `data/romm-notices` |
+| Linux | Host and three matching core shared libraries under `lib/`; source/notices under `data/romm-notices` |
+| Tizen / webOS | Cross-built host and three core libraries under `lib/`, with matching source/notices |
 
-Use `scripts/games/build_romm_cores.py` on the authorized platform build machine
-to produce the core staging directory and its hash/license manifest. Its default
-set is Gambatte, mGBA and FCEUmm. Snes9x and Genesis Plus GX are optional inputs
-with separate distribution-license restrictions, excluded from the default.
-Core revisions are immutable; runtime downloads of emulator executables are
-prohibited. Pass each upstream makefile's target platform and cross-compiler
-variables explicitly. The pinned mGBA revision uses CMake's `mgba_libretro`
-target; pass its target/toolchain definitions with repeated
-`--cmake-arg=-DKEY=value` arguments. Cross builds require an explicit CMake
-toolchain, system name or Apple target SDK. Per-target build directories prevent
-mixing CMake artifacts, and make-based cores clean old objects before each build.
-The stage includes tracked license files from nested dependencies and records
-the selected target and toolchain arguments. Android libraries must have the
-`lib` prefix and be copied to the correct `android/app/src/main/jniLibs/<abi>/`
-directory before packaging.
+Apple builds stage the entire host/core/source set before replacing the previous
+set, and verify the cache's file contents, permissions and framework symlinks.
+Android release inspection checks all four libraries per ABI, their exported
+interfaces, alignment and dependencies, and the matching source receipts.
+The desktop install steps run after Flutter's bundle cleanup so the cleanup
+cannot delete the just-installed host.
 
-Apple core slices must be packaged as signed-capable XCFrameworks named
-`<core>_libretro.xcframework` containing `<core>_libretro.framework`, under
-`native/games/romm/apple/Frameworks/<ios|macos|tvos>/`. The pod includes these
-alongside the host. Release signing must cover every embedded binary. Missing
-core artifacts simply remove that native route. Firmware and games are never
-part of the package.
+Each package retains the exact default-core source archives, tracked license
+files, host implementation/header notices and the application build recipe.
+Receipts identify the source pins and pre-packaging library hashes; Gradle
+stripping and Apple signing may change the shipped binary hashes. Final Android
+package inspection separately records the packaged library hashes. None of
+these receipts claims device qualification.
 
-Apple host builds isolate dependency output per SDK and prepare a complete
-replacement XCFramework before swapping the package artifact and stamp.
+Snes9x and Genesis Plus GX remain optional inputs with separate distribution
+restrictions. The standalone `scripts/games/build_romm_cores.py` recipe remains
+available for explicitly staged additional cores and cross-toolchain work.
+Firmware and game content are never part of the application package.
+
+Linux host and all three default cores compile, link and pass actual dynamic
+loading checks on the current host. Android, Apple, Windows and TV package/device
+execution remains pending; the source recipes alone do not certify those builds.
 
 ## Ecosystem handoff
 

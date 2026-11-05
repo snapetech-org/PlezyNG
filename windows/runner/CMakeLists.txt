@@ -165,4 +165,3 @@ add_dependencies(${BINARY_NAME} plezy_retro)
 add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:plezy_retro>" "$<TARGET_FILE_DIR:${BINARY_NAME}>"
   VERBATIM)
-install(TARGETS plezy_retro RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}" COMPONENT Runtime)

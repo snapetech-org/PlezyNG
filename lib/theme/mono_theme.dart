@@ -240,6 +240,8 @@ ThemeData monoThemeUncached(MonoPalette palette) => _buildMonoTheme(palette, pla
 
 ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
   final brightness = c.brightness;
+  final fallbackFonts = platform == TargetPlatform.linux
+      ? const ['Go Noto Current', 'Go Noto Current Hangul'] : null;
   final onAccent = c.onAccent;
   final clickableCursor = WidgetStateProperty.resolveWith<MouseCursor>(
     (states) => states.contains(WidgetState.disabled) ? MouseCursor.defer : SystemMouseCursors.click,
@@ -267,7 +269,7 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
     // Linux resolves UI text through fontconfig, which on a minimal desktop
     // may have no CJK font at all; the bundled subtitle fonts (pubspec
     // `fonts:`) cover it. Other platforms keep their native CJK fonts.
-    fontFamilyFallback: platform == TargetPlatform.linux ? const ['Go Noto Current', 'Go Noto Current Hangul'] : null,
+    fontFamilyFallback: fallbackFonts,
     colorScheme: ColorScheme(
       brightness: brightness,
       // Accent: everything Material derives from primary (switches, sliders,
@@ -331,9 +333,7 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
           bodySmall: Typography.englishLike2021.bodySmall?.copyWith(color: c.textMuted),
         )
         .apply(
-          fontFamilyFallback: platform == TargetPlatform.linux
-              ? const ['Go Noto Current', 'Go Noto Current Hangul']
-              : null,
+          fontFamilyFallback: fallbackFonts,
         ),
     cardTheme: CardThemeData(
       color: c.surface,

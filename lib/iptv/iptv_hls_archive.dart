@@ -294,7 +294,7 @@ class IptvHlsArchive {
     }
     final video = File(p.join(folder.path, 'video.m3u8'));
     if (!await video.exists() || await video.length() > 16 * 1024 * 1024 ||
-        !(await video.readAsString()).contains('#EXTINF:')) return 0;
+        !utf8.decode(await video.readAsBytes()).contains('#EXTINF:')) return 0;
     var bytes = 0, entries = 0;
     await for (final file in folder.list(followLinks: false)) {
       if (++entries > 100100) throw const FileSystemException('Recording archive contains too many files');
@@ -309,7 +309,9 @@ class IptvHlsArchive {
     for (final name in const ['video', 'audio']) {
       final playlist = File(p.join(folder.path, '$name.m3u8'));
       if (!await playlist.exists() || await playlist.length() > 16 * 1024 * 1024) continue;
-      var text = await playlist.readAsString();
+      // Decode separately so malformed playlist data remains distinguishable
+      // from a filesystem error during per-recording recovery.
+      var text = utf8.decode(await playlist.readAsBytes());
       if (!text.startsWith('#EXTM3U')) continue;
       text = text.replaceAll('#EXT-X-PLAYLIST-TYPE:EVENT', '#EXT-X-PLAYLIST-TYPE:VOD');
       if (!text.contains('#EXT-X-ENDLIST')) text = '${text.trimRight()}\n#EXT-X-ENDLIST\n';

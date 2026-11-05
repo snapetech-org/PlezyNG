@@ -15,12 +15,32 @@ elseif(APPLE)
   target_link_libraries(plezy_retro PRIVATE "-framework CoreAudio" "-framework AudioToolbox" "-framework CoreFoundation")
 elseif(ANDROID)
   target_link_libraries(plezy_retro PRIVATE log android dl m)
+  target_link_options(plezy_retro PRIVATE "-Wl,-z,max-page-size=16384")
 else()
   find_package(Threads REQUIRED)
   target_link_libraries(plezy_retro PRIVATE Threads::Threads ${CMAKE_DL_LIBS} m)
 endif()
-# Core binaries are separately pinned/staged by scripts/games/build_romm_cores.py.
-# Missing cores disable native routes; they never cause a network download in app.
+# Normal builds include the pinned software cores, corresponding source and
+# notices. Capability probing still admits only libraries that actually load.
+option(PLEZY_ROMM_BUILD_CORES "Build the bundled software emulator cores" ON)
+if(PLEZY_ROMM_BUILD_CORES)
+  add_subdirectory(cores)
+endif()
+
+# Call from the top-level app AFTER its clean-bundle install step. Registering
+# this in linux/runner would install the host before that step deletes it.
+function(plezy_install_romm)
+  install(TARGETS plezy_retro
+    RUNTIME DESTINATION "${INSTALL_BUNDLE_LIB_DIR}" COMPONENT Runtime
+    LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}" COMPONENT Runtime)
+  if(PLEZY_ROMM_BUILD_CORES)
+    install(TARGETS gambatte_libretro mgba_libretro fceumm_libretro
+      RUNTIME DESTINATION "${INSTALL_BUNDLE_LIB_DIR}" COMPONENT Runtime
+      LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}" COMPONENT Runtime)
+    install(DIRECTORY "${ROMM_NOTICES_DIR}/"
+      DESTINATION "${INSTALL_BUNDLE_DATA_DIR}/romm-notices" COMPONENT Runtime)
+  endif()
+endfunction()
 if(APPLE)
   set_target_properties(plezy_retro PROPERTIES
     FRAMEWORK TRUE FRAMEWORK_VERSION A OUTPUT_NAME PlezyRetro

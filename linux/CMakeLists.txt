@@ -175,3 +175,4 @@ endif()
 # Optional qualified MilkRust artifacts and their exact corresponding source.
 include("${CMAKE_SOURCE_DIR}/../native/visualizer/milkrust.cmake")
 plezy_install_milkrust("libmilkrust_native.so")
+plezy_install_romm()

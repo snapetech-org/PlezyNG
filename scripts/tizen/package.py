@@ -347,6 +347,13 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
         f'-DFETCHCONTENT_BASE_DIR={sources / "romm-dependencies"}')
     run('cmake', '--build', out / 'romm-build', '--target', 'plezy_retro', '--parallel', args.jobs)
     shutil.copyfile(out / 'romm-build/libplezy_retro.so', out / 'libplezy_retro.so')
+    romm_cores = ('gambatte', 'mgba', 'fceumm')
+    for core in romm_cores:
+        libraries = list((out / 'romm-build/cores').rglob(f'{core}_libretro.so'))
+        if len(libraries) != 1:
+            raise ValueError(f'Expected one Tizen core library: {core}')
+        shutil.copyfile(libraries[0], out / libraries[0].name)
+    shutil.copytree(out / 'romm-build/cores/notices', out / 'romm-notices', dirs_exist_ok=True)
 
     whisper_source = fetch_locked_whisper_source(sources)
     run('cmake', '-S', whisper_source / 'src', '-B', out / 'whisper-build',
@@ -367,11 +374,14 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
         'whisper': {'version': WHISPER_GGML_VERSION, 'archive_sha256': WHISPER_GGML_SHA256},
         'libraries': {},
     }
-    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libplezy_retro.so', 'libflutter_whisper_plugin.so'):
+    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libplezy_retro.so',
+                 'libflutter_whisper_plugin.so', *(f'{core}_libretro.so' for core in romm_cores)):
         path = out / name
         if elf_arch(path.read_bytes()[:64]) != args.arch:
             raise ValueError('Toolchain produced the wrong architecture')
         report['libraries'][name] = sha256(path)
+    report['rommNotices'] = {path.relative_to(out / 'romm-notices').as_posix(): sha256(path)
+                            for path in (out / 'romm-notices').rglob('*') if path.is_file()}
     (out / 'native-build.json').write_text(json.dumps(report, indent=2) + '\n')
 
 
@@ -396,11 +406,25 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
     native_library_names = ['libdart_smb2.so', 'libplezy_sqlite3.so', 'libplezy_torrent.so']
     if 'libplezy_retro.so' in report['libraries']:
         native_library_names.append('libplezy_retro.so')
+        native_library_names.extend(f'{core}_libretro.so' for core in ('gambatte', 'mgba', 'fceumm'))
+        notices = report.get('rommNotices', {})
+        if 'romm-cores.json' not in notices:
+            raise ValueError('The Tizen RomM runtime requires matching core source and notices')
+        for relative, digest in notices.items():
+            path = Path(relative)
+            if path.is_absolute() or '..' in path.parts or '\\' in relative:
+                raise ValueError('Invalid RomM notice path')
+            source_notice = native_dir / 'romm-notices' / path
+            if source_notice.is_symlink() or sha256(source_notice) != digest:
+                raise ValueError('RomM notice digest mismatch')
+            target = native_target / 'romm-notices' / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source_notice, target)
     if 'libflutter_whisper_plugin.so' in report['libraries']:
         native_library_names.append('libflutter_whisper_plugin.so')
     for name in native_library_names:
         path = native_dir / name
-        if sha256(path) != report['libraries'][name] or elf_arch(path.read_bytes()[:64]) != arch:
+        if name not in report['libraries'] or sha256(path) != report['libraries'][name] or elf_arch(path.read_bytes()[:64]) != arch:
             raise ValueError(f'Native input mismatch: {name}')
         dest = destination / 'build-inputs' / name if name == 'libdart_smb2.so' else native_target / name
         dest.parent.mkdir(parents=True, exist_ok=True)

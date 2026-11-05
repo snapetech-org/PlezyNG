@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/multiview/detached_window_peer.dart';
 
@@ -48,7 +48,7 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(calls, 1);
     expect(client.isClosed, isTrue);
-    expect(() => client.call('late'), throwsStateError);
+    await expectLater(client.call('late'), throwsStateError);
   });
 
   test('a process reusing the port cannot impersonate the parent by echoing a token', () async {
@@ -64,9 +64,9 @@ void main() {
     final read = socket.listen(received.addAll);
     addTearDown(read.cancel);
     await Future<void>.delayed(const Duration(milliseconds: 20));
-    final payload = const StandardMessageCodec().encodeMessage({
-      'type': 'challenge', 'nonce': DetachedWindowPeer.newSecret(), 'proof': '0' * 64,
-    })!;
+    final payload = ByteData.sublistView(Uint8List.fromList(utf8.encode(jsonEncode({
+      'type': 'challenge', 'nonce': DetachedWindowPeer.newSecret(), 'proof': List.filled(64, '0').join(),
+    }))));
     final frame = Uint8List(payload.lengthInBytes + 4);
     ByteData.sublistView(frame).setUint32(0, payload.lengthInBytes, Endian.big);
     frame.setRange(4, frame.length, payload.buffer.asUint8List(payload.offsetInBytes, payload.lengthInBytes));

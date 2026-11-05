@@ -116,7 +116,10 @@ final class DetachedWindowPeer {
 
   Future<void> _send(Map<String, Object?> message) {
     if (_disposed) return Future.error(StateError('Detached window is closed'));
-    final bytes = _codec.encodeMessage(message)!;
+    final authentication = const {'hello', 'challenge', 'authenticate', 'ready'}.contains(message['type']);
+    final bytes = authentication
+        ? ByteData.sublistView(Uint8List.fromList(utf8.encode(jsonEncode(message))))
+        : _codec.encodeMessage(message)!;
     if (bytes.lengthInBytes > maxFrameBytes || (!_authenticated && bytes.lengthInBytes > 4096)) {
       return Future.error(const FormatException('Detached window frame is too large'));
     }
@@ -148,7 +151,11 @@ final class DetachedWindowPeer {
         final size = ByteData.sublistView(merged, offset, offset + 4).getUint32(0, Endian.big);
         if (size == 0 || size > (_authenticated ? maxFrameBytes : 4096)) throw const FormatException('Invalid detached window frame');
         if (merged.length - offset < size + 4) break;
-        final value = _codec.decodeMessage(ByteData.sublistView(merged, offset + 4, offset + 4 + size));
+        // StandardMessageCodec may allocate from declared collection lengths.
+        // An unauthenticated peer gets only small JSON handshake messages;
+        // native typed values are decoded after mutual authentication.
+        final payload = Uint8List.sublistView(merged, offset + 4, offset + 4 + size);
+        final value = _authenticated ? _codec.decodeMessage(ByteData.sublistView(payload)) : jsonDecode(utf8.decode(payload));
         if (value is! Map) throw const FormatException('Invalid detached window message');
         _message(value);
         offset += size + 4;

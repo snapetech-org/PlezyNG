@@ -12,8 +12,8 @@ release qualification. Changes are committed directly to `main` in small batches
 | D02-D03 | Recording stop and interrupted-file salvage | Implemented: finish in-flight resources; retain nonempty captures and recover journaled partials | Early EOF and mid-segment deadline regression cases added; execution pending |
 | D04-D05 | HLS rendition/map handling | In progress | Pending |
 | D06 | Bound credential payload caching; avoid caching encryption outputs | Implemented | Regression cases added; execution pending |
-| D07 | Native P2P hash capability alignment | Queued | Pending |
-| D08 | External stream server reporting | Queued | Pending |
+| D07 | Native P2P hash capability alignment | Implemented: SHA-256 multihash magnets and native v2 acceptance | Native v2 transfer regression added; execution pending |
+| D08 | External stream server reporting | Implemented: matched online items use their server reporting client with offline fallback | Provider/server session acceptance pending |
 | D09 | Progressive unified search | Queued | Pending |
 | D10 | Translation fallbacks and localized service status | Queued | Pending |
 | G01-G02 | Native visualizer delivery and signed catalog activation | Queued | Pending |

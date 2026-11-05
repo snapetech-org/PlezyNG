@@ -135,7 +135,7 @@ void* pt_open(const char* magnet, const char* directory, int32_t index, int64_t 
     if (!magnet || !directory || index < -1 || quota < 16 * 1024 * 1024) return nullptr;
     lt::error_code error;
     auto params = lt::parse_magnet_uri(magnet, error);
-    if (error || !params.info_hashes.has_v1()) return nullptr;
+    if (error || (!params.info_hashes.has_v1() && !params.info_hashes.has_v2())) return nullptr;
     auto stream = std::make_unique<Stream>(index, quota, upload);
     params.save_path = directory;
     params.flags &= ~(lt::torrent_flags::auto_managed | lt::torrent_flags::paused);

@@ -16,7 +16,7 @@ statically into the small platform shared library. No external daemon,
 downloaded executable, remote proxy or magnet-launch application is required.
 The full upstream license texts ship as app assets and appear in app licenses.
 
-The versioned C ABI opens a v1 magnet, acquires metadata, selects the requested
+The versioned C ABI opens a v1 or v2 magnet, acquires metadata, selects the requested
 file and supplies verified bytes. An unspecified index is accepted only when
 the torrent has one unambiguous video. Metadata-only acquisition begins with
 all files unwanted. The engine pauses while applying selection and renaming
@@ -45,9 +45,11 @@ the existing Cloud & add-on streaming settings. The existing stream row offers
 the native action only when the backend is available and the user opted in.
 A failed cloud request does not silently start peer traffic.
 
-Supported discovery is v1 magnets, DHT, PEX and HTTP/UDP tracker hints. v2-only
-torrents and HTTPS-only/private-tracker workflows are outside this transport's
-current contract. Local discovery and automatic router port mapping are off.
+Supported discovery is v1/v2 magnets, DHT, PEX and HTTP/UDP tracker hints.
+SHA-256 add-on hashes use the BEP 9 multihash topic (`urn:btmh:1220...`) and
+the native libtorrent 2 engine accepts either identity. HTTPS-only/private-tracker
+workflows remain outside this transport's current contract. Local discovery and
+automatic router port mapping are off. Native v2 regression execution is pending.
 
 ## Packaging and OS work
 

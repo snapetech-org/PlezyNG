@@ -1196,6 +1196,15 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (source.mediaGlobalKey != metadata.globalKey || !_externalSourceProfileIsCurrent(source)) {
       throw StateError('The selected remote stream is no longer available in this profile.');
     }
+    final serverId = metadata.serverId;
+    final manager = context.read<MultiServerProvider>().serverManager;
+    final reportingId = serverId == null ? null : ServerId(serverId);
+    final reportingClient = reportingId != null &&
+            manager.isServerVisible(reportingId) &&
+            !manager.refusedServerIds.contains(reportingId) &&
+            manager.isClientOnline(reportingId)
+        ? manager.getClient(reportingId)
+        : null;
     return PlaybackContext(
       metadata: metadata,
       result: PlaybackInitializationResult(
@@ -1207,7 +1216,12 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         playMethod: 'DirectPlay',
       ),
       sourceKind: source.isLocal ? PlaybackSourceKind.localFile : PlaybackSourceKind.remoteDirect,
-      reportingMode: PlaybackReportingMode.localOnly,
+      // Stream bytes belong to the external provider; a matched library item
+      // still belongs to its server's ordinary playback/session contract.
+      reportingMode: reportingClient == null
+          ? PlaybackReportingMode.localOnly
+          : PlaybackReportingMode.onlineWithOfflineFallback,
+      reportingClient: reportingClient,
     );
   }
 

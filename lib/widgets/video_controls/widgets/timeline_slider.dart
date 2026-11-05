@@ -11,6 +11,7 @@ import '../helpers/eager_horizontal_drag_recognizer.dart';
 import '../helpers/render_geometry.dart';
 import '../painters/buffer_range_painter.dart';
 import 'player_focus_disc.dart';
+import 'player_chrome_style.dart';
 
 /// Timeline slider with chapter markers for video playback
 ///
@@ -384,7 +385,7 @@ class _TimelineSliderState extends State<TimelineSlider> {
                           widget.bufferedProgressColor != null && (widget.showPosition || _dragValue != null)
                           ? displayPosition
                           : null,
-                      progressColor: widget.bufferedProgressColor ?? Colors.white,
+                      progressColor: widget.bufferedProgressColor ?? PlayerChromeStyle.accent(context),
                       chapters: widget.chaptersLoaded && widget.showChapterMarkersOnTimeline
                           ? widget.chapters
                           : const [],
@@ -430,8 +431,8 @@ class _TimelineSliderState extends State<TimelineSlider> {
                         min: 0.0,
                         max: max,
                         onChanged: _noopSliderChanged,
-                        activeColor: widget.showProgress ? Colors.white : Colors.transparent,
-                        thumbColor: widget.bufferedProgressColor ?? (widget.showProgress ? null : Colors.white),
+                        activeColor: widget.showProgress ? PlayerChromeStyle.accent(context) : Colors.transparent,
+                        thumbColor: widget.bufferedProgressColor ?? PlayerChromeStyle.accent(context),
                         inactiveColor: Colors.transparent,
                       ),
                     ),

@@ -4,21 +4,23 @@ import 'package:plezy/widgets/app_icon.dart';
 import '../../focus/focus_theme.dart';
 import '../../focus/focusable_wrapper.dart';
 import 'widgets/player_focus_disc.dart';
+import 'widgets/player_chrome_style.dart';
+import '../../theme/mono_tokens.dart';
 
 /// A standardized icon button for the video player's control rows.
 ///
 /// Guarantees a 40px tap target without changing the idle appearance. With a
 /// [focusNode] it is D-pad/keyboard focusable and shows the player's focus
 /// treatment: a solid disc with the icon inverted ([PlayerFocusDisc]), scaled
-/// by [FocusTheme.playerControlFocusScale]. With a [label] it becomes a pill
-/// showing the icon and the label, and the focus fill follows the pill.
+/// by [FocusTheme.playerControlFocusScale]. Labelled controls use the shared
+/// rounded button shape.
 class VideoControlButton extends StatelessWidget {
   final IconData icon;
 
   final VoidCallback? onPressed;
   final VoidCallback? onLongPress;
 
-  /// The color of the icon. Defaults to white, or amber if [isActive] is true.
+  /// The color of the icon. Defaults to white, or the accent when active.
   final Color? color;
 
   final double iconSize;
@@ -43,7 +45,7 @@ class VideoControlButton extends StatelessWidget {
   final bool? checked;
 
   /// Whether this button represents an active state (e.g., a feature is enabled).
-  /// When true, the icon color defaults to amber instead of white.
+  /// When true, the icon uses the player-safe theme accent.
   final bool isActive;
 
   /// Optional FocusNode for D-pad/keyboard navigation.
@@ -78,7 +80,7 @@ class VideoControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final idleColor = color ?? (isActive ? Colors.amber : Colors.white);
+    final idleColor = color ?? (isActive ? PlayerChromeStyle.accent(context) : Colors.white);
     final label = this.label;
     final effectiveSemanticLabel = semanticLabel ?? label ?? tooltip;
 
@@ -90,7 +92,7 @@ class VideoControlButton extends StatelessWidget {
           child: InkWell(
             onTap: onPressed,
             onLongPress: onLongPress,
-            customBorder: const StadiumBorder(),
+            borderRadius: BorderRadius.circular(tokens(context).radiusMd),
             child: SizedBox(
               height: 40,
               child: Padding(
@@ -164,7 +166,7 @@ class VideoControlButton extends StatelessWidget {
         child: PlayerFocusDisc(
           iconColor: idleColor,
           isActive: isActive,
-          borderRadius: label == null ? null : const BorderRadius.all(Radius.circular(20)),
+          borderRadius: label == null ? null : BorderRadius.circular(tokens(context).radiusMd),
           builder: (context, iconColor) => button(iconColor),
         ),
       );

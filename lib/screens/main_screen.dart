@@ -2376,8 +2376,8 @@ class _MainScreenState extends State<MainScreen>
               softWrap: false,
               overflow: TextOverflow.ellipsis,
               child: NavigationDestination(
-                icon: AppIcon(Symbols.more_horiz_rounded, fill: 1),
-                selectedIcon: AppIcon(Symbols.more_horiz_rounded, fill: 1),
+                icon: AppIcon(Symbols.more_horiz_rounded, fill: 0, weight: 500),
+                selectedIcon: AppIcon(Symbols.more_horiz_rounded, fill: 1, weight: 600),
                 label: moreLabel,
                 tooltip: moreLabel,
               ),

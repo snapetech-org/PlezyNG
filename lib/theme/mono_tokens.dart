@@ -45,8 +45,7 @@ class MonoTokens extends ThemeExtension<MonoTokens> {
   final Color text;
   final Color textMuted;
 
-  /// Interactive and selected-state colour; equal to [text] on the built-in
-  /// themes. Mirrors `colorScheme.primary`.
+  /// Interactive and selected-state colour. Mirrors `colorScheme.primary`.
   final Color accent;
 
   const MonoTokens({

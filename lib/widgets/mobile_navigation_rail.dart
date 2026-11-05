@@ -97,24 +97,31 @@ class MobileNavigationRail extends StatelessWidget {
   }
 
   NavigationRailDestination _destination(BuildContext context, NavigationTab tab) {
-    Widget icon = AppIcon(tab.icon, fill: 1);
-    final onLongPress = onLibrariesLongPress;
-    if (tab.id == NavigationTabId.libraries && onLongPress != null) {
-      // Only a long-press recogniser: taps fall through to the rail's own
-      // destination handling, exactly like the bottom bar's overlay.
-      icon = GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        excludeFromSemantics: true,
-        onLongPress: () {
-          Feedback.forLongPress(context);
-          onLongPress();
-        },
-        child: SizedBox.fromSize(
-          size: _indicatorSize,
-          child: Center(child: icon),
-        ),
-      );
+    Widget wrapIcon(Widget icon) {
+      final onLongPress = onLibrariesLongPress;
+      if (tab.id == NavigationTabId.libraries && onLongPress != null) {
+        // Only a long-press recogniser: taps fall through to the rail's own
+        // destination handling, exactly like the bottom bar's overlay.
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          excludeFromSemantics: true,
+          onLongPress: () {
+            Feedback.forLongPress(context);
+            onLongPress();
+          },
+          child: SizedBox.fromSize(
+            size: _indicatorSize,
+            child: Center(child: icon),
+          ),
+        );
+      }
+      return icon;
     }
-    return NavigationRailDestination(icon: icon, label: Text(tab.getLabel()));
+
+    return NavigationRailDestination(
+      icon: wrapIcon(AppIcon(tab.icon, fill: 0, weight: 500)),
+      selectedIcon: wrapIcon(AppIcon(tab.icon, fill: 1, weight: 600)),
+      label: Text(tab.getLabel()),
+    );
   }
 }

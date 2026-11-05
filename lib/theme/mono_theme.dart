@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'gapped_track_shape.dart';
 import 'mono_tokens.dart';
+import 'navigation_indicator_shape.dart';
 
 /// One of the six colours a [MonoPalette] holds. [id] is the key the custom
 /// theme persists the colour under.
@@ -58,33 +59,33 @@ class MonoPalette {
   final Color textMuted;
 
   /// Primary, filled buttons, switches, sliders, progress, selection and the
-  /// focus ring. The built-ins set it to [text], which keeps them monochrome.
+  /// focus ring. Body text remains neutral across all built-in appearances.
   final Color accent;
 
-  // Neutral greys tuned for crisp contrast.
+  // Quiet graphite surfaces with a lagoon accent. OLED retains true black.
   static const light = MonoPalette(
-    bg: Color(0xFFF7F7F8),
+    bg: Color(0xFFF4F7F9),
     surface: Color(0xFFFFFFFF),
-    outline: Color(0x19000000),
-    text: Color(0xFF111111),
-    textMuted: Color(0x99111111),
-    accent: Color(0xFF111111),
+    outline: Color(0xFFD3DEE5),
+    text: Color(0xFF18232E),
+    textMuted: Color(0xFF526574),
+    accent: Color(0xFF0B7268),
   );
   static const dark = MonoPalette(
-    bg: Color(0xFF0E0F12),
-    surface: Color(0xFF15171C),
-    outline: Color(0x1FFFFFFF),
-    text: Color(0xFFEDEDED),
-    textMuted: Color(0x99EDEDED),
-    accent: Color(0xFFEDEDED),
+    bg: Color(0xFF0B1118),
+    surface: Color(0xFF141E29),
+    outline: Color(0xFF293A49),
+    text: Color(0xFFEDF3FA),
+    textMuted: Color(0xFF9BAFC2),
+    accent: Color(0xFF5ED8C5),
   );
   static const oled = MonoPalette(
     bg: Color(0xFF000000), // Pure black for OLED
-    surface: Color(0xFF0A0A0A),
-    outline: Color(0x1FFFFFFF),
-    text: Color(0xFFEDEDED),
-    textMuted: Color(0x99EDEDED),
-    accent: Color(0xFFEDEDED),
+    surface: Color(0xFF0B1014),
+    outline: Color(0xFF293A49),
+    text: Color(0xFFEDF3FA),
+    textMuted: Color(0xFF9BAFC2),
+    accent: Color(0xFF5ED8C5),
   );
 
   // Presets keep bg/surface low-chroma so artwork stays the loudest thing on
@@ -256,7 +257,7 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
     foregroundColor: WidgetStateProperty.resolveWith(
       (states) => states.contains(WidgetState.disabled) ? c.text.withValues(alpha: 0.38) : onAccent,
     ),
-    shape: const WidgetStatePropertyAll(StadiumBorder()),
+    shape: const WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
   );
 
   final base = ThemeData(
@@ -320,10 +321,19 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
     textTheme: Typography.englishLike2021
         .apply(bodyColor: c.text, displayColor: c.text)
         .copyWith(
-          displayLarge: const TextStyle(fontWeight: .w700, letterSpacing: -0.5),
-          titleMedium: const TextStyle(fontWeight: .w600),
-          bodyMedium: TextStyle(color: c.text),
-          bodySmall: TextStyle(color: c.textMuted),
+          displayLarge: Typography.englishLike2021.displayLarge?.copyWith(
+            fontWeight: .w700,
+            letterSpacing: -0.5,
+            color: c.text,
+          ),
+          titleMedium: Typography.englishLike2021.titleMedium?.copyWith(fontWeight: .w600, color: c.text),
+          bodyMedium: Typography.englishLike2021.bodyMedium?.copyWith(color: c.text),
+          bodySmall: Typography.englishLike2021.bodySmall?.copyWith(color: c.textMuted),
+        )
+        .apply(
+          fontFamilyFallback: platform == TargetPlatform.linux
+              ? const ['Go Noto Current', 'Go Noto Current Hangul']
+              : null,
         ),
     cardTheme: CardThemeData(
       color: c.surface,
@@ -361,12 +371,23 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: c.bg,
       elevation: 0,
-      indicatorColor: Colors.transparent,
+      indicatorColor: c.accent.withValues(alpha: 0.12),
+      indicatorShape: NavigationIndicatorShape(markerColor: c.accent),
       labelTextStyle: WidgetStatePropertyAll(TextStyle(color: c.textMuted, fontSize: 11)),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         final active = states.contains(WidgetState.selected);
         return IconThemeData(opacity: active ? 1 : 0.6, size: 22, color: active ? c.accent : c.text);
       }),
+    ),
+    navigationRailTheme: NavigationRailThemeData(
+      backgroundColor: c.bg,
+      useIndicator: true,
+      indicatorColor: c.accent.withValues(alpha: 0.12),
+      indicatorShape: NavigationIndicatorShape(markerColor: c.accent),
+      selectedIconTheme: IconThemeData(color: c.accent),
+      unselectedIconTheme: IconThemeData(color: c.textMuted),
+      selectedLabelTextStyle: TextStyle(color: c.text, fontWeight: FontWeight.w600),
+      unselectedLabelTextStyle: TextStyle(color: c.textMuted),
     ),
     // Floating snackbars auto-offset above the Scaffold's bottom NavigationBar,
     // so they don't cover it on mobile. Background color tracks the theme to
@@ -385,7 +406,7 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
   return base.copyWith(
     extensions: [
       MonoTokens(
-        radiusSm: 8,
+        radiusSm: 10,
         radiusMd: 12,
         radiusLg: 20,
         radiusXs: 5,

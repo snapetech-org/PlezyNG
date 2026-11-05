@@ -67,13 +67,13 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         (metadata.mediaVersions?.length ?? 0) > 1 &&
         itemServerId != null &&
         context.read<MultiServerProvider>().serverManager.isClientOnline(itemServerId);
-    // M3E split-button geometry: stadium outer corners, small joined inner
+    // Split-button geometry: rounded outer corners, small joined inner
     // corners, a hairline gap between the two segments, and a trailing
     // segment narrower than a full action so it reads as Play's appendix.
     final splitGap = isTv ? 2.0 * tvScale : 2.0;
     final versionSegmentWidth = actionSize * 0.75;
     final splitInnerRadius = Radius.circular(isTv ? 8.0 * tvScale : 8.0);
-    final splitOuterRadius = Radius.circular(actionSize / 2);
+    final splitOuterRadius = Radius.circular(tokens(context).radiusMd * (isTv ? tvScale : 1));
     final playShape = showVersionSplit
         ? RoundedRectangleBorder(
             borderRadius: BorderRadiusDirectional.horizontal(start: splitOuterRadius, end: splitInnerRadius),

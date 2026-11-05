@@ -41,7 +41,12 @@ typedef GamepadInputResetHandler = void Function(WorkspaceGameInputResetReason r
 enum WorkspaceGameInputResetReason { leaseReleased, windowFocusLost, applicationInactive, controllerDisconnected }
 
 class _WorkspaceInputRegistration {
-  const _WorkspaceInputRegistration({required this.onEvent, this.onNativeKeyEvent, this.onReset, this.rawTvosControllerInput = false});
+  const _WorkspaceInputRegistration({
+    required this.onEvent,
+    this.onNativeKeyEvent,
+    this.onReset,
+    this.rawTvosControllerInput = false,
+  });
 
   final GamepadInputEventHandler onEvent;
   final WorkspaceNativeKeyEventHandler? onNativeKeyEvent;
@@ -97,7 +102,9 @@ class GamepadDuplicateInputGuard {
   bool get _isEnabled => _enabled?.call() ?? true;
 
   bool handleNativeKeyEvent(KeyEvent event) {
-    if (!_isEnabled || !_trackedNativeKeys.contains(event.logicalKey)) return false;
+    if (!_isEnabled || !_trackedNativeKeys.contains(event.logicalKey)) {
+      return false;
+    }
 
     final now = _now();
     _lastNativeEvents[event.logicalKey] = now;
@@ -111,12 +118,16 @@ class GamepadDuplicateInputGuard {
   }
 
   bool shouldSuppressSyntheticKey(LogicalKeyboardKey logicalKey) {
-    if (!_isEnabled) return false;
+    if (!_isEnabled) {
+      return false;
+    }
 
     final now = _now();
     _prune(now);
     for (final key in _nativeAliasesBySyntheticKey[logicalKey] ?? {logicalKey}) {
-      if (_nativeKeysPressed.contains(key)) return true;
+      if (_nativeKeysPressed.contains(key)) {
+        return true;
+      }
 
       final lastNativeEvent = _lastNativeEvents[key];
       if (lastNativeEvent != null && now.difference(lastNativeEvent) <= suppressionWindow) {
@@ -138,7 +149,9 @@ class GamepadDuplicateInputGuard {
 
 @visibleForTesting
 bool isTvosEngineOwnedGamepadButton({required bool isAppleTV, required GamepadButton button}) {
-  if (!isAppleTV) return false;
+  if (!isAppleTV) {
+    return false;
+  }
   return switch (button) {
     GamepadButton.dpadUp ||
     GamepadButton.dpadDown ||
@@ -220,7 +233,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
 
   static void _dispatchTabNavigation({required bool previous}) {
     for (final handler in _tabNavigationHandlers.values) {
-      if (!handler.isActive()) continue;
+      if (!handler.isActive()) {
+        continue;
+      }
       previous ? handler.previous() : handler.next();
       return;
     }
@@ -296,7 +311,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   /// Removes a workspace input handler and releases it if it currently owns
   /// input. This also stops any app-navigation keys left held at handoff.
   void unregisterWorkspaceInputHandler(Object owner) {
-    if (_workspaceInputOwner == owner) setWorkspaceInputOwner(null);
+    if (_workspaceInputOwner == owner) {
+      setWorkspaceInputOwner(null);
+    }
     _workspaceInputHandlers.remove(owner);
   }
 
@@ -307,7 +324,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     if (owner != null && !_workspaceInputHandlers.containsKey(owner)) {
       throw ArgumentError.value(owner, 'owner', 'must have a registered workspace input handler');
     }
-    if (_workspaceInputOwner == owner) return;
+    if (_workspaceInputOwner == owner) {
+      return;
+    }
     final previousOwner = _workspaceInputOwner;
     if (previousOwner != null) {
       _notifyWorkspaceInputReset(previousOwner, WorkspaceGameInputResetReason.leaseReleased);
@@ -322,12 +341,16 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   /// non-focused game surface. That callback must not release a different
   /// game's active lease.
   void releaseWorkspaceInputOwner(Object owner) {
-    if (_workspaceInputOwner == owner) setWorkspaceInputOwner(null);
+    if (_workspaceInputOwner == owner) {
+      setWorkspaceInputOwner(null);
+    }
   }
 
   bool _routeToWorkspaceInputOwner(GamepadEvent event) {
     final owner = _workspaceInputOwner;
-    if (owner == null || !_windowFocused) return false;
+    if (owner == null || !_windowFocused) {
+      return false;
+    }
     if (_workspaceInputHandlers[owner]?.rawTvosControllerInput != true &&
         event is GamepadButtonEvent &&
         isTvosEngineOwnedGamepadButton(isAppleTV: PlatformDetector.isAppleTV(), button: event.button)) {
@@ -377,7 +400,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
 
   void _notifyWorkspaceInputReset(Object owner, WorkspaceGameInputResetReason reason) {
     final handler = _workspaceInputHandlers[owner]?.onReset;
-    if (handler == null) return;
+    if (handler == null) {
+      return;
+    }
     try {
       handler(reason);
     } catch (error, stackTrace) {
@@ -394,12 +419,16 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     bool focused, {
     WorkspaceGameInputResetReason resetReason = WorkspaceGameInputResetReason.windowFocusLost,
   }) {
-    if (_windowFocused == focused) return;
+    if (_windowFocused == focused) {
+      return;
+    }
     _windowFocused = focused;
     _publishWorkspaceAvailability();
     if (!focused) {
       final owner = _workspaceInputOwner;
-      if (owner != null) _notifyWorkspaceInputReset(owner, resetReason);
+      if (owner != null) {
+        _notifyWorkspaceInputReset(owner, resetReason);
+      }
       _releaseHeldInputState();
     }
   }
@@ -486,7 +515,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
-        if (!_isDesktop) _setInputWindowFocused(true);
+        if (!_isDesktop) {
+          _setInputWindowFocused(true);
+        }
         break;
       case AppLifecycleState.inactive || AppLifecycleState.hidden || AppLifecycleState.paused:
         _setInputWindowFocused(false, resetReason: WorkspaceGameInputResetReason.applicationInactive);
@@ -522,7 +553,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
   }
 
   void _registerNativeKeyHandler() {
-    if (_nativeKeyHandlerRegistered || Platform.isAndroid) return;
+    if (_nativeKeyHandlerRegistered || Platform.isAndroid) {
+      return;
+    }
     HardwareKeyboard.instance.addHandler(_handleNativeKeyEvent);
     _nativeKeyHandlerRegistered = true;
   }
@@ -531,15 +564,22 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     final owner = _workspaceInputOwner;
     // Shift+Escape always belongs to the workspace so a keyboard user can
     // leave game input and reach its menus without a pointing device.
-    if (event.logicalKey == LogicalKeyboardKey.escape && HardwareKeyboard.instance.isShiftPressed) return false;
+    if (event.logicalKey == LogicalKeyboardKey.escape && HardwareKeyboard.instance.isShiftPressed) {
+      return false;
+    }
     if (owner != null && _windowFocused && !_nativeTextInputFocused && !Platform.isAndroid) {
       // A native emulator needs each controller's ID and unmodified buttons.
       // Consume the engine's duplicate gamepad keys when it owns raw tvOS input.
       if (_workspaceInputHandlers[owner]?.rawTvosControllerInput == true &&
-          PlatformDetector.isAppleTV() && event.deviceType == ui.KeyEventDeviceType.gamepad) return true;
+          PlatformDetector.isAppleTV() &&
+          event.deviceType == ui.KeyEventDeviceType.gamepad) {
+        return true;
+      }
       final workspaceKey = _workspaceSyntheticKeyForNativeKey(event.logicalKey);
       if (workspaceKey != null && _steamInputInjectsKeys()) {
-        if (_workspaceRawKeysHeld.contains(workspaceKey)) return true;
+        if (_workspaceRawKeysHeld.contains(workspaceKey)) {
+          return true;
+        }
         final lastRawEvent = _workspaceRawKeyEvents[workspaceKey];
         if (lastRawEvent != null && DateTime.now().difference(lastRawEvent) <= _duplicateInputGuard.suppressionWindow) {
           return true;
@@ -574,7 +614,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
 
   LogicalKeyboardKey? _workspaceSyntheticKeyForNativeKey(LogicalKeyboardKey nativeKey) {
     for (final entry in GamepadDuplicateInputGuard._nativeAliasesBySyntheticKey.entries) {
-      if (entry.value.contains(nativeKey)) return entry.key;
+      if (entry.value.contains(nativeKey)) {
+        return entry.key;
+      }
     }
     return null;
   }
@@ -584,11 +626,15 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
       _logGamepadDiag('setNativeTextInputFocused requested focused=$focused current=$_nativeTextInputFocused');
     }
     if (_nativeTextInputFocused == focused) {
-      if (TextInputDiagnostics.enabled) _logGamepadDiag('setNativeTextInputFocused no-op focused=$focused');
+      if (TextInputDiagnostics.enabled) {
+        _logGamepadDiag('setNativeTextInputFocused no-op focused=$focused');
+      }
       return;
     }
     _nativeTextInputFocused = focused;
-    if (focused) _publishWorkspaceAvailability();
+    if (focused) {
+      _publishWorkspaceAvailability();
+    }
 
     if (focused) {
       if (TextInputDiagnostics.enabled) {
@@ -613,13 +659,21 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
 
     try {
       if (focused) {
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('calling Gamepad.pause for native text input');
+        if (TextInputDiagnostics.enabled) {
+          _logGamepadDiag('calling Gamepad.pause for native text input');
+        }
         await Gamepad.instance.pause();
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('Gamepad.pause completed for native text input');
+        if (TextInputDiagnostics.enabled) {
+          _logGamepadDiag('Gamepad.pause completed for native text input');
+        }
       } else {
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('calling Gamepad.resume after native text input');
+        if (TextInputDiagnostics.enabled) {
+          _logGamepadDiag('calling Gamepad.resume after native text input');
+        }
         await Gamepad.instance.resume();
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('Gamepad.resume completed after native text input');
+        if (TextInputDiagnostics.enabled) {
+          _logGamepadDiag('Gamepad.resume completed after native text input');
+        }
       }
     } catch (e) {
       appLogger.e('GamepadService: Failed to ${focused ? "pause" : "resume"} for native text input', error: e);
@@ -632,7 +686,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     if (TextInputDiagnostics.enabled) {
       _logGamepadDiag('event received type=${event.runtimeType} nativeTextInputFocused=$_nativeTextInputFocused');
     }
-    if (_routeToWorkspaceInputOwner(event)) return;
+    if (_routeToWorkspaceInputOwner(event)) {
+      return;
+    }
     switch (event) {
       case final GamepadConnectionEvent e:
         appLogger.i('GamepadService: Gamepad ${e.connected ? "connected" : "disconnected"}: ${e.info.name}');
@@ -642,7 +698,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
         // A controller that vanishes mid-hold never sends its releases: drop
         // the repeat timer and held keys so navigation cannot run away. The
         // plugin stays live for any remaining controllers.
-        if (!e.connected) _releaseHeldInputState();
+        if (!e.connected) {
+          _releaseHeldInputState();
+        }
       case final GamepadButtonEvent e:
         _handleButton(e);
       case final GamepadAxisEvent e:
@@ -814,7 +872,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
 
   /// Fire [direction] immediately, then auto-repeat after an initial delay.
   void _startDirectionRepeat(TraversalDirection direction) {
-    if (TextInputDiagnostics.enabled) _logGamepadDiag('startDirectionRepeat direction=$direction');
+    if (TextInputDiagnostics.enabled) {
+      _logGamepadDiag('startDirectionRepeat direction=$direction');
+    }
     _stopDirectionRepeat();
     final logicalKey = _syntheticKeyByDirection[direction]!;
     if (TextInputDiagnostics.enabled) {
@@ -827,7 +887,9 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
 
   void _stopDirectionRepeat() {
     if (_keyEventSimulator?.isRepeating ?? false) {
-      if (TextInputDiagnostics.enabled) _logGamepadDiag('stopDirectionRepeat');
+      if (TextInputDiagnostics.enabled) {
+        _logGamepadDiag('stopDirectionRepeat');
+      }
     }
     _keyEventSimulator?.stopKeyRepeat();
   }
@@ -843,14 +905,20 @@ class GamepadService with WindowListener, WidgetsBindingObserver {
     required TraversalDirection positive,
   }) {
     if (value > _stickDeadzone) {
-      if (held != positive) _startDirectionRepeat(positive);
+      if (held != positive) {
+        _startDirectionRepeat(positive);
+      }
       return positive;
     }
     if (value < -_stickDeadzone) {
-      if (held != negative) _startDirectionRepeat(negative);
+      if (held != negative) {
+        _startDirectionRepeat(negative);
+      }
       return negative;
     }
-    if (held != null) _stopDirectionRepeat();
+    if (held != null) {
+      _stopDirectionRepeat();
+    }
     return null;
   }
 }

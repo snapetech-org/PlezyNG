@@ -32,9 +32,7 @@ class RenderQuality {
     height_ = h;
     ResetTiming();
   }
-  std::pair<int, int> Size() const {
-    return {std::max(1, int(width_ * scale_)), std::max(1, int(height_ * scale_))};
-  }
+  std::pair<int, int> Size() const { return {std::max(1, int(width_ * scale_)), std::max(1, int(height_ * scale_))}; }
   std::chrono::microseconds Interval() const { return std::chrono::microseconds(1000000 / fps_); }
   int FramesPerSecond() const { return fps_; }
   double FrameMilliseconds() const { return frame_ms_; }
@@ -53,18 +51,24 @@ class RenderQuality {
     const double p90 = ordered[ordered.size() * 9 / 10];
     const double target = 1000.0 / fps_;
     if (p90 > target * 0.9 && now - adjusted_ >= std::chrono::seconds(1)) {
-      if (scale_ > 0.5) scale_ = std::max(0.5, scale_ * 0.8);
-      else if (fps_ > 30) fps_ = 30;
-      else return;
+      if (scale_ > 0.5)
+        scale_ = std::max(0.5, scale_ * 0.8);
+      else if (fps_ > 30)
+        fps_ = 30;
+      else
+        return;
     } else if (now - adjusted_ >= std::chrono::seconds(10)) {
       if (fps_ < budget_.frames_per_second && p90 < 1000.0 / budget_.frames_per_second * 0.45)
         fps_ = budget_.frames_per_second;
       else if (scale_ < 1.0 && p90 < target * 0.5)
         scale_ = std::min(1.0, scale_ * 1.25);
-      else return;
-    } else return;
+      else
+        return;
+    } else
+      return;
     adjusted_ = now;
   }
+
  private:
   RenderBudget budget_;
   int width_ = 768, height_ = 432, fps_;

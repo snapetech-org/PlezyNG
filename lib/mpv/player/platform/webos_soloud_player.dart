@@ -38,11 +38,7 @@ class WebOSSoLoudPlayer {
     final durationReady = Completer<Duration>();
     _durationReady = durationReady;
     final durationFuture = durationReady.future.timeout(const Duration(seconds: 15));
-    await _invoke('setSourceUrl', {
-      'url': uri.toString(),
-      'isLocal': isLocal,
-      'mimeType': '',
-    });
+    await _invoke('setSourceUrl', {'url': uri.toString(), 'isLocal': isLocal, 'mimeType': ''});
     await durationFuture;
   }
 
@@ -58,9 +54,7 @@ class WebOSSoLoudPlayer {
     await _invoke('pause');
   }
 
-  Future<void> seek(Duration position) => _invoke('seek', {
-    'position': position.inMilliseconds.clamp(0, 0x7fffffff),
-  });
+  Future<void> seek(Duration position) => _invoke('seek', {'position': position.inMilliseconds.clamp(0, 0x7fffffff)});
 
   Future<void> setVolume(double value) => _invoke('setVolume', {'volume': value});
 
@@ -77,7 +71,9 @@ class WebOSSoLoudPlayer {
   }
 
   Future<void> dispose() async {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     _disposed = true;
     _positionTimer?.cancel();
     _positionTimer = null;
@@ -94,30 +90,40 @@ class WebOSSoLoudPlayer {
 
   void _onError(Object error) {
     final ready = _durationReady;
-    if (ready != null && !ready.isCompleted) ready.completeError(error);
+    if (ready != null && !ready.isCompleted) {
+      ready.completeError(error);
+    }
     onError(error);
   }
 
   void _onEvent(dynamic raw) {
-    if (_disposed || raw is! Map) return;
+    if (_disposed || raw is! Map) {
+      return;
+    }
     final event = raw['event'];
     final value = raw['value'];
     if (event == 'audio.onDuration' && value is num && value.isFinite && value >= 0) {
       final duration = Duration(milliseconds: value.toInt());
       onDuration(duration);
       final ready = _durationReady;
-      if (ready != null && !ready.isCompleted) ready.complete(duration);
+      if (ready != null && !ready.isCompleted) {
+        ready.complete(duration);
+      }
     } else if (event == 'audio.onComplete') {
       onComplete();
     }
   }
 
   Future<void> _pollPosition() async {
-    if (_disposed || _polling) return;
+    if (_disposed || _polling) {
+      return;
+    }
     _polling = true;
     try {
       final position = await getCurrentPosition();
-      if (position != null && !_disposed) onPosition(position);
+      if (position != null && !_disposed) {
+        onPosition(position);
+      }
     } on MissingPluginException {
       onError(const FormatException('The webOS SoLoud player disappeared.'));
     } on PlatformException catch (error) {

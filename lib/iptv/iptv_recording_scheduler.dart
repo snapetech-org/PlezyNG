@@ -38,7 +38,9 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
   bool _recovering = false;
 
   Future<void> _recoverAndTick() async {
-    if (_disposed || _recovered || _recovering) return;
+    if (_disposed || _recovered || _recovering) {
+      return;
+    }
     _recovering = true;
     try {
       await _repository.recoverLocalRecordingSchedules();
@@ -53,17 +55,23 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) unawaited(_tick());
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_tick());
+    }
   }
 
   Future<void> _tick() async {
-    if (_disposed || !_recovered || _ticking) return;
+    if (_disposed || !_recovered || _ticking) {
+      return;
+    }
     _ticking = true;
     try {
       final schedules = await _repository.dueLocalRecordingSchedules();
       final now = DateTime.now();
       for (final schedule in schedules) {
-        if (_disposed || _starting.contains(schedule.id) || _active.containsKey(schedule.id)) continue;
+        if (_disposed || _starting.contains(schedule.id) || _active.containsKey(schedule.id)) {
+          continue;
+        }
         if (!schedule.endsAt.isAfter(now)) {
           await _repository.updateLocalRecordingSchedule(schedule.id, state: 'missed', errorCode: 'app_not_running');
         } else if (!schedule.startsAt.isAfter(now)) {
@@ -78,7 +86,9 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
   }
 
   Future<void> _record(IptvLocalRecordingSchedule schedule) async {
-    if (_disposed || !_starting.add(schedule.id)) return;
+    if (_disposed || !_starting.add(schedule.id)) {
+      return;
+    }
     String? recordingId;
     String? profileId;
     DateTime? startedAt;
@@ -89,9 +99,13 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
     try {
       await _repository.updateLocalRecordingSchedule(schedule.id, state: 'starting');
       final config = await _repository.configuration(schedule.profileId, schedule.sourceId);
-      if (config == null) throw const IptvImportException('source_missing');
+      if (config == null) {
+        throw const IptvImportException('source_missing');
+      }
       session = await _repository.startPlayback(schedule.profileId, schedule.sourceId, schedule.channelId);
-      if (session == null) throw const IptvImportException('source_missing');
+      if (session == null) {
+        throw const IptvImportException('source_missing');
+      }
       final streamUrl = await session.streamUrlAt();
       final uri = streamUrl == null ? null : Uri.tryParse(streamUrl);
       if (uri == null || uri.host.isEmpty || !const {'http', 'https'}.contains(uri.scheme)) {
@@ -108,7 +122,9 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       await folder.create(recursive: true);
       try {
         final available = await DiskUsage.freeSpace(folder.path).timeout(const Duration(seconds: 3));
-        if (available != null && available < 512 * 1024 * 1024) throw const IptvImportException('storage_low');
+        if (available != null && available < 512 * 1024 * 1024) {
+          throw const IptvImportException('storage_low');
+        }
       } on IptvImportException {
         rethrow;
       } on Object {
@@ -151,15 +167,21 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
       recorder = capture;
       _active[schedule.id] = capture;
       final extension = await capture.record();
-      if (_disposed) throw const IptvImportException('recording_interrupted');
+      if (_disposed) {
+        throw const IptvImportException('recording_interrupted');
+      }
       if (!await recordingPartial.exists() || await recordingPartial.length() == 0) {
         throw const IptvImportException('recording_empty');
       }
       final size = await IptvHlsArchive.retainedBytes(recordingPartial);
-      if (size <= 0) throw const IptvImportException('recording_empty');
+      if (size <= 0) {
+        throw const IptvImportException('recording_empty');
+      }
       final extensionlessTarget = recordingTarget.path.substring(0, recordingTarget.path.lastIndexOf('.'));
       final completedTarget = File('$extensionlessTarget$extension');
-      if (await completedTarget.exists()) throw const IptvImportException('recording_conflict');
+      if (await completedTarget.exists()) {
+        throw const IptvImportException('recording_conflict');
+      }
       await _repository.updateLocalRecordingFilePath(
         profileId: schedule.profileId,
         recordingId: id,
@@ -198,7 +220,9 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
           }
         }
         if (recordingId != null && profileId != null) {
-          final retainedSize = target != null && await target.exists() ? await IptvHlsArchive.retainedBytes(target) : null;
+          final retainedSize = target != null && await target.exists()
+              ? await IptvHlsArchive.retainedBytes(target)
+              : null;
           if (retainedSize != null && retainedSize > 0) {
             await _repository.updateLocalRecordingFilePath(
               profileId: profileId,
@@ -231,8 +255,12 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
     } finally {
       _active.remove(schedule.id);
       _starting.remove(schedule.id);
-      if (recorder != null && !_disposed) await recorder.stop();
-      if (session != null) await session.discard();
+      if (recorder != null && !_disposed) {
+        await recorder.stop();
+      }
+      if (session != null) {
+        await session.discard();
+      }
     }
   }
 
@@ -248,12 +276,16 @@ class IptvRecordingScheduler with WidgetsBindingObserver {
 
   static String _safePath(String value) {
     final normalized = value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9_-]+'), '-').replaceAll(RegExp(r'^-+|-+$'), '');
-    if (normalized.isEmpty) return 'iptv';
+    if (normalized.isEmpty) {
+      return 'iptv';
+    }
     return normalized.length <= 64 ? normalized : normalized.substring(0, 64);
   }
 
   Future<void> dispose() async {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     _disposed = true;
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();

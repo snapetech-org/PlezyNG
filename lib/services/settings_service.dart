@@ -52,16 +52,24 @@ import '../theme/theme_package.dart';
 import '../watch_together/services/watch_party_relays.dart';
 
 Map<String, List<MediaBookmark>> _decodeMediaBookmarks(dynamic raw) {
-  if (raw is! Map) return const <String, List<MediaBookmark>>{};
+  if (raw is! Map) {
+    return const <String, List<MediaBookmark>>{};
+  }
   final decoded = <String, List<MediaBookmark>>{};
   for (final entry in raw.entries) {
-    if (entry.key is! String || (entry.key as String).isEmpty || entry.value is! List) continue;
+    if (entry.key is! String || (entry.key as String).isEmpty || entry.value is! List) {
+      continue;
+    }
     final bookmarks = <MediaBookmark>[];
     for (final value in entry.value as List) {
       final bookmark = MediaBookmark.tryFromJson(value);
-      if (bookmark != null) bookmarks.add(bookmark);
+      if (bookmark != null) {
+        bookmarks.add(bookmark);
+      }
     }
-    if (bookmarks.isNotEmpty) decoded[entry.key as String] = bookmarks;
+    if (bookmarks.isNotEmpty) {
+      decoded[entry.key as String] = bookmarks;
+    }
   }
   return decoded;
 }
@@ -300,7 +308,9 @@ class _LibraryDensityPref extends Pref<int> {
   int readFrom(BaseSharedPreferencesService svc) {
     try {
       final intVal = svc.prefs.getInt(key);
-      if (intVal != null) return intVal.clamp(LibraryDensity.min, LibraryDensity.max);
+      if (intVal != null) {
+        return intVal.clamp(LibraryDensity.min, LibraryDensity.max);
+      }
     } on TypeError {
       // Stored value is a String from old enum format — fall through to migration.
     }
@@ -315,7 +325,9 @@ class _LibraryDensityPref extends Pref<int> {
       'comfortable' => 4,
       _ => LibraryDensity.defaultValue,
     };
-    if (strVal != null) svc.prefs.setInt(key, result);
+    if (strVal != null) {
+      svc.prefs.setInt(key, result);
+    }
     return result;
   }
 
@@ -338,7 +350,9 @@ class _AutomotiveUiScalePref extends Pref<double> {
   double get resolvedDefault => PlatformDetector.isAutomotive() ? AutomotiveUiScale.defaultValue : 1.0;
   @override
   double fromJson(Object? value) {
-    if (value is! num || !value.isFinite) throw const FormatException('Expected a finite number');
+    if (value is! num || !value.isFinite) {
+      throw const FormatException('Expected a finite number');
+    }
     return value.toDouble();
   }
 
@@ -370,7 +384,9 @@ class _EpisodePosterModePref extends EnumPref<EpisodePosterMode> {
 
   @override
   EpisodePosterMode readFrom(BaseSharedPreferencesService svc) {
-    if (svc.prefs.containsKey(key)) return super.readFrom(svc);
+    if (svc.prefs.containsKey(key)) {
+      return super.readFrom(svc);
+    }
     final legacyValue = svc.readNullableBool(_legacyUseSeasonPosterKey);
     if (legacyValue != null) {
       final migrated = legacyValue ? EpisodePosterMode.seasonPoster : EpisodePosterMode.seriesPoster;
@@ -399,7 +415,9 @@ class PlayerSettingScopePref extends EnumPref<PlayerSettingScope> {
   Future<void> writeTo(BaseSharedPreferencesService svc, PlayerSettingScope value) async {
     final entersKeyedScope = value.keysEntries && !readFrom(svc).keysEntries;
     await super.writeTo(svc, value);
-    if (entersKeyedScope) await resetGlobals(svc);
+    if (entersKeyedScope) {
+      await resetGlobals(svc);
+    }
   }
 
   Future<void> resetGlobals(BaseSharedPreferencesService svc) async {
@@ -441,7 +459,9 @@ class LegacyBoolEnumPref<T extends Enum> extends EnumPref<T> {
     // A committed value is authoritative, including one restored before this
     // preference's first read. A leftover boolean must never replace it.
     if (svc.prefs.containsKey(key)) {
-      if (svc.prefs.containsKey(legacyKey)) svc.prefs.remove(legacyKey);
+      if (svc.prefs.containsKey(legacyKey)) {
+        svc.prefs.remove(legacyKey);
+      }
       return super.readFrom(svc);
     }
     final legacyValue = svc.readNullableBool(legacyKey);
@@ -491,8 +511,12 @@ class _LocalePreference extends StringPref {
   const _LocalePreference(super.key, {super.defaultValue = '', this.formatting = false});
 
   String normalize(String value) {
-    if (formatting && (value == 'app' || value == 'system')) return value;
-    if (!formatting && value.isEmpty) return value;
+    if (formatting && (value == 'app' || value == 'system')) {
+      return value;
+    }
+    if (!formatting && value.isEmpty) {
+      return value;
+    }
     final parts = value.trim().replaceAll('_', '-').split('-');
     final tag = [
       parts.first.toLowerCase(),
@@ -518,7 +542,9 @@ class _LocalePreference extends StringPref {
 
   @override
   String fromJson(Object? value) {
-    if (value is! String) throw const FormatException('Locale must be a string');
+    if (value is! String) {
+      throw const FormatException('Locale must be a string');
+    }
     return normalize(value);
   }
 
@@ -566,7 +592,9 @@ class _AutoPipPref extends Pref<bool> {
 
   @override
   bool readFrom(BaseSharedPreferencesService svc) {
-    if (!PlatformDetector.supportsPictureInPicture()) return false;
+    if (!PlatformDetector.supportsPictureInPicture()) {
+      return false;
+    }
     return svc.readNullableBool(key) ?? resolvedDefault;
   }
 
@@ -581,7 +609,9 @@ class _UseExternalPlayerPref extends Pref<bool> {
 
   @override
   bool readFrom(BaseSharedPreferencesService svc) {
-    if (!PlatformDetector.supportsExternalPlayers()) return false;
+    if (!PlatformDetector.supportsExternalPlayers()) {
+      return false;
+    }
     return svc.readNullableBool(key) ?? false;
   }
 
@@ -601,7 +631,9 @@ class _AudioPassthroughPref extends Pref<bool> {
   @override
   bool readFrom(BaseSharedPreferencesService svc) {
     final stored = svc.readNullableBool(key);
-    if (stored != null) return stored;
+    if (stored != null) {
+      return stored;
+    }
     // TV form factors default to handing Dolby to the TV/AVR, preserving
     // surround. Android TV bitstreams Dolby/DTS; both Android backends decide
     // from the same source — the sink's advertised capabilities: Media3 via
@@ -625,7 +657,9 @@ String? _trimEmptyAsNull(String? v) {
 }
 
 String? _normalizeRelayBaseUrl(String? value) {
-  if (value == null || value.trim().isEmpty) return null;
+  if (value == null || value.trim().isEmpty) {
+    return null;
+  }
   final base = canonicalRelayBaseUrl(value);
   if (base == null) {
     throw FormatException('Invalid Open Watch Party relay base URL');
@@ -661,10 +695,14 @@ class _MpvConfigTextPref extends StringPref {
   @override
   String readFrom(BaseSharedPreferencesService svc) {
     final text = svc.readNullableString(key);
-    if (text != null) return text;
+    if (text != null) {
+      return text;
+    }
 
     final legacyJson = svc.readNullableString(_legacyMpvConfigEntriesKey);
-    if (legacyJson == null) return '';
+    if (legacyJson == null) {
+      return '';
+    }
 
     try {
       final migrated = _legacyMpvEntriesToText(json.decode(legacyJson) as List<dynamic>);
@@ -695,13 +733,17 @@ Map<String, HotKey?> _decodeKeyboardHotkeys(dynamic raw) {
   final result = <String, HotKey?>{};
   for (final entry in (raw as Map<String, dynamic>).entries) {
     final value = entry.value;
-    if (value is! Map<String, dynamic>) continue;
+    if (value is! Map<String, dynamic>) {
+      continue;
+    }
     if (value['disabled'] == true) {
       result[entry.key] = null;
       continue;
     }
     final hotkey = SettingsService.deserializeHotKey(value);
-    if (hotkey != null) result[entry.key] = hotkey;
+    if (hotkey != null) {
+      result[entry.key] = hotkey;
+    }
   }
   return <String, HotKey?>{..._defaultKeyboardHotkeys(), ...result};
 }
@@ -720,7 +762,9 @@ class _PreferenceGroupListenable extends ChangeNotifier {
   void addListener(VoidCallback listener) {
     final shouldAttach = !hasListeners;
     super.addListener(listener);
-    if (!shouldAttach) return;
+    if (!shouldAttach) {
+      return;
+    }
     for (final child in _children) {
       child.addListener(_relay);
     }
@@ -730,7 +774,9 @@ class _PreferenceGroupListenable extends ChangeNotifier {
   void removeListener(VoidCallback listener) {
     final wasAttached = hasListeners;
     super.removeListener(listener);
-    if (!wasAttached || hasListeners) return;
+    if (!wasAttached || hasListeners) {
+      return;
+    }
     for (final child in _children) {
       child.removeListener(_relay);
     }
@@ -1381,16 +1427,24 @@ class SettingsService extends BaseSharedPreferencesService {
       defaultValue: const {},
       encode: json.encode,
       decode: (raw) {
-        if (raw is! Map) return const {};
+        if (raw is! Map) {
+          return const {};
+        }
         final entries = <String, String>{};
         var totalBytes = 0;
         for (final entry in raw.entries) {
-          if (entry.key is! String || entry.value is! String) continue;
+          if (entry.key is! String || entry.value is! String) {
+            continue;
+          }
           final key = entry.key as String;
           final value = entry.value as String;
-          if (key.isEmpty || key.length > 800 || value.length > 128 * 1024) continue;
+          if (key.isEmpty || key.length > 800 || value.length > 128 * 1024) {
+            continue;
+          }
           final entryBytes = utf8.encode(key).length + utf8.encode(value).length;
-          if (entries.length >= 512 || entryBytes > 1024 * 1024 - totalBytes) break;
+          if (entries.length >= 512 || entryBytes > 1024 * 1024 - totalBytes) {
+            break;
+          }
           entries[key] = value;
           totalBytes += entryBytes;
         }
@@ -1408,14 +1462,20 @@ class SettingsService extends BaseSharedPreferencesService {
       defaultValue: const {},
       encode: json.encode,
       decode: (raw) {
-        if (raw is! Map) return const {};
+        if (raw is! Map) {
+          return const {};
+        }
         final pairs = <String, Map<String, String>>{};
         for (final pair in raw.entries) {
-          if (pair.key is! String || pair.value is! Map) continue;
+          if (pair.key is! String || pair.value is! Map) {
+            continue;
+          }
           final terms = <String, String>{};
           final seen = <String>{};
           for (final term in (pair.value as Map).entries) {
-            if (term.key is! String || term.value is! String) continue;
+            if (term.key is! String || term.value is! String) {
+              continue;
+            }
             final source = (term.key as String).trim();
             final target = (term.value as String).trim();
             if (source.isEmpty ||
@@ -1430,10 +1490,16 @@ class SettingsService extends BaseSharedPreferencesService {
               continue;
             }
             terms[source] = target;
-            if (terms.length >= 200) break;
+            if (terms.length >= 200) {
+              break;
+            }
           }
-          if (terms.isNotEmpty) pairs[pair.key as String] = Map.unmodifiable(terms);
-          if (pairs.length >= 16) break;
+          if (terms.isNotEmpty) {
+            pairs[pair.key as String] = Map.unmodifiable(terms);
+          }
+          if (pairs.length >= 16) {
+            break;
+          }
         }
         return Map.unmodifiable(pairs);
       },
@@ -1500,7 +1566,8 @@ class SettingsService extends BaseSharedPreferencesService {
     decode: (raw) => raw == null ? null : MonoPalette.fromJson(raw),
   );
   static final customThemePackage = JsonPref<ThemePackage?>(
-    'custom_theme_package_v1', defaultValue: null,
+    'custom_theme_package_v1',
+    defaultValue: null,
     encode: (value) => json.encode(value?.toJson()),
     decode: (raw) => raw == null ? null : ThemePackage.fromJson(raw),
   );
@@ -1785,7 +1852,9 @@ class SettingsService extends BaseSharedPreferencesService {
     // Watch Party relay answers there.
     await prefs.remove(_legacyCustomRelayUrlKey);
     final storedRelay = readNullableString(watchPartyRelayUrl.key);
-    if (storedRelay == null) return;
+    if (storedRelay == null) {
+      return;
+    }
     final base = canonicalRelayBaseUrl(storedRelay);
     if (base == null) {
       await prefs.remove(watchPartyRelayUrl.key);
@@ -1799,9 +1868,13 @@ class SettingsService extends BaseSharedPreferencesService {
   /// stale Everywhere value. The sentinel keeps later fallback writes (items
   /// without a library or title identity) from being wiped on every launch.
   Future<void> _resetGlobalsOfKeyedPlayerScopes() async {
-    if (prefs.containsKey(_playerScopeGlobalsResetKey)) return;
+    if (prefs.containsKey(_playerScopeGlobalsResetKey)) {
+      return;
+    }
     for (final scope in [playbackSpeedScope, shaderPresetScope, boxFitScope, syncOffsetScope]) {
-      if (read(scope).keysEntries) await scope.resetGlobals(this);
+      if (read(scope).keysEntries) {
+        await scope.resetGlobals(this);
+      }
     }
     await prefs.setBool(_playerScopeGlobalsResetKey, true);
   }
@@ -1819,7 +1892,9 @@ class SettingsService extends BaseSharedPreferencesService {
   /// One pass over the already-cached key set; no I/O.
   void _assertCredentialsReadable() {
     for (final key in prefs.keys) {
-      if (isSensitivePrefKey(key)) readTolerantString(prefs, key);
+      if (isSensitivePrefKey(key)) {
+        readTolerantString(prefs, key);
+      }
     }
   }
 
@@ -1906,22 +1981,30 @@ class SettingsService extends BaseSharedPreferencesService {
     final result = <String, String>{};
     for (final line in text.split('\n')) {
       final trimmed = line.trim();
-      if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
+      if (trimmed.isEmpty || trimmed.startsWith('#')) {
+        continue;
+      }
       final eqIndex = trimmed.indexOf('=');
-      if (eqIndex <= 0) continue;
+      if (eqIndex <= 0) {
+        continue;
+      }
       final k = trimmed.substring(0, eqIndex).trim();
       var v = trimmed.substring(eqIndex + 1).trim();
       if (v.length >= 2 && (v[0] == "'" || v[0] == '"') && v[v.length - 1] == v[0]) {
         v = v.substring(1, v.length - 1);
       }
-      if (k.isNotEmpty) result[k] = v;
+      if (k.isNotEmpty) {
+        result[k] = v;
+      }
     }
     return result;
   }
 
   /// Save a new preset (overwrites existing with same name).
   Future<void> saveMpvPreset(String name, String text) async {
-    if (name.trim().isEmpty) throw const FormatException('A preset name is required');
+    if (name.trim().isEmpty) {
+      throw const FormatException('A preset name is required');
+    }
     final presets = read(mpvPresets).where((p) => p.name != name).toList();
     presets.add(MpvPreset(name: name, text: text, createdAt: DateTime.now()));
     await write(mpvPresets, presets);
@@ -1935,7 +2018,9 @@ class SettingsService extends BaseSharedPreferencesService {
   Future<void> replaceMpvPresets(List<({String name, String text})> values, {void Function()? checkCurrent}) async {
     final names = <String>{};
     for (final value in values) {
-      if (value.name.trim().isEmpty || !names.add(value.name)) throw const FormatException('Invalid preset name');
+      if (value.name.trim().isEmpty || !names.add(value.name)) {
+        throw const FormatException('Invalid preset name');
+      }
     }
     final previous = {for (final preset in read(mpvPresets)) preset.name: preset};
     final now = DateTime.now();
@@ -2069,21 +2154,31 @@ class SettingsService extends BaseSharedPreferencesService {
     final usbHidMatch = RegExp(r'usbhidusage: "0x([0-9a-f]+)"').firstMatch(normalized);
     if (usbHidMatch != null) {
       final code = int.tryParse(usbHidMatch.group(1)!, radix: 16);
-      if (code != null) return PhysicalKeyboardKey(code);
+      if (code != null) {
+        return PhysicalKeyboardKey(code);
+      }
     }
 
     for (final entry in _keyNameMap.entries) {
-      if (normalized.contains(entry.key)) return entry.value;
+      if (normalized.contains(entry.key)) {
+        return entry.value;
+      }
     }
     // Function keys before digits to avoid f1 matching f10.
     for (final entry in _functionKeyMap.entries) {
-      if (normalized.contains(entry.key)) return entry.value;
+      if (normalized.contains(entry.key)) {
+        return entry.value;
+      }
     }
     for (final entry in _digitKeyMap.entries) {
-      if (normalized.contains(entry.key)) return entry.value;
+      if (normalized.contains(entry.key)) {
+        return entry.value;
+      }
     }
     for (final entry in _letterKeyMap.entries) {
-      if (normalized.contains(entry.key)) return entry.value;
+      if (normalized.contains(entry.key)) {
+        return entry.value;
+      }
     }
 
     return null;
@@ -2358,7 +2453,9 @@ class SettingsService extends BaseSharedPreferencesService {
   };
 
   static bool isValidSkipPattern(String value) {
-    if (value.trim().isEmpty) return false;
+    if (value.trim().isEmpty) {
+      return false;
+    }
     try {
       RegExp(value, caseSensitive: false);
       return true;
@@ -2368,7 +2465,9 @@ class SettingsService extends BaseSharedPreferencesService {
   }
 
   static void validateEditableValue(Pref<Object?> pref, Object? value) {
-    if (pref is _LocalePreference) pref.fromJson(value);
+    if (pref is _LocalePreference) {
+      pref.fromJson(value);
+    }
     final bounds = numericBounds(pref);
     if (value is num && (!value.isFinite || (bounds != null && (value < bounds.$1 || value > bounds.$2)))) {
       throw const FormatException('Value is outside the supported range');
@@ -2407,7 +2506,9 @@ class SettingsService extends BaseSharedPreferencesService {
       final pref = entry.value;
       if (!resettable.contains(pref) && !prefs.containsKey(pref.key)) {
         final legacyValue = readNullableBool(entry.key);
-        if (legacyValue != null) await pref.writeTo(this, pref.fromLegacy(legacyValue));
+        if (legacyValue != null) {
+          await pref.writeTo(this, pref.fromLegacy(legacyValue));
+        }
       }
       await prefs.remove(entry.key);
     }

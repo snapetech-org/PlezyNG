@@ -79,12 +79,18 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _load(refresh: widget.sourceId != null));
     } else if (!sources.loading && _automationRevision != sources.podcastAutomation.revision) {
       _automationRevision = sources.podcastAutomation.revision;
-      WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _load(); });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _load();
+        }
+      });
     }
   }
 
   Future<void> _load({bool refresh = false}) async {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final sources = _sources!, epoch = sources.generation, request = ++_request;
     final status = _status, offlineOnly = _offlineOnly, oldest = _oldest, query = _search.text.trim();
     Object? refreshError;
@@ -101,14 +107,18 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
           final source = sources.sources.where((s) => s.id == widget.sourceId).firstOrNull;
           if (source != null) {
             try {
-              if (source.kind == FileSourceKind.podcastRss) await sources.browse(source.id);
+              if (source.kind == FileSourceKind.podcastRss) {
+                await sources.browse(source.id);
+              }
               await sources.browse(source.id, parent: widget.parentId);
             } catch (error) {
               refreshError = error;
             }
           }
         } else if (await PodcastLibrary(sources).refreshFeeds() > 0) {
-          if (mounted && sources.current(epoch)) showSnackBar(context, t.podcasts.refreshPartial);
+          if (mounted && sources.current(epoch)) {
+            showSnackBar(context, t.podcasts.refreshPartial);
+          }
         }
       }
       sources.requireSession(epoch);
@@ -121,7 +131,9 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
       // unfinished episode must not disappear behind 200 finished episodes.
       while (entries.length <= _limit && offset < 10000) {
         sources.requireSession(epoch);
-        if (!mounted || request != _request) return;
+        if (!mounted || request != _request) {
+          return;
+        }
         final batch = await sources.repository.podcastEntries(
           profile,
           limit: 200,
@@ -131,19 +143,29 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
           query: query,
           oldestFirst: oldest,
         );
-        if (batch.isEmpty) break;
+        if (batch.isEmpty) {
+          break;
+        }
         offset += batch.length;
         final progress = await sources.repository.progressForEntries(profile, batch.map((e) => e.key));
         final downloads = await sources.downloads.verifiedFiles(profile, batch, records: records);
         final seeds = {for (final entry in batch) entry.key: PodcastLibrary.seed(entry).key};
         for (final value in progress) {
-          if (value.key != seeds[value.entryKey]) continue;
-          if ((latest[value.entryKey]?.updatedAt ?? -1) < value.updatedAt) latest[value.entryKey] = value;
+          if (value.key != seeds[value.entryKey]) {
+            continue;
+          }
+          if ((latest[value.entryKey]?.updatedAt ?? -1) < value.updatedAt) {
+            latest[value.entryKey] = value;
+          }
         }
         for (final entry in batch) {
           final downloaded = PublicationOfflineReadiness.evaluate(entry, downloads).isReady;
-          if (downloaded) offline.add(entry.key);
-          if ((entry.unavailable && !downloaded) || (offlineOnly && !downloaded)) continue;
+          if (downloaded) {
+            offline.add(entry.key);
+          }
+          if ((entry.unavailable && !downloaded) || (offlineOnly && !downloaded)) {
+            continue;
+          }
           final progress = latest[entry.key];
           final started = (progress?.positionMs ?? 0) > 0 || (progress?.fraction ?? 0) > 0;
           final matches = switch (status) {
@@ -152,12 +174,18 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
             PublicationStatus.inProgress => progress?.finished != true && started,
             PublicationStatus.finished => progress?.finished == true,
           };
-          if (matches) entries.add(entry);
+          if (matches) {
+            entries.add(entry);
+          }
         }
-        if (batch.length < 200) break;
+        if (batch.length < 200) {
+          break;
+        }
       }
       sources.requireSession(epoch);
-      if (!mounted || request != _request) return;
+      if (!mounted || request != _request) {
+        return;
+      }
       setState(() {
         _error = refreshError;
         _more = entries.length > _limit;
@@ -166,9 +194,13 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
         _offline = offline;
       });
     } catch (error) {
-      if (mounted && request == _request && sources.current(epoch)) setState(() => _error = error);
+      if (mounted && request == _request && sources.current(epoch)) {
+        setState(() => _error = error);
+      }
     } finally {
-      if (mounted && request == _request) setState(() => _loading = false);
+      if (mounted && request == _request) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -181,7 +213,9 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
         builder: (_) => screen,
       ),
     );
-    if (mounted && sources.current(epoch)) await _load(refresh: refresh);
+    if (mounted && sources.current(epoch)) {
+      await _load(refresh: refresh);
+    }
   }
 
   Future<void> _play(SourceEntry entry) async {
@@ -197,14 +231,20 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
       /* Cached offline episode. */
     }
     sources.requireSession(epoch);
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     await context.read<SourcePlayback>().start(current, current.audio);
     sources.requireSession(epoch);
-    if (mounted) await _route(const SourcePlayerScreen());
+    if (mounted) {
+      await _route(const SourcePlayerScreen());
+    }
   }
 
   Future<void> _episodeAction(SourceEntry entry, String action) async {
-    if (_actions.contains(entry.key)) return;
+    if (_actions.contains(entry.key)) {
+      return;
+    }
     final sources = _sources!, epoch = sources.generation;
     setState(() => _actions.add(entry.key));
     try {
@@ -217,7 +257,9 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
         }
       } else if (action == 'finished') {
         final playback = context.read<SourcePlayback>();
-        if (playback.entry?.key == entry.key) await playback.stop();
+        if (playback.entry?.key == entry.key) {
+          await playback.stop();
+        }
         sources.requireSession(epoch);
         await PodcastLibrary(sources).markFinished(entry, _progress[entry.key]?.finished != true);
       } else {
@@ -243,7 +285,9 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
     }
     sources.requireSession(epoch);
     await sources.remove(source);
-    if (mounted && sources.current(epoch)) await _load();
+    if (mounted && sources.current(epoch)) {
+      await _load();
+    }
   }
 
   String _statusLabel(PublicationStatus status) => switch (status) {
@@ -329,7 +373,9 @@ class _PodcastsScreenState extends State<PodcastsScreen> {
               await _route(const AddSourceScreen(initialKind: FileSourceKind.audiobookshelf));
             } else if (action == 'import') {
               await importPodcastOpml(context);
-              if (mounted) await _load(refresh: true);
+              if (mounted) {
+                await _load(refresh: true);
+              }
             } else {
               await exportPodcastOpml(context);
             }

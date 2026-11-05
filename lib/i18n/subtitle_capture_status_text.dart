@@ -6,7 +6,9 @@ import '../services/subtitle_speech_progress.dart';
 import 'strings.g.dart';
 
 String subtitleCaptureStatusText(BuildContext context, SubtitleCaptureStatus? status) {
-  if (status == null) return '';
+  if (status == null) {
+    return '';
+  }
   final numbers = NumberFormat.decimalPattern(Localizations.localeOf(context).toLanguageTag());
   return resolveSubtitleCaptureStatus(context.t, status, number: numbers.format);
 }
@@ -21,12 +23,18 @@ String resolveSubtitleSpeechProgress(Translations t, SubtitleSpeechProgress prog
   final percent = progress.percent;
   String count(int n) => number?.call(n) ?? n.toString();
   return switch (progress.phase) {
-    SubtitleSpeechPhase.downloadingModel => percent == null ? messages.downloadingModel : messages.downloadingModelProgress(percent: count(percent)),
-    SubtitleSpeechPhase.downloadingDetector => percent == null ? messages.downloadingDetector : messages.downloadingDetectorProgress(percent: count(percent)),
-    SubtitleSpeechPhase.loadingModel => percent == null ? messages.loadingModel : messages.loadingModelProgress(percent: count(percent)),
-    SubtitleSpeechPhase.transcribing => percent == null ? messages.transcribing : messages.transcribingProgress(percent: count(percent)),
-    SubtitleSpeechPhase.translating => percent == null ? messages.translating : messages.translatingProgress(percent: count(percent)),
-    SubtitleSpeechPhase.inference => percent == null ? messages.processingAudio : messages.processingAudioProgress(percent: count(percent)),
+    SubtitleSpeechPhase.downloadingModel =>
+      percent == null ? messages.downloadingModel : messages.downloadingModelProgress(percent: count(percent)),
+    SubtitleSpeechPhase.downloadingDetector =>
+      percent == null ? messages.downloadingDetector : messages.downloadingDetectorProgress(percent: count(percent)),
+    SubtitleSpeechPhase.loadingModel =>
+      percent == null ? messages.loadingModel : messages.loadingModelProgress(percent: count(percent)),
+    SubtitleSpeechPhase.transcribing =>
+      percent == null ? messages.transcribing : messages.transcribingProgress(percent: count(percent)),
+    SubtitleSpeechPhase.translating =>
+      percent == null ? messages.translating : messages.translatingProgress(percent: count(percent)),
+    SubtitleSpeechPhase.inference =>
+      percent == null ? messages.processingAudio : messages.processingAudioProgress(percent: count(percent)),
     SubtitleSpeechPhase.cpuFallback => messages.cpuFallback,
   };
 }
@@ -37,8 +45,10 @@ String resolveSubtitleCaptureStatus(Translations t, SubtitleCaptureStatus status
   String count(int n) => number?.call(n) ?? n.toString();
   final percent = status.percent;
   return switch (status.phase) {
-    SubtitleCapturePhase.loadingModel => percent == null ? messages.loadingModel : messages.loadingModelProgress(percent: count(percent)),
-    SubtitleCapturePhase.downloadingModel => percent == null ? messages.downloadingModel : messages.downloadingModelProgress(percent: count(percent)),
+    SubtitleCapturePhase.loadingModel =>
+      percent == null ? messages.loadingModel : messages.loadingModelProgress(percent: count(percent)),
+    SubtitleCapturePhase.downloadingModel =>
+      percent == null ? messages.downloadingModel : messages.downloadingModelProgress(percent: count(percent)),
     SubtitleCapturePhase.capturing => messages.capturing,
     SubtitleCapturePhase.startFailed => messages.startFailed,
     SubtitleCapturePhase.inferenceFailed => messages.inferenceFailed,

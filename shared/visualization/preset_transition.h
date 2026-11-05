@@ -12,17 +12,14 @@ namespace plezy::visualization {
 // preset, so pausing audio/rendering also pauses this transition.
 class PresetTransition {
  public:
-  static bool ValidDuration(double seconds) {
-    return std::isfinite(seconds) && seconds >= 0 && seconds <= 10;
-  }
+  static bool ValidDuration(double seconds) { return std::isfinite(seconds) && seconds >= 0 && seconds <= 10; }
   void Clear() {
     std::vector<uint8_t>().swap(previous_);
     width_ = height_ = 0;
     duration_ = 0;
   }
   void Start(const std::vector<uint8_t>& rgba, uint32_t width, uint32_t height, double seconds) {
-    if (!ValidDuration(seconds))
-      throw std::runtime_error("Preset transition must be between zero and ten seconds.");
+    if (!ValidDuration(seconds)) throw std::runtime_error("Preset transition must be between zero and ten seconds.");
     if (seconds == 0 || !ValidFrame(rgba, width, height)) {
       Clear();
       return;
@@ -48,8 +45,8 @@ class PresetTransition {
         const size_t src = (old_y * width_ + old_x) * 4;
         const size_t dst = (static_cast<size_t>(y) * width + x) * 4;
         for (size_t channel = 0; channel < 4; ++channel)
-          rgba[dst + channel] = static_cast<uint8_t>(
-              (previous_[src + channel] * prior + rgba[dst + channel] * next + 32768u) >> 16);
+          rgba[dst + channel] =
+              static_cast<uint8_t>((previous_[src + channel] * prior + rgba[dst + channel] * next + 32768u) >> 16);
       }
     }
   }

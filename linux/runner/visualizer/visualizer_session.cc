@@ -13,11 +13,11 @@
 #include <thread>
 #include <vector>
 
-#include "../../../shared/visualization/render_process.h"
 #include "../../../shared/visualization/pcm_resampler.h"
 #include "../../../shared/visualization/preset_transition.h"
-#include "../../../shared/visualization/render_thread.h"
+#include "../../../shared/visualization/render_process.h"
 #include "../../../shared/visualization/render_quality.h"
+#include "../../../shared/visualization/render_thread.h"
 
 namespace {
 using Clock = std::chrono::steady_clock;
@@ -84,7 +84,8 @@ struct Engine {
   bool Has() const { return bool(renderer); }
   void Reset() {
     if (renderer) renderer->Reset();
-    elapsed = 0; tick = {};
+    elapsed = 0;
+    tick = {};
   }
   void Pause(bool paused) {
     if (renderer) renderer->Pause(paused);
@@ -92,12 +93,15 @@ struct Engine {
   }
   void Create() {
     using namespace plezy::visualization;
-    renderer = std::make_unique<IsolatedRenderBackend>(render_process_detail::HelperPath(),
+    renderer = std::make_unique<IsolatedRenderBackend>(
+        render_process_detail::HelperPath(),
         native ? render_protocol::Backend::MilkRust : render_protocol::Backend::ProjectM);
     renderer->Reset();
   }
   void Load(const std::string& path, const std::string& root, double transition) {
-    renderer->Load(path, root, transition); elapsed = 0; tick = {};
+    renderer->Load(path, root, transition);
+    elapsed = 0;
+    tick = {};
   }
   void Pcm(const std::vector<float>& pcm, uint32_t generation) {
     renderer->Pcm(pcm.data(), pcm.size() / 2, generation);
@@ -136,14 +140,19 @@ struct VisualizerSession::Impl {
     bool reader_closed = false;
     RenderWatchdog watchdog;
     std::function<void()> cancel;
-    Work(AudioReader callback, std::string engine):reader(std::move(callback)),engine_name(std::move(engine)) {}
+    Work(AudioReader callback, std::string engine) : reader(std::move(callback)), engine_name(std::move(engine)) {}
     void Stop() {
       std::function<void()> interrupt;
-      { std::lock_guard<std::mutex> lock(mutex); stopping = true; interrupt = cancel; }
+      {
+        std::lock_guard<std::mutex> lock(mutex);
+        stopping = true;
+        interrupt = cancel;
+      }
       if (interrupt) interrupt();
       condition.notify_all();
       std::lock_guard<std::mutex> callback(reader_mutex);
-      reader_closed = true; reader = {};
+      reader_closed = true;
+      reader = {};
     }
     int Read(mpv_plezy_audio_block* block) {
       std::lock_guard<std::mutex> callback(reader_mutex);
@@ -175,7 +184,11 @@ struct VisualizerSession::Impl {
           double transition;
           bool pause_requested, mouse_down;
           double mouse_x, mouse_y, mouse_dx, mouse_dy;
-          { std::lock_guard<std::mutex> lock(mutex); pause_requested = paused; if (paused) quality.ResetTiming(); }
+          {
+            std::lock_guard<std::mutex> lock(mutex);
+            pause_requested = paused;
+            if (paused) quality.ResetTiming();
+          }
           if (pause_requested && engine.Has()) {
             RenderWatchdog::Operation operation(watchdog);
             engine.Pause(true);
@@ -217,7 +230,11 @@ struct VisualizerSession::Impl {
             if (!engine.Has()) {
               engine.Create();
               std::function<void()> interrupt;
-              { std::lock_guard<std::mutex> lock(mutex); cancel = engine.Cancellation(); if (stopping) interrupt = cancel; }
+              {
+                std::lock_guard<std::mutex> lock(mutex);
+                cancel = engine.Cancellation();
+                if (stopping) interrupt = cancel;
+              }
               if (interrupt) interrupt();
             }
             if (loaded_serial != serial) {
@@ -285,7 +302,9 @@ struct VisualizerSession::Impl {
             }
           }
           std::unique_lock<std::mutex> lock(mutex);
-          condition.wait_until(lock, started + quality.Interval(), [this, serial] { return stopping || paused || preset_serial != serial; });
+          condition.wait_until(lock, started + quality.Interval(), [this, serial] {
+            return stopping || paused || preset_serial != serial;
+          });
           if (stopping) break;
         }
       } catch (const std::exception& ex) {
@@ -303,7 +322,8 @@ struct VisualizerSession::Impl {
   uint64_t marked_serial = 0;
 
   Impl(FlTextureRegistrar* r, AudioReader callback, std::string engine)
-      : work(std::make_shared<Work>(std::move(callback), std::move(engine))), registrar(FL_TEXTURE_REGISTRAR(g_object_ref(r))) {
+      : work(std::make_shared<Work>(std::move(callback), std::move(engine))),
+        registrar(FL_TEXTURE_REGISTRAR(g_object_ref(r))) {
     texture = reinterpret_cast<PlezyBufferTexture*>(g_object_new(plezy_buffer_texture_get_type(), nullptr));
     *texture->state = work->frames;
     if (!fl_texture_registrar_register_texture(registrar, FL_TEXTURE(texture))) {
@@ -324,7 +344,7 @@ struct VisualizerSession::Impl {
         },
         this);
     try {
-      worker = std::make_unique<RenderThread>([state=work] { state->Run(); });
+      worker = std::make_unique<RenderThread>([state = work] { state->Run(); });
     } catch (...) {
       g_source_remove(timer);
       fl_texture_registrar_unregister_texture(registrar, FL_TEXTURE(texture));
@@ -438,7 +458,8 @@ FlValue* VisualizerSession::Status() const {
   fl_value_set_string_take(
       result, "hasFrame",
       fl_value_new_bool(
-          !impl_->work->stopping && impl_->work->state != "failed" && impl_->work->frames->serial.load() != 0 && impl_->work->frames->preset_serial.load() == impl_->work->preset_serial));
+          !impl_->work->stopping && impl_->work->state != "failed" && impl_->work->frames->serial.load() != 0 &&
+          impl_->work->frames->preset_serial.load() == impl_->work->preset_serial));
   fl_value_set_string_take(result, "droppedFrames", fl_value_new_int(impl_->work->dropped));
   fl_value_set_string_take(result, "width", fl_value_new_int(impl_->work->width));
   fl_value_set_string_take(result, "height", fl_value_new_int(impl_->work->height));

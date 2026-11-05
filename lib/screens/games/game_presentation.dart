@@ -1,3 +1,4 @@
+import '../../i18n/strings.g.dart' as l10n;
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -31,7 +32,7 @@ class SteamSourceBadge extends StatelessWidget {
           label: t.games.steamSource,
           excludeSemantics: true,
           child: Text(
-            'Steam',
+            l10n.t.games.steam_f71a8503,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: onArtwork ? Colors.white : colors.onSurface,
               fontWeight: FontWeight.w600,
@@ -53,9 +54,15 @@ String gameInstallationLabel(GameInstallation installation) => switch (installat
 /// Installed is an inventory observation. It never means online or playable.
 String gameAvailabilityLabel(LibraryGame game) {
   final installed = game.routes.where((r) => r.installation == GameInstallation.installed).toList();
-  if (installed.length == 1) return t.games.installedOn(computer: isolateDisplayText(installed.single.host.name));
-  if (installed.length > 1) return t.games.installedComputers(n: installed.length);
-  if (game.routes.isEmpty) return t.games.connectToPlayShort;
+  if (installed.length == 1) {
+    return t.games.installedOn(computer: isolateDisplayText(installed.single.host.name));
+  }
+  if (installed.length > 1) {
+    return t.games.installedComputers(n: installed.length);
+  }
+  if (game.routes.isEmpty) {
+    return t.games.connectToPlayShort;
+  }
   if (game.routes.length == 1) {
     return '${isolateDisplayText(game.routes.single.host.name)} · ${gameInstallationLabel(game.routes.single.installation)}';
   }

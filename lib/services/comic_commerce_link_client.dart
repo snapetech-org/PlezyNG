@@ -14,7 +14,12 @@ import 'plezy_server.dart';
 class ComicCommerceLinkClient {
   final http.Client _http;
 
-  ComicCommerceLinkClient({http.Client? httpClient}) : _http = httpClient ?? platform.createPlatformClient();
+  ComicCommerceLinkClient({http.Client? httpClient, this._serviceBaseUrl})
+    : _http = httpClient ?? platform.createPlatformClient();
+
+  final String? _serviceBaseUrl;
+  String get _baseUrl =>
+      _serviceBaseUrl == null ? plezyComicCommerceBaseUrl : requirePleazyngServiceUrl(_serviceBaseUrl);
 
   void dispose() => _http.close();
 
@@ -26,7 +31,7 @@ class ComicCommerceLinkClient {
     try {
       final response = await _http
           .post(
-            Uri.parse('$plezyComicCommerceBaseUrl/commerce/comic-link'),
+            Uri.parse('$_baseUrl/commerce/comic-link'),
             headers: const {'Content-Type': 'application/json'},
             body: jsonEncode({
               'providerId': providerId,

@@ -51,9 +51,13 @@ class HiddenLibrariesProvider extends ChangeNotifier with DisposableChangeNotifi
 
   Future<void> setLibraryHidden(String libraryKey, bool hidden, {void Function()? checkCurrent}) async {
     await ensureInitialized();
-    if (isDisposed) return;
+    if (isDisposed) {
+      return;
+    }
     checkCurrent?.call();
-    if (_hiddenLibraryKeys.contains(libraryKey) == hidden) return;
+    if (_hiddenLibraryKeys.contains(libraryKey) == hidden) {
+      return;
+    }
     final next = Set<String>.of(_hiddenLibraryKeys);
     hidden ? next.add(libraryKey) : next.remove(libraryKey);
     final storage = _storageService!;
@@ -63,14 +67,15 @@ class HiddenLibrariesProvider extends ChangeNotifier with DisposableChangeNotifi
     } else {
       await storage.saveHiddenLibrariesForProfile(scopedProfileId, next);
     }
-    if (isDisposed) return;
+    if (isDisposed) {
+      return;
+    }
     checkCurrent?.call();
     _hiddenLibraryKeys = next;
     safeNotifyListeners();
   }
 
   /// Check if a specific library is hidden
-  @visibleForTesting
   bool isLibraryHidden(String libraryKey) => _hiddenLibraryKeys.contains(libraryKey);
 
   /// Refresh hidden libraries from storage

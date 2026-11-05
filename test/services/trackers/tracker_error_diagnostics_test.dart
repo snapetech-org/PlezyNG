@@ -120,7 +120,10 @@ void main() {
         onSessionInvalidated: () {},
         httpClient: MockClient((_) async => http.Response(_rejectedBody, 503)),
         authService: MalAuthService(
-          proxy: OAuthProxyClient(httpClient: MockClient((_) async => fail('unused OAuth proxy'))),
+          proxy: OAuthProxyClient(
+            serviceBaseUrl: 'https://relay.example.test',
+            httpClient: MockClient((_) async => fail('unused OAuth proxy')),
+          ),
           httpClient: MockClient((_) async => fail('unused MAL auth client')),
         ),
       );
@@ -221,7 +224,10 @@ void main() {
     for (final status in [400, 503]) {
       test('MAL refresh HTTP $status preserves classification without retaining its body', () async {
         final service = MalAuthService(
-          proxy: OAuthProxyClient(httpClient: MockClient((_) async => fail('unused OAuth proxy'))),
+          proxy: OAuthProxyClient(
+            serviceBaseUrl: 'https://relay.example.test',
+            httpClient: MockClient((_) async => fail('unused OAuth proxy')),
+          ),
           httpClient: MockClient((_) async => http.Response(_rejectedBody, status)),
         );
         addTearDown(service.dispose);
@@ -290,8 +296,14 @@ void main() {
 
   group('OAuth proxy diagnostics', () {
     test('start and poll rejected bodies are status-only through the real connect catch', () async {
-      final startClient = OAuthProxyClient(httpClient: MockClient((_) async => http.Response(_rejectedBody, 502)));
-      final pollClient = OAuthProxyClient(httpClient: MockClient((_) async => http.Response(_rejectedBody, 503)));
+      final startClient = OAuthProxyClient(
+        serviceBaseUrl: 'https://relay.example.test',
+        httpClient: MockClient((_) async => http.Response(_rejectedBody, 502)),
+      );
+      final pollClient = OAuthProxyClient(
+        serviceBaseUrl: 'https://relay.example.test',
+        httpClient: MockClient((_) async => http.Response(_rejectedBody, 503)),
+      );
       addTearDown(startClient.dispose);
       addTearDown(pollClient.dispose);
 
@@ -308,6 +320,7 @@ void main() {
 
     test('unknown provider error becomes a generic fixed category', () async {
       final client = OAuthProxyClient(
+        serviceBaseUrl: 'https://relay.example.test',
         httpClient: MockClient((_) async => http.Response(json.encode({'error': _canaries[9]}), 200)),
       );
       addTearDown(client.dispose);
@@ -323,6 +336,7 @@ void main() {
         (code: 'exchange_failed', category: 'token exchange failed'),
       ]) {
         final client = OAuthProxyClient(
+          serviceBaseUrl: 'https://relay.example.test',
           httpClient: MockClient((_) async => http.Response(json.encode({'error': testCase.code}), 200)),
         );
         try {
@@ -344,6 +358,7 @@ void main() {
 
     test('access denial still cancels and 204 still retries into fixed 410 expiry', () async {
       final deniedClient = OAuthProxyClient(
+        serviceBaseUrl: 'https://relay.example.test',
         httpClient: MockClient((_) async => http.Response(json.encode({'error': 'access_denied'}), 200)),
       );
       addTearDown(deniedClient.dispose);
@@ -351,6 +366,7 @@ void main() {
 
       var requests = 0;
       final expiryClient = OAuthProxyClient(
+        serviceBaseUrl: 'https://relay.example.test',
         httpClient: MockClient((_) async {
           requests++;
           return requests == 1 ? http.Response('', 204) : http.Response(_rejectedBody, 410);

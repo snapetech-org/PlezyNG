@@ -1,3 +1,5 @@
+import '../../widgets/app_icon.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,15 +35,22 @@ class _PodcastTranscriptScreenState extends State<PodcastTranscriptScreen> {
     super.didChangeDependencies();
     final owner = context.watch<SourceController>();
     if (!identical(owner, _owner) || _epoch != owner.generation) {
-      _owner = owner; _epoch = owner.generation;
-      _transcript = null; _visible = const []; _loading = true; _error = null;
+      _owner = owner;
+      _epoch = owner.generation;
+      _transcript = null;
+      _visible = const [];
+      _loading = true;
+      _error = null;
       _load();
     }
   }
+
   void _filter() {
     _visible = (_transcript?.cues ?? const <SubtitleCue>[])
-        .where((cue) => _query.isEmpty || cue.text.toLowerCase().contains(_query)).toList();
+        .where((cue) => _query.isEmpty || cue.text.toLowerCase().contains(_query))
+        .toList();
   }
+
   Future<void> _load({bool refresh = false}) async {
     final owner = _owner!, epoch = owner.generation;
     final key = 'podcast-transcript-v1:${sourceDigest(widget.entry.key)}';
@@ -54,58 +63,118 @@ class _PodcastTranscriptScreenState extends State<PodcastTranscriptScreen> {
       final fingerprint = widget.entry.files.firstOrNull?.fingerprint;
       PodcastTranscript? transcript;
       if (!refresh && cached['fingerprint'] == fingerprint && cached['document'] is Map) {
-        try { transcript = PodcastTranscript.fromJson(sourceMap(cached['document'])); }
-        on Object { /* Re-fetch a damaged optional cache. */ }
+        try {
+          transcript = PodcastTranscript.fromJson(sourceMap(cached['document']));
+        } on Object {
+          /* Re-fetch a damaged optional cache. */
+        }
       }
       if (transcript == null) {
         final adapter = owner.adapter(widget.entry.sourceId);
-        if (adapter is! PodcastRssSourceAdapter) throw const SourceException(SourceFailure.unsupported);
+        if (adapter is! PodcastRssSourceAdapter) {
+          throw const SourceException(SourceFailure.unsupported);
+        }
         transcript = await adapter.transcript(widget.entry);
         owner.requireSession(epoch);
-        if (transcript == null) throw const SourceException(SourceFailure.unavailable);
-        await owner.repository.savePrivatePreference(profile, key,
-          {'fingerprint': fingerprint, 'document': transcript.toJson()});
+        if (transcript == null) {
+          throw const SourceException(SourceFailure.unavailable);
+        }
+        await owner.repository.savePrivatePreference(profile, key, {
+          'fingerprint': fingerprint,
+          'document': transcript.toJson(),
+        });
       }
       owner.requireSession(epoch);
-      if (mounted) setState(() { _transcript = transcript; _loading = false; _error = null; _filter(); });
+      if (mounted) {
+        setState(() {
+          _transcript = transcript;
+          _loading = false;
+          _error = null;
+          _filter();
+        });
+      }
     } on Object catch (error) {
-      if (mounted && owner.current(epoch)) setState(() { _loading = false; _error = error; });
+      if (mounted && owner.current(epoch)) {
+        setState(() {
+          _loading = false;
+          _error = error;
+        });
+      }
     }
   }
+
   Future<void> _forget() async {
     final owner = _owner!, epoch = owner.generation;
     await sourceAction(context, () async {
       owner.requireSession(epoch);
-      await owner.repository.forgetPreference(owner.profileId!, 'podcast-transcript-v1:${sourceDigest(widget.entry.key)}');
-      if (mounted && owner.current(epoch)) Navigator.pop(context);
+      await owner.repository.forgetPreference(
+        owner.profileId!,
+        'podcast-transcript-v1:${sourceDigest(widget.entry.key)}',
+      );
+      if (mounted && owner.current(epoch)) {
+        Navigator.pop(context);
+      }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final playback = context.watch<SourcePlayback>();
     final canSeek = playback.entry?.key == widget.entry.key && playback.player?.state.seekable == true;
     final cues = _visible;
-    return FocusedScrollScaffold(title: Text(t.subtitleAiUi.searchTranscript), actions: [
-      IconButton(tooltip: t.fileSources.refresh, icon: const Icon(Icons.refresh), onPressed: _loading ? null : () {
-        setState(() => _loading = true); _load(refresh: true);
-      }),
-      IconButton(tooltip: t.downloads.deleteDownload, icon: const Icon(Icons.delete_outline), onPressed: _loading ? null : _forget),
-    ], slivers: [
-      if (_loading) const SliverToBoxAdapter(child: LinearProgressIndicator()),
-      if (_error != null) SliverToBoxAdapter(child: SourceErrorMessage(message: sourceFailureText(_error!))),
-      SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(16), child: TextField(
-        decoration: InputDecoration(labelText: t.common.search),
-        onChanged: (value) => setState(() { _query = value.trim().toLowerCase(); _filter(); })))),
-      if (_transcript?.cues.isNotEmpty == true)
-        SliverList.builder(itemCount: cues.length, itemBuilder: (context, index) {
-          final cue = cues[index];
-          final active = canSeek && playback.positionMs >= cue.startMs && playback.positionMs <= cue.endMs;
-          return FocusableListTile(selected: active, title: Text(cue.text),
-            subtitle: Text(Duration(milliseconds: cue.startMs).toString().split('.').first),
-            onTap: !canSeek ? null : () => sourceAction(context, () => playback.seek(cue.startMs)));
-        })
-      else if (_transcript != null)
-        SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(16), child: SelectableText(_transcript!.text))),
-    ]);
+    return FocusedScrollScaffold(
+      title: Text(t.subtitleAiUi.searchTranscript),
+      actions: [
+        IconButton(
+          tooltip: t.fileSources.refresh,
+          icon: const AppIcon(Symbols.refresh_rounded),
+          onPressed: _loading
+              ? null
+              : () {
+                  setState(() => _loading = true);
+                  _load(refresh: true);
+                },
+        ),
+        IconButton(
+          tooltip: t.downloads.deleteDownload,
+          icon: const AppIcon(Symbols.delete_outline_rounded),
+          onPressed: _loading ? null : _forget,
+        ),
+      ],
+      slivers: [
+        if (_loading) const SliverToBoxAdapter(child: LinearProgressIndicator()),
+        if (_error != null) SliverToBoxAdapter(child: SourceErrorMessage(message: sourceFailureText(_error!))),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              decoration: InputDecoration(labelText: t.common.search),
+              onChanged: (value) => setState(() {
+                _query = value.trim().toLowerCase();
+                _filter();
+              }),
+            ),
+          ),
+        ),
+        if (_transcript?.cues.isNotEmpty == true)
+          SliverList.builder(
+            itemCount: cues.length,
+            itemBuilder: (context, index) {
+              final cue = cues[index];
+              final active = canSeek && playback.positionMs >= cue.startMs && playback.positionMs <= cue.endMs;
+              return FocusableListTile(
+                selected: active,
+                title: Text(cue.text),
+                subtitle: Text(Duration(milliseconds: cue.startMs).toString().split('.').first),
+                onTap: !canSeek ? null : () => sourceAction(context, () => playback.seek(cue.startMs)),
+              );
+            },
+          )
+        else if (_transcript != null)
+          SliverToBoxAdapter(
+            child: Padding(padding: const EdgeInsets.all(16), child: SelectableText(_transcript!.text)),
+          ),
+      ],
+    );
   }
 }

@@ -3,14 +3,16 @@
 #if !defined(__linux__) || defined(__ANDROID__)
 #error This transport is for Linux TV application packages.
 #endif
-#include "render_socket.h"
-#include <array>
-#include <csignal>
-#include <mutex>
 #include <sys/prctl.h>
 #include <sys/resource.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+
+#include <array>
+#include <csignal>
+#include <mutex>
+
+#include "render_socket.h"
 extern char** environ;
 
 namespace plezy::visualization {
@@ -18,20 +20,27 @@ namespace tv_process_detail {
 struct Fd {
   int value = -1;
   explicit Fd(int fd) : value(fd) {}
-  ~Fd() { if (value >= 0) close(value); }
+  ~Fd() {
+    if (value >= 0) close(value);
+  }
   Fd(const Fd&) = delete;
 };
 struct Control {
   std::mutex mutex;
   pid_t pid = 0;
   std::shared_ptr<RenderSocketControl> socket;
-  void Abort() const noexcept { if (socket) socket->Abort(); }
+  void Abort() const noexcept {
+    if (socket) socket->Abort();
+  }
   bool Reaped() {
     std::lock_guard<std::mutex> lock(mutex);
     if (!pid) return true;
     int status = 0;
     const auto result = waitpid(pid, &status, WNOHANG);
-    if (result == pid || (result < 0 && errno == ECHILD)) { pid = 0; return true; }
+    if (result == pid || (result < 0 && errno == ECHILD)) {
+      pid = 0;
+      return true;
+    }
     return false;
   }
   ~Control() { Abort(); }
@@ -40,9 +49,13 @@ struct Retired {
   std::mutex mutex;
   std::array<std::shared_ptr<Control>, 4> children;
 };
-inline Retired& Pool() { static auto* pool = new Retired; return *pool; }
+inline Retired& Pool() {
+  static auto* pool = new Retired;
+  return *pool;
+}
 inline void Admit() {
-  auto& pool = Pool(); std::lock_guard<std::mutex> lock(pool.mutex);
+  auto& pool = Pool();
+  std::lock_guard<std::mutex> lock(pool.mutex);
   bool pending = false;
   for (auto& child : pool.children) {
     if (child && child->Reaped()) child.reset();
@@ -53,9 +66,13 @@ inline void Admit() {
 inline void Retire(const std::shared_ptr<Control>& control) noexcept {
   control->Abort();
   if (control->Reaped()) return;
-  auto& pool = Pool(); std::lock_guard<std::mutex> lock(pool.mutex);
+  auto& pool = Pool();
+  std::lock_guard<std::mutex> lock(pool.mutex);
   for (auto& child : pool.children) {
-    if (!child || child->Reaped()) { child = control; return; }
+    if (!child || child->Reaped()) {
+      child = control;
+      return;
+    }
   }
 }
 inline std::filesystem::path HelperPath() {
@@ -66,7 +83,8 @@ inline std::filesystem::path HelperPath() {
   // webOS puts plugins in lib/. Tizen statically links its plugin into bin/.
   for (const auto& folder : {directory, directory.parent_path() / "lib"}) {
     const auto helper = folder / "plezy_visualizer_helper";
-    if (!std::filesystem::is_symlink(helper) && std::filesystem::is_regular_file(helper) && access(helper.c_str(), X_OK) == 0)
+    if (!std::filesystem::is_symlink(helper) && std::filesystem::is_regular_file(helper) &&
+        access(helper.c_str(), X_OK) == 0)
       return helper;
   }
   throw std::runtime_error("The isolated TV visualization helper is missing or not executable.");
@@ -88,13 +106,16 @@ inline RenderConnection Connect(const std::filesystem::path& path) {
     // Allocate all arguments before fork. The child uses only system calls and
     // execve; it never enters a copied C++/graphics/player mutex or allocator.
     const auto executable = path.string();
-    char* arguments[] = {const_cast<char*>(executable.c_str()), const_cast<char*>("--plezy-render-pipe"), const_cast<char*>("3"), nullptr};
+    char* arguments[] = {
+        const_cast<char*>(executable.c_str()), const_cast<char*>("--plezy-render-pipe"), const_cast<char*>("3"),
+        nullptr};
     char** environment = environ;
     const pid_t owner = getpid();
     const pid_t pid = fork();
     if (pid < 0) throw std::runtime_error("The TV denied visualization helper startup.");
     if (pid == 0) {
-      if (prctl(PR_SET_PDEATHSIG, SIGKILL) != 0 || getppid() != owner || dup2(child.value, 3) < 0 || fcntl(3, F_SETFD, 0) < 0)
+      if (prctl(PR_SET_PDEATHSIG, SIGKILL) != 0 || getppid() != owner || dup2(child.value, 3) < 0 ||
+          fcntl(3, F_SETFD, 0) < 0)
         _exit(126);
       // close_range is optional on older firmware. The fallback is bounded by
       // the inherited descriptor limit and requires no libc allocation.
@@ -107,7 +128,10 @@ inline RenderConnection Connect(const std::filesystem::path& path) {
     }
     control->pid = pid;
     return RenderConnection(std::move(pipe), [control] { control->Abort(); }, [control] { Retire(control); });
-  } catch (...) { Retire(control); throw; }
+  } catch (...) {
+    Retire(control);
+    throw;
+  }
 }
 }  // namespace tv_process_detail
 
@@ -118,8 +142,12 @@ inline RenderConnection Connect(const std::filesystem::path& path) {
 class TvRenderBackend final : public RemoteRenderBackend {
  public:
   static std::string DependencyError() {
-    try { tv_process_detail::HelperPath(); return {}; }
-    catch (const std::exception& error) { return error.what(); }
+    try {
+      tv_process_detail::HelperPath();
+      return {};
+    } catch (const std::exception& error) {
+      return error.what();
+    }
   }
   explicit TvRenderBackend(const std::filesystem::path& path = tv_process_detail::HelperPath())
       : RemoteRenderBackend(tv_process_detail::Connect(path)) {}

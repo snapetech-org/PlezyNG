@@ -8,22 +8,32 @@ abstract final class VisualizerFragments {
   static final _equation = RegExp(r'^(init|per_frame_init|per_frame|per_point)(?:_?\d+)?$', caseSensitive: false);
 
   static Map<int, List<MapEntry<String, String>>> parse(String source, String kind) {
-    if (kind != 'shape' && kind != 'wave') throw const FormatException('Expected a shape or wave fragment.');
+    if (kind != 'shape' && kind != 'wave') {
+      throw const FormatException('Expected a shape or wave fragment.');
+    }
     final result = <int, List<MapEntry<String, String>>>{};
     var numbered = false, standalone = false, lineNumber = 0;
     for (final line in const LineSplitter().convert(source)) {
       lineNumber++;
       final text = line.trim();
-      if (text.isEmpty || text.startsWith('//') || text.startsWith(';') ||
-          RegExp(r'^\[(shape\d*|wave\d*|preset\d+)\]$', caseSensitive: false).hasMatch(text)) continue;
+      if (text.isEmpty ||
+          text.startsWith('//') ||
+          text.startsWith(';') ||
+          RegExp(r'^\[(shape\d*|wave\d*|preset\d+)\]$', caseSensitive: false).hasMatch(text)) {
+        continue;
+      }
       final equals = text.indexOf('=');
-      if (equals <= 0) throw FormatException('Fragment line $lineNumber: expected key=value.');
+      if (equals <= 0) {
+        throw FormatException('Fragment line $lineNumber: expected key=value.');
+      }
       var key = text.substring(0, equals).trim();
       final value = text.substring(equals + 1);
       final indexed = _indexed.firstMatch(key);
       var index = 0;
       if (indexed != null) {
-        if (indexed[1]!.toLowerCase() != kind) throw FormatException('Fragment line $lineNumber: mixed object types.');
+        if (indexed[1]!.toLowerCase() != kind) {
+          throw FormatException('Fragment line $lineNumber: mixed object types.');
+        }
         numbered = true;
         index = int.tryParse(indexed[2]!) ?? 64;
         key = indexed[3]!;
@@ -35,7 +45,9 @@ abstract final class VisualizerFragments {
       }
       (result[index] ??= []).add(MapEntry(key, value));
     }
-    if (result.isEmpty || result.length > 64) throw const FormatException('The fragment contains no bounded objects.');
+    if (result.isEmpty || result.length > 64) {
+      throw const FormatException('The fragment contains no bounded objects.');
+    }
     return result;
   }
 
@@ -50,12 +62,16 @@ abstract final class VisualizerFragments {
     final occupied = <int>{};
     for (final line in const LineSplitter().convert(parent)) {
       final entry = _indexed.firstMatch(line.trim().split('=').first.trim());
-      if (entry != null && entry[1]!.toLowerCase() == kind) occupied.add(int.tryParse(entry[2]!) ?? 64);
+      if (entry != null && entry[1]!.toLowerCase() == kind) {
+        occupied.add(int.tryParse(entry[2]!) ?? 64);
+      }
     }
     final objects = parse(source, kind), lines = <String>[parent, '; User-composed $kind fragments'];
     for (final key in objects.keys.toList()..sort()) {
       final available = List.generate(4, (i) => i).where((index) => !occupied.contains(index));
-      if (available.isEmpty) throw const FormatException('The preset has no free slots among its four supported objects.');
+      if (available.isEmpty) {
+        throw const FormatException('The preset has no free slots among its four supported objects.');
+      }
       final index = available.first;
       occupied.add(index);
       lines.add('${kind}code_${index}_enabled=1');
@@ -81,11 +97,17 @@ abstract final class VisualizerFragments {
     }
     for (final line in const LineSplitter().convert(text)) {
       final match = _indexed.firstMatch(line.trim().split('=').first.trim());
-      if (match != null && match[1]!.toLowerCase() == kind) indexed.add(line);
+      if (match != null && match[1]!.toLowerCase() == kind) {
+        indexed.add(line);
+      }
     }
-    if (indexed.isEmpty) return const {};
+    if (indexed.isEmpty) {
+      return const {};
+    }
     final objects = parse(indexed.join('\n'), kind);
-    return {for (final item in objects.entries)
-      item.key: '[$kind]\n${item.value.map((value) => '${value.key}=${value.value}').join('\n')}\n'};
+    return {
+      for (final item in objects.entries)
+        item.key: '[$kind]\n${item.value.map((value) => '${value.key}=${value.value}').join('\n')}\n',
+    };
   }
 }

@@ -40,7 +40,6 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	Translations $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => Translations(meta: meta ?? this.$meta);
 
 	// Translations
-	late final Translations$subtitleCapture$en subtitleCapture = Translations$subtitleCapture$en.internal(_root);
 	late final Translations$app$en app = Translations$app$en.internal(_root);
 	late final Translations$appIcon$en appIcon = Translations$appIcon$en.internal(_root);
 	late final Translations$auth$en auth = Translations$auth$en.internal(_root);
@@ -121,6 +120,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$sourcePlayerUi$en sourcePlayerUi = Translations$sourcePlayerUi$en.internal(_root);
 	late final Translations$subtitleSearchUi$en subtitleSearchUi = Translations$subtitleSearchUi$en.internal(_root);
 	late final Translations$visualizerUi$en visualizerUi = Translations$visualizerUi$en.internal(_root);
+	late final Translations$romm$en romm = Translations$romm$en.internal(_root);
+	late final Translations$subtitleCapture$en subtitleCapture = Translations$subtitleCapture$en.internal(_root);
+	late final Translations$karaokeUi$en karaokeUi = Translations$karaokeUi$en.internal(_root);
 }
 
 // Path: app
@@ -8311,7 +8313,7 @@ class Translations$streaming$en {
 	/// en: 'Play on this device'
 	String get nativePeerPlay => 'Play on this device';
 
-	/// en: 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.'
+	/// en: 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Temporary files share the configured storage limit; free space is checked before playback. Uploads up to 256 KB/s while playing; stops when playback ends.'
 	String get nativePeerHelp => 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Temporary files share the configured storage limit; free space is checked before playback. Uploads up to 256 KB/s while playing; stops when playback ends.';
 
 	/// en: 'Available sources'
@@ -10963,20 +10965,11 @@ class Translations$games$en {
 	/// en: 'Your computers'
 	String get computers => 'Your computers';
 
-	/// en: 'Nearby computers'
-	String get nearby => 'Nearby computers';
-
 	/// en: 'Find computers'
 	String get findComputers => 'Find computers';
 
 	/// en: 'Add computer'
 	String get addComputer => 'Add computer';
-
-	/// en: 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.'
-	String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-
-	/// en: 'No computers found on this network. You can enter an address manually.'
-	String get noNearby => 'No computers found on this network. You can enter an address manually.';
 
 	/// en: 'Computer name'
 	String get name => 'Computer name';
@@ -11110,9 +11103,6 @@ class Translations$games$en {
 	/// en: 'Cancel'
 	String get cancel => 'Cancel';
 
-	/// en: 'Looking for computers…'
-	String get scanning => 'Looking for computers…';
-
 	/// en: 'Save shortcut'
 	String get saveShortcut => 'Save shortcut';
 
@@ -11154,12 +11144,6 @@ class Translations$games$en {
 
 	/// en: 'Steam account linked. Its library is private or unavailable, so no games were imported.'
 	String get steamLibraryPrivate => 'Steam account linked. Its library is private or unavailable, so no games were imported.';
-
-	/// en: 'Steam could not refresh the library. Showing the last available catalog.'
-	String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
-
-	/// en: 'Showing up to 2,000 games. The Steam catalog was truncated.'
-	String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 
 	/// en: 'Connecting…'
 	String get connecting => 'Connecting…';
@@ -11827,12 +11811,6 @@ class Translations$games$en {
 	/// en: 'Install on $computer'
 	String lanInstallTarget({required Object computer}) => 'Install on ${computer}';
 
-	/// en: 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.'
-	String get lanInstallSubmitted => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.';
-
-	/// en: 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.'
-	String get cloudSettingsHelp => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.';
-
 	/// en: 'Ultra HD · capable hardware required'
 	String get qualityUltraHd => 'Ultra HD · capable hardware required';
 
@@ -11947,14 +11925,8 @@ class Translations$games$en {
 	/// en: 'Steam account linked'
 	String get accountLinked => 'Steam account linked';
 
-	/// en: 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.'
-	String get computerSetupHint => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.';
-
 	/// en: 'Manage connections'
 	String get manageConnections => 'Manage connections';
-
-	/// en: 'Library status'
-	String get accountStatus => 'Library status';
 
 	/// en: 'Clear search and filters'
 	String get clearGameFilters => 'Clear search and filters';
@@ -11992,12 +11964,6 @@ class Translations$games$en {
 	/// en: 'Preferred computer'
 	String get preferredComputer => 'Preferred computer';
 
-	/// en: 'Prefer this computer'
-	String get preferComputer => 'Prefer this computer';
-
-	/// en: 'Choose automatically'
-	String get automaticComputer => 'Choose automatically';
-
 	/// en: 'Installation comes from the last library check. Your computer confirms availability when you connect.'
 	String get inventorySnapshotHelp => 'Installation comes from the last library check. Your computer confirms availability when you connect.';
 
@@ -12021,9 +11987,6 @@ class Translations$games$en {
 
 	/// en: 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.'
 	String get streamRecoveryHelp => 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.';
-
-	/// en: 'Steam is a trademark of Valve Corporation. PlezyNG is an independent application.'
-	String get steamAttribution => 'Steam is a trademark of Valve Corporation. PlezyNG is an independent application.';
 
 	/// en: 'News and achievements load when requested. Friends activity is optional.'
 	String get steamActivityPrivacy => 'News and achievements load when requested. Friends activity is optional.';
@@ -12055,29 +12018,23 @@ class Translations$games$en {
 	/// en: 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.'
 	String get allowCloudSettingsHelp => 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.';
 
-	/// en: 'Steam Cloud on computer'
-	String get cloudAccountSetting => 'Steam Cloud on computer';
+	/// en: 'Steam'
+	String get steam_f71a8503 => 'Steam';
 
-	/// en: 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.'
-	String get cloudBridgeUnavailable => 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.';
+	/// en: '${value1} / ${value2} GiB'
+	String gib({required Object value1, required Object value2}) => '${value1} / ${value2} GiB';
 
-	/// en: 'Enable Steam Cloud'
-	String get enableAccountCloud => 'Enable Steam Cloud';
+	/// en: '${value1} GiB'
+	String gib_da17b9f0({required Object value1}) => '${value1} GiB';
 
-	/// en: 'Disable Steam Cloud'
-	String get disableAccountCloud => 'Disable Steam Cloud';
+	/// en: '${value1} · ${value2} MiB'
+	String mib({required Object value1, required Object value2}) => '${value1} · ${value2} MiB';
 
-	/// en: 'Change Steam Cloud for all games in the signed-in Steam account on $computer? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.'
-	String cloudAccountConfirm({required Object computer}) => 'Change Steam Cloud for all games in the signed-in Steam account on ${computer}? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.';
+	/// en: 'Steam AppID: ${value1}'
+	String steamAppID({required Object value1}) => 'Steam AppID: ${value1}';
 
-	/// en: 'Steam confirmed the Cloud setting on this computer.'
-	String get cloudAccountObserved => 'Steam confirmed the Cloud setting on this computer.';
-
-	/// en: 'The setting changed since you reviewed it. Open it again to review the current state.'
-	String get cloudAccountStale => 'The setting changed since you reviewed it. Open it again to review the current state.';
-
-	/// en: 'The change could not be confirmed. It may have applied. Check Steam before trying again.'
-	String get cloudAccountUnknown => 'The change could not be confirmed. It may have applied. Check Steam before trying again.';
+	/// en: '${value1} · Vulkan'
+	String vulkan({required Object value1}) => '${value1} · Vulkan';
 }
 
 // Path: deepLinks
@@ -12298,7 +12255,7 @@ class Translations$podcasts$en {
 	/// en: 'Device ID'
 	String get syncDevice => 'Device ID';
 
-	/// en: 'Each installation needs its own device ID. Link the devices in your server\'s device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.'
+	/// en: 'Each installation needs its own device ID. Link the devices in your server's device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.'
 	String get syncDevicesHelp => 'Each installation needs its own device ID. Link the devices in your server\'s device synchronization settings to share subscription changes. Listening actions are account-wide. HTTPS feeds can be imported automatically; HTTP feeds wait for manual setup.';
 
 	/// en: 'Sync now'
@@ -12342,9 +12299,6 @@ class Translations$subtitleAiUi$en {
 
 	/// en: 'Glossary check found ${count} possible mismatches. Review these cues before attaching.'
 	String glossaryMismatchMany({required Object count}) => 'Glossary check found ${count} possible mismatches. Review these cues before attaching.';
-
-	/// en: 'Downloading the English speech model and speech detector…'
-	String get downloadingTheEnglishSpeechModelAndS_d75c5cb7 => 'Downloading the English speech model and speech detector…';
 
 	/// en: 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}'
 	String generatedCueCountAndDuration({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}';
@@ -13074,6 +13028,1149 @@ class Translations$visualizerUi$en {
 
 	/// en: 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.'
 	String get milkRustShaderSupportNotice => 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.';
+
+	/// en: '${value1} MB download · ${value2} MB installed'
+	String mbDownloadMBInstalled({required Object value1, required Object value2}) => '${value1} MB download · ${value2} MB installed';
+
+	/// en: '${value1}% saved · ${value2}'
+	String saved({required Object value1, required Object value2}) => '${value1}% saved · ${value2}';
+
+	/// en: 'Discard saved download'
+	String get discardSavedDownload => 'Discard saved download';
+
+	/// en: 'Preset preview'
+	String get presetPreview => 'Preset preview';
+
+	/// en: 'Copy, export and compose preset'
+	String get copyExportAndComposePreset => 'Copy, export and compose preset';
+
+	/// en: 'Export preset, assets and notices'
+	String get exportPresetAssetsAndNotices => 'Export preset, assets and notices';
+
+	/// en: 'Add shape or wave to a new copy'
+	String get addShapeOrWaveToANewCopy => 'Add shape or wave to a new copy';
+
+	/// en: 'Export shape fragments'
+	String get exportShapeFragments => 'Export shape fragments';
+
+	/// en: 'Export wave fragments'
+	String get exportWaveFragments => 'Export wave fragments';
+}
+
+// Path: romm
+class Translations$romm$en {
+	Translations$romm$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Choose a game file'
+	String get chooseFile => 'Choose a game file';
+
+	/// en: 'Choose an exact game copy'
+	String get chooseCopy => 'Choose an exact game copy';
+
+	/// en: 'Favorite'
+	String get favorite => 'Favorite';
+
+	/// en: 'Start from the beginning'
+	String get startFresh => 'Start from the beginning';
+
+	/// en: 'Automatic'
+	String get automatic => 'Automatic';
+
+	/// en: 'No games are accepting players.'
+	String get noJoinable => 'No games are accepting players.';
+
+	/// en: 'Download again'
+	String get downloadAgain => 'Download again';
+
+	/// en: 'Saved offline. This server did not provide a checksum; only the local file fingerprint is available.'
+	String get offlineUnverified => 'Saved offline. This server did not provide a checksum; only the local file fingerprint is available.';
+
+	/// en: 'Achievements'
+	String get achievementCount => 'Achievements';
+
+	/// en: 'A save is still being captured. Keep the game open and try again.'
+	String get saveInProgress => 'A save is still being captured. Keep the game open and try again.';
+
+	/// en: 'Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.'
+	String get browserSaveHelp => 'Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.';
+
+	/// en: 'I saved; close the player'
+	String get savedClose => 'I saved; close the player';
+
+	/// en: 'The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.'
+	String get cardImportRequired => 'The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.';
+
+	/// en: 'The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.'
+	String get cardUnreadable => 'The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.';
+
+	/// en: 'Keep existing card'
+	String get adoptCard => 'Keep existing card';
+
+	/// en: 'Erase existing card'
+	String get discardContainerCard => 'Erase existing card';
+
+	/// en: 'This state belongs to another core version. Use a compatible in-game save or start from the beginning.'
+	String get coreVersionDifferent => 'This state belongs to another core version. Use a compatible in-game save or start from the beginning.';
+
+	/// en: 'Resume saved progress'
+	String get nativeCloudResume => 'Resume saved progress';
+
+	/// en: 'The server is saving. Wait for it to finish before exiting.'
+	String get streamSaving => 'The server is saving. Wait for it to finish before exiting.';
+
+	/// en: 'There is no compatible local progress to restore.'
+	String get noLocalSave => 'There is no compatible local progress to restore.';
+
+	/// en: 'Completed 100%'
+	String get completedAll => 'Completed 100%';
+
+	/// en: 'Progress'
+	String get status => 'Progress';
+
+	/// en: 'In backlog'
+	String get backlogged => 'In backlog';
+
+	/// en: 'Now playing'
+	String get nowPlaying => 'Now playing';
+
+	/// en: 'Completed'
+	String get completed => 'Completed';
+
+	/// en: 'Playing'
+	String get playing => 'Playing';
+
+	/// en: 'Unplayed'
+	String get unplayed => 'Unplayed';
+
+	/// en: 'Saves synchronized'
+	String get syncComplete => 'Saves synchronized';
+
+	/// en: 'Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.'
+	String get netplayHelp => 'Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.';
+
+	/// en: 'RomM'
+	String get title => 'RomM';
+
+	/// en: 'Connect RomM'
+	String get connect => 'Connect RomM';
+
+	/// en: 'RomM libraries'
+	String get connections => 'RomM libraries';
+
+	/// en: 'Browse your RomM collection and play supported games here.'
+	String get connectionHelp => 'Browse your RomM collection and play supported games here.';
+
+	/// en: 'Server address'
+	String get serverAddress => 'Server address';
+
+	/// en: 'Library name'
+	String get serverName => 'Library name';
+
+	/// en: 'Client API token'
+	String get token => 'Client API token';
+
+	/// en: 'Pair this device'
+	String get pair => 'Pair this device';
+
+	/// en: 'Open the approval page on a signed-in device, review the requested access, and approve this code.'
+	String get pairHelp => 'Open the approval page on a signed-in device, review the requested access, and approve this code.';
+
+	/// en: 'Open approval page'
+	String get openApproval => 'Open approval page';
+
+	/// en: 'Use a client token'
+	String get manualToken => 'Use a client token';
+
+	/// en: 'Create a personal client token in RomM with library, save and device permissions.'
+	String get manualTokenHelp => 'Create a personal client token in RomM with library, save and device permissions.';
+
+	/// en: 'Waiting for approval…'
+	String get pairing => 'Waiting for approval…';
+
+	/// en: 'Cancel'
+	String get cancel => 'Cancel';
+
+	/// en: 'Save'
+	String get save => 'Save';
+
+	/// en: 'Close'
+	String get close => 'Close';
+
+	/// en: 'Disconnect'
+	String get remove => 'Disconnect';
+
+	/// en: 'Remove this connection from this profile? Your server library and saves will remain available in RomM.'
+	String get removeHelp => 'Remove this connection from this profile? Your server library and saves will remain available in RomM.';
+
+	/// en: 'Refresh'
+	String get refresh => 'Refresh';
+
+	/// en: 'Reconnect'
+	String get reconnect => 'Reconnect';
+
+	/// en: 'Signed in for this session. Sign in again after restarting this device.'
+	String get sessionOnly => 'Signed in for this session. Sign in again after restarting this device.';
+
+	/// en: 'All libraries'
+	String get allLibraries => 'All libraries';
+
+	/// en: 'All platforms'
+	String get allPlatforms => 'All platforms';
+
+	/// en: 'All collections'
+	String get allCollections => 'All collections';
+
+	/// en: 'Load more games'
+	String get more => 'Load more games';
+
+	/// en: 'No games found'
+	String get noGames => 'No games found';
+
+	/// en: 'Showing saved library information.'
+	String get cached => 'Showing saved library information.';
+
+	/// en: 'Other copies'
+	String get variants => 'Other copies';
+
+	/// en: 'Game files'
+	String get files => 'Game files';
+
+	/// en: 'Saves and states'
+	String get saves => 'Saves and states';
+
+	/// en: 'No saves yet'
+	String get noSaves => 'No saves yet';
+
+	/// en: 'Play'
+	String get play => 'Play';
+
+	/// en: 'Resume'
+	String get resume => 'Resume';
+
+	/// en: 'Play with'
+	String get playWith => 'Play with';
+
+	/// en: 'Keep offline'
+	String get download => 'Keep offline';
+
+	/// en: 'Available offline'
+	String get offline => 'Available offline';
+
+	/// en: 'Downloading…'
+	String get downloadProgress => 'Downloading…';
+
+	/// en: 'Cancel download'
+	String get cancelDownload => 'Cancel download';
+
+	/// en: 'Remove offline copy'
+	String get removeOffline => 'Remove offline copy';
+
+	/// en: 'Offline storage'
+	String get storage => 'Offline storage';
+
+	/// en: 'Storage limit (GiB)'
+	String get storageLimit => 'Storage limit (GiB)';
+
+	/// en: 'In-app browser player'
+	String get browser => 'In-app browser player';
+
+	/// en: 'Stream from server'
+	String get stream => 'Stream from server';
+
+	/// en: 'On this device'
+	String get native => 'On this device';
+
+	/// en: 'EmulatorJS'
+	String get emulatorJs => 'EmulatorJS';
+
+	/// en: 'Ruffle'
+	String get ruffle => 'Ruffle';
+
+	/// en: 'js-dos'
+	String get jsDos => 'js-dos';
+
+	/// en: 'PICO-8'
+	String get pico8 => 'PICO-8';
+
+	/// en: 'EasyRPG'
+	String get easyRpg => 'EasyRPG';
+
+	/// en: 'An embedded browser player is not available in this build.'
+	String get browserUnavailable => 'An embedded browser player is not available in this build.';
+
+	/// en: 'The native emulator core is not installed in this build.'
+	String get nativeUnavailable => 'The native emulator core is not installed in this build.';
+
+	/// en: 'Refresh this library to check available players.'
+	String get refreshBeforePlay => 'Refresh this library to check available players.';
+
+	/// en: 'This copy has no game files on the server.'
+	String get missing => 'This copy has no game files on the server.';
+
+	/// en: 'No compatible in-app player is available for this copy.'
+	String get noRoute => 'No compatible in-app player is available for this copy.';
+
+	/// en: 'Firmware'
+	String get firmware => 'Firmware';
+
+	/// en: 'Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.'
+	String get firmwareHelp => 'Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.';
+
+	/// en: 'RetroAchievements'
+	String get achievements => 'RetroAchievements';
+
+	/// en: 'Achievement information comes from RomM. The browser player does not earn new achievements.'
+	String get achievementsHelp => 'Achievement information comes from RomM. The browser player does not earn new achievements.';
+
+	/// en: 'Screenshots'
+	String get screenshots => 'Screenshots';
+
+	/// en: 'Manual'
+	String get manual => 'Manual';
+
+	/// en: 'Import save'
+	String get importSave => 'Import save';
+
+	/// en: 'Export'
+	String get exportSave => 'Export';
+
+	/// en: 'Import state'
+	String get importState => 'Import state';
+
+	/// en: 'Save imported'
+	String get saveImported => 'Save imported';
+
+	/// en: 'Save exported'
+	String get saveExported => 'Save exported';
+
+	/// en: 'Emulator identity'
+	String get engine => 'Emulator identity';
+
+	/// en: 'Save slot'
+	String get slot => 'Save slot';
+
+	/// en: 'Core identity'
+	String get core => 'Core identity';
+
+	/// en: 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.'
+	String get compatibilityHelp => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.';
+
+	/// en: 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.'
+	String get saveConflict => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.';
+
+	/// en: 'Keep both'
+	String get keepBoth => 'Keep both';
+
+	/// en: 'Use server copy'
+	String get useServer => 'Use server copy';
+
+	/// en: 'Replace server copy'
+	String get replaceServer => 'Replace server copy';
+
+	/// en: 'Saves waiting to sync'
+	String get pendingSaves => 'Saves waiting to sync';
+
+	/// en: 'Sync saves'
+	String get sync => 'Sync saves';
+
+	/// en: 'Progress kept on this device; upload is pending.'
+	String get savedLocally => 'Progress kept on this device; upload is pending.';
+
+	/// en: 'Pause'
+	String get pause => 'Pause';
+
+	/// en: 'Continue'
+	String get kContinue => 'Continue';
+
+	/// en: 'Save state'
+	String get saveState => 'Save state';
+
+	/// en: 'Load state'
+	String get loadState => 'Load state';
+
+	/// en: 'Save and exit'
+	String get saveAndExit => 'Save and exit';
+
+	/// en: 'Exit without saving'
+	String get exitWithoutSaving => 'Exit without saving';
+
+	/// en: 'Finish this game session?'
+	String get exitConfirm => 'Finish this game session?';
+
+	/// en: 'Save your progress before leaving. Keep this screen open until saving finishes.'
+	String get saveExitHelp => 'Save your progress before leaving. Keep this screen open until saving finishes.';
+
+	/// en: 'Starting game…'
+	String get starting => 'Starting game…';
+
+	/// en: 'Connecting…'
+	String get connecting => 'Connecting…';
+
+	/// en: 'The streaming computer is occupied.'
+	String get busy => 'The streaming computer is occupied.';
+
+	/// en: 'The streaming session ended.'
+	String get streamEnded => 'The streaming session ended.';
+
+	/// en: 'Try again'
+	String get retry => 'Try again';
+
+	/// en: 'Change disc'
+	String get disc => 'Change disc';
+
+	/// en: 'Memory card'
+	String get memoryCard => 'Memory card';
+
+	/// en: 'Allow players to join'
+	String get multiplayer => 'Allow players to join';
+
+	/// en: 'Join game'
+	String get join => 'Join game';
+
+	/// en: 'Copy game link'
+	String get copyLink => 'Copy game link';
+
+	/// en: 'Game link copied'
+	String get linkCopied => 'Game link copied';
+
+	/// en: 'Open game link'
+	String get openLink => 'Open game link';
+
+	/// en: 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.'
+	String get linkHelp => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.';
+
+	/// en: 'This link identifies a different copy. Choose the intended game from your library.'
+	String get copyMismatch => 'This link identifies a different copy. Choose the intended game from your library.';
+
+	/// en: 'Library indexing'
+	String get requestStatus => 'Library indexing';
+
+	/// en: 'The requested game is not indexed in this library yet.'
+	String get notIndexed => 'The requested game is not indexed in this library yet.';
+
+	/// en: 'Touch controls'
+	String get touchControls => 'Touch controls';
+
+	/// en: 'Controls'
+	String get controls => 'Controls';
+
+	/// en: 'Reset controls'
+	String get resetControls => 'Reset controls';
+
+	/// en: 'Player 1'
+	String get playerOne => 'Player 1';
+
+	/// en: 'Select'
+	String get select => 'Select';
+
+	/// en: 'Start'
+	String get start => 'Start';
+
+	/// en: 'Up'
+	String get up => 'Up';
+
+	/// en: 'Down'
+	String get down => 'Down';
+
+	/// en: 'Left'
+	String get left => 'Left';
+
+	/// en: 'Right'
+	String get right => 'Right';
+
+	/// en: 'Waiting for the server emulator…'
+	String get connectingStream => 'Waiting for the server emulator…';
+
+	/// en: 'Saving did not finish. Keep this session open and try again.'
+	String get saveFailed => 'Saving did not finish. Keep this session open and try again.';
+
+	/// en: 'This server uses unencrypted HTTP. Connect on a network you trust.'
+	String get httpHelp => 'This server uses unencrypted HTTP. Connect on a network you trust.';
+
+	/// en: 'Enter an HTTP or HTTPS server address without a password, query or fragment.'
+	String get invalidAddress => 'Enter an HTTP or HTTPS server address without a password, query or fragment.';
+
+	/// en: 'This connection is invalid. Connect the server again.'
+	String get invalidConnection => 'This connection is invalid. Connect the server again.';
+
+	/// en: 'Enter a valid client token.'
+	String get invalidToken => 'Enter a valid client token.';
+
+	/// en: 'The server returned an unsupported response.'
+	String get invalidResponse => 'The server returned an unsupported response.';
+
+	/// en: 'The server response exceeded the supported size.'
+	String get responseTooLarge => 'The server response exceeded the supported size.';
+
+	/// en: 'Sign in to this library again.'
+	String get signInAgain => 'Sign in to this library again.';
+
+	/// en: 'Your RomM account or client token does not permit this action.'
+	String get permissionDenied => 'Your RomM account or client token does not permit this action.';
+
+	/// en: 'This item is no longer available.'
+	String get notFound => 'This item is no longer available.';
+
+	/// en: 'The RomM server could not complete this request.'
+	String get serverError => 'The RomM server could not complete this request.';
+
+	/// en: 'Could not connect to RomM. Check the server and try again.'
+	String get connectionFailed => 'Could not connect to RomM. Check the server and try again.';
+
+	/// en: 'Cancelled'
+	String get cancelled => 'Cancelled';
+
+	/// en: 'Connect this RomM library first.'
+	String get notConnected => 'Connect this RomM library first.';
+
+	/// en: 'This connection belongs to a different RomM account. Add it as a separate library.'
+	String get accountMismatch => 'This connection belongs to a different RomM account. Add it as a separate library.';
+
+	/// en: 'This profile already has the maximum number of RomM connections.'
+	String get connectionLimit => 'This profile already has the maximum number of RomM connections.';
+
+	/// en: 'The server copy changed. Review both versions before replacing anything.'
+	String get conflict => 'The server copy changed. Review both versions before replacing anything.';
+
+	/// en: 'This file cannot be used here.'
+	String get invalidFile => 'This file cannot be used here.';
+
+	/// en: 'The save could not be uploaded.'
+	String get saveUploadFailed => 'The save could not be uploaded.';
+
+	/// en: 'There is not enough space within the offline storage limit.'
+	String get quotaExceeded => 'There is not enough space within the offline storage limit.';
+
+	/// en: 'The downloaded file did not match the server checksum.'
+	String get checksumFailed => 'The downloaded file did not match the server checksum.';
+
+	/// en: 'This game file changed during the download. Refresh and try again.'
+	String get downloadChanged => 'This game file changed during the download. Refresh and try again.';
+
+	/// en: 'Native play needs extracted game files. Choose an extracted copy or use the browser player.'
+	String get unsupportedArchive => 'Native play needs extracted game files. Choose an extracted copy or use the browser player.';
+
+	/// en: 'The emulator could not start this copy. Check its core and firmware requirements.'
+	String get nativeError => 'The emulator could not start this copy. Check its core and firmware requirements.';
+
+	/// en: 'Waiting for approval…'
+	String get authorization_pending => 'Waiting for approval…';
+
+	/// en: 'Waiting for approval…'
+	String get slow_down => 'Waiting for approval…';
+
+	/// en: 'Device access was declined.'
+	String get access_denied => 'Device access was declined.';
+
+	/// en: 'This pairing code expired. Start pairing again.'
+	String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class Translations$subtitleCapture$en {
+	Translations$subtitleCapture$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Loading the local speech model…'
+	String get loadingModel => 'Loading the local speech model…';
+
+	/// en: 'Loading the local speech model (${percent}%)…'
+	String loadingModelProgress({required Object percent}) => 'Loading the local speech model (${percent}%)…';
+
+	/// en: 'Downloading the speech model…'
+	String get downloadingModel => 'Downloading the speech model…';
+
+	/// en: 'Downloading the speech model (${percent}%)…'
+	String downloadingModelProgress({required Object percent}) => 'Downloading the speech model (${percent}%)…';
+
+	/// en: 'Capturing decoded audio locally. Captions will appear shortly.'
+	String get capturing => 'Capturing decoded audio locally. Captions will appear shortly.';
+
+	/// en: 'Live captions could not start. Check the audio route and try again.'
+	String get startFailed => 'Live captions could not start. Check the audio route and try again.';
+
+	/// en: 'Speech recognition failed. Stop capture and try again.'
+	String get inferenceFailed => 'Speech recognition failed. Stop capture and try again.';
+
+	/// en: 'No speech captions were produced. Check the audio track and try again.'
+	String get noSpeech => 'No speech captions were produced. Check the audio track and try again.';
+
+	/// en: 'Captured speech cues from the watched portion: ${count}.'
+	String captured({required Object count}) => 'Captured speech cues from the watched portion: ${count}.';
+
+	/// en: 'Playback ended. The captured transcript was discarded.'
+	String get playbackEnded => 'Playback ended. The captured transcript was discarded.';
+
+	/// en: 'Playback changed. The captured transcript was discarded.'
+	String get playbackChanged => 'Playback changed. The captured transcript was discarded.';
+
+	/// en: 'The audio track changed. Start capture again on the current track.'
+	String get audioTrackChanged => 'The audio track changed. Start capture again on the current track.';
+
+	/// en: 'Listening locally on CPU. Captured audio packets: ${count}.'
+	String listening({required Object count}) => 'Listening locally on CPU. Captured audio packets: ${count}.';
+
+	/// en: 'Decoded audio is unavailable on this route. Try a supported audio output.'
+	String get captureUnavailable => 'Decoded audio is unavailable on this route. Try a supported audio output.';
+
+	/// en: 'Waiting for decoded audio. Playback may be paused.'
+	String get waitingForAudio => 'Waiting for decoded audio. Playback may be paused.';
+
+	/// en: 'Live capture stopped. Check playback and try again.'
+	String get captureStopped => 'Live capture stopped. Check playback and try again.';
+
+	/// en: 'Preparing live captions…'
+	String get preparing => 'Preparing live captions…';
+
+	/// en: 'Downloading the speech detector…'
+	String get downloadingDetector => 'Downloading the speech detector…';
+
+	/// en: 'Downloading the speech detector (${percent}%)…'
+	String downloadingDetectorProgress({required Object percent}) => 'Downloading the speech detector (${percent}%)…';
+
+	/// en: 'Transcribing audio locally…'
+	String get transcribing => 'Transcribing audio locally…';
+
+	/// en: 'Transcribing audio locally (${percent}%)…'
+	String transcribingProgress({required Object percent}) => 'Transcribing audio locally (${percent}%)…';
+
+	/// en: 'Translating speech to English locally…'
+	String get translating => 'Translating speech to English locally…';
+
+	/// en: 'Translating speech to English locally (${percent}%)…'
+	String translatingProgress({required Object percent}) => 'Translating speech to English locally (${percent}%)…';
+
+	/// en: 'Processing audio locally…'
+	String get processingAudio => 'Processing audio locally…';
+
+	/// en: 'Processing audio locally (${percent}%)…'
+	String processingAudioProgress({required Object percent}) => 'Processing audio locally (${percent}%)…';
+
+	/// en: 'GPU speech processing failed. Retrying on CPU…'
+	String get cpuFallback => 'GPU speech processing failed. Retrying on CPU…';
+}
+
+// Path: karaokeUi
+class Translations$karaokeUi$en {
+	Translations$karaokeUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Choose a microphone'
+	String get chooseAMicrophone => 'Choose a microphone';
+
+	/// en: 'Microphone and private take'
+	String get microphoneAndPrivateTake => 'Microphone and private take';
+
+	/// en: 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.'
+	String get pitchFeedbackAndDryRecordingUseYourSelectedMicrophone => 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.';
+
+	/// en: 'Input offset: ${value1} ms · ${value2}'
+	String inputOffsetMs({required Object value1, required Object value2}) => 'Input offset: ${value1} ms · ${value2}';
+
+	/// en: 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.'
+	String comfortableRangeSavedMIDISuggestedKey({required Object value1, required Object value2, required Object value3}) => 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.';
+
+	/// en: 'Save my comfortable range'
+	String get saveMyComfortableRange => 'Save my comfortable range';
+
+	/// en: 'Lyric timing'
+	String get lyricTiming => 'Lyric timing';
+
+	/// en: 'Reference note'
+	String get referenceNote => 'Reference note';
+
+	/// en: 'Freestyle / not scored'
+	String get freestyleNotScored => 'Freestyle / not scored';
+
+	/// en: 'Golden note'
+	String get goldenNote => 'Golden note';
+
+	/// en: 'Section timing'
+	String get sectionTiming => 'Section timing';
+
+	/// en: 'Instrumental / intro'
+	String get instrumentalIntro => 'Instrumental / intro';
+
+	/// en: 'Edit ${value1}'
+	String edit({required Object value1}) => 'Edit ${value1}';
+
+	/// en: 'Redo'
+	String get redo => 'Redo';
+
+	/// en: 'Original files stay unchanged. Review imported or generated notes against the backing track before enabling scoring.'
+	String get originalFilesStayUnchangedReviewImportedOrGeneratedNotes => 'Original files stay unchanged. Review imported or generated notes against the backing track before enabling scoring.';
+
+	/// en: 'Waveform · tap to seek during this rendition'
+	String get waveformTapToSeekDuringThisRendition => 'Waveform · tap to seek during this rendition';
+
+	/// en: 'Generate a waveform from Prepare to see the audio timeline here.'
+	String get generateAWaveformFromPrepareToSeeTheAudio => 'Generate a waveform from Prepare to see the audio timeline here.';
+
+	/// en: 'Import lyrics / UltraStar'
+	String get importLyricsUltraStar => 'Import lyrics / UltraStar';
+
+	/// en: 'Add note'
+	String get addNote => 'Add note';
+
+	/// en: 'Tap line ${value1}'
+	String tapLine({required Object value1}) => 'Tap line ${value1}';
+
+	/// en: 'Reset tap cursor'
+	String get resetTapCursor => 'Reset tap cursor';
+
+	/// en: 'Export ${value1}'
+	String export({required Object value1}) => 'Export ${value1}';
+
+	/// en: 'Lyric offset: ${value1} ms'
+	String lyricOffsetMs({required Object value1}) => 'Lyric offset: ${value1} ms';
+
+	/// en: 'I auditioned this chart and verified the notes, parts and timing'
+	String get iAuditionedThisChartAndVerifiedTheNotesParts => 'I auditioned this chart and verified the notes, parts and timing';
+
+	/// en: 'Enables reference-based scoring for this local revision.'
+	String get enablesReferenceBasedScoringForThisLocalRevision => 'Enables reference-based scoring for this local revision.';
+
+	/// en: 'Sections and medley cues'
+	String get sectionsAndMedleyCues => 'Sections and medley cues';
+
+	/// en: 'Add section from current playback times'
+	String get addSectionFromCurrentPlaybackTimes => 'Add section from current playback times';
+
+	/// en: 'Delete line'
+	String get deleteLine => 'Delete line';
+
+	/// en: 'Reference notes'
+	String get referenceNotes => 'Reference notes';
+
+	/// en: '${value1} · MIDI ${value2} · ${value3}'
+	String midi({required Object value1, required Object value2, required Object value3}) => '${value1} · MIDI ${value2} · ${value3}';
+
+	/// en: 'Delete note'
+	String get deleteNote => 'Delete note';
+
+	/// en: 'Add a question you authored or may use'
+	String get addAQuestionYouAuthoredOrMayUse => 'Add a question you authored or may use';
+
+	/// en: 'Trivia / lyric completion / name that tune prompt'
+	String get triviaLyricCompletionNameThatTunePrompt => 'Trivia / lyric completion / name that tune prompt';
+
+	/// en: 'Options, one per line'
+	String get optionsOnePerLine => 'Options, one per line';
+
+	/// en: 'Correct option number (starting at 1)'
+	String get correctOptionNumberStartingAt1 => 'Correct option number (starting at 1)';
+
+	/// en: 'Party rounds'
+	String get partyRounds => 'Party rounds';
+
+	/// en: 'Scores stay private. Leaderboards compare reviewed charts with matching settings and calibrated, unassisted input. No-score singing is always available.'
+	String get scoresStayPrivateLeaderboardsCompareReviewedChartsWithMatching => 'Scores stay private. Leaderboards compare reviewed charts with matching settings and calibrated, unassisted input. No-score singing is always available.';
+
+	/// en: 'Start a round-robin tournament with present singers'
+	String get startARoundRobinTournamentWithPresentSingers => 'Start a round-robin tournament with present singers';
+
+	/// en: 'Round ${value1}'
+	String round({required Object value1}) => 'Round ${value1}';
+
+	/// en: 'Match ${value1}: ${value2}'
+	String match({required Object value1, required Object value2}) => 'Match ${value1}: ${value2}';
+
+	/// en: 'Verified eligible scores · ${value1}'
+	String verifiedEligibleScores({required Object value1}) => 'Verified eligible scores · ${value1}';
+
+	/// en: 'Each singer needs a calibrated, unassisted result on the same reviewed rendition and settings before this match can be resolved.'
+	String get eachSingerNeedsACalibratedUnassistedResultOnThe => 'Each singer needs a calibrated, unassisted result on the same reviewed rendition and settings before this match can be resolved.';
+
+	/// en: 'Winner: ${value1}'
+	String winner({required Object value1}) => 'Winner: ${value1}';
+
+	/// en: '${value1} wins'
+	String wins({required Object value1}) => '${value1} wins';
+
+	/// en: 'Choose team'
+	String get chooseTeam => 'Choose team';
+
+	/// en: '${value1} average'
+	String average({required Object value1}) => '${value1} average';
+
+	/// en: 'Begin a fresh score round'
+	String get beginAFreshScoreRound => 'Begin a fresh score round';
+
+	/// en: 'Start sections from the next queued songs'
+	String get startSectionsFromTheNextQueuedSongs => 'Start sections from the next queued songs';
+
+	/// en: 'Quiz interludes'
+	String get quizInterludes => 'Quiz interludes';
+
+	/// en: 'Add question'
+	String get addQuestion => 'Add question';
+
+	/// en: 'Close and reveal answer'
+	String get closeAndRevealAnswer => 'Close and reveal answer';
+
+	/// en: 'Return to singer rotation'
+	String get returnToSingerRotation => 'Return to singer rotation';
+
+	/// en: 'Ask phones'
+	String get askPhones => 'Ask phones';
+
+	/// en: 'Recent private scores'
+	String get recentPrivateScores => 'Recent private scores';
+
+	/// en: '${value1} · ${value2} · key ${value3} · tempo ${value4}'
+	String keyTempo({required Object value1, required Object value2, required Object value3, required Object value4}) => '${value1} · ${value2} · key ${value3} · tempo ${value4}';
+
+	/// en: 'Preparation companion'
+	String get preparationCompanion => 'Preparation companion';
+
+	/// en: 'Run the PlezyNG karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.'
+	String get runThePlezyNGKaraokeCompanionOnYourComputerHTTPS => 'Run the PlezyNG karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.';
+
+	/// en: 'Companion URL'
+	String get companionURL => 'Companion URL';
+
+	/// en: 'Token'
+	String get token => 'Token';
+
+	/// en: 'Choose the source asset'
+	String get chooseTheSourceAsset => 'Choose the source asset';
+
+	/// en: 'Prepare ${value1}'
+	String prepare({required Object value1}) => 'Prepare ${value1}';
+
+	/// en: 'Companion settings'
+	String get companionSettings => 'Companion settings';
+
+	/// en: 'Preparation runs between performances. Originals stay unchanged. Generated backing, alignment and pitch proposals must be auditioned and reviewed.'
+	String get preparationRunsBetweenPerformancesOriginalsStayUnchangedGeneratedBacki => 'Preparation runs between performances. Originals stay unchanged. Generated backing, alignment and pitch proposals must be auditioned and reviewed.';
+
+	/// en: 'Configure companion'
+	String get configureCompanion => 'Configure companion';
+
+	/// en: 'Retry / reconnect'
+	String get retryReconnect => 'Retry / reconnect';
+
+	/// en: 'Remove companion job'
+	String get removeCompanionJob => 'Remove companion job';
+
+	/// en: 'Download / apply for review'
+	String get downloadApplyForReview => 'Download / apply for review';
+
+	/// en: 'Assign singers and parts'
+	String get assignSingersAndParts => 'Assign singers and parts';
+
+	/// en: 'Part ${value1}'
+	String part({required Object value1}) => 'Part ${value1}';
+
+	/// en: 'Queue assigned singers'
+	String get queueAssignedSingers => 'Queue assigned singers';
+
+	/// en: 'Room connection'
+	String get roomConnection => 'Room connection';
+
+	/// en: 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.'
+	String get useHTTPSToEnablePhonePitchAndPrivateVocal => 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.';
+
+	/// en: 'LAN songbook only'
+	String get lanSongbookOnly => 'LAN songbook only';
+
+	/// en: 'Configure HTTPS'
+	String get configureHTTPS => 'Configure HTTPS';
+
+	/// en: 'Select trusted PEM certificate'
+	String get selectTrustedPEMCertificate => 'Select trusted PEM certificate';
+
+	/// en: 'Select private PEM key'
+	String get selectPrivatePEMKey => 'Select private PEM key';
+
+	/// en: 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.'
+	String get thisInvitationExpiresIn30MinutesConnectedGuestsCan => 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.';
+
+	/// en: 'Copy invitation'
+	String get copyInvitation => 'Copy invitation';
+
+	/// en: 'Create read-only stage link'
+	String get createReadOnlyStageLink => 'Create read-only stage link';
+
+	/// en: 'Create one-use host handover link'
+	String get createOneUseHostHandoverLink => 'Create one-use host handover link';
+
+	/// en: 'Revoke guests and replace invitation'
+	String get revokeGuestsAndReplaceInvitation => 'Revoke guests and replace invitation';
+
+	/// en: 'Close room'
+	String get closeRoom => 'Close room';
+
+	/// en: 'Karaoke tools'
+	String get karaokeTools => 'Karaoke tools';
+
+	/// en: 'Private takes'
+	String get privateTakes => 'Private takes';
+
+	/// en: 'Venue, collections and readiness'
+	String get venueCollectionsAndReadiness => 'Venue, collections and readiness';
+
+	/// en: 'Recently added'
+	String get recentlyAdded => 'Recently added';
+
+	/// en: 'Scored charts'
+	String get scoredCharts => 'Scored charts';
+
+	/// en: 'Fits my range'
+	String get fitsMyRange => 'Fits my range';
+
+	/// en: 'All genres'
+	String get allGenres => 'All genres';
+
+	/// en: 'All languages'
+	String get allLanguages => 'All languages';
+
+	/// en: 'All decades'
+	String get allDecades => 'All decades';
+
+	/// en: 'All difficulty levels'
+	String get allDifficultyLevels => 'All difficulty levels';
+
+	/// en: 'Difficulty ${value1} / 5'
+	String difficulty5({required Object value1}) => 'Difficulty ${value1} / 5';
+
+	/// en: 'Request duet / group'
+	String get requestDuetGroup => 'Request duet / group';
+
+	/// en: 'Prepare backing, timing and guidance'
+	String get prepareBackingTimingAndGuidance => 'Prepare backing, timing and guidance';
+
+	/// en: 'Export private duet invitation'
+	String get exportPrivateDuetInvitation => 'Export private duet invitation';
+
+	/// en: 'Allow guest votes on waiting songs'
+	String get allowGuestVotesOnWaitingSongs => 'Allow guest votes on waiting songs';
+
+	/// en: 'Mark sourced'
+	String get markSourced => 'Mark sourced';
+
+	/// en: 'Dismiss suggestion'
+	String get dismissSuggestion => 'Dismiss suggestion';
+
+	/// en: 'Resolved missing-song suggestions'
+	String get resolvedMissingSongSuggestions => 'Resolved missing-song suggestions';
+
+	/// en: 'Reopen suggestion'
+	String get reopenSuggestion => 'Reopen suggestion';
+
+	/// en: 'Restart'
+	String get restart => 'Restart';
+
+	/// en: 'End performance'
+	String get endPerformance => 'End performance';
+
+	/// en: 'Vocal mixer'
+	String get vocalMixer => 'Vocal mixer';
+
+	/// en: 'Mute stem'
+	String get muteStem => 'Mute stem';
+
+	/// en: 'Guide vocals'
+	String get guideVocals => 'Guide vocals';
+
+	/// en: 'Instrumental'
+	String get instrumental => 'Instrumental';
+
+	/// en: '${value1} · ${value2} BPM · ${value3} · estimated'
+	String bpmEstimated({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated';
+
+	/// en: 'Mix and export privately'
+	String get mixAndExportPrivately => 'Mix and export privately';
+
+	/// en: 'The dry vocal stays unchanged. Choose gains, effects and trim for a new render.'
+	String get theDryVocalStaysUnchangedChooseGainsEffectsAnd => 'The dry vocal stays unchanged. Choose gains, effects and trim for a new render.';
+
+	/// en: 'Backing'
+	String get backing => 'Backing';
+
+	/// en: 'Vocal'
+	String get vocal => 'Vocal';
+
+	/// en: 'Echo wet'
+	String get echoWet => 'Echo wet';
+
+	/// en: 'Noise gate'
+	String get noiseGate => 'Noise gate';
+
+	/// en: 'Trim start (ms)'
+	String get trimStartMs => 'Trim start (ms)';
+
+	/// en: 'Output duration (ms)'
+	String get outputDurationMs => 'Output duration (ms)';
+
+	/// en: 'Mix approved response ${value1}'
+	String mixApprovedResponse({required Object value1}) => 'Mix approved response ${value1}';
+
+	/// en: 'Include a camera/video file I choose'
+	String get includeACameraVideoFileIChoose => 'Include a camera/video file I choose';
+
+	/// en: 'Overlay timed lyrics'
+	String get overlayTimedLyrics => 'Overlay timed lyrics';
+
+	/// en: 'Render'
+	String get render => 'Render';
+
+	/// en: 'Stop preview'
+	String get stopPreview => 'Stop preview';
+
+	/// en: 'Accept duet invitation'
+	String get acceptDuetInvitation => 'Accept duet invitation';
+
+	/// en: 'Import duet response'
+	String get importDuetResponse => 'Import duet response';
+
+	/// en: '${value1}: ${value2}. Use the assigned part and keep the backing rendition, key, and tempo fixed.'
+	String useTheAssignedPartAndKeepTheBackingRendition({required Object value1, required Object value2}) => '${value1}: ${value2}. Use the assigned part and keep the backing rendition, key, and tempo fixed.';
+
+	/// en: 'Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.'
+	String get recordingsRemainPrivateExportCreatesAFileYouCan => 'Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.';
+
+	/// en: '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}'
+	String keyTempo_f457ce13({required Object value1, required Object value2, required Object value3, required Object value4, required Object value5}) => '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}';
+
+	/// en: 'Recover recording'
+	String get recoverRecording => 'Recover recording';
+
+	/// en: 'Link this take to the duet invitation'
+	String get linkThisTakeToTheDuetInvitation => 'Link this take to the duet invitation';
+
+	/// en: 'Listen to dry take'
+	String get listenToDryTake => 'Listen to dry take';
+
+	/// en: 'Mix / export audio or video'
+	String get mixExportAudioOrVideo => 'Mix / export audio or video';
+
+	/// en: 'Export portable take'
+	String get exportPortableTake => 'Export portable take';
+
+	/// en: 'Download completed render'
+	String get downloadCompletedRender => 'Download completed render';
+
+	/// en: 'Approve duet merge after listening'
+	String get approveDuetMergeAfterListening => 'Approve duet merge after listening';
+
+	/// en: 'Save setlist'
+	String get saveSetlist => 'Save setlist';
+
+	/// en: 'Resolve collection conflicts'
+	String get resolveCollectionConflicts => 'Resolve collection conflicts';
+
+	/// en: 'New singers and setlists will be added. Choose which preferences to keep when the same singer or setlist already exists. Media packages are imported separately.'
+	String get newSingersAndSetlistsWillBeAddedChooseWhich => 'New singers and setlists will be added. Choose which preferences to keep when the same singer or setlist already exists. Media packages are imported separately.';
+
+	/// en: 'Keep existing preferences'
+	String get keepExistingPreferences => 'Keep existing preferences';
+
+	/// en: 'Use imported preferences'
+	String get useImportedPreferences => 'Use imported preferences';
+
+	/// en: 'Instrumental filler'
+	String get instrumentalFiller => 'Instrumental filler';
+
+	/// en: 'Stage banner'
+	String get stageBanner => 'Stage banner';
+
+	/// en: 'Stage text size'
+	String get stageTextSize => 'Stage text size';
+
+	/// en: 'Display offset: ${value1} ms'
+	String displayOffsetMs({required Object value1}) => 'Display offset: ${value1} ms';
+
+	/// en: 'Per-singer pending request limit'
+	String get perSingerPendingRequestLimit => 'Per-singer pending request limit';
+
+	/// en: 'Open request kiosk'
+	String get openRequestKiosk => 'Open request kiosk';
+
+	/// en: 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.'
+	String get theKioskLimitsThisScreenToSongRequestsUse => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.';
+
+	/// en: 'Saved sets'
+	String get savedSets => 'Saved sets';
+
+	/// en: 'Create a setlist'
+	String get createASetlist => 'Create a setlist';
+
+	/// en: '${value1} songs'
+	String songs({required Object value1}) => '${value1} songs';
+
+	/// en: 'Queue this setlist'
+	String get queueThisSetlist => 'Queue this setlist';
+
+	/// en: 'Audit complete offline assets'
+	String get auditCompleteOfflineAssets => 'Audit complete offline assets';
+
+	/// en: 'Remove setlist'
+	String get removeSetlist => 'Remove setlist';
+
+	/// en: 'Play a rotating local instrumental while the next singer prepares. It stops when the next karaoke request starts.'
+	String get playARotatingLocalInstrumentalWhileTheNextSinger => 'Play a rotating local instrumental while the next singer prepares. It stops when the next karaoke request starts.';
+
+	/// en: '${value1} filler renditions selected'
+	String fillerRenditionsSelected({required Object value1}) => '${value1} filler renditions selected';
+
+	/// en: 'Portability'
+	String get portability => 'Portability';
+
+	/// en: 'Export singers, favorites and sets'
+	String get exportSingersFavoritesAndSets => 'Export singers, favorites and sets';
+
+	/// en: 'Import collection'
+	String get importCollection => 'Import collection';
+
+	/// en: 'Choose an existing synced folder in the system file picker to exchange these files. Imports resolve preferences explicitly; packages retain their rendition IDs and checksums.'
+	String get chooseAnExistingSyncedFolderInTheSystemFile => 'Choose an existing synced folder in the system file picker to exchange these files. Imports resolve preferences explicitly; packages retain their rendition IDs and checksums.';
+
+	/// en: '${value1} MiB'
+	String mib({required Object value1}) => '${value1} MiB';
+
+	/// en: 'Remove package'
+	String get removePackage => 'Remove package';
+
+	/// en: 'This build'
+	String get thisBuild => 'This build';
+
+	/// en: 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.'
+	String get packageImportLyricStageCDGHostingQuizzesEditing => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.';
+
+	/// en: 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.'
+	String get separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.';
+
+	/// en: 'Host exit PIN'
+	String get hostExitPIN => 'Host exit PIN';
+
+	/// en: 'Unlock'
+	String get unlock => 'Unlock';
+
+	/// en: 'Request sent to the host'
+	String get requestSentToTheHost => 'Request sent to the host';
+
+	/// en: 'Request a song'
+	String get requestASong => 'Request a song';
+
+	/// en: 'Host unlock'
+	String get hostUnlock => 'Host unlock';
+
+	/// en: 'Choose your singer name'
+	String get chooseYourSingerName => 'Choose your singer name';
+
+	/// en: 'Search songs'
+	String get searchSongs => 'Search songs';
 }
 
 // Path: appIcon.names
@@ -15628,33 +16725,6 @@ class Translations$services$trackerDescriptions$en {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'subtitleCapture.loadingModel' => "Loading the local speech model…",
-			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => "Loading the local speech model (${percent}%)…",
-			'subtitleCapture.downloadingModel' => "Downloading the speech model…",
-			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => "Downloading the speech model (${percent}%)…",
-			'subtitleCapture.capturing' => "Capturing decoded audio locally. Captions will appear shortly.",
-			'subtitleCapture.startFailed' => "Live captions could not start. Check the audio route and try again.",
-			'subtitleCapture.inferenceFailed' => "Speech recognition failed. Stop capture and try again.",
-			'subtitleCapture.noSpeech' => "No speech captions were produced. Check the audio track and try again.",
-			'subtitleCapture.captured' => ({required Object count}) => "Captured speech cues from the watched portion: ${count}.",
-			'subtitleCapture.playbackEnded' => "Playback ended. The captured transcript was discarded.",
-			'subtitleCapture.playbackChanged' => "Playback changed. The captured transcript was discarded.",
-			'subtitleCapture.audioTrackChanged' => "The audio track changed. Start capture again on the current track.",
-			'subtitleCapture.listening' => ({required Object count}) => "Listening locally on CPU. Captured audio packets: ${count}.",
-			'subtitleCapture.captureUnavailable' => "Decoded audio is unavailable on this route. Try a supported audio output.",
-			'subtitleCapture.waitingForAudio' => "Waiting for decoded audio. Playback may be paused.",
-			'subtitleCapture.captureStopped' => "Live capture stopped. Check playback and try again.",
-			'subtitleCapture.preparing' => "Preparing live captions…",
-			'subtitleCapture.downloadingDetector' => "Downloading the speech detector…",
-			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => "Downloading the speech detector (${percent}%)…",
-			'subtitleCapture.transcribing' => "Transcribing audio locally…",
-			'subtitleCapture.transcribingProgress' => ({required Object percent}) => "Transcribing audio locally (${percent}%)…",
-			'subtitleCapture.translating' => "Translating speech to English locally…",
-			'subtitleCapture.translatingProgress' => ({required Object percent}) => "Translating speech to English locally (${percent}%)…",
-			'subtitleCapture.processingAudio' => "Processing audio locally…",
-			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => "Processing audio locally (${percent}%)…",
-			'subtitleCapture.cpuFallback' => "GPU speech processing failed. Retrying on CPU…",
-
 			'app.title' => 'PlezyNG',
 			'appIcon.title' => 'App icon',
 			'appIcon.defaultIcon' => 'Default',
@@ -15951,9 +17021,9 @@ extension on Translations {
 			'settings.smallSkipDuration' => 'Small Skip Duration',
 			'settings.largeSkipDuration' => 'Large Skip Duration',
 			'settings.rewindOnResume' => 'Rewind on Resume',
-			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} seconds', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} second', ),
+			'settings.secondsUnit' => ({required num seconds}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(seconds, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} seconds', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(seconds)} second', ), 
 			'settings.defaultSleepTimer' => 'Default Sleep Timer',
-			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minute', ),
+			'settings.minutesUnit' => ({required num minutes}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(minutes, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(minutes)} minute', ), 
 			'settings.rememberTrackSelections' => 'Remember track selections per show/movie',
 			'settings.chooseTracksBeforePlayback' => 'Choose audio and subtitles before playback',
 			'settings.chooseTracksBeforePlaybackDescription' => 'Pick the source audio and subtitle tracks before each video starts.',
@@ -16593,9 +17663,9 @@ extension on Translations {
 			'mediaMenu.deleteAnyway' => 'Delete anyway',
 			'mediaMenu.confirmDeleteTarget' => ({required Object title}) => 'Permanently delete ${title} from your server?',
 			'mediaMenu.deleteMultipleWarning' => 'This includes all episodes and their files.',
-			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This deletes the ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode it contains and its file.', other: 'This deletes all ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes in it, and their files.', ),
-			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This item is stored as ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} file, which will be deleted.', other: 'This item is stored across ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} files, and all of them will be deleted.', ),
-			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episode is stored in the same file and will be deleted too:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episodes are stored in the same file and will be deleted too:', ),
+			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This deletes the ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode it contains and its file.', other: 'This deletes all ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes in it, and their files.', ), 
+			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'This item is stored as ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} file, which will be deleted.', other: 'This item is stored across ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} files, and all of them will be deleted.', ), 
+			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episode is stored in the same file and will be deleted too:', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} other episodes are stored in the same file and will be deleted too:', ), 
 			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'PlezyNG could not check which files this will remove, so it may delete more than the item named above. Cancel and try again, or delete anyway.',
 			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Your server did not provide file details for this item, so PlezyNG cannot check which files this will remove. It may delete more than the item named above.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Media item deleted successfully',
@@ -16785,7 +17855,7 @@ extension on Translations {
 			'videoControls.osdSubtitlesOff' => 'Subtitles: Off',
 			'videoControls.osdSubtitles' => ({required Object track}) => 'Subtitles: ${track}',
 			'videoControls.osdAudio' => ({required Object track}) => 'Audio: ${track}',
-			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frame', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frames', ),
+			'videoControls.frameCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frame', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} frames', ), 
 			'videoControls.trackSelectionTitle' => 'Choose tracks before playback',
 			'videoControls.trackSelectionAuto' => 'Automatic selection',
 			'videoControls.openMiniPlayer' => 'Open mini player',
@@ -16801,7 +17871,7 @@ extension on Translations {
 			'messages.markedAsWatchedOffline' => 'Marked as watched (will sync when online)',
 			'messages.markedAsUnwatchedOffline' => 'Marked as unwatched (will sync when online)',
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Auto-removed: ${title}',
-			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched download', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched downloads', ),
+			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched download', other: 'Auto-removed ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} watched downloads', ), 
 			'messages.removedFromContinueWatching' => 'Removed from Continue Watching',
 			'messages.errorLoading' => ({required Object error}) => 'Error: ${error}',
 			'messages.searchPartialResults' => 'Some media servers could not be searched. Showing available results.',
@@ -17380,7 +18450,7 @@ extension on Translations {
 			'discover.tvShow' => 'TV Show',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} min left',
 			'discover.moreLikeThis' => 'More Like This',
-			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} title', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titles', ),
+			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} title', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} titles', ), 
 			'discover.person.born' => 'Born',
 			'discover.person.died' => 'Died',
 			'discover.person.birthplace' => 'Birthplace',
@@ -17625,7 +18695,7 @@ extension on Translations {
 			'explore.status.ended' => 'Ended',
 			'explore.status.canceled' => 'Canceled',
 			'explore.status.upcoming' => 'Upcoming',
-			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes', ),
+			'explore.episodeCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episode', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} episodes', ), 
 			'explore.cast' => 'Cast',
 			'explore.characters' => 'Characters',
 			'explore.addToWatchlist' => 'Add to Watchlist',
@@ -17637,7 +18707,7 @@ extension on Translations {
 			'explore.notInLibrary' => 'Not in your library',
 			'explore.inTheseLibraries' => 'In these libraries',
 			'explore.checkingLibrary' => 'Checking your library...',
-			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} server', other: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servers', ),
+			'explore.libraryCheckFailed' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} server', other: 'Couldn\'t check ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} servers', ), 
 			'explore.emptyTitle' => 'Nothing here yet',
 			'explore.emptyMessage' => ({required Object source}) => 'Rows from ${source} will appear here once they have content.',
 			'explore.searchHint' => ({required Object source}) => 'Search ${source}',
@@ -17674,7 +18744,7 @@ extension on Translations {
 			'explore.stats.planning' => ({required Object n}) => '${n} planning to watch',
 			'explore.stats.favorited' => ({required Object n}) => '${n} favorites',
 			'explore.stats.dropRate' => ({required Object percent}) => '${percent} dropped it',
-			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comment', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comments', ),
+			'explore.stats.comments' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comment', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} comments', ), 
 			'explore.stats.votes' => ({required Object n}) => '${n} votes',
 			'explore.stats.watching' => ({required Object n}) => '${n} watching it',
 			'explore.stats.completed' => ({required Object n}) => '${n} completed',
@@ -17743,14 +18813,14 @@ extension on Translations {
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Ratings',
 			'explore.detail.schedule' => 'Schedule',
-			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} user', other: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} users', ),
+			'explore.detail.recommendedByUsers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} user', other: 'Recommended by ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} users', ), 
 			'explore.detail.recommendedBy' => ({required Object who}) => 'Recommended by ${who}',
 			'explore.detail.favoritedBy' => ({required Object who}) => 'Favorited by ${who}',
 			'explore.detail.unairedEpisodes' => ({required Object n}) => '${n} not aired yet',
 			'explore.detail.recommendedByPercent' => ({required Object percent}) => 'Recommended by ${percent} of viewers',
 			'explore.detail.relatedTitles' => 'Related titles',
 			'explore.detail.background' => 'Background',
-			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} result', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} results', ),
+			'explore.totalResults' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} result', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} results', ), 
 			'liveTv.title' => 'Live TV',
 			'liveTv.guide' => 'Guide',
 			'liveTv.noChannels' => 'No channels available',
@@ -17879,7 +18949,7 @@ extension on Translations {
 			'playlists.delete' => 'Delete Playlist',
 			'playlists.removeItem' => 'Remove from Playlist',
 			'playlists.smartPlaylist' => 'Smart Playlist',
-			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} items', ),
+			'playlists.itemCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} item', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} items', ), 
 			'playlists.emptyPlaylist' => 'This playlist is empty',
 			'playlists.deleteConfirm' => 'Delete Playlist?',
 			'playlists.deleteMessage' => ({required Object name}) => 'Are you sure you want to delete "${name}"?',
@@ -17901,7 +18971,7 @@ extension on Translations {
 			'music.playNext' => 'Play next',
 			'music.addToQueue' => 'Add to queue',
 			'music.discNumber' => ({required Object n}) => 'Disc ${n}',
-			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} track', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tracks', ),
+			'music.trackCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} track', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} tracks', ), 
 			'music.nowPlaying' => 'Now Playing',
 			'music.playingFrom' => ({required Object title}) => 'Playing from ${title}',
 			'music.queue' => 'Queue',
@@ -17923,7 +18993,7 @@ extension on Translations {
 			'music.noLyrics' => 'No lyrics available',
 			'music.sleepTimer' => 'Sleep timer',
 			'music.sleepTimerEndOfTrack' => 'End of track',
-			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minute', ),
+			'music.sleepTimerMinutes' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} minute', ), 
 			'music.stopPlayback' => 'Stop playback',
 			'music.previousTrack' => 'Previous track',
 			'music.nextTrack' => 'Next track',
@@ -18005,7 +19075,7 @@ extension on Translations {
 			'watchTogether.offsetPlusTenth' => '+100 ms',
 			'watchTogether.offsetPlusSecond' => '+1 s',
 			'watchTogether.participants' => 'Participants',
-			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participant', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participants', ),
+			'watchTogether.participantCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participant', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} participants', ), 
 			'watchTogether.hostBadge' => 'HOST',
 			'watchTogether.nameYou' => ({required Object name}) => '${name} (You)',
 			'watchTogether.playerIdle' => 'Idle',
@@ -18214,10 +19284,10 @@ extension on Translations {
 			'downloads.unknownAlbum' => 'Unknown Album',
 			'downloads.completedOfTotal' => ({required Object completed, required Object total}) => '${completed}/${total} completed',
 			'downloads.storageUsed' => ({required Object size}) => 'Storage used: ${size}',
-			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} download', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} downloads', ),
-			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ),
-			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ),
-			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ),
+			'downloads.downloadCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} download', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} downloads', ), 
+			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ), 
+			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
+			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
 			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
@@ -18875,7 +19945,7 @@ extension on Translations {
 			'streaming.providers' => 'Debrid providers',
 			'streaming.nativePeerTitle' => 'Play torrents on this device',
 			'streaming.nativePeerPlay' => 'Play on this device',
-			'streaming.nativePeerHelp' => 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Uses up to 4 GB per video and uploads up to 256 KB/s while playing; stops when playback ends.',
+			'streaming.nativePeerHelp' => 'Use peers when a cloud provider is unavailable. Peers can see your IP address. Temporary files share the configured storage limit; free space is checked before playback. Uploads up to 256 KB/s while playing; stops when playback ends.',
 			'streaming.availableCopies' => 'Available sources',
 			'streaming.availableCopiesCount' => ({required Object count}) => '${count} sources',
 			'streaming.canonicalIndexing' => 'Finding your server and cloud copies…',
@@ -19114,7 +20184,7 @@ extension on Translations {
 			'universalMedia.saveFavorite' => 'Save favorite',
 			'universalMedia.playNow' => 'Play now',
 			'universalMedia.favoriteSaved' => 'Stream favorite saved to this profile',
-			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ),
+			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
 			'universalMedia.playlistAddress' => 'Playlist address',
 			'universalMedia.playlistAddressHelp' => 'Open an M3U, M3U8, or PLS playlist from a web address. Direct stream links do not save the playlist.',
 			'universalMedia.choosePlaylist' => 'Choose playlist file',
@@ -19128,7 +20198,7 @@ extension on Translations {
 			'universalMedia.removeFavorite' => 'Remove stream favorite',
 			'universalMedia.filesHelp' => 'Choose audio, video, or ISO files for a temporary queue. Files and URLs are not added to library history.',
 			'universalMedia.chooseFiles' => 'Choose files',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 selected file', other: '${count} selected files', ),
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 selected file', other: '${count} selected files', ), 
 			'universalMedia.wifiTransfer' => 'Send files over Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transfer supported files from a browser on the same trusted network.',
 			'universalMedia.wifiTransferIntro' => 'Open this address in a browser on another device. Choose files to add them to this device’s Files and books library.',
@@ -19139,7 +20209,7 @@ extension on Translations {
 			'universalMedia.copyAddress' => 'Copy transfer address',
 			'universalMedia.addressCopied' => 'Transfer address copied',
 			'universalMedia.transferExpires' => ({required Object time}) => 'This address expires in ${time}.',
-			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${count} file received', other: '${count} files received', ),
+			'universalMedia.uploadCount' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${count} file received', other: '${count} files received', ), 
 			'universalMedia.uploadedData' => ({required Object size}) => 'Received ${size}',
 			'universalMedia.stopTransfer' => 'Stop transfer and invalidate address',
 			'universalMedia.startTransfer' => 'Start transfer',
@@ -19367,7 +20437,7 @@ extension on Translations {
 			'fileSources.sleep' => 'Sleep timer',
 			'fileSources.sleepOff' => 'Off',
 			'fileSources.endChapter' => 'End of chapter',
-			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minute', ),
+			'fileSources.minutes' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minutes', one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(count)} minute', ), 
 			'fileSources.skipBack' => 'Skip back',
 			'fileSources.skipForward' => 'Skip forward',
 			'fileSources.smartRewind' => 'Smart rewind after a pause',
@@ -19709,11 +20779,8 @@ extension on Translations {
 			'games.enable' => 'Show Games for this profile',
 			'games.enableDescription' => 'Browse your games and connect gaming computers. In-app playback depends on this device’s streaming support.',
 			'games.computers' => 'Your computers',
-			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
-			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
 			'games.port' => 'Service port',
@@ -19758,11 +20825,8 @@ extension on Translations {
 			'games.help' => 'Games help',
 			'games.helpBody' => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.',
 			'games.cancel' => 'Cancel',
-			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
-			_ => null,
-		} ?? switch (path) {
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
@@ -19771,17 +20835,15 @@ extension on Translations {
 			'games.steamLibrary' => 'Steam library',
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
+			_ => null,
+		} ?? switch (path) {
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
-			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
-			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
-			_ => null,
-		} ?? switch (path) {
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
 			'games.gameDetails' => 'Game details',
 			'games.chooseComputer' => 'Choose computer',
@@ -20001,8 +21063,6 @@ extension on Translations {
 			'games.lanInstallCandidates' => 'These computers last reported the game installed. This does not confirm they are online, nearby or eligible to transfer:',
 			'games.lanInstallNoCandidates' => 'No other computer has reported this game installed yet. Refresh inventories after enabling sharing on your computers.',
 			'games.lanInstallTarget' => ({required Object computer}) => 'Install on ${computer}',
-			'games.lanInstallSubmitted' => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.',
-			'games.cloudSettingsHelp' => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to PlezyNG. Cloud file actions below are separate and require authorized service scopes.',
 			'games.qualityUltraHd' => 'Ultra HD · capable hardware required',
 			'games.qualityHighRefresh' => 'High refresh rate · capable display required',
 			'games.textInput' => 'Enter text in game',
@@ -20041,21 +21101,17 @@ extension on Translations {
 			'games.computerSetupTitle' => 'Play from a computer',
 			'games.computerSetupHelp' => 'Connect Steam Remote Play or Sunshine on your network. You can play without linking a Steam account.',
 			'games.accountLinked' => 'Steam account linked',
-			'games.computerSetupHint' => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.',
 			'games.manageConnections' => 'Manage connections',
-			'games.accountStatus' => 'Library status',
 			'games.clearGameFilters' => 'Clear search and filters',
 			'games.emptyLibraryTitle' => 'Your games will appear here',
 			'games.emptyLibraryHelp' => 'Connect a computer to load its games, or link Steam to browse your account’s library.',
 			'games.emptyConnectedHelp' => 'Select a computer in Game connections to pair and refresh its games. Steam account libraries may also need public game details.',
 			'games.filterEmptyHelp' => 'Try another computer, include games that are not installed, or clear your search.',
 			'games.installedOn' => ({required Object computer}) => 'Installed on ${computer}',
-			'games.installedComputers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computer', other: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computers', ),
-			'games.savedComputers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computer', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computers', ),
+			'games.installedComputers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computer', other: 'Installed on ${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} computers', ), 
+			'games.savedComputers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computer', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computers', ), 
 			'games.connectToPlayShort' => 'Connect a computer to play',
 			'games.preferredComputer' => 'Preferred computer',
-			'games.preferComputer' => 'Prefer this computer',
-			'games.automaticComputer' => 'Choose automatically',
 			'games.inventorySnapshotHelp' => 'Installation comes from the last library check. Your computer confirms availability when you connect.',
 			'games.streamingGroup' => 'Picture and sound',
 			'games.advancedStreaming' => 'Advanced streaming',
@@ -20064,7 +21120,6 @@ extension on Translations {
 			'games.gameOptions' => ({required Object game}) => 'Options for ${game}',
 			'games.streamConnectHelp' => 'Keep this computer awake. Pairing and network access are checked as the stream starts.',
 			'games.streamRecoveryHelp' => 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.',
-			'games.steamAttribution' => 'Steam is a trademark of Valve Corporation. PlezyNG is an independent application.',
 			'games.steamActivityPrivacy' => 'News and achievements load when requested. Friends activity is optional.',
 			'games.disconnecting' => 'Disconnecting…',
 			'games.useAsController' => 'Use as controller',
@@ -20075,14 +21130,12 @@ extension on Translations {
 			'games.steamSessionSignIn' => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting PlezyNG.',
 			'games.allowCloudSettings' => 'Allow Steam Cloud settings changes',
 			'games.allowCloudSettingsHelp' => 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.',
-			'games.cloudAccountSetting' => 'Steam Cloud on computer',
-			'games.cloudBridgeUnavailable' => 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.',
-			'games.enableAccountCloud' => 'Enable Steam Cloud',
-			'games.disableAccountCloud' => 'Disable Steam Cloud',
-			'games.cloudAccountConfirm' => ({required Object computer}) => 'Change Steam Cloud for all games in the signed-in Steam account on ${computer}? Close games and let syncing finish first. Other computers may apply this setting later. This does not delete Cloud saves.',
-			'games.cloudAccountObserved' => 'Steam confirmed the Cloud setting on this computer.',
-			'games.cloudAccountStale' => 'The setting changed since you reviewed it. Open it again to review the current state.',
-			'games.cloudAccountUnknown' => 'The change could not be confirmed. It may have applied. Check Steam before trying again.',
+			'games.steam_f71a8503' => 'Steam',
+			'games.gib' => ({required Object value1, required Object value2}) => '${value1} / ${value2} GiB',
+			'games.gib_da17b9f0' => ({required Object value1}) => '${value1} GiB',
+			'games.mib' => ({required Object value1, required Object value2}) => '${value1} · ${value2} MiB',
+			'games.steamAppID' => ({required Object value1}) => 'Steam AppID: ${value1}',
+			'games.vulkan' => ({required Object value1}) => '${value1} · Vulkan',
 			'deepLinks.invalid' => 'This Plezy link isn\'t valid.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'No profile matches "${profile}".',
 			'deepLinks.serverUnavailable' => 'Couldn\'t reach the server for this link.',
@@ -20156,7 +21209,6 @@ extension on Translations {
 			'subtitleAiUi.uploadedToServerLibraryNote' => ' Uploaded to the server library.',
 			'subtitleAiUi.glossaryMismatchOne' => ({required Object count}) => 'Glossary check found ${count} possible mismatch. Review these cues before attaching.',
 			'subtitleAiUi.glossaryMismatchMany' => ({required Object count}) => 'Glossary check found ${count} possible mismatches. Review these cues before attaching.',
-			'subtitleAiUi.downloadingTheEnglishSpeechModelAndS_d75c5cb7' => 'Downloading the English speech model and speech detector…',
 			'subtitleAiUi.generatedCueCountAndDuration' => ({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}',
 			'subtitleAiUi.transcribingAudioAndAligningSubtitleText' => 'Transcribing audio and aligning subtitle text…',
 			'subtitleAiUi.synchronizationOperationApplied' => ({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object discontinuityCount, required Object rate, required Object baseOffset, required Object source, required Object uploadedNote}) => '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected; rate ${rate}×, base offset ${baseOffset} ms. Original: ${source}.${uploadedNote}',
@@ -20297,6 +21349,8 @@ extension on Translations {
 			'subtitleAiUi.sDHClosedCaptions' => 'SDH / closed captions',
 			'subtitleAiUi.enterAValidISO6391LanguageCode' => 'Enter a valid ISO 639-1 language code.',
 			'subtitleAiUi.upload' => 'Upload',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.continueButton' => 'Continue',
 			'subtitleAiUi.speechTranslatedToEnglish' => 'Speech translated to English',
 			'subtitleAiUi.detectedSpeechLanguage' => ({required Object language}) => 'Detected language: ${language}',
@@ -20385,206 +21439,379 @@ extension on Translations {
 			'visualizerUi.reorderInPlaylist' => 'Reorder in playlist',
 			'visualizerUi.presetDetailsAndNotices' => 'Preset details and notices',
 			'visualizerUi.milkRustShaderSupportNotice' => 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.',
-			"romm.chooseFile" => "Choose a game file",
-			"romm.chooseCopy" => "Choose an exact game copy",
-			"romm.favorite" => "Favorite",
-			"romm.startFresh" => "Start from the beginning",
-			"romm.automatic" => "Automatic",
-			"romm.noJoinable" => "No games are accepting players.",
-			"romm.downloadAgain" => "Download again",
-			"romm.offlineUnverified" => "Saved offline. This server did not provide a checksum; only the local file fingerprint is available.",
-			"romm.achievementCount" => "Achievements",
-			"romm.saveInProgress" => "A save is still being captured. Keep the game open and try again.",
-			"romm.browserSaveHelp" => "Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.",
-			"romm.savedClose" => "I saved; close the player",
-			"romm.cardImportRequired" => "The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.",
-			"romm.cardUnreadable" => "The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.",
-			"romm.adoptCard" => "Keep existing card",
-			"romm.discardContainerCard" => "Erase existing card",
-			"romm.coreVersionDifferent" => "This state belongs to another core version. Use a compatible in-game save or start from the beginning.",
-			"romm.nativeCloudResume" => "Resume saved progress",
-			"romm.streamSaving" => "The server is saving. Wait for it to finish before exiting.",
-			"romm.noLocalSave" => "There is no compatible local progress to restore.",
-			"romm.completedAll" => "Completed 100%",
-			"romm.status" => "Progress",
-			"romm.backlogged" => "In backlog",
-			"romm.nowPlaying" => "Now playing",
-			"romm.completed" => "Completed",
-			"romm.playing" => "Playing",
-			"romm.unplayed" => "Unplayed",
-			"romm.syncComplete" => "Saves synchronized",
-			"romm.netplayHelp" => "Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.",
-			"romm.title" => "RomM",
-			"romm.connect" => "Connect RomM",
-			"romm.connections" => "RomM libraries",
-			"romm.connectionHelp" => "Browse your RomM collection and play supported games here.",
-			"romm.serverAddress" => "Server address",
-			"romm.serverName" => "Library name",
-			"romm.token" => "Client API token",
-			"romm.pair" => "Pair this device",
-			"romm.pairHelp" => "Open the approval page on a signed-in device, review the requested access, and approve this code.",
-			"romm.openApproval" => "Open approval page",
-			"romm.manualToken" => "Use a client token",
-			"romm.manualTokenHelp" => "Create a personal client token in RomM with library, save and device permissions.",
-			"romm.pairing" => "Waiting for approval…",
-			"romm.cancel" => "Cancel",
-			"romm.save" => "Save",
-			"romm.close" => "Close",
-			"romm.remove" => "Disconnect",
-			"romm.removeHelp" => "Remove this connection from this profile? Your server library and saves will remain available in RomM.",
-			"romm.refresh" => "Refresh",
-			"romm.reconnect" => "Reconnect",
-			"romm.sessionOnly" => "Signed in for this session. Sign in again after restarting this device.",
-			"romm.allLibraries" => "All libraries",
-			"romm.allPlatforms" => "All platforms",
-			"romm.allCollections" => "All collections",
-			"romm.more" => "Load more games",
-			"romm.noGames" => "No games found",
-			"romm.cached" => "Showing saved library information.",
-			"romm.variants" => "Other copies",
-			"romm.files" => "Game files",
-			"romm.saves" => "Saves and states",
-			"romm.noSaves" => "No saves yet",
-			"romm.play" => "Play",
-			"romm.resume" => "Resume",
-			"romm.playWith" => "Play with",
-			"romm.download" => "Keep offline",
-			"romm.offline" => "Available offline",
-			"romm.downloadProgress" => "Downloading…",
-			"romm.cancelDownload" => "Cancel download",
-			"romm.removeOffline" => "Remove offline copy",
-			"romm.storage" => "Offline storage",
-			"romm.storageLimit" => "Storage limit (GiB)",
-			"romm.browser" => "In-app browser player",
-			"romm.stream" => "Stream from server",
-			"romm.native" => "On this device",
-			"romm.emulatorJs" => "EmulatorJS",
-			"romm.ruffle" => "Ruffle",
-			"romm.jsDos" => "js-dos",
-			"romm.pico8" => "PICO-8",
-			"romm.easyRpg" => "EasyRPG",
-			"romm.browserUnavailable" => "An embedded browser player is not available in this build.",
-			"romm.nativeUnavailable" => "The native emulator core is not installed in this build.",
-			"romm.refreshBeforePlay" => "Refresh this library to check available players.",
-			"romm.missing" => "This copy has no game files on the server.",
-			"romm.noRoute" => "No compatible in-app player is available for this copy.",
-			"romm.firmware" => "Firmware",
-			"romm.firmwareHelp" => "Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.",
-			"romm.achievements" => "RetroAchievements",
-			"romm.achievementsHelp" => "Achievement information comes from RomM. The browser player does not earn new achievements.",
-			"romm.screenshots" => "Screenshots",
-			"romm.manual" => "Manual",
-			"romm.importSave" => "Import save",
-			"romm.exportSave" => "Export",
-			"romm.importState" => "Import state",
-			"romm.saveImported" => "Save imported",
-			"romm.saveExported" => "Save exported",
-			"romm.engine" => "Emulator identity",
-			"romm.slot" => "Save slot",
-			"romm.core" => "Core identity",
-			"romm.compatibilityHelp" => "Save states require the same emulator and compatible core version. Choose the exact game copy before importing.",
-			"romm.saveConflict" => "Both copies changed. Keep both versions, use the server copy, or explicitly replace it.",
-			"romm.keepBoth" => "Keep both",
-			"romm.useServer" => "Use server copy",
-			"romm.replaceServer" => "Replace server copy",
-			"romm.pendingSaves" => "Saves waiting to sync",
-			"romm.sync" => "Sync saves",
-			"romm.savedLocally" => "Progress kept on this device; upload is pending.",
-			"romm.pause" => "Pause",
-			"romm.continue" => "Continue",
-			"romm.saveState" => "Save state",
-			"romm.loadState" => "Load state",
-			"romm.saveAndExit" => "Save and exit",
-			"romm.exitWithoutSaving" => "Exit without saving",
-			"romm.exitConfirm" => "Finish this game session?",
-			"romm.saveExitHelp" => "Save your progress before leaving. Keep this screen open until saving finishes.",
-			"romm.starting" => "Starting game…",
-			"romm.connecting" => "Connecting…",
-			"romm.busy" => "The streaming computer is occupied.",
-			"romm.streamEnded" => "The streaming session ended.",
-			"romm.retry" => "Try again",
-			"romm.disc" => "Change disc",
-			"romm.memoryCard" => "Memory card",
-			"romm.multiplayer" => "Allow players to join",
-			"romm.join" => "Join game",
-			"romm.copyLink" => "Copy game link",
-			"romm.linkCopied" => "Game link copied",
-			"romm.openLink" => "Open game link",
-			"romm.linkHelp" => "Paste a PlezyNG game link. Connect the matching RomM server before opening it.",
-			"romm.copyMismatch" => "This link identifies a different copy. Choose the intended game from your library.",
-			"romm.requestStatus" => "Library indexing",
-			"romm.notIndexed" => "The requested game is not indexed in this library yet.",
-			"romm.touchControls" => "Touch controls",
-			"romm.controls" => "Controls",
-			"romm.resetControls" => "Reset controls",
-			"romm.playerOne" => "Player 1",
-			"romm.select" => "Select",
-			"romm.start" => "Start",
-			"romm.up" => "Up",
-			"romm.down" => "Down",
-			"romm.left" => "Left",
-			"romm.right" => "Right",
-			"romm.connectingStream" => "Waiting for the server emulator…",
-			"romm.saveFailed" => "Saving did not finish. Keep this session open and try again.",
-			"romm.httpHelp" => "This server uses unencrypted HTTP. Connect on a network you trust.",
-			"romm.invalidAddress" => "Enter an HTTP or HTTPS server address without a password, query or fragment.",
-			"romm.invalidConnection" => "This connection is invalid. Connect the server again.",
-			"romm.invalidToken" => "Enter a valid client token.",
-			"romm.invalidResponse" => "The server returned an unsupported response.",
-			"romm.responseTooLarge" => "The server response exceeded the supported size.",
-			"romm.signInAgain" => "Sign in to this library again.",
-			"romm.permissionDenied" => "Your RomM account or client token does not permit this action.",
-			"romm.notFound" => "This item is no longer available.",
-			"romm.serverError" => "The RomM server could not complete this request.",
-			"romm.connectionFailed" => "Could not connect to RomM. Check the server and try again.",
-			"romm.cancelled" => "Cancelled",
-			"romm.notConnected" => "Connect this RomM library first.",
-			"romm.accountMismatch" => "This connection belongs to a different RomM account. Add it as a separate library.",
-			"romm.connectionLimit" => "This profile already has the maximum number of RomM connections.",
-			"romm.conflict" => "The server copy changed. Review both versions before replacing anything.",
-			"romm.invalidFile" => "This file cannot be used here.",
-			"romm.saveUploadFailed" => "The save could not be uploaded.",
-			"romm.quotaExceeded" => "There is not enough space within the offline storage limit.",
-			"romm.checksumFailed" => "The downloaded file did not match the server checksum.",
-			"romm.downloadChanged" => "This game file changed during the download. Refresh and try again.",
-			"romm.unsupportedArchive" => "Native play needs extracted game files. Choose an extracted copy or use the browser player.",
-			"romm.nativeError" => "The emulator could not start this copy. Check its core and firmware requirements.",
-			"romm.authorization_pending" => "Waiting for approval…",
-			"romm.slow_down" => "Waiting for approval…",
-			"romm.access_denied" => "Device access was declined.",
-			"romm.expired_token" => "This pairing code expired. Start pairing again.",
+			'visualizerUi.mbDownloadMBInstalled' => ({required Object value1, required Object value2}) => '${value1} MB download · ${value2} MB installed',
+			'visualizerUi.saved' => ({required Object value1, required Object value2}) => '${value1}% saved · ${value2}',
+			'visualizerUi.discardSavedDownload' => 'Discard saved download',
+			'visualizerUi.presetPreview' => 'Preset preview',
+			'visualizerUi.copyExportAndComposePreset' => 'Copy, export and compose preset',
+			'visualizerUi.exportPresetAssetsAndNotices' => 'Export preset, assets and notices',
+			'visualizerUi.addShapeOrWaveToANewCopy' => 'Add shape or wave to a new copy',
+			'visualizerUi.exportShapeFragments' => 'Export shape fragments',
+			'visualizerUi.exportWaveFragments' => 'Export wave fragments',
+			'romm.chooseFile' => 'Choose a game file',
+			'romm.chooseCopy' => 'Choose an exact game copy',
+			'romm.favorite' => 'Favorite',
+			'romm.startFresh' => 'Start from the beginning',
+			'romm.automatic' => 'Automatic',
+			'romm.noJoinable' => 'No games are accepting players.',
+			'romm.downloadAgain' => 'Download again',
+			'romm.offlineUnverified' => 'Saved offline. This server did not provide a checksum; only the local file fingerprint is available.',
+			'romm.achievementCount' => 'Achievements',
+			'romm.saveInProgress' => 'A save is still being captured. Keep the game open and try again.',
+			'romm.browserSaveHelp' => 'Use the player’s save and exit controls first. Then close this screen. Pending browser saves remain in this profile’s player storage.',
+			'romm.savedClose' => 'I saved; close the player',
+			'romm.cardImportRequired' => 'The streaming computer has an existing memory card. Keep it in your RomM account before playing, or explicitly erase that card.',
+			'romm.cardUnreadable' => 'The existing memory card could not be read. Cancel to recover it in RomM, or explicitly erase it to continue.',
+			'romm.adoptCard' => 'Keep existing card',
+			'romm.discardContainerCard' => 'Erase existing card',
+			'romm.coreVersionDifferent' => 'This state belongs to another core version. Use a compatible in-game save or start from the beginning.',
+			'romm.nativeCloudResume' => 'Resume saved progress',
+			'romm.streamSaving' => 'The server is saving. Wait for it to finish before exiting.',
+			'romm.noLocalSave' => 'There is no compatible local progress to restore.',
+			'romm.completedAll' => 'Completed 100%',
+			'romm.status' => 'Progress',
+			'romm.backlogged' => 'In backlog',
+			'romm.nowPlaying' => 'Now playing',
+			'romm.completed' => 'Completed',
+			'romm.playing' => 'Playing',
+			'romm.unplayed' => 'Unplayed',
+			'romm.syncComplete' => 'Saves synchronized',
+			'romm.netplayHelp' => 'Shared server sessions support joining. Browser netplay requires RomM’s own session authentication and is not enabled by device-token pairing.',
+			'romm.title' => 'RomM',
+			'romm.connect' => 'Connect RomM',
+			'romm.connections' => 'RomM libraries',
+			'romm.connectionHelp' => 'Browse your RomM collection and play supported games here.',
+			'romm.serverAddress' => 'Server address',
+			'romm.serverName' => 'Library name',
+			'romm.token' => 'Client API token',
+			'romm.pair' => 'Pair this device',
+			'romm.pairHelp' => 'Open the approval page on a signed-in device, review the requested access, and approve this code.',
+			'romm.openApproval' => 'Open approval page',
+			'romm.manualToken' => 'Use a client token',
+			'romm.manualTokenHelp' => 'Create a personal client token in RomM with library, save and device permissions.',
+			'romm.pairing' => 'Waiting for approval…',
+			'romm.cancel' => 'Cancel',
+			'romm.save' => 'Save',
+			'romm.close' => 'Close',
+			'romm.remove' => 'Disconnect',
+			'romm.removeHelp' => 'Remove this connection from this profile? Your server library and saves will remain available in RomM.',
+			'romm.refresh' => 'Refresh',
+			'romm.reconnect' => 'Reconnect',
+			'romm.sessionOnly' => 'Signed in for this session. Sign in again after restarting this device.',
+			'romm.allLibraries' => 'All libraries',
+			'romm.allPlatforms' => 'All platforms',
+			'romm.allCollections' => 'All collections',
+			'romm.more' => 'Load more games',
+			'romm.noGames' => 'No games found',
+			'romm.cached' => 'Showing saved library information.',
+			'romm.variants' => 'Other copies',
+			'romm.files' => 'Game files',
+			'romm.saves' => 'Saves and states',
+			'romm.noSaves' => 'No saves yet',
+			'romm.play' => 'Play',
+			'romm.resume' => 'Resume',
+			'romm.playWith' => 'Play with',
+			'romm.download' => 'Keep offline',
+			'romm.offline' => 'Available offline',
+			'romm.downloadProgress' => 'Downloading…',
+			'romm.cancelDownload' => 'Cancel download',
+			'romm.removeOffline' => 'Remove offline copy',
+			'romm.storage' => 'Offline storage',
+			'romm.storageLimit' => 'Storage limit (GiB)',
+			'romm.browser' => 'In-app browser player',
+			'romm.stream' => 'Stream from server',
+			'romm.native' => 'On this device',
+			'romm.emulatorJs' => 'EmulatorJS',
+			'romm.ruffle' => 'Ruffle',
+			'romm.jsDos' => 'js-dos',
+			'romm.pico8' => 'PICO-8',
+			'romm.easyRpg' => 'EasyRPG',
+			'romm.browserUnavailable' => 'An embedded browser player is not available in this build.',
+			'romm.nativeUnavailable' => 'The native emulator core is not installed in this build.',
+			'romm.refreshBeforePlay' => 'Refresh this library to check available players.',
+			'romm.missing' => 'This copy has no game files on the server.',
+			'romm.noRoute' => 'No compatible in-app player is available for this copy.',
+			'romm.firmware' => 'Firmware',
+			'romm.firmwareHelp' => 'Some systems need firmware. Manage it in RomM; the selected emulator reports any missing requirements at launch.',
+			'romm.achievements' => 'RetroAchievements',
+			'romm.achievementsHelp' => 'Achievement information comes from RomM. The browser player does not earn new achievements.',
+			'romm.screenshots' => 'Screenshots',
+			'romm.manual' => 'Manual',
+			'romm.importSave' => 'Import save',
+			'romm.exportSave' => 'Export',
+			'romm.importState' => 'Import state',
+			'romm.saveImported' => 'Save imported',
+			'romm.saveExported' => 'Save exported',
+			'romm.engine' => 'Emulator identity',
+			'romm.slot' => 'Save slot',
+			'romm.core' => 'Core identity',
+			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
+			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
+			'romm.keepBoth' => 'Keep both',
+			'romm.useServer' => 'Use server copy',
+			'romm.replaceServer' => 'Replace server copy',
+			'romm.pendingSaves' => 'Saves waiting to sync',
+			'romm.sync' => 'Sync saves',
+			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
+			'romm.pause' => 'Pause',
+			'romm.kContinue' => 'Continue',
+			'romm.saveState' => 'Save state',
+			'romm.loadState' => 'Load state',
+			'romm.saveAndExit' => 'Save and exit',
+			'romm.exitWithoutSaving' => 'Exit without saving',
+			'romm.exitConfirm' => 'Finish this game session?',
+			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
+			'romm.starting' => 'Starting game…',
+			'romm.connecting' => 'Connecting…',
+			'romm.busy' => 'The streaming computer is occupied.',
+			'romm.streamEnded' => 'The streaming session ended.',
+			'romm.retry' => 'Try again',
+			'romm.disc' => 'Change disc',
+			'romm.memoryCard' => 'Memory card',
+			'romm.multiplayer' => 'Allow players to join',
+			'romm.join' => 'Join game',
+			'romm.copyLink' => 'Copy game link',
+			'romm.linkCopied' => 'Game link copied',
+			'romm.openLink' => 'Open game link',
+			'romm.linkHelp' => 'Paste a PlezyNG game link. Connect the matching RomM server before opening it.',
+			'romm.copyMismatch' => 'This link identifies a different copy. Choose the intended game from your library.',
+			'romm.requestStatus' => 'Library indexing',
+			'romm.notIndexed' => 'The requested game is not indexed in this library yet.',
+			'romm.touchControls' => 'Touch controls',
+			'romm.controls' => 'Controls',
+			'romm.resetControls' => 'Reset controls',
+			'romm.playerOne' => 'Player 1',
+			'romm.select' => 'Select',
+			'romm.start' => 'Start',
+			'romm.up' => 'Up',
+			'romm.down' => 'Down',
+			'romm.left' => 'Left',
+			'romm.right' => 'Right',
+			'romm.connectingStream' => 'Waiting for the server emulator…',
+			'romm.saveFailed' => 'Saving did not finish. Keep this session open and try again.',
+			'romm.httpHelp' => 'This server uses unencrypted HTTP. Connect on a network you trust.',
+			'romm.invalidAddress' => 'Enter an HTTP or HTTPS server address without a password, query or fragment.',
+			'romm.invalidConnection' => 'This connection is invalid. Connect the server again.',
+			'romm.invalidToken' => 'Enter a valid client token.',
+			'romm.invalidResponse' => 'The server returned an unsupported response.',
+			'romm.responseTooLarge' => 'The server response exceeded the supported size.',
+			'romm.signInAgain' => 'Sign in to this library again.',
+			'romm.permissionDenied' => 'Your RomM account or client token does not permit this action.',
+			'romm.notFound' => 'This item is no longer available.',
+			'romm.serverError' => 'The RomM server could not complete this request.',
+			'romm.connectionFailed' => 'Could not connect to RomM. Check the server and try again.',
+			'romm.cancelled' => 'Cancelled',
+			'romm.notConnected' => 'Connect this RomM library first.',
+			'romm.accountMismatch' => 'This connection belongs to a different RomM account. Add it as a separate library.',
+			'romm.connectionLimit' => 'This profile already has the maximum number of RomM connections.',
+			'romm.conflict' => 'The server copy changed. Review both versions before replacing anything.',
+			'romm.invalidFile' => 'This file cannot be used here.',
+			'romm.saveUploadFailed' => 'The save could not be uploaded.',
+			'romm.quotaExceeded' => 'There is not enough space within the offline storage limit.',
+			'romm.checksumFailed' => 'The downloaded file did not match the server checksum.',
+			'romm.downloadChanged' => 'This game file changed during the download. Refresh and try again.',
+			'romm.unsupportedArchive' => 'Native play needs extracted game files. Choose an extracted copy or use the browser player.',
+			'romm.nativeError' => 'The emulator could not start this copy. Check its core and firmware requirements.',
+			'romm.authorization_pending' => 'Waiting for approval…',
+			'romm.slow_down' => 'Waiting for approval…',
+			'romm.access_denied' => 'Device access was declined.',
+			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Loading the local speech model…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Loading the local speech model (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Downloading the speech model…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Downloading the speech model (${percent}%)…',
+			'subtitleCapture.capturing' => 'Capturing decoded audio locally. Captions will appear shortly.',
+			'subtitleCapture.startFailed' => 'Live captions could not start. Check the audio route and try again.',
+			'subtitleCapture.inferenceFailed' => 'Speech recognition failed. Stop capture and try again.',
+			'subtitleCapture.noSpeech' => 'No speech captions were produced. Check the audio track and try again.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Captured speech cues from the watched portion: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Playback ended. The captured transcript was discarded.',
+			'subtitleCapture.playbackChanged' => 'Playback changed. The captured transcript was discarded.',
+			'subtitleCapture.audioTrackChanged' => 'The audio track changed. Start capture again on the current track.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Listening locally on CPU. Captured audio packets: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Decoded audio is unavailable on this route. Try a supported audio output.',
+			'subtitleCapture.waitingForAudio' => 'Waiting for decoded audio. Playback may be paused.',
+			'subtitleCapture.captureStopped' => 'Live capture stopped. Check playback and try again.',
+			'subtitleCapture.preparing' => 'Preparing live captions…',
+			'subtitleCapture.downloadingDetector' => 'Downloading the speech detector…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Downloading the speech detector (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Transcribing audio locally…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Transcribing audio locally (${percent}%)…',
+			'subtitleCapture.translating' => 'Translating speech to English locally…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Translating speech to English locally (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Processing audio locally…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Processing audio locally (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU speech processing failed. Retrying on CPU…',
+			'karaokeUi.chooseAMicrophone' => 'Choose a microphone',
+			'karaokeUi.microphoneAndPrivateTake' => 'Microphone and private take',
+			'karaokeUi.pitchFeedbackAndDryRecordingUseYourSelectedMicrophone' => 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.',
+			'karaokeUi.inputOffsetMs' => ({required Object value1, required Object value2}) => 'Input offset: ${value1} ms · ${value2}',
+			'karaokeUi.comfortableRangeSavedMIDISuggestedKey' => ({required Object value1, required Object value2, required Object value3}) => 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.',
+			'karaokeUi.saveMyComfortableRange' => 'Save my comfortable range',
+			'karaokeUi.lyricTiming' => 'Lyric timing',
+			'karaokeUi.referenceNote' => 'Reference note',
+			'karaokeUi.freestyleNotScored' => 'Freestyle / not scored',
+			'karaokeUi.goldenNote' => 'Golden note',
+			'karaokeUi.sectionTiming' => 'Section timing',
+			'karaokeUi.instrumentalIntro' => 'Instrumental / intro',
+			'karaokeUi.edit' => ({required Object value1}) => 'Edit ${value1}',
+			'karaokeUi.redo' => 'Redo',
+			'karaokeUi.originalFilesStayUnchangedReviewImportedOrGeneratedNotes' => 'Original files stay unchanged. Review imported or generated notes against the backing track before enabling scoring.',
+			'karaokeUi.waveformTapToSeekDuringThisRendition' => 'Waveform · tap to seek during this rendition',
+			'karaokeUi.generateAWaveformFromPrepareToSeeTheAudio' => 'Generate a waveform from Prepare to see the audio timeline here.',
+			'karaokeUi.importLyricsUltraStar' => 'Import lyrics / UltraStar',
+			'karaokeUi.addNote' => 'Add note',
+			'karaokeUi.tapLine' => ({required Object value1}) => 'Tap line ${value1}',
+			'karaokeUi.resetTapCursor' => 'Reset tap cursor',
+			'karaokeUi.export' => ({required Object value1}) => 'Export ${value1}',
+			'karaokeUi.lyricOffsetMs' => ({required Object value1}) => 'Lyric offset: ${value1} ms',
+			'karaokeUi.iAuditionedThisChartAndVerifiedTheNotesParts' => 'I auditioned this chart and verified the notes, parts and timing',
+			'karaokeUi.enablesReferenceBasedScoringForThisLocalRevision' => 'Enables reference-based scoring for this local revision.',
+			'karaokeUi.sectionsAndMedleyCues' => 'Sections and medley cues',
+			'karaokeUi.addSectionFromCurrentPlaybackTimes' => 'Add section from current playback times',
+			'karaokeUi.deleteLine' => 'Delete line',
+			'karaokeUi.referenceNotes' => 'Reference notes',
+			'karaokeUi.midi' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · MIDI ${value2} · ${value3}',
+			'karaokeUi.deleteNote' => 'Delete note',
+			'karaokeUi.addAQuestionYouAuthoredOrMayUse' => 'Add a question you authored or may use',
+			'karaokeUi.triviaLyricCompletionNameThatTunePrompt' => 'Trivia / lyric completion / name that tune prompt',
+			'karaokeUi.optionsOnePerLine' => 'Options, one per line',
+			'karaokeUi.correctOptionNumberStartingAt1' => 'Correct option number (starting at 1)',
+			'karaokeUi.partyRounds' => 'Party rounds',
+			'karaokeUi.scoresStayPrivateLeaderboardsCompareReviewedChartsWithMatching' => 'Scores stay private. Leaderboards compare reviewed charts with matching settings and calibrated, unassisted input. No-score singing is always available.',
+			'karaokeUi.startARoundRobinTournamentWithPresentSingers' => 'Start a round-robin tournament with present singers',
+			'karaokeUi.round' => ({required Object value1}) => 'Round ${value1}',
+			'karaokeUi.match' => ({required Object value1, required Object value2}) => 'Match ${value1}: ${value2}',
+			'karaokeUi.verifiedEligibleScores' => ({required Object value1}) => 'Verified eligible scores · ${value1}',
+			'karaokeUi.eachSingerNeedsACalibratedUnassistedResultOnThe' => 'Each singer needs a calibrated, unassisted result on the same reviewed rendition and settings before this match can be resolved.',
+			'karaokeUi.winner' => ({required Object value1}) => 'Winner: ${value1}',
+			'karaokeUi.wins' => ({required Object value1}) => '${value1} wins',
+			'karaokeUi.chooseTeam' => 'Choose team',
+			'karaokeUi.average' => ({required Object value1}) => '${value1} average',
+			'karaokeUi.beginAFreshScoreRound' => 'Begin a fresh score round',
+			'karaokeUi.startSectionsFromTheNextQueuedSongs' => 'Start sections from the next queued songs',
+			'karaokeUi.quizInterludes' => 'Quiz interludes',
+			'karaokeUi.addQuestion' => 'Add question',
+			'karaokeUi.closeAndRevealAnswer' => 'Close and reveal answer',
+			'karaokeUi.returnToSingerRotation' => 'Return to singer rotation',
+			'karaokeUi.askPhones' => 'Ask phones',
+			'karaokeUi.recentPrivateScores' => 'Recent private scores',
+			'karaokeUi.keyTempo' => ({required Object value1, required Object value2, required Object value3, required Object value4}) => '${value1} · ${value2} · key ${value3} · tempo ${value4}',
+			'karaokeUi.preparationCompanion' => 'Preparation companion',
+			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Run the PlezyNG karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.',
+			'karaokeUi.companionURL' => 'Companion URL',
+			'karaokeUi.token' => 'Token',
+			'karaokeUi.chooseTheSourceAsset' => 'Choose the source asset',
+			'karaokeUi.prepare' => ({required Object value1}) => 'Prepare ${value1}',
+			'karaokeUi.companionSettings' => 'Companion settings',
+			'karaokeUi.preparationRunsBetweenPerformancesOriginalsStayUnchangedGeneratedBacki' => 'Preparation runs between performances. Originals stay unchanged. Generated backing, alignment and pitch proposals must be auditioned and reviewed.',
+			'karaokeUi.configureCompanion' => 'Configure companion',
+			'karaokeUi.retryReconnect' => 'Retry / reconnect',
+			'karaokeUi.removeCompanionJob' => 'Remove companion job',
+			'karaokeUi.downloadApplyForReview' => 'Download / apply for review',
+			'karaokeUi.assignSingersAndParts' => 'Assign singers and parts',
+			'karaokeUi.part' => ({required Object value1}) => 'Part ${value1}',
+			'karaokeUi.queueAssignedSingers' => 'Queue assigned singers',
+			'karaokeUi.roomConnection' => 'Room connection',
+			'karaokeUi.useHTTPSToEnablePhonePitchAndPrivateVocal' => 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.',
+			'karaokeUi.lanSongbookOnly' => 'LAN songbook only',
+			'karaokeUi.configureHTTPS' => 'Configure HTTPS',
+			'karaokeUi.selectTrustedPEMCertificate' => 'Select trusted PEM certificate',
+			'karaokeUi.selectPrivatePEMKey' => 'Select private PEM key',
+			'karaokeUi.thisInvitationExpiresIn30MinutesConnectedGuestsCan' => 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.',
+			'karaokeUi.copyInvitation' => 'Copy invitation',
+			'karaokeUi.createReadOnlyStageLink' => 'Create read-only stage link',
+			'karaokeUi.createOneUseHostHandoverLink' => 'Create one-use host handover link',
+			'karaokeUi.revokeGuestsAndReplaceInvitation' => 'Revoke guests and replace invitation',
+			'karaokeUi.closeRoom' => 'Close room',
+			'karaokeUi.karaokeTools' => 'Karaoke tools',
+			'karaokeUi.privateTakes' => 'Private takes',
+			'karaokeUi.venueCollectionsAndReadiness' => 'Venue, collections and readiness',
+			'karaokeUi.recentlyAdded' => 'Recently added',
+			'karaokeUi.scoredCharts' => 'Scored charts',
+			'karaokeUi.fitsMyRange' => 'Fits my range',
+			'karaokeUi.allGenres' => 'All genres',
+			'karaokeUi.allLanguages' => 'All languages',
+			'karaokeUi.allDecades' => 'All decades',
+			'karaokeUi.allDifficultyLevels' => 'All difficulty levels',
+			'karaokeUi.difficulty5' => ({required Object value1}) => 'Difficulty ${value1} / 5',
+			'karaokeUi.requestDuetGroup' => 'Request duet / group',
+			'karaokeUi.prepareBackingTimingAndGuidance' => 'Prepare backing, timing and guidance',
+			'karaokeUi.exportPrivateDuetInvitation' => 'Export private duet invitation',
+			'karaokeUi.allowGuestVotesOnWaitingSongs' => 'Allow guest votes on waiting songs',
+			'karaokeUi.markSourced' => 'Mark sourced',
+			'karaokeUi.dismissSuggestion' => 'Dismiss suggestion',
+			'karaokeUi.resolvedMissingSongSuggestions' => 'Resolved missing-song suggestions',
+			'karaokeUi.reopenSuggestion' => 'Reopen suggestion',
+			'karaokeUi.restart' => 'Restart',
+			'karaokeUi.endPerformance' => 'End performance',
+			'karaokeUi.vocalMixer' => 'Vocal mixer',
+			'karaokeUi.muteStem' => 'Mute stem',
+			'karaokeUi.guideVocals' => 'Guide vocals',
+			'karaokeUi.instrumental' => 'Instrumental',
+			'karaokeUi.bpmEstimated' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated',
+			'karaokeUi.mixAndExportPrivately' => 'Mix and export privately',
+			'karaokeUi.theDryVocalStaysUnchangedChooseGainsEffectsAnd' => 'The dry vocal stays unchanged. Choose gains, effects and trim for a new render.',
+			'karaokeUi.backing' => 'Backing',
+			'karaokeUi.vocal' => 'Vocal',
+			'karaokeUi.echoWet' => 'Echo wet',
+			'karaokeUi.noiseGate' => 'Noise gate',
+			'karaokeUi.trimStartMs' => 'Trim start (ms)',
+			'karaokeUi.outputDurationMs' => 'Output duration (ms)',
+			'karaokeUi.mixApprovedResponse' => ({required Object value1}) => 'Mix approved response ${value1}',
+			'karaokeUi.includeACameraVideoFileIChoose' => 'Include a camera/video file I choose',
+			'karaokeUi.overlayTimedLyrics' => 'Overlay timed lyrics',
+			'karaokeUi.render' => 'Render',
+			'karaokeUi.stopPreview' => 'Stop preview',
+			'karaokeUi.acceptDuetInvitation' => 'Accept duet invitation',
+			'karaokeUi.importDuetResponse' => 'Import duet response',
+			'karaokeUi.useTheAssignedPartAndKeepTheBackingRendition' => ({required Object value1, required Object value2}) => '${value1}: ${value2}. Use the assigned part and keep the backing rendition, key, and tempo fixed.',
+			'karaokeUi.recordingsRemainPrivateExportCreatesAFileYouCan' => 'Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.',
+			'karaokeUi.keyTempo_f457ce13' => ({required Object value1, required Object value2, required Object value3, required Object value4, required Object value5}) => '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}',
+			'karaokeUi.recoverRecording' => 'Recover recording',
+			'karaokeUi.linkThisTakeToTheDuetInvitation' => 'Link this take to the duet invitation',
+			'karaokeUi.listenToDryTake' => 'Listen to dry take',
+			'karaokeUi.mixExportAudioOrVideo' => 'Mix / export audio or video',
+			'karaokeUi.exportPortableTake' => 'Export portable take',
+			'karaokeUi.downloadCompletedRender' => 'Download completed render',
+			'karaokeUi.approveDuetMergeAfterListening' => 'Approve duet merge after listening',
+			'karaokeUi.saveSetlist' => 'Save setlist',
+			'karaokeUi.resolveCollectionConflicts' => 'Resolve collection conflicts',
+			'karaokeUi.newSingersAndSetlistsWillBeAddedChooseWhich' => 'New singers and setlists will be added. Choose which preferences to keep when the same singer or setlist already exists. Media packages are imported separately.',
+			'karaokeUi.keepExistingPreferences' => 'Keep existing preferences',
+			'karaokeUi.useImportedPreferences' => 'Use imported preferences',
+			'karaokeUi.instrumentalFiller' => 'Instrumental filler',
+			'karaokeUi.stageBanner' => 'Stage banner',
+			'karaokeUi.stageTextSize' => 'Stage text size',
+			'karaokeUi.displayOffsetMs' => ({required Object value1}) => 'Display offset: ${value1} ms',
+			'karaokeUi.perSingerPendingRequestLimit' => 'Per-singer pending request limit',
+			'karaokeUi.openRequestKiosk' => 'Open request kiosk',
+			'karaokeUi.theKioskLimitsThisScreenToSongRequestsUse' => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.',
+			'karaokeUi.savedSets' => 'Saved sets',
+			'karaokeUi.createASetlist' => 'Create a setlist',
+			'karaokeUi.songs' => ({required Object value1}) => '${value1} songs',
+			'karaokeUi.queueThisSetlist' => 'Queue this setlist',
+			'karaokeUi.auditCompleteOfflineAssets' => 'Audit complete offline assets',
+			'karaokeUi.removeSetlist' => 'Remove setlist',
+			'karaokeUi.playARotatingLocalInstrumentalWhileTheNextSinger' => 'Play a rotating local instrumental while the next singer prepares. It stops when the next karaoke request starts.',
+			'karaokeUi.fillerRenditionsSelected' => ({required Object value1}) => '${value1} filler renditions selected',
+			'karaokeUi.portability' => 'Portability',
+			'karaokeUi.exportSingersFavoritesAndSets' => 'Export singers, favorites and sets',
+			'karaokeUi.importCollection' => 'Import collection',
+			'karaokeUi.chooseAnExistingSyncedFolderInTheSystemFile' => 'Choose an existing synced folder in the system file picker to exchange these files. Imports resolve preferences explicitly; packages retain their rendition IDs and checksums.',
+			'karaokeUi.mib' => ({required Object value1}) => '${value1} MiB',
+			'karaokeUi.removePackage' => 'Remove package',
+			'karaokeUi.thisBuild' => 'This build',
+			'karaokeUi.packageImportLyricStageCDGHostingQuizzesEditing' => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.',
+			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
+			'karaokeUi.hostExitPIN' => 'Host exit PIN',
+			'karaokeUi.unlock' => 'Unlock',
+			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
+			'karaokeUi.requestASong' => 'Request a song',
+			'karaokeUi.hostUnlock' => 'Host unlock',
+			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
+			'karaokeUi.searchSongs' => 'Search songs',
 			_ => null,
 		};
 	}
-}
-
-class Translations$subtitleCapture$en {
-	Translations$subtitleCapture$en.internal(this._root);
-	final Translations _root; // ignore: unused_field
-	String get loadingModel => "Loading the local speech model…";
-	String loadingModelProgress({required Object percent}) => "Loading the local speech model (${percent}%)…";
-	String get downloadingModel => "Downloading the speech model…";
-	String downloadingModelProgress({required Object percent}) => "Downloading the speech model (${percent}%)…";
-	String get capturing => "Capturing decoded audio locally. Captions will appear shortly.";
-	String get startFailed => "Live captions could not start. Check the audio route and try again.";
-	String get inferenceFailed => "Speech recognition failed. Stop capture and try again.";
-	String get noSpeech => "No speech captions were produced. Check the audio track and try again.";
-	String captured({required Object count}) => "Captured speech cues from the watched portion: ${count}.";
-	String get playbackEnded => "Playback ended. The captured transcript was discarded.";
-	String get playbackChanged => "Playback changed. The captured transcript was discarded.";
-	String get audioTrackChanged => "The audio track changed. Start capture again on the current track.";
-	String listening({required Object count}) => "Listening locally on CPU. Captured audio packets: ${count}.";
-	String get captureUnavailable => "Decoded audio is unavailable on this route. Try a supported audio output.";
-	String get waitingForAudio => "Waiting for decoded audio. Playback may be paused.";
-	String get captureStopped => "Live capture stopped. Check playback and try again.";
-	String get preparing => "Preparing live captions…";
-	String get downloadingDetector => "Downloading the speech detector…";
-	String downloadingDetectorProgress({required Object percent}) => "Downloading the speech detector (${percent}%)…";
-	String get transcribing => "Transcribing audio locally…";
-	String transcribingProgress({required Object percent}) => "Transcribing audio locally (${percent}%)…";
-	String get translating => "Translating speech to English locally…";
-	String translatingProgress({required Object percent}) => "Translating speech to English locally (${percent}%)…";
-	String get processingAudio => "Processing audio locally…";
-	String processingAudioProgress({required Object percent}) => "Processing audio locally (${percent}%)…";
-	String get cpuFallback => "GPU speech processing failed. Retrying on CPU…";
 }

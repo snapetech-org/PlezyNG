@@ -490,7 +490,9 @@ void main() {
         final before = {for (final key in prefs.keys) key: prefs.get(key)};
         final exportedBefore = SettingsExportService.buildExportMap(prefs)['prefs'];
         SettingsExportService.debugBeforeImportWrite = (key) {
-          if (key == failAt) throw StateError('synthetic write failure');
+          if (key == failAt) {
+            throw StateError('synthetic write failure');
+          }
         };
 
         await expectLater(
@@ -835,7 +837,9 @@ void main() {
       var writes = 0;
       SettingsExportService.debugBeforeImportWrite = (_) {
         writes++;
-        if (writes == 2) throw StateError('synthetic write failure');
+        if (writes == 2) {
+          throw StateError('synthetic write failure');
+        }
       };
 
       await expectLater(
@@ -1039,7 +1043,9 @@ class _FakeFilePicker implements FilePickerDelegate {
   }) async {
     pickCalls++;
     final error = pickError;
-    if (error != null) throw error;
+    if (error != null) {
+      throw error;
+    }
     return pickResult;
   }
 
@@ -1058,7 +1064,9 @@ class _FakeFilePicker implements FilePickerDelegate {
     lastSaveExtensions = allowedExtensions;
     lastSaveBytes = bytes;
     final error = saveError;
-    if (error != null) throw error;
+    if (error != null) {
+      throw error;
+    }
     return saveResult;
   }
 }

@@ -35,11 +35,17 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
     // them before runApp) so the first frame paints the persisted theme; the
     // async path below lands a microtask too late for the first build.
     final loaded = settings.SettingsService.instanceOrNull;
-    if (loaded != null) _readStored(loaded);
+    if (loaded != null) {
+      _readStored(loaded);
+    }
     _choice = _resolve();
     _supporter.addListener(_apply);
     _settingsBinding = SettingsBindingOwner(
-      prefs: [settings.SettingsService.themeMode, settings.SettingsService.customThemePalette, settings.SettingsService.customThemePackage],
+      prefs: [
+        settings.SettingsService.themeMode,
+        settings.SettingsService.customThemePalette,
+        settings.SettingsService.customThemePackage,
+      ],
       onRefresh: (service) {
         final previous = (_storedMode, _customPalette, _customPackage);
         _readStored(service);
@@ -76,19 +82,26 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
     _customPackage = service.read(settings.SettingsService.customThemePackage);
   }
 
-  ThemeChoice _resolve() => resolve(_storedMode, _customPackage?.palette ?? _customPalette, unlocked: _supporter.isUnlocked);
+  ThemeChoice _resolve() =>
+      resolve(_storedMode, _customPackage?.palette ?? _customPalette, unlocked: _supporter.isUnlocked);
 
   /// Re-resolves after the stored choice or the lifetime access state changes.
   /// The stored choice is never rewritten: losing the entitlement only changes
   /// what paints, and regaining it brings the choice back.
   void _apply({bool pushSplash = false, bool forceNotify = false}) {
-    if (isDisposed) return;
+    if (isDisposed) {
+      return;
+    }
     final next = _resolve();
     final changed = next != _choice;
     _choice = next;
-    if (changed || pushSplash) _updateSplashTheme(next.palette);
+    if (changed || pushSplash) {
+      _updateSplashTheme(next.palette);
+    }
     _syncWindowChrome();
-    if (changed || forceNotify) safeNotifyListeners();
+    if (changed || forceNotify) {
+      safeNotifyListeners();
+    }
   }
 
   /// The effective theme: the stored choice, or the device's default theme
@@ -130,7 +143,8 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   /// [resolve] for the choice stored in [service].
   static ThemeChoice resolveStored(settings.SettingsService service, {required bool unlocked}) => resolve(
     service.read(settings.SettingsService.themeMode),
-    service.read(settings.SettingsService.customThemePackage)?.palette ?? service.read(settings.SettingsService.customThemePalette),
+    service.read(settings.SettingsService.customThemePackage)?.palette ??
+        service.read(settings.SettingsService.customThemePalette),
     unlocked: unlocked,
   );
 
@@ -210,9 +224,13 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   }
 
   void _syncWindowChrome() {
-    if (isDisposed) return;
+    if (isDisposed) {
+      return;
+    }
     final dark = isDarkMode;
-    if (_windowChromeDark == dark) return;
+    if (_windowChromeDark == dark) {
+      return;
+    }
     _windowChromeDark = dark;
     applyWindowChromeBrightness(dark);
   }
@@ -222,7 +240,9 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   @visibleForTesting
   Future<void> setThemeMode(settings.ThemeMode mode) async {
     final service = _settingsBinding.settings ?? await settings.SettingsService.getInstance();
-    if (service.read(settings.SettingsService.themeMode) == mode) return;
+    if (service.read(settings.SettingsService.themeMode) == mode) {
+      return;
+    }
     await service.write(settings.SettingsService.themeMode, mode);
     if (_settingsBinding.settings == null) {
       _readStored(service);
@@ -233,13 +253,17 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   Future<void> reload() async {
     await _settingsBinding.bind();
     final service = _settingsBinding.settings;
-    if (service == null) return;
+    if (service == null) {
+      return;
+    }
     _readStored(service);
     _apply(pushSplash: true, forceNotify: true);
   }
 
   void _updateSplashTheme(MonoPalette? palette) {
-    if (!Platform.isAndroid) return;
+    if (!Platform.isAndroid) {
+      return;
+    }
     _themeChannel.invokeMethod('setSplashTheme', {'mode': nativeSplashMode(palette)});
   }
 
@@ -249,8 +273,12 @@ class ThemeProvider extends ChangeNotifier with DisposableChangeNotifierMixin, W
   /// nearest built-in by brightness. The first Flutter frame then paints it.
   @visibleForTesting
   static String nativeSplashMode(MonoPalette? palette) {
-    if (palette == null) return 'system';
-    if (palette == MonoPalette.oled) return 'oled';
+    if (palette == null) {
+      return 'system';
+    }
+    if (palette == MonoPalette.oled) {
+      return 'oled';
+    }
     return palette.brightness == Brightness.light ? 'light' : 'dark';
   }
 

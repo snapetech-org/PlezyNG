@@ -35,7 +35,12 @@ bool steamPublicIPv4(InternetAddress address) {
 
 Uri? steamRelayUri([String value = steamRelayBaseUrl]) {
   final uri = Uri.tryParse(value);
-  final catalog = Uri.tryParse(plezyServerBaseUrl);
+  final Uri? catalog;
+  try {
+    catalog = Uri.tryParse(plezyServerBaseUrl);
+  } on StateError {
+    return null;
+  }
   if (uri == null ||
       uri.scheme != 'https' ||
       uri.host.isEmpty ||
@@ -52,8 +57,18 @@ Uri? steamRelayUri([String value = steamRelayBaseUrl]) {
 /// listener). Only Steam's six local UDP ports are ever forwarded. Steam's own
 /// PIN/session encryption remains intact inside the paired encrypted channel.
 class SteamInternetTunnel {
-  SteamInternetTunnel._(this._context, this.host, this._uri, this._allowed, this._admission, this._isPublic);
+  SteamInternetTunnel._(
+    this._context,
+    this.host,
+    this._uri,
+    this._allowed,
+    this._admission,
+    this._isPublic,
+    this._hostPorts,
+  );
   final String _admission;
+  static const _steamPorts = [27031, 27032, 27033, 27034, 27035, 27036];
+  final List<int> _hostPorts;
   final bool Function(InternetAddress) _isPublic;
   final RemoteAuthContext _context;
   final bool host;
@@ -114,6 +129,7 @@ class SteamInternetTunnel {
     required Uri relay,
     required bool Function(InternetAddress) isPublic,
     bool waitForPeer = true,
+    List<int> hostPorts = _steamPorts,
   }) => _connect(
     context,
     host: host,
@@ -122,6 +138,7 @@ class SteamInternetTunnel {
     relay: relay,
     waitForPeer: waitForPeer,
     isPublic: isPublic,
+    hostPorts: hostPorts,
   );
 
   static Future<SteamInternetTunnel> _connect(
@@ -132,11 +149,23 @@ class SteamInternetTunnel {
     required Uri? relay,
     required bool waitForPeer,
     required bool Function(InternetAddress) isPublic,
+    List<int> hostPorts = _steamPorts,
   }) async {
     final uri = relay ?? steamRelayUri();
     if (uri == null || uri.scheme != 'wss' || !allowed()) throw const SocketException('Steam internet unavailable');
     if (!RegExp(r'^[A-Za-z0-9_-]{43}$').hasMatch(admission)) throw const FormatException('Link Steam');
-    final tunnel = SteamInternetTunnel._(context, host, uri, allowed, admission, isPublic);
+    if (hostPorts.length != 6 || hostPorts.any((port) => port < 1 || port > 65535)) {
+      throw ArgumentError.value(hostPorts, 'hostPorts');
+    }
+    final tunnel = SteamInternetTunnel._(
+      context,
+      host,
+      uri,
+      allowed,
+      admission,
+      isPublic,
+      List.unmodifiable(hostPorts),
+    );
     // Observe rejection even for a host waiting asynchronously for a remote.
     unawaited(tunnel._ready.future.catchError((Object _) {}));
     try {
@@ -176,7 +205,7 @@ class SteamInternetTunnel {
               continue;
             }
             if (host) {
-              if (packet.port != 27031 + index) continue;
+              if (packet.port != _hostPorts[index]) continue;
             } else {
               _nativePorts[index] = packet.port;
             }
@@ -393,7 +422,7 @@ class SteamInternetTunnel {
         close();
         return;
       }
-      final port = host ? 27031 + row.port : _nativePorts[row.port];
+      final port = host ? _hostPorts[row.port] : _nativePorts[row.port];
       if (port != null) _local[row.port].send(row.data, InternetAddress.loopbackIPv4, port);
     }
   }

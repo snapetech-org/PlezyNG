@@ -25,7 +25,13 @@ class OAuthProxyClient {
 
   final http.Client _http;
 
-  OAuthProxyClient({http.Client? httpClient}) : _http = httpClient ?? platform.createPlatformClient();
+  /// Tests and explicit deployments may provide their own fork-owned endpoint.
+  /// The default still requires configured service infrastructure.
+  OAuthProxyClient({http.Client? httpClient, this._serviceBaseUrl})
+    : _http = httpClient ?? platform.createPlatformClient();
+
+  final String? _serviceBaseUrl;
+  String get _requestBaseUrl => _serviceBaseUrl == null ? baseUrl : requirePleazyngServiceUrl(_serviceBaseUrl);
 
   void dispose() => _http.close();
 
@@ -35,7 +41,7 @@ class OAuthProxyClient {
     final res = await sendAbortableHttpRequest(
       _http,
       'POST',
-      Uri.parse('$baseUrl/auth/start'),
+      Uri.parse('$_requestBaseUrl/auth/start'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'service': service}),
       timeout: TrackerConstants.authRequestTimeout,
@@ -54,7 +60,7 @@ class OAuthProxyClient {
     final response = await sendAbortableHttpRequest(
       _http,
       'POST',
-      Uri.parse('$baseUrl/auth/steam/library'),
+      Uri.parse('$_requestBaseUrl/auth/steam/library'),
       headers: {'Authorization': 'Bearer $credential'},
       timeout: TrackerConstants.authRequestTimeout,
       operation: 'Steam catalog refresh',
@@ -80,7 +86,7 @@ class OAuthProxyClient {
     await sendAbortableHttpRequest(
       _http,
       'DELETE',
-      Uri.parse('$baseUrl/auth/steam/library'),
+      Uri.parse('$_requestBaseUrl/auth/steam/library'),
       headers: {'Authorization': 'Bearer $credential'},
       timeout: const Duration(seconds: 5),
       operation: 'Steam catalog unlink',
@@ -97,7 +103,7 @@ class OAuthProxyClient {
     final response = await sendAbortableHttpRequest(
       _http,
       'POST',
-      Uri.parse('$baseUrl/auth/steam/game'),
+      Uri.parse('$_requestBaseUrl/auth/steam/game'),
       headers: {'Authorization': 'Bearer $credential', 'Content-Type': 'application/json'},
       body: json.encode({'appId': appId, 'includeFriends': includeFriends}),
       timeout: TrackerConstants.authRequestTimeout,
@@ -122,7 +128,7 @@ class OAuthProxyClient {
   /// 50 s; 204 responses are retried transparently, and 429 responses are
   /// retried until the session's own lifetime expires.
   Future<OAuthProxyResult?> poll(String session, {bool Function()? shouldCancel, Future<void>? onCancel}) async {
-    final uri = Uri.parse('$baseUrl/auth/result').replace(queryParameters: {'session': session});
+    final uri = Uri.parse('$_requestBaseUrl/auth/result').replace(queryParameters: {'session': session});
     final deadline = clock.now().add(TrackerConstants.oauthProxySessionTimeout);
     final cancelSentinel = Object();
     // Subscribe to onCancel once; reusing this derived future avoids

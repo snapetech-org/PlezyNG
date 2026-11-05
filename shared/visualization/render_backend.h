@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <memory>
+
 #include "milkrust_engine.h"
 
 namespace plezy::visualization {
@@ -43,6 +44,7 @@ class LocalRenderBackend final : public RenderBackend {
     if (!engine_) throw std::runtime_error("Visualization renderer has not been reset.");
     return *engine_;
   }
+
  public:
   LocalRenderBackend(std::unique_ptr<NativeContext> context, MilkRustImageDecoder decoder)
       : context_(std::move(context)), decoder_(std::move(decoder)) {
@@ -52,7 +54,9 @@ class LocalRenderBackend final : public RenderBackend {
     context_->PrepareDestroy();
     engine_.reset();
   }
-  void Pause(bool paused) override { if (paused) context_->Drain(); }
+  void Pause(bool paused) override {
+    if (paused) context_->Drain();
+  }
   void Reset() override {
     engine_.reset();
     engine_ = std::make_unique<MilkRustEngine>(context_->Loader(), context_->IsGles());

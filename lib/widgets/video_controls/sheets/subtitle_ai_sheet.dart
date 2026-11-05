@@ -103,8 +103,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     super.initState();
     unawaited(_refreshCapabilityState());
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(_loadGlossaryForCurrentPair());
-      if (mounted) unawaited(_loadSpeechLanguageForProfile());
+      if (mounted) {
+        unawaited(_loadGlossaryForCurrentPair());
+      }
+      if (mounted) {
+        unawaited(_loadSpeechLanguageForProfile());
+      }
     });
   }
 
@@ -126,7 +130,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     } catch (_) {
       translationSupported = false;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     setState(() {
       _translationSupported = translationSupported;
       _playbackCaptureSupported = playbackCaptureSupported;
@@ -134,7 +140,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _run(Future<void> Function() operation) async {
-    if (_busy) return;
+    if (_busy) {
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
@@ -146,19 +154,34 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     try {
       await operation();
     } catch (error) {
-      if (mounted) setState(() => _error = _readableError(error));
+      if (mounted) {
+        setState(() => _error = _readableError(error));
+      }
     } finally {
-      if (mounted) setState(() { _busy = false; _speechProgress = null; });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _speechProgress = null;
+        });
+      }
     }
   }
 
   Future<void> _ensureSpeechModel() async {
-    if (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu) return;
-    if (await SubtitleAiService.instance.isModelInstalled()) return;
-    if (mounted) setState(() => _speechProgress = const SubtitleSpeechProgress(SubtitleSpeechPhase.downloadingModel));
+    if (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu) {
+      return;
+    }
+    if (await SubtitleAiService.instance.isModelInstalled()) {
+      return;
+    }
+    if (mounted) {
+      setState(() => _speechProgress = const SubtitleSpeechProgress(SubtitleSpeechPhase.downloadingModel));
+    }
     await SubtitleAiService.instance.downloadModel(
       onProgress: (phase, received, total) {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
@@ -166,12 +189,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<String?> _pickWav() async {
     final result = await FilePickerService.instance.pickFiles(type: FileType.custom, allowedExtensions: const ['wav']);
-    if (!mounted || result == null || result.files.isEmpty) return null;
+    if (!mounted || result == null || result.files.isEmpty) {
+      return null;
+    }
     final file = result.files.first;
     if (p.extension(file.name).toLowerCase() != '.wav') {
       throw const FormatException('Choose a WAV file exported from the same title and audio track.');
     }
-    if (file.path != null) return file.path!;
+    if (file.path != null) {
+      return file.path!;
+    }
     final bytes = file.bytes;
     if (bytes == null || bytes.lengthInBytes < 44 || bytes.lengthInBytes > 256 * 1024 * 1024) {
       throw const FormatException('This platform did not provide a bounded local WAV file.');
@@ -188,7 +215,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       allowedExtensions: const ['ass', 'srt', 'ssa', 'vtt'],
       withData: true,
     );
-    if (!mounted || result == null || result.files.isEmpty) return null;
+    if (!mounted || result == null || result.files.isEmpty) {
+      return null;
+    }
     final file = result.files.first;
     final extension = p.extension(file.name).toLowerCase();
     if (!const {'.ass', '.srt', '.ssa', '.vtt'}.contains(extension)) {
@@ -217,21 +246,27 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _transcribe() => _run(() async {
     final wavPath = await _pickWav();
-    if (wavPath == null || !mounted) return;
+    if (wavPath == null || !mounted) {
+      return;
+    }
     await _ensureSpeechModel();
     final translateToEnglish =
         _translateSpeechToEnglish &&
         (_provider == SubtitleInferenceProvider.cpu || _provider == SubtitleInferenceProvider.desktopGpu);
-    setState(() => _speechProgress = SubtitleSpeechProgress(
-      translateToEnglish ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.transcribing,
-    ));
+    setState(
+      () => _speechProgress = SubtitleSpeechProgress(
+        translateToEnglish ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.transcribing,
+      ),
+    );
     final result = await SubtitleAiService.instance.transcribeWav(
       wavPath,
       provider: _provider,
       translateToEnglish: translateToEnglish,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
@@ -243,7 +278,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     )) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final providerLabel = result.fellBackToCpu
         ? '${result.requestedProvider.displayName} request unavailable; CPU fallback'
         : result.runtimeProvider.toUpperCase();
@@ -264,9 +301,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _synchronize({required bool repairCuts}) => _run(() async {
     final wavPath = await _pickWav();
-    if (wavPath == null || !mounted) return;
+    if (wavPath == null || !mounted) {
+      return;
+    }
     final selected = await _pickSubtitleCues();
-    if (selected == null || !mounted) return;
+    if (selected == null || !mounted) {
+      return;
+    }
     await _ensureSpeechModel();
     setState(() => _status = context.t.subtitleAiUi.transcribingAudioAndAligningSubtitleText);
     final transcription = await SubtitleAiService.instance.transcribeWav(
@@ -274,7 +315,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       provider: _provider,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (phase, received, total) {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         setState(() => _speechProgress = SubtitleSpeechProgress(phase, received: received, total: total));
       },
     );
@@ -292,7 +335,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     )) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final percent = (aligned.meanMatchConfidence * 100).round();
     setState(() {
       _status = context.t.subtitleAiUi.synchronizationOperationApplied(
@@ -326,7 +371,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final service = SubtitlePlaybackTranscriptionService.instance;
     if (service.isRunning || service.hasActiveSession) {
       await service.stop();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() => _captureStatus = service.status);
       return;
     }
@@ -334,10 +381,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       captureSource,
       languageCode: _speechLanguageCode == 'auto' ? null : _speechLanguageCode,
       onProgress: (status) {
-        if (mounted) setState(() => _captureStatus = status);
+        if (mounted) {
+          setState(() => _captureStatus = status);
+        }
       },
     );
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     setState(() => _captureStatus = service.status);
   });
 
@@ -412,9 +463,13 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Map<String, String> _glossaryForPair(TranslateLanguage source, TranslateLanguage target) {
     final sameAsCurrent = source == _sourceLanguage && target == _targetLanguage;
-    if (sameAsCurrent) return _parseGlossary();
+    if (sameAsCurrent) {
+      return _parseGlossary();
+    }
     final profileId = _activeProfileId;
-    if (profileId == null) return const <String, String>{};
+    if (profileId == null) {
+      return const <String, String>{};
+    }
     try {
       return SubtitleTranslationService.loadGlossaryForProfile(
         profileId: profileId,
@@ -430,12 +485,18 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _synchronizeAcrossLanguages({required bool repairCuts}) => _run(() async {
     setState(() => _status = context.t.subtitleAiUi.chooseTheSubtitleThatNeedsSynchronization);
     final target = await _pickSubtitleCues();
-    if (target == null || !mounted) return;
+    if (target == null || !mounted) {
+      return;
+    }
     setState(() => _status = context.t.subtitleAiUi.chooseASynchronizedSubtitleInAnotherLanguage);
     final reference = await _pickSubtitleCues();
-    if (reference == null || !mounted) return;
+    if (reference == null || !mounted) {
+      return;
+    }
     final pair = await _chooseCrossLanguagePair();
-    if (pair == null || !mounted) return;
+    if (pair == null || !mounted) {
+      return;
+    }
     final sourceLanguage = pair.$1;
     final referenceLanguage = pair.$2;
     final durationMs = widget.player.state.duration.inMilliseconds;
@@ -452,13 +513,17 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       requestDesktopCuda: _requestTranslationCuda,
       glossary: _glossaryForPair(sourceLanguage, referenceLanguage),
       onProgress: (completed, total) {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         setState(
           () => _status = context.t.subtitleAiUi.translatingCuesForAlignment(completed: completed, total: total),
         );
       },
     );
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     if (translated.cues.length != target.$1.length) {
       throw StateError('Translation changed the cue count; no synchronization was applied.');
     }
@@ -490,7 +555,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     )) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final percent = (aligned.meanMatchConfidence * 100).round();
     final warningCount = translated.qualityWarnings.length;
     setState(() {
@@ -511,10 +578,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   Future<void> _synchronizeToReference({required bool repairCuts}) => _run(() async {
     setState(() => _status = context.t.subtitleAiUi.chooseTheSubtitleThatNeedsSynchronization);
     final target = await _pickSubtitleCues();
-    if (target == null || !mounted) return;
+    if (target == null || !mounted) {
+      return;
+    }
     setState(() => _status = context.t.subtitleAiUi.chooseAnAlreadySynchronizedSubtitleI_83e183b5);
     final reference = await _pickSubtitleCues();
-    if (reference == null || !mounted) return;
+    if (reference == null || !mounted) {
+      return;
+    }
     if (target.$1.length == reference.$1.length &&
         List.generate(target.$1.length, (index) => index).every((index) {
           final left = target.$1[index];
@@ -540,7 +611,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     )) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final percent = (aligned.meanMatchConfidence * 100).round();
     setState(() {
       _status = context.t.subtitleAiUi.referenceOperationApplied(
@@ -563,7 +636,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       throw const FormatException('Capture at least three speech cues before synchronizing.');
     }
     final selected = await _pickSubtitleCues();
-    if (selected == null || !mounted) return;
+    if (selected == null || !mounted) {
+      return;
+    }
     final playerDuration = widget.player.state.duration.inMilliseconds;
     final durationMs = playerDuration > 0 ? playerDuration : transcript.durationMs;
     setState(() => _status = context.t.subtitleAiUi.matchingTheCapturedSpeechAgainstSubtitleText);
@@ -582,7 +657,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     )) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final percent = (aligned.meanMatchConfidence * 100).round();
     setState(() {
       _status = context.t.subtitleAiUi.capturedPlaybackOperationApplied(
@@ -601,7 +678,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Map<String, String> _parseGlossary() {
     final source = _glossaryController.text.trim();
-    if (source.isEmpty) return const {};
+    if (source.isEmpty) {
+      return const {};
+    }
     final decoded = jsonDecode(source);
     if (decoded is! Map) {
       throw const FormatException('Glossary must be a JSON object mapping source terms to translated terms.');
@@ -626,7 +705,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   SubtitleRevisionIdentity? get _revisionIdentity {
     final standaloneIdentity = widget.revisionIdentity;
-    if (standaloneIdentity != null) return standaloneIdentity;
+    if (standaloneIdentity != null) {
+      return standaloneIdentity;
+    }
     final profileId = _activeProfileId?.trim();
     final serverId = widget.serverId?.trim();
     final ratingKey = widget.ratingKey?.trim();
@@ -726,7 +807,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     required List<SubtitleWordTiming> wordTimings,
   }) async {
     final identity = _revisionIdentity;
-    if (identity == null || undoHistory.isEmpty) return;
+    if (identity == null || undoHistory.isEmpty) {
+      return;
+    }
 
     // The most recent pre-edit states are the most useful recovery points.
     // Leave one item-history slot for the accepted final revision.
@@ -738,7 +821,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       index--
     ) {
       final (cueIndex, previousCue) = undoHistory[index];
-      if (cueIndex < 0 || cueIndex >= snapshot.length) continue;
+      if (cueIndex < 0 || cueIndex >= snapshot.length) {
+        continue;
+      }
       final currentCue = snapshot[cueIndex];
       if (currentCue.startMs == previousCue.startMs &&
           currentCue.endMs == previousCue.endMs &&
@@ -752,7 +837,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: languageCode,
         wordTimings: wordTimings,
       );
-      if (!persisted) return;
+      if (!persisted) {
+        return;
+      }
       saved++;
     }
   }
@@ -800,7 +887,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     }
     try {
       var revisions = await SubtitleRevisionService.loadRevisions(identity);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       await showDialog<void>(
         context: context,
         builder: (dialogContext) => StatefulBuilder(
@@ -870,7 +959,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                                     TextButton.icon(
                                       onPressed: () async {
                                         await SubtitleRevisionService.deleteRevision(identity, revision.id);
-                                        if (!mounted || !dialogContext.mounted) return;
+                                        if (!mounted || !dialogContext.mounted) {
+                                          return;
+                                        }
                                         setDialogState(
                                           () => revisions = revisions
                                               .where((item) => item.id != revision.id)
@@ -912,10 +1003,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _loadSpeechLanguageForProfile() async {
     final profileId = _activeProfileId;
-    if (profileId == null) return;
+    if (profileId == null) {
+      return;
+    }
     try {
       final code = SettingsService.instance.read(SettingsService.subtitleSpeechLanguageForProfile(profileId));
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (code == 'auto' || _whisperLanguagesByCode().containsKey(code)) {
         setState(() => _speechLanguageCode = code);
       }
@@ -926,11 +1021,15 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   Future<void> _saveSpeechLanguageForProfile(String code) async {
     final profileId = _activeProfileId;
-    if (profileId == null) return;
+    if (profileId == null) {
+      return;
+    }
     try {
       await SettingsService.instance.write(SettingsService.subtitleSpeechLanguageForProfile(profileId), code);
     } catch (_) {
-      if (mounted) setState(() => _status = context.t.subtitleAiUi.couldNotSaveTheSpeechLanguagePrefere_41ee943c);
+      if (mounted) {
+        setState(() => _status = context.t.subtitleAiUi.couldNotSaveTheSpeechLanguagePrefere_41ee943c);
+      }
     }
   }
 
@@ -950,14 +1049,20 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         saved = const {};
       }
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     _glossaryController.text = draft ?? (saved.isEmpty ? '' : JsonEncoder.withIndent('  ').convert(saved));
   }
 
   void _changeTranslationLanguage({required bool source, required TranslateLanguage? value}) {
-    if (value == null || (source ? value == _sourceLanguage : value == _targetLanguage)) return;
+    if (value == null || (source ? value == _sourceLanguage : value == _targetLanguage)) {
+      return;
+    }
     _glossaryDrafts[_currentGlossaryDraftKey()] = _glossaryController.text;
-    if (_glossaryDrafts.length > 16) _glossaryDrafts.remove(_glossaryDrafts.keys.first);
+    if (_glossaryDrafts.length > 16) {
+      _glossaryDrafts.remove(_glossaryDrafts.keys.first);
+    }
     setState(() {
       if (source) {
         _sourceLanguage = value;
@@ -997,10 +1102,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       targetLanguage: _targetLanguage,
       allowMobileData: _allowMobileData,
       onStatus: (status) {
-        if (mounted) setState(() => _status = status);
+        if (mounted) {
+          setState(() => _status = status);
+        }
       },
     );
-    if (mounted) setState(() => _status = context.t.subtitleAiUi.selectedLanguageModelsAreReadyForOff_eda629c6);
+    if (mounted) {
+      setState(() => _status = context.t.subtitleAiUi.selectedLanguageModelsAreReadyForOff_eda629c6);
+    }
   });
 
   Future<void> _translate() => _run(() async {
@@ -1012,7 +1121,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       );
     }
     final selected = await _pickSubtitleCues();
-    if (selected == null || !mounted) return;
+    if (selected == null || !mounted) {
+      return;
+    }
     final glossary = _parseGlossary();
     final profileId = _activeProfileId;
     if (profileId != null) {
@@ -1065,7 +1176,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     )) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     setState(() {
       _status = context.t.subtitleAiUi.translatedCuesFrom(
         cueCount: result.cues.length,
@@ -1177,7 +1290,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   void _rememberCueEdit(List<(int, SubtitleCue)> undoHistory, int index, SubtitleCue cue) {
-    if (undoHistory.length == 100) undoHistory.removeAt(0);
+    if (undoHistory.length == 100) {
+      undoHistory.removeAt(0);
+    }
     undoHistory.add((index, cue));
   }
 
@@ -1198,7 +1313,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
             final normalizedQuery = query.trim().toLowerCase();
             final visibleIndexes = List<int>.generate(cues.length, (index) => index)
                 .where((index) {
-                  if (normalizedQuery.isEmpty) return true;
+                  if (normalizedQuery.isEmpty) {
+                    return true;
+                  }
                   final output = cues[index].text.toLowerCase();
                   final original = sourceCues != null && index < sourceCues.length
                       ? sourceCues[index].text.toLowerCase()
@@ -1329,7 +1446,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
       throw StateError('This playback item is not linked to a server library entry.');
     }
     final client = context.tryGetMediaClientForServer(ServerId(serverId));
-    if (client == null) throw StateError('The media server is offline or unavailable.');
+    if (client == null) {
+      throw StateError('The media server is offline or unavailable.');
+    }
     final uploaded = await client.attachSubtitle(
       ratingKey,
       bytes: bytes,
@@ -1345,8 +1464,12 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
 
   String _originTokenForOperation(String operationLabel) {
     final normalized = operationLabel.toLowerCase();
-    if (normalized.contains('translat')) return 'translated';
-    if (normalized.contains('sync') || normalized.contains('repair')) return 'synchronized';
+    if (normalized.contains('translat')) {
+      return 'translated';
+    }
+    if (normalized.contains('sync') || normalized.contains('repair')) {
+      return 'synchronized';
+    }
     return 'generated';
   }
 
@@ -1583,7 +1706,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         type: FileType.custom,
         allowedExtensions: const ['srt'],
       );
-      if (!mounted) return false;
+      if (!mounted) {
+        return false;
+      }
       if (exportPath == null) {
         setState(() => _status = context.t.subtitleAiUi.sRTExportWasCancelledTheActiveTrackA_62f0bcfe);
         return false;
@@ -1601,7 +1726,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
       );
-      if (mounted) setState(() => _status = context.t.subtitleAiUi.reviewedSubtitleExportedAsSRT);
+      if (mounted) {
+        setState(() => _status = context.t.subtitleAiUi.reviewedSubtitleExportedAsSRT);
+      }
       return false;
     }
     if (choice == _SubtitleReviewChoice.exportJson) {
@@ -1642,7 +1769,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         type: FileType.custom,
         allowedExtensions: const ['json'],
       );
-      if (!mounted) return false;
+      if (!mounted) {
+        return false;
+      }
       if (exportPath == null) {
         setState(() => _status = context.t.subtitleAiUi.jSONExportWasCancelledTheActiveTrack_9ae1948d);
         return false;
@@ -1660,12 +1789,16 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
         languageCode: operationLanguageCode,
         wordTimings: reviewedWordTimings,
       );
-      if (mounted) setState(() => _status = context.t.subtitleAiUi.reviewedSubtitleExportedAsVersionedCueJSON);
+      if (mounted) {
+        setState(() => _status = context.t.subtitleAiUi.reviewedSubtitleExportedAsVersionedCueJSON);
+      }
       return false;
     }
     if (choice == _SubtitleReviewChoice.serverAndPlayer) {
       final languageCode = uploadLanguage;
-      if (languageCode == null) throw StateError('The result language could not be identified for server upload.');
+      if (languageCode == null) {
+        throw StateError('The result language could not be identified for server upload.');
+      }
       await _uploadSubtitleToServer(bytes, languageCode, originToken);
       _lastResultUploadedToServer = true;
     }
@@ -1719,7 +1852,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   }
 
   Future<void> _showApplied() async {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     // Keep the result attached to the current session. The path is app-managed
     // temporary storage and will be removed by the OS when its cache is cleared.
     OverlaySheetController.of(context).refocus();
@@ -1766,7 +1901,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
     final languages = <String, TranslateLanguage>{};
     for (final language in SubtitleTranslationService.languages) {
       final code = language.bcpCode.toLowerCase().split(RegExp(r'[-_]')).first;
-      if (RegExp(r'^[a-z]{2,3}$').hasMatch(code)) languages.putIfAbsent(code, () => language);
+      if (RegExp(r'^[a-z]{2,3}$').hasMatch(code)) {
+        languages.putIfAbsent(code, () => language);
+      }
     }
     return languages;
   }
@@ -1822,7 +1959,9 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
   @override
   Widget build(BuildContext context) {
     final providers = SubtitleAiService.availableProviderRequests;
-    if (!providers.contains(_provider)) _provider = SubtitleInferenceProvider.cpu;
+    if (!providers.contains(_provider)) {
+      _provider = SubtitleInferenceProvider.cpu;
+    }
     return BaseVideoControlSheet(
       title: 'AI subtitles',
       icon: Symbols.auto_awesome_rounded,
@@ -1879,7 +2018,14 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
           if (_busy) const LinearProgressIndicator(),
           if (_status != null || _captureStatus != null || _speechProgress != null) ...[
             const SizedBox(height: 8),
-            Text(_speechProgress != null ? subtitleSpeechProgressText(context, _speechProgress!) : _captureStatus != null ? subtitleCaptureStatusText(context, _captureStatus) : _status!, style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              _speechProgress != null
+                  ? subtitleSpeechProgressText(context, _speechProgress!)
+                  : _captureStatus != null
+                  ? subtitleCaptureStatusText(context, _captureStatus)
+                  : _status!,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ],
           if (_error != null) ...[
             const SizedBox(height: 8),
@@ -1915,7 +2061,10 @@ class _SubtitleAiSheetState extends State<SubtitleAiSheet> {
                     if (service.status != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text(subtitleCaptureStatusText(context, service.status), style: Theme.of(context).textTheme.bodySmall),
+                        child: Text(
+                          subtitleCaptureStatusText(context, service.status),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ),
                     FocusableListTile(
                       leading: AppIcon(
@@ -2213,10 +2362,14 @@ class _CapturedTranscriptDialogState extends State<_CapturedTranscriptDialog> {
   Future<void> _seekToCue(SubtitleCue cue) async {
     try {
       final target = widget.service.playbackPositionForCue(cue);
-      if (target.isNegative) return;
+      if (target.isNegative) {
+        return;
+      }
       await widget.player.seek(target);
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.maybeOf(
         context,
       )?.showSnackBar(SnackBar(content: Text(context.t.subtitleAiUi.couldNotSeekToThisTranscriptCue)));

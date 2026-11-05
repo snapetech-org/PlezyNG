@@ -5,9 +5,16 @@ import 'package:plezy/games/romm/romm_link.dart';
 import 'package:plezy/games/romm/romm_models.dart';
 
 RommGame game({int id = 42, String hash = ''}) => RommGame(
-  connectionId: 'library_0001', id: id, platformId: 1, name: 'Game',
-  platform: 'gb', platformName: 'Game Boy', fileName: 'game.gb',
-  extension: 'gb', size: 1024, sha1: hash,
+  connectionId: 'library_0001',
+  id: id,
+  platformId: 1,
+  name: 'Game',
+  platform: 'gb',
+  platformName: 'Game Boy',
+  fileName: 'game.gb',
+  extension: 'gb',
+  size: 1024,
+  sha1: hash,
 );
 
 void main() {
@@ -33,7 +40,15 @@ void main() {
     addTearDown(client.close);
     expect(client.uri('api/roms/42').path, '/romm/api/roms/42');
     expect(client.resource('/assets/cover.jpg').path, '/romm/assets/cover.jpg');
-    for (final target in ['https://other.example/cover', 'https://user:secret@media.example/romm/cover', '../secret', '/romm/%2e%2e/secret']) {
+    for (final target in [
+      'https://other.example/cover',
+      'https://user:secret@media.example/romm/cover',
+      '../secret',
+      '/romm/%2e%2e/secret',
+      '/romm/%252e%252e/secret',
+      '/romm/cover%2f..%2f..%2fsecret',
+      '/romm/cover%5csecret',
+    ]) {
       expect(() => client.resource(target), throwsA(isA<RommFailure>()));
     }
     expect(() => client.uri('https://other.example/rom'), throwsA(isA<RommFailure>()));
@@ -43,15 +58,40 @@ void main() {
 
   test('cached server capabilities cannot enable a browser player', () {
     final fresh = RommCapabilities(
-      observedAt: DateTime.now(), emulation: const {'DISABLE_EMULATOR_JS': false},
+      observedAt: DateTime.now(),
+      emulation: const {'DISABLE_EMULATOR_JS': false},
       scopes: const ['firmware.read'],
     );
     expect(fresh.routes(game(), browserAvailable: true).single.available, isTrue);
     final cached = RommCapabilities.cached(fresh.toJson());
     expect(cached.routes(game(), browserAvailable: true).single.available, isFalse);
-    expect(cached.routes(game(), browserAvailable: false, nativeCores: {'gambatte'},
-      offlineAvailable: true, offlineFileName: 'game.gb').where((r) => r.engine == RommEngine.native).single.available, isTrue);
-    expect(cached.routes(game(), browserAvailable: false, nativeCores: {'gambatte'},
-      offlineAvailable: true, offlineFileName: 'game.zip').where((r) => r.engine == RommEngine.native).single.available, isFalse);
+    expect(
+      cached
+          .routes(
+            game(),
+            browserAvailable: false,
+            nativeCores: {'gambatte'},
+            offlineAvailable: true,
+            offlineFileName: 'game.gb',
+          )
+          .where((r) => r.engine == RommEngine.native)
+          .single
+          .available,
+      isTrue,
+    );
+    expect(
+      cached
+          .routes(
+            game(),
+            browserAvailable: false,
+            nativeCores: {'gambatte'},
+            offlineAvailable: true,
+            offlineFileName: 'game.zip',
+          )
+          .where((r) => r.engine == RommEngine.native)
+          .single
+          .available,
+      isFalse,
+    );
   });
 }

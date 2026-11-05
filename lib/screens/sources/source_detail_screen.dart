@@ -128,7 +128,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
       _conflicts.clear();
       for (final progress in progresses) {
         final conflict = await sources.repository.remoteConflict(profile, progress.key);
-        if (conflict != null) _conflicts[progress.key] = conflict;
+        if (conflict != null) {
+          _conflicts[progress.key] = conflict;
+        }
       }
       _offline.clear();
       for (final file in _entry.files.where((file) => !file.sampleOnly)) {
@@ -137,21 +139,31 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         }
       }
       sources.requireSession(epoch);
-      if (mounted) setState(() => _progress = progresses);
+      if (mounted) {
+        setState(() => _progress = progresses);
+      }
       if (mounted && _entry.kind == SourceItemKind.video) {
         unawaited(_identifyStandaloneMetadata(sources, epoch));
       }
     } catch (e) {
-      if (mounted) setState(() => _error = e);
+      if (mounted) {
+        setState(() => _error = e);
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
   Future<void> _identifyStandaloneMetadata(SourceController sources, int epoch) async {
-    if (_entry.kind != SourceItemKind.video) return;
+    if (_entry.kind != SourceItemKind.video) {
+      return;
+    }
     final source = sources.sources.where((item) => item.id == _entry.sourceId).firstOrNull;
-    if (source == null || source.options['onlineMetadata'] != 'true') return;
+    if (source == null || source.options['onlineMetadata'] != 'true') {
+      return;
+    }
     final entryKey = _entry.key;
     setState(() {
       _metadataLookupPending = true;
@@ -182,12 +194,16 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
 
   Future<void> _qualifyNfsRead() async {
     final controller = context.read<SourceController>();
-    if (_entry.files.isEmpty) return;
+    if (_entry.files.isEmpty) {
+      return;
+    }
     final file = _entry.files.reduce((a, b) => (a.size ?? 0) >= (b.size ?? 0) ? a : b);
     setState(() => _busy = true);
     try {
       final result = await controller.qualifyNfsRead(_entry.sourceId, file);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       await showScopedDialog<void>(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -219,14 +235,18 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         ),
       );
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
   Future<void> _editSharedEntryMapping() async {
     final controller = context.read<SourceController>();
     final current = await controller.sharedEntryMapping(_entry);
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final sharedId = TextEditingController(text: current ?? '');
     final formKey = GlobalKey<FormState>();
     final save = await showScopedDialog<bool>(
@@ -292,11 +312,15 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
     );
     final value = sharedId.text.trim();
     sharedId.dispose();
-    if (save != true || !mounted) return;
+    if (save != true || !mounted) {
+      return;
+    }
     try {
       await controller.setSharedEntryMapping(_entry, value.isEmpty ? null : value);
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final message = error is SourceException && error.reason == SourceFailure.conflict
           ? t.sourceSetup.sharedEntryConflict
           : sourceFailureText(error);
@@ -404,16 +428,22 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
 
   Future<void> _searchOnlineMetadata() async {
     final client = context.read<TrackersProvider>().traktCatalogClient;
-    if (client == null) return;
+    if (client == null) {
+      return;
+    }
     final query = await _metadataSearchQuery();
-    if (query == null || query.trim().isEmpty || !mounted) return;
+    if (query == null || query.trim().isEmpty || !mounted) {
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
     });
     try {
       final page = await client.searchCatalog(query.trim(), limit: 25);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final candidates = page.items
           .where((entry) => entry.media?.title?.trim().isNotEmpty == true)
           .take(25)
@@ -423,10 +453,14 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         return;
       }
       final selected = await _chooseMetadataMatch(candidates);
-      if (selected == null || !mounted) return;
+      if (selected == null || !mounted) {
+        return;
+      }
       final media = selected.media;
       final traktId = media?.ids.trakt;
-      if (media == null || traktId == null) return;
+      if (media == null || traktId == null) {
+        return;
+      }
       final type = selected.show != null ? TraktCatalogType.shows : TraktCatalogType.movies;
       var cast = <String>[];
       try {
@@ -434,7 +468,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         cast = people.cast
             .map((credit) {
               final name = credit.person?.name?.trim();
-              if (name == null || name.isEmpty) return null;
+              if (name == null || name.isEmpty) {
+                return null;
+              }
               final character = credit.characters?.isNotEmpty == true ? credit.characters!.first.trim() : '';
               return character.isEmpty ? name : '$name — $character';
             })
@@ -450,7 +486,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         if (media.ids.imdb != null) 'imdb': media.ids.imdb!,
         if (media.ids.tvdb != null) 'tvdb': media.ids.tvdb.toString(),
       };
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       await context.read<SourceController>().saveOnlineMetadata(
         _entry,
         title: media.title ?? _entry.displayTitle,
@@ -464,9 +502,13 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         cast: cast,
         provider: 'trakt',
       );
-      if (mounted) await _load();
+      if (mounted) {
+        await _load();
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -488,11 +530,15 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
 
   Future<void> _openTrailer() async {
     final uri = _trailerUri;
-    if (uri != null) await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (uri != null) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Future<void> _play(List<PublicationFile> files) async {
-    if (files.isEmpty) return;
+    if (files.isEmpty) {
+      return;
+    }
     final sampleOnly = files.isNotEmpty && files.every((file) => file.sampleOnly);
     if (sampleOnly && files.length != 1) {
       throw const SourceException(SourceFailure.unsupported);
@@ -519,7 +565,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         ),
       );
     }
-    if (mounted) await _load();
+    if (mounted) {
+      await _load();
+    }
   }
 
   Future<void> _playSharedVideo(List<PublicationFile> files) async {
@@ -530,7 +578,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
     try {
       await sourcePlayback.stop();
       final descriptor = await session.resolve(session.items.first);
-      if (!mounted || !session.valid) throw const SourceException(SourceFailure.cancelled);
+      if (!mounted || !session.valid) {
+        throw const SourceException(SourceFailure.cancelled);
+      }
       playbackState.setPlaybackFromLocalQueue(
         LocalPlayQueue(items: session.items, currentIndex: 0),
         contextKey: session.contextKey,
@@ -548,10 +598,14 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         ),
       );
     } finally {
-      if (playbackState.shuffleContextKey == session.contextKey) playbackState.clearShuffle();
+      if (playbackState.shuffleContextKey == session.contextKey) {
+        playbackState.clearShuffle();
+      }
       await session.close();
     }
-    if (mounted) await _load();
+    if (mounted) {
+      await _load();
+    }
   }
 
   Future<void> _read(PublicationFile file) async {
@@ -566,11 +620,15 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         pageBuilder: (_, _, _) => PublicationReaderScreen(entry: _entry, file: file),
       ),
     );
-    if (mounted) await _load();
+    if (mounted) {
+      await _load();
+    }
   }
 
   Future<void> _download(PublicationFile file) async {
-    if (_transfers.containsKey(file.id)) return;
+    if (_transfers.containsKey(file.id)) {
+      return;
+    }
     setState(() => _transfers[file.id] = null);
     try {
       await context.read<SourceController>().content(
@@ -601,7 +659,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
     )) {
       return;
     }
-    if (!mounted || sources.profileId != profile) return;
+    if (!mounted || sources.profileId != profile) {
+      return;
+    }
     await sources.downloads.remove(profile, _entry.sourceId, file);
     await _load();
   }
@@ -610,7 +670,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
     final sources = context.read<SourceController>(), profile = sourcesProfile(context);
     await context.read<SourcePlayback>().stop();
     final current = await sources.repository.progress(profile, progress.key);
-    if (current == null) return;
+    if (current == null) {
+      return;
+    }
     final value = action == 'reset'
         ? PublicationProgress(
             entryKey: current.entryKey,
@@ -627,7 +689,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
   Future<void> _history(PublicationProgress progress) async {
     final sources = context.read<SourceController>(), profile = sourcesProfile(context);
     final history = await sources.repository.history(profile, progress.key);
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final restore = await Navigator.push<PublicationProgress>(
       context,
       MaterialPageRoute(
@@ -658,7 +722,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         ),
       ),
     );
-    if (restore == null || !mounted || sources.profileId != profile) return;
+    if (restore == null || !mounted || sources.profileId != profile) {
+      return;
+    }
     await context.read<SourcePlayback>().stop();
     final latest = await sources.repository.progress(profile, progress.key);
     await sources.repository.saveProgress(
@@ -674,7 +740,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
       context,
       MaterialPageRoute(builder: (_) => _AudioOrder(files: _entry.audio)),
     );
-    if (ordered == null || !mounted) return;
+    if (ordered == null || !mounted) {
+      return;
+    }
     final sources = context.read<SourceController>();
     sources.requireSession();
     _entry = SourceEntry.fromJson({
@@ -699,8 +767,14 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
       focusableAppBarActions: true,
       actions: [
         if (_entry.identifiers['transcript'] == 'available')
-          IconButton(tooltip: t.subtitleAiUi.searchTranscript, icon: const Icon(Icons.subject),
-            onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PodcastTranscriptScreen(entry: _entry)))),
+          IconButton(
+            tooltip: t.subtitleAiUi.searchTranscript,
+            icon: const AppIcon(Symbols.subject_rounded),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(builder: (_) => PodcastTranscriptScreen(entry: _entry)),
+            ),
+          ),
         if (source?.kind == FileSourceKind.nfs && _entry.files.isNotEmpty)
           IconButton(
             tooltip: t.sourceSetup.nfsReadTest,
@@ -730,7 +804,9 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
           icon: const AppIcon(Symbols.cloud_sync_rounded),
           onPressed: () async {
             await Navigator.push(context, MaterialPageRoute(builder: (_) => const SourceSyncScreen()));
-            if (mounted) await _load();
+            if (mounted) {
+              await _load();
+            }
           },
         ),
         IconButton(
@@ -1162,7 +1238,9 @@ class _AudioOrderState extends State<_AudioOrder> {
   late final List<PublicationFile> _files = [...widget.files];
   void move(int i, int direction) {
     final next = i + direction;
-    if (next < 0 || next >= _files.length) return;
+    if (next < 0 || next >= _files.length) {
+      return;
+    }
     setState(() {
       final f = _files.removeAt(i);
       _files.insert(next, f);

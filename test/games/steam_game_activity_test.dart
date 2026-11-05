@@ -9,6 +9,7 @@ void main() {
   const id = '76561198000000000';
   test('activity uses a bearer header, no caller identity and explicit social opt-in', () async {
     final client = OAuthProxyClient(
+      serviceBaseUrl: 'https://relay.example.test',
       httpClient: MockClient((request) async {
         expect(request.url.query, isEmpty);
         expect(request.headers['Authorization'], 'Bearer scoped-token');

@@ -31,10 +31,16 @@ void main() {
     addTearDown(player.dispose);
     final actions = <NativeVideoWindowAction>[];
     var returned = 0;
-    expect(await player.detachVideoWindow(
-      title: 'Current source', geometryKey: List.filled(64, 'a').join(), labels: const {},
-      onIntent: actions.add, onRestored: () => returned++,
-    ), isTrue);
+    expect(
+      await player.detachVideoWindow(
+        title: 'Current source',
+        geometryKey: List.filled(64, 'a').join(),
+        labels: const {},
+        onIntent: actions.add,
+        onRestored: () => returned++,
+      ),
+      isTrue,
+    );
     final token = (calls.first.arguments as Map)['token'];
     player.handlePlayerEvent('detached-window-action', {'token': 'retired', 'action': 'togglePlayback'});
     player.handlePlayerEvent('detached-window-action', {'token': token, 'action': 'run'});
@@ -57,7 +63,9 @@ void main() {
   test('native close revokes queued controls before they can affect the returned owner', () async {
     Map? arguments;
     messenger.setMockMethodCallHandler(method, (call) async {
-      if (call.method == 'detachVideoWindow') arguments = call.arguments as Map;
+      if (call.method == 'detachVideoWindow') {
+        arguments = call.arguments as Map;
+      }
       return true;
     });
     final player = _WindowPlayer();
@@ -65,8 +73,14 @@ void main() {
     final release = Completer<void>();
     var intents = 0, restored = 0;
     await player.detachVideoWindow(
-      title: 'Owner', geometryKey: List.filled(64, 'b').join(), labels: const {},
-      onIntent: (_) async { intents++; await release.future; }, onRestored: () => restored++,
+      title: 'Owner',
+      geometryKey: List.filled(64, 'b').join(),
+      labels: const {},
+      onIntent: (_) async {
+        intents++;
+        await release.future;
+      },
+      onRestored: () => restored++,
     );
     final token = arguments!['token'];
     player.handlePlayerEvent('detached-window-action', {'token': token, 'action': 'togglePlayback'});
@@ -88,13 +102,27 @@ void main() {
     final returned = Completer<bool>();
     var detached = true, restored = 0;
     final descriptor = WorkspaceSessionDescriptor(
-      id: 'video:one', title: 'One', kind: MultiviewMediaKind.video, openedAt: DateTime.utc(2026),
+      id: 'video:one',
+      title: 'One',
+      kind: MultiviewMediaKind.video,
+      openedAt: DateTime.utc(2026),
     );
-    workspace.register(WorkspaceSurfaceRegistration(
-      descriptor: descriptor, buildSurface: (_) => const SizedBox(), onRestore: () => restored++,
-      onAttachWindow: () async { final accepted = await returned.future; if (accepted) detached = false; return accepted; },
-      onDetachWindow: () async => true, isWindowDetached: () => detached,
-    ));
+    workspace.register(
+      WorkspaceSurfaceRegistration(
+        descriptor: descriptor,
+        buildSurface: (_) => const SizedBox(),
+        onRestore: () => restored++,
+        onAttachWindow: () async {
+          final accepted = await returned.future;
+          if (accepted) {
+            detached = false;
+          }
+          return accepted;
+        },
+        onDetachWindow: () async => true,
+        isWindowDetached: () => detached,
+      ),
+    );
     expect(workspace.restore(descriptor.id), isTrue);
     expect(restored, 0);
     expect(workspace.isRestored(descriptor.id), isFalse);

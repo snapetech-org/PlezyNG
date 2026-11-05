@@ -85,7 +85,9 @@ class SourceDatabase extends GeneratedDatabase {
         for (final row in rows) {
           try {
             final entry = SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('payload'))));
-            if (entry.kind == SourceItemKind.video) await identity.recordSource(row.read<String>('profile'), entry);
+            if (entry.kind == SourceItemKind.video) {
+              await identity.recordSource(row.read<String>('profile'), entry);
+            }
           } on FormatException {
             /* keep corrupt cached rows recoverable */
           }
@@ -163,8 +165,12 @@ class SourceDatabase extends GeneratedDatabase {
           await customStatement(statement);
         }
       }
-      if (from < 9) await _createEntrySearchIndex();
-      if (from >= 5 && from < 10) await _refreshEntrySearchText();
+      if (from < 9) {
+        await _createEntrySearchIndex();
+      }
+      if (from >= 5 && from < 10) {
+        await _refreshEntrySearchText();
+      }
       if (from < 8) {
         await customStatement("ALTER TABLE downloads ADD COLUMN source_id TEXT NOT NULL DEFAULT ''");
         await customStatement("ALTER TABLE downloads ADD COLUMN file_payload TEXT NOT NULL DEFAULT '{}'");
@@ -180,13 +186,19 @@ class SourceDatabase extends GeneratedDatabase {
           DateTime.now().millisecondsSinceEpoch,
         ]);
       }
-      if (from < 12) await _createPodcastSyncSchema();
+      if (from < 12) {
+        await _createPodcastSyncSchema();
+      }
     },
   );
 
   Future<void> _createPodcastSyncSchema() async {
-    await customStatement('CREATE TABLE podcast_sync_ack (profile TEXT NOT NULL, account TEXT NOT NULL, key TEXT NOT NULL, revision INTEGER NOT NULL, content_hash TEXT NOT NULL, PRIMARY KEY(profile,account,key))');
-    await customStatement("CREATE INDEX entries_podcast_sync_identity ON entries(profile,CASE WHEN json_valid(payload) THEN json_extract(payload,'\$.identifiers.podcastSyncIdentity') END)");
+    await customStatement(
+      'CREATE TABLE podcast_sync_ack (profile TEXT NOT NULL, account TEXT NOT NULL, key TEXT NOT NULL, revision INTEGER NOT NULL, content_hash TEXT NOT NULL, PRIMARY KEY(profile,account,key))',
+    );
+    await customStatement(
+      "CREATE INDEX entries_podcast_sync_identity ON entries(profile,CASE WHEN json_valid(payload) THEN json_extract(payload,'\$.identifiers.podcastSyncIdentity') END)",
+    );
   }
 
   Future<void> _createRemoteWorkerSchema() async {
@@ -208,7 +220,9 @@ class SourceDatabase extends GeneratedDatabase {
         'SELECT rowid AS row_id,payload FROM entries WHERE rowid>? ORDER BY rowid LIMIT 200',
         variables: [Variable(after)],
       ).get();
-      if (rows.isEmpty) return;
+      if (rows.isEmpty) {
+        return;
+      }
       for (final row in rows) {
         after = row.read<int>('row_id');
         SourceEntry entry;
@@ -272,7 +286,9 @@ class SourceRepository {
   final _removedProfiles = <String>{};
   bool? _ftsSearchAvailable;
   void _writable(String profile) {
-    if (_removedProfiles.contains(profile)) throw const SourceException(SourceFailure.cancelled);
+    if (_removedProfiles.contains(profile)) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
   }
 
   Future<void> forgetProfile(String profile) async {
@@ -325,15 +341,21 @@ class SourceRepository {
   }
 
   Future<void> saveSources(List<(FileSource, Map<String, String>)> values) async {
-    if (values.length > 500) throw const SourceException(SourceFailure.invalidData);
+    if (values.length > 500) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final prepared = <(FileSource, String)>[];
     final ids = <String>{};
     for (final (source, credentials) in values) {
       _validateSourceEndpoint(source);
-      if (!ids.add('${source.profileId}\u0000${source.id}')) throw const SourceException(SourceFailure.conflict);
+      if (!ids.add('${source.profileId}\u0000${source.id}')) {
+        throw const SourceException(SourceFailure.conflict);
+      }
       prepared.add((source, await protect(jsonEncode(credentials))));
     }
-    if (prepared.isEmpty) return;
+    if (prepared.isEmpty) {
+      return;
+    }
     final profile = prepared.first.$1.profileId;
     if (prepared.any((item) => item.$1.profileId != profile)) {
       throw const SourceException(SourceFailure.permission);
@@ -382,9 +404,13 @@ class SourceRepository {
           variables: [Variable(source.profileId), Variable(source.id)],
         )
         .getSingleOrNull();
-    if (row == null) throw const SourceException(SourceFailure.authentication);
+    if (row == null) {
+      throw const SourceException(SourceFailure.authentication);
+    }
     final clear = await reveal(row.read<String>('credentials'));
-    if (clear == null) throw const SourceException(SourceFailure.authentication);
+    if (clear == null) {
+      throw const SourceException(SourceFailure.authentication);
+    }
     return sourceMap(jsonDecode(clear)).map((k, v) => MapEntry(k, '$v'));
   }
 
@@ -423,7 +449,9 @@ class SourceRepository {
   Future<void> cacheEntries(String profile, List<SourceEntry> entries) => database.transaction(() async {
     _writable(profile);
     for (final entry in entries) {
-      if (entry.kind == SourceItemKind.video) await CanonicalLibrary(database).recordSource(profile, entry);
+      if (entry.kind == SourceItemKind.video) {
+        await CanonicalLibrary(database).recordSource(profile, entry);
+      }
       await database.customStatement(
         'INSERT INTO entries (profile,source,id,parent,payload,search,entry_key) VALUES (?,?,?,?,?,?,?) '
         'ON CONFLICT(profile,source,id) DO UPDATE SET parent=excluded.parent,payload=excluded.payload,search=excluded.search,entry_key=excluded.entry_key',
@@ -464,7 +492,9 @@ class SourceRepository {
 
   Future<bool> _hasFullTextSearch() async {
     final cached = _ftsSearchAvailable;
-    if (cached != null) return cached;
+    if (cached != null) {
+      return cached;
+    }
     try {
       await database.customSelect('SELECT rowid FROM entries_search_fts LIMIT 0').get();
       _ftsSearchAvailable = true;
@@ -504,7 +534,9 @@ class SourceRepository {
   Future<void> finishSourceScan(String profile, String source, int generation, {required bool Function() isCurrent}) =>
       database.transaction(() async {
         _writable(profile);
-        if (!isCurrent()) throw const SourceException(SourceFailure.cancelled);
+        if (!isCurrent()) {
+          throw const SourceException(SourceFailure.cancelled);
+        }
         final active = await database
             .customSelect(
               'SELECT generation FROM source_scans WHERE profile=? AND source=?',
@@ -530,9 +562,13 @@ class SourceRepository {
                   .get())
             row.read<String>('key'): row.read<String>('fingerprint'),
         };
-        if (!isCurrent()) throw const SourceException(SourceFailure.cancelled);
+        if (!isCurrent()) {
+          throw const SourceException(SourceFailure.cancelled);
+        }
         for (final row in stale) {
-          if (!isCurrent()) throw const SourceException(SourceFailure.cancelled);
+          if (!isCurrent()) {
+            throw const SourceException(SourceFailure.cancelled);
+          }
           final id = row.read<String>('id');
           final entry = SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('payload'))));
           final retainedOffline = entry.files.any((file) => completed[sourceKey(source, file.id)] == file.fingerprint);
@@ -641,9 +677,13 @@ class SourceRepository {
     Set<String>? sourceIds,
     int limit = 500,
   }) async {
-    if (identifiers.isEmpty) return const [];
+    if (identifiers.isEmpty) {
+      return const [];
+    }
     final configuredSourceIds = sourceIds?.where((id) => id.trim().isNotEmpty).toList(growable: false);
-    if (configuredSourceIds != null && configuredSourceIds.isEmpty) return const [];
+    if (configuredSourceIds != null && configuredSourceIds.isEmpty) {
+      return const [];
+    }
     const aliases = <String, List<String>>{
       'imdb': ['imdb', 'imdbid'],
       'tmdb': ['tmdb', 'tmdbid', 'themoviedb'],
@@ -673,7 +713,9 @@ class SourceRepository {
     for (final entry in identifiers.entries) {
       final normalizedKey = entry.key.toLowerCase();
       final keyAliases = aliases[normalizedKey];
-      if (keyAliases == null || entry.value.trim().isEmpty) continue;
+      if (keyAliases == null || entry.value.trim().isEmpty) {
+        continue;
+      }
       final normalizedValue = normalizedKey == 'isbn10' || normalizedKey == 'isbn13'
           ? entry.value.replaceAll(RegExp(r'[\s-]'), '').toLowerCase()
           : entry.value.trim().toLowerCase();
@@ -686,9 +728,13 @@ class SourceRepository {
       );
       variables.addAll(keyAliases.map((key) => Variable<Object>(key)));
       variables.add(Variable<Object>(normalizedValue));
-      if (normalizedKey == 'doi') variables.add(Variable<Object>(normalizedValue));
+      if (normalizedKey == 'doi') {
+        variables.add(Variable<Object>(normalizedValue));
+      }
     }
-    if (clauses.isEmpty) return const [];
+    if (clauses.isEmpty) {
+      return const [];
+    }
     final rows = await database
         .customSelect(
           "SELECT DISTINCT entries.payload FROM entries, json_each(entries.payload, '\$.identifiers') AS identifier "
@@ -739,7 +785,9 @@ class SourceRepository {
     final normalizedQuery = query?.trim().toLowerCase() ?? '';
     final useFts = normalizedQuery.runes.length >= 3 && await _hasFullTextSearch();
     final after = cursor == null ? 0 : int.tryParse(cursor);
-    if (after == null || after < 0) throw const SourceException(SourceFailure.invalidData);
+    if (after == null || after < 0) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     Future<List<QueryRow>> fetch(bool fts) {
       final pagePredicates = [...predicates];
       final pageVariables = [...variables];
@@ -889,7 +937,9 @@ class SourceRepository {
       jsonEncode(annotation.toJson()),
     ]);
     for (final event in await pendingEvents(profile)) {
-      if (event['kind'] != 'annotation' || event['key'] != annotation.entryKey) continue;
+      if (event['kind'] != 'annotation' || event['key'] != annotation.entryKey) {
+        continue;
+      }
       try {
         final existing = BookAnnotation.fromJson(sourceMap(jsonDecode(event['payload'] as String)));
         if (existing.id == annotation.id) {
@@ -925,7 +975,9 @@ class SourceRepository {
   /// Loads progress for a visible slice without decoding every profile record.
   Future<List<PublicationProgress>> progressForEntries(String profile, Iterable<String> entryKeys) async {
     final keys = entryKeys.toSet().toList(growable: false);
-    if (keys.isEmpty) return const [];
+    if (keys.isEmpty) {
+      return const [];
+    }
     final result = <PublicationProgress>[];
     for (var start = 0; start < keys.length; start += 500) {
       final chunk = keys.skip(start).take(500).toList(growable: false);
@@ -1070,34 +1122,64 @@ class SourceRepository {
           .toList();
 
   Future<SourceEntry?> podcastEntryBySyncIdentity(String profile, String identity) async {
-    final rows = await database.customSelect(
-      "SELECT payload FROM entries WHERE profile=? AND (CASE WHEN json_valid(payload) THEN json_extract(payload,'\$.identifiers.podcastSyncIdentity') END)=? LIMIT 2",
-      variables: [Variable(profile), Variable(identity)]).get();
-    if (rows.length != 1) return null; // Do not guess between duplicate feed connections.
+    final rows = await database
+        .customSelect(
+          "SELECT payload FROM entries WHERE profile=? AND (CASE WHEN json_valid(payload) THEN json_extract(payload,'\$.identifiers.podcastSyncIdentity') END)=? LIMIT 2",
+          variables: [Variable(profile), Variable(identity)],
+        )
+        .get();
+    if (rows.length != 1) {
+      return null;
+    } // Do not guess between duplicate feed connections.
     return SourceEntry.fromJson(sourceMap(jsonDecode(rows.single.read<String>('payload'))));
   }
 
   Future<({int revision, String hash})?> podcastSyncAck(String profile, String account, String key) async {
-    final row = await database.customSelect('SELECT revision,content_hash FROM podcast_sync_ack WHERE profile=? AND account=? AND key=?',
-      variables: [Variable(profile), Variable(account), Variable(key)]).getSingleOrNull();
+    final row = await database
+        .customSelect(
+          'SELECT revision,content_hash FROM podcast_sync_ack WHERE profile=? AND account=? AND key=?',
+          variables: [Variable(profile), Variable(account), Variable(key)],
+        )
+        .getSingleOrNull();
     return row == null ? null : (revision: row.read<int>('revision'), hash: row.read<String>('content_hash'));
   }
+
   Future<void> acknowledgePodcastSync(String profile, String account, PublicationProgress progress, String hash) {
     _writable(profile);
-    return database.customStatement('INSERT INTO podcast_sync_ack VALUES (?,?,?,?,?) ON CONFLICT(profile,account,key) DO UPDATE SET revision=excluded.revision,content_hash=excluded.content_hash',
-      [profile, account, progress.key, progress.revision, hash]);
+    return database.customStatement(
+      'INSERT INTO podcast_sync_ack VALUES (?,?,?,?,?) ON CONFLICT(profile,account,key) DO UPDATE SET revision=excluded.revision,content_hash=excluded.content_hash',
+      [profile, account, progress.key, progress.revision, hash],
+    );
   }
+
   Future<void> forgetPodcastSyncAck(String profile, String account, String key) {
     _writable(profile);
-    return database.customStatement('DELETE FROM podcast_sync_ack WHERE profile=? AND account=? AND key=?', [profile, account, key]);
+    return database.customStatement('DELETE FROM podcast_sync_ack WHERE profile=? AND account=? AND key=?', [
+      profile,
+      account,
+      key,
+    ]);
   }
-  Future<List<({int row, SourceEntry entry, PublicationProgress progress})>> podcastSyncChanges(String profile, String account, {int after = 0}) async {
-    final rows = await database.customSelect(
-      "SELECT p.rowid AS row_id,e.payload AS item,p.payload AS progress_value FROM progress p JOIN entries e ON e.profile=p.profile AND e.entry_key=p.entry LEFT JOIN podcast_sync_ack a ON a.profile=p.profile AND a.account=? AND a.key=p.key WHERE p.profile=? AND p.rowid>? AND (CASE WHEN json_valid(e.payload) THEN json_extract(e.payload,'\$.identifiers.podcast') END)='episode' AND (a.revision IS NULL OR a.revision != p.revision) ORDER BY p.rowid LIMIT 500",
-      variables: [Variable(account), Variable(profile), Variable(after)]).get();
-    return [for (final row in rows) (row: row.read<int>('row_id'),
-      entry: SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('item')))),
-      progress: PublicationProgress.fromJson(sourceMap(jsonDecode(row.read<String>('progress_value')))))];
+
+  Future<List<({int row, SourceEntry entry, PublicationProgress progress})>> podcastSyncChanges(
+    String profile,
+    String account, {
+    int after = 0,
+  }) async {
+    final rows = await database
+        .customSelect(
+          "SELECT p.rowid AS row_id,e.payload AS item,p.payload AS progress_value FROM progress p JOIN entries e ON e.profile=p.profile AND e.entry_key=p.entry LEFT JOIN podcast_sync_ack a ON a.profile=p.profile AND a.account=? AND a.key=p.key WHERE p.profile=? AND p.rowid>? AND (CASE WHEN json_valid(e.payload) THEN json_extract(e.payload,'\$.identifiers.podcast') END)='episode' AND (a.revision IS NULL OR a.revision != p.revision) ORDER BY p.rowid LIMIT 500",
+          variables: [Variable(account), Variable(profile), Variable(after)],
+        )
+        .get();
+    return [
+      for (final row in rows)
+        (
+          row: row.read<int>('row_id'),
+          entry: SourceEntry.fromJson(sourceMap(jsonDecode(row.read<String>('item')))),
+          progress: PublicationProgress.fromJson(sourceMap(jsonDecode(row.read<String>('progress_value')))),
+        ),
+    ];
   }
 
   Future<Map<String, dynamic>> preference(String profile, String key) async {
@@ -1152,9 +1234,13 @@ class SourceRepository {
 
   Future<Map<String, dynamic>> privatePreference(String profile, String key) async {
     final stored = await preference(profile, key);
-    if (stored['sealed'] is! String) return {};
+    if (stored['sealed'] is! String) {
+      return {};
+    }
     final clear = await reveal(stored['sealed'] as String);
-    if (clear == null) throw const SourceException(SourceFailure.authentication);
+    if (clear == null) {
+      throw const SourceException(SourceFailure.authentication);
+    }
     return sourceMap(jsonDecode(clear));
   }
 
@@ -1167,7 +1253,9 @@ class SourceRepository {
   /// Deletes a known set of private integration preferences across profiles
   /// during app-wide sign-out without removing the profiles' source files.
   Future<void> forgetPreferencesForAllProfiles(Set<String> keys) async {
-    if (keys.isEmpty) return;
+    if (keys.isEmpty) {
+      return;
+    }
     final placeholders = List.filled(keys.length, '?').join(',');
     await database.transaction(
       () => database.customStatement(

@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   disk_usage
   flutter_secure_storage_linux
   os_media_controls
+  record_linux
   screen_retriever_linux
   sentry_flutter
   universal_gamepad

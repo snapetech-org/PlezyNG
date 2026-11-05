@@ -1260,10 +1260,12 @@ val stageMilkRustRuntime by tasks.registering(Exec::class) {
     if (localFile.isFile) localFile.inputStream().use { localProperties.load(it) }
     val sdkRoot = System.getenv("ANDROID_HOME") ?: localProperties.getProperty("sdk.dir")
       ?: throw GradleException("The pinned Android SDK is required for MilkRust")
-    commandLine("python3", "scripts/visualizer/build_runtime.py", "--platform", "android",
+    commandLine(
+      "python3", "scripts/visualizer/build_runtime.py", "--platform", "android",
       "--architectures", mpvAbis.joinToString(","),
       "--ndk", File(sdkRoot, "ndk/29.0.14206865").absolutePath,
-      "--output", "build/visualizer-native")
+      "--output", "build/visualizer-native"
+    )
   }
 }
 

@@ -252,7 +252,8 @@ class PublicationFile {
     // Accept the earlier PR schema while always writing the canonical key.
     sampleOnly: j['sampleOnly'] as bool? ?? j['sample'] as bool? ?? false,
     sealedAccessHint: j['sealedAccessHint'] is String && (j['sealedAccessHint'] as String).length <= 32768
-        ? j['sealedAccessHint'] as String : null,
+        ? j['sealedAccessHint'] as String
+        : null,
   );
 }
 
@@ -383,13 +384,17 @@ class SourceEntry {
   /// Video source names begin as filenames. Keep their descriptive stem while
   /// omitting only the container extension in user-facing titles.
   String get displayTitle {
-    if (kind != SourceItemKind.video) return title;
+    if (kind != SourceItemKind.video) {
+      return title;
+    }
     // Offline NFO titles stay authoritative; online matching only replaces the
     // original filename stem when no richer local title was supplied.
     final filename = files.firstOrNull?.name;
     final isFilename = filename == null || filename == title;
     final matched = onlineTitle?.trim();
-    if (isFilename && matched?.isNotEmpty == true) return matched!;
+    if (isFilename && matched?.isNotEmpty == true) {
+      return matched!;
+    }
     return isFilename ? p.withoutExtension(title) : title;
   }
 
@@ -542,7 +547,9 @@ class ContentLease {
     final seenHeaders = <String>{};
     for (final entry in headers.entries) {
       final name = entry.key.toLowerCase();
-      if (!seenHeaders.add(name)) return false;
+      if (!seenHeaders.add(name)) {
+        return false;
+      }
       if (name == 'authorization') {
         final value = entry.value;
         if (!(value.startsWith('Basic ') || value.startsWith('Bearer '))) {
@@ -747,7 +754,9 @@ SourceItemKind classifySourceFile(String name, [String mime = '']) {
   if (const {'.epub', '.pdf'}.contains(ext) || const {'application/epub+zip', 'application/pdf'}.contains(mime)) {
     return SourceItemKind.ebook;
   }
-  if (ext == '.m4b') return SourceItemKind.audiobook;
+  if (ext == '.m4b') {
+    return SourceItemKind.audiobook;
+  }
   if (mime.startsWith('audio/') ||
       const {
         '.mp3',

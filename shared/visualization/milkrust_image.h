@@ -7,4 +7,4 @@ struct MilkRustImage {
   uint32_t width = 0, height = 0;
   std::vector<uint8_t> rgba;
 };
-}
+}  // namespace plezy::visualization

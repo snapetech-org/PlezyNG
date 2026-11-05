@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Repair integrated Games, RomM, karaoke, visualizer, localization and native runtime build failures. Keep optional fork services from breaking local Games and companion remote sessions when no relay is configured, and preserve results and filters during progressive search.
+
 - Include webOS and Tizen in every complete versioned release, verify actual package source and checksums, and build the release matrix once after exact-source CI. Keep physical-device qualification separate from feature availability.
 - Isolate offline converter workers from app and Python loader overrides so bundled runtimes also work on newer Linux distributions with a different system shell.
 - Prepare 3.0.1 with matching webOS metadata and a shared Linux client SDK that resolves without the producer's private Lua and Wayland protocol build dependencies.

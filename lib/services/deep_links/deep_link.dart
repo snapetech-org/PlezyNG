@@ -43,7 +43,9 @@ sealed class DeepLink {
   /// Parses [link], or returns null when it is not a well-formed Plezy link.
   static DeepLink? tryParse(String link) {
     final uri = Uri.tryParse(link.trim());
-    if (uri == null || !acceptedSchemes.contains(uri.scheme.toLowerCase())) return null;
+    if (uri == null || !acceptedSchemes.contains(uri.scheme.toLowerCase())) {
+      return null;
+    }
     final Map<String, String> params;
     try {
       params = uri.queryParameters;
@@ -99,7 +101,9 @@ final class OpenMediaLink extends DeepLink {
 
   static OpenMediaLink? _parse(Map<String, String> params, String? profile) {
     final address = _param(params, 'url');
-    if (address == null || address.length > 4096) return null;
+    if (address == null || address.length > 4096) {
+      return null;
+    }
     final uri = Uri.tryParse(address);
     if (uri == null ||
         uri.scheme.toLowerCase() != 'https' ||
@@ -154,9 +158,13 @@ final class PlayLink extends DeepLink {
       'shuffle' => PlayMode.shuffle,
       _ => null,
     };
-    if (mode == null) return null;
+    if (mode == null) {
+      return null;
+    }
     final target = PlayTarget._parse(params);
-    if (target == null) return null;
+    if (target == null) {
+      return null;
+    }
     return PlayLink(target: target, mode: mode, profile: profile);
   }
 
@@ -173,7 +181,9 @@ sealed class PlayTarget {
     final contentId = _param(params, 'content_id');
     if (contentId != null) {
       final parsed = SystemShelfService.parseContentId(contentId);
-      if (parsed == null) return null;
+      if (parsed == null) {
+        return null;
+      }
       return ItemPlayTarget(serverId: parsed.$1, itemId: parsed.$2);
     }
 
@@ -181,7 +191,9 @@ sealed class PlayTarget {
     final id = _param(params, 'id');
     if (server != null || id != null) {
       // Item ids are per server, so an id means nothing without its server.
-      if (server == null || id == null) return null;
+      if (server == null || id == null) {
+        return null;
+      }
       return ItemPlayTarget(serverId: ServerId(server), itemId: id);
     }
 
@@ -190,20 +202,34 @@ sealed class PlayTarget {
       'show' => MediaKind.show,
       _ => null,
     };
-    if (kind == null) return null;
+    if (kind == null) {
+      return null;
+    }
     final tmdb = _param(params, 'tmdb');
     final tvdb = _param(params, 'tvdb');
     final imdb = _param(params, 'imdb');
     final plex = _param(params, 'plex');
-    if (tmdb != null && !_number.hasMatch(tmdb)) return null;
-    if (tvdb != null && !_number.hasMatch(tvdb)) return null;
-    if (imdb != null && !_imdbId.hasMatch(imdb)) return null;
-    if (plex != null && !_plexHash.hasMatch(plex)) return null;
+    if (tmdb != null && !_number.hasMatch(tmdb)) {
+      return null;
+    }
+    if (tvdb != null && !_number.hasMatch(tvdb)) {
+      return null;
+    }
+    if (imdb != null && !_imdbId.hasMatch(imdb)) {
+      return null;
+    }
+    if (plex != null && !_plexHash.hasMatch(plex)) {
+      return null;
+    }
     final tmdbId = tmdb == null ? null : int.tryParse(tmdb);
     final tvdbId = tvdb == null ? null : int.tryParse(tvdb);
-    if ((tmdb != null && tmdbId == null) || (tvdb != null && tvdbId == null)) return null;
+    if ((tmdb != null && tmdbId == null) || (tvdb != null && tvdbId == null)) {
+      return null;
+    }
     final ids = ExternalIds(tmdb: tmdbId, tvdb: tvdbId, imdb: imdb?.toLowerCase());
-    if (!ids.hasCatalogIds && plex == null) return null;
+    if (!ids.hasCatalogIds && plex == null) {
+      return null;
+    }
     return CatalogPlayTarget(kind: kind, ids: ids, plexHash: plex);
   }
 
@@ -286,14 +312,18 @@ final class LiveLink extends DeepLink {
 
   static LiveLink? _parse(Map<String, String> params, String? profile) {
     final channel = _param(params, 'channel');
-    if (channel == null) return null;
+    if (channel == null) {
+      return null;
+    }
     final start = switch (_param(params, 'start')?.toLowerCase()) {
       null => LiveTvStartPosition.ask,
       'beginning' || 'start' => LiveTvStartPosition.beginning,
       'live' || 'now' => LiveTvStartPosition.live,
       _ => null,
     };
-    if (start == null) return null;
+    if (start == null) {
+      return null;
+    }
     return LiveLink(
       channel: channel,
       serverId: serverIdOrNull(_param(params, 'server')),
@@ -315,7 +345,9 @@ final class LiveLink extends DeepLink {
     ];
     for (final rule in rules) {
       final matches = channels.where(rule).toList(growable: false);
-      if (matches.length == 1) return matches.single;
+      if (matches.length == 1) {
+        return matches.single;
+      }
       if (matches.length > 1) {
         appLogger.w('Live link: channel "$channel" is ambiguous (${matches.length} matches)');
         return null;
@@ -356,7 +388,9 @@ final class ExternalPlayerReturnLink extends DeepLink {
 /// Null when nothing matches or a rule matches several profiles.
 Profile? resolveLinkProfile(List<Profile> profiles, String ref) {
   for (final profile in profiles) {
-    if (profile.id == ref) return profile;
+    if (profile.id == ref) {
+      return profile;
+    }
   }
   final wanted = ref.trim().toLowerCase();
   final rules = <bool Function(Profile)>[
@@ -365,7 +399,9 @@ Profile? resolveLinkProfile(List<Profile> profiles, String ref) {
   ];
   for (final rule in rules) {
     final matches = profiles.where(rule).toList(growable: false);
-    if (matches.length == 1) return matches.single;
+    if (matches.length == 1) {
+      return matches.single;
+    }
     if (matches.length > 1) {
       appLogger.w('Deep link: profile "$ref" is ambiguous (${matches.length} matches)');
       return null;
@@ -389,7 +425,9 @@ DeepLink? _legacyProfileLink(Uri uri, Map<String, String> params) {
       _param(params, 'profileId') ??
       _param(params, 'profile') ??
       (uri.pathSegments.isEmpty ? null : uri.pathSegments.first.trim());
-  if (ref == null || ref.isEmpty || ref.contains('/')) return null;
+  if (ref == null || ref.isEmpty || ref.contains('/')) {
+    return null;
+  }
   return OpenLink(profile: ref);
 }
 
@@ -404,7 +442,10 @@ final class GameLink extends DeepLink {
   const GameLink(this.target);
   final RommLink target;
   static GameLink? parse(Uri uri) {
-    final target = RommLink.parse(uri); return target == null ? null : GameLink(target);
+    final target = RommLink.parse(uri);
+    return target == null ? null : GameLink(target);
   }
-  @override Uri toUri() => target.uri;
+
+  @override
+  Uri toUri() => target.uri;
 }

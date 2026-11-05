@@ -25,8 +25,10 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
 
   fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, results: IntArray): Boolean {
     if (requestCode != MICROPHONE_PERMISSION) return false
-    val granted = permissions.size == 1 && permissions[0] == android.Manifest.permission.RECORD_AUDIO &&
-      results.size == 1 && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED
+    val granted = permissions.size == 1 &&
+      permissions[0] == android.Manifest.permission.RECORD_AUDIO &&
+      results.size == 1 &&
+      results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED
     microphonePermission?.success(granted)
     microphonePermission = null
     return true
@@ -58,7 +60,9 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
   override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
     val parameters = args as? Map<*, *> ?: throw IllegalArgumentException("Missing Steam stream arguments")
     val requestedKey = parameters["sessionKey"]
-    val key = if (requestedKey == null) "legacy:$viewId" else {
+    val key = if (requestedKey == null) {
+      "legacy:$viewId"
+    } else {
       require(requestedKey is String && requestedKey.matches(Regex("^[0-9a-f]{32}-[0-9]{1,10}$")))
       requestedKey
     }
@@ -102,9 +106,13 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
       channel?.setMethodCallHandler(null)
       channel = MethodChannel(messenger, "com.plezy/games/steam_stream/$viewId")
       channel?.setMethodCallHandler(this)
-      invoke("setOnStateChanged", arrayOf(Runnable::class.java), Runnable {
-        if (!closed) channel?.invokeMethod("sessionState", target.javaClass.getMethod("getSessionState").invoke(target))
-      })
+      invoke(
+        "setOnStateChanged",
+        arrayOf(Runnable::class.java),
+        Runnable {
+          if (!closed) channel?.invokeMethod("sessionState", target.javaClass.getMethod("getSessionState").invoke(target))
+        }
+      )
     }
 
     fun suspendInput() {
@@ -142,15 +150,21 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
             result.success(null)
             return
           }
-          "releaseTouchControls" -> { invoke("releaseTouchControls"); result.success(null); return }
+          "releaseTouchControls" -> {
+            invoke("releaseTouchControls")
+            result.success(null)
+            return
+          }
           "readControllerFeedback" -> {
             result.success(target.javaClass.getMethod("readControllerFeedback").invoke(target))
             return
           }
           "setControllerMotion" -> {
             val values = listOf("gx", "gy", "gz", "ax", "ay", "az").map { call.argument<Number>(it)?.toDouble() ?: Double.NaN }.toDoubleArray()
-            result.success(target.javaClass.getMethod("setControllerMotion", Int::class.javaPrimitiveType, DoubleArray::class.java)
-              .invoke(target, call.argument<Number>("deviceId")?.toInt() ?: -1, values) == true)
+            result.success(
+              target.javaClass.getMethod("setControllerMotion", Int::class.javaPrimitiveType, DoubleArray::class.java)
+                .invoke(target, call.argument<Number>("deviceId")?.toInt() ?: -1, values) == true
+            )
             return
           }
           "getMicrophoneState" -> {
@@ -158,8 +172,10 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
             return
           }
           "setMicrophoneEnabled" -> {
-            result.success(target.javaClass.getMethod("setMicrophoneEnabled", booleanType)
-              .invoke(target, call.argument<Boolean>("enabled") == true) == true)
+            result.success(
+              target.javaClass.getMethod("setMicrophoneEnabled", booleanType)
+                .invoke(target, call.argument<Boolean>("enabled") == true) == true
+            )
             return
           }
           "disconnect" -> {
@@ -188,8 +204,10 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
           }
           "setControllerMapping" -> {
             val mapping = call.argument<List<*>>("mapping") ?: throw IllegalArgumentException("Missing mapping")
-            result.success(target.javaClass.getMethod("setControllerMapping", Int::class.javaPrimitiveType, List::class.java)
-              .invoke(target, call.argument<Int>("seat") ?: 0, mapping))
+            result.success(
+              target.javaClass.getMethod("setControllerMapping", Int::class.javaPrimitiveType, List::class.java)
+                .invoke(target, call.argument<Int>("seat") ?: 0, mapping)
+            )
             return
           }
           "setAudioEnabled" -> invoke("setAudioEnabled", arrayOf(booleanType), call.argument<Boolean>("enabled") == true)
@@ -239,6 +257,5 @@ internal class SteamStreamPlatformViewFactory(private val messenger: BinaryMesse
     private fun invoke(name: String, types: Array<Class<*>> = emptyArray(), vararg arguments: Any) {
       target.javaClass.getMethod(name, *types).invoke(target, *arguments)
     }
-
   }
 }

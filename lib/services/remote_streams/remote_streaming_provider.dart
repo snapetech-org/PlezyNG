@@ -35,7 +35,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
 
   RemoteStreamingProvider({StremioAddonClient Function()? stremioAddonClientFactory, this.backgroundWorker = false})
     : _stremioAddonClientFactory = stremioAddonClientFactory ?? StremioAddonClient.new {
-    if (!backgroundWorker) WidgetsBinding.instance.addObserver(this);
+    if (!backgroundWorker) {
+      WidgetsBinding.instance.addObserver(this);
+    }
   }
 
   final bool backgroundWorker;
@@ -48,10 +50,13 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   int get nativeCacheQuotaBytes => _snapshot.nativeCacheQuotaBytes;
 
   Future<void> setNativeCacheQuotaBytes(int bytes) async {
-    if (bytes < 1024 * 1024 * 1024 || bytes > 1024 * 1024 * 1024 * 1024) throw ArgumentError.value(bytes);
+    if (bytes < 1024 * 1024 * 1024 || bytes > 1024 * 1024 * 1024 * 1024) {
+      throw ArgumentError.value(bytes);
+    }
     final (profile, generation) = _requireProfile();
     await _commit(profile, generation, (current) => current.copyWith(nativeCacheQuotaBytes: bytes));
   }
+
   int _nativeGeneration = 0;
   bool? scheduledPreparationAvailable;
   bool get nativePeerAvailable => TorrentLease.available;
@@ -59,7 +64,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   Future<void> setNativePeerEnabled(bool value) async {
     final (profile, generation) = _requireProfile();
     await _commit(profile, generation, (current) => current.copyWith(nativePeerEnabled: value));
-    if (!value) _closeNativeLeases();
+    if (!value) {
+      _closeNativeLeases();
+    }
   }
 
   void _closeNativeLeases() {
@@ -77,7 +84,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       throw const RemoteProviderException(RemoteProviderFailure.unsupported);
     }
     _nativeLeases.removeWhere((lease) {
-      if (!lease.isClosed) return false;
+      if (!lease.isClosed) {
+        return false;
+      }
       _nativeReservations.remove(lease);
       return true;
     });
@@ -87,7 +96,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     final nativeGeneration = _nativeGeneration;
     final reservation = Object();
     var quota = nativeCacheQuotaBytes - _nativeReservations.values.fold<int>(0, (sum, bytes) => sum + bytes);
-    if (quota < 16 * 1024 * 1024) throw const SourceException(SourceFailure.quotaExceeded);
+    if (quota < 16 * 1024 * 1024) {
+      throw const SourceException(SourceFailure.quotaExceeded);
+    }
     final knownSize = candidate.behaviorHints['videoSize'];
     if (knownSize is num && knownSize > quota - 32 * 1024 * 1024) {
       throw const SourceException(SourceFailure.quotaExceeded);
@@ -106,7 +117,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       } on Object {
         throw const SourceException(SourceFailure.storageUnavailable);
       }
-      if (available == null) throw const SourceException(SourceFailure.storageUnavailable);
+      if (available == null) {
+        throw const SourceException(SourceFailure.storageUnavailable);
+      }
       final otherReservations = _nativeReservations.entries
           .where((entry) => !identical(entry.key, reservation))
           .fold<int>(0, (sum, entry) => sum + entry.value);
@@ -114,7 +127,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       if (writable < 16 * 1024 * 1024 || (knownSize is num && knownSize + 32 * 1024 * 1024 > writable)) {
         throw const SourceException(SourceFailure.storageLow);
       }
-      if (writable < quota) quota = writable;
+      if (writable < quota) {
+        quota = writable;
+      }
       _nativeReservations[reservation] = quota;
       if (_nativeLeases.isEmpty && _nativeOpening == 1 && await cache.exists()) {
         final cutoff = DateTime.now().subtract(const Duration(days: 1));
@@ -158,15 +173,21 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) unawaited(_refreshJournal());
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshJournal());
+    }
   }
 
   Future<void> _refreshJournal() => _serializeMutation(() async {
     final profile = _profileId, generation = _generation;
-    if (profile == null || loading) return;
+    if (profile == null || loading) {
+      return;
+    }
     try {
       final snapshot = await RemoteStreamStore.load(profile);
-      if (!_current(profile, generation)) return;
+      if (!_current(profile, generation)) {
+        return;
+      }
       _snapshot = snapshot;
       _notify();
       if (!backgroundWorker && scheduledPreparationAvailable == false) {
@@ -179,7 +200,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     }
   });
   Future<void> _scheduleRecovery() async {
-    if (backgroundWorker) return;
+    if (backgroundWorker) {
+      return;
+    }
     scheduledPreparationAvailable = await PreparationScheduler.schedule();
     _notify();
   }
@@ -209,7 +232,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     }
     final heartbeat = Timer.periodic(const Duration(seconds: 30), (_) async {
       try {
-        if (!await RemoteStreamStore.renewClaim(profile, job, claim.owner)) claim.active = false;
+        if (!await RemoteStreamStore.renewClaim(profile, job, claim.owner)) {
+          claim.active = false;
+        }
       } on Object {
         claim.active = false;
       }
@@ -284,7 +309,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   /// are exhausted. The existing provider job identity is reused.
   Future<void> retryPreparation(String id) async {
     final (profile, generation) = _requireProfile();
-    if (_scheduledRecoveryIds.contains(id) || !_manualRetryIds.add(id)) return;
+    if (_scheduledRecoveryIds.contains(id) || !_manualRetryIds.add(id)) {
+      return;
+    }
     _notify();
     try {
       final job = _snapshot.preparations.where((candidate) => candidate.id == id).firstOrNull;
@@ -314,7 +341,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
           ],
         ),
       );
-      if (!_current(profile, generation) || _scheduledRecoveryIds.contains(id)) return;
+      if (!_current(profile, generation) || _scheduledRecoveryIds.contains(id)) {
+        return;
+      }
       final retryJob = _snapshot.preparations.where((candidate) => candidate.id == id).firstOrNull;
       if (retryJob != null && retryJob.state == RemotePreparationState.interrupted) {
         unawaited(_recoverInterruptedPreparations(profile, generation, [retryJob]));
@@ -350,7 +379,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       }
       return;
     }
-    if (_profileId == profileId) return;
+    if (_profileId == profileId) {
+      return;
+    }
     _profileId = profileId;
     _cancelledPreparationIds.clear();
     _scheduledRecoveryIds.clear();
@@ -367,7 +398,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   Future<void> _load(String profileId, int generation) async {
     try {
       final snapshot = await RemoteStreamStore.load(profileId);
-      if (!_current(profileId, generation)) return;
+      if (!_current(profileId, generation)) {
+        return;
+      }
       _snapshot = snapshot;
       loadFailed = false;
       settingsUnreadable = false;
@@ -382,7 +415,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         }
       }
     } on Object catch (error) {
-      if (!_current(profileId, generation)) return;
+      if (!_current(profileId, generation)) {
+        return;
+      }
       loadFailed = true;
       settingsUnreadable = error is RemoteStreamStoreException;
     } finally {
@@ -403,7 +438,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     try {
       await pass;
     } finally {
-      if (identical(_recoveryPass, pass)) _recoveryPass = null;
+      if (identical(_recoveryPass, pass)) {
+        _recoveryPass = null;
+      }
     }
   }
 
@@ -412,25 +449,37 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     // provider pressure if several preparation requests were interrupted.
     final newIds = <String>{};
     for (final job in jobs) {
-      if (_scheduledRecoveryIds.add(job.id)) newIds.add(job.id);
+      if (_scheduledRecoveryIds.add(job.id)) {
+        newIds.add(job.id);
+      }
     }
-    if (newIds.isEmpty) return;
+    if (newIds.isEmpty) {
+      return;
+    }
     _notify();
     try {
       var nextJob = 0;
       Future<void> runWorker() async {
         while (_current(profile, generation) && nextJob < jobs.length) {
           final job = jobs[nextJob++];
-          if (!newIds.contains(job.id)) continue;
+          if (!newIds.contains(job.id)) {
+            continue;
+          }
           try {
-            if (_workerDeadline != null && DateTime.now().isAfter(_workerDeadline!)) return;
+            if (_workerDeadline != null && DateTime.now().isAfter(_workerDeadline!)) {
+              return;
+            }
             await _withPreparationClaim(profile, job.id, () async {
               try {
                 final recovered = await RemoteStreamStore.load(profile);
-                if (!_current(profile, generation)) return;
+                if (!_current(profile, generation)) {
+                  return;
+                }
                 _snapshot = recovered;
                 final fresh = _snapshot.preparations.where((row) => row.id == job.id).firstOrNull;
-                if (fresh == null || !_recoverable(fresh)) return;
+                if (fresh == null || !_recoverable(fresh)) {
+                  return;
+                }
                 await _commit(
                   profile,
                   generation,
@@ -505,15 +554,21 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
             _recoveryBackoff(candidate.recoveryAttempts) -
             DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(candidate.updatedAt));
         if (wait > Duration.zero) {
-          if (backgroundWorker) return;
+          if (backgroundWorker) {
+            return;
+          }
           final until = DateTime.now().add(wait);
           while (DateTime.now().isBefore(until)) {
-            if (_shouldCancelPreparation(profile, generation, job.id)) return;
+            if (_shouldCancelPreparation(profile, generation, job.id)) {
+              return;
+            }
             await Future<void>.delayed(const Duration(seconds: 1));
           }
         }
       }
-      if (_shouldCancelPreparation(profile, generation, job.id)) return;
+      if (_shouldCancelPreparation(profile, generation, job.id)) {
+        return;
+      }
       await _recoverInterruptedPreparation(profile, generation, candidate);
       final updated = _snapshot.preparations.where((item) => item.id == candidate.id).firstOrNull;
       if (updated == null ||
@@ -522,7 +577,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
           !_retryableRecoveryErrors.contains(updated.errorCode)) {
         return;
       }
-      if (backgroundWorker) return;
+      if (backgroundWorker) {
+        return;
+      }
       candidate = updated;
     }
   }
@@ -537,13 +594,19 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   );
 
   Future<void> _recoverInterruptedPreparation(String profile, int generation, RemotePreparationJob job) async {
-    if (_shouldCancelPreparation(profile, generation, job.id)) return;
+    if (_shouldCancelPreparation(profile, generation, job.id)) {
+      return;
+    }
     final saved = _snapshot.preparations.where((candidate) => candidate.id == job.id).firstOrNull;
-    if (saved == null || saved.state != RemotePreparationState.interrupted || saved.providerJobId == null) return;
+    if (saved == null || saved.state != RemotePreparationState.interrupted || saved.providerJobId == null) {
+      return;
+    }
     final account = _snapshot.accounts
         .where((candidate) => candidate.service == saved.service && candidate.id == saved.accountId)
         .firstOrNull;
-    if (account == null) return;
+    if (account == null) {
+      return;
+    }
 
     final startedAt = DateTime.now().millisecondsSinceEpoch;
     try {
@@ -570,7 +633,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     } on Object {
       return;
     }
-    if (_shouldCancelPreparation(profile, generation, saved.id)) return;
+    if (_shouldCancelPreparation(profile, generation, saved.id)) {
+      return;
+    }
 
     String lastStage = 'reconnecting';
     Future<void> onProgress({required String stage, String? providerJobId}) async {
@@ -582,7 +647,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
           (providerJobId.isEmpty || providerJobId.length > 128 || RegExp(r'[\x00-\x1f\x7f]').hasMatch(providerJobId))) {
         throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
       }
-      if (normalized == lastStage && providerJobId == saved.providerJobId) return;
+      if (normalized == lastStage && providerJobId == saved.providerJobId) {
+        return;
+      }
       lastStage = normalized;
       final updatedAt = DateTime.now().millisecondsSinceEpoch;
       await _commit(
@@ -682,8 +749,12 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         ),
       );
     } on Object catch (error) {
-      if (!_current(profile, generation)) return;
-      if (_cancelledPreparationIds.contains(saved.id)) return;
+      if (!_current(profile, generation)) {
+        return;
+      }
+      if (_cancelledPreparationIds.contains(saved.id)) {
+        return;
+      }
       final failedAt = DateTime.now().millisecondsSinceEpoch;
       final code = _workerDeadline != null && DateTime.now().isAfter(_workerDeadline!)
           ? 'timeout'
@@ -723,7 +794,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
 
   void retrySettingsLoad() {
     final profile = _profileId;
-    if (profile == null || loading || !loadFailed) return;
+    if (profile == null || loading || !loadFailed) {
+      return;
+    }
     final generation = ++_generation;
     loading = true;
     loadFailed = false;
@@ -741,9 +814,13 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     final generation = _generation;
     const empty = RemoteStreamSnapshot();
     await _serializeMutation(() async {
-      if (!_current(profile, generation)) return;
+      if (!_current(profile, generation)) {
+        return;
+      }
       await RemoteStreamStore.save(profile, empty);
-      if (!_current(profile, generation)) return;
+      if (!_current(profile, generation)) {
+        return;
+      }
       _snapshot = empty;
       loadFailed = false;
       settingsUnreadable = false;
@@ -754,12 +831,18 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   Future<StremioAddonInstallation> installAddon(String address, {required bool allowHttp}) async {
     final (profile, generation) = _requireProfile();
     final existing = addons.where((addon) => addon.manifestUrl == address).firstOrNull;
-    if (existing != null) return existing;
-    if (addons.length >= 50) throw const StremioAddonException(StremioAddonFailure.unavailable);
+    if (existing != null) {
+      return existing;
+    }
+    if (addons.length >= 50) {
+      throw const StremioAddonException(StremioAddonFailure.unavailable);
+    }
     final client = _stremioAddonClientFactory();
     try {
       final manifest = await client.fetchManifest(address, allowHttp: allowHttp);
-      if (!_current(profile, generation)) throw const StremioAddonException(StremioAddonFailure.unavailable);
+      if (!_current(profile, generation)) {
+        throw const StremioAddonException(StremioAddonFailure.unavailable);
+      }
       late StremioAddonInstallation installed;
       await _commit(profile, generation, (current) {
         final existing = current.addons.where((addon) => addon.manifestUrl == address).firstOrNull;
@@ -767,7 +850,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
           installed = existing;
           return current;
         }
-        if (current.addons.length >= 50) throw const StremioAddonException(StremioAddonFailure.unavailable);
+        if (current.addons.length >= 50) {
+          throw const StremioAddonException(StremioAddonFailure.unavailable);
+        }
         installed = StremioAddonInstallation(
           id: const Uuid().v4(),
           name: (manifest['name'] as String).trim(),
@@ -788,7 +873,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   Future<StremioAddonUpdateCheck> checkAddonUpdate(String id) async {
     final (profile, generation) = _requireProfile();
     final installed = addons.where((addon) => addon.id == id).firstOrNull;
-    if (installed == null) throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
+    if (installed == null) {
+      throw const StremioAddonException(StremioAddonFailure.unsupportedResource);
+    }
     final client = _stremioAddonClientFactory();
     try {
       final latestManifest = await client.fetchManifest(installed.manifestUrl, allowHttp: installed.allowHttp);
@@ -816,7 +903,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   /// Applies only a previously reviewed update, keeping installation ID,
   /// enabled state, endpoint and explicit HTTP opt-in intact.
   Future<void> applyAddonUpdate(StremioAddonUpdateCheck check) async {
-    if (!check.hasChanges) return;
+    if (!check.hasChanges) {
+      return;
+    }
     final profile = check.profileId;
     final generation = check.generation;
     if (!_current(profile, generation)) {
@@ -919,7 +1008,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     String accountId,
     RemoteStreamAccount updated,
   ) async {
-    if (!_current(profile, generation)) return;
+    if (!_current(profile, generation)) {
+      return;
+    }
     await _commit(profile, generation, (current) {
       if (current.accounts.where((account) => account.service == updated.service).firstOrNull?.id != accountId) {
         return current;
@@ -947,7 +1038,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     }
     final profile = _profileId;
     final generation = _generation;
-    if (profile == null || loading) throw const RealDebridException(RealDebridFailure.cancelled);
+    if (profile == null || loading) {
+      throw const RealDebridException(RealDebridFailure.cancelled);
+    }
     final orderedServices = [
       RemoteStreamService.realDebrid,
       RemoteStreamService.allDebrid,
@@ -955,13 +1048,19 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       RemoteStreamService.torbox,
     ];
     final selectedService = service ?? orderedServices.where((value) => accountFor(value) != null).firstOrNull;
-    if (selectedService == null) throw const RealDebridException(RealDebridFailure.authentication);
+    if (selectedService == null) {
+      throw const RealDebridException(RealDebridFailure.authentication);
+    }
     final account = accountFor(selectedService);
-    if (account == null) throw const RealDebridException(RealDebridFailure.authentication);
+    if (account == null) {
+      throw const RealDebridException(RealDebridFailure.authentication);
+    }
 
     final requestKey = sourceDigest(jsonEncode([profile, account.id, hash.toLowerCase(), candidate.fileIndex]));
     final existing = _activeTorrentPreparations[requestKey];
-    if (existing != null) return existing;
+    if (existing != null) {
+      return existing;
+    }
     final preparation = _resolveTorrentWithJournal(
       candidate,
       hash: hash,
@@ -991,7 +1090,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     required RemoteStreamRequest? request,
   }) async {
     final durable = await RemoteStreamStore.load(profile);
-    if (!_current(profile, generation)) throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    if (!_current(profile, generation)) {
+      throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    }
     final previous = durable.preparations
         .where(
           (job) =>
@@ -1036,7 +1137,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
               (old) => old.state == RemotePreparationState.preparing || old.state == RemotePreparationState.interrupted,
             )
             .toList();
-        if (live.length >= 20) throw const RemoteProviderException(RemoteProviderFailure.unavailable);
+        if (live.length >= 20) {
+          throw const RemoteProviderException(RemoteProviderFailure.unavailable);
+        }
         final history = retained.where(
           (old) => !live.contains(old) && now - old.updatedAt < const Duration(days: 14).inMilliseconds,
         );
@@ -1059,9 +1162,13 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
                 RegExp(r'[\x00-\x1f\x7f]').hasMatch(providerJobId))) {
           throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
         }
-        if (safeStage == lastStage && (providerJobId == null || providerJobId == lastProviderJobId)) return;
+        if (safeStage == lastStage && (providerJobId == null || providerJobId == lastProviderJobId)) {
+          return;
+        }
         lastStage = safeStage;
-        if (providerJobId != null) lastProviderJobId = providerJobId;
+        if (providerJobId != null) {
+          lastProviderJobId = providerJobId;
+        }
         final updatedAt = DateTime.now().millisecondsSinceEpoch;
         await _commit(
           profile,
@@ -1208,7 +1315,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   Future<RemoteCloudPage> browseCloud(RemoteStreamService service, {String? parentId, String? cursor}) async {
     final (profile, generation) = _requireProfile();
     final account = accountFor(service);
-    if (account == null) throw const RemoteProviderException(RemoteProviderFailure.authentication);
+    if (account == null) {
+      throw const RemoteProviderException(RemoteProviderFailure.authentication);
+    }
     late RemoteCloudPage page;
     switch (service) {
       case RemoteStreamService.realDebrid:
@@ -1247,7 +1356,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         }
         break;
     }
-    if (!_current(profile, generation)) throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    if (!_current(profile, generation)) {
+      throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    }
     return RemoteCloudPage(
       items: List.unmodifiable(page.items.map((item) => item.withAccountId(account.id, parentProviderId: parentId))),
       nextCursor: page.nextCursor,
@@ -1264,16 +1375,24 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
 
   Future<ResolvedRemoteStream> resolveCloudFile(RemoteCloudItem item) async {
     final (profile, generation) = _requireProfile();
-    if (item.kind != RemoteCloudItemKind.file) throw const RemoteProviderException(RemoteProviderFailure.unsupported);
+    if (item.kind != RemoteCloudItemKind.file) {
+      throw const RemoteProviderException(RemoteProviderFailure.unsupported);
+    }
     final account = accountFor(item.service);
-    if (account == null) throw const RemoteProviderException(RemoteProviderFailure.authentication);
-    if (item.accountId != account.id) throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    if (account == null) {
+      throw const RemoteProviderException(RemoteProviderFailure.authentication);
+    }
+    if (item.accountId != account.id) {
+      throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    }
     // Cloud rows and cached source entries deliberately contain no signed
     // links. Re-list the same provider folder each time a lease is requested
     // so an open, resume, or gateway 401/403 retry receives a fresh link for
     // the same provider file rather than reusing an expired URL.
     final currentPage = await browseCloud(item.service, parentId: item.parentProviderId);
-    if (!_current(profile, generation)) throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    if (!_current(profile, generation)) {
+      throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    }
     final currentItem = currentPage.items
         .where(
           (candidate) =>
@@ -1292,7 +1411,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     switch (item.service) {
       case RemoteStreamService.realDebrid:
         final link = currentItem.uri;
-        if (link == null) throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+        if (link == null) {
+          throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+        }
         final client = RealDebridClient(
           account: account,
           onAccountRefreshed: (updated) => _persistRefreshedAccount(profile, generation, account.id, updated),
@@ -1305,7 +1426,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         break;
       case RemoteStreamService.allDebrid:
         final link = currentItem.uri;
-        if (link == null) throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+        if (link == null) {
+          throw const RemoteProviderException(RemoteProviderFailure.invalidResponse);
+        }
         final client = AllDebridClient(account: account);
         try {
           resolved = await client.resolveHosterLink(link);
@@ -1328,7 +1451,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
           client.close();
         }
     }
-    if (!_current(profile, generation)) throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    if (!_current(profile, generation)) {
+      throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    }
     return resolved;
   }
 
@@ -1338,9 +1463,13 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     }
     final profile = _profileId;
     final generation = _generation;
-    if (profile == null || loading) throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    if (profile == null || loading) {
+      throw const RemoteProviderException(RemoteProviderFailure.cancelled);
+    }
     final account = accountFor(service);
-    if (account == null) throw const RemoteProviderException(RemoteProviderFailure.authentication);
+    if (account == null) {
+      throw const RemoteProviderException(RemoteProviderFailure.authentication);
+    }
     switch (service) {
       case RemoteStreamService.realDebrid:
         final client = RealDebridClient(
@@ -1373,10 +1502,14 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
 
   Future<RemoteStreamSearchResult> streamsFor(RemoteStreamRequest request) async {
     final profile = _profileId;
-    if (profile == null || loading) return const RemoteStreamSearchResult(candidates: [], failedAddons: 0);
+    if (profile == null || loading) {
+      return const RemoteStreamSearchResult(candidates: [], failedAddons: 0);
+    }
     final generation = _generation;
     final enabled = addons.where((addon) => addon.enabled).toList(growable: false);
-    if (enabled.isEmpty) return const RemoteStreamSearchResult(candidates: [], failedAddons: 0);
+    if (enabled.isEmpty) {
+      return const RemoteStreamSearchResult(candidates: [], failedAddons: 0);
+    }
     final results = await Future.wait(
       enabled.map((addon) async {
         final client = StremioAddonClient();
@@ -1389,10 +1522,14 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         }
       }),
     );
-    if (!_current(profile, generation)) return const RemoteStreamSearchResult(candidates: [], failedAddons: 0);
+    if (!_current(profile, generation)) {
+      return const RemoteStreamSearchResult(candidates: [], failedAddons: 0);
+    }
     final candidates = <RemoteStreamCandidate>[];
     for (final result in results) {
-      if (result != null) candidates.addAll(result);
+      if (result != null) {
+        candidates.addAll(result);
+      }
     }
     return RemoteStreamSearchResult(
       candidates: List.unmodifiable(candidates),
@@ -1408,9 +1545,13 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   }) {
     final claim = Zone.current[_claimZoneKey] as RemotePreparationClaim?;
     return _serializeMutation(() async {
-      if (!_current(profile, generation)) throw const StremioAddonException(StremioAddonFailure.unavailable);
+      if (!_current(profile, generation)) {
+        throw const StremioAddonException(StremioAddonFailure.unavailable);
+      }
       final snapshot = await RemoteStreamStore.update(profile, (current) {
-        if (!_current(profile, generation)) return current;
+        if (!_current(profile, generation)) {
+          return current;
+        }
         if (claim != null) {
           final job = current.preparations.where((job) => job.id == claim.job).firstOrNull;
           if (job != null &&
@@ -1422,9 +1563,13 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
         }
         return update(current);
       }, claim: claim);
-      if (!_current(profile, generation)) return;
+      if (!_current(profile, generation)) {
+        return;
+      }
       _snapshot = snapshot;
-      if (!backgroundWorker && snapshot.preparations.any(_recoverable)) unawaited(_scheduleRecovery());
+      if (!backgroundWorker && snapshot.preparations.any(_recoverable)) {
+        unawaited(_scheduleRecovery());
+      }
       final retainedIds = snapshot.preparations.map((job) => job.id).toSet();
       _cancelledPreparationIds.removeWhere((id) => !retainedIds.contains(id));
       _notify();
@@ -1441,7 +1586,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
 
   String _journalText(String value, int maxLength, String fallback) {
     final clean = value.replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '').trim();
-    if (clean.isEmpty) return fallback;
+    if (clean.isEmpty) {
+      return fallback;
+    }
     return clean.length <= maxLength ? clean : clean.substring(0, maxLength);
   }
 
@@ -1450,13 +1597,17 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
       final keys = value.keys.map((key) => key.toString()).toList()..sort();
       return {for (final key in keys) key: _canonicalJson(value[key])};
     }
-    if (value is List) return [for (final item in value) _canonicalJson(item)];
+    if (value is List) {
+      return [for (final item in value) _canonicalJson(item)];
+    }
     return value;
   }
 
   (String, int) _requireProfile() {
     final profile = _profileId;
-    if (profile == null || loading) throw StateError('Remote streaming is unavailable for the active profile');
+    if (profile == null || loading) {
+      throw StateError('Remote streaming is unavailable for the active profile');
+    }
     return (profile, _generation);
   }
 
@@ -1464,9 +1615,15 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
 
   bool _shouldCancelPreparation(String profile, int generation, String id) {
     final claim = Zone.current[_claimZoneKey] as RemotePreparationClaim?;
-    if (claim != null && !claim.active) return true;
-    if (!_current(profile, generation) || _cancelledPreparationIds.contains(id)) return true;
-    if (_workerDeadline != null && DateTime.now().isAfter(_workerDeadline!)) return true;
+    if (claim != null && !claim.active) {
+      return true;
+    }
+    if (!_current(profile, generation) || _cancelledPreparationIds.contains(id)) {
+      return true;
+    }
+    if (_workerDeadline != null && DateTime.now().isAfter(_workerDeadline!)) {
+      return true;
+    }
     final job = _snapshot.preparations.where((job) => job.id == id).firstOrNull;
     return job == null ||
         job.state == RemotePreparationState.cancelled ||
@@ -1474,7 +1631,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
   }
 
   void _notify() {
-    if (!_disposed) notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
   }
 
   @override
@@ -1483,7 +1642,9 @@ class RemoteStreamingProvider extends ChangeNotifier with WidgetsBindingObserver
     _generation++;
     _journalRefresh?.cancel();
     _closeNativeLeases();
-    if (!backgroundWorker) WidgetsBinding.instance.removeObserver(this);
+    if (!backgroundWorker) {
+      WidgetsBinding.instance.removeObserver(this);
+    }
     super.dispose();
   }
 }

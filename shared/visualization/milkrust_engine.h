@@ -13,8 +13,8 @@
 #include <utility>
 #include <vector>
 
-#include "milkrust.h"
 #include "legacy_image_decode.h"
+#include "milkrust.h"
 #if defined(_WIN32)
 #include <windows.h>
 #else
@@ -57,8 +57,7 @@ struct MilkRustApi {
       // plugin's own installed directory (the webOS IPK stages both in app/lib).
       Dl_info module{};
       if (dladdr(reinterpret_cast<const void*>(&MilkRustApi::Shared), &module) != 0 && module.dli_fname) {
-        const auto bundled = std::filesystem::path(module.dli_fname).parent_path() /
-            "libmilkrust_native.so";
+        const auto bundled = std::filesystem::path(module.dli_fname).parent_path() / "libmilkrust_native.so";
         library = dlopen(bundled.c_str(), RTLD_NOW | RTLD_LOCAL);
       }
     }
@@ -157,11 +156,12 @@ class MilkRustEngine {
           throw std::runtime_error("WebP exceeds 16 MiB or is empty.");
         std::ifstream encoded_input(asset, std::ios::binary);
         std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
-        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+        if (!encoded_input.read(
+                reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
             encoded_input.peek() != EOF)
           throw std::runtime_error("WebP changed while loading.");
-        Check(api_.texture_webp(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
-                                encoded.data(), encoded.size()));
+        Check(api_.texture_webp(
+            handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(), encoded.data(), encoded.size()));
         continue;
       }
       if (extension == ".png") {
@@ -170,11 +170,12 @@ class MilkRustEngine {
           throw std::runtime_error("PNG exceeds 16 MiB or is empty.");
         std::ifstream encoded_input(asset, std::ios::binary);
         std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
-        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+        if (!encoded_input.read(
+                reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
             encoded_input.peek() != EOF)
           throw std::runtime_error("PNG changed while loading.");
-        Check(api_.texture_png(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
-                               encoded.data(), encoded.size()));
+        Check(api_.texture_png(
+            handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(), encoded.data(), encoded.size()));
         continue;
       }
       if (extension == ".gif") {
@@ -183,18 +184,18 @@ class MilkRustEngine {
           throw std::runtime_error("GIF exceeds 16 MiB or is empty.");
         std::ifstream encoded_input(asset, std::ios::binary);
         std::vector<uint8_t> encoded(static_cast<size_t>(encoded_size));
-        if (!encoded_input.read(reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
+        if (!encoded_input.read(
+                reinterpret_cast<char*>(encoded.data()), static_cast<std::streamsize>(encoded.size())) ||
             encoded_input.peek() != EOF)
           throw std::runtime_error("GIF changed while loading.");
-        Check(api_.texture_gif(handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(),
-                               encoded.data(), encoded.size()));
+        Check(api_.texture_gif(
+            handle_, reinterpret_cast<const uint8_t*>(name.data()), name.size(), encoded.data(), encoded.size()));
         continue;
       }
-      if (std::filesystem::file_size(asset) > 16 * 1024 * 1024)
-        throw std::runtime_error("Texture exceeds 16 MiB.");
+      if (std::filesystem::file_size(asset) > 16 * 1024 * 1024) throw std::runtime_error("Texture exceeds 16 MiB.");
       const auto image = extension == ".dds" || extension == ".tga"
-          ? legacy_image::Decode(asset, extension == ".dds")
-          : decode(asset);  // Platform decoder must enforce dimensions before allocation.
+                             ? legacy_image::Decode(asset, extension == ".dds")
+                             : decode(asset);  // Platform decoder must enforce dimensions before allocation.
       pixels += static_cast<uint64_t>(image.width) * image.height;
       if (!image.width || !image.height || image.width > 4096 || image.height > 4096 ||
           static_cast<uint64_t>(image.width) * image.height > 8 * 1024 * 1024 || pixels > 32 * 1024 * 1024 ||
@@ -233,7 +234,8 @@ class MilkRustEngine {
   void SetLocalClock() {
     const auto now = std::chrono::system_clock::now();
     const auto whole_seconds = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-    const auto total_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    const auto total_milliseconds =
+        std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
     const auto subsecond = static_cast<uint32_t>((total_milliseconds % 1000 + 1000) % 1000);
     const std::time_t timestamp = static_cast<std::time_t>(whole_seconds);
     std::tm local_time{};
@@ -244,10 +246,11 @@ class MilkRustEngine {
     if (::localtime_r(&timestamp, &local_time) == nullptr)
       throw std::runtime_error("Could not read the local calendar clock.");
 #endif
-    Check(api_.set_clock(handle_, static_cast<int32_t>(local_time.tm_year + 1900),
-        static_cast<uint32_t>(local_time.tm_mon + 1), static_cast<uint32_t>(local_time.tm_mday),
-        static_cast<uint32_t>(local_time.tm_wday), static_cast<uint32_t>(local_time.tm_hour),
-        static_cast<uint32_t>(local_time.tm_min), static_cast<uint32_t>(local_time.tm_sec), subsecond));
+    Check(api_.set_clock(
+        handle_, static_cast<int32_t>(local_time.tm_year + 1900), static_cast<uint32_t>(local_time.tm_mon + 1),
+        static_cast<uint32_t>(local_time.tm_mday), static_cast<uint32_t>(local_time.tm_wday),
+        static_cast<uint32_t>(local_time.tm_hour), static_cast<uint32_t>(local_time.tm_min),
+        static_cast<uint32_t>(local_time.tm_sec), subsecond));
   }
   void Check(int result) const {
     if (result != 0) throw std::runtime_error(api_.Error());

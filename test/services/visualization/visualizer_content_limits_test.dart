@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/visualization/visualizer_content_limits.dart';
 import 'package:plezy/services/visualization/visualizer_pack_store.dart';
 
-// Source only; execute on the required private JIT runner before release.
+// Header validation runs in normal CI before native image decoding.
 void main() {
   test('portable library paths reject aliasing and Windows device names', () {
     for (final path in [
@@ -45,9 +45,11 @@ void main() {
   });
 
   Uint8List pngHeader(int width, int height) {
-    final bytes = Uint8List(33)
+    final bytes = Uint8List(57)
       ..setRange(0, 8, [137, 80, 78, 71, 13, 10, 26, 10])
-      ..setRange(12, 16, ascii.encode('IHDR'));
+      ..setRange(12, 16, ascii.encode('IHDR'))
+      ..setRange(37, 41, ascii.encode('IDAT'))
+      ..setRange(49, 53, ascii.encode('IEND'));
     ByteData.sublistView(bytes)
       ..setUint32(8, 13)
       ..setUint32(16, width)

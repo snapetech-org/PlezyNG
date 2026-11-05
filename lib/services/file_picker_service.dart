@@ -6,6 +6,7 @@ import '../utils/app_logger.dart';
 
 abstract interface class FilePickerDelegate {
   Future<FilePickerResult?> pickFiles({
+    String? dialogTitle,
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     bool allowMultiple = false,
@@ -28,12 +29,14 @@ class _PluginFilePickerDelegate implements FilePickerDelegate {
 
   @override
   Future<FilePickerResult?> pickFiles({
+    String? dialogTitle,
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     bool allowMultiple = false,
     bool withData = false,
   }) {
     return FilePicker.pickFiles(
+      dialogTitle: dialogTitle,
       type: type,
       allowedExtensions: allowedExtensions,
       allowMultiple: allowMultiple,
@@ -82,12 +85,16 @@ class FilePickerService {
   }
 
   Future<T?> _guard<T>(String opName, Future<T?> Function() body) async {
-    if (_active) return null;
+    if (_active) {
+      return null;
+    }
     _active = true;
     try {
       return await body();
     } on PlatformException catch (e, st) {
-      if (e.code == 'already_active') return null;
+      if (e.code == 'already_active') {
+        return null;
+      }
       appLogger.e('FilePicker.$opName failed', error: e, stackTrace: st);
       rethrow;
     } finally {
@@ -96,6 +103,7 @@ class FilePickerService {
   }
 
   Future<FilePickerResult?> pickFiles({
+    String? dialogTitle,
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     bool allowMultiple = false,
@@ -104,6 +112,7 @@ class FilePickerService {
     return _guard(
       'pickFiles',
       () => _delegate.pickFiles(
+        dialogTitle: dialogTitle,
         type: type,
         allowedExtensions: allowedExtensions,
         allowMultiple: allowMultiple,

@@ -9,6 +9,7 @@ void main() {
   test('broker failures and malformed links preserve the direct-storefront fallback', () async {
     var calls = 0;
     final client = ComicCommerceLinkClient(
+      serviceBaseUrl: 'https://relay.example.test',
       httpClient: MockClient((request) async {
         calls++;
         final body = jsonDecode(request.body) as Map<String, dynamic>;
@@ -34,6 +35,7 @@ void main() {
   test('rejects insecure destinations and tracking responses with unsafe URL forms', () async {
     var calls = 0;
     final client = ComicCommerceLinkClient(
+      serviceBaseUrl: 'https://relay.example.test',
       httpClient: MockClient((_) async {
         calls++;
         return http.Response(jsonEncode({'tracked': true, 'url': 'https://user:secret@track.example/click'}), 200);
@@ -63,6 +65,7 @@ void main() {
 
   test('accepts a clean HTTPS tracking response for subsequent provider allowlist validation', () async {
     final client = ComicCommerceLinkClient(
+      serviceBaseUrl: 'https://relay.example.test',
       httpClient: MockClient(
         (_) async =>
             http.Response(jsonEncode({'tracked': true, 'url': 'https://track.flexlinks.com/click?publisher=1'}), 200),

@@ -10,8 +10,12 @@ bool get isPleazyngRelayConfigured => pleazyngRelayBaseUrl.trim().isNotEmpty;
 /// send credentials or logs to another project's infrastructure.
 String requirePleazyngServiceUrl(String value, {String service = 'Online service'}) {
   final uri = Uri.tryParse(value.trim());
-  if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
-      uri.userInfo.isNotEmpty || uri.hasQuery || uri.hasFragment) {
+  if (uri == null ||
+      uri.scheme != 'https' ||
+      uri.host.isEmpty ||
+      uri.userInfo.isNotEmpty ||
+      uri.hasQuery ||
+      uri.hasFragment) {
     throw StateError('$service is not configured for this Pleazyng build.');
   }
   final host = uri.host.toLowerCase();

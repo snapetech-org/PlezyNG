@@ -459,7 +459,7 @@ open class MpvPlayerPlugin(
         "visualizerLoad" -> current.load(
           checkNotNull(call.argument<String>("path")),
           checkNotNull(call.argument<String>("root")),
-          call.argument<Number>("transitionSeconds")?.toDouble() ?: 3.0,
+          call.argument<Number>("transitionSeconds")?.toDouble() ?: 3.0
         )
         "visualizerResize" -> {
           val width = checkNotNull(call.argument<Number>("width")).toLong()
@@ -472,7 +472,7 @@ open class MpvPlayerPlugin(
           checkNotNull(call.argument<Number>("x")).toDouble(),
           checkNotNull(call.argument<Number>("y")).toDouble(),
           checkNotNull(call.argument<Number>("dx")).toDouble(),
-          checkNotNull(call.argument<Number>("dy")).toDouble(),
+          checkNotNull(call.argument<Number>("dy")).toDouble()
         )
         "visualizerSetPaused" -> current.pause(checkNotNull(call.argument<Boolean>("paused")))
         "visualizerStatus" -> {

@@ -59,7 +59,9 @@ class NewEpisodeNotificationService {
   }
 
   void setForeground(bool foreground) {
-    if (_foreground == foreground) return;
+    if (_foreground == foreground) {
+      return;
+    }
     _foreground = foreground;
     _refreshSchedule();
   }
@@ -84,11 +86,15 @@ class NewEpisodeNotificationService {
   }
 
   Future<void> refreshNow() async {
-    if (_polling || !_foreground) return;
+    if (_polling || !_foreground) {
+      return;
+    }
     final profileId = _profileId;
     final servers = _servers;
     final settings = SettingsService.instanceOrNull;
-    if (profileId == null || servers == null || settings == null) return;
+    if (profileId == null || servers == null || settings == null) {
+      return;
+    }
     if (!settings.read(SettingsService.notifyNewEpisodesForProfile(profileId))) {
       _timer?.cancel();
       _timer = null;
@@ -97,11 +103,17 @@ class NewEpisodeNotificationService {
 
     _polling = true;
     try {
-      if (!await _ensureNotifications() || !_isEnabledFor(profileId)) return;
+      if (!await _ensureNotifications() || !_isEnabledFor(profileId)) {
+        return;
+      }
       for (final serverId in servers.onlineServerIds) {
-        if (!_isEnabledFor(profileId)) break;
+        if (!_isEnabledFor(profileId)) {
+          break;
+        }
         final client = servers.getClientForServer(ServerId(serverId));
-        if (client == null) continue;
+        if (client == null) {
+          continue;
+        }
         List<MediaLibrary> libraries;
         try {
           libraries = await client.fetchLibraries();
@@ -115,13 +127,17 @@ class NewEpisodeNotificationService {
         }
 
         for (final library in libraries) {
-          if (!_isEnabledFor(profileId)) break;
+          if (!_isEnabledFor(profileId)) {
+            break;
+          }
           final mayContainEpisodes =
               library.kind == MediaKind.show ||
               library.kind == MediaKind.unknown ||
               library.defaultBrowseKinds.contains(MediaKind.episode) ||
               library.defaultBrowseKinds.contains(MediaKind.show);
-          if (!mayContainEpisodes) continue;
+          if (!mayContainEpisodes) {
+            continue;
+          }
           await _scanLibrary(profileId: profileId, serverId: serverId, library: library, client: client);
         }
       }
@@ -129,12 +145,16 @@ class NewEpisodeNotificationService {
       appLogger.w('New-episode scan failed', error: error, stackTrace: stackTrace);
     } finally {
       _polling = false;
-      if (_foreground && _profileId != profileId) unawaited(refreshNow());
+      if (_foreground && _profileId != profileId) {
+        unawaited(refreshNow());
+      }
     }
   }
 
   Future<bool> _ensureNotifications() async {
-    if (!Platform.isAndroid && !Platform.isIOS) return false;
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return false;
+    }
     try {
       if (!_initialized) {
         await _notifications.initialize(
@@ -184,7 +204,9 @@ class NewEpisodeNotificationService {
     required MediaServerClient client,
   }) async {
     final settings = SettingsService.instanceOrNull;
-    if (settings == null) return;
+    if (settings == null) {
+      return;
+    }
     final snapshotPref = SettingsService.newEpisodeSnapshotForProfile(profileId, serverId, library.id);
     final previousSnapshot = _decodeSnapshot(settings.read(snapshotPref));
 
@@ -206,7 +228,9 @@ class NewEpisodeNotificationService {
       );
       return;
     }
-    if (!_isEnabledFor(profileId)) return;
+    if (!_isEnabledFor(profileId)) {
+      return;
+    }
 
     final currentEpisodeIds = episodes.map((episode) => episode.id).toSet();
     final currentShowIds = episodes.map((episode) => episode.grandparentId).whereType<String>().toSet();
@@ -216,7 +240,9 @@ class NewEpisodeNotificationService {
       final candidates = <String, List<MediaItem>>{};
       for (final episode in episodes) {
         final showId = episode.grandparentId;
-        if (showId == null || !knownShowIds.contains(showId) || previousEpisodeIds.contains(episode.id)) continue;
+        if (showId == null || !knownShowIds.contains(showId) || previousEpisodeIds.contains(episode.id)) {
+          continue;
+        }
         candidates.putIfAbsent(showId, () => []).add(episode);
       }
 
@@ -226,8 +252,12 @@ class NewEpisodeNotificationService {
           final allEpisodes = (await client.fetchPlayableDescendants(
             entry.key,
           )).where((item) => item.kind == MediaKind.episode).toList();
-          if (!_isEnabledFor(profileId)) return;
-          if (allEpisodes.isEmpty) continue;
+          if (!_isEnabledFor(profileId)) {
+            return;
+          }
+          if (allEpisodes.isEmpty) {
+            continue;
+          }
           allEpisodes.sort(_episodeOrder);
           final candidateIds = entry.value.map((item) => item.id).toSet();
           MediaItem? nextEpisode;
@@ -238,10 +268,16 @@ class NewEpisodeNotificationService {
             }
           }
           final episodeToNotify = nextEpisode;
-          if (episodeToNotify == null) continue;
+          if (episodeToNotify == null) {
+            continue;
+          }
           final nextIndex = allEpisodes.indexWhere((episode) => episode.id == episodeToNotify.id);
-          if (allEpisodes.take(nextIndex).any((episode) => !episode.isWatched)) continue;
-          if (!_isEnabledFor(profileId)) return;
+          if (allEpisodes.take(nextIndex).any((episode) => !episode.isWatched)) {
+            continue;
+          }
+          if (!_isEnabledFor(profileId)) {
+            return;
+          }
           await _showEpisodeNotification(serverId: serverId, showId: entry.key, episode: episodeToNotify);
         } catch (error, stackTrace) {
           safeToAdvanceSnapshot = false;
@@ -252,10 +288,14 @@ class NewEpisodeNotificationService {
           );
         }
       }
-      if (!safeToAdvanceSnapshot) return;
+      if (!safeToAdvanceSnapshot) {
+        return;
+      }
     }
 
-    if (!_isEnabledFor(profileId)) return;
+    if (!_isEnabledFor(profileId)) {
+      return;
+    }
     await settings.write(
       snapshotPref,
       jsonEncode({'episodeIds': currentEpisodeIds.toList(), 'showIds': currentShowIds.toList()}),
@@ -264,23 +304,40 @@ class NewEpisodeNotificationService {
 
   int _episodeOrder(MediaItem a, MediaItem b) {
     final seasonOrder = (a.parentIndex ?? 0).compareTo(b.parentIndex ?? 0);
-    if (seasonOrder != 0) return seasonOrder;
+    if (seasonOrder != 0) {
+      return seasonOrder;
+    }
     final episodeOrder = (a.index ?? 0).compareTo(b.index ?? 0);
-    if (episodeOrder != 0) return episodeOrder;
+    if (episodeOrder != 0) {
+      return episodeOrder;
+    }
     return (a.addedAt ?? 0).compareTo(b.addedAt ?? 0);
   }
 
-  Future<void> notifyPodcastEpisode({required String profileId, required String sourceId,
-    required String show, required String episode, required bool Function() isCurrent}) async {
-    if (!_foreground || _profileId != profileId || !isCurrent()) return;
-    if (!await _ensureNotifications() || !_foreground || _profileId != profileId || !isCurrent()) return;
+  Future<void> notifyPodcastEpisode({
+    required String profileId,
+    required String sourceId,
+    required String show,
+    required String episode,
+    required bool Function() isCurrent,
+  }) async {
+    if (!_foreground || _profileId != profileId || !isCurrent()) {
+      return;
+    }
+    if (!await _ensureNotifications() || !_foreground || _profileId != profileId || !isCurrent()) {
+      return;
+    }
     final hash = sha256.convert(utf8.encode('podcast/$profileId/$sourceId')).bytes;
     final id = ((hash[0] << 24) | (hash[1] << 16) | (hash[2] << 8) | hash[3]) & 0x7fffffff;
-    await _notifications.show(id: id, title: t.notifications.newEpisodeTitle,
+    await _notifications.show(
+      id: id,
+      title: t.notifications.newEpisodeTitle,
       body: t.notifications.newEpisodeBody(show: show, episode: episode),
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(_channelId, 'New episodes', importance: Importance.defaultImportance),
-        iOS: DarwinNotificationDetails()));
+        iOS: DarwinNotificationDetails(),
+      ),
+    );
   }
 
   Future<void> _showEpisodeNotification({
@@ -290,7 +347,9 @@ class NewEpisodeNotificationService {
   }) async {
     final showTitle = episode.grandparentTitle?.trim();
     final episodeTitle = episode.title?.trim();
-    if (showTitle == null || showTitle.isEmpty || episodeTitle == null || episodeTitle.isEmpty) return;
+    if (showTitle == null || showTitle.isEmpty || episodeTitle == null || episodeTitle.isEmpty) {
+      return;
+    }
     final hash = sha256.convert(utf8.encode('$serverId/$showId')).bytes;
     final id = ((hash[0] << 24) | (hash[1] << 16) | (hash[2] << 8) | hash[3]) & 0x7fffffff;
     await _notifications.show(
@@ -310,10 +369,14 @@ class NewEpisodeNotificationService {
   }
 
   _EpisodeSnapshot? _decodeSnapshot(String encoded) {
-    if (encoded.isEmpty) return null;
+    if (encoded.isEmpty) {
+      return null;
+    }
     try {
       final decoded = jsonDecode(encoded);
-      if (decoded is! Map<String, dynamic>) return null;
+      if (decoded is! Map<String, dynamic>) {
+        return null;
+      }
       return _EpisodeSnapshot(
         episodeIds: (decoded['episodeIds'] as List? ?? const []).whereType<String>().toSet(),
         showIds: (decoded['showIds'] as List? ?? const []).whereType<String>().toSet(),

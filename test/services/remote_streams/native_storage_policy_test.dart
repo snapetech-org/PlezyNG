@@ -12,6 +12,9 @@ void main() {
     final saved = const RemoteStreamSnapshot().copyWith(nativeCacheQuotaBytes: 128 * gib);
     expect(RemoteStreamSnapshot.decode(saved.encode()).nativeCacheQuotaBytes, 128 * gib);
     expect(RemoteStreamSnapshot.decode('{"version":1,"nativeCacheQuotaBytes":-1}').nativeCacheQuotaBytes, gib);
-    expect(RemoteStreamSnapshot.decode('{"version":1,"nativeCacheQuotaBytes":999999999999999}').nativeCacheQuotaBytes, 1024 * gib);
+    expect(
+      RemoteStreamSnapshot.decode('{"version":1,"nativeCacheQuotaBytes":999999999999999}').nativeCacheQuotaBytes,
+      1024 * gib,
+    );
   });
 }

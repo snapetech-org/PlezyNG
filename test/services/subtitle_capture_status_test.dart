@@ -28,15 +28,23 @@ void main() {
   test('every capture phase resolves in English, Arabic and German', () {
     for (final translations in [Translations(), TranslationsAr(), TranslationsDe()]) {
       for (final phase in SubtitleCapturePhase.values) {
-        final text = resolveSubtitleCaptureStatus(translations,
-          SubtitleCaptureStatus(phase, count: 12, received: 25, total: 100));
+        final text = resolveSubtitleCaptureStatus(
+          translations,
+          SubtitleCaptureStatus(phase, count: 12, received: 25, total: 100),
+        );
         expect(text.trim(), isNotEmpty);
         expect(text, isNot(contains(r'${')));
       }
     }
     const status = SubtitleCaptureStatus(SubtitleCapturePhase.loadingModel);
-    expect(resolveSubtitleCaptureStatus(TranslationsAr(), status), isNot(resolveSubtitleCaptureStatus(Translations(), status)));
-    expect(resolveSubtitleCaptureStatus(TranslationsDe(), status), isNot(resolveSubtitleCaptureStatus(Translations(), status)));
+    expect(
+      resolveSubtitleCaptureStatus(TranslationsAr(), status),
+      isNot(resolveSubtitleCaptureStatus(Translations(), status)),
+    );
+    expect(
+      resolveSubtitleCaptureStatus(TranslationsDe(), status),
+      isNot(resolveSubtitleCaptureStatus(Translations(), status)),
+    );
   });
 
   test('status stores data and resolves numbers using the selected presentation', () {

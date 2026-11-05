@@ -69,7 +69,7 @@ void main() {
       expect(captured.method, 'POST');
       expect(captured.url.toString(), SimklConstants.deviceAuthorizationUrl);
       expect(captured.bodyFields, {'client_id': SimklConstants.v2ClientId, 'scope': 'media:read media:write'});
-      expect(captured.headers['user-agent'], 'plezy/$appVersion');
+      expect(captured.headers['user-agent'], '${SimklConstants.appName}/$appVersion');
       expect(code.deviceCode, 'dev-code');
       expect(code.userCode, 'BDWP-HQPK');
       expect(code.verificationUrl, 'https://simkl.com/pin');

@@ -473,13 +473,16 @@ private final class MpvDetachedVideoWindow: NSObject, NSWindowDelegate {
   private let onAction: (String) -> Void
   private let onRestore: () -> Void
 
-  init(title: String, labels: [String: String], layers: [CALayer], geometryKey: String,
-       onAction: @escaping (String) -> Void, onRestore: @escaping () -> Void) {
+  init(
+    title: String, labels: [String: String], layers: [CALayer], geometryKey: String,
+    onAction: @escaping (String) -> Void, onRestore: @escaping () -> Void
+  ) {
     self.onAction = onAction
     self.onRestore = onRestore
-    window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
-                      styleMask: [.titled, .closable, .miniaturizable, .resizable],
-                      backing: .buffered, defer: false)
+    window = NSWindow(
+      contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
+      styleMask: [.titled, .closable, .miniaturizable, .resizable],
+      backing: .buffered, defer: false)
     video = MpvPipVideoView(layers: layers, size: NSSize(width: 800, height: 450))
     super.init()
     window.title = title
@@ -495,9 +498,12 @@ private final class MpvDetachedVideoWindow: NSObject, NSWindowDelegate {
     controls.orientation = .horizontal
     controls.spacing = 12
     controls.edgeInsets = NSEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
-    for (action, key) in [("seekBackward", "back"), ("togglePlayback", "playPause"),
-                          ("seekForward", "forward"), ("restore", "restore")] {
-      let button = NSButton(title: String((labels[key] ?? action).prefix(240)), target: self, action: #selector(control(_:)))
+    for (action, key) in [
+      ("seekBackward", "back"), ("togglePlayback", "playPause"),
+      ("seekForward", "forward"), ("restore", "restore"),
+    ] {
+      let button = NSButton(
+        title: String((labels[key] ?? action).prefix(240)), target: self, action: #selector(control(_:)))
       button.identifier = NSUserInterfaceItemIdentifier(action)
       button.setAccessibilityLabel(button.title)
       controls.addArrangedSubview(button)

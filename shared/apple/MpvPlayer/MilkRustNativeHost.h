@@ -24,9 +24,11 @@ int PlezySubtitlePcmCaptureReadNext(
 - (nullable instancetype)initWithAudioReader:(int (^)(void*, size_t))reader
                               frameAvailable:(void (^)(void))frameAvailable
                                        error:(NSError* _Nullable* _Nullable)error;
-- (BOOL)loadPreset:(NSString*)path root:(NSString*)root transitionSeconds:(double)transitionSeconds
-  allowInterrupted:(BOOL)allowInterrupted
-             error:(NSError* _Nullable* _Nullable)error;
+- (BOOL)loadPreset:(NSString*)path
+                 root:(NSString*)root
+    transitionSeconds:(double)transitionSeconds
+     allowInterrupted:(BOOL)allowInterrupted
+                error:(NSError* _Nullable* _Nullable)error;
 - (void)resizeWidth:(NSInteger)width height:(NSInteger)height;
 - (void)setMouseState:(BOOL)down x:(double)x y:(double)y dx:(double)dx dy:(double)dy;
 - (void)setPaused:(BOOL)paused;

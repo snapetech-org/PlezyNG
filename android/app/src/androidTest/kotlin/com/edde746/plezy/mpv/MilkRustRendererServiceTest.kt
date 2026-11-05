@@ -25,6 +25,7 @@ class MilkRustRendererServiceTest {
   @Test fun privateServiceStopsAndRejectsMalformedStartupWithoutKillingPlayer() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val component = ComponentName(context, MilkRustRendererService::class.java)
+
     @Suppress("DEPRECATION")
     val info = context.packageManager.getServiceInfo(component, 0)
     assertFalse("Renderer Binder must not be exported", info.exported)
@@ -46,7 +47,9 @@ class MilkRustRendererServiceTest {
           try {
             endpoint.set(service)
             service.linkToDeath({ died.countDown() }, 0)
-          } catch (error: Throwable) { callbackError.set(error) }
+          } catch (error: Throwable) {
+            callbackError.set(error)
+          }
           connected.countDown()
         }
         override fun onServiceDisconnected(name: ComponentName) = Unit
@@ -65,14 +68,16 @@ class MilkRustRendererServiceTest {
         previous = service
         val message = Message.obtain(null, if (malformed) MilkRustServiceProtocol.START else MilkRustServiceProtocol.STOP, 71, 0)
         if (malformed) {
-          message.replyTo = Messenger(Handler(Looper.getMainLooper()) { reply ->
-            if (reply.what == MilkRustServiceProtocol.ERROR && reply.arg1 == 71) {
-              replyPid.set(reply.arg2)
-              replyReason.set(reply.data.getString("reason"))
-              errorReply.countDown()
+          message.replyTo = Messenger(
+            Handler(Looper.getMainLooper()) { reply ->
+              if (reply.what == MilkRustServiceProtocol.ERROR && reply.arg1 == 71) {
+                replyPid.set(reply.arg2)
+                replyReason.set(reply.data.getString("reason"))
+                errorReply.countDown()
+              }
+              true
             }
-            true
-          })
+          )
         }
         Messenger(service).send(message)
         if (malformed) {

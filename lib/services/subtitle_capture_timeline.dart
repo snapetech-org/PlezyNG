@@ -3,7 +3,7 @@ enum SubtitleCapturePacketAction { append, resetWindow, resetTimeline, discard }
 /// A decoded audio clock. A user seek retains DVR cues, whereas an unexplained
 /// backwards live-clock jump starts a new epoch and cannot reuse old cue times.
 final class SubtitleCaptureTimeline {
-  SubtitleCaptureTimeline({required this.live, required int seekGeneration}) : _seekGeneration = seekGeneration;
+  SubtitleCaptureTimeline({required this.live, required this._seekGeneration});
   final bool live;
   int _seekGeneration;
   int? _seekTargetUs;

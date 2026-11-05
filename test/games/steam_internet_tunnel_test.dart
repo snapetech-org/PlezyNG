@@ -151,6 +151,13 @@ void main() {
     addTearDown(relay.close);
     await HttpOverrides.runWithHttpOverrides(() async {
       var allowed = true;
+      // Ephemeral fixture ports keep the real Steam client and parallel tests intact.
+      final steamSockets = <RawDatagramSocket>[];
+      for (var i = 0; i < 6; i++) {
+        final socket = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
+        steamSockets.add(socket);
+        addTearDown(socket.close);
+      }
       final host = await SteamInternetTunnel.connectForTesting(
         identity(),
         host: true,
@@ -159,6 +166,7 @@ void main() {
         relay: relay.uri,
         isPublic: (a) => a.isLoopback,
         waitForPeer: false,
+        hostPorts: steamSockets.map((socket) => socket.port).toList(),
       );
       addTearDown(() {
         host.close();
@@ -193,9 +201,8 @@ void main() {
       expect(receiver.relayBitrateCeilingKbps, 50331); // Older relay without a rate field.
       expect(session.creationParams['streamBitrateKbps'], 50331);
       expect(session.creationParams['streamWidth'], 3840);
-      final steam = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 27036, reuseAddress: false);
+      final steam = steamSockets[5];
       final native = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
-      addTearDown(steam.close);
       addTearDown(native.close);
       final received = StreamController<List<int>>();
       addTearDown(received.close);

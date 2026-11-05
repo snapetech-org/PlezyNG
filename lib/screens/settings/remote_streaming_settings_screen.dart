@@ -41,7 +41,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
 
   Future<void> _copyAuthorizationCode(String value) async {
     await Clipboard.setData(ClipboardData(text: value));
-    if (mounted) showAppSnackBar(context, t.services.deviceCode.codeCopied);
+    if (mounted) {
+      showAppSnackBar(context, t.services.deviceCode.codeCopied);
+    }
   }
 
   Widget _copyableAuthorizationCode(String value, {required String copyLabel}) {
@@ -89,25 +91,37 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
       context: context,
       builder: (context) => const _AddAddonDialog(),
     );
-    if (result == null || !mounted) return;
+    if (result == null || !mounted) {
+      return;
+    }
     try {
       await context.read<RemoteStreamingProvider>().installAddon(result.address, allowHttp: result.allowHttp);
-      if (mounted) showAppSnackBar(context, t.streaming.addonInstalled);
+      if (mounted) {
+        showAppSnackBar(context, t.streaming.addonInstalled);
+      }
     } on StremioAddonException {
-      if (mounted) showAppSnackBar(context, t.streaming.addonError);
+      if (mounted) {
+        showAppSnackBar(context, t.streaming.addonError);
+      }
     } on Object {
-      if (mounted) showAppSnackBar(context, t.streaming.addonError);
+      if (mounted) {
+        showAppSnackBar(context, t.streaming.addonError);
+      }
     }
   }
 
   Future<void> _checkAddonUpdate(StremioAddonInstallation addon) async {
-    if (!_checkingAddonIds.add(addon.id)) return;
+    if (!_checkingAddonIds.add(addon.id)) {
+      return;
+    }
     final streaming = context.read<RemoteStreamingProvider>();
     final profile = streaming.profileId;
     setState(() {});
     try {
       final check = await streaming.checkAddonUpdate(addon.id);
-      if (!mounted || streaming.profileId != profile || !streaming.isReady) return;
+      if (!mounted || streaming.profileId != profile || !streaming.isReady) {
+        return;
+      }
       if (!check.hasChanges) {
         showAppSnackBar(context, t.update.latestVersion);
         return;
@@ -140,22 +154,34 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
           ],
         ),
       );
-      if (approved != true || !mounted || streaming.profileId != profile || !streaming.isReady) return;
+      if (approved != true || !mounted || streaming.profileId != profile || !streaming.isReady) {
+        return;
+      }
       await streaming.applyAddonUpdate(check);
-      if (mounted && streaming.profileId == profile) showAppSnackBar(context, t.update.latestVersion);
+      if (mounted && streaming.profileId == profile) {
+        showAppSnackBar(context, t.update.latestVersion);
+      }
     } on Object {
-      if (mounted && streaming.profileId == profile) showAppSnackBar(context, t.update.checkFailed);
+      if (mounted && streaming.profileId == profile) {
+        showAppSnackBar(context, t.update.checkFailed);
+      }
     } finally {
       _checkingAddonIds.remove(addon.id);
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
   Future<void> _importFromStremio() async {
-    if (_connecting) return;
+    if (_connecting) {
+      return;
+    }
     final streaming = context.read<RemoteStreamingProvider>();
     final profile = streaming.profileId;
-    if (profile == null || !streaming.isReady) return;
+    if (profile == null || !streaming.isReady) {
+      return;
+    }
     if (streaming.addons.length >= 50) {
       showAppSnackBar(context, t.streaming.stremioImportLimitReached);
       return;
@@ -168,7 +194,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
     Future<void>? dialogResult;
     try {
       final authorization = await client.createLinkAuthorization();
-      if (!mounted || streaming.profileId != profile || !streaming.isReady) return;
+      if (!mounted || streaming.profileId != profile || !streaming.isReady) {
+        return;
+      }
       dialogResult = showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -195,13 +223,17 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
         authorization.code,
         shouldCancel: () => cancelled || !mounted || streaming.profileId != profile,
       );
-      if (cancelled || !mounted || streaming.profileId != profile || !streaming.isReady) return;
+      if (cancelled || !mounted || streaming.profileId != profile || !streaming.isReady) {
+        return;
+      }
       if (dialogOpen) {
         dialogOpen = false;
         Navigator.of(context, rootNavigator: true).pop();
       }
       await dialogResult;
-      if (!mounted || streaming.profileId != profile || !streaming.isReady) return;
+      if (!mounted || streaming.profileId != profile || !streaming.isReady) {
+        return;
+      }
 
       final alreadyInstalled = streaming.addons.map((addon) => addon.manifestUrl).toSet();
       final candidates = collection.addons.where((addon) => !alreadyInstalled.contains(addon.manifestUrl)).toList();
@@ -225,7 +257,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
       var added = 0;
       var failed = 0;
       for (final addon in selected) {
-        if (!mounted || streaming.profileId != profile || !streaming.isReady) return;
+        if (!mounted || streaming.profileId != profile || !streaming.isReady) {
+          return;
+        }
         try {
           await streaming.installAddon(addon.manifestUrl, allowHttp: false);
           added++;
@@ -233,7 +267,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
           failed++;
         }
       }
-      if (!mounted || streaming.profileId != profile) return;
+      if (!mounted || streaming.profileId != profile) {
+        return;
+      }
       if (added == 0) {
         showAppSnackBar(context, t.streaming.stremioImportFailed);
       } else if (failed == 0) {
@@ -246,7 +282,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
         dialogOpen = false;
         Navigator.of(context, rootNavigator: true).pop();
       }
-      if (dialogResult != null) await dialogResult;
+      if (dialogResult != null) {
+        await dialogResult;
+      }
       if (mounted && !cancelled && streaming.profileId == profile) {
         showAppSnackBar(
           context,
@@ -260,27 +298,37 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
         dialogOpen = false;
         Navigator.of(context, rootNavigator: true).pop();
       }
-      if (dialogResult != null) await dialogResult;
+      if (dialogResult != null) {
+        await dialogResult;
+      }
       if (mounted && !cancelled && streaming.profileId == profile) {
         showAppSnackBar(context, t.streaming.stremioImportFailed);
       }
     } finally {
       client.close();
-      if (mounted) setState(() => _connecting = false);
+      if (mounted) {
+        setState(() => _connecting = false);
+      }
     }
   }
 
   Future<void> _connectRealDebrid() async {
-    if (_connecting) return;
+    if (_connecting) {
+      return;
+    }
     final streaming = context.read<RemoteStreamingProvider>();
     final profile = streaming.profileId;
-    if (profile == null || !streaming.isReady) return;
+    if (profile == null || !streaming.isReady) {
+      return;
+    }
     setState(() => _connecting = true);
     var cancelled = false;
     var dialogOpen = false;
     try {
       final code = await RealDebridClient.startDeviceAuthorization();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final dialogFuture = showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -305,32 +353,52 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
       );
       if (account != null && !cancelled && mounted && streaming.profileId == profile && streaming.isReady) {
         await streaming.saveAccount(account);
-        if (mounted) showAppSnackBar(context, t.streaming.realDebridConnected(username: account.displayName));
+        if (mounted) {
+          showAppSnackBar(context, t.streaming.realDebridConnected(username: account.displayName));
+        }
       }
-      if (dialogOpen && mounted && !cancelled) Navigator.of(context, rootNavigator: true).pop();
+      if (dialogOpen && mounted && !cancelled) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
       await dialogFuture;
     } on RealDebridException {
-      if (dialogOpen && mounted && !cancelled) Navigator.of(context, rootNavigator: true).pop();
-      if (mounted && !cancelled) showAppSnackBar(context, t.streaming.realDebridConnectFailed);
+      if (dialogOpen && mounted && !cancelled) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      if (mounted && !cancelled) {
+        showAppSnackBar(context, t.streaming.realDebridConnectFailed);
+      }
     } on Object {
-      if (dialogOpen && mounted && !cancelled) Navigator.of(context, rootNavigator: true).pop();
-      if (mounted && !cancelled) showAppSnackBar(context, t.streaming.realDebridConnectFailed);
+      if (dialogOpen && mounted && !cancelled) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      if (mounted && !cancelled) {
+        showAppSnackBar(context, t.streaming.realDebridConnectFailed);
+      }
     } finally {
-      if (mounted) setState(() => _connecting = false);
+      if (mounted) {
+        setState(() => _connecting = false);
+      }
     }
   }
 
   Future<void> _connectAllDebrid() async {
-    if (_connecting) return;
+    if (_connecting) {
+      return;
+    }
     final streaming = context.read<RemoteStreamingProvider>();
     final profile = streaming.profileId;
-    if (profile == null || !streaming.isReady) return;
+    if (profile == null || !streaming.isReady) {
+      return;
+    }
     setState(() => _connecting = true);
     var cancelled = false;
     var dialogOpen = false;
     try {
       final code = await AllDebridClient.startDeviceAuthorization();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final dialogFuture = showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -355,32 +423,54 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
       );
       if (account != null && !cancelled && mounted && streaming.profileId == profile && streaming.isReady) {
         await streaming.saveAccount(account);
-        if (mounted) showAppSnackBar(context, t.streaming.accountConnected(username: account.displayName));
+        if (mounted) {
+          showAppSnackBar(context, t.streaming.accountConnected(username: account.displayName));
+        }
       }
-      if (dialogOpen && mounted && !cancelled) Navigator.of(context, rootNavigator: true).pop();
+      if (dialogOpen && mounted && !cancelled) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
       await dialogFuture;
-      if (account == null && mounted && !cancelled) showAppSnackBar(context, t.streaming.allDebridConnectFailed);
+      if (account == null && mounted && !cancelled) {
+        showAppSnackBar(context, t.streaming.allDebridConnectFailed);
+      }
     } on RealDebridException {
-      if (dialogOpen && mounted && !cancelled) Navigator.of(context, rootNavigator: true).pop();
-      if (mounted && !cancelled) showAppSnackBar(context, t.streaming.allDebridConnectFailed);
+      if (dialogOpen && mounted && !cancelled) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      if (mounted && !cancelled) {
+        showAppSnackBar(context, t.streaming.allDebridConnectFailed);
+      }
     } on Object {
-      if (dialogOpen && mounted && !cancelled) Navigator.of(context, rootNavigator: true).pop();
-      if (mounted && !cancelled) showAppSnackBar(context, t.streaming.allDebridConnectFailed);
+      if (dialogOpen && mounted && !cancelled) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      if (mounted && !cancelled) {
+        showAppSnackBar(context, t.streaming.allDebridConnectFailed);
+      }
     } finally {
-      if (mounted) setState(() => _connecting = false);
+      if (mounted) {
+        setState(() => _connecting = false);
+      }
     }
   }
 
   Future<void> _connectWithApiKey(RemoteStreamService service, String label) async {
-    if (_connecting) return;
+    if (_connecting) {
+      return;
+    }
     final key = await showDialog<String>(
       context: context,
       builder: (_) => _ApiKeyDialog(service: label),
     );
-    if (key == null || !mounted) return;
+    if (key == null || !mounted) {
+      return;
+    }
     final streaming = context.read<RemoteStreamingProvider>();
     final profile = streaming.profileId;
-    if (profile == null || !streaming.isReady) return;
+    if (profile == null || !streaming.isReady) {
+      return;
+    }
     setState(() => _connecting = true);
     try {
       final account = switch (service) {
@@ -390,12 +480,18 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
       };
       if (mounted && streaming.profileId == profile && streaming.isReady) {
         await streaming.saveAccount(account);
-        if (mounted) showAppSnackBar(context, t.streaming.accountConnected(username: account.displayName));
+        if (mounted) {
+          showAppSnackBar(context, t.streaming.accountConnected(username: account.displayName));
+        }
       }
     } on Object {
-      if (mounted && streaming.profileId == profile) showAppSnackBar(context, t.streaming.apiKeyConnectFailed);
+      if (mounted && streaming.profileId == profile) {
+        showAppSnackBar(context, t.streaming.apiKeyConnectFailed);
+      }
     } finally {
-      if (mounted) setState(() => _connecting = false);
+      if (mounted) {
+        setState(() => _connecting = false);
+      }
     }
   }
 
@@ -411,7 +507,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
         ],
       ),
     );
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !mounted) {
+      return;
+    }
     await context.read<RemoteStreamingProvider>().removeAccount(service);
   }
 
@@ -419,7 +517,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
     try {
       await context.read<RemoteStreamingProvider>().cancelPreparation(id);
     } on Object {
-      if (mounted) showAppSnackBar(context, t.streaming.settingsLoadFailed);
+      if (mounted) {
+        showAppSnackBar(context, t.streaming.settingsLoadFailed);
+      }
     }
   }
 
@@ -427,7 +527,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
     try {
       await context.read<RemoteStreamingProvider>().retryPreparation(id);
     } on Object {
-      if (mounted) showAppSnackBar(context, t.streaming.settingsLoadFailed);
+      if (mounted) {
+        showAppSnackBar(context, t.streaming.settingsLoadFailed);
+      }
     }
   }
 
@@ -450,11 +552,15 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
         ],
       ),
     );
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !mounted) {
+      return;
+    }
     try {
       await context.read<RemoteStreamingProvider>().clearUnreadableSettings();
     } on Object {
-      if (mounted) showAppSnackBar(context, t.streaming.clearUnreadableSettingsFailed);
+      if (mounted) {
+        showAppSnackBar(context, t.streaming.clearUnreadableSettingsFailed);
+      }
     }
   }
 
@@ -462,7 +568,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
     final streaming = context.read<RemoteStreamingProvider>();
     final account = streaming.accountFor(service);
     final profileId = streaming.profileId;
-    if (!streaming.isReady || account == null || profileId == null) return;
+    if (!streaming.isReady || account == null || profileId == null) {
+      return;
+    }
     final settingsRoute = ModalRoute.of(context);
     await Navigator.push(
       context,
@@ -470,7 +578,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
         builder: (_) => RemoteCloudFilesScreen(
           service: service,
           onManageConnections: () async {
-            if (!mounted || settingsRoute == null) return;
+            if (!mounted || settingsRoute == null) {
+              return;
+            }
             Navigator.of(context).popUntil((route) => identical(route, settingsRoute));
           },
           expectedAccountId: account.id,
@@ -481,16 +591,24 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
   }
 
   Future<void> _setCloudMetadata(SourceController sources, String profile, bool enabled) async {
-    if (_cloudMetadataSaving) return;
+    if (_cloudMetadataSaving) {
+      return;
+    }
     setState(() => _cloudMetadataSaving = true);
     try {
       await sources.setRemoteCloudMetadataEnabled(enabled);
-      if (!mounted || sources.profileId != profile) return;
+      if (!mounted || sources.profileId != profile) {
+        return;
+      }
       setState(() => _cloudMetadataFuture = Future.value(enabled));
     } on Object {
-      if (mounted) showAppSnackBar(context, t.streaming.settingsLoadFailed);
+      if (mounted) {
+        showAppSnackBar(context, t.streaming.settingsLoadFailed);
+      }
     } finally {
-      if (mounted) setState(() => _cloudMetadataSaving = false);
+      if (mounted) {
+        setState(() => _cloudMetadataSaving = false);
+      }
     }
   }
 
@@ -648,7 +766,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                                 tooltip: t.common.delete,
                                 onPressed: () async {
                                   await streaming.removeAddon(addon.id);
-                                  if (context.mounted) showAppSnackBar(context, t.streaming.addonRemoved);
+                                  if (context.mounted) {
+                                    showAppSnackBar(context, t.streaming.addonRemoved);
+                                  }
                                 },
                                 icon: const AppIcon(Symbols.delete_outline_rounded),
                               ),
@@ -706,7 +826,9 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                                 try {
                                   await streaming.setNativePeerEnabled(value);
                                 } on Object {
-                                  if (context.mounted) showAppSnackBar(context, t.streaming.streamPrepareFailed);
+                                  if (context.mounted) {
+                                    showAppSnackBar(context, t.streaming.streamPrepareFailed);
+                                  }
                                 }
                               }
                             : null,
@@ -716,20 +838,33 @@ class _RemoteStreamingSettingsScreenState extends State<RemoteStreamingSettingsS
                         leading: const AppIcon(Symbols.storage_rounded),
                         title: Text('${t.streaming.nativePeerTitle}: ${t.fileSources.offlineQuota}'),
                         subtitle: Text(ByteFormatter.formatBytes(streaming.nativeCacheQuotaBytes)),
-                        onTap: !streaming.isReady ? null : () async {
-                          final bytes = await showDialog<int>(context: context, builder: (context) => SimpleDialog(
-                            title: Text(t.fileSources.offlineQuota),
-                            children: [for (final gib in [4, 16, 64, 128, 256])
-                              SimpleDialogOption(
-                                onPressed: () => Navigator.pop(context, gib * 1024 * 1024 * 1024),
-                                child: Text(ByteFormatter.formatBytes(gib * 1024 * 1024 * 1024)),
-                              ),
-                            ],
-                          ));
-                          if (bytes == null || !context.mounted) return;
-                          try { await streaming.setNativeCacheQuotaBytes(bytes); }
-                          on Object { if (context.mounted) showAppSnackBar(context, t.streaming.streamPrepareFailed); }
-                        },
+                        onTap: !streaming.isReady
+                            ? null
+                            : () async {
+                                final bytes = await showDialog<int>(
+                                  context: context,
+                                  builder: (context) => SimpleDialog(
+                                    title: Text(t.fileSources.offlineQuota),
+                                    children: [
+                                      for (final gib in [4, 16, 64, 128, 256])
+                                        SimpleDialogOption(
+                                          onPressed: () => Navigator.pop(context, gib * 1024 * 1024 * 1024),
+                                          child: Text(ByteFormatter.formatBytes(gib * 1024 * 1024 * 1024)),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                                if (bytes == null || !context.mounted) {
+                                  return;
+                                }
+                                try {
+                                  await streaming.setNativeCacheQuotaBytes(bytes);
+                                } on Object {
+                                  if (context.mounted) {
+                                    showAppSnackBar(context, t.streaming.streamPrepareFailed);
+                                  }
+                                }
+                              },
                       ),
                     _providerTile(
                       service: RemoteStreamService.realDebrid,

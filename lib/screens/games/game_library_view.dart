@@ -70,7 +70,10 @@ class _GameLibraryViewState extends State<GameLibraryView> {
   @override
   void didUpdateWidget(GameLibraryView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_computerFilter != null && (!widget.includePrimaryGames || !widget.library.hosts.any((h) => h.key == _computerFilter))) _computerFilter = null;
+    if (_computerFilter != null &&
+        (!widget.includePrimaryGames || !widget.library.hosts.any((h) => h.key == _computerFilter))) {
+      _computerFilter = null;
+    }
   }
 
   @override
@@ -147,9 +150,15 @@ class _GameLibraryViewState extends State<GameLibraryView> {
     final byKey = {for (final game in entries) game.key: game};
     final filtered = entries.where((game) {
       // RomM already searched its server catalog, including metadata matches.
-      if (game.romm == null && !game.name.toLowerCase().contains(_query.trim().toLowerCase())) return false;
-      if (game.romm != null) return _computerFilter == null && (!_installedOnly || widget.additionalInstalled.contains(game.key));
-      if (game.routes.isEmpty) return _computerFilter == null && !_installedOnly;
+      if (game.romm == null && !game.name.toLowerCase().contains(_query.trim().toLowerCase())) {
+        return false;
+      }
+      if (game.romm != null) {
+        return _computerFilter == null && (!_installedOnly || widget.additionalInstalled.contains(game.key));
+      }
+      if (game.routes.isEmpty) {
+        return _computerFilter == null && !_installedOnly;
+      }
       return game.routes.any(
         (route) =>
             (_computerFilter == null || route.host.key == _computerFilter) &&
@@ -157,10 +166,16 @@ class _GameLibraryViewState extends State<GameLibraryView> {
       );
     }).toList()..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     final recent = _query.isEmpty
-        ? [...widget.additionalRecent, ...state.recentKeys].map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).take(6).toList()
+        ? [
+            ...widget.additionalRecent,
+            ...state.recentKeys,
+          ].map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).take(6).toList()
         : <LibraryGame>[];
     final favorites = _query.isEmpty
-        ? {...state.favoriteKeys, ...widget.additionalFavorites}.map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).toList()
+        ? {
+            ...state.favoriteKeys,
+            ...widget.additionalFavorites,
+          }.map((key) => byKey[key]).whereType<LibraryGame>().where(filtered.contains).toList()
         : <LibraryGame>[];
     final enabled = !widget.busy && widget.available;
     return FocusedScrollScaffold(

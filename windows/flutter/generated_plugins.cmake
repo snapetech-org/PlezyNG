@@ -15,6 +15,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_whisper_ggml
   os_media_controls
   permission_handler_windows
+  record_windows
   screen_retriever_windows
   sentry_flutter
   universal_gamepad

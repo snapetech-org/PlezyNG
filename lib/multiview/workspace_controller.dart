@@ -115,7 +115,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   bool hasSessionOfKind(MultiviewMediaKind kind) => _sessions.values.any((session) => session.descriptor.kind == kind);
   bool get hasAudioSelection => _hasExplicitAudioSelection || _requestedAudibleSessionId != null;
   bool get hasCompetingAudioOwner {
-    if (_hasExplicitAudioSelection && _requestedAudibleSessionId == null) return true;
+    if (_hasExplicitAudioSelection && _requestedAudibleSessionId == null) {
+      return true;
+    }
     final owner = _requestedAudibleSessionId == null ? null : _sessions[_requestedAudibleSessionId!];
     return owner != null && owner.descriptor.kind != MultiviewMediaKind.music;
   }
@@ -148,12 +150,16 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       sha256.convert(utf8.encode('plezy-window-v1|${_profileId ?? 'default'}|${slot?.name ?? 'primary'}')).toString();
 
   void refreshPresentation(String id) {
-    if (!_disposed && _sessions.containsKey(id)) _publish();
+    if (!_disposed && _sessions.containsKey(id)) {
+      _publish();
+    }
   }
 
   Future<bool> toggleDetachedWindow(String id) async {
     final registration = _sessions[id];
-    if (_disposed || registration == null || !_windowOperations.add(id)) return false;
+    if (_disposed || registration == null || !_windowOperations.add(id)) {
+      return false;
+    }
     _publish();
     try {
       final operation = isWindowDetached(id) ? registration.onAttachWindow : registration.onDetachWindow;
@@ -163,7 +169,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       return false;
     } finally {
       _windowOperations.remove(id);
-      if (!_disposed) _publish();
+      if (!_disposed) {
+        _publish();
+      }
     }
   }
 
@@ -173,13 +181,19 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   Future<void> hydrate() async {
     final persistence = _persistence;
     final profileId = _profileId;
-    if (_hydrated || _hydrating || persistence == null || profileId == null) return;
+    if (_hydrated || _hydrating || persistence == null || profileId == null) {
+      return;
+    }
     _hydrating = true;
     try {
       final snapshot = await persistence.read(profileId);
-      if (_disposed) return;
+      if (_disposed) {
+        return;
+      }
       _pendingSnapshot = snapshot;
-      if (snapshot != null) restoreLayout(snapshot);
+      if (snapshot != null) {
+        restoreLayout(snapshot);
+      }
     } catch (error, stackTrace) {
       debugPrint('Multiview layout restore failed: $error\\n$stackTrace');
     } finally {
@@ -189,7 +203,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   void _publish() {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     final coordinator = PlaybackCoordinator.instance;
     coordinator.setWorkspaceRetainsMusic(hasSessionOfKind(MultiviewMediaKind.music));
     coordinator.setWorkspaceVideoSessionCount(videoSessionCount);
@@ -212,7 +228,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   void _schedulePersistence() {
     final persistence = _persistence;
     final profileId = _profileId;
-    if (_disposed || !_hydrated || _hydrating || persistence == null || profileId == null) return;
+    if (_disposed || !_hydrated || _hydrating || persistence == null || profileId == null) {
+      return;
+    }
     _persistenceTimer?.cancel();
     _persistenceTimer = Timer(const Duration(milliseconds: 250), () {
       _persistSnapshot(persistence, profileId, snapshot());
@@ -236,10 +254,18 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// cannot replace the adapter currently driving a visible pane.
   bool register(WorkspaceSurfaceRegistration registration) {
     final descriptor = registration.descriptor;
-    if (descriptor.id.trim().isEmpty || descriptor.title.trim().isEmpty) return false;
-    if (descriptor.hasAudio && registration.onAudioOwnershipChanged == null) return false;
-    if (descriptor.acceptsInput && registration.onInputOwnershipChanged == null) return false;
-    if (_sessions.containsKey(descriptor.id)) return false;
+    if (descriptor.id.trim().isEmpty || descriptor.title.trim().isEmpty) {
+      return false;
+    }
+    if (descriptor.hasAudio && registration.onAudioOwnershipChanged == null) {
+      return false;
+    }
+    if (descriptor.acceptsInput && registration.onInputOwnershipChanged == null) {
+      return false;
+    }
+    if (_sessions.containsKey(descriptor.id)) {
+      return false;
+    }
     if (descriptor.hasVideo &&
         registration.videoPlayerSlot != null &&
         _sessions.values.any(
@@ -317,7 +343,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
         )) {
       return false;
     }
-    if (!descriptor.acceptsInput) _focusedInputSurfaceIds.remove(descriptor.id);
+    if (!descriptor.acceptsInput) {
+      _focusedInputSurfaceIds.remove(descriptor.id);
+    }
     _sessions[descriptor.id] = WorkspaceSurfaceRegistration(
       descriptor: descriptor,
       buildSurface: existing.buildSurface,
@@ -358,7 +386,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// call restore or close because the owner is already retiring.
   bool unregister(String id) {
     final registration = _remove(id);
-    if (registration == null) return false;
+    if (registration == null) {
+      return false;
+    }
     _reconcileOwnershipAfterRemoval(id);
     _publish();
     return true;
@@ -369,19 +399,25 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// again without reopening its source.
   bool restore(String id) {
     final registration = _sessions[id];
-    if (registration == null || _restoredSessionIds.contains(id)) return false;
+    if (registration == null || _restoredSessionIds.contains(id)) {
+      return false;
+    }
     if (isWindowDetached(id)) {
       unawaited(_attachWindowThenRestore(id, registration));
       return true;
     }
     _restoredSessionIds.add(id);
     _parkedSessionIds.remove(id);
-    if (_fullscreenSessionId == id) _fullscreenSessionId = null;
+    if (_fullscreenSessionId == id) {
+      _fullscreenSessionId = null;
+    }
     if (_positioningSessionId == id) {
       _positioningSessionId = null;
       _placementBeforeMove = null;
     }
-    if (_focusedSessionId == id) _focusedSessionId = _firstVisibleSessionId(excluding: id);
+    if (_focusedSessionId == id) {
+      _focusedSessionId = _firstVisibleSessionId(excluding: id);
+    }
     final restoredInputTarget = registration.descriptor.acceptsInput ? id : null;
     if (_requestedInputSessionId != restoredInputTarget || _inputSessionId != restoredInputTarget) {
       _requestedInputSessionId = restoredInputTarget;
@@ -393,19 +429,27 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   Future<void> _attachWindowThenRestore(String id, WorkspaceSurfaceRegistration registration) async {
-    if (!await toggleDetachedWindow(id)) return;
-    if (!_disposed && _sessions[id]?.onAttachWindow == registration.onAttachWindow && !isWindowDetached(id)) restore(id);
+    if (!await toggleDetachedWindow(id)) {
+      return;
+    }
+    if (!_disposed && _sessions[id]?.onAttachWindow == registration.onAttachWindow && !isWindowDetached(id)) {
+      restore(id);
+    }
   }
 
   /// Move a restored or parked session back into the workspace. When
   /// [fullscreen] is true it becomes the only visible surface until the user
   /// exits fullscreen or chooses another session from the tray.
   bool showSessionInWorkspace(String id, {bool fullscreen = false}) {
-    if (!_sessions.containsKey(id)) return false;
+    if (!_sessions.containsKey(id)) {
+      return false;
+    }
     final wasRestored = _restoredSessionIds.remove(id);
     final wasParked = _parkedSessionIds.remove(id);
     final wasFullscreen = fullscreen ? _fullscreenSessionId != id : _fullscreenSessionId == id;
-    if (!wasRestored && !wasParked && !wasFullscreen) return false;
+    if (!wasRestored && !wasParked && !wasFullscreen) {
+      return false;
+    }
     _focusedSessionId = id;
     _fullscreenSessionId = fullscreen ? id : null;
     final registration = _sessions.remove(id)!;
@@ -417,7 +461,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// Close the underlying session through its existing owner policy.
   bool close(String id) {
     final registration = _remove(id);
-    if (registration == null) return false;
+    if (registration == null) {
+      return false;
+    }
     _reconcileOwnershipAfterRemoval(id);
     _publish();
     final onClose = registration.onClose;
@@ -431,11 +477,15 @@ class MultiviewWorkspaceController extends ChangeNotifier {
 
   WorkspaceSurfaceRegistration? _remove(String id) {
     final registration = _sessions.remove(id);
-    if (registration == null) return null;
+    if (registration == null) {
+      return null;
+    }
     _focusedInputSurfaceIds.remove(id);
     _parkedSessionIds.remove(id);
     _restoredSessionIds.remove(id);
-    if (_fullscreenSessionId == id) _fullscreenSessionId = null;
+    if (_fullscreenSessionId == id) {
+      _fullscreenSessionId = null;
+    }
     if (_positioningSessionId == id) {
       _positioningSessionId = null;
       _placementBeforeMove = null;
@@ -443,21 +493,27 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (_focusedSessionId == id) {
       _focusedSessionId = _firstVisibleSessionId() ?? (_sessions.isEmpty ? null : _sessions.keys.last);
     }
-    if (_sessions.isEmpty) _sessionTrayVisible = false;
+    if (_sessions.isEmpty) {
+      _sessionTrayVisible = false;
+    }
     return registration;
   }
 
   void _prunePlacements() {
     while (_placements.length > 64) {
       final oldestClosedId = _placements.keys.firstWhere((id) => !_sessions.containsKey(id), orElse: () => '');
-      if (oldestClosedId.isEmpty) return;
+      if (oldestClosedId.isEmpty) {
+        return;
+      }
       _placements.remove(oldestClosedId);
     }
   }
 
   String? _firstSessionIdWhere(bool Function(WorkspaceSurfaceRegistration) predicate) {
     for (final session in _sessions.values) {
-      if (predicate(session)) return session.descriptor.id;
+      if (predicate(session)) {
+        return session.descriptor.id;
+      }
     }
     return null;
   }
@@ -481,13 +537,17 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       _requestedInputSessionId = inputTarget;
       unawaited(_enqueueInputReconcile());
     }
-    if (focusChanged || inputChanged) _publish();
+    if (focusChanged || inputChanged) {
+      _publish();
+    }
     return focusChanged;
   }
 
   bool focusNext() {
     final ids = visibleSessions.map((session) => session.descriptor.id).toList(growable: false);
-    if (ids.length < 2) return false;
+    if (ids.length < 2) {
+      return false;
+    }
     final current = _focusedSessionId == null ? -1 : ids.indexOf(_focusedSessionId!);
     return focus(ids[(current + 1) % ids.length]);
   }
@@ -499,15 +559,21 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     final selectionChanged = _requestedAudibleSessionId != id || !_hasExplicitAudioSelection;
     _hasExplicitAudioSelection = true;
     _requestedAudibleSessionId = id;
-    if (selectionChanged) _publish();
-    if (!selectionChanged && _audibleSessionId == id) return Future<bool>.value(false);
+    if (selectionChanged) {
+      _publish();
+    }
+    if (!selectionChanged && _audibleSessionId == id) {
+      return Future<bool>.value(false);
+    }
     return _enqueueAudioReconcile();
   }
 
   /// Mute only this session's pending selection. An action on an old pane
   /// must never cancel a newer request to listen to another media session.
   Future<bool> muteSession(String id) {
-    if (_disposed || _requestedAudibleSessionId != id) return Future<bool>.value(false);
+    if (_disposed || _requestedAudibleSessionId != id) {
+      return Future<bool>.value(false);
+    }
     return setAudibleSession(null);
   }
 
@@ -518,34 +584,46 @@ class MultiviewWorkspaceController extends ChangeNotifier {
           completer.complete(await _reconcileAudioOwnership());
         })
         .catchError((Object error, StackTrace stackTrace) {
-          if (!completer.isCompleted) completer.complete(false);
+          if (!completer.isCompleted) {
+            completer.complete(false);
+          }
           debugPrint('Multiview audio ownership queue failed: $error\\n$stackTrace');
         });
     return completer.future;
   }
 
   Future<bool> _reconcileAudioOwnership() async {
-    if (_disposed) return false;
+    if (_disposed) {
+      return false;
+    }
     final targetId = _requestedAudibleSessionId;
     final target = targetId == null ? null : _sessions[targetId];
     if (targetId != null && (target?.descriptor.hasAudio != true || target?.onAudioOwnershipChanged == null)) {
       return false;
     }
     final targetHandler = target?.onAudioOwnershipChanged;
-    if (_audibleSessionId == targetId && identical(_audibleHandler, targetHandler)) return false;
+    if (_audibleSessionId == targetId && identical(_audibleHandler, targetHandler)) {
+      return false;
+    }
 
     final previousId = _audibleSessionId;
     final previousHandler = _audibleHandler;
     final revision = ++_audioRevision;
     try {
-      if (previousHandler != null) await previousHandler(false);
-      if (_disposed || revision != _audioRevision) return false;
+      if (previousHandler != null) {
+        await previousHandler(false);
+      }
+      if (_disposed || revision != _audioRevision) {
+        return false;
+      }
       if (_requestedAudibleSessionId != targetId) {
         await _applyOwnershipSafely(targetHandler, false);
         await _restorePreviousAudioOwner(previousId, previousHandler);
         return false;
       }
-      if (targetHandler != null) await targetHandler(true);
+      if (targetHandler != null) {
+        await targetHandler(true);
+      }
       if (_disposed || revision != _audioRevision) {
         await _applyOwnershipSafely(targetHandler, false);
         return false;
@@ -562,13 +640,17 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     } catch (error, stackTrace) {
       await _applyOwnershipSafely(targetHandler, false);
       final restored = await _restorePreviousAudioOwner(previousId, previousHandler);
-      if (_disposed) return false;
+      if (_disposed) {
+        return false;
+      }
       if (_requestedAudibleSessionId == targetId) {
         final fallbackId = restored && previousId != null
             ? previousId
             : _firstSessionIdWhere((session) => session.descriptor.hasAudio && session.descriptor.id != targetId);
         _requestedAudibleSessionId = fallbackId;
-        if (fallbackId != null) unawaited(_enqueueAudioReconcile());
+        if (fallbackId != null) {
+          unawaited(_enqueueAudioReconcile());
+        }
       }
       debugPrint('Multiview audio ownership change failed: $error\\n$stackTrace');
       _publish();
@@ -602,8 +684,12 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     }
     final selectionChanged = _requestedInputSessionId != id;
     _requestedInputSessionId = id;
-    if (selectionChanged) _publish();
-    if (!selectionChanged && _inputSessionId == id) return Future<bool>.value(false);
+    if (selectionChanged) {
+      _publish();
+    }
+    if (!selectionChanged && _inputSessionId == id) {
+      return Future<bool>.value(false);
+    }
     return _enqueueInputReconcile();
   }
 
@@ -613,10 +699,14 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// pane's focus scope to remain active prevents an embedded game from
   /// receiving controller input behind a dialog or another route.
   void setSurfaceInputFocus(String id, bool focused) {
-    if (_sessions[id]?.descriptor.acceptsInput != true) return;
+    if (_sessions[id]?.descriptor.acceptsInput != true) {
+      return;
+    }
     final shouldFocus = focused && _focusedSessionId == id && _isVisible(id);
     final changed = shouldFocus ? _focusedInputSurfaceIds.add(id) : _focusedInputSurfaceIds.remove(id);
-    if (!changed || (_requestedInputSessionId != id && _inputSessionId != id)) return;
+    if (!changed || (_requestedInputSessionId != id && _inputSessionId != id)) {
+      return;
+    }
     unawaited(_enqueueInputReconcile());
   }
 
@@ -627,7 +717,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
           completer.complete(await _reconcileInputOwnership());
         })
         .catchError((Object error, StackTrace stackTrace) {
-          if (!completer.isCompleted) completer.complete(false);
+          if (!completer.isCompleted) {
+            completer.complete(false);
+          }
           debugPrint('Multiview input ownership queue failed: $error\\n$stackTrace');
         });
     return completer.future;
@@ -642,7 +734,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   Future<bool> _reconcileInputOwnership() async {
-    if (_disposed) return false;
+    if (_disposed) {
+      return false;
+    }
     final targetId = _effectiveInputSessionId();
     final target = targetId == null ? null : _sessions[targetId];
     if (targetId != null &&
@@ -654,20 +748,28 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       return false;
     }
     final targetHandler = target?.onInputOwnershipChanged;
-    if (_inputSessionId == targetId && identical(_inputHandler, targetHandler)) return false;
+    if (_inputSessionId == targetId && identical(_inputHandler, targetHandler)) {
+      return false;
+    }
 
     final previousId = _inputSessionId;
     final previousHandler = _inputHandler;
     final revision = ++_inputRevision;
     try {
-      if (previousHandler != null) await previousHandler(false);
-      if (_disposed || revision != _inputRevision) return false;
+      if (previousHandler != null) {
+        await previousHandler(false);
+      }
+      if (_disposed || revision != _inputRevision) {
+        return false;
+      }
       if (_effectiveInputSessionId() != targetId) {
         await _applyOwnershipSafely(targetHandler, false);
         await _restorePreviousInputOwner(previousId, previousHandler);
         return false;
       }
-      if (targetHandler != null) await targetHandler(true);
+      if (targetHandler != null) {
+        await targetHandler(true);
+      }
       if (_disposed || revision != _inputRevision) {
         await _applyOwnershipSafely(targetHandler, false);
         return false;
@@ -684,7 +786,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     } catch (error, stackTrace) {
       await _applyOwnershipSafely(targetHandler, false);
       final restored = await _restorePreviousInputOwner(previousId, previousHandler);
-      if (_disposed) return false;
+      if (_disposed) {
+        return false;
+      }
       if (_requestedInputSessionId == targetId) {
         _requestedInputSessionId = restored ? previousId : null;
       }
@@ -716,7 +820,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   void _queueInputRelease(String id, WorkspaceOwnershipHandler? handler) {
-    if (handler == null) return;
+    if (handler == null) {
+      return;
+    }
     _inputQueue = _inputQueue
         .then((_) async {
           if (_disposed || _requestedInputSessionId == id || _inputSessionId == id) {
@@ -730,7 +836,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   void _queueAudioMute(String id, WorkspaceOwnershipHandler? handler) {
-    if (handler == null) return;
+    if (handler == null) {
+      return;
+    }
     _audioQueue = _audioQueue
         .then((_) async {
           if (_disposed || _requestedAudibleSessionId == id || _audibleSessionId == id) {
@@ -769,7 +877,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   Future<bool> _applyOwnershipSafely(WorkspaceOwnershipHandler? handler, bool enabled) async {
-    if (handler == null) return true;
+    if (handler == null) {
+      return true;
+    }
     try {
       await handler(enabled);
       return true;
@@ -780,8 +890,12 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   bool promoteToFullscreen(String id) {
-    if (!_sessions.containsKey(id) || _fullscreenSessionId == id) return false;
-    if (_positioningSessionId != null) finishPositioning(cancel: false);
+    if (!_sessions.containsKey(id) || _fullscreenSessionId == id) {
+      return false;
+    }
+    if (_positioningSessionId != null) {
+      finishPositioning(cancel: false);
+    }
     final inputTarget = _sessions[id]?.descriptor.acceptsInput == true ? id : null;
     if (_requestedInputSessionId != inputTarget || _inputSessionId != inputTarget) {
       _requestedInputSessionId = inputTarget;
@@ -797,7 +911,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
 
   /// Return from the promoted surface to the previous floating or split layout.
   bool exitFullscreen() {
-    if (_fullscreenSessionId == null) return false;
+    if (_fullscreenSessionId == null) {
+      return false;
+    }
     _fullscreenSessionId = null;
     _publish();
     return true;
@@ -809,15 +925,21 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (!_sessions.containsKey(id) || _parkedSessionIds.contains(id) || _restoredSessionIds.contains(id)) {
       return false;
     }
-    if (_positioningSessionId == id) finishPositioning(cancel: true);
-    if (_fullscreenSessionId == id) _fullscreenSessionId = null;
+    if (_positioningSessionId == id) {
+      finishPositioning(cancel: true);
+    }
+    if (_fullscreenSessionId == id) {
+      _fullscreenSessionId = null;
+    }
     _parkedSessionIds.add(id);
     if (_focusedSessionId == id) {
       _focusedSessionId = _firstVisibleSessionId(excluding: id);
     }
     // Parking the last visible pane must leave the session tray available so
     // the live session can be brought back without reopening its source.
-    if (visibleSessions.isEmpty) _sessionTrayVisible = true;
+    if (visibleSessions.isEmpty) {
+      _sessionTrayVisible = true;
+    }
     if (_requestedInputSessionId == id || _inputSessionId == id) {
       _requestedInputSessionId = _firstSessionIdWhere(
         (session) =>
@@ -839,7 +961,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   bool unpark(String id) {
-    if (!_sessions.containsKey(id) || !_parkedSessionIds.remove(id)) return false;
+    if (!_sessions.containsKey(id) || !_parkedSessionIds.remove(id)) {
+      return false;
+    }
     _focusedSessionId = id;
     _publish();
     return true;
@@ -852,7 +976,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   bool setSessionTrayVisible(bool visible) {
-    if (_sessionTrayVisible == visible) return false;
+    if (_sessionTrayVisible == visible) {
+      return false;
+    }
     _sessionTrayVisible = visible;
     _publish();
     return true;
@@ -860,7 +986,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
 
   bool swapFocusedWithNext() {
     final ids = visibleSessions.map((session) => session.descriptor.id).toList(growable: false);
-    if (ids.length < 2) return false;
+    if (ids.length < 2) {
+      return false;
+    }
     final current = _focusedSessionId == null ? -1 : ids.indexOf(_focusedSessionId!);
     final firstId = current < 0 ? ids.first : ids[current];
     final secondId = ids[((current < 0 ? 0 : current) + 1) % ids.length];
@@ -868,21 +996,29 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   bool swapPlacement(String firstId, String secondId) {
-    if (firstId == secondId) return false;
+    if (firstId == secondId) {
+      return false;
+    }
     final first = _placements[firstId];
     final second = _placements[secondId];
-    if (first == null || second == null) return false;
+    if (first == null || second == null) {
+      return false;
+    }
     if (_layoutMode == MultiviewLayoutMode.sideBySide) {
       final ids = _sessions.keys.toList(growable: false);
       final firstIndex = ids.indexOf(firstId);
       final secondIndex = ids.indexOf(secondId);
-      if (firstIndex < 0 || secondIndex < 0) return false;
+      if (firstIndex < 0 || secondIndex < 0) {
+        return false;
+      }
       ids[firstIndex] = secondId;
       ids[secondIndex] = firstId;
       final reordered = <String, WorkspaceSurfaceRegistration>{};
       for (final id in ids) {
         final registration = _sessions[id];
-        if (registration != null) reordered[id] = registration;
+        if (registration != null) {
+          reordered[id] = registration;
+        }
       }
       _sessions
         ..clear()
@@ -891,7 +1027,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       _placements[firstId] = second;
       _placements[secondId] = first;
       final registration = _sessions.remove(firstId);
-      if (registration != null) _sessions[firstId] = registration;
+      if (registration != null) {
+        _sessions[firstId] = registration;
+      }
     }
     _focusedSessionId = firstId;
     _publish();
@@ -899,7 +1037,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   bool setLayoutMode(MultiviewLayoutMode mode) {
-    if (_layoutMode == mode) return false;
+    if (_layoutMode == mode) {
+      return false;
+    }
     if (mode == MultiviewLayoutMode.sideBySide && _positioningSessionId != null) {
       finishPositioning(cancel: true);
     }
@@ -909,9 +1049,13 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   }
 
   bool moveByPixels(String id, Offset delta, Size viewport, {Size? paneSize}) {
-    if (!_isVisible(id)) return false;
+    if (!_isVisible(id)) {
+      return false;
+    }
     final placement = _placements[id];
-    if (placement == null || viewport.width <= 0 || viewport.height <= 0) return false;
+    if (placement == null || viewport.width <= 0 || viewport.height <= 0) {
+      return false;
+    }
     final maximumLeft = paneSize == null ? 1.0 - placement.width : (viewport.width - paneSize.width) / viewport.width;
     final maximumTop = paneSize == null
         ? 1.0 - placement.height
@@ -922,16 +1066,22 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       maximumLeft: maximumLeft,
       maximumTop: maximumTop,
     );
-    if (next.left == placement.left && next.top == placement.top) return false;
+    if (next.left == placement.left && next.top == placement.top) {
+      return false;
+    }
     _placements[id] = next;
     _publish();
     return true;
   }
 
   bool resizeByPixels(String id, Offset delta, Size viewport, {Size? paneSize}) {
-    if (!_isVisible(id)) return false;
+    if (!_isVisible(id)) {
+      return false;
+    }
     final placement = _placements[id];
-    if (placement == null || viewport.width <= 0 || viewport.height <= 0) return false;
+    if (placement == null || viewport.width <= 0 || viewport.height <= 0) {
+      return false;
+    }
     final next = placement.withDelta(
       width: paneSize == null
           ? placement.width + delta.dx / viewport.width
@@ -940,7 +1090,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
           ? placement.height + delta.dy / viewport.height
           : (paneSize.height + delta.dy) / viewport.height,
     );
-    if (next.width == placement.width && next.height == placement.height) return false;
+    if (next.width == placement.width && next.height == placement.height) {
+      return false;
+    }
     _placements[id] = next;
     _publish();
     return true;
@@ -951,32 +1103,46 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     if (!_isVisible(id) || _layoutMode != MultiviewLayoutMode.floating || _fullscreenSessionId != null) {
       return false;
     }
-    if (_positioningSessionId == id) return false;
-    if (_positioningSessionId != null) finishPositioning(cancel: true);
+    if (_positioningSessionId == id) {
+      return false;
+    }
+    if (_positioningSessionId != null) {
+      finishPositioning(cancel: true);
+    }
     _positioningSessionId = id;
     _placementBeforeMove = _placements[id];
     _focusedSessionId = id;
-    if (_requestedInputSessionId == id || _inputSessionId == id) unawaited(_enqueueInputReconcile());
+    if (_requestedInputSessionId == id || _inputSessionId == id) {
+      unawaited(_enqueueInputReconcile());
+    }
     _publish();
     return true;
   }
 
   bool finishPositioning({bool cancel = false}) {
     final id = _positioningSessionId;
-    if (id == null) return false;
+    if (id == null) {
+      return false;
+    }
     if (cancel) {
       final original = _placementBeforeMove;
-      if (original != null && _sessions.containsKey(id)) _placements[id] = original;
+      if (original != null && _sessions.containsKey(id)) {
+        _placements[id] = original;
+      }
     }
     _positioningSessionId = null;
     _placementBeforeMove = null;
-    if (_requestedInputSessionId == id || _inputSessionId == id) unawaited(_enqueueInputReconcile());
+    if (_requestedInputSessionId == id || _inputSessionId == id) {
+      unawaited(_enqueueInputReconcile());
+    }
     _publish();
     return true;
   }
 
   bool movePositionedByPixels(String id, Offset delta, Size viewport, {Size? paneSize}) {
-    if (_positioningSessionId != id) return false;
+    if (_positioningSessionId != id) {
+      return false;
+    }
     return moveByPixels(id, delta, viewport, paneSize: paneSize);
   }
 
@@ -988,11 +1154,17 @@ class MultiviewWorkspaceController extends ChangeNotifier {
 
   /// Non-gesture positioning path for remotes and keyboards.
   bool moveToCorner(String id, {required bool right, required bool bottom}) {
-    if (!_isVisible(id)) return false;
+    if (!_isVisible(id)) {
+      return false;
+    }
     final placement = _placements[id];
-    if (placement == null) return false;
+    if (placement == null) {
+      return false;
+    }
     final next = placement.withDelta(left: right ? 1 - placement.width : 0, top: bottom ? 1 - placement.height : 0);
-    if (next.left == placement.left && next.top == placement.top) return false;
+    if (next.left == placement.left && next.top == placement.top) {
+      return false;
+    }
     _placements[id] = next;
     _publish();
     return true;
@@ -1009,7 +1181,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   );
 
   void restoreLayout(WorkspaceSnapshot snapshot) {
-    if (_positioningSessionId != null) finishPositioning(cancel: true);
+    if (_positioningSessionId != null) {
+      finishPositioning(cancel: true);
+    }
     _pendingSnapshot = snapshot;
     _layoutMode = snapshot.layoutMode;
     _placements.addAll(snapshot.placements);

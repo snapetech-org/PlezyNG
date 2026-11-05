@@ -12,26 +12,49 @@ void main() {
   test('private archives paginate, preserve enclosure identity and survive adapter restart', () async {
     final sealed = <String, String>{};
     var serial = 0;
-    Future<String> protect(String value) async { final key = 'enc:v2:fixture-${serial++}'; sealed[key] = value; return key; }
+    Future<String> protect(String value) async {
+      final key = 'enc:v2:fixture-${serial++}';
+      sealed[key] = value;
+      return key;
+    }
+
     Future<String?> reveal(String value) async => sealed[value];
     var rootReads = 0;
-    SourceTransport transport() => SourceTransport(client: MockClient((request) async {
-      if (request.url.path == '/feed') {
-        rootReads++;
-        return http.Response('<rss xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Show</title>'
-          '<atom:link rel="prev-archive" href="https://publisher.example/archive?token=private"/>'
-          '${List.generate(300, (i) => '<item><guid>new-$i</guid><title>Episode $i</title><enclosure url="https://cdn.example/$i.mp3" type="audio/mpeg" length="100"/></item>').join()}'
-          '</channel></rss>', 200);
-      }
-      expect(request.url.path, '/archive');
-      return http.Response('<rss><channel><title>Show</title><item><guid>old</guid><title>Old</title>'
-        '<enclosure url="https://cdn.example/old.mp3?token=secret" type="audio/mpeg" length="100"/>'
-        '</item></channel></rss>', 200);
-    }));
-    const source = FileSource(id: 'feed', profileId: 'profile', kind: FileSourceKind.podcastRss,
-      name: 'Show', endpoint: 'https://publisher.example');
-    PodcastRssSourceAdapter adapter() => PodcastRssSourceAdapter(source, transport(),
-      () async => {'feedUrl': 'https://publisher.example/feed'}, protect: protect, reveal: reveal);
+    SourceTransport transport() => SourceTransport(
+      client: MockClient((request) async {
+        if (request.url.path == '/feed') {
+          rootReads++;
+          return http.Response(
+            '<rss xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Show</title>'
+            '<atom:link rel="prev-archive" href="https://publisher.example/archive?token=private"/>'
+            '${List.generate(300, (i) => '<item><guid>new-$i</guid><title>Episode $i</title><enclosure url="https://cdn.example/$i.mp3" type="audio/mpeg" length="100"/></item>').join()}'
+            '</channel></rss>',
+            200,
+          );
+        }
+        expect(request.url.path, '/archive');
+        return http.Response(
+          '<rss><channel><title>Show</title><item><guid>old</guid><title>Old</title>'
+          '<enclosure url="https://cdn.example/old.mp3?token=secret" type="audio/mpeg" length="100"/>'
+          '</item></channel></rss>',
+          200,
+        );
+      }),
+    );
+    const source = FileSource(
+      id: 'feed',
+      profileId: 'profile',
+      kind: FileSourceKind.podcastRss,
+      name: 'Show',
+      endpoint: 'https://publisher.example',
+    );
+    PodcastRssSourceAdapter adapter() => PodcastRssSourceAdapter(
+      source,
+      transport(),
+      () async => {'feedUrl': 'https://publisher.example/feed'},
+      protect: protect,
+      reveal: reveal,
+    );
     final first = adapter();
     final page1 = await first.browse(parent: 'podcast:episodes');
     final page2 = await first.browse(parent: 'podcast:episodes', cursor: page1.next);
@@ -55,7 +78,10 @@ void main() {
     final vtt = PodcastTranscript.parse('WEBVTT\n\n00:00:01.000 --> 00:00:02.000\n<v Speaker>Hello</v>\n', 'text/vtt');
     expect(vtt.cues.single.startMs, 1000);
     expect(vtt.cues.single.text, 'Hello');
-    final json = PodcastTranscript.parse('{"segments":[{"startTime":1,"endTime":2,"speaker":"A","body":"Hello"}]}', 'application/json');
+    final json = PodcastTranscript.parse(
+      '{"segments":[{"startTime":1,"endTime":2,"speaker":"A","body":"Hello"}]}',
+      'application/json',
+    );
     expect(json.cues.single.text, 'A: Hello');
     expect(PodcastTranscript.fromJson(json.toJson()).cues.single.endMs, 2000);
   });

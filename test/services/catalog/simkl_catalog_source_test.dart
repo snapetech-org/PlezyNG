@@ -572,10 +572,17 @@ void main() {
       expect(redirect.url.host, 'api.simkl.com');
       expect(redirect.followRedirects, isFalse);
       expect(redirect.headers['authorization'], 'Bearer access');
-      expect(
-        redirect.url.query,
-        startsWith('to=simkl&imdb=tt0877057&tmdb=13916&type=tv&mal=1535&anilist=1535&client_id='),
-      );
+      expect(redirect.url.queryParameters, containsPair('client_id', SimklConstants.legacyClientId));
+      for (final entry in {
+        'to': 'simkl',
+        'imdb': 'tt0877057',
+        'tmdb': '13916',
+        'type': 'tv',
+        'mal': '1535',
+        'anilist': '1535',
+      }.entries) {
+        expect(redirect.url.queryParameters, containsPair(entry.key, entry.value));
+      }
       expect(ratings, [
         _rating('simkl', 9.0, votes: 4200),
         _rating('imdb', 9.0, votes: 410000),

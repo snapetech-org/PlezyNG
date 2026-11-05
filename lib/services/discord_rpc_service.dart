@@ -98,12 +98,14 @@ class DiscordRPCService {
   /// Standalone instance for tests; [rpcFactory] supplies fake clients so no
   /// IPC connection is attempted.
   @visibleForTesting
-  DiscordRPCService.forTesting({required this._rpcFactory, String applicationId = '1'}) : _applicationId = applicationId;
+  DiscordRPCService.forTesting({required this._rpcFactory, this._applicationId = '1'});
 
   final DiscordRPC Function() _rpcFactory;
 
   static bool get isAvailable {
-    if (_configuredApplicationId.isEmpty) return false;
+    if (_configuredApplicationId.isEmpty) {
+      return false;
+    }
     if (!PlatformDetector.isDesktopOS()) {
       return false;
     }
@@ -117,7 +119,9 @@ class DiscordRPCService {
       return;
     }
 
-    if (_isInitialized) return;
+    if (_isInitialized) {
+      return;
+    }
     _isInitialized = true;
 
     final settings = await SettingsService.getInstance();
@@ -129,7 +133,9 @@ class DiscordRPCService {
   }
 
   Future<void> setEnabled(bool enabled) async {
-    if (_isEnabled == enabled) return;
+    if (_isEnabled == enabled) {
+      return;
+    }
 
     _isEnabled = enabled;
 
@@ -176,7 +182,9 @@ class DiscordRPCService {
 
   /// Update current playback speed (for accurate remaining time calculation)
   void updatePlaybackSpeed(double speed) {
-    if (_playbackSpeed == speed) return;
+    if (_playbackSpeed == speed) {
+      return;
+    }
     _playbackSpeed = speed;
     if (_isEnabled && _isConnected && _playbackStartTime != null) {
       _updatePresence();
@@ -185,7 +193,9 @@ class DiscordRPCService {
 
   /// Resume playback (restore timestamp)
   Future<void> resumePlayback() async {
-    if (_currentMetadata == null) return;
+    if (_currentMetadata == null) {
+      return;
+    }
 
     _playbackStartTime = DateTime.now();
 
@@ -236,7 +246,9 @@ class DiscordRPCService {
       appLogger.w('Discord Rich Presence is not configured for this Pleazyng build');
       return;
     }
-    if (_rpc != null) return;
+    if (_rpc != null) {
+      return;
+    }
 
     // Bound to this attempt's client so deferred continuations (the initialize
     // await and the ready/disconnected listeners) can detect that a
@@ -248,7 +260,9 @@ class DiscordRPCService {
       _rpc = rpc;
 
       _readySubscription = rpc.onReady.listen((_) async {
-        if (!identical(_rpc, rpc)) return; // stale event from a replaced client
+        if (!identical(_rpc, rpc)) {
+          return;
+        } // stale event from a replaced client
         _isConnected = true;
         appLogger.i('Discord RPC connected');
 
@@ -256,7 +270,9 @@ class DiscordRPCService {
         await Future.delayed(const Duration(milliseconds: 200));
         // The client may have been replaced while we waited; don't publish
         // presence on the successor's behalf.
-        if (!identical(_rpc, rpc)) return;
+        if (!identical(_rpc, rpc)) {
+          return;
+        }
 
         // Update presence if we have active playback
         final metadata = _currentMetadata;
@@ -267,7 +283,9 @@ class DiscordRPCService {
       });
 
       _disconnectedSubscription = rpc.onDisconnected.listen((_) {
-        if (!identical(_rpc, rpc)) return; // stale event from a replaced client
+        if (!identical(_rpc, rpc)) {
+          return;
+        } // stale event from a replaced client
         appLogger.i('Discord RPC disconnected');
         // A disposed/lost DiscordRPC cannot be re-initialized and _connect
         // no-ops while _rpc is set — tear the dead client down before arming
@@ -315,7 +333,9 @@ class DiscordRPCService {
     _disconnectedSubscription = null;
     _errorSubscription = null;
 
-    if (rpc == null) return;
+    if (rpc == null) {
+      return;
+    }
     try {
       unawaited(rpc.dispose());
     } catch (e) {
@@ -324,7 +344,9 @@ class DiscordRPCService {
   }
 
   void _scheduleReconnect() {
-    if (!_isEnabled) return;
+    if (!_isEnabled) {
+      return;
+    }
 
     _reconnectTimer?.cancel();
     _reconnectTimer = Timer(const Duration(seconds: 30), () {
@@ -344,10 +366,14 @@ class DiscordRPCService {
   }
 
   Future<String?> _uploadThumbnail(MediaItem metadata, MediaServerClient client) async {
-    if (!isPleazyngRelayConfigured) return null;
+    if (!isPleazyngRelayConfigured) {
+      return null;
+    }
     try {
       final thumbPath = _presenceThumbPath(metadata);
-      if (thumbPath == null || thumbPath.isEmpty) return null;
+      if (thumbPath == null || thumbPath.isEmpty) {
+        return null;
+      }
 
       final cacheKey = '${client.backend.id}:$thumbPath';
       final cached = _posterUrlCache[cacheKey];
@@ -357,14 +383,18 @@ class DiscordRPCService {
       }
 
       final imageUrl = _buildTranscodedThumbnailUrl(metadata, client, thumbPath);
-      if (imageUrl.isEmpty) return null;
+      if (imageUrl.isEmpty) {
+        return null;
+      }
 
       final imageBytes = await httpClient.getBytes(
         imageUrl,
         headers: client.streamHeaders,
         timeout: const Duration(seconds: 10),
       );
-      if (imageBytes.isEmpty) return null;
+      if (imageBytes.isEmpty) {
+        return null;
+      }
       if (imageBytes.length > _maxPosterUploadBytes) {
         appLogger.d('Discord poster upload skipped: transcoded image is ${imageBytes.length} bytes');
         return null;
@@ -404,7 +434,9 @@ class DiscordRPCService {
   /// episode thumb), album art for tracks — never the artist portrait Plex
   /// puts in `grandparentThumb` — and the item's own poster otherwise.
   String? _presenceThumbPath(MediaItem metadata) {
-    if (metadata.kind == MediaKind.track) return metadata.thumbPath;
+    if (metadata.kind == MediaKind.track) {
+      return metadata.thumbPath;
+    }
     return metadata.grandparentThumbPath ?? metadata.thumbPath;
   }
 
@@ -426,9 +458,13 @@ class DiscordRPCService {
   }
 
   String? _absolutePosterUrl(String? url) {
-    if (url == null || url.isEmpty) return null;
+    if (url == null || url.isEmpty) {
+      return null;
+    }
     final uri = Uri.tryParse(url);
-    if (uri == null) return null;
+    if (uri == null) {
+      return null;
+    }
     if (uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https')) {
       return url;
     }
@@ -439,7 +475,9 @@ class DiscordRPCService {
   }
 
   Future<void> _updatePresence() async {
-    if (_rpc == null || !_isConnected || _currentMetadata == null) return;
+    if (_rpc == null || !_isConnected || _currentMetadata == null) {
+      return;
+    }
 
     // No card while paused. Discord runs an "elapsed" counter from the
     // activity's creation when no timestamps are sent, so a paused card
@@ -476,7 +514,9 @@ class DiscordRPCService {
   /// Build timestamps for Discord progress bar
   DiscordTimestamps? _buildTimestamps() {
     // When paused, don't show timestamps (progress bar would be inaccurate)
-    if (_playbackStartTime == null) return null;
+    if (_playbackStartTime == null) {
+      return null;
+    }
 
     final duration = _timeline.duration;
     if (duration != null) {

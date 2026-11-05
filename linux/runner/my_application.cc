@@ -91,7 +91,9 @@ static void my_application_activate(GApplication* application) {
   gtk_container_add(GTK_CONTAINER(romm_overlay), GTK_WIDGET(self->flutter_view));
   gtk_container_add(GTK_CONTAINER(window), romm_overlay);
   gtk_widget_show(romm_overlay);
-  romm_web_register(fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "RommWeb"), GTK_OVERLAY(romm_overlay));
+  romm_web_register(
+      fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "RommWeb"),
+      GTK_OVERLAY(romm_overlay));
 #else
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(self->flutter_view));
 #endif

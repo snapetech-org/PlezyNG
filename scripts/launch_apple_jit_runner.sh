@@ -78,6 +78,22 @@ if [[ "$active_apple" != 0 ]]; then
   exit 1
 fi
 
+# Avoid the measured per-file NFS delay after a Mac reboot resets this sysctl.
+# Performance tuning is optional: it must never prevent a build from starting.
+if ! ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
+  "cd / && /bin/bash -s" <<'REMOTE_NFS_PERFORMANCE'
+if [[ "$(/usr/bin/uname -s)" == Darwin ]]; then
+  current_ack="$(/usr/sbin/sysctl -n net.inet.tcp.delayed_ack 2>/dev/null || true)"
+  if [[ "$current_ack" == 3 ]]; then
+    sudo -n /usr/sbin/sysctl -w net.inet.tcp.delayed_ack=0 \
+      || printf 'Optional NFS TCP tuning unavailable; continuing.\n' >&2
+  fi
+fi
+REMOTE_NFS_PERFORMANCE
+then
+  printf 'Optional NFS performance check unavailable; continuing to preflight.\n' >&2
+fi
+
 # Check disk, both NFS mounts, and the pinned runner cache before consuming a
 # one-time JIT configuration. The SSH command starts from / so sudo never
 # inherits the desktop user's inaccessible working directory.

@@ -52,6 +52,20 @@ all client, ownership and root-squash options. Update only this export with
 runners or reload unrelated exports. This scratch policy permits write
 acknowledgement before stable storage and is not a policy for personal data.
 
+Before each launch, the controller also changes the Mac's default
+`net.inet.tcp.delayed_ack=3` to `0`. The measured 12-file NFS probe improved
+create/fsync time from 1.00 to 0.27 seconds and unlink time from 0.78 to 0.24
+seconds. The setting resets after reboot, so the launcher reapplies it; a
+failure to tune it is non-blocking. An already-set `0` or a custom `1`/`2` is
+left alone. See the [NAS vendor's macOS performance guidance](https://www.dell.com/en-us/infohub/articles/powerscale-onefs-macos-client-performance-and-user-experience-optimization).
+
+The iOS CocoaPods permission pass was also profiled spending most samples in
+`chmod` over NFS. If metadata latency still dominates, use a short local APFS
+source/Pods workspace and retain NFS for caches and archives. Preserve the
+matching owner records, path validation and cleanup support when changing that
+layout; do not remap an active workspace or treat the permission pass as a
+stopped compiler.
+
 Steam sources prepared under `.dart_tool/games/steam` are reusable between
 Apple platforms when `.plezy-recipe` matches the script, source lock and patches.
 Preserve a completed source cache before removing the creating workspace,

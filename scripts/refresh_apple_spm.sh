@@ -125,8 +125,19 @@ for platform in "${PLATFORMS[@]}"; do
     echo "reset      $cloned_dir"
   fi
 
+  derived_data_args=()
+  if [[ "${APPLE_SCRATCH_MODE:-}" == "local-xcode" ]]; then
+    expected_derived_data="$runner_temp_real/plezyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${platform}-xcode/DerivedData"
+    if [[ "${APPLE_DERIVED_DATA_PATH:-}" != "$expected_derived_data" ]]; then
+      echo "error: refusing an unscoped Apple DerivedData directory" >&2
+      exit 1
+    fi
+    derived_data_args=(-scheme Runner -derivedDataPath "$APPLE_DERIVED_DATA_PATH")
+  fi
+
   log="$(mktemp)"
   if (cd "$platform" && xcodebuild -project Runner.xcodeproj -resolvePackageDependencies \
+    "${derived_data_args[@]}" \
     -clonedSourcePackagesDirPath "$cloned_dir" >"$log" 2>&1); then
     echo "resolved   $platform"
     # Only the lines that say what moved; the rest is a list of local plugin packages.

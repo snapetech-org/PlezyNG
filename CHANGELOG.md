@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Keep Apple JIT queue discovery active before platform jobs appear and retry failed launches while their jobs remain queued.
+- Keep Swift package resolution inside each Apple job's DerivedData directory so completed JIT jobs reclaim that output.
+- Reclaim default Xcode DerivedData belonging to a completed Apple JIT job after retaining its logs and failed build products.
 - Set the Apple JIT APFS admission floor to 37 GiB, matching the pinned Flutter installer’s 30 GiB reserve plus 7 GiB install headroom.
 - Automate serial Apple JIT job handling in release runs and preserve per-job diagnostics.
 - Pin the validated WebOS engine archive produced by the release builder and keep GitHub-only macOS artifacts unsigned unless notarized Homebrew preparation is requested.

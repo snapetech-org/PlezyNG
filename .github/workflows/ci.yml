@@ -905,7 +905,7 @@ jobs:
           ruby tvos/scripts/test_wire_top_shelf.rb
 
       - name: Resolve pinned Apple Swift packages for native tests
-        run: xcodebuild -resolvePackageDependencies -workspace "${{ matrix.workspace }}" -scheme Runner -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR"
+        run: xcodebuild -resolvePackageDependencies -workspace "${{ matrix.workspace }}" -scheme Runner -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" -derivedDataPath "$APPLE_DERIVED_DATA_PATH"
 
       - name: Remove AMSMB2 unsafe warning flag from the pinned tvOS checkout
         if: matrix.platform == 'tvOS'

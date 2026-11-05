@@ -2,6 +2,7 @@
 set -euo pipefail
 
 readonly ORG="snapetech-org"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPO="PlezyNG"
 readonly RUNNER_GROUP_ID="${APPLE_JIT_RUNNER_GROUP_ID:-8}"
 readonly SSH_TARGET="${APPLE_JIT_SSH_TARGET:-keith@100.64.0.3}"
@@ -220,6 +221,10 @@ if [[ -n "${APPLE_JIT_EVIDENCE_DIR:-}" ]]; then
     echo "Runner registration $runner_name remains after job completion; keeping $run_root for diagnosis." >&2
     exit 1
   fi
+
+  ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
+    "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /usr/bin/python3 - '$run_id' '$run_attempt' '$runner_root' '$conclusion'" \
+    < "$SCRIPT_DIR/cleanup_apple_jit_derived_data.py"
 
   ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
     "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /bin/bash -s" \

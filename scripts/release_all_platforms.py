@@ -61,10 +61,13 @@ RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "scripts/checks/check_build_workflow.py",
     "scripts/checks/test_check_build_workflow.py",
     "scripts/checks/test_release_ci_gate.py",
+    "scripts/checks/test_apple_jit_queue.py",
     "scripts/launch_apple_jit_runner.sh",
+    "scripts/cleanup_apple_jit_derived_data.py",
     "scripts/launch_queued_apple_jit_jobs.py",
     "scripts/prepare_android_sdk.py",
     "scripts/release_all_platforms.py",
+    "scripts/refresh_apple_spm.sh",
     "tools/reader-tests/README.md",
     "tools/webos/compatibility.json",
 })
@@ -138,42 +141,16 @@ def wait_for_run(repo: str, run: dict, purpose: str) -> dict:
     print(f"\n{purpose}: {run.get('url', f'https://github.com/{repo}/actions/runs/{run_id}')}", flush=True)
     apple_controller: subprocess.Popen[bytes] | None = None
     if repo == PLEZY_REPO:
-        jobs_payload = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
-        jobs = jobs_payload.get("jobs") if isinstance(jobs_payload, dict) else None
-        if not isinstance(jobs, list):
-            raise ReleaseError(f"Could not inspect Apple jobs for PlezyNG run {run_id}.")
-        apple_labels = {"private-apple", "macOS", "ARM64"}
-        queued_apple_jobs = [
-            job for job in jobs
-            if isinstance(job, dict)
-            and job.get("status") != "completed"
-            and apple_labels.issubset(set(job.get("labels", [])))
-            and any(
-                isinstance(label, str) and label.startswith(f"gha-{run_id}-")
-                for label in job.get("labels", [])
-            )
-        ]
-        if queued_apple_jobs:
-            if APPLE_JIT_EVIDENCE_ROOT is None:
-                raise ReleaseError(
-                    "PlezyNG Apple jobs are queued, but no task scratch path is configured for JIT evidence."
-                )
-            controller_script = ROOT / "scripts/launch_queued_apple_jit_jobs.py"
-            print(
-                f"Starting the Apple JIT queue controller for {len(queued_apple_jobs)} job(s); "
-                "it will serialize the single Mac slot and preserve per-job evidence.",
-                flush=True,
-            )
-            apple_controller = subprocess.Popen(
-                [
-                    sys.executable,
-                    str(controller_script),
-                    run_id,
-                    "--evidence-dir",
-                    str(APPLE_JIT_EVIDENCE_ROOT),
-                ],
-                cwd=ROOT,
-            )
+        if APPLE_JIT_EVIDENCE_ROOT is None:
+            raise ReleaseError("No task scratch path is configured for Apple JIT evidence.")
+        # Platform jobs appear only after the workflow's validation job passes.
+        # Start discovery now so later queued Apple jobs cannot be missed.
+        print("Starting continuous Apple JIT job discovery for this run.", flush=True)
+        apple_controller = subprocess.Popen(
+            [sys.executable, str(ROOT / "scripts/launch_queued_apple_jit_jobs.py"),
+             run_id, "--evidence-dir", str(APPLE_JIT_EVIDENCE_ROOT)],
+            cwd=ROOT,
+        )
 
     watcher = subprocess.Popen(
         ["gh", "run", "watch", run_id, "--repo", repo, "--interval", "30", "--exit-status"],

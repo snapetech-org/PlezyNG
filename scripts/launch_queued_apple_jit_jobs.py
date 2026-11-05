@@ -118,16 +118,11 @@ def wait_until_completed(run_id: str, job_id: int) -> dict:
         time.sleep(POLL_SECONDS)
 
 
-def wait_until_started_or_completed(run_id: str, job_id: int) -> dict:
-    while True:
-        job = next((item for item in get_jobs(run_id) if item.get("id") == job_id), None)
-        if job is None:
-            raise QueueError(f"Apple job {job_id} disappeared from run {run_id}.")
-        if job.get("status") != "queued":
-            return job
-        if get_run(run_id).get("status") == "completed":
-            return job
-        time.sleep(POLL_SECONDS)
+def get_job(run_id: str, job_id: int) -> dict:
+    job = next((item for item in get_jobs(run_id) if item.get("id") == job_id), None)
+    if job is None:
+        raise QueueError(f"Apple job {job_id} disappeared from run {run_id}.")
+    return job
 
 
 def launch_job(run_id: str, job_id: int, attempt: int, evidence_run_dir: Path) -> int:
@@ -208,6 +203,106 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def run_queue(run_id: str, evidence_root: Path) -> int:
+    evidence_run_dir = evidence_root / run_id
+    attempts: dict[int, int] = {}
+    failures: list[str] = []
+    idle_polls = 0
+
+    while True:
+        run = get_run(run_id)
+        jobs = get_jobs(run_id)
+        apple_jobs = [job for job in jobs if is_apple_job(job, run_id)]
+        if run.get("status") == "completed":
+            break
+
+        active_jobs = [
+            job for job in apple_jobs
+            if job.get("status") not in {"queued", "completed"}
+        ]
+        if active_jobs or active_run_scoped_apple_runner():
+            time.sleep(POLL_SECONDS)
+            continue
+
+        queued = sorted(
+            (job for job in apple_jobs if job.get("status") == "queued"),
+            key=lambda job: job.get("id", 0),
+        )
+        if not queued:
+            idle_polls += 1
+            if idle_polls % 4 == 0:
+                print(
+                    f"Apple JIT queue: no queued Apple job is ready; waiting for run {run_id}.",
+                    flush=True,
+                )
+            time.sleep(POLL_SECONDS)
+            continue
+
+        idle_polls = 0
+
+        job = queued[0]
+        job_id = job.get("id")
+        if not isinstance(job_id, int):
+            raise QueueError("A queued Apple job is missing its numeric job ID.")
+        attempt = attempts.get(job_id, 0) + 1
+        if attempt > MAX_LAUNCH_ATTEMPTS:
+            raise QueueError(
+                f"Apple job {job_id} remained queued after {MAX_LAUNCH_ATTEMPTS} launch attempts. "
+                "Capacity or runner preflight needs operator attention."
+            )
+        attempts[job_id] = attempt
+        print(
+            f"Apple JIT queue: starting {job.get('name', job_id)} "
+            f"(run {run_id}, job {job_id}, launch {attempt}/{MAX_LAUNCH_ATTEMPTS}).",
+            flush=True,
+        )
+        return_code = launch_job(run_id, job_id, attempt, evidence_run_dir)
+        current = get_job(run_id, job_id)
+        if current.get("status") == "queued":
+            print(
+                f"Apple JIT launcher attempt {attempt} for job {job_id} returned {return_code}; "
+                "the job remains queued, so the controller will retry after a short delay.",
+                file=sys.stderr,
+                flush=True,
+            )
+            time.sleep(min(15 * attempt, 60))
+            continue
+        completed = (
+            current if current.get("status") == "completed"
+            else wait_until_completed(run_id, job_id)
+        )
+        if completed.get("status") == "completed":
+            attempts.pop(job_id, None)
+            if completed.get("conclusion") != "success":
+                failures.append(
+                    f"{completed.get('name', job_id)} concluded {completed.get('conclusion')}"
+                )
+                print(f"Apple JIT queue: {failures[-1]}.", file=sys.stderr, flush=True)
+            else:
+                print(f"Apple JIT queue: job {job_id} succeeded.", flush=True)
+                if return_code != 0:
+                    raise QueueError(
+                        f"Apple job {job_id} succeeded, but its launcher returned {return_code}; "
+                        "inspect cleanup and diagnostics before using the Mac slot again."
+                    )
+            continue
+
+    remaining = [
+        job for job in apple_jobs if job.get("status") not in {"completed"}
+    ]
+    if remaining:
+        failures.extend(
+            f"{job.get('name', job.get('id'))} ended in {job.get('status')}"
+            for job in remaining
+        )
+    save_github_logs(run_id, apple_jobs, evidence_run_dir)
+    if failures:
+        raise QueueError("Apple JIT jobs did not all pass: " + "; ".join(failures))
+    print(f"Apple JIT queue: all {len(apple_jobs)} Apple jobs reached a terminal result.", flush=True)
+    return 0
+
+
+
 def main() -> int:
     args = parse_args()
     if not args.run_id.isdigit():
@@ -235,102 +330,10 @@ def main() -> int:
         os.close(lock_fd)
         raise QueueError(f"Another Apple queue controller owns run {args.run_id}.") from error
     os.fchmod(lock_fd, 0o600)
-    evidence_run_dir = evidence_root / args.run_id
-    attempts: dict[int, int] = {}
-    failures: list[str] = []
-    idle_polls = 0
-
-    while True:
-        run = get_run(args.run_id)
-        jobs = get_jobs(args.run_id)
-        apple_jobs = [job for job in jobs if is_apple_job(job, args.run_id)]
-        if run.get("status") == "completed":
-            break
-
-        active_jobs = [
-            job for job in apple_jobs
-            if job.get("status") not in {"queued", "completed"}
-        ]
-        if active_jobs or active_run_scoped_apple_runner():
-            time.sleep(POLL_SECONDS)
-            continue
-
-        queued = sorted(
-            (job for job in apple_jobs if job.get("status") == "queued"),
-            key=lambda job: job.get("id", 0),
-        )
-        if not queued:
-            idle_polls += 1
-            if idle_polls % 4 == 0:
-                print(
-                    f"Apple JIT queue: no queued Apple job is ready; waiting for run {args.run_id}.",
-                    flush=True,
-                )
-            time.sleep(POLL_SECONDS)
-            continue
-
-        idle_polls = 0
-
-        job = queued[0]
-        job_id = job.get("id")
-        if not isinstance(job_id, int):
-            raise QueueError("A queued Apple job is missing its numeric job ID.")
-        attempt = attempts.get(job_id, 0) + 1
-        if attempt > MAX_LAUNCH_ATTEMPTS:
-            raise QueueError(
-                f"Apple job {job_id} remained queued after {MAX_LAUNCH_ATTEMPTS} launch attempts. "
-                "Capacity or runner preflight needs operator attention."
-            )
-        attempts[job_id] = attempt
-        print(
-            f"Apple JIT queue: starting {job.get('name', job_id)} "
-            f"(run {args.run_id}, job {job_id}, launch {attempt}/{MAX_LAUNCH_ATTEMPTS}).",
-            flush=True,
-        )
-        return_code = launch_job(args.run_id, job_id, attempt, evidence_run_dir)
-        current = wait_until_started_or_completed(args.run_id, job_id)
-        if current.get("status") == "queued":
-            print(
-                f"Apple JIT launcher attempt {attempt} for job {job_id} returned {return_code}; "
-                "the job remains queued, so the controller will retry after a short delay.",
-                file=sys.stderr,
-                flush=True,
-            )
-            time.sleep(min(15 * attempt, 60))
-            continue
-        completed = (
-            current if current.get("status") == "completed"
-            else wait_until_completed(args.run_id, job_id)
-        )
-        if completed.get("status") == "completed":
-            attempts.pop(job_id, None)
-            if completed.get("conclusion") != "success":
-                failures.append(
-                    f"{completed.get('name', job_id)} concluded {completed.get('conclusion')}"
-                )
-                print(f"Apple JIT queue: {failures[-1]}.", file=sys.stderr, flush=True)
-            else:
-                print(f"Apple JIT queue: job {job_id} succeeded.", flush=True)
-                if return_code != 0:
-                    raise QueueError(
-                        f"Apple job {job_id} succeeded, but its launcher returned {return_code}; "
-                        "inspect cleanup and diagnostics before using the Mac slot again."
-                    )
-            continue
-
-    remaining = [
-        job for job in apple_jobs if job.get("status") not in {"completed"}
-    ]
-    if remaining:
-        failures.extend(
-            f"{job.get('name', job.get('id'))} ended in {job.get('status')}"
-            for job in remaining
-        )
-    save_github_logs(args.run_id, apple_jobs, evidence_run_dir)
-    if failures:
-        raise QueueError("Apple JIT jobs did not all pass: " + "; ".join(failures))
-    print(f"Apple JIT queue: all {len(apple_jobs)} Apple jobs reached a terminal result.", flush=True)
-    return 0
+    try:
+        return run_queue(args.run_id, evidence_root)
+    finally:
+        os.close(lock_fd)
 
 
 if __name__ == "__main__":

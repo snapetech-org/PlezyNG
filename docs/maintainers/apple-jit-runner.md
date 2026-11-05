@@ -34,6 +34,14 @@ The controller accepts only trusted `workflow_dispatch` runs from PlezyNG
 preserves launcher logs, GitHub job logs, and `_diag` archives in the supplied
 evidence directory.
 
+Swift package resolution also uses the job's local APFS DerivedData path.
+It must not fall back to `~/Library/Developer/Xcode/DerivedData`, where aborted
+jobs previously left build output outside the runner cleanup root.
+The launcher also checks default Xcode DerivedData workspace records after the
+job exits. It archives matching logs (and all build products after failure),
+then removes only output belonging to that run and attempt. Other workspaces
+and shared caches remain available.
+
 ## Single-job troubleshooting
 
 Use the low-level launcher only for a single-job recovery when no queue

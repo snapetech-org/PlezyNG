@@ -1,3 +1,6 @@
 demucs==4.0.1
-torch==2.8.0
-torchaudio==2.8.0
+# Patched checkpoint loading and a compatible audio backend for FFmpeg 4-9.
+torch==2.15.0
+torchaudio==2.11.1
+torchcodec==0.17.0
+setuptools==84.2.1

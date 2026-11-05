@@ -10,6 +10,7 @@ import concurrent.futures
 import hashlib
 import hmac
 import importlib.util
+import importlib.metadata
 import json
 import os
 from pathlib import Path
@@ -25,7 +26,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
-VERSION = "plezy-karaoke-worker-1"
+VERSION = "plezy-karaoke-worker-2"
 MAX_ASSET = 512 * 1024 * 1024
 MAX_WORK = 20 * 1024 * 1024 * 1024
 IDENTITY = re.compile(r"^[a-f0-9]{64}$")
@@ -69,15 +70,26 @@ class Jobs:
             reserved += max(0, limit - used)
         return reserved
 
+    def separation_runtime_ready(self):
+        floors = {"torch": (2, 15, 0), "torchaudio": (2, 11, 0), "torchcodec": (0, 17, 0), "setuptools": (84, 1, 0)}
+        for name, minimum in floors.items():
+            try:
+                found = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)(?:\+[A-Za-z0-9.]+)?", importlib.metadata.version(name))
+                if not found or tuple(map(int, found.groups())) < minimum: return False
+            except importlib.metadata.PackageNotFoundError:
+                return False
+        return True
+
     def capabilities(self):
         ffmpeg = bool(shutil.which("ffmpeg") and shutil.which("ffprobe"))
         model_ready = bool(self.models and self.models.is_dir() and self.model_revision)
         has = lambda name: importlib.util.find_spec(name) is not None
         return {"schema": 1, "worker": VERSION, "maxAssetBytes": MAX_ASSET, "concurrency": 1, "device": "cpu",
             "capabilities": {"waveform": ffmpeg, "render": ffmpeg, "analyze": ffmpeg and has("librosa"),
-                "reference": ffmpeg and has("librosa"), "separate": ffmpeg and model_ready and has("demucs"),
+                "reference": ffmpeg and has("librosa"), "separate": ffmpeg and model_ready and has("demucs") and self.separation_runtime_ready(),
                 "align": ffmpeg and model_ready and has("whisperx"), "midi": bool(shutil.which("fluidsynth") and self.soundfont and self.soundfont.is_file())},
             "modelRevision": self.model_revision,
+            "separationRuntimeReady": self.separation_runtime_ready(),
             "qualification": "Runtime dependencies detected; model accuracy, DSP filters and hardware are not device-qualified"}
 
     def submit(self, body):

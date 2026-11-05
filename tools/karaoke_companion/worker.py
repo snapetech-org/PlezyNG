@@ -17,7 +17,7 @@ import sys
 import threading
 import wave
 
-VERSION = "plezy-karaoke-worker-1"
+VERSION = "plezy-karaoke-worker-2"
 MEDIA_FORMATS = "aac,flac,mp3,mov,matroska,webm,ogg,wav"
 
 
@@ -37,6 +37,9 @@ def run(args: list[str], *, capture=False, cwd=None):
     for thread in threads: thread.start()
     process.wait()
     for thread in threads: thread.join(timeout=2)
+    if all(not thread.is_alive() for thread in threads):
+        for stream in (process.stdout, process.stderr):
+            if stream: stream.close()
     if process.returncode or overflow.is_set():
         raise RuntimeError(f"{Path(args[0]).name} failed: {errors[-3000:].decode(errors='replace')}")
     return bytes(output) if capture else None
@@ -87,7 +90,7 @@ def waveform(source, out):
 def separate(source, out, params, models):
     if not models or not models.is_dir(): raise ValueError("Provision approved local Demucs model files first")
     # The repository is explicitly local; no implicit model download.
-    run([sys.executable, "-m", "demucs.separate", "--repo", str(models), "-n", "htdemucs", "-d", "cpu",
+    run([sys.executable, str(Path(__file__).with_name("demucs_runner.py")), "--repo", str(models), "-n", "htdemucs", "-d", "cpu",
          "--two-stems", "vocals", "--segment", "7", "--shifts", "0", "-j", "1", "-o", str(out / "work"), str(source)])
     vocals = list((out / "work").rglob("vocals.wav"))
     backing = list((out / "work").rglob("no_vocals.wav"))
@@ -315,7 +318,7 @@ def main():
             with file.open("rb") as stream: digest = hashlib.file_digest(stream, "sha256").hexdigest()
             files.append({"name": file.name, "bytes": file.stat().st_size, "sha256": digest})
     versions = {}
-    for name in ["demucs", "whisperx", "librosa", "torch"]:
+    for name in ["demucs", "whisperx", "librosa", "torch", "torchaudio", "torchcodec"]:
         try: versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError: pass
     write_json(job / "result.json", {"schema": 1, "worker": VERSION, "kind": kind, "files": files, "versions": versions,

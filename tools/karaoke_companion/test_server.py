@@ -23,6 +23,24 @@ class JobsTest(unittest.TestCase):
     def request(self, **changes):
         return {"id": "request_0001", "kind": "waveform", "assets": [self.asset], **changes}
 
+    def test_separation_requires_the_patched_runtime(self):
+        models = Path(self.tmp.name) / "models"
+        models.mkdir()
+        self.jobs.models, self.jobs.model_revision = models, "fixture"
+        versions = {"torch": "2.15.0+cpu", "torchaudio": "2.11.1+cpu", "torchcodec": "0.17.0+cpu", "setuptools": "84.2.1"}
+        with patch("server.shutil.which", return_value="/fixture/tool"), \
+                patch("server.importlib.util.find_spec", return_value=object()), \
+                patch("server.importlib.metadata.version", side_effect=versions.__getitem__):
+            self.assertTrue(self.jobs.capabilities()["capabilities"]["separate"])
+            versions["torch"] = "2.8.0"
+            self.assertFalse(self.jobs.capabilities()["capabilities"]["separate"])
+            versions["torch"] = "2.15.0+cpu"
+            versions["setuptools"] = "81.0.0"
+            self.assertFalse(self.jobs.capabilities()["capabilities"]["separate"])
+            versions["setuptools"] = "84.2.1"
+            versions["torch"] = "2.15.0rc1"
+            self.assertFalse(self.jobs.capabilities()["capabilities"]["separate"])
+
     def test_retries_return_same_job_and_reject_changed_inputs(self):
         with patch.object(self.jobs, "capabilities", return_value={"capabilities": {"waveform": True}}), \
                 patch.object(self.jobs.pool, "submit") as submit:

@@ -1583,6 +1583,70 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  record:
+    dependency: "direct main"
+    description:
+      name: record
+      sha256: "7c4467dec63435c9206db183f8a4672cf8a62f5e5579e45803ceada8330756e7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.1.2"
+  record_android:
+    dependency: transitive
+    description:
+      name: record_android
+      sha256: "28f1108626a190e249b01ffa9f639070e31e5157474b64a5ae380bf36aec9559"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.2"
+  record_ios:
+    dependency: transitive
+    description:
+      name: record_ios
+      sha256: "21d189f49a598af4697dac4cc9e48389ac0a1fb3e916622b5504a58d9b96313e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
+  record_linux:
+    dependency: transitive
+    description:
+      name: record_linux
+      sha256: "305526af0560866a0cc4219aa3726ef8541f819e14bd5f65b73ffdb7dc5911be"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  record_macos:
+    dependency: transitive
+    description:
+      name: record_macos
+      sha256: "ced7495abf3d683e8a7dbe8fc96df8ea5722837a26f922b7cb7c5de11661bb46"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
+  record_platform_interface:
+    dependency: transitive
+    description:
+      name: record_platform_interface
+      sha256: "d94b37cadb8fe203e64b0e9893271c0b71b34f2550ee7fb0c6105d650e00c1f5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  record_web:
+    dependency: transitive
+    description:
+      name: record_web
+      sha256: "7d75ed681b5bf40c3a9b51b6c105fe53705f752284d859d5f030ab5a2bfd49cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
+  record_windows:
+    dependency: transitive
+    description:
+      name: record_windows
+      sha256: "39ca03e7ae4df5e2512bc3c92b0ef9a7b148d9295ae8ac92df6beb4daf939d94"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   rxdart:
     dependency: transitive
     description:

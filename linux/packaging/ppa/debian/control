@@ -10,6 +10,8 @@ Homepage: https://github.com/snapetech-org/PlezyNG
 Package: plezyng
 Architecture: amd64 arm64
 Depends: ${misc:Depends},
+ pulseaudio-utils,
+ ffmpeg,
  libgtk-3-0 | libgtk-3-0t64,
  libepoxy0,
  libasound2 | libasound2t64,

@@ -300,7 +300,8 @@ This list covers the current PlezyNG codebase, including additions since the for
 - OPML subscription import/export with explicit confirmation before exporting private feed links
 - Audio/video enclosures, show notes, publication/season/episode metadata, Podlove and Podcasting 2.0 chapters
 - Audiobookshelf podcast shows and episode-specific playback/progress; shared-player resume, speed, sleep timer, bookmarks and manual offline downloads
-- See the [podcast implementation and limits](docs/plezyng/podcasts/IMPLEMENTATION.md); proprietary subscription playback and automatic episode downloading are outside the implemented scope
+- Per-show automatic downloads and retention, archive pagination, transcript search/seek and opt-in gpodder synchronization are implemented in source. See the [podcast implementation and limits](docs/plezyng/podcasts/IMPLEMENTATION.md) for protocol and device qualification limits
+- Dedicated karaoke host/songbook, singer rotation, open rendition packages, timed lyrics/CD+G, practice and optional microphone/private-take workflows are integrated in source. Licensed catalogs, hosted sharing and native microphone monitoring remain open; see the [karaoke ledger](docs/plezyng/karaoke/PLAN.md)
 
 ### <img src="assets/readme_icons/live-tv.svg" height="20" alt="" align="center" /> Live TV & DVR
 

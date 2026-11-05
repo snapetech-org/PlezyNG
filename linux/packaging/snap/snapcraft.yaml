@@ -66,6 +66,8 @@ parts:
       install -Dm644 "$CRAFT_PROJECT_DIR/plezyng.desktop" "$CRAFT_PART_INSTALL/usr/share/applications/org.snapetech.plezyng.desktop"
       install -Dm644 "$CRAFT_PROJECT_DIR/gui/plezyng.png" "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/512x512/apps/plezyng.png"
     stage-packages:
+      - pulseaudio-utils
+      - ffmpeg
       - libasound2t64
       - libdrm2
       - libegl1

@@ -119,6 +119,8 @@
 	<string>Search Apple Music catalog results you choose and play them through Apple's native player.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose images from your photo library to use as media artwork.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>PlezyNG uses your microphone only when you enable karaoke pitch feedback or private recording.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Scan QR codes to pair a Companion Remote.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

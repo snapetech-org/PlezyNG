@@ -12,6 +12,12 @@ enum MusicRepeatMode { off, all, one }
 /// Coarse playback state of the music session.
 enum MusicPlaybackStatus { idle, loading, playing, paused, error }
 
+/// Optional decoded-audio capability. Unsupported backends must throw.
+abstract interface class MusicKaraokeControls {
+  Future<void> setKaraokeControls({required double semitones, required double tempo});
+  Future<void> resetKaraokeControls();
+}
+
 /// What kind of container playback was started from. The player keeps
 /// artist/playlist/mix provenance stable, while album and ad-hoc queues use
 /// the active track's album for the "Playing from …" line.

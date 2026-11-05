@@ -24,6 +24,11 @@ except ModuleNotFoundError:
 MAX_EMBED_DESCRIPTION = 3500
 RECEIPT_NAME = "discord-announcement-receipt.json"
 REPOSITORY = "snapetech-org/PlezyNG"
+USER_AGENT = "DiscordBot (https://github.com/snapetech-org/PlezyNG, 1.0)"
+
+
+class RejectedPost(RuntimeError):
+    """Discord definitively rejected a request without creating a message."""
 
 
 def split_description(text: str) -> list[str]:
@@ -75,14 +80,22 @@ def post(webhook_url: str, title: str, release_url: str, description: str) -> di
     request = Request(
         webhook_url,
         data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "User-Agent": USER_AGENT},
         method="POST",
     )
     try:
         with safe_urlopen(request, timeout=30) as response:
             result = json.loads(response.read().decode("utf-8"))
     except HTTPError as error:
-        raise RuntimeError(f"Discord webhook returned HTTP {error.code}.") from None
+        detail = ""
+        try:
+            code = json.loads(error.read()).get("code")
+            if isinstance(code, int):
+                detail = f" (Discord code {code})"
+        except (ValueError, AttributeError):
+            pass
+        failure = RejectedPost if error.code in {400, 401, 403, 404, 422, 429} else RuntimeError
+        raise failure(f"Discord webhook returned HTTP {error.code}{detail}.") from None
     except URLError:
         raise RuntimeError("Could not reach the Discord webhook.") from None
     except json.JSONDecodeError:
@@ -140,8 +153,13 @@ def announce(release: dict, webhook_url: str, receipt_path: Path) -> dict:
         receipt["in_flight_chunk"] = index
         save()
         suffix = f" ({index + 1}/{len(chunks)})" if len(chunks) > 1 else ""
-        message = post(webhook_url, f"PlezyNG {version} is out{suffix}",
-                       release["html_url"], chunks[index])
+        try:
+            message = post(webhook_url, f"PlezyNG {version} is out{suffix}",
+                           release["html_url"], chunks[index])
+        except RejectedPost:
+            receipt["in_flight_chunk"] = None
+            save()
+            raise
         receipt["messages"].append(message)
         receipt["in_flight_chunk"] = None
         save()

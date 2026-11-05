@@ -767,6 +767,7 @@ def ensure_candidate_build(
     *,
     execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
+    include_webos_build: bool = True,
 ) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
     run_title = candidate_build_title(version)
@@ -823,7 +824,7 @@ def ensure_candidate_build(
             "execution_profile": execution_profile,
             "mode": "release",
             "build_version": version,
-            "include_webos_build": "true",
+            "include_webos_build": "true" if include_webos_build else "false",
             "include_webos_release": "false",
             "include_tizen_build": "true",
             "include_apple_store_build": "true" if include_apple_store_build else "false",
@@ -905,6 +906,10 @@ def ensure_release(
     reuse_android_run_id: int | None = None,
     include_webos_build: bool = True,
 ) -> dict:
+    if reuse_android_run_id and not reuse_platform_run_id:
+        raise ReleaseError("Android reuse requires a verified platform source run.")
+    if include_webos_release and not include_webos_build:
+        raise ReleaseError("Public WebOS attachment requires a successful candidate build.")
     run_title = f"action:release:pool:private:tag:{tag}"
     if reuse_platform_run_id:
         if execution_profile != "hybrid" or include_webos_release or include_apple_store_build:
@@ -1501,6 +1506,7 @@ def main() -> int:
                 pin_sha,
                 execution_profile=args.execution_profile,
                 include_apple_store_build=include_apple_store_build,
+                **({"include_webos_build": False} if args.skip_webos_build else {}),
             )
             progress["candidate_build_run"] = candidate["databaseId"]
             stage = "release tag"

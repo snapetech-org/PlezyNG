@@ -728,7 +728,16 @@
     "contentScreensaverDelayOptionDescription": "Počkejte na to mnoho minut bez vstupu, než se zobrazí obrazovkový záložní umělecké dílo.",
     "videoCodecOptionDescription": "Umožňujte přímé přehrávání pro tento kodek, když je podporován. nekontrolované kodeky jsou transkódovány mediálním serverem.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "stavět-in",

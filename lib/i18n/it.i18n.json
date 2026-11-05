@@ -726,7 +726,16 @@
     "contentScreensaverDelayOptionDescription": "Aspettate questi molti minuti senza input prima di mostrare screensaver artwork.",
     "videoCodecOptionDescription": "Permettere la riproduzione diretta di questo codec quando supportato. i codec non controllati sono trascoditi dal server dei media.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Integrati",

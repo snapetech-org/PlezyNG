@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "Изчакайте много минути без въвеждане, преди да покажете екран за съхранение на изкуството.",
     "videoCodecOptionDescription": "Допускайте директна възпроизвеждане на този кодек, когато е поддържан.Непровержените кодове се транскодират от медийния сървър.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Вградени",

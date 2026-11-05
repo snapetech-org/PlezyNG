@@ -722,7 +722,16 @@
     "contentScreensaverDelayOptionDescription": "Tunggu ini beberapa menit tanpa input sebelum menunjukkan karya seni screensaver.",
     "videoCodecOptionDescription": "Memungkinkan playback langsung untuk codec ini ketika didukung. codec yang tidak disemak dikodifikasi oleh server media.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "dibangun",

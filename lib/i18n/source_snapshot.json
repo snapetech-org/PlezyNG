@@ -4538,5 +4538,14 @@
   "visualizerUi.noMatchingPresets": "cbd19922a0003ba9",
   "visualizerUi.reorderInPlaylist": "02ec9b106c526736",
   "visualizerUi.presetDetailsAndNotices": "79a4db4a7d4de93f",
-  "visualizerUi.milkRustShaderSupportNotice": "1851e33be73d2cea"
+  "visualizerUi.milkRustShaderSupportNotice": "1851e33be73d2cea",
+  "settings.dvOfflineTitle": "6882de06a73f3b2f",
+  "settings.dvOfflineDescription": "867528362dac3c0c",
+  "settings.dvOfflineBase": "a65ee016a39d6be8",
+  "settings.dvOfflineEnhancement": "ba7db934233cacab",
+  "settings.dvOfflineFrameRate": "8ea52deb22190524",
+  "settings.dvOfflineInvalid": "8e5548309461a091",
+  "settings.dvOfflineNewOutput": "dff1e5885e25fc7d",
+  "settings.dvOfflineHdr10": "2ebf28209e11db3e",
+  "settings.dvOfflineSdr": "c3232311daf873a4"
 }

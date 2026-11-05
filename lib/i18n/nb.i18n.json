@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "Vent dette mange minutter uten inngang før du viser skjermbeskyttelse kunstverk.",
     "videoCodecOptionDescription": "Tillat direkte spill for denne kodeksen når den støttes. Unchecked codecs transcodes av media serveren.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Innebygde",

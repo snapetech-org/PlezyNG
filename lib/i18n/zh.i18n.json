@@ -722,7 +722,16 @@
     "contentScreensaverDelayOptionDescription": "在显示屏保存艺术作品之前等待这些无输入的几分钟。",
     "videoCodecOptionDescription": "允许在支持时直接播放此代码器. 未经检查的代码被媒体服务器编码。",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "内置",

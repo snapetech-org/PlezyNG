@@ -2441,6 +2441,12 @@ jobs:
         shell: bash
         run: flutter pub get --enforce-lockfile --no-example
 
+      - name: Cache locked offline HDR10 and SDR tools
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/plezyng/dv-tools
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-dv-tools-${{ runner.arch }}-${{ hashFiles('tools/dv-engine/offline-runtime.lock.json') }}
+
       - name: Build Linux ${{ matrix.arch }}
         shell: bash
         run: |

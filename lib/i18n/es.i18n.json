@@ -726,7 +726,16 @@
     "contentScreensaverDelayOptionDescription": "Esperar estos muchos minutos sin entrada antes de mostrar la pantalla de almacenamiento artwork.",
     "videoCodecOptionDescription": "Permite reproducción directa para este codec cuando se apoya. los codecs no verificados son transcodados por el servidor de medios.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Integrados",

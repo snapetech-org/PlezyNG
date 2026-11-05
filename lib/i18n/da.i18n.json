@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "Vent dette mange minutter uden input, før du viser screensaver kunstværk.",
     "videoCodecOptionDescription": "Tillad direkte playback for denne codec, når den er understøttet. Unchecked codecs transcodes af mediaserveren.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Indbygget",

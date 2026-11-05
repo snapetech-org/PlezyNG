@@ -726,7 +726,16 @@
     "contentScreensaverDelayOptionDescription": "Aguarde muitos minutos sem entrada antes de mostrar o trabalho artístico do monitor.",
     "videoCodecOptionDescription": "Permitir reprodução direta para este codec quando suportado. codecs não verificados são transcodados pelo servidor de mídia.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Integrados",

@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "स्क्रीन सहेजने से पहले इनमें प्रवेश के बिना कई मिनटों का इंतजार करें।",
     "videoCodecOptionDescription": "समर्थित होने पर इस कोडेक के लिए सीधे प्लेबैक की अनुमति दें। बिना चेक किए गए कोडेक मीडिया सर्वर द्वारा ट्रांसकोड किए जाते हैं।",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "इमारत में",

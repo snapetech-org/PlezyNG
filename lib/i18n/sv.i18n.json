@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "Vänta på detta många minuter utan inmatning innan du visar skärmskydd konstverk.",
     "videoCodecOptionDescription": "Tillåta direktspelning för denna codec när den stöds.Ocheckade codecs transcoderas av media-servern.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Inbyggda",

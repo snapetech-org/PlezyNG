@@ -732,7 +732,16 @@
     "contentScreensaverDelayOptionDescription": "انتظر هذه دقائق عديدة دون إدخال قبل عرض عمل شاشة التخزين الفني.",
     "videoCodecOptionDescription": "السماح للتشغيل المباشر لهذا الكوديك عند دعمها.يتم نقل الكوديات غير التي تم فحصها من قبل خادم الوسائط.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "بناء في",

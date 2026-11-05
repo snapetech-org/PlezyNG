@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "Wacht dit vele minuten zonder input voordat u screensaver kunstwerk toont.",
     "videoCodecOptionDescription": "Toegeeft direct afspelen voor deze codec wanneer ondersteund. Unchecked codecs worden gecodeerd door de media server.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Ingebouwd",

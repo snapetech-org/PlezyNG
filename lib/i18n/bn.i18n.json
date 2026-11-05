@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "স্ক্রিন সার্ভার শিল্প প্রদর্শন করার আগে এই অনেক মিনিট অন্তর্ভুক্ত অপেক্ষা করুন।",
     "videoCodecOptionDescription": "সমর্থিত হলে এই কোডেক সরাসরি চালাতে দিন। চেক না করা কোডেকগুলো মিডিয়া সার্ভার ট্রান্সকোড করবে।",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "ভিত্তিতে",

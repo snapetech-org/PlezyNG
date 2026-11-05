@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "Ekran koruyucu sanat eserini göstermeden önce giriş olmadan bu uzun dakikaları bekleyin.",
     "videoCodecOptionDescription": "Desteklendiğinde bu kodek için doğrudan oynatma izin verin. kontrolsüz kodekler medya sunucusu tarafından şifrelenir.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Yerleşik",

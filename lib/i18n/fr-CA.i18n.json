@@ -94,7 +94,16 @@
       "one": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minute",
       "other": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutes",
       "many": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutes"
-    }
+    },
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "custom": "Personnalisation",

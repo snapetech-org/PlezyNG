@@ -1,7 +1,7 @@
 name: plezy
 description: "A cross-platform PlezyNG client for Plex, Jellyfin, and Emby"
 publish_to: "none"
-version: 3.0.0+159
+version: 3.0.0+160
 
 environment:
   # Dart floor stays 3.12: freezed 3.x emits `final` constructor parameters,

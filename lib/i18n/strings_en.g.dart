@@ -2138,6 +2138,33 @@ class Translations$settings$en {
 
 	/// en: 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.'
 	String get subtitleOnMuteDescription => 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.';
+
+	/// en: 'Offline HDR10 / SDR export'
+	String get dvOfflineTitle => 'Offline HDR10 / SDR export';
+
+	/// en: 'Create a compatible video from synchronized Dolby Vision base and enhancement HEVC files. All tools are included and run locally. Originals are preserved; picture quality depends on the source.'
+	String get dvOfflineDescription => 'Create a compatible video from synchronized Dolby Vision base and enhancement HEVC files. All tools are included and run locally. Originals are preserved; picture quality depends on the source.';
+
+	/// en: 'Choose base-layer HEVC file'
+	String get dvOfflineBase => 'Choose base-layer HEVC file';
+
+	/// en: 'Choose enhancement-layer HEVC file'
+	String get dvOfflineEnhancement => 'Choose enhancement-layer HEVC file';
+
+	/// en: 'Source frame rate (for example 24000/1001)'
+	String get dvOfflineFrameRate => 'Source frame rate (for example 24000/1001)';
+
+	/// en: 'Choose different synchronized layer files and a frame rate from 1 to 120 fps.'
+	String get dvOfflineInvalid => 'Choose different synchronized layer files and a frame rate from 1 to 120 fps.';
+
+	/// en: 'Choose a new .mkv filename. Existing media and reports are preserved.'
+	String get dvOfflineNewOutput => 'Choose a new .mkv filename. Existing media and reports are preserved.';
+
+	/// en: 'HDR10 · 10-bit HEVC'
+	String get dvOfflineHdr10 => 'HDR10 · 10-bit HEVC';
+
+	/// en: 'SDR · H.264'
+	String get dvOfflineSdr => 'SDR · H.264';
 }
 
 // Path: themeEditor
@@ -15806,6 +15833,15 @@ extension on Translations {
 			'settings.videoCodecOptionDescription' => 'Allow direct playback for this codec when supported. Unchecked codecs are transcoded by the media server.',
 			'settings.subtitleOnMute' => 'Show subtitles when muted',
 			'settings.subtitleOnMuteDescription' => 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.',
+			'settings.dvOfflineTitle' => 'Offline HDR10 / SDR export',
+			'settings.dvOfflineDescription' => 'Create a compatible video from synchronized Dolby Vision base and enhancement HEVC files. All tools are included and run locally. Originals are preserved; picture quality depends on the source.',
+			'settings.dvOfflineBase' => 'Choose base-layer HEVC file',
+			'settings.dvOfflineEnhancement' => 'Choose enhancement-layer HEVC file',
+			'settings.dvOfflineFrameRate' => 'Source frame rate (for example 24000/1001)',
+			'settings.dvOfflineInvalid' => 'Choose different synchronized layer files and a frame rate from 1 to 120 fps.',
+			'settings.dvOfflineNewOutput' => 'Choose a new .mkv filename. Existing media and reports are preserved.',
+			'settings.dvOfflineHdr10' => 'HDR10 · 10-bit HEVC',
+			'settings.dvOfflineSdr' => 'SDR · H.264',
 			'themeEditor.builtIn' => 'Built-in',
 			'themeEditor.presets' => 'Presets',
 			'themeEditor.custom' => 'Custom',
@@ -16122,6 +16158,8 @@ extension on Translations {
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
 			'videoControls.sleepTimerDurationHeader' => 'Timer',
 			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
 			'videoControls.continueWatching' => 'Continue',
@@ -16131,8 +16169,6 @@ extension on Translations {
 			'videoControls.pauseButton' => 'Pause',
 			'videoControls.playbackPaused' => 'Paused',
 			'videoControls.playbackResumed' => 'Playing',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.loadingVideo' => 'Loading video',
 			'videoControls.showPlaybackControls' => 'Show playback controls',
 			'videoControls.hidePlaybackControls' => 'Hide playback controls',
@@ -16636,6 +16672,8 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
 			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
+			_ => null,
+		} ?? switch (path) {
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForced' => 'Only non-forced subtitles',
@@ -16645,8 +16683,6 @@ extension on Translations {
 			'accountPreferences.forcedSubtitleOptions.onlyNonForcedDescription' => 'Exclude tracks marked as forced.',
 			'accountPreferences.displayMissingEpisodes' => 'Show missing episodes',
 			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
-			_ => null,
-		} ?? switch (path) {
 			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
 			'accountPreferences.hidePlayedInLatestDescription' => 'Leave items you have already watched out of the server\'s Latest rows.',
 			'accountPreferences.displayCollectionsView' => 'Show the Collections view',
@@ -17150,6 +17186,8 @@ extension on Translations {
 			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
+			_ => null,
+		} ?? switch (path) {
 			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
 			'explore.relation.spinOff' => 'Spin-off',
@@ -17159,8 +17197,6 @@ extension on Translations {
 			'explore.relation.adaptation' => 'Adaptation',
 			'explore.relation.other' => 'Related',
 			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
-			_ => null,
-		} ?? switch (path) {
 			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
 			'explore.detail.alsoKnownAs' => 'Also known as',
@@ -17664,6 +17700,8 @@ extension on Translations {
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			'downloads.convertingOnServer' => 'Converting on server…',
+			_ => null,
+		} ?? switch (path) {
 			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
 			'downloads.errorPostProcessing' => ({required Object reason}) => 'Post-processing failed: ${reason}',
@@ -17673,8 +17711,6 @@ extension on Translations {
 			'downloads.notificationDownloading' => 'Downloading...',
 			'downloads.notificationComplete' => 'Download complete',
 			'downloads.notificationPaused' => 'Download paused',
-			_ => null,
-		} ?? switch (path) {
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
 			'shaders.nvscalerDescription' => 'NVIDIA image scaling for sharper video',
@@ -18178,6 +18214,8 @@ extension on Translations {
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
+			_ => null,
+		} ?? switch (path) {
 			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
@@ -18187,8 +18225,6 @@ extension on Translations {
 			'services.deviceCode.instructions' => 'Scan the QR code, or visit the address below and enter this code:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
 			'services.deviceCode.copyCode' => 'Copy activation code',
-			_ => null,
-		} ?? switch (path) {
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
 			'services.deviceCode.codeCopied' => 'Code copied',
 			'services.oauthProxy.title' => ({required Object service}) => 'Sign in to ${service}',
@@ -18692,6 +18728,8 @@ extension on Translations {
 			'universalMedia.shareEnded' => 'The media reached the end and is no longer being shared.',
 			'universalMedia.shareStopped' => 'Sharing stopped. The temporary link is no longer valid.',
 			'universalMedia.shareUrlCopied' => 'Stream address copied.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.shareOpenUrl' => 'Open this address in a player on the other device',
 			'universalMedia.shareQrLabel' => 'QR code for the temporary stream address',
 			'universalMedia.shareQrHelp' => 'Scan with a compatible player connected to the same private network.',
@@ -18701,8 +18739,6 @@ extension on Translations {
 			'universalMedia.shareStarting' => 'Preparing the stream…',
 			'universalMedia.shareStart' => 'Start sharing',
 			'universalMedia.shareStop' => 'Stop sharing',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
 			'universalMedia.extensionsPrivacy' => 'A manifest can define one HTTPS search endpoint and map response fields. It cannot run code, add request headers, read files, or launch shell commands.',
@@ -19206,6 +19242,8 @@ extension on Translations {
 			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
+			_ => null,
+		} ?? switch (path) {
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
@@ -19215,8 +19253,6 @@ extension on Translations {
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
-			_ => null,
-		} ?? switch (path) {
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',

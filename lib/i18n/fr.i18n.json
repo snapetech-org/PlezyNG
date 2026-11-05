@@ -726,7 +726,16 @@
     "contentScreensaverDelayOptionDescription": "Attendre de nombreuses minutes sans entrées avant d'afficher l'œuvre d'art screensaver.",
     "videoCodecOptionDescription": "Permettre la reproduction directe de ce codec lorsqu'il est supporté. les codecs non vérifiés sont transcodés par le serveur des médias.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Intégrés",

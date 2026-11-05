@@ -16,6 +16,7 @@ import tarfile
 import urllib.request
 
 from build_adapters import checkout, patch_felbaker_vs_output_key
+from complete_offline_notices import collect as collect_runtime_notices
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -172,10 +173,12 @@ def build(work: Path, lock: dict):
         if not source.is_file():
             raise ValueError(f'missing runtime copyright notice: {package}')
         shutil.copy2(source, notices / (package + '-copyright'))
+    packages = run(['dpkg-query', '-W', '-f=${Package}\t${Version}\n'], capture=True)
+    runtime_notices = collect_runtime_notices(root, packages)
     report = {'schema_version': 1, 'lock': lock, 'encoder_flags': ENCODER_FLAGS,
               'architecture': platform.machine(), 'activation': 'runtime-command',
               'device_qualification': 'unqualified',
-              'system_packages': run(['dpkg-query', '-W', '-f=${Package}\t${Version}\n'], capture=True),
+              'system_packages': packages, 'runtime_notices': runtime_notices,
               'files': {str(path.relative_to(root)): digest(path) for path in sorted(root.rglob('*')) if path.is_file()}}
     (root / 'provenance.json').write_text(json.dumps(report, indent=2) + '\n')
     run([root / 'plezyng-dv-convert', '--self-test'])

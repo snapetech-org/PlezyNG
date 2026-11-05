@@ -722,7 +722,16 @@
     "contentScreensaverDelayOptionDescription": "在顯示屏儲存藝術作品之前等待這些無輸入的幾分鐘。",
     "videoCodecOptionDescription": "允許在支援時直接播放此程式碼器. 未經檢查的程式碼被媒體伺服器編碼。",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "內建",

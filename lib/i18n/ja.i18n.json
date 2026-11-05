@@ -722,7 +722,16 @@
     "contentScreensaverDelayOptionDescription": "スクリーンセーバーアートワークを表示する前に入力なしで数分待ってください。",
     "videoCodecOptionDescription": "このコデックがサポートされているときに直接再生を許可します. チェックされていないコデックスはメディアサーバーによってトランスコードされます。",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "標準",

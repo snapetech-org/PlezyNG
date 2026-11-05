@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "U'qizga bu mullayni o‘zizga, ekrensaver artwork ko‘shish.",
     "videoCodecOptionDescription": "Bu codec'nin doğrudan playback ko‘dadi. Unchecked codeclar media server tarafından transcodir.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Oʻrnatilgan",

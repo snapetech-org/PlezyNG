@@ -724,7 +724,16 @@
     "contentScreensaverDelayOptionDescription": "Wait this many minutes without input before showing screensaver artwork.",
     "videoCodecOptionDescription": "Allow direct playback for this codec when supported. Unchecked codecs are transcoded by the media server.",
     "subtitleOnMute": "Show subtitles when muted",
-    "subtitleOnMuteDescription": "Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track."
+    "subtitleOnMuteDescription": "Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.",
+    "dvOfflineTitle": "Offline HDR10 / SDR export",
+    "dvOfflineDescription": "Create a compatible video from synchronized Dolby Vision base and enhancement HEVC files. All tools are included and run locally. Originals are preserved; picture quality depends on the source.",
+    "dvOfflineBase": "Choose base-layer HEVC file",
+    "dvOfflineEnhancement": "Choose enhancement-layer HEVC file",
+    "dvOfflineFrameRate": "Source frame rate (for example 24000/1001)",
+    "dvOfflineInvalid": "Choose different synchronized layer files and a frame rate from 1 to 120 fps.",
+    "dvOfflineNewOutput": "Choose a new .mkv filename. Existing media and reports are preserved.",
+    "dvOfflineHdr10": "HDR10 · 10-bit HEVC",
+    "dvOfflineSdr": "SDR · H.264"
   },
   "themeEditor": {
     "builtIn": "Built-in",

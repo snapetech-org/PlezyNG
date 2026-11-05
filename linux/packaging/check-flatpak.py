@@ -23,6 +23,12 @@ count=0
 while IFS= read -r -d '' object; do
     magic=$(od -An -tx1 -N4 "$object")
     if [[ "$magic" != *"7f 45 4c 46"* ]]; then continue; fi
+    # The converter launches a separate process with its own library closure.
+    # Its copies must neither satisfy nor override dependencies of the app.
+    case "$object" in
+      /app/plezy/tools/dv/*) export LD_LIBRARY_PATH=/app/plezy/tools/dv/lib/runtime ;;
+      *) export LD_LIBRARY_PATH=/app/plezy/lib ;;
+    esac
     dependencies=$(ldd "$object" 2>&1) || { echo "$dependencies" >&2; exit 1; }
     if [[ "$dependencies" == *"not found"* ]]; then
         printf 'Unresolved dependency in %s:\n%s\n' "$object" "$dependencies" >&2
@@ -31,6 +37,7 @@ while IFS= read -r -d '' object; do
     count=$((count + 1))
 done < <(find /app/plezy -type f -print0)
 test "$count" -gt 0
+/app/plezy/tools/dv/plezyng-dv-convert --self-test
 printf 'Resolved all dependencies for %s ELF objects in the installed runtime.\n' "$count"
 '''
 

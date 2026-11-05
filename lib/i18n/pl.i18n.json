@@ -728,7 +728,16 @@
     "contentScreensaverDelayOptionDescription": "Poczekaj na to wiele minut bez wejścia przed wyświetleniem ekranu pamięci artystycznej.",
     "videoCodecOptionDescription": "Umożliwia bezpośrednie odtwarzanie tego kodeka, gdy jest obsługiwany. nie sprawdzone kodeki są przekodowane przez serwer medialny.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Wbudowane",

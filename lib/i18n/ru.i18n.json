@@ -728,7 +728,16 @@
     "contentScreensaverDelayOptionDescription": "Чекайте на это много минут без ввода, прежде чем показывать экран-защитник искусства.",
     "videoCodecOptionDescription": "Дозвольте прямое воспроизведение этого кодек, когда он поддерживается.Непроверженные кодек перешифровываются медиа-сервером.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "Встроенные",

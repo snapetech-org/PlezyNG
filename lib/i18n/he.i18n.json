@@ -726,7 +726,16 @@
     "contentScreensaverDelayOptionDescription": "לחכות הרבה דקות ללא כניסה לפני הצגת מסך אחסון אמנות.",
     "videoCodecOptionDescription": "תאפשר שידור ישיר עבור קודק זה כאשר תומך. codecs Unchecked are transcoded by the media server.",
     "subtitleOnMute": "",
-    "subtitleOnMuteDescription": ""
+    "subtitleOnMuteDescription": "",
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "builtIn": "בנוי",

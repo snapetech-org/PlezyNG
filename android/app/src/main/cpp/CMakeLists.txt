@@ -31,6 +31,7 @@ add_library(ffmpegJNI SHARED
     media3_ffmpeg_decoder/ffmpeg_jni.cc)
 target_compile_features(ffmpegJNI PRIVATE cxx_std_17)
 target_include_directories(ffmpegJNI PRIVATE
+    "${MPV_FFMPEG_ROOT}/include/${ANDROID_ABI}"
     "${MPV_FFMPEG_ROOT}/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/media3_ffmpeg_decoder")
 target_link_libraries(ffmpegJNI

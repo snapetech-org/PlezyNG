@@ -22,6 +22,7 @@ REPOSITORY = "snapetech-org/PlezyNG"
 RECOVERY_FILES = frozenset({
     ".github/workflows/build.yml", ".github/workflows/ci.yml", "CHANGELOG.md",
     "docs/maintainers/full-release-build.md", "docs/maintainers/apple-jit-runner.md",
+    "scripts/launch_apple_jit_runner.sh",
     "scripts/release_all_platforms.py",
     "scripts/prepare_gradle_repositories.py", "scripts/gradle/plezyng-maven-mirror.init.gradle",
     "scripts/checks/test_prepare_gradle_repositories.py", "scripts/recover_release_platforms.py",

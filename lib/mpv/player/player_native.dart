@@ -46,7 +46,8 @@ class PlayerNative extends PlayerBase
         PlayerAudioFocusControl,
         AudioSpectrumAnalyzer,
         SubtitlePcmCaptureSource,
-        NativeVisualizationAudioSource {
+        NativeVisualizationAudioSource,
+        NativeVideoWindowSource {
   final StreamController<AudioSpectrumSample?> _audioSpectrumController =
       StreamController<AudioSpectrumSample?>.broadcast(sync: true);
   final Stopwatch _audioSpectrumClock = Stopwatch()..start();

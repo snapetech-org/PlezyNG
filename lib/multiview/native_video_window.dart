@@ -6,6 +6,10 @@ enum NativeVideoWindowAction { togglePlayback, seekBackward, seekForward }
 
 typedef NativeVideoWindowIntent = FutureOr<void> Function(NativeVideoWindowAction action);
 
+abstract interface class NativeVideoWindowSource {
+  bool get hasNativeVideoWindow;
+}
+
 NativeVideoWindowAction? nativeVideoWindowAction(Object? value) => switch (value) {
   'togglePlayback' => NativeVideoWindowAction.togglePlayback,
   'seekBackward' => NativeVideoWindowAction.seekBackward,

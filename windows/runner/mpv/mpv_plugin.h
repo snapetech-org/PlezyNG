@@ -64,6 +64,7 @@ class MpvPlayerPlugin : public flutter::Plugin {
   HWND detached_window_ = nullptr;
   HWND video_parent_ = nullptr;
   RECT video_rect_{};
+  bool requested_video_visible_ = false;
   std::string detached_token_;
   std::wstring detached_geometry_key_;
   void SaveDetachedGeometry();

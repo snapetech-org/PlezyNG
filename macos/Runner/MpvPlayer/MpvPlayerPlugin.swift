@@ -13,7 +13,9 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
   var nameToId: [String: Int] = [:]
 
   var coreBase: MpvPlayerCoreBase? { playerCore }
+  private var requestedVisible = false
   func setPlayerVisible(_ visible: Bool, restoreOnWindowVisible: Bool) {
+    requestedVisible = visible
     playerCore?.setVisible(visible, restoreOnWindowVisible: restoreOnWindowVisible)
   }
   func updatePlayerFrame() { if detachedWindow == nil { playerCore?.updateFrame() } }
@@ -357,6 +359,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { result(nil); return }
       self.restoreDetachedVideoWindow(notify: false)
+      self.requestedVisible = false
       if let pip = self.pipController, pip.isActive {
         pip.stopPip()
         pip.detachLayers()
@@ -390,6 +393,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
     let layers = host.releaseLayers()
     playerCore?.isPipActive = false
     playerCore?.takeBackVideoLayers(layers)
+    playerCore?.setVisible(requestedVisible)
     if notify { detachedAction("restored") }
     detachedWindow = nil
     detachedToken = nil

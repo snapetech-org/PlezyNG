@@ -81,6 +81,7 @@ struct _MpvPlugin {
   guint detached_restore_attempts;
   gchar* detached_geometry_path;
   guint detached_geometry_source;
+  gboolean detached_parent_visible;
   // What Dart last asked for via hdr-enabled. Remembered because the answer can
   // change without Dart saying anything: moving the window to another monitor
   // changes whether the output is in HDR at all, and the plane has to be
@@ -962,7 +963,9 @@ static gboolean attach_video_window(MpvPlugin* self, gboolean notify) {
   GtkWidget* window = self->detached_window;
   save_detached_geometry(self);
   self->detached_window = self->detached_video = nullptr;
+  self->visible = self->detached_parent_visible;
   apply_pending_rect(self);
+  self->video_surface->SetVisible(self->visible && !self->hdr_output_unnameable);
   self->plane_needs_render = TRUE;
   render_video_plane(self, TRUE);
   if (notify) detached_action(self, "restored");
@@ -1017,12 +1020,13 @@ static gboolean detach_video_window(MpvPlugin* self, FlValue* args) {
     g_autofree gchar* directory = g_build_filename(g_get_user_config_dir(), "plezy", "detached-windows", nullptr);
     if (g_mkdir_with_parents(directory, 0700) == 0) {
       geometry_path = g_build_filename(directory, key, nullptr);
-      g_autofree gchar* saved = nullptr;
-      gsize bytes = 0;
-      if (g_file_get_contents(geometry_path, &saved, &bytes, nullptr) && bytes <= 64) {
+      if (FILE* input = std::fopen(geometry_path, "r")) {
+        char saved[65]{};
         unsigned int width = 0, height = 0;
-        if (sscanf(saved, "%u %u", &width, &height) == 2 && width >= 360 && width <= 8192 && height >= 200 && height <= 8192)
+        if (std::fgets(saved, sizeof(saved), input) && sscanf(saved, "%u %u", &width, &height) == 2 &&
+            width >= 360 && width <= 8192 && height >= 200 && height <= 8192)
           gtk_window_set_default_size(GTK_WINDOW(window), width, height);
+        std::fclose(input);
       }
     }
   }
@@ -1062,6 +1066,7 @@ static gboolean detach_video_window(MpvPlugin* self, FlValue* args) {
   gtk_widget_show_all(window);
   if (!self->video_surface->Reparent(video)) { gtk_widget_destroy(window); return FALSE; }
   self->detached_window = window;
+  self->detached_parent_visible = self->visible;
   self->detached_video = video;
   self->detached_token = g_strdup(token);
   self->detached_geometry_path = g_steal_pointer(&geometry_path);
@@ -1856,7 +1861,8 @@ static void mpv_plugin_handle_method_call(FlMethodChannel* channel, FlMethodCall
     if (visible_value == nullptr || fl_value_get_type(visible_value) != FL_VALUE_TYPE_BOOL) {
       response = FL_METHOD_RESPONSE(fl_method_error_response_new("INVALID_ARGS", "Missing 'visible'", nullptr));
     } else {
-      self->visible = self->detached_window != nullptr || fl_value_get_bool(visible_value);
+      self->detached_parent_visible = fl_value_get_bool(visible_value);
+      self->visible = self->detached_window != nullptr || self->detached_parent_visible;
 
       if (self->video_surface) {
         // Hiding is always Dart's to do. Showing is not, while the plane is

@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import '../mpv/mpv.dart';
+import '../multiview/native_video_window.dart';
 import '../services/media_control_router.dart';
 import '../services/media_controls_manager.dart';
 import '../services/playback_coordinator.dart';
@@ -2538,6 +2539,12 @@ class SourcePlayback extends ChangeNotifier with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
       unawaited(_persist());
+      final current = player;
+      if (state == AppLifecycleState.inactive && current is NativeVideoWindowSource && current.hasNativeVideoWindow) {
+        // Flutter's main window loses focus when its retained native video
+        // window receives it. The same source owner is still presenting video.
+        return;
+      }
       if (video || PlatformDetector.isTV()) unawaited(pause());
     }
   }

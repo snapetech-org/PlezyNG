@@ -278,6 +278,7 @@ void MpvPlayerPlugin::AttachVideoWindow(bool notify) {
     SetLastError(0);
     if (!SetParent(video, video_parent_) && GetLastError() != 0) return;
     player_->SetRect(video_rect_, 1.0);
+    player_->SetVisible(requested_video_visible_);
   }
   HWND window = detached_window_;
   detached_window_ = nullptr;
@@ -604,6 +605,7 @@ void MpvPlayerPlugin::HandleMethodCall(
 
       if (!audio_only_) {
         // Start hidden.
+        requested_video_visible_ = false;
         player_->SetVisible(false);
       }
       result->Success(flutter::EncodableValue(true));
@@ -828,6 +830,7 @@ void MpvPlayerPlugin::HandleMethodCall(
     }
 
     bool visible = std::get<bool>(visible_it->second);
+    requested_video_visible_ = visible;
 
     if (player_) {
       player_->SetVisible(detached_window_ != nullptr || visible);

@@ -106,7 +106,7 @@
     },
     {
       "area": "Hybrid runner routing",
-      "status": "active",
+      "status": "partial",
       "evidence": ["AGENTS.md", ".github/workflows/ci.yml", ".github/workflows/build.yml"],
       "open": "Compatible GitHub-hosted runners are the default. Private ephemeral JIT is reserved for Apple, private storage/network, special hardware, or other task-specific constraints. Confirm actual runner assignment and capacity for each dispatched workflow."
     }

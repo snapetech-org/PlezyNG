@@ -93,7 +93,7 @@ readonly RUN_ROOT="$run_root"
 [[ ! -e "\$RUN_ROOT" && ! -L "\$RUN_ROOT" ]]
 
 free_kib="\$(/bin/df -Pk / | /usr/bin/awk 'NR == 2 {print \$4}')"
-(( free_kib >= 38 * 1024 * 1024 )) || { echo "Apple JIT needs at least 38 GiB free on local APFS." >&2; /bin/df -h / >&2; exit 1; }
+(( free_kib >= 37 * 1024 * 1024 )) || { echo "Apple JIT needs at least 37 GiB free on local APFS." >&2; /bin/df -h / >&2; exit 1; }
 [[ -d /Volumes/p/runs && ! -L /Volumes/p/runs ]]
 [[ -d /Volumes/plezyng-native-build-kspld0 ]]
 short_mount="\$(/sbin/mount | /usr/bin/awk '\$3 == "/Volumes/p" {print; exit}')"

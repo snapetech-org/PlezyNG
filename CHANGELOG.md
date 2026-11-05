@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Set the Apple JIT APFS admission floor to 37 GiB, matching the pinned Flutter installer’s 30 GiB reserve plus 7 GiB install headroom.
 - Automate serial Apple JIT job handling in release runs and preserve per-job diagnostics.
 - Pin the validated WebOS engine archive produced by the release builder and keep GitHub-only macOS artifacts unsigned unless notarized Homebrew preparation is requested.
 - Bound the Flutter Chrome CI browser test and per-test timeout so stalled runs terminate.

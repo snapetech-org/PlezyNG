@@ -1177,6 +1177,8 @@ jobs:
 
       - name: Reject tracked package build output
         run: python3 scripts/checks/check_tracked_build_outputs.py
+      - name: Check relative Dart imports
+        run: python3 scripts/checks/check_dart_imports.py
 
       - name: Validate published release facts
         env:

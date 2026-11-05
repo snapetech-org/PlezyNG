@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../../i18n/strings.g.dart';
+import '../../i18n/strings.g.dart';
 
 import '../../services/settings_service.dart';
 import '../../utils/language_codes.dart';

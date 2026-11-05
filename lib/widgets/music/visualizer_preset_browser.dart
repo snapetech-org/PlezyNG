@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../i18n/strings.g.dart';
+import '../../i18n/strings.g.dart';
 
 import '../../services/file_picker_service.dart';
 import '../../services/visualization/visualizer_pack_store.dart';

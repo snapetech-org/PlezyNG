@@ -75,6 +75,8 @@ RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "scripts/refresh_apple_spm.sh",
     "tools/reader-tests/README.md",
     "tools/webos/compatibility.json",
+    "tools/webos/build_ipk.sh",
+    "tools/webos/tests/test_source_ndk_environment.py",
 })
 
 
@@ -969,7 +971,7 @@ def verify_platform_recovery(run_id: int, commit_sha: str, version: str) -> dict
     from recover_release_platforms import RecoveryError, verify_source_run
 
     try:
-        return verify_source_run(run_id, commit_sha, version)
+        return verify_source_run(run_id, commit_sha, version, allow_pending=True)
     except (RecoveryError, RuntimeError) as error:
         raise ReleaseError(f"Platform artifact recovery rejected: {error}") from error
 
@@ -1317,7 +1319,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--version", required=True, help="Release version matching pubspec.yaml, such as 3.0.0")
     parser.add_argument(
         "--reuse-platform-run", type=int,
-        help="Rebuild Android and reuse verified successful platform outputs after infrastructure-only fixes.",
+        help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
     )
     parser.add_argument(
         "--include-webos-release",

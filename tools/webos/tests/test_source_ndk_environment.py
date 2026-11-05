@@ -12,6 +12,13 @@ BUILDER = ROOT / "tools/webos/build_engine.sh"
 
 
 class SourceNdkEnvironmentTests(unittest.TestCase):
+    def test_ipk_builder_also_isolates_the_setup_python_loader_path(self):
+        builder = (ROOT / "tools/webos/build_ipk.sh").read_text(encoding="utf-8")
+        self.assertIn('source "$ROOT/tools/webos/source_ndk_environment.sh"', builder)
+        self.assertIn('plezyng_source_ndk_environment "$NDK_ENVIRONMENT"', builder)
+        self.assertIn('trap \'rm -f -- "$NDK_ENVIRONMENT"\' EXIT', builder)
+        self.assertNotIn('source <(', builder)
+
     def test_builder_uses_the_python_path_safe_ndk_source_helper(self):
         builder = BUILDER.read_text(encoding="utf-8")
         self.assertIn('source "$ROOT/tools/webos/source_ndk_environment.sh"', builder)

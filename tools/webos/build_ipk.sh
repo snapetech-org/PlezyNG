@@ -44,7 +44,13 @@ fi
 
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/verify_sdk_checkout.py" "$SDK_ROOT"
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --verify
-source <("$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --emit-shell)
+NDK_ENVIRONMENT="$(mktemp "${TMPDIR:-/tmp}/plezyng-webos-ndk-env.XXXXXX")"
+trap 'rm -f -- "$NDK_ENVIRONMENT"' EXIT
+"$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --emit-shell > "$NDK_ENVIRONMENT"
+source "$ROOT/tools/webos/source_ndk_environment.sh"
+plezyng_source_ndk_environment "$NDK_ENVIRONMENT"
+rm -f -- "$NDK_ENVIRONMENT"
+trap - EXIT
 if [[ "${SDKTARGETSYSROOT:-}" != "$NDK_ROOT/sysroots/ca9v1-webosmllib32-linux-gnueabi" ]]; then
   echo "The verified webOS NDK environment did not load the expected target sysroot." >&2
   exit 1

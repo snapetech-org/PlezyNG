@@ -1523,7 +1523,7 @@ require(
     and all(
         "inputs.reuse_platform_run_id == ''" in job(name).split("needs:", 1)[0]
         and f"needs.{name}.result == 'skipped'" in release_condition
-        for name in ("build-ios", "build-tvos", "build-macos", "build-webos", "build-tizen",
+        for name in ("build-ios", "build-tvos", "build-macos", "build-tizen",
                      "build-linux", "build-windows", "package-windows")
     ),
     "platform artifact recovery must verify its source and preserve honest job results and provenance",
@@ -1549,7 +1549,7 @@ require(
     and 'git merge-base --is-ancestor "$release_commit" refs/remotes/origin/main' in trusted_ref
     and 'git diff --name-only "$release_commit" "$GITHUB_SHA"' in trusted_ref
     and "AGENTS.md|CHANGELOG.md" in trusted_ref
-    and "tools/webos/compatibility.json)" in trusted_ref
+    and "tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)" in trusted_ref
     and 'printf \'commit=%s\\n\' "$release_commit" >> "$GITHUB_OUTPUT"' in trusted_ref,
     "release tags must be immutable ancestors of trusted main with only allowlisted release-infrastructure changes",
 )

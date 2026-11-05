@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify and reuse successful non-Android release outputs after infrastructure fixes."""
+"""Recover successful platform outputs while rebuilding Android and WebOS after CI fixes."""
 
 import argparse
 import hashlib
@@ -9,6 +9,7 @@ import re
 import stat
 import subprocess
 import tempfile
+import time
 import zipfile
 from pathlib import Path, PurePosixPath
 
@@ -25,9 +26,11 @@ RECOVERY_FILES = frozenset({
     "scripts/checks/test_prepare_gradle_repositories.py", "scripts/recover_release_platforms.py",
     "scripts/checks/test_recover_release_platforms.py", "scripts/checks/check_build_workflow.py",
     "scripts/checks/test_check_build_workflow.py", "scripts/checks/test_release_ci_gate.py",
+    "tools/webos/build_ipk.sh", "tools/webos/tests/test_source_ndk_environment.py",
 })
+REBUILT_JOBS = frozenset({"build-android", "Build WebOS TV package (ARMv7)"})
 REQUIRED_JOBS = (
-    "Validate release request", "Build WebOS TV package (ARMv7)",
+    "Validate release request",
     "Build tvOS developer package (arm64)", "build-ios", "build-macos",
     "Build Linux (x64)", "Build Linux (arm64)",
     "Build Windows (x64)", "Build Windows (arm64)", "package-windows",
@@ -77,18 +80,19 @@ def ci_proof(repository, source_sha):
     return {"ci_run_id": run["id"], "ci_run_url": run["html_url"]}
 
 
-def verify_source_run(run_id, head_sha, version, repository=REPOSITORY):
+def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False):
     if repository != REPOSITORY or not str(run_id).isdigit() or not re.fullmatch(r"[0-9a-f]{40}", head_sha):
         raise RecoveryError("Recovery requires the PlezyNG repository and exact run/commit identities.")
     source = api(f"repos/{repository}/actions/runs/{run_id}")
     source_sha = source.get("head_sha", "")
-    if (source.get("status") != "completed" or source.get("event") != "workflow_dispatch"
+    pending = allow_pending and source.get("status") in {"queued", "in_progress", "waiting", "pending"}
+    if ((source.get("status") != "completed" and not pending) or source.get("event") != "workflow_dispatch"
         or source.get("head_branch") != "main"
         or source.get("head_repository", {}).get("full_name") != repository
         or source.get("path", "").split("@")[0] != ".github/workflows/build.yml"
         or source.get("display_title") != f"action:release:pool:private:tag:v{version}"
         or not re.fullmatch(r"[0-9a-f]{40}", source_sha)):
-        raise RecoveryError("Source must be a completed trusted-main release run for this version.")
+        raise RecoveryError("Source must be a trusted-main release run for this version, completed before reuse.")
     comparison = api(f"repos/{repository}/compare/{source_sha}...{head_sha}")
     changed = comparison.get("files")
     if (comparison.get("status") not in {"ahead", "identical"}
@@ -101,23 +105,43 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY):
     if blocked:
         raise RecoveryError("Application or pinned native inputs changed: " + ", ".join(blocked))
     jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
+    pending_jobs = []
     for name in REQUIRED_JOBS:
         matches = [job for job in jobs if job.get("name") == name]
+        if len(matches) == 1 and pending and matches[0].get("status") in {"queued", "in_progress", "waiting", "pending", "requested"} and not matches[0].get("conclusion"):
+            pending_jobs.append(name)
+            continue
         if len(matches) != 1 or matches[0].get("status") != "completed" or matches[0].get("conclusion") != "success":
             raise RecoveryError(f"Source platform job is not uniquely successful: {name}")
     failures = [job.get("name") for job in jobs
                 if job.get("conclusion") in {"failure", "cancelled", "timed_out"}
-                and job.get("name") != "build-android"]
+                and job.get("name") not in REBUILT_JOBS]
     if failures:
         raise RecoveryError("Other source jobs failed: " + ", ".join(failures))
     android = [job for job in jobs if job.get("name") == "build-android"]
     if len(android) != 1 or android[0].get("conclusion") != "failure":
         raise RecoveryError("Recovery requires exactly one failed Android job.")
-    if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped" for job in jobs):
+    if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped"
+           and not (pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion"))
+           for job in jobs):
         raise RecoveryError("The source run already attempted release creation; inspect its side effects.")
     return {"source_run_id": int(run_id), "source_sha": source_sha, "head_sha": head_sha,
             "version": version, "reused_jobs": list(REQUIRED_JOBS),
+            "rebuilt_jobs": sorted(REBUILT_JOBS),
+            "platforms_complete": source.get("status") == "completed", "pending_jobs": pending_jobs,
             **ci_proof(repository, source_sha)}
+
+
+def wait_for_source_run(run_id, head_sha, version, seconds):
+    deadline = time.monotonic() + seconds
+    while True:
+        proof = verify_source_run(run_id, head_sha, version, allow_pending=True)
+        if proof["platforms_complete"]:
+            return proof
+        if time.monotonic() >= deadline:
+            raise RecoveryError("Timed out waiting for successful source platform builds; no artifacts reused.")
+        print(f"Source run {run_id} is still building: {', '.join(proof['pending_jobs'])}.", flush=True)
+        time.sleep(min(30, max(0, deadline - time.monotonic())))
 
 
 def extract_verified(archive, destination):
@@ -183,8 +207,16 @@ def main():
     parser.add_argument("--head-sha", required=True)
     parser.add_argument("--version", required=True)
     parser.add_argument("--download", type=Path)
+    parser.add_argument("--allow-building", action="store_true", help="Preflight only: native jobs may still be running.")
+    parser.add_argument("--wait-for-source", type=int, default=0, help="Wait up to this many seconds before recovering completed outputs.")
     args = parser.parse_args()
-    proof = verify_source_run(args.source_run, args.head_sha, args.version)
+    if args.allow_building and args.download:
+        parser.error("--allow-building is only a preflight; downloads require completed successful platform jobs")
+    if not 0 <= args.wait_for_source <= 10800:
+        parser.error("--wait-for-source must be between 0 and 10800 seconds")
+    proof = (wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source)
+             if args.wait_for_source else
+             verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building))
     if args.download:
         proof = download_platforms(proof, args.download)
     if os.environ.get("GITHUB_OUTPUT"):

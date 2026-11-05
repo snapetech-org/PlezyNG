@@ -1,5 +1,7 @@
 # Pleazyng release channels
 
+Live account migration is in progress. See [the dated channel migration receipt](pleazyng-channel-migration.json) for verified new records, API access and pending steps. The older readiness snapshots below describe their audit dates and do not prove current publication readiness.
+
 This is the release support boundary for the Pleazyng client and its separate relay service. A client platform or package channel is active when the manual release workflow creates the package and attaches it to a GitHub Release, or when a named publisher workflow submits that release's package.
 
 ## Release trigger and order
@@ -28,9 +30,9 @@ There is no 32-bit x86 desktop package. Android `armeabi-v7a` is the 32-bit ARM 
 
 ## Fork identity and compatibility
 
-The Android application ID, Apple bundle IDs, Flatpak ID, and Linux desktop entry use `org.snapetech.plezyng`. The tvOS Top Shelf extension uses `org.snapetech.plezyng.TopShelfExtension` and the app group is `group.org.snapetech.plezyng`. This keeps new packages separate from upstream Plezy's store identities. The internal Android Kotlin namespace remains `com.edde746.plezy`.
+The Android application ID, Apple bundle IDs, Flatpak ID, and Linux desktop entry use `org.snapetech.pleazyng`. The tvOS Top Shelf extension uses `org.snapetech.pleazyng.TopShelfExtension` and the app group is `group.org.snapetech.pleazyng`. This keeps new packages separate from upstream Plezy's store identities. The internal Android Kotlin namespace remains `com.edde746.plezy`.
 
-Changing the install IDs means an install signed under upstream's identity cannot be updated by Pleazyng. Store users need Pleazyng's own listings and signing keys. The existing `plezy://` deep-link scheme remains in place.
+Changing the install IDs means an install signed under upstream's identity cannot be updated by Pleazyng. Store users need Pleazyng's own listings and signing keys. New packages register `pleazyng://` and the explicit legacy fork aliases, with upstream `plezy://` registration removed.
 
 ## Package managers and stores
 

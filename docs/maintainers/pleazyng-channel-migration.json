@@ -55,5 +55,33 @@
     "Microsoft Store",
     "Samsung Seller Office",
     "LG Content Store"
-  ]
+  ],
+  "google_play": {
+    "developer_account_id": "6391667308394850607",
+    "old_app_id": "4973705897703938705",
+    "old_package": "org.snapetech.plezyng",
+    "new_package": "org.snapetech.pleazyng",
+    "sign_in_email_entered": "keith@snape.tech",
+    "google_primary_alias_shown": "keithsnapetech@gmail.com",
+    "excluded_account_not_used": "snapek@gmail.com",
+    "state": "new draft created; publisher access configured",
+    "new_app_id": "4975934724712317609",
+    "declarations": "Owner accepted Developer Program Policies and US export declarations",
+    "service_account": "plezyng-play-release@plezyng-play-release.iam.gserviceaccount.com",
+    "new_app_permissions": [
+      "View app information (read-only)",
+      "View app quality information (read-only)",
+      "Release apps to testing tracks"
+    ],
+    "production_permission": false,
+    "credential_rotated": false,
+    "old_draft_retirement": "pending metadata migration"
+  },
+  "copr": {
+    "old_project": "slskdn/plezyng",
+    "old_project_id": 267110,
+    "state": "owner login required; two saved logins rejected; awaiting human MFA/authentication",
+    "new_project": "slskdn/pleazyng",
+    "new_project_public_api": "404 before migration"
+  }
 }

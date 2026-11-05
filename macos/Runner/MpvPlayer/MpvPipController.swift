@@ -143,7 +143,7 @@ class MpvPipController: NSObject, PIPViewControllerDelegate {
 /// The PiP window's content: hosts the player's display and OSD layers and
 /// keeps them at the view's size, in bounds and position (the VO tracks the
 /// display layer's bounds and contentsScale to size its output and OSD).
-private final class MpvPipVideoView: NSView {
+final class MpvPipVideoView: NSView {
   init(layers: [CALayer], size: NSSize) {
     super.init(frame: NSRect(origin: .zero, size: size))
     wantsLayer = true

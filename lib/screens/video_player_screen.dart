@@ -112,6 +112,7 @@ import '../services/video_filter_manager.dart';
 import '../services/video_volume_controller.dart';
 import '../services/pip_service.dart';
 import '../multiview/workspace_controller.dart';
+import '../multiview/native_video_window.dart';
 import '../multiview/workspace_models.dart';
 import '../services/shader_service.dart';
 import '../providers/shader_provider.dart';

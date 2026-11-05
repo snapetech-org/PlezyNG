@@ -198,7 +198,7 @@ class MpvPlayerCore: MpvPlayerCoreBase {
   }
 
   func updateFrame(_ frame: CGRect? = nil) {
-    guard let containerLayer else { return }
+    guard let containerLayer, !isPipActive else { return }
 
     let targetFrame: CGRect
     if let frame {

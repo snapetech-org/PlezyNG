@@ -93,6 +93,10 @@ class WaylandVideoSurface {
   // failure — the caller reports it; there is no other video path.
   bool Create(GtkWidget* view, std::string* error, bool vulkan = false);
 
+  // Recreate only the subsurface relationship; the producer surface, EGL
+  // context, decoder and colour objects remain owned. Caller drains presents.
+  bool Reparent(GtkWidget* view);
+
   // Alternative producer for a Steam Vulkan swapchain. No EGL producer is
   // attached in this mode; the caller must destroy WSI before Destroy().
   wl_display* native_display() const { return wl_display_; }

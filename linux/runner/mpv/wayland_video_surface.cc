@@ -1254,6 +1254,26 @@ void WaylandVideoSurface::RequestParentCommit() {
   if (view_ != nullptr) gtk_widget_queue_draw(view_);
 }
 
+bool WaylandVideoSurface::Reparent(GtkWidget* view) {
+  wl_surface* parent = view != nullptr ? ParentSurface(view) : nullptr;
+  if (!parent || !surface_ || !subcompositor_ || !subsurface_) return false;
+  ClearFrameCallback();
+  CancelStalledRepresentTimer();
+  // Wayland permits another wl_subsurface for the same surface once its old
+  // role object is destroyed. No swap/render may run during this transaction.
+  wl_subsurface_destroy(subsurface_);
+  subsurface_ = wl_subcompositor_get_subsurface(subcompositor_, surface_, parent);
+  if (!subsurface_) return false;
+  view_ = view;
+  wl_subsurface_place_below(subsurface_, parent);
+  wl_subsurface_set_desync(subsurface_);
+  wl_subsurface_set_position(subsurface_, PlaneSurfacePosition(x_, scale_, 0), PlaneSurfacePosition(y_, scale_, 0));
+  // SetRect must apply geometry even if the old and new windows share a size.
+  x_ = std::numeric_limits<int32_t>::min();
+  RequestParentCommit();
+  return true;
+}
+
 void WaylandVideoSurface::SetRect(int32_t x, int32_t y, int32_t width, int32_t height, int32_t scale) {
   scale = NormalizePlaneScale(scale);
   // Whether Dart has given us a rect worth showing. Tracked from the *requested*

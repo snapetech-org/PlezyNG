@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Include webOS and Tizen in every complete versioned release, verify actual package source and checksums, and build the release matrix once after exact-source CI. Keep physical-device qualification separate from feature availability.
 - Isolate offline converter workers from app and Python loader overrides so bundled runtimes also work on newer Linux distributions with a different system shell.
 - Prepare 3.0.1 with matching webOS metadata and a shared Linux client SDK that resolves without the producer's private Lua and Wayland protocol build dependencies.
 - Open bundled offline HDR10/SDR exports from Playback settings when Dolby Vision experiments are enabled; select synchronized layer files and save a new local MKV without replacing source files.

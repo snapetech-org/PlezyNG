@@ -4,6 +4,7 @@ import argparse
 import base64
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -28,8 +29,11 @@ def verify(bundle: Path, fixtures: Path, output: Path):
         process = subprocess.run(list(map(str, command)), capture_output=True, text=True, timeout=90)
         (output / (target + '.log')).write_text(process.stdout + process.stderr)
         process.check_returncode()
+        probe_environment = dict(os.environ, LD_LIBRARY_PATH=str(bundle / 'lib/runtime'))
+        probe_environment.pop('LD_PRELOAD', None)
         result = subprocess.check_output([str(bundle / 'bin/ffprobe'), '-v', 'error', '-count_frames',
-                                          '-show_streams', '-of', 'json', str(destination)], text=True)
+                                          '-show_streams', '-of', 'json', str(destination)], text=True,
+                                         env=probe_environment)
         stream = json.loads(result)['streams'][0]
         if (stream['codec_name'] != codec or stream['color_transfer'] != transfer
                 or int(stream['nb_read_frames']) != data['frames']):

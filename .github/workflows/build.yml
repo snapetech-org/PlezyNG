@@ -56,12 +56,10 @@ on:
         default: true
       include_webos_release:
         description: >-
-          Include the LG webOS IPK in a public release after its exact artifact
-          and redistribution gates are approved. This does not control whether
-          the candidate is built.
+          Include the verified LG webOS IPK in the complete versioned release.
         required: true
         type: boolean
-        default: false
+        default: true
       include_tizen_build:
         description: Build the experimental ARM Samsung Tizen tester candidate in this workflow run
         required: true
@@ -225,8 +223,8 @@ jobs:
             echo "The hybrid execution profile requires a full CPU-backend release build from refs/heads/main." >&2
             exit 1
           fi
-          if [[ "$MODE" == "release" && "$VERSION" == "3.0.0" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
-            echo "The PlezyNG 3.0.0 release requires the hybrid profile so native Windows ARM64 CI and release artifacts are included." >&2
+          if [[ "$MODE" == "release" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
+            echo "Complete versioned releases require the hybrid profile so native Windows ARM64 CI and release artifacts are included." >&2
             exit 1
           fi
           if [[ "$PREPARE_HOMEBREW_CASK" != "true" && "$PREPARE_HOMEBREW_CASK" != "false" ]]; then
@@ -271,6 +269,10 @@ jobs:
           fi
           if [[ "$MODE" == "release" && "$INCLUDE_TIZEN_BUILD" != "true" && "$INCLUDE_TIZEN_BUILD" != "false" ]]; then
             echo "include_tizen_build must be true or false." >&2
+            exit 1
+          fi
+          if [[ "$MODE" == "release" && ( "$INCLUDE_WEBOS_BUILD" != "true" || "$INCLUDE_WEBOS_RELEASE" != "true" || "$INCLUDE_TIZEN_BUILD" != "true" ) ]]; then
+            echo "Complete versioned builds require webOS and Tizen packages and release inclusion." >&2
             exit 1
           fi
           {
@@ -377,10 +379,7 @@ jobs:
             echo "A public webOS release requires building the webOS candidate." >&2
             exit 1
           fi
-          if [[ "${{ steps.request.outputs.include_webos_release }}" == "true" && "$ACTION" != "release" ]]; then
-            echo "Public webOS inclusion requires action=release." >&2
-            exit 1
-          fi
+
 
       - name: Validate release tag before building
         if: ${{ steps.request.outputs.mode == 'release' }}
@@ -447,14 +446,9 @@ jobs:
           REPOSITORY: ${{ github.repository }}
         run: python3 scripts/verify_release_ci.py
 
-      - name: Require approval for the exact webOS release artifact
-        if: ${{ steps.request.outputs.mode == 'release' && steps.request.outputs.include_webos_release == 'true' }}
-        env:
-          RELEASE_TAG: ${{ steps.request.outputs.version }}
-        run: >-
-          python3 tools/webos/check_release_eligibility.py
-          --preflight
-          --version "$RELEASE_TAG"
+      - name: Validate webOS package metadata
+        if: ${{ steps.request.outputs.mode == 'release' }}
+        run: python3 tools/webos/verify_package.py --project-metadata
 
       - name: Validate webOS-only mode input
         if: ${{ steps.request.outputs.mode == 'webos-validation' }}
@@ -730,7 +724,7 @@ jobs:
       - name: Verify private WebOS output storage
         run: python3 tools/webos/retain_private_candidate.py --preflight
 
-      - name: Test WebOS packaging and release gates
+      - name: Test WebOS packaging and integrity
         env:
           PLEZY_WEBOS_TEST_TMP: ${{ runner.temp }}/plezy-webos-tests
         run: |
@@ -807,7 +801,7 @@ jobs:
             --source-dir "$OUTPUT_DIR" \
             --version "$(python3 scripts/pubspec_version.py pubspec.yaml)"
 
-      - name: Verify the exact approved WebOS IPK
+      - name: Verify WebOS package integrity and source
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
         env:
           OUTPUT_DIR: ${{ steps.webos-build.outputs.output_dir }}
@@ -820,8 +814,8 @@ jobs:
             echo "Expected exactly one WebOS IPK in the verified output." >&2
             exit 1
           fi
-          python3 tools/webos/check_release_eligibility.py \
-            --version "$RELEASE_TAG" \
+          python3 tools/webos/check_release_package.py \
+            --version "$RELEASE_TAG" --source-commit "$GITHUB_SHA" \
             --artifact "${ipks[0]}"
 
       - name: Prepare LG Seller Lounge handoff bundle
@@ -840,7 +834,8 @@ jobs:
           fi
           python3 scripts/tv_store_submission.py --store lg \
             --package "${ipks[0]}" --version "$RELEASE_TAG" \
-            --source-commit "$SOURCE_COMMIT" --release-gates-passed \
+            --source-commit "$SOURCE_COMMIT" --package-verified \
+            --evidence "$OUTPUT_DIR/webos-app-provenance.json" \
             --evidence "$OUTPUT_DIR/webos-engine-provenance.json" \
             --evidence "$OUTPUT_DIR/webos-compatibility.json" \
             --evidence "$OUTPUT_DIR/SHA256SUMS.txt" \
@@ -850,11 +845,12 @@ jobs:
         with:
           subject-path: |
             ${{ steps.webos-build.outputs.output_dir }}/*.ipk
+            ${{ steps.webos-build.outputs.output_dir }}/webos-app-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-engine-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-compatibility.json
             ${{ steps.webos-build.outputs.output_dir }}/SHA256SUMS.txt
 
-      - name: Upload approved WebOS IPK for public release assembly
+      - name: Upload verified WebOS IPK for release assembly
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
@@ -869,6 +865,7 @@ jobs:
         with:
           name: webos-validation-evidence
           path: |
+            ${{ steps.webos-build.outputs.output_dir }}/webos-app-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-engine-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-compatibility.json
             ${{ steps.webos-build.outputs.output_dir }}/SHA256SUMS.txt
@@ -3020,6 +3017,7 @@ jobs:
             echo artifacts/android-apk/plezy-android-x86_64.tar.gz
             if [[ "$INCLUDE_WEBOS_RELEASE" == "true" ]]; then
               echo artifacts/webos/*.ipk
+              echo artifacts/webos/webos-app-provenance.json
               echo artifacts/webos/webos-engine-provenance.json
               echo artifacts/webos/webos-compatibility.json
               echo artifacts/webos/webos-SHA256SUMS.txt

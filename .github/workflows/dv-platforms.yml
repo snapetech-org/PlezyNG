@@ -10,7 +10,7 @@ on:
         description: Platform experiment action
         required: true
         type: choice
-        options: [dv-platforms, offline-tools]
+        options: [dv-platforms, offline-tools, offline-verify]
       runner_pool:
         description: Runner pool for these experiments
         required: true
@@ -18,7 +18,7 @@ on:
         options: [public, private]
         default: public
       offline_arch:
-        description: Offline tool architecture to build without repeating a verified artifact
+        description: Offline tool architecture to build or verify
         type: choice
         options: [all, x86_64, aarch64]
         default: all
@@ -186,6 +186,38 @@ jobs:
         with:
           name: dv-native-port-audit
           path: build/dv-native-audit/native-port-audit.json
+          retention-days: 14
+
+  offline-verify:
+    if: inputs.action == 'offline-verify' && inputs.runner_pool == 'public'
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ fromJSON(inputs.offline_arch == 'aarch64' && '["aarch64"]' || inputs.offline_arch == 'x86_64' && '["x86_64"]' || '["x86_64","aarch64"]') }}
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Fetch and verify the runtime pinned for normal application packages
+        run: python3 scripts/fetch_dv_tools.py --dest "$RUNNER_TEMP/dv-bundle"
+      - name: Verify shipped exports without rebuilding native components
+        run: |
+          mkdir -p "$RUNNER_TEMP/dv-verification"
+          docker run --rm --network none --read-only --cpus=2 --tmpfs /tmp:rw,size=128m \
+            -v "$RUNNER_TEMP/dv-bundle:/bundle:ro" \
+            -v "$GITHUB_WORKSPACE/tools/dv-engine:/verify:ro" \
+            -v "$RUNNER_TEMP/dv-verification:/outputs" \
+            -e PYTHONHOME=/bundle -e LD_LIBRARY_PATH=/bundle/lib/runtime \
+            docker.io/library/ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
+            /bundle/bin/python3.12 -I -B /verify/verify_offline_bundle.py --bundle /bundle --output /outputs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: dv-offline-verification-${{ matrix.arch }}
+          path: ${{ runner.temp }}/dv-verification/
+          if-no-files-found: error
           retention-days: 14
 
   offline-tools:

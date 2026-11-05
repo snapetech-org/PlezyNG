@@ -59,7 +59,7 @@ def retain(source: Path, version: str, env: dict[str, str]) -> Path:
     if source.resolve() != source or not source.is_dir():
         raise ValueError("Candidate output must be a real directory without symlink parents")
     ipk = f"org.snapetech.plezyng_{version}_arm.ipk"
-    files = {ipk, "webos-engine-provenance.json", "webos-compatibility.json"}
+    files = {ipk, "webos-engine-provenance.json", "webos-app-provenance.json", "webos-compatibility.json"}
     checksum_name = "SHA256SUMS.txt"
     if {path.name for path in source.iterdir()} != files | {checksum_name}:
         raise ValueError("Expected exactly one version-matched IPK, provenance, compatibility, and checksums")

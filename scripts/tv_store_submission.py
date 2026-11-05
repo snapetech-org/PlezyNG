@@ -43,7 +43,7 @@ PROFILES: dict[str, dict[str, Any]] = {
         ),
         "signing_note": (
             "Confirm the IPK and runtime libraries meet the Seller Lounge requirements "
-            "and the repository's LG redistribution gate."
+            "and the included third-party notices."
         ),
     },
 }
@@ -113,9 +113,9 @@ def make_readme(profile: dict[str, Any], args: argparse.Namespace, package_hash:
         "PlezyNG is a public repository. Treat its GitHub Actions artifacts as accessible to repository readers.",
         "",
     ]
-    if args.release_gates_passed:
+    if args.package_verified:
         lines.extend([
-            "The release workflow's exact-candidate eligibility gate passed before this LG bundle was created. This is not LG Seller Lounge approval.",
+            "The release workflow verified package integrity and source provenance. Physical-device qualification and LG Seller Lounge approval are separate.",
             "",
         ])
     return "\n".join(lines)
@@ -130,9 +130,9 @@ def main() -> int:
     parser.add_argument("--evidence", type=Path, action="append", default=[])
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
-        "--release-gates-passed",
+        "--package-verified",
         action="store_true",
-        help="Record that the LG exact-candidate release gate passed before bundling.",
+        help="Record that LG package integrity and provenance were verified before bundling.",
     )
     args = parser.parse_args()
 
@@ -144,12 +144,12 @@ def main() -> int:
             raise ValueError("source commit must be a hexadecimal Git commit SHA")
         if args.package.suffix.lower() != profile["package_suffix"]:
             raise ValueError(f"{args.store} packages must end in {profile['package_suffix']}")
-        if args.store == "lg" and not args.release_gates_passed:
-            raise ValueError("LG handoff bundles may only be created after the exact-candidate release gate passes")
+        if args.store == "lg" and not args.package_verified:
+            raise ValueError("LG handoff bundles require package integrity and provenance verification")
         if not args.evidence:
             raise ValueError("at least one package inspection or provenance file must be included")
-        if args.release_gates_passed and args.store != "lg":
-            raise ValueError("--release-gates-passed is only valid for an LG bundle")
+        if args.package_verified and args.store != "lg":
+            raise ValueError("--package-verified is only valid for an LG bundle")
 
         package_bytes = read_regular_file(args.package)
         if not package_bytes:
@@ -189,7 +189,7 @@ def main() -> int:
             },
             "source_commit": args.source_commit.lower(),
             "release_eligibility_gate": (
-                "passed for this exact LG candidate" if args.release_gates_passed
+                "passed for this exact LG candidate" if args.package_verified
                 else "not asserted by the bundle builder"
             ),
             "submission": {

@@ -106,26 +106,9 @@ print(value)
 PY
 }
 
-case "${PLEZY_WEBOS_RELEASE_BUILD:-false}" in
-  true)
-    if [[ -n "${PLEZY_WEBOS_GIT_COMMIT:-}" ]]; then
-      echo "The public WebOS release must use the commit recorded in the eligibility lock." >&2
-      exit 1
-    fi
-    PLEZY_WEBOS_GIT_COMMIT="$(read_lock releaseEligibility validatedSourceCommit)"
-    if [[ ! "$PLEZY_WEBOS_GIT_COMMIT" =~ ^[0-9a-f]{40,64}$ ]]; then
-      echo "The approved WebOS source commit is missing or malformed." >&2
-      exit 1
-    fi
-    export PLEZY_WEBOS_GIT_COMMIT
-    ;;
-  false)
-    ;;
-  *)
-    echo "PLEZY_WEBOS_RELEASE_BUILD must be exactly true or false." >&2
-    exit 1
-    ;;
-esac
+# Every package records this checkout, including newly versioned releases.
+PLEZY_WEBOS_GIT_COMMIT="$(git -C "$ROOT" rev-parse HEAD)"
+export PLEZY_WEBOS_GIT_COMMIT
 
 PYTHON_BIN="${WEBOS_PYTHON_BIN:-$(command -v python3.14 || true)}"
 NINJA_BIN="${WEBOS_NINJA_BIN:-$(command -v ninja || true)}"
@@ -343,9 +326,20 @@ fi
 install -m 644 -- "${IPKS[0]}" "$OUTPUT_ROOT/"
 install -m 644 -- "$ENGINE_PROVENANCE" "$OUTPUT_ROOT/webos-engine-provenance.json"
 install -m 644 -- "$ROOT/tools/webos/compatibility.json" "$OUTPUT_ROOT/webos-compatibility.json"
+"$JSON_PYTHON" - "$OUTPUT_ROOT" "$PLEZY_WEBOS_GIT_COMMIT" <<'PYPROVENANCE'
+import hashlib, json, pathlib, sys
+root, commit = pathlib.Path(sys.argv[1]), sys.argv[2]
+ipk, = root.glob('*.ipk')
+with ipk.open('rb') as source:
+    digest = hashlib.file_digest(source, 'sha256').hexdigest()
+version = ipk.name.removeprefix('org.snapetech.plezyng_').removesuffix('_arm.ipk')
+record = {'sourceCommit': commit, 'version': version, 'package': ipk.name,
+          'packageSha256': digest, 'deviceQualification': 'not-established-by-build'}
+(root / 'webos-app-provenance.json').write_text(json.dumps(record, indent=2) + '\n')
+PYPROVENANCE
 (
   cd -- "$OUTPUT_ROOT"
-  sha256sum -- *.ipk webos-engine-provenance.json webos-compatibility.json > SHA256SUMS.txt
+  sha256sum -- *.ipk webos-engine-provenance.json webos-app-provenance.json webos-compatibility.json > SHA256SUMS.txt
 )
 
 printf 'Validated webOS release artifact: %s\n' "$OUTPUT_ROOT/$(basename -- "${IPKS[0]}")"

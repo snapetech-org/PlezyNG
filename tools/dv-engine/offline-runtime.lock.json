@@ -3,12 +3,12 @@
   "assetBase": "https://github.com/snapetech-org/mpv-build/releases/download/binaries-dv-tools",
   "assets": {
     "x86_64": {
-      "asset": "plezyng-dv-tools-22bc7df5fcd2-linux-x86_64.tar.zst",
-      "checksum": "22bc7df5fcd265c63e0f8811ed9ed4e0a10f0589478a0d3573010189edec4437"
+      "asset": "plezyng-dv-tools-c7ff1f25f170-linux-x86_64.tar.zst",
+      "checksum": "c7ff1f25f17045fe6778a71450330391ab0bf65c461a62dd0f14495a5579e82f"
     },
     "aarch64": {
-      "asset": "plezyng-dv-tools-5c90818fd6bb-linux-aarch64.tar.zst",
-      "checksum": "5c90818fd6bbb2f59ce99884dada734832168c7efdbf95b5046b5071b96c1a86"
+      "asset": "plezyng-dv-tools-5ec38161bc16-linux-aarch64.tar.zst",
+      "checksum": "5ec38161bc166f3aabed045ff1905248bcbbdaa84d0e97f9cb615c1b3279c59f"
     }
   }
 }

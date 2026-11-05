@@ -171,12 +171,14 @@ PlezyNG is a public repository. GitHub says signed-in users with repository read
 
 `tools/webos/retain_private_candidate.py` requires the exact trusted job identity, version-matched package, empty mount, regular files, and matching source/copy checksums. It writes `webos-private-receipt.json` last, recording the source commit, run, attempt, and file hashes. The private worker retains these outputs under `/var/lib/gha-jit/jobs/retained-outputs/<repo>/<run>/<job>/<instance>` before removing the guest. Retrieve them through the runner host's authorized SSH access for TV testing, and verify the receipt and `SHA256SUMS.txt` before installation. Partial exports remain diagnostic evidence and do not qualify as complete candidates. This storage path requires the matching Packer broker/worker deployment; it does not change any public-release eligibility gate.
 
-Normal draft releases omit the experimental WebOS package. Including one requires the explicit `include_webos_release` input and a fail-closed approval record in `tools/webos/compatibility.json`. The release gate requires every documented eligibility gate, the exact C6-qualified source commit and app version, and a rebuilt IPK whose SHA-256 matches the physically qualified artifact. This prevents a passing validation of one package from authorizing a different source, version, or binary. All gates currently remain blocked; do not change them until the evidence is recorded. When they pass,
-an opted-in release also attaches
-`PlezyNG-lg-webos-submission.zip`. It includes the exact gated IPK, build
-provenance, compatibility record, checksum, shared listing copy, privacy policy,
-and license. It prepares the Seller Lounge handoff only; account approval,
-listing fields, real-TV screenshots, and vendor submission remain manual.
+Complete versioned releases include the webOS IPK. The builder embeds the
+actual checkout commit, records its version and package SHA-256 in
+`webos-app-provenance.json`, and verifies the package layout and pinned runtime
+inputs before release assembly. Historical `releaseEligibility` fields are
+qualification evidence, not approval requirements for a new build. Keep device
+and store claims factual: producing a package does not establish physical
+playback qualification, vendor permission, or Seller Lounge approval.
+
 
 
 ## Remaining device validation
@@ -187,6 +189,15 @@ listing fields, real-TV screenshots, and vendor submission remain manual.
 - Expand playback validation across pause/resume, audio and subtitle track selection, server loss, app restarts, and media formats.
 - The current-source IPK listed at the top is a local development candidate only; no webOS GitHub Release asset or Homebrew submission has been published. Preserved `ares` logs report that it installed and launched on the C6, but the later device inspection found no app process/appdata and the Flutter log capture has no app lifecycle details. An earlier package update also hit a full `/usr` destination and its captured screen was black. The user later confirmed login, artwork/cards, playback, and secure-storage checks on earlier C6 builds; those reports do not qualify this exact candidate.
 
-The release workflow is manual-only. Dispatch it from `main` with `mode=webos-validation` to build, verify, attest, and retain the candidate privately without uploading the IPK or creating a release. Full `mode=release` builds also include WebOS by default and retain the IPK in the same private storage. Only `action=release` plus the explicit `include_webos_release` input and a passing exact-candidate gate may upload it for draft-release assembly. Both modes currently use private Linux JIT because they require the private output mount; no hosted route is configured for these jobs. This is a job-specific storage constraint, not a repo-wide hosted-runner ban. Before dispatch, verify the live runner-group selection, the private output mount, 60 GiB of free task space, and the hash-locked Python/Ninja toolchain. Keep the exact-candidate and redistribution gates blocked until their evidence is approved. Track volatile platform capacity and deployment state in the Packer owner runbook; source configuration alone does not prove that a compatible worker is available.
+The release workflow is manual-only. Dispatch it from `main` with
+`mode=webos-validation` for focused packaging and private device testing. Full
+`mode=release` builds require webOS and Tizen and upload the verified IPK for
+release assembly. Both modes use private Linux JIT for its private output mount
+and large SDK; compatible jobs on other platforms use hosted runners. Before
+dispatch, verify live runner access, private output storage, 60 GiB of free task
+space, and the hash-locked Python/Ninja toolchain. Volatile capacity belongs in
+the Packer owner runbook. Do not rewrite historical qualification evidence to
+make a build appear device-qualified.
+
 
 Do not claim broad model support or publish this candidate until LG runtime redistribution terms are reviewed, this exact package passes captured visible-frame and media smoke tests on the C6 through a reproducible install path, and additional supported model/firmware combinations are exercised.

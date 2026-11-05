@@ -404,7 +404,6 @@ class SourceController extends ChangeNotifier {
     activeProgressKeys.clear();
     _progressHolds.clear();
     syncConfig = null;
-    discoverySync.resetStatus();
     sources = const [];
     shelves = {};
     if (profileChanged) _remoteSourceIds.clear();
@@ -421,7 +420,13 @@ class SourceController extends ChangeNotifier {
     unawaited(
       ready
           .then((_) async {
+            // The root proxy can bind a profile before the database opens.
+            // All late-initialized services must wait for ready, and an older
+            // binding must not reset or cancel the current profile's work.
+            if (!current(epoch)) return;
             await _settleImports();
+            if (!current(epoch)) return;
+            discoverySync.resetStatus();
             downloads.cancelAll();
             oauth.cancel();
             if (id != null && !blocked && current(epoch)) {

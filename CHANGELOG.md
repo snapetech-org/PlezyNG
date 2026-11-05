@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Fix the black screen after sign-in when a profile binds before the file-source database finishes opening, and retain bounded webOS widget-error diagnostics.
 - Resolve webOS dependencies once with the enforced lockfile, keep its package version at 3.0.0, and reject stale package metadata before starting a build.
 - Announce published stable releases to Discord automatically, including GitHub-only releases, and retain per-message delivery receipts for safe retries.
 - Share Android CI/release caches and apply the Maven Central mirror before Flutter's included Gradle build resolves plugins.

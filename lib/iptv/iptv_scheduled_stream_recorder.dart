@@ -29,6 +29,8 @@ class IptvScheduledStreamRecorder {
   Completer<void>? _directDone;
   Timer? _stopTimer;
   bool _stopped = false;
+  String _fileExtension = '.ts';
+  String get fileExtension => _fileExtension;
 
   Future<String> record() async {
     if (uri.path.toLowerCase().endsWith('.m3u8')) {
@@ -40,7 +42,8 @@ class IptvScheduledStreamRecorder {
       r'\.(ts|mp2t|m2ts|mp4|m4v|mkv|mp3|aac|m4a|mpg|mpeg|webm)$',
       caseSensitive: false,
     ).firstMatch(filename)?.group(1)?.toLowerCase();
-    return extension == null ? '.ts' : '.$extension';
+    _fileExtension = extension == null ? '.ts' : '.$extension';
+    return _fileExtension;
   }
 
   Future<void> stop() async {
@@ -82,7 +85,13 @@ class IptvScheduledStreamRecorder {
     }
 
     subscription = response.stream.listen(
-      sink.add,
+      (bytes) {
+        subscription.pause();
+        sink.add(bytes);
+        unawaited(sink.flush().then((_) => subscription.resume(), onError: (Object error, StackTrace stackTrace) {
+          finish(error, stackTrace);
+        }));
+      },
       onError: (Object error, StackTrace stackTrace) => finish(error, stackTrace),
       onDone: finish,
       cancelOnError: true,
@@ -176,7 +185,8 @@ class IptvScheduledStreamRecorder {
       }
       await sink.flush();
       if (!wroteAny) throw const FileSystemException('No HLS media segments received');
-      return fragmentedMp4 ? '.mp4' : '.ts';
+      _fileExtension = fragmentedMp4 ? '.mp4' : '.ts';
+      return _fileExtension;
     } finally {
       _stopTimer?.cancel();
       await sink.close();
@@ -211,7 +221,9 @@ class IptvScheduledStreamRecorder {
     }
     final bytes = BytesBuilder(copy: false);
     await for (final chunk in response.stream.timeout(const Duration(seconds: 45))) {
-      if (_stopped || !DateTime.now().isBefore(endsAt)) break;
+      // A scheduled deadline stops before the next segment, not in the middle
+      // of the current ciphertext. Only complete validated resources may be
+      // committed to the recording. Manual cancellation still closes transport.
       if (bytes.length + chunk.length > 64 * 1024 * 1024) {
         throw const FileSystemException('HLS resource is too large');
       }

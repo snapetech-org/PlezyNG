@@ -1164,6 +1164,28 @@ class IptvSourceRepository {
         );
       }),
     );
+    // Interrupted rows remain playable when their journaled file survived.
+    // Older versions journaled the final name instead of the active partial;
+    // recover that exact app-owned legacy partial without sweeping/deleting it.
+    final interrupted = await _database.customSelect(
+      "SELECT id, profile_id, file_path FROM iptv_recordings WHERE state='interrupted'",
+    ).get();
+    for (final row in interrupted) {
+      final id = row.read<String>('id');
+      final profile = row.read<String>('profile_id');
+      var file = File(row.read<String>('file_path'));
+      if (!await file.exists() && RegExp(r'^[a-f0-9-]{36}$', caseSensitive: false).hasMatch(id)) {
+        final legacy = File(p.join(file.parent.path, '.$id.partial.ts'));
+        if (await legacy.exists()) file = legacy;
+      }
+      if (await file.exists()) {
+        final size = await file.length();
+        await _database.runIdentityMutation(() => _database.customStatement(
+          "UPDATE iptv_recordings SET file_path=?, size_bytes=? WHERE profile_id=? AND id=? AND state='interrupted'",
+          [file.path, size, profile, id],
+        ));
+      }
+    }
   }
 
   Future<void> cancelLocalRecordingSchedule(String profileId, String scheduleId) async {
@@ -1196,7 +1218,7 @@ class IptvSourceRepository {
           DateTime.now().millisecondsSinceEpoch ~/ 1000,
           durationSeconds,
           sizeBytes,
-          completed ? 'complete' : 'failed',
+          completed ? 'complete' : (sizeBytes ?? 0) > 0 ? 'interrupted' : 'failed',
           errorCode,
           profileId,
           recordingId,

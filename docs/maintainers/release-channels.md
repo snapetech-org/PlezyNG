@@ -107,7 +107,7 @@ event. This applies to GitHub-only publication as well as full channel publicati
 Runs serialize by release tag. The release asset
 `discord-announcement-receipt.json` records confirmed message IDs after each
 chunk; it contains no webhook URL or credentials. Confirmed chunks are skipped
-on retries. The receipt is also retained as a workflow artifact, including on
+on retries, and definite HTTP rejections leave that chunk retryable. The receipt is also retained as a workflow artifact, including on
 failure. If a POST's outcome is uncertain, automation stops instead of repeating
 it: inspect the retained receipt and Discord channel, then reconcile the
 in-flight entry against the actual message before retrying. Changed release notes

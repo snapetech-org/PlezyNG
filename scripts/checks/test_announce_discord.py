@@ -39,6 +39,7 @@ class DiscordDeliveryTest(unittest.TestCase):
         with patch.object(discord, "safe_urlopen", return_value=response) as send:
             result = discord.post("https://discord.com/api/webhooks/example/test?wait=true", "Release", "https://example.com", "@everyone notes")
         payload = json.loads(send.call_args.args[0].data)
+        self.assertEqual(send.call_args.args[0].get_header("User-agent"), discord.USER_AGENT)
         self.assertEqual(payload["allowed_mentions"], {"parse": []})
         self.assertEqual(result, {"id": "123", "channel_id": "456"})
         with patch.object(discord, "safe_urlopen", return_value=io.BytesIO(b'{}')):
@@ -75,6 +76,18 @@ class DiscordDeliveryTest(unittest.TestCase):
                 existing = {**release(), "assets": [{"name": discord.RECEIPT_NAME}]}
                 with self.assertRaisesRegex(RuntimeError, "uncertain"):
                     discord.announce(existing, "unused", target)
+                self.assertEqual(send.call_count, 1)
+
+    def test_definite_rejection_can_be_retried_after_fixing_the_client(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / discord.RECEIPT_NAME
+            with patch.object(discord, "gh"), patch.object(discord, "post", side_effect=discord.RejectedPost("HTTP 403")):
+                with self.assertRaises(discord.RejectedPost):
+                    discord.announce(release(), "unused", target)
+            self.assertIsNone(json.loads(target.read_text())["in_flight_chunk"])
+            existing = {**release(), "assets": [{"name": discord.RECEIPT_NAME}]}
+            with patch.object(discord, "gh"), patch.object(discord, "post", return_value={"id": "123", "channel_id": "456"}) as send:
+                discord.announce(existing, "unused", target)
                 self.assertEqual(send.call_count, 1)
 
     def test_partial_confirmed_delivery_resumes_only_remaining_chunks(self):

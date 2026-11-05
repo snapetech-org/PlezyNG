@@ -3,9 +3,9 @@
 After exact-main CI and platform canaries pass, run the complete 3.0.0 release
 from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
 x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple
-builds and the storage-heavy webOS candidate use compatible private JIT runners.
-The workflow's private broker pool remains selected for those constrained jobs;
-the hybrid execution profile routes compatible work directly to hosted runners.
+builds and the storage-heavy WebOS candidate use compatible private JIT runners.
+The hybrid execution profile routes each job to the compatible runner class;
+the broker pool remains available for jobs that need private capacity.
 
 ## Release job concurrency
 
@@ -28,6 +28,13 @@ independent platform jobs inside the dispatched release workflow.
 For Apple queue inspection and the one-job JIT launcher, see the
 [Apple JIT runner runbook](apple-jit-runner.md).
 
+Release actions reuse an existing immutable version tag. If the tag is an
+ancestor of `main`, the workflow permits only release infrastructure, changelog,
+maintainer documentation, and the WebOS compatibility lock to differ from the
+tagged commit; application-source changes still require a new matching tag.
+Both the workflow and the local release driver enforce this allowlist, and the
+draft release remains tied to the existing tag.
+
 ```sh
 python3 scripts/release_all_platforms.py --version 3.0.0 \
   --execution-profile hybrid --publish-github-only \
@@ -35,11 +42,12 @@ python3 scripts/release_all_platforms.py --version 3.0.0 \
   --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/release-final
 ```
 
-The command coordinates the existing private JIT and standard hosted workflows
-in order. It reuses an active native build when one exists; otherwise it
-verifies the current native manifest and dispatches `snapetech-org/mpv-build`
-if the published artifacts are stale or incomplete. It verifies Apple,
-Android, Linux, and Windows native groups before touching PlezyNG.
+The command validates CI on the exact current `main` SHA, then runs the complete
+release build. When a version tag already exists, it reuses that immutable tag
+only if it is an ancestor of `main` and the intervening changes are on the
+release allowlist; the release workflow builds the full platform matrix. For a
+new version, it first verifies or refreshes native artifacts, updates their
+pins, validates CI and a nonpublishing candidate, and only then creates the tag.
 
 If the control-plane host cannot reach `ffmpeg.org`, pass
 `--ffmpeg-source-cache <directory>` with retained files named
@@ -52,7 +60,7 @@ When a completed native run has failed platforms, the orchestrator can recover
 other groups whose publishing jobs succeeded. It checks the manifest artifact's
 GitHub digest, the current source content keys, and every published asset's
 checksum before recording that group on native `main`. Only manifests from an
-explicit private build of an ancestor of current `main` are eligible. The next
+explicit native build of an ancestor of current `main` are eligible. The next
 native build then rebuilds only the groups still stale. A partial recovery never
 updates PlezyNG's pins or bypasses the final all-platform verification.
 
@@ -67,12 +75,11 @@ Windows CI and release jobs provision NuGet from `windows/tool/build-toolchain.l
 before Flutter configures its plugins. The installer job also provisions Inno Setup
 from that lock; both downloads require matching hashes and publisher signatures.
 `-VerifyOnly` checks the installed tools before compilation or packaging. The
-private profile keeps Windows x64 on the private PC pool and omits ARM64. The
 3.0.0 hybrid profile uses `windows-2025` for x64 and the native
 `windows-11-vs2026-arm`
 runner for ARM64; ARM64 is packaged as a separate portable ZIP while installers
-and package-manager artifacts remain x64. Linux ARM64 uses `ubuntu-24.04-arm`
-in the hybrid profile. The Mac remains reserved for Apple work. See
+and package-manager artifacts remain x64. Linux ARM64 uses `ubuntu-24.04-arm`.
+The Mac remains reserved for Apple work. See
 [the Windows toolchain runbook](../../windows/tool/build-toolchain.md).
 
 Apple JIT source workspaces use `/Volumes/p/runs/...`, a short mount alias of
@@ -149,11 +156,10 @@ Authenticode signing, and LG public IPK publication remain gated on their
 missing identities, profiles, credentials, or artifact approvals.
 
 The orchestrator uses the current machine's GitHub CLI authentication only for
-workflow dispatch, repository commits, and the version tag. The default
-execution profile keeps all jobs on private JIT; the 3.0.0 hybrid profile uses
-standard GitHub-hosted runners only for compatible Linux, Android, and Windows
-jobs. The script does not accept custom runner labels or store or print
-credentials.
+workflow dispatch, repository commits, and the version tag. Its default hybrid
+profile sends compatible jobs to GitHub-hosted runners and uses private JIT for
+Apple, storage-heavy WebOS, and other private-resource work. The script does not
+accept custom runner labels or store or print credentials.
 It stops on a failed native group, FFmpeg signature, CI run, candidate build,
 tag conflict, or release build. Re-running it reuses successful native,
 CI, candidate, and release runs and never moves an existing tag.

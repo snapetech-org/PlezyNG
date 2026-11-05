@@ -105,10 +105,10 @@
       "open": "Keep OverDrive disabled until provider approval, deployed gateway controls, assigned sandbox credentials, and live fulfillment qualification are available."
     },
     {
-      "area": "Private JIT runners",
-      "status": "gated",
+      "area": "Hybrid runner routing",
+      "status": "active",
       "evidence": ["AGENTS.md", ".github/workflows/ci.yml", ".github/workflows/build.yml"],
-      "open": "Workflows must stay on compatible private ephemeral JIT runners with no hosted fallback. This PR does not dispatch a workflow or establish live pool capacity."
+      "open": "Compatible GitHub-hosted runners are the default. Private ephemeral JIT is reserved for Apple, private storage/network, special hardware, or other task-specific constraints. Confirm actual runner assignment and capacity for each dispatched workflow."
     }
   ],
   "findings": [
@@ -128,7 +128,7 @@
       "implementationStatus": "implemented",
       "confidence": "high",
       "evidence": ["scripts/verify_release_ci.py", ".github/workflows/build.yml", ".github/workflows/ci.yml"],
-      "qualification": "The release workflow checks the newest manually dispatched main CI run for the exact SHA and requires every named job, including each matrix expansion, to complete successfully. The changed workflow has not been dispatched on private JIT; negative-gate and successful-candidate evidence remain pending."
+      "qualification": "The release workflow checks the newest manually dispatched main CI run for the exact SHA and requires every named job, including each matrix expansion, to complete successfully. The changed workflow has not yet passed exact-SHA CI on the default hybrid route; negative-gate and successful-candidate evidence remain pending."
     },
     {
       "id": "F03",

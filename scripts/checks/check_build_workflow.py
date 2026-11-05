@@ -180,7 +180,7 @@ require(
     '"arch":"arm64","flutter_setup":"git","native_cache_path":"build/windows/arm64/_deps"' in windows
     and "matrix: ${{ fromJSON(needs.validate-trusted-ref.outputs.execution_profile == 'hybrid'" in windows
     and '"include":[{"arch":"x64"' in windows,
-    "native Windows ARM64 must be present only in the hybrid 3.0.0 build matrix",
+    "native Windows ARM64 must be present in the hybrid build matrix",
 )
 require(
     'CMAKE_GENERATOR=Visual Studio 18 2026' in named_step(
@@ -786,8 +786,10 @@ require(
     and '"linux","x64"' in linux
     and '"linux","arm64"' in linux
     and "matrix.arch == 'x64'" in linux
+    and "'ubuntu-24.04-arm'" in linux
+    and "'ubuntu-24.04'" in linux
     and '"gha-{0}-{1}-build-linux"' in linux,
-    "Linux architectures must use the private JIT route",
+    "Linux architectures must use compatible hosted runners in hybrid mode and retain the private route",
 )
 require("fail-fast: false" in linux, "Linux matrix must not cancel its other architecture")
 require(
@@ -1035,9 +1037,10 @@ tizen_workflow = (
 require(
     "  workflow_call:" in tizen_workflow
     and "tester_build:" in tizen_workflow
-    and "default: private" in tizen_workflow
+    and "default: hybrid" in tizen_workflow
+    and "options: [private, hybrid]" in tizen_workflow
     and tizen_workflow.count("inputs.execution_profile == 'hybrid' && 'ubuntu-24.04'") == 2
-    and "PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && '1' || '0' }}" in tizen_workflow
+    and "PLEZYNG_ALLOW_DIRECT_DOWNLOADS: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt == 1 && '1' || '0' }}" in tizen_workflow
     and "Ignore private Tizen toolchain paths on hosted runners" in tizen_workflow
     and "python3 scripts/tizen/prepare_signing_profile.py" in tizen_workflow
     and "python3 scripts/tizen/package.py build" in tizen_workflow
@@ -1069,7 +1072,7 @@ require(
         r".*?^        options:\n          - private$",
         text,
     ) is not None,
-    "platform workflow must require its supported private runner pool",
+    "platform workflow must select its supported broker route",
 )
 require(
     re.search(
@@ -1078,8 +1081,9 @@ require(
         text,
     ) is not None
     and "inputs.execution_profile == 'hybrid'" in job("validate-trusted-ref")
-    and "\"$VERSION\" != \"3.0.0\"" in named_step(job("validate-trusted-ref"), "Resolve release request"),
-    "the hybrid execution profile must be the default and remain restricted to trusted-main PlezyNG 3.0.0 builds",
+    and '"$MODE" != "release"' in named_step(job("validate-trusted-ref"), "Resolve release request")
+    and '"$VERSION" != "3.0.0"' not in named_step(job("validate-trusted-ref"), "Resolve release request"),
+    "the hybrid execution profile must be the default for trusted-main release builds",
 )
 require(
     "inputs.build_android" not in text
@@ -1212,6 +1216,15 @@ for apple_job_name, workspace_label in (
             and 'FLUTTER_XCODE_CODE_SIGNING_IDENTITY: ""' in macos_xcode_step,
             "macOS release build must use Flutter's Xcode build-setting overrides to disable signing before optional Developer ID signing",
         )
+        macos_signing_step = named_step(
+            apple_release_job, "Check macOS signing configuration"
+        )
+        require(
+            'if [[ "$REQUIRE_HOMEBREW_CASK" != "true" ]]' in macos_signing_step
+            and 'echo "codesign=false"' in macos_signing_step
+            and 'echo "notarize=false"' in macos_signing_step,
+            "GitHub-only macOS releases must ignore optional Developer ID secrets and remain unsigned",
+        )
     cleanup_step_name = (
         "Remove AppleDouble sidecars before iOS Xcode build"
         if apple_job_name == "build-ios"
@@ -1299,7 +1312,7 @@ require(
     and "matrix: ${{ fromJSON(inputs.execution_profile == 'hybrid'" in windows_native
     and '"include":[{"arch":"x64"' in windows_native
     and "'windows-11-vs2026-arm'" in windows_native,
-    "native Windows ARM64 CI must run on the public ARM64 host in the 3.0.0 hybrid profile",
+    "native Windows ARM64 CI must run on the public ARM64 host in the hybrid profile",
 )
 require(
     'CMAKE_GENERATOR=Visual Studio 18 2026' in named_step(
@@ -1478,8 +1491,8 @@ require(
     "release builds must bind the validated release tag",
 )
 require(
-    "target_commitish: ${{ github.sha }}" in release,
-    "release tags must target the exact build commit",
+    "target_commitish: ${{ needs.validate-trusted-ref.outputs.release_commit }}" in release,
+    "release drafts must remain bound to the validated immutable tag commit",
 )
 require(
     "python3 scripts/generate_release_notes.py \"$RELEASE_TAG\" > release-notes.md"
@@ -1505,8 +1518,13 @@ require(
     and '"$REF_TYPE" != "branch" || "$REF_NAME" != "main"' in request_resolver
     and 'git fetch --no-tags origin "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"' in trusted_ref
     and 'git rev-parse "refs/tags/$RELEASE_TAG^{commit}"' in trusted_ref
-    and '"$release_commit" != "$GITHUB_SHA"' in trusted_ref,
-    "release tags must match pubspec and the exact trusted main commit before builds",
+    and 'git merge-base --is-ancestor "$release_commit" "$GITHUB_SHA"' in trusted_ref
+    and 'git merge-base --is-ancestor "$release_commit" refs/remotes/origin/main' in trusted_ref
+    and 'git diff --name-only "$release_commit" "$GITHUB_SHA"' in trusted_ref
+    and "AGENTS.md|CHANGELOG.md" in trusted_ref
+    and "tools/webos/compatibility.json)" in trusted_ref
+    and 'printf \'commit=%s\\n\' "$release_commit" >> "$GITHUB_OUTPUT"' in trusted_ref,
+    "release tags must be immutable ancestors of trusted main with only allowlisted release-infrastructure changes",
 )
 for protected_job in (
     "build-android",
@@ -1535,7 +1553,7 @@ require(
     and "actions/cache/save@" in android_ci
     and "TRUSTED_BUILD_CACHE_VERSION" in android_ci
     and "PLEZYNG_FFMPEG_SOURCE_ARCHIVE" in android_ffmpeg_gradle,
-    "Android CI must prefetch, verify, and cache pinned FFmpeg headers through the private JIT proxy",
+    "Android CI must prefetch, verify, and cache pinned FFmpeg headers on the selected runner route",
 )
 require(
     "prepare_android_ffmpeg_source.py" in android_ffmpeg_prepare
@@ -1552,7 +1570,7 @@ require(
     and "--direct-egress" in android_ffmpeg_prepare
     and "sha256_file" in android_ffmpeg_helper
     and "FFmpeg source SHA-256 mismatch" in android_ffmpeg_helper,
-    "Android FFmpeg prefetch must use the private proxy and verify its pinned SHA-256",
+    "Android FFmpeg prefetch must support the selected runner egress and verify its pinned SHA-256",
 )
 require(
     "-Xmx3G" in android_gradle_properties

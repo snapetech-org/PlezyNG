@@ -153,10 +153,11 @@ identical. It never overwrites an existing signed output or guesses a TV target.
 ## CI and rollout plan
 
 `.github/workflows/tizen.yml` is manual (`workflow_dispatch`) with no release
-publication. Its current validation and packaging jobs use private ephemeral
-JIT runners. Root `AGENTS.md` permits compatible GitHub-hosted runners when
-they meet OS, architecture, trust, toolchain, and storage needs; use private JIT
-for requirements a hosted runner cannot meet.
+publication. It defaults to compatible hosted Ubuntu and offers the private
+profile for tasks that require private network, storage, or provisioned SDK
+resources. The versioned 3.0.0 release uses the same hybrid route: Tizen builds
+run on hosted Ubuntu while Apple and storage-constrained WebOS jobs use private
+JIT. Both profiles preserve the ARM toolchain and signing gates.
 `build_package` defaults to false; packaging runs only on `main`. `tester_build`
 defaults to true. With no provisioned paths/profile, the ARM job checks out the
 pinned Flutter toolchain, bootstraps its isolated SDK and creates a disposable
@@ -165,14 +166,11 @@ development profile. Provisioned paths can override this through
 `PLEZYNG_TIZEN_TOOLCHAIN_X64`. x64 still requires a provisioned SDK. Selecting a
 real Samsung profile requires preprovisioning its SDK and certificate store.
 
-The shared JIT inventory in `snapetech-org/packer` must include this exact
-workflow and its two jobs. The deployed broker policy, runner-group workflow
-access and runner bootstrap/capacity must agree before dispatch. Adding workflow
-YAML or inventory source does not deploy the broker or create capacity.
-ARM SDK and development signing are now provisioned by the workflow. The
-current workflow has no hosted route, so missing JIT capacity blocks this
-configured dispatch until a compatible hosted route is added or JIT capacity is
-available. Do not restart an active broker to roll out this change.
+The shared JIT inventory in `snapetech-org/packer` remains necessary when the
+private profile is selected. The deployed broker policy, runner-group workflow
+access and runner bootstrap/capacity must agree before dispatching that route.
+Adding workflow YAML or inventory source does not deploy the broker or create
+capacity. ARM SDK and development signing are provisioned by the workflow.
 
 ## Existing Samsung signing and Seller Office handoff
 

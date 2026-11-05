@@ -20,10 +20,14 @@ a branch name therefore does not remove its original commits or prevent recovery
 - Retain the newly published experimental Tizen TV port, native media plugins,
   conservative server profiles and signed-TPK tooling. Preserve the DV compatibility
   and workspace changes in overlapping factories, settings and Plex negotiation.
-- Retain the current private JIT runner routing. Discard older hosted-runner and
-  automatic PR/push trigger changes. Keep the latest main build-only action and
-  webOS validation/redistribution gates together. CI, native validation and CodeQL
-  remain manually dispatched; existing release-published package jobs are retained.
+- At this 2026-10-27 consolidation, retain the then-current private JIT routing
+  and discard older hosted-runner and automatic PR/push trigger changes. That
+  historical routing decision is superseded by the current root `AGENTS.md`,
+  which uses compatible GitHub-hosted runners by default and reserves private
+  JIT for task-specific private requirements. Keep the latest main build-only
+  action and webOS validation/redistribution gates together. CI and native
+  validation remain manually dispatched; CodeQL is disabled across Snapetech.
+  Existing release-published package jobs are retained.
 - Keep the current comic-inclusive product artwork and branding. Merge individual
   UI focus, accessibility, text-scaling and navigation fixes, resolving overlapping
   implementations rather than replacing entire feature files.

@@ -140,7 +140,7 @@
       }
     },
     "normalization": {
-      "referenceArchiveSha256": "5c6e6840a33079baa176cc11c553d44708f31ecf46e1fb2f371b6a270aaa1360",
+      "referenceArchiveSha256": "1d10cceab50301eb92e3ac0e2acb6c499852107163e98021a07228034e2de17c",
       "engine": {
         "sectionNames": ["", ".note.gnu.build-id", ".gnu.hash", ".dynsym", ".dynstr", ".gnu.version", ".gnu.version_r", ".rel.dyn", ".rel.plt", ".init", ".plt", ".text", "__lcxx_override", "malloc_hook", ".fini", ".rodata", ".ARM.exidx", ".eh_frame", ".tbss", ".init_array", ".fini_array", ".data.rel.ro", ".dynamic", ".got", ".data", ".bss", ".ARM.attributes", ".shstrtab"],
         "sectionNameOffsets": [0, 209, 173, 147, 89, 134, 97, 125, 47, 56, 51, 36, 193, 155, 167, 247, 25, 183, 62, 1, 13, 112, 228, 42, 255, 68, 73, 237],
@@ -179,7 +179,7 @@
     },
     "baseEngineArchiveUrl": "https://github.com/lg-flutter-webos/artifacts/releases/download/c6f67dede3-webos26-2/webos-arm-release.zip",
     "baseEngineArchiveSha256": "28fd011b3334323c1e28343f600c40f7ebabaee51fe0cafe6e9463340b5c7fb9",
-    "engineArchiveSha256": "5c6e6840a33079baa176cc11c553d44708f31ecf46e1fb2f371b6a270aaa1360",
+    "engineArchiveSha256": "1d10cceab50301eb92e3ac0e2acb6c499852107163e98021a07228034e2de17c",
     "commonArchiveUrl": "https://github.com/lg-flutter-webos/artifacts/releases/download/c6f67dede3-webos26-2/webos-common.zip",
     "commonArchiveSha256": "b0706807140c4792525879de30ecd0d219111f521252965cb75c01fef5a20a2e",
     "genSnapshotSha256": "78ab5c5423adaabe59ca150def5922568eddb1e820b282e273acca19d62c8e01",

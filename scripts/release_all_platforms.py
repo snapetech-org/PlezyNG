@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Orchestrate a native dependency refresh and the complete PlezyNG release.
 
-This is a local control-plane command. The default profile keeps build, test,
-package, and release jobs on private JIT runners; the 3.0.0 hybrid profile
-routes only compatible jobs to standard GitHub-hosted runners. It uses the
-operator's authenticated `gh` CLI session and never copies credentials into
-the repos.
+This is a local control-plane command. PlezyNG 3.0.0 uses compatible
+GitHub-hosted runners by default and private JIT for Apple, WebOS storage, or
+other private-resource requirements. It uses the operator's authenticated
+`gh` CLI session and never copies credentials into the repos.
 With --publish, it promotes the verified draft and runs every configured
 package/store publication workflow from main, sequentially and idempotently.
 """
@@ -40,6 +39,33 @@ NATIVE_GROUPS = ("apple", "android", "linux", "windows")
 FFMPEG_SIGNING_FINGERPRINT = "FCF986EA15E6E293A5644F10B4322F04D67658D8"
 DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
+RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
+    ".github/actions/setup-flutter-windows/action.yml",
+    ".github/workflows/build.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/tizen.yml",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "docs/games/VALIDATION.md",
+    "docs/maintainers/apple-jit-runner.md",
+    "docs/maintainers/branch-consolidation-2026-10-27.md",
+    "docs/maintainers/capability-manifest.json",
+    "docs/maintainers/dv-platform-buildout.md",
+    "docs/maintainers/full-release-build.md",
+    "docs/maintainers/release-channels.md",
+    "docs/maintainers/tizen-tv.md",
+    "docs/plezyng/subtitles/PLAN.md",
+    "native/games/apple/SteamAppleSinkTests.mm",
+    "scripts/checks/check_build_workflow.py",
+    "scripts/checks/test_check_build_workflow.py",
+    "scripts/checks/test_release_ci_gate.py",
+    "scripts/launch_apple_jit_runner.sh",
+    "scripts/prepare_android_sdk.py",
+    "scripts/release_all_platforms.py",
+    "tools/reader-tests/README.md",
+    "tools/webos/compatibility.json",
+})
 
 
 class ReleaseError(RuntimeError):
@@ -629,14 +655,14 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
             raise ReleaseError("Expected one [Unreleased] section before committing native pins.")
         changelog.write_text(changelog_source.replace(unreleased, unreleased + pin_note, 1), encoding="utf-8")
     # The Apple SPM checker needs .dart_tool/package_config.json from `flutter pub get`.
-    # Dependency resolution belongs on the compatible private JIT runner, not this host.
+    # Dependency resolution belongs on the selected CI runner, not this host.
     # ci.yml runs pub get and this same checker on the exact release commit before tagging.
     command(["git", "diff", "--check"], cwd=worktree)
 
     changed = command(["git", "status", "--porcelain"], cwd=worktree, capture=True).stdout.strip()
     if changed:
         command(["git", "add", "-u"], cwd=worktree)
-        # This generated pin commit is validated by the exact-source private-JIT CI below.
+        # This generated pin commit is validated by exact-source CI below.
         # The repository pre-commit hook runs Dart/codegen checks on the host, so skip it here.
         command(
             ["env", "SKIP_HOOKS=1", "git", "commit", "-m",
@@ -654,7 +680,7 @@ def commit_and_push_native_pin(worktree: Path, native_repo: Path, native_sha: st
     return command(["git", "rev-parse", "HEAD"], cwd=worktree, capture=True).stdout.strip()
 
 
-def ensure_ci(commit_sha: str, *, execution_profile: str = "private") -> dict:
+def ensure_ci(commit_sha: str, *, execution_profile: str = "hybrid") -> dict:
     existing = matching_run(PLEZY_REPO, CI_WORKFLOW, commit_sha, ref="main")
     if existing:
         if existing.get("status") == "completed" and existing.get("conclusion") != "success":
@@ -690,7 +716,7 @@ def ensure_candidate_build(
     version: str,
     commit_sha: str,
     *,
-    execution_profile: str = "private",
+    execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
 ) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
@@ -761,8 +787,7 @@ def ensure_candidate_build(
     )
 
 
-def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
-    tag = f"v{version}"
+def existing_release_tag_commit(worktree: Path, tag: str) -> str | None:
     command(["git", "fetch", "--tags", "origin"], cwd=worktree)
     existing = command(
         ["git", "rev-parse", f"refs/tags/{tag}^{{commit}}"],
@@ -771,12 +796,49 @@ def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
         check=False,
         quiet=True,
     )
-    if existing.returncode == 0:
-        if existing.stdout.strip() != commit_sha:
-            raise ReleaseError(
-                f"Tag {tag} already points to {existing.stdout.strip()[:12]}, "
-                f"not release commit {commit_sha[:12]}; refusing to move it."
-            )
+    return existing.stdout.strip() if existing.returncode == 0 else None
+
+
+def validate_immutable_release_tag(
+    worktree: Path,
+    tag: str,
+    tag_commit: str,
+    main_commit: str,
+) -> None:
+    ancestry = command(
+        ["git", "merge-base", "--is-ancestor", tag_commit, main_commit],
+        cwd=worktree,
+        check=False,
+        quiet=True,
+    )
+    if ancestry.returncode != 0:
+        raise ReleaseError(
+            f"Tag {tag} at {tag_commit[:12]} is not an ancestor of main "
+            f"at {main_commit[:12]}; refusing to reuse or move it."
+        )
+    changed = command(
+        ["git", "diff", "--name-only", "-z", tag_commit, main_commit],
+        cwd=worktree,
+        capture=True,
+        quiet=True,
+    ).stdout
+    blocked = sorted(
+        path for path in changed.split("\0")
+        if path and path not in RELEASE_TAG_REUSE_ALLOWLIST
+    )
+    if blocked:
+        raise ReleaseError(
+            f"Tag {tag} is immutable and cannot be reused because main differs in "
+            f"non-release source files: {', '.join(blocked)}."
+        )
+
+
+def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
+    tag = f"v{version}"
+    existing_commit = existing_release_tag_commit(worktree, tag)
+    if existing_commit:
+        validate_immutable_release_tag(worktree, tag, existing_commit, commit_sha)
+        print(f"Reusing immutable tag {tag} at {existing_commit[:12]}.")
         return tag
     command(["git", "tag", "-a", tag, commit_sha, "-m", f"PlezyNG {version}"], cwd=worktree)
     command(["git", "push", "origin", f"refs/tags/{tag}"], cwd=worktree)
@@ -788,7 +850,7 @@ def ensure_release(
     commit_sha: str,
     *,
     include_webos_release: bool,
-    execution_profile: str = "private",
+    execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
 ) -> dict:
     run_title = f"action:release:pool:private:tag:{tag}"
@@ -1197,7 +1259,7 @@ def parse_args() -> argparse.Namespace:
         "--execution-profile",
         choices=("private", "hybrid"),
         default=None,
-        help="Use hosted runners for compatible 3.0.0 jobs by default; other releases remain on private JIT.",
+        help="Use hosted runners for compatible jobs by default; private JIT remains available for constrained work.",
     )
     publication = parser.add_mutually_exclusive_group()
     publication.add_argument(
@@ -1234,14 +1296,12 @@ def main() -> int:
     if not re.fullmatch(r"\d+\.\d+\.\d+", args.version):
         raise ReleaseError("--version must be MAJOR.MINOR.PATCH, without a leading v.")
     if args.execution_profile is None:
-        args.execution_profile = "hybrid" if args.version == "3.0.0" else "private"
+        args.execution_profile = "hybrid"
     package_version = command(
         ["python3", "scripts/pubspec_version.py", "pubspec.yaml"], cwd=ROOT, capture=True
     ).stdout.strip().split("+", 1)[0]
     if package_version != args.version:
         raise ReleaseError(f"Requested {args.version}, but pubspec.yaml declares {package_version}.")
-    if args.execution_profile == "hybrid" and args.version != "3.0.0":
-        raise ReleaseError("The hybrid execution profile is restricted to PlezyNG 3.0.0.")
     if args.version == "3.0.0" and args.execution_profile != "hybrid":
         raise ReleaseError("The PlezyNG 3.0.0 release requires the hybrid profile, including native Windows ARM64 CI.")
     command(["gh", "auth", "status", "--hostname", "github.com"], capture=True, quiet=True)
@@ -1262,31 +1322,55 @@ def main() -> int:
 
     try:
         print(f"Release scratch: {scratch}", flush=True)
-        stage = "native build and manifest verification"
-        progress["stage"] = stage
-        save_progress()
-        native_repo, native_sha = prepare_native_checkout(scratch)
-        progress["native_manifest_commit"] = native_sha
-        versions = json.loads((native_repo / "versions.json").read_text(encoding="utf-8"))
-        ffmpeg_pin = versions["components"]["ffmpeg"]["version"]
-        stage = "FFmpeg signature and checksum verification"
-        progress["stage"] = stage
-        save_progress()
-        ffmpeg_version, ffmpeg_sha256 = verified_ffmpeg_source(
-            ffmpeg_pin,
-            scratch / "ffmpeg",
-            source_cache=args.ffmpeg_source_cache,
-        )
-        progress["ffmpeg_version"] = ffmpeg_version
-        progress["ffmpeg_source_sha256"] = ffmpeg_sha256
-
-        stage = "PlezyNG pin update and push"
-        progress["stage"] = stage
-        save_progress()
         worktree = create_plezy_worktree(scratch)
-        pin_sha = commit_and_push_native_pin(
-            worktree, native_repo, native_sha, ffmpeg_version, ffmpeg_sha256
-        )
+        main_commit = command(
+            ["git", "rev-parse", "HEAD"], cwd=worktree, capture=True, quiet=True
+        ).stdout.strip()
+        ensure_remote_main_sha(main_commit, "starting the PlezyNG release")
+        tag = f"v{args.version}"
+        existing_tag_commit = existing_release_tag_commit(worktree, tag)
+        tag_reused = existing_tag_commit is not None
+        native_sha = None
+        ffmpeg_version = None
+        ffmpeg_sha256 = None
+
+        if tag_reused:
+            validate_immutable_release_tag(
+                worktree, tag, existing_tag_commit, main_commit
+            )
+            pin_sha = main_commit
+            progress["tag_commit"] = existing_tag_commit
+            progress["immutable_tag_reused"] = True
+            print(
+                f"Using existing immutable {tag} at {existing_tag_commit[:12]}; "
+                "main differs only in allowlisted release infrastructure, so the "
+                "release action will perform the complete platform build."
+            )
+        else:
+            stage = "native build and manifest verification"
+            progress["stage"] = stage
+            save_progress()
+            native_repo, native_sha = prepare_native_checkout(scratch)
+            progress["native_manifest_commit"] = native_sha
+            versions = json.loads((native_repo / "versions.json").read_text(encoding="utf-8"))
+            ffmpeg_pin = versions["components"]["ffmpeg"]["version"]
+            stage = "FFmpeg signature and checksum verification"
+            progress["stage"] = stage
+            save_progress()
+            ffmpeg_version, ffmpeg_sha256 = verified_ffmpeg_source(
+                ffmpeg_pin,
+                scratch / "ffmpeg",
+                source_cache=args.ffmpeg_source_cache,
+            )
+            progress["ffmpeg_version"] = ffmpeg_version
+            progress["ffmpeg_source_sha256"] = ffmpeg_sha256
+
+            stage = "PlezyNG pin update and push"
+            progress["stage"] = stage
+            save_progress()
+            pin_sha = commit_and_push_native_pin(
+                worktree, native_repo, native_sha, ffmpeg_version, ffmpeg_sha256
+            )
         progress["plezyng_commit"] = pin_sha
         stage = "PlezyNG CI"
         progress["stage"] = stage
@@ -1299,20 +1383,25 @@ def main() -> int:
         include_apple_store_build = (
             args.publish and apple_store_secrets.issubset(configured_repo_names("secret"))
         )
-        stage = "all-platform release-mode candidate build"
-        progress["stage"] = stage
-        save_progress()
-        candidate = ensure_candidate_build(
-            args.version,
-            pin_sha,
-            execution_profile=args.execution_profile,
-            include_apple_store_build=include_apple_store_build,
-        )
-        progress["candidate_build_run"] = candidate["databaseId"]
-        stage = "release tag"
-        progress["stage"] = stage
-        save_progress()
-        tag = ensure_tag(worktree, args.version, pin_sha)
+        if not tag_reused:
+            stage = "all-platform release-mode candidate build"
+            progress["stage"] = stage
+            save_progress()
+            candidate = ensure_candidate_build(
+                args.version,
+                pin_sha,
+                execution_profile=args.execution_profile,
+                include_apple_store_build=include_apple_store_build,
+            )
+            progress["candidate_build_run"] = candidate["databaseId"]
+            stage = "release tag"
+            progress["stage"] = stage
+            save_progress()
+            tag = ensure_tag(worktree, args.version, pin_sha)
+        else:
+            stage = "reuse immutable release tag"
+            progress["stage"] = stage
+            save_progress()
         progress["tag"] = tag
         stage = "all-platform release build"
         progress["stage"] = stage
@@ -1390,7 +1479,7 @@ def main() -> int:
             "tizen_built": True,
             "tizen_seller_office_submission": "not configured; tester artifact only",
             "microsoft_store": "not configured; package identity variables are absent",
-            "runner_pool": "private JIT",
+            "runner_pool": "private broker pool for constrained jobs",
             "execution_profile": args.execution_profile,
             "publication_scope": "github-and-configured-channels" if args.publish else "github-only" if args.publish_github_only else "draft-only",
         }

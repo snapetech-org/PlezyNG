@@ -167,7 +167,7 @@
     },
     "depotToolsPythonRequirements": {
       "path": "tools/webos/depot-tools-python-requirements.txt",
-      "sha256": "406484ee82f854f915f80e6cc595a9f9e37f4c41c520aa576aa2da8d70998a88"
+      "sha256": "da32ea0d989d11dd4bc611ee46d6179b04de05aa1194a436ed46d73f25aa66a7"
     }
   },
   "lgArtifacts": {

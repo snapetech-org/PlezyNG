@@ -24,6 +24,8 @@ verified against the actual store records before publication.
   immutable product can be selected with LIFETIME_UNLOCK_PRODUCT_ID at build time.
   This does not transfer purchases between store applications.
 - Inherited README showcase and old-name store screenshot bases removed.
+  All nine inherited README feature pictograms replaced with independent geometric
+  SVGs; all 39 shared upstream images classified in pleazyng-artwork-audit.json.
   README and feature graphic use labelled brand artwork. Store screenshots must
   be recaptured, not repainted and represented as actual captures.
 - Scoped regression check: scripts/checks/check_rebrand.py, included in guards.
@@ -70,17 +72,21 @@ four browser-logic tests passed. Visual contact sheet reviewed for symbol,
 wordmark and artwork. These are source/export results, not signed binary or
 device qualification. Generated localization output was regenerated from sources.
 
-The broader Flutter launcher test cannot compile existing main subsystems:
-games_screen.dart has unmatched braces; romm_storage.dart has malformed nullable
-map conditional syntax; karaoke still uses removed FilePicker.platform APIs and
-PlatformDetector.isAppleTVSync; subtitle capture references an absent
-subtitlePcmSeekGeneration member; visualization has a malformed declaration.
-These files' failing logic is unchanged by this rebrand. The full local commit
-hook also fails existing Dart/native formatting, 118 icon-rule violations,
-guard import-path and analyzer/dependency checks. Focused checks above pass;
-the authorized source commit uses the hook's documented SKIP_HOOKS escape
-hatch. This does not waive release qualification. Fix and qualify them
-before any all-platform release; do not omit required platforms.
+The initial broader Flutter run found malformed games, RomM and visualization
+source. Concurrent commit 2a5378d62 repaired those defects and was integrated
+before this rebrand was pushed. The launcher test rerun on 9e9745362 still cannot
+compile: karaoke uses removed FilePicker.platform APIs and
+PlatformDetector.isAppleTVSync, karaoke_session.dart has a nullable string
+mismatch, subtitle capture references subtitlePcmSeekGeneration without valid
+type promotion, and source_playback.dart cannot access hasNativeVideoWindow on
+a nullable player. The failing logic is unchanged by this rebrand.
+
+The full local hook also fails existing formatting, translation hygiene,
+generated-code freshness, hardcoded strings, 118 icon-rule violations,
+guard import-path and analyzer/dependency checks. The authorized source commits
+use the hook's documented SKIP_HOOKS escape hatch after focused checks; this
+does not waive release qualification. Fix and qualify these problems before
+any all-platform release; do not omit required platforms.
 
 External gates still open: new domain ownership and redirects; store records,
 certificates and IAP permissions; provider OAuth/Discord registrations and owned

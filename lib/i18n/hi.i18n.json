@@ -4733,7 +4733,15 @@
     "accountStatus": "",
     "preferComputer": "",
     "automaticComputer": "",
-    "steamAttribution": ""
+    "steamAttribution": "",
+    "cloudAccountSetting": "",
+    "cloudBridgeUnavailable": "",
+    "enableAccountCloud": "",
+    "disableAccountCloud": "",
+    "cloudAccountConfirm": "",
+    "cloudAccountObserved": "",
+    "cloudAccountStale": "",
+    "cloudAccountUnknown": ""
   },
   "deepLinks": {
     "invalid": "यह Pleazyng लिंक वैध नहीं है।",

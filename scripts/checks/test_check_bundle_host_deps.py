@@ -118,7 +118,7 @@ def stage_bundle(
 class BundleHostDepsGuardTest(unittest.TestCase):
     def test_offline_runtime_libraries_cannot_mask_missing_app_libraries(self):
         result = self._check(
-            ldd={'plezy': ['libpython3.12.so => not found']},
+            ldd={'pleazyng': ['libpython3.12.so => not found']},
             owners={}, shipped=('tools/dv/lib/runtime/libpython3.12.so',),
         )
         self.assertEqual(result.returncode, 1)

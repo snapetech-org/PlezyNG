@@ -1,5 +1,7 @@
 # Pleazyng release channels
 
+Live account migration is in progress. See [the dated channel migration receipt](pleazyng-channel-migration.json) for verified new records, API access and pending steps. The older readiness snapshots below describe their audit dates and do not prove current publication readiness.
+
 This is the release support boundary for the Pleazyng client and its separate relay service. A client platform or package channel is active when the manual release workflow creates the package and attaches it to a GitHub Release, or when a named publisher workflow submits that release's package.
 
 ## Release trigger and order
@@ -28,9 +30,9 @@ There is no 32-bit x86 desktop package. Android `armeabi-v7a` is the 32-bit ARM 
 
 ## Fork identity and compatibility
 
-The Android application ID, Apple bundle IDs, Flatpak ID, and Linux desktop entry use `org.snapetech.plezyng`. The tvOS Top Shelf extension uses `org.snapetech.plezyng.TopShelfExtension` and the app group is `group.org.snapetech.plezyng`. This keeps new packages separate from upstream Plezy's store identities. The internal Android Kotlin namespace remains `com.edde746.plezy`.
+The Android application ID, Apple bundle IDs, Flatpak ID, and Linux desktop entry use `org.snapetech.pleazyng`. The tvOS Top Shelf extension uses `org.snapetech.pleazyng.TopShelfExtension` and the app group is `group.org.snapetech.pleazyng`. This keeps new packages separate from upstream Plezy's store identities. The internal Android Kotlin namespace remains `com.edde746.plezy`.
 
-Changing the install IDs means an install signed under upstream's identity cannot be updated by Pleazyng. Store users need Pleazyng's own listings and signing keys. The existing `plezy://` deep-link scheme remains in place.
+Changing the install IDs means an install signed under upstream's identity cannot be updated by Pleazyng. Store users need Pleazyng's own listings and signing keys. New packages register `pleazyng://` and the explicit legacy fork aliases, with upstream `plezy://` registration removed.
 
 ## Package managers and stores
 
@@ -49,7 +51,7 @@ Changing the install IDs means an install signed under upstream's identity canno
 | Apple App Store (tvOS) | App record created; cloud-signing build configured, not yet validated | The app's iOS and tvOS platforms can share the lifetime IAP. The previous 2.24.1 workflow failed while importing the manual PKCS#12. The updated workflow uses Xcode cloud signing for both the app and Top Shelf extension. The next release build must verify signing before this channel is considered ready. |
 | Mac App Store | Not a Plezy upstream channel | Plezy distributes macOS through a direct DMG and Homebrew. |
 | Snap Store | Name registered, credential scope needs verification | `publish-snap.yml` uploads the matching architecture package to `stable` after a published release. `SNAPCRAFT_STORE_CREDENTIALS` must authorize the registered `plezyng` snap and required channels. Manual dispatch can publish an existing release to `edge`, `beta`, `candidate`, or `stable`. |
-| AUR | Wired, package and credential-gated | `publish-aur.yml` updates the binary package recipe after a published release. Register the selected package name first, then set `AUR_PACKAGE_NAME` and `AUR_SSH_KEY`. |
+| AUR | Wired, package and credential-gated | `publish-aur.yml` updates the binary package recipe after a published release. Set `AUR_PACKAGE_NAME` and `AUR_SSH_KEY`; the first valid recipe push creates a new AUR package. The current target is `pleazyng-bin` (see the migration receipt). |
 | Fedora COPR | Wired, project and credential-gated | `publish-copr.yml` builds an SRPM from the checked release bundles and submits it to `COPR_PROJECT`. The COPR project must include x86_64 and aarch64 chroots. |
 | Launchpad PPA | Wired, archive and credential-gated | `publish-ppa.yml` signs and uploads source packages for Jammy and Noble after a published release. Set `LAUNCHPAD_PPA` and a Launchpad-registered `GPG_PRIVATE_KEY`. |
 | Flathub | Not submitted | The attached Flatpak bundles use the prebuilt Linux bundle. Flathub requires its own source-built manifest submission and reviewer approval; it is not an automatic upload channel. |

@@ -42,6 +42,18 @@ release qualification. Changes are committed directly to `main` in small batches
 
 ### Follow-up integration checks
 
+Search cancellation now preserves the prior visible result set, while selected
+kind/People filters remain active until all sources finish. Optional Steam
+relay configuration no longer throws while settings render. Diagnostic and
+OAuth clients accept a validated per-instance endpoint so tests exercise the
+same request construction without depending on compiled deployment secrets.
+Targeted search/log/podcast checks pass; the follow-up migration, Games, callback
+and theme batch passes 54 cases with seven explicit platform/environment skips.
+The broad Flutter run is still in progress. It exposed a newly introduced
+focus-button assumption that scoped Material themes always contain MonoTokens;
+the synchronized main control now supplies a fallback when that extension is absent.
+
+
 Normal RomM packaging now builds Gambatte, mGBA and FCEUmm from one canonical
 pin file across app toolchains. Linux builds and dynamic loading pass for the
 host and all three cores. Fixed desktop install ordering, added Android ABI/

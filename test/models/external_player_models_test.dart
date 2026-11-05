@@ -259,7 +259,7 @@ void main() {
     };
     for (final (key, path) in [('x-success', '/success/s3'), ('x-error', '/error/s3')]) {
       final link = Uri.parse(parsed[key]!);
-      expect(link.scheme, 'plezy');
+      expect(link.scheme, 'pleazyng');
       expect(link.host, 'external-player');
       expect(link.path, path);
     }

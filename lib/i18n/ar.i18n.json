@@ -4841,7 +4841,15 @@
     "accountStatus": "",
     "preferComputer": "",
     "automaticComputer": "",
-    "steamAttribution": ""
+    "steamAttribution": "",
+    "cloudAccountSetting": "",
+    "cloudBridgeUnavailable": "",
+    "enableAccountCloud": "",
+    "disableAccountCloud": "",
+    "cloudAccountConfirm": "",
+    "cloudAccountObserved": "",
+    "cloudAccountStale": "",
+    "cloudAccountUnknown": ""
   },
   "deepLinks": {
     "invalid": "هذا الرابط Pleazyng غير صالح.",

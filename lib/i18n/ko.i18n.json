@@ -4728,7 +4728,15 @@
     "accountStatus": "",
     "preferComputer": "",
     "automaticComputer": "",
-    "steamAttribution": ""
+    "steamAttribution": "",
+    "cloudAccountSetting": "",
+    "cloudBridgeUnavailable": "",
+    "enableAccountCloud": "",
+    "disableAccountCloud": "",
+    "cloudAccountConfirm": "",
+    "cloudAccountObserved": "",
+    "cloudAccountStale": "",
+    "cloudAccountUnknown": ""
   },
   "deepLinks": {
     "invalid": "이 Pleazyng 링크는 유효하지 않습니다.",

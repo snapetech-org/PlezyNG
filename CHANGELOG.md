@@ -11,6 +11,7 @@
 - Package a self-contained Linux FEL-derived HDR10/SDR converter with its Python runtime, decoder, compositor and encoders; verify actual exports without network access or system tools. Keep Apple experimental video below Flutter controls and make incremental runtime packaging repeatable.
 - Bundle experimental Dolby Vision/FEL playback in normal compatible builds and use a persisted, default-off Settings switch. Add an in-app Apple runtime for macOS 15 and iOS/tvOS 18 while retaining the normal app deployment floors; device output remains unqualified.
 - Keep Android FEL reconstruction controlled by the runtime experimental setting when a FEL-capable engine is bundled.
+- Preserve search results on cancellation and filters during partial responses, and keep optional relay absence from crashing settings.
 
 - Build and package the three default RomM emulator cores with the app, preserve their source/notices, validate Android delivery, and install the desktop host after bundle cleanup.
 

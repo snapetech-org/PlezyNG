@@ -4706,7 +4706,15 @@
     "accountStatus": "",
     "preferComputer": "",
     "automaticComputer": "",
-    "steamAttribution": ""
+    "steamAttribution": "",
+    "cloudAccountSetting": "",
+    "cloudBridgeUnavailable": "",
+    "enableAccountCloud": "",
+    "disableAccountCloud": "",
+    "cloudAccountConfirm": "",
+    "cloudAccountObserved": "",
+    "cloudAccountStale": "",
+    "cloudAccountUnknown": ""
   },
   "deepLinks": {
     "invalid": "ลิงค์ Pleazyng นี้ไม่ถูกต้อง",

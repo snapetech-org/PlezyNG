@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Restore truncated Games screen actions and repair malformed visualizer validation and RomM save-key syntax.
 - Declare the RomM WebKit runtime in Linux packages and keep release-recovery checks aligned with mandatory webOS delivery.
 - Patch the karaoke separation runtime, constrain local model checkpoint loading, and verify CPU stem generation with the current audio backend.
 - Fix the black screen after sign-in when a profile binds before the file-source database finishes opening, and retain bounded webOS widget-error diagnostics.

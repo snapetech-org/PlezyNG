@@ -529,7 +529,10 @@ class RommStorage extends ChangeNotifier {
   Future<Directory> nativeDirectory(RommGame game) async {
     check(); return Directory('${_root!.path}/native/${_key(game.key)}').create(recursive: true);
   }
-  String _nativeKey(RommGame game, String core, String fileHash) => '${game.key}:${game.identity}:${fileHash.isEmpty ? downloads[game.key]?['sha1'] : fileHash}:$core';
+  String _nativeKey(RommGame game, String core, String fileHash) {
+    final hash = fileHash.isEmpty ? (downloads[game.key]?['sha1'] ?? '') : fileHash;
+    return '${game.key}:${game.identity}:$hash:$core';
+  }
   Future<void> keepNativeProgress(RommGame game, String core, Uint8List bytes, {bool state = false, String fileHash = ''}) =>
     keepNativeSnapshot(game, core, sram: state ? null : bytes, state: state ? bytes : null, fileHash: fileHash);
   Future<void> keepNativeSnapshot(RommGame game, String core, {Uint8List? sram, Uint8List? state, Uint8List? rtc, String fileHash = ''}) =>

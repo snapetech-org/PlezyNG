@@ -667,4 +667,805 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     if (game == null) return;
     if (choice is GameRoute && game.routes.any((r) => r.key == choice.key)) await _open(choice.host, choice.game);
     if (choice == 'play' || choice == 'choose' || choice == 'mini') {
-      await _openLibraryGame
+      await _openLibraryGame(game, choose: choice == 'choose', mini: choice == 'mini');
+    }
+    if (choice == 'controller') await _openLibraryGame(game, controllerOnly: true);
+    if (choice == 'link') await _linkSteamAccount();
+    if (choice == 'add') await _connections();
+    if (choice is String && choice.startsWith('metrics:')) {
+      final session = _workspaceGameSessions[choice.substring(8)];
+      await session?.withInputSuspended(() async {
+        if (!mounted || !c.current) return;
+        await showScopedDialog<void>(
+          context: _actionContext,
+          builder: (_) => SteamStreamDiagnostics(readMetrics: session.readMetrics, internetPath: session.internetPath),
+        );
+      });
+    }
+  }
+
+  Widget _routeActions(LibraryGame game, GameRoute route) {
+    final c = _controller!;
+    final preferred = (c.library.routeSelections[game.key] ?? c.library.preferredRoutes[game.key]) == route.key;
+    return AppMenuButton<String>(
+      tooltip: t.games.gameOptions(game: isolateDisplayText(route.host.name)),
+      adaptiveSheet: true,
+      enabled: !c.busy,
+      icon: const AppIcon(Symbols.more_vert_rounded),
+      entriesBuilder: (_) => [
+        AppMenuItem(
+          value: 'prefer',
+          label: preferred ? t.games.automaticComputer : t.games.preferComputer,
+          icon: Symbols.star_rounded,
+          selected: preferred,
+          enabled: preferred || route.installation != GameInstallation.notInstalled,
+        ),
+        if (game.steamAppId != null && route.host.protocol == GameProtocol.steam) ...[
+          const AppMenuDivider(),
+          AppMenuItem(value: 'launch', label: t.games.launchOnComputer, icon: Symbols.play_arrow_rounded),
+          AppMenuItem(value: 'install', label: t.games.installOnComputer, icon: Symbols.download_rounded),
+          if (context.read<CompanionRemoteProvider>().supportsGameAction(SteamHostAction.inputConfiguration))
+            AppMenuItem(value: 'input', label: t.games.inputOnComputer, icon: Symbols.sports_esports_rounded),
+          if (c.library.steamAccountId != null && context.read<CompanionRemoteProvider>().supportsCloudSettings)
+            AppMenuItem(value: 'cloudSetting', label: t.games.cloudAccountSetting, icon: Symbols.cloud_sync_rounded),
+          if (context.read<CompanionRemoteProvider>().supportsGameAction(SteamHostAction.properties))
+            AppMenuItem(value: 'properties', label: t.games.propertiesOnComputer, icon: Symbols.settings_rounded),
+        ],
+      ],
+      onSelected: (action) async {
+        if (!c.current || c != _controller) return;
+        if (action == 'cloudSetting') {
+          await _cloudAccountSetting(route.host);
+        } else if (action == 'prefer') {
+          await _run((c) => c.preferRoute(game, preferred ? null : route));
+        } else {
+          await _remoteHostAction(route.host, switch (action) {
+            'launch' => SteamHostAction.launch,
+            'install' => SteamHostAction.install,
+            'input' => SteamHostAction.inputConfiguration,
+            _ => SteamHostAction.properties,
+          }, appId: game.steamAppId);
+        }
+      },
+    );
+  }
+
+  Future<void> _openInWorkspace(
+    GameHost host,
+    StreamGame game, {
+    bool fullscreen = false,
+    bool controllerOnly = false,
+  }) => _run((c) async {
+    final capability = await c.client.capabilities(host);
+    if (!mounted || !c.current) return;
+    if (!capability.embeddedSurface ||
+        host.protocol != GameProtocol.steam ||
+        !PlatformDetector.supportsEmbeddedGameStreaming()) {
+      await _engineUnavailable(host);
+      return;
+    }
+
+    final workspace = context.read<MultiviewWorkspaceController>();
+    _workspaceController = workspace;
+    final sessionId = controllerOnly ? 'game-controller:${game.key}:${host.id}' : 'game:${game.key}';
+    final existing = workspace.session(sessionId);
+    if (existing != null) {
+      workspace.showSessionInWorkspace(sessionId, fullscreen: fullscreen);
+      workspace.focus(sessionId);
+      return;
+    }
+
+    Future<SteamInternetTunnel?> connectInternet() async {
+      c.requireCurrent();
+      if (!capability.internetTunnel ||
+          steamRelayUri() == null ||
+          !SettingsService.instance.read(SettingsService.steamInternetForProfile(c.profileId))) {
+        return null;
+      }
+      final inventory = c.library.inventories.where((i) => i.hostKey == host.key).firstOrNull;
+      if (inventory == null || await steamHostReachable(host)) return null;
+      if (!mounted) throw const GameClientException(GameClientFailure.cancelled);
+      c.requireCurrent();
+      final remote = context.read<CompanionRemoteProvider>();
+      final ready = await ensureCompanionRemoteCryptoFromContext(context, checkCurrent: c.requireCurrent);
+      c.requireCurrent();
+      if (!ready) throw const GameClientException(GameClientFailure.unavailable);
+      return remote.openSteamInternet(inventory.peerId, isCurrent: () => mounted && c.current);
+    }
+
+    final tunnel = await connectInternet();
+    if (!mounted || !c.current) {
+      tunnel?.close();
+      tunnel?.path.dispose();
+      return;
+    }
+    final session = SteamGameWorkspaceSession(
+      controllerOnly: controllerOnly,
+      inputProfile: SteamInputProfile.restore(
+        SettingsService.instance.read(SettingsService.steamInputForGame(c.profileId, game.id)),
+      ),
+      persistInputProfile: (profile) async {
+        c.requireCurrent();
+        await SettingsService.instance.write(
+          SettingsService.steamInputForGame(c.profileId, game.id),
+          profile.encode(),
+          checkCurrent: c.requireCurrent,
+        );
+      },
+      touchLayout: SteamTouchLayout.restore(
+        SettingsService.instance.read(SettingsService.steamTouchLayoutForGame(c.profileId, game.id)),
+      ),
+      persistTouchLayout: (layout) async {
+        c.requireCurrent();
+        await SettingsService.instance.write(
+          SettingsService.steamTouchLayoutForGame(c.profileId, game.id),
+          layout.encode(),
+          checkCurrent: c.requireCurrent,
+        );
+      },
+      touchOpacity: SettingsService.instance.read(SettingsService.steamTouchOpacityForProfile(c.profileId)),
+      swapTouchSides: SettingsService.instance.read(SettingsService.steamSwapTouchSidesForProfile(c.profileId)),
+      controllerRumble: SettingsService.instance.read(SettingsService.steamControllerRumbleForProfile(c.profileId)),
+      motionController: SettingsService.instance.read(SettingsService.steamMotionControllerForProfile(c.profileId)),
+      internetTunnel: tunnel,
+      connectInternet: connectInternet,
+      onFirstFrame: () {
+        if (c.current && game.id != '0') {
+          unawaited(c.connected(GameRoute(host: host, game: game)).catchError((Object _) {}));
+        }
+      },
+      pyrowave: SettingsService.instance.read(SettingsService.gamePyrowaveForProfile(c.profileId)),
+      allowHdr: SettingsService.instance.read(SettingsService.enableHDR),
+      quality: SettingsService.instance.read(SettingsService.steamQualityForProfile(c.profileId)),
+      codec: SettingsService.instance.read(SettingsService.steamCodecForProfile(c.profileId)),
+      controllerCount: SettingsService.instance.read(SettingsService.steamControllerCountForProfile(c.profileId)),
+      audio: SettingsService.instance.read(SettingsService.steamAudioForProfile(c.profileId)),
+      host: host,
+      game: game,
+      touchControls:
+          controllerOnly ||
+          (!PlatformDetector.isTV() &&
+              SettingsService.instance.read(SettingsService.gameTouchControlsForProfile(c.profileId))),
+    );
+    final registration = WorkspaceSurfaceRegistration(
+      descriptor: WorkspaceSessionDescriptor(
+        id: sessionId,
+        kind: MultiviewMediaKind.game,
+        title: game.name,
+        subtitle: host.name,
+        mediaKey: game.key,
+        hasAudio: !controllerOnly,
+        hasVideo: !controllerOnly,
+        acceptsInput: true,
+        openedAt: DateTime.now(),
+      ),
+      buildSurface: (_) => session.workspaceSurface(),
+      onRestore: () {
+        workspace.showSessionInWorkspace(sessionId, fullscreen: true);
+      },
+      onClose: () {
+        _workspaceGameSessions.remove(sessionId)?.dispose();
+      },
+      onAudioOwnershipChanged: session.setAudioEnabled,
+      onInputOwnershipChanged: session.setInputEnabled,
+    );
+
+    if (!workspace.register(registration)) {
+      session.dispose();
+      showErrorSnackBar(context, t.videoControls.pipFailed);
+      return;
+    }
+    _workspaceGameSessions[sessionId] = session;
+    workspace.showSessionInWorkspace(sessionId, fullscreen: fullscreen);
+  }).then<void>((_) {});
+  Future<void> _engineUnavailable(GameHost host) async {
+    if (!mounted) return;
+    await showScopedDialog<void>(
+      context: _actionContext,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(t.games.engineUnavailable),
+        scrollable: true,
+        content: Text(host.protocol == GameProtocol.steam ? t.games.steamEnginePending : t.games.nativeEnginePending),
+        actions: [
+          DialogActionButton(
+            autofocus: InputModeTracker.isKeyboardMode(dialogContext, listen: false),
+            onPressed: () => Navigator.pop(dialogContext),
+            label: t.common.ok,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showHelp() => showScopedDialog<void>(
+    context: _actionContext,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(t.games.help),
+      scrollable: true,
+      content: Text(t.games.helpBody),
+      actions: [
+        DialogActionButton(
+          autofocus: InputModeTracker.isKeyboardMode(dialogContext, listen: false),
+          onPressed: () => Navigator.pop(dialogContext),
+          label: t.common.ok,
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _importInventory(GameHost host) async {
+    final c = _controller;
+    if (c == null || !c.current) return;
+    final remote = context.read<CompanionRemoteProvider>();
+    final peerId = remote.gameInventoryPeerId;
+    if (peerId == null || !remote.supportsGameInventory) {
+      showErrorSnackBar(context, t.games.inventoryConnectHelp);
+      return;
+    }
+    final confirmed = await showConfirmDialog(
+      _actionContext,
+      title: t.games.importInstalledGames,
+      confirmText: t.games.importInstalledGames,
+      message: t.games.inventoryConfirm(peer: remote.connectedDevice?.name ?? t.games.computers, computer: host.name),
+    );
+    if (!confirmed || !mounted || !c.current || remote.gameInventoryPeerId != peerId) return;
+    await _run((c) async {
+      try {
+        final inventory = await remote.requestGameInventory();
+        c.requireCurrent();
+        if (remote.gameInventoryPeerId != peerId) throw const SteamInventoryUnavailable();
+        await c.saveInventory(
+          SteamHostInventory(
+            hostKey: host.key,
+            peerId: peerId,
+            observedAt: DateTime.now(),
+            games: inventory.games,
+            complete: inventory.complete,
+          ),
+        );
+        if (mounted && c.current) showSuccessSnackBar(context, t.games.inventoryImported);
+      } on SteamInventoryUnavailable {
+        if (mounted && c.current) showErrorSnackBar(context, t.games.inventoryConnectHelp);
+      }
+    });
+  }
+
+  Future<void> _chooseSteamFolder() async {
+    final c = _controller;
+    if (c == null || !c.current) return;
+    final path = await FilePickerService.instance.getDirectoryPath(dialogTitle: t.games.steamInstallFolder);
+    if (path == null || !mounted || !c.current) return;
+    await SettingsService.instance.write(
+      SettingsService.steamInstallRootForProfile(c.profileId),
+      path,
+      checkCurrent: c.requireCurrent,
+    );
+    if (mounted && c.current) _changed();
+  }
+
+  Future<void> _cloudAccountSetting(GameHost host) async {
+    final c = _controller;
+    if (c == null || !c.current || c.busy) return;
+    final remote = context.read<CompanionRemoteProvider>();
+    final account = c.library.steamAccountId;
+    final peer = remote.gameActionPeerId;
+    final snapshot = c.library.inventories.where((i) => i.hostKey == host.key).firstOrNull;
+    bool current() =>
+        mounted &&
+        c.current &&
+        c == _controller &&
+        c.library.steamAccountId == account &&
+        remote.gameActionPeerId == peer &&
+        remote.supportsCloudSettings;
+    if (account == null || peer == null || snapshot?.peerId != peer || !current()) {
+      showErrorSnackBar(context, t.games.hostActionPairingHelp);
+      return;
+    }
+    await _run((_) async {
+      final before = await remote.requestCloudSetting(account);
+      if (!current()) return;
+      if (before.status != 'observed' || before.enabled == null) {
+        showErrorSnackBar(context, t.games.cloudBridgeUnavailable);
+        return;
+      }
+      final desired = !before.enabled!;
+      final label = desired ? t.games.enableAccountCloud : t.games.disableAccountCloud;
+      final confirmed = await showConfirmDialog(
+        _actionContext,
+        title: label,
+        message: t.games.cloudAccountConfirm(computer: isolateDisplayText(host.name)),
+        confirmText: label,
+      );
+      if (!confirmed || !current()) return;
+      final result = await remote.requestCloudSetting(account, expected: before.enabled, enabled: desired);
+      if (!current()) return;
+      if (result.status == 'observed' && result.enabled == desired) {
+        showSuccessSnackBar(context, t.games.cloudAccountObserved);
+      } else {
+        showErrorSnackBar(context, result.status == 'stale' ? t.games.cloudAccountStale : t.games.cloudAccountUnknown);
+      }
+    });
+  }
+
+  Future<void> _remoteHostAction(GameHost host, SteamHostAction action, {int? appId}) async {
+    final c = _controller;
+    if (c == null || !c.current || c.busy) return;
+    final remote = context.read<CompanionRemoteProvider>();
+    final snapshot = c.library.inventories.where((i) => i.hostKey == host.key).firstOrNull;
+    final peer = remote.gameActionPeerId;
+    // A discovered name or matching IP cannot authorize a remote command.
+    if (snapshot == null || peer == null || snapshot.peerId != peer || !remote.supportsGameAction(action)) {
+      showErrorSnackBar(context, t.games.hostActionPairingHelp);
+      return;
+    }
+    final label = switch (action) {
+      SteamHostAction.launch => t.games.launchOnComputer,
+      SteamHostAction.install => t.games.installOnComputer,
+      SteamHostAction.library => t.games.hostLibrary,
+      SteamHostAction.downloads => t.games.hostDownloads,
+      SteamHostAction.inputConfiguration => t.games.inputOnComputer,
+      SteamHostAction.properties => t.games.propertiesOnComputer,
+    };
+    final confirmed = action == SteamHostAction.install
+        ? await showScopedDialog<bool>(
+                context: _actionContext,
+                builder: (_) => SteamLanInstallDialog(
+                  target: host,
+                  game: c.library.entries.where((g) => g.steamAppId == appId).firstOrNull,
+                  isCurrent: () => mounted && c.current && remote.gameActionPeerId == peer,
+                ),
+              ) ==
+              true
+        : await showConfirmDialog(
+            _actionContext,
+            title: label,
+            message:
+                '${t.games.hostActionConfirm(computer: isolateDisplayText(host.name))}${action == SteamHostAction.properties ? '\n\n${t.games.cloudSettingsHelp}' : ''}',
+            confirmText: label,
+          );
+    if (!confirmed || !mounted || !c.current || remote.gameActionPeerId != peer) return;
+    await _run((c) async {
+      final result = await remote.requestGameAction(action, appId: appId);
+      if (!mounted || !c.current || remote.gameActionPeerId != peer) return;
+      if (result == SteamHostActionResult.submitted) {
+        showSuccessSnackBar(
+          context,
+          action == SteamHostAction.install ? t.games.lanInstallSubmitted : t.games.hostActionSubmitted,
+        );
+      } else {
+        showErrorSnackBar(
+          context,
+          result == SteamHostActionResult.denied ? t.games.hostActionDenied : t.games.unavailable,
+        );
+      }
+    });
+  }
+
+  Future<void> _hostAction(String action, GameHost host) async {
+    switch (action) {
+      case 'hostLibrary':
+        await _remoteHostAction(host, SteamHostAction.library);
+      case 'hostDownloads':
+        await _remoteHostAction(host, SteamHostAction.downloads);
+      case 'inventory':
+        await _importInventory(host);
+      case 'library':
+        await _open(host, StreamGame(hostKey: host.key, id: '0', name: t.games.steamLibrary));
+      case 'pair':
+        await _connect(host, forcePair: true);
+      case 'refresh':
+        await _run((c) => c.refreshGames(host));
+      case 'wake':
+        await _run((c) async {
+          await wakeGameHost(host);
+          if (mounted && c.current) showSuccessSnackBar(context, t.games.wakeSent);
+        });
+      case 'forget':
+        final c = _controller;
+        if (await showConfirmDialog(
+              _actionContext,
+              title: t.games.forget,
+              message: t.games.forgetDescription,
+              confirmText: t.games.forget,
+              isDestructive: true,
+            ) &&
+            mounted &&
+            c == _controller) {
+          await _run((c) => c.removeHost(host));
+        }
+      case 'add':
+        final c = _controller;
+        final game = await showScopedDialog<StreamGame>(
+          context: _actionContext,
+          builder: (_) => AddGameShortcutDialog(host: host),
+        );
+        if (game != null && mounted && c == _controller) await _run((c) => c.saveGame(game));
+    }
+  }
+
+  Widget _host(GameHost host) => FocusableListTile(
+    leading: const AppIcon(Symbols.computer_rounded),
+    title: Text(isolateDisplayText(host.name)),
+    subtitle: Text(
+      '${isolateDisplayText(host.address)} · ${host.protocol == GameProtocol.steam ? t.games.steam : t.games.moonlight}',
+    ),
+    onTap: _controller!.busy || !PlatformDetector.supportsEmbeddedGameStreaming() ? null : () => _connect(host),
+    trailing: AppMenuButton<String>(
+      tooltip: t.games.computers,
+      icon: const AppIcon(Symbols.more_vert_rounded),
+      adaptiveSheet: true,
+      enabled: !_controller!.busy,
+      entriesBuilder: (_) => [
+        if (host.protocol == GameProtocol.steam)
+          AppMenuItem(value: 'inventory', label: t.games.importInstalledGames, icon: Symbols.download_rounded),
+        if (host.protocol == GameProtocol.steam && PlatformDetector.supportsEmbeddedGameStreaming())
+          AppMenuItem(value: 'library', label: t.games.steamLibrary, icon: Symbols.apps_rounded),
+        if (host.protocol == GameProtocol.steam) ...[
+          AppMenuItem(value: 'hostLibrary', label: t.games.hostLibrary, icon: Symbols.desktop_windows_rounded),
+          AppMenuItem(value: 'hostDownloads', label: t.games.hostDownloads, icon: Symbols.download_rounded),
+        ],
+        if (PlatformDetector.supportsEmbeddedGameStreaming()) ...[
+          AppMenuItem(value: 'pair', label: t.games.pair, icon: Symbols.link_rounded),
+          AppMenuItem(value: 'refresh', label: t.games.refreshGames, icon: Symbols.refresh_rounded),
+        ],
+        AppMenuItem(value: 'add', label: t.games.addGame, icon: Symbols.add_rounded),
+        if (host.mac != null) AppMenuItem(value: 'wake', label: t.games.wake, icon: Symbols.power_settings_new_rounded),
+        AppMenuItem(value: 'forget', label: t.games.forget, icon: Symbols.delete_rounded, destructive: true),
+      ],
+      onSelected: (value) => _hostAction(value, host),
+    ),
+  );
+  Future<void> _connections() async {
+    unawaited(_scan());
+    await _page<void>((pageContext) {
+      final c = _controller!;
+      final state = c.library;
+      final enabled = c.current && !c.busy;
+      final nearby = c.nearby
+          .where(
+            (host) => !state.hosts.any(
+              (saved) => saved.protocol == host.protocol && saved.address == host.address && saved.port == host.port,
+            ),
+          )
+          .toList();
+      return FocusedScrollScaffold(
+        title: Text(t.games.connections),
+        focusableAppBarActions: true,
+        actions: [
+          if (state.entries.isNotEmpty)
+            FocusableButton(
+              autoScroll: false,
+              onPressed: () => Navigator.pop(pageContext),
+              child: TextButton.icon(
+                onPressed: () => Navigator.pop(pageContext),
+                icon: const AppIcon(Symbols.apps_rounded),
+                label: Text(t.games.allGames),
+              ),
+            ),
+        ],
+        slivers: [
+          SliverToBoxAdapter(
+            child: SettingsGroup(
+              title: t.games.accountSetupTitle,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SteamSourceBadge(),
+                      const SizedBox(height: 12),
+                      Text(
+                        state.steamAccountId == null ? t.games.accountSetupHelp : t.games.accountLinked,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      if (state.steamAccountId != null) ...[const SizedBox(height: 8), Text(t.games.accountSetupHelp)],
+                      if (c.usesSessionSteamCredential) ...[
+                        const SizedBox(height: 8),
+                        Text(t.games.steamSessionSignIn),
+                      ],
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 8,
+                        children: [
+                          FocusableButton(
+                            onPressed: enabled
+                                ? (state.steamAccountId == null ? _linkSteamAccount : _refreshSteamAccount)
+                                : null,
+                            child: OutlinedButton.icon(
+                              onPressed: enabled
+                                  ? (state.steamAccountId == null ? _linkSteamAccount : _refreshSteamAccount)
+                                  : null,
+                              icon: AppIcon(
+                                state.steamAccountId == null ? Symbols.link_rounded : Symbols.refresh_rounded,
+                              ),
+                              label: Text(
+                                state.steamAccountId == null ? t.games.linkSteamAccount : t.games.refreshSteamAccount,
+                              ),
+                            ),
+                          ),
+                          if (state.steamAccountId != null)
+                            FocusableButton(
+                              onPressed: enabled ? _unlinkSteamAccount : null,
+                              child: TextButton.icon(
+                                onPressed: enabled ? _unlinkSteamAccount : null,
+                                icon: const AppIcon(Symbols.link_off_rounded),
+                                label: Text(t.games.unlinkSteamAccount),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ..._catalogNotices(state, actions: false),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text(t.games.computers, style: Theme.of(context).textTheme.titleLarge),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    PlatformDetector.supportsEmbeddedGameStreaming()
+                        ? t.games.computerSetupHint
+                        : t.games.browseComputersHelp,
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
+                    children: [
+                      FocusableButton(
+                        focusNode: _scanFocus,
+                        onPressed: enabled && !c.scanning ? _scan : null,
+                        useBackgroundFocus: true,
+                        child: FilledButton.icon(
+                          onPressed: enabled && !c.scanning ? _scan : null,
+                          icon: const AppIcon(Symbols.radar_rounded),
+                          label: Text(c.scanning ? t.games.scanning : t.games.findComputers),
+                        ),
+                      ),
+                      FocusableButton(
+                        focusNode: _addFocus,
+                        onPressed: enabled ? _add : null,
+                        child: OutlinedButton.icon(
+                          onPressed: enabled ? _add : null,
+                          icon: const AppIcon(Symbols.add_rounded),
+                          label: Text(t.games.addComputer),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (c.busy || c.scanning)
+            SliverToBoxAdapter(
+              child: Semantics(
+                liveRegion: true,
+                label: c.scanning ? t.games.scanning : t.games.connecting,
+                child: const LinearProgressIndicator(),
+              ),
+            ),
+          if (state.hosts.isNotEmpty)
+            SliverToBoxAdapter(child: SettingsGroup(children: state.hosts.map(_host).toList())),
+          if (nearby.isNotEmpty)
+            SliverToBoxAdapter(
+              child: SettingsGroup(
+                title: t.games.nearby,
+                children: [
+                  for (final host in nearby)
+                    FocusableListTile(
+                      dense: false,
+                      title: Text(isolateDisplayText(host.name)),
+                      subtitle: Text(
+                        '${isolateDisplayText(host.address)} · ${host.protocol == GameProtocol.steam ? t.games.steamSource : t.games.moonlight}',
+                      ),
+                      leading: const AppIcon(Symbols.computer_rounded),
+                      onTap: enabled
+                          ? () async {
+                              final saved = await _run((c) => c.saveHost(host));
+                              if (saved && mounted && c.current && PlatformDetector.supportsEmbeddedGameStreaming()) {
+                                await _connect(host);
+                              }
+                            }
+                          : null,
+                    ),
+                ],
+              ),
+            )
+          else if (!c.scanning && state.hosts.isEmpty)
+            SliverToBoxAdapter(
+              child: GameNotice(
+                title: t.games.noNearby,
+                message: t.games.scanHint,
+                icon: Symbols.radar_rounded,
+                actionLabel: t.games.addComputer,
+                onAction: enabled ? _add : null,
+              ),
+            ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(t.games.steamAttribution, style: Theme.of(context).textTheme.bodySmall),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  Future<void> _rommConnections() async {
+    final romm = _romm;
+    if (romm != null && romm.current) await _page<void>((_) => RommConnectionsScreen(controller: romm));
+  }
+  Future<void> _rommLink([RommLink? incoming]) async {
+    final romm = _romm;
+    if (romm == null || !romm.current) return;
+    RommLink? link = incoming;
+    if (link == null) {
+      final text = TextEditingController();
+      try {
+        final raw = await rommDialog<String>(context: context, controller: romm, builder: (dialog) => AlertDialog(
+          title: Text(rommText(dialog, 'openLink')), content: FocusableTextField(controller: text,
+            decoration: InputDecoration(labelText: rommText(dialog, 'linkHelp'))),
+          actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
+            FilledButton(onPressed: () => Navigator.pop(dialog, text.text), child: Text(rommText(dialog, 'openLink')))]));
+        if (raw == null || !romm.current) return;
+        final uri = Uri.tryParse(raw); link = uri == null ? null : RommLink.parse(uri);
+      } finally { text.dispose(); }
+    }
+    try {
+      if (link == null) throw const RommFailure('romm.invalidAddress');
+      final sources = romm.connections.where((s) => s.base == link!.server && romm.hasConnection(s.id)).toList();
+      if (sources.isEmpty) throw const RommFailure('romm.notConnected');
+      RommConnection? source = sources.singleOrNull;
+      if (source == null) {
+        if (!mounted || !romm.current) return;
+        source = await rommDialog<RommConnection>(context: context, controller: romm, builder: (dialog) => SimpleDialog(
+          title: Text(rommText(dialog, 'connections')), children: [for (final item in sources)
+            SimpleDialogOption(onPressed: () => Navigator.pop(dialog, item), child: Text(isolateDisplayText('${item.name} · ${item.username}')))]));
+        if (source == null || !romm.current) return;
+      }
+      RommGame? game;
+      if (link.romId > 0) game = await (await romm.client(source.id)).game(source.id, link.romId);
+      else {
+        // Acquisition links without an indexed ROM ID use external identity,
+        // never a fuzzy title match or an arbitrary URL supplied in a link.
+        final api = await romm.client(source.id);
+        final result = await api.getMap('roms/by-metadata-provider', query: {'igdb_id': link.igdbId});
+        final first = RommGame.fromJson(source.id, result), candidates = <RommGame>[];
+        candidates.add(first);
+        for (final sibling in first.siblingIds.take(50)) {
+          candidates.add(await api.game(source.id, sibling));
+        }
+        final matches = candidates.where(link.matches).toList();
+        if (matches.length == 1) game = matches.single;
+        else if (matches.length > 1 && mounted && romm.current) {
+          game = await rommDialog<RommGame>(context: context, controller: romm, connectionId: source.id, builder: (dialog) => SimpleDialog(
+            title: Text(rommText(dialog, 'chooseCopy')), children: [for (final copy in matches)
+              SimpleDialogOption(onPressed: () => Navigator.pop(dialog, copy), child: Text(isolateDisplayText('${copy.name} · ${copy.variant}')))]));
+          if (game == null) return;
+        }
+      }
+      if (game == null) throw const RommFailure('romm.notIndexed');
+      if (!link.matches(game)) throw const RommFailure('romm.copyMismatch');
+      if (romm.current) await _details(LibraryGame(key: game.key, name: game.name, routes: const [], romm: game));
+    } catch (error) { if (mounted && romm.current) showErrorSnackBar(context, rommText(context, error is RommFailure ? error.code : 'connectionFailed')); }
+  }
+
+  Future<void> _settings() async {
+    final profile = _profile;
+    if (profile == null) return;
+    await _page<void>((_) => GameSettingsScreen(profileId: profile, onChooseFolder: _chooseSteamFolder));
+  }
+
+  List<Widget> _catalogNotices(GameLibrary state, {bool actions = true}) {
+    if (state.steamAccountId == null) return [];
+    return [
+      if (!state.steamCatalogAvailable || state.steamCatalogStale || state.steamCatalogTruncated)
+        SliverToBoxAdapter(
+          child: GameNotice(
+            title: t.games.accountStatus,
+            live: true,
+            message: [
+              if (!state.steamCatalogAvailable) t.games.steamLibraryPrivate,
+              if (state.steamCatalogStale) t.games.steamLibraryStale,
+              if (state.steamCatalogTruncated) t.games.steamLibraryTruncated,
+            ].join('\n'),
+            actionLabel: actions ? t.games.manageConnections : null,
+            onAction: actions ? _connections : null,
+          ),
+        ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loadFailed) {
+      return FocusedScrollScaffold(
+        title: Text(t.games.title),
+        automaticallyImplyLeading: false,
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: ErrorStateWidget(
+              message: t.errors.unableToLoad(context: t.games.title),
+              onRetry: _retryLoad,
+              actionAutofocus: PlatformDetector.isTV(),
+            ),
+          ),
+        ],
+      );
+    }
+    final c = _controller;
+    if (c == null) {
+      return FocusedScrollScaffold(
+        title: Text(t.games.title),
+        automaticallyImplyLeading: false,
+        slivers: [
+          SliverToBoxAdapter(
+            child: _loading
+                ? Semantics(label: t.games.connecting, liveRegion: true, child: const LinearProgressIndicator())
+                : GameNotice(title: t.games.title, message: t.games.nativeEnginePending),
+          ),
+        ],
+      );
+    }
+    return GameLibraryView(
+      key: ValueKey('games:$_profile:$_sourceGeneration'),
+      library: c.library,
+      artwork: c.artwork,
+      loading: _loading,
+      busy: c.busy,
+      available: c.current,
+      canStream: PlatformDetector.supportsEmbeddedGameStreaming(),
+      firstFocus: _firstFocus,
+      onConnections: _connections,
+      onSettings: _settings,
+      onHelp: _showHelp,
+      onLink: _linkSteamAccount,
+      onRefresh: _refreshSteamAccount,
+      onPlay: _openLibraryGame,
+      onDetails: _details,
+      onFavorite: (game) => _run((c) => c.toggleLibraryFavorite(game)),
+      onMiniPlayer: (game) => _openLibraryGame(game, mini: true),
+      onUseAsController: (Platform.isAndroid || Platform.isIOS) && !PlatformDetector.isTV()
+          ? (game) => _openLibraryGame(game, controllerOnly: true)
+          : null,
+      catalogNotices: [..._catalogNotices(c.library), if (_rommLoadError) SliverToBoxAdapter(child: GameNotice(
+        title: rommText(context, 'title'), message: rommText(context, 'connectionFailed'), actionLabel: rommText(context, 'retry'), onAction: _retryLoad))],
+      includePrimaryGames: _romm?.source.isEmpty ?? true,
+      additionalGames: [for (final game in _romm?.visibleGames ?? <RommGame>[])
+        if (_romm!.source.isEmpty || game.connectionId == _romm!.source)
+          LibraryGame(key: game.key, name: game.name, routes: const [], romm: game)],
+      additionalFavorites: _romm?.favorites ?? const {},
+      additionalInstalled: {for (final game in _romm?.visibleGames ?? <RommGame>[]) if (_romm!.storage.available(game)) game.key},
+      additionalRecent: _romm?.recent ?? const [],
+      onSearchChanged: (query) {
+        _rommSearch?.cancel();
+        _rommSearch = Timer(const Duration(milliseconds: 350), () {
+          final romm = _romm; if (romm != null && romm.current) unawaited(romm.refresh(search: query));
+        });
+      },
+      sourceFilters: _romm == null ? null : RommLibraryFilters(controller: _romm!, onConnections: _rommConnections, onLink: _rommLink),
+      additionalCardBuilder: (entry, focus) {
+        final romm = _romm!, game = entry.romm!;
+        return GameCard(key: ValueKey(game.key), game: StreamGame(hostKey: game.connectionId, id: '${game.id}', name: game.name),
+          artwork: c.artwork, loadCover: () => romm.cover(game), focusNode: focus, subtitle: game.variant,
+          favorite: romm.favorites.contains(game.key), onPlay: () => _details(entry), onDetails: () => _details(entry),
+          onFavorite: () => romm.favorite(game).catchError((_) { if (mounted && romm.current) showErrorSnackBar(context, rommText(context, 'connectionFailed')); }));
+      },
+    );
+  }
+}

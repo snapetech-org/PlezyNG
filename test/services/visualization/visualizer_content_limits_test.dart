@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/visualization/visualizer_content_limits.dart';
 import 'package:plezy/services/visualization/visualizer_pack_store.dart';
 
-// Source only; execute on the required private JIT runner before release.
 void main() {
   test('portable library paths reject aliasing and Windows device names', () {
     for (final path in [
@@ -45,9 +44,11 @@ void main() {
   });
 
   Uint8List pngHeader(int width, int height) {
-    final bytes = Uint8List(33)
+    final bytes = Uint8List(57)
       ..setRange(0, 8, [137, 80, 78, 71, 13, 10, 26, 10])
-      ..setRange(12, 16, ascii.encode('IHDR'));
+      ..setRange(12, 16, ascii.encode('IHDR'))
+      ..setRange(37, 41, ascii.encode('IDAT'))
+      ..setRange(49, 53, ascii.encode('IEND'));
     ByteData.sublistView(bytes)
       ..setUint32(8, 13)
       ..setUint32(16, width)
@@ -64,6 +65,9 @@ void main() {
       );
     }
     expect(() => VisualizerContentLimits.imagePixels('.png', Uint8List(4)), throwsFormatException);
+    // Dimension headers alone must not bypass the complete chunk walk.
+    expect(() => VisualizerContentLimits.imagePixels('.png', pngHeader(16, 16).sublist(0, 33)),
+        throwsFormatException);
   });
 
   test('JPEG segment lengths cannot skip beyond the bounded input', () {

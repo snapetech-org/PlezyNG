@@ -42,6 +42,17 @@ release qualification. Changes are committed directly to `main` in small batches
 
 ### Follow-up integration checks
 
+The Dart parser exposed three authored-source blockers: the Games screen had
+been truncated at 24,000 bytes, the visualizer content validator contained a
+duplicated function body inside an unterminated regular expression, and RomM's
+save-key expression was ambiguous. Restored the missing Games actions from the
+complete PR #111 blob (`2efe2096ece75bb9ca79c2bd0cf29c492d92a005`), verified the
+blob hash and preserved the current prefix. Repaired both expressions and kept
+the image-budget checks. The production visualizer validator passes standalone
+Dart checks for engine-profile markers, shader includes and truncated PNGs;
+its targeted analyzer reports no diagnostics. The Linux RomM native host also
+compiles and links with the pinned libretro/miniaudio sources on this host.
+
 The full Python check suite exposed an undeclared RomM WebKit runtime in Linux
 package metadata and stale recovery tests that still expected webOS omission.
 Debian, RPM, Arch, PPA and Snap metadata now includes the browser runtime, and

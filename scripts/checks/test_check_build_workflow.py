@@ -458,8 +458,8 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_release_tag_changed_path_allowlist_is_required(self) -> None:
         workflow = self._workflow().replace(
-            "tools/webos/compatibility.json)",
-            "tools/webos/compatibility.json",
+            "tools/webos/compatibility.json|",
+            "",
             1,
         )
         self.assertNotEqual(workflow, self._workflow(), "fixture mutation no longer matches workflow")

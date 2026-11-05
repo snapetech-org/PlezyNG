@@ -33,14 +33,36 @@ class SourceProofTests(unittest.TestCase):
         self.jobs += [{"name": "build-android", "status": "completed", "conclusion": "failure"},
                       {"name": "create-release", "status": "completed", "conclusion": "skipped"}]
 
-    def prove(self):
+    def prove(self, **options):
         with patch.object(recovery, "api", side_effect=[self.source, self.compare]), \
              patch.object(recovery, "collection", return_value=self.jobs), \
              patch.object(recovery, "ci_proof", return_value={"ci_run_id": 23}):
-            return recovery.verify_source_run(42, "b" * 40, "3.0.0")
+            return recovery.verify_source_run(42, "b" * 40, "3.0.0", **options)
 
     def test_all_platforms_can_be_recovered_after_only_bootstrap_fix(self):
         self.assertEqual(self.prove()["source_sha"], "a" * 40)
+
+    def test_preflight_allows_running_native_jobs_but_never_a_failure(self):
+        self.source["status"] = "queued"
+        self.jobs[0].update(status="in_progress", conclusion=None)
+        proof = self.prove(allow_pending=True)
+        self.assertFalse(proof["platforms_complete"])
+        self.assertIn(self.jobs[0]["name"], proof["pending_jobs"])
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+        self.jobs[0].update(status="completed", conclusion="failure")
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove(allow_pending=True)
+
+    def test_assembly_waits_for_completion_and_has_a_deadline(self):
+        with patch.object(recovery, "verify_source_run", side_effect=[
+            {"platforms_complete": False, "pending_jobs": ["build-ios"]},
+            {"platforms_complete": True},
+        ]), patch.object(recovery.time, "sleep"):
+            self.assertTrue(recovery.wait_for_source_run(42, "b" * 40, "3.0.0", 60)["platforms_complete"])
+        with patch.object(recovery, "verify_source_run", return_value={"platforms_complete": False}), \
+             self.assertRaisesRegex(recovery.RecoveryError, "Timed out"):
+            recovery.wait_for_source_run(42, "b" * 40, "3.0.0", 0)
 
     def test_rejects_untrusted_active_or_wrong_version_source(self):
         for change in ({"head_branch": "feature"}, {"status": "in_progress"},

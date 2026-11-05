@@ -1785,8 +1785,10 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     TranscodeQualityPreset? downloadQuality,
     DownloadVersionConfig? versionConfig,
     _RelatedMetadataDownloadContext? relatedContext,
+    bool userInitiated = true,
   }) async {
     if (!_downloadManager.downloadsSupported) return false;
+    if (!userInitiated && _downloadManager.isWaitingForStorageRecovery) return false;
 
     if (!_isQueueOwnershipCurrent(ownership)) return false;
     var metadataToStore = metadata.serverId == null ? metadata.copyWith(serverId: client.serverId) : metadata;
@@ -1883,8 +1885,11 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     await _claimDownloadForProfile(globalKey, ownership, client);
     if (!_isQueueOwnershipCurrent(ownership)) return false;
 
-    _downloads[globalKey] = DownloadProgress(globalKey: globalKey, status: DownloadStatus.queued);
-    safeNotifyListeners();
+    final previousProgress = _downloads[globalKey];
+    if (userInitiated) {
+      _downloads[globalKey] = DownloadProgress(globalKey: globalKey, status: DownloadStatus.queued);
+      safeNotifyListeners();
+    }
 
     if (!_isQueueOwnershipCurrent(ownership)) return false;
     final storedMetadata = await _downloadManager.queueDownload(
@@ -1892,7 +1897,13 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       client: client,
       mediaIndex: resolvedIndex,
       downloadQuality: downloadQuality,
+      userInitiated: userInitiated,
     );
+    if (storedMetadata == null) return false;
+    if (!userInitiated && identical(_downloads[globalKey], previousProgress)) {
+      _downloads[globalKey] = DownloadProgress(globalKey: globalKey, status: DownloadStatus.queued);
+      safeNotifyListeners();
+    }
     // The manager may have stamped library identity during the enqueue; keep
     // the hydrated item and the row-derived map in sync with what was stored.
     if (!identical(storedMetadata, metadataToStore)) {
@@ -2619,6 +2630,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       mediaIndex: mediaIndex,
       downloadQuality: downloadQuality,
       relatedContext: relatedContext,
+      userInitiated: false,
     );
   }
 

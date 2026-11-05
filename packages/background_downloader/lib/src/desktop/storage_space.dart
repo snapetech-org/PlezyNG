@@ -37,7 +37,9 @@ bool isOutOfSpaceError(Object error) {
   return Platform.isWindows ? code == 39 || code == 112 : code == 28;
 }
 
-/// Checks actual target-volume capacity before each bounded, drained write.
+/// Reserves at most one MiB from a live capacity sample, charging every write
+/// against that budget. Drains the sink before replenishing it so tiny network
+/// packets do not cause a filesystem query and flush for every packet.
 ///
 /// A volume that cannot report its capacity (some network and FUSE mounts
 /// report zero) is not checked; a write that then runs out of space still
@@ -47,36 +49,33 @@ class StorageSpaceGuard {
   final String path;
   final int configuration;
   final ({int available, int total}) Function(String) _capacity;
+  int _writeBudget = 0;
 
-  StorageSpaceGuard(
-    this.path,
-    this.configuration, {
-    ({int available, int total}) Function(String)? capacity,
-  }) : _capacity = capacity ?? desktopVolumeCapacity;
+  StorageSpaceGuard(this.path, this.configuration, {({int available, int total}) Function(String)? capacity})
+    : _capacity = capacity ?? desktopVolumeCapacity;
 
   void check([int requiredBytes = 0]) {
-    if (configuration == 0) return;
+    final headroom = _headroom();
+    if (headroom != null && headroom < max(0, requiredBytes)) {
+      throw TaskFileSystemException('Insufficient space to store download on $path');
+    }
+  }
+
+  int? _headroom() {
+    if (configuration == 0) return null;
     final ({int available, int total}) capacity;
     try {
       capacity = _capacity(path);
     } catch (error) {
       _skipUnknownCapacity(error);
-      return;
+      return null;
     }
     if (capacity.total <= 0 || capacity.available < 0) {
-      _skipUnknownCapacity(
-        'reported ${capacity.available} of ${capacity.total} bytes available',
-      );
-      return;
+      _skipUnknownCapacity('reported ${capacity.available} of ${capacity.total} bytes available');
+      return null;
     }
-    final floor = configuration < 0
-        ? max(256 * 1024 * 1024, capacity.total ~/ 100)
-        : configuration * 1024 * 1024;
-    if (capacity.available - max(0, requiredBytes) < floor) {
-      throw TaskFileSystemException(
-        'Insufficient space to store download on $path',
-      );
-    }
+    final floor = configuration < 0 ? max(256 * 1024 * 1024, capacity.total ~/ 100) : configuration * 1024 * 1024;
+    return capacity.available - floor;
   }
 
   var _loggedUnknownCapacity = false;
@@ -84,33 +83,36 @@ class StorageSpaceGuard {
   void _skipUnknownCapacity(Object reason) {
     if (_loggedUnknownCapacity) return;
     _loggedUnknownCapacity = true;
-    _log.warning(
-      'Storage capacity of $path is unknown, not checking free space: $reason',
-    );
+    _log.warning('Storage capacity of $path is unknown, not checking free space: $reason');
   }
 
   Future<void> write(IOSink sink, List<int> bytes) async {
-    for (var offset = 0; offset < bytes.length; offset += writeSize) {
-      final end = min(offset + writeSize, bytes.length);
-      check(end - offset);
-      sink.add(offset == 0 && end == bytes.length
-          ? bytes
-          : bytes is Uint8List
-              ? Uint8List.sublistView(bytes, offset, end)
-              : bytes.sublist(offset, end));
-      // Bound queued writes, so the next capacity sample accounts for this one.
-      await sink.flush();
+    for (var offset = 0; offset < bytes.length;) {
+      if (_writeBudget == 0) {
+        await sink.flush();
+        _writeBudget = min(writeSize, _headroom() ?? writeSize);
+        if (_writeBudget <= 0) {
+          _writeBudget = 0;
+          throw TaskFileSystemException('Insufficient space to store download on $path');
+        }
+      }
+      final end = min(offset + _writeBudget, bytes.length);
+      sink.add(
+        offset == 0 && end == bytes.length
+            ? bytes
+            : bytes is Uint8List
+            ? Uint8List.sublistView(bytes, offset, end)
+            : bytes.sublist(offset, end),
+      );
+      _writeBudget -= end - offset;
+      offset = end;
     }
   }
 }
 
 /// Copy to a task-owned staging file, never truncate an existing final file.
 /// The caller publishes by rename only after successful completion.
-Future<void> copyWithSpaceGuard(
-  File source,
-  File staging,
-  int configuration,
-) async {
+Future<void> copyWithSpaceGuard(File source, File staging, int configuration) async {
   final guard = StorageSpaceGuard(staging.path, configuration);
   IOSink? sink;
   var complete = false;
@@ -136,29 +138,26 @@ Future<void> copyWithSpaceGuard(
 
 final class _NativeCapacity {
   static final instance = _NativeCapacity();
-  final DynamicLibrary _allocator = Platform.isWindows
-      ? DynamicLibrary.open('msvcrt.dll')
-      : DynamicLibrary.process();
-  late final _calloc = _allocator.lookupFunction<
-      Pointer<Void> Function(IntPtr, IntPtr),
-      Pointer<Void> Function(int, int)>('calloc');
-  late final _free = _allocator.lookupFunction<Void Function(Pointer<Void>),
-      void Function(Pointer<Void>)>('free');
+  final DynamicLibrary _allocator = Platform.isWindows ? DynamicLibrary.open('msvcrt.dll') : DynamicLibrary.process();
+  late final _calloc = _allocator
+      .lookupFunction<Pointer<Void> Function(IntPtr, IntPtr), Pointer<Void> Function(int, int)>('calloc');
+  late final _free = _allocator.lookupFunction<Void Function(Pointer<Void>), void Function(Pointer<Void>)>('free');
   // Darwin's statvfs has 32-bit block counts (fsblkcnt_t is unsigned int).
   // statfs has 64-bit counts in its 64-bit-inode layout, which Intel binaries
   // bind through the statfs$INODE64 symbol.
-  late final _statfs = DynamicLibrary.process().lookupFunction<
-          Int32 Function(Pointer<Uint8>, Pointer<Void>),
-          int Function(Pointer<Uint8>, Pointer<Void>)>(
-      Abi.current() == Abi.macosX64 ? r'statfs$INODE64' : 'statfs');
-  late final _statvfs = DynamicLibrary.process().lookupFunction<
-      Int32 Function(Pointer<Uint8>, Pointer<Void>),
-      int Function(Pointer<Uint8>, Pointer<Void>)>('statvfs');
-  late final _diskFree = DynamicLibrary.open('kernel32.dll').lookupFunction<
-      Int32 Function(Pointer<Uint16>, Pointer<Uint64>, Pointer<Uint64>,
-          Pointer<Uint64>),
-      int Function(Pointer<Uint16>, Pointer<Uint64>, Pointer<Uint64>,
-          Pointer<Uint64>)>('GetDiskFreeSpaceExW');
+  late final _statfs = DynamicLibrary.process()
+      .lookupFunction<Int32 Function(Pointer<Uint8>, Pointer<Void>), int Function(Pointer<Uint8>, Pointer<Void>)>(
+        Abi.current() == Abi.macosX64 ? r'statfs$INODE64' : 'statfs',
+      );
+  late final _statvfs = DynamicLibrary.process()
+      .lookupFunction<Int32 Function(Pointer<Uint8>, Pointer<Void>), int Function(Pointer<Uint8>, Pointer<Void>)>(
+        'statvfs',
+      );
+  late final _diskFree = DynamicLibrary.open('kernel32.dll')
+      .lookupFunction<
+        Int32 Function(Pointer<Uint16>, Pointer<Uint64>, Pointer<Uint64>, Pointer<Uint64>),
+        int Function(Pointer<Uint16>, Pointer<Uint64>, Pointer<Uint64>, Pointer<Uint64>)
+      >('GetDiskFreeSpaceExW');
 
   ({int available, int total}) query(String directory) {
     // Flutter's supported desktop ABIs are 64-bit. The buffer is larger than
@@ -166,9 +165,7 @@ final class _NativeCapacity {
     if (sizeOf<IntPtr>() != 8) {
       throw UnsupportedError('32-bit desktop filesystem capacity');
     }
-    final encoded = Platform.isWindows
-        ? directory.codeUnits
-        : utf8.encode(directory);
+    final encoded = Platform.isWindows ? directory.codeUnits : utf8.encode(directory);
     final name = _calloc(encoded.length + 1, Platform.isWindows ? 2 : 1);
     final data = _calloc(1, 4096);
     try {
@@ -201,10 +198,7 @@ final class _NativeCapacity {
       if (_statvfs(name.cast<Uint8>(), data) != 0) {
         throw const FileSystemException('statvfs failed');
       }
-      return (
-        available: values[4] * values[1],
-        total: values[2] * values[1],
-      );
+      return (available: values[4] * values[1], total: values[2] * values[1]);
     } finally {
       _free(name);
       _free(data);

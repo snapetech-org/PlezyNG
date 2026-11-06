@@ -46,6 +46,10 @@ function(plezy_add_mgba)
     set(HAVE_STRLCPY "${PLEZY_MGBA_HAVE_STRLCPY}")
   endif()
   add_subdirectory("${romm_mgba_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/mgba" EXCLUDE_FROM_ALL)
+  if(MSVC)
+    # The pinned core has conditional directives inside variadic log arguments.
+    target_compile_options(mgba_libretro PRIVATE /Zc:preprocessor)
+  endif()
 endfunction()
 plezy_add_mgba()
 

@@ -25,6 +25,13 @@ def step(text: str, name: str) -> str:
 
 
 class NativePreparationOrderTests(unittest.TestCase):
+    def test_independent_ci_jobs_can_start_without_waiting_for_other_suites(self):
+        workflow = WORKFLOW.read_text()
+        for name in ('android-test', 'linux-native-test', 'server'):
+            with self.subTest(job=name):
+                self.assertNotRegex(job(workflow, name), r'(?m)^    needs:')
+                self.assertNotIn('${{ needs.', job(workflow, name))
+
     def test_windows_build_uses_the_current_application_target(self):
         cmake = (ROOT / 'windows/CMakeLists.txt').read_text()
         binary = re.search(r'set\(BINARY_NAME "([^"]+)"\)', cmake)

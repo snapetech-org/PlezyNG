@@ -74,7 +74,9 @@ parts:
       - libepoxy0
       - libevdev2
       - libgbm1
+      - libgl1
       - libglvnd0
+      - libglx0
       - libgtk-3-0t64
       - libwebkit2gtk-4.1-0
       - libglib2.0-0t64
@@ -88,6 +90,7 @@ parts:
       - libwayland-client0
       - libwayland-cursor0
       - libwayland-egl1
+      - libwayland-server0
       - libx11-6
       - libx11-xcb1
       - libxcb-dri3-0

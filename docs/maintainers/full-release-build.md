@@ -9,6 +9,11 @@ the broker pool remains available for jobs that need private capacity.
 
 ## Release job concurrency
 
+CI's Android, Linux native and server checks own their checkouts and setup and
+consume no artifacts from the other suites. They start independently rather
+than waiting for the application tests or for one another. The release gate
+still requires all 13 CI jobs to pass on its exact source revision.
+
 `validate-trusted-ref` is the short gate all build jobs wait for. Once it passes,
 the independent platform jobs in one `build.yml` release run are eligible to run
 in parallel; they do not wait for one another. `package-windows` waits for the

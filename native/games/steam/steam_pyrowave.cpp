@@ -204,9 +204,9 @@ bool PyrowaveDecoder::start(int width, int height, const uint8_t* initial, size_
   impl_->width = width;
   impl_->height = height;
   if (initialLength != 0) {
-    PyrowaveFrameInfo info;
+    PyrowaveFrameInfo initialInfo;
     if (!parsePyrowaveFrame(
-            initial, initialLength, static_cast<uint32_t>(width), static_cast<uint32_t>(height), info) ||
+            initial, initialLength, static_cast<uint32_t>(width), static_cast<uint32_t>(height), initialInfo) ||
         pyrowave_decoder_push_packet(impl_->decoder, initial, initialLength) != PYROWAVE_SUCCESS) {
       reset();
       return false;

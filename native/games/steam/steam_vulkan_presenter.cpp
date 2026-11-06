@@ -495,7 +495,7 @@ struct VulkanPresenter::Impl {
     info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     if (!(caps.supportedCompositeAlpha & info.compositeAlpha)) {
       info.compositeAlpha =
-          static_cast<VkCompositeAlphaFlagBitsKHR>(caps.supportedCompositeAlpha & -caps.supportedCompositeAlpha);
+          static_cast<VkCompositeAlphaFlagBitsKHR>(caps.supportedCompositeAlpha & (0u - caps.supportedCompositeAlpha));
     }
     info.presentMode = VK_PRESENT_MODE_FIFO_KHR;
     info.clipped = VK_TRUE;

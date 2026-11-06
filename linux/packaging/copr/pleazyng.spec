@@ -21,8 +21,10 @@ Requires:       glib2
 Requires:       libwayland-client
 Requires:       libwayland-cursor
 Requires:       libwayland-egl
+Requires:       libwayland-server
 Requires:       libglvnd
 Requires:       libglvnd-egl
+Requires:       libglvnd-glx
 Requires:       libva
 Requires:       libvdpau
 Requires:       vulkan-loader

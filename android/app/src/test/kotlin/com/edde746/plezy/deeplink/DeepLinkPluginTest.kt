@@ -48,14 +48,17 @@ class DeepLinkPluginTest {
       "pleazyng://future-host/some/path?param=value#fragment"
     )
 
-    for (link in links) {
-      assertEquals(link, DeepLinkPlugin.linkFrom(viewIntent(link)))
+    for (scheme in listOf("pleazyng", "plezy", "plezyng", "plezxyng")) {
+      for (link in links) {
+        val supportedLink = link.replaceFirst("pleazyng:", "$scheme:")
+        assertEquals(supportedLink, DeepLinkPlugin.linkFrom(viewIntent(supportedLink)))
+      }
     }
   }
 
   @Test
   fun schemeMatchIgnoresCaseAndKeepsTheUrlUnchanged() {
-    for (link in listOf("PLEZY://open", "Plezy://play?server=srv-1&id=42")) {
+    for (link in listOf("PLEAZYNG://open", "Pleazyng://play?server=srv-1&id=42", "PLEZY://open", "Plezy://play?server=srv-1&id=42")) {
       assertEquals(link, DeepLinkPlugin.linkFrom(viewIntent(link)))
     }
   }

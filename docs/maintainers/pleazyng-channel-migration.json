@@ -294,7 +294,34 @@
   "microsoft_store": {
     "account_entered": "keith@snape.tech",
     "portal": "https://partner.microsoft.com/dashboard",
-    "state": "Awaiting owner Authenticator approval in dedicated Firefox",
+    "state": "Signed in successfully; no Windows publishing workspace listed; checking Store developer registration",
     "registration_or_package_changes_made": false
+  },
+  "homebrew": {
+    "tap_repository": "snapetech-org/homebrew-slskdn",
+    "cask_token": "snapetech-pleazyng",
+    "inventory": "Tap has Formula/slskdn.rb and Formula/slskr.rb; no Casks directory or old/new app Cask",
+    "automation": "Update Packages now verifies the published attested Cask, manifest, DMG hash and notarization before writing Casks/snapetech-pleazyng.rb to the publisher tap",
+    "pending": [
+      "HOMEBREW_TAP_TOKEN restricted to Contents write on publisher tap",
+      "First signed/notarized release with prepare_homebrew_cask enabled",
+      "Live workflow validation on selected public macOS runner; no publication dispatched"
+    ]
+  },
+  "chocolatey": {
+    "package_id": "pleazyng",
+    "inventory": "Public OData API returned no exact plezyng or pleazyng package entry on 2026-11-05",
+    "automation": "Existing CHOCO_API_KEY preserved; first valid package push creates the entry",
+    "pending": [
+      "Qualified Windows package and first publish verification"
+    ]
+  },
+  "winget": {
+    "package_identifier": "SnapeTech.Pleazyng",
+    "inventory": "Official microsoft/winget-pkgs manifests/s/SnapeTech namespace returned 404 on 2026-11-05",
+    "automation": "Existing WINGET_CREATE_GITHUB_TOKEN preserved; first valid manifest submission pending",
+    "pending": [
+      "Qualified Windows installer and manifest submission/review"
+    ]
   }
 }

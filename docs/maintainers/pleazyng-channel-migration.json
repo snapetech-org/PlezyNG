@@ -30,11 +30,34 @@
       "org.snapetech.pleazyng.TopShelfExtension"
     ],
     "pending": [
-      "Create or reconcile Pleazyng lifetime IAP",
+      "Complete IAP review screenshot and validate sandbox purchase with first signed build",
       "Update localized listing copy and remove stale screenshots",
       "Retire old identifiers only after dependency review",
       "Validate signing and App Store Connect upload with new identity"
-    ]
+    ],
+    "iap": {
+      "product_id": "pleazyng_lifetime_unlock",
+      "apple_id": "6831392640",
+      "type": "Non-Consumable",
+      "reference_name": "Pleazyng Lifetime Unlock",
+      "localizations": [
+        "en-CA",
+        "en-US"
+      ],
+      "description": "Unlock all Pleazyng features for life.",
+      "base_price_usd": "2.99",
+      "price_regions": 175,
+      "availability": "All 175 countries or regions selected",
+      "state": "Prepare for Submission; first IAP must accompany new app version",
+      "old_product_id": "plezyng_lifetime_unlock",
+      "old_apple_id": "6826961651",
+      "old_draft_deleted": true,
+      "deletion_verified": "Reloaded IAP list shows only the new Pleazyng draft",
+      "pending": [
+        "Real purchase-screen review screenshot",
+        "Attach to new app version and validate sandbox purchase before review"
+      ]
+    }
   },
   "automation_before": {
     "AUR_PACKAGE_NAME": "plezyng-bin",

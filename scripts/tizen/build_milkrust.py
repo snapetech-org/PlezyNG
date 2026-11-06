@@ -103,12 +103,12 @@ def build(args):
         host_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         if not re.fullmatch(r"[a-f0-9]{40}", host_revision):
             raise ValueError("Invalid visualization host revision")
-        if subprocess.check_output(["git", "status", "--porcelain", "--", "shared/visualization", "native/visualizer"], cwd=ROOT):
+        if subprocess.check_output(["git", "status", "--porcelain", "--", "shared/visualization", "native/visualizer", "packages/tizen_plugins/video_player_videohole/tizen/inc"], cwd=ROOT):
             raise ValueError("Visualization host sources must match their committed archive")
         with (bundle / "visualizer-host-source.tar.gz").open("wb") as file:
             with gzip.GzipFile(filename="", fileobj=file, mode="wb", mtime=0) as compressed:
                 archive = subprocess.Popen(["git", "archive", "--format=tar", f"--prefix=plezy-visualizer-{host_revision}/",
-                    host_revision, "--", "LICENSE", "shared/visualization", "native/visualizer"], cwd=ROOT, stdout=subprocess.PIPE)
+                    host_revision, "--", "LICENSE", "shared/visualization", "native/visualizer", "packages/tizen_plugins/video_player_videohole/tizen/inc"], cwd=ROOT, stdout=subprocess.PIPE)
                 assert archive.stdout is not None
                 try:
                     shutil.copyfileobj(archive.stdout, compressed)

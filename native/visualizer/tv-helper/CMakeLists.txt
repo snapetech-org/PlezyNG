@@ -3,6 +3,11 @@ project(plezy_visualizer_tv_helper LANGUAGES CXX)
 find_package(Threads REQUIRED)
 add_executable(plezy_visualizer_helper ../tv_helper.cc)
 target_compile_features(plezy_visualizer_helper PRIVATE cxx_std_17)
+# The pinned TV rootstraps provide the EGL runtime but may omit its development
+# headers. Reuse the app's vendored Khronos declarations; resolve the firmware
+# libraries dynamically rather than linking to host graphics libraries.
+target_include_directories(plezy_visualizer_helper PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../../packages/tizen_plugins/video_player_videohole/tizen/inc")
 target_link_libraries(plezy_visualizer_helper PRIVATE ${CMAKE_DL_LIBS} Threads::Threads)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
   target_link_libraries(plezy_visualizer_helper PRIVATE stdc++fs)

@@ -1072,6 +1072,7 @@ def validate_release_outputs(
         "pleazyng-linux-arm64.pkg.tar.zst", "pleazyng-linux-arm64.flatpak", "pleazyng-linux-arm64.snap",
         "pleazyng-linux-x86_64.AppImage",
         "pleazyng-tizen-arm-tester-handoff.zip",
+        "pleazyng-amazon-firetv.apk", "pleazyng-amazon-firetv-provenance.json",
     }
     if include_webos_release:
         required.update({

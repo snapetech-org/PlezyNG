@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Require a signed Amazon Fire TV / Stick APK and verification receipt in release assets, with an Android-only validation build and the renamed Amazon lifetime unlock SKU.
+
 - Keep configured service endpoints on system certificate trust, validate storefront brokers, repair rebrand-sensitive regression fixtures, and verify native torrent reads beyond 4 GiB.
 - Record current release availability separately from historical publication evidence when the recorded release is no longer returned by GitHub.
 

@@ -12,6 +12,7 @@ import sys
 # packager's versioned application identifier without accepting another format.
 REQUIRED = {
     "Android": ("pleazyng-android-arm64-v8a.tar.gz", "pleazyng-android-armeabi-v7a.tar.gz", "pleazyng-android-x86_64.tar.gz"),
+    "Fire TV / Stick": ("pleazyng-amazon-firetv.apk", "pleazyng-amazon-firetv-provenance.json"),
     "Linux x64": ("pleazyng-linux-x64.tar.gz",),
     "Linux ARM64": ("pleazyng-linux-arm64.tar.gz",),
     "Windows x64": ("pleazyng-windows-x64-portable.7z",),

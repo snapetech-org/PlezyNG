@@ -4725,4 +4725,3 @@ class ExoPlayerCore(private val activity: Activity) :
     Log.d(TAG, "Disposed")
   }
 }
-

@@ -1,3 +1,4 @@
+import '../../i18n/strings.g.dart' as l10n;
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -33,11 +34,15 @@ class _SteamStreamDiagnosticsState extends State<SteamStreamDiagnostics> {
   }
 
   Future<void> _read() async {
-    if (_reading) return;
+    if (_reading) {
+      return;
+    }
     _reading = true;
     try {
       final next = await widget.readMetrics().timeout(const Duration(seconds: 2));
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _rates = next != null && _metrics != null ? SteamStreamRates.between(_metrics!, next) : null;
         _metrics = next;
@@ -111,7 +116,7 @@ class _SteamStreamDiagnosticsState extends State<SteamStreamDiagnostics> {
               2 => t.games.streamSoftwareDecoder,
               3 => t.games.streamReadbackDecoder,
               4 => t.games.streamMetalDecoder,
-              5 => '${t.games.streamHardwareDecoder} · Vulkan',
+              5 => l10n.t.games.vulkan(value1: (t.games.streamHardwareDecoder).toString()),
               _ => t.games.streamMeasurementsUnavailable,
             }),
             if (m.chromaFormat != 0) _row(t.games.streamChroma, m.chromaFormat == 2 ? '4:4:4' : '4:2:0'),

@@ -67,6 +67,7 @@ class PlayerNative extends PlayerBase
   int _queuedNativeWindowActions = 0;
 
   bool get supportsNativeVideoWindow => !audioOnly && (Platform.isLinux || Platform.isWindows || Platform.isMacOS);
+  @override
   bool get hasNativeVideoWindow => _nativeWindowToken != null;
 
   /// Moves the existing native plane; decoder, credentials and Dart owners stay
@@ -78,8 +79,12 @@ class PlayerNative extends PlayerBase
     required NativeVideoWindowIntent onIntent,
     required void Function() onRestored,
   }) async {
-    if (!supportsNativeVideoWindow || _nativeCoreUnavailable || hasNativeVideoWindow || !state.hasRenderedFrame) return false;
-    if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(geometryKey)) throw const FormatException('Invalid window geometry key');
+    if (!supportsNativeVideoWindow || _nativeCoreUnavailable || hasNativeVideoWindow || !state.hasRenderedFrame) {
+      return false;
+    }
+    if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(geometryKey)) {
+      throw const FormatException('Invalid window geometry key');
+    }
     final token = '$nativeInstanceId:${++_nativeWindowRevision}';
     _nativeWindowToken = token;
     _nativeWindowIntent = onIntent;
@@ -87,9 +92,14 @@ class PlayerNative extends PlayerBase
     var installed = false;
     try {
       for (var attempt = 0; attempt < 24; attempt++) {
-        if (_nativeCoreUnavailable || _nativeWindowToken != token) return false;
+        if (_nativeCoreUnavailable || _nativeWindowToken != token) {
+          return false;
+        }
         final accepted = await invoke<bool>('detachVideoWindow', {
-          'token': token, 'title': title, 'labels': labels, 'geometryKey': geometryKey,
+          'token': token,
+          'title': title,
+          'labels': labels,
+          'geometryKey': geometryKey,
         });
         if (accepted == true && _nativeWindowToken == token) {
           installed = true;
@@ -99,18 +109,28 @@ class PlayerNative extends PlayerBase
       }
       return false;
     } finally {
-      if (!installed && _nativeWindowToken == token) _clearNativeVideoWindow();
+      if (!installed && _nativeWindowToken == token) {
+        _clearNativeVideoWindow();
+      }
     }
   }
 
   Future<bool> attachVideoWindow() async {
     final token = _nativeWindowToken;
-    if (token == null) return true;
+    if (token == null) {
+      return true;
+    }
     for (var attempt = 0; attempt < 40; attempt++) {
-      if (_nativeCoreUnavailable) return false;
-      if (_nativeWindowToken != token) return true;
+      if (_nativeCoreUnavailable) {
+        return false;
+      }
+      if (_nativeWindowToken != token) {
+        return true;
+      }
       if (await invoke<bool>('attachVideoWindow', {'token': token}) == true) {
-        if (_nativeWindowToken == token) _clearNativeVideoWindow();
+        if (_nativeWindowToken == token) {
+          _clearNativeVideoWindow();
+        }
         await _applyPendingVideoRect();
         return true;
       }
@@ -124,8 +144,11 @@ class PlayerNative extends PlayerBase
     _nativeWindowToken = null;
     _nativeWindowIntent = null;
     _nativeWindowRestored = null;
-    if (!_nativeCoreUnavailable) restored?.call();
+    if (!_nativeCoreUnavailable) {
+      restored?.call();
+    }
   }
+
   ({int left, int top, int right, int bottom, double devicePixelRatio})? _pendingVideoRect;
 
   @override
@@ -155,14 +178,20 @@ class PlayerNative extends PlayerBase
     required int bottom,
     required double devicePixelRatio,
   }) async {
-    if (audioOnly || _nativeCoreUnavailable) return;
+    if (audioOnly || _nativeCoreUnavailable) {
+      return;
+    }
     _pendingVideoRect = (left: left, top: top, right: right, bottom: bottom, devicePixelRatio: devicePixelRatio);
-    if (initialized) await _applyPendingVideoRect();
+    if (initialized) {
+      await _applyPendingVideoRect();
+    }
   }
 
   Future<void> _applyPendingVideoRect() async {
     final rect = _pendingVideoRect;
-    if (rect == null || audioOnly || _nativeCoreUnavailable || !initialized || hasNativeVideoWindow) return;
+    if (rect == null || audioOnly || _nativeCoreUnavailable || !initialized || hasNativeVideoWindow) {
+      return;
+    }
     await invoke('setVideoRect', {
       'left': rect.left,
       'top': rect.top,
@@ -170,7 +199,9 @@ class PlayerNative extends PlayerBase
       'bottom': rect.bottom,
       'devicePixelRatio': rect.devicePixelRatio,
     });
-    if (_pendingVideoRect == rect) _pendingVideoRect = null;
+    if (_pendingVideoRect == rect) {
+      _pendingVideoRect = null;
+    }
   }
 
   static const Object _channelNameBaseZoneKey = #playerNativeChannelNameBase;
@@ -287,11 +318,15 @@ class PlayerNative extends PlayerBase
   /// process lifetime.
   static Future<int> getHeapSize() async {
     final cached = _cachedHeapSizeMB;
-    if (cached != null) return cached;
+    if (cached != null) {
+      return cached;
+    }
     try {
       const channel = MethodChannel('com.plezy/mpv_player');
       final result = await channel.invokeMethod<int>('getHeapSize');
-      if (result != null && result > 0) _cachedHeapSizeMB = result;
+      if (result != null && result > 0) {
+        _cachedHeapSizeMB = result;
+      }
       return result ?? 0;
     } catch (e) {
       return 0;
@@ -333,7 +368,9 @@ class PlayerNative extends PlayerBase
   Stream<AudioSpectrumSample?> get audioSpectrumStream => _audioSpectrumController.stream;
 
   void _emitAudioSpectrum(AudioSpectrumSample? sample) {
-    if (!_audioSpectrumController.isClosed) _audioSpectrumController.add(sample);
+    if (!_audioSpectrumController.isClosed) {
+      _audioSpectrumController.add(sample);
+    }
   }
 
   // The Android plugin no-ops a dispose whose instanceId is not the core's
@@ -380,7 +417,9 @@ class PlayerNative extends PlayerBase
         .toSet()
         .map((uri) => MpvPathList.escapeEntry(uri, separator))
         .toList();
-    if (escapedUris == null || escapedUris.isEmpty) return null;
+    if (escapedUris == null || escapedUris.isEmpty) {
+      return null;
+    }
 
     return 'sub-files=${_fixedLengthQuote(escapedUris.join(separator))}';
   }
@@ -398,7 +437,9 @@ class PlayerNative extends PlayerBase
   /// the list from the outer key/value split. No headers clears the list: a
   /// bare empty value would parse as one empty item, a blank header line.
   static String _httpHeaderFieldsLoadfileOption(Map<String, String> headers) {
-    if (headers.isEmpty) return 'http-header-fields-clr=';
+    if (headers.isEmpty) {
+      return 'http-header-fields-clr=';
+    }
     final items = headers.entries.map((e) {
       final item = '${e.key}: ${e.value}'.replaceAll(',', r'\,');
       return item.endsWith(r'\') ? '$item ' : item;
@@ -422,14 +463,18 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<T?> invoke<T>(String method, [dynamic args]) {
-    if (_nativeCoreUnavailable) return Future<T?>.value();
+    if (_nativeCoreUnavailable) {
+      return Future<T?>.value();
+    }
     return super.invoke<T>(method, args);
   }
 
   double _requestedRate = 1.0;
 
   Future<void> _ensureInitialized() async {
-    if (initialized) return;
+    if (initialized) {
+      return;
+    }
     return _initFuture ??= _doInitialize();
   }
 
@@ -448,7 +493,7 @@ class PlayerNative extends PlayerBase
       // ignore them.
       final result = await invoke<Object>('initialize', {
         if (!audioOnly) 'hardwareDecoding': _hardwareDecoding,
-        if (!audioOnly && (usesLinuxVideoPlane || Platform.isAndroid || Platform.isWindows))
+        if (!audioOnly)
           'experimentalDolbyVision':
               SettingsService.instanceOrNull?.read(SettingsService.experimentalDolbyVision) ?? false,
         if (!audioOnly && usesLinuxVideoPlane)
@@ -464,7 +509,9 @@ class PlayerNative extends PlayerBase
       if (result != true) {
         throw const PlayerInitializationException();
       }
-      if (_nativeCoreUnavailable) throw StateError('Player was disposed during initialization');
+      if (_nativeCoreUnavailable) {
+        throw StateError('Player was disposed during initialization');
+      }
 
       final caFile = await MpvCertificateTrust.caFile();
       if (caFile != null) {
@@ -511,7 +558,9 @@ class PlayerNative extends PlayerBase
         await observeProperty('audio-device', 'string');
       }
 
-      if (_nativeCoreUnavailable) throw StateError('Player was disposed during initialization');
+      if (_nativeCoreUnavailable) {
+        throw StateError('Player was disposed during initialization');
+      }
       initialized = true;
       await _applyPendingVideoRect();
     } catch (e) {
@@ -554,10 +603,14 @@ class PlayerNative extends PlayerBase
   /// an explicit open.
   Future<(String, int?)> _toPlayableUri(String uri, {bool strict = false}) async {
     final convert = (Platform.isAndroid || debugForceContentFdConversion) && uri.startsWith('content://');
-    if (!convert) return (uri, null);
+    if (!convert) {
+      return (uri, null);
+    }
     final fd = await _openContentFd(uri);
     if (fd == null) {
-      if (strict) throw StateError('openContentFd failed for ${_uriTail(uri)}');
+      if (strict) {
+        throw StateError('openContentFd failed for ${_uriTail(uri)}');
+      }
       return (uri, null);
     }
     return ('fdclose://$fd', fd);
@@ -585,10 +638,14 @@ class PlayerNative extends PlayerBase
     Duration timelineOffset = Duration.zero,
     bool startLivePlaylistFromBeginning = false,
   }) async {
-    if (_nativeCoreUnavailable) return null;
+    if (_nativeCoreUnavailable) {
+      return null;
+    }
     ++_mediaSessionGeneration;
     await _ensureInitialized();
-    if (_nativeCoreUnavailable) return null;
+    if (_nativeCoreUnavailable) {
+      return null;
+    }
     final previousIsLivePlayback = _isLivePlayback;
     _isLivePlayback = isLive;
     // MPV retains A/B points when it advances to another file. They are
@@ -669,7 +726,9 @@ class PlayerNative extends PlayerBase
     required List<SubtitleTrack>? externalSubtitles,
     required bool startLivePlaylistFromBeginning,
   }) async {
-    if (!audioOnly) await setVisible(true);
+    if (!audioOnly) {
+      await setVisible(true);
+    }
 
     // Rebuild the header list via `change-list` items — a plain
     // `setProperty('http-header-fields', joined)` splits on commas inside
@@ -691,7 +750,9 @@ class PlayerNative extends PlayerBase
     }
     // A failed replacement leaves the playing entry on this rewritten list,
     // so until the load is accepted no arm may prefetch with it (setNext).
-    if (audioOnly) _prefetchHeaders = null;
+    if (audioOnly) {
+      _prefetchHeaders = null;
+    }
     await Future.wait(headerCommands);
 
     // 'start' must be set before loadfile. These are playback defaults, not
@@ -756,31 +817,43 @@ class PlayerNative extends PlayerBase
     // Every shipped build bundles the pinned libmpv; a source or AUR build
     // against an older system libmpv is explicitly out of scope.
     loadfileArgs.addAll(['-1', loadfileOptions.join(',')]);
-    if (audioOnly) _expectOpenFileLoad = true;
+    if (audioOnly) {
+      _expectOpenFileLoad = true;
+    }
     // The core can be torn down while the awaits above were suspended; the
     // `command` path makes the same re-check before dispatching.
-    if (_nativeCoreUnavailable) return null;
+    if (_nativeCoreUnavailable) {
+      return null;
+    }
     final loadfileReply = await invoke<Map>('command', {'args': loadfileArgs});
-    if (audioOnly) _prefetchHeaders = media.headers ?? const {};
+    if (audioOnly) {
+      _prefetchHeaders = media.headers ?? const {};
+    }
     final playlistEntryId = loadfileReply?['playlistEntryId'];
     return playlistEntryId is int ? playlistEntryId : null;
   }
 
   @override
   Future<void> play() async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await setProperty('pause', 'no');
   }
 
   @override
   Future<void> pause() async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await setProperty('pause', 'yes');
   }
 
   @override
   Future<void> stop() async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     ++_mediaSessionGeneration;
     _isLivePlayback = false;
     // `stop` tears down the playlist without mpv opening the armed entry —
@@ -788,12 +861,16 @@ class PlayerNative extends PlayerBase
     await _clearArmedNext(adoptIfRolledIn: false);
     await command(['stop']);
     setSeekable(false);
-    if (!audioOnly) await invoke('setVisible', {'visible': false});
+    if (!audioOnly) {
+      await invoke('setVisible', {'visible': false});
+    }
   }
 
   @override
   Future<void> seek(Duration position) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await runSeek(
       position,
       () => command(['seek', (sourcePositionFor(position).inMilliseconds / 1000.0).toString(), 'absolute']),
@@ -802,10 +879,14 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> setNext(Media? media) async {
-    if (_nativeCoreUnavailable || !audioOnly || !initialized) return;
+    if (_nativeCoreUnavailable || !audioOnly || !initialized) {
+      return;
+    }
 
     await _clearArmedNext();
-    if (media == null) return;
+    if (media == null) {
+      return;
+    }
 
     // Let mpv open the armed entry while the current track still plays
     // (prefetch starts once the current demuxer is fully read) so the
@@ -839,7 +920,9 @@ class PlayerNative extends PlayerBase
       await command(args);
     } catch (e) {
       // The entry never joined the playlist, so the fd has no consumer.
-      if (fd != null) unawaited(_closeContentFd(fd));
+      if (fd != null) {
+        unawaited(_closeContentFd(fd));
+      }
       rethrow;
     }
     _hasArmedNext = true;
@@ -867,7 +950,9 @@ class PlayerNative extends PlayerBase
   /// audio for the whole next track. Callers that replace or stop playback
   /// pass false: no one is listening for that entry anymore.
   Future<void> _clearArmedNext({bool adoptIfRolledIn = true, bool duringDispose = false}) async {
-    if (!_hasArmedNext) return;
+    if (!_hasArmedNext) {
+      return;
+    }
     final uri = _armedNextUri;
     final fd = _armedNextFd;
     final headers = _armedNextHeaders;
@@ -886,7 +971,9 @@ class PlayerNative extends PlayerBase
     }
     if (pos == '1') {
       appLogger.d('MPV-audio: clear requested but armed entry already playing');
-      if (adoptIfRolledIn) _completeArmedAdvance(uri, headers);
+      if (adoptIfRolledIn) {
+        _completeArmedAdvance(uri, headers);
+      }
       return;
     }
 
@@ -908,7 +995,9 @@ class PlayerNative extends PlayerBase
       // the file-loaded handler already rebased. The fd (if any) is mpv's.
       return;
     }
-    if (fd == null) return;
+    if (fd == null) {
+      return;
+    }
     String? postPos;
     try {
       postPos = duringDispose
@@ -937,7 +1026,9 @@ class PlayerNative extends PlayerBase
     _prefetchHeaders = headers;
     appLogger.d('MPV-audio: armed entry advanced → playlist-remove 0, ${_uriTail(uri ?? '')}');
     unawaited(_removeSpentPlaylistEntry());
-    if (uri != null) trackTransitionController.add(uri);
+    if (uri != null) {
+      trackTransitionController.add(uri);
+    }
   }
 
   Future<void> _removeSpentPlaylistEntry() async {
@@ -966,7 +1057,9 @@ class PlayerNative extends PlayerBase
       // point ordered ahead of the new source's own position reports: they ride
       // this same property flow, while `file-loaded` rides the event flow. Take
       // the outgoing track's final position while it is still the current one.
-      if (_hasArmedNext) freezeOutgoingSourcePosition();
+      if (_hasArmedNext) {
+        freezeOutgoingSourcePosition();
+      }
       appLogger.d('MPV-audio: playlist-pos=$value (armed=$_hasArmedNext)');
       return;
     }
@@ -977,26 +1070,37 @@ class PlayerNative extends PlayerBase
   void handlePlayerEvent(String name, Map? data) {
     if (name == 'detached-window-action') {
       final token = _nativeWindowToken;
-      if (token == null || data?['token'] != token || _nativeCoreUnavailable) return;
+      if (token == null || data?['token'] != token || _nativeCoreUnavailable) {
+        return;
+      }
       if (data?['action'] == 'restored') {
         _clearNativeVideoWindow();
         unawaited(_applyPendingVideoRect());
         return;
       }
       final action = nativeVideoWindowAction(data?['action']);
-      if (action == null || _queuedNativeWindowActions >= 32) return;
+      if (action == null || _queuedNativeWindowActions >= 32) {
+        return;
+      }
       _queuedNativeWindowActions++;
-      _nativeWindowActions = _nativeWindowActions.then((_) async {
-        if (_nativeCoreUnavailable || _nativeWindowToken != token) return;
-        await _nativeWindowIntent?.call(action);
-      }).whenComplete(() => _queuedNativeWindowActions--).catchError((Object error, StackTrace stack) {
-        appLogger.w('Detached window control failed', error: error, stackTrace: stack);
-      });
+      _nativeWindowActions = _nativeWindowActions
+          .then((_) async {
+            if (_nativeCoreUnavailable || _nativeWindowToken != token) {
+              return;
+            }
+            await _nativeWindowIntent?.call(action);
+          })
+          .whenComplete(() => _queuedNativeWindowActions--)
+          .catchError((Object error, StackTrace stack) {
+            appLogger.w('Detached window control failed', error: error, stackTrace: stack);
+          });
       return;
     }
     if (name == 'start-file' && !audioOnly) {
       ++_mediaSessionGeneration;
-      if (_hasSeenSegmentLoopSource) unawaited(_clearTransientSegmentLoop());
+      if (_hasSeenSegmentLoopSource) {
+        unawaited(_clearTransientSegmentLoop());
+      }
       _hasSeenSegmentLoopSource = true;
     }
     if (audioOnly && name == 'file-loaded') {
@@ -1040,7 +1144,9 @@ class PlayerNative extends PlayerBase
   @override
   Future<void> dispose({bool preserveDisplayMode = false}) {
     final existing = _disposeFuture;
-    if (existing != null) return existing;
+    if (existing != null) {
+      return existing;
+    }
     _disposing = true;
     final disposal = _disposeNative(preserveDisplayMode: preserveDisplayMode);
     _disposeFuture = disposal;
@@ -1048,7 +1154,9 @@ class PlayerNative extends PlayerBase
   }
 
   Future<void> _disposeNative({required bool preserveDisplayMode}) async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     _clearNativeVideoWindow();
     _audioSpectrumAnalysisRequested = false;
     // Settle an armed-but-unconsumed content fd before the base teardown
@@ -1063,45 +1171,61 @@ class PlayerNative extends PlayerBase
     }
     await _audioStateTail;
     _emitAudioSpectrum(null);
-    if (!_audioSpectrumController.isClosed) await _audioSpectrumController.close();
+    if (!_audioSpectrumController.isClosed) {
+      await _audioSpectrumController.close();
+    }
     await super.dispose(preserveDisplayMode: preserveDisplayMode);
   }
 
   @override
   Future<void> selectAudioTrack(AudioTrack track) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await setProperty('aid', track.id);
   }
 
   @override
   Future<void> selectSubtitleTrack(SubtitleTrack track) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await setProperty('sid', track.id);
   }
 
   @override
   Future<void> selectSecondarySubtitleTrack(SubtitleTrack track) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await setProperty('secondary-sid', track.id);
   }
 
   @override
   Future<void> setVolume(double volume) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await setProperty('volume', volume.toString());
-    if (!_nativeCoreUnavailable) setVolumeState(volume);
+    if (!_nativeCoreUnavailable) {
+      setVolumeState(volume);
+    }
   }
 
   @override
   Future<void> setRate(double rate) {
-    if (_nativeCoreUnavailable) return Future<void>.value();
+    if (_nativeCoreUnavailable) {
+      return Future<void>.value();
+    }
     _requestedRate = rate;
     return _enqueueAudioStateReconciliation(_rateAudioField);
   }
 
   @override
   Future<void> setAudioDevice(AudioDevice device) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await setProperty('audio-device', device.name);
   }
 
@@ -1112,10 +1236,14 @@ class PlayerNative extends PlayerBase
   /// Returns null on platforms without the native method.
   @override
   Future<AudioRenderingMode?> getAudioRenderingMode() async {
-    if (!Platform.isIOS || _nativeCoreUnavailable) return null;
+    if (!Platform.isIOS || _nativeCoreUnavailable) {
+      return null;
+    }
     try {
       final raw = await invoke<Map<Object?, Object?>>('getAudioRenderingMode', const {});
-      if (raw == null) return null;
+      if (raw == null) {
+        return null;
+      }
       return AudioRenderingMode(
         name: raw['name'] as String? ?? 'unknown',
         rawValue: (raw['rawValue'] as num?)?.toInt() ?? 0,
@@ -1134,11 +1262,17 @@ class PlayerNative extends PlayerBase
   Future<void> setProperty(String name, String value) => _setProperty(name, value, synchronizeRate: true);
 
   Future<void> _setProperty(String name, String value, {required bool synchronizeRate}) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     final updatesDvMode = (Platform.isIOS || Platform.isMacOS) && name == 'dv-conversion-mode';
     final updatesDvLog = (Platform.isIOS || Platform.isMacOS) && name == 'dv-conversion-log';
-    if (updatesDvMode) value = _normalizeDvConversionMode(value);
-    if (updatesDvLog) value = _normalizeBoolProperty(value);
+    if (updatesDvMode) {
+      value = _normalizeDvConversionMode(value);
+    }
+    if (updatesDvLog) {
+      value = _normalizeBoolProperty(value);
+    }
 
     await _ensureInitialized();
     try {
@@ -1149,13 +1283,21 @@ class PlayerNative extends PlayerBase
       // the session being released): there is nothing left to apply the
       // value to, which is what the guard below already concludes on success.
       // A live player still reports every refusal to its caller.
-      if (!_nativeCoreUnavailable) rethrow;
+      if (!_nativeCoreUnavailable) {
+        rethrow;
+      }
       appLogger.d('MPV: $name write ended by player teardown (${e.code})');
       return;
     }
-    if (_nativeCoreUnavailable) return;
-    if (updatesDvMode) _dvConversionMode = value;
-    if (updatesDvLog) _dvConversionLog = value;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
+    if (updatesDvMode) {
+      _dvConversionMode = value;
+    }
+    if (updatesDvLog) {
+      _dvConversionLog = value;
+    }
     if (synchronizeRate && name == 'speed') {
       final rate = double.tryParse(value);
       if (rate != null && rate.isFinite) {
@@ -1182,7 +1324,9 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<String?> getProperty(String name) async {
-    if (_nativeCoreUnavailable) return null;
+    if (_nativeCoreUnavailable) {
+      return null;
+    }
     if ((Platform.isIOS || Platform.isMacOS) && name == 'dv-conversion-mode') {
       return _dvConversionMode;
     }
@@ -1195,7 +1339,9 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<Map<String, dynamic>> getStats() async {
-    if (_nativeCoreUnavailable || !Platform.isAndroid) return super.getStats();
+    if (_nativeCoreUnavailable || !Platform.isAndroid) {
+      return super.getStats();
+    }
     await _ensureInitialized();
     final result = await invoke<Map>('getStats');
     return Map<String, dynamic>.from(result ?? const {});
@@ -1207,12 +1353,16 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> command(List<String> args) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     await _ensureInitialized();
     // Re-checked after the await: initialization can fail, or the core can be
     // torn down, while this call is suspended. Announcing a jump that no
     // command will follow would retire a consumer's pending target for nothing.
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     if (args.isEmpty || !_playheadRelocatingCommands.contains(args.first)) {
       await invoke('command', {'args': args});
       return;
@@ -1250,20 +1400,26 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> awaitDisplayModeSwitch({int extraDelayMs = 0}) async {
-    if (_nativeCoreUnavailable || audioOnly || !Platform.isIOS) return;
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isIOS) {
+      return;
+    }
     await _ensureInitialized();
     await invoke('awaitDisplayModeSwitch', {'extraDelayMs': extraDelayMs});
   }
 
   @override
   Future<void> setLogLevel(String level) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     if (Platform.isAndroid) {
       // Carry the preference into native creation, even if another operation
       // starts initialization before this ordered runtime write gets its turn.
       _requestedLogLevel = level;
       final request = _logLevelTail.then((_) async {
-        if (_nativeCoreUnavailable) return;
+        if (_nativeCoreUnavailable) {
+          return;
+        }
         await _ensureInitialized();
         await invoke('setLogLevel', {'level': level});
       });
@@ -1276,7 +1432,9 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<bool> setVisible(bool visible, {bool restoreOnWindowVisible = false}) async {
-    if (_nativeCoreUnavailable) return false;
+    if (_nativeCoreUnavailable) {
+      return false;
+    }
     final changed = await super.setVisible(visible, restoreOnWindowVisible: restoreOnWindowVisible);
     return changed && !_nativeCoreUnavailable;
   }
@@ -1340,7 +1498,9 @@ class PlayerNative extends PlayerBase
   static String get _passthroughCodecs => usesAppleAudioOutput ? 'ac3,eac3' : 'ac3,eac3,dts,dts-hd,truehd';
 
   Future<String> _resolvePassthroughCodecs() async {
-    if (!Platform.isAndroid && !Platform.isIOS) return _passthroughCodecs;
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return _passthroughCodecs;
+    }
     try {
       return await invoke<String>('getAudioSpdifCodecs') ?? '';
     } catch (error, stackTrace) {
@@ -1398,12 +1558,24 @@ class PlayerNative extends PlayerBase
 
   Future<void> _enqueueAudioStateReconciliation(int fields) {
     final requested = _requestedAudioState;
-    if (fields & _passthroughAudioField != 0) _passthroughGeneration++;
-    if (fields & _normalizationAudioField != 0) _normalizationGeneration++;
-    if (fields & _downmixAudioField != 0) _downmixGeneration++;
-    if (fields & _equalizerAudioField != 0) _equalizerGeneration++;
-    if (fields & _effectsAudioField != 0) _effectsGeneration++;
-    if (fields & _rateAudioField != 0) _rateGeneration++;
+    if (fields & _passthroughAudioField != 0) {
+      _passthroughGeneration++;
+    }
+    if (fields & _normalizationAudioField != 0) {
+      _normalizationGeneration++;
+    }
+    if (fields & _downmixAudioField != 0) {
+      _downmixGeneration++;
+    }
+    if (fields & _equalizerAudioField != 0) {
+      _equalizerGeneration++;
+    }
+    if (fields & _effectsAudioField != 0) {
+      _effectsGeneration++;
+    }
+    if (fields & _rateAudioField != 0) {
+      _rateGeneration++;
+    }
     final generations = (
       passthrough: _passthroughGeneration,
       normalization: _normalizationGeneration,
@@ -1422,12 +1594,16 @@ class PlayerNative extends PlayerBase
     int fields,
     _AudioStateGenerations generations,
   ) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     final previous = _acceptedAudioState;
     final target = _rebaseAudioState(previous, requested, fields);
     try {
       await _applyAudioState(target);
-      if (_nativeCoreUnavailable) return;
+      if (_nativeCoreUnavailable) {
+        return;
+      }
       _acceptedAudioState = target;
     } catch (error, stackTrace) {
       try {
@@ -1457,7 +1633,9 @@ class PlayerNative extends PlayerBase
     bool forceEqualizer = false,
     bool forceEffects = false,
   }) async {
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
     // Normalization wins over passthrough: it is an audio filter and filters
     // cannot process a bitstream, so honouring the user's normalization choice
     // means decoding every track to PCM (AC3/DTS/TrueHD included). mpv also
@@ -1534,7 +1712,9 @@ class PlayerNative extends PlayerBase
         }
       } else {
         _audioSpectrumAnalysisActive = spectrumAnalysisShouldBeActive;
-        if (!spectrumAnalysisShouldBeActive) _emitAudioSpectrum(null);
+        if (!spectrumAnalysisShouldBeActive) {
+          _emitAudioSpectrum(null);
+        }
       }
     }
     if (passthroughShouldBeActive && !_passthroughActive) {
@@ -1544,17 +1724,23 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> setAudioPassthrough(bool enabled) {
-    if (_nativeCoreUnavailable) return Future<void>.value();
+    if (_nativeCoreUnavailable) {
+      return Future<void>.value();
+    }
     _passthroughRequested = enabled;
     return _enqueueAudioStateReconciliation(_passthroughAudioField);
   }
 
   @override
   Future<bool> setAudioSpectrumAnalysisEnabled(bool enabled) {
-    if (!audioOnly || _nativeCoreUnavailable || _disposing) return Future<bool>.value(false);
+    if (!audioOnly || _nativeCoreUnavailable || _disposing) {
+      return Future<bool>.value(false);
+    }
     _audioSpectrumAnalysisRequested = enabled;
     final operation = _audioStateTail.then<bool>((_) async {
-      if (_nativeCoreUnavailable) return false;
+      if (_nativeCoreUnavailable) {
+        return false;
+      }
       try {
         await _ensureInitialized();
         await _applyAudioState(_acceptedAudioState);
@@ -1571,7 +1757,9 @@ class PlayerNative extends PlayerBase
 
   Future<void> _applyPassthrough(bool enabled) async {
     await setProperty('audio-spdif', enabled ? await _resolvePassthroughCodecs() : '');
-    if (_nativeCoreUnavailable) return;
+    if (_nativeCoreUnavailable) {
+      return;
+    }
 
     // audio-spdif is the authoritative transition. Publish only after mpv
     // accepts it; audio-exclusive below is an independent device-mode hint.
@@ -1594,14 +1782,18 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> setAudioNormalization(bool enabled) {
-    if (_nativeCoreUnavailable) return Future<void>.value();
+    if (_nativeCoreUnavailable) {
+      return Future<void>.value();
+    }
     _normalizationRequested = enabled;
     return _enqueueAudioStateReconciliation(_normalizationAudioField);
   }
 
   @override
   Future<void> setAudioChannelLimit(AudioChannelLimit limit, {required int centerBoostDb, required bool normalize}) {
-    if (_nativeCoreUnavailable) return Future<void>.value();
+    if (_nativeCoreUnavailable) {
+      return Future<void>.value();
+    }
     _channelLimitRequested = limit;
     _downmixCenterBoostDb = centerBoostDb;
     _downmixNormalize = normalize;
@@ -1610,7 +1802,9 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> setAudioEqualizer(List<double> bandGains) {
-    if (_nativeCoreUnavailable || bandGains.length != 10) return Future<void>.value();
+    if (_nativeCoreUnavailable || bandGains.length != 10) {
+      return Future<void>.value();
+    }
     _equalizerGainsRequested = List<double>.unmodifiable(
       bandGains.map((gain) => gain.isFinite ? gain.clamp(-12.0, 12.0).toDouble() : 0.0),
     );
@@ -1619,7 +1813,9 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> setAudioEffects(PlayerAudioEffects effects) {
-    if (_nativeCoreUnavailable) return Future<void>.value();
+    if (_nativeCoreUnavailable) {
+      return Future<void>.value();
+    }
     _effectsRequested = (
       stereoWidth: effects.stereoWidth.isFinite ? effects.stereoWidth.clamp(0.0, 1.0).toDouble() : 0.0,
       spatializer: effects.spatializer,
@@ -1630,7 +1826,9 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> updateFrame() async {
-    if (_nativeCoreUnavailable || !initialized) return;
+    if (_nativeCoreUnavailable || !initialized) {
+      return;
+    }
     if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isLinux) {
       await invoke('updateFrame');
     }
@@ -1642,7 +1840,9 @@ class PlayerNative extends PlayerBase
   /// (DV renders near-black on tvOS).
   @override
   Future<void> setVideoZoom(double scale) async {
-    if (_nativeCoreUnavailable || audioOnly || !(Platform.isIOS || Platform.isMacOS) || !initialized) return;
+    if (_nativeCoreUnavailable || audioOnly || !(Platform.isIOS || Platform.isMacOS) || !initialized) {
+      return;
+    }
     await invoke('setVideoZoom', {'scale': scale});
   }
 
@@ -1655,7 +1855,9 @@ class PlayerNative extends PlayerBase
     int videoHeight = 0,
     bool matchResolution = false,
   }) async {
-    if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) return false;
+    if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) {
+      return false;
+    }
     final result = await invoke<bool>('setVideoFrameRate', {
       'fps': fps,
       'duration': durationMs,
@@ -1669,7 +1871,9 @@ class PlayerNative extends PlayerBase
 
   @override
   Future<void> clearVideoFrameRate() async {
-    if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) return;
+    if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) {
+      return;
+    }
     await invoke('clearVideoFrameRate');
   }
 
@@ -1681,7 +1885,9 @@ class PlayerNative extends PlayerBase
       return false;
     }
     await _ensureInitialized();
-    if (_nativeCoreUnavailable || !initialized) return false;
+    if (_nativeCoreUnavailable || !initialized) {
+      return false;
+    }
     try {
       return await invoke<bool>('subtitlePcmCaptureAvailable') ?? false;
     } on Object {
@@ -1722,7 +1928,9 @@ class PlayerNative extends PlayerBase
   /// not claim that inference has executed; the filter reports its provider
   /// after a successful HTP graph call.
   Future<Map<Object?, Object?>?> getAndroidMotionRuntimeCapabilities() async {
-    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return null;
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) {
+      return null;
+    }
     final value = await invoke<Object?>('getAndroidMotionRuntimeCapabilities');
     return value is Map ? Map<Object?, Object?>.from(value) : null;
   }
@@ -1730,23 +1938,33 @@ class PlayerNative extends PlayerBase
   /// Current OS thermal-pressure tier, when Android or Apple reports one.
   /// Unknown or unsupported devices remain eligible for normal policy.
   Future<String?> getMotionProcessingThermalStatus() async {
-    if (_nativeCoreUnavailable || audioOnly) return null;
-    if (Platform.isAndroid) return invoke<String>('getAndroidThermalStatus');
-    if (Platform.isIOS || Platform.isMacOS) return invoke<String>('getAppleThermalStatus');
+    if (_nativeCoreUnavailable || audioOnly) {
+      return null;
+    }
+    if (Platform.isAndroid) {
+      return invoke<String>('getAndroidThermalStatus');
+    }
+    if (Platform.isIOS || Platform.isMacOS) {
+      return invoke<String>('getAppleThermalStatus');
+    }
     return null;
   }
 
   /// Copies the licensed, SDK-built HTP skeleton from APK assets next to the
   /// verified ANVIL context file and returns the directory used by QNN.
   Future<String?> prepareAndroidAnvilRuntime({String? contextPath, required String modelId}) async {
-    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return null;
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) {
+      return null;
+    }
     return invoke<String>('prepareAndroidAnvilRuntime', {'contextPath': ?contextPath, 'modelId': modelId});
   }
 
   /// Installs the verified LiteRT model variants used by Android's ANVIL
   /// filter and returns paths for the runtime to try in NPU-then-GPU order.
   Future<Map<Object?, Object?>?> prepareAndroidLiteRtMotionRuntime({required String modelId}) async {
-    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return null;
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) {
+      return null;
+    }
     final value = await invoke<Object?>('prepareAndroidLiteRtMotionRuntime', {'modelId': modelId});
     return value is Map ? Map<Object?, Object?>.from(value) : null;
   }
@@ -1754,27 +1972,37 @@ class PlayerNative extends PlayerBase
   /// Routes the Android MPV core through its output policy so motion
   /// processing receives the right GL renderer and owned surfaces.
   Future<bool> setAndroidMotionProcessingRenderer(String? renderer) async {
-    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) return false;
+    if (_nativeCoreUnavailable || audioOnly || !Platform.isAndroid) {
+      return false;
+    }
     return await invoke<bool>('setAndroidMotionProcessingRenderer', {'renderer': renderer}) ?? false;
   }
 
   @override
   Future<void> setAudioFocusEnabled(bool enabled) async {
-    if (_nativeCoreUnavailable || !Platform.isAndroid) return;
+    if (_nativeCoreUnavailable || !Platform.isAndroid) {
+      return;
+    }
     await invoke('setAudioFocusEnabled', {'enabled': enabled});
   }
 
   @override
   Future<bool> requestAudioFocus() async {
-    if (_nativeCoreUnavailable) return false;
-    if (!Platform.isAndroid) return true;
+    if (_nativeCoreUnavailable) {
+      return false;
+    }
+    if (!Platform.isAndroid) {
+      return true;
+    }
     await _ensureInitialized();
     return await invoke<bool>('requestAudioFocus') ?? false;
   }
 
   @override
   Future<void> abandonAudioFocus() async {
-    if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) return;
+    if (_nativeCoreUnavailable || !Platform.isAndroid || !initialized) {
+      return;
+    }
     await invoke('abandonAudioFocus');
   }
 
@@ -1790,11 +2018,15 @@ class PlayerNative extends PlayerBase
   Future<bool> isHdrOutputSupported() async {
     // No video plane without video, on any platform, so this precedes the
     // platform question rather than sitting inside one branch of it.
-    if (_nativeCoreUnavailable || audioOnly) return false;
+    if (_nativeCoreUnavailable || audioOnly) {
+      return false;
+    }
     // Asked through usesLinuxVideoPlane, not Platform.isLinux, so this and the
     // settings sheet's _probesHdrSupport resolve the same way under the test
     // override; on a real Linux host the two are the same answer.
-    if (usesLinuxVideoPlane) return await invoke<bool>('isHDRSupported') ?? false;
+    if (usesLinuxVideoPlane) {
+      return await invoke<bool>('isHDRSupported') ?? false;
+    }
     return Platform.isIOS || Platform.isMacOS || Platform.isWindows;
   }
 }

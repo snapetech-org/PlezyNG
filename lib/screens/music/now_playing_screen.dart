@@ -129,7 +129,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
       // Surface playback failures while the screen is open — the service
       // already recovers (skip / stop) by itself.
       _errorsSub = service.errors.listen((error) {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         // The init sentinel deliberately carries no prose, so `toString()`
         // would put its class name in front of the user; it gets the same
         // localized copy the video player shows.
@@ -145,7 +147,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   }
 
   void _scheduleAutoJoinWorkspace() {
-    if (!mounted || _autoJoinScheduled) return;
+    if (!mounted || _autoJoinScheduled) {
+      return;
+    }
     final service = _service;
     final workspace = _workspace;
     if (service?.currentTrack == null ||
@@ -157,7 +161,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
     _autoJoinScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _autoJoinScheduled = false;
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final currentService = _service;
       final currentWorkspace = _workspace;
       final track = currentService?.currentTrack;
@@ -173,7 +179,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   }
 
   void _onWorkspaceChanged() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     _scheduleAutoJoinWorkspace();
   }
 
@@ -201,11 +209,15 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   void _toggleLyrics() {
     setState(() {
       _showLyrics = !_showLyrics;
-      if (_showLyrics) _showVisualizer = false;
+      if (_showLyrics) {
+        _showVisualizer = false;
+      }
     });
     if (_showLyrics && InputModeTracker.isKeyboardMode(context)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _showLyrics) _lyricsPaneFocusNode.requestFocus();
+        if (mounted && _showLyrics) {
+          _lyricsPaneFocusNode.requestFocus();
+        }
       });
     }
   }
@@ -213,12 +225,16 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   void _toggleVisualizer() {
     setState(() {
       _showVisualizer = !_showVisualizer;
-      if (_showVisualizer) _showLyrics = false;
+      if (_showVisualizer) {
+        _showLyrics = false;
+      }
     });
   }
 
   void _setVisualizerPreset(MusicVisualizerPreset preset) {
-    if (_visualizerPreset == preset) return;
+    if (_visualizerPreset == preset) {
+      return;
+    }
     setState(() => _visualizerPreset = preset);
   }
 
@@ -229,7 +245,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
     if (existing != null) {
       if (controller.isRestored(sessionId) || controller.parkedSessions.any((s) => s.descriptor.id == sessionId)) {
         controller.showSessionInWorkspace(sessionId);
-        if (mounted) Navigator.of(context).pop();
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       } else {
         controller.restore(sessionId);
       }
@@ -255,7 +273,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         buildSurface: (_) => MusicWorkspaceSurface(service: service, controller: controller, sessionId: sessionId),
         onRestore: () {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!navigator.mounted) return;
+            if (!navigator.mounted) {
+              return;
+            }
             if (nowPlayingRoute?.isActive == true) {
               navigator.popUntil((candidate) => identical(candidate, nowPlayingRoute));
             } else {
@@ -267,8 +287,12 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         onAudioOwnershipChanged: service.setWorkspaceAudioEnabled,
       ),
     );
-    if (!registered) return;
-    if (mounted) Navigator.of(context).pop();
+    if (!registered) {
+      return;
+    }
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   void _focusTransport() => _playPauseFocusNode.requestFocus();
@@ -293,7 +317,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
 
   void _onDismissDragEnd(DragEndDetails details) {
     final offset = _dismissDrag.value;
-    if (offset <= 0) return;
+    if (offset <= 0) {
+      return;
+    }
     // Same thresholds as the overlay sheet system's drag-to-dismiss.
     if (offset > MediaQuery.sizeOf(context).height * 0.25 || (details.primaryVelocity ?? 0) > 500) {
       _pop();
@@ -303,7 +329,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   }
 
   void _onDismissDragCancel() {
-    if (_dismissDrag.value <= 0) return;
+    if (_dismissDrag.value <= 0) {
+      return;
+    }
     _dismissSettleFrom = _dismissDrag.value;
     _dismissSettle.forward(from: 0);
   }
@@ -313,7 +341,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   Future<void> _openArtist(MediaItem track) async {
     final artistId = track.grandparentId;
     final client = context.getMediaClientForItemOrNull(track);
-    if (artistId == null || client == null) return;
+    if (artistId == null || client == null) {
+      return;
+    }
     await openArtistById(context, client, artistId);
   }
 
@@ -348,7 +378,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         ],
       ),
     );
-    if (!mounted || selected == null) return;
+    if (!mounted || selected == null) {
+      return;
+    }
     switch (selected) {
       case 'off':
         service.setSleepTimer(null);
@@ -356,7 +388,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         service.setSleepTimer(null, endOfTrack: true);
       default:
         final minutes = int.tryParse(selected);
-        if (minutes != null) service.setSleepTimer(Duration(minutes: minutes));
+        if (minutes != null) {
+          service.setSleepTimer(Duration(minutes: minutes));
+        }
     }
   }
 
@@ -366,9 +400,13 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   /// itself instead. The first route stays rather than strand an empty
   /// navigator.
   void _closeForIdle() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final route = ModalRoute.of(context);
-    if (route == null || route.isFirst || !route.isActive) return;
+    if (route == null || route.isFirst || !route.isActive) {
+      return;
+    }
     final navigator = Navigator.of(context);
     if (route.isCurrent) {
       navigator.pop();
@@ -407,7 +445,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              if (isTV) return _buildTvLayout(service, track, client);
+              if (isTV) {
+                return _buildTvLayout(service, track, client);
+              }
               final twoPane = constraints.maxWidth >= 800 && constraints.maxWidth > constraints.maxHeight;
               return twoPane ? _buildWideLayout(service, track, client) : _buildPortraitLayout(service, track, client);
             },
@@ -640,9 +680,11 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
                 icon: AppIcon(Symbols.picture_in_picture_alt_rounded, fill: 1, color: tk.text),
               ),
             ),
-            IconButton(tooltip: karaokeText(context, 'sing'),
+            IconButton(
+              tooltip: karaokeText(context, 'sing'),
               icon: AppIcon(Symbols.mic_rounded, color: tk.text),
-              onPressed: () => unawaited(openKaraoke(context, media: track))),
+              onPressed: () => unawaited(openKaraoke(context, media: track)),
+            ),
             _buildOverflowButton(track),
           ],
         ),
@@ -659,14 +701,18 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         playContext.kind == MusicPlayContextKind.album ||
         playContext.kind == MusicPlayContextKind.tracks;
     final title = (followsCurrentAlbum ? track.albumTitle : playContext.title)?.trim();
-    if (title == null || title.isEmpty) return null;
+    if (title == null || title.isEmpty) {
+      return null;
+    }
     return toBulletedString([title, if (followsCurrentAlbum && track.albumYear != null) '${track.albumYear}']);
   }
 
   String _musicWorkspaceActionLabel() {
     final controller = _workspace;
     const sessionId = 'music:active';
-    if (controller == null || controller.session(sessionId) == null) return t.videoControls.openMiniPlayer;
+    if (controller == null || controller.session(sessionId) == null) {
+      return t.videoControls.openMiniPlayer;
+    }
     final isParked = controller.parkedSessions.any((session) => session.descriptor.id == sessionId);
     return controller.isRestored(sessionId) || isParked
         ? t.videoControls.openMiniPlayer
@@ -1058,7 +1104,9 @@ class _Artwork extends StatelessWidget {
         final side = tvSized
             ? math.min(constraints.maxWidth, constraints.maxHeight * 0.62)
             : math.min(constraints.maxWidth * 0.85, constraints.maxHeight);
-        if (side <= 0 || !side.isFinite) return const SizedBox.shrink();
+        if (side <= 0 || !side.isFinite) {
+          return const SizedBox.shrink();
+        }
         return Center(
           child: AnimatedContainer(
             duration: MonoMotion.shape(context),
@@ -1237,7 +1285,9 @@ class _NowPlayingSeekBarState extends State<_NowPlayingSeekBar> {
       // have to retire it too (#1819).
       playheadJumps: context.read<MusicPlaybackService>().playheadJumpStream,
       onChanged: () {
-        if (mounted) setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       },
     );
   }
@@ -1245,7 +1295,9 @@ class _NowPlayingSeekBarState extends State<_NowPlayingSeekBar> {
   @override
   void didUpdateWidget(covariant _NowPlayingSeekBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.trackKey == widget.trackKey) return;
+    if (oldWidget.trackKey == widget.trackKey) {
+      return;
+    }
     _keySeek.cancel();
     _dragValueMs = null;
     _resetSeekState();
@@ -1272,12 +1324,18 @@ class _NowPlayingSeekBarState extends State<_NowPlayingSeekBar> {
     }
 
     final backResult = _backGate.handle(event, widget.onBack);
-    if (backResult != KeyEventResult.ignored) return backResult;
+    if (backResult != KeyEventResult.ignored) {
+      return backResult;
+    }
 
-    if (!event.isActionable) return KeyEventResult.ignored;
+    if (!event.isActionable) {
+      return KeyEventResult.ignored;
+    }
 
     if (key.isUpKey) {
-      if (widget.onNavigateUp == null) return KeyEventResult.handled; // trap
+      if (widget.onNavigateUp == null) {
+        return KeyEventResult.handled;
+      } // trap
       widget.onNavigateUp!();
       return KeyEventResult.handled;
     }
@@ -1289,13 +1347,17 @@ class _NowPlayingSeekBarState extends State<_NowPlayingSeekBar> {
     if (key.isLeftKey || key.isRightKey) {
       final service = context.read<MusicPlaybackService>();
       final duration = service.duration;
-      if (duration == null || duration.inMilliseconds <= 0) return KeyEventResult.handled;
+      if (duration == null || duration.inMilliseconds <= 0) {
+        return KeyEventResult.handled;
+      }
 
       if (_seekDirection != key) {
         _seekDirection = key;
         _seekRepeatCount = 0;
       }
-      if (event is KeyRepeatEvent) _seekRepeatCount++;
+      if (event is KeyRepeatEvent) {
+        _seekRepeatCount++;
+      }
       final multiplier = event is KeyRepeatEvent ? steppedSeekMultiplier(_seekRepeatCount) : 1.0;
       final stepMs = (_baseStepMs * multiplier).round();
 

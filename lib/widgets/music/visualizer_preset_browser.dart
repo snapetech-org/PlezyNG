@@ -1,3 +1,4 @@
+import '../../i18n/strings.g.dart' as l10n;
 import '../app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'dart:convert';
@@ -57,7 +58,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
         });
       }
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
@@ -80,7 +83,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
         ],
       ),
     );
-    if (!mounted || name == null) return;
+    if (!mounted || name == null) {
+      return;
+    }
     try {
       if (_playlists.any((item) => item.name.toLowerCase() == name.toLowerCase())) {
         throw const VisualizerPackException('Choose a new playlist name.');
@@ -97,7 +102,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
         });
       }
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
@@ -112,7 +119,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
         });
       }
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
@@ -120,7 +129,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
     final selected = _playlists.firstWhere((item) => item.name == _playlist);
     final entries = [...selected.entries];
     final before = entries.indexOf(preset.libraryPath), after = before + offset;
-    if (before < 0 || after < 0 || after >= entries.length) return;
+    if (before < 0 || after < 0 || after >= entries.length) {
+      return;
+    }
     entries.removeAt(before);
     entries.insert(after, preset.libraryPath);
     final next = _playlists
@@ -128,9 +139,13 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
         .toList();
     try {
       await widget.store.savePlaylists(next);
-      if (mounted) setState(() => _playlists = next);
+      if (mounted) {
+        setState(() => _playlists = next);
+      }
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
@@ -153,14 +168,18 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
         allowedExtensions: ['json'],
       );
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
   Future<void> _importPlaylists() async {
     try {
       final picked = await FilePickerService.instance.pickFiles(type: FileType.custom, allowedExtensions: ['json']);
-      if (picked == null || picked.files.isEmpty || !mounted) return;
+      if (picked == null || picked.files.isEmpty || !mounted) {
+        return;
+      }
       final path = picked.files.single.path;
       if (path == null || picked.files.single.size > 512 * 1024) {
         throw const VisualizerPackException('Playlist files must be readable and at most 512 KB.');
@@ -168,7 +187,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
       final bytes = await File(
         path,
       ).openRead(0, 512 * 1024 + 1).fold<List<int>>([], (all, chunk) => all..addAll(chunk));
-      if (bytes.length > 512 * 1024) throw const VisualizerPackException('Playlist file exceeds 512 KB.');
+      if (bytes.length > 512 * 1024) {
+        throw const VisualizerPackException('Playlist file exceeds 512 KB.');
+      }
       final value = jsonDecode(utf8.decode(bytes));
       if (value is! Map || value['kind'] != 'plezy-visualizer-playlists') {
         throw const VisualizerPackException('Not a visualizer playlist export.');
@@ -182,20 +203,28 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
       }
       final next = [..._playlists, ...imported];
       await widget.store.savePlaylists(next);
-      if (mounted) setState(() => _playlists = next);
+      if (mounted) {
+        setState(() => _playlists = next);
+      }
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
   Future<void> _favorite(VisualizerPresetFile preset) async {
     setState(() {
-      if (!_favorites.add(preset.id)) _favorites.remove(preset.id);
+      if (!_favorites.add(preset.id)) {
+        _favorites.remove(preset.id);
+      }
     });
     try {
       await widget.store.saveFavoriteIds({..._favorites});
     } on Object catch (error) {
-      if (mounted) setState(() => _error = context.t.visualizerUi.couldNotSaveFavorites(error: error));
+      if (mounted) {
+        setState(() => _error = context.t.visualizerUi.couldNotSaveFavorites(error: error));
+      }
     }
   }
 
@@ -207,30 +236,48 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
       await FilePickerService.instance.saveFile(
         dialogTitle: fragmentKind == null ? 'Export preset with assets and notices' : 'Export $fragmentKind fragments',
         fileName: fragmentKind == null ? 'visualizer-preset.zip' : 'visualizer-$fragmentKind-fragments.zip',
-        bytes: bytes, type: FileType.custom, allowedExtensions: ['zip'],
+        bytes: bytes,
+        type: FileType.custom,
+        allowedExtensions: ['zip'],
       );
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
   Future<void> _compose(VisualizerPresetFile preset) async {
     try {
-      final picked = await FilePickerService.instance.pickFiles(type: FileType.custom,
-          allowedExtensions: ['shape', 'wave'], withData: false);
-      if (picked == null || picked.files.isEmpty || !mounted) return;
+      final picked = await FilePickerService.instance.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['shape', 'wave'],
+        withData: false,
+      );
+      if (picked == null || picked.files.isEmpty || !mounted) {
+        return;
+      }
       final file = picked.files.single;
       if (file.path == null || file.size > VisualizerContentLimits.maxPresetBytes) {
         throw const VisualizerPackException('Choose a readable fragment of at most 2 MiB.');
       }
-      final bytes = await File(file.path!).openRead(0, VisualizerContentLimits.maxPresetBytes + 1)
-          .fold<List<int>>([], (all, chunk) => all..addAll(chunk));
+      final bytes = await File(
+        file.path!,
+      ).openRead(0, VisualizerContentLimits.maxPresetBytes + 1).fold<List<int>>([], (all, chunk) => all..addAll(chunk));
       final created = await widget.store.composeFragment(preset, file.name, bytes);
-      if (!mounted) return;
-      Navigator.pop(context, VisualizerSelection(created, [created],
-          engine: widget.capability.engine.startsWith('milkrust') ? 'milkrust' : 'projectm'));
+      if (!mounted) {
+        return;
+      }
+      Navigator.pop(
+        context,
+        VisualizerSelection(created, [
+          created,
+        ], engine: widget.capability.engine.startsWith('milkrust') ? 'milkrust' : 'projectm'),
+      );
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted) {
+        setState(() => _error = error.toString());
+      }
     }
   }
 
@@ -275,7 +322,9 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
               (_query.isEmpty || preset.searchText.contains(_query)),
         )
         .toList();
-    if (selected != null) visible.sort((a, b) => positions[a.libraryPath]!.compareTo(positions[b.libraryPath]!));
+    if (selected != null) {
+      visible.sort((a, b) => positions[a.libraryPath]!.compareTo(positions[b.libraryPath]!));
+    }
     return SafeArea(
       child: SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.8,
@@ -379,11 +428,17 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                         return ListTile(
                           leading: preset.thumbnailPath == null
                               ? AppIcon(canPlay ? Symbols.play_circle_rounded : Symbols.info_rounded)
-                              : SizedBox(width: 56, height: 40, child: Image.file(
-                                  File(preset.thumbnailPath!), fit: BoxFit.cover, cacheWidth: 112,
-                                  semanticLabel: 'Preset preview',
-                                  errorBuilder: (_, __, ___) => const AppIcon(Symbols.graphic_eq_rounded),
-                                )),
+                              : SizedBox(
+                                  width: 56,
+                                  height: 40,
+                                  child: Image.file(
+                                    File(preset.thumbnailPath!),
+                                    fit: BoxFit.cover,
+                                    cacheWidth: 112,
+                                    semanticLabel: l10n.t.visualizerUi.presetPreview,
+                                    errorBuilder: (_, _, _) => const AppIcon(Symbols.graphic_eq_rounded),
+                                  ),
+                                ),
                           title: Text(preset.title, maxLines: 2, overflow: TextOverflow.ellipsis),
                           subtitle: Text(
                             [
@@ -421,18 +476,30 @@ class _VisualizerPresetBrowserState extends State<VisualizerPresetBrowser> {
                                 icon: AppIcon(Symbols.favorite_rounded, fill: _favorites.contains(preset.id) ? 1 : 0),
                               ),
                               PopupMenuButton<String>(
-                                tooltip: 'Copy, export and compose preset',
+                                tooltip: l10n.t.visualizerUi.copyExportAndComposePreset,
                                 icon: const AppIcon(Symbols.more_vert_rounded),
                                 onSelected: (action) {
-                                  if (action == 'compose') { _compose(preset); }
-                                  else { _exportPreset(preset, fragmentKind: action == 'preset' ? null : action); }
+                                  if (action == 'compose') {
+                                    _compose(preset);
+                                  } else {
+                                    _exportPreset(preset, fragmentKind: action == 'preset' ? null : action);
+                                  }
                                 },
                                 itemBuilder: (_) => [
-                                  const PopupMenuItem(value: 'preset', child: Text('Export preset, assets and notices')),
+                                  PopupMenuItem(
+                                    value: 'preset',
+                                    child: Text(l10n.t.visualizerUi.exportPresetAssetsAndNotices),
+                                  ),
                                   if (preset.isClassicPreset) ...[
-                                    const PopupMenuItem(value: 'compose', child: Text('Add shape or wave to a new copy')),
-                                    const PopupMenuItem(value: 'shape', child: Text('Export shape fragments')),
-                                    const PopupMenuItem(value: 'wave', child: Text('Export wave fragments')),
+                                    PopupMenuItem(
+                                      value: 'compose',
+                                      child: Text(l10n.t.visualizerUi.addShapeOrWaveToANewCopy),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'shape',
+                                      child: Text(l10n.t.visualizerUi.exportShapeFragments),
+                                    ),
+                                    PopupMenuItem(value: 'wave', child: Text(l10n.t.visualizerUi.exportWaveFragments)),
                                   ],
                                 ],
                               ),

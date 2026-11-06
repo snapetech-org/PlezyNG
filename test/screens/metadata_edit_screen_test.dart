@@ -532,7 +532,9 @@ class _PlexMetadataRequests {
         !request.url.queryParameters.containsKey('includePreferences')) {
       final id = path.split('/').last;
       final title = serverTitles[id];
-      if (title == null) return _response(404);
+      if (title == null) {
+        return _response(404);
+      }
       return jsonResponse({
         'MediaContainer': {
           'Metadata': [
@@ -601,7 +603,9 @@ class _PlexMetadataRequests {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         for (final key in serverPreferences.keys) {
           final value = request.url.queryParameters[key];
-          if (value != null) serverPreferences[key] = value;
+          if (value != null) {
+            serverPreferences[key] = value;
+          }
         }
       }
       return response;

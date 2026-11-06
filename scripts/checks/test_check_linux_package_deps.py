@@ -34,7 +34,7 @@ CMAKE_INPUTS = ("runner/CMakeLists.txt", "CMakeLists.txt", "flutter/CMakeLists.t
 
 
 # Pins the walk's reach: gtk+-3.0, mpv, epoxy, glib-2.0, gio-2.0 and the three the
-# video plane added, plus the Steam credential-vault libsecret link. A drop here means the parser stopped seeing something rather
+# video plane added, plus the Steam credential-vault libsecret and RomM WebKit links. A drop here means the parser stopped seeing something rather
 # than that a link was removed.
 FULL_WALK_SUMMARY = "(10 pkg-config links, 10 modules)"
 
@@ -56,7 +56,7 @@ class LinuxPackageDepsGuardTest(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("vulkan", result.stderr)
 
-    def test_vulkan_loader_must_remain_host_provided(self) -> None:
+    def test_host_vulkan_loader_must_not_replace_the_pinned_copy(self) -> None:
         bundle = self._mutate("packaging/bundle-libs.sh", r"libvulkan\.so|", "")
         result = self._run(**{"packaging/bundle-libs.sh": bundle})
         self.assertNotEqual(result.returncode, 0)

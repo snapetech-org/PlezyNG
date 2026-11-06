@@ -19,7 +19,9 @@ Lyrics? parseLrc(String raw) {
 
   for (final rawLine in raw.split(RegExp(r'\r?\n'))) {
     final line = rawLine.trim();
-    if (line.isEmpty) continue;
+    if (line.isEmpty) {
+      continue;
+    }
 
     final idTag = _idTag.firstMatch(line);
     if (idTag != null && !_timestamp.hasMatch(line)) {
@@ -46,20 +48,37 @@ Lyrics? parseLrc(String raw) {
       final marks = _wordTimestamp.allMatches(text).toList();
       final spans = <LyricSpan>[];
       final plain = StringBuffer();
-      if (marks.isNotEmpty && marks.first.start > 0) plain.write(text.substring(0, marks.first.start));
+      if (marks.isNotEmpty && marks.first.start > 0) {
+        plain.write(text.substring(0, marks.first.start));
+      }
       int wordTime(RegExpMatch mark) {
         final fraction = mark.group(3);
         return ((int.parse(mark.group(1)!) * 60 + int.parse(mark.group(2)!)) * 1000 +
-          (fraction == null ? 0 : int.parse(fraction) * 1000 ~/ _pow10(fraction.length)) - offsetMs).clamp(0, 1 << 52);
+                (fraction == null ? 0 : int.parse(fraction) * 1000 ~/ _pow10(fraction.length)) -
+                offsetMs)
+            .clamp(0, 1 << 52);
       }
+
       for (var i = 0; i < marks.length; i++) {
         final unitText = text.substring(marks[i].end, i + 1 < marks.length ? marks[i + 1].start : text.length);
         plain.write(unitText);
-        if (unitText.isNotEmpty) spans.add(LyricSpan(text: unitText, startMs: wordTime(marks[i]),
-          endMs: i + 1 < marks.length ? wordTime(marks[i + 1]) : null));
+        if (unitText.isNotEmpty) {
+          spans.add(
+            LyricSpan(
+              text: unitText,
+              startMs: wordTime(marks[i]),
+              endMs: i + 1 < marks.length ? wordTime(marks[i + 1]) : null,
+            ),
+          );
+        }
       }
-      lines.add(LyricLine(text: marks.isEmpty ? text : plain.toString().trim(),
-        startMs: startMs < 0 ? 0 : startMs, spans: List.unmodifiable(spans)));
+      lines.add(
+        LyricLine(
+          text: marks.isEmpty ? text : plain.toString().trim(),
+          startMs: startMs < 0 ? 0 : startMs,
+          spans: List.unmodifiable(spans),
+        ),
+      );
     }
   }
 

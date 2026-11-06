@@ -3,6 +3,8 @@
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -17,6 +19,29 @@ SPEC.loader.exec_module(INSTALLER)
 
 
 class InstallSherpaOnnxRuntimeTest(unittest.TestCase):
+    def test_print_runtime_cli_emits_only_the_path_without_installing(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="plezy-sherpa-cli-") as directory:
+            root = Path(directory)
+            package = root / "package with spaces"
+            runtime = package / "linux/x64/libonnxruntime.so"
+            runtime.parent.mkdir(parents=True)
+            runtime.write_bytes(b"resolution must not try to load this library")
+            config = root / "package_config.json"
+            config.write_text(json.dumps({"packages": [
+                {"name": "sherpa_onnx_linux", "rootUri": package.as_uri()},
+            ]}))
+            arguments = [sys.executable, str(SCRIPT), "--print-runtime", "--arch", "x64",
+                         "--package-config", str(config)]
+            result = subprocess.run(arguments, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, str(runtime.resolve()) + "\n")
+            self.assertEqual(result.stderr, "")
+            bundle = root / "must-not-install"
+            result = subprocess.run([*arguments, str(bundle)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("does not install", result.stderr)
+            self.assertFalse(bundle.exists())
+
     def test_resolves_absolute_file_uri(self) -> None:
         with tempfile.TemporaryDirectory(prefix="plezy-sherpa-config-") as directory:
             root = Path(directory) / "sherpa package"
@@ -89,6 +114,12 @@ class InstallSherpaOnnxRuntimeTest(unittest.TestCase):
             for name in INSTALLER.LIBRARIES:
                 (source / name).write_bytes(("locked:" + name).encode())
                 (bundle_lib / name).write_bytes(b"stale bundle copy")
+            self.assertEqual(
+                INSTALLER.resolve_runtime(config, "arm64"),
+                (source / "libonnxruntime.so").resolve(),
+            )
+            with self.assertRaisesRegex(ValueError, "runtime is missing"):
+                INSTALLER.resolve_runtime(config, "x64")
 
             result = type(
                 "Result",

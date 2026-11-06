@@ -66,6 +66,8 @@ class MpvPlayerCore: MpvPlayerCoreBase {
       return false
     }
 
+    dvBackend?.attach(to: container)
+
     setupNotifications()
     #if os(iOS)
       ExternalDisplayManager.shared.attach(core: self)
@@ -76,9 +78,10 @@ class MpvPlayerCore: MpvPlayerCoreBase {
     return true
   }
 
-  var sampleBufferDisplayLayer: MpvVideoLayer? { videoLayer }
+  var sampleBufferDisplayLayer: MpvVideoLayer? { dvBackend == nil ? videoLayer : nil }
 
   func setVisible(_ visible: Bool) {
+    dvBackend?.setVisible(visible)
     guard containerView != nil else { return }
 
     isVisible = visible
@@ -101,6 +104,7 @@ class MpvPlayerCore: MpvPlayerCoreBase {
         containerView.frame = window.bounds
       }
       fitVideoLayer(videoLayer, in: containerView)
+      dvBackend?.setFrame(containerView.bounds)
 
       mainBlankView?.frame = window?.bounds ?? .zero
 

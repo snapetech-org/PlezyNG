@@ -24,6 +24,15 @@ import time
 MAX_PROBE = 1024 * 1024
 
 
+def bundled_worker_environment() -> dict[str, str]:
+    # The worker's shell belongs to the host; it must start with host libraries.
+    # Its launcher then selects the packaged Python/plugin runtime explicitly.
+    environment = os.environ.copy()
+    for name in ('LD_LIBRARY_PATH', 'LD_PRELOAD', 'PYTHONHOME', 'PYTHONPATH'):
+        environment.pop(name, None)
+    return environment
+
+
 def regular(path: Path) -> Path:
     path = path.resolve(strict=True)
     if not path.is_file():
@@ -73,11 +82,19 @@ def bake_script(bl: Path, el: Path, ffms: Path, baker: Path, fps: Fraction, fram
                          "fps_num": fps.numerator, "fps_den": fps.denominator, "frames": frames})
     return '''import json
 import vapoursynth as vs
+import os
 core = vs.core
+core.num_threads = 2
 core.max_cache_size = 512
 config = json.loads(CONFIG_JSON)
-core.std.LoadPlugin(config['ffms'])
-core.std.LoadPlugin(config['baker'])
+def load_pinned_plugin(identifier, path):
+    existing = next((p for p in core.plugins() if p.identifier == identifier), None)
+    if existing is None:
+        core.std.LoadPlugin(path)
+    elif not existing.plugin_path or os.path.realpath(existing.plugin_path) != os.path.realpath(path):
+        raise ValueError('a different version of the requested plugin is already loaded')
+load_pinned_plugin('com.vapoursynth.ffms2', config['ffms'])
+load_pinned_plugin('com.vapoursynth.felbaker', config['baker'])
 bl = core.ffms2.Source(config['bl'], cache=False, threads=2)
 el = core.ffms2.Source(config['el'], cache=False, threads=2)
 if bl.num_frames != el.num_frames or bl.num_frames < 1:
@@ -136,13 +153,15 @@ def encode_command(ffmpeg: Path, output: Path, *, width: int, height: int, fps: 
     return args + ["-f", "matroska", str(output)]
 
 
-def pipe_processes(producer: list[str], consumer: list[str], *, timeout: float, cwd: Path) -> None:
+def pipe_processes(producer: list[str], consumer: list[str], *, timeout: float, cwd: Path,
+                   producer_environment: dict[str, str] | None = None) -> None:
     """Drain both stderr streams to files; kill and reap both on any failure."""
     started = time.monotonic()
     processes = []
     with tempfile.TemporaryFile() as first_log, tempfile.TemporaryFile() as second_log:
         try:
-            first = subprocess.Popen(producer, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=first_log, cwd=cwd)
+            first = subprocess.Popen(producer, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=first_log,
+                                     cwd=cwd, env=producer_environment)
             processes.append(first)
             second = subprocess.Popen(consumer, stdin=first.stdout, stdout=subprocess.DEVNULL, stderr=second_log, cwd=cwd)
             processes.append(second)
@@ -160,10 +179,17 @@ def pipe_processes(producer: list[str], consumer: list[str], *, timeout: float, 
                 process.wait()
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+def main(argv=None, *, bundled_tools=None):
+    description = (__doc__ if not bundled_tools else
+                   "Offline FEL-derived HDR10/SDR export using the included decoder, compositor and encoders. "
+                   "Provide synchronized BL/EL HEVC files with original RPU and the original frame rate. "
+                   "Add --execute to render; the default validates and prints a plan. Outputs are derived, lossy compatibility versions.")
+    parser = argparse.ArgumentParser(description=description)
     for key in ("bl", "el", "ffms-plugin", "felbaker-plugin", "vspipe", "ffmpeg", "ffprobe", "output"):
-        parser.add_argument("--" + key, type=Path, required=True)
+        bundled = bundled_tools or {}
+        parser.add_argument("--" + key, type=Path, required=key not in bundled,
+                            default=bundled.get(key),
+                            help=argparse.SUPPRESS if key in bundled else None)
     parser.add_argument("--audio", type=Path, help="optional local original container; audio must share video start time")
     parser.add_argument("--fps", type=Fraction, required=True, help="original rational frame rate, e.g. 24000/1001")
     parser.add_argument("--target", choices=("hdr10", "sdr"), default="hdr10")
@@ -211,7 +237,8 @@ def main(argv=None):
         command = encode_command(paths["ffmpeg"], partial, width=width, height=height, fps=args.fps,
                                  target=args.target, peak_nits=args.peak_nits, frames=args.frames, audio=audio)
         pipe_processes([str(paths["vspipe"]), "--requests", "2", str(script), "-"], command,
-                       timeout=args.timeout, cwd=work)
+                       timeout=args.timeout, cwd=work,
+                       producer_environment=bundled_worker_environment() if bundled_tools else None)
         encoded = probe(paths["ffprobe"], partial)
         expected = ("hevc", "smpte2084", "bt2020") if args.target == "hdr10" else ("h264", "bt709", "bt709")
         if (encoded.get("codec_name"), encoded.get("color_transfer"), encoded.get("color_primaries")) != expected:

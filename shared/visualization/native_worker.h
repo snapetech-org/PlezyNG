@@ -8,11 +8,11 @@
 #include <mutex>
 #include <thread>
 
-#include "render_backend.h"
 #include "pcm_resampler.h"
 #include "preset_transition.h"
-#include "render_thread.h"
+#include "render_backend.h"
 #include "render_quality.h"
+#include "render_thread.h"
 
 namespace plezy::visualization {
 struct NativeFrame {
@@ -37,9 +37,11 @@ class NativeWorker {
   using ContextFactory = std::function<std::unique_ptr<NativeContext>()>;
   using BackendFactory = std::function<std::unique_ptr<RenderBackend>()>;
   using Publish = std::function<void(std::shared_ptr<const NativeFrame>)>;
+
  private:
   static bool IsPresetPath(const std::filesystem::path& path) {
-    auto extension = path.extension().u8string();
+    const auto utf8_extension = path.extension().u8string();
+    std::string extension(utf8_extension.begin(), utf8_extension.end());
     for (auto& character : extension) {
       if (character >= 'A' && character <= 'Z') character += 'a' - 'A';
     }
@@ -47,11 +49,18 @@ class NativeWorker {
   }
   struct WorkerState {
     WorkerState(BackendFactory backend, AudioReader audio, Publish publish, bool owned_publish, RenderBudget budget)
-        : backend_(std::move(backend)), audio_(std::move(audio)),
-          publish_(std::move(publish)), owned_publish_(owned_publish), quality_(budget) {}
+        : backend_(std::move(backend)),
+          audio_(std::move(audio)),
+          publish_(std::move(publish)),
+          owned_publish_(owned_publish),
+          quality_(budget) {}
     void Stop() {
       std::function<void()> cancel;
-      { std::lock_guard<std::mutex> lock(mutex_); stopping_ = true; cancel = cancel_; }
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+        stopping_ = true;
+        cancel = cancel_;
+      }
       if (cancel) cancel();
       condition_.notify_all();
       // PCM reads and borrowed Flutter notifications are bounded host calls;
@@ -104,13 +113,14 @@ class NativeWorker {
     bool PauseAndDrain(std::chrono::milliseconds timeout) {
       Pause(true);
       std::unique_lock<std::mutex> lock(mutex_);
-      const bool completed = condition_.wait_for(lock, timeout, [this] {
-        return (!active_ && quiescent_) || stopping_ || status_.state == "failed";
-      });
+      const bool completed = condition_.wait_for(
+          lock, timeout, [this] { return (!active_ && quiescent_) || stopping_ || status_.state == "failed"; });
       if (completed && !stopping_ && status_.state != "failed") return true;
       stopping_ = true;
       if (status_.state != "failed")
-        status_.reason = "Visualization did not pause in time. Choose an original scene; restart the app if the renderer remains busy.";
+        status_.reason =
+            "Visualization did not pause in time. Choose an original scene; restart the app if the renderer remains "
+            "busy.";
       status_.state = "failed";
       auto cancel = cancel_;
       lock.unlock();
@@ -149,7 +159,8 @@ class NativeWorker {
         }
         result = status_;
 
-        result.has_frame = !stopping_ && result.state != "failed" && result.frame_serial != 0 && result.preset_serial == serial_;
+        result.has_frame =
+            !stopping_ && result.state != "failed" && result.frame_serial != 0 && result.preset_serial == serial_;
         if (paused_ && result.state != "failed" && result.state != "unavailable") result.state = "paused";
       }
       if (cancel) cancel();
@@ -206,6 +217,7 @@ class NativeWorker {
       status_.state = state;
       status_.reason = reason;
     }
+
    public:
     void Run() noexcept {
       std::unique_ptr<RenderBackend> engine;
@@ -239,7 +251,10 @@ class NativeWorker {
                 Work work(*this);
                 engine->Pause(true);
                 engine_paused = true;
-                { std::lock_guard<std::mutex> done(mutex_); quiescent_ = true; }
+                {
+                  std::lock_guard<std::mutex> done(mutex_);
+                  quiescent_ = true;
+                }
                 continue;
               }
             }
@@ -267,9 +282,12 @@ class NativeWorker {
               if (stopping_) early_cancel = cancel_;
             }
             if (early_cancel) early_cancel();
-            continue; // Recheck pause/stop before submitting any preset work.
+            continue;  // Recheck pause/stop before submitting any preset work.
           }
-          if (engine_paused) { engine->Pause(false); engine_paused = false; }
+          if (engine_paused) {
+            engine->Pause(false);
+            engine_paused = false;
+          }
           const auto started = Clock::now();
           bool received = false, unsupported = false;
           for (int reads = 0; reads < 32; ++reads) {
@@ -400,22 +418,32 @@ class NativeWorker {
   };
   std::shared_ptr<WorkerState> state_;
   RenderThread worker_;
+
  public:
   // owned_publish is only for sinks that retain all resources they access;
   // borrowed registrar/player pointers must use the default guarded path.
-  NativeWorker(ContextFactory context, MilkRustImageDecoder decoder, AudioReader audio, Publish publish,
-               bool owned_publish = false, RenderBudget budget = RenderBudget::Constrained())
-      : NativeWorker([context=std::move(context), decoder=std::move(decoder)] {
-          return std::make_unique<LocalRenderBackend>(context(), decoder);
-        }, std::move(audio), std::move(publish), owned_publish, budget) {}
-  NativeWorker(BackendFactory backend, AudioReader audio, Publish publish, bool owned_publish = false,
-               RenderBudget budget = RenderBudget::Constrained())
-      : state_(std::make_shared<WorkerState>(std::move(backend), std::move(audio), std::move(publish), owned_publish, budget)),
-        worker_([state=state_] { state->Run(); }) {}
+  NativeWorker(
+      ContextFactory context, MilkRustImageDecoder decoder, AudioReader audio, Publish publish,
+      bool owned_publish = false, RenderBudget budget = RenderBudget::Constrained())
+      : NativeWorker(
+            [context = std::move(context), decoder = std::move(decoder)] {
+              return std::make_unique<LocalRenderBackend>(context(), decoder);
+            },
+            std::move(audio), std::move(publish), owned_publish, budget) {}
+  NativeWorker(
+      BackendFactory backend, AudioReader audio, Publish publish, bool owned_publish = false,
+      RenderBudget budget = RenderBudget::Constrained())
+      : state_(
+            std::make_shared<WorkerState>(
+                std::move(backend), std::move(audio), std::move(publish), owned_publish, budget)),
+        worker_([state = state_] { state->Run(); }) {}
   ~NativeWorker() { Stop(); }
   NativeWorker(const NativeWorker&) = delete;
   NativeWorker& operator=(const NativeWorker&) = delete;
-  bool Stop() { state_->Stop(); return worker_.Join(); }
+  bool Stop() {
+    state_->Stop();
+    return worker_.Join();
+  }
   void Load(const std::string& path, const std::string& root, double transition_seconds = 3) {
     state_->Load(path, root, transition_seconds);
   }
@@ -424,9 +452,7 @@ class NativeWorker {
   bool PauseAndDrain(std::chrono::milliseconds timeout = std::chrono::milliseconds(250)) {
     return state_->PauseAndDrain(timeout);
   }
-  void SetMouseState(bool down, double x, double y, double dx, double dy) {
-    state_->SetMouseState(down, x, y, dx, dy);
-  }
+  void SetMouseState(bool down, double x, double y, double dx, double dy) { state_->SetMouseState(down, x, y, dx, dy); }
   NativeStatus Status() const { return state_->Status(); }
 };
 }  // namespace plezy::visualization

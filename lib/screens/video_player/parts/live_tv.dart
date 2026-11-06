@@ -5,7 +5,9 @@ const _liveClockReadyTimeout = Duration(seconds: 15);
 extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
   Future<void> _showLiveChannelPicker() async {
     final channels = widget.live?.channels;
-    if (channels == null || channels.length < 2 || _shuttingDown) return;
+    if (channels == null || channels.length < 2 || _shuttingDown) {
+      return;
+    }
     final current = _live.channelIndex >= 0 && _live.channelIndex < channels.length
         ? channels[_live.channelIndex]
         : widget.live?.channel;
@@ -16,7 +18,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       final savedOrder = settings.read(SettingsService.iptvRecentChannelsForProfile(profileId));
       for (final channel in channels) {
         final timestamp = savedOrder[liveTvChannelScopeKey(channel)];
-        if (timestamp != null) recentOrder[channel.key] = timestamp;
+        if (timestamp != null) {
+          recentOrder[channel.key] = timestamp;
+        }
       }
     }
     final selected = await showIptvLiveChannelPicker(
@@ -25,19 +29,29 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       currentChannel: current,
       recentChannelOrder: recentOrder,
     );
-    if (!mounted || selected == null || selected.key == current?.key) return;
+    if (!mounted || selected == null || selected.key == current?.key) {
+      return;
+    }
     final index = channels.indexWhere((channel) => channel.key == selected.key);
-    if (index < 0) return;
+    if (index < 0) {
+      return;
+    }
     await _switchLiveChannel(index - _live.channelIndex);
   }
 
   Future<void> _recordIptvRecentChannel(LiveTvChannel channel) async {
-    if (channel.iptvSourceId == null || channel.iptvChannelId == null || !mounted) return;
+    if (channel.iptvSourceId == null || channel.iptvChannelId == null || !mounted) {
+      return;
+    }
     final profileId = context.read<ActiveProfileProvider>().activeId;
-    if (profileId == null) return;
+    if (profileId == null) {
+      return;
+    }
     try {
       final settings = await SettingsService.getInstance();
-      if (!mounted || context.read<ActiveProfileProvider>().activeId != profileId) return;
+      if (!mounted || context.read<ActiveProfileProvider>().activeId != profileId) {
+        return;
+      }
       final pref = SettingsService.iptvRecentChannelsForProfile(profileId);
       final recent = Map<String, int>.from(settings.read(pref));
       recent.remove(liveTvChannelScopeKey(channel));
@@ -51,7 +65,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
 
   /// Start periodic timeline heartbeats for live TV transcode session.
   void _startLiveTimelineUpdates() {
-    if (_shuttingDown) return;
+    if (_shuttingDown) {
+      return;
+    }
     final generation = ++_live.timelineGeneration;
     _live.timelineTimer?.cancel();
     unawaited(_refreshLiveGuide());
@@ -85,7 +101,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
 
   /// Advance the fallback ladder and retry — the error path's entry point.
   void _beginLiveLadderRetry() {
-    if (_shuttingDown) return;
+    if (_shuttingDown) {
+      return;
+    }
     // A start or zap that already opened its stream owns it but has not
     // adopted its session yet: recovering now would re-tune the session being
     // replaced, and the gate turns the retry away. Park the failure until the
@@ -105,7 +123,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
   /// Play pressed while the live stream is dead: reuse the ladder retry
   /// unless one is already in flight.
   Future<void> _retryLiveStreamForPlayIntent() {
-    if (_shuttingDown || _live.retrying) return Future.value();
+    if (_shuttingDown || _live.retrying) {
+      return Future.value();
+    }
     _live.retrying = true;
     return _retryLiveStream();
   }
@@ -140,7 +160,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
   /// Whether the background stop asked for an exit-on-resume; consuming the
   /// flag so the exit runs once.
   bool _consumeLiveExitOnResume() {
-    if (!_live.exitOnResume) return false;
+    if (!_live.exitOnResume) {
+      return false;
+    }
     _live.exitOnResume = false;
     return true;
   }
@@ -152,9 +174,13 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
   }
 
   Future<void> _sendLiveTimeline(String state) async {
-    if (_shuttingDown && state != 'stopped') return;
+    if (_shuttingDown && state != 'stopped') {
+      return;
+    }
     final requestSession = _live.session;
-    if (requestSession == null) return;
+    if (requestSession == null) {
+      return;
+    }
     final requestGeneration = _live.timelineGeneration;
     final requestStreamGeneration = _live.streamGeneration;
     // For live TV, player position/duration are unreliable (often 0). Use
@@ -174,7 +200,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
           currentGeneration: () => _live.timelineGeneration,
           isMounted: () => mounted,
           commit: (update) {
-            if (requestStreamGeneration != _live.streamGeneration) return;
+            if (requestStreamGeneration != _live.streamGeneration) {
+              return;
+            }
             final hadSeekWindow = _live.captureBuffer != null;
             _setPlayerState(() {
               final playbackStream = update.playbackStream;
@@ -270,7 +298,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
   Future<void> _retryLiveStream() async {
     _liveSeek.cancel();
     final currentPlayer = player;
-    if (!mounted || _shuttingDown || currentPlayer == null) return;
+    if (!mounted || _shuttingDown || currentPlayer == null) {
+      return;
+    }
     final session = _live.session;
     if (session == null) {
       _live.retrying = false;
@@ -312,7 +342,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
         identical(_live.session, session) &&
         intent == _liveSeek.intentGeneration &&
         _live.ownsRetry(retryOwner);
-    if (_isRecordingIptv) await _finishIptvRecording(currentPlayer);
+    if (_isRecordingIptv) {
+      await _finishIptvRecording(currentPlayer);
+    }
     _live.playbackPosition(currentPlayer.currentPosition);
     _live.invalidatePlayback();
 
@@ -332,7 +364,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
         recoveredSubtitle = LiveTvSessionState.remapSubtitleSelection(recovered.subtitleTracks, _live.selectedSubtitle);
         if (recoveredSubtitle != null) {
           final url = await recovered.streamUrlAt(subtitleTrack: recoveredSubtitle);
-          if (url != null) return url;
+          if (url != null) {
+            return url;
+          }
           appLogger.w('Live recovery could not re-apply the subtitle burn; retrying without subtitles');
           recoveredSubtitle = null;
         }
@@ -382,7 +416,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
     final enabled =
         enableLocalTimeShift ?? (activeSession is IptvLiveTvPlaybackSession && activeSession.localTimeShiftEnabled);
     await player.setProperty('force-seekable', enabled && player is PlayerNative ? 'yes' : 'no');
-    if (!enabled || player is! PlayerNative) return;
+    if (!enabled || player is! PlayerNative) {
+      return;
+    }
     // A bounded demuxer back-buffer gives MPV a real seek window without
     // turning a live stream into an unbounded memory cache. Unsupported
     // protocols simply report no ranges and keep the ordinary live controls.
@@ -414,7 +450,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
   }) async {
     bool ownsOpen() =>
         mounted && !_shuttingDown && _launchCurrent && this.player == player && (isCurrent?.call() ?? true);
-    if (!ownsOpen()) return false;
+    if (!ownsOpen()) {
+      return false;
+    }
     _live.playbackPosition(player.currentPosition);
     _live.invalidatePlayback();
     _live.streamGeneration++;
@@ -426,8 +464,12 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
     final media = Media(streamUrl, headers: {'Accept-Language': 'en', ...?activeIptvSession?.streamHeaders});
     final playNow = play ?? automotivePlaybackAllowedNow();
     if (targetEpoch == null || player is! PlayerNative) {
-      if (applyOptions) await _setLiveStreamOptions(player, enableLocalTimeShift: enableLocalTimeShift);
-      if (!ownsStream()) return false;
+      if (applyOptions) {
+        await _setLiveStreamOptions(player, enableLocalTimeShift: enableLocalTimeShift);
+      }
+      if (!ownsStream()) {
+        return false;
+      }
       onOpenStarted?.call();
       await player.open(media, play: playNow, isLive: true);
       if (ownsStream() && targetEpoch != null) {
@@ -448,7 +490,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
     final clockResult = _live.clockOpenResult(clockGeneration);
     final int? sourceId;
     try {
-      if (applyOptions) await _setLiveStreamOptions(player, enableLocalTimeShift: enableLocalTimeShift);
+      if (applyOptions) {
+        await _setLiveStreamOptions(player, enableLocalTimeShift: enableLocalTimeShift);
+      }
       if (!ownsStream()) {
         _live.failClockOpen(clockGeneration);
         return false;
@@ -492,7 +536,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
         !activeSession.localTimeShiftEnabled ||
         player is! PlayerNative ||
         _iptvRecordingPartial != null) {
-      if (activeSession != null) activeSession.updateLocalBuffer(null);
+      if (activeSession != null) {
+        activeSession.updateLocalBuffer(null);
+      }
       if (identical(_live.session, activeSession) && _live.captureBuffer != null) {
         _live.captureBuffer = null;
         _liveBufferAge.reset();
@@ -501,9 +547,13 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       return;
     }
     final state = player.state;
-    if (!state.seekable || state.bufferRanges.isEmpty) return;
+    if (!state.seekable || state.bufferRanges.isEmpty) {
+      return;
+    }
     final ranges = state.bufferRanges.where((range) => range.end > range.start).toList(growable: false);
-    if (ranges.isEmpty) return;
+    if (ranges.isEmpty) {
+      return;
+    }
     var currentRange = ranges.last;
     for (final range in ranges) {
       if (range.start <= position && range.end >= position) {
@@ -516,7 +566,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       seekStartSeconds: currentRange.start.inMilliseconds / 1000.0,
       seekEndSeconds: currentRange.end.inMilliseconds / 1000.0,
     );
-    if (!buffer.isValid || buffer.seekableDurationSeconds < 3) return;
+    if (!buffer.isValid || buffer.seekableDurationSeconds < 3) {
+      return;
+    }
     final previous = activeSession.captureBuffer;
     if (previous != null &&
         previous.startedAt == buffer.startedAt &&
@@ -525,14 +577,18 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       return;
     }
     activeSession.updateLocalBuffer(buffer);
-    if (!identical(_live.session, activeSession)) return;
+    if (!identical(_live.session, activeSession)) {
+      return;
+    }
     final gainedWindow = _live.captureBuffer == null;
     _live.captureBuffer = buffer;
     _liveBufferAge
       ..reset()
       ..start();
     _setPlayerState(() {});
-    if (gainedWindow) unawaited(_mediaControls.syncAvailability());
+    if (gainedWindow) {
+      unawaited(_mediaControls.syncAvailability());
+    }
   }
 
   bool get _isRecordingIptv => _iptvRecordingPartial != null;
@@ -629,7 +685,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       }
     } catch (error) {
       try {
-        if (partial != null && await partial.exists()) await partial.delete();
+        if (partial != null && await partial.exists()) {
+          await partial.delete();
+        }
         final records = await repository.localRecordings(profileId);
         if (records.any((record) => record.id == id)) {
           await repository.finishLocalRecording(
@@ -654,7 +712,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
 
   String _iptvFileSlug(String value) {
     final slug = value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-').replaceAll(RegExp(r'^-+|-+$'), '');
-    if (slug.isEmpty) return 'channel';
+    if (slug.isEmpty) {
+      return 'channel';
+    }
     return slug.length <= 64 ? slug : slug.substring(0, 64);
   }
 
@@ -665,7 +725,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
     final profileId = _iptvRecordingProfileId;
     final startedAt = _iptvRecordingStartedAt;
     final native = _iptvRecordingPlayer ?? (activePlayer is PlayerNative ? activePlayer : null);
-    if (partial == null || target == null || id == null || profileId == null) return;
+    if (partial == null || target == null || id == null || profileId == null) {
+      return;
+    }
     final repository = context.read<IptvSourceRepository>();
     try {
       if (native != null && !native.disposed) {
@@ -674,7 +736,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       if (!await partial.exists() || await partial.length() == 0) {
         throw const IptvImportException('recording_empty');
       }
-      if (await target.exists()) throw const IptvImportException('recording_conflict');
+      if (await target.exists()) {
+        throw const IptvImportException('recording_conflict');
+      }
       final size = await partial.length();
       await partial.rename(target.path);
       await repository.finishLocalRecording(
@@ -689,7 +753,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       }
     } catch (_) {
       try {
-        if (await partial.exists()) await partial.delete();
+        if (await partial.exists()) {
+          await partial.delete();
+        }
         final retainedSize = await target.exists() ? await target.length() : null;
         await repository.finishLocalRecording(
           profileId: profileId,
@@ -702,7 +768,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       } on Object {
         // Playback teardown must keep moving even if the recording store fails.
       }
-      if (notify && mounted) showGlobalErrorSnackBar(t.iptv.recordingSaveFailed);
+      if (notify && mounted) {
+        showGlobalErrorSnackBar(t.iptv.recordingSaveFailed);
+      }
     } finally {
       _iptvRecordingPlayer = null;
       _iptvRecordingTarget = null;
@@ -715,7 +783,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       if (liveSession is IptvLiveTvPlaybackSession && currentPlayer != null && mounted) {
         _updateIptvLocalTimeShift(currentPlayer, currentPlayer.currentPosition);
       }
-      if (mounted) _setPlayerState(() {});
+      if (mounted) {
+        _setPlayerState(() {});
+      }
     }
   }
 
@@ -752,9 +822,13 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       suppressContentRateMatching: motionCompensatedRequested,
       motionCompensatedOutputFps: motionCompensatedRequested ? outputRate.resolve(null) : null,
     );
-    if (plan == null) return null;
+    if (plan == null) {
+      return null;
+    }
     _frameRate.resetForNewItem();
-    if (plan.countsAsApplied) _frameRate.applied = true;
+    if (plan.countsAsApplied) {
+      _frameRate.applied = true;
+    }
     plan.armFirstFrameGate(firstFrame, _frameRate);
     return plan;
   }
@@ -774,7 +848,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
   }) async {
     final generation = _transitionGate.generation;
     try {
-      if (stream == null || !plan.holdPlaybackStart) return;
+      if (stream == null || !plan.holdPlaybackStart) {
+        return;
+      }
       await _releaseFrameRateStartupGate(
         currentPlayer: currentPlayer,
         settingsService: SettingsService.instance,
@@ -815,7 +891,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
 
   Future<void> _refreshLiveGuide() async {
     final session = _live.session;
-    if (session == null || session is! LiveTvTimeshiftSession || !mounted) return;
+    if (session == null || session is! LiveTvTimeshiftSession || !mounted) {
+      return;
+    }
     if (!identical(_liveGuideSession, session)) {
       _liveGuideSession = session;
       _liveGuide.reset(session);
@@ -838,13 +916,17 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
     final iptvSourceId = channel.iptvSourceId;
     final iptvChannelId = channel.iptvChannelId;
     final client = serverInfo == null ? null : multiServer.getClientForServer(ServerId(serverInfo.serverId));
-    if ((iptvSourceId == null || profileId == null) && client == null) return;
+    if ((iptvSourceId == null || profileId == null) && client == null) {
+      return;
+    }
     _liveGuideLoading = true;
     final now = DateTime.now().millisecondsSinceEpoch / 1000.0;
     final buffer = _live.captureBuffer;
     final playback = _live.playbackPosition(player?.currentPosition ?? Duration.zero).epoch;
     var from = buffer == null ? now - 3600 : buffer.startedAt + buffer.seekStartSeconds;
-    if (playback != null && playback < from) from = playback;
+    if (playback != null && playback < from) {
+      from = playback;
+    }
     final changed = await _liveGuide.refresh(
       owner: session,
       channel: channel,
@@ -860,16 +942,22 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
             channelId: iptvChannelId,
           );
         }
-        if (client == null) return Future.value(const <LiveTvProgram>[]);
+        if (client == null) {
+          return Future.value(const <LiveTvProgram>[]);
+        }
         return client.liveTv.fetchSchedule(from: from, to: to);
       },
     );
-    if (!mounted || !identical(_live.session, session) || !identical(_liveGuideSession, session)) return;
+    if (!mounted || !identical(_live.session, session) || !identical(_liveGuideSession, session)) {
+      return;
+    }
     _liveGuideLoading = false;
     _liveGuideAge
       ..reset()
       ..start();
-    if (changed) _setPlayerState(() {});
+    if (changed) {
+      _setPlayerState(() {});
+    }
   }
 
   /// Show "Watch from Start" / "Watch Live" dialog.
@@ -919,13 +1007,21 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       isCurrent: isCurrent,
       subtitleTrack: _live.selectedSubtitle,
       open: (request) async {
-        if (!isCurrent()) return false;
+        if (!isCurrent()) {
+          return false;
+        }
         if (request.localPosition != null) {
-          if (currentPlayer is! PlayerNative || !currentPlayer.state.seekable) return false;
+          if (currentPlayer is! PlayerNative || !currentPlayer.state.seekable) {
+            return false;
+          }
           await currentPlayer.seek(request.localPosition!);
-          if (!isCurrent()) return false;
+          if (!isCurrent()) {
+            return false;
+          }
           final epoch = request.effectiveTargetEpoch;
-          if (epoch != null) _live.estimateUnidentifiedStream(epoch, request.localPosition!);
+          if (epoch != null) {
+            _live.estimateUnidentifiedStream(epoch, request.localPosition!);
+          }
           _updateIptvLocalTimeShift(currentPlayer, request.localPosition!);
           return true;
         }
@@ -933,38 +1029,49 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
           ..reset()
           ..start();
         final captions = SubtitlePlaybackTranscriptionService.instance;
-        final captureSource = currentPlayer is SubtitlePcmCaptureSource ? currentPlayer as SubtitlePcmCaptureSource : null;
+        final captureSource = currentPlayer is SubtitlePcmCaptureSource
+            ? currentPlayer as SubtitlePcmCaptureSource
+            : null;
         final beforePosition = currentPlayer.currentPosition;
         final beforeEpoch = _live.playbackPosition(beforePosition).epoch;
         final targetEpoch = request.effectiveTargetEpoch;
         Object? captionHandoff;
         if (captureSource != null && beforeEpoch != null && targetEpoch != null) {
-          captionHandoff = await captions.suspendForDvrReopen(captureSource,
-            targetPositionMs: beforePosition.inMilliseconds + ((targetEpoch - beforeEpoch) * 1000).round());
+          captionHandoff = await captions.suspendForDvrReopen(
+            captureSource,
+            targetPositionMs: beforePosition.inMilliseconds + ((targetEpoch - beforeEpoch) * 1000).round(),
+          );
         }
         var opened = false;
         try {
-          if (!isCurrent()) return false;
+          if (!isCurrent()) {
+            return false;
+          }
           opened = await _openLiveStream(
-          currentPlayer,
-          request.url,
-          targetEpoch: request.effectiveTargetEpoch,
-          awaitClock: currentPlayer is PlayerNative,
-          isCurrent: isCurrent,
-          timeShifted: targetEpochSeconds != null,
-          iptvSession: session is IptvLiveTvPlaybackSession ? session : null,
-          enableLocalTimeShift: session is IptvLiveTvPlaybackSession ? session.localTimeShiftEnabled : false,
-        );
+            currentPlayer,
+            request.url,
+            targetEpoch: request.effectiveTargetEpoch,
+            awaitClock: currentPlayer is PlayerNative,
+            isCurrent: isCurrent,
+            timeShifted: targetEpochSeconds != null,
+            iptvSession: session is IptvLiveTvPlaybackSession ? session : null,
+            enableLocalTimeShift: session is IptvLiveTvPlaybackSession ? session.localTimeShiftEnabled : false,
+          );
           return opened;
         } finally {
           if (captionHandoff != null) {
-            try { await captions.resumeAfterDvrReopen(captionHandoff, opened: opened && isCurrent()); }
-            on Object catch (error) { appLogger.w('Live caption handoff failed (${error.runtimeType})'); }
+            try {
+              await captions.resumeAfterDvrReopen(captionHandoff, opened: opened && isCurrent());
+            } on Object catch (error) {
+              appLogger.w('Live caption handoff failed (${error.runtimeType})');
+            }
           }
         }
       },
     );
-    if (result == LiveTvSeekOutcome.superseded || !isCurrent()) return false;
+    if (result == LiveTvSeekOutcome.superseded || !isCurrent()) {
+      return false;
+    }
     if (result == LiveTvSeekOutcome.failed) {
       _live.seekStatus = LiveTvSeekStatus.failed;
       showGlobalErrorSnackBar(t.liveTv.liveStreamFailed);
@@ -982,11 +1089,15 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
     PlaybackSourceSubtitleChoice choice,
     PlaybackTransitionLease lease,
   ) async {
-    if (_live.retrying) return PlaybackSourceChangeOutcome.busy;
+    if (_live.retrying) {
+      return PlaybackSourceChangeOutcome.busy;
+    }
     _liveSeek.cancel();
     final currentPlayer = player;
     final session = _live.session;
-    if (currentPlayer == null || session == null) return PlaybackSourceChangeOutcome.unavailable;
+    if (currentPlayer == null || session == null) {
+      return PlaybackSourceChangeOutcome.unavailable;
+    }
 
     MediaSubtitleTrack? target;
     if (!choice.isOff) {
@@ -996,10 +1107,14 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
           break;
         }
       }
-      if (target == null) return PlaybackSourceChangeOutcome.unavailable;
+      if (target == null) {
+        return PlaybackSourceChangeOutcome.unavailable;
+      }
     }
     final previous = _live.selectedSubtitle;
-    if (target?.id == previous?.id) return PlaybackSourceChangeOutcome.unchanged;
+    if (target?.id == previous?.id) {
+      return PlaybackSourceChangeOutcome.unchanged;
+    }
 
     _live.selectedSubtitle = target;
 
@@ -1033,7 +1148,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       enableLocalTimeShift: session is IptvLiveTvPlaybackSession ? session.localTimeShiftEnabled : false,
       isCurrent: () => _transitionGate.owns(lease) && identical(_live.session, session),
     );
-    if (mounted) _setPlayerState(() {});
+    if (mounted) {
+      _setPlayerState(() {});
+    }
     return PlaybackSourceChangeOutcome.applied;
   }
 
@@ -1043,16 +1160,22 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       _liveBufferAge.isRunning && _liveBufferAge.elapsed > const Duration(seconds: 30) ? null : _live.captureBuffer;
 
   LiveSeekBounds? _liveSeekBounds() {
-    if (_live.retrying) return null;
+    if (_live.retrying) {
+      return null;
+    }
     final session = _live.session;
     final buffer = _freshLiveBuffer;
-    if (session is! LiveTvTimeshiftSession || buffer == null) return null;
+    if (session is! LiveTvTimeshiftSession || buffer == null) {
+      return null;
+    }
     final window = (session as LiveTvTimeshiftSession).seekWindow(buffer);
     return window;
   }
 
   void _onLiveSeekTargetChanged() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     if (_lastLiveIntent != _liveSeek.intentGeneration) {
       _lastLiveIntent = _liveSeek.intentGeneration;
       _live.cancelClockOpens();
@@ -1087,22 +1210,38 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
 
   /// Jump to the live edge of the capture buffer.
   void _jumpToLiveEdge() {
-    if (_live.retrying) return;
+    if (_live.retrying) {
+      return;
+    }
     final buffer = _live.captureBuffer;
-    if (buffer != null) _liveSeek.jumpToLive(previewEpoch: buffer.startedAt + buffer.seekEndSeconds);
+    if (buffer != null) {
+      _liveSeek.jumpToLive(previewEpoch: buffer.startedAt + buffer.seekEndSeconds);
+    }
   }
 
   Future<void> _switchLiveChannel(int delta) async {
-    if (_shuttingDown) return;
+    if (_shuttingDown) {
+      return;
+    }
     final channels = widget.live?.channels;
-    if (channels == null || channels.isEmpty) return;
+    if (channels == null || channels.isEmpty) {
+      return;
+    }
     final newIndex = _live.channelIndex + delta;
-    if (newIndex < 0 || newIndex >= channels.length) return;
+    if (newIndex < 0 || newIndex >= channels.length) {
+      return;
+    }
     final channel = channels[newIndex];
-    if (!await IptvParentalAccessService.ensureAllowed(context, channel)) return;
-    if (!mounted || _shuttingDown) return;
+    if (!await IptvParentalAccessService.ensureAllowed(context, channel)) {
+      return;
+    }
+    if (!mounted || _shuttingDown) {
+      return;
+    }
     final currentPlayer = player;
-    if (currentPlayer == null) return;
+    if (currentPlayer == null) {
+      return;
+    }
 
     // Zapping away from a failing channel must not wait out its recovery (a
     // re-tune can take the whole tune budget): the zap replaces that stream,
@@ -1112,7 +1251,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       _live.retrying = false;
     }
     final transitionLease = _transitionGate.tryAcquire(PlaybackTransition.switchingChannel);
-    if (transitionLease == null) return; // debounce concurrent switches
+    if (transitionLease == null) {
+      return;
+    } // debounce concurrent switches
     final replacement = _live.beginReplacement();
     var committed = false;
     bool isCurrentChannelSwitch() =>
@@ -1133,8 +1274,12 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
     _FrameRateStartupPlan? frameRatePlan;
     int? openedStream;
     try {
-      if (_isRecordingIptv) await _finishIptvRecording(currentPlayer);
-      if (!isCurrentChannelSwitch()) return;
+      if (_isRecordingIptv) {
+        await _finishIptvRecording(currentPlayer);
+      }
+      if (!isCurrentChannelSwitch()) {
+        return;
+      }
       // Channel switch IS a fresh start: same resolution path as launch. Keep
       // the old session alive until the replacement stream is actually open so
       // a failed zap does not tell the server to reclaim the still-playing
@@ -1144,7 +1289,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
         // Jellyfin's negotiation returns null instead of throwing, so this
         // is not covered by the catch below; without feedback a failed zap
         // looks like a dead remote (#2198).
-        if (mounted) showErrorSnackBar(context, t.liveTv.failedToStartChannel);
+        if (mounted) {
+          showErrorSnackBar(context, t.liveTv.failedToStartChannel);
+        }
         return;
       }
       if (!isCurrentChannelSwitch()) {
@@ -1182,7 +1329,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
           widget.launchObserver?.detach();
         },
       );
-      if (opened) openedStream = _live.streamGeneration;
+      if (opened) {
+        openedStream = _live.streamGeneration;
+      }
       if (!isCurrentChannelSwitch()) {
         _abandonLiveSession(session);
         return;
@@ -1205,7 +1354,9 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       _live.retryFailed = false;
       committed = true;
 
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _setPlayerState(() {
         _live.channelIndex = newIndex;
         _live.channelName = channel.displayName;
@@ -1234,18 +1385,26 @@ extension _VideoPlayerLiveTvMethods on VideoPlayerScreenState {
       // A session that tuned but was never adopted (streamUrlAt/open threw)
       // would otherwise hold its server-side tuner until the backend times out.
       final orphan = session;
-      if (orphan != null && _live.session != orphan) _abandonLiveSession(orphan);
-      if (!isCurrentChannelSwitch()) return;
+      if (orphan != null && _live.session != orphan) {
+        _abandonLiveSession(orphan);
+      }
+      if (!isCurrentChannelSwitch()) {
+        return;
+      }
       if (replacementOpenStarted && mounted && _live.session == previousSession) {
         _setPlayerState(() {
           _firstFrame.restore(previousFirstFrame);
         });
       }
       appLogger.e('Failed to switch channel', error: e);
-      if (mounted) showErrorSnackBar(context, t.liveTv.channelSwitchFailed(reason: localizedErrorReason(e)));
+      if (mounted) {
+        showErrorSnackBar(context, t.liveTv.channelSwitchFailed(reason: localizedErrorReason(e)));
+      }
     } finally {
       _finishLiveReplacement(transitionLease, replacement, committed: committed);
-      if (!committed) zapOutcome?.abort('channel switch did not commit');
+      if (!committed) {
+        zapOutcome?.abort('channel switch did not commit');
+      }
       final plan = frameRatePlan;
       if (plan != null) {
         await _releaseLiveDisplayNegotiation(currentPlayer, plan, stream: committed ? openedStream : null);

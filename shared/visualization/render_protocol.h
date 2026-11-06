@@ -25,24 +25,31 @@ inline void U32(Bytes& out, uint32_t value) {
   for (unsigned shift = 0; shift < 32; shift += 8) out.push_back(static_cast<uint8_t>(value >> shift));
 }
 inline void U64(Bytes& out, uint64_t value) {
-  U32(out, static_cast<uint32_t>(value)); U32(out, static_cast<uint32_t>(value >> 32));
+  U32(out, static_cast<uint32_t>(value));
+  U32(out, static_cast<uint32_t>(value >> 32));
 }
 inline void Float(Bytes& out, float value) {
   static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559, "IEEE float required");
-  uint32_t bits; std::memcpy(&bits, &value, sizeof(bits)); U32(out, bits);
+  uint32_t bits;
+  std::memcpy(&bits, &value, sizeof(bits));
+  U32(out, bits);
 }
 inline void Double(Bytes& out, double value) {
   static_assert(sizeof(double) == 8 && std::numeric_limits<double>::is_iec559, "IEEE double required");
-  uint64_t bits; std::memcpy(&bits, &value, sizeof(bits)); U64(out, bits);
+  uint64_t bits;
+  std::memcpy(&bits, &value, sizeof(bits));
+  U64(out, bits);
 }
 inline void Text(Bytes& out, const std::string& text, size_t maximum = 32768) {
   if (text.size() > maximum || text.find('\0') != std::string::npos)
     throw std::runtime_error("Invalid visualization protocol string.");
-  U32(out, static_cast<uint32_t>(text.size())); out.insert(out.end(), text.begin(), text.end());
+  U32(out, static_cast<uint32_t>(text.size()));
+  out.insert(out.end(), text.begin(), text.end());
 }
 class Reader {
   const Bytes& data_;
   size_t offset_ = 0;
+
  public:
   explicit Reader(const Bytes& data) : data_(data) {}
   uint32_t U32() {
@@ -51,13 +58,28 @@ class Reader {
     for (unsigned shift = 0; shift < 32; shift += 8) value |= uint32_t(data_[offset_++]) << shift;
     return value;
   }
-  uint64_t U64() { const uint64_t low = U32(); return low | (uint64_t(U32()) << 32); }
-  float Float() { const auto bits = U32(); float value; std::memcpy(&value, &bits, sizeof(value)); return value; }
-  double Double() { const auto bits = U64(); double value; std::memcpy(&value, &bits, sizeof(value)); return value; }
+  uint64_t U64() {
+    const uint64_t low = U32();
+    return low | (uint64_t(U32()) << 32);
+  }
+  float Float() {
+    const auto bits = U32();
+    float value;
+    std::memcpy(&value, &bits, sizeof(value));
+    return value;
+  }
+  double Double() {
+    const auto bits = U64();
+    double value;
+    std::memcpy(&value, &bits, sizeof(value));
+    return value;
+  }
   std::string Text(size_t maximum = 32768) {
     const auto size = U32();
-    if (size > maximum || size > data_.size() - offset_) throw std::runtime_error("Invalid visualization string length.");
-    std::string value(data_.begin() + offset_, data_.begin() + offset_ + size); offset_ += size;
+    if (size > maximum || size > data_.size() - offset_)
+      throw std::runtime_error("Invalid visualization string length.");
+    std::string value(data_.begin() + offset_, data_.begin() + offset_ + size);
+    offset_ += size;
     if (value.find('\0') != std::string::npos) throw std::runtime_error("Visualization strings cannot contain NUL.");
     return value;
   }
@@ -65,19 +87,29 @@ class Reader {
     if (offset_ != data_.size()) throw std::runtime_error("Unexpected visualization payload bytes.");
   }
 };
-struct Header { uint32_t command, sequence, size; };
+struct Header {
+  uint32_t command, sequence, size;
+};
 inline Bytes EncodeHeader(uint32_t command, uint32_t sequence, size_t size) {
   if (size > kMaxMessage || !sequence) throw std::runtime_error("Visualization protocol limit exceeded.");
-  Bytes bytes; bytes.reserve(kHeaderSize);
-  U32(bytes, kMagic); U32(bytes, kVersion); U32(bytes, command); U32(bytes, sequence); U32(bytes, static_cast<uint32_t>(size));
+  Bytes bytes;
+  bytes.reserve(kHeaderSize);
+  U32(bytes, kMagic);
+  U32(bytes, kVersion);
+  U32(bytes, command);
+  U32(bytes, sequence);
+  U32(bytes, static_cast<uint32_t>(size));
   return bytes;
 }
 inline Header DecodeHeader(const Bytes& bytes) {
   Reader reader(bytes);
-  if (reader.U32() != kMagic || reader.U32() != kVersion) throw std::runtime_error("Visualization helper protocol differs.");
-  Header header{reader.U32(), reader.U32(), reader.U32()}; reader.End();
+  if (reader.U32() != kMagic || reader.U32() != kVersion)
+    throw std::runtime_error("Visualization helper protocol differs.");
+  Header header{reader.U32(), reader.U32(), reader.U32()};
+  reader.End();
   const auto command = header.command & ~kReply;
-  if (!header.sequence || header.size > kMaxMessage || command < uint32_t(Command::Hello) || command > uint32_t(Command::Present))
+  if (!header.sequence || header.size > kMaxMessage || command < uint32_t(Command::Hello) ||
+      command > uint32_t(Command::Present))
     throw std::runtime_error("Invalid visualization helper header.");
   return header;
 }

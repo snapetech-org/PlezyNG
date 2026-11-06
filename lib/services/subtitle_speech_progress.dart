@@ -1,7 +1,12 @@
 /// Speech preparation/inference progress contains data, never UI prose.
 enum SubtitleSpeechPhase {
-  downloadingModel, downloadingDetector, loadingModel, transcribing,
-  translating, inference, cpuFallback,
+  downloadingModel,
+  downloadingDetector,
+  loadingModel,
+  transcribing,
+  translating,
+  inference,
+  cpuFallback,
 }
 
 typedef SubtitleSpeechProgressCallback = void Function(SubtitleSpeechPhase phase, int received, int total);

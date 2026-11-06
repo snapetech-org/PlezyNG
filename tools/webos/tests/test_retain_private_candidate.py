@@ -24,6 +24,7 @@ class PrivateCandidateTests(unittest.TestCase):
         self.destination.mkdir()
         self.files = {
             "org.snapetech.pleazyng_3.0.0_arm.ipk": b"verified test package",
+            "webos-app-provenance.json": b'{"sourceCommit": "test"}\n',
             "webos-engine-provenance.json": b'{"source": "test"}\n',
             "webos-compatibility.json": b'{"releaseEligible": false}\n',
         }

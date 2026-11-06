@@ -69,7 +69,9 @@ void main() {
     });
 
     test('reads a catalogue title and normalizes its ids', () {
-      final link = DeepLink.tryParse('pleazyng://play?type=Show&tvdb=81189&imdb=TT0903747&plex=5d9c086c46115600200aa2fe');
+      final link = DeepLink.tryParse(
+        'pleazyng://play?type=Show&tvdb=81189&imdb=TT0903747&plex=5d9c086c46115600200aa2fe',
+      );
       expect(
         (link! as PlayLink).target,
         const CatalogPlayTarget(

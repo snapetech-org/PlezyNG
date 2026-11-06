@@ -226,6 +226,10 @@ def collect_references() -> set[str]:
         if dart_file.name.endswith((".g.dart", ".freezed.dart")):
             continue
         text = dart_file.read_text(encoding="utf-8", errors="replace")
+        # Slang's map API supports bounded dynamic keys, e.g. t['romm.$id'].
+        # Record the literal namespace without treating arbitrary maps as UI.
+        for dynamic in re.finditer(r"\bt\s*\[\s*['\"]([A-Za-z_]\w*)\.\$", text):
+            refs.add(dynamic.group(1))
         for usage_re in USAGE_RES:
             for match in usage_re.finditer(text):
                 chain = DOT_WS_RE.sub(".", match.group(1))

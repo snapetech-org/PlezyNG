@@ -52,7 +52,9 @@ final class SubtitleWhisperCppService {
   static bool? _tizenWhisperRuntimeState;
 
   static bool get supportedPlatform {
-    if (_tizenBuild) return _tizenWhisperRuntimeAvailable;
+    if (_tizenBuild) {
+      return _tizenWhisperRuntimeAvailable;
+    }
     return !_tvOsBuild &&
         !_webOsBuild &&
         (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux);
@@ -99,7 +101,9 @@ final class SubtitleWhisperCppService {
     String? languageCode,
     SubtitleSpeechProgressCallback? onProgress,
   }) async {
-    if (!supportedPlatform) throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
+    if (!supportedPlatform) {
+      throw UnsupportedError('Local Whisper inference is unavailable on this platform.');
+    }
     final normalizedLanguageCode = languageCode?.trim().toLowerCase().split(RegExp(r'[-_]')).first ?? '';
     final selectedLanguage = normalizedLanguageCode.isEmpty || normalizedLanguageCode == 'auto'
         ? 'auto'
@@ -153,7 +157,9 @@ final class SubtitleWhisperCppService {
         languageCode: selectedLanguage,
       );
     } catch (error) {
-      if (selectedDevice == null) rethrow;
+      if (selectedDevice == null) {
+        rethrow;
+      }
       onProgress?.call(SubtitleSpeechPhase.cpuFallback, 0, 0);
       return _run(
         wavPath,
@@ -203,21 +209,33 @@ final class SubtitleWhisperCppService {
           tokenTimestamps: true,
           splitOnWord: true,
         ),
-        onProgress: (progress) => onProgress?.call(translated ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.inference, progress, 100),
+        onProgress: (progress) => onProgress?.call(
+          translated ? SubtitleSpeechPhase.translating : SubtitleSpeechPhase.inference,
+          progress,
+          100,
+        ),
       );
       final wordTimings = SubtitleWordTimingBuilder.fromWhisperSegments(result.segments, durationMs: durationMs);
       final cues = <SubtitleCue>[];
       for (final segment in result.segments) {
         final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
         final startRaw = segment.start.inMilliseconds;
-        if (text.isEmpty || text.length > _maximumCueCharacters || startRaw >= durationMs) continue;
+        if (text.isEmpty || text.length > _maximumCueCharacters || startRaw >= durationMs) {
+          continue;
+        }
         final startMs = startRaw.clamp(0, durationMs).toInt();
         final endMs = segment.end.inMilliseconds.clamp(startMs + 1, durationMs).toInt();
-        if (endMs <= startMs) continue;
+        if (endMs <= startMs) {
+          continue;
+        }
         cues.add(SubtitleCue(index: cues.length + 1, startMs: startMs, endMs: endMs, text: text));
-        if (cues.length >= _maximumCues) break;
+        if (cues.length >= _maximumCues) {
+          break;
+        }
       }
-      if (cues.isEmpty) throw const FormatException('Whisper did not produce any speech cues.');
+      if (cues.isEmpty) {
+        throw const FormatException('Whisper did not produce any speech cues.');
+      }
       return SubtitleWhisperResult(
         cues: List.unmodifiable(cues),
         durationMs: durationMs,
@@ -243,7 +261,9 @@ abstract final class _WavDurationReader {
     final file = await File(path).open(mode: FileMode.read);
     try {
       final length = await file.length();
-      if (length < 44) throw const FormatException('WAV file is too short.');
+      if (length < 44) {
+        throw const FormatException('WAV file is too short.');
+      }
       if (length > SubtitleWhisperCppService._maximumWavBytes) {
         throw const FormatException('WAV file exceeds the 1 GiB Whisper processing limit.');
       }
@@ -259,7 +279,9 @@ abstract final class _WavDurationReader {
       var dataBytes = -1;
       while (await file.position() + 8 <= length) {
         final chunkHeader = await file.read(8);
-        if (chunkHeader.length != 8) break;
+        if (chunkHeader.length != 8) {
+          break;
+        }
         final name = ascii.decode(chunkHeader.sublist(0, 4), allowInvalid: true);
         final size = ByteData.sublistView(Uint8List.fromList(chunkHeader)).getUint32(4, Endian.little);
         final contentStart = await file.position();
@@ -267,9 +289,13 @@ abstract final class _WavDurationReader {
           throw const FormatException('WAV contains an invalid chunk length.');
         }
         if (name == 'fmt ') {
-          if (size < 16 || size > 4096) throw const FormatException('WAV format chunk is invalid.');
+          if (size < 16 || size > 4096) {
+            throw const FormatException('WAV format chunk is invalid.');
+          }
           final format = await file.read(size);
-          if (format.length != size) throw const FormatException('WAV ended inside its format header.');
+          if (format.length != size) {
+            throw const FormatException('WAV ended inside its format header.');
+          }
           final view = ByteData.sublistView(Uint8List.fromList(format));
           final audioFormat = view.getUint16(0, Endian.little);
           final channels = view.getUint16(2, Endian.little);
@@ -286,8 +312,12 @@ abstract final class _WavDurationReader {
           dataBytes = size;
         }
         final next = contentStart + size + (size.isOdd ? 1 : 0);
-        if (await file.position() != next) await file.setPosition(next);
-        if (sampleRate > 0 && dataBytes >= 0) break;
+        if (await file.position() != next) {
+          await file.setPosition(next);
+        }
+        if (sampleRate > 0 && dataBytes >= 0) {
+          break;
+        }
       }
 
       if (sampleRate < 8000 || sampleRate > 192000 || blockAlign <= 0 || dataBytes <= 0) {

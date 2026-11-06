@@ -18,8 +18,8 @@ class _Version8Database extends SourceDatabase {
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await super.migration.onCreate(migrator);
-      await customStatement('DROP INDEX entries_podcast_sync_identity');
       for (final table in [
+        'podcast_sync_ack',
         'canonical_cards',
         'canonical_aliases',
         'canonical_copies',
@@ -27,10 +27,10 @@ class _Version8Database extends SourceDatabase {
         'remote_stream_state',
         'remote_preparation_claims',
         'remote_deleted_profiles',
-        'podcast_sync_ack',
       ]) {
         await customStatement('DROP TABLE $table');
       }
+      await customStatement('DROP INDEX entries_podcast_sync_identity');
       await customStatement('DROP TRIGGER entries_search_update');
       await customStatement('DROP TRIGGER entries_search_delete');
       await customStatement(
@@ -61,7 +61,6 @@ void main() {
       kind: SourceItemKind.video,
     );
     await oldRepository.cacheEntries('alice', [movie]);
-    await old.customStatement('DROP INDEX entries_podcast_sync_identity');
     await old.customStatement("UPDATE entries SET search='film-123.mkv'");
     final progress = await oldRepository.saveProgress(
       'alice',
@@ -74,6 +73,7 @@ void main() {
       ),
     );
     for (final table in [
+      'podcast_sync_ack',
       'canonical_cards',
       'canonical_aliases',
       'canonical_copies',
@@ -81,10 +81,10 @@ void main() {
       'remote_stream_state',
       'remote_preparation_claims',
       'remote_deleted_profiles',
-      'podcast_sync_ack',
     ]) {
       await old.customStatement('DROP TABLE $table');
     }
+    await old.customStatement('DROP INDEX entries_podcast_sync_identity');
     await old.customStatement('PRAGMA user_version=9');
     await old.close();
     final database = SourceDatabase(NativeDatabase(file));

@@ -20,7 +20,7 @@ class AppleVisualizerRecovery {
 
   static bool Text(id value, NSUInteger maximum = 32768) {
     return [value isKindOfClass:[NSString class]] && [value length] > 0 &&
-        [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= maximum;
+           [value lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= maximum;
   }
   void Remember(NSString* path, NSString* reason) {
     if (!Text(path)) return;
@@ -33,10 +33,9 @@ class AppleVisualizerRecovery {
   }
   void Save() {
     NSError* error = nil;
-    NSDictionary* value = @{@"schemaVersion":@1, @"blocked":blocked_, @"active":active_ ?: (id)[NSNull null]};
+    NSDictionary* value = @{@"schemaVersion" : @1, @"blocked" : blocked_, @"active" : active_ ?: (id)[NSNull null]};
     NSData* bytes = [NSJSONSerialization dataWithJSONObject:value options:0 error:&error];
-    if (!bytes || bytes.length > 2 * 1024 * 1024 ||
-        ![bytes writeToURL:file_ options:NSDataWritingAtomic error:&error])
+    if (!bytes || bytes.length > 2 * 1024 * 1024 || ![bytes writeToURL:file_ options:NSDataWritingAtomic error:&error])
       throw std::runtime_error("Could not save visualization recovery state.");
     // NSData's atomic replacement alone does not promise durable file content.
     int fd = open(file_.fileSystemRepresentation, O_RDWR | O_CLOEXEC | O_NOFOLLOW);
@@ -46,36 +45,48 @@ class AppleVisualizerRecovery {
     if (result != 0) throw std::runtime_error("Could not flush visualization recovery state.");
     unreadable_ = false;
   }
+
  public:
   explicit AppleVisualizerRecovery(NSURL* file) : file_(file), blocked_([NSMutableDictionary dictionary]) {
     NSError* error = nil;
     auto* manager = NSFileManager.defaultManager;
-    if (![manager createDirectoryAtURL:file.URLByDeletingLastPathComponent withIntermediateDirectories:YES
-        attributes:@{NSFilePosixPermissions:@0700} error:&error])
+    if (![manager createDirectoryAtURL:file.URLByDeletingLastPathComponent
+            withIntermediateDirectories:YES
+                             attributes:@{
+                               NSFilePosixPermissions : @0700
+                             }
+                                  error:&error])
       throw std::runtime_error("Could not open visualization recovery storage.");
     NSDictionary* attributes = [manager attributesOfItemAtPath:file.path error:&error];
     if (!attributes) {
       if (error && error.code != NSFileReadNoSuchFileError && error.code != NSFileNoSuchFileError) unreadable_ = true;
       return;
     }
-    if (![attributes[NSFileType] isEqual:NSFileTypeRegular] || [attributes[NSFileSize] unsignedLongLongValue] > 2 * 1024 * 1024) {
-      unreadable_ = true; return;
+    if (![attributes[NSFileType] isEqual:NSFileTypeRegular] ||
+        [attributes[NSFileSize] unsignedLongLongValue] > 2 * 1024 * 1024) {
+      unreadable_ = true;
+      return;
     }
     NSData* data = [NSData dataWithContentsOfURL:file options:0 error:&error];
     id value = data ? [NSJSONSerialization JSONObjectWithData:data options:0 error:&error] : nil;
     if (![value isKindOfClass:[NSDictionary class]] || ![value[@"schemaVersion"] isEqual:@1] ||
         ![value[@"blocked"] isKindOfClass:[NSDictionary class]] || [value[@"blocked"] count] > 32) {
-      unreadable_ = true; return;
+      unreadable_ = true;
+      return;
     }
     for (id path in value[@"blocked"]) {
       id reason = value[@"blocked"][path];
-      if (!Text(path) || !Text(reason, 8192)) { unreadable_ = true; return; }
+      if (!Text(path) || !Text(reason, 8192)) {
+        unreadable_ = true;
+        return;
+      }
       blocked_[path] = reason;
     }
     id active = value[@"active"];
     if (active != [NSNull null]) {
       if (![active isKindOfClass:[NSDictionary class]] || !Text(active[@"path"]) || !Text(active[@"owner"], 256)) {
-        unreadable_ = true; return;
+        unreadable_ = true;
+        return;
       }
       Remember(active[@"path"], @"The previous visualization session ended unexpectedly.");
     }
@@ -84,7 +95,9 @@ class AppleVisualizerRecovery {
   }
   static AppleVisualizerRecovery& Shared() {
     static auto* journal = [] {
-      NSURL* root = [NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].firstObject;
+      NSURL* root = [NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory
+                                                         inDomains:NSUserDomainMask]
+                        .firstObject;
       if (!root) throw std::runtime_error("Visualization recovery storage is unavailable.");
       return new AppleVisualizerRecovery([[root URLByAppendingPathComponent:@"visualizer" isDirectory:YES]
           URLByAppendingPathComponent:@"apple-render-recovery.json"]);
@@ -101,8 +114,14 @@ class AppleVisualizerRecovery {
     if ([active_[@"owner"] isEqual:owner] && [active_[@"path"] isEqual:path]) return;
     NSDictionary* previous = active_;
     if (previous) Remember(previous[@"path"], @"The previous visualization session did not finish.");
-    active_ = @{@"owner":owner, @"path":path};
-    try { Save(); } catch (...) { active_ = previous; unreadable_ = true; throw; }
+    active_ = @{@"owner" : owner, @"path" : path};
+    try {
+      Save();
+    } catch (...) {
+      active_ = previous;
+      unreadable_ = true;
+      throw;
+    }
   }
   void End(NSString* owner, bool healthy, NSString* reason = nil, bool rendered = true) {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -110,6 +129,11 @@ class AppleVisualizerRecovery {
     if (healthy && rendered) [blocked_ removeObjectForKey:active_[@"path"]];
     if (!healthy) Remember(active_[@"path"], reason);
     active_ = nil;
-    try { Save(); } catch (...) { unreadable_ = true; throw; }
+    try {
+      Save();
+    } catch (...) {
+      unreadable_ = true;
+      throw;
+    }
   }
 };

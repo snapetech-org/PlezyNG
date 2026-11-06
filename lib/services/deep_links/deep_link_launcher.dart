@@ -39,7 +39,10 @@ Future<void> launchDeepLink(BuildContext context, DeepLink link, {required bool 
       return;
     case GameLink():
       await Navigator.of(context, rootNavigator: true).push(
-        PageRouteBuilder<void>(pageBuilder: (_, animation, secondaryAnimation) => GamesScreen(initialRommLink: link.target)));
+        PageRouteBuilder<void>(
+          pageBuilder: (_, animation, secondaryAnimation) => GamesScreen(initialRommLink: link.target),
+        ),
+      );
     case OpenMediaLink():
       await Navigator.of(context, rootNavigator: true).push(
         PageRouteBuilder<void>(
@@ -74,7 +77,9 @@ Future<void> _launchLegacyAutomationLink(BuildContext context, LegacyAutomationL
         return;
       }
       final launched = await controlLink.launch();
-      if (!launched) showMainSnackBar(t.automation.noActivePlayback);
+      if (!launched) {
+        showMainSnackBar(t.automation.noActivePlayback);
+      }
       return;
   }
 }
@@ -112,7 +117,9 @@ Future<void> _launchPlayLink(BuildContext context, PlayLink link, {required bool
   );
 
   final resolution = await resolver.resolve(link);
-  if (!context.mounted) return;
+  if (!context.mounted) {
+    return;
+  }
   switch (resolution) {
     case PlayLinkFailure(:final reason):
       showMainSnackBar(switch (reason) {
@@ -219,7 +226,9 @@ class PlayLinkResolver {
     final download = downloaded != null && downloaded.kind.isVideo ? downloaded : null;
     bool usable() => sources.isServerOnline(target.serverId) && sources.clientFor(target.serverId) != null;
     // A download plays at once instead of after waiting out an absent server.
-    if (download != null && !usable()) return PlayLinkItem(download, offline: true);
+    if (download != null && !usable()) {
+      return PlayLinkItem(download, offline: true);
+    }
 
     if (!await waitForServers(sources.serversChanged, usable, timeout: serverWait)) {
       return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
@@ -234,10 +243,14 @@ class PlayLinkResolver {
         error: e,
         stackTrace: stackTrace,
       );
-      if (download != null) return PlayLinkItem(download, offline: true);
+      if (download != null) {
+        return PlayLinkItem(download, offline: true);
+      }
       return const PlayLinkFailure(PlayLinkFailureReason.serverUnavailable);
     }
-    if (item == null) return const PlayLinkFailure(PlayLinkFailureReason.notFound);
+    if (item == null) {
+      return const PlayLinkFailure(PlayLinkFailureReason.notFound);
+    }
     return _forItem(client, _onServer(item, target.serverId), mode);
   }
 
@@ -256,10 +269,14 @@ class PlayLinkResolver {
     }
     final copies = <_Copy>[];
     for (final item in lookup.items) {
-      if (item.kind != target.kind) continue;
+      if (item.kind != target.kind) {
+        continue;
+      }
       final serverId = serverIdOrNull(item.serverId);
       final client = serverId == null ? null : sources.clientFor(serverId);
-      if (client != null) copies.add((client: client, item: item));
+      if (client != null) {
+        copies.add((client: client, item: item));
+      }
     }
     if (copies.isEmpty) {
       // A server that failed to answer or is offline may hold the title; one
@@ -278,7 +295,9 @@ class PlayLinkResolver {
       return PlayLinkItem(_watchedLast(fresh, (item) => item));
     }
 
-    if (mode == PlayMode.shuffle) return PlayLinkShuffle(copies.first.item);
+    if (mode == PlayMode.shuffle) {
+      return PlayLinkShuffle(copies.first.item);
+    }
 
     // Next: the copy being watched, and of several the one watched last.
     final onDeck = await Future.wait([for (final copy in copies) _onDeck(copy)]);
@@ -295,10 +314,14 @@ class PlayLinkResolver {
   /// [target] itself when it has one already or Discover cannot say.
   Future<CatalogPlayTarget> _withPlexHash(CatalogPlayTarget target) async {
     final resolve = sources.resolvePlexHash;
-    if (target.plexHash != null || !target.ids.hasCatalogIds || resolve == null) return target;
+    if (target.plexHash != null || !target.ids.hasCatalogIds || resolve == null) {
+      return target;
+    }
     try {
       final hash = await resolve(target);
-      if (hash == null || hash.isEmpty) return target;
+      if (hash == null || hash.isEmpty) {
+        return target;
+      }
       return CatalogPlayTarget(kind: target.kind, ids: target.ids, plexHash: hash);
     } catch (e, stackTrace) {
       // Best effort: the catalogue ids still find the title elsewhere.
@@ -332,10 +355,14 @@ class PlayLinkResolver {
       case MediaKind.movie || MediaKind.episode || MediaKind.clip:
         return PlayLinkItem(item);
       case MediaKind.show || MediaKind.season:
-        if (mode == PlayMode.shuffle) return PlayLinkShuffle(item);
+        if (mode == PlayMode.shuffle) {
+          return PlayLinkShuffle(item);
+        }
         if (item.kind == MediaKind.show) {
           final onDeck = (await _onDeck((client: client, item: item))).episode;
-          if (onDeck != null) return PlayLinkItem(_onServer(onDeck, ServerId(item.serverId!)));
+          if (onDeck != null) {
+            return PlayLinkItem(_onServer(onDeck, ServerId(item.serverId!)));
+          }
         }
         return _firstEpisode(client, item, preferUnwatched: item.kind == MediaKind.season);
       default:
@@ -359,7 +386,9 @@ class PlayLinkResolver {
     }
     final ordered = episodes.where((e) => e.kind == MediaKind.episode).toList()..sort(compareEpisodesSpecialsLast);
     final episode = (preferUnwatched ? firstUnwatchedEpisode(ordered) : null) ?? ordered.firstOrNull;
-    if (episode == null) return const PlayLinkFailure(PlayLinkFailureReason.notFound);
+    if (episode == null) {
+      return const PlayLinkFailure(PlayLinkFailureReason.notFound);
+    }
     return PlayLinkItem(_onServer(episode, ServerId(container.serverId!)));
   }
 }
@@ -367,16 +396,24 @@ class PlayLinkResolver {
 /// Waits up to [timeout] for [ready], re-checking whenever [changes]
 /// notifies. Returns whether it became true.
 Future<bool> waitForServers(Listenable changes, bool Function() ready, {required Duration timeout}) async {
-  if (ready()) return true;
-  if (timeout <= Duration.zero) return false;
+  if (ready()) {
+    return true;
+  }
+  if (timeout <= Duration.zero) {
+    return false;
+  }
   final done = Completer<bool>();
   void check() {
-    if (!done.isCompleted && ready()) done.complete(true);
+    if (!done.isCompleted && ready()) {
+      done.complete(true);
+    }
   }
 
   changes.addListener(check);
   final timer = Timer(timeout, () {
-    if (!done.isCompleted) done.complete(ready());
+    if (!done.isCompleted) {
+      done.complete(ready());
+    }
   });
   try {
     return await done.future;
@@ -413,11 +450,15 @@ Future<void> _launchLiveLink(BuildContext context, LiveLink link, {required bool
       () => serverId == null ? multiServer.hasConnectedServers : multiServer.isServerOnline(serverId),
       timeout: deepLinkServerWait,
     );
-    if (!context.mounted) return;
+    if (!context.mounted) {
+      return;
+    }
     await multiServer.checkLiveTvAvailability();
     found = sources();
   }
-  if (!context.mounted) return;
+  if (!context.mounted) {
+    return;
+  }
   if (found.isEmpty) {
     appLogger.w('Live link: no Live TV server${link.serverId == null ? '' : ' ${link.serverId}'}');
     showMainSnackBar(t.deepLinks.noLiveTv);
@@ -427,7 +468,9 @@ Future<void> _launchLiveLink(BuildContext context, LiveLink link, {required bool
   final channels = <LiveTvChannel>[];
   for (final source in found) {
     final client = multiServer.getClientForServer(ServerId(source.serverId));
-    if (client == null) continue;
+    if (client == null) {
+      continue;
+    }
     try {
       final rows = await client.liveTv.fetchChannels(lineup: source.lineup);
       channels.addAll(rows.map((c) => c.copyWith(serverId: source.serverId, liveDvrKey: source.dvrKey)));
@@ -435,7 +478,9 @@ Future<void> _launchLiveLink(BuildContext context, LiveLink link, {required bool
       appLogger.w('Live link: fetching channels from ${source.serverId} failed', error: e, stackTrace: stackTrace);
     }
   }
-  if (!context.mounted) return;
+  if (!context.mounted) {
+    return;
+  }
 
   final match = link.selectChannel(channels);
   if (match == null) {

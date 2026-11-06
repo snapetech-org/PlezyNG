@@ -12,12 +12,42 @@ add_executable(${BINARY_NAME}
   "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
 )
 
-# Package the portable Vulkan-backed provider in Linux app builds by default.
-# A caller may explicitly select cpu, amd-migraphx, or openvino instead. The
-# standalone PME CMake project keeps its minimal CPU default.
+# Package supported NPU and portable Vulkan providers in ordinary app builds.
+# Provider selection happens after the user opts in to Neural in Settings.
+# The standalone PME project retains its minimal developer configuration.
 if(NOT DEFINED PLEZY_ORT_LINUX_VARIANT)
-  set(PLEZY_ORT_LINUX_VARIANT "webgpu" CACHE STRING
-    "Linux ONNX Runtime bundle: cpu, amd-migraphx, openvino, or webgpu")
+  set(PLEZY_ORT_LINUX_VARIANT "auto" CACHE STRING
+    "Linux ONNX Runtime bundle: auto, cpu, amd-migraphx, openvino, or webgpu")
+endif()
+
+# Speech and motion share one ORT runtime in the final bundle. Select the
+# locked speech package's API-v27-compatible runtime before PME installation,
+# rather than installing a second runtime that packaging overwrites later.
+if(PLEZY_ORT_LINUX_VARIANT STREQUAL "auto" AND
+   NOT PME_ORT_RUNTIME_LIBRARY AND NOT DEFINED ENV{PME_ORT_RUNTIME_LIBRARY})
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  if(FLUTTER_TARGET_PLATFORM STREQUAL "linux-arm64")
+    set(PLEZY_SPEECH_ARCH "arm64")
+  elseif(FLUTTER_TARGET_PLATFORM STREQUAL "linux-x64")
+    set(PLEZY_SPEECH_ARCH "x64")
+  else()
+    message(FATAL_ERROR "Unknown Linux speech runtime target: ${FLUTTER_TARGET_PLATFORM}")
+  endif()
+  execute_process(
+    COMMAND "${Python3_EXECUTABLE}"
+      "${CMAKE_SOURCE_DIR}/packaging/install-sherpa-onnx-runtime.py"
+      --print-runtime --arch "${PLEZY_SPEECH_ARCH}"
+      --package-config "${CMAKE_SOURCE_DIR}/../.dart_tool/package_config.json"
+    RESULT_VARIABLE PLEZY_SPEECH_RUNTIME_RESULT
+    OUTPUT_VARIABLE PLEZY_SPEECH_RUNTIME
+    ERROR_VARIABLE PLEZY_SPEECH_RUNTIME_ERROR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(NOT PLEZY_SPEECH_RUNTIME_RESULT EQUAL 0)
+    message(FATAL_ERROR "Cannot resolve the locked ONNX runtime: ${PLEZY_SPEECH_RUNTIME_ERROR}")
+  endif()
+  set(PME_ORT_RUNTIME_LIBRARY "${PLEZY_SPEECH_RUNTIME}" CACHE FILEPATH
+    "ONNX Runtime shared library to bundle" FORCE)
 endif()
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/../shared/cpp/plezy_motion_engine" plezy_motion_engine)

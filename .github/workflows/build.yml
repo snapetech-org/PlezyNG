@@ -56,7 +56,8 @@ on:
         type: boolean
         default: true
       include_webos_release:
-        description: Required for release actions; validation build actions keep webOS as a candidate
+        description: >-
+          Include the verified LG webOS IPK in the complete versioned release.
         required: true
         type: boolean
         default: true
@@ -91,7 +92,7 @@ env:
   RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true --dart-define=GIT_COMMIT=${{ github.sha }}
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
   LINUX_APT_PACKAGES: >
-    clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libsecret-1-dev libevdev-dev liblzma-dev
+    clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libwebkit2gtk-4.1-dev libsecret-1-dev libevdev-dev liblzma-dev
     libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-base gstreamer1.0-libav gstreamer1.0-plugins-bad gstreamer1.0-plugins-good
     libstdc++-12-dev libasound2-dev libass-dev libfreetype-dev libfontconfig-dev libfribidi-dev
     libharfbuzz-dev libepoxy-dev libegl-dev libgl-dev libgnutls28-dev libpipewire-0.3-dev
@@ -180,9 +181,6 @@ jobs:
             echo "Unsupported subtitle_gpu_backend: $SUBTITLE_GPU_BACKEND" >&2
             exit 1
           fi
-          if [[ "$ACTION" == "build" ]]; then
-            INCLUDE_WEBOS_RELEASE=false
-          fi
           if [[ "$ACTION" == "release" && ( "$INCLUDE_WEBOS_BUILD" != "true" || "$INCLUDE_WEBOS_RELEASE" != "true" || "$INCLUDE_TIZEN_BUILD" != "true" || "$EXECUTION_PROFILE" != "hybrid" ) ]]; then
             echo "Versioned releases require webOS, Tizen and Windows ARM64. Use the complete hybrid platform matrix." >&2
             exit 1
@@ -234,8 +232,8 @@ jobs:
             echo "The hybrid execution profile requires a CPU-backend release or Android validation build from refs/heads/main." >&2
             exit 1
           fi
-          if [[ "$MODE" == "release" && "$VERSION" == "3.0.0" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
-            echo "The Pleazyng 3.0.0 release requires the hybrid profile so native Windows ARM64 CI and release artifacts are included." >&2
+          if [[ "$MODE" == "release" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
+            echo "Complete versioned releases require the hybrid profile so native Windows ARM64 CI and release artifacts are included." >&2
             exit 1
           fi
           if [[ "$PREPARE_HOMEBREW_CASK" != "true" && "$PREPARE_HOMEBREW_CASK" != "false" ]]; then
@@ -285,6 +283,10 @@ jobs:
           fi
           if [[ "$MODE" == "release" && "$INCLUDE_TIZEN_BUILD" != "true" && "$INCLUDE_TIZEN_BUILD" != "false" ]]; then
             echo "include_tizen_build must be true or false." >&2
+            exit 1
+          fi
+          if [[ "$MODE" == "release" && ( "$INCLUDE_WEBOS_BUILD" != "true" || "$INCLUDE_WEBOS_RELEASE" != "true" || "$INCLUDE_TIZEN_BUILD" != "true" ) ]]; then
+            echo "Complete versioned builds require webOS and Tizen packages and release inclusion." >&2
             exit 1
           fi
           {
@@ -395,10 +397,7 @@ jobs:
             echo "A public webOS release requires building the webOS candidate." >&2
             exit 1
           fi
-          if [[ "${{ steps.request.outputs.include_webos_release }}" == "true" && "$ACTION" != "release" ]]; then
-            echo "Public webOS inclusion requires action=release." >&2
-            exit 1
-          fi
+
 
       - name: Validate release tag before building
         if: ${{ steps.request.outputs.mode == 'release' }}
@@ -465,14 +464,9 @@ jobs:
           REPOSITORY: ${{ github.repository }}
         run: python3 scripts/verify_release_ci.py
 
-      - name: Require approval for the exact webOS release artifact
-        if: ${{ steps.request.outputs.mode == 'release' && steps.request.outputs.include_webos_release == 'true' }}
-        env:
-          RELEASE_TAG: ${{ steps.request.outputs.version }}
-        run: >-
-          python3 tools/webos/check_release_eligibility.py
-          --preflight
-          --version "$RELEASE_TAG"
+      - name: Validate webOS package metadata
+        if: ${{ steps.request.outputs.mode == 'release' }}
+        run: python3 tools/webos/verify_package.py --project-metadata
 
       - name: Validate webOS-only mode input
         if: ${{ steps.request.outputs.mode == 'webos-validation' }}
@@ -782,7 +776,7 @@ jobs:
       - name: Verify private WebOS output storage
         run: python3 tools/webos/retain_private_candidate.py --preflight
 
-      - name: Test WebOS packaging and release gates
+      - name: Test WebOS packaging and integrity
         env:
           PLEZY_WEBOS_TEST_TMP: ${{ runner.temp }}/plezy-webos-tests
         run: |
@@ -859,7 +853,7 @@ jobs:
             --source-dir "$OUTPUT_DIR" \
             --version "$(python3 scripts/pubspec_version.py pubspec.yaml)"
 
-      - name: Verify the exact approved WebOS IPK
+      - name: Verify WebOS package integrity and source
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
         env:
           OUTPUT_DIR: ${{ steps.webos-build.outputs.output_dir }}
@@ -872,8 +866,8 @@ jobs:
             echo "Expected exactly one WebOS IPK in the verified output." >&2
             exit 1
           fi
-          python3 tools/webos/check_release_eligibility.py \
-            --version "$RELEASE_TAG" \
+          python3 tools/webos/check_release_package.py \
+            --version "$RELEASE_TAG" --source-commit "$GITHUB_SHA" \
             --artifact "${ipks[0]}"
 
       - name: Prepare LG Seller Lounge handoff bundle
@@ -892,7 +886,8 @@ jobs:
           fi
           python3 scripts/tv_store_submission.py --store lg \
             --package "${ipks[0]}" --version "$RELEASE_TAG" \
-            --source-commit "$SOURCE_COMMIT" --release-gates-passed \
+            --source-commit "$SOURCE_COMMIT" --package-verified \
+            --evidence "$OUTPUT_DIR/webos-app-provenance.json" \
             --evidence "$OUTPUT_DIR/webos-engine-provenance.json" \
             --evidence "$OUTPUT_DIR/webos-compatibility.json" \
             --evidence "$OUTPUT_DIR/SHA256SUMS.txt" \
@@ -902,11 +897,12 @@ jobs:
         with:
           subject-path: |
             ${{ steps.webos-build.outputs.output_dir }}/*.ipk
+            ${{ steps.webos-build.outputs.output_dir }}/webos-app-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-engine-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-compatibility.json
             ${{ steps.webos-build.outputs.output_dir }}/SHA256SUMS.txt
 
-      - name: Upload approved WebOS IPK for public release assembly
+      - name: Upload verified WebOS IPK for release assembly
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
@@ -921,6 +917,7 @@ jobs:
         with:
           name: webos-validation-evidence
           path: |
+            ${{ steps.webos-build.outputs.output_dir }}/webos-app-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-engine-provenance.json
             ${{ steps.webos-build.outputs.output_dir }}/webos-compatibility.json
             ${{ steps.webos-build.outputs.output_dir }}/SHA256SUMS.txt
@@ -993,6 +990,8 @@ jobs:
           set -euo pipefail
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
           command -v cmake >/dev/null || brew install cmake
+          command -v xcodegen >/dev/null || brew install xcodegen
+          command -v git-lfs >/dev/null || brew install git-lfs
           cmake --version
 
       - name: Install CocoaPods
@@ -1211,6 +1210,8 @@ jobs:
           set -euo pipefail
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
           command -v cmake >/dev/null || brew install cmake
+          command -v xcodegen >/dev/null || brew install xcodegen
+          command -v git-lfs >/dev/null || brew install git-lfs
           cmake --version
 
       - name: Install CocoaPods
@@ -1406,6 +1407,8 @@ jobs:
           set -euo pipefail
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
           command -v cmake >/dev/null || brew install cmake
+          command -v xcodegen >/dev/null || brew install xcodegen
+          command -v git-lfs >/dev/null || brew install git-lfs
           cmake --version
 
       - name: Install CocoaPods
@@ -2346,13 +2349,13 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: libmpv-prefix
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json', 'scripts/fetch_linux_libmpv.py') }}
 
       # The prebuilt prefix from our unified mpv-build repo: the script reads
       # the asset and expected SHA-256 from the lock and verifies the bytes
       # before a single one is extracted. The tarball is a self-relocating
       # prefix tree (lib/ or lib/<triplet>/ with the libmpv.so* chain,
-      # lib/libshaderc_shared.so*, include/, and pkgconfig/ dirs with
+      # lib/libshaderc_shared.so*, lib/libvulkan.so*, include/, and pkgconfig/ dirs with
       # ${pcfiledir}-relative roots), so the downstream PKG_CONFIG_PATH,
       # bundle-copy, and find steps are unchanged.
       - name: Fetch libmpv
@@ -2386,6 +2389,12 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Cache locked offline HDR10 and SDR tools
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/plezyng/dv-tools
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-dv-tools-${{ runner.arch }}-${{ hashFiles('tools/dv-engine/offline-runtime.lock.json') }}
 
       - name: Build bundled MilkRust for Linux
         shell: bash
@@ -2439,6 +2448,7 @@ jobs:
           LIBMPV_DIR=$(dirname "$(find libmpv-prefix -name 'libmpv.so' | head -1)")
           cp -a "$LIBMPV_DIR"/libmpv.so* "$BUNDLE_LIB/"
           cp -a libmpv-prefix/lib/libshaderc_shared.so* "$BUNDLE_LIB/"
+          cp -a libmpv-prefix/lib/libvulkan.so* "$BUNDLE_LIB/"
 
       - name: Bundle shared libraries
         shell: bash
@@ -2967,6 +2977,7 @@ jobs:
             echo artifacts/android-apk/pleazyng-android-x86_64.tar.gz
             if [[ "$INCLUDE_WEBOS_RELEASE" == "true" ]]; then
               echo artifacts/webos/*.ipk
+              echo artifacts/webos/webos-app-provenance.json
               echo artifacts/webos/webos-engine-provenance.json
               echo artifacts/webos/webos-compatibility.json
               echo artifacts/webos/webos-SHA256SUMS.txt

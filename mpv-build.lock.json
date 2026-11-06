@@ -2,27 +2,27 @@
   "artifacts": {
     "android": {
       "aar": {
-        "asset": "mpv-android-f4dc64da4397.aar",
-        "checksum": "c250af536c7cff7d47fc66d8ada978cf6bc50f19a2a3cd1039ad41a589b92f7e",
-        "key": "f4dc64da4397"
+        "asset": "mpv-android-a2eaf3a9242e.aar",
+        "checksum": "387b0bb9d482a46b02dee8c2538c5ae23176882422422aa595bfa9f662fb6112",
+        "key": "a2eaf3a9242e"
       },
       "assetBase": "https://github.com/snapetech-org/mpv-build/releases/download/binaries-android",
       "symbols": {
         "arm64-v8a": {
-          "asset": "mpv-android-f4dc64da4397-arm64-v8a-symbols.zip",
-          "checksum": "3546a79637d6a1aacc0539c69908648af9d11d35f5493e13868f3e066e97f42c"
+          "asset": "mpv-android-a2eaf3a9242e-arm64-v8a-symbols.zip",
+          "checksum": "225a20d49223f8540d862ec15be1458e72d8c21ff29ca8723f206bed4a161397"
         },
         "armeabi-v7a": {
-          "asset": "mpv-android-f4dc64da4397-armeabi-v7a-symbols.zip",
-          "checksum": "203bf4e79965681a886349774f3f37566ff4559470689071bdff1029d30fd592"
+          "asset": "mpv-android-a2eaf3a9242e-armeabi-v7a-symbols.zip",
+          "checksum": "a20d71a3c31b9fdfd086f6d0d4c9bd6dd6c302f0194bd7d46c843400105de9a2"
         },
         "x86": {
-          "asset": "mpv-android-f4dc64da4397-x86-symbols.zip",
-          "checksum": "a0821b0ed863af6ef6b2bde32508daf8a0108f093b012d9a669dc2ccd2746d06"
+          "asset": "mpv-android-a2eaf3a9242e-x86-symbols.zip",
+          "checksum": "8346b9b34a6eaea4c66ce6b2bd53115086b919e4114bcfddab6220181280922c"
         },
         "x86_64": {
-          "asset": "mpv-android-f4dc64da4397-x86_64-symbols.zip",
-          "checksum": "3d68b33cbcf2f1119b5f15a5506f65c0531270d814457b76e5a5a74b3a708499"
+          "asset": "mpv-android-a2eaf3a9242e-x86_64-symbols.zip",
+          "checksum": "9916b451afe585606c57e138ec9ce34fa1ce9396349a9026bef85c83ab51572a"
         }
       }
     },
@@ -30,23 +30,23 @@
       "assetBase": "https://github.com/snapetech-org/mpv-build/releases/download/binaries-linux",
       "assets": {
         "aarch64": {
-          "asset": "libmpv-linux-9d2c2fe13669-aarch64.tar.zst",
-          "checksum": "9a7a68bb6895b43db801b74b6bea7141b24520d30f2203e846178d47fef00ace"
+          "asset": "libmpv-linux-24046d15c2a3-aarch64.tar.zst",
+          "checksum": "31e8480c979bd63f84c0f9ed4911ee700cf70b1a2bf98fb3785ab0804794355f"
         },
         "x86_64": {
-          "asset": "libmpv-linux-9d2c2fe13669-x86_64.tar.zst",
-          "checksum": "16ed0ff26543c44553f03727aa8db9027328b3aef3f5ec526f524839b67a45a4"
+          "asset": "libmpv-linux-24046d15c2a3-x86_64.tar.zst",
+          "checksum": "6c3ba549f7fbb5f817fb123afcca2befb500e0b3966b1719090adbc7a8d22340"
         }
       },
-      "key": "9d2c2fe13669",
+      "key": "24046d15c2a3",
       "symbols": {
         "aarch64": {
-          "asset": "libmpv-linux-9d2c2fe13669-aarch64-symbols.zip",
-          "checksum": "1183b3e007598f9eefcb509335ac61339f7018fdbe2ae46f4fb717c73ed7be6c"
+          "asset": "libmpv-linux-24046d15c2a3-aarch64-symbols.zip",
+          "checksum": "3f445efded06a60a7b907042094894be21568529a7150201a96a00580f87b080"
         },
         "x86_64": {
-          "asset": "libmpv-linux-9d2c2fe13669-x86_64-symbols.zip",
-          "checksum": "d524a6f4e8775ba8764e63b2d3b600eb959876ab3694861f900e53aabd23c799"
+          "asset": "libmpv-linux-24046d15c2a3-x86_64-symbols.zip",
+          "checksum": "ff3bddb4031adb5e1a5e0984b402f3e334c0df87ab9555343dd52271bc330473"
         }
       }
     },
@@ -54,28 +54,413 @@
       "assetBase": "https://github.com/snapetech-org/mpv-build/releases/download/binaries-windows",
       "assets": {
         "aarch64": {
-          "asset": "libmpv-windows-e602a168afe6-aarch64.zip",
-          "checksum": "997ab651bdb434048c9c80206540d70437d67812f645b9a7b1f8bb349846c28a"
+          "asset": "libmpv-windows-d0968b525be2-aarch64.zip",
+          "checksum": "2df0a2b1a2bb77e7f61c5a89bf9fe501c28e79afdff99b51a8f97f405a14b93a"
         },
         "x86_64": {
-          "asset": "libmpv-windows-e602a168afe6-x86_64.zip",
-          "checksum": "d604668ba77aadc18aa6b6a2a3f41c7a0bca3a041405a24e2c0d4d6c06d3cfb8"
+          "asset": "libmpv-windows-d0968b525be2-x86_64.zip",
+          "checksum": "8a6c06452feeaaa02fd5b14f23ad550ba059fc304230cd3a38d06315ffc35583"
         }
       },
-      "key": "e602a168afe6",
+      "key": "d0968b525be2",
       "symbols": {
         "aarch64": {
-          "asset": "libmpv-windows-e602a168afe6-aarch64-symbols.zip",
-          "checksum": "14a52ea55a2c98c5b19331a52cbd2f3107fba717dbcb89a3540f8eafe24f8009"
+          "asset": "libmpv-windows-d0968b525be2-aarch64-symbols.zip",
+          "checksum": "890ce4f67d0b01a0971c8aae76bbd14820a2a76768fd91be9e015a8109f4a71d"
         },
         "x86_64": {
-          "asset": "libmpv-windows-e602a168afe6-x86_64-symbols.zip",
-          "checksum": "deb9053236a06390bcf9088196f669d35d4d46a2087653cff7ec9555e46ad5c7"
+          "asset": "libmpv-windows-d0968b525be2-x86_64-symbols.zip",
+          "checksum": "9b131e3d49b40a514380aa1b5820db9aacc200005c432e9b149e65e7acc56132"
         }
       }
     }
   },
-  "commit": "9210fcddd0ce3d6cdfe2151e2718ea83058ab243",
+  "commit": "2c4944d2b725c142de8e78e38de08adfbe9a7bae",
   "formatVersion": 1,
+  "nativePackages": {
+    "android": {
+      "aar": {
+        "asset": "mpv-android-a2eaf3a9242e.aar",
+        "capabilities": {
+          "appleSlices": [],
+          "artifactSha256": "387b0bb9d482a46b02dee8c2538c5ae23176882422422aa595bfa9f662fb6112",
+          "binaries": [
+            "jni/arm64-v8a/libmpv.so",
+            "jni/armeabi-v7a/libmpv.so",
+            "jni/x86/libmpv.so",
+            "jni/x86_64/libmpv.so"
+          ],
+          "binaryArchitectures": {
+            "jni/arm64-v8a/libmpv.so": [
+              "arm64"
+            ],
+            "jni/armeabi-v7a/libmpv.so": [
+              "armv7"
+            ],
+            "jni/x86/libmpv.so": [
+              "i386"
+            ],
+            "jni/x86_64/libmpv.so": [
+              "x86_64"
+            ]
+          },
+          "binarySha256": {
+            "jni/arm64-v8a/libmpv.so": "e8e06bf6a5489b92e2a59e23d7230a59ffc24af8aec092499ec807d16388e3cf",
+            "jni/armeabi-v7a/libmpv.so": "d392ae3ef5c72d3b298a2aa5662c0db2fa8c20019b0fb8d8176b7e1de0dd54d8",
+            "jni/x86/libmpv.so": "f308ae753cc8654fe6555a62778079a4a8731c99f205d4a50984ab17a1595b28",
+            "jni/x86_64/libmpv.so": "de13df090ec020c38bf2da29f592e700743231009fb3b844b8b6d490b258e9da"
+          },
+          "executionQualified": false,
+          "inspectionSchema": 4,
+          "motionPlatform": "android",
+          "neuralFilters": {
+            "jni/arm64-v8a/libmpv.so": {
+              "arm64": [
+                "anvil",
+                "litert"
+              ]
+            },
+            "jni/armeabi-v7a/libmpv.so": {
+              "armv7": []
+            },
+            "jni/x86/libmpv.so": {
+              "i386": []
+            },
+            "jni/x86_64/libmpv.so": {
+              "x86_64": []
+            }
+          },
+          "orderedSubtitlePcmAbi": 1,
+          "requiredSymbols": [
+            "mpv_plezy_audio_tap_version",
+            "mpv_plezy_audio_tap_enable",
+            "mpv_plezy_audio_tap_read",
+            "mpv_plezy_audio_tap_read_next"
+          ],
+          "symbol": "mpv_plezy_audio_tap_read_next"
+        },
+        "checksum": "387b0bb9d482a46b02dee8c2538c5ae23176882422422aa595bfa9f662fb6112"
+      }
+    },
+    "apple": {
+      "Libmpv": {
+        "asset": "Libmpv-f1ea43848944.xcframework.zip",
+        "capabilities": {
+          "appleSlices": [
+            {
+              "architectures": [
+                "arm64"
+              ],
+              "binary": "Libmpv.xcframework/ios-arm64/Libmpv.framework/Libmpv",
+              "platform": "ios",
+              "variant": ""
+            },
+            {
+              "architectures": [
+                "arm64",
+                "x86_64"
+              ],
+              "binary": "Libmpv.xcframework/ios-arm64_x86_64-maccatalyst/Libmpv.framework/Libmpv",
+              "platform": "ios",
+              "variant": "maccatalyst"
+            },
+            {
+              "architectures": [
+                "arm64",
+                "x86_64"
+              ],
+              "binary": "Libmpv.xcframework/ios-arm64_x86_64-simulator/Libmpv.framework/Libmpv",
+              "platform": "ios",
+              "variant": "simulator"
+            },
+            {
+              "architectures": [
+                "arm64",
+                "x86_64"
+              ],
+              "binary": "Libmpv.xcframework/macos-arm64_x86_64/Libmpv.framework/Versions/A/Libmpv",
+              "platform": "macos",
+              "variant": ""
+            },
+            {
+              "architectures": [
+                "arm64",
+                "arm64e"
+              ],
+              "binary": "Libmpv.xcframework/tvos-arm64_arm64e/Libmpv.framework/Libmpv",
+              "platform": "tvos",
+              "variant": ""
+            },
+            {
+              "architectures": [
+                "arm64",
+                "x86_64"
+              ],
+              "binary": "Libmpv.xcframework/tvos-arm64_x86_64-simulator/Libmpv.framework/Libmpv",
+              "platform": "tvos",
+              "variant": "simulator"
+            }
+          ],
+          "artifactSha256": "3f0bc8d9a9a72f1e0e5a87e3c75d6252c5bec6978d207e87f7e87f208f9f97bb",
+          "binaries": [
+            "Libmpv.xcframework/ios-arm64/Libmpv.framework/Libmpv",
+            "Libmpv.xcframework/ios-arm64_x86_64-maccatalyst/Libmpv.framework/Libmpv",
+            "Libmpv.xcframework/ios-arm64_x86_64-simulator/Libmpv.framework/Libmpv",
+            "Libmpv.xcframework/macos-arm64_x86_64/Libmpv.framework/Versions/A/Libmpv",
+            "Libmpv.xcframework/tvos-arm64_arm64e/Libmpv.framework/Libmpv",
+            "Libmpv.xcframework/tvos-arm64_x86_64-simulator/Libmpv.framework/Libmpv"
+          ],
+          "binaryArchitectures": {
+            "Libmpv.xcframework/ios-arm64/Libmpv.framework/Libmpv": [
+              "arm64"
+            ],
+            "Libmpv.xcframework/ios-arm64_x86_64-maccatalyst/Libmpv.framework/Libmpv": [
+              "arm64",
+              "x86_64"
+            ],
+            "Libmpv.xcframework/ios-arm64_x86_64-simulator/Libmpv.framework/Libmpv": [
+              "arm64",
+              "x86_64"
+            ],
+            "Libmpv.xcframework/macos-arm64_x86_64/Libmpv.framework/Versions/A/Libmpv": [
+              "arm64",
+              "x86_64"
+            ],
+            "Libmpv.xcframework/tvos-arm64_arm64e/Libmpv.framework/Libmpv": [
+              "arm64",
+              "arm64e"
+            ],
+            "Libmpv.xcframework/tvos-arm64_x86_64-simulator/Libmpv.framework/Libmpv": [
+              "arm64",
+              "x86_64"
+            ]
+          },
+          "binarySha256": {
+            "Libmpv.xcframework/ios-arm64/Libmpv.framework/Libmpv": "2360a27bfce6326e1e3812f080cee3f5693be113a5adaf163b4a3a037050ab4f",
+            "Libmpv.xcframework/ios-arm64_x86_64-maccatalyst/Libmpv.framework/Libmpv": "bc61cbf1c6321de3e85b8610784ada2b785c1ed62008da9b330b8c6e149a22f8",
+            "Libmpv.xcframework/ios-arm64_x86_64-simulator/Libmpv.framework/Libmpv": "e93e81f5028f54bd89ceed984b3f1886ed5c440d84b8d610100f84a03ecc9bd7",
+            "Libmpv.xcframework/macos-arm64_x86_64/Libmpv.framework/Versions/A/Libmpv": "bd9be1815498b0b56eeec23b9ea053ecf3d7f62f45e2c06ccf7e334329aac440",
+            "Libmpv.xcframework/tvos-arm64_arm64e/Libmpv.framework/Libmpv": "527b912b0d5f73d85c4fc8326d880059bd41c849ce0db2b9852b39b79780abf4",
+            "Libmpv.xcframework/tvos-arm64_x86_64-simulator/Libmpv.framework/Libmpv": "bef2fd293a1d6fcd16e7cf7382ff3f59944ef02f0713636eaa0f86dea9ad6d4e"
+          },
+          "executionQualified": false,
+          "inspectionSchema": 4,
+          "motionPlatform": "apple",
+          "neuralFilters": {
+            "Libmpv.xcframework/ios-arm64/Libmpv.framework/Libmpv": {
+              "arm64": [
+                "videotoolbox"
+              ]
+            },
+            "Libmpv.xcframework/ios-arm64_x86_64-maccatalyst/Libmpv.framework/Libmpv": {
+              "arm64": [
+                "videotoolbox"
+              ],
+              "x86_64": [
+                "videotoolbox"
+              ]
+            },
+            "Libmpv.xcframework/ios-arm64_x86_64-simulator/Libmpv.framework/Libmpv": {
+              "arm64": [
+                "videotoolbox"
+              ],
+              "x86_64": [
+                "videotoolbox"
+              ]
+            },
+            "Libmpv.xcframework/macos-arm64_x86_64/Libmpv.framework/Versions/A/Libmpv": {
+              "arm64": [
+                "videotoolbox"
+              ],
+              "x86_64": [
+                "videotoolbox"
+              ]
+            },
+            "Libmpv.xcframework/tvos-arm64_arm64e/Libmpv.framework/Libmpv": {
+              "arm64": [
+                "videotoolbox"
+              ],
+              "arm64e": [
+                "videotoolbox"
+              ]
+            },
+            "Libmpv.xcframework/tvos-arm64_x86_64-simulator/Libmpv.framework/Libmpv": {
+              "arm64": [
+                "videotoolbox"
+              ],
+              "x86_64": [
+                "videotoolbox"
+              ]
+            }
+          },
+          "orderedSubtitlePcmAbi": 1,
+          "requiredSymbols": [
+            "mpv_plezy_audio_tap_version",
+            "mpv_plezy_audio_tap_enable",
+            "mpv_plezy_audio_tap_read",
+            "mpv_plezy_audio_tap_read_next"
+          ],
+          "symbol": "mpv_plezy_audio_tap_read_next"
+        },
+        "checksum": "3f0bc8d9a9a72f1e0e5a87e3c75d6252c5bec6978d207e87f7e87f208f9f97bb"
+      }
+    },
+    "linux": {
+      "aarch64": {
+        "asset": "libmpv-linux-24046d15c2a3-aarch64.tar.zst",
+        "capabilities": {
+          "appleSlices": [],
+          "artifactSha256": "31e8480c979bd63f84c0f9ed4911ee700cf70b1a2bf98fb3785ab0804794355f",
+          "binaries": [
+            "lib/aarch64-linux-gnu/libmpv.so.2.6.0"
+          ],
+          "binaryArchitectures": {
+            "lib/aarch64-linux-gnu/libmpv.so.2.6.0": [
+              "arm64"
+            ]
+          },
+          "binarySha256": {
+            "lib/aarch64-linux-gnu/libmpv.so.2.6.0": "cc8471d21f18943de9d82a1ca4cdb074594e82c9575612455a134fcef9579a2c"
+          },
+          "executionQualified": false,
+          "inspectionSchema": 4,
+          "motionPlatform": "linux",
+          "neuralFilters": {
+            "lib/aarch64-linux-gnu/libmpv.so.2.6.0": {
+              "arm64": [
+                "pme"
+              ]
+            }
+          },
+          "orderedSubtitlePcmAbi": 1,
+          "pmeVulkan": true,
+          "requiredSymbols": [
+            "mpv_plezy_audio_tap_version",
+            "mpv_plezy_audio_tap_enable",
+            "mpv_plezy_audio_tap_read",
+            "mpv_plezy_audio_tap_read_next"
+          ],
+          "symbol": "mpv_plezy_audio_tap_read_next"
+        },
+        "checksum": "31e8480c979bd63f84c0f9ed4911ee700cf70b1a2bf98fb3785ab0804794355f"
+      },
+      "x86_64": {
+        "asset": "libmpv-linux-24046d15c2a3-x86_64.tar.zst",
+        "capabilities": {
+          "appleSlices": [],
+          "artifactSha256": "6c3ba549f7fbb5f817fb123afcca2befb500e0b3966b1719090adbc7a8d22340",
+          "binaries": [
+            "lib/x86_64-linux-gnu/libmpv.so.2.6.0"
+          ],
+          "binaryArchitectures": {
+            "lib/x86_64-linux-gnu/libmpv.so.2.6.0": [
+              "x86_64"
+            ]
+          },
+          "binarySha256": {
+            "lib/x86_64-linux-gnu/libmpv.so.2.6.0": "c15082fe79b3a6f31332b016c7cb03c0bd87dec00c13cf5345bb680de35afcb0"
+          },
+          "executionQualified": false,
+          "inspectionSchema": 4,
+          "motionPlatform": "linux",
+          "neuralFilters": {
+            "lib/x86_64-linux-gnu/libmpv.so.2.6.0": {
+              "x86_64": [
+                "pme"
+              ]
+            }
+          },
+          "orderedSubtitlePcmAbi": 1,
+          "pmeVulkan": true,
+          "requiredSymbols": [
+            "mpv_plezy_audio_tap_version",
+            "mpv_plezy_audio_tap_enable",
+            "mpv_plezy_audio_tap_read",
+            "mpv_plezy_audio_tap_read_next"
+          ],
+          "symbol": "mpv_plezy_audio_tap_read_next"
+        },
+        "checksum": "6c3ba549f7fbb5f817fb123afcca2befb500e0b3966b1719090adbc7a8d22340"
+      }
+    },
+    "windows": {
+      "aarch64": {
+        "asset": "libmpv-windows-d0968b525be2-aarch64.zip",
+        "capabilities": {
+          "appleSlices": [],
+          "artifactSha256": "2df0a2b1a2bb77e7f61c5a89bf9fe501c28e79afdff99b51a8f97f405a14b93a",
+          "binaries": [
+            "libmpv-2.dll"
+          ],
+          "binaryArchitectures": {
+            "libmpv-2.dll": [
+              "arm64"
+            ]
+          },
+          "binarySha256": {
+            "libmpv-2.dll": "ec7a7bed4b4f3e6293c4b10b89691fc77e88ffa39635dbf78df473b428c211e1"
+          },
+          "executionQualified": false,
+          "inspectionSchema": 4,
+          "motionPlatform": "windows",
+          "neuralFilters": {
+            "libmpv-2.dll": {
+              "arm64": [
+                "pme"
+              ]
+            }
+          },
+          "orderedSubtitlePcmAbi": 1,
+          "pmeVulkan": true,
+          "requiredSymbols": [
+            "mpv_plezy_audio_tap_version",
+            "mpv_plezy_audio_tap_enable",
+            "mpv_plezy_audio_tap_read",
+            "mpv_plezy_audio_tap_read_next"
+          ],
+          "symbol": "mpv_plezy_audio_tap_read_next"
+        },
+        "checksum": "2df0a2b1a2bb77e7f61c5a89bf9fe501c28e79afdff99b51a8f97f405a14b93a"
+      },
+      "x86_64": {
+        "asset": "libmpv-windows-d0968b525be2-x86_64.zip",
+        "capabilities": {
+          "appleSlices": [],
+          "artifactSha256": "8a6c06452feeaaa02fd5b14f23ad550ba059fc304230cd3a38d06315ffc35583",
+          "binaries": [
+            "libmpv-2.dll"
+          ],
+          "binaryArchitectures": {
+            "libmpv-2.dll": [
+              "x86_64"
+            ]
+          },
+          "binarySha256": {
+            "libmpv-2.dll": "e004b822dc1c8a4707b195c2a1627a8941fabf7621a406229c7cf32ce54e9037"
+          },
+          "executionQualified": false,
+          "inspectionSchema": 4,
+          "motionPlatform": "windows",
+          "neuralFilters": {
+            "libmpv-2.dll": {
+              "x86_64": [
+                "pme"
+              ]
+            }
+          },
+          "orderedSubtitlePcmAbi": 1,
+          "pmeVulkan": true,
+          "requiredSymbols": [
+            "mpv_plezy_audio_tap_version",
+            "mpv_plezy_audio_tap_enable",
+            "mpv_plezy_audio_tap_read",
+            "mpv_plezy_audio_tap_read_next"
+          ],
+          "symbol": "mpv_plezy_audio_tap_read_next"
+        },
+        "checksum": "8a6c06452feeaaa02fd5b14f23ad550ba059fc304230cd3a38d06315ffc35583"
+      }
+    }
+  },
   "repo": "snapetech-org/mpv-build"
 }

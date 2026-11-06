@@ -1,4 +1,4 @@
-import 'dart:collection';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -33,7 +33,7 @@ class CredentialVault {
   static const _maximumCachedCredentials = 128;
   static const _maximumCachedCredentialBytes = 256 * 1024;
   static const _maximumSharedDecryptions = 32;
-  static final _decryptionCache = LinkedHashMap<String, ({String value, int bytes})>();
+  static final _decryptionCache = <String, ({String value, int bytes})>{};
   static final Map<String, Future<String?>> _decryptions = {};
   static int _cachedCredentialBytes = 0;
   static Future<({String id, SecretKey key})>? _secretKey;
@@ -58,9 +58,13 @@ class CredentialVault {
     // Bulk imports and whole encrypted journals must never become a second,
     // process-lifetime copy of the database in memory.
     final bytes = (ciphertext.length + plaintext.length) * 2;
-    if (bytes > _maximumCachedCredentialBytes) return;
+    if (bytes > _maximumCachedCredentialBytes) {
+      return;
+    }
     final previous = _decryptionCache.remove(ciphertext);
-    if (previous != null) _cachedCredentialBytes -= previous.bytes;
+    if (previous != null) {
+      _cachedCredentialBytes -= previous.bytes;
+    }
     while (_decryptionCache.isNotEmpty &&
         (_decryptionCache.length >= _maximumCachedCredentials ||
             _cachedCredentialBytes + bytes > _maximumCachedCredentialBytes)) {
@@ -82,17 +86,23 @@ class CredentialVault {
   static bool needsMigration(String value) => !value.startsWith(_prefix);
 
   static Future<String> protect(String value) async {
-    if (value.isEmpty || value.startsWith(_prefix)) return value;
+    if (value.isEmpty || value.startsWith(_prefix)) {
+      return value;
+    }
     if (value.startsWith(_legacyPrefix)) {
       final revealed = await reveal(value);
-      if (revealed == null) throw StateError('Cannot migrate an unreadable credential');
+      if (revealed == null) {
+        throw StateError('Cannot migrate an unreadable credential');
+      }
       return protect(revealed);
     }
     while (true) {
       final generation = _cacheGeneration;
       final key = await _getSecretKey();
       final box = await _algorithm.encrypt(utf8.encode(value), secretKey: key.key);
-      if (generation != _cacheGeneration) continue;
+      if (generation != _cacheGeneration) {
+        continue;
+      }
 
       final payload = {
         'k': key.id,
@@ -111,7 +121,9 @@ class CredentialVault {
   /// key generation) or a corrupt payload means the credential is *lost*,
   /// never a reason to crash; callers treat null as "re-acquire the token".
   static Future<String?> reveal(String value) async {
-    if (!isProtected(value)) return value;
+    if (!isProtected(value)) {
+      return value;
+    }
     while (true) {
       final generation = _cacheGeneration;
       final cached = _decryptionCache.remove(value);
@@ -120,16 +132,22 @@ class CredentialVault {
         return cached.value;
       }
       final pending = _decryptions[value] ?? _decrypt(value, generation);
-      if (_decryptions.length < _maximumSharedDecryptions) _decryptions[value] = pending;
+      if (_decryptions.length < _maximumSharedDecryptions) {
+        _decryptions[value] = pending;
+      }
       final String? clear;
       try {
         clear = await pending;
       } finally {
         // Neither transient keychain failures nor missing keys are memoized.
-        if (identical(_decryptions[value], pending)) _decryptions.remove(value);
+        if (identical(_decryptions[value], pending)) {
+          unawaited(_decryptions.remove(value));
+        }
       }
       if (generation == _cacheGeneration) {
-        if (clear != null) _rememberCredential(value, clear);
+        if (clear != null) {
+          _rememberCredential(value, clear);
+        }
         return clear;
       }
     }
@@ -152,14 +170,20 @@ class CredentialVault {
     // Keep platform I/O outside the corruption/MAC catch. A temporary keychain
     // outage must propagate to the retry path rather than sign the user out.
     final keyId = payload['k'];
-    if (!legacy && (keyId is! String || !_validKeyId(keyId))) return null;
+    if (!legacy && (keyId is! String || !_validKeyId(keyId))) {
+      return null;
+    }
     final key = legacy ? await _getLegacyKey() : await _readKey(keyId as String);
-    if (key == null) return null;
+    if (key == null) {
+      return null;
+    }
     try {
       final clear = await _algorithm.decrypt(box, secretKey: key);
       return utf8.decode(clear);
     } catch (e) {
-      if (generation != _cacheGeneration) return null;
+      if (generation != _cacheGeneration) {
+        return null;
+      }
       appLogger.w('CredentialVault: failed to decrypt stored credential, treating as lost', error: e);
       return null;
     }
@@ -169,7 +193,9 @@ class CredentialVault {
     final copy = Map<String, Object?>.from(config);
     final tokenKey = _tokenKeyForConfig(kind, copy);
     final token = tokenKey == null ? null : copy[tokenKey];
-    if (token is String) copy[tokenKey!] = await protect(token);
+    if (token is String) {
+      copy[tokenKey!] = await protect(token);
+    }
     if (kind == 'plex' && copy['servers'] != null) {
       copy['servers'] = await _protectPlexServers(copy['servers']);
     }
@@ -208,7 +234,9 @@ class CredentialVault {
   };
 
   static Future<Object?> _protectPlexServers(Object? rawServers) async {
-    if (rawServers is! List) return rawServers;
+    if (rawServers is! List) {
+      return rawServers;
+    }
     final servers = <Object?>[];
     for (final raw in rawServers) {
       if (raw is! Map) {
@@ -217,14 +245,18 @@ class CredentialVault {
       }
       final server = Map<String, Object?>.from(raw);
       final token = server['accessToken'];
-      if (token is String) server['accessToken'] = await protect(token);
+      if (token is String) {
+        server['accessToken'] = await protect(token);
+      }
       servers.add(server);
     }
     return servers;
   }
 
   static Future<({Object? servers, bool migrated})> _revealPlexServers(Object? rawServers) async {
-    if (rawServers is! List) return (servers: rawServers, migrated: false);
+    if (rawServers is! List) {
+      return (servers: rawServers, migrated: false);
+    }
     var migrated = false;
     final servers = <Object?>[];
     for (final raw in rawServers) {
@@ -247,11 +279,17 @@ class CredentialVault {
   static bool _validKeyId(String id) => RegExp(r'^(?:v2-[0-9a-f]{32}|v1-[0-9a-f]{64})$').hasMatch(id);
 
   static Future<SecretKey?> _readKey(String id) async {
-    if (!_validKeyId(id)) throw const FormatException('Invalid credential key identifier');
+    if (!_validKeyId(id)) {
+      throw const FormatException('Invalid credential key identifier');
+    }
     final encoded = await CredentialKeyStore.read(id);
-    if (encoded == null) return null;
+    if (encoded == null) {
+      return null;
+    }
     final bytes = base64Decode(encoded);
-    if (bytes.length != 32) throw const FormatException('Invalid credential key');
+    if (bytes.length != 32) {
+      throw const FormatException('Invalid credential key');
+    }
     return SecretKey(bytes);
   }
 
@@ -268,7 +306,9 @@ class CredentialVault {
     final legacy = readTolerantString(prefs, _keyPref);
     if (legacy != null && legacy.isNotEmpty) {
       final bytes = base64Decode(legacy);
-      if (bytes.length != 32) throw const FormatException('Invalid legacy credential key');
+      if (bytes.length != 32) {
+        throw const FormatException('Invalid legacy credential key');
+      }
       final id = 'v1-${crypto.sha256.convert(bytes)}';
       // Content-addressing makes concurrent migrations of the same key
       // idempotent. Never overwrite a different key under a shared name.
@@ -283,7 +323,9 @@ class CredentialVault {
 
   static Future<({String id, SecretKey key})> _getSecretKey() {
     final existing = _secretKey;
-    if (existing != null) return existing;
+    if (existing != null) {
+      return existing;
+    }
     late final Future<({String id, SecretKey key})> loading;
     loading =
         () async {
@@ -295,7 +337,9 @@ class CredentialVault {
           final activeId = readTolerantString(prefs, _activeKeyPref);
           if (activeId != null) {
             final key = await _readKey(activeId);
-            if (key != null) return (id: activeId, key: key);
+            if (key != null) {
+              return (id: activeId, key: key);
+            }
           }
           final random = Random.secure();
           final id = 'v2-${List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
@@ -306,7 +350,9 @@ class CredentialVault {
           // each ciphertext records the exact key that encrypted it.
           return (id: id, key: SecretKey(bytes));
         }().catchError((Object error, StackTrace stackTrace) {
-          if (identical(_secretKey, loading)) _secretKey = null;
+          if (identical(_secretKey, loading)) {
+            _secretKey = null;
+          }
           Error.throwWithStackTrace(error, stackTrace);
         });
     _secretKey = loading;

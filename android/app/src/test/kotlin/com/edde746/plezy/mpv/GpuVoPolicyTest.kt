@@ -57,6 +57,21 @@ class GpuVoPolicyTest {
   }
 
   @Test
+  fun `a bundled FEL engine still requires runtime opt-in and an accepted filter`() {
+    for (accepted in listOf(false, true)) {
+      assertFalse(GpuVoPolicy.p7FelRouteActive(7L, "auto", experimentalEnabled = false, filterAccepted = accepted))
+    }
+    assertFalse(GpuVoPolicy.p7FelRouteActive(7L, "auto", experimentalEnabled = true, filterAccepted = false))
+    assertTrue(GpuVoPolicy.p7FelRouteActive(7L, "auto", experimentalEnabled = true, filterAccepted = true))
+    for (profile in listOf(null, 5L, 8L)) {
+      assertFalse(GpuVoPolicy.p7FelRouteActive(profile, "auto", experimentalEnabled = true, filterAccepted = true))
+    }
+    for (mode in listOf("native", "dv81", "hevc_strip")) {
+      assertFalse(GpuVoPolicy.p7FelRouteActive(7L, mode, experimentalEnabled = true, filterAccepted = true))
+    }
+  }
+
+  @Test
   fun `base-layer-compatible profiles are never routed`() {
     // P7/P8 strip to an HDR10/HLG base layer; non-DV content has no profile.
     assertFalse(GpuVoPolicy.needsDvReshaping(7L, "auto", canPlayP5Natively = false))

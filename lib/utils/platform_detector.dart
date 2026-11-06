@@ -35,10 +35,18 @@ class AndroidTvFeatureDetection {
 AndroidTvFeatureDetection detectAndroidTvFromSystemFeatures(Iterable<String> features) {
   final featureSet = features.toSet();
   final reasons = <String>[];
-  if (featureSet.contains(_androidFeatureTelevision)) reasons.add('television_feature');
-  if (featureSet.contains(_androidFeatureLeanback)) reasons.add('leanback');
-  if (featureSet.contains(_androidFeatureFireTv)) reasons.add('fire_tv');
-  if (featureSet.isNotEmpty && !featureSet.contains(_androidFeatureTouchscreen)) reasons.add('no_touchscreen');
+  if (featureSet.contains(_androidFeatureTelevision)) {
+    reasons.add('television_feature');
+  }
+  if (featureSet.contains(_androidFeatureLeanback)) {
+    reasons.add('leanback');
+  }
+  if (featureSet.contains(_androidFeatureFireTv)) {
+    reasons.add('fire_tv');
+  }
+  if (featureSet.isNotEmpty && !featureSet.contains(_androidFeatureTouchscreen)) {
+    reasons.add('no_touchscreen');
+  }
 
   // A car is never a TV. Rotary-only head units report no touchscreen, and OEM
   // images derived from other AOSP variants can carry a stray leanback flag;
@@ -95,7 +103,9 @@ class TvDetectionService {
   static const bool _tvosBuild = bool.fromEnvironment('TVOS_BUILD');
 
   Future<void> _detect(bool forceTv) async {
-    if (_initialized) return;
+    if (_initialized) {
+      return;
+    }
 
     final deviceInfo = DeviceInfoPlugin();
     if (_tizenBuild) {
@@ -144,19 +154,25 @@ class TvDetectionService {
 
   List<String> get _effectiveDetectionReasons {
     final reasons = <String>[..._detectionReasons];
-    if (_forceTv && !reasons.contains('force_tv')) reasons.add('force_tv');
+    if (_forceTv && !reasons.contains('force_tv')) {
+      reasons.add('force_tv');
+    }
     return reasons;
   }
 
   Future<AndroidTvFeatureDetection?> _getNativeAndroidTvDetection() async {
     try {
       final result = await deviceChannel.invokeMapMethod<dynamic, dynamic>('getTvDetection');
-      if (result == null) return null;
+      if (result == null) {
+        return null;
+      }
       final reasonsValue = result['reasons'];
       final reasons = reasonsValue is Iterable ? reasonsValue.whereType<String>().toList() : <String>[];
       final isTv = result['isTv'] == true;
       final isAutomotive = result['isAutomotive'] == true;
-      if (isTv && reasons.isEmpty) reasons.add('native');
+      if (isTv && reasons.isEmpty) {
+        reasons.add('native');
+      }
       return AndroidTvFeatureDetection(isTv: isTv && !isAutomotive, isAutomotive: isAutomotive, reasons: reasons);
     } on MissingPluginException {
       return null;
@@ -168,7 +184,9 @@ class TvDetectionService {
   /// User-assigned Android device name (Settings > About > Device name), or
   /// null if unavailable. Android only.
   static Future<String?> getAndroidDeviceName() async {
-    if (!Platform.isAndroid) return null;
+    if (!Platform.isAndroid) {
+      return null;
+    }
     try {
       final name = (await deviceChannel.invokeMethod<String>('getDeviceName'))?.trim();
       return (name == null || name.isEmpty) ? null : name;
@@ -275,8 +293,12 @@ class PlatformDetector {
   static bool shouldUseSideNavigation(BuildContext context) {
     final choice = Theme.of(context).extension<ThemeLayout>()?.navigation;
     if (!isTV() && !isAutomotive()) {
-      if (choice == ThemeNavigation.bottom) return false;
-      if (choice == ThemeNavigation.sidebar && MediaQuery.sizeOf(context).width >= 840) return true;
+      if (choice == ThemeNavigation.bottom) {
+        return false;
+      }
+      if (choice == ThemeNavigation.sidebar && MediaQuery.sizeOf(context).width >= 840) {
+        return true;
+      }
     }
     return isDesktop(context);
   }
@@ -286,7 +308,11 @@ class PlatformDetector {
   /// unit — keeps its height for content. Not the desktop/TV sidebar: every
   /// other mobile layout decision stays as it is.
   static bool shouldUseLandscapeNavigationRail(BuildContext context) {
-    if (Theme.of(context).extension<ThemeLayout>()?.navigation == ThemeNavigation.bottom && !isTV() && !isAutomotive()) return false;
+    if (Theme.of(context).extension<ThemeLayout>()?.navigation == ThemeNavigation.bottom &&
+        !isTV() &&
+        !isAutomotive()) {
+      return false;
+    }
     return isMobile(context) && MediaQuery.orientationOf(context) == Orientation.landscape;
   }
 
@@ -302,7 +328,9 @@ class PlatformDetector {
   /// OS is iOS or Android.
   /// Uses Theme for consistent platform detection across the app.
   static bool isMobile(BuildContext context) {
-    if (isTV()) return false;
+    if (isTV()) {
+      return false;
+    }
     final platform = Theme.of(context).platform;
     return platform == TargetPlatform.iOS || platform == TargetPlatform.android;
   }
@@ -335,14 +363,18 @@ class PlatformDetector {
   }
 
   static bool supportsExternalPlayers() {
-    if (usesNativeTvMedia()) return false;
+    if (usesNativeTvMedia()) {
+      return false;
+    }
     return Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isLinux || Platform.isWindows;
   }
 
   static bool supportsAudioPassthrough() {
     // TV audio routing is owned by the firmware; an MPV bitstream toggle
     // cannot control it.
-    if (usesNativeTvMedia()) return false;
+    if (usesNativeTvMedia()) {
+      return false;
+    }
     // Apple platforms (iOS covers iPhone, iPad, and Apple TV) hand AC3/EAC3
     // access units to mpv's AVFoundation output, which feeds the system Dolby
     // decoder — the only path that renders Atmos, on HDMI receivers and on

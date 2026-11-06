@@ -13,7 +13,7 @@ See [the branding guide](docs/maintainers/branding.md) before changing logos or 
 ## Development
 
 - Follow Dart/Flutter conventions
-- Run `dart format .` to format Dart code (note: generated files like `*.g.dart` are excluded from CI checks)
+- Run `scripts/format_dart.sh` to format Dart code (generated files are maintained by `scripts/codegen.sh`)
 - Run `scripts/format_native.sh --fix` to format Kotlin, Swift, C++, C, Objective-C, and native headers
 - Run `flutter analyze` before submitting to check for issues
 - Run `scripts/run_tests.sh` to run the test suite (same as `flutter test`, but scaled to your core count)
@@ -39,7 +39,7 @@ requests. PR descriptions should report focused validation; after changes merge
 to `main`, dispatch CI against that exact SHA before a release build.
 
 1. **Code Formatting**: Ensures code follows Dart and native formatting standards
-   - Run locally: `dart format .` to format Dart files
+   - Run locally: `scripts/format_dart.sh` to format Dart files
    - Run locally: `scripts/format_native.sh --fix` to format native files
    - Note: CI only checks non-generated files (excludes `.g.dart`, `.freezed.dart`)
    - Generated files are reformatted automatically by build tools

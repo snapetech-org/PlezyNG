@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/models/audio_channel_limit.dart';
 import 'package:plezy/models/audio_quality_preset.dart';
+import 'package:plezy/models/motion_processing_mode.dart';
 import 'package:plezy/screens/settings/playback_settings_screen.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
@@ -32,6 +33,44 @@ void main() {
     LocaleSettings.setLocaleSync(AppLocale.en);
   });
 
+  testWidgets('neural experiments are an off-by-default persisted Settings choice', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1000, 1400);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final settings = SettingsService.instance;
+    expect(settings.read(SettingsService.motionProcessingMode), MotionProcessingMode.off);
+    await _pumpPlaybackSettings(tester);
+    await tester.pumpAndSettle();
+    expect(find.text(t.settings.neuralInterpolationPresets), findsNothing);
+    final mode = find.text(t.settings.motionSmoothing);
+    await tester.scrollUntilVisible(mode, 400, scrollable: find.byType(Scrollable).first);
+    await tester.ensureVisible(mode);
+    await tester.pumpAndSettle();
+    await tester.tap(mode);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(t.settings.neuralInterpolation));
+    await tester.pumpAndSettle();
+    expect(settings.read(SettingsService.motionProcessingMode), MotionProcessingMode.neural);
+    expect(settings.prefs.getString(SettingsService.motionProcessingMode.key), 'neural');
+    final presets = find.text(t.settings.neuralInterpolationPresets);
+    await tester.ensureVisible(presets);
+    await tester.pumpAndSettle();
+    await tester.tap(presets);
+    await tester.pumpAndSettle();
+    expect(find.text(t.settings.neuralInterpolationPresetPerformance), findsOneWidget);
+    expect(find.text(t.settings.neuralInterpolationPresetBalanced).hitTestable(), findsOneWidget);
+    await tester.tap(find.text(t.settings.neuralInterpolationPresetQuality));
+    await tester.pumpAndSettle();
+    expect(settings.read(SettingsService.neuralInterpolationPreset), NeuralInterpolationPreset.quality);
+    expect(settings.read(SettingsService.neuralOnlyWhenPluggedIn), isTrue);
+    await tester.pumpWidget(const SizedBox.shrink());
+    SettingsService.resetForTesting();
+    final restored = await SettingsService.getInstance();
+    expect(restored.read(SettingsService.motionProcessingMode), MotionProcessingMode.neural);
+    expect(restored.read(SettingsService.neuralInterpolationPreset), NeuralInterpolationPreset.quality);
+  });
+
   testWidgets('DV experiments use persisted opt-in switches with a conditional fallback', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1000, 1400);
@@ -41,6 +80,7 @@ void main() {
     await tester.pumpAndSettle();
     final settings = SettingsService.instance;
     expect(settings.read(SettingsService.experimentalDolbyVision), isFalse);
+    expect(find.text(t.settings.dvOfflineTitle), findsNothing);
     expect(settings.read(SettingsService.dvExperimentDiagnostics), isFalse);
     final toggle = find.text(t.settings.experimentalDolbyVision);
     await tester.scrollUntilVisible(toggle, 300, scrollable: find.byType(Scrollable).first);
@@ -48,6 +88,7 @@ void main() {
     await tester.tap(toggle);
     await tester.pumpAndSettle();
     expect(settings.read(SettingsService.experimentalDolbyVision), isTrue);
+    expect(find.text(t.settings.dvOfflineTitle), findsOneWidget);
     final fallback = find.text(t.settings.dvCompatibilityFallback);
     await tester.ensureVisible(fallback);
     await tester.tap(fallback);

@@ -1,6 +1,7 @@
 // Generated from Unicode CLDR 48.0, ICU 78.3.
 // Regenerate: node scripts/codegen/generate_locale_names.mjs
 // Data license: https://www.unicode.org/license.txt
+// dart format off
 const localizedUnitLists = <String, Map<String, List<String>>>{
   "ar": {
     "narrow": [

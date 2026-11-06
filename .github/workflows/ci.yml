@@ -129,17 +129,16 @@ jobs:
         run: bash scripts/ci_guard_checks.sh
 
       - name: Verify formatting
-        run: |
-          paths=(lib)
-          [ ! -d test ] || paths+=(test)
-          find "${paths[@]}" -name "*.dart" ! -name "*.g.dart" ! -name "*.freezed.dart" -type f -print0 |
-            xargs -0 -r dart format --output=none --set-exit-if-changed
+        run: bash scripts/format_dart.sh --check
 
       - name: Verify icon consistency
         run: dart run scripts/checks/check_icon_consistency.dart
 
       - name: Analyze code
         run: dart run scripts/checks/check_analyzer.dart
+
+      - name: Run application regression tests
+        run: flutter test --concurrency 2 --reporter expanded
 
       - name: Check for unused code
         run: |
@@ -1314,7 +1313,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: libmpv-prefix
-          key: ci-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-libmpv-${{ runner.arch }}-${{ hashFiles('mpv-build.lock.json', 'scripts/fetch_linux_libmpv.py') }}
 
       # Same contract as build.yml: the script reads mpv-build.lock.json,
       # downloads the linux asset for this arch, verifies its SHA-256, and
@@ -1360,6 +1359,7 @@ jobs:
           LIBMPV_DIR=$(dirname "$(find libmpv-prefix -name 'libmpv.so' | head -1)")
           cp -a "$LIBMPV_DIR"/libmpv.so* "$BUNDLE_LIB/"
           cp -a libmpv-prefix/lib/libshaderc_shared.so* "$BUNDLE_LIB/"
+          cp -a libmpv-prefix/lib/libvulkan.so* "$BUNDLE_LIB/"
 
       - name: Bundle shared libraries
         run: bash linux/packaging/bundle-libs.sh build/linux/x64/release/bundle

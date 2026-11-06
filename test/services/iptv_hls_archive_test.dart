@@ -26,13 +26,18 @@ void main() {
     final plaintext = Uint8List.fromList(List<int>.generate(188, (i) => i % 256));
     final padded = Uint8List(192)..setRange(0, plaintext.length, plaintext);
     padded.fillRange(188, 192, 4);
-    final cipher = CBCBlockCipher(AESEngine())..init(true, ParametersWithIV<KeyParameter>(KeyParameter(key), Uint8List(16)));
+    final cipher = CBCBlockCipher(AESEngine())
+      ..init(true, ParametersWithIV<KeyParameter>(KeyParameter(key), Uint8List(16)));
     final ciphertext = Uint8List(padded.length);
-    for (var i = 0; i < padded.length; i += 16) cipher.processBlock(padded, i, ciphertext, i);
+    for (var i = 0; i < padded.length; i += 16) {
+      cipher.processBlock(padded, i, ciphertext, i);
+    }
     final started = Completer<void>(), release = Completer<void>();
     server.listen((request) async {
       if (request.uri.path == '/live.m3u8') {
-        request.response.write('#EXTM3U\n#EXT-X-TARGETDURATION:1\n#EXT-X-KEY:METHOD=AES-128,URI="key"\n#EXTINF:1,\nsegment.ts\n');
+        request.response.write(
+          '#EXTM3U\n#EXT-X-TARGETDURATION:1\n#EXT-X-KEY:METHOD=AES-128,URI="key"\n#EXTINF:1,\nsegment.ts\n',
+        );
       } else if (request.uri.path == '/key') {
         request.response.add(key);
       } else {
@@ -46,11 +51,15 @@ void main() {
     });
     final output = File('${directory.path}/programme.m3u8');
     final recorder = IptvScheduledStreamRecorder(
-      uri: Uri.parse('http://127.0.0.1:${server.port}/live.m3u8'), allowHttp: true,
-      outputFile: output, endsAt: DateTime.now().add(const Duration(milliseconds: 200)),
+      uri: Uri.parse('http://127.0.0.1:${server.port}/live.m3u8'),
+      allowHttp: true,
+      outputFile: output,
+      endsAt: DateTime.now().add(const Duration(milliseconds: 200)),
     );
     addTearDown(() async {
-      if (!release.isCompleted) release.complete();
+      if (!release.isCompleted) {
+        release.complete();
+      }
       await recorder.stop();
       await server.close(force: true);
       await directory.delete(recursive: true);
@@ -68,27 +77,36 @@ void main() {
     final directory = await Directory.systemTemp.createTemp('plezy-hls-archive-');
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     final fixtures = <String, String>{
-      '/master.m3u8': '#EXTM3U\n'
+      '/master.m3u8':
+          '#EXTM3U\n'
           '#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="a",NAME="Main",DEFAULT=YES,URI="audio.m3u8"\n'
           '#EXT-X-STREAM-INF:BANDWIDTH=1000000,AUDIO="a"\nvideo.m3u8\n',
-      '/video.m3u8': '#EXTM3U\n#EXT-X-TARGETDURATION:2\n'
+      '/video.m3u8':
+          '#EXTM3U\n#EXT-X-TARGETDURATION:2\n'
           '#EXT-X-MAP:URI="init-a.mp4"\n#EXTINF:2,\nfirst.m4s\n'
           '#EXT-X-DISCONTINUITY\n#EXT-X-MAP:URI="init-b.mp4"\n#EXTINF:2,\nsecond.m4s\n#EXT-X-ENDLIST\n',
       '/audio.m3u8': '#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXTINF:2,\naudio.aac\n#EXT-X-ENDLIST\n',
-      '/init-a.mp4': 'map-a', '/init-b.mp4': 'map-b',
-      '/first.m4s': 'video-a', '/second.m4s': 'video-b', '/audio.aac': 'audio',
+      '/init-a.mp4': 'map-a',
+      '/init-b.mp4': 'map-b',
+      '/first.m4s': 'video-a',
+      '/second.m4s': 'video-b',
+      '/audio.aac': 'audio',
     };
     server.listen((request) async {
       final body = fixtures[request.uri.path];
-      if (body == null) request.response.statusCode = 404;
+      if (body == null) {
+        request.response.statusCode = 404;
+      }
       request.response.write(body ?? '');
       await request.response.close();
     });
     final output = File('${directory.path}/programme.m3u8');
     final media = Directory('${directory.path}/programme.media');
     final recorder = IptvScheduledStreamRecorder(
-      uri: Uri.parse('http://127.0.0.1:${server.port}/master.m3u8'), allowHttp: true,
-      outputFile: output, archiveDirectory: media,
+      uri: Uri.parse('http://127.0.0.1:${server.port}/master.m3u8'),
+      allowHttp: true,
+      outputFile: output,
+      archiveDirectory: media,
       endsAt: DateTime.now().add(const Duration(seconds: 20)),
     );
     addTearDown(() async {

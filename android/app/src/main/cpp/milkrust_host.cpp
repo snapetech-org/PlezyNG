@@ -41,7 +41,7 @@ TapApi& Tap() {
 }
 std::string DependencyError() {
   if (!Tap().available()) return "This mpv AAR lacks the session-leased visualization PCM bridge v1.";
-  return {}; // The remote service validates the renderer ABI during its handshake.
+  return {};  // The remote service validates the renderer ABI during its handshake.
 }
 class EglContext final : public NativeContext {
  public:
@@ -195,49 +195,67 @@ class SurfaceBackend final : public RenderBackend {
   std::shared_ptr<ANativeWindow> window_;
   LocalRenderBackend renderer_;
   uint32_t width_ = 0, height_ = 0;
+
  public:
   SurfaceBackend(std::shared_ptr<ANativeWindow> window, const std::shared_ptr<JavaDecoder>& decoder)
-      : window_(std::move(window)), renderer_(std::make_unique<EglContext>(),
-          [decoder](const auto& path) { return decoder->Decode(path); }) {}
+      : window_(std::move(window)),
+        renderer_(std::make_unique<EglContext>(), [decoder](const auto& path) { return decoder->Decode(path); }) {}
   void Reset() override { renderer_.Reset(); }
   void Pause(bool paused) override { renderer_.Pause(paused); }
-  void Load(const std::string& path, const std::string& root, double duration) override { renderer_.Load(path, root, duration); }
-  void Pcm(const float* samples, size_t frames, uint32_t generation) override { renderer_.Pcm(samples, frames, generation); }
+  void Load(const std::string& path, const std::string& root, double duration) override {
+    renderer_.Load(path, root, duration);
+  }
+  void Pcm(const float* samples, size_t frames, uint32_t generation) override {
+    renderer_.Pcm(samples, frames, generation);
+  }
   void Capture(uint32_t width, uint32_t height, double seconds, std::vector<uint8_t>& rgba) override {
     renderer_.Capture(width, height, seconds, rgba);
   }
-  void SetMouseState(bool down, double x, double y, double dx, double dy) override { renderer_.SetMouseState(down, x, y, dx, dy); }
+  void SetMouseState(bool down, double x, double y, double dx, double dy) override {
+    renderer_.SetMouseState(down, x, y, dx, dy);
+  }
   bool CanPresent() const override { return true; }
   void Present(uint32_t width, uint32_t height, const std::vector<uint8_t>& rgba) override {
-    if (rgba.size() != render_protocol::FrameBytes(width, height)) throw std::runtime_error("Invalid Android presentation frame.");
+    if (rgba.size() != render_protocol::FrameBytes(width, height))
+      throw std::runtime_error("Invalid Android presentation frame.");
     auto* window = window_.get();
     if ((width_ != width || height_ != height) &&
         ANativeWindow_setBuffersGeometry(window, width, height, WINDOW_FORMAT_RGBA_8888) < 0)
       throw std::runtime_error("Could not size the Android visualization surface.");
-    width_ = width; height_ = height;
+    width_ = width;
+    height_ = height;
     ANativeWindow_Buffer buffer{};
-    if (ANativeWindow_lock(window, &buffer, nullptr) < 0) throw std::runtime_error("Android visualization surface was lost.");
-    if (buffer.width != static_cast<int32_t>(width) || buffer.height != static_cast<int32_t>(height) || buffer.stride < buffer.width) {
+    if (ANativeWindow_lock(window, &buffer, nullptr) < 0)
+      throw std::runtime_error("Android visualization surface was lost.");
+    if (buffer.width != static_cast<int32_t>(width) || buffer.height != static_cast<int32_t>(height) ||
+        buffer.stride < buffer.width) {
       ANativeWindow_unlockAndPost(window);
       throw std::runtime_error("Android surface dimensions changed.");
     }
     for (uint32_t y = 0; y < height; ++y)
-      std::copy_n(rgba.data() + static_cast<size_t>(y) * width * 4, width * 4,
+      std::copy_n(
+          rgba.data() + static_cast<size_t>(y) * width * 4, width * 4,
           static_cast<uint8_t*>(buffer.bits) + static_cast<size_t>(y) * buffer.stride * 4);
     if (ANativeWindow_unlockAndPost(window) < 0) throw std::runtime_error("Android frame presentation failed.");
   }
 };
 struct HelperDescriptor {
   int value = -1;
-  ~HelperDescriptor() { if (value >= 0) close(value); }
-  int Release() { const int result = value; value = -1; return result; }
+  ~HelperDescriptor() {
+    if (value >= 0) close(value);
+  }
+  int Release() {
+    const int result = value;
+    value = -1;
+    return result;
+  }
 };
 struct Host {
   uint64_t player = 0;
   std::function<void()> cancel;
   std::unique_ptr<NativeWorker> worker;
   ~Host() {
-    if (cancel) cancel(); // Also interrupts a handshake before the worker publishes its callback.
+    if (cancel) cancel();  // Also interrupts a handshake before the worker publishes its callback.
     worker.reset();
     if (player && Tap().available()) Tap().enable(player, 0);
   }
@@ -369,14 +387,19 @@ extern "C" JNIEXPORT void JNICALL JNI_NAME(startHelper)(JNIEnv* env, jobject own
     auto* acquired = ANativeWindow_fromSurface(env, surface);
     if (!acquired) throw std::runtime_error("No Android visualization surface.");
     auto window = std::shared_ptr<ANativeWindow>(acquired, ANativeWindow_release);
-    auto lease = std::make_shared<HelperDescriptor>(); lease->value = descriptor.Release();
+    auto lease = std::make_shared<HelperDescriptor>();
+    lease->value = descriptor.Release();
     std::thread([lease, decoder, window] {
-      RunRenderHelper(lease->Release(), [decoder, window](render_protocol::Backend kind) -> std::unique_ptr<RenderBackend> {
-        if (kind != render_protocol::Backend::MilkRust) throw std::runtime_error("Android supports MilkRust rendering.");
-        return std::make_unique<SurfaceBackend>(window, decoder);
-      });
+      RunRenderHelper(
+          lease->Release(), [decoder, window](render_protocol::Backend kind) -> std::unique_ptr<RenderBackend> {
+            if (kind != render_protocol::Backend::MilkRust)
+              throw std::runtime_error("Android supports MilkRust rendering.");
+            return std::make_unique<SurfaceBackend>(window, decoder);
+          });
     }).detach();
-  } catch (const std::exception& ex) { Error(env, ex); }
+  } catch (const std::exception& ex) {
+    Error(env, ex);
+  }
 }
 extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject, jlong player, jint channel) {
   try {
@@ -389,7 +412,10 @@ extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject, jlong 
       throw std::runtime_error("Could not attach to the music session PCM.");
     host->player = player;
     host->worker = std::make_unique<NativeWorker>(
-        [connection] { return std::make_unique<RemoteRenderBackend>(std::move(*connection), render_protocol::Backend::MilkRust, true); },
+        [connection] {
+          return std::make_unique<RemoteRenderBackend>(
+              std::move(*connection), render_protocol::Backend::MilkRust, true);
+        },
         [player](mpv_plezy_audio_block* block) { return Tap().read(player, block, sizeof(*block)); },
         [](std::shared_ptr<const NativeFrame>) {});
     std::lock_guard<std::mutex> lock(registry_mutex);
@@ -398,7 +424,10 @@ extern "C" JNIEXPORT jlong JNICALL JNI_NAME(create)(JNIEnv* env, jobject, jlong 
     if (id <= 0) throw std::runtime_error("Native session identity exhausted.");
     registry.emplace(id, std::move(host));
     return id;
-  } catch (const std::exception& ex) { Error(env, ex); return 0; }
+  } catch (const std::exception& ex) {
+    Error(env, ex);
+    return 0;
+  }
 }
 extern "C" JNIEXPORT void JNICALL JNI_NAME(destroy)(JNIEnv* env, jobject, jlong id) {
   try {
@@ -415,8 +444,8 @@ extern "C" JNIEXPORT void JNICALL JNI_NAME(destroy)(JNIEnv* env, jobject, jlong 
     Error(env, ex);
   }
 }
-extern "C" JNIEXPORT void JNICALL JNI_NAME(load)(JNIEnv* env, jobject, jlong id, jstring path, jstring root,
-                                               jdouble transition_seconds) {
+extern "C" JNIEXPORT void JNICALL
+JNI_NAME(load)(JNIEnv* env, jobject, jlong id, jstring path, jstring root, jdouble transition_seconds) {
   try {
     Find(id)->worker->Load(Utf8(env, path), Utf8(env, root), transition_seconds);
   } catch (const std::exception& ex) {
@@ -430,8 +459,8 @@ extern "C" JNIEXPORT void JNICALL JNI_NAME(resize)(JNIEnv* env, jobject, jlong i
     Error(env, ex);
   }
 }
-extern "C" JNIEXPORT void JNICALL JNI_NAME(setMouseState)(
-    JNIEnv* env, jobject, jlong id, jboolean down, jdouble x, jdouble y, jdouble dx, jdouble dy) {
+extern "C" JNIEXPORT void JNICALL
+JNI_NAME(setMouseState)(JNIEnv* env, jobject, jlong id, jboolean down, jdouble x, jdouble y, jdouble dx, jdouble dy) {
   try {
     Find(id)->worker->SetMouseState(down == JNI_TRUE, x, y, dx, dy);
   } catch (const std::exception& ex) {

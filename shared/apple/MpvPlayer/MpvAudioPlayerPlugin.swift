@@ -224,14 +224,16 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
         let transition: Double
         if let value = args["transitionSeconds"] {
           guard let number = value as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID() else {
-            result(FlutterError(code: "INVALID_ARGS", message: "A numeric transition duration is required.", details: nil))
+            result(
+              FlutterError(code: "INVALID_ARGS", message: "A numeric transition duration is required.", details: nil))
             return
           }
           transition = number.doubleValue
         } else {
           transition = 3
         }
-        try texture.host.loadPreset(path, root: root, transitionSeconds: transition,
+        try texture.host.loadPreset(
+          path, root: root, transitionSeconds: transition,
           allowInterrupted: args["allowInterrupted"] as? Bool ?? false)
       case "visualizerResize":
         guard let width = args["width"] as? Int, let height = args["height"] as? Int,
@@ -251,7 +253,8 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
           let y = args["y"] as? NSNumber, CFGetTypeID(y) != CFBooleanGetTypeID(),
           let dx = args["dx"] as? NSNumber, CFGetTypeID(dx) != CFBooleanGetTypeID(),
           let dy = args["dy"] as? NSNumber, CFGetTypeID(dy) != CFBooleanGetTypeID(),
-          x.doubleValue.isFinite, y.doubleValue.isFinite, dx.doubleValue.isFinite, dy.doubleValue.isFinite else {
+          x.doubleValue.isFinite, y.doubleValue.isFinite, dx.doubleValue.isFinite, dy.doubleValue.isFinite
+        else {
           result(FlutterError(code: "INVALID_ARGS", message: "Finite mouse state is required.", details: nil)); return
         }
         texture.host.setMouseState(down, x: x.doubleValue, y: y.doubleValue, dx: dx.doubleValue, dy: dy.doubleValue)

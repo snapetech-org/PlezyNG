@@ -15,9 +15,8 @@ class ComicCommerceLinkClient {
   final http.Client _http;
   final String? _serviceBaseUrl;
 
-  ComicCommerceLinkClient({http.Client? httpClient, String? serviceBaseUrl})
-    : _http = httpClient ?? platform.createPlatformClient(),
-      _serviceBaseUrl = serviceBaseUrl;
+  ComicCommerceLinkClient({http.Client? httpClient, this._serviceBaseUrl})
+    : _http = httpClient ?? platform.createPlatformClient();
 
   String get _baseUrl => _serviceBaseUrl == null
       ? plezyComicCommerceBaseUrl
@@ -55,8 +54,9 @@ class ComicCommerceLinkClient {
           uri.scheme != 'https' ||
           uri.host.isEmpty ||
           uri.userInfo.isNotEmpty ||
-          uri.fragment.isNotEmpty)
+          uri.fragment.isNotEmpty) {
         return null;
+      }
       return uri;
     } on Object {
       return null;

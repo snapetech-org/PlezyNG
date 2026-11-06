@@ -96,8 +96,11 @@ bash scripts/launch_apple_jit_runner.sh "$run_id" "$job_id"
 
 The launcher checks that the job is queued and has the native Apple labels, that
 there is no other run-scoped Apple JIT runner online or busy, that both NFS
-mounts point to the same export, and that the Mac has at least 37 GiB free on
-APFS and 40 GiB free on NFS. It verifies the cached runner archive's SHA-256
+mounts point to the same export, and that the Mac has at least 12 GiB free on
+APFS and 40 GiB free on NFS. Flutter installation measures each download and
+extraction peak, retaining 4 GiB locally plus 0.8 GiB for metadata; it does not
+reserve an additional 30 GiB when the build workspace is on NFS.
+It verifies the cached runner archive's SHA-256
 before creating a unique per-run, per-job, per-attempt directory. The default
 SSH target is the Mac's stable Tailscale address `keith@100.64.0.3`; override it
 with `APPLE_JIT_SSH_TARGET` only if that identity changes.
@@ -122,3 +125,26 @@ The queue controller performs the post-job checks and exact-path cleanup after
 archiving evidence. In single-job troubleshooting mode, do those steps manually
 before starting another job. Leave the runner cache, persistent service, NFS
 mounts, and unrelated run directories in place.
+
+## VPN and mount recovery after reboot
+
+The host's launch daemon `com.snapetech.plezyng-native-build-nfs` runs every 60
+seconds and installs the same export at both documented mount paths. Its
+canonical helper is [`scripts/mount_macos_native_build_nfs.sh`](../../scripts/mount_macos_native_build_nfs.sh),
+installed as `/usr/local/sbin/plezyng-native-build-mount.sh` with root ownership
+and mode 755. Install a new copy atomically, then kickstart only this mount job.
+Do not restart the runner broker or unmount a workspace in use.
+
+The helper verifies MagicDNS, the expected client address on the tunnel route,
+and ports 111/20048/2049. If needed it starts the existing saved Tailscale VPN
+service with a bounded command. It preserves credentials, the VPN profile,
+export permissions, and active mounts. Healthy connectivity does not depend on
+the GUI app's CLI returning a status document: that CLI was observed hanging
+while encrypted ping, SSH and NFS were already working.
+
+For a stuck Connecting state, verify the actual tunnel before changing anything.
+The November 5 recovery retained the existing VPN profile, refreshed only the
+installed Tailscale app/extension registration, restarted those components and
+started the saved VPN service. The recovered route answered a 3 ms ping and
+NFS write/fsync/read validation. Preserve the diagnostics in private task
+storage; do not delete keychains, authentication state or VPN profiles.

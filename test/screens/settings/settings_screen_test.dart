@@ -799,7 +799,9 @@ Future<_SettingsHarness> _pumpSettingsScreen(
       settingsImporter: settingsImporter,
       backgroundWorkDiagnosticsService: backgroundWorkDiagnosticsService,
     );
-    if (!wrapSettingsInProfileMessenger) return screen;
+    if (!wrapSettingsInProfileMessenger) {
+      return screen;
+    }
     final key = GlobalKey<ScaffoldMessengerState>();
     profileMessengerKeys?.add(key);
     return ScaffoldMessenger(key: key, child: screen);
@@ -893,9 +895,13 @@ class _FakeDirectoryPicker implements FilePickerDelegate {
     bool lockParentWindow = false,
   }) async {
     final gate = directoryGate;
-    if (gate != null) return gate.future;
+    if (gate != null) {
+      return gate.future;
+    }
     final error = directoryError;
-    if (error != null) throw error;
+    if (error != null) {
+      throw error;
+    }
     return directoryPath;
   }
 }

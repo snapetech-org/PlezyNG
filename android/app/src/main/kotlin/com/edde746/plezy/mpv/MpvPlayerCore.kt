@@ -1722,7 +1722,7 @@ class MpvPlayerCore private constructor(
       experimentalEnabled = experimentalDolbyVision
     )
     val felActive = configureP7FelFilter(p, wantsP7Fel)
-    val needsP7Fel = (wantsP7Fel && felActive) || (profile == 7L && felEngineAvailable)
+    val needsP7Fel = GpuVoPolicy.p7FelRouteActive(profile, mode, experimentalDolbyVision, felActive)
     val needsP5Reshape = profile == 5L &&
       GpuVoPolicy.needsDvReshaping(
         dvProfile = profile,
@@ -1823,7 +1823,7 @@ class MpvPlayerCore private constructor(
       experimentalEnabled = experimentalDolbyVision
     )
     val felActive = configureP7FelFilter(p, wantsP7Fel)
-    val needsP7Fel = (wantsP7Fel && felActive) || (profile == 7L && felEngineAvailable)
+    val needsP7Fel = GpuVoPolicy.p7FelRouteActive(profile, mode, experimentalDolbyVision, felActive)
     val needsP5Reshape = profile == 5L && GpuVoPolicy.softwareDecodeNeedsDvReshaping(profile, mode, hwdecCurrent = "no")
     val needs = needsP5Reshape || needsP7Fel
     if (needsP7Fel) {
@@ -2108,7 +2108,7 @@ class MpvPlayerCore private constructor(
    * file too — the next file's hook re-evaluates it.
    */
   private fun onDecoderState(hwdecCurrent: String) {
-    if (GpuVoPolicy.softwareDecodeNeedsDvReshaping(pendingDvProfile, dvRouting().conversionMode, hwdecCurrent, felEngineAvailable)) {
+    if (GpuVoPolicy.softwareDecodeNeedsDvReshaping(pendingDvProfile, dvRouting().conversionMode, hwdecCurrent, experimentalDolbyVision && p7FelFilterActive)) {
       Log.i(TAG, "DV P5 decoded in software (hwdec-current=$hwdecCurrent): gpu-next reshaping")
       setGpuVoRequirement(GpuVoPolicy.REASON_DV_RESHAPE, true)
     }

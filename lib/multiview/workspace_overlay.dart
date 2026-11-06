@@ -58,7 +58,9 @@ class _MultiviewOverlayHostState extends State<MultiviewOverlayHost> {
   }
 
   void _syncEntry() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     if (!widget.controller.hasVisibleSessions) {
       _removeEntry();
       return;
@@ -68,13 +70,19 @@ class _MultiviewOverlayHostState extends State<MultiviewOverlayHost> {
       entry.markNeedsBuild();
       return;
     }
-    if (_installScheduled) return;
+    if (_installScheduled) {
+      return;
+    }
     _installScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _installScheduled = false;
-      if (!mounted || !widget.controller.hasVisibleSessions || _entry != null) return;
+      if (!mounted || !widget.controller.hasVisibleSessions || _entry != null) {
+        return;
+      }
       final overlay = widget.overlayKey.currentState;
-      if (overlay == null) return;
+      if (overlay == null) {
+        return;
+      }
       final entry = OverlayEntry(builder: (context) => _MultiviewOverlay(controller: widget.controller));
       _entry = entry;
       overlay.insert(entry);
@@ -84,7 +92,9 @@ class _MultiviewOverlayHostState extends State<MultiviewOverlayHost> {
   void _removeEntry() {
     final entry = _entry;
     _entry = null;
-    if (entry == null) return;
+    if (entry == null) {
+      return;
+    }
     entry.remove();
     entry.dispose();
   }
@@ -319,7 +329,9 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
 
   Widget _buildSurfaceWithMoveGestures(BuildContext context, String id, WorkspaceSurfaceRegistration registration) {
     final surface = registration.buildSurface(context);
-    if (!widget.floating) return surface;
+    if (!widget.floating) {
+      return surface;
+    }
 
     if (controller.positioningSessionId == id) {
       return GestureDetector(
@@ -382,7 +394,9 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
       onKeyEvent: (node, event) {
         // Child player and reader controls keep their own arrow-key behavior.
         // The workspace owns arrows only during its explicit Move action.
-        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+        if (event is! KeyDownEvent) {
+          return KeyEventResult.ignored;
+        }
         final moving = controller.positioningSessionId == id;
         if (event.logicalKey == LogicalKeyboardKey.escape) {
           if (HardwareKeyboard.instance.isShiftPressed && registration.descriptor.acceptsInput) {
@@ -437,7 +451,9 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
           behavior: HitTestBehavior.translucent,
           onPointerDown: (_) {
             controller.focus(id);
-            if (!_focusNode.hasFocus) _focusNode.requestFocus();
+            if (!_focusNode.hasFocus) {
+              _focusNode.requestFocus();
+            }
           },
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -508,7 +524,7 @@ class _WorkspaceWindowState extends State<_WorkspaceWindow> {
                                     onPressed: controller.windowOperationPending(id)
                                         ? null
                                         : () => controller.toggleDetachedWindow(id),
-                                    icon: const Icon(Symbols.picture_in_picture_alt_rounded),
+                                    icon: const AppIcon(Symbols.picture_in_picture_alt_rounded),
                                     label: Text(t.common.returnToFullView),
                                   ),
                                 )
@@ -643,9 +659,7 @@ class _WorkspaceTitleBar extends StatelessWidget {
                     ? t.common.returnToFullView
                     : t.common.workspaceWindowLabel(title: registration.descriptor.title),
                 icon: Symbols.open_in_new_rounded,
-                onPressed: controller.windowOperationPending(id)
-                    ? null
-                    : () => controller.toggleDetachedWindow(id),
+                onPressed: controller.windowOperationPending(id) ? null : () => controller.toggleDetachedWindow(id),
                 iconSize: 19,
               ),
             _workspaceIconButton(
@@ -908,7 +922,9 @@ class _ResizeHandle extends StatelessWidget {
           disableScale: true,
           excludeChildSemantics: false,
           onKeyEvent: (node, event) {
-            if (event is! KeyDownEvent) return KeyEventResult.ignored;
+            if (event is! KeyDownEvent) {
+              return KeyEventResult.ignored;
+            }
             final delta = switch (event.logicalKey) {
               LogicalKeyboardKey.arrowLeft => const Offset(-20, 0),
               LogicalKeyboardKey.arrowRight => const Offset(20, 0),
@@ -916,7 +932,9 @@ class _ResizeHandle extends StatelessWidget {
               LogicalKeyboardKey.arrowDown => const Offset(0, 12),
               _ => null,
             };
-            if (delta == null) return KeyEventResult.ignored;
+            if (delta == null) {
+              return KeyEventResult.ignored;
+            }
             onResize(delta);
             return KeyEventResult.handled;
           },

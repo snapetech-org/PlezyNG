@@ -61,6 +61,28 @@ final third = Translations . of ( context ) . libraries . hiddenLibrariesCount;
         self.assertEqual(references, set())
 
 
+    def test_collects_handwritten_i18n_helpers_and_parent_aliases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            lib = Path(directory)
+            (lib / "i18n").mkdir()
+            (lib / "i18n" / "status.dart").write_text(
+                "final status = t.subtitleCapture; final label = t.common.ok;", encoding="utf-8"
+            )
+            with patch.object(clean_translations, "LIB_DIR", lib):
+                references = clean_translations.collect_references()
+        self.assertEqual(references, {"subtitleCapture", "common.ok"})
+
+    def test_collects_only_bounded_slang_dynamic_namespaces(self):
+        with tempfile.TemporaryDirectory() as directory:
+            lib = Path(directory)
+            (lib / "widget.dart").write_text(
+                "final label = context.t['romm.$id']; final other = values['unrelated.$id'];", encoding="utf-8"
+            )
+            with patch.object(clean_translations, "LIB_DIR", lib):
+                references = clean_translations.collect_references()
+        self.assertEqual(references, {"romm"})
+
+
 class NormalizePluralTest(unittest.TestCase):
     def test_approved_fallbacks_stay_absent_without_removing_real_translations(self):
         en = {"extras": {"title": "Extras"}, "common": {"save": "Save", "new": "New"}, "missing": "Missing"}

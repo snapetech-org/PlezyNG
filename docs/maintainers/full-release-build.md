@@ -1,6 +1,6 @@
-# One-command Pleazyng 3.0.0 release
+# One-command Pleazyng 3.0.1 release
 
-After exact-main CI and platform canaries pass, run the complete 3.0.0 release
+After exact-main CI and platform canaries pass, run the complete 3.0.1 release
 from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
 x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple
 builds and the storage-heavy WebOS candidate use compatible private JIT runners.
@@ -22,7 +22,7 @@ tvOS, and macOS use the single private Apple JIT slot, so those three jobs run
 one at a time. WebOS uses its own private Linux route and can remain queued
 until that compatible capacity is available; it has no dependency on an Apple
 job. The stage-by-stage waits in `release_all_platforms.py` protect the exact
-native-manifest, CI, candidate, tag, and release gates; they do not serialize
+native-manifest, CI, tag, and release checks; they do not serialize
 independent platform jobs inside the dispatched release workflow.
 
 For Apple queue inspection and the one-job JIT launcher, see the
@@ -36,18 +36,29 @@ Both the workflow and the local release driver enforce this allowlist, and the
 draft release remains tied to the existing tag.
 
 ```sh
-python3 scripts/release_all_platforms.py --version 3.0.0 \
+python3 scripts/release_all_platforms.py --version 3.0.1 \
   --execution-profile hybrid --publish-github-only \
-  --ffmpeg-source-cache /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/ffmpeg-preflight \
-  --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/release-final
+  --include-apple-store-build --prepare-homebrew-cask \
+  --ffmpeg-source-cache /mnt/disks/scratch/task-scratch/plezyng-release-3.0.1-20261103/ffmpeg-preflight \
+  --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.1-20261103/release-final
 ```
+
+The explicit signing and Homebrew options require signed iOS/tvOS archives and a
+notarized macOS Cask candidate, even for GitHub-only publication. They do not
+enable store uploads or tap publication. Successful-run reuse checks the requested
+signing, notarization and Cask steps; asset validation requires both signed IPAs
+and `snapetech-pleazyng.rb`. These options default off and require a full build;
+they cannot be combined with platform-artifact recovery.
 
 The command validates CI on the exact current `main` SHA, then runs the complete
 release build. When a version tag already exists, it reuses that immutable tag
 only if it is an ancestor of `main` and the intervening changes are on the
 release allowlist; the release workflow builds the full platform matrix. For a
 new version, it first verifies or refreshes native artifacts, updates their
-pins, validates CI and a nonpublishing candidate, and only then creates the tag.
+pins, validates all 13 CI jobs, creates the immutable tag, and builds the complete
+release matrix once. Publication waits for every platform and artifact check.
+If a product fix is needed after tagging, advance the patch version and build
+number; never move a tag or replace an already published release.
 
 If the control-plane host cannot reach `ffmpeg.org`, pass
 `--ffmpeg-source-cache <directory>` with retained files named
@@ -102,7 +113,7 @@ Windows CI and release jobs provision NuGet from `windows/tool/build-toolchain.l
 before Flutter configures its plugins. The installer job also provisions Inno Setup
 from that lock; both downloads require matching hashes and publisher signatures.
 `-VerifyOnly` checks the installed tools before compilation or packaging. The
-3.0.0 hybrid profile uses `windows-2025` for x64 and the native
+3.0.1 hybrid profile uses `windows-2025` for x64 and the native
 `windows-11-vs2026-arm`
 runner for ARM64; ARM64 is packaged as a separate portable ZIP while installers
 and package-manager artifacts remain x64. Linux ARM64 uses `ubuntu-24.04-arm`.
@@ -146,16 +157,16 @@ signature against FFmpeg's pinned release-key fingerprint, records its exact
 SHA-256 in the Android header build, and runs
 `scripts/set_native_revision.sh` for the published artifact-manifest commit.
 It pushes that focused pin update to Pleazyng `main`, waits for CI on that exact
-commit, and runs a complete nonpublishing `action=build`, `mode=release`
-candidate with webOS and Tizen enabled. The immutable `v<version>` tag is
-created only after that candidate succeeds; the tagged `action=release` run
-then assembles and validates the draft release. Both runs use the same exact
-`main` commit. The candidate build compiles the webOS and Tizen ARM artifacts
-by default. The validated Tizen tester package and its re-signing handoff are
-attached to the versioned release. The webOS IPK remains excluded from public
-release assets until the existing artifact eligibility gate passes and the
-operator opts in. Apple jobs refresh their SwiftPM mirror after the native pin
-changes.
+commit, creates its immutable `v<version>` tag, and dispatches one complete
+`action=release`, `mode=release` build. Verified native components are reused
+by content key and published digest; a second native or application build is
+not required merely to rename a candidate. All versioned builds require
+Android, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen,
+and webOS. The webOS IPK, its actual app-source provenance, engine provenance,
+compatibility record, and checksums enter the release with the other platforms.
+Device qualification remains descriptive and does not gate inclusion of an
+implemented feature or platform. Apple jobs refresh their SwiftPM mirror after
+the native pin changes.
 Before publication, the orchestrator checks that every required release asset
 exists. `--publish-github-only` promotes the verified GitHub draft and starts
 its automatic Discord announcement without dispatching store, package,
@@ -165,39 +176,37 @@ It
 reuses successful channel runs and stops on a prior failed run rather than
 repeating an external side effect blindly.
 
-The webOS candidate is built privately and kept out of public release assets
-unless the existing artifact eligibility gate passes and the operator opts in.
-Only after that approval, the release may be rerun with:
-
-```sh
-python3 scripts/release_all_platforms.py --version 3.0.0 \
-  --execution-profile hybrid --include-webos-release --publish-github-only \
-  --ffmpeg-source-cache /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/ffmpeg-preflight \
-  --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.0-20261103/release-webos-approved
-```
+WebOS uses private Linux capacity for its large SDK. Its runtime inputs remain
+hash-locked and package inspection verifies ARM ELF files, application ID,
+version, permissions, licenses, and runtime hashes. `check_release_package.py`
+then checks the new package against its recorded source and SHA-256. Historical
+C6 evidence is not an approval lock on an older application commit. Do not
+report device playback, vendor permission, or store approval as established by
+a build. The generated LG handoff is for manual review, not store publication.
 
 Tizen remains a tester artifact for qualification; Seller Office signing and
 submission are not configured. App Store Connect and Amazon uploads do not
 submit builds for review. Google Play is sent to the internal draft track.
 Microsoft Store, Samsung Seller Office, macOS Developer ID signing, Windows
-Authenticode signing, and LG public IPK publication remain gated on their
-missing identities, profiles, credentials, or artifact approvals.
+Authenticode signing, and vendor-store publication require their configured
+identities, profiles, and credentials. These store channels do not gate the
+complete GitHub release.
 
 The orchestrator uses the current machine's GitHub CLI authentication only for
 workflow dispatch, repository commits, and the version tag. Its default hybrid
 profile sends compatible jobs to GitHub-hosted runners and uses private JIT for
 Apple, storage-heavy WebOS, and other private-resource work. The script does not
 accept custom runner labels or store or print credentials.
-It stops on a failed native group, FFmpeg signature, CI run, candidate build,
+It stops on a failed native group, FFmpeg signature, CI run,
 tag conflict, or release build. Re-running it reuses successful native,
-CI, candidate, and release runs and never moves an existing tag.
+CI and release runs and never moves an existing tag.
 
 If Android fails, merge the infrastructure fixes, then recover the
 native run without rebuilding its entire matrix. Android and WebOS recovery may start while native
 jobs are still running; release assembly waits for their successful completion:
 
 ```sh
-python3 scripts/release_all_platforms.py --version 3.0.0 \
+python3 scripts/release_all_platforms.py --version 3.0.1 \
   --execution-profile hybrid --publish-github-only \
   --reuse-platform-run SOURCE_RUN_ID --scratch /path/to/empty/task-scratch
 ```
@@ -211,17 +220,15 @@ reused artifact's GitHub SHA-256 digest and source identity are checked before
 extraction. The release includes `platform-reuse-provenance.json` and its checksum
 with the actual source run, CI run, commit, jobs, and artifact digests. Skipped
 jobs remain skipped in the recovery run; they are not reported as new builds.
-Recovery does not enable App Store signing, Homebrew notarization, or public
-WebOS attachment. If a reused platform fails or product inputs change, fix and
+Recovery does not enable App Store signing or Homebrew notarization. WebOS is
+rebuilt and included with verified source provenance. If a reused platform fails or product inputs change, fix and
 validate that platform instead of broadening the recovery allowlist.
 
 If Android has already succeeded in a separate trusted-main release run, add
 `--reuse-android-run ANDROID_RUN_ID`. Its successful job, product input diff,
 artifact identity and digest are checked independently and included in the
-public provenance. To ship the GitHub assets while an experimental, non-public
-WebOS candidate is being qualified, also add `--skip-webos-build`. This honors
-the workflow's existing optional WebOS scope; it does not mark a failed WebOS
-job successful. Public WebOS attachment still requires its eligibility gate.
+public provenance. WebOS and Tizen cannot be excluded from a complete versioned
+release. Product-source changes require the next patch version and new builds.
 An assembly-only recovery waits locally for its source jobs before dispatching,
 so a hosted assembly runner does not sit idle while Apple builds finish.
 
@@ -231,17 +238,56 @@ GitHub retains the workflow logs and release artifacts. The scratch directory
 and its receipt remain for review and should be cleaned only after the release
 has completed and its outputs have been transferred or retained deliberately.
 
+### Linux speech and neural runtime
+
+Ordinary Linux builds select the locked `sherpa_onnx_linux` ONNX Runtime for
+both speech and motion processing before CMake installs the bundle. PME still
+compiles against the pinned API-v27 SDK. This avoids installing a second ORT
+version and overwriting its symlink target later. The shared 1.28.2 runtime
+has been loaded in the pinned Ubuntu 24.04 container with API 27, and both the
+OpenVINO and WebGPU provider libraries registered successfully. This verifies
+runtime compatibility and packaging; it does not establish device inference
+performance or qualification.
+
+The standalone PME developer build retains its pinned default runtime, and
+explicit developer runtime/provider variants remain available.
+
+### Samsung neural provider packaging
+
+Normal Android builds run `buildAndroidSamsungLiteRtRuntime` before staging
+LiteRT. The portable bootstrap verifies an immutable archive of the Apache
+LiteRT compiler/dispatch adapters and downloads the original Samsung AI LiteCore
+1.2.0 SDK separately. It stages Android ARM64 object libraries and licensing on
+Linux, macOS and Windows build hosts with Python 3.9 or newer. Native source
+compilation is available through the maintainer builder with LiteRT v2.3.0,
+Bazel 7.7.0 and NDK 29.0.14206865. The FlatBuffers link fix and ARM64 output
+configuration are recorded with the source and artifact receipts.
+
+The downloaded SDK stays in private task storage outside public Actions caches.
+The shared adapter archive contains the two compiled Apache adapters, their
+license and provenance. The APK additionally embeds the original vendor object
+libraries, original licensing, hashes and source receipt. Validation rejects
+changed pins, missing libraries, corrupted bytes and host-architecture payloads.
+Both new JNI adapters have 16 KiB ELF alignment. Vendor LiteCore objects remain
+unchanged in their runtime asset layout; device/loader compatibility and NPU
+execution use runtime detection, fallback and physical device qualification.
+
 ## Linux graphics loader dependencies
 
-The bundle leaves the graphics stack on the host. Keep `libvulkan.so.1` declared
-as `libvulkan1` on Debian/Ubuntu, `vulkan-loader` on RPM distributions and
-`vulkan-icd-loader` on Arch. The PPA, COPR, AUR and Snap recipes must cover the
-same host runtime libraries as `linux/packaging/build-packages.py`; the source
-guard checks that contract, including Snap's time64 package names. Release and
-package-smoke workers install the loader before inspecting the bundle.
+The verified native prefix supplies the pinned Vulkan loader needed by the new
+FEL/PME build (at least 1.4.309). Both release and package-smoke workflows copy
+its complete `libvulkan.so*` chain next to shaderc before bundling. A native
+archive without that loader fails the copy; the older Ubuntu system loader is
+not a fallback for this build. Keep the host-Vulkan exclusion in `bundle-libs.sh`
+so dependency harvesting cannot replace the pinned copy with a host library.
 
-An AppImage also needs the host Vulkan loader. Flatpak resolves graphics through
-its pinned runtime and extensions; validate its real installed closure after
-the native rebuild. A loader dependency does not prove a GPU or device path is
-usable: retain the per-architecture bundle `ldd`/package checks and accurate
-runtime diagnostics when qualifying the newly compiled PME Vulkan path.
+GPU ICDs and display-driver libraries stay on the host. The existing loader
+package declarations (`libvulkan1`, `vulkan-loader`, `vulkan-icd-loader`) remain
+for older/developer bundle compatibility, but do not prove the new loader's
+version. PPA, COPR, AUR and Snap recipes continue to cover the canonical runtime
+package lists, including Snap's time64 names. The common resolved bundle,
+including the AppImage input, carries the pinned loader; validate Flatpak's
+installed closure against its pinned runtime and extensions after rebuilding.
+
+A bundled loader does not prove a usable GPU path. Retain per-architecture
+`ldd`/package checks and accurate runtime diagnostics when qualifying PME Vulkan.

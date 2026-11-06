@@ -99,7 +99,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     // select is only supported during build; dependency changes also deliver
     // profile/source retirement before a pushed Games page can act again.
     final generation = context.watch<SourceController>().generation;
-    if (id == _profile && generation == _sourceGeneration && _controller != null) return;
+    if (id == _profile && generation == _sourceGeneration && _controller != null) {
+      return;
+    }
     _profile = id;
     _sourceGeneration = generation;
     _retire();
@@ -108,7 +110,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   }
 
   Future<void> _load(String? id, int epoch) async {
-    if (!mounted || epoch != _epoch || id == null) return;
+    if (!mounted || epoch != _epoch || id == null) {
+      return;
+    }
     if (!PlatformDetector.supportsGameLibrary()) {
       setState(() => _loading = false);
       return;
@@ -116,9 +120,13 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     final sources = context.read<SourceController>();
     try {
       await sources.ready;
-      if (!mounted || epoch != _epoch) return;
+      if (!mounted || epoch != _epoch) {
+        return;
+      }
       sources.requireSession();
-      if (sources.profileId != id) return;
+      if (sources.profileId != id) {
+        return;
+      }
       final generation = sources.generation;
       final controller = GameLibraryController(
         repository: sources.repository,
@@ -129,28 +137,43 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
             sources.current(generation) &&
             !sources.blocked &&
             context.read<ActiveProfileProvider>().activeId == id &&
-            (widget.initialRommLink != null || SettingsService.instance.read(SettingsService.showGamesTabForProfile(id))),
+            (widget.initialRommLink != null ||
+                SettingsService.instance.read(SettingsService.showGamesTabForProfile(id))),
         client: NativeGameStreamingClient(),
       );
       _controller = controller;
       controller.addListener(_changed);
       await controller.load();
-      if (!controller.current) return;
-      final romm = _romm = RommController(repository: sources.repository, profileId: id, sessionCurrent: () => controller.current);
+      if (!controller.current) {
+        return;
+      }
+      final romm = _romm = RommController(
+        repository: sources.repository,
+        profileId: id,
+        sessionCurrent: () => controller.current,
+      );
       romm.addListener(_changed);
       try {
         await romm.load();
-        if (romm.current && romm.connections.isNotEmpty) unawaited(romm.refresh());
+        if (romm.current && romm.connections.isNotEmpty) {
+          unawaited(romm.refresh());
+        }
       } catch (_) {
-        romm.removeListener(_changed); romm.dispose();
-        if (mounted && epoch == _epoch && identical(_romm, romm)) { _romm = null; _rommLoadError = true; }
+        romm.removeListener(_changed);
+        romm.dispose();
+        if (mounted && epoch == _epoch && identical(_romm, romm)) {
+          _romm = null;
+          _rommLoadError = true;
+        }
       }
       if (mounted && controller.current) {
         setState(() {
           _loading = false;
           _loadFailed = false;
         });
-        if (PlatformDetector.supportsEmbeddedGameStreaming()) unawaited(_scan());
+        if (PlatformDetector.supportsEmbeddedGameStreaming()) {
+          unawaited(_scan());
+        }
         if (!_initialRommLinkOpened && widget.initialRommLink != null) {
           _initialRommLinkOpened = true;
           unawaited(_rommLink(widget.initialRommLink));
@@ -186,7 +209,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         accountDialog?.close();
         for (final route in retiring.reversed) {
           dismissDialogsOwnedBy(route);
-          if (route.isActive) route.navigator?.removeRoute(route);
+          if (route.isActive) {
+            route.navigator?.removeRoute(route);
+          }
         }
       });
     }
@@ -197,9 +222,12 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     }
     _workspaceGameSessions.clear();
     _workspaceController = null;
-    _rommSearch?.cancel(); _rommSearch = null;
+    _rommSearch?.cancel();
+    _rommSearch = null;
     _romm?.removeListener(_changed);
-    _romm?.dispose(); _romm = null; _rommLoadError = false;
+    _romm?.dispose();
+    _romm = null;
+    _rommLoadError = false;
     _controller?.removeListener(_changed);
     _controller?.dispose();
     _controller = null;
@@ -209,7 +237,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   void _retryLoad() {
     final id = _profile;
-    if (!mounted || id == null) return;
+    if (!mounted || id == null) {
+      return;
+    }
     _retire();
     final epoch = ++_epoch;
     setState(() {
@@ -242,19 +272,27 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   @override
   void onTabShown() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<bool> _run(Future<void> Function(GameLibraryController) work) async {
     final c = _controller;
-    if (c == null || !c.current || c.busy) return false;
+    if (c == null || !c.current || c.busy) {
+      return false;
+    }
     try {
       await c.action(() => work(c));
       return true;
     } catch (error) {
-      if (!mounted || !c.current) return false;
+      if (!mounted || !c.current) {
+        return false;
+      }
       final failure = error is GameClientException ? error.failure : null;
-      if (failure == GameClientFailure.cancelled) return false;
+      if (failure == GameClientFailure.cancelled) {
+        return false;
+      }
       showErrorSnackBar(
         context,
         failure == GameClientFailure.pairingRequired
@@ -272,11 +310,15 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     try {
       final start = await proxy.start('steam');
       c.requireCurrent();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final cancelled = Completer<void>();
       var dialogClosedByFlow = false;
       void cancel() {
-        if (!cancelled.isCompleted) cancelled.complete();
+        if (!cancelled.isCompleted) {
+          cancelled.complete();
+        }
       }
 
       _cancelAccountLink = cancel;
@@ -287,14 +329,18 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           start: start,
           serviceName: 'Steam',
           onCancel: () {
-            if (dialogClosedByFlow) return;
+            if (dialogClosedByFlow) {
+              return;
+            }
             cancel();
           },
         ),
       );
       unawaited(
         dialog.closed.then((_) {
-          if (!dialogClosedByFlow) cancel();
+          if (!dialogClosedByFlow) {
+            cancel();
+          }
         }),
       );
       OAuthProxyResult? result;
@@ -308,12 +354,18 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         dialogClosedByFlow = true;
         dialog.close();
         await dialog.closed;
-        if (identical(_accountLinkDialog, dialog)) _accountLinkDialog = null;
-        if (identical(_cancelAccountLink, cancel)) _cancelAccountLink = null;
+        if (identical(_accountLinkDialog, dialog)) {
+          _accountLinkDialog = null;
+        }
+        if (identical(_cancelAccountLink, cancel)) {
+          _cancelAccountLink = null;
+        }
       }
       c.requireCurrent();
       final linked = result;
-      if (cancelled.isCompleted || linked == null || linked.steamId == null) return;
+      if (cancelled.isCompleted || linked == null || linked.steamId == null) {
+        return;
+      }
       final catalog = linked.steamGames.map(SteamCatalogGame.fromJson).toList(growable: false);
       String? protectedCredential, sessionCredential;
       final token = linked.steamCatalogToken;
@@ -353,7 +405,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   Future<void> _refreshSteamAccount() async {
     final c = _controller;
-    if (c == null || !c.current || c.busy) return;
+    if (c == null || !c.current || c.busy) {
+      return;
+    }
     final encrypted = c.catalogCredential;
     if (encrypted == null) {
       await _linkSteamAccount();
@@ -371,7 +425,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         }
         final result = await proxy.refreshSteamCatalog(credential);
         c.requireCurrent();
-        if (result.steamId != c.library.steamAccountId) throw const OAuthProxyException('Steam identity mismatch');
+        if (result.steamId != c.library.steamAccountId) {
+          throw const OAuthProxyException('Steam identity mismatch');
+        }
         await c.saveSteamCatalog(
           steamId: result.steamId!,
           games: result.steamGames.map(SteamCatalogGame.fromJson).toList(),
@@ -384,12 +440,16 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         proxy.dispose();
       }
     });
-    if (relink && mounted && c.current) await _linkSteamAccount();
+    if (relink && mounted && c.current) {
+      await _linkSteamAccount();
+    }
   }
 
   Future<void> _unlinkSteamAccount() async {
     final c = _controller;
-    if (c == null || !c.current || c.busy) return;
+    if (c == null || !c.current || c.busy) {
+      return;
+    }
     final confirmed = await showConfirmDialog(
       _actionContext,
       title: t.games.unlinkSteamAccount,
@@ -406,7 +466,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           try {
             final credential = await CredentialVault.reveal(encrypted);
             active.requireCurrent();
-            if (credential != null) await proxy.revokeSteamCatalog(credential);
+            if (credential != null) {
+              await proxy.revokeSteamCatalog(credential);
+            }
           } catch (_) {
             /* Local unlink succeeds offline; server grants expire. */
           } finally {
@@ -419,7 +481,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   Future<void> _scan() async {
     final c = _controller;
-    if (c == null || !c.current) return;
+    if (c == null || !c.current) {
+      return;
+    }
     try {
       await c.scan();
     } catch (_) {
@@ -433,15 +497,23 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       context: _actionContext,
       builder: (_) => const AddGameComputerDialog(),
     );
-    if (host == null || !mounted || c != _controller) return;
-    if (!await _run((c) => c.saveHost(host))) return;
-    if (mounted && c == _controller && PlatformDetector.supportsEmbeddedGameStreaming()) await _connect(host);
+    if (host == null || !mounted || c != _controller) {
+      return;
+    }
+    if (!await _run((c) => c.saveHost(host))) {
+      return;
+    }
+    if (mounted && c == _controller && PlatformDetector.supportsEmbeddedGameStreaming()) {
+      await _connect(host);
+    }
   }
 
   Future<void> _connect(GameHost host, {bool forcePair = false}) => _run((c) async {
     final capability = await c.client.capabilities(host);
     c.requireCurrent();
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     if (!capability.available || !capability.inlinePairing) {
       await _engineUnavailable(host);
       return;
@@ -450,7 +522,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         ? await identifySteamHost(host)
         : await identifyGameStreamHost(host);
     c.requireCurrent();
-    if (selected.key != host.key) await c.removeHost(host);
+    if (selected.key != host.key) {
+      await c.removeHost(host);
+    }
     await c.saveHost(selected);
     // Already authorized computers open their library without another prompt.
     try {
@@ -459,17 +533,23 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         return;
       }
     } on GameClientException catch (error) {
-      if (error.failure != GameClientFailure.pairingRequired) rethrow;
+      if (error.failure != GameClientFailure.pairingRequired) {
+        rethrow;
+      }
     }
     c.requireCurrent();
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final paired = await showScopedDialog<bool>(
       context: _actionContext,
       barrierDismissible: false,
       builder: (_) => PairGameComputerDialog(host: selected, client: c.client, isCurrent: () => c.current),
     );
     c.requireCurrent();
-    if (paired == true) await c.refreshGames(selected);
+    if (paired == true) {
+      await c.refreshGames(selected);
+    }
   }).then<void>((_) {});
   Future<void> _open(GameHost host, StreamGame game) async {
     if (!PlatformDetector.supportsEmbeddedGameStreaming()) {
@@ -512,8 +592,13 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     bool controllerOnly = false,
   }) async {
     final c = _controller;
-    if (c == null || !c.current || c.busy) return;
-    if (game.romm != null) { await _details(game); return; }
+    if (c == null || !c.current || c.busy) {
+      return;
+    }
+    if (game.romm != null) {
+      await _details(game);
+      return;
+    }
     if (!PlatformDetector.supportsEmbeddedGameStreaming()) {
       await _details(game);
       return;
@@ -546,7 +631,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         ],
       ),
     );
-    if (route == null || !mounted || !c.current) return;
+    if (route == null || !mounted || !c.current) {
+      return;
+    }
     if (controllerOnly) {
       await _openInWorkspace(route.host, route.game, fullscreen: true, controllerOnly: true);
     } else if (mini) {
@@ -558,7 +645,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   Future<T?> _page<T>(WidgetBuilder builder) async {
     final c = _controller;
-    if (c == null || !c.current) return null;
+    if (c == null || !c.current) {
+      return null;
+    }
     final ownership = Listenable.merge([
       _presentationRevision,
       context.read<ActiveProfileProvider>(),
@@ -586,12 +675,20 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
   Future<void> _details(LibraryGame initial) async {
     if (initial.romm != null) {
       final romm = _romm;
-      if (romm != null && romm.current) await rommPush<void>(context, romm,
-        RommDetailScreen(controller: romm, game: initial.romm!), connectionId: initial.romm!.connectionId);
+      if (romm != null && romm.current) {
+        await rommPush<void>(
+          context,
+          romm,
+          RommDetailScreen(controller: romm, game: initial.romm!),
+          connectionId: initial.romm!.connectionId,
+        );
+      }
       return;
     }
     final c = _controller;
-    if (c == null || !c.current) return;
+    if (c == null || !c.current) {
+      return;
+    }
     final activityIdentity = c.library.steamAccountId;
     final activityCredential = c.catalogCredential;
     final choice = await _page<Object>((pageContext) {
@@ -662,20 +759,34 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         ],
       );
     });
-    if (!mounted || !c.current) return;
+    if (!mounted || !c.current) {
+      return;
+    }
     final game = c.library.entries.where((g) => g.key == initial.key).firstOrNull;
-    if (game == null) return;
-    if (choice is GameRoute && game.routes.any((r) => r.key == choice.key)) await _open(choice.host, choice.game);
+    if (game == null) {
+      return;
+    }
+    if (choice is GameRoute && game.routes.any((r) => r.key == choice.key)) {
+      await _open(choice.host, choice.game);
+    }
     if (choice == 'play' || choice == 'choose' || choice == 'mini') {
       await _openLibraryGame(game, choose: choice == 'choose', mini: choice == 'mini');
     }
-    if (choice == 'controller') await _openLibraryGame(game, controllerOnly: true);
-    if (choice == 'link') await _linkSteamAccount();
-    if (choice == 'add') await _connections();
+    if (choice == 'controller') {
+      await _openLibraryGame(game, controllerOnly: true);
+    }
+    if (choice == 'link') {
+      await _linkSteamAccount();
+    }
+    if (choice == 'add') {
+      await _connections();
+    }
     if (choice is String && choice.startsWith('metrics:')) {
       final session = _workspaceGameSessions[choice.substring(8)];
       await session?.withInputSuspended(() async {
-        if (!mounted || !c.current) return;
+        if (!mounted || !c.current) {
+          return;
+        }
         await showScopedDialog<void>(
           context: _actionContext,
           builder: (_) => SteamStreamDiagnostics(readMetrics: session.readMetrics, internetPath: session.internetPath),
@@ -713,7 +824,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         ],
       ],
       onSelected: (action) async {
-        if (!c.current || c != _controller) return;
+        if (!c.current || c != _controller) {
+          return;
+        }
         if (action == 'cloudSetting') {
           await _cloudAccountSetting(route.host);
         } else if (action == 'prefer') {
@@ -737,7 +850,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     bool controllerOnly = false,
   }) => _run((c) async {
     final capability = await c.client.capabilities(host);
-    if (!mounted || !c.current) return;
+    if (!mounted || !c.current) {
+      return;
+    }
     if (!capability.embeddedSurface ||
         host.protocol != GameProtocol.steam ||
         !PlatformDetector.supportsEmbeddedGameStreaming()) {
@@ -763,13 +878,19 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
         return null;
       }
       final inventory = c.library.inventories.where((i) => i.hostKey == host.key).firstOrNull;
-      if (inventory == null || await steamHostReachable(host)) return null;
-      if (!mounted) throw const GameClientException(GameClientFailure.cancelled);
+      if (inventory == null || await steamHostReachable(host)) {
+        return null;
+      }
+      if (!mounted) {
+        throw const GameClientException(GameClientFailure.cancelled);
+      }
       c.requireCurrent();
       final remote = context.read<CompanionRemoteProvider>();
       final ready = await ensureCompanionRemoteCryptoFromContext(context, checkCurrent: c.requireCurrent);
       c.requireCurrent();
-      if (!ready) throw const GameClientException(GameClientFailure.unavailable);
+      if (!ready) {
+        throw const GameClientException(GameClientFailure.unavailable);
+      }
       return remote.openSteamInternet(inventory.peerId, isCurrent: () => mounted && c.current);
     }
 
@@ -859,7 +980,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
     workspace.showSessionInWorkspace(sessionId, fullscreen: fullscreen);
   }).then<void>((_) {});
   Future<void> _engineUnavailable(GameHost host) async {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     await showScopedDialog<void>(
       context: _actionContext,
       builder: (dialogContext) => AlertDialog(
@@ -895,7 +1018,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   Future<void> _importInventory(GameHost host) async {
     final c = _controller;
-    if (c == null || !c.current) return;
+    if (c == null || !c.current) {
+      return;
+    }
     final remote = context.read<CompanionRemoteProvider>();
     final peerId = remote.gameInventoryPeerId;
     if (peerId == null || !remote.supportsGameInventory) {
@@ -908,12 +1033,16 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       confirmText: t.games.importInstalledGames,
       message: t.games.inventoryConfirm(peer: remote.connectedDevice?.name ?? t.games.computers, computer: host.name),
     );
-    if (!confirmed || !mounted || !c.current || remote.gameInventoryPeerId != peerId) return;
+    if (!confirmed || !mounted || !c.current || remote.gameInventoryPeerId != peerId) {
+      return;
+    }
     await _run((c) async {
       try {
         final inventory = await remote.requestGameInventory();
         c.requireCurrent();
-        if (remote.gameInventoryPeerId != peerId) throw const SteamInventoryUnavailable();
+        if (remote.gameInventoryPeerId != peerId) {
+          throw const SteamInventoryUnavailable();
+        }
         await c.saveInventory(
           SteamHostInventory(
             hostKey: host.key,
@@ -923,29 +1052,41 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
             complete: inventory.complete,
           ),
         );
-        if (mounted && c.current) showSuccessSnackBar(context, t.games.inventoryImported);
+        if (mounted && c.current) {
+          showSuccessSnackBar(context, t.games.inventoryImported);
+        }
       } on SteamInventoryUnavailable {
-        if (mounted && c.current) showErrorSnackBar(context, t.games.inventoryConnectHelp);
+        if (mounted && c.current) {
+          showErrorSnackBar(context, t.games.inventoryConnectHelp);
+        }
       }
     });
   }
 
   Future<void> _chooseSteamFolder() async {
     final c = _controller;
-    if (c == null || !c.current) return;
+    if (c == null || !c.current) {
+      return;
+    }
     final path = await FilePickerService.instance.getDirectoryPath(dialogTitle: t.games.steamInstallFolder);
-    if (path == null || !mounted || !c.current) return;
+    if (path == null || !mounted || !c.current) {
+      return;
+    }
     await SettingsService.instance.write(
       SettingsService.steamInstallRootForProfile(c.profileId),
       path,
       checkCurrent: c.requireCurrent,
     );
-    if (mounted && c.current) _changed();
+    if (mounted && c.current) {
+      _changed();
+    }
   }
 
   Future<void> _cloudAccountSetting(GameHost host) async {
     final c = _controller;
-    if (c == null || !c.current || c.busy) return;
+    if (c == null || !c.current || c.busy) {
+      return;
+    }
     final remote = context.read<CompanionRemoteProvider>();
     final account = c.library.steamAccountId;
     final peer = remote.gameActionPeerId;
@@ -961,35 +1102,47 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       showErrorSnackBar(context, t.games.hostActionPairingHelp);
       return;
     }
+    final actionContext = _actionContext;
     await _run((_) async {
       final before = await remote.requestCloudSetting(account);
-      if (!current()) return;
+      if (!actionContext.mounted || !current()) {
+        return;
+      }
       if (before.status != 'observed' || before.enabled == null) {
-        showErrorSnackBar(context, t.games.cloudBridgeUnavailable);
+        showErrorSnackBar(actionContext, t.games.cloudBridgeUnavailable);
         return;
       }
       final desired = !before.enabled!;
       final label = desired ? t.games.enableAccountCloud : t.games.disableAccountCloud;
       final confirmed = await showConfirmDialog(
-        _actionContext,
+        actionContext,
         title: label,
         message: t.games.cloudAccountConfirm(computer: isolateDisplayText(host.name)),
         confirmText: label,
       );
-      if (!confirmed || !current()) return;
+      if (!confirmed || !actionContext.mounted || !current()) {
+        return;
+      }
       final result = await remote.requestCloudSetting(account, expected: before.enabled, enabled: desired);
-      if (!current()) return;
+      if (!actionContext.mounted || !current()) {
+        return;
+      }
       if (result.status == 'observed' && result.enabled == desired) {
-        showSuccessSnackBar(context, t.games.cloudAccountObserved);
+        showSuccessSnackBar(actionContext, t.games.cloudAccountObserved);
       } else {
-        showErrorSnackBar(context, result.status == 'stale' ? t.games.cloudAccountStale : t.games.cloudAccountUnknown);
+        showErrorSnackBar(
+          actionContext,
+          result.status == 'stale' ? t.games.cloudAccountStale : t.games.cloudAccountUnknown,
+        );
       }
     });
   }
 
   Future<void> _remoteHostAction(GameHost host, SteamHostAction action, {int? appId}) async {
     final c = _controller;
-    if (c == null || !c.current || c.busy) return;
+    if (c == null || !c.current || c.busy) {
+      return;
+    }
     final remote = context.read<CompanionRemoteProvider>();
     final snapshot = c.library.inventories.where((i) => i.hostKey == host.key).firstOrNull;
     final peer = remote.gameActionPeerId;
@@ -1023,10 +1176,14 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
                 '${t.games.hostActionConfirm(computer: isolateDisplayText(host.name))}${action == SteamHostAction.properties ? '\n\n${t.games.cloudSettingsHelp}' : ''}',
             confirmText: label,
           );
-    if (!confirmed || !mounted || !c.current || remote.gameActionPeerId != peer) return;
+    if (!confirmed || !mounted || !c.current || remote.gameActionPeerId != peer) {
+      return;
+    }
     await _run((c) async {
       final result = await remote.requestGameAction(action, appId: appId);
-      if (!mounted || !c.current || remote.gameActionPeerId != peer) return;
+      if (!mounted || !c.current || remote.gameActionPeerId != peer) {
+        return;
+      }
       if (result == SteamHostActionResult.submitted) {
         showSuccessSnackBar(
           context,
@@ -1058,7 +1215,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       case 'wake':
         await _run((c) async {
           await wakeGameHost(host);
-          if (mounted && c.current) showSuccessSnackBar(context, t.games.wakeSent);
+          if (mounted && c.current) {
+            showSuccessSnackBar(context, t.games.wakeSent);
+          }
         });
       case 'forget':
         final c = _controller;
@@ -1079,7 +1238,9 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           context: _actionContext,
           builder: (_) => AddGameShortcutDialog(host: host),
         );
-        if (game != null && mounted && c == _controller) await _run((c) => c.saveGame(game));
+        if (game != null && mounted && c == _controller) {
+          await _run((c) => c.saveGame(game));
+        }
     }
   }
 
@@ -1307,39 +1468,82 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
 
   Future<void> _rommConnections() async {
     final romm = _romm;
-    if (romm != null && romm.current) await _page<void>((_) => RommConnectionsScreen(controller: romm));
+    if (romm != null && romm.current) {
+      await _page<void>((_) => RommConnectionsScreen(controller: romm));
+    }
   }
+
   Future<void> _rommLink([RommLink? incoming]) async {
     final romm = _romm;
-    if (romm == null || !romm.current) return;
+    if (romm == null || !romm.current) {
+      return;
+    }
     RommLink? link = incoming;
     if (link == null) {
       final text = TextEditingController();
       try {
-        final raw = await rommDialog<String>(context: context, controller: romm, builder: (dialog) => AlertDialog(
-          title: Text(rommText(dialog, 'openLink')), content: FocusableTextField(controller: text,
-            decoration: InputDecoration(labelText: rommText(dialog, 'linkHelp'))),
-          actions: [TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
-            FilledButton(onPressed: () => Navigator.pop(dialog, text.text), child: Text(rommText(dialog, 'openLink')))]));
-        if (raw == null || !romm.current) return;
-        final uri = Uri.tryParse(raw); link = uri == null ? null : RommLink.parse(uri);
-      } finally { text.dispose(); }
+        final raw = await rommDialog<String>(
+          context: context,
+          controller: romm,
+          builder: (dialog) => AlertDialog(
+            title: Text(rommText(dialog, 'openLink')),
+            content: FocusableTextField(
+              controller: text,
+              decoration: InputDecoration(labelText: rommText(dialog, 'linkHelp')),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(dialog), child: Text(rommText(dialog, 'cancel'))),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialog, text.text),
+                child: Text(rommText(dialog, 'openLink')),
+              ),
+            ],
+          ),
+        );
+        if (raw == null || !romm.current) {
+          return;
+        }
+        final uri = Uri.tryParse(raw);
+        link = uri == null ? null : RommLink.parse(uri);
+      } finally {
+        text.dispose();
+      }
     }
     try {
-      if (link == null) throw const RommFailure('romm.invalidAddress');
+      if (link == null) {
+        throw const RommFailure('romm.invalidAddress');
+      }
       final sources = romm.connections.where((s) => s.base == link!.server && romm.hasConnection(s.id)).toList();
-      if (sources.isEmpty) throw const RommFailure('romm.notConnected');
+      if (sources.isEmpty) {
+        throw const RommFailure('romm.notConnected');
+      }
       RommConnection? source = sources.singleOrNull;
       if (source == null) {
-        if (!mounted || !romm.current) return;
-        source = await rommDialog<RommConnection>(context: context, controller: romm, builder: (dialog) => SimpleDialog(
-          title: Text(rommText(dialog, 'connections')), children: [for (final item in sources)
-            SimpleDialogOption(onPressed: () => Navigator.pop(dialog, item), child: Text(isolateDisplayText('${item.name} · ${item.username}')))]));
-        if (source == null || !romm.current) return;
+        if (!mounted || !romm.current) {
+          return;
+        }
+        source = await rommDialog<RommConnection>(
+          context: context,
+          controller: romm,
+          builder: (dialog) => SimpleDialog(
+            title: Text(rommText(dialog, 'connections')),
+            children: [
+              for (final item in sources)
+                SimpleDialogOption(
+                  onPressed: () => Navigator.pop(dialog, item),
+                  child: Text(isolateDisplayText('${item.name} · ${item.username}')),
+                ),
+            ],
+          ),
+        );
+        if (source == null || !romm.current) {
+          return;
+        }
       }
       RommGame? game;
-      if (link.romId > 0) game = await (await romm.client(source.id)).game(source.id, link.romId);
-      else {
+      if (link.romId > 0) {
+        game = await (await romm.client(source.id)).game(source.id, link.romId);
+      } else {
         // Acquisition links without an indexed ROM ID use external identity,
         // never a fuzzy title match or an arbitrary URL supplied in a link.
         final api = await romm.client(source.id);
@@ -1350,28 +1554,57 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
           candidates.add(await api.game(source.id, sibling));
         }
         final matches = candidates.where(link.matches).toList();
-        if (matches.length == 1) game = matches.single;
-        else if (matches.length > 1 && mounted && romm.current) {
-          game = await rommDialog<RommGame>(context: context, controller: romm, connectionId: source.id, builder: (dialog) => SimpleDialog(
-            title: Text(rommText(dialog, 'chooseCopy')), children: [for (final copy in matches)
-              SimpleDialogOption(onPressed: () => Navigator.pop(dialog, copy), child: Text(isolateDisplayText('${copy.name} · ${copy.variant}')))]));
-          if (game == null) return;
+        if (matches.length == 1) {
+          game = matches.single;
+        } else if (matches.length > 1 && mounted && romm.current) {
+          game = await rommDialog<RommGame>(
+            context: context,
+            controller: romm,
+            connectionId: source.id,
+            builder: (dialog) => SimpleDialog(
+              title: Text(rommText(dialog, 'chooseCopy')),
+              children: [
+                for (final copy in matches)
+                  SimpleDialogOption(
+                    onPressed: () => Navigator.pop(dialog, copy),
+                    child: Text(isolateDisplayText('${copy.name} · ${copy.variant}')),
+                  ),
+              ],
+            ),
+          );
+          if (game == null) {
+            return;
+          }
         }
       }
-      if (game == null) throw const RommFailure('romm.notIndexed');
-      if (!link.matches(game)) throw const RommFailure('romm.copyMismatch');
-      if (romm.current) await _details(LibraryGame(key: game.key, name: game.name, routes: const [], romm: game));
-    } catch (error) { if (mounted && romm.current) showErrorSnackBar(context, rommText(context, error is RommFailure ? error.code : 'connectionFailed')); }
+      if (game == null) {
+        throw const RommFailure('romm.notIndexed');
+      }
+      if (!link.matches(game)) {
+        throw const RommFailure('romm.copyMismatch');
+      }
+      if (romm.current) {
+        await _details(LibraryGame(key: game.key, name: game.name, routes: const [], romm: game));
+      }
+    } catch (error) {
+      if (mounted && romm.current) {
+        showErrorSnackBar(context, rommText(context, error is RommFailure ? error.code : 'connectionFailed'));
+      }
+    }
   }
 
   Future<void> _settings() async {
     final profile = _profile;
-    if (profile == null) return;
+    if (profile == null) {
+      return;
+    }
     await _page<void>((_) => GameSettingsScreen(profileId: profile, onChooseFolder: _chooseSteamFolder));
   }
 
   List<Widget> _catalogNotices(GameLibrary state, {bool actions = true}) {
-    if (state.steamAccountId == null) return [];
+    if (state.steamAccountId == null) {
+      return [];
+    }
     return [
       if (!state.steamCatalogAvailable || state.steamCatalogStale || state.steamCatalogTruncated)
         SliverToBoxAdapter(
@@ -1443,28 +1676,60 @@ class _GamesScreenState extends State<GamesScreen> with FocusableTab, TabVisibil
       onUseAsController: (Platform.isAndroid || Platform.isIOS) && !PlatformDetector.isTV()
           ? (game) => _openLibraryGame(game, controllerOnly: true)
           : null,
-      catalogNotices: [..._catalogNotices(c.library), if (_rommLoadError) SliverToBoxAdapter(child: GameNotice(
-        title: rommText(context, 'title'), message: rommText(context, 'connectionFailed'), actionLabel: rommText(context, 'retry'), onAction: _retryLoad))],
+      catalogNotices: [
+        ..._catalogNotices(c.library),
+        if (_rommLoadError)
+          SliverToBoxAdapter(
+            child: GameNotice(
+              title: rommText(context, 'title'),
+              message: rommText(context, 'connectionFailed'),
+              actionLabel: rommText(context, 'retry'),
+              onAction: _retryLoad,
+            ),
+          ),
+      ],
       includePrimaryGames: _romm?.source.isEmpty ?? true,
-      additionalGames: [for (final game in _romm?.visibleGames ?? <RommGame>[])
-        if (_romm!.source.isEmpty || game.connectionId == _romm!.source)
-          LibraryGame(key: game.key, name: game.name, routes: const [], romm: game)],
+      additionalGames: [
+        for (final game in _romm?.visibleGames ?? <RommGame>[])
+          if (_romm!.source.isEmpty || game.connectionId == _romm!.source)
+            LibraryGame(key: game.key, name: game.name, routes: const [], romm: game),
+      ],
       additionalFavorites: _romm?.favorites ?? const {},
-      additionalInstalled: {for (final game in _romm?.visibleGames ?? <RommGame>[]) if (_romm!.storage.available(game)) game.key},
+      additionalInstalled: {
+        for (final game in _romm?.visibleGames ?? <RommGame>[])
+          if (_romm!.storage.available(game)) game.key,
+      },
       additionalRecent: _romm?.recent ?? const [],
       onSearchChanged: (query) {
         _rommSearch?.cancel();
         _rommSearch = Timer(const Duration(milliseconds: 350), () {
-          final romm = _romm; if (romm != null && romm.current) unawaited(romm.refresh(search: query));
+          final romm = _romm;
+          if (romm != null && romm.current) {
+            unawaited(romm.refresh(search: query));
+          }
         });
       },
-      sourceFilters: _romm == null ? null : RommLibraryFilters(controller: _romm!, onConnections: _rommConnections, onLink: _rommLink),
+      sourceFilters: _romm == null
+          ? null
+          : RommLibraryFilters(controller: _romm!, onConnections: _rommConnections, onLink: _rommLink),
       additionalCardBuilder: (entry, focus) {
         final romm = _romm!, game = entry.romm!;
-        return GameCard(key: ValueKey(game.key), game: StreamGame(hostKey: game.connectionId, id: '${game.id}', name: game.name),
-          artwork: c.artwork, loadCover: () => romm.cover(game), focusNode: focus, subtitle: game.variant,
-          favorite: romm.favorites.contains(game.key), onPlay: () => _details(entry), onDetails: () => _details(entry),
-          onFavorite: () => romm.favorite(game).catchError((_) { if (mounted && romm.current) showErrorSnackBar(context, rommText(context, 'connectionFailed')); }));
+        return GameCard(
+          key: ValueKey(game.key),
+          game: StreamGame(hostKey: game.connectionId, id: '${game.id}', name: game.name),
+          artwork: c.artwork,
+          loadCover: () => romm.cover(game),
+          focusNode: focus,
+          subtitle: game.variant,
+          favorite: romm.favorites.contains(game.key),
+          onPlay: () => _details(entry),
+          onDetails: () => _details(entry),
+          onFavorite: () => romm.favorite(game).catchError((_) {
+            if (context.mounted && romm.current) {
+              showErrorSnackBar(context, rommText(context, 'connectionFailed'));
+            }
+          }),
+        );
       },
     );
   }

@@ -47,6 +47,14 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def resolve_runtime(package_config: Path, architecture: str) -> Path:
+    root = resolve_package_root(package_config, "sherpa_onnx_linux")
+    runtime = root / "linux" / ARCHITECTURE_DIRECTORIES[architecture] / "libonnxruntime.so"
+    if not runtime.is_file():
+        raise ValueError(f"Locked Sherpa ONNX runtime is missing: {runtime}")
+    return runtime.resolve()
+
+
 def install_runtime_pair(
     package_config: Path,
     bundle: Path,
@@ -102,7 +110,8 @@ def install_runtime_pair(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("bundle", type=Path)
+    parser.add_argument("bundle", type=Path, nargs="?")
+    parser.add_argument("--print-runtime", action="store_true")
     parser.add_argument("--arch", required=True, choices=tuple(ARCHITECTURE_DIRECTORIES))
     parser.add_argument(
         "--package-config",
@@ -110,6 +119,13 @@ def main() -> None:
         default=Path(".dart_tool/package_config.json"),
     )
     args = parser.parse_args()
+    if args.print_runtime:
+        if args.bundle:
+            parser.error("--print-runtime does not install a bundle")
+        print(resolve_runtime(args.package_config, args.arch))
+        return
+    if args.bundle is None:
+        parser.error("bundle is required unless --print-runtime is selected")
     install_runtime_pair(args.package_config, args.bundle, args.arch)
 
 

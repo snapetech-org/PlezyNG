@@ -116,9 +116,9 @@ def locate(program: str) -> str | None:
     return override or shutil.which(program)
 
 
-def run(*command: str) -> subprocess.CompletedProcess:
+def run(*command: str, env: dict | None = None) -> subprocess.CompletedProcess:
     program, *arguments = command
-    return subprocess.run([locate(program) or program, *arguments], capture_output=True, text=True)
+    return subprocess.run([locate(program) or program, *arguments], capture_output=True, text=True, env=env)
 
 
 def load_distros(root: Path) -> dict:
@@ -143,7 +143,10 @@ def host_libraries(bundle: Path) -> tuple[dict[str, str], list[str]]:
     # happens to equal one the executable really takes from the host would
     # otherwise make that host library look bundled and pass the check
     # vacuously.
-    shipped = {path.name for directory in LOADER_DIRECTORIES for path in (bundle / directory).glob("*.so*")}
+    app_shipped = {path.name for directory in LOADER_DIRECTORIES for path in (bundle / directory).glob("*.so*")}
+    offline = bundle / 'tools/dv'
+    offline_runtime = offline / 'lib/runtime'
+    offline_shipped = {path.name for path in offline_runtime.glob('*.so*')}
     # rglob for the objects to inspect, though: those same modules pull in host
     # libraries nothing else in the bundle links, and scanning only lib/*.so*
     # left their dependencies out of ldd entirely.
@@ -151,7 +154,10 @@ def host_libraries(bundle: Path) -> tuple[dict[str, str], list[str]]:
     needed: dict[str, str] = {}
     problems: list[str] = []
     for binary in binaries:
-        result = run("ldd", str(binary))
+        is_offline = binary.is_relative_to(offline)
+        shipped = offline_shipped if is_offline else app_shipped
+        environment = {**os.environ, 'LD_LIBRARY_PATH': str(offline_runtime)} if is_offline else None
+        result = run("ldd", str(binary), env=environment)
         # ldd exits non-zero for a file it cannot read as an object. Statically
         # linked objects are the benign case and say so on stdout.
         if result.returncode != 0 and "not a dynamic executable" not in (result.stdout + result.stderr):
@@ -173,12 +179,14 @@ def host_libraries(bundle: Path) -> tuple[dict[str, str], list[str]]:
                 # shipping it sufficient. libshaderc_shared is exactly this case:
                 # no distro package installs it, which is why both workflows copy
                 # it in by hand.
-                if soname in shipped:
+                if not is_offline and soname in shipped:
                     continue
                 problems.append(f"{binary.name} needs {soname}, which resolves to nothing on this machine")
                 continue
             path = remainder.split(" (")[0]
             if not path.startswith("/"):
+                continue
+            if is_offline and Path(path).resolve().is_relative_to(offline.resolve()):
                 continue
             # A library that ships beside the binary needs nothing declared,
             # even when the loader happened to resolve this copy from the host.

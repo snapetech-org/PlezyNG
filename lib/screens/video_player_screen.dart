@@ -286,11 +286,19 @@ SubtitlePreference? subtitlePreferenceForItemChange({
   bool isDeviceLocalFallback = false,
 }) {
   final sessionIntent = SubtitlePreference.demoteToIntent(sessionPreference);
-  if (sessionIntent != null) return sessionIntent;
-  if (isDeviceLocalFallback) return null;
+  if (sessionIntent != null) {
+    return sessionIntent;
+  }
+  if (isDeviceLocalFallback) {
+    return null;
+  }
   SubtitlePreference? normalize(SubtitleTrack? track, {required bool preserveOff}) {
-    if (track == null) return null;
-    if (track.id == SubtitleTrack.off.id) return preserveOff ? const SubtitlePreference.off() : null;
+    if (track == null) {
+      return null;
+    }
+    if (track.id == SubtitleTrack.off.id) {
+      return preserveOff ? const SubtitlePreference.off() : null;
+    }
 
     final intent = SubtitleIntent.fromTrack(track);
     return intent == null ? null : SubtitlePreference.intent(intent);
@@ -309,10 +317,14 @@ SubtitlePreference? subtitlePreferenceForItemChange({
     return normalize(nativeTrack, preserveOff: false) ?? SubtitlePreference.demoteToIntent(declinedPreference);
   }
 
-  if (committedTrack == null) return const SubtitlePreference.off();
+  if (committedTrack == null) {
+    return const SubtitlePreference.off();
+  }
 
   final committedPreference = normalize(committedTrack, preserveOff: true);
-  if (committedPreference != null) return committedPreference;
+  if (committedPreference != null) {
+    return committedPreference;
+  }
   return normalize(nativeTrack, preserveOff: false);
 }
 
@@ -360,7 +372,9 @@ SubtitlePreference? sessionPreferenceForSourceSubtitleChoice(
   PlaybackSourceSubtitleChoice choice,
   List<MediaSubtitleTrack> rows,
 ) {
-  if (choice.isOff) return const SubtitlePreference.off();
+  if (choice.isOff) {
+    return const SubtitlePreference.off();
+  }
   for (final row in rows) {
     if (row.id == choice.sourceStreamId) {
       return SubtitlePreference.track(PlaybackSubtitleResolver.subtitleTrackForSource(row));
@@ -672,7 +686,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// Idempotent: shutdown and dispose both call it.
   void _retireLaunchObserver() {
     final observer = widget.launchObserver;
-    if (observer == null) return;
+    if (observer == null) {
+      return;
+    }
     if (!_ownsLaunchPlayback()) {
       observer.detach();
       return;
@@ -766,7 +782,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       return true;
     }
     final route = ModalRoute.of(context);
-    if (route == null || !route.isCurrent || !Navigator.of(context).canPop()) return false;
+    if (route == null || !route.isCurrent || !Navigator.of(context).canPop()) {
+      return false;
+    }
     await _exitPlayerRoute(navigateHome: false, stop: true);
     // Automation/application callers still observe truthful retirement, even
     // when navigation had to leave an unresponsive player behind.
@@ -1138,23 +1156,33 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// owns this item. Used by the player initialization path.
   MediaServerClient? _getMediaServerClient(BuildContext context) {
     final id = _currentMetadata.serverId;
-    if (id == null) return null;
+    if (id == null) {
+      return null;
+    }
     return context.read<MultiServerProvider>().serverManager.getClient(ServerId(id));
   }
 
   MediaServerClient? _getOnlineMediaServerClient(BuildContext context) {
     final id = _currentMetadata.serverId;
-    if (id == null) return null;
+    if (id == null) {
+      return null;
+    }
     final manager = context.read<MultiServerProvider>().serverManager;
-    if (!manager.isClientOnline(ServerId(id))) return null;
+    if (!manager.isClientOnline(ServerId(id))) {
+      return null;
+    }
     return manager.getClient(ServerId(id));
   }
 
   ExternalPlaybackSource? _externalSourceFor(MediaItem metadata) {
     final source = _activeExternalPlaybackSource;
-    if (source == null || source.isReleased || source.mediaGlobalKey != metadata.globalKey) return null;
+    if (source == null || source.isReleased || source.mediaGlobalKey != metadata.globalKey) {
+      return null;
+    }
     final controller = _externalSourceController;
-    if (controller == null || controller.blocked || controller.profileId != source.profileId) return null;
+    if (controller == null || controller.blocked || controller.profileId != source.profileId) {
+      return null;
+    }
     return source;
   }
 
@@ -1167,7 +1195,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<PlaybackContext> _resolveExternalPlaybackContext(MediaItem metadata, ExternalPlaybackSource source) async {
-    if (source.mediaGlobalKey != metadata.globalKey || !_externalSourceProfileIsCurrent(source)) {
+    if (!mounted || source.mediaGlobalKey != metadata.globalKey || !_externalSourceProfileIsCurrent(source)) {
       throw StateError('The selected remote stream is no longer available in this profile.');
     }
     final gateway = _externalStreamGateway ??= SourceStreamGateway(valid: () => _externalStreamGatewayValid && mounted);
@@ -1195,13 +1223,14 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         ),
       );
     }
-    if (source.mediaGlobalKey != metadata.globalKey || !_externalSourceProfileIsCurrent(source)) {
+    if (!mounted || source.mediaGlobalKey != metadata.globalKey || !_externalSourceProfileIsCurrent(source)) {
       throw StateError('The selected remote stream is no longer available in this profile.');
     }
     final serverId = metadata.serverId;
     final manager = context.read<MultiServerProvider>().serverManager;
     final reportingId = serverId == null ? null : ServerId(serverId);
-    final reportingClient = reportingId != null &&
+    final reportingClient =
+        reportingId != null &&
             manager.isServerVisible(reportingId) &&
             !manager.refusedServerIds.contains(reportingId) &&
             manager.isClientOnline(reportingId)
@@ -1235,11 +1264,17 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _externalStreamGatewayValid = false;
     final gateway = _externalStreamGateway;
-    if (gateway != null) unawaited(gateway.close());
-    if (_externalProfileExitQueued || !mounted) return;
+    if (gateway != null) {
+      unawaited(gateway.close());
+    }
+    if (_externalProfileExitQueued || !mounted) {
+      return;
+    }
     _externalProfileExitQueued = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(_handleBackButton());
+      if (mounted) {
+        unawaited(_handleBackButton());
+      }
     });
   }
 
@@ -1333,7 +1368,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (_observedLaunchGeneration == previousGeneration) {
       _observedLaunchGeneration = generation;
       final observer = widget.launchObserver;
-      if (observer != null && observer.isTerminal && _ownsLaunchPlayback()) observer.mark('opening');
+      if (observer != null && observer.isTerminal && _ownsLaunchPlayback()) {
+        observer.mark('opening');
+      }
     } else {
       _observedLaunchGeneration ??= generation;
     }
@@ -1383,7 +1420,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<void> _playWithPlaybackIntent(Player currentPlayer) {
-    if (_shuttingDown) return Future<void>.value();
+    if (_shuttingDown) {
+      return Future<void>.value();
+    }
     if (!automotivePlaybackAllowedNow()) {
       _playbackIntentShouldPlay = false;
       appLogger.d('Playback blocked while Android Automotive app is not resumed');
@@ -1408,7 +1447,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<void> _playOrPauseWithPlaybackIntent(Player currentPlayer) {
-    if (_shuttingDown) return Future<void>.value();
+    if (_shuttingDown) {
+      return Future<void>.value();
+    }
     if (!automotivePlaybackAllowedNow()) {
       appLogger.d('Play/pause requested while Android Automotive app is not resumed; keeping playback paused');
       return _pauseWithPlaybackIntent(currentPlayer);
@@ -1425,9 +1466,13 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<bool> _handleAutomationTransport(VideoAutomationCommand command) async {
-    if (!_ownsLaunchPlayback()) return false;
+    if (!_ownsLaunchPlayback()) {
+      return false;
+    }
     final currentPlayer = player;
-    if (currentPlayer == null) return false;
+    if (currentPlayer == null) {
+      return false;
+    }
     switch (command) {
       case VideoAutomationCommand.play:
         await _playWithPlaybackIntent(currentPlayer);
@@ -1573,7 +1618,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     bindEffect<bool>(SettingsService.subtitleOnMute, (enabled) {
       final volume = _volumeController?.value;
-      if (volume == null) return;
+      if (volume == null) {
+        return;
+      }
       final generation = ++_subtitleMuteGeneration;
       if (enabled && volume <= 0) {
         unawaited(_selectSubtitleForMute(generation));
@@ -1731,7 +1778,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     _setupAppleTvRemotePlaybackActions();
 
     _sleepTimerSubscription = SleepTimerService().onPrompt.listen((_) {
-      if (mounted) _showStillWatchingDialog();
+      if (mounted) {
+        _showStillWatchingDialog();
+      }
     });
 
     if (PlatformDetector.isAutomotive()) {
@@ -1748,7 +1797,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// gating — which, for a screen the user just opened, permits playback.
   Future<void> _startPlayerInitializationOnceVehicleAnswers() async {
     await CarUxRestrictionsService.instance.ensureResolved();
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     await _startPlayerInitialization(replaceCurrent: false);
   }
 
@@ -1760,7 +1811,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// is coming, because the activity never left the foreground. The playback gate
   /// keeps this paused until the vehicle releases it.
   void _handleCarRestrictionsChanged() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     if (automotivePlaybackAllowedNow()) {
       // The room catches the player up, if it stopped waiting for this user.
       _watchTogetherProvider?.setVehicleRestricted(false);
@@ -1774,7 +1827,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // Deliberately not gated on `state.isActive`: that is `playing && !completed`, which is false
     // for the whole of a rebuffer while the native side still intends to play. Skipping here would
     // leave the play intent standing, and playback would start the moment the buffer fills.
-    if (currentPlayer == null || !_isPlayerInitialized) return;
+    if (currentPlayer == null || !_isPlayerInitialized) {
+      return;
+    }
     try {
       await _pauseWithoutDisturbingTheRoom(currentPlayer);
     } catch (e, stackTrace) {
@@ -1804,7 +1859,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (_shuttingDown) return;
+    if (_shuttingDown) {
+      return;
+    }
 
     switch (state) {
       case AppLifecycleState.inactive:
@@ -1853,9 +1910,13 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<void> _startPlayerInitialization({required bool replaceCurrent}) {
-    if (_shuttingDown) return Future<void>.value();
+    if (_shuttingDown) {
+      return Future<void>.value();
+    }
     final activeOperation = _playerInitializationOperation;
-    if (activeOperation != null) return activeOperation;
+    if (activeOperation != null) {
+      return activeOperation;
+    }
 
     final generation = ++_playerInitializationGeneration;
     final operationCompleter = Completer<void>();
@@ -1898,7 +1959,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         );
       }
     }
-    if (_preferredSubtitleTrack != null || preferences['subtitle'] is! Map) return;
+    if (_preferredSubtitleTrack != null || preferences['subtitle'] is! Map) {
+      return;
+    }
     final subtitle = Map<String, dynamic>.from(preferences['subtitle'] as Map);
     if (subtitle['off'] == true) {
       _preferredSubtitleTrack = const SubtitlePreference.off();
@@ -1907,7 +1970,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     final language = subtitle['language'] as String?;
     final title = subtitle['title'] as String?;
     final codec = subtitle['codec'] as String?;
-    if (language == null && title == null && codec == null) return;
+    if (language == null && title == null && codec == null) {
+      return;
+    }
     _preferredSubtitleTrack = SubtitlePreference.intent(
       SubtitleIntent(
         language: language,
@@ -1930,7 +1995,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _disposeVolumeControllerForPlayer(Player currentPlayer) {
     final controller = _volumeController;
-    if (controller == null || !controller.ownsPlayer(currentPlayer)) return;
+    if (controller == null || !controller.ownsPlayer(currentPlayer)) {
+      return;
+    }
     _detachSubtitleMuteVolumeListener(controller);
     _detachSubtitleMuteTrackCatalogListener(currentPlayer);
     _volumeController = null;
@@ -1955,7 +2022,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       appLogger.w('Failed to tear down player collaborators during initialization rollback', error: e, stackTrace: st);
     }
     try {
-      if (mounted && !_shuttingDown) await attemptPlayer.abandonAudioFocus();
+      if (mounted && !_shuttingDown) {
+        await attemptPlayer.abandonAudioFocus();
+      }
     } catch (e, st) {
       appLogger.w('Failed to abandon audio focus during player rollback', error: e, stackTrace: st);
     }
@@ -1973,7 +2042,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     var committed = false;
     String? failureMessage;
     try {
-      if (!_isPlayerInitializationCurrent(generation)) return;
+      if (!_isPlayerInitializationCurrent(generation)) {
+        return;
+      }
       setState(() {
         _playerInitializationError = null;
         _isPlayerInitialized = false;
@@ -1984,7 +2055,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         if (previousPlayer != null) {
           await _disposePlayerInitializationAttempt(previousPlayer);
         }
-        if (!_isPlayerInitializationCurrent(generation)) return;
+        if (!_isPlayerInitializationCurrent(generation)) {
+          return;
+        }
       }
 
       initPhase = 'loading settings';
@@ -1995,11 +2068,15 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       final savedTrackPreference = localTrackPreferences.getShowTrackPreference(
         _currentMetadata.seriesGlobalKey ?? _currentMetadata.globalKey,
       );
-      if (!_isPlayerInitializationCurrent(generation)) return;
+      if (!_isPlayerInitializationCurrent(generation)) {
+        return;
+      }
       _restoreShowTrackPreferences(savedTrackPreference);
       // Literal `mounted` check: the kickoff block below reads `context`, and
       // the lint cannot see the mounted check inside the helper.
-      if (!mounted || !_isPlayerInitializationCurrent(generation)) return;
+      if (!mounted || !_isPlayerInitializationCurrent(generation)) {
+        return;
+      }
       _autoPipEnabled = settingsService.read(SettingsService.autoPip);
       _exitFullscreenOnPlayerClose = settingsService.read(SettingsService.exitFullscreenOnPlayerClose);
       _rewindOnResume = settingsService.read(SettingsService.rewindOnResume);
@@ -2140,7 +2217,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         initPhase = 'syncing display mode';
         _displayModeService = DisplayModeService(settingsService, FullscreenStateManager());
         await _displayModeService!.syncWithNative();
-        if (!_isPlayerInitializationCurrent(generation)) return;
+        if (!_isPlayerInitializationCurrent(generation)) {
+          return;
+        }
         _releaseFullscreenListener ??= bindListenable(FullscreenStateManager(), _onFullscreenChanged);
       }
 
@@ -2148,7 +2227,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       // separate audio core and stays alive beside this video. Outside the
       // workspace, keep the existing playback replacement policy.
       initPhase = 'claiming playback session';
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       MultiviewWorkspaceController? workspace;
       try {
         workspace = context.read<MultiviewWorkspaceController>();
@@ -2169,7 +2250,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         attemptVideoLease = existingLease;
         await coordinator.claimVideoForLease(existingLease);
       }
-      if (!mounted || generation != _playerInitializationGeneration) return;
+      if (!mounted || generation != _playerInitializationGeneration) {
+        return;
+      }
 
       initPhase = 'creating player';
       final videoSlot = attemptVideoLease.slot;
@@ -2183,13 +2266,19 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       );
       attemptPlayer = currentPlayer;
       await currentPlayer.setWorkspaceAudioFocusEnabled(allowInitialWorkspaceAudio);
-      if (!mounted || generation != _playerInitializationGeneration) return;
+      if (!mounted || generation != _playerInitializationGeneration) {
+        return;
+      }
       if (Platform.isAndroid) {
         await currentPlayer.setLogLevel(debugLoggingEnabled ? 'v' : 'warn');
-        if (!mounted || generation != _playerInitializationGeneration) return;
+        if (!mounted || generation != _playerInitializationGeneration) {
+          return;
+        }
       }
 
-      if (!_isPlayerInitializationCurrent(generation)) return;
+      if (!_isPlayerInitializationCurrent(generation)) {
+        return;
+      }
       initPhase = 'configuring player';
       await currentPlayer.configureSubtitleFonts();
       await currentPlayer.setProperty('sub-ass', 'yes'); // Enable libass
@@ -2418,7 +2507,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         try {
           await currentPlayer.setProperty('hdr-enabled', enableHDR ? 'yes' : 'no');
         } catch (e) {
-          if (!PlayerNative.usesLinuxVideoPlane) rethrow;
+          if (!PlayerNative.usesLinuxVideoPlane) {
+            rethrow;
+          }
           appLogger.d('VideoPlayerScreen: HDR passthrough not applied', error: e);
           // Same hazard as the tone-mapping block above. A refused transaction
           // hands hdr_wanted back to whatever it held before this write, and
@@ -2575,7 +2666,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       final savedVolume = settingsService.read(SettingsService.volume).clamp(0.0, maxVolume.toDouble());
       await currentPlayer.setVolume(allowInitialWorkspaceAudio ? savedVolume : 0);
-      if (!_isPlayerInitializationCurrent(generation)) return;
+      if (!_isPlayerInitializationCurrent(generation)) {
+        return;
+      }
       _volumeController = VideoVolumeController(
         player: currentPlayer,
         settings: settingsService,
@@ -2597,7 +2690,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         settingsService: settingsService,
         useExoPlayer: useExoPlayer,
       );
-      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) return;
+      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) {
+        return;
+      }
 
       if (mounted) {
         setState(() => _isPlayerInitialized = true);
@@ -2612,7 +2707,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
       initPhase = 'starting playback';
       await _startPlayback();
-      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) return;
+      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) {
+        return;
+      }
 
       // Set fullscreen mode and orientation based on rotation lock setting
       initPhase = 'applying orientation';
@@ -2639,7 +2736,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
         }
       }
 
-      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) return;
+      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) {
+        return;
+      }
       // Player streams are wired before open so broadcast first-frame events
       // cannot be dropped. Service init follows immediately after open.
       // `_loadAdjacentEpisodes` depends on the play queue being in state
@@ -2649,12 +2748,16 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       // until after first frame anyway.
       unawaited(
         _ensurePlayQueue().whenComplete(() {
-          if (_ownsPlayerInitializationAttempt(generation, currentPlayer)) _loadAdjacentEpisodes();
+          if (_ownsPlayerInitializationAttempt(generation, currentPlayer)) {
+            _loadAdjacentEpisodes();
+          }
         }),
       );
       initPhase = 'initializing playback services';
       await _initializeServices();
-      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) return;
+      if (!_ownsPlayerInitializationAttempt(generation, currentPlayer)) {
+        return;
+      }
       committed = true;
     } catch (e, st) {
       failureMessage = _safePlaybackErrorMessage(e);
@@ -2708,11 +2811,17 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// route, and [_removePlayerRoute] removes it whatever ends up on top (#2290).
   Future<void> _exitPlayerRoute({required bool navigateHome, bool stop = false}) {
     final existing = _routeExitOperation;
-    if (existing != null) return existing;
-    if (!mounted) return Future<void>.value();
+    if (existing != null) {
+      return existing;
+    }
+    if (!mounted) {
+      return Future<void>.value();
+    }
     final navigator = Navigator.of(context);
     final route = ModalRoute.of(context);
-    if (!navigator.canPop() || route == null || !route.isCurrent) return Future<void>.value();
+    if (!navigator.canPop() || route == null || !route.isCurrent) {
+      return Future<void>.value();
+    }
 
     final completer = Completer<void>();
     _routeExitOperation = completer.future;
@@ -2727,7 +2836,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       } catch (error, stackTrace) {
         appLogger.w('Player exit cleanup failed', error: error, stackTrace: stackTrace);
       } finally {
-        if (!navigationReady.isCompleted) navigationReady.complete();
+        if (!navigationReady.isCompleted) {
+          navigationReady.complete();
+        }
       }
     }());
     unawaited(() async {
@@ -2752,18 +2863,26 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// the exit's shutdown cancels its countdown before any await.
   Future<void> _handleBackButton({bool navigateHome = false}) async {
     final acceptedExit = _routeExitOperation;
-    if (acceptedExit != null) return acceptedExit;
+    if (acceptedExit != null) {
+      return acceptedExit;
+    }
     if (!navigateHome && _showStillWatchingPrompt) {
       _dismissPlaybackPromptForBack();
       return;
     }
-    if (_isHandlingBack) return;
+    if (_isHandlingBack) {
+      return;
+    }
     _isHandlingBack = true;
     try {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       await _exitPlayerRoute(navigateHome: navigateHome);
     } finally {
-      if (mounted && _routeExitOperation == null) _isHandlingBack = false;
+      if (mounted && _routeExitOperation == null) {
+        _isHandlingBack = false;
+      }
     }
   }
 
@@ -2780,7 +2899,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     VoidCallback? onHome,
   }) {
     // The navigator or the route went away on its own; nothing of ours is left.
-    if (!navigator.mounted || !route.isActive) return;
+    if (!navigator.mounted || !route.isActive) {
+      return;
+    }
     if (route.isCurrent && navigator.canPop()) {
       if (navigateHome) {
         navigator.popUntil((r) => r.isFirst);
@@ -2840,8 +2961,12 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // must find no owner, or it would hide them again.
     ImmersiveModeGuard.release(this);
     final existing = _systemUiRestoreOperation;
-    if (existing != null) return existing;
-    if (_activeRouteGuard.identityFor(this) == null) return Future<void>.value();
+    if (existing != null) {
+      return existing;
+    }
+    if (_activeRouteGuard.identityFor(this) == null) {
+      return Future<void>.value();
+    }
     if (PlatformDetector.isDesktopOS() && _exitFullscreenOnPlayerClose) {
       unawaited(FullscreenStateManager().exitFullscreen());
     }
@@ -2875,7 +3000,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     _externalStreamGatewayValid = false;
     final externalGateway = _externalStreamGateway;
     _externalStreamGateway = null;
-    if (externalGateway != null) unawaited(externalGateway.close());
+    if (externalGateway != null) {
+      unawaited(externalGateway.close());
+    }
     final workspaceSessionId = _workspaceSessionId;
     if (workspaceSessionId != null) {
       _workspaceController?.unregister(workspaceSessionId);
@@ -2939,7 +3066,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     _stopLiveTimelineUpdates();
 
     _detachPipStateListener();
-    if (_pipInitialized) unawaited(PipService.setAutoPipReady(ready: false));
+    if (_pipInitialized) {
+      unawaited(PipService.setAutoPipReady(ready: false));
+    }
     _clearAutoPipEnteringCallback();
     _videoFilterManager?.dispose();
     _pipInitialized = false;
@@ -3040,7 +3169,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     Sentry.addBreadcrumb(Breadcrumb(message: 'Player dispose', category: 'player'));
     final volumeController = _volumeController;
-    if (volumeController != null) _detachSubtitleMuteVolumeListener(volumeController);
+    if (volumeController != null) {
+      _detachSubtitleMuteVolumeListener(volumeController);
+    }
     _detachSubtitleMuteTrackCatalogListener();
     _volumeController = null;
     volumeController?.dispose();
@@ -3079,7 +3210,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// resume (#2034) — leaves `isCurrent` true, but CoveredRouteFocusBoundary
   /// then excludes the whole session from focus, so the request is a no-op.
   void _onScreenFocusChanged() {
-    if (_reclaimingFocus) return;
+    if (_reclaimingFocus) {
+      return;
+    }
     if (!_screenFocusNode.hasFocus && mounted && !_isExiting.value) {
       _reclaimingFocus = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -3099,7 +3232,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// owns unless the gate has seen the press. Priming lets it exit exactly
   /// once.
   bool _primeInitializationNavigationFocus(KeyEvent event) {
-    if (!mounted || _isExiting.value) return false;
+    if (!mounted || _isExiting.value) {
+      return false;
+    }
     final primed = primePlayerNavigationFocusForEvent(
       event,
       focusNode: _screenFocusNode,
@@ -3120,7 +3255,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _setupAppleTvRemotePlaybackActions() {
-    if (!PlatformDetector.isAppleTV()) return;
+    if (!PlatformDetector.isAppleTV()) {
+      return;
+    }
 
     _appleTvPlayPauseSubscription = AppleTvRemoteTouchService.instance.playPauseActions.listen((action) {
       unawaited(_handleAppleTvRemotePlayPause(action));
@@ -3143,9 +3280,13 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// prompts, route exit and episode reloads — none of which are user
   /// commands. Each accepted command site opts in explicitly instead (#1676).
   void _announceTransportCommand({required bool willPlay}) {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     // Visible chrome already renders the play/pause state.
-    if (_chromeController.controlsVisible) return;
+    if (_chromeController.controlsVisible) {
+      return;
+    }
     _toastController.showTransport(
       willPlay ? Symbols.play_arrow_rounded : Symbols.pause_rounded,
       willPlay ? t.videoControls.playbackResumed : t.videoControls.playbackPaused,
@@ -3159,7 +3300,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// here — wheel, shortcut keys, the OSD slider, companion remote — while
   /// volume the player reports on its own never does.
   void _handleSubtitleMuteVolume(double volume) {
-    if (!volume.isFinite) return;
+    if (!volume.isFinite) {
+      return;
+    }
     final generation = ++_subtitleMuteGeneration;
     if (volume <= 0) {
       if (SettingsService.instance.read(SettingsService.subtitleOnMute)) {
@@ -3171,7 +3314,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Future<void> _selectSubtitleForMute(int generation) async {
-    if (_subtitleMuteRestore != null || !mounted || generation != _subtitleMuteGeneration) return;
+    if (_subtitleMuteRestore != null || !mounted || generation != _subtitleMuteGeneration) {
+      return;
+    }
     final currentPlayer = player;
     final manager = _trackManager;
     if (currentPlayer == null ||
@@ -3184,13 +3329,19 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
     final state = currentPlayer.state;
     final previouslySelected = state.track.subtitle;
-    if (previouslySelected != null && previouslySelected.id != SubtitleTrack.off.id) return;
+    if (previouslySelected != null && previouslySelected.id != SubtitleTrack.off.id) {
+      return;
+    }
 
     final tracks = state.tracks.subtitle;
-    if (tracks.isEmpty) return;
+    if (tracks.isEmpty) {
+      return;
+    }
     final settings = SettingsService.instance;
     final profile = manager.getProfileSettings();
-    if (profile?.subtitleMode == SubtitlePlaybackMode.none) return;
+    if (profile?.subtitleMode == SubtitlePlaybackMode.none) {
+      return;
+    }
 
     final resolver = TrackSelectionService(
       player: currentPlayer,
@@ -3208,7 +3359,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
           .where((track) => track.id != SubtitleTrack.off.id && track.id != SubtitleTrack.auto.id)
           .where((track) => profile?.subtitleMode != SubtitlePlaybackMode.onlyForced || track.effectiveForced)
           .toList(growable: false);
-      if (selectable.isEmpty) return;
+      if (selectable.isEmpty) {
+        return;
+      }
 
       final preferredLanguage = profile?.defaultSubtitleLanguage?.trim();
       final audioLanguage = state.track.audio?.language?.trim();
@@ -3248,7 +3401,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Future<void> _restoreSubtitleAfterMute(int generation) async {
     final restore = _subtitleMuteRestore;
-    if (restore == null) return;
+    if (restore == null) {
+      return;
+    }
     _subtitleMuteRestore = null;
     final manager = _trackManager;
     if (!mounted ||
@@ -3275,7 +3430,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     _subtitleMuteSelectionPending = true;
     final previous = _subtitleMuteSelectionQueue;
     final operation = previous.catchError((Object _, StackTrace _) {}).then((_) async {
-      if (!mounted || generation != _subtitleMuteGeneration || !identical(player, targetPlayer)) return;
+      if (!mounted || generation != _subtitleMuteGeneration || !identical(player, targetPlayer)) {
+        return;
+      }
       if (expectedCurrentTrackId != null && targetPlayer.state.track.subtitle?.id != expectedCurrentTrackId) {
         return;
       }
@@ -3285,7 +3442,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       appLogger.w('Temporary subtitle selection failed', error: error, stackTrace: stackTrace);
     });
     await _subtitleMuteSelectionQueue;
-    if (generation == _subtitleMuteGeneration) _subtitleMuteSelectionPending = false;
+    if (generation == _subtitleMuteGeneration) {
+      _subtitleMuteSelectionPending = false;
+    }
   }
 
   void _attachSubtitleMuteVolumeListener(VideoVolumeController controller) {
@@ -3301,7 +3460,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _attachSubtitleMuteTrackCatalogListener(Player currentPlayer) {
-    if (identical(_subtitleMuteTrackCatalogPlayer, currentPlayer)) return;
+    if (identical(_subtitleMuteTrackCatalogPlayer, currentPlayer)) {
+      return;
+    }
     _detachSubtitleMuteTrackCatalogListener();
     _subtitleMuteTrackCatalogPlayer = currentPlayer;
     _subtitleMuteTrackCatalogSubscription = currentPlayer.streams.tracks.listen((tracks) {
@@ -3317,7 +3478,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _detachSubtitleMuteTrackCatalogListener([Player? expectedPlayer]) {
-    if (expectedPlayer != null && !identical(_subtitleMuteTrackCatalogPlayer, expectedPlayer)) return;
+    if (expectedPlayer != null && !identical(_subtitleMuteTrackCatalogPlayer, expectedPlayer)) {
+      return;
+    }
     _subtitleMuteTrackCatalogPlayer = null;
     unawaited(_subtitleMuteTrackCatalogSubscription?.cancel());
     _subtitleMuteTrackCatalogSubscription = null;
@@ -3325,7 +3488,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _detachSubtitleMuteVolumeListener(VideoVolumeController controller) {
     final listener = _subtitleMuteVolumeListener;
-    if (listener == null) return;
+    if (listener == null) {
+      return;
+    }
     controller.removeListener(listener);
     _subtitleMuteVolumeListener = null;
   }
@@ -3341,7 +3506,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _announceVolumeCommand(double volume) {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final percent = volume.round();
     final icon = percent == 0
         ? Symbols.volume_off_rounded
@@ -3355,7 +3522,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// or a hardware media key). Mirrors the controls path: rewind-on-resume,
   /// then play/pause with playback intent, then announce.
   Future<void> _remoteTransport(TransportCommand command, {required String source}) async {
-    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) {
+      return;
+    }
 
     final currentPlayer = player;
     if (!_isPlayerInitialized || currentPlayer == null) {
@@ -3379,7 +3548,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     try {
       if (resumes) {
         await _mediaControls.seekBackForRewind(currentPlayer);
-        if (!mounted || player != currentPlayer) return;
+        if (!mounted || player != currentPlayer) {
+          return;
+        }
       }
       await _transportIntent(currentPlayer, command);
       _announceTransportCommand(willPlay: _playbackIntentShouldPlay);
@@ -3393,7 +3564,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// and rewind-on-resume already ran in the controls layer.
   Future<void> _handleControlsTransport(TransportCommand command) async {
     final currentPlayer = player;
-    if (currentPlayer == null) return;
+    if (currentPlayer == null) {
+      return;
+    }
     try {
       await _transportIntent(currentPlayer, command);
       _announceTransportCommand(willPlay: _playbackIntentShouldPlay);
@@ -3432,7 +3605,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   /// Navigate to a specific queue item (called from QueueSheet)
   Future<void> navigateToQueueItem(MediaItem metadata) async {
-    if (!_canNavigateMediaItems()) return;
+    if (!_canNavigateMediaItems()) {
+      return;
+    }
     await _navigateToEpisode(metadata);
   }
 
@@ -3442,10 +3617,14 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// This prevents default-track fallback when playback starts before
   /// [AccountPreferencesController] finishes its first load.
   Future<void> _waitForProfileSettingsIfNeeded() async {
-    if (!_isOfflinePlayback || !mounted) return;
+    if (!_isOfflinePlayback || !mounted) {
+      return;
+    }
 
     final provider = context.read<AccountPreferencesController>();
-    if (provider.activePreferences != null) return;
+    if (provider.activePreferences != null) {
+      return;
+    }
 
     final completer = Completer<void>();
     late VoidCallback listener;
@@ -3502,7 +3681,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
           _sessionSecondarySubtitlePreference = const SubtitlePreference.off();
       }
       final session = _playbackSession;
-      if (session == null) return;
+      if (session == null) {
+        return;
+      }
       final currentSelection = session.subtitleSelection;
       _updatePlaybackSessionSubtitleSelection(session, switch (slot) {
         _SubtitleSelectionSlot.primary => const PlaybackSubtitleSelection.off(),
@@ -3515,12 +3696,16 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
           declinedPreference: currentSelection.declinedPreference,
         ),
       });
-      if (mounted) _setPlayerState(() {});
+      if (mounted) {
+        _setPlayerState(() {});
+      }
       return;
     }
 
     final session = _playbackSession;
-    if (session == null) return;
+    if (session == null) {
+      return;
+    }
     final currentSelection = session.subtitleSelection;
 
     final info = _currentMediaInfo;
@@ -3587,19 +3772,25 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
     }
     _updatePlaybackSessionSubtitleSelection(session, selection);
-    if (mounted) _setPlayerState(() {});
+    if (mounted) {
+      _setPlayerState(() {});
+    }
   }
 
   PlaybackSubtitleSidecar? _sidecarForSourceStreamId(PlaybackSession session, int sourceStreamId) {
     for (final candidate in session.context.result.subtitleSidecars) {
-      if (candidate.sourceStreamId == sourceStreamId) return candidate;
+      if (candidate.sourceStreamId == sourceStreamId) {
+        return candidate;
+      }
     }
     return null;
   }
 
   Future<void> _shutdownVideo({bool pauseForRouteExit = false}) {
     final existing = _shutdownOperation;
-    if (existing != null) return existing;
+    if (existing != null) {
+      return existing;
+    }
     final completer = Completer<void>();
     _shutdownOperation = completer.future;
 
@@ -3629,9 +3820,13 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     _clearAutoPipEnteringCallback();
     final cancellations = _cancelPlayerStreamSubscriptions(includeMediaControls: true);
     final remoteCancellation = _appleTvPlayPauseSubscription?.cancel();
-    if (remoteCancellation != null) cancellations.add(remoteCancellation);
+    if (remoteCancellation != null) {
+      cancellations.add(remoteCancellation);
+    }
     final sleepCancellation = _sleepTimerSubscription?.cancel();
-    if (sleepCancellation != null) cancellations.add(sleepCancellation);
+    if (sleepCancellation != null) {
+      cancellations.add(sleepCancellation);
+    }
 
     final currentPlayer = player;
     // The tracker snapshots duration, tracks, identity and position before
@@ -3669,7 +3864,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     final tracker = _progressTracker;
-    if (tracker == null) return Future<void>.value();
+    if (tracker == null) {
+      return Future<void>.value();
+    }
 
     return tracker
         .sendStoppedProgressOnce(positionOverride: positionOverride, durationOverride: durationOverride)
@@ -3690,7 +3887,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
       autofocus: isCurrentRoute,
       canRequestFocus: isCurrentRoute,
       onKeyEvent: (node, event) {
-        if (!isCurrentRoute) return KeyEventResult.ignored;
+        if (!isCurrentRoute) {
+          return KeyEventResult.ignored;
+        }
         final navigationKey = classifyPlayerNavigationKey(event, isAppleTV: PlatformDetector.isAppleTV());
         if (navigationKey != PlayerNavigationKey.none) {
           return handlePlayerNavigationKeyAction(
@@ -3786,7 +3985,9 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
             if (playbackFailure != null) {
               return _buildPlaybackFailure(playbackFailure, onRetry: _playbackFailureRetry!);
             }
-            if (_isPlayerInitialized && player != null) return _buildVideoPlayer(sheetContext);
+            if (_isPlayerInitialized && player != null) {
+              return _buildVideoPlayer(sheetContext);
+            }
             final initializationError = _playerInitializationError;
             if (initializationError != null) {
               return _buildPlaybackFailure(initializationError, onRetry: _retryPlayerInitialization);
@@ -3814,7 +4015,9 @@ String _sanitizedSubtitleColor(String value, String fallback) {
 
 /// Returns the appropriate hwdec value based on platform and user preference.
 String _getHwdecValue(bool enabled) {
-  if (!enabled) return 'no';
+  if (!enabled) {
+    return 'no';
+  }
 
   if (Platform.isMacOS || Platform.isIOS) {
     return 'videotoolbox';

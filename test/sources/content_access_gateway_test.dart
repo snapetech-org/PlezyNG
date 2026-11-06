@@ -48,17 +48,25 @@ void main() {
         request.response.headers.contentType = ContentType.parse('application/vnd.apple.mpegurl');
         request.response.write('#EXTM3U\n');
         if (attempt++ < 3) {
-          for (var i = 0; i < 40000; i++) request.response.write('#EXTINF:2,\nsegment-$attempt-$i.ts\n');
+          for (var i = 0; i < 40000; i++) {
+            request.response.write('#EXTINF:2,\nsegment-$attempt-$i.ts\n');
+          }
           request.response.write('file:///not-a-network-segment.ts\n');
         } else {
           request.response.write('#EXTINF:2,\nvalid.ts\n#EXT-X-ENDLIST\n');
         }
-      } else { request.response.write('valid media'); }
+      } else {
+        request.response.write('valid media');
+      }
       await request.response.close();
     });
     final gateway = SourceStreamGateway(valid: () => true);
     final client = HttpClient();
-    addTearDown(() async { client.close(force: true); await gateway.close(); await upstream.close(force: true); });
+    addTearDown(() async {
+      client.close(force: true);
+      await gateway.close();
+      await upstream.close(force: true);
+    });
     final root = await gateway.registerUri(Uri.parse('http://127.0.0.1:${upstream.port}/stream.m3u8'));
     for (var i = 0; i < 3; i++) {
       final response = await (await client.getUrl(root)).close();
@@ -82,24 +90,36 @@ void main() {
       if (request.uri.path == '/stream.m3u8') {
         request.response.headers.contentType = ContentType.parse('application/vnd.apple.mpegurl');
         request.response.write('#EXTM3U\n#EXTINF:2,\n${revision == 1 || revision == 3 ? 'current' : 'old'}.ts\n');
-        if (revision == 2) request.response.write('file:///rejected.ts\n');
-      } else { request.response.write('segment'); }
+        if (revision == 2) {
+          request.response.write('file:///rejected.ts\n');
+        }
+      } else {
+        request.response.write('segment');
+      }
       await request.response.close();
     });
     final gateway = SourceStreamGateway(valid: () => true, clock: () => now);
     final client = HttpClient();
-    addTearDown(() async { client.close(force: true); await gateway.close(); await upstream.close(force: true); });
+    addTearDown(() async {
+      client.close(force: true);
+      await gateway.close();
+      await upstream.close(force: true);
+    });
     final root = await gateway.registerUri(Uri.parse('http://127.0.0.1:${upstream.port}/stream.m3u8'));
     Future<(int, String)> read(Uri uri) async {
       final response = await (await client.getUrl(uri)).close();
       return (response.statusCode, await utf8.decoder.bind(response).join());
     }
+
     final initial = await read(root);
     final old = Uri.parse(const LineSplitter().convert(initial.$2).firstWhere((line) => line.startsWith('http://')));
-    revision = 1; expect((await read(root)).$1, HttpStatus.ok);
-    revision = 2; expect((await read(root)).$1, HttpStatus.badGateway);
+    revision = 1;
+    expect((await read(root)).$1, HttpStatus.ok);
+    revision = 2;
+    expect((await read(root)).$1, HttpStatus.badGateway);
     now = now.add(const Duration(minutes: 3));
-    revision = 3; expect((await read(root)).$1, HttpStatus.ok);
+    revision = 3;
+    expect((await read(root)).$1, HttpStatus.ok);
     expect((await read(old)).$1, HttpStatus.notFound);
   });
 
@@ -131,6 +151,7 @@ void main() {
       expect(response.statusCode, HttpStatus.ok);
       return utf8.decoder.bind(response).join();
     }
+
     final manifest = await read(root);
     final urls = const LineSplitter().convert(manifest).where((line) => line.startsWith('http://')).toList();
     expect(urls, hasLength(5000));

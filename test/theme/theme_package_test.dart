@@ -18,7 +18,10 @@ void main() {
     expect(painted.extension<MonoTokens>()!.radiusMd, 4);
     expect(painted.extension<MonoTokens>()!.space, 20);
     expect(painted.extension<ThemeLayout>()!.navigation, ThemeNavigation.bottom);
-    expect(painted.textTheme.bodyMedium!.fontSize!, greaterThan(monoTheme(restored.palette).textTheme.bodyMedium!.fontSize!));
+    expect(
+      painted.textTheme.bodyMedium!.fontSize!,
+      greaterThan(monoTheme(restored.palette).textTheme.bodyMedium!.fontSize!),
+    );
   });
   test('unknown executable or remote asset fields are rejected', () {
     for (final key in ['script', 'stylesheetUrl', 'fontUrl']) {
@@ -34,7 +37,12 @@ void main() {
     expect(() => ThemePackage.fromJson(manifest()..['id'] = '../escape'), throwsFormatException);
   });
   test('existing palette-only themes are unchanged by absent package tokens', () {
-    final package = ThemePackage.fromJson({'schemaVersion': 1, 'id': 'legacy', 'name': 'Legacy', 'palette': MonoPalette.paper.toJson()});
+    final package = ThemePackage.fromJson({
+      'schemaVersion': 1,
+      'id': 'legacy',
+      'name': 'Legacy',
+      'palette': MonoPalette.paper.toJson(),
+    });
     expect(package.palette, MonoPalette.paper);
     expect(package.navigation, ThemeNavigation.adaptive);
     expect(package.space, monoTheme(MonoPalette.paper).extension<MonoTokens>()!.space);

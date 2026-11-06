@@ -92,5 +92,8 @@
   },
   "lib/widgets/video_controls/sheets/subtitle_ai_sheet.dart": {
     "Undo checkpoint: ": "Persisted revision marker retained for backwards compatibility; not user-facing UI copy."
+  },
+  "lib/screens/settings/privacy_screen.dart": {
+    "https://snape.tech/privacy/pleazyng/": "Canonical policy URL displayed if the bundled notice cannot load; URLs do not change with the UI language."
   }
 }

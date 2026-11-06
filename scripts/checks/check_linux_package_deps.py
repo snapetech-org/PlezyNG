@@ -30,6 +30,7 @@ BUNDLED_MODULES = {"mpv"}
 
 # pkg-config module -> runtime package name for each distro.
 RUNTIME_PACKAGES = {
+    "webkit2gtk-4.1": {"deb": "libwebkit2gtk-4.1-0", "rpm": "webkit2gtk4.1", "pacman": "webkit2gtk-4.1"},
     "gtk+-3.0": {"deb": "libgtk-3-0", "rpm": "gtk3", "pacman": "gtk3"},
     "libsecret-1": {"deb": "libsecret-1-0", "rpm": "libsecret", "pacman": "libsecret"},
     "webkit2gtk-4.1": {"deb": "libwebkit2gtk-4.1-0", "rpm": "webkit2gtk4.1", "pacman": "webkit2gtk-4.1"},
@@ -234,12 +235,16 @@ for recipe, distro, packages in recipes:
 
 # These libraries must remain host-provided; bundling them would invalidate this guard.
 bundle = read(BUNDLE_SH)
-for pattern in (r"libEGL\.so", r"libwayland.*\.so", r"libvulkan\.so"):
+for pattern in (r"libEGL\.so", r"libwayland.*\.so"):
     require(
         pattern in bundle,
         f"bundle-libs.sh no longer excludes {pattern}: if those are bundled now, "
         "the depends entries this guard demands may be wrong",
     )
+require(
+    r"libvulkan\.so" in bundle,
+    "bundle-libs.sh no longer excludes the host Vulkan loader: it could replace the pinned bundled copy",
+)
 
 linked = linked_pkgconfig_targets(cmake_text)
 require(

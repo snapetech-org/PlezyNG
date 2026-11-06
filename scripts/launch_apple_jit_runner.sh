@@ -3,7 +3,6 @@ set -euo pipefail
 
 readonly ORG="snapetech-org"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly REPO="Pleazyng"
 readonly RUNNER_GROUP_ID="${APPLE_JIT_RUNNER_GROUP_ID:-8}"
 readonly SSH_TARGET="${APPLE_JIT_SSH_TARGET:-keith@100.64.0.3}"
 readonly SERVICE_USER="gha-jit-macos"
@@ -24,9 +23,18 @@ run_id="$1"
 job_id="$2"
 [[ "$run_id" =~ ^[0-9]+$ && "$job_id" =~ ^[0-9]+$ ]] || usage
 
-for command in gh jq ssh; do
+for command in gh jq ssh git; do
   command -v "$command" >/dev/null || { echo "Required command not found: $command" >&2; exit 1; }
 done
+
+# Product branding can change before the GitHub repository is renamed. Resolve
+# the actual checkout's canonical API identity instead of guessing its slug.
+repository_full="$(cd "$SCRIPT_DIR/.." && env -u GH_REPO gh repo view --json nameWithOwner --jq '.nameWithOwner')"
+[[ "$repository_full" == "$ORG/"* && "$repository_full" != "$ORG/" ]] || {
+  echo "The Apple launcher requires a repository owned by $ORG." >&2
+  exit 1
+}
+readonly REPO="${repository_full#*/}"
 
 readonly API_ROOT="/orgs/$ORG/actions"
 readonly RUN_URL="repos/$ORG/$REPO/actions/runs/$run_id"
@@ -110,7 +118,7 @@ readonly RUN_ROOT="$run_root"
 [[ ! -e "\$RUN_ROOT" && ! -L "\$RUN_ROOT" ]]
 
 free_kib="\$(/bin/df -Pk / | /usr/bin/awk 'NR == 2 {print \$4}')"
-(( free_kib >= 37 * 1024 * 1024 )) || { echo "Apple JIT needs at least 37 GiB free on local APFS." >&2; /bin/df -h / >&2; exit 1; }
+(( free_kib >= 12 * 1024 * 1024 )) || { echo "Apple JIT needs at least 12 GiB free on local APFS for Flutter installation and temporary files." >&2; /bin/df -h / >&2; exit 1; }
 [[ -d /Volumes/p/runs && ! -L /Volumes/p/runs ]]
 [[ -d /Volumes/plezyng-native-build-kspld0 ]]
 short_mount="\$(/sbin/mount | /usr/bin/awk '\$3 == "/Volumes/p" {print; exit}')"

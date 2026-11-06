@@ -116,6 +116,14 @@ def stage_bundle(
 
 
 class BundleHostDepsGuardTest(unittest.TestCase):
+    def test_offline_runtime_libraries_cannot_mask_missing_app_libraries(self):
+        result = self._check(
+            ldd={'pleazyng': ['libpython3.12.so => not found']},
+            owners={}, shipped=('tools/dv/lib/runtime/libpython3.12.so',),
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('libpython3.12.so', result.stderr)
+
     def _check(
         self,
         ldd: dict[str, list[str]],
@@ -160,7 +168,20 @@ class BundleHostDepsGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("every one of the 1 host libraries", result.stdout)
 
+    def test_bundled_vulkan_loader_does_not_need_a_host_package_owner(self) -> None:
+        result = self._check(
+            ldd={"pleazyng": [
+                f"{DECLARED_SONAME} => {DECLARED_PATH} (0x00007f9c2c000000)",
+                "libvulkan.so.1 => /usr/lib/x86_64-linux-gnu/libvulkan.so.1 (0x00007f9c2c000000)",
+            ]},
+            owners={DECLARED_PATH: DECLARED_OWNER},
+            shipped=("lib/libvulkan.so.1",),
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("every one of the 1 host libraries", result.stdout)
+
     def test_vdpau_and_vulkan_runtime_libraries_are_declared_for_every_distro(self) -> None:
+        """Host fallback libraries remain declared for older/developer bundles."""
         libraries = {
             "libvdpau.so.1": (
                 "/usr/lib/x86_64-linux-gnu/libvdpau.so.1",

@@ -1,15 +1,62 @@
 from fractions import Fraction
+import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
-from companion import bake_script, encode_command, pipe_processes, probe, validate_shape
+from companion import bake_script, bundled_worker_environment, encode_command, pipe_processes, probe, validate_shape
+from unittest.mock import patch
 
 
 class CompanionTest(unittest.TestCase):
+    def test_bundled_worker_does_not_load_python_libraries_into_the_host_shell(self):
+        inherited = {'PATH': '/usr/bin', 'LANG': 'en_US.UTF-8', 'LD_LIBRARY_PATH': '/old/python/libs',
+                     'LD_PRELOAD': '/old/overlay.so', 'PYTHONHOME': '/old/python', 'PYTHONPATH': '/old/modules'}
+        with patch.dict(os.environ, inherited, clear=True):
+            self.assertEqual(bundled_worker_environment(), {'PATH': '/usr/bin', 'LANG': 'en_US.UTF-8'})
+            self.assertEqual(os.environ['LD_LIBRARY_PATH'], '/old/python/libs')
+
+    @unittest.skipUnless(os.name == 'posix', 'GUI cancellation uses POSIX SIGINT on Linux')
+    def test_gui_cancellation_reaps_both_pipeline_workers(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            work = Path(temporary)
+            worker = "import os,sys,time; from pathlib import Path; Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(30)"
+            runner = (f"import sys; from pathlib import Path; sys.path.insert(0, {str(Path(__file__).parent)!r}); "
+                      "from companion import pipe_processes; "
+                      f"pipe_processes([sys.executable, '-c', {worker!r}, 'producer.pid'], "
+                      f"[sys.executable, '-c', {worker!r}, 'encoder.pid'], timeout=35, cwd=Path('.'))")
+            process = subprocess.Popen([sys.executable, '-c', runner], cwd=work,
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            pids = []
+            try:
+                deadline = time.monotonic() + 5
+                while not all((work / name).exists() for name in ('producer.pid', 'encoder.pid')):
+                    if time.monotonic() > deadline:
+                        self.fail('pipeline workers did not start')
+                    time.sleep(0.01)
+                pids = [int((work / name).read_text()) for name in ('producer.pid', 'encoder.pid')]
+                process.send_signal(signal.SIGINT)
+                process.communicate(timeout=5)
+                self.assertNotEqual(process.returncode, 0)
+                for pid in pids:
+                    with self.assertRaises(ProcessLookupError):
+                        os.kill(pid, 0)
+                pids = []
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.communicate()
+                for pid in pids:
+                    try:
+                        os.kill(pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+
     def test_shape_rejects_incompatible_or_unbounded_layers(self):
         bl = dict(codec_name="hevc", width=3840, height=2160, pix_fmt="yuv420p10le")
         el = {**bl, "width": 1920, "height": 1080}

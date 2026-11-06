@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "producer": {
+      "url": "https://github.com/snapetech-org/mpv-build.git",
+      "commit": "771499c54917983ca9345a007667349a067a9445"
+    },
+    "felbaker": {
+      "url": "https://github.com/bbeny123/felbaker.git",
+      "commit": "cae66302433578ec62afa8c5c5809e93d0405b2f",
+      "license": "GPL-3.0-or-later",
+      "submodules": {
+        "external/dovi_tool": "82384bc7652c6f88cb63f7f11e0315b624003fc3"
+      }
+    }
+  },
+  "wheels": {
+    "linux-x86_64": [
+      {
+        "name": "vapoursynth-80-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "url": "https://files.pythonhosted.org/packages/36/3b/b83e56bcf362535309a4f317ddd73167e10972e23678dbb1edab17c2b80b/vapoursynth-80-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "sha256": "28489ba081031c1107a59c34f4cf6a7bc5a484a50678dd0e30814a5301237b02"
+      },
+      {
+        "name": "vapoursynth_ffms2-5.2.1-py3-none-manylinux_2_28_x86_64.whl",
+        "url": "https://github.com/Jaded-Encoding-Thaumaturgy/vs-wheels/releases/download/vapoursynth-ffms2-v5.2.1/vapoursynth_ffms2-5.2.1-py3-none-manylinux_2_28_x86_64.whl",
+        "sha256": "96e81cd6ae8970f196d72cc7e970be56d934afbd43754de913e4d754edb5f784"
+      }
+    ],
+    "linux-aarch64": [
+      {
+        "name": "vapoursynth-80-cp312-abi3-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+        "url": "https://files.pythonhosted.org/packages/c9/9f/f7823de4695c14fbde0025164f9993ce70334f28305842c39b4ab8276c2a/vapoursynth-80-cp312-abi3-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+        "sha256": "4ea6eb3a71c3db4c3cf6e005dd5c3ce33ccb786c6d5bedce35db3861ca8eb1ee"
+      },
+      {
+        "name": "vapoursynth_ffms2-5.2.1-py3-none-manylinux_2_28_aarch64.whl",
+        "url": "https://github.com/Jaded-Encoding-Thaumaturgy/vs-wheels/releases/download/vapoursynth-ffms2-v5.2.1/vapoursynth_ffms2-5.2.1-py3-none-manylinux_2_28_aarch64.whl",
+        "sha256": "8928c32179e5baa195477de05f381c3b287001e1f92b7c3d5319a1b8821e3731"
+      }
+    ]
+  },
+  "provenance": "VapourSynth 80 hashes from PyPI release metadata; FFMS2 5.2.1 hashes from its publisher vs-wheels simple index, reviewed 2026-11-05. RPU support verified in FFMS source vapoursource4.cpp.",
+  "toolchain": {
+    "ubuntu_image": "docker.io/library/ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517",
+    "rust_images": {
+      "x86_64": "docker.io/library/rust@sha256:b07b1bc9cb80ea8f48f304fe469feb759f54cfd30c6ec545a1b0ec3af822daf0",
+      "aarch64": "docker.io/library/rust@sha256:d56b2ffba84557d885e9a566bd9601d4588b520c6e147460523a2b36dfeebfa6"
+    },
+    "rust": "1.97.0",
+    "cargo_c": "0.10.26",
+    "meson": "1.10.0"
+  }
+}

@@ -79,17 +79,27 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   bool get nativeVisualizationAudioReady =>
-      audioOnly && _usingSoLoud && _visualizerBound && _loaded && _audioPlaying &&
-      !_activeIsLive && !disposed && !_errorSent;
+      audioOnly &&
+      _usingSoLoud &&
+      _visualizerBound &&
+      _loaded &&
+      _audioPlaying &&
+      !_activeIsLive &&
+      !disposed &&
+      !_errorSent;
 
   void _declineSoLoud(String uri) {
-    if (_soLoudDeclinedUris.length >= 64) _soLoudDeclinedUris.remove(_soLoudDeclinedUris.first);
+    if (_soLoudDeclinedUris.length >= 64) {
+      _soLoudDeclinedUris.remove(_soLoudDeclinedUris.first);
+    }
     _soLoudDeclinedUris.add(uri);
   }
 
   Widget videoSurface() {
     final controller = _controller;
-    if (audioOnly || controller == null) return const SizedBox.expand();
+    if (audioOnly || controller == null) {
+      return const SizedBox.expand();
+    }
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -120,12 +130,16 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     Duration? timelineDuration,
     Duration timelineOffset = Duration.zero,
   }) async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     final generation = ++_generation;
     _activeIsLive = isLive;
     _currentMedia = media;
     await _releaseSource();
-    if (disposed || generation != _generation) return;
+    if (disposed || generation != _generation) {
+      return;
+    }
 
     final startPosition = media.start ?? timelineOffset;
     configureTimeline(duration: timelineDuration, offset: timelineOffset);
@@ -169,11 +183,17 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       }
 
       _proxy = proxy;
-      if (audioOnly && !isLive && !_soLoudDeclinedUris.contains(media.uri) &&
+      if (audioOnly &&
+          !isLive &&
+          !_soLoudDeclinedUris.contains(media.uri) &&
           await _canUseSoLoud(sourceUri, playerUri, proxy)) {
         final opened = await _openSoLoud(playerUri, sourceId, generation, startPosition, play, isLive);
-        if (opened) return;
-        if (disposed || generation != _generation) return;
+        if (opened) {
+          return;
+        }
+        if (disposed || generation != _generation) {
+          return;
+        }
       }
 
       controller = playerUri.scheme == 'file'
@@ -184,13 +204,21 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       surfaceRevision.value++;
 
       await controller.initialize();
-      if (disposed || generation != _generation) return;
+      if (disposed || generation != _generation) {
+        return;
+      }
       _adoptControllerValue(controller, sourceId, generation, isLive: isLive);
 
       final sourceStart = sourcePositionFor(startPosition);
-      if (sourceStart > Duration.zero) await controller.seekTo(sourceStart);
-      if (play) await controller.play();
-      if (disposed || generation != _generation) return;
+      if (sourceStart > Duration.zero) {
+        await controller.seekTo(sourceStart);
+      }
+      if (play) {
+        await controller.play();
+      }
+      if (disposed || generation != _generation) {
+        return;
+      }
     } catch (error) {
       if (generation == _generation && !disposed) {
         _emitFailure(sourceId);
@@ -204,7 +232,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   }
 
   Future<bool> _canUseSoLoud(Uri source, Uri playerUri, WebOSMediaProxy? proxy) async {
-    if (!audioOnly) return false;
+    if (!audioOnly) {
+      return false;
+    }
     const supportedTypes = {'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/ogg', 'audio/flac'};
     final extension = source.path.toLowerCase().split('.').last;
     final supportedExtension = const {'mp3', 'wav', 'ogg', 'flac'}.contains(extension);
@@ -220,8 +250,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         contentType = metadata?.contentType;
       }
       final supportedType = contentType != null && supportedTypes.contains(contentType);
-      return length != null && length > 0 && length <= _soloudMemoryLimit &&
-          (supportedExtension || supportedType);
+      return length != null && length > 0 && length <= _soloudMemoryLimit && (supportedExtension || supportedType);
     } catch (_) {
       // Keep uncertain sizes, formats and server behavior on LG's regular NDL path.
       return false;
@@ -240,16 +269,24 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     player = WebOSSoLoudPlayer(
       playerId: 'plezy-webos-$sourceId',
       onPosition: (position) {
-        if (disposed || generation != _generation || !identical(_audioPlayer, player) || !_loaded) return;
+        if (disposed || generation != _generation || !identical(_audioPlayer, player) || !_loaded) {
+          return;
+        }
         handlePropertyChange('time-pos', position.inMilliseconds / Duration.millisecondsPerSecond);
       },
       onDuration: (duration) {
-        if (disposed || generation != _generation || !identical(_audioPlayer, player)) return;
+        if (disposed || generation != _generation || !identical(_audioPlayer, player)) {
+          return;
+        }
         _pendingAudioDuration = duration;
-        if (_loaded) _adoptAudioDuration(duration, isLive);
+        if (_loaded) {
+          _adoptAudioDuration(duration, isLive);
+        }
       },
       onComplete: () {
-        if (disposed || generation != _generation || !identical(_audioPlayer, player) || _completionQueued) return;
+        if (disposed || generation != _generation || !identical(_audioPlayer, player) || _completionQueued) {
+          return;
+        }
         _audioPlaying = false;
         handlePropertyChange('pause', true);
         _completionQueued = true;
@@ -269,11 +306,18 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
     try {
       await player.load(playerUri, isLocal: playerUri.scheme == 'file');
-      if (disposed || generation != _generation) return true;
+      if (disposed || generation != _generation) {
+        return true;
+      }
       final duration = _pendingAudioDuration ?? await player.getDuration() ?? Duration.zero;
       _loaded = true;
       handlePlayerEvent('file-loaded', {'sourceId': sourceId});
-      updateTracks(const Tracks(audio: [AudioTrack(id: '0', title: 'Default')], subtitle: [SubtitleTrack.off]));
+      updateTracks(
+        const Tracks(
+          audio: [AudioTrack(id: '0', title: 'Default')],
+          subtitle: [SubtitleTrack.off],
+        ),
+      );
       primaryMediaReadyController.add(null);
       _adoptAudioDuration(duration, isLive);
       final sourceStart = sourcePositionFor(startPosition);
@@ -291,7 +335,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       return true;
     } catch (_) {
       final uri = _currentMedia?.uri;
-      if (uri != null) _declineSoLoud(uri);
+      if (uri != null) {
+        _declineSoLoud(uri);
+      }
       await _discardSoLoudPlayer(sourceId);
       _loaded = false;
       _firstFrameSent = false;
@@ -301,9 +347,13 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   }
 
   void _recoverFromSoLoudError(int generation) {
-    if (_recoveringSoLoud || disposed || generation != _generation || !_usingSoLoud || !_loaded) return;
+    if (_recoveringSoLoud || disposed || generation != _generation || !_usingSoLoud || !_loaded) {
+      return;
+    }
     final media = _currentMedia;
-    if (media == null) return;
+    if (media == null) {
+      return;
+    }
     _recoveringSoLoud = true;
     _declineSoLoud(media.uri);
     unawaited(() async {
@@ -311,7 +361,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         await open(media, play: _audioPlaying, isLive: _activeIsLive);
       } catch (_) {
         final sourceId = _sourceId;
-        if (sourceId != null) _emitFailure(sourceId);
+        if (sourceId != null) {
+          _emitFailure(sourceId);
+        }
       } finally {
         _recoveringSoLoud = false;
       }
@@ -335,12 +387,11 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   }
 
   Future<void> _setVisualizerAudioActive(int sourceId, bool active) async {
-    if (!_visualizerBound) return;
+    if (!_visualizerBound) {
+      return;
+    }
     try {
-      await _visualizerChannel.invokeMethod<void>('visualizerSetAudioActive', {
-        'playerId': sourceId,
-        'active': active,
-      });
+      await _visualizerChannel.invokeMethod<void>('visualizerSetAudioActive', {'playerId': sourceId, 'active': active});
     } on MissingPluginException {
       // Retain the binding state so teardown still attempts an explicit
       // unbind if the host channel becomes available again.
@@ -351,7 +402,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   }
 
   Future<void> _notifyVisualizerDiscontinuity(int sourceId) async {
-    if (!_visualizerBound) return;
+    if (!_visualizerBound) {
+      return;
+    }
     try {
       await _visualizerChannel.invokeMethod<void>('visualizerAudioDiscontinuity', {'playerId': sourceId});
     } on MissingPluginException {
@@ -390,7 +443,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     int generation, {
     required bool isLive,
   }) {
-    if (disposed || generation != _generation || !identical(controller, _controller)) return;
+    if (disposed || generation != _generation || !identical(controller, _controller)) {
+      return;
+    }
     if (controller.value.errorDescription != null) {
       _emitFailure(sourceId);
       return;
@@ -404,7 +459,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     int generation, {
     required bool isLive,
   }) {
-    if (generation != _generation || disposed) return;
+    if (generation != _generation || disposed) {
+      return;
+    }
     final value = controller.value;
     if (value.isInitialized && !_loaded) {
       _loaded = true;
@@ -414,7 +471,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       setSeekable(!isLive && value.duration > Duration.zero);
     }
 
-    if (!value.isInitialized) return;
+    if (!value.isInitialized) {
+      return;
+    }
     handlePropertyChange('duration', value.duration.inMilliseconds / Duration.millisecondsPerSecond);
     handlePropertyChange('pause', !value.isPlaying);
     handlePropertyChange('paused-for-cache', value.isBuffering);
@@ -475,7 +534,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       updateSelectedAudioTrack('$currentAudio');
     }
     final subtitleSelection = _subtitleSelection;
-    if (subtitleSelection != null) updateSelectedSubtitleTrack(subtitleSelection);
+    if (subtitleSelection != null) {
+      updateSelectedSubtitleTrack(subtitleSelection);
+    }
   }
 
   String _trackLabel(Map<String, dynamic> row, int index) {
@@ -489,7 +550,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   }
 
   void _emitFailure(int sourceId) {
-    if (_errorSent || disposed) return;
+    if (_errorSent || disposed) {
+      return;
+    }
     _errorSent = true;
     handlePlayerEvent('end-file', {
       'sourceId': sourceId,
@@ -502,7 +565,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   Future<void> _advanceAudio(Media next, int previousSourceId) async {
     try {
       await open(next, play: true);
-      if (!disposed) trackTransitionController.add(next.uri);
+      if (!disposed) {
+        trackTransitionController.add(next.uri);
+      }
     } catch (_) {
       if (!disposed) {
         handlePlayerEvent('end-file', {
@@ -524,7 +589,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     _subtitleSelection = null;
     caption.value = '';
     _externalSubtitles = const [];
-    if (_audioPlayer != null && sourceId != null) await _discardSoLoudPlayer(sourceId);
+    if (_audioPlayer != null && sourceId != null) {
+      await _discardSoLoudPlayer(sourceId);
+    }
     final proxy = _proxy;
     _proxy = null;
     if (controller != null) {
@@ -544,13 +611,17 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> play() async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     final player = _audioPlayer;
     if (player != null) {
       await player.resume();
       _audioPlaying = true;
       final sourceId = _sourceId;
-      if (sourceId != null) await _setVisualizerAudioActive(sourceId, true);
+      if (sourceId != null) {
+        await _setVisualizerAudioActive(sourceId, true);
+      }
     } else {
       await _controller?.play();
     }
@@ -559,13 +630,17 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> pause() async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     final player = _audioPlayer;
     if (player != null) {
       await player.pause();
       _audioPlaying = false;
       final sourceId = _sourceId;
-      if (sourceId != null) await _setVisualizerAudioActive(sourceId, false);
+      if (sourceId != null) {
+        await _setVisualizerAudioActive(sourceId, false);
+      }
     } else {
       await _controller?.pause();
     }
@@ -574,10 +649,14 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> stop() async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     final sourceId = _sourceId;
     await _releaseSource();
-    if (sourceId != null) handlePlayerEvent('end-file', {'sourceId': sourceId, 'reason': 'stop'});
+    if (sourceId != null) {
+      handlePlayerEvent('end-file', {'sourceId': sourceId, 'reason': 'stop'});
+    }
     resetPlaybackProgress(Duration.zero);
     setSeekable(false);
     clearTracks();
@@ -585,19 +664,25 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> seek(Duration position) async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     final target = position < Duration.zero ? Duration.zero : position;
     final player = _audioPlayer;
     if (player != null && _loaded) {
       await runSeek(target, () async {
         await player.seek(sourcePositionFor(target));
         final sourceId = _sourceId;
-        if (sourceId != null) await _notifyVisualizerDiscontinuity(sourceId);
+        if (sourceId != null) {
+          await _notifyVisualizerDiscontinuity(sourceId);
+        }
       });
       return;
     }
     final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) return;
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
     await runSeek(target, () async => controller.seekTo(sourcePositionFor(target)));
   }
 
@@ -605,7 +690,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   Future<void> selectAudioTrack(AudioTrack track) async {
     final controller = _controller;
     final index = int.tryParse(track.id);
-    if (disposed || controller == null || index == null || index < 0) return;
+    if (disposed || controller == null || index == null || index < 0) {
+      return;
+    }
     await controller.selectAudioTrack(index);
     updateSelectedAudioTrack(track.id);
   }
@@ -613,12 +700,16 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   @override
   Future<void> selectSubtitleTrack(SubtitleTrack track) async {
     final controller = _controller;
-    if (disposed || controller == null) return;
+    if (disposed || controller == null) {
+      return;
+    }
     final generation = _generation;
     final selection = ++_subtitleGeneration;
     if (track.id == SubtitleTrack.off.id || track.id == 'auto') {
       await controller.setSubtitleEnabled(false);
-      if (disposed || generation != _generation || selection != _subtitleGeneration) return;
+      if (disposed || generation != _generation || selection != _subtitleGeneration) {
+        return;
+      }
       _captions = null;
       _subtitlesVisible = false;
       caption.value = '';
@@ -628,9 +719,13 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     }
     if (track.uri != null) {
       final parsed = await _readLocalCaptions(track);
-      if (disposed || generation != _generation || selection != _subtitleGeneration) return;
+      if (disposed || generation != _generation || selection != _subtitleGeneration) {
+        return;
+      }
       await controller.setSubtitleEnabled(false);
-      if (disposed || generation != _generation || selection != _subtitleGeneration) return;
+      if (disposed || generation != _generation || selection != _subtitleGeneration) {
+        return;
+      }
       _captions = parsed;
       _subtitlesVisible = true;
       _subtitleSelection = track.id;
@@ -639,13 +734,21 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       return;
     }
     final index = int.tryParse(track.id);
-    if (index == null || index < 0) return;
+    if (index == null || index < 0) {
+      return;
+    }
     await controller.selectSubtitleTrack(index);
-    if (disposed || generation != _generation || selection != _subtitleGeneration) return;
+    if (disposed || generation != _generation || selection != _subtitleGeneration) {
+      return;
+    }
     await controller.setSubtitleSync(_subtitleDelay.inMilliseconds);
-    if (disposed || generation != _generation || selection != _subtitleGeneration) return;
+    if (disposed || generation != _generation || selection != _subtitleGeneration) {
+      return;
+    }
     await controller.setSubtitleEnabled(true);
-    if (disposed || generation != _generation || selection != _subtitleGeneration) return;
+    if (disposed || generation != _generation || selection != _subtitleGeneration) {
+      return;
+    }
     _captions = null;
     _subtitlesVisible = false;
     caption.value = '';
@@ -674,7 +777,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       // File-system errors may contain the user's full local path.
       throw const FormatException('Subtitle file could not be read.');
     }
-    if (bytes.isEmpty) throw const FormatException('Subtitle file is empty.');
+    if (bytes.isEmpty) {
+      throw const FormatException('Subtitle file is empty.');
+    }
     final content = utf8.decode(bytes).replaceFirst(String.fromCharCode(0xFEFF), '');
     return isVtt ? webos_media.WebVTTCaptionFile(content) : webos_media.SubRipCaptionFile(content);
   }
@@ -691,7 +796,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         }
       }
     }
-    if (caption.value != text) caption.value = text;
+    if (caption.value != text) {
+      caption.value = text;
+    }
   }
 
   @override
@@ -708,7 +815,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       try {
         await controller.setVolume(clamped / 100);
       } on PlatformException catch (error) {
-        if (error.code != 'unsupported') rethrow;
+        if (error.code != 'unsupported') {
+          rethrow;
+        }
       }
     }
     // webOS TV exposes system volume through the remote; the LG media plugin
@@ -719,17 +828,23 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> setRate(double rate) async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     final player = _audioPlayer;
     if (player != null) {
       await player.setPlaybackRate(rate);
       setRateState(rate);
       final sourceId = _sourceId;
-      if (sourceId != null) await _notifyVisualizerDiscontinuity(sourceId);
+      if (sourceId != null) {
+        await _notifyVisualizerDiscontinuity(sourceId);
+      }
       return;
     }
     final controller = _controller;
-    if (controller == null) return;
+    if (controller == null) {
+      return;
+    }
     await controller.setPlaybackSpeed(rate);
     setRateState(rate);
   }
@@ -739,7 +854,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> setProperty(String name, String value) async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     switch (name) {
       case 'pause':
         if (value == 'yes') {
@@ -789,8 +906,12 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       'pause' => state.playing ? 'no' : 'yes',
       'volume' => state.volume.toString(),
       'speed' => state.rate.toString(),
-      'time-pos' => (((audioPosition ?? value?.position ?? Duration.zero).inMilliseconds) / Duration.millisecondsPerSecond).toString(),
-      'duration' => (((audioDuration ?? value?.duration ?? Duration.zero).inMilliseconds) / Duration.millisecondsPerSecond).toString(),
+      'time-pos' =>
+        (((audioPosition ?? value?.position ?? Duration.zero).inMilliseconds) / Duration.millisecondsPerSecond)
+            .toString(),
+      'duration' =>
+        (((audioDuration ?? value?.duration ?? Duration.zero).inMilliseconds) / Duration.millisecondsPerSecond)
+            .toString(),
       'seekable' => state.seekable ? 'yes' : 'no',
       'width' || 'dwidth' => value?.size.width.toInt().toString(),
       'height' || 'dheight' => value?.size.height.toInt().toString(),
@@ -803,9 +924,15 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> command(List<String> args) async {
-    if (disposed || args.isEmpty || args.first != 'sub-add') return;
-    if (args.length < 2) throw ArgumentError('sub-add requires a local file path.');
-    if (_controller == null || !_loaded) throw StateError('No active playback session for subtitle import.');
+    if (disposed || args.isEmpty || args.first != 'sub-add') {
+      return;
+    }
+    if (args.length < 2) {
+      throw ArgumentError('sub-add requires a local file path.');
+    }
+    if (_controller == null || !_loaded) {
+      throw StateError('No active playback session for subtitle import.');
+    }
     final localPath = args[1];
     final fileName = localPath.split(Platform.pathSeparator).last;
     final extension = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : '';
@@ -822,7 +949,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       _externalSubtitles = [..._externalSubtitles, track];
       updateTracks(Tracks(audio: state.tracks.audio, subtitle: [...state.tracks.subtitle, track]));
     }
-    if (args.length < 3 || args[2] == 'select') await selectSubtitleTrack(track);
+    if (args.length < 3 || args[2] == 'select') {
+      await selectSubtitleTrack(track);
+    }
   }
 
   @override
@@ -855,7 +984,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> setNext(Media? media) async {
-    if (audioOnly && !disposed) _nextMedia = media;
+    if (audioOnly && !disposed) {
+      _nextMedia = media;
+    }
   }
 
   @override
@@ -863,7 +994,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   @override
   Future<void> dispose({bool preserveDisplayMode = false}) async {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     _generation++;
     await _releaseSource();
     surfaceRevision.dispose();

@@ -288,6 +288,13 @@ void main() {
     addTearDown(() => directory.deleteSync(recursive: true));
     final file = File('${directory.path}/poster.png');
     late StateSetter rebuild;
+    Future<void> waitForArtworkState(bool Function() ready) async {
+      final timer = Stopwatch()..start();
+      while (!ready() && timer.elapsed < const Duration(seconds: 5)) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+        await tester.pump();
+      }
+    }
 
     await tester.pumpWidget(
       MaterialApp(
@@ -307,8 +314,7 @@ void main() {
     );
 
     expect(find.byIcon(Symbols.image_not_supported_rounded), findsNothing);
-    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
-    await tester.pump();
+    await waitForArtworkState(() => find.byIcon(Symbols.image_not_supported_rounded).evaluate().isNotEmpty);
     expect(find.byIcon(Symbols.image_not_supported_rounded), findsOneWidget);
 
     file.writeAsBytesSync(
@@ -319,9 +325,7 @@ void main() {
     await tester.pump();
 
     expect(find.byIcon(Symbols.image_not_supported_rounded), findsNothing);
-    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
-    await tester.pump();
-    await tester.pump();
+    await waitForArtworkState(() => find.byType(Image).evaluate().isNotEmpty);
     expect(file.existsSync(), isTrue);
     expect(find.byIcon(Symbols.image_not_supported_rounded), findsNothing);
     expect(find.byType(Image), findsOneWidget);

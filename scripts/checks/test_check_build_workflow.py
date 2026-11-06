@@ -137,6 +137,20 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
 
+    def test_store_msix_cannot_reuse_unlocked_direct_payload(self) -> None:
+        workflow = self._workflow()
+        result = self._run(workflow.replace('-X64BuildDir "build-store-x64"', '-X64BuildDir "build-x64"', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('separate trial/IAP payloads', result.stderr)
+
+    def test_msix_arm64_does_not_widen_the_direct_installer(self) -> None:
+        workflow = self._workflow()
+        original = 'run: .\\windows\\build-installer.ps1 -X64BuildDir "build-x64"'
+        self.assertIn(original, workflow)
+        result = self._run(workflow.replace(original, original + ' -Arm64BuildDir "build-store-arm64"', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('installer and Chocolatey packages remain x64', result.stderr)
+
     def test_recovery_requires_source_verification_and_public_provenance(self) -> None:
         for original in ("--download artifacts", "needs.validate-trusted-ref.outputs.reuse_source_sha != ''",
                          "needs.validate-trusted-ref.outputs.android_source_sha != ''"):

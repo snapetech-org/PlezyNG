@@ -8,6 +8,7 @@
 - Reject CRLF header injection in the Apple experimental playback bridge, including headers supplied through MPV change-list commands.
 - Curated title extras with strict identity and publisher checks, bounded previews, profile-specific exclusions, and optional evidence-backed AI search.
 - Isolate Steam relay regression tests from a running desktop Steam client and model server deletion permission before validating shared-file deletion.
+- Add Microsoft Store lifetime billing with verified online licence ownership and separate trial/IAP MSIX payloads; preserve free direct Windows downloads.
 
 - Refuse incomplete native engine pin promotions and retain checksum-bound package receipts for every required architecture and implemented neural path.
 

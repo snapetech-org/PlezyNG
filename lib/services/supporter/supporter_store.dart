@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'samsung_supporter_store.dart';
+import 'microsoft_supporter_store.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -81,6 +82,9 @@ abstract class SupporterStore {
   /// Additional platform receipt verification before granting a stream event.
   Future<bool> verifyPurchase(PurchaseDetails purchase) async => true;
 
+  /// Whether the returned product implements this store's lifetime purchase.
+  bool acceptsProduct(ProductDetails product) => true;
+
   /// The store for this device, or null where in_app_purchase has none.
   ///
   /// The first [InAppPurchase.instance] registers this OS's implementation:
@@ -89,6 +93,7 @@ abstract class SupporterStore {
   static SupporterStore? forThisDevice() {
     if (const bool.fromEnvironment('PLEZY_TIZEN')) return SamsungSupporterStore.configured();
     final os = defaultTargetPlatform;
+    if (os == TargetPlatform.windows) return MicrosoftSupporterStore.configured();
     if (os != TargetPlatform.android && os != TargetPlatform.iOS && os != TargetPlatform.macOS) return null;
     final iap = InAppPurchase.instance;
     if (os == TargetPlatform.android) {

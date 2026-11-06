@@ -13,6 +13,9 @@ import '../../services/settings_service.dart';
 import '../../services/trackers/tracker_constants.dart';
 import '../../services/trackers/trakt/trakt_letterboxd_export_service.dart';
 import '../../utils/dialogs.dart';
+import '../../utils/platform_detector.dart';
+import '../../services/trackers/oauth_proxy_client.dart';
+import '../../widgets/oauth_proxy_dialog.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/device_code_dialog.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -23,6 +26,17 @@ import 'tracker_connect_launcher.dart';
 Future<void> startTraktConnection(BuildContext context) {
   final account = context.read<TrackersProvider>();
   final name = t.trakt.title;
+  if (!PlatformDetector.isTVDevice()) {
+    return launchTrackerConnect<OAuthProxyStart>(
+      context,
+      isBusyOrConnected: account.isConnecting(TrackerService.trakt) || account.isTraktConnected,
+      serviceName: name,
+      connect: (cb) => account.connectTraktWithBrowser(onCodeReady: cb),
+      onCancel: account.cancelConnect,
+      buildDialog: (start, cancel) => OAuthProxyDialog(start: start, serviceName: name, onCancel: cancel),
+      urlFor: (start) => start.url,
+    );
+  }
   return launchTrackerConnect<DeviceCode>(
     context,
     isBusyOrConnected: account.isConnecting(TrackerService.trakt) || account.isTraktConnected,

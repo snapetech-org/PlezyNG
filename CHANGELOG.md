@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add Trakt browser sign-in with S256 PKCE through the owned HTTPS relay while retaining TV device-code sign-in; include Trakt attribution and privacy/disconnect information.
+
 - Sign macOS helpers and nested code before sealing their containers, preserve helper entitlements, and refresh runtime receipt hashes after final signing.
 
 - Preserve macOS exception handling across the bundled Rust, LuaJIT, Objective-C and C++ runtimes by packaging the pinned LuaJIT archive as a separate signed dynamic library.

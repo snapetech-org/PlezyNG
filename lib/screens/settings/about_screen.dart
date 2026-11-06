@@ -48,6 +48,12 @@ class AboutScreen extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
+                        const SizedBox(height: 16),
+                        Text(
+                          t.about.traktAttribution,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: tokens(context).textMuted),
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     ),
                   ),

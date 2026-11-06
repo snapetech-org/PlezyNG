@@ -38,3 +38,13 @@ For privacy questions, use the [Pleazyng GitHub project page](https://github.com
 
 We may update this notice when the app's data practices change. The effective date above will change with each revision.
 
+
+## Trakt integration
+
+Connecting Trakt is optional. When connected, Pleazyng reads your account details, watch history, ratings and lists for the features you use. Playback scrobbling and watched-state sync send playback events or changes to your own Trakt account when you enable those features. Metadata searches send the search title and identifiers, not your media files or source credentials. Trakt data is used within Pleazyng for these features; it is not sold or provided as a catalog or data feed to other services.
+
+TV devices use Trakt's device-code authorization. Browser-capable devices use S256 PKCE through a SnapeTech-owned HTTPS callback. The callback service temporarily holds the verifier and authorization result in memory for up to ten minutes; a result can be retrieved only once. It does not persist or log Trakt tokens. No Trakt client secret is included in the app. Account tokens and cached data remain on your device for your connection and selected features.
+
+Disconnect Trakt in Settings → Services → Trakt to stop account access, remove the local connection and attempt to revoke its token. You can also revoke Pleazyng in Trakt's connected-app settings. Disconnecting does not erase history or lists on Trakt; use Trakt's account controls to manage or delete that data. Clear Pleazyng's app storage to remove remaining local caches. For help with data you sent directly to SnapeTech support, contact support@snape.tech; we retain support correspondence only as needed to handle your request and applicable recordkeeping obligations.
+
+Pleazyng uses Trakt but is not endorsed or certified by Trakt.

@@ -4988,6 +4988,9 @@ class Translations$about$en {
 
 	/// en: 'Privacy Policy'
 	String get privacyPolicy => 'Privacy Policy';
+
+	/// en: 'Pleazyng uses Trakt but is not endorsed or certified by Trakt'
+	String get traktAttribution => 'Pleazyng uses Trakt but is not endorsed or certified by Trakt';
 }
 
 // Path: serverSelection
@@ -18922,6 +18925,7 @@ extension on Translations {
 			'about.appDescription' => 'A beautiful Plex, Jellyfin, and Emby client for Flutter',
 			'about.viewLicensesDescription' => 'View licenses of third-party libraries',
 			'about.privacyPolicy' => 'Privacy Policy',
+			'about.traktAttribution' => 'Pleazyng uses Trakt but is not endorsed or certified by Trakt',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'No servers found for ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Failed to load servers: ${error}',
 			'serverSelection.noValidServers' => 'No usable servers were found on this account',
@@ -19096,9 +19100,9 @@ extension on Translations {
 			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
-			'explore.relation.sequel' => 'Sequel',
 			_ => null,
 		} ?? switch (path) {
+			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
 			'explore.relation.spinOff' => 'Spin-off',
 			'explore.relation.alternativeVersion' => 'Alternative version',
@@ -19610,9 +19614,9 @@ extension on Translations {
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			'downloads.convertingOnServer' => 'Converting on server…',
-			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
 			'downloads.errorPostProcessing' => ({required Object reason}) => 'Post-processing failed: ${reason}',
 			'downloads.reasonFileNotSaved' => 'the file could not be saved on this device',
@@ -20124,9 +20128,9 @@ extension on Translations {
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
-			'services.names.simkl' => 'Simkl',
 			_ => null,
 		} ?? switch (path) {
+			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Reconnect Simkl',
@@ -20638,9 +20642,9 @@ extension on Translations {
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
-			'universalMedia.shareFfmpegMissing' => 'FFmpeg or the H.264/AAC encoders are unavailable. Install FFmpeg with H.264 and AAC encoder support.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.shareFfmpegMissing' => 'FFmpeg or the H.264/AAC encoders are unavailable. Install FFmpeg with H.264 and AAC encoder support.',
 			'universalMedia.shareFailed' => 'The stream could not start or stopped unexpectedly. Check FFmpeg and network access.',
 			'universalMedia.shareActive' => 'The stream is ready on your private network.',
 			'universalMedia.shareEnded' => 'The media reached the end and is no longer being shared.',
@@ -21152,9 +21156,9 @@ extension on Translations {
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
-			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			_ => null,
 		} ?? switch (path) {
+			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
 			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, Pleazyng reconnects using a compatible codec.',
 			'games.steamLibrary' => 'Steam library',
@@ -21666,9 +21670,9 @@ extension on Translations {
 			'subtitleAiUi.saveGlossary' => 'Save glossary',
 			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
-			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
 			'subtitleAiUi.requiresACUDAEnabledArgosCTranslate2_25eb4fab' => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
 			'subtitleAiUi.translateAnExistingSubtitle' => 'Translate an existing subtitle',
 			'subtitleAiUi.timingAndSourceFileRemainUnchanged' => 'Timing and source file remain unchanged',
@@ -22180,9 +22184,9 @@ extension on Translations {
 			'bonusExtras.spoilers' => 'Show extras that may contain spoilers',
 			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
 			'bonusExtras.externalEnabled' => 'Discover verified online extras',
-			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			'bonusExtras.serviceUrl' => 'Discovery server address',
 			'bonusExtras.serviceToken' => 'Discovery access token',
 			'bonusExtras.aiMode' => 'AI assistance',

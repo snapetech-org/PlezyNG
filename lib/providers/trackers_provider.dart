@@ -70,6 +70,9 @@ class TrackersProvider extends ChangeNotifier with DisposableChangeNotifierMixin
           : AnilistAuthService(proxy: OAuthProxyClient(httpClient: httpClientFactory())),
       _simklAuth = httpClientFactory == null ? SimklAuthService() : SimklAuthService(httpClient: httpClientFactory()),
       _traktAuth = httpClientFactory == null ? TraktAuthService() : TraktAuthService(httpClient: httpClientFactory()),
+      _traktBrowserAuth = httpClientFactory == null
+          ? TraktBrowserAuthService()
+          : TraktBrowserAuthService(proxy: OAuthProxyClient(httpClient: httpClientFactory())),
       _mdblistAuth = httpClientFactory == null
           ? MdblistAuthService()
           : MdblistAuthService(httpClient: httpClientFactory());
@@ -80,6 +83,7 @@ class TrackersProvider extends ChangeNotifier with DisposableChangeNotifierMixin
   final AnilistAuthService _anilistAuth;
   final SimklAuthService _simklAuth;
   final TraktAuthService _traktAuth;
+  final TraktBrowserAuthService _traktBrowserAuth;
   final MdblistAuthService _mdblistAuth;
 
   final _TrackerSlot _mal = _TrackerSlot(
@@ -293,6 +297,16 @@ class TrackersProvider extends ChangeNotifier with DisposableChangeNotifierMixin
   Future<bool> connectTrakt({required void Function(DeviceCode code) onCodeReady}) => _runConnect(
     _trakt,
     authorize: () => _traktAuth.authorize(
+      onCodeReady: onCodeReady,
+      shouldCancel: _isConnectCancelled,
+      onCancel: _cancelCompleter!.future,
+    ),
+    enrich: _enrichTrakt,
+  );
+
+  Future<bool> connectTraktWithBrowser({required void Function(OAuthProxyStart) onCodeReady}) => _runConnect(
+    _trakt,
+    authorize: () => _traktBrowserAuth.authorize(
       onCodeReady: onCodeReady,
       shouldCancel: _isConnectCancelled,
       onCancel: _cancelCompleter!.future,
@@ -543,6 +557,7 @@ class TrackersProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     _anilistAuth.dispose();
     _simklAuth.dispose();
     _traktAuth.dispose();
+    _traktBrowserAuth.dispose();
     _mdblistAuth.dispose();
     super.dispose();
   }

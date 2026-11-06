@@ -4,10 +4,47 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:plezy/models/trackers/device_code.dart';
+import 'package:plezy/services/trackers/oauth_proxy_client.dart';
 import 'package:plezy/services/trackers/trakt/trakt_auth_service.dart';
 import 'package:plezy/services/trackers/trakt/trakt_constants.dart';
 
 void main() {
+  test('browser authorization uses owned relay PKCE and returns refreshable session', () async {
+    final requests = <http.Request>[];
+    final service = TraktBrowserAuthService(
+      proxy: OAuthProxyClient(
+        relayBaseUrl: 'https://relay.example',
+        httpClient: MockClient((request) async {
+          requests.add(request);
+          if (request.url.path == '/auth/start') {
+            expect(json.decode(request.body), {'service': 'trakt'});
+            return http.Response(
+              json.encode({
+                'session': 'poll-capability',
+                'url': 'https://relay.example/auth/trakt?state=browser-state',
+              }),
+              200,
+            );
+          }
+          expect(request.url.path, '/auth/result');
+          expect(request.url.queryParameters['session'], 'poll-capability');
+          return http.Response(
+            json.encode({'accessToken': 'access', 'refreshToken': 'refresh', 'expiresIn': 3600}),
+            200,
+          );
+        }),
+      ),
+    );
+    OAuthProxyStart? displayed;
+    final result = await service.authorize(onCodeReady: (start) => displayed = start);
+    expect(displayed?.url, startsWith('https://relay.example/auth/trakt'));
+    expect(result?.accessToken, 'access');
+    expect(result?.refreshToken, 'refresh');
+    expect(requests, hasLength(2));
+    expect(requests.every((request) => !request.body.contains('client_secret')), isTrue);
+    service.dispose();
+  });
+
   test('device authorization identifies the public client without a secret', () async {
     http.Request? captured;
     final service = TraktAuthService(

@@ -130,8 +130,8 @@ void main() {
         },
       );
 
-      expect(clients, hasLength(6));
-      expect(clients.toSet(), hasLength(6));
+      expect(clients, hasLength(7));
+      expect(clients.toSet(), hasLength(7));
       for (final client in clients) {
         expect(client.closeCount, 0);
       }

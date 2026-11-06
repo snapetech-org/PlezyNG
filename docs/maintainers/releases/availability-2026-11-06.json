@@ -19,5 +19,5 @@
     }
   ],
   "historicalEvidence": "docs/maintainers/releases/v3.0.0.json",
-  "interpretation": "The previously observed v3.0.0 release is not currently returned by its ID, tag or latest endpoint. The list exposes only the older draft. The cause is unknown; this does not establish that v3.0.0 was never published."
+  "interpretation": "The owner explicitly authorized deleting the previously published v3.0.0 GitHub release (ID 434865030) and its 31 assets. The immutable tag remains. The observed 404 responses are expected after that deletion and do not establish that v3.0.0 was never published. A complete corrective release is being prepared separately."
 }

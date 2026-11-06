@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prepare the complete Pleazyng 3.0.2 corrective release with package build 161, preserving the earlier immutable tags.
+
 - Publish QAIRT context manifests atomically and reject previously published output directories, preserving valid package metadata after interrupted builds.
 - Identify native Tizen video output in playback diagnostics when the player reports no output property.
 - Keep Google Tensor export filenames and provider keys consistent with runtime model packs, accepting compiler-suffixed output names without selecting other targets.

@@ -55,9 +55,9 @@ jobs:
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           set -euo pipefail
@@ -110,8 +110,8 @@ jobs:
           echo "tag=$RESOLVED_TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           if [[ -n "$MACOS_CERTIFICATE_BASE64" && -n "$MACOS_CERTIFICATE_PASSWORD" && \
-                -n "$KEYCHAIN_PASSWORD" && -n "$APPLE_ID" && \
-                -n "$APPLE_APP_SPECIFIC_PASSWORD" && -n "$APPLE_TEAM_ID" && -n "$HOMEBREW_TAP_TOKEN" ]]; then
+                -n "$APPLE_API_KEY_ID" && -n "$APPLE_API_ISSUER_ID" && \
+                -n "$APPLE_API_PRIVATE_KEY" && -n "$APPLE_TEAM_ID" && -n "$HOMEBREW_TAP_TOKEN" ]]; then
             echo "homebrew_enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "homebrew_enabled=false" >> "$GITHUB_OUTPUT"

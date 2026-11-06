@@ -5,10 +5,12 @@ The macOS product bundle is `Pleazyng.app`, and the release disk image is `pleaz
 ## Release requirements
 
 - The macOS app must be signed with a Developer ID Application certificate, notarized by Apple, stapled, and pass the workflow Gatekeeper assessment.
-- Configure `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `KEYCHAIN_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, and `APPLE_TEAM_ID` as repository or organization secrets. The ordinary release path stays optional-signing; the Homebrew option fails closed if any signing or notarization credential is missing.
+- Configure `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER_ID`, `APPLE_API_PRIVATE_KEY`, and `APPLE_TEAM_ID` as repository or organization secrets. The ordinary release path stays optional-signing; the Homebrew option fails closed if any signing or notarization credential is missing.
 - Dispatch the workflow against a stable `vMAJOR.MINOR.PATCH` tag with action `release` and mode `release`, then enable `prepare_homebrew_cask`.
 - The run attaches `snapetech-pleazyng.rb` to the draft release and attests that candidate. Publish the release before submitting or installing the Cask because Homebrew must be able to fetch the versioned DMG from the public release URL.
 - Verify the published `pleazyng-macos.dmg` checksum matches the `sha256` in the candidate and confirm the asset URL uses the `vMAJOR.MINOR.PATCH` release tag.
+
+The Developer ID Application certificate was issued on 2026-11-05 for team `DM9A59DC85`, and the two dedicated macOS certificate secrets are configured. Existing iOS distribution credentials are separate and remain unchanged. Notarization uses the existing App Store Connect API key; an Apple app-specific password and persistent keychain password are not required. Native import, signing, notarization and Gatekeeper still need to pass on the qualified release.
 
 ## Official Homebrew submission
 

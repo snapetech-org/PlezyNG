@@ -1302,8 +1302,8 @@ def publish_configured_channels(
     skipped: list[dict] = []
     failures: list[str] = []
     macos_signing = {
-        "MACOS_CERTIFICATE_BASE64", "MACOS_CERTIFICATE_PASSWORD", "KEYCHAIN_PASSWORD",
-        "APPLE_ID", "APPLE_APP_SPECIFIC_PASSWORD", "APPLE_TEAM_ID",
+        "MACOS_CERTIFICATE_BASE64", "MACOS_CERTIFICATE_PASSWORD",
+        "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
     }
     if not (macos_signing | {"HOMEBREW_TAP_TOKEN"}).issubset(secrets):
         skipped.append({

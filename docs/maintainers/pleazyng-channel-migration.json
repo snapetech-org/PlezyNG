@@ -31,7 +31,7 @@
     ],
     "pending": [
       "Complete IAP review screenshot and validate sandbox purchase with first signed build",
-      "Update localized listing copy and remove stale screenshots",
+      "Fresh Pleazyng sign-in and real Apple TV screenshots; remaining submission metadata",
       "Retire old identifiers only after dependency review",
       "Validate signing and App Store Connect upload with new identity"
     ],
@@ -57,6 +57,16 @@
         "Real purchase-screen review screenshot",
         "Attach to new app version and validate sandbox purchase before review"
       ]
+    },
+    "listing": {
+      "locale": "en-US",
+      "ios_description_updated": true,
+      "old_branded_sign_in_screenshot_removed": true,
+      "iphone_screenshots": 3,
+      "iphone_screenshot_size": "1179x2556",
+      "tvos_description_keywords_contact_copyright_saved": true,
+      "tvos_screenshots": 0,
+      "fresh_brand_and_tv_captures_pending": true
     }
   },
   "automation_before": {

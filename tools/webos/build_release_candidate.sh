@@ -333,17 +333,25 @@ fi
 install -m 644 -- "${IPKS[0]}" "$OUTPUT_ROOT/"
 install -m 644 -- "$ENGINE_PROVENANCE" "$OUTPUT_ROOT/webos-engine-provenance.json"
 install -m 644 -- "$ROOT/tools/webos/compatibility.json" "$OUTPUT_ROOT/webos-compatibility.json"
-"$JSON_PYTHON" - "$OUTPUT_ROOT" "$PLEZY_WEBOS_GIT_COMMIT" <<'PYPROVENANCE'
+PACKAGE_VERSION="$("$JSON_PYTHON" "$ROOT/scripts/pubspec_version.py" "$ROOT/pubspec.yaml")"
+PACKAGE_VERSION="${PACKAGE_VERSION%%+*}"
+"$JSON_PYTHON" - "$OUTPUT_ROOT" "$PLEZY_WEBOS_GIT_COMMIT" "$PACKAGE_VERSION" <<'PYPROVENANCE'
 import hashlib, json, pathlib, sys
-root, commit = pathlib.Path(sys.argv[1]), sys.argv[2]
+root, commit, version = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3]
 ipk, = root.glob('*.ipk')
+if ipk.name != f'org.snapetech.pleazyng_{version}_arm.ipk':
+    raise ValueError('WebOS package filename differs from the project version')
 with ipk.open('rb') as source:
     digest = hashlib.file_digest(source, 'sha256').hexdigest()
-version = ipk.name.removeprefix('org.snapetech.plezyng_').removesuffix('_arm.ipk')
 record = {'sourceCommit': commit, 'version': version, 'package': ipk.name,
           'packageSha256': digest, 'deviceQualification': 'not-established-by-build'}
 (root / 'webos-app-provenance.json').write_text(json.dumps(record, indent=2) + '\n')
 PYPROVENANCE
+# Validation mode must exercise the same package/source/version check as release
+# mode, before retaining an apparently successful candidate.
+"$JSON_PYTHON" "$ROOT/tools/webos/check_release_package.py" \
+  --version "$PACKAGE_VERSION" --source-commit "$PLEZY_WEBOS_GIT_COMMIT" \
+  --artifact "$OUTPUT_ROOT/$(basename -- "${IPKS[0]}")"
 (
   cd -- "$OUTPUT_ROOT"
   sha256sum -- *.ipk webos-engine-provenance.json webos-app-provenance.json webos-compatibility.json > SHA256SUMS.txt

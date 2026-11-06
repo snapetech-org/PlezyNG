@@ -18,6 +18,11 @@ directory. CI retains its output in `logs/native-syntax.log` on failure. Passing
 this check proves native source/API compatibility; the full IPK build and physical
 TV validation remain separate checks.
 
+After packaging, validation mode also runs the release integrity check against
+the actual project version, source SHA and package hash. Provenance takes the
+version from `pubspec.yaml` and checks the complete package filename, so an app
+ID rename cannot silently corrupt the version field.
+
 The pinned webOS texture registrar has synchronous removal without a completion
 callback. The visualizer keeps one texture registration per plugin/view lifetime,
 reuses it across session leases, stops its worker and clears its current frame on

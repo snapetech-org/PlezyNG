@@ -117,7 +117,7 @@ val felAarFile = felAarPath?.let { path ->
     val metadata = archive.getInputStream(archive.getEntry("META-INF/plezyng-dv-engine.json")).bufferedReader().use {
       groovy.json.JsonSlurper().parseText(it.readText()) as? Map<*, *>
     } ?: throw GradleException("Experimental FEL AAR has invalid engine metadata")
-    if (metadata["schema_version"] != 1 ||
+    if ((metadata["schema_version"] != 1 && metadata["schema_version"] != 2) ||
       metadata["engine_id"] != "plezyng-dv-fel-v1" ||
       metadata["ffmpeg_headers"] != "META-INF/plezyng-dv/ffmpeg-headers/"
     ) {
@@ -130,14 +130,17 @@ val felAarFile = felAarPath?.let { path ->
     val headerPrefix = metadata["ffmpeg_headers"] as String
     val headerEntries = archive.entries().asSequence().map { it.name }
       .filter { it.startsWith(headerPrefix) && !it.endsWith("/") }.toSet()
-    val requiredHeaders = setOf(
-      "${headerPrefix}libavcodec/avcodec.h",
-      "${headerPrefix}libavcodec/mediacodec.h",
-      "${headerPrefix}libavcodec/jni.h",
-      "${headerPrefix}libavutil/avconfig.h",
-      "${headerPrefix}libavutil/channel_layout.h",
-      "${headerPrefix}libswresample/swresample.h"
-    )
+    val headerRoots = if (metadata["schema_version"] == 2) mpvAbis.map { "$headerPrefix$it/" } else listOf(headerPrefix)
+    val requiredHeaders = headerRoots.flatMap { root ->
+      listOf(
+        "${root}libavcodec/avcodec.h",
+        "${root}libavcodec/mediacodec.h",
+        "${root}libavcodec/jni.h",
+        "${root}libavutil/avconfig.h",
+        "${root}libavutil/channel_layout.h",
+        "${root}libswresample/swresample.h"
+      )
+    }.toSet()
     if (!headerEntries.containsAll(requiredHeaders)) {
       throw GradleException("Experimental FEL AAR is missing FFmpeg headers required by the shared Media3 bridge: ${(requiredHeaders - headerEntries).joinToString()}")
     }
@@ -750,17 +753,15 @@ val mpvFfmpegDevelopmentDir = layout.buildDirectory.dir("libmpv-ffmpeg-developme
 // Build the Media3 JNI adapter against the same shared FFmpeg libraries that
 // libmpv packages. Headers are pinned to libmpv's FFmpeg version and remain
 // build-only; the APK contains one FFmpeg implementation for both players.
-// The AAR carries no headers, so they come from FFmpeg's release source: the
-// Media3 adapter uses none of the declarations mpv-build's patches change
-// (libavcodec/mediacodec.h, libavcodec/jni.h).
+// Normal bundled engine AARs carry their matching installed FFmpeg headers.
+// Legacy development overrides can still use the pinned release-source fallback.
 val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") {
   dependsOn(extractMpvNatives)
   val manifest = File(mpvFfmpegDevelopmentDir, ".manifest")
   val libraries = listOf("avcodec", "avutil", "swresample")
   inputs.dir(mpvFfmpegJniDir)
-  if (felAarFile != null) {
-    inputs.file(felAarFile)
-  } else {
+  inputs.files(mpvAarNatives)
+  if (felAarFile == null) {
     inputs.property("ffmpegVersion", mpvFfmpegVersion)
     inputs.property("sourceUrl", mpvFfmpegSourceUrl)
     inputs.property("sourceSha256", mpvFfmpegSourceSha256)
@@ -770,12 +771,8 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
       libraries.map { library -> File(mpvFfmpegDevelopmentDir, "native/$abi/lib$library.so") }
     }
   )
-  outputs.files(
-    File(mpvFfmpegDevelopmentDir, "include/libavcodec/avcodec.h"),
-    File(mpvFfmpegDevelopmentDir, "include/libavutil/avconfig.h"),
-    File(mpvFfmpegDevelopmentDir, "include/libswresample/swresample.h"),
-    manifest
-  )
+  outputs.dir(mpvFfmpegDevelopmentDir)
+  outputs.file(manifest)
   doLast {
     val staging = File(
       mpvFfmpegDevelopmentDir.parentFile,
@@ -786,14 +783,26 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
       val nativeDir = File(staging, "native")
       staging.mkdirs()
       val ffmpegIdentity: String
-      if (felAarFile != null) {
+      val nativeAar = mpvAarNatives.singleFile
+      val hasBundledHeaders = ZipFile(nativeAar).use { it.getEntry("META-INF/plezyng-dv-engine.json") != null }
+      if (hasBundledHeaders) {
         val headerPrefix = "META-INF/plezyng-dv/ffmpeg-headers/"
-        val sourceCommit = ZipFile(felAarFile).use { archive ->
+        var perAbiHeaders = false
+        val sourceCommit = ZipFile(nativeAar).use { archive ->
           val metadata = archive.getInputStream(archive.getEntry("META-INF/plezyng-dv-engine.json")).bufferedReader().use {
             groovy.json.JsonSlurper().parseText(it.readText()) as Map<*, *>
           }
           val sourceCommit = metadata["ffmpeg_commit"] as? String
             ?: throw GradleException("Experimental FEL AAR metadata has no FFmpeg source commit")
+          if ((metadata["schema_version"] != 1 && metadata["schema_version"] != 2) ||
+            metadata["engine_id"] != "plezyng-dv-fel-v1" ||
+            metadata["ffmpeg_headers"] != headerPrefix
+          ) {
+            throw GradleException("Bundled FFmpeg headers have incompatible engine metadata")
+          }
+          perAbiHeaders = metadata["schema_version"] == 2
+          val hashes = metadata["header_sha256"] as? Map<*, *>
+            ?: throw GradleException("Bundled FFmpeg headers have no checksum manifest")
           archive.entries().asSequence()
             .filter { !it.isDirectory && it.name.startsWith(headerPrefix) }
             .forEach { entry ->
@@ -809,6 +818,13 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
               archive.getInputStream(entry).use { input ->
                 destination.outputStream().use { output -> input.copyTo(output) }
               }
+              val checksum = if (perAbiHeaders) {
+                (hashes[relative.substringBefore('/')] as? Map<*, *>)?.get(relative.substringAfter('/'))
+              } else {
+                hashes[relative]
+              }
+              if (checksum !is String) throw GradleException("Bundled FFmpeg header has no checksum: $relative")
+              verifySha256(destination, checksum, "bundled FFmpeg header $relative")
             }
           sourceCommit
         }
@@ -820,7 +836,8 @@ val prepareMpvFfmpegDevelopment = tasks.register("prepareMpvFfmpegDevelopment") 
           "libavutil/channel_layout.h",
           "libswresample/swresample.h"
         )
-        val missingHeaders = requiredHeaders.map { File(includeDir, it) }.filterNot(File::isFile)
+        val roots = if (perAbiHeaders) mpvAbis.map { File(includeDir, it) } else listOf(includeDir)
+        val missingHeaders = roots.flatMap { root -> requiredHeaders.map { File(root, it) } }.filterNot(File::isFile)
         if (missingHeaders.isNotEmpty()) {
           throw GradleException("Experimental FEL AAR is missing matching FFmpeg headers: ${missingHeaders.joinToString()}")
         }
@@ -1051,7 +1068,6 @@ android {
     versionCode = flutter.versionCode
     versionName = flutter.versionName
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    buildConfigField("boolean", "PLEZYNG_DV_FEL_EXPERIMENTAL", if (felAarFile != null) "true" else "false")
 
     if (felAarFile != null) {
       ndk {
@@ -1252,10 +1268,12 @@ val stageMilkRustRuntime by tasks.registering(Exec::class) {
     if (localFile.isFile) localFile.inputStream().use { localProperties.load(it) }
     val sdkRoot = System.getenv("ANDROID_HOME") ?: localProperties.getProperty("sdk.dir")
       ?: throw GradleException("The pinned Android SDK is required for MilkRust")
-    commandLine("python3", "scripts/visualizer/build_runtime.py", "--platform", "android",
+    commandLine(
+      "python3", "scripts/visualizer/build_runtime.py", "--platform", "android",
       "--architectures", mpvAbis.joinToString(","),
       "--ndk", File(sdkRoot, "ndk/29.0.14206865").absolutePath,
-      "--output", "build/visualizer-native")
+      "--output", "build/visualizer-native"
+    )
   }
 }
 

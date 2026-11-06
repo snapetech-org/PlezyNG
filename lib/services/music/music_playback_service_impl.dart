@@ -17,7 +17,6 @@ import '../../models/companion_remote/remote_command.dart';
 import '../../mpv/models.dart';
 import '../../mpv/player/audio_spectrum.dart';
 import '../../mpv/player/player.dart';
-import '../../mpv/player/player_base.dart';
 import '../../mpv/player/player_native.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/notification_permission.dart';
@@ -86,7 +85,11 @@ class _PendingResume {
 /// progress stop the session with [MusicPlaybackStatus.error].
 class MusicPlaybackServiceImpl extends MusicPlaybackService
     with WidgetsBindingObserver
-    implements MusicLoudnessProfileService, MusicAudioSpectrumService, MusicVisualizationAudioService, MusicKaraokeControls {
+    implements
+        MusicLoudnessProfileService,
+        MusicAudioSpectrumService,
+        MusicVisualizationAudioService,
+        MusicKaraokeControls {
   bool? _karaokePassthrough;
   double _karaokeKey = 0, _karaokeTempo = 1;
 
@@ -117,7 +120,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> resetKaraokeControls() async {
     final passthrough = _karaokePassthrough;
-    if (passthrough == null) return;
+    if (passthrough == null) {
+      return;
+    }
     final player = _player;
     if (player != null && !player.disposed && player is AudioEffectsCapable) {
       await (player as AudioEffectsCapable).setAudioEffects((stereoWidth: 0, spatializer: false, pitchSemitones: 0));
@@ -178,7 +183,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _sweetFadesSettingsListenable = settings.listenable(SettingsService.musicSweetFades)
         ..addListener(_onSweetFadesPreferenceChanged);
     }
-    if (_sessionStore != null) unawaited(_maybeRestoreSession());
+    if (_sessionStore != null) {
+      unawaited(_maybeRestoreSession());
+    }
   }
 
   static const _previousRestartThreshold = Duration(seconds: 3);
@@ -293,7 +300,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   Map<String, dynamic> _launchSnapshot() {
     final current = _launchObserver?.isCurrent == true && _observedGeneration == _generation;
-    if (!current) return const {'stage': 'cancelled', 'playing': false, 'buffering': false};
+    if (!current) {
+      return const {'stage': 'cancelled', 'playing': false, 'buffering': false};
+    }
     final state = _player?.state;
     final failed = _status == MusicPlaybackStatus.error || _launchObserver?.failure != null;
     final ready = _observedReady;
@@ -323,7 +332,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _markLaunchTerminal(String stage, {String? failure}) {
-    if (_observedGeneration != _generation) return;
+    if (_observedGeneration != _generation) {
+      return;
+    }
     // Capture once, before generation changes or teardown clears the native
     // player. A source that never started must not inherit an old playhead.
     final player = _observedSourceId == null ? null : _player;
@@ -383,9 +394,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Duration? get duration {
-    if (_currentTrack == null) return null;
+    if (_currentTrack == null) {
+      return null;
+    }
     final playerDuration = _player?.state.duration ?? Duration.zero;
-    if (playerDuration > Duration.zero) return playerDuration;
+    if (playerDuration > Duration.zero) {
+      return playerDuration;
+    }
     final ms = _currentTrack?.durationMs;
     return ms != null ? Duration(milliseconds: ms) : null;
   }
@@ -466,19 +481,27 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final intent = beginPlayIntent();
     final client = _clientFor(seed);
     if (client == null) {
-      if (!isPlayIntentCurrent(intent)) return InstantMixOutcome.superseded;
+      if (!isPlayIntentCurrent(intent)) {
+        return InstantMixOutcome.superseded;
+      }
       throw PlaybackException(t.music.instantMixNoServer, reason: PlaybackFailureReason.serverUnavailable);
     }
     List<MediaItem> tracks;
     try {
       tracks = await client.fetchInstantMix(seed.id);
     } catch (e, st) {
-      if (!isPlayIntentCurrent(intent)) return InstantMixOutcome.superseded;
+      if (!isPlayIntentCurrent(intent)) {
+        return InstantMixOutcome.superseded;
+      }
       appLogger.w('Instant mix fetch failed for ${seed.id}', error: e, stackTrace: st);
       rethrow;
     }
-    if (!isPlayIntentCurrent(intent)) return InstantMixOutcome.superseded;
-    if (tracks.isEmpty) return InstantMixOutcome.empty;
+    if (!isPlayIntentCurrent(intent)) {
+      return InstantMixOutcome.superseded;
+    }
+    if (tracks.isEmpty) {
+      return InstantMixOutcome.empty;
+    }
     await _startQueue(
       tracks: tracks,
       playContext: MusicPlayContext(title: seed.displayTitle, kind: MusicPlayContextKind.mix),
@@ -496,8 +519,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     bool offline = false,
     PlaybackLaunchObserver? launchObserver,
   }) async {
-    if (tracks.isEmpty || _disposed) return;
-    if (launchObserver != null && !launchObserver.isCurrent) return;
+    if (tracks.isEmpty || _disposed) {
+      return;
+    }
+    if (launchObserver != null && !launchObserver.isCurrent) {
+      return;
+    }
     beginPlayIntent();
     _queueSessionRevision++;
     // A new queue is a new decision: the vehicle's claim on whatever it stopped
@@ -537,7 +564,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     int? startIndex;
     if (startTrack != null) {
       final index = tracks.indexWhere((t) => t.globalKey == startTrack.globalKey);
-      if (index >= 0) startIndex = index;
+      if (index >= 0) {
+        startIndex = index;
+      }
     }
     _queue.load(tracks, startIndex: startIndex, shuffle: shuffle);
     _playContext = playContext;
@@ -555,7 +584,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// through [_handlePlaybackFailure].
   Future<void> _openCurrent(int generation, {bool play = true, Duration? initialPosition, bool offline = false}) async {
     final track = _queue.current;
-    if (track == null) return;
+    if (track == null) {
+      return;
+    }
     _openingGeneration = generation;
     final observer = _observedGeneration == generation ? _launchObserver : null;
     bool launchCurrent() => generation == _generation && (observer?.isCurrent ?? true);
@@ -568,7 +599,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _setStatus(MusicPlaybackStatus.loading, forceNotify: true);
 
       await _coordinator.claimMusic();
-      if (!launchCurrent()) return;
+      if (!launchCurrent()) {
+        return;
+      }
       // When video or another non-music surface owns workspace audio, keep a
       // newly started music session silent until the user assigns it focus.
       _workspaceAudioEnabled = !_coordinator.workspaceHasCompetingAudioOwner;
@@ -577,12 +610,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       // leave background audio off until the next track.
       if (PlatformDetector.isAutomotive()) {
         await CarUxRestrictionsService.instance.ensureResolved();
-        if (!launchCurrent()) return;
+        if (!launchCurrent()) {
+          return;
+        }
       }
       final player = await _ensurePlayer();
-      if (!launchCurrent() || _player != player) return;
+      if (!launchCurrent() || _player != player) {
+        return;
+      }
       await player.setWorkspaceAudioFocusEnabled(_workspaceAudioEnabled);
-      if (!launchCurrent() || _player != player) return;
+      if (!launchCurrent() || _player != player) {
+        return;
+      }
       _ensureMediaControls();
       // Re-asserted per open (cheap, idempotent): the native side drops the
       // background-mode opt-in when the user swipes the task away, so a
@@ -620,7 +659,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         }
         return;
       }
-      if (!launchCurrent() || _player != player) return;
+      if (!launchCurrent() || _player != player) {
+        return;
+      }
       _currentSource = source;
 
       // Claim audio focus before audio starts so other media apps pause (mpv
@@ -631,7 +672,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       } catch (e) {
         appLogger.d('Audio focus request failed', error: e);
       }
-      if (!launchCurrent() || _player != player) return;
+      if (!launchCurrent() || _player != player) {
+        return;
+      }
 
       final shouldPlay = play && automotivePlaybackAllowedNow();
       // A restored session's first open resumes at the persisted playhead;
@@ -650,12 +693,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         }
         return;
       }
-      if (!launchCurrent() || _player != player) return;
+      if (!launchCurrent() || _player != player) {
+        return;
+      }
 
       final playbackStarted = shouldPlay && automotivePlaybackAllowedNow();
       if (shouldPlay && !playbackStarted) {
         await player.pause();
-        if (generation != _generation || _player != player) return;
+        if (generation != _generation || _player != player) {
+          return;
+        }
       }
       committedPlayer = player;
       _setStatus(playbackStarted ? MusicPlaybackStatus.playing : MusicPlaybackStatus.paused);
@@ -695,23 +742,31 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// reuses the current track's resolved source.
   Future<void> _applyArmNext(int generation, int armRequest) async {
     final player = _player;
-    if (player == null || !_isCurrentArmRequest(player, generation, armRequest)) return;
+    if (player == null || !_isCurrentArmRequest(player, generation, armRequest)) {
+      return;
+    }
 
     final targetCursor = _sleepTimerEndOfTrack ? null : _queue.nextIndex();
     final target = targetCursor == null ? null : _queue.trackAt(targetCursor);
 
     if (target == null) {
-      if (_armed == null) return;
+      if (_armed == null) {
+        return;
+      }
       appLogger.d('Music: clearing arm (queue end / end-of-track sleep)');
       _rememberStaleArm();
       await _trySetNext(player, null);
       return;
     }
-    if (_armed?.track.globalKey == target.globalKey) return;
+    if (_armed?.track.globalKey == target.globalKey) {
+      return;
+    }
 
     _rememberStaleArm();
     await _trySetNext(player, null);
-    if (!_isCurrentArmRequest(player, generation, armRequest)) return;
+    if (!_isCurrentArmRequest(player, generation, armRequest)) {
+      return;
+    }
 
     MusicSource source;
     if (targetCursor == _queue.cursor && _currentSource != null) {
@@ -727,10 +782,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         return;
       }
     }
-    if (!_isCurrentArmRequest(player, generation, armRequest)) return;
+    if (!_isCurrentArmRequest(player, generation, armRequest)) {
+      return;
+    }
     final armed = _ArmedTrack(track: target, source: source);
     _armed = armed;
-    if (_sweetFadesEnabled) unawaited(_loadLoudnessProfile(source));
+    if (_sweetFadesEnabled) {
+      unawaited(_loadLoudnessProfile(source));
+    }
     appLogger.d('Music: arming cursor $targetCursor "${target.title}"');
     final ok = await _trySetNext(player, Media(source.url, headers: source.headers));
     if (!ok && identical(_armed, armed)) {
@@ -750,7 +809,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _requestArmNext() {
-    if (_disposed || !automotivePlaybackAllowedNow()) return;
+    if (_disposed || !automotivePlaybackAllowedNow()) {
+      return;
+    }
     _armRequestGeneration++;
     _armRequestPending = true;
     _ensureArmDrain();
@@ -762,12 +823,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _ensureArmDrain() {
-    if (_disposed || !_armRequestPending || _openingGeneration != null || _armDrain != null) return;
+    if (_disposed || !_armRequestPending || _openingGeneration != null || _armDrain != null) {
+      return;
+    }
     final drain = _drainArmRequests();
     _armDrain = drain;
     unawaited(
       drain.whenComplete(() {
-        if (_armDrain != drain) return;
+        if (_armDrain != drain) {
+          return;
+        }
         _armDrain = null;
         if (!_disposed && _armRequestPending && _openingGeneration == null) {
           _ensureArmDrain();
@@ -796,7 +861,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   Future<bool> _trySetNext(Player player, Media? media) async {
-    if (media != null && !automotivePlaybackAllowedNow()) return false;
+    if (media != null && !automotivePlaybackAllowedNow()) {
+      return false;
+    }
     try {
       await player.setNext(media);
       return true;
@@ -809,7 +876,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// Re-arm only when queue/mode changes altered what plays next — queue
   /// edits that keep the same next track cost no server round-trip.
   void _rearmIfNeeded() {
-    if (_player == null || _currentTrack == null) return;
+    if (_player == null || _currentTrack == null) {
+      return;
+    }
     _requestArmNext();
   }
 
@@ -834,8 +903,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (isNew && _player == player && !player.disposed && (_volume != 100.0 || !_workspaceAudioEnabled)) {
       unawaited(player.setVolume(_workspaceAudioEnabled ? _volume * _musicGain : 0));
     }
-    if (isNew && _player == player && !player.disposed) await _applyAudioPassthrough(player);
-    if (isNew && _player == player && !player.disposed) await _applyAudioOutputDevice(player);
+    if (isNew && _player == player && !player.disposed) {
+      await _applyAudioPassthrough(player);
+    }
+    if (isNew && _player == player && !player.disposed) {
+      await _applyAudioOutputDevice(player);
+    }
     return player;
   }
 
@@ -847,10 +920,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// the next player. Elsewhere passthrough claims the output device (exclusive
   /// WASAPI, IEC 61937 AudioTrack), which music playback does not opt into.
   Future<void> _applyAudioPassthrough(Player player) async {
-    if (!PlayerNative.usesAppleAudioOutput) return;
+    if (!PlayerNative.usesAppleAudioOutput) {
+      return;
+    }
     final settings = SettingsService.instanceOrNull;
-    if (settings == null) return;
-    if (!settings.read(SettingsService.audioPassthrough) || settings.read(SettingsService.audioNormalization)) return;
+    if (settings == null) {
+      return;
+    }
+    if (!settings.read(SettingsService.audioPassthrough) || settings.read(SettingsService.audioNormalization)) {
+      return;
+    }
     try {
       await player.setAudioPassthrough(true);
     } catch (error, stackTrace) {
@@ -864,7 +943,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// disposes it when it claims the session.
   Future<void> _applyAudioOutputDevice(Player player) async {
     final settings = SettingsService.instanceOrNull;
-    if (settings == null) return;
+    if (settings == null) {
+      return;
+    }
     await applyPreferredAudioDevice(player, settings.read(SettingsService.audioOutputDevice));
   }
 
@@ -884,7 +965,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _playerSubs
         ..add(
           player.streams.sourceStarted.listen((event) {
-            if (_player != player || _observedGeneration != _generation || _launchObserver?.isCurrent != true) return;
+            if (_player != player || _observedGeneration != _generation || _launchObserver?.isCurrent != true) {
+              return;
+            }
             _observedSourceId = event.sourceId;
             _observedReady = false;
           }),
@@ -923,7 +1006,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _mediaControls?.updatePlaybackState(isPlaying: player.state.isActive, position: position, speed: 1.0);
     }
     DiscordRPCService.instance.updatePosition(position);
-    if (_status == MusicPlaybackStatus.playing) _maybePersistPositionTick(position);
+    if (_status == MusicPlaybackStatus.playing) {
+      _maybePersistPositionTick(position);
+    }
   }
 
   void _onPlayingChanged(bool isPlaying) {
@@ -935,7 +1020,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     // The vehicle's claim is discharged here when a restriction-owned resume only
     // reports the transition now: leaving it set would let a later lifted verdict
     // restart a track that has since finished and parked at its end.
-    if (shouldBePlaying && !_carPauseInFlight) _pausedByCarRestriction = false;
+    if (shouldBePlaying && !_carPauseInFlight) {
+      _pausedByCarRestriction = false;
+    }
     if (_status == MusicPlaybackStatus.playing || _status == MusicPlaybackStatus.paused) {
       _setStatus(shouldBePlaying ? MusicPlaybackStatus.playing : MusicPlaybackStatus.paused);
       unawaited(_tracker?.sendProgress(shouldBePlaying ? 'playing' : 'paused'));
@@ -1040,16 +1127,24 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// sleep-at-end-of-track, or failed arm it stays true, and the confirmed
   /// handler advances explicitly or parks.
   void _onCompleted(bool done) {
-    if (!done || _currentTrack == null || _status == MusicPlaybackStatus.idle) return;
+    if (!done || _currentTrack == null || _status == MusicPlaybackStatus.idle) {
+      return;
+    }
     appLogger.d('Music: completed received (armed=${_armed != null}, cursor ${_queue.cursor})');
-    if (_armed != null) return; // The backend advances; trackTransition handles it.
+    if (_armed != null) {
+      return;
+    } // The backend advances; trackTransition handles it.
 
     final generation = _generation;
     _completedConfirmTimer?.cancel();
     _completedConfirmTimer = Timer(_completedConfirmDelay, () {
       _completedConfirmTimer = null;
-      if (_disposed || generation != _generation || _armed != null) return;
-      if (_player?.state.completed != true) return; // stale boundary pulse
+      if (_disposed || generation != _generation || _armed != null) {
+        return;
+      }
+      if (_player?.state.completed != true) {
+        return;
+      } // stale boundary pulse
       appLogger.d('Music: completed confirmed (cursor ${_queue.cursor})');
       _handleQueueCompleted();
     });
@@ -1095,7 +1190,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _onPlayerError(PlayerError error) {
-    if (_status == MusicPlaybackStatus.idle || _status == MusicPlaybackStatus.error) return;
+    if (_status == MusicPlaybackStatus.idle || _status == MusicPlaybackStatus.error) {
+      return;
+    }
     appLogger.w('Music player error: $error');
     _handlePlaybackFailure(error);
   }
@@ -1130,7 +1227,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _tracker?.dispose();
     _tracker = null;
     final player = _player;
-    if (player == null) return;
+    if (player == null) {
+      return;
+    }
 
     final profileKey = _loudnessProfileCacheKey(source);
     _currentLoudnessProfile = profileKey == null ? null : _loadedLoudnessProfiles[profileKey];
@@ -1157,7 +1256,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (_sweetFadesEnabled && _currentLoudnessProfile == null) {
       unawaited(
         _loadLoudnessProfile(source).then((profile) {
-          if (_disposed || !identical(_currentSource, source)) return;
+          if (_disposed || !identical(_currentSource, source)) {
+            return;
+          }
           _currentLoudnessProfile = profile;
           _updateSweetFade(fadeIn ? Duration.zero : player.currentPosition);
         }),
@@ -1215,7 +1316,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       // Callers set [_status] before binding; a restored session or a
       // car-restricted open binds paused, and presence must not run a
       // timer for a track that is not audible.
-      if (_status != MusicPlaybackStatus.playing) unawaited(rpc.pausePlayback());
+      if (_status != MusicPlaybackStatus.playing) {
+        unawaited(rpc.pausePlayback());
+      }
     }
   }
 
@@ -1225,7 +1328,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   void _finalizeCurrentTrack({Duration? positionOverride}) {
     final tracker = _tracker;
     _tracker = null;
-    if (tracker == null) return;
+    if (tracker == null) {
+      return;
+    }
     tracker.stopTracking();
     unawaited(
       tracker.sendStoppedProgressOnce(positionOverride: positionOverride).catchError((Object e) {
@@ -1235,7 +1340,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _ensureMediaControls() {
-    if (_mediaControls != null) return;
+    if (_mediaControls != null) {
+      return;
+    }
     final controls = _mediaControlsFactory();
     _mediaControls = controls;
     _controlEventsSub = controls.controlEvents.listen(_onControlEvent);
@@ -1260,25 +1367,41 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   String? _loudnessProfileCacheKey(MusicSource source) {
-    if (source.isOffline) return null;
+    if (source.isOffline) {
+      return null;
+    }
     final client = source.reportingClient;
-    if (client == null || client is! PlexLoudnessProfileClient) return null;
-    if (client.isOfflineMode) return null;
+    if (client == null || client is! PlexLoudnessProfileClient) {
+      return null;
+    }
+    if (client.isOfflineMode) {
+      return null;
+    }
     final tracks = source.mediaInfo?.audioTracks;
-    if (tracks == null) return null;
+    if (tracks == null) {
+      return null;
+    }
     for (final track in tracks) {
-      if (track.selected) return '${client.serverId}:${track.id}';
+      if (track.selected) {
+        return '${client.serverId}:${track.id}';
+      }
     }
     return null;
   }
 
   Future<AudioLoudnessProfile?> _loadLoudnessProfile(MusicSource source) {
     final client = source.reportingClient;
-    if (source.isOffline || client == null || client is! PlexLoudnessProfileClient) return Future.value(null);
+    if (source.isOffline || client == null || client is! PlexLoudnessProfileClient) {
+      return Future.value(null);
+    }
     final profileClient = client as PlexLoudnessProfileClient;
-    if (client.isOfflineMode) return Future.value(null);
+    if (client.isOfflineMode) {
+      return Future.value(null);
+    }
     final tracks = source.mediaInfo?.audioTracks;
-    if (tracks == null) return Future.value(null);
+    if (tracks == null) {
+      return Future.value(null);
+    }
     MediaAudioTrack? selectedTrack;
     for (final track in tracks) {
       if (track.selected) {
@@ -1286,11 +1409,15 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         break;
       }
     }
-    if (selectedTrack == null) return Future.value(null);
+    if (selectedTrack == null) {
+      return Future.value(null);
+    }
 
     final key = '${client.serverId}:${selectedTrack.id}';
     final cached = _loudnessProfileRequests[key];
-    if (cached != null) return cached;
+    if (cached != null) {
+      return cached;
+    }
     if (_loudnessProfileRequests.length >= 24) {
       final oldestKey = _loudnessProfileRequests.keys.first;
       _loudnessProfileRequests.remove(oldestKey);
@@ -1301,11 +1428,15 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         .fetchAudioLoudnessProfile(selectedTrack.id)
         .then<AudioLoudnessProfile?>(
           (profile) {
-            if (!_disposed) _loadedLoudnessProfiles[key] = profile;
+            if (!_disposed) {
+              _loadedLoudnessProfiles[key] = profile;
+            }
             return profile;
           },
           onError: (Object _, StackTrace _) {
-            if (!_disposed) _loadedLoudnessProfiles[key] = null;
+            if (!_disposed) {
+              _loadedLoudnessProfiles[key] = null;
+            }
             appLogger.d('Music loudness profile unavailable');
             return null;
           },
@@ -1317,7 +1448,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   bool get _sweetFadesEnabled => SettingsService.instanceOrNull?.read(SettingsService.musicSweetFades) ?? false;
 
   void _onSweetFadesPreferenceChanged() {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     if (!_sweetFadesEnabled) {
       _fadeCurrentTrackIn = false;
       _setMusicGain(1, force: true);
@@ -1326,14 +1459,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       if (source != null) {
         unawaited(
           _loadLoudnessProfile(source).then((profile) {
-            if (_disposed || !identical(_currentSource, source)) return;
+            if (_disposed || !identical(_currentSource, source)) {
+              return;
+            }
             _currentLoudnessProfile = profile;
             _updateSweetFade(_player?.currentPosition ?? Duration.zero);
           }),
         );
       }
       final armedSource = _armed?.source;
-      if (armedSource != null) unawaited(_loadLoudnessProfile(armedSource));
+      if (armedSource != null) {
+        unawaited(_loadLoudnessProfile(armedSource));
+      }
       _updateSweetFade(_player?.currentPosition ?? Duration.zero);
     }
   }
@@ -1391,10 +1528,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   void _setMusicGain(double gain, {bool force = false}) {
     final normalized = gain.clamp(0.0, 1.0).toDouble();
-    if (!force && (normalized - _musicGain).abs() < 0.01) return;
+    if (!force && (normalized - _musicGain).abs() < 0.01) {
+      return;
+    }
     _musicGain = normalized;
     final player = _player;
-    if (player == null || player.disposed) return;
+    if (player == null || player.disposed) {
+      return;
+    }
     final effectiveVolume = (_volume * normalized * (_workspaceAudioEnabled ? 1.0 : 0.0)).clamp(0.0, 100.0).toDouble();
     unawaited(
       player.setVolume(effectiveVolume).catchError((Object _) {
@@ -1404,7 +1545,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   bool _handleRemoteTransport(RemoteCommandType type) {
-    if (_disposed || _currentTrack == null) return false;
+    if (_disposed || _currentTrack == null) {
+      return false;
+    }
     final Future<void> Function()? action = switch (type) {
       RemoteCommandType.play => play,
       RemoteCommandType.pause => pause,
@@ -1416,7 +1559,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       RemoteCommandType.seekBackward => () => _seekRelative(-_defaultSkipInterval),
       _ => null,
     };
-    if (action == null) return false;
+    if (action == null) {
+      return false;
+    }
     unawaited(action());
     return true;
   }
@@ -1467,8 +1612,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   );
 
   void _onControlEvent(MediaControlEvent event) {
-    if (_disposed || _currentTrack == null) return;
-    if (_mediaControlRouter.route(event)) return;
+    if (_disposed || _currentTrack == null) {
+      return;
+    }
+    if (_mediaControlRouter.route(event)) {
+      return;
+    }
 
     if (event is AudioInterruptionBeganEvent || event is AudioRouteOldDeviceUnavailableEvent) {
       // Remember whether we were playing so interruption-end/route-return
@@ -1496,11 +1645,17 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// In-track relative seek for OS skip commands, clamped to the track.
   Future<void> _seekRelative(Duration delta) async {
     final player = _player;
-    if (player == null) return;
+    if (player == null) {
+      return;
+    }
     var target = player.currentPosition + delta;
-    if (target < Duration.zero) target = Duration.zero;
+    if (target < Duration.zero) {
+      target = Duration.zero;
+    }
     final max = duration;
-    if (max != null && target > max) target = max;
+    if (max != null && target > max) {
+      target = max;
+    }
     await player.seek(target);
   }
 
@@ -1514,7 +1669,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       appLogger.d('Music play denied while automotive playback is restricted');
       return;
     }
-    if (_currentTrack == null) return;
+    if (_currentTrack == null) {
+      return;
+    }
     final player = _player;
     if (player == null) {
       // Parked restored session (#2148): no player exists yet — the first
@@ -1528,7 +1685,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (player.state.completed) {
       // Parked at queue end: restart the current track.
       await player.seek(Duration.zero);
-      if (!_isCurrentTransport(player, generation)) return;
+      if (!_isCurrentTransport(player, generation)) {
+        return;
+      }
       final currentTrack = _currentTrack;
       final currentSource = _currentSource;
       if (currentTrack != null && currentSource != null) {
@@ -1541,7 +1700,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     await player.play();
-    if (!_isCurrentTransport(player, generation)) return;
+    if (!_isCurrentTransport(player, generation)) {
+      return;
+    }
     if (!automotivePlaybackAllowedNow()) {
       await player.pause();
       if (_isCurrentTransport(player, generation)) {
@@ -1552,7 +1713,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _setStatus(MusicPlaybackStatus.playing);
     // A restriction cleared the native arm on the way in; restore it so gapless
     // playback survives a park-and-resume cycle.
-    if (PlatformDetector.isAutomotive()) _requestArmNext();
+    if (PlatformDetector.isAutomotive()) {
+      _requestArmNext();
+    }
   }
 
   @override
@@ -1563,12 +1726,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// command, the sleep timer — takes that ownership away, so parking must not
   /// restart a track somebody deliberately stopped while driving.
   Future<void> _pause({required bool byCar}) async {
-    if (!byCar) _pausedByCarRestriction = false;
+    if (!byCar) {
+      _pausedByCarRestriction = false;
+    }
     final player = _player;
-    if (player == null || _currentTrack == null) return;
+    if (player == null || _currentTrack == null) {
+      return;
+    }
     final generation = _generation;
     await player.pause();
-    if (!_isCurrentTransport(player, generation)) return;
+    if (!_isCurrentTransport(player, generation)) {
+      return;
+    }
     _setStatus(MusicPlaybackStatus.paused);
   }
 
@@ -1579,7 +1748,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<void> togglePlayPause() {
     final player = _player;
-    if (player == null) return _currentTrack != null ? play() : Future.value();
+    if (player == null) {
+      return _currentTrack != null ? play() : Future.value();
+    }
     return player.state.isActive ? pause() : play();
   }
 
@@ -1590,7 +1761,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// music going.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
@@ -1611,7 +1784,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _onCarRestrictionsChanged() {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     // A late first answer must reconfigure the session that was opened while the
     // vehicle was still silent, otherwise background audio stays off until the
     // next track opens.
@@ -1622,12 +1797,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// Applies the foreground-service opt-in (and the notification it needs) for
   /// the live session whenever the vehicle's answer changes what we may do.
   void _reassertCarBackgroundMode() {
-    if (!PlatformDetector.isAutomotive() || _mediaControls == null) return;
+    if (!PlatformDetector.isAutomotive() || _mediaControls == null) {
+      return;
+    }
     final enabled = _carBackgroundAudioAvailable;
-    if (enabled == _carBackgroundModeApplied) return;
+    if (enabled == _carBackgroundModeApplied) {
+      return;
+    }
     _carBackgroundModeApplied = enabled;
     unawaited(_mediaControls?.setBackgroundMode(enabled));
-    if (enabled) unawaited(NotificationPermission.ensure());
+    if (enabled) {
+      unawaited(NotificationPermission.ensure());
+    }
   }
 
   /// Stop audio while the vehicle requires distraction optimization (`DD-2`),
@@ -1666,20 +1847,28 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     // Restrictions lifted: re-arm the next track that was cleared on entry.
-    if (_currentTrack != null) _requestArmNext();
+    if (_currentTrack != null) {
+      _requestArmNext();
+    }
     // Only playback this gate stopped is resumed; a track the user paused
     // before driving stays paused, and nothing auto-starts on a fresh session.
     if (_pausedByCarRestriction) {
       // A restriction-owned pause still in flight keeps the latch: `isPlaying`
       // reads stale until that pause lands, so clearing here would skip the
       // resume and leave a parked car silent. The re-evaluation does it instead.
-      if (_carPauseInFlight) return;
+      if (_carPauseInFlight) {
+        return;
+      }
       // Only a definitive verdict consumes it. While the vehicle cannot answer,
       // the app regaining focus is not a reason to forget that this gate stopped
       // the track — the answer can still arrive and resume it.
-      if (!vehicleReports) return;
+      if (!vehicleReports) {
+        return;
+      }
       // A resume already in flight owns the outcome; it re-evaluates when it lands.
-      if (_carResumeInFlight) return;
+      if (_carResumeInFlight) {
+        return;
+      }
       if (_currentTrack != null && !isPlaying) {
         appLogger.d('Vehicle restrictions lifted — resuming music');
         unawaited(_resumeAfterRestriction());
@@ -1707,7 +1896,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     } finally {
       _carResumeInFlight = false;
     }
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     if (isPlaying) {
       _pausedByCarRestriction = false;
       return;
@@ -1757,14 +1948,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     } finally {
       _carPauseInFlight = false;
     }
-    if (_disposed || !automotivePlaybackAllowedNow()) return;
+    if (_disposed || !automotivePlaybackAllowedNow()) {
+      return;
+    }
     _applyCarPlaybackRestrictions();
   }
 
   @override
   Future<void> next() async {
     final nextCursor = _queue.nextIndex(manual: true);
-    if (nextCursor == null) return;
+    if (nextCursor == null) {
+      return;
+    }
     await _advanceTo(nextCursor);
   }
 
@@ -1774,7 +1969,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (player == null) {
       // Parked restored session: previous restarts from the top (or steps
       // back) — the persisted resume offset belongs to play() alone.
-      if (_currentTrack == null) return;
+      if (_currentTrack == null) {
+        return;
+      }
       await _advanceTo(_queue.previousIndex() ?? _queue.cursor);
       return;
     }
@@ -1797,7 +1994,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       // Parked restored session: move the deferred resume point instead.
       var target = position < Duration.zero ? Duration.zero : position;
       final max = duration;
-      if (max != null && target > max) target = max;
+      if (max != null && target > max) {
+        target = max;
+      }
       pending.position = target;
       _positionController.add(target);
       _persistSessionProgress();
@@ -1832,14 +2031,20 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> setWorkspaceAudioEnabled(bool enabled) async {
-    if (_workspaceAudioEnabled == enabled) return;
+    if (_workspaceAudioEnabled == enabled) {
+      return;
+    }
     _workspaceAudioEnabled = enabled;
     final player = _player;
-    if (player == null || player.disposed) return;
+    if (player == null || player.disposed) {
+      return;
+    }
     if (enabled) {
       try {
         await player.setWorkspaceAudioFocusEnabled(true);
-        if (player.state.isActive) await player.requestAudioFocus();
+        if (player.state.isActive) {
+          await player.requestAudioFocus();
+        }
       } catch (error, stackTrace) {
         appLogger.w('Music workspace audio focus handoff failed', error: error, stackTrace: stackTrace);
       }
@@ -1860,13 +2065,17 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   static Future<void> _writePersistedVolume(double volume) async {
     final settings = SettingsService.instanceOrNull;
-    if (settings != null) await settings.write(SettingsService.musicVolume, volume);
+    if (settings != null) {
+      await settings.write(SettingsService.musicVolume, volume);
+    }
   }
 
   Future<void> _persistVolume(double volume) {
     _pendingVolumeWrite = volume;
     final activeDrain = _volumeWriteDrain;
-    if (activeDrain != null) return activeDrain;
+    if (activeDrain != null) {
+      return activeDrain;
+    }
 
     final completer = Completer<void>();
     _volumeWriteDrain = completer.future;
@@ -1899,7 +2108,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> jumpTo(int index) async {
-    if (index < 0 || index >= _queue.length || index == _queue.cursor) return;
+    if (index < 0 || index >= _queue.length || index == _queue.cursor) {
+      return;
+    }
     await _advanceTo(index);
   }
 
@@ -1909,21 +2120,27 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void setRepeatMode(MusicRepeatMode mode) {
-    if (_queue.repeatMode == mode) return;
+    if (_queue.repeatMode == mode) {
+      return;
+    }
     _queue.repeatMode = mode;
     _afterQueueEdit();
   }
 
   @override
   void toggleShuffle() {
-    if (_queue.isEmpty) return;
+    if (_queue.isEmpty) {
+      return;
+    }
     _queue.toggleShuffle();
     _afterQueueEdit();
   }
 
   @override
   void removeAt(int index) {
-    if (index < 0 || index >= _queue.length) return;
+    if (index < 0 || index >= _queue.length) {
+      return;
+    }
     final wasCurrent = _queue.removeAt(index);
     if (wasCurrent) {
       if (_queue.isEmpty) {
@@ -1940,7 +2157,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void reorder(int from, int to) {
-    if (from == to) return;
+    if (from == to) {
+      return;
+    }
     _queue.move(from, to);
     _afterQueueEdit();
   }
@@ -1955,7 +2174,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// (mini-player appears paused) instead of silently dropping the action
   /// or surprising the user with audio.
   void _enqueue(List<MediaItem> tracks, {required bool next}) {
-    if (tracks.isEmpty) return;
+    if (tracks.isEmpty) {
+      return;
+    }
     if (_queue.isEmpty || _currentTrack == null) {
       final first = tracks.first;
       unawaited(
@@ -1980,7 +2201,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void clearUpcoming() {
-    if (_queue.isEmpty) return;
+    if (_queue.isEmpty) {
+      return;
+    }
     _queue.clearUpcoming();
     _afterQueueEdit();
   }
@@ -2104,7 +2327,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _hardwareTransport?.unregister();
     _hardwareTransport = null;
     final receiver = CompanionRemoteReceiver.instance;
-    if (identical(receiver.musicTransport, _remoteTransport)) receiver.musicTransport = null;
+    if (identical(receiver.musicTransport, _remoteTransport)) {
+      receiver.musicTransport = null;
+    }
     for (final sub in _playerSubs) {
       unawaited(sub.cancel());
     }
@@ -2158,13 +2383,17 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<Lyrics?> fetchLyrics(MediaItem track) async {
     final client = _clientFor(track);
-    if (client == null) return null;
+    if (client == null) {
+      return null;
+    }
     return client.fetchLyrics(track);
   }
 
   MediaServerClient? _clientFor(MediaItem item) {
     final serverId = serverIdOrNull(item.serverId);
-    if (serverId == null) return null;
+    if (serverId == null) {
+      return null;
+    }
     return _serverManager.getClient(serverId);
   }
 
@@ -2178,9 +2407,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// offline for downloaded tracks and while servers are still connecting).
   Future<void> _maybeRestoreSession() async {
     final store = _sessionStore;
-    if (store == null) return;
+    if (store == null) {
+      return;
+    }
     final settings = SettingsService.instanceOrNull;
-    if (settings != null && !settings.read(SettingsService.resumeMusicOnLaunch)) return;
+    if (settings != null && !settings.read(SettingsService.resumeMusicOnLaunch)) {
+      return;
+    }
     final intent = _playIntentGeneration;
     final revision = _queueSessionRevision;
     MusicSessionSnapshot? snapshot;
@@ -2190,10 +2423,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       appLogger.w('Music session restore read failed', error: e, stackTrace: st);
       return;
     }
-    if (snapshot == null) return;
+    if (snapshot == null) {
+      return;
+    }
     // A play intent or session that raced the read wins; never clobber it.
-    if (_disposed || intent != _playIntentGeneration || revision != _queueSessionRevision) return;
-    if (_status != MusicPlaybackStatus.idle || _currentTrack != null) return;
+    if (_disposed || intent != _playIntentGeneration || revision != _queueSessionRevision) {
+      return;
+    }
+    if (_status != MusicPlaybackStatus.idle || _currentTrack != null) {
+      return;
+    }
     if (!_queue.restoreState(snapshot.queue)) {
       appLogger.w('Discarding persisted music session with invalid queue state');
       return;
@@ -2221,9 +2460,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// track; opening anything else discards it.
   Duration? _consumePendingResume(MediaItem track) {
     final pending = _pendingRestoreResume;
-    if (pending == null) return null;
+    if (pending == null) {
+      return null;
+    }
     _pendingRestoreResume = null;
-    if (pending.globalKey != track.globalKey || pending.position <= Duration.zero) return null;
+    if (pending.globalKey != track.globalKey || pending.position <= Duration.zero) {
+      return null;
+    }
     return pending.position;
   }
 
@@ -2233,7 +2476,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final store = _sessionStore;
     // Guard on the queue, not [_currentTrack]: at [_startQueue] time the
     // queue is already loaded but the track only commits inside [_openCurrent].
-    if (store == null || _disposed || _queue.current == null) return;
+    if (store == null || _disposed || _queue.current == null) {
+      return;
+    }
     final snapshot = MusicSessionSnapshot(
       queue: _queue.captureState(),
       playContext: _playContext,
@@ -2248,7 +2493,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   void _persistSessionProgress({Duration? positionOverride}) {
     final store = _sessionStore;
-    if (store == null || _currentTrack == null) return;
+    if (store == null || _currentTrack == null) {
+      return;
+    }
     unawaited(
       store.updateProgress(cursor: _queue.cursor, position: positionOverride ?? position).catchError((
         Object e,
@@ -2260,16 +2507,22 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _maybePersistPositionTick(Duration position) {
-    if (_sessionStore == null || _currentTrack == null) return;
+    if (_sessionStore == null || _currentTrack == null) {
+      return;
+    }
     final now = DateTime.now();
-    if (now.difference(_lastPositionPersist) < _positionPersistInterval) return;
+    if (now.difference(_lastPositionPersist) < _positionPersistInterval) {
+      return;
+    }
     _lastPositionPersist = now;
     _persistSessionProgress(positionOverride: position);
   }
 
   void _clearPersistedSession() {
     final store = _sessionStore;
-    if (store == null) return;
+    if (store == null) {
+      return;
+    }
     unawaited(
       store.clear().catchError((Object e, StackTrace st) {
         appLogger.w('Music session clear failed', error: e, stackTrace: st);
@@ -2278,19 +2531,27 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _setStatus(MusicPlaybackStatus status, {bool forceNotify = false}) {
-    if (_disposed) return;
-    if (_status == status && !forceNotify) return;
+    if (_disposed) {
+      return;
+    }
+    if (_status == status && !forceNotify) {
+      return;
+    }
     final wasPlaying = _status == MusicPlaybackStatus.playing;
     _status = status;
     // Pause is the moment the playhead stops moving — flush it so a quit
     // while paused restores exactly here.
-    if (wasPlaying && status == MusicPlaybackStatus.paused) _persistSessionProgress();
+    if (wasPlaying && status == MusicPlaybackStatus.paused) {
+      _persistSessionProgress();
+    }
     notifyListeners();
   }
 
   @override
   void dispose() {
-    if (_disposed) return;
+    if (_disposed) {
+      return;
+    }
     // Best-effort final playhead flush: dispose runs on profile switch and
     // normal app teardown, both of which should restore precisely.
     _persistSessionProgress();

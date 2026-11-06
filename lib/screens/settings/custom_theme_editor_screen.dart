@@ -100,7 +100,9 @@ class _CustomThemeEditorScreenState extends State<CustomThemeEditorScreen>
 
   @override
   void didChangeMetrics() {
-    if (mounted && _isKeyboardOpen(context) != _keyboardOpen) setState(() {});
+    if (mounted && _isKeyboardOpen(context) != _keyboardOpen) {
+      setState(() {});
+    }
   }
 
   static String _hexFor(Color color) {
@@ -128,7 +130,9 @@ class _CustomThemeEditorScreenState extends State<CustomThemeEditorScreen>
     if (!InputModeTracker.isKeyboardMode(context, listen: false) && _isNarrow(context)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final pickerContext = _pickerKey.currentContext;
-        if (pickerContext == null || !pickerContext.mounted) return;
+        if (pickerContext == null || !pickerContext.mounted) {
+          return;
+        }
         unawaited(Scrollable.ensureVisible(pickerContext, alignment: 0.2, duration: const Duration(milliseconds: 200)));
       });
     }
@@ -189,7 +193,9 @@ class _CustomThemeEditorScreenState extends State<CustomThemeEditorScreen>
       currentValue: null,
     );
     final palette = picked?.value == null ? null : ThemeProvider.paletteFor(picked!.value!);
-    if (palette == null || !mounted) return;
+    if (palette == null || !mounted) {
+      return;
+    }
     setState(() {
       _draft = palette;
       _syncEditedColor();
@@ -214,26 +220,43 @@ class _CustomThemeEditorScreenState extends State<CustomThemeEditorScreen>
       _syncEditedColor();
     });
     // Reset disables itself; keep D-pad focus on a live button.
-    if (InputModeTracker.isKeyboardMode(context, listen: false)) _saveFocusNode.requestFocus();
+    if (InputModeTracker.isKeyboardMode(context, listen: false)) {
+      _saveFocusNode.requestFocus();
+    }
   }
 
   Future<void> _save() async {
-    if (_saving) return;
+    if (_saving) {
+      return;
+    }
     setState(() => _saving = true);
     final palette = _draft;
     const mutation = SettingsMutationService();
     try {
       final packageFailure = await mutation.write(context, settings.SettingsService.customThemePackage, null);
-      if (packageFailure != null) throw StateError(packageFailure.display);
+      if (packageFailure != null) {
+        throw StateError(packageFailure.display);
+      }
+      if (!mounted) {
+        return;
+      }
       final paletteFailure = await mutation.write(context, settings.SettingsService.customThemePalette, palette);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final modeFailure = await mutation.write(context, settings.SettingsService.themeMode, settings.ThemeMode.custom);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final failure = paletteFailure ?? modeFailure;
-      if (failure != null) showErrorSnackBar(context, failure.display);
+      if (failure != null) {
+        showErrorSnackBar(context, failure.display);
+      }
     } catch (error, stackTrace) {
       appLogger.e('Custom theme save failed', error: error, stackTrace: stackTrace);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() => _saving = false);
       showErrorSnackBar(context, t.settings.saveFailed);
       return;
@@ -250,7 +273,9 @@ class _CustomThemeEditorScreenState extends State<CustomThemeEditorScreen>
       confirmText: t.themeEditor.discard,
       isDestructive: true,
     );
-    if (!discard || !mounted) return;
+    if (!discard || !mounted) {
+      return;
+    }
     setState(() => _leaving = true);
     Navigator.pop(context);
   }
@@ -276,7 +301,9 @@ class _CustomThemeEditorScreenState extends State<CustomThemeEditorScreen>
     return PopScope(
       canPop: _leaving || !_dirty,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop || _leaving) return;
+        if (didPop || _leaving) {
+          return;
+        }
         unawaited(_confirmDiscard());
       },
       child: FocusedScrollScaffold(

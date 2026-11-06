@@ -43,7 +43,8 @@ WindowsVisualizerSession::WindowsVisualizerSession(
             slot->frame = std::move(frame);
           }
           registrar->MarkTextureFrameAvailable(id);
-        }, false, RenderBudget::Desktop());
+        },
+        false, RenderBudget::Desktop());
   } catch (...) {
     registrar_->UnregisterTexture(texture_id_, [keep = texture_] {});
     throw;

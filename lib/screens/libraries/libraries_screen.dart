@@ -54,7 +54,9 @@ import 'tabs/base_library_tab.dart';
 enum LibraryTabType { recommended, browse, collections, playlists, genres }
 
 List<LibraryTabType> visibleLibraryTabs(MediaLibrary library) {
-  if (library.isShared) return [LibraryTabType.browse, LibraryTabType.playlists];
+  if (library.isShared) {
+    return [LibraryTabType.browse, LibraryTabType.playlists];
+  }
   final hasGenres = library.kind == MediaKind.movie || library.kind == MediaKind.show;
   return [
     for (final tab in LibraryTabType.values)
@@ -130,7 +132,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   /// the NestedScrollView (selected library), and during the transition both
   /// can briefly be attached — `offset` would throw on `_positions.single`.
   void _resetOuterScroll() {
-    if (!_outerScrollController.hasClients) return;
+    if (!_outerScrollController.hasClients) {
+      return;
+    }
     for (final position in _outerScrollController.positions) {
       if (position.pixels > 0) {
         position.jumpTo(0);
@@ -162,11 +166,15 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   /// library dropdown only renders once a library is selected, so the body
   /// would stay blank.
   void _scheduleInitializeWithLibraries() {
-    if (_initializeScheduled) return;
+    if (_initializeScheduled) {
+      return;
+    }
     _initializeScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeScheduled = false;
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       _initializeWithLibraries();
     });
   }
@@ -183,12 +191,16 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   /// lands while this is suspended on an await ([refresh]'s stale-resume
   /// entry point).
   Future<void> _initializeWithLibraries() async {
-    if (_selectedLibraryGlobalKey != null) return;
+    if (_selectedLibraryGlobalKey != null) {
+      return;
+    }
 
     final librariesProvider = context.read<LibrariesProvider>();
     final hiddenLibrariesProvider = context.read<HiddenLibrariesProvider>();
     await hiddenLibrariesProvider.ensureInitialized();
-    if (!mounted || _selectedLibraryGlobalKey != null) return;
+    if (!mounted || _selectedLibraryGlobalKey != null) {
+      return;
+    }
     final allLibraries = librariesProvider.libraries;
 
     if (allLibraries.isEmpty) {
@@ -204,7 +216,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     );
 
     final storage = await StorageService.getInstance();
-    if (!mounted || _selectedLibraryGlobalKey != null) return;
+    if (!mounted || _selectedLibraryGlobalKey != null) {
+      return;
+    }
     final savedLibraryKey = storage.getSelectedLibraryKey();
 
     String? libraryGlobalKeyToLoad;
@@ -225,9 +239,13 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   }
 
   Future<void> _pickRandomMovie(MediaLibrary library) async {
-    if (_isPreparingRandomPlay) return;
+    if (_isPreparingRandomPlay) {
+      return;
+    }
     final serverId = serverIdOrNull(library.serverId);
-    if (serverId == null) return;
+    if (serverId == null) {
+      return;
+    }
     final client = context.read<MultiServerProvider>().getClientForServer(serverId);
     if (client == null) {
       showErrorSnackBar(context, t.errors.noClientAvailable);
@@ -241,7 +259,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
         query: const LibraryQuery(kind: MediaKind.movie, limit: 1),
         libraryKind: library.kind,
       );
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (firstPage.totalCount <= 0 || firstPage.items.isEmpty) {
         showAppSnackBar(context, t.hubDetail.noItemsFound);
         return;
@@ -255,7 +275,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
               query: LibraryQuery(kind: MediaKind.movie, offset: offset, limit: 1),
               libraryKind: library.kind,
             );
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final movie = page.items.firstOrNull;
       if (movie == null) {
         showAppSnackBar(context, t.hubDetail.noItemsFound);
@@ -264,23 +286,35 @@ class _LibrariesScreenState extends State<LibrariesScreen>
       await navigateToMediaItem(context, movie, playDirectly: true);
     } catch (error, stackTrace) {
       appLogger.w('Random movie selection failed', error: error, stackTrace: stackTrace);
-      if (mounted) showErrorSnackBar(context, t.libraries.randomPickFailed);
+      if (mounted) {
+        showErrorSnackBar(context, t.libraries.randomPickFailed);
+      }
     } finally {
-      if (mounted) setState(() => _isPreparingRandomPlay = false);
+      if (mounted) {
+        setState(() => _isPreparingRandomPlay = false);
+      }
     }
   }
 
   Future<void> _shuffleLibrary(MediaLibrary library) async {
-    if (_isPreparingRandomPlay) return;
+    if (_isPreparingRandomPlay) {
+      return;
+    }
     setState(() => _isPreparingRandomPlay = true);
     try {
       final result = await MediaListPlaybackLauncher.shuffleLibrary(context, library);
-      if (mounted && result is PlayQueueEmpty) showAppSnackBar(context, t.hubDetail.noItemsFound);
+      if (mounted && result is PlayQueueEmpty) {
+        showAppSnackBar(context, t.hubDetail.noItemsFound);
+      }
     } catch (error, stackTrace) {
       appLogger.w('Library shuffle failed', error: error, stackTrace: stackTrace);
-      if (mounted) showErrorSnackBar(context, t.libraries.randomPickFailed);
+      if (mounted) {
+        showErrorSnackBar(context, t.libraries.randomPickFailed);
+      }
     } finally {
-      if (mounted) setState(() => _isPreparingRandomPlay = false);
+      if (mounted) {
+        setState(() => _isPreparingRandomPlay = false);
+      }
     }
   }
 
@@ -318,7 +352,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     }
     // On mobile (touch mode), skip auto-focus to prevent ensureVisible()
     // from interfering with TabBarView page animations
-    if (!InputModeTracker.isKeyboardMode(context)) return;
+    if (!InputModeTracker.isKeyboardMode(context)) {
+      return;
+    }
 
     // Re-enable auto-focus since user is navigating into tab content
     // Only call setState if the value actually changes to avoid unnecessary rebuilds
@@ -329,7 +365,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       final tabState = _getTabState(tabController.index);
       if (tabState != null) {
@@ -337,7 +375,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
       } else {
         // State not available yet, retry after another frame
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
+          if (!mounted) {
+            return;
+          }
           _focusCurrentTabImmediate(awaitLoad: awaitLoad);
         });
       }
@@ -383,7 +423,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     _resetOuterScroll();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       final tabState = _getTabState(tabController.index);
       if (tabState != null) {
@@ -398,7 +440,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   }
 
   State? _getTabState(int index) {
-    if (index < 0 || index >= _visibleTabs.length) return null;
+    if (index < 0 || index >= _visibleTabs.length) {
+      return null;
+    }
     return switch (_visibleTabs[index]) {
       LibraryTabType.recommended => _recommendedTabKey.currentState,
       LibraryTabType.browse => _browseTabKey.currentState,
@@ -409,28 +453,42 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   }
 
   void _showBrowseOptionsForCurrentTab() {
-    if (_visibleTabs.isEmpty) return;
+    if (_visibleTabs.isEmpty) {
+      return;
+    }
     final index = tabController.index.clamp(0, _visibleTabs.length - 1).toInt();
-    if (_visibleTabs[index] != LibraryTabType.browse) return;
+    if (_visibleTabs[index] != LibraryTabType.browse) {
+      return;
+    }
     final tabState = _browseTabKey.currentState;
-    if (tabState == null) return;
+    if (tabState == null) {
+      return;
+    }
     (tabState as dynamic).showBrowseOptionsSheet();
   }
 
   /// Handle when the browse tab's active-filter state changes
   void _handleBrowseFiltersActiveChanged(bool active) {
-    if (_browseFiltersActive == active) return;
+    if (_browseFiltersActive == active) {
+      return;
+    }
     setState(() => _browseFiltersActive = active);
   }
 
   Future<void> _openGenre(MediaLibrary library, LibraryGenre genre, {required bool canGroupByFolders}) async {
     final libraryGlobalKey = library.globalKey;
     await saveGenreBrowseSelection(library, genre, canGroupByFolders: canGroupByFolders);
-    if (!mounted || _selectedLibraryGlobalKey != libraryGlobalKey) return;
+    if (!mounted || _selectedLibraryGlobalKey != libraryGlobalKey) {
+      return;
+    }
     final browseIndex = _visibleTabs.indexOf(LibraryTabType.browse);
-    if (browseIndex < 0) return;
+    if (browseIndex < 0) {
+      return;
+    }
     final Object? browse = _browseTabKey.currentState;
-    if (browse is Refreshable) browse.refresh();
+    if (browse is Refreshable) {
+      browse.refresh();
+    }
     tabController.animateTo(browseIndex);
   }
 
@@ -438,7 +496,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   void _handleTabDataLoaded(int tabIndex) {
     _loadedTabs.add(tabIndex);
 
-    if (suppressAutoFocus) return;
+    if (suppressAutoFocus) {
+      return;
+    }
 
     if (tabController.index == tabIndex && mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -456,10 +516,14 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   /// focused when the load lands instead.
   @override
   void focusActiveTabIfReady() {
-    if (_selectedLibraryGlobalKey == null) return;
+    if (_selectedLibraryGlobalKey == null) {
+      return;
+    }
     if (_selectedLibraryGlobalKey!.startsWith('source:')) {
       _sourceFocus.requestFocus();
-      if (_sourceFocus.focusedChild == null) _sourceFocus.nextFocus();
+      if (_sourceFocus.focusedChild == null) {
+        _sourceFocus.nextFocus();
+      }
       return;
     }
     _focusCurrentTab(awaitLoad: true);
@@ -477,13 +541,17 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   }
 
   void _updateState(VoidCallback fn) {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     setState(fn);
   }
 
   /// Rebuild tab infrastructure when the visible tab set changes.
   void _updateVisibleTabs(List<LibraryTabType> newTabs) {
-    if (listEquals(_visibleTabs, newTabs)) return;
+    if (listEquals(_visibleTabs, newTabs)) {
+      return;
+    }
 
     final currentTabType = _visibleTabs.length > tabController.index ? _visibleTabs[tabController.index] : null;
 
@@ -594,7 +662,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     // Resolve from allLibraries — hidden libraries are still navigable from the
     // sidebar's "Hidden libraries" section.
     final selectedLibrary = allLibraries.where((lib) => lib.globalKey == libraryGlobalKey).firstOrNull;
-    if (selectedLibrary == null) return;
+    if (selectedLibrary == null) {
+      return;
+    }
 
     final isLibraryChange = _selectedLibraryGlobalKey != libraryGlobalKey;
 
@@ -614,16 +684,22 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     // jumpTo to catch via the browse-tab callback).
     if (isLibraryChange) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         _resetOuterScroll();
       });
     }
 
     // Save selected library key and restore saved tab (async — safe after state is consistent)
     final storage = await StorageService.getInstance();
-    if (!mounted || _selectedLibraryGlobalKey != libraryGlobalKey) return;
+    if (!mounted || _selectedLibraryGlobalKey != libraryGlobalKey) {
+      return;
+    }
     await storage.saveSelectedLibraryKey(libraryGlobalKey);
-    if (!mounted || _selectedLibraryGlobalKey != libraryGlobalKey) return;
+    if (!mounted || _selectedLibraryGlobalKey != libraryGlobalKey) {
+      return;
+    }
 
     // Restore saved tab by name
     final savedTabName = storage.getLibraryTab(libraryGlobalKey);
@@ -669,9 +745,13 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   /// activation, and a library switch reloads unconditionally anyway.
   @override
   void onTabShown() {
-    if (_selectedLibraryGlobalKey == null) return;
+    if (_selectedLibraryGlobalKey == null) {
+      return;
+    }
     final Object? tabState = _getTabState(tabController.index);
-    if (tabState is BaseLibraryTabState) tabState.refreshIfLibraryContentStale();
+    if (tabState is BaseLibraryTabState) {
+      tabState.refreshIfLibraryContentStale();
+    }
   }
 
   @override
@@ -712,7 +792,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
   }
 
   Future<void> _toggleLibraryVisibility(MediaLibrary library) async {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final librariesProvider = context.read<LibrariesProvider>();
     final hiddenLibrariesProvider = Provider.of<HiddenLibrariesProvider>(context, listen: false);
     final isHidden = hiddenLibrariesProvider.hiddenLibraryKeys.contains(library.globalKey);
@@ -845,7 +927,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     final selectedLibrary =
         visibleLibraries.where((lib) => lib.globalKey == _selectedLibraryGlobalKey).firstOrNull ??
         visibleLibraries.firstOrNull;
-    if (selectedLibrary == null) return Text(t.libraries.title);
+    if (selectedLibrary == null) {
+      return Text(t.libraries.title);
+    }
 
     return AppMenuButton<String>(
       key: _libraryDropdownKey,
@@ -956,9 +1040,13 @@ class _LibrariesScreenState extends State<LibrariesScreen>
     final showBrowseOptionsAction =
         selectedLibrary != null && PlatformDetector.isMobile(context) && currentTabType == LibraryTabType.browse;
     final canSelectedLibraryGroupByFolders = context.select<MultiServerProvider, bool>((provider) {
-      if (selectedLibrary == null || selectedLibrary.isShared) return false;
+      if (selectedLibrary == null || selectedLibrary.isShared) {
+        return false;
+      }
       final serverId = serverIdOrNull(selectedLibrary.serverId);
-      if (serverId == null) return false;
+      if (serverId == null) {
+        return false;
+      }
       return provider.getClientForServer(serverId)?.capabilities.folderGrouping ?? false;
     });
 
@@ -1203,7 +1291,9 @@ class _LibrariesScreenState extends State<LibrariesScreen>
         ),
       );
     } else {
-      if (_selectedLibraryGlobalKey == null) _scheduleInitializeWithLibraries();
+      if (_selectedLibraryGlobalKey == null) {
+        _scheduleInitializeWithLibraries();
+      }
       body = buildSimpleScroll(body: const SizedBox.shrink());
     }
 

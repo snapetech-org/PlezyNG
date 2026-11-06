@@ -644,8 +644,6 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Konverze RPU na profil Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'Strip Dolby Vision RPU/EL vrstvy a současná rovina HEVC';
 	@override String get experimentalDolbyVision => 'Experimentální Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Při příštím přehrávání použít experimentální renderer FEL. Vyžaduje samostatné sestavení enginu.';
-	@override String get dvExperimentUnavailableDescription => 'Tento experiment je zatím dostupný pouze na Linuxu.';
 	@override String get dvCompatibilityFallback => 'Záložní režim kompatibility';
 	@override String get dvCompatibilityFallbackDescription => 'Pokud experiment nelze spustit, použít standardní renderer. Data FEL mohou být ztracena.';
 	@override String get dvExperimentDiagnostics => 'Protokolování videoexperimentu';
@@ -3924,14 +3922,9 @@ class _Translations$games$cs extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
-	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
-	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
-	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
 	@override String get port => 'Service port';
@@ -3958,10 +3951,8 @@ class _Translations$games$cs extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3972,7 +3963,6 @@ class _Translations$games$cs extends Translations$games$en {
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
 	@override String get cancel => 'Cancel';
-	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
@@ -3985,12 +3975,16 @@ class _Translations$games$cs extends Translations$games$en {
 	@override String get unlinkSteamAccountConfirm => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.';
 	@override String get steamAccountLinked => 'Steam account linked. Games imported.';
 	@override String get steamLibraryPrivate => 'Steam account linked. Its library is private or unavailable, so no games were imported.';
-	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
-	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 	@override String get connecting => 'Connecting…';
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -5872,8 +5866,6 @@ extension on TranslationsCs {
 			'settings.dvConversionDv81Description' => 'Konverze RPU na profil Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision RPU/EL vrstvy a současná rovina HEVC',
 			'settings.experimentalDolbyVision' => 'Experimentální Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Při příštím přehrávání použít experimentální renderer FEL. Vyžaduje samostatné sestavení enginu.',
-			'settings.dvExperimentUnavailableDescription' => 'Tento experiment je zatím dostupný pouze na Linuxu.',
 			'settings.dvCompatibilityFallback' => 'Záložní režim kompatibility',
 			'settings.dvCompatibilityFallbackDescription' => 'Pokud experiment nelze spustit, použít standardní renderer. Data FEL mohou být ztracena.',
 			'settings.dvExperimentDiagnostics' => 'Protokolování videoexperimentu',
@@ -5882,10 +5874,10 @@ extension on TranslationsCs {
 			'settings.disableDolbyVisionDescription' => 'Přehrávejte soubor HDR10 nebo vrstvu HLG namísto Dolby Vision, když má jeden',
 			'settings.hdrSdrConversion' => 'HDR na SDR konverze',
 			'settings.hdrSdrConversionDescription' => 'Vyberte, co konvertuje HDR video, když displej nedokáže zobrazit HDR.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Automaticky',
 			'settings.hdrSdrConversionAutoDescription' => 'Přístroj na Android 9 a novější, hráč na starších verzích',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Zařízení',
 			'settings.hdrSdrConversionDeviceDescription' => 'Video hardware vašeho zařízení to konvertuje. nejrychlejší, ale barvy závisí na zařízení',
 			'settings.hdrSdrConversionPlayer' => 'Přehrávač',
@@ -6396,10 +6388,10 @@ extension on TranslationsCs {
 			'videoControls.segmentLoop' => 'Segmentový loop',
 			'videoControls.addBookmark' => 'Přidat bookmark',
 			'videoControls.bookmarkName' => 'Bookmark jméno',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Zadejte jméno pro tuto knižní značku.',
 			'videoControls.deleteBookmark' => 'Odstranit bookmark',
 			'videoControls.bookmarkLimitReached' => 'Tato položka má již 100 bookmarků.',
@@ -6910,10 +6902,10 @@ extension on TranslationsCs {
 			'libraries.hideLibrary' => 'Skryté knihovny',
 			'libraries.libraryOptions' => 'Možnosti knihovny',
 			'libraries.content' => 'Obsah knihovny',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
 			'libraries.noFoldersFound' => 'Žádné složky nenajdete',
@@ -7424,10 +7416,10 @@ extension on TranslationsCs {
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Připojení...',
 			'watchTogether.reconnectingDescription' => 'Připojení je zrušené. automaticky se připojíte k místnosti.',
 			'watchTogether.connected' => 'připojené',
@@ -7938,10 +7930,10 @@ extension on TranslationsCs {
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
 			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
 			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Umělecká volba ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Možnost umělecké práce ${index}, vybraná',
 			'metadataEdit.notSet' => 'Není nastaven',
@@ -8452,10 +8444,10 @@ extension on TranslationsCs {
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Přenos podporovaných souborů z prohlížeče na stejnou důvěryhodnou síť.',
 			'universalMedia.wifiTransferIntro' => 'Otevřete tuto adresu v prohlížeči na jiném zařízení. Vyberte soubory, abyste je přidali do knihovny souborů a knih tohoto zařízení.',
@@ -8966,10 +8958,10 @@ extension on TranslationsCs {
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',
 			'sourceSetup.videoDetailsLoading' => 'Načítání informací o videu',
 			'sourceSetup.subtitleKeyRequired' => 'Je vyžadován klíč API OpenSubtitles',
@@ -9031,14 +9023,9 @@ extension on TranslationsCs {
 			'comics.collections' => 'Kolekce',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
-			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
-			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
-			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
 			'games.port' => 'Service port',
@@ -9065,10 +9052,8 @@ extension on TranslationsCs {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -9079,7 +9064,6 @@ extension on TranslationsCs {
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
 			'games.cancel' => 'Cancel',
-			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
@@ -9092,12 +9076,16 @@ extension on TranslationsCs {
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
-			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
-			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'deepLinks.invalid' => 'Tento odkaz Pleazyng není platný.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'Žádný profil se neshoduje s "${profile}".',
 			'deepLinks.serverUnavailable' => 'Nemohla jsem se dostat na server pro tento odkaz.',

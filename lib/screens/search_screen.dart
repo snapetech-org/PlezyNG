@@ -172,16 +172,22 @@ class _SearchScreenState extends State<SearchScreen>
   void _onCatalogSourcesChanged() {
     final catalogs = _catalogSourcesProvider;
     final signature = _catalogSignature(catalogs);
-    if (signature == _catalogSourceSignature) return;
+    if (signature == _catalogSourceSignature) {
+      return;
+    }
     _catalogSourceSignature = signature;
     _catalogSearchCache.clear();
     _catalogSearchHealth.clear();
     final query = searchController.text.trim();
-    if (query.isNotEmpty && hasSearched) unawaited(runSearch(query));
+    if (query.isNotEmpty && hasSearched) {
+      unawaited(runSearch(query));
+    }
   }
 
   void _onSourceScopeChanged() {
-    if (!mounted || _sourceGeneration == _sourceController?.generation) return;
+    if (!mounted || _sourceGeneration == _sourceController?.generation) {
+      return;
+    }
     _sourceGeneration = _sourceController?.generation;
     // Profile changes must invalidate even a completed Files-only search.
     fullRefresh();
@@ -214,21 +220,27 @@ class _SearchScreenState extends State<SearchScreen>
   Future<void> _bindHiddenLibraries() async {
     final hiddenLibraries = context.read<HiddenLibrariesProvider>();
     await hiddenLibraries.ensureInitialized();
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     _lastSeenHiddenKeys = Set.of(hiddenLibraries.hiddenLibraryKeys);
     _hiddenLibraries = hiddenLibraries..addListener(_onHiddenLibrariesChanged);
   }
 
   void _onHiddenLibrariesChanged() {
     final hiddenLibraries = _hiddenLibraries;
-    if (hiddenLibraries == null || !mounted) return;
+    if (hiddenLibraries == null || !mounted) {
+      return;
+    }
     final currentKeys = hiddenLibraries.hiddenLibraryKeys;
     if (currentKeys.length == _lastSeenHiddenKeys.length && currentKeys.containsAll(_lastSeenHiddenKeys)) {
       return;
     }
     _lastSeenHiddenKeys = Set.of(currentKeys);
     final query = searchController.text.trim();
-    if (query.isEmpty || !hasSearched) return;
+    if (query.isEmpty || !hasSearched) {
+      return;
+    }
     unawaited(runSearch(query));
   }
 
@@ -247,21 +259,35 @@ class _SearchScreenState extends State<SearchScreen>
 
     final publish = searchProgressPublisher(query);
     SearchAggregationResult? result;
-    ({List<SourceEntry> entries, bool available, bool failed}) files =
-        (entries: const [], available: false, failed: false);
+    ({List<SourceEntry> entries, bool available, bool failed}) files = (
+      entries: const [],
+      available: false,
+      failed: false,
+    );
     List<MediaItem>? seerr;
-    ({List<CatalogItem> items, bool succeeded, bool failed}) catalogSearch =
-        (items: const [], succeeded: false, failed: false);
-    ({List<IptvVodItem> items, String? profileId, bool available}) iptvVod =
-        (items: const [], profileId: null, available: false);
+    ({List<CatalogItem> items, bool succeeded, bool failed}) catalogSearch = (
+      items: const [],
+      succeeded: false,
+      failed: false,
+    );
+    ({List<IptvVodItem> items, String? profileId, bool available}) iptvVod = (
+      items: const [],
+      profileId: null,
+      available: false,
+    );
     List<IdentityCrosswalk> crosswalks = const [];
-    bool current() => mounted && !abort.isAborted &&
-        identical(_activeSearchAbort, abort) && profileId == context.read<ActiveProfileProvider?>()?.activeId;
+    bool current() =>
+        mounted &&
+        !abort.isAborted &&
+        identical(_activeSearchAbort, abort) &&
+        profileId == context.read<ActiveProfileProvider?>()?.activeId;
 
     List<SearchHit> compose({bool finished = false}) {
-      final partial = finished && ((hadServers &&
-          (result == null || result!.failedServerIds.isNotEmpty || result!.cancelledServerIds.isNotEmpty)) ||
-          catalogSearch.failed);
+      final partial =
+          finished &&
+          ((hadServers &&
+                  (result == null || result!.failedServerIds.isNotEmpty || result!.cancelledServerIds.isNotEmpty)) ||
+              catalogSearch.failed);
       final catalogItems = _deduplicateConnectedCatalogItems([
         for (final item in catalogSearch.items)
           if (!_matchesLocalCatalogItem(item, [...?result?.candidates, ...?seerr]) &&
@@ -305,24 +331,44 @@ class _SearchScreenState extends State<SearchScreen>
     }
 
     void progress() {
-      if (!current()) return;
+      if (!current()) {
+        return;
+      }
       final hits = compose();
-      // Unconfigured or cancelled legs often finish first with no data. They
-      // must not erase the previous query before any source produces results.
-      if (hits.isNotEmpty || iptvVod.items.isNotEmpty) publish(hits);
+      // Unavailable or empty optional sources must not erase the last complete
+      // results while servers are pending (or all of them cancel).
+      if (hits.isEmpty && iptvVod.items.isEmpty) return;
+      publish(hits);
     }
 
     // Attach handlers as each leg starts. Local results and fast servers can
     // render while a slow catalog is still under its independent deadline.
     final futures = <Future<void>>[
-      _searchIndex(sources, query).then((value) { files = value; progress(); }),
-      _searchSeerr(query).then((value) { seerr = value; progress(); }),
-      _searchConnectedCatalogs(query).then((value) { catalogSearch = value; progress(); }),
-      _searchIptvVod(query).then((value) { iptvVod = value; progress(); }),
+      _searchIndex(sources, query).then((value) {
+        files = value;
+        progress();
+      }),
+      _searchSeerr(query).then((value) {
+        seerr = value;
+        progress();
+      }),
+      _searchConnectedCatalogs(query).then((value) {
+        catalogSearch = value;
+        progress();
+      }),
+      _searchIptvVod(query).then((value) {
+        iptvVod = value;
+        progress();
+      }),
       if (profileId != null)
-        _loadIdentityCrosswalks(profileId).then((value) { crosswalks = value; progress(); }),
+        _loadIdentityCrosswalks(profileId).then((value) {
+          crosswalks = value;
+          progress();
+        }),
       () async {
-        if (!hadServers) return;
+        if (!hadServers) {
+          return;
+        }
         try {
           await hidden.ensureInitialized();
           abort.throwIfAborted();
@@ -330,7 +376,10 @@ class _SearchScreenState extends State<SearchScreen>
             query,
             hiddenLibraryKeys: hidden.hiddenLibraryKeys,
             abort: abort,
-            onProgress: (value) { result = value; progress(); },
+            onProgress: (value) {
+              result = value;
+              progress();
+            },
           );
         } catch (_) {
           abort.throwIfAborted();
@@ -342,7 +391,9 @@ class _SearchScreenState extends State<SearchScreen>
     try {
       await Future.wait(futures);
       abort.throwIfAborted();
-      if (!current()) return const [];
+      if (!current()) {
+        return const [];
+      }
       final serverSucceeded = result?.succeededServerIds.isNotEmpty ?? false;
       if (!serverSucceeded && !files.available && seerr == null && !catalogSearch.succeeded && !iptvVod.available) {
         if (result != null && result!.failedServerIds.isEmpty && result!.cancelledServerIds.isNotEmpty) {
@@ -355,13 +406,17 @@ class _SearchScreenState extends State<SearchScreen>
       }
       return compose(finished: true);
     } finally {
-      if (identical(_activeSearchAbort, abort)) _activeSearchAbort = null;
+      if (identical(_activeSearchAbort, abort)) {
+        _activeSearchAbort = null;
+      }
     }
   }
 
   Future<({List<IptvVodItem> items, String? profileId, bool available})> _searchIptvVod(String query) async {
     final profileId = context.read<ActiveProfileProvider?>()?.activeId;
-    if (profileId == null) return (items: const <IptvVodItem>[], profileId: null, available: false);
+    if (profileId == null) {
+      return (items: const <IptvVodItem>[], profileId: null, available: false);
+    }
     try {
       final repository = context.read<IptvSourceRepository>();
       final sources = await repository.vodSources(profileId);
@@ -414,7 +469,9 @@ class _SearchScreenState extends State<SearchScreen>
       return (items: cached.items, failed: cached.failed);
     }
     final health = _catalogSearchHealth[sourceKey];
-    if (health != null && now.isBefore(health.retryAt)) return (items: null, failed: true);
+    if (health != null && now.isBefore(health.retryAt)) {
+      return (items: null, failed: true);
+    }
 
     _pruneCatalogSearchCache(now);
     final entry = _CatalogSearchCacheEntry();
@@ -454,13 +511,21 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   static bool _matchesLocalCatalogItem(CatalogItem catalogItem, List<MediaItem> candidates) {
-    if (catalogItem.season != null) return false;
+    if (catalogItem.season != null) {
+      return false;
+    }
     final ids = catalogItem.ids.toExternalIds();
-    if (!ids.hasCatalogIds) return false;
+    if (!ids.hasCatalogIds) {
+      return false;
+    }
     for (final candidate in candidates) {
-      if (candidate.kind != catalogItem.kind) continue;
+      if (candidate.kind != catalogItem.kind) {
+        continue;
+      }
       final candidateIds = candidate.catalogItem?.ids.toExternalIds() ?? _externalIdsFor(candidate);
-      if (ids.intersects(candidateIds)) return true;
+      if (ids.intersects(candidateIds)) {
+        return true;
+      }
     }
     return false;
   }
@@ -471,11 +536,17 @@ class _SearchScreenState extends State<SearchScreen>
     List<IdentityCrosswalk> crosswalks,
   ) {
     final catalogRef = _catalogEntityRef(catalogItem);
-    if (catalogRef == null) return false;
+    if (catalogRef == null) {
+      return false;
+    }
     for (final candidate in candidates) {
-      if (candidate.kind != catalogItem.kind) continue;
+      if (candidate.kind != catalogItem.kind) {
+        continue;
+      }
       final serverRef = _serverEntityRef(candidate);
-      if (serverRef == null) continue;
+      if (serverRef == null) {
+        continue;
+      }
       if (crosswalks.any((crosswalk) {
         if (crosswalk.method != IdentifierMatchMethod.userConfirmed ||
             crosswalk.relation != EntityRelationKind.sameWork) {
@@ -493,7 +564,9 @@ class _SearchScreenState extends State<SearchScreen>
   static IntegrationEntityRef? _catalogEntityRef(CatalogItem item) {
     final kind = _integrationKindForMediaKind(item.kind);
     final entryKey = item.ids.entryKey;
-    if (kind == null || entryKey == null || entryKey.trim().isEmpty) return null;
+    if (kind == null || entryKey == null || entryKey.trim().isEmpty) {
+      return null;
+    }
     final nativeId = '${item.kind.id}/$entryKey';
     final reference = IntegrationEntityRef(providerId: item.source.name, nativeId: nativeId, kind: kind);
     return reference.isValid ? reference : null;
@@ -502,7 +575,9 @@ class _SearchScreenState extends State<SearchScreen>
   static IntegrationEntityRef? _serverEntityRef(MediaItem item) {
     final kind = _integrationKindForMediaKind(item.kind);
     final serverId = item.serverId;
-    if (kind == null || serverId == null || serverId.trim().isEmpty || item.id.trim().isEmpty) return null;
+    if (kind == null || serverId == null || serverId.trim().isEmpty || item.id.trim().isEmpty) {
+      return null;
+    }
     final reference = IntegrationEntityRef(
       providerId: 'server.${item.backend.id}',
       nativeId: sourceDigest('$serverId\u0000${item.id}'),
@@ -544,7 +619,9 @@ class _SearchScreenState extends State<SearchScreen>
       final ids = catalog?.ids.toExternalIds() ?? const ExternalIds();
       if (catalog?.season == null && ids.hasCatalogIds) {
         final seen = seenByKind.putIfAbsent(media.kind, () => []);
-        if (seen.any(ids.intersects)) continue;
+        if (seen.any(ids.intersects)) {
+          continue;
+        }
         seen.add(ids);
       }
       result.add(media);
@@ -561,7 +638,9 @@ class _SearchScreenState extends State<SearchScreen>
       ).fillFrom(ExternalIds.fromLegacyPlexGuid(item.guid));
     }
     final providerIds = raw?['ProviderIds'];
-    if (providerIds is! Map) return const ExternalIds();
+    if (providerIds is! Map) {
+      return const ExternalIds();
+    }
     return ExternalIds.fromJellyfinProviderIds({
       for (final entry in providerIds.entries)
         if (entry.key is String) entry.key as String: entry.value,
@@ -572,7 +651,9 @@ class _SearchScreenState extends State<SearchScreen>
     SourceController? sources,
     String query,
   ) async {
-    if (sources == null) return (entries: const <SourceEntry>[], available: false, failed: false);
+    if (sources == null) {
+      return (entries: const <SourceEntry>[], available: false, failed: false);
+    }
     try {
       final entries = await sources.searchIndex(query);
       return (entries: entries, available: sources.sources.isNotEmpty, failed: false);
@@ -593,7 +674,9 @@ class _SearchScreenState extends State<SearchScreen>
   /// outlived [_seerrSearchTimeout].
   Future<List<MediaItem>?> _searchSeerr(String query) async {
     final seerr = context.read<CatalogSourcesProvider?>()?.seerrSource;
-    if (seerr == null) return null;
+    if (seerr == null) {
+      return null;
+    }
     try {
       final items = await seerr.search(query).timeout(_seerrSearchTimeout);
       return [
@@ -617,9 +700,13 @@ class _SearchScreenState extends State<SearchScreen>
   /// they are.
   Future<void> _refreshSeerrResults() async {
     final query = lastSearchedQuery;
-    if (query.isEmpty) return;
+    if (query.isEmpty) {
+      return;
+    }
     final fresh = await _searchSeerr(query);
-    if (fresh == null || !mounted || isSearching || query != lastSearchedQuery) return;
+    if (fresh == null || !mounted || isSearching || query != lastSearchedQuery) {
+      return;
+    }
     setState(() {
       searchResults = [
         for (final hit in searchResults)
@@ -628,13 +715,17 @@ class _SearchScreenState extends State<SearchScreen>
       ];
       _seerrResults = fresh;
       _candidateKinds = _kindsIn([..._searchCandidates, ..._seerrResults, ..._catalogResults]);
-      if (!_hasCandidatesFor(_selectedFilter)) _selectedFilter = const _AllResults();
+      if (!isSearching && !_hasCandidatesFor(_selectedFilter)) {
+        _selectedFilter = const _AllResults();
+      }
       _filteredResults = _rankFilteredResults(_selectedFilter, query);
     });
   }
 
   @override
   void onSearchStarted(String query) {
+    // Keep the committed query and selected filter until actual new results
+    // arrive. Scope changes already clear them through fullRefresh().
     _pendingSearchOutcome = null;
   }
 
@@ -709,9 +800,9 @@ class _SearchScreenState extends State<SearchScreen>
     _iptvVodResults = matchedOutcome?.iptvVod ?? const [];
     _iptvVodProfileId = matchedOutcome?.iptvVodProfileId;
     _candidateKinds = _kindsIn([..._searchCandidates, ..._seerrResults, ..._catalogResults]);
-    // A slow source may still supply the selected kind/people filter. Only a
-    // completed query establishes that it has disappeared.
-    if (!isSearching && !_hasCandidatesFor(_selectedFilter)) _selectedFilter = const _AllResults();
+    if (!isSearching && !_hasCandidatesFor(_selectedFilter)) {
+      _selectedFilter = const _AllResults();
+    }
     _filteredResults = _rankFilteredResults(_selectedFilter, query);
 
     if (!isSearching && (matchedOutcome?.partial ?? false)) {
@@ -720,10 +811,16 @@ class _SearchScreenState extends State<SearchScreen>
       showAppSnackBar(context, '${t.fileSources.title}: ${t.fileSources.errorUnavailable}');
     }
 
-    if (isSearching && results.isEmpty && _iptvVodResults.isEmpty) return;
-    if (_focusResultsForQuery == null || _focusResultsForQuery != query) return;
+    if (isSearching && results.isEmpty && _iptvVodResults.isEmpty) {
+      return;
+    }
+    if (_focusResultsForQuery == null || _focusResultsForQuery != query) {
+      return;
+    }
     _focusResultsForQuery = null;
-    if (searchController.text.trim() != query) return; // user kept editing
+    if (searchController.text.trim() != query) {
+      return;
+    } // user kept editing
     FocusUtils.requestFocusAfterBuild(this, results.isNotEmpty ? firstResultFocusNode : _firstIptvVodFocusNode);
   }
 
@@ -732,7 +829,9 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   void handleSearchSubmit() {
     final query = searchController.text.trim();
-    if (query.isEmpty) return;
+    if (query.isEmpty) {
+      return;
+    }
     if (searchResults.isEmpty || isSearching || query != lastSearchedQuery) {
       _focusResultsForQuery = query;
     }
@@ -741,7 +840,9 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   void refresh() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     runSearch(searchController.text.trim());
   }
 
@@ -753,13 +854,17 @@ class _SearchScreenState extends State<SearchScreen>
   /// Focus the search input field
   @override
   void focusSearchInput() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     searchFocusNode.requestFocus();
   }
 
   @override
   void focusActiveTabIfReady() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     searchFocusNode.requestFocus();
   }
 
@@ -770,7 +875,9 @@ class _SearchScreenState extends State<SearchScreen>
   /// their phone, so the TV keyboard must never be up afterwards.
   @override
   void submitSearchQuery(String query) {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final trimmed = query.trim();
     searchController.text = trimmed; // listener arms the debounce / resets state
 
@@ -778,7 +885,9 @@ class _SearchScreenState extends State<SearchScreen>
     // show it, and must dismiss one the TV user already had open (the phone's
     // Search chip sends tabSearch before the query arrives).
     _tvTextInputController.closeTextInput();
-    if (trimmed.isEmpty) return;
+    if (trimmed.isEmpty) {
+      return;
+    }
 
     // Land focus on the (visible) input immediately so the D-pad remote is
     // never stranded on the hidden previous tab — while the search is in
@@ -794,7 +903,9 @@ class _SearchScreenState extends State<SearchScreen>
   // Public method to fully reload all content (for profile switches)
   @override
   void fullRefresh() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     appLogger.d('SearchScreen.fullRefresh() called - clearing search and reloading');
     // Clearing the field resets the search state through the text listener.
     _focusResultsForQuery = null;
@@ -802,14 +913,20 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<void> updateItem(MediaItem source) async {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     final serverId = source.serverId;
-    if (serverId == null) return;
+    if (serverId == null) {
+      return;
+    }
 
     try {
       final multiServer = context.read<MultiServerProvider>();
       final updated = await multiServer.getClientForServer(ServerId(serverId))?.fetchItem(source.id);
-      if (!mounted || updated == null) return;
+      if (!mounted || updated == null) {
+        return;
+      }
       // A fresh Jellyfin `fetchItem` carries no library field, and a
       // library-less row would lose its label (#1970); keep the identity
       // and library context the search stamped on the original row.
@@ -823,7 +940,9 @@ class _SearchScreenState extends State<SearchScreen>
       if (filtered != null) {
         replaced = _replaceHitByGlobalKey(filtered, source.globalKey, merged) || replaced;
       }
-      if (replaced) setState(() {});
+      if (replaced) {
+        setState(() {});
+      }
     } catch (e) {
       appLogger.d('Search item refresh skipped for ${source.globalKey}', error: e);
     }
@@ -849,7 +968,9 @@ class _SearchScreenState extends State<SearchScreen>
   ];
 
   static List<MediaKind> _kindsIn(List<MediaItem> candidates) {
-    if (candidates.isEmpty) return const [];
+    if (candidates.isEmpty) {
+      return const [];
+    }
     final present = {for (final item in candidates) item.kind};
     return [
       for (final kind in _kindFilterOrder)
@@ -859,14 +980,18 @@ class _SearchScreenState extends State<SearchScreen>
 
   static bool _replaceByGlobalKey(List<MediaItem> items, String globalKey, MediaItem replacement) {
     final index = items.indexWhere((item) => item.globalKey == globalKey);
-    if (index == -1) return false;
+    if (index == -1) {
+      return false;
+    }
     items[index] = replacement;
     return true;
   }
 
   static bool _replaceHitByGlobalKey(List<SearchHit> hits, String globalKey, MediaItem replacement) {
     final index = hits.indexWhere((hit) => hit is MediaSearchHit && hit.globalKey == globalKey);
-    if (index == -1) return false;
+    if (index == -1) {
+      return false;
+    }
     hits[index] = MediaSearchHit(replacement);
     return true;
   }
@@ -946,7 +1071,9 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _selectFilter(_SearchFilter filter) {
-    if (filter == _selectedFilter) return;
+    if (filter == _selectedFilter) {
+      return;
+    }
     setState(() {
       _selectedFilter = filter;
       _filteredResults = _rankFilteredResults(filter, isSearching ? searchController.text.trim() : lastSearchedQuery);
@@ -988,7 +1115,9 @@ class _SearchScreenState extends State<SearchScreen>
   void _focusFilterChips() => _chipFocusNode(_selectedFilter).requestFocus();
 
   void _focusFirstResult() {
-    if (_visibleResults.isNotEmpty) firstResultFocusNode.requestFocus();
+    if (_visibleResults.isNotEmpty) {
+      firstResultFocusNode.requestFocus();
+    }
   }
 
   String _filterLabel(_SearchFilter filter) => switch (filter) {
@@ -1022,7 +1151,9 @@ class _SearchScreenState extends State<SearchScreen>
 
   String _catalogSourceName(CatalogSourceId id) {
     for (final source in _catalogSourcesProvider?.connectedSources ?? const <CatalogSource>[]) {
-      if (source.id == id) return source.displayName;
+      if (source.id == id) {
+        return source.displayName;
+      }
     }
     return switch (id) {
       CatalogSourceId.plex => 'Plex',
@@ -1043,7 +1174,9 @@ class _SearchScreenState extends State<SearchScreen>
 
   Future<void> _matchCatalogItem(CatalogItem remote, List<MediaItem> candidates) async {
     final profileId = context.read<ActiveProfileProvider?>()?.activeId;
-    if (profileId == null) return;
+    if (profileId == null) {
+      return;
+    }
     final selected = await showDialog<MediaItem>(
       context: context,
       builder: (dialogContext) => SimpleDialog(
@@ -1069,7 +1202,9 @@ class _SearchScreenState extends State<SearchScreen>
         ],
       ),
     );
-    if (selected == null || !mounted || context.read<ActiveProfileProvider?>()?.activeId != profileId) return;
+    if (selected == null || !mounted || context.read<ActiveProfileProvider?>()?.activeId != profileId) {
+      return;
+    }
     if (!_searchCandidates.any((candidate) => candidate.globalKey == selected.globalKey) ||
         !context.read<MultiServerProvider>().serverIds.contains(selected.serverId)) {
       showErrorSnackBar(context, t.matchScreen.matchFailed);
@@ -1091,7 +1226,9 @@ class _SearchScreenState extends State<SearchScreen>
     );
     try {
       await _identityStore.put(profileId, crosswalk);
-      if (!mounted || context.read<ActiveProfileProvider?>()?.activeId != profileId) return;
+      if (!mounted || context.read<ActiveProfileProvider?>()?.activeId != profileId) {
+        return;
+      }
       showAppSnackBar(context, t.matchScreen.matchApplied);
       unawaited(runSearch(searchController.text.trim()));
     } on Object {
@@ -1140,7 +1277,9 @@ class _SearchScreenState extends State<SearchScreen>
 
   Future<void> _requestFromSeerr(SeerrCatalogSource seerr, CatalogItem item, int tmdbId) async {
     await showSeerrRequestSheet(context, source: seerr, kind: item.kind, tmdbId: tmdbId, title: item.title);
-    if (mounted) await _refreshSeerrResults();
+    if (mounted) {
+      await _refreshSeerrResults();
+    }
   }
 
   /// The trailing end of a Seerr row: the status of a request already in
@@ -1148,7 +1287,9 @@ class _SearchScreenState extends State<SearchScreen>
   /// The button is off the D-pad path, so TV requests through the row's
   /// detail screen or context menu instead.
   Widget? _seerrRowAction(BuildContext context, CatalogItem? item, SeerrCatalogSource? seerr) {
-    if (item == null) return null;
+    if (item == null) {
+      return null;
+    }
     if (item.serverState?.request
         case final request? &&
             (CatalogRequestState.pending || CatalogRequestState.approved || CatalogRequestState.processing)) {
@@ -1161,7 +1302,9 @@ class _SearchScreenState extends State<SearchScreen>
       );
     }
     final tmdbId = item.ids.tmdb;
-    if (seerr == null || tmdbId == null || !seerr.canRequest(item.kind) || PlatformDetector.isTV()) return null;
+    if (seerr == null || tmdbId == null || !seerr.canRequest(item.kind) || PlatformDetector.isTV()) {
+      return null;
+    }
     return IconButton(
       tooltip: t.seerr.request,
       icon: const AppIcon(Symbols.download_rounded, fill: 1, size: 22),
@@ -1204,7 +1347,9 @@ class _SearchScreenState extends State<SearchScreen>
       }
     }
     final seerrAction = sourceId == CatalogSourceId.seerr ? _seerrRowAction(context, item.catalogItem, seerr) : null;
-    if (seerrAction != null) actions.add(seerrAction);
+    if (seerrAction != null) {
+      actions.add(seerrAction);
+    }
     if (actions.isNotEmpty) {
       row = Row(
         children: [
@@ -1214,7 +1359,9 @@ class _SearchScreenState extends State<SearchScreen>
         ],
       );
     }
-    if (!showHeader) return row;
+    if (!showHeader) {
+      return row;
+    }
     return Column(
       crossAxisAlignment: .stretch,
       children: [
@@ -1247,7 +1394,9 @@ class _SearchScreenState extends State<SearchScreen>
     for (var index = 0; index < visible.length; index++) {
       if (visible[index] case MediaSearchHit(:final item)) {
         final sourceId = item.catalogItem?.source;
-        if (sourceId != null) firstCatalogIndexBySource.putIfAbsent(sourceId, () => index);
+        if (sourceId != null) {
+          firstCatalogIndexBySource.putIfAbsent(sourceId, () => index);
+        }
       }
     }
     return buildResultsSliver(
@@ -1320,7 +1469,9 @@ class _SearchScreenState extends State<SearchScreen>
 
   List<Widget> _buildIptvVodResults() {
     final profileId = _iptvVodProfileId;
-    if (profileId == null || _iptvVodResults.isEmpty) return const [];
+    if (profileId == null || _iptvVodResults.isEmpty) {
+      return const [];
+    }
     return [
       SliverToBoxAdapter(
         child: Padding(

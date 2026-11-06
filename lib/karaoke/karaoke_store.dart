@@ -16,24 +16,38 @@ class KaraokeStore {
     final key = sha256.convert(utf8.encode(profileId)).toString();
     return Directory(p.join(root.path, 'karaoke', key)).create(recursive: true);
   }
+
   Future<Map<String, dynamic>?> read(String name) async {
     _validateName(name);
     final dir = await directory;
     for (final suffix in ['', '.previous']) {
       final file = File(p.join(dir.path, '$name.json$suffix'));
-      if (!await file.exists()) continue;
+      if (!await file.exists()) {
+        continue;
+      }
       try {
-        if (await file.length() > 32 * 1024 * 1024) continue;
+        if (await file.length() > 32 * 1024 * 1024) {
+          continue;
+        }
         final value = jsonDecode(await file.readAsString());
-        if (value is Map<String, dynamic>) return value;
-      } on FormatException { continue; } on FileSystemException { continue; }
+        if (value is Map<String, dynamic>) {
+          return value;
+        }
+      } on FormatException {
+        continue;
+      } on FileSystemException {
+        continue;
+      }
     }
     return null;
   }
+
   Future<void> write(String name, Map<String, dynamic> value) {
     _validateName(name);
     final encoded = jsonEncode(value);
-    if (utf8.encode(encoded).length > 32 * 1024 * 1024) throw const FormatException('Karaoke state limit exceeded');
+    if (utf8.encode(encoded).length > 32 * 1024 * 1024) {
+      throw const FormatException('Karaoke state limit exceeded');
+    }
     final result = _writes.then((_) async {
       final dir = await directory;
       final file = File(p.join(dir.path, '$name.json'));
@@ -41,7 +55,9 @@ class KaraokeStore {
       final backup = File('${file.path}.previous');
       await temp.writeAsString(encoded, flush: true);
       if (await file.exists()) {
-        if (await backup.exists()) await backup.delete();
+        if (await backup.exists()) {
+          await backup.delete();
+        }
         await file.rename(backup.path);
       }
       await temp.rename(file.path);
@@ -49,9 +65,13 @@ class KaraokeStore {
     _writes = result.catchError((Object _) {});
     return result;
   }
+
   static void _validateName(String name) {
-    if (!RegExp(r'^[a-zA-Z0-9_-]{1,128}$').hasMatch(name)) throw const FormatException('Invalid state name');
+    if (!RegExp(r'^[a-zA-Z0-9_-]{1,128}$').hasMatch(name)) {
+      throw const FormatException('Invalid state name');
+    }
   }
+
   Future<File> asset(String id, String relative) async {
     _validateName(id);
     final base = p.join((await directory).path, 'packages', id);

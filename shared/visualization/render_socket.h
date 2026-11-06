@@ -11,6 +11,7 @@ namespace plezy::visualization {
 // exits its process even when its render thread is inside a driver call.
 class RenderSocketControl {
   int socket_ = -1;
+
  public:
   explicit RenderSocketControl(int channel) : socket_(fcntl(channel, F_DUPFD_CLOEXEC, 3)) {
     if (socket_ < 0) throw std::runtime_error("Could not retain visualization socket.");

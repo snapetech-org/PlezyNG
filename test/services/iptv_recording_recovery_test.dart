@@ -13,7 +13,12 @@ Future<void> _profile(AppDatabase database) => database.customStatement(
 );
 
 IptvLocalRecording _recording(String id, String path) => IptvLocalRecording(
-  id: id, profileId: 'p', title: id, filePath: path, startedAt: DateTime.utc(2026), state: 'recording',
+  id: id,
+  profileId: 'p',
+  title: id,
+  filePath: path,
+  startedAt: DateTime.utc(2026),
+  state: 'recording',
 );
 
 void main() {
@@ -22,7 +27,10 @@ void main() {
   test('an unreadable archive cannot prevent another interrupted recording from recovering', () async {
     final directory = await Directory.systemTemp.createTemp('plezy-recording-recovery-');
     final database = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(() async { await database.close(); await directory.delete(recursive: true); });
+    addTearDown(() async {
+      await database.close();
+      await directory.delete(recursive: true);
+    });
     await _profile(database);
     final repository = IptvSourceRepository(database);
     final bad = File('${directory.path}/bad.m3u8');
@@ -47,15 +55,22 @@ void main() {
   test('legacy bootstrap interruptions are recoverable without reopening ordinary failed captures', () async {
     final directory = await Directory.systemTemp.createTemp('plezy-legacy-recovery-');
     final database = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(() async { await database.close(); await directory.delete(recursive: true); });
+    addTearDown(() async {
+      await database.close();
+      await directory.delete(recursive: true);
+    });
     await _profile(database);
     final repository = IptvSourceRepository(database);
     final file = File('${directory.path}/legacy.ts');
     await file.writeAsBytes([1, 2, 3, 4]);
     await repository.beginLocalRecording(_recording('legacy', file.path));
     await repository.beginLocalRecording(_recording('empty', '${directory.path}/absent.ts'));
-    await database.customStatement("UPDATE iptv_recordings SET state='failed', error_code='interrupted' WHERE id='legacy'");
-    await database.customStatement("UPDATE iptv_recordings SET state='failed', error_code='recording_empty' WHERE id='empty'");
+    await database.customStatement(
+      "UPDATE iptv_recordings SET state='failed', error_code='interrupted' WHERE id='legacy'",
+    );
+    await database.customStatement(
+      "UPDATE iptv_recordings SET state='failed', error_code='recording_empty' WHERE id='empty'",
+    );
     await repository.recoverLocalRecordingSchedules();
     final rows = {for (final row in await repository.localRecordings('p')) row.id: row};
     expect(rows['legacy']!.state, 'interrupted');
@@ -73,7 +88,9 @@ void main() {
     try {
       await _profile(initial);
       await IptvSourceRepository(initial).beginLocalRecording(_recording('live', '${directory.path}/live.ts'));
-    } finally { await initial.close(); }
+    } finally {
+      await initial.close();
+    }
     final opened = await AppDatabase.open(databaseFile: file, isTvos: false);
     addTearDown(opened.database.close);
     final row = (await IptvSourceRepository(opened.database).localRecordings('p')).single;

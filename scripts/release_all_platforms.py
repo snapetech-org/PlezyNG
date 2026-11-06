@@ -412,6 +412,13 @@ def prepare_native_checkout(scratch: Path) -> tuple[Path, str]:
 
     recover_native_groups(checkout, scratch / "native-recovery")
 
+    if verify_native_groups(checkout):
+        sync_native_asset_bases(checkout)
+        verify_native_release_assets(checkout)
+        native_sha = command(["git", "rev-parse", "HEAD"], cwd=checkout, capture=True).stdout.strip()
+        print(f"Reusing all verified native components at {native_sha[:12]}.")
+        return checkout, native_sha
+
     native_head = command(["git", "rev-parse", "HEAD"], cwd=checkout, capture=True).stdout.strip()
     native_title = "action:build:pool:private"
     existing = matching_run(
@@ -828,7 +835,7 @@ def ensure_candidate_build(
             "mode": "release",
             "build_version": version,
             "include_webos_build": "true" if include_webos_build else "false",
-            "include_webos_release": "false",
+            "include_webos_release": "true",
             "include_tizen_build": "true",
             "include_apple_store_build": "true" if include_apple_store_build else "false",
             "subtitle_gpu_backend": "cpu",
@@ -1076,7 +1083,7 @@ def validate_release_outputs(
     }
     if include_webos_release:
         required.update({
-            "webos-engine-provenance.json", "webos-compatibility.json",
+            "webos-engine-provenance.json", "webos-app-provenance.json", "webos-compatibility.json",
             "webos-SHA256SUMS.txt", "pleazyng-lg-webos-submission.zip",
         })
         if not any(name.endswith(".ipk") for name in assets if isinstance(name, str)):
@@ -1346,12 +1353,11 @@ def parse_args() -> argparse.Namespace:
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
     )
     parser.add_argument("--reuse-android-run", type=int, help="Reuse a separately successful Android release artifact.")
-    parser.add_argument("--skip-webos-build", action="store_true", help="Deprecated: versioned releases require webOS and reject this option.")
+    parser.add_argument("--skip-webos-build", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument(
         "--include-webos-release",
-        action="store_true",
-        default=True,
-        help="webOS attachment is required for every versioned release; eligibility gates still apply.",
+        action="store_true", default=True,
+        help="Include the verified webOS package (required and enabled by default).",
     )
     parser.add_argument(
         "--execution-profile",
@@ -1400,8 +1406,8 @@ def main() -> int:
     ).stdout.strip().split("+", 1)[0]
     if package_version != args.version:
         raise ReleaseError(f"Requested {args.version}, but pubspec.yaml declares {package_version}.")
-    if args.version == "3.0.0" and args.execution_profile != "hybrid":
-        raise ReleaseError("The Pleazyng 3.0.0 release requires the hybrid profile, including native Windows ARM64 CI.")
+    if args.execution_profile != "hybrid":
+        raise ReleaseError("Complete releases require the hybrid profile, including native Windows ARM64 CI.")
     if args.reuse_platform_run and (
         args.reuse_platform_run < 1 or args.publish
         or args.execution_profile != "hybrid"
@@ -1410,7 +1416,7 @@ def main() -> int:
     if args.reuse_android_run and (args.reuse_android_run < 1 or not args.reuse_platform_run):
         raise ReleaseError("Android reuse requires a verified platform source run.")
     if args.skip_webos_build:
-        raise ReleaseError("--skip-webos-build cannot be used for a versioned release; all owner-mandated platforms are required.")
+        raise ReleaseError("Complete versioned releases require webOS; omission is no longer supported.")
     command(["gh", "auth", "status", "--hostname", "github.com"], capture=True, quiet=True)
 
     scratch = args.scratch.resolve() if args.scratch else Path(tempfile.mkdtemp(prefix="pleazyng-release-"))
@@ -1505,17 +1511,8 @@ def main() -> int:
             args.publish and apple_store_secrets.issubset(configured_repo_names("secret"))
         )
         if not tag_reused:
-            stage = "all-platform release-mode candidate build"
-            progress["stage"] = stage
-            save_progress()
-            candidate = ensure_candidate_build(
-                args.version,
-                pin_sha,
-                execution_profile=args.execution_profile,
-                include_apple_store_build=include_apple_store_build,
-                **({"include_webos_build": False} if args.skip_webos_build else {}),
-            )
-            progress["candidate_build_run"] = candidate["databaseId"]
+            # Exact-source CI runs first. Build every release package once after
+            # tagging; never publish until the complete artifact checks pass.
             stage = "release tag"
             progress["stage"] = stage
             save_progress()

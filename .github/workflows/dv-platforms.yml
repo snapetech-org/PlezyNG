@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# Compatible offline tool builds use native public runners; device work can use private hardware.
 name: Dolby Vision platform experiments
 run-name: ${{ format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 
@@ -10,22 +10,29 @@ on:
         description: Platform experiment action
         required: true
         type: choice
-        options: [dv-platforms]
+        options: [dv-platforms, offline-tools, offline-verify]
       runner_pool:
         description: Runner pool for these experiments
         required: true
         type: choice
-        options: [private]
+        options: [public, private]
+        default: public
+      offline_arch:
+        description: Offline tool architecture to build or verify
+        type: choice
+        options: [all, x86_64, aarch64]
+        default: all
 
 permissions:
   contents: read
 
 concurrency:
-  group: dv-platforms-${{ github.ref }}
-  cancel-in-progress: true
+  group: dv-platforms-${{ inputs.action }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   contracts:
+    if: inputs.action == 'dv-platforms'
     strategy:
       fail-fast: false
       matrix:
@@ -39,6 +46,7 @@ jobs:
       - run: python3 scripts/test_dv_experiments.py
 
   app-tests:
+    if: inputs.action == 'dv-platforms'
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-app-tests"]}}', github.run_id)) }}
     timeout-minutes: 30
     steps:
@@ -69,6 +77,7 @@ jobs:
         run: git diff --exit-code -- lib test
 
   felbaker-source:
+    if: inputs.action == 'dv-platforms'
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-felbaker-source"]}}', github.run_id)) }}
     timeout-minutes: 45
     steps:
@@ -96,6 +105,7 @@ jobs:
           retention-days: 14
 
   apple-source:
+    if: inputs.action == 'dv-platforms'
     runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-apple-source"]}}', github.run_id)) }}
     timeout-minutes: 60
     steps:
@@ -119,6 +129,7 @@ jobs:
           retention-days: 14
 
   windows-engine:
+    if: inputs.action == 'dv-platforms'
     runs-on: ${{ fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","packer-windows","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-windows-engine"]}}', github.run_id)) }}
     timeout-minutes: 90
     steps:
@@ -161,6 +172,7 @@ jobs:
           retention-days: 14
 
   native-patch-audit:
+    if: inputs.action == 'dv-platforms'
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-patch-audit"]}}', github.run_id)) }}
     timeout-minutes: 30
     steps:
@@ -175,4 +187,68 @@ jobs:
           name: dv-native-port-audit
           path: build/dv-native-audit/native-port-audit.json
           retention-days: 14
+
+  offline-verify:
+    if: inputs.action == 'offline-verify' && inputs.runner_pool == 'public'
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ fromJSON(inputs.offline_arch == 'aarch64' && '["aarch64"]' || inputs.offline_arch == 'x86_64' && '["x86_64"]' || '["x86_64","aarch64"]') }}
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Fetch and verify the runtime pinned for normal application packages
+        run: python3 scripts/fetch_dv_tools.py --dest "$RUNNER_TEMP/dv-bundle"
+      - name: Verify shipped exports without rebuilding native components
+        run: |
+          mkdir -p "$RUNNER_TEMP/dv-verification"
+          docker run --rm --network none --read-only --cpus=2 --tmpfs /tmp:rw,size=128m \
+            -v "$RUNNER_TEMP/dv-bundle:/bundle:ro" \
+            -v "$GITHUB_WORKSPACE/tools/dv-engine:/verify:ro" \
+            -v "$RUNNER_TEMP/dv-verification:/outputs" \
+            -e PYTHONHOME=/bundle -e LD_LIBRARY_PATH=/bundle/lib/runtime \
+            docker.io/library/ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
+            /bundle/bin/python3.12 -I -B /verify/verify_offline_bundle.py --bundle /bundle --output /outputs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: dv-offline-verification-${{ matrix.arch }}
+          path: ${{ runner.temp }}/dv-verification/
+          if-no-files-found: error
+          retention-days: 14
+
+  offline-tools:
+    if: inputs.action == 'offline-tools' && inputs.runner_pool == 'public'
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ${{ fromJSON(inputs.offline_arch == 'aarch64' && '["aarch64"]' || inputs.offline_arch == 'x86_64' && '["x86_64"]' || '["x86_64","aarch64"]') }}
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Build the complete offline runtime with pinned source and SDK inputs
+        run: python3 tools/dv-engine/build_offline_tools.py --work-dir "$RUNNER_TEMP/dv-offline"
+      - name: Verify actual HDR10 and SDR exports in a clean offline container
+        run: |
+          docker run --rm --network none --read-only --cpus=2 --tmpfs /tmp:rw,size=128m \
+            -v "$RUNNER_TEMP/dv-offline/build/bundle:/bundle:ro" \
+            -v "$GITHUB_WORKSPACE/tools/dv-engine:/verify:ro" \
+            -v "$RUNNER_TEMP/dv-offline:/outputs" \
+            -e PYTHONHOME=/bundle -e LD_LIBRARY_PATH=/bundle/lib/runtime \
+            docker.io/library/ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
+            /bundle/bin/python3.12 -I -B /verify/verify_offline_bundle.py --bundle /bundle --output /outputs/verification
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: dv-offline-tools-linux-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/dv-offline/build/PlezyNG-dv-tools-*.tar.zst*
+            ${{ runner.temp }}/dv-offline/verification/
+          if-no-files-found: error
+          retention-days: 30
 

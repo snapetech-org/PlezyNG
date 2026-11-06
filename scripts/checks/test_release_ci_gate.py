@@ -151,7 +151,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
                 "mode": "release",
                 "build_version": "3.0.0",
                 "include_webos_build": "true",
-                "include_webos_release": "false",
+                "include_webos_release": "true",
                 "include_tizen_build": "true",
                 "include_apple_store_build": "false",
                 "subtitle_gpu_backend": "cpu",

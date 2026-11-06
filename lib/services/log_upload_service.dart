@@ -47,9 +47,9 @@ String constrainLogUploadPayload({required String header, required String logs, 
 ///
 /// [payload] must already be redacted and allowlisted by the caller; this
 /// function performs no sanitisation of its own.
-Future<String> uploadDiagnosticText(String payload, {MediaServerHttpClient? client, String? relayBaseUrl}) async {
+Future<String> uploadDiagnosticText(String payload, {MediaServerHttpClient? client, String? serviceBaseUrl}) async {
   final response = await (client ?? httpClient).post(
-    relayBaseUrl == null ? logUploadEndpoint : '${requirePleazyngServiceUrl(relayBaseUrl)}/logs',
+    serviceBaseUrl == null ? logUploadEndpoint : '${requirePleazyngServiceUrl(serviceBaseUrl)}/logs',
     body: payload,
     headers: {'Content-Type': 'text/plain'},
   );

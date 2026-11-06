@@ -114,21 +114,26 @@ class IptvHlsArchive {
     track.ended = parsed.ended;
     for (final segment in parsed.segments) {
       if (_stopped || !DateTime.now().isBefore(endsAt)) break;
-      final identity = '${segment.continuity}:${segment.sequence}:${segment.uri}:${segment.range?.offset}:${segment.range?.length}';
+      final identity =
+          '${segment.continuity}:${segment.sequence}:${segment.uri}:${segment.range?.offset}:${segment.range?.length}';
       if (track.seen.contains(identity)) continue;
       if (track.segments.length >= 50000) throw const SourceException(SourceFailure.invalidData);
       String? mapName;
       final map = segment.map;
       if (map != null) {
-        final mapIdentity = '${segment.continuity}:${map.uri}:${map.range?.offset}:${map.range?.length}:${map.key?.uri}:'
+        final mapIdentity =
+            '${segment.continuity}:${map.uri}:${map.range?.offset}:${map.range?.length}:${map.key?.uri}:'
             '${map.key?.iv == null ? '' : base64Encode(map.key!.iv!)}';
         mapName = track.maps[mapIdentity];
         if (mapName == null) {
           final bytes = await _resource(transport, map.uri, map.range);
           final decoded = map.key == null
               ? bytes
-              : _decrypt(bytes, await _key(transport, map.key!.uri), map.key!.iv ??
-                  (throw UnsupportedError('Encrypted HLS maps require an explicit IV')));
+              : _decrypt(
+                  bytes,
+                  await _key(transport, map.key!.uri),
+                  map.key!.iv ?? (throw UnsupportedError('Encrypted HLS maps require an explicit IV')),
+                );
           mapName = '${track.name}-map-${track.maps.length}.bin';
           await _writeMedia(mapName, decoded);
           track.maps[mapIdentity] = mapName;
@@ -145,8 +150,8 @@ class IptvHlsArchive {
         duration: segment.duration,
         startsAt: segment.startsAt,
         map: mapName,
-        discontinuity: segment.discontinuity ||
-            (track.lastSequence != null && track.lastSequence! + 1 != segment.sequence),
+        discontinuity:
+            segment.discontinuity || (track.lastSequence != null && track.lastSequence! + 1 != segment.sequence),
       ));
       track.lastSequence = segment.sequence;
       if (segment.duration.ceil() > track.targetDuration) track.targetDuration = segment.duration.ceil();
@@ -159,14 +164,25 @@ class IptvHlsArchive {
     await _writeTrack(track, complete: false);
   }
 
-  Future<Uint8List> _resource(SourceTransport transport, Uri address, _Range? range, {int limit = 64 * 1024 * 1024}) async {
+  Future<Uint8List> _resource(
+    SourceTransport transport,
+    Uri address,
+    _Range? range, {
+    int limit = 64 * 1024 * 1024,
+  }) async {
     final abort = Completer<void>();
     final deadline = Timer(const Duration(seconds: 45), () => abort.complete());
     try {
-      final response = await transport.send('GET', address, headers: {
-        ..._headers(address),
-        if (range != null) 'Range': 'bytes=${range.offset}-${range.offset + range.length - 1}',
-      }, redirects: true, abort: abort.future);
+      final response = await transport.send(
+        'GET',
+        address,
+        headers: {
+          ..._headers(address),
+          if (range != null) 'Range': 'bytes=${range.offset}-${range.offset + range.length - 1}',
+        },
+        redirects: true,
+        abort: abort.future,
+      );
       SourceTransport.check(response.statusCode);
       if (range != null) {
         final expected = 'bytes ${range.offset}-${range.offset + range.length - 1}/';
@@ -227,14 +243,19 @@ class IptvHlsArchive {
     final folder = p.basename(directory.path);
     if (!RegExp(r'^[A-Za-z0-9_.-]+$').hasMatch(folder)) throw const SourceException(SourceFailure.invalidData);
     final audio = tracks.length > 1;
-    await _atomicText(output, '#EXTM3U\n#EXT-X-VERSION:7\n#PLEZY-ARCHIVE:$folder\n'
-        '${audio ? '#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="Audio",DEFAULT=YES,AUTOSELECT=YES,URI="$folder/audio.m3u8"\n' : ''}'
-        '#EXT-X-STREAM-INF:BANDWIDTH=$bandwidth${audio ? ',AUDIO="audio"' : ''}\n$folder/video.m3u8\n');
+    await _atomicText(
+      output,
+      '#EXTM3U\n#EXT-X-VERSION:7\n#PLEZY-ARCHIVE:$folder\n'
+      '${audio ? '#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="Audio",DEFAULT=YES,AUTOSELECT=YES,URI="$folder/audio.m3u8"\n' : ''}'
+      '#EXT-X-STREAM-INF:BANDWIDTH=$bandwidth${audio ? ',AUDIO="audio"' : ''}\n$folder/video.m3u8\n',
+    );
   }
 
   Future<void> _writeTrack(_ArchiveTrack track, {required bool complete}) async {
-    final text = StringBuffer('#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:${track.targetDuration}\n'
-        '#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:${complete ? 'VOD' : 'EVENT'}\n');
+    final text = StringBuffer(
+      '#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:${track.targetDuration}\n'
+      '#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:${complete ? 'VOD' : 'EVENT'}\n',
+    );
     String? previousMap;
     for (final segment in track.segments) {
       if (segment.discontinuity) text.writeln('#EXT-X-DISCONTINUITY');
@@ -242,7 +263,9 @@ class IptvHlsArchive {
         text.writeln('#EXT-X-MAP:URI="${segment.map}"');
       }
       previousMap = segment.map;
-      if (segment.startsAt != null) text.writeln('#EXT-X-PROGRAM-DATE-TIME:${segment.startsAt!.toUtc().toIso8601String()}');
+      if (segment.startsAt != null) {
+        text.writeln('#EXT-X-PROGRAM-DATE-TIME:${segment.startsAt!.toUtc().toIso8601String()}');
+      }
       text.writeln('#EXTINF:${segment.duration.toStringAsFixed(6)},');
       text.writeln(segment.name);
     }
@@ -251,13 +274,15 @@ class IptvHlsArchive {
     track.lastPublishedAt = DateTime.now();
   }
 
-  Future<void> _checkpoint(List<_ArchiveTrack> tracks, {required bool complete}) =>
-      _atomicText(File(p.join(directory.path, 'recording.json')), jsonEncode({
-        'version': 1,
-        'mediaBytes': mediaBytes,
-        'complete': complete,
-        'tracks': {for (final track in tracks) track.name: track.segments.length},
-      }));
+  Future<void> _checkpoint(List<_ArchiveTrack> tracks, {required bool complete}) => _atomicText(
+    File(p.join(directory.path, 'recording.json')),
+    jsonEncode({
+      'version': 1,
+      'mediaBytes': mediaBytes,
+      'complete': complete,
+      'tracks': {for (final track in tracks) track.name: track.segments.length},
+    }),
+  );
 
   /// Only an archive explicitly created beside this recording can be removed
   /// with it. A marker cannot name a parent, absolute path or symbolic link.
@@ -273,7 +298,9 @@ class IptvHlsArchive {
     final match = RegExp(r'^#PLEZY-ARCHIVE:([A-Za-z0-9_.-]+\.media)$', multiLine: true).firstMatch(prefix);
     if (match == null || match.group(1)!.length > 160) return null;
     final folder = Directory(p.join(manifest.parent.path, match.group(1)!));
-    return await FileSystemEntity.type(folder.path, followLinks: false) == FileSystemEntityType.directory ? folder : null;
+    return await FileSystemEntity.type(folder.path, followLinks: false) == FileSystemEntityType.directory
+        ? folder
+        : null;
   }
 
   static Future<int> retainedBytes(File manifest) async {
@@ -293,8 +320,11 @@ class IptvHlsArchive {
       return manifest.length();
     }
     final video = File(p.join(folder.path, 'video.m3u8'));
-    if (!await video.exists() || await video.length() > 16 * 1024 * 1024 ||
-        !utf8.decode(await video.readAsBytes()).contains('#EXTINF:')) return 0;
+    if (!await video.exists() ||
+        await video.length() > 16 * 1024 * 1024 ||
+        !utf8.decode(await video.readAsBytes()).contains('#EXTINF:')) {
+      return 0;
+    }
     var bytes = 0, entries = 0;
     await for (final file in folder.list(followLinks: false)) {
       if (++entries > 100100) throw const FileSystemException('Recording archive contains too many files');
@@ -336,12 +366,20 @@ class IptvHlsArchive {
       if (line.startsWith('#EXT-X-MEDIA:')) {
         final values = _attributes(line.substring(13));
         final group = values['GROUP-ID'], path = values['URI'];
-        if (values['TYPE'] == 'AUDIO' && group != null && path != null &&
-            (!audio.containsKey(group) || values['DEFAULT'] == 'YES')) audio[group] = base.resolve(path);
+        if (values['TYPE'] == 'AUDIO' &&
+            group != null &&
+            path != null &&
+            (!audio.containsKey(group) || values['DEFAULT'] == 'YES')) {
+          audio[group] = base.resolve(path);
+        }
       } else if (line.startsWith('#EXT-X-STREAM-INF:')) {
         pending = _attributes(line.substring(18));
       } else if (pending != null && line.isNotEmpty && !line.startsWith('#')) {
-        variants.add((uri: base.resolve(line), group: pending['AUDIO'], bandwidth: int.tryParse(pending['BANDWIDTH'] ?? '') ?? 1000000));
+        variants.add((
+          uri: base.resolve(line),
+          group: pending['AUDIO'],
+          bandwidth: int.tryParse(pending['BANDWIDTH'] ?? '') ?? 1000000,
+        ));
         pending = null;
       }
     }
@@ -384,7 +422,8 @@ class IptvHlsArchive {
         final values = _attributes(line.substring(11));
         if (values['METHOD'] == 'NONE') {
           key = null;
-        } else if (values['METHOD'] == 'AES-128' && values['URI'] != null &&
+        } else if (values['METHOD'] == 'AES-128' &&
+            values['URI'] != null &&
             (values['KEYFORMAT'] == null || values['KEYFORMAT'] == 'identity')) {
           key = _Encryption(base.resolve(values['URI']!), _iv(values['IV']));
         } else {
@@ -405,7 +444,19 @@ class IptvHlsArchive {
           throw const SourceException(SourceFailure.invalidData);
         }
         final address = base.resolve(line);
-        segments.add(_Segment(address, sequence + segments.length, duration, _range(byteRange, address, offsets), key, map, discontinuity, continuity, startsAt));
+        segments.add(
+          _Segment(
+            address,
+            sequence + segments.length,
+            duration,
+            _range(byteRange, address, offsets),
+            key,
+            map,
+            discontinuity,
+            continuity,
+            startsAt,
+          ),
+        );
         if (startsAt != null) startsAt = startsAt.add(Duration(microseconds: (duration * 1000000).round()));
         byteRange = null;
         discontinuity = false;
@@ -438,7 +489,9 @@ class IptvHlsArchive {
   static Uint8List _sequenceIv(int sequence) {
     if (sequence < 0) throw const FormatException('Invalid HLS sequence');
     final value = Uint8List(16);
-    for (var i = 15; i >= 0 && sequence > 0; i--, sequence >>= 8) value[i] = sequence & 255;
+    for (var i = 15; i >= 0 && sequence > 0; i--, sequence >>= 8) {
+      value[i] = sequence & 255;
+    }
     return value;
   }
 
@@ -448,7 +501,9 @@ class IptvHlsArchive {
     }
     final cipher = CBCBlockCipher(AESEngine())..init(false, ParametersWithIV<KeyParameter>(KeyParameter(key), iv));
     final output = Uint8List(bytes.length);
-    for (var i = 0; i < bytes.length; i += 16) cipher.processBlock(bytes, i, output, i);
+    for (var i = 0; i < bytes.length; i += 16) {
+      cipher.processBlock(bytes, i, output, i);
+    }
     final padding = output.last;
     if (padding < 1 || padding > 16 || !output.sublist(output.length - padding).every((b) => b == padding)) {
       throw const FormatException('Invalid AES-128 HLS padding');
@@ -489,7 +544,17 @@ class _MapResource {
 }
 
 class _Segment {
-  const _Segment(this.uri, this.sequence, this.duration, this.range, this.key, this.map, this.discontinuity, this.continuity, this.startsAt);
+  const _Segment(
+    this.uri,
+    this.sequence,
+    this.duration,
+    this.range,
+    this.key,
+    this.map,
+    this.discontinuity,
+    this.continuity,
+    this.startsAt,
+  );
   final Uri uri;
   final int sequence;
   final double duration;

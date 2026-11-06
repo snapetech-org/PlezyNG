@@ -640,8 +640,6 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'শক্তি ইনলাইন RPU পৃষ্ঠা Dolby Vision প্রোফাইল 8.1';
 	@override String get dvConversionHevcStripDescription => 'স্ট্রিপ Dolby Vision RPU/EL layers এবং বর্তমান প্লাইন HEVC';
 	@override String get experimentalDolbyVision => 'পরীক্ষামূলক Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'পরবর্তী প্লেব্যাকে পরীক্ষামূলক FEL রেন্ডারার ব্যবহার করুন। ইঞ্জিনের আলাদা বিল্ড প্রয়োজন।';
-	@override String get dvExperimentUnavailableDescription => 'এই পরীক্ষা বর্তমানে শুধু Linux-এ উপলব্ধ।';
 	@override String get dvCompatibilityFallback => 'সামঞ্জস্যপূর্ণ বিকল্প';
 	@override String get dvCompatibilityFallbackDescription => 'পরীক্ষা শুরু না হলে সাধারণ রেন্ডারার ব্যবহার করুন। FEL তথ্য হারিয়ে যেতে পারে।';
 	@override String get dvExperimentDiagnostics => 'ভিডিও পরীক্ষার লগ';
@@ -3882,14 +3880,9 @@ class _Translations$games$bn extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
-	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
-	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
-	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
 	@override String get port => 'Service port';
@@ -3916,10 +3909,8 @@ class _Translations$games$bn extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3930,7 +3921,6 @@ class _Translations$games$bn extends Translations$games$en {
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
 	@override String get cancel => 'Cancel';
-	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
@@ -3943,12 +3933,16 @@ class _Translations$games$bn extends Translations$games$en {
 	@override String get unlinkSteamAccountConfirm => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.';
 	@override String get steamAccountLinked => 'Steam account linked. Games imported.';
 	@override String get steamLibraryPrivate => 'Steam account linked. Its library is private or unavailable, so no games were imported.';
-	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
-	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 	@override String get connecting => 'Connecting…';
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -5828,8 +5822,6 @@ extension on TranslationsBn {
 			'settings.dvConversionDv81Description' => 'শক্তি ইনলাইন RPU পৃষ্ঠা Dolby Vision প্রোফাইল 8.1',
 			'settings.dvConversionHevcStripDescription' => 'স্ট্রিপ Dolby Vision RPU/EL layers এবং বর্তমান প্লাইন HEVC',
 			'settings.experimentalDolbyVision' => 'পরীক্ষামূলক Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'পরবর্তী প্লেব্যাকে পরীক্ষামূলক FEL রেন্ডারার ব্যবহার করুন। ইঞ্জিনের আলাদা বিল্ড প্রয়োজন।',
-			'settings.dvExperimentUnavailableDescription' => 'এই পরীক্ষা বর্তমানে শুধু Linux-এ উপলব্ধ।',
 			'settings.dvCompatibilityFallback' => 'সামঞ্জস্যপূর্ণ বিকল্প',
 			'settings.dvCompatibilityFallbackDescription' => 'পরীক্ষা শুরু না হলে সাধারণ রেন্ডারার ব্যবহার করুন। FEL তথ্য হারিয়ে যেতে পারে।',
 			'settings.dvExperimentDiagnostics' => 'ভিডিও পরীক্ষার লগ',
@@ -5838,10 +5830,10 @@ extension on TranslationsBn {
 			'settings.disableDolbyVisionDescription' => 'ফাইলের HDR10 বা HLG স্তরের পরিবর্তে Dolby Vision খেলুন, যখন এটি একটি আছে',
 			'settings.hdrSdrConversion' => 'HDR থেকে SDR সংকট',
 			'settings.hdrSdrConversionDescription' => 'HDR ভিডিও কনভার্ট করে যা নির্বাচন করুন, যখন ডিভাইস HDR দেখতে পারবে না।',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'অটো',
 			'settings.hdrSdrConversionAutoDescription' => 'ডিভাইস Android 9 এবং তারপর, পুরনো সংস্করণগুলিতে খেলা',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'ডিভাইস',
 			'settings.hdrSdrConversionDeviceDescription' => 'আপনার ডিভাইসের ভিডিও হার্ভিড এটি পরিদর্শন করে. সবচেয়ে দ্রুত, কিন্তু রঙগুলি ডিভাইসের উপর নির্ভর করে',
 			'settings.hdrSdrConversionPlayer' => 'প্লেয়ার',
@@ -6352,10 +6344,10 @@ extension on TranslationsBn {
 			'videoControls.segmentLoop' => 'সেগেট লোভ',
 			'videoControls.addBookmark' => 'Bookmark যোগ করুন',
 			'videoControls.bookmarkName' => 'Bookmark নাম',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'উদাহরণস্বরূপ, দৃশ্য খোলা',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'বইমার্ক ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'এ বইয়ের জন্য একটি নাম লিখুন।',
 			'videoControls.deleteBookmark' => 'বুকমার্ক 삭제',
 			'videoControls.bookmarkLimitReached' => 'এই পণ্যটি এখন 100 বইমেলা আছে।',
@@ -6866,10 +6858,10 @@ extension on TranslationsBn {
 			'libraries.hideLibrary' => 'কবর লাইব্রেরি',
 			'libraries.libraryOptions' => 'লাইব্রেরি বিকল্প',
 			'libraries.content' => 'লাইব্রেরি বিষয়বস্তু',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'লাইব্রেরি নির্বাচন',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ফিল্টার (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			'libraries.noCollections' => 'এই লাইব্রেরিতে কোন সংগ্রহ নেই',
 			'libraries.noFoldersFound' => 'কোন ফাইল পাওয়া যায়নি',
@@ -7380,10 +7372,10 @@ extension on TranslationsBn {
 			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			'watchTogether.reconnectingDescription' => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।',
 			'watchTogether.connected' => 'সংযুক্ত',
@@ -7894,10 +7886,10 @@ extension on TranslationsBn {
 			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
 			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ছবির বিকল্প ${index}, নির্বাচিত',
 			'metadataEdit.notSet' => 'সিস্টেম না',
@@ -8408,10 +8400,10 @@ extension on TranslationsBn {
 			'universalMedia.noFavorites' => 'এখনো কোন প্রেমের পছন্দ সংরক্ষণ করা হয় না. পছন্দের এই प्रोফাইলে থাকুন।',
 			'universalMedia.removeFavorite' => 'প্রিয় স্ট্রিম মুছে ফেলুন',
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
 			'universalMedia.wifiTransferHelp' => 'সমর্থিত ফাইলগুলি এক ব্রাউজার থেকে একই বিশ্বাসযোগ্য নেটওয়ার্কে স্থানান্তর করুন।',
 			'universalMedia.wifiTransferIntro' => 'অন্য ডিভাইসের একটি ব্রাউজারে এই ঠিকানা খোঁজ করুন. ফাইলগুলি নির্বাচন করে এই ডিভিশনের ফাইল এবং বই লাইব্রিয়ামে যোগ করুন.',
@@ -8922,10 +8914,10 @@ extension on TranslationsBn {
 			'sourceSetup.metadataNoMatches' => 'অনলাইনে মিলে যায় এমন কোনো শিরোনাম পাওয়া যায়নি। অন্য শিরোনাম দিয়ে চেষ্টা করুন।',
 			'sourceSetup.metadataSearch' => 'অনলাইন মেটাডেটা খুঁজুন',
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',
 			'sourceSetup.videoDetailsLoading' => 'ভিডিওর তথ্য লোড হচ্ছে',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API কী প্রয়োজন',
@@ -8987,14 +8979,9 @@ extension on TranslationsBn {
 			'comics.collections' => 'সংগ্রহ',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
-			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
-			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
-			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
 			'games.port' => 'Service port',
@@ -9021,10 +9008,8 @@ extension on TranslationsBn {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -9035,7 +9020,6 @@ extension on TranslationsBn {
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
 			'games.cancel' => 'Cancel',
-			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
@@ -9048,12 +9032,16 @@ extension on TranslationsBn {
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
-			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
-			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'deepLinks.invalid' => 'এই Pleazyng লিঙ্ক সঠিক নয়।',
 			'deepLinks.profileNotFound' => ({required Object profile}) => 'কোন প্রোফাইল "${profile}" সঙ্গে জড়িত না।',
 			'deepLinks.serverUnavailable' => 'আমি এই লিঙ্কের জন্য সার্ভার পৌঁছাতে পারিনি।',

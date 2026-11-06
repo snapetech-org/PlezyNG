@@ -822,7 +822,6 @@ class Translations$sourceSetup$pt_PT extends Translations$sourceSetup$pt {
 	// Translations
 	@override String get subtitleApplyFailed => 'Não foi possível descarregar ou aplicar esta legenda. Verifique a ligação e tente outro resultado.';
 	@override String get subtitleSearching => 'A pesquisar no OpenSubtitles';
-	@override String subtitleDownloading({required Object title}) => 'A descarregar a legenda: ${title}';
 }
 
 // Path: householdSetup
@@ -1746,7 +1745,6 @@ extension on TranslationsPtPt {
 			'lending.cancel' => 'Cancelar',
 			'sourceSetup.subtitleApplyFailed' => 'Não foi possível descarregar ou aplicar esta legenda. Verifique a ligação e tente outro resultado.',
 			'sourceSetup.subtitleSearching' => 'A pesquisar no OpenSubtitles',
-			'sourceSetup.subtitleDownloading' => ({required Object title}) => 'A descarregar a legenda: ${title}',
 			'householdSetup.title' => 'Configuração do agregado familiar',
 			'issueReport.title' => 'Comunicar um problema',
 			'issueReport.instructions' => 'Leia o código QR para abrir um rascunho do GitHub já preenchido. Reveja-o e envie-o quando estiver pronto.',
@@ -1859,9 +1857,9 @@ extension on TranslationsPtPt {
 			'romm.sync' => 'Sync saves',
 			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
 			'romm.pause' => 'Pause',
+			'romm.kContinue' => 'Continue',
 			_ => null,
 		} ?? switch (path) {
-			'romm.kContinue' => 'Continue',
 			'romm.saveState' => 'Save state',
 			'romm.loadState' => 'Load state',
 			'romm.saveAndExit' => 'Save and exit',

@@ -103,7 +103,16 @@
       "other": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos",
       "one": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minuto",
       "many": "${minutes: NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName)} minutos"
-    }
+    },
+    "dvOfflineTitle": "",
+    "dvOfflineDescription": "",
+    "dvOfflineBase": "",
+    "dvOfflineEnhancement": "",
+    "dvOfflineFrameRate": "",
+    "dvOfflineInvalid": "",
+    "dvOfflineNewOutput": "",
+    "dvOfflineHdr10": "",
+    "dvOfflineSdr": ""
   },
   "themeEditor": {
     "custom": "Personalizado",
@@ -540,8 +549,7 @@
   },
   "sourceSetup": {
     "subtitleApplyFailed": "Não foi possível descarregar ou aplicar esta legenda. Verifique a ligação e tente outro resultado.",
-    "subtitleSearching": "A pesquisar no OpenSubtitles",
-    "subtitleDownloading(param:title)": "A descarregar a legenda: ${title}"
+    "subtitleSearching": "A pesquisar no OpenSubtitles"
   },
   "householdSetup": {
     "title": "Configuração do agregado familiar"
@@ -568,7 +576,6 @@
     "allowHostInstall": "",
     "allowHostInstallHelp": "",
     "automaticFolder": "",
-    "availabilityHint": "",
     "chooseComputer": "",
     "codecAutomatic": "",
     "connectComputer": "",
@@ -587,7 +594,6 @@
     "hostActionDenied": "",
     "hostActionPairingHelp": "",
     "hostActionSubmitted": "",
-    "hostActions": "",
     "hostDownloads": "",
     "hostLibrary": "",
     "importInstalledGames": "",
@@ -619,7 +625,6 @@
     "shareLibrary": "",
     "shareLibraryHelp": "",
     "steamActivity": "",
-    "steamActivityHelp": "",
     "steamBetaDescription": "",
     "steamBetaTitle": "",
     "steamCommunity": "",
@@ -635,7 +640,6 @@
     "streamDecoder": "",
     "streamDetails": "",
     "streamDroppedFrames": "",
-    "streamFailed": "",
     "streamFeedbackHelp": "",
     "streamHardwareDecoder": "",
     "streamHostBitrate": "",

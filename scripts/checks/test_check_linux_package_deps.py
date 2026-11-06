@@ -30,7 +30,7 @@ CMAKE_INPUTS = ("runner/CMakeLists.txt", "CMakeLists.txt", "flutter/CMakeLists.t
 
 
 # Pins the walk's reach: gtk+-3.0, mpv, epoxy, glib-2.0, gio-2.0 and the three the
-# video plane added, plus the Steam credential-vault libsecret link. A drop here means the parser stopped seeing something rather
+# video plane added, plus the Steam credential-vault libsecret and RomM WebKit links. A drop here means the parser stopped seeing something rather
 # than that a link was removed.
 FULL_WALK_SUMMARY = "(10 pkg-config links, 10 modules)"
 

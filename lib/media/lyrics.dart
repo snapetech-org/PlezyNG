@@ -10,16 +10,30 @@ class LyricSpan {
   final String? part;
   final double? confidence;
 
-  const LyricSpan({required this.text, required this.startMs, this.endMs, this.unit = LyricUnit.word, this.part, this.confidence});
+  const LyricSpan({
+    required this.text,
+    required this.startMs,
+    this.endMs,
+    this.unit = LyricUnit.word,
+    this.part,
+    this.confidence,
+  });
 
   Map<String, dynamic> toJson() => {
-    'text': text, 'startMs': startMs, if (endMs != null) 'endMs': endMs,
-    'unit': unit.name, if (part != null) 'part': part, if(confidence!=null)'confidence':confidence,
+    'text': text,
+    'startMs': startMs,
+    if (endMs != null) 'endMs': endMs,
+    'unit': unit.name,
+    if (part != null) 'part': part,
+    if (confidence != null) 'confidence': confidence,
   };
 
   factory LyricSpan.fromJson(Map<String, dynamic> json) => LyricSpan(
-    text: json['text'] as String, startMs: json['startMs'] as int,
-    endMs: json['endMs'] as int?, part: json['part'] as String?, confidence:(json['confidence'] as num?)?.toDouble(),
+    text: json['text'] as String,
+    startMs: json['startMs'] as int,
+    endMs: json['endMs'] as int?,
+    part: json['part'] as String?,
+    confidence: (json['confidence'] as num?)?.toDouble(),
     unit: LyricUnit.values.firstWhere((u) => u.name == json['unit'], orElse: () => LyricUnit.word),
   );
 }
@@ -35,21 +49,36 @@ class LyricLine {
   final String? pronunciation;
   final List<LyricSpan> spans;
 
-  const LyricLine({required this.text, this.startMs, this.endMs, this.part,
-    this.translation, this.pronunciation, this.spans = const []});
+  const LyricLine({
+    required this.text,
+    this.startMs,
+    this.endMs,
+    this.part,
+    this.translation,
+    this.pronunciation,
+    this.spans = const [],
+  });
 
   Map<String, dynamic> toJson() => {
-    'text': text, if (startMs != null) 'startMs': startMs, if (endMs != null) 'endMs': endMs,
-    if (part != null) 'part': part, if (translation != null) 'translation': translation,
+    'text': text,
+    if (startMs != null) 'startMs': startMs,
+    if (endMs != null) 'endMs': endMs,
+    if (part != null) 'part': part,
+    if (translation != null) 'translation': translation,
     if (pronunciation != null) 'pronunciation': pronunciation,
     if (spans.isNotEmpty) 'spans': spans.map((s) => s.toJson()).toList(),
   };
 
   factory LyricLine.fromJson(Map<String, dynamic> json) => LyricLine(
-    text: json['text'] as String, startMs: json['startMs'] as int?, endMs: json['endMs'] as int?,
-    part: json['part'] as String?, translation: json['translation'] as String?,
+    text: json['text'] as String,
+    startMs: json['startMs'] as int?,
+    endMs: json['endMs'] as int?,
+    part: json['part'] as String?,
+    translation: json['translation'] as String?,
     pronunciation: json['pronunciation'] as String?,
-    spans: List.unmodifiable((json['spans'] as List? ?? const []).map((s) => LyricSpan.fromJson(Map<String, dynamic>.from(s as Map)))),
+    spans: List.unmodifiable(
+      (json['spans'] as List? ?? const []).map((s) => LyricSpan.fromJson(Map<String, dynamic>.from(s as Map))),
+    ),
   );
 }
 
@@ -71,6 +100,8 @@ class Lyrics {
 
   factory Lyrics.fromJson(Map<String, dynamic> json) => Lyrics(
     synced: json['synced'] == true,
-    lines: List.unmodifiable((json['lines'] as List).map((l) => LyricLine.fromJson(Map<String, dynamic>.from(l as Map)))),
+    lines: List.unmodifiable(
+      (json['lines'] as List).map((l) => LyricLine.fromJson(Map<String, dynamic>.from(l as Map))),
+    ),
   );
 }

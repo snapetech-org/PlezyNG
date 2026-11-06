@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import '../test_helpers/prefs.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:plezy/sources/adapters/open_subsonic_source.dart';
@@ -8,7 +9,6 @@ import 'package:plezy/sources/adapters/podcast_rss_source.dart';
 import 'package:plezy/sources/source_models.dart';
 import 'package:plezy/sources/source_transport.dart';
 import 'package:plezy/sources/podcast_opml.dart';
-import '../test_helpers/prefs.dart';
 
 http.Response _json(Object value, {int status = 200}) =>
     http.Response(jsonEncode(value), status, headers: const {'content-type': 'application/json'});

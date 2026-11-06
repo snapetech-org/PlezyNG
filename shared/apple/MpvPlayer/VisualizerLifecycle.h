@@ -13,22 +13,44 @@ class AppleVisualizerLifecycle {
   std::condition_variable condition_;
   bool foreground_;
   id inactive_, active_;
-  AppleVisualizerLifecycle() : foreground_(UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+  AppleVisualizerLifecycle()
+      : foreground_(UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
     auto* center = NSNotificationCenter.defaultCenter;
-    inactive_ = [center addObserverForName:UIApplicationWillResignActiveNotification object:nil queue:nil
-        usingBlock:^(NSNotification*) { SetForeground(false); }];
-    active_ = [center addObserverForName:UIApplicationDidBecomeActiveNotification object:nil queue:nil
-        usingBlock:^(NSNotification*) { SetForeground(true); }];
+    inactive_ = [center addObserverForName:UIApplicationWillResignActiveNotification
+                                    object:nil
+                                     queue:nil
+                                usingBlock:^(NSNotification*) {
+                                  SetForeground(false);
+                                }];
+    active_ = [center addObserverForName:UIApplicationDidBecomeActiveNotification
+                                  object:nil
+                                   queue:nil
+                              usingBlock:^(NSNotification*) {
+                                SetForeground(true);
+                              }];
   }
+
  public:
-  static AppleVisualizerLifecycle& Shared() { static auto* gate = new AppleVisualizerLifecycle; return *gate; }
-  bool Foreground() { std::lock_guard<std::mutex> lock(mutex_); return foreground_; }
+  static AppleVisualizerLifecycle& Shared() {
+    static auto* gate = new AppleVisualizerLifecycle;
+    return *gate;
+  }
+  bool Foreground() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return foreground_;
+  }
   void SetForeground(bool value) {
-    { std::lock_guard<std::mutex> lock(mutex_); foreground_ = value; }
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      foreground_ = value;
+    }
     condition_.notify_all();
   }
   void Cancel(std::atomic<bool>& cancelled) {
-    { std::lock_guard<std::mutex> lock(mutex_); cancelled.store(true); }
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      cancelled.store(true);
+    }
     condition_.notify_all();
   }
   void Wait(const std::atomic<bool>* cancelled = nullptr) {

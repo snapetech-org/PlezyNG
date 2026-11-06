@@ -119,6 +119,20 @@ install(CODE "
 set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
 set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
+# Every ordinary Linux build includes the offline HDR10/SDR runtime. The
+# persisted experimental setting controls access; there is no feature flag.
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/../scripts/fetch_dv_tools.py"
+  OUTPUT_VARIABLE PLEZYNG_DV_TOOLS_DIR OUTPUT_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE PLEZYNG_DV_TOOLS_RESULT
+)
+if(NOT PLEZYNG_DV_TOOLS_RESULT EQUAL 0)
+  message(FATAL_ERROR "The locked offline Dolby Vision runtime could not be verified")
+endif()
+install(DIRECTORY "${PLEZYNG_DV_TOOLS_DIR}/"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/tools/dv" USE_SOURCE_PERMISSIONS COMPONENT Runtime)
+
 # Opt-in dependency built from native/visualizer/sources.lock.json on private
 # JIT. Stock app builds stay usable and report this capability unavailable.
 # A path alone is not release evidence; promotion also requires recorded

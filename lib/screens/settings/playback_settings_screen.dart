@@ -41,6 +41,7 @@ import 'mpv_config_screen.dart';
 import 'settings_utils.dart';
 import 'subtitle_styling_screen.dart';
 import 'subtitle_language_order_screen.dart';
+import '../sources/dv_offline_export_screen.dart';
 
 class PlaybackSettingsScreen extends StatefulWidget {
   const PlaybackSettingsScreen({super.key});
@@ -114,6 +115,8 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
         final showExperimentalDolbyVision =
             (Platform.isLinux && !PlatformDetector.usesNativeTvMedia()) ||
             Platform.isWindows ||
+            Platform.isIOS ||
+            Platform.isMacOS ||
             (Platform.isAndroid && !exoActive);
 
         return SettingsPage(
@@ -155,9 +158,16 @@ class _PlaybackSettingsScreenState extends State<PlaybackSettingsScreen> {
                     pref: SettingsService.experimentalDolbyVision,
                     icon: Symbols.hdr_on_rounded,
                     title: t.settings.experimentalDolbyVision,
-                    subtitle: Platform.isLinux
-                        ? t.settings.experimentalDolbyVisionDescription
-                        : t.settings.dvExperimentUnavailableDescription,
+                    subtitle: t.settings.experimentalDolbyVisionDescription,
+                  ),
+                if (Platform.isLinux &&
+                    !PlatformDetector.usesNativeTvMedia() &&
+                    svc.read(SettingsService.experimentalDolbyVision))
+                  SettingNavigationTile(
+                    icon: Symbols.movie_rounded,
+                    title: t.settings.dvOfflineTitle,
+                    subtitle: t.settings.dvOfflineDescription,
+                    destinationBuilder: (_) => const DvOfflineExportScreen(),
                   ),
                 if (Platform.isLinux &&
                     !PlatformDetector.usesNativeTvMedia() &&

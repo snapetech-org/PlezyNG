@@ -49,9 +49,13 @@ final class ThemePackage {
   }
 
   factory ThemePackage.fromJson(Object? value) {
-    if (value is! Map || value['schemaVersion'] != 1) throw const FormatException('Unsupported theme schema');
+    if (value is! Map || value['schemaVersion'] != 1) {
+      throw const FormatException('Unsupported theme schema');
+    }
     void keys(Map map, Set<String> allowed) {
-      if (map.keys.any((key) => !allowed.contains(key))) throw const FormatException('Unsupported theme token');
+      if (map.keys.any((key) => !allowed.contains(key))) {
+        throw const FormatException('Unsupported theme token');
+      }
     }
 
     keys(value, {'schemaVersion', 'id', 'name', 'palette', 'geometry', 'typography', 'layout'});
@@ -66,7 +70,9 @@ final class ThemePackage {
     }
     Map section(String key, Set<String> allowed) {
       final data = value[key] ?? const {};
-      if (data is! Map) throw const FormatException('Invalid theme section');
+      if (data is! Map) {
+        throw const FormatException('Invalid theme section');
+      }
       keys(data, allowed);
       return data;
     }
@@ -76,13 +82,17 @@ final class ThemePackage {
     final layout = section('layout', {'navigation'});
     double number(Map map, String key, double fallback, double minimum, double maximum) {
       final n = map[key] ?? fallback;
-      if (n is! num || !n.isFinite || n < minimum || n > maximum) throw FormatException('Invalid theme $key');
+      if (n is! num || !n.isFinite || n < minimum || n > maximum) {
+        throw FormatException('Invalid theme $key');
+      }
       return n.toDouble();
     }
 
     final nav = layout['navigation'] ?? 'adaptive';
     final navigation = ThemeNavigation.values.where((value) => value.name == nav).firstOrNull;
-    if (navigation == null) throw const FormatException('Unsupported navigation layout');
+    if (navigation == null) {
+      throw const FormatException('Unsupported navigation layout');
+    }
     return ThemePackage(
       id: id,
       name: name.trim(),
@@ -119,8 +129,32 @@ final class ThemePackage {
   ThemeData apply(ThemeData base) {
     final tokens = base.extension<MonoTokens>()!;
     final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd));
+    // Sparse text themes inherit unspecified sizes later in Flutter. Scale
+    // only declared sizes so a package does not assert on those inherited styles.
+    TextStyle? scaled(TextStyle? style) {
+      if (style == null || style.fontSize == null) return style;
+      return style.apply(fontSizeFactor: textScale);
+    }
+
+    final text = base.textTheme;
     return base.copyWith(
-      textTheme: base.textTheme.apply(fontSizeFactor: textScale),
+      textTheme: text.copyWith(
+        displayLarge: scaled(text.displayLarge),
+        displayMedium: scaled(text.displayMedium),
+        displaySmall: scaled(text.displaySmall),
+        headlineLarge: scaled(text.headlineLarge),
+        headlineMedium: scaled(text.headlineMedium),
+        headlineSmall: scaled(text.headlineSmall),
+        titleLarge: scaled(text.titleLarge),
+        titleMedium: scaled(text.titleMedium),
+        titleSmall: scaled(text.titleSmall),
+        bodyLarge: scaled(text.bodyLarge),
+        bodyMedium: scaled(text.bodyMedium),
+        bodySmall: scaled(text.bodySmall),
+        labelLarge: scaled(text.labelLarge),
+        labelMedium: scaled(text.labelMedium),
+        labelSmall: scaled(text.labelSmall),
+      ),
       cardTheme: base.cardTheme.copyWith(shape: shape),
       filledButtonTheme: FilledButtonThemeData(
         style: base.filledButtonTheme.style?.copyWith(shape: WidgetStatePropertyAll(shape)),

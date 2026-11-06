@@ -3,6 +3,7 @@
 
 import importlib.util
 import plistlib
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -15,7 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def load_script(name):
     spec = importlib.util.spec_from_file_location(name, ROOT / "scripts" / f"{name}.py")
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    with patch.object(sys, "path", [str(ROOT / "scripts"), *sys.path]):
+        spec.loader.exec_module(module)
     return module
 
 

@@ -214,7 +214,11 @@ void main() {
           'username': 'member',
           'password': 'secret',
         },
-        protect: (value) async { final id = 'enc:v2:test-${sealId++}'; sealed[id] = value; return id; },
+        protect: (value) async {
+          final id = 'enc:v2:test-${sealId++}';
+          sealed[id] = value;
+          return id;
+        },
         reveal: (value) async => sealed[value],
       );
       addTearDown(source.close);
@@ -280,7 +284,9 @@ void main() {
               'total': 1,
             });
           }
-          if (request.url.path == '/api/items/show-1') return jsonResponse(podcast);
+          if (request.url.path == '/api/items/show-1') {
+            return jsonResponse(podcast);
+          }
           if (request.url.path == '/api/me/progress/show-1/ep-1') {
             if (request.method == 'PATCH') {
               expect(jsonDecode(request.body)['currentTime'], 30);

@@ -1,8 +1,8 @@
 #include "mpv_plugin.h"
 
 #include <cmath>
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 #include <deque>
 #include <functional>
 #include <limits>
@@ -379,7 +379,8 @@ static void apply_pending_rect(MpvPlugin* self) {
   if (self->video_surface == nullptr) return;
   if (self->detached_video) {
     const int scale = gtk_widget_get_scale_factor(self->detached_video);
-    self->video_surface->SetRect(0, 0, gtk_widget_get_allocated_width(self->detached_video) * scale,
+    self->video_surface->SetRect(
+        0, 0, gtk_widget_get_allocated_width(self->detached_video) * scale,
         gtk_widget_get_allocated_height(self->detached_video) * scale, scale);
     return;
   }
@@ -979,7 +980,8 @@ static void request_detached_restore(MpvPlugin* self) {
   if (self->detached_restore_source) return;
   if (attach_video_window(self, TRUE)) return;
   self->detached_restore_attempts = 0;
-  self->detached_restore_source = g_timeout_add_full(G_PRIORITY_DEFAULT, 25,
+  self->detached_restore_source = g_timeout_add_full(
+      G_PRIORITY_DEFAULT, 25,
       +[](gpointer data) -> gboolean {
         auto* self = static_cast<MpvPlugin*>(data);
         if (++self->detached_restore_attempts >= 200 || attach_video_window(self, TRUE)) {
@@ -987,7 +989,8 @@ static void request_detached_restore(MpvPlugin* self) {
           return G_SOURCE_REMOVE;
         }
         return G_SOURCE_CONTINUE;
-      }, g_object_ref(self), g_object_unref);
+      },
+      g_object_ref(self), g_object_unref);
 }
 
 static const char* detached_text(FlValue* args, const char* key) {
@@ -1023,75 +1026,101 @@ static gboolean detach_video_window(MpvPlugin* self, FlValue* args) {
       if (FILE* input = std::fopen(geometry_path, "r")) {
         char saved[65]{};
         unsigned int width = 0, height = 0;
-        if (std::fgets(saved, sizeof(saved), input) && sscanf(saved, "%u %u", &width, &height) == 2 &&
-            width >= 360 && width <= 8192 && height >= 200 && height <= 8192)
+        if (std::fgets(saved, sizeof(saved), input) && sscanf(saved, "%u %u", &width, &height) == 2 && width >= 360 &&
+            width <= 8192 && height >= 200 && height <= 8192)
           gtk_window_set_default_size(GTK_WINDOW(window), width, height);
         std::fclose(input);
       }
     }
   }
   GdkVisual* rgba = gdk_screen_get_rgba_visual(gtk_widget_get_screen(window));
-  if (!rgba) { gtk_widget_destroy(window); return FALSE; }
+  if (!rgba) {
+    gtk_widget_destroy(window);
+    return FALSE;
+  }
   gtk_widget_set_visual(window, rgba);
   gtk_widget_set_app_paintable(window, TRUE);
-  g_signal_connect(window, "draw", G_CALLBACK(+[](GtkWidget*, cairo_t* cr, gpointer) -> gboolean {
-    cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgba(cr, 0, 0, 0, 0);
-    cairo_paint(cr);
-    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
-    return FALSE;
-  }), nullptr);
+  g_signal_connect(
+      window, "draw", G_CALLBACK(+[](GtkWidget*, cairo_t* cr, gpointer) -> gboolean {
+        cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
+        cairo_set_source_rgba(cr, 0, 0, 0, 0);
+        cairo_paint(cr);
+        cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+        return FALSE;
+      }),
+      nullptr);
   GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   GtkWidget* video = gtk_drawing_area_new();
   gtk_widget_set_app_paintable(video, TRUE);
   gtk_widget_set_size_request(video, 360, 200);
   gtk_box_pack_start(GTK_BOX(box), video, TRUE, TRUE, 0);
   GtkWidget* controls = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
-  FlValue* labels = args && fl_value_get_type(args) == FL_VALUE_TYPE_MAP ? fl_value_lookup_string(args, "labels") : nullptr;
+  FlValue* labels =
+      args && fl_value_get_type(args) == FL_VALUE_TYPE_MAP ? fl_value_lookup_string(args, "labels") : nullptr;
   const char* keys[] = {"back", "playPause", "forward", "restore"};
   const char* actions[] = {"seekBackward", "togglePlayback", "seekForward", "restore"};
   for (int i = 0; i < 4; ++i) {
     GtkWidget* button = gtk_button_new_with_label(detached_text(labels, keys[i]));
     g_object_set_data(G_OBJECT(button), "plezy-action", const_cast<char*>(actions[i]));
-    g_signal_connect(button, "clicked", G_CALLBACK(+[](GtkButton* button, gpointer data) {
-      auto* self = static_cast<MpvPlugin*>(data);
-      const auto* action = static_cast<const char*>(g_object_get_data(G_OBJECT(button), "plezy-action"));
-      if (strcmp(action, "restore") == 0) request_detached_restore(self);
-      else detached_action(self, action);
-    }), self);
+    g_signal_connect(
+        button, "clicked", G_CALLBACK(+[](GtkButton* button, gpointer data) {
+          auto* self = static_cast<MpvPlugin*>(data);
+          const auto* action = static_cast<const char*>(g_object_get_data(G_OBJECT(button), "plezy-action"));
+          if (strcmp(action, "restore") == 0)
+            request_detached_restore(self);
+          else
+            detached_action(self, action);
+        }),
+        self);
     gtk_box_pack_start(GTK_BOX(controls), button, TRUE, TRUE, 0);
   }
   gtk_box_pack_start(GTK_BOX(box), controls, FALSE, FALSE, 0);
   gtk_container_add(GTK_CONTAINER(window), box);
   gtk_widget_show_all(window);
-  if (!self->video_surface->Reparent(video)) { gtk_widget_destroy(window); return FALSE; }
+  if (!self->video_surface->Reparent(video)) {
+    gtk_widget_destroy(window);
+    return FALSE;
+  }
   self->detached_window = window;
   self->detached_parent_visible = self->visible;
   self->detached_video = video;
   self->detached_token = g_strdup(token);
   self->detached_geometry_path = g_steal_pointer(&geometry_path);
-  g_signal_connect(window, "configure-event", G_CALLBACK(+[](GtkWidget*, GdkEvent*, gpointer data) -> gboolean {
-    auto* self = static_cast<MpvPlugin*>(data);
-    if (!self->detached_geometry_source) {
-      self->detached_geometry_source = g_timeout_add_full(G_PRIORITY_DEFAULT, 250,
-          +[](gpointer data) -> gboolean {
-            auto* self = static_cast<MpvPlugin*>(data);
-            self->detached_geometry_source = 0;
-            save_detached_geometry(self);
-            return G_SOURCE_REMOVE;
-          }, g_object_ref(self), g_object_unref);
-    }
-    return FALSE;
-  }), self);
-  g_signal_connect(window, "delete-event", G_CALLBACK(+[](GtkWidget*, GdkEvent*, gpointer data) -> gboolean {
-    request_detached_restore(static_cast<MpvPlugin*>(data));
-    return TRUE;
-  }), self);
-  g_signal_connect(video, "size-allocate", G_CALLBACK(+[](GtkWidget*, GtkAllocation*, gpointer data) {
-    auto* self = static_cast<MpvPlugin*>(data);
-    if (self->render_in_flight) self->rect_apply_deferred = TRUE;
-    else { apply_pending_rect(self); self->plane_needs_render = TRUE; render_video_plane(self, TRUE); }
-  }), self);
+  g_signal_connect(
+      window, "configure-event", G_CALLBACK(+[](GtkWidget*, GdkEvent*, gpointer data) -> gboolean {
+        auto* self = static_cast<MpvPlugin*>(data);
+        if (!self->detached_geometry_source) {
+          self->detached_geometry_source = g_timeout_add_full(
+              G_PRIORITY_DEFAULT, 250,
+              +[](gpointer data) -> gboolean {
+                auto* self = static_cast<MpvPlugin*>(data);
+                self->detached_geometry_source = 0;
+                save_detached_geometry(self);
+                return G_SOURCE_REMOVE;
+              },
+              g_object_ref(self), g_object_unref);
+        }
+        return FALSE;
+      }),
+      self);
+  g_signal_connect(
+      window, "delete-event", G_CALLBACK(+[](GtkWidget*, GdkEvent*, gpointer data) -> gboolean {
+        request_detached_restore(static_cast<MpvPlugin*>(data));
+        return TRUE;
+      }),
+      self);
+  g_signal_connect(
+      video, "size-allocate", G_CALLBACK(+[](GtkWidget*, GtkAllocation*, gpointer data) {
+        auto* self = static_cast<MpvPlugin*>(data);
+        if (self->render_in_flight)
+          self->rect_apply_deferred = TRUE;
+        else {
+          apply_pending_rect(self);
+          self->plane_needs_render = TRUE;
+          render_video_plane(self, TRUE);
+        }
+      }),
+      self);
   apply_pending_rect(self);
   self->visible = TRUE;
   self->video_surface->SetVisible(!self->hdr_output_unnameable);
@@ -1853,7 +1882,8 @@ static void mpv_plugin_handle_method_call(FlMethodChannel* channel, FlMethodCall
   } else if (strcmp(method, "detachVideoWindow") == 0) {
     response = bool_success_response(detach_video_window(self, args));
   } else if (strcmp(method, "attachVideoWindow") == 0) {
-    response = bool_success_response(!self->detached_window ||
+    response = bool_success_response(
+        !self->detached_window ||
         (g_strcmp0(detached_text(args, "token"), self->detached_token) == 0 && attach_video_window(self, FALSE)));
   } else if (strcmp(method, "setVisible") == 0) {
     FlValue* visible_value = fl_value_lookup_string(args, "visible");

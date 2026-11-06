@@ -197,8 +197,8 @@ class WaylandVideoSurface {
   // and why the margin it applies is not a magic number.
   bool output_is_hdr() const {
     return OutputIsHdr(
-        ParseOutputHdrPolicy(g_getenv("PLEAZYNG_HDR_OUTPUT")), preferred_.valid,
-        preferred_.max_luminance, preferred_.reference_luminance);
+        ParseOutputHdrPolicy(g_getenv("PLEAZYNG_HDR_OUTPUT")), preferred_.valid, preferred_.max_luminance,
+        preferred_.reference_luminance);
   }
 
   // Invoked on the GTK main thread when the compositor's preferred description

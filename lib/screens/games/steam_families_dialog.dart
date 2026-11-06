@@ -1,3 +1,4 @@
+import '../../i18n/strings.g.dart' as l10n;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -46,14 +47,18 @@ class _SteamFamiliesDialogState extends State<SteamFamiliesDialog> {
         _retire();
         if (mounted) {
           final route = ModalRoute.of(context);
-          if (route != null && route.isActive) Navigator.of(context).removeRoute(route);
+          if (route != null && route.isActive) {
+            Navigator.of(context).removeRoute(route);
+          }
         }
       }),
     );
   }
 
   void _retire() {
-    if (!_cancelled.isCompleted) _cancelled.complete();
+    if (!_cancelled.isCompleted) {
+      _cancelled.complete();
+    }
     unawaited(widget.client.retire());
   }
 
@@ -66,7 +71,9 @@ class _SteamFamiliesDialogState extends State<SteamFamiliesDialog> {
   }
 
   Future<void> _perform(Future<void> Function() action) async {
-    if (!current || _busy) return;
+    if (!current || _busy) {
+      return;
+    }
     setState(() {
       _busy = true;
       _message = null;
@@ -81,20 +88,30 @@ class _SteamFamiliesDialogState extends State<SteamFamiliesDialog> {
         });
       }
     } finally {
-      if (current) setState(() => _busy = false);
+      if (current) {
+        setState(() => _busy = false);
+      }
     }
   }
 
   Future<void> _authorize() => _perform(() async {
     await widget.client.start();
-    if (current) setState(() {});
+    if (current) {
+      setState(() {});
+    }
     while (current && !widget.client.authorized) {
       await Future.any([Future<void>.delayed(const Duration(seconds: 5)), _cancelled.future]);
-      if (!current) return;
+      if (!current) {
+        return;
+      }
       await widget.client.poll();
-      if (current) setState(() {});
+      if (current) {
+        setState(() {});
+      }
     }
-    if (current) await _readState();
+    if (current) {
+      await _readState();
+    }
   });
   Future<void> _readState() async {
     final state = await widget.client.state();
@@ -108,7 +125,9 @@ class _SteamFamiliesDialogState extends State<SteamFamiliesDialog> {
   }
 
   void _edit(String action) {
-    if (!current || _busy) return;
+    if (!current || _busy) {
+      return;
+    }
     setState(() {
       _editing = action;
       _name.text = action == 'rename' ? _state?.name ?? '' : '';
@@ -131,12 +150,18 @@ class _SteamFamiliesDialogState extends State<SteamFamiliesDialog> {
   });
   Future<void> _commit() => _perform(() async {
     final review = _review;
-    if (review == null || !_acknowledged) return;
+    if (review == null || !_acknowledged) {
+      return;
+    }
     setState(() => _review = null);
     final needsSteam = await widget.client.commit(review);
-    if (!current) return;
+    if (!current) {
+      return;
+    }
     await _readState();
-    if (current) setState(() => _message = needsSteam ? t.games.familyNeedsSteam : t.games.familySubmitted);
+    if (current) {
+      setState(() => _message = needsSteam ? t.games.familyNeedsSteam : t.games.familySubmitted);
+    }
   });
   String _label(String action) => switch (action) {
     'create' => t.games.familyCreate,
@@ -249,7 +274,7 @@ class _SteamFamiliesDialogState extends State<SteamFamiliesDialog> {
                       if (review.change.steamId case final id?) Text('${t.games.familySteamId}: $id'),
                       if (review.change.familyId case final id?) Text(id),
                       if (review.change.role case final role?) Text(_roleName(role)),
-                      if (review.change.appId case final app?) Text('Steam AppID: $app'),
+                      if (review.change.appId case final app?) Text(l10n.t.games.steamAppID(value1: (app).toString())),
                       Text(t.games.familyReviewHelp),
                       FocusableSwitchListTile(
                         value: _acknowledged,
@@ -284,7 +309,9 @@ class _SteamFamiliesDialogState extends State<SteamFamiliesDialog> {
                           onChanged: _busy
                               ? null
                               : (value) {
-                                  if (value != null) setState(() => _role = value);
+                                  if (value != null) {
+                                    setState(() => _role = value);
+                                  }
                                 },
                         ),
                       ] else

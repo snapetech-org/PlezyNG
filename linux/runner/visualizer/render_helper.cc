@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "../../../shared/visualization/render_helper.h"
+
 #include <epoxy/egl.h>
 #include <epoxy/gl.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
 #include <cstring>
 
 using namespace plezy::visualization;
@@ -61,7 +63,7 @@ struct ProjectMApi {
   }
 };
 ProjectMApi& Api() {
-  static auto* api = new ProjectMApi(); // Quarantined driver calls retain this mapping.
+  static auto* api = new ProjectMApi();  // Quarantined driver calls retain this mapping.
   return *api;
 }
 
@@ -189,6 +191,7 @@ plezy::visualization::MilkRustImage DecodeImage(const std::filesystem::path& pat
 
 class Context final : public NativeContext {
   OffscreenContext context_;
+
  public:
   Context() { context_.Initialize(); }
   milkrust_gl_loader Loader() const override {
@@ -202,22 +205,33 @@ class ProjectMBackend final : public RenderBackend {
   std::string error_;
   void* instance_ = nullptr;
   bool loaded_ = false;
+
  public:
   ProjectMBackend() {
     if (!Api().error.empty()) throw std::runtime_error(Api().error);
     graphics_.Initialize();
   }
-  ~ProjectMBackend() override { if (instance_) Api().destroy(instance_); }
+  ~ProjectMBackend() override {
+    if (instance_) Api().destroy(instance_);
+  }
   void Reset() override {
-    if (instance_) { Api().destroy(instance_); instance_ = nullptr; }
-    loaded_ = false; error_.clear();
+    if (instance_) {
+      Api().destroy(instance_);
+      instance_ = nullptr;
+    }
+    loaded_ = false;
+    error_.clear();
     graphics_.Resize(768, 432);
     instance_ = Api().create();
     if (!instance_) throw std::runtime_error("projectM could not initialize.");
-    Api().failed(instance_, [](const char*, const char* message, void* target) {
-      *static_cast<std::string*>(target) = message ? message : "Preset loading failed.";
-    }, &error_);
-    Api().lock(instance_, true); Api().fps(instance_, 30);
+    Api().failed(
+        instance_,
+        [](const char*, const char* message, void* target) {
+          *static_cast<std::string*>(target) = message ? message : "Preset loading failed.";
+        },
+        &error_);
+    Api().lock(instance_, true);
+    Api().fps(instance_, 30);
   }
   void Load(const std::string& path, const std::string& root, double transition = 0) override {
     if (!instance_) throw std::runtime_error("projectM has not been reset.");
@@ -225,14 +239,17 @@ class ProjectMBackend final : public RenderBackend {
     const auto preset = std::filesystem::canonical(std::filesystem::u8path(path));
     const auto relative = preset.lexically_relative(base);
     auto extension = preset.extension().u8string();
-    for (auto& value : extension) if (value >= 'A' && value <= 'Z') value += 'a' - 'A';
+    for (auto& value : extension)
+      if (value >= 'A' && value <= 'Z') value += 'a' - 'A';
     if (relative.empty() || *relative.begin() == ".." || extension != ".milk" ||
         !std::filesystem::is_regular_file(preset) || std::filesystem::file_size(preset) > 2 * 1024 * 1024)
       throw std::runtime_error("projectM requires a bounded .milk preset inside its pack.");
     const auto root_path = base.string(), textures = (base / "textures").string();
     const char* roots[] = {root_path.c_str(), textures.c_str()};
-    Api().paths(instance_, roots, 2); Api().soft_cut(instance_, std::max(0.01, transition));
-    error_.clear(); Api().load(instance_, preset.c_str(), loaded_ && transition > 0);
+    Api().paths(instance_, roots, 2);
+    Api().soft_cut(instance_, std::max(0.01, transition));
+    error_.clear();
+    Api().load(instance_, preset.c_str(), loaded_ && transition > 0);
     if (!error_.empty()) throw std::runtime_error(error_);
     loaded_ = true;
   }
@@ -242,10 +259,13 @@ class ProjectMBackend final : public RenderBackend {
     if (!maximum) throw std::runtime_error("Invalid projectM PCM capacity.");
     for (size_t offset = 0; offset < frames;) {
       const auto count = static_cast<unsigned int>(std::min<size_t>(maximum, frames - offset));
-      Api().pcm(instance_, samples + offset * 2, count, 2); offset += count;
+      Api().pcm(instance_, samples + offset * 2, count, 2);
+      offset += count;
     }
   }
-  void Pause(bool paused) override { if (instance_) Api().pause(instance_, paused); }
+  void Pause(bool paused) override {
+    if (instance_) Api().pause(instance_, paused);
+  }
   void Capture(uint32_t width, uint32_t height, double, std::vector<uint8_t>& rgba) override {
     if (!instance_ || !loaded_) throw std::runtime_error("projectM has no loaded preset.");
     const auto bytes = render_protocol::FrameBytes(width, height);
@@ -259,11 +279,11 @@ class ProjectMBackend final : public RenderBackend {
     if (glGetError() != GL_NO_ERROR) throw std::runtime_error("Visualization frame readback failed.");
     const size_t stride = size_t(width) * 4;
     for (uint32_t y = 0; y < height / 2; ++y)
-      std::swap_ranges(rgba.begin() + y * stride, rgba.begin() + (y + 1) * stride,
-          rgba.begin() + (height - y - 1) * stride);
+      std::swap_ranges(
+          rgba.begin() + y * stride, rgba.begin() + (y + 1) * stride, rgba.begin() + (height - y - 1) * stride);
   }
 };
-}
+}  // namespace
 int main(int argc, char** argv) {
   if (argc != 3 || std::strcmp(argv[1], "--plezy-render-pipe") || std::strcmp(argv[2], "3")) return 64;
   RunRenderHelper(3, [](render_protocol::Backend kind) -> std::unique_ptr<RenderBackend> {

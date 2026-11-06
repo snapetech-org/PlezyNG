@@ -109,7 +109,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     _native.addListener(_onNativeChanged);
     _playbackListenable.addListener(_onSourceChanged);
     _observedSourceIdentity = _sourceIdentity;
-    if (_sourceReady) _beginProfileLoad();
+    if (_sourceReady) {
+      _beginProfileLoad();
+    }
     _publishFrame();
   }
 
@@ -156,11 +158,15 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       _profile = null;
       _profileLoadStarted = false;
       _profileLoaded = false;
-      if (_sourceReady) _beginProfileLoad();
+      if (_sourceReady) {
+        _beginProfileLoad();
+      }
     }
     _publishFrame();
     _syncTicker();
-    if (oldWidget.preset != widget.preset) _savePreferences();
+    if (oldWidget.preset != widget.preset) {
+      _savePreferences();
+    }
   }
 
   @override
@@ -174,17 +180,23 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     final route = _fullscreenRoute;
     if (route != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (route.isActive) route.navigator?.removeRoute(route);
+        if (route.isActive) {
+          route.navigator?.removeRoute(route);
+        }
       });
     }
     WidgetsBinding.instance.removeObserver(this);
     _playbackListenable.removeListener(_onSourceChanged);
     final reducedMotionSubscription = _reducedMotionPositionSubscription;
     _reducedMotionPositionSubscription = null;
-    if (reducedMotionSubscription != null) unawaited(reducedMotionSubscription.cancel());
+    if (reducedMotionSubscription != null) {
+      unawaited(reducedMotionSubscription.cancel());
+    }
     final spectrumSubscription = _spectrumSubscription;
     _spectrumSubscription = null;
-    if (spectrumSubscription != null) unawaited(spectrumSubscription.cancel());
+    if (spectrumSubscription != null) {
+      unawaited(spectrumSubscription.cancel());
+    }
     _stopSpectrumAnalysis();
     _ticker.dispose();
     _presetTimer?.cancel();
@@ -232,9 +244,13 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
 
   Duration get _duration {
     final configured = widget.duration;
-    if (configured > Duration.zero) return configured;
+    if (configured > Duration.zero) {
+      return configured;
+    }
     final sourceDuration = widget.sourcePlayback?.durationMs ?? 0;
-    if (sourceDuration > 0) return Duration(milliseconds: sourceDuration);
+    if (sourceDuration > 0) {
+      return Duration(milliseconds: sourceDuration);
+    }
     return widget.service?.duration ?? Duration.zero;
   }
 
@@ -268,7 +284,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   }
 
   void _syncReducedMotionPositionListener() {
-    if (widget.service == null) return;
+    if (widget.service == null) {
+      return;
+    }
     if (_reduceMotion && _reducedMotionPositionSubscription == null) {
       _reducedMotionPositionSubscription = widget.service!.positionStream.listen((_) => _publishFrame());
     } else if (!_reduceMotion && _reducedMotionPositionSubscription != null) {
@@ -286,13 +304,17 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       _missingSpectrumSince = null;
       _spectrumMonitorElapsed = Duration.zero;
     }
-    if (!_profileLoadStarted && _sourceReady) _beginProfileLoad();
+    if (!_profileLoadStarted && _sourceReady) {
+      _beginProfileLoad();
+    }
     _syncTicker();
     _publishFrame();
   }
 
   void _onNativeChanged() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     setState(() {});
     _syncTicker();
   }
@@ -302,9 +324,13 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     try {
       final prefs = await store.preferences();
       final files = await store.allPresets();
-      if (!mounted || generation != _preferenceGeneration) return;
+      if (!mounted || generation != _preferenceGeneration) {
+        return;
+      }
       await _native.setEngine(prefs['engine'] == 'milkrust' ? 'milkrust' : 'projectm');
-      if (!mounted || generation != _preferenceGeneration) return;
+      if (!mounted || generation != _preferenceGeneration) {
+        return;
+      }
       _shuffle = prefs['shuffle'] == true;
       _locked = prefs['locked'] != false;
       _intervalSeconds = prefs['interval'] is int ? (prefs['interval'] as int).clamp(10, 600).toInt() : 30;
@@ -317,14 +343,20 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           : files.where(_native.accepts).toList();
       final original = prefs['original'];
       for (final preset in MusicVisualizerPreset.values) {
-        if (preset.name == original) widget.onPresetChanged(preset);
+        if (preset.name == original) {
+          widget.onPresetChanged(preset);
+        }
       }
       final selected = byPath[prefs['selected']];
       if (selected != null && _native.accepts(selected) && _nativeSourceReady) {
-        if (!_playlist.any((file) => file.id == selected.id)) _playlist.add(selected);
+        if (!_playlist.any((file) => file.id == selected.id)) {
+          _playlist.add(selected);
+        }
         await _native.load(selected, automatic: true);
       }
-      if (!mounted || generation != _preferenceGeneration) return;
+      if (!mounted || generation != _preferenceGeneration) {
+        return;
+      }
       setState(() {});
       _syncTicker();
     } on Object catch (error) {
@@ -334,9 +366,13 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
 
   void _savePreferences() {
     final store = _store;
-    if (store == null) return;
+    if (store == null) {
+      return;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _optionsRevision.value++;
+      if (mounted) {
+        _optionsRevision.value++;
+      }
     });
     unawaited(
       store
@@ -376,19 +412,29 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       return;
     }
     _presetTimer ??= Timer.periodic(Duration(seconds: _intervalSeconds), (_) {
-      if (_native.state == 'rendering') _stepPreset(1, automatic: true);
+      if (_native.state == 'rendering') {
+        _stepPreset(1, automatic: true);
+      }
     });
   }
 
   Future<void> _selectPreset(VisualizerSelection selection, {bool automatic = false}) async {
-    if (!_nativeSourceReady) return;
+    if (!_nativeSourceReady) {
+      return;
+    }
     ++_preferenceGeneration; // A late restore must not replace a user selection.
     _playlist = selection.playlist;
-    if (selection.engine != null) await _native.setEngine(selection.engine!);
-    if (!mounted) return;
+    if (selection.engine != null) {
+      await _native.setEngine(selection.engine!);
+    }
+    if (!mounted) {
+      return;
+    }
     _syncTicker();
     await _native.load(selection.preset, automatic: automatic);
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     _savePreferences();
     _syncTicker();
   }
@@ -414,7 +460,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   }
 
   void _beginProfileLoad() {
-    if (_profileLoadStarted || !_sourceReady) return;
+    if (_profileLoadStarted || !_sourceReady) {
+      return;
+    }
     _profileLoadStarted = true;
     final requestId = ++_profileRequestId;
     final service = widget.service;
@@ -434,7 +482,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   Future<void> _loadProfile(MusicLoudnessProfileService service, int requestId) async {
     try {
       final profile = await service.loadCurrentTrackLoudnessProfile();
-      if (!mounted || requestId != _profileRequestId) return;
+      if (!mounted || requestId != _profileRequestId) {
+        return;
+      }
       setState(() {
         _profile = profile == null || profile.isEmpty ? null : profile;
         _profileLoaded = true;
@@ -450,7 +500,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       // Loudness is optional; keep the scenes available and avoid surfacing a
       // network or server error from a decorative, best-effort request.
       developer.log('Optional Plex loudness data is unavailable', name: 'MusicVisualizer', level: 800);
-      if (!mounted || requestId != _profileRequestId) return;
+      if (!mounted || requestId != _profileRequestId) {
+        return;
+      }
       setState(() => _profileLoaded = true);
       _syncSpectrumAnalyzer();
     }
@@ -467,7 +519,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
         !_native.hasFrame &&
         _profile == null;
     if (!canAnalyze || analyzer == null) {
-      if (_spectrumAnalyzer != null) _stopSpectrumAnalysis();
+      if (_spectrumAnalyzer != null) {
+        _stopSpectrumAnalysis();
+      }
       _spectrumSample = null;
       return;
     }
@@ -478,12 +532,16 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     _stopSpectrumAnalysis();
     _spectrumAnalyzer = analyzer;
     _spectrumSubscription = analyzer.audioSpectrumStream.listen((sample) {
-      if (!mounted || !identical(analyzer, _spectrumAnalyzer)) return;
+      if (!mounted || !identical(analyzer, _spectrumAnalyzer)) {
+        return;
+      }
       final wasVisible = _spectrumSample != null;
       _spectrumSample = sample;
       _lastSpectrumAt = sample == null ? null : _spectrumMonitorElapsed;
       _missingSpectrumSince = null;
-      if (wasVisible != (sample != null)) setState(() {});
+      if (wasVisible != (sample != null)) {
+        setState(() {});
+      }
       _publishFrame();
     });
     unawaited(_requestSpectrumAnalysis(analyzer));
@@ -496,16 +554,22 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     } on Object {
       // Analysis is decorative; the existing ambient scene remains available.
     }
-    if (mounted && identical(analyzer, _spectrumAnalyzer)) _ensureSpectrumMonitor();
+    if (mounted && identical(analyzer, _spectrumAnalyzer)) {
+      _ensureSpectrumMonitor();
+    }
   }
 
   void _ensureSpectrumMonitor() {
-    if (_spectrumMonitor != null || _spectrumAnalyzer == null) return;
+    if (_spectrumMonitor != null || _spectrumAnalyzer == null) {
+      return;
+    }
     const interval = Duration(milliseconds: 500);
     _spectrumMonitorElapsed = Duration.zero;
     _spectrumMonitor = Timer.periodic(interval, (_) {
       final analyzer = _spectrumAnalyzer;
-      if (!mounted || analyzer == null) return;
+      if (!mounted || analyzer == null) {
+        return;
+      }
       _spectrumMonitorElapsed += interval;
       final now = _spectrumMonitorElapsed;
       if (_spectrumSample != null && _lastSpectrumAt != null && now - _lastSpectrumAt! > const Duration(seconds: 2)) {
@@ -538,8 +602,12 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
     _spectrumAnalyzer = null;
     final subscription = _spectrumSubscription;
     _spectrumSubscription = null;
-    if (subscription != null) unawaited(subscription.cancel());
-    if (analyzer != null) unawaited(analyzer.setAudioSpectrumAnalysisEnabled(false));
+    if (subscription != null) {
+      unawaited(subscription.cancel());
+    }
+    if (analyzer != null) {
+      unawaited(analyzer.setAudioSpectrumAnalysisEnabled(false));
+    }
   }
 
   void _onTick(Duration elapsed) {
@@ -588,7 +656,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
 
   void _resizeNative(BoxConstraints constraints, double pixelRatio) {
     final width = constraints.maxWidth * pixelRatio, height = constraints.maxHeight * pixelRatio;
-    if (!width.isFinite || !height.isFinite || width <= 0 || height <= 0) return;
+    if (!width.isFinite || !height.isFinite || width <= 0 || height <= 0) {
+      return;
+    }
     final scale = math.min(1.0, math.min(1920 / width, 1080 / height)) * _resolutionScale;
     _native.resize(width * scale, height * scale);
   }
@@ -597,7 +667,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       (0.18 + sample.normalizedCentroid * 0.52 + sample.flatness * 0.24).clamp(0.08, 1.0).toDouble();
 
   void _handleNativePointer(PointerEvent event, Size size, {bool? down}) {
-    if (_native.engine != 'milkrust' || size.width <= 0 || size.height <= 0) return;
+    if (_native.engine != 'milkrust' || size.width <= 0 || size.height <= 0) {
+      return;
+    }
     final position = event.localPosition;
     final x = (position.dx / size.width).clamp(0.0, 1.0).toDouble();
     final y = (position.dy / size.height).clamp(0.0, 1.0).toDouble();
@@ -639,7 +711,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (!_fullscreen) _resizeNative(constraints, MediaQuery.devicePixelRatioOf(context));
+        if (!_fullscreen) {
+          _resizeNative(constraints, MediaQuery.devicePixelRatioOf(context));
+        }
         final maxLabelWidth = (constraints.maxWidth - 172).clamp(72, 190).toDouble();
         return DecoratedBox(
           decoration: BoxDecoration(
@@ -650,39 +724,39 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
           child: ClipRRect(
             borderRadius: BorderRadius.circular(tk.radiusLg),
             child: _nativePointerSurface(
-             Size(constraints.maxWidth, constraints.maxHeight),
-             Stack(
-              fit: StackFit.expand,
-              children: [
-                Positioned.fill(
-                  child: RepaintBoundary(
-                    child: CustomPaint(
-                      painter: MusicVisualizerPainter(
-                        frame: _frame,
-                        preset: widget.preset,
-                        palette: palette,
-                        profile: _profile,
+              Size(constraints.maxWidth, constraints.maxHeight),
+              Stack(
+                fit: StackFit.expand,
+                children: [
+                  Positioned.fill(
+                    child: RepaintBoundary(
+                      child: CustomPaint(
+                        painter: MusicVisualizerPainter(
+                          frame: _frame,
+                          preset: widget.preset,
+                          palette: palette,
+                          profile: _profile,
+                        ),
+                        child: const SizedBox.expand(),
                       ),
-                      child: const SizedBox.expand(),
                     ),
                   ),
-                ),
-                if (_native.hasFrame && _native.textureId != null && !_fullscreen)
-                  Positioned.fill(
-                    child: Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low),
+                  if (_native.hasFrame && _native.textureId != null && !_fullscreen)
+                    Positioned.fill(
+                      child: Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low),
+                    ),
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    right: 12,
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: _buildPresetControls(context, status, maxLabelWidth: maxLabelWidth),
+                    ),
                   ),
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  right: 12,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: _buildPresetControls(context, status, maxLabelWidth: maxLabelWidth),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-           ),
           ),
         );
       },
@@ -836,7 +910,9 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
         initialEngine: _native.engine,
       ),
     );
-    if (mounted && profileId == _profileId && selection != null) await _selectPreset(selection);
+    if (mounted && profileId == _profileId && selection != null) {
+      await _selectPreset(selection);
+    }
   }
 
   void _option(String action) {
@@ -864,11 +940,21 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
       return;
     }
     setState(() {
-      if (action == 'lock') _locked = !_locked;
-      if (action == 'shuffle') _shuffle = !_shuffle;
-      if (action == 'quality') _resolutionScale = _resolutionScale < 1 ? 1 : 0.5;
-      if (action.startsWith('interval:')) _intervalSeconds = int.parse(action.split(':').last);
-      if (action.startsWith('transition:')) _native.transitionSeconds = double.parse(action.split(':').last);
+      if (action == 'lock') {
+        _locked = !_locked;
+      }
+      if (action == 'shuffle') {
+        _shuffle = !_shuffle;
+      }
+      if (action == 'quality') {
+        _resolutionScale = _resolutionScale < 1 ? 1 : 0.5;
+      }
+      if (action.startsWith('interval:')) {
+        _intervalSeconds = int.parse(action.split(':').last);
+      }
+      if (action.startsWith('transition:')) {
+        _native.transitionSeconds = double.parse(action.split(':').last);
+      }
     });
     _presetTimer?.cancel();
     _presetTimer = null;
@@ -877,14 +963,18 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
   }
 
   Future<void> _showFullscreen() async {
-    if (_fullscreen) return;
+    if (_fullscreen) {
+      return;
+    }
     setState(() => _fullscreen = true);
     _syncTicker();
     await showDialog<void>(
       context: context,
       useSafeArea: false,
       builder: (dialogContext) {
-        if (!mounted) return const SizedBox.shrink();
+        if (!mounted) {
+          return const SizedBox.shrink();
+        }
         _fullscreenRoute = ModalRoute.of<void>(dialogContext);
         return Dialog.fullscreen(
           child: CallbackShortcuts(
@@ -906,53 +996,53 @@ class _MusicVisualizerState extends State<MusicVisualizer> with TickerProviderSt
                           return _nativePointerSurface(
                             Size(constraints.maxWidth, constraints.maxHeight),
                             Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              if (_native.hasFrame && _native.textureId != null)
-                                Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low)
-                              else
-                                CustomPaint(
-                                  painter: MusicVisualizerPainter(
-                                    frame: _frame,
-                                    preset: widget.preset,
-                                    profile: _profile,
-                                    palette: MusicVisualizerPalette.fromTheme(
-                                      accent: tk.accent,
-                                      background: tk.bg,
-                                      surface: tk.surface,
-                                      outline: tk.outline,
+                              fit: StackFit.expand,
+                              children: [
+                                if (_native.hasFrame && _native.textureId != null)
+                                  Texture(textureId: _native.textureId!, filterQuality: FilterQuality.low)
+                                else
+                                  CustomPaint(
+                                    painter: MusicVisualizerPainter(
+                                      frame: _frame,
                                       preset: widget.preset,
+                                      profile: _profile,
+                                      palette: MusicVisualizerPalette.fromTheme(
+                                        accent: tk.accent,
+                                        background: tk.bg,
+                                        surface: tk.surface,
+                                        outline: tk.outline,
+                                        preset: widget.preset,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              SafeArea(
-                                child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Align(
-                                            alignment: Alignment.topLeft,
-                                            child: _buildPresetControls(
-                                              context,
-                                              _native.active ? _native.statusLabel : _presetName(widget.preset),
-                                              maxLabelWidth: (constraints.maxWidth - 244).clamp(72, 190).toDouble(),
+                                SafeArea(
+                                  child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Align(
+                                              alignment: Alignment.topLeft,
+                                              child: _buildPresetControls(
+                                                context,
+                                                _native.active ? _native.statusLabel : _presetName(widget.preset),
+                                                maxLabelWidth: (constraints.maxWidth - 244).clamp(72, 190).toDouble(),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        IconButton(
-                                          tooltip: context.t.common.exitFullscreen,
-                                          onPressed: () => Navigator.pop(dialogContext),
-                                          icon: const AppIcon(Symbols.fullscreen_exit_rounded),
-                                        ),
-                                      ],
+                                          IconButton(
+                                            tooltip: context.t.common.exitFullscreen,
+                                            onPressed: () => Navigator.pop(dialogContext),
+                                            icon: const AppIcon(Symbols.fullscreen_exit_rounded),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
                             ),
                           );
                         },

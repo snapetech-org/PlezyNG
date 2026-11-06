@@ -31,7 +31,8 @@ class PodcastLibrary {
       ),
       SourceTransport(),
       () async => {'feedUrl': subscription.url.toString()},
-      protect: sources.repository.protect, reveal: sources.repository.reveal,
+      protect: sources.repository.protect,
+      reveal: sources.repository.reveal,
     );
     late String title;
     try {
@@ -69,7 +70,9 @@ class PodcastLibrary {
     sources.requireSession();
     final epoch = sources.generation, profile = sources.profileId!;
     final initial = seed(episode, session: const Uuid().v4());
-    if (sources.activeProgressKeys.contains(initial.key)) throw const SourceException(SourceFailure.conflict);
+    if (sources.activeProgressKeys.contains(initial.key)) {
+      throw const SourceException(SourceFailure.conflict);
+    }
     final current = await sources.openProgress(episode, initial);
     sources.requireSession(epoch);
     if (sources.activeProgressKeys.contains(initial.key) ||

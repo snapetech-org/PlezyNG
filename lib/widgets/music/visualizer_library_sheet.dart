@@ -1,3 +1,4 @@
+import '../../i18n/strings.g.dart' as l10n;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -67,7 +68,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
             available: false,
             reason: 'This music playback source has no native visualization audio.',
           );
-    if (mounted && engine == _engine) setState(() => _capability = capability);
+    if (mounted && engine == _engine) {
+      setState(() => _capability = capability);
+    }
   }
 
   Future<void> _browse({String? packPath, String? importedName}) async {
@@ -77,21 +80,27 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
           : importedName != null
           ? [await _store.importedPreset(importedName)]
           : await _store.allPresets();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final selection = await showModalBottomSheet<VisualizerSelection>(
         context: context,
         isScrollControlled: true,
         useSafeArea: true,
         builder: (_) => VisualizerPresetBrowser(presets: presets, store: _store, capability: _capability),
       );
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       if (selection != null) {
         Navigator.pop(context, selection);
       } else {
         await _refresh(); // Per-preset favorites may have changed.
       }
     } on Object catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     }
   }
 
@@ -104,10 +113,14 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
   }
 
   Future<void> _refresh() async {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     setState(() => _loading = true);
     if (!_store.isStorageSupported) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _failure = context.t.visualizerUi.downloadsAndLocalPresetStorageAreNot_c2c47bc7;
         _loading = false;
@@ -123,17 +136,23 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
         _store.favoriteIds(),
         _store.pendingDownloads(),
       ]);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _installed = results[0] as List<VisualizerInstalledPack>;
         _imports = results[1] as List<String>;
         _communityPacks = results[2] as List<VisualizerImportedPack>;
         _favorites = results[3] as Set<String>;
-        _pendingDownloads = {for (final download in results[4] as List<VisualizerPackDownload>) download.identity: download};
+        _pendingDownloads = {
+          for (final download in results[4] as List<VisualizerPackDownload>) download.identity: download,
+        };
         _loading = false;
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _failure = error.toString();
         _loading = false;
@@ -149,12 +168,16 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
 
   Future<void> _toggleFavorite(String key) async {
     final next = {..._favorites};
-    if (!next.add(key)) next.remove(key);
+    if (!next.add(key)) {
+      next.remove(key);
+    }
     setState(() => _favorites = next);
     try {
       await _store.saveFavoriteIds(next);
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() => _failure = context.t.visualizerUi.couldNotSaveLibraryFavorites(error: error));
     }
   }
@@ -168,9 +191,13 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       await _store.refreshCatalog();
       await _refresh();
     } on Object catch (error) {
-      if (mounted) setState(() => _failure = context.t.visualizerUi.couldNotUpdatePackCatalog(error: error));
+      if (mounted) {
+        setState(() => _failure = context.t.visualizerUi.couldNotUpdatePackCatalog(error: error));
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -188,18 +215,26 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
         entry,
         cancellation: cancellation,
         onProgress: (value) {
-          if (mounted) setState(() => _progress = value.clamp(0.0, 1.0).toDouble());
+          if (mounted) {
+            setState(() => _progress = value.clamp(0.0, 1.0).toDouble());
+          }
         },
       );
       await _refresh();
     } on VisualizerPackCanceledException {
-      if (mounted) setState(() => _failure = null);
+      if (mounted) {
+        setState(() => _failure = null);
+      }
     } catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     } finally {
       try {
         final pending = await _store.pendingDownloads();
-        if (mounted) setState(() => _pendingDownloads = {for (final item in pending) item.identity: item});
+        if (mounted) {
+          setState(() => _pendingDownloads = {for (final item in pending) item.identity: item});
+        }
       } on Object {
         // Preserve the original installation failure; recovery is retried on open.
       }
@@ -223,9 +258,13 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       await _store.remove(entry);
       await _refresh();
     } catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -234,7 +273,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       await _store.removeImportedPreset(name);
       await _refresh();
     } catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     }
   }
 
@@ -245,7 +286,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       allowMultiple: true,
       withData: false,
     );
-    if (result == null || result.files.isEmpty || !mounted) return;
+    if (result == null || result.files.isEmpty || !mounted) {
+      return;
+    }
     if (result.files.length > VisualizerPackStore.maxPresetImportCount) {
       setState(
         () => _failure = context.t.visualizerUi.presetImportLimit(count: VisualizerPackStore.maxPresetImportCount),
@@ -282,7 +325,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
         }
       }
       await _refresh();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final skipped = failures.isEmpty
           ? ''
           : '; skipped ${failures.length}: ${failures.take(2).join(' · ')}${failures.length > 2 ? ' · …' : ''}';
@@ -298,9 +343,13 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
         ),
       );
     } catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -310,7 +359,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       allowedExtensions: const ['rmpack', 'zip'],
       withData: false,
     );
-    if (result == null || result.files.isEmpty || !mounted) return;
+    if (result == null || result.files.isEmpty || !mounted) {
+      return;
+    }
     final picked = result.files.first;
     if (picked.size <= 0 || picked.size > VisualizerPackStore.maxLocalPackArchiveBytes) {
       setState(() => _failure = context.t.visualizerUi.communityPackArchivesMustBe32MBOrSmaller);
@@ -330,16 +381,22 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
           ? await _store.importPresetArchiveFile(sourcePath, picked.size)
           : await _store.importPackFile(sourcePath, picked.size);
       await _refresh();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
         SnackBar(
           content: Text(context.t.visualizerUi.imported(packName: pack.name, packVersion: pack.version)),
         ),
       );
     } catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -353,7 +410,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       final path = await FilePickerService.instance.getDirectoryPath(
         dialogTitle: context.t.visualizerUi.importAPresetFolderWithTexturesAndNotices,
       );
-      if (path == null || !mounted) return;
+      if (path == null || !mounted) {
+        return;
+      }
       setState(() {
         _busy = true;
         _failure = null;
@@ -373,7 +432,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
     } on VisualizerPackCanceledException {
       /* The staging directory is discarded. */
     } on Object catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -393,15 +454,21 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
       await _store.removeImportedPack(pack);
       await _refresh();
     } catch (error) {
-      if (mounted) setState(() => _failure = error.toString());
+      if (mounted) {
+        setState(() => _failure = error.toString());
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
   Future<void> _openSource(String url) async {
     final uri = Uri.tryParse(url);
-    if (uri == null || uri.scheme != 'https') return;
+    if (uri == null || uri.scheme != 'https') {
+      return;
+    }
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && mounted) {
       setState(() => _failure = context.t.visualizerUi.couldNotOpenTheSourcePage);
     }
@@ -549,7 +616,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                             onChanged: _busy
                                 ? null
                                 : (value) {
-                                    if (value == null) return;
+                                    if (value == null) {
+                                      return;
+                                    }
                                     setState(() {
                                       _engine = value;
                                       _capability = const VisualizerCapabilities(
@@ -608,11 +677,21 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(entry.description, style: Theme.of(context).textTheme.bodyMedium),
-                                    Text('${(entry.archiveBytes / (1024 * 1024)).toStringAsFixed(1)} MB download · '
-                                        '${(entry.expandedBytes / (1024 * 1024)).toStringAsFixed(1)} MB installed'),
+                                    Text(
+                                      l10n.t.visualizerUi.mbDownloadMBInstalled(
+                                        value1: ((entry.archiveBytes / (1024 * 1024)).toStringAsFixed(1)).toString(),
+                                        value2: ((entry.expandedBytes / (1024 * 1024)).toStringAsFixed(1)).toString(),
+                                      ),
+                                    ),
                                     if (_pendingDownloads[entry.identity] case final pending?)
-                                      Text('${(pending.progress * 100).floor()}% saved · '
-                                          '${pending.resumable ? "Ready to resume" : "Retry starts a new download"}'),
+                                      Text(
+                                        l10n.t.visualizerUi.saved(
+                                          value1: ((pending.progress * 100).floor()).toString(),
+                                          value2:
+                                              (pending.resumable ? "Ready to resume" : "Retry starts a new download")
+                                                  .toString(),
+                                        ),
+                                      ),
                                     Text(entry.qualification.label, style: Theme.of(context).textTheme.bodySmall),
                                     if (entry.qualification.reportUrl != null)
                                       TextButton(
@@ -685,7 +764,9 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                               entry.bundledAsset != null
                                                   ? 'Restore included pack'
                                                   : _pendingDownloads.containsKey(entry.identity)
-                                                  ? (_pendingDownloads[entry.identity]!.resumable ? 'Resume download' : 'Retry download')
+                                                  ? (_pendingDownloads[entry.identity]!.resumable
+                                                        ? 'Resume download'
+                                                        : 'Retry download')
                                                   : olderIds.contains(entry.id)
                                                   ? 'Download update'
                                                   : t.downloads.downloadNow,
@@ -693,18 +774,26 @@ class _VisualizerLibrarySheetState extends State<VisualizerLibrarySheet> {
                                           ),
                                         if (_pendingDownloads.containsKey(entry.identity) && _workingPackId != entry.id)
                                           TextButton(
-                                            onPressed: _busy ? null : () async {
-                                              setState(() => _busy = true);
-                                              try {
-                                                await _store.discardDownload(_pendingDownloads[entry.identity]!.sha256);
-                                                await _refresh();
-                                              } on Object catch (error) {
-                                                if (mounted) setState(() => _failure = error.toString());
-                                              } finally {
-                                                if (mounted) setState(() => _busy = false);
-                                              }
-                                            },
-                                            child: const Text('Discard saved download'),
+                                            onPressed: _busy
+                                                ? null
+                                                : () async {
+                                                    setState(() => _busy = true);
+                                                    try {
+                                                      await _store.discardDownload(
+                                                        _pendingDownloads[entry.identity]!.sha256,
+                                                      );
+                                                      await _refresh();
+                                                    } on Object catch (error) {
+                                                      if (mounted) {
+                                                        setState(() => _failure = error.toString());
+                                                      }
+                                                    } finally {
+                                                      if (mounted) {
+                                                        setState(() => _busy = false);
+                                                      }
+                                                    }
+                                                  },
+                                            child: Text(l10n.t.visualizerUi.discardSavedDownload),
                                           ),
                                         IconButton(
                                           tooltip: _favorites.contains(_packFavoriteKey(entry.id, entry.version))

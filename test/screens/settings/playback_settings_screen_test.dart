@@ -41,6 +41,7 @@ void main() {
     await tester.pumpAndSettle();
     final settings = SettingsService.instance;
     expect(settings.read(SettingsService.experimentalDolbyVision), isFalse);
+    expect(find.text(t.settings.dvOfflineTitle), findsNothing);
     expect(settings.read(SettingsService.dvExperimentDiagnostics), isFalse);
     final toggle = find.text(t.settings.experimentalDolbyVision);
     await tester.scrollUntilVisible(toggle, 300, scrollable: find.byType(Scrollable).first);
@@ -48,6 +49,7 @@ void main() {
     await tester.tap(toggle);
     await tester.pumpAndSettle();
     expect(settings.read(SettingsService.experimentalDolbyVision), isTrue);
+    expect(find.text(t.settings.dvOfflineTitle), findsOneWidget);
     final fallback = find.text(t.settings.dvCompatibilityFallback);
     await tester.ensureVisible(fallback);
     await tester.tap(fallback);

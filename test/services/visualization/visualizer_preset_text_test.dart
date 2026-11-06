@@ -10,12 +10,21 @@ void main() {
     expect(VisualizerPresetText.decode([0xef, 0xbb, 0xbf, 65]), 'A');
   });
   test('malformed Unicode, binary and undefined code page bytes fail', () {
-    for (final bytes in [[0x81], [65, 0, 66], [0xff, 0xfe, 0, 0xd8], [0xff, 0xfe, 65]]) {
+    for (final bytes in [
+      [0x81],
+      [65, 0, 66],
+      [0xff, 0xfe, 0, 0xd8],
+      [0xff, 0xfe, 65],
+    ]) {
       expect(() => VisualizerPresetText.decode(bytes), throwsFormatException);
     }
   });
   test('UTF-16 cannot hide a shader include from import validation', () {
-    final bytes = [0xff, 0xfe, for (final unit in '#include "outside.fx"'.codeUnits) ...[unit & 255, unit >> 8]];
+    final bytes = [
+      0xff,
+      0xfe,
+      for (final unit in '#include "outside.fx"'.codeUnits) ...[unit & 255, unit >> 8],
+    ];
     expect(() => VisualizerContentLimits.checkPreset(bytes), throwsFormatException);
   });
 }

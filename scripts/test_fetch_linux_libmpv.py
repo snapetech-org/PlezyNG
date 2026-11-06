@@ -38,7 +38,7 @@ class FetchLinuxLibmpvTest(unittest.TestCase):
         """A tiny prefix tree packed the way mpv-build publishes it."""
         tree = self.root / "tree"
         (tree / "lib/pkgconfig").mkdir(parents=True)
-        (tree / "lib/pkgconfig/mpv.pc").write_text("Name: mpv\n", encoding="utf-8")
+        (tree / "lib/pkgconfig/mpv.pc").write_text("Name: mpv\nLibs: -lmpv\n", encoding="utf-8")
         asset = self.root / "libmpv-linux-test.tar.zst"
         if HAS_ZSTD:
             subprocess.run(
@@ -97,7 +97,7 @@ class FetchLinuxLibmpvTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(
             (self.dest / "lib/pkgconfig/mpv.pc").read_text(encoding="utf-8"),
-            "Name: mpv\n",
+            "Name: mpv\nLibs: -L${libdir} -lmpv -Wl,-rpath-link,${prefix}/lib -Wl,-rpath-link,${libdir}\n",
         )
 
     @unittest.skipUnless(HAS_ZSTD, "zstd not installed")

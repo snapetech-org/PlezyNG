@@ -94,6 +94,12 @@ class MpvPlayerCore: MpvPlayerCoreBase {
       return false
     }
 
+    if let backend = dvBackend {
+      container.backgroundColor = nil
+      container.isOpaque = false
+      backend.attach(to: contentView)
+    }
+
     let center = NotificationCenter.default
     center.addObserver(
       self,
@@ -151,6 +157,7 @@ class MpvPlayerCore: MpvPlayerCoreBase {
   private var shouldRestoreOnWindowVisible = false
 
   func setVisible(_ visible: Bool, restoreOnWindowVisible: Bool = false) {
+    dvBackend?.setVisible(visible)
     guard containerLayer != nil, !isPipActive else { return }
 
     if visible && isVisible && !shouldRestoreOnWindowVisible {
@@ -213,6 +220,7 @@ class MpvPlayerCore: MpvPlayerCoreBase {
 
     withoutLayerAnimations {
       containerLayer.frame = targetFrame
+      dvBackend?.setFrame(targetFrame)
       updateContentsScale()
     }
   }

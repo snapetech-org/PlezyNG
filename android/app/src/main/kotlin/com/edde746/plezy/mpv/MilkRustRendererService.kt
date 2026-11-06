@@ -63,9 +63,11 @@ class MilkRustRendererService : Service() {
 
   private fun reply(recipient: Messenger?, what: Int, token: Int, reason: String? = null) {
     try {
-      recipient?.send(Message.obtain(null, what, token, Process.myPid()).apply {
-        if (reason != null) data = Bundle().apply { putString("reason", reason.take(8192)) }
-      })
+      recipient?.send(
+        Message.obtain(null, what, token, Process.myPid()).apply {
+          if (reason != null) data = Bundle().apply { putString("reason", reason.take(8192)) }
+        }
+      )
     } catch (_: Exception) {
       terminate()
     }

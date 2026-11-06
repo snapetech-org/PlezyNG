@@ -121,7 +121,9 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _hasBuiltSession = true;
+      if (mounted) {
+        _hasBuiltSession = true;
+      }
     });
   }
 
@@ -136,18 +138,24 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
     if (!_seenFirstActiveId) {
       _seenFirstActiveId = true;
       _lastSessionActiveId = activeId;
-      if (activeId != null) shelf.beginProfileSession(activeId);
+      if (activeId != null) {
+        shelf.beginProfileSession(activeId);
+      }
       return;
     }
     final oldOwner = _lastSessionActiveId;
-    if (oldOwner == activeId) return;
+    if (oldOwner == activeId) {
+      return;
+    }
     if (oldOwner != null) {
       // endProfileSession invalidates synchronously and queues its clear before
       // the new owner is admitted below.
       unawaited(shelf.endProfileSession(oldOwner));
     }
     _lastSessionActiveId = activeId;
-    if (activeId != null) shelf.beginProfileSession(activeId);
+    if (activeId != null) {
+      shelf.beginProfileSession(activeId);
+    }
     unawaited(ApiCache.clearRegisteredVolatile());
   }
 
@@ -306,9 +314,10 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                       : MusicSessionStore(database: context.read<AppDatabase>(), profileId: activeId),
                 ),
               ),
-              ChangeNotifierProvider(create: (context) => KaraokeSession(
-                music: context.read<MusicPlaybackService>(), profileId: activeId ?? 'local',
-              )),
+              ChangeNotifierProvider(
+                create: (context) =>
+                    KaraokeSession(music: context.read<MusicPlaybackService>(), profileId: activeId ?? 'local'),
+              ),
               // Per profile: a profile switch disposes of it, which leaves the
               // room and closes the party.
               ChangeNotifierProvider(
@@ -327,14 +336,20 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                 create: (context) {
                   final provider = CompanionRemoteProvider();
                   provider.bindSteamAdmission((profileId) async {
-                    if (!context.mounted) return null;
+                    if (!context.mounted) {
+                      return null;
+                    }
                     final sources = context.read<SourceController>();
                     await sources.ready;
-                    if (!context.mounted || sources.profileId != profileId) return null;
+                    if (!context.mounted || sources.profileId != profileId) {
+                      return null;
+                    }
                     final generation = sources.generation;
                     final data = await sources.repository.preference(profileId, GameLibraryController.preferenceKey);
                     final credential = GameLibrary.fromJson(data).steamCatalogCredential;
-                    if (credential == null || !context.mounted || sources.generation != generation) return null;
+                    if (credential == null || !context.mounted || sources.generation != generation) {
+                      return null;
+                    }
                     final clear = await CredentialVault.reveal(credential);
                     return context.mounted && sources.generation == generation && sources.profileId == profileId
                         ? clear
@@ -418,7 +433,9 @@ class _ProfileSessionNavigatorState extends State<_ProfileSessionNavigator> {
   }
 
   Widget _withAgentControls(Widget child) {
-    if (!agentControlEnabled) return child;
+    if (!agentControlEnabled) {
+      return child;
+    }
     return AgentControlScope(
       profile: true,
       commandContext: () => _navigatorKey.currentState?.overlay?.context,
@@ -436,7 +453,9 @@ class _ProfileSessionNavigatorState extends State<_ProfileSessionNavigator> {
         PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) {
-            if (didPop) return;
+            if (didPop) {
+              return;
+            }
             unawaited(_navigatorKey.currentState?.maybePop());
           },
           child: MultiProvider(

@@ -102,12 +102,18 @@ class _LogRecordState extends State<_LogRecord> {
 }
 
 class LogsScreen extends StatefulWidget {
-  const LogsScreen({super.key, this.httpClient, this.deviceInfoPlugin, this.returnUploadedLogId = false, this.logUploadBaseUrl});
+  const LogsScreen({
+    super.key,
+    this.httpClient,
+    this.deviceInfoPlugin,
+    this.serviceBaseUrl,
+    this.returnUploadedLogId = false,
+  });
 
   final MediaServerHttpClient? httpClient;
+  final String? serviceBaseUrl;
   final DeviceInfoPlugin? deviceInfoPlugin;
   final bool returnUploadedLogId;
-  final String? logUploadBaseUrl;
 
   @override
   State<LogsScreen> createState() => _LogsScreenState();
@@ -307,7 +313,7 @@ class _LogsScreenState extends State<LogsScreen> with MountedSetStateMixin {
     showLoadingDialog(context);
 
     try {
-      final id = await uploadDiagnosticText(logText, client: _httpClient, relayBaseUrl: widget.logUploadBaseUrl);
+      final id = await uploadDiagnosticText(logText, client: _httpClient, serviceBaseUrl: widget.serviceBaseUrl);
 
       if (!mounted) return;
       Navigator.of(context).pop(); // dismiss loading

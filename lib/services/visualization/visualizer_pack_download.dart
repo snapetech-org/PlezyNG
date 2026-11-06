@@ -44,15 +44,27 @@ class VisualizerPackDownloader {
       final record = _record(digest);
       if (await FileSystemEntity.type(record.path, followLinks: false) != FileSystemEntityType.file ||
           await record.length() > 8192 ||
-          await FileSystemEntity.type(_part(digest).path, followLinks: false) != FileSystemEntityType.file) return null;
+          await FileSystemEntity.type(_part(digest).path, followLinks: false) != FileSystemEntityType.file) {
+        return null;
+      }
       final value = jsonDecode(await record.readAsString());
-      if (value is! Map<String, dynamic> || value['schema'] != 1 || value['sha256'] != digest ||
-          value['identity'] is! String || (value['identity'] as String).length > 161 ||
-          value['url'] is! String || (value['url'] as String).length > 1024 ||
-          value['bytes'] is! int || value['bytes'] <= 0 || value['bytes'] > maxBytes ||
-          (value['etag'] != null && _etag(value['etag'] is String ? value['etag'] as String : null) == null)) return null;
+      if (value is! Map<String, dynamic> ||
+          value['schema'] != 1 ||
+          value['sha256'] != digest ||
+          value['identity'] is! String ||
+          (value['identity'] as String).length > 161 ||
+          value['url'] is! String ||
+          (value['url'] as String).length > 1024 ||
+          value['bytes'] is! int ||
+          value['bytes'] <= 0 ||
+          value['bytes'] > maxBytes ||
+          (value['etag'] != null && _etag(value['etag'] is String ? value['etag'] as String : null) == null)) {
+        return null;
+      }
       final length = await _part(digest).length();
-      if (length > value['bytes']) return null;
+      if (length > value['bytes']) {
+        return null;
+      }
       return value;
     } on Object {
       return null;
@@ -63,12 +75,16 @@ class VisualizerPackDownloader {
     final target = _record(digest), temporary = File('${_record(digest).path}.tmp');
     await temporary.writeAsString(jsonEncode(value), flush: true);
     // A crash in this gap loses resumability, never exposes an unverified pack.
-    if (await target.exists()) await target.delete();
+    if (await target.exists()) {
+      await target.delete();
+    }
     await temporary.rename(target.path);
   }
 
   Future<void> discard(String digest) async {
-    if (!_digest.hasMatch(digest)) throw const FormatException('Invalid download identity.');
+    if (!_digest.hasMatch(digest)) {
+      throw const FormatException('Invalid download identity.');
+    }
     for (final file in [_part(digest), _record(digest), File('${_record(digest).path}.tmp')]) {
       if (await FileSystemEntity.type(file.path, followLinks: false) != FileSystemEntityType.notFound) {
         await file.delete();
@@ -77,11 +93,15 @@ class VisualizerPackDownloader {
   }
 
   Future<List<VisualizerPackDownload>> pending() async {
-    if (!await directory.exists()) return const [];
+    if (!await directory.exists()) {
+      return const [];
+    }
     final result = <VisualizerPackDownload>[];
     final records = <File>[];
     await for (final item in directory.list(followLinks: false)) {
-      if (item is File && p.basename(item.path).endsWith('.json') && _digest.hasMatch(p.basenameWithoutExtension(item.path))) {
+      if (item is File &&
+          p.basename(item.path).endsWith('.json') &&
+          _digest.hasMatch(p.basenameWithoutExtension(item.path))) {
         records.add(item);
       }
     }
@@ -89,24 +109,31 @@ class VisualizerPackDownloader {
     records.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
     final retained = <String>{};
     for (final record in records) {
-      final digest = p.basenameWithoutExtension(record.path), data = await _read(p.basenameWithoutExtension(record.path));
+      final digest = p.basenameWithoutExtension(record.path),
+          data = await _read(p.basenameWithoutExtension(record.path));
       if (data == null || result.length >= maxPending) {
         await discard(digest);
         continue;
       }
       retained.add(digest);
-      result.add(VisualizerPackDownload(
-        identity: data['identity'] as String,
-        sha256: digest,
-        received: await _part(digest).length(),
-        total: data['bytes'] as int,
-        resumable: data['etag'] != null,
-      ));
+      result.add(
+        VisualizerPackDownload(
+          identity: data['identity'] as String,
+          sha256: digest,
+          received: await _part(digest).length(),
+          total: data['bytes'] as int,
+          resumable: data['etag'] != null,
+        ),
+      );
     }
     await for (final item in directory.list(followLinks: false)) {
       final name = p.basename(item.path);
-      if (item is File && name.endsWith('.part') && _digest.hasMatch(p.basenameWithoutExtension(name)) &&
-          !retained.contains(p.basenameWithoutExtension(name))) await item.delete();
+      if (item is File &&
+          name.endsWith('.part') &&
+          _digest.hasMatch(p.basenameWithoutExtension(name)) &&
+          !retained.contains(p.basenameWithoutExtension(name))) {
+        await item.delete();
+      }
       if (item is File && name.endsWith('.json.tmp') && _digest.hasMatch(name.substring(0, name.length - 9))) {
         await item.delete();
       }
@@ -133,8 +160,10 @@ class VisualizerPackDownloader {
       await discard(existing.last.sha256);
     }
     var saved = await _read(entry.sha256);
-    if (saved != null && (saved['url'] != entry.archiveUrl || saved['bytes'] != entry.archiveBytes ||
-        saved['identity'] != entry.identity)) {
+    if (saved != null &&
+        (saved['url'] != entry.archiveUrl ||
+            saved['bytes'] != entry.archiveBytes ||
+            saved['identity'] != entry.identity)) {
       await discard(entry.sha256);
       saved = null;
     }
@@ -142,8 +171,12 @@ class VisualizerPackDownloader {
     var offset = saved == null ? 0 : await file.length();
     checkCancellation();
     // The store still hashes and validates an already downloaded archive.
-    if (offset == entry.archiveBytes) return file;
-    if (saved?['etag'] == null) offset = 0;
+    if (offset == entry.archiveBytes) {
+      return file;
+    }
+    if (saved?['etag'] == null) {
+      offset = 0;
+    }
     for (var attempt = 0; attempt < 2; attempt++) {
       checkCancellation();
       final request = http.AbortableRequest('GET', uri, abortTrigger: abortTrigger)..followRedirects = false;
@@ -155,12 +188,19 @@ class VisualizerPackDownloader {
       final response = await client.send(request).timeout(const Duration(seconds: 30));
       final tag = _etag(response.headers['etag']);
       final range = RegExp(r'^bytes (\d+)-(\d+)/(\d+)$').firstMatch(response.headers['content-range'] ?? '');
-      final partial = response.statusCode == HttpStatus.partialContent && offset > 0 &&
-          tag == saved?['etag'] && range != null && int.tryParse(range[1]!) == offset &&
-          int.tryParse(range[2]!) == entry.archiveBytes - 1 && int.tryParse(range[3]!) == entry.archiveBytes;
+      final partial =
+          response.statusCode == HttpStatus.partialContent &&
+          offset > 0 &&
+          tag == saved?['etag'] &&
+          range != null &&
+          int.tryParse(range[1]!) == offset &&
+          int.tryParse(range[2]!) == entry.archiveBytes - 1 &&
+          int.tryParse(range[3]!) == entry.archiveBytes;
       if (response.statusCode != HttpStatus.ok && !partial) {
         await response.stream.listen(null).cancel();
-        if (offset > 0 && (response.statusCode == HttpStatus.partialContent || response.statusCode == HttpStatus.requestedRangeNotSatisfiable)) {
+        if (offset > 0 &&
+            (response.statusCode == HttpStatus.partialContent ||
+                response.statusCode == HttpStatus.requestedRangeNotSatisfiable)) {
           await discard(entry.sha256);
           saved = null;
           offset = 0;
@@ -168,7 +208,9 @@ class VisualizerPackDownloader {
         }
         throw HttpException('Pack download failed with HTTP ${response.statusCode}.', uri: uri);
       }
-      if (!partial) offset = 0; // A changed or unsupported range starts cleanly.
+      if (!partial) {
+        offset = 0;
+      } // A changed or unsupported range starts cleanly.
       if ((response.headers['content-encoding'] ?? 'identity').toLowerCase() != 'identity' ||
           (response.contentLength != null && response.contentLength != entry.archiveBytes - offset)) {
         await response.stream.listen(null).cancel();
@@ -179,8 +221,12 @@ class VisualizerPackDownloader {
       var received = offset;
       try {
         await _write(entry.sha256, {
-          'schema': 1, 'identity': entry.identity, 'sha256': entry.sha256,
-          'url': entry.archiveUrl, 'bytes': entry.archiveBytes, 'etag': tag,
+          'schema': 1,
+          'identity': entry.identity,
+          'sha256': entry.sha256,
+          'url': entry.archiveUrl,
+          'bytes': entry.archiveBytes,
+          'etag': tag,
         });
         onProgress?.call(received / entry.archiveBytes);
         await for (final chunk in response.stream.timeout(const Duration(seconds: 30))) {
@@ -199,7 +245,9 @@ class VisualizerPackDownloader {
           await handle.close();
         }
       }
-      if (received != entry.archiveBytes) throw const HttpException('The downloaded pack is incomplete. Retry to resume.');
+      if (received != entry.archiveBytes) {
+        throw const HttpException('The downloaded pack is incomplete. Retry to resume.');
+      }
       return file;
     }
     throw const HttpException('The server could not provide a valid pack download.');

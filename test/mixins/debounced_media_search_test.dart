@@ -46,11 +46,15 @@ void main() {
 
   testWidgets('A to B to A rejects progress from the first A generation', (tester) async {
     final pending = <Completer<List<MediaItem>>>[];
-    await tester.pumpWidget(_SearchProbe(search: (_) {
-      final request = Completer<List<MediaItem>>();
-      pending.add(request);
-      return request.future;
-    }));
+    await tester.pumpWidget(
+      _SearchProbe(
+        search: (_) {
+          final request = Completer<List<MediaItem>>();
+          pending.add(request);
+          return request.future;
+        },
+      ),
+    );
     final state = tester.state<_SearchProbeState>(find.byType(_SearchProbe));
     final first = state.runSearch('A');
     final stale = state.searchProgressPublisher('A');
@@ -60,7 +64,9 @@ void main() {
     expect(stale([testMediaItem(id: 'stale', title: 'Stale')]), isFalse);
     expect(current([testMediaItem(id: 'current', title: 'Current')]), isTrue);
     expect(state.searchResults.single.id, 'current');
-    for (final request in pending) { request.complete(const []); }
+    for (final request in pending) {
+      request.complete(const []);
+    }
     await Future.wait([first, second, third]);
     await tester.pump();
   });
@@ -70,7 +76,9 @@ void main() {
     await tester.pumpWidget(
       _SearchProbe(
         search: (query) {
-          if (query == 'abc') return Future.value([testMediaItem(id: 'abc', title: 'abc')]);
+          if (query == 'abc') {
+            return Future.value([testMediaItem(id: 'abc', title: 'abc')]);
+          }
           return (pending[query] = Completer<List<MediaItem>>()).future;
         },
       ),
@@ -99,4 +107,3 @@ void main() {
     expect(pending.keys, ['abcd']);
   });
 }
-

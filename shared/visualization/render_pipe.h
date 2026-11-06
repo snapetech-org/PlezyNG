@@ -1,21 +1,23 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
-#include "render_protocol.h"
 #include <algorithm>
 #include <chrono>
 #include <memory>
 #include <thread>
+
+#include "render_protocol.h"
 #if defined(_WIN32)
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
 #include <windows.h>
 #else
-#include <cerrno>
 #include <fcntl.h>
 #include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#include <cerrno>
 #endif
 
 namespace plezy::visualization {
@@ -83,9 +85,9 @@ class RenderPipe {
       ResetEvent(event);
       DWORD transferred = 0;
       const auto count = static_cast<DWORD>(size - offset);
-      const BOOL complete = input
-          ? WriteFile(handle_, pending->bytes.data() + offset, count, nullptr, &pending->operation)
-          : ReadFile(handle_, pending->bytes.data() + offset, count, nullptr, &pending->operation);
+      const BOOL complete =
+          input ? WriteFile(handle_, pending->bytes.data() + offset, count, nullptr, &pending->operation)
+                : ReadFile(handle_, pending->bytes.data() + offset, count, nullptr, &pending->operation);
       if (!complete) {
         if (GetLastError() != ERROR_IO_PENDING) throw std::runtime_error("Visualization helper disconnected.");
         Await(pending, deadline);
@@ -104,7 +106,9 @@ class RenderPipe {
         throw std::runtime_error("Visualization helper exceeded its response deadline.");
       pollfd descriptor{handle_, static_cast<short>(writing ? POLLOUT : POLLIN), 0};
       int ready;
-      do { ready = poll(&descriptor, 1, Remaining(deadline)); } while (ready < 0 && errno == EINTR);
+      do {
+        ready = poll(&descriptor, 1, Remaining(deadline));
+      } while (ready < 0 && errno == EINTR);
       if (ready == 0) throw std::runtime_error("Visualization helper exceeded its response deadline.");
       if (ready < 0 || (descriptor.revents & POLLNVAL)) throw std::runtime_error("Visualization helper IPC failed.");
       ssize_t count;
@@ -119,7 +123,8 @@ class RenderPipe {
       }
       if (count < 0 && (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)) continue;
       if (count <= 0) throw std::runtime_error("Visualization helper disconnected.");
-      data += count; size -= static_cast<size_t>(count);
+      data += count;
+      size -= static_cast<size_t>(count);
     }
   }
 #endif
@@ -130,18 +135,23 @@ class RenderPipe {
     const auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - now).count();
     return static_cast<int>(std::min<int64_t>(millis + 1, 2000000000));
   }
+
  public:
   explicit RenderPipe(Handle handle) : handle_(handle) {
     if (handle_ == Invalid()) throw std::runtime_error("Invalid visualization IPC handle.");
 #if !defined(_WIN32)
     const int flags = fcntl(handle_, F_GETFL);
     if (flags < 0 || fcntl(handle_, F_SETFL, flags | O_NONBLOCK) < 0) {
-      close(handle_); handle_ = Invalid(); throw std::runtime_error("Could not bound visualization IPC.");
+      close(handle_);
+      handle_ = Invalid();
+      throw std::runtime_error("Could not bound visualization IPC.");
     }
 #if defined(SO_NOSIGPIPE)
     int enabled = 1;
     if (setsockopt(handle_, SOL_SOCKET, SO_NOSIGPIPE, &enabled, sizeof(enabled)) < 0) {
-      close(handle_); handle_ = Invalid(); throw std::runtime_error("Could not configure visualization IPC.");
+      close(handle_);
+      handle_ = Invalid();
+      throw std::runtime_error("Could not configure visualization IPC.");
     }
 #endif
 #endif
@@ -175,7 +185,9 @@ class RenderPipe {
 #if defined(_WIN32)
     return Transfer(nullptr, size, deadline);
 #else
-    render_protocol::Bytes bytes(size); Transfer(bytes.data(), size, false, deadline); return bytes;
+    render_protocol::Bytes bytes(size);
+    Transfer(bytes.data(), size, false, deadline);
+    return bytes;
 #endif
   }
   void Write(const render_protocol::Bytes& bytes, Deadline deadline) {

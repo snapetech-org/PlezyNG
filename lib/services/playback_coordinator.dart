@@ -19,7 +19,9 @@ class VideoPlayerLease {
   bool _released = false;
 
   void release() {
-    if (_released) return;
+    if (_released) {
+      return;
+    }
     _released = true;
     _coordinator._releaseVideoPlayerLease(this);
   }
@@ -51,8 +53,11 @@ class PlaybackCoordinator {
   Future<void> Function()? _stopKaraoke;
   void registerKaraoke(Future<void> Function() stop) => _stopKaraoke = stop;
   void unregisterKaraoke(Future<void> Function() stop) {
-    if (_stopKaraoke == stop) _stopKaraoke = null;
+    if (_stopKaraoke == stop) {
+      _stopKaraoke = null;
+    }
   }
+
   bool get hasKaraokeSession => _stopKaraoke != null;
   Future<void> claimKaraoke() async {
     await _stopNarration?.call();
@@ -81,8 +86,12 @@ class PlaybackCoordinator {
       // slot. Conservatively treat that one as primary while upgrading.
       occupied.add(VideoPlayerSlot.primary);
     }
-    if (!occupied.contains(VideoPlayerSlot.primary)) return VideoPlayerSlot.primary;
-    if (!occupied.contains(VideoPlayerSlot.companion)) return VideoPlayerSlot.companion;
+    if (!occupied.contains(VideoPlayerSlot.primary)) {
+      return VideoPlayerSlot.primary;
+    }
+    if (!occupied.contains(VideoPlayerSlot.companion)) {
+      return VideoPlayerSlot.companion;
+    }
     return null;
   }
 
@@ -112,7 +121,9 @@ class PlaybackCoordinator {
   Future<void> Function()? _stopNarration;
   void registerNarrationSession(Future<void> Function() stop) => _stopNarration = stop;
   void unregisterNarrationSession(Future<void> Function() stop) {
-    if (_stopNarration == stop) _stopNarration = null;
+    if (_stopNarration == stop) {
+      _stopNarration = null;
+    }
   }
 
   void registerFileSession(Future<void> Function() stop, {bool Function()? isActive}) {
@@ -132,8 +143,12 @@ class PlaybackCoordinator {
     await _stopKaraoke?.call();
     await _stopNarration?.call();
     await _stopTheme();
-    if (!preserveWorkspaceMusic || !_workspaceRetainsMusic) await _stopMusicSession?.call();
-    if (!preserveWorkspaceVideo || !workspaceRetainsVideo) await shutdownVideo();
+    if (!preserveWorkspaceMusic || !_workspaceRetainsMusic) {
+      await _stopMusicSession?.call();
+    }
+    if (!preserveWorkspaceVideo || !workspaceRetainsVideo) {
+      await shutdownVideo();
+    }
   }
 
   /// Theme songs share the music channel, so both claims stop them first.
@@ -236,7 +251,9 @@ class PlaybackCoordinator {
   /// active, such as when a cold-start control link opens the app.
   Future<bool> controlVideo(VideoAutomationCommand command) async {
     final control = _controlVideoSession;
-    if (control == null) return false;
+    if (control == null) {
+      return false;
+    }
     return control(command);
   }
 
@@ -252,22 +269,30 @@ class PlaybackCoordinator {
   /// same callback used to register keeps a stale unregister (from an
   /// already-replaced session) from tearing down the new one.
   void unregisterMusicSession(Future<void> Function() stopAndDispose) {
-    if (_stopMusicSession == stopAndDispose) _stopMusicSession = null;
+    if (_stopMusicSession == stopAndDispose) {
+      _stopMusicSession = null;
+    }
   }
 
   /// Video playback is about to construct its native core: stop and dispose
   /// any live music session first. Completes once the audio core is gone.
   Future<void> claimVideo({bool stopFileSession = true}) async {
-    if (_workspaceVideoSessionCount >= 2) throw const WorkspaceVideoCapacityException();
+    if (_workspaceVideoSessionCount >= 2) {
+      throw const WorkspaceVideoCapacityException();
+    }
     await _claimVideoPlayback(stopFileSession: stopFileSession);
   }
 
   /// Reserve the native channel first, before awaiting other session teardown.
   /// Two simultaneous opens therefore cannot both select the primary core.
   Future<VideoPlayerLease> claimVideoSlot({bool stopFileSession = true}) {
-    if (_workspaceVideoSessionCount >= 2) throw const WorkspaceVideoCapacityException();
+    if (_workspaceVideoSessionCount >= 2) {
+      throw const WorkspaceVideoCapacityException();
+    }
     final slot = nextVideoPlayerSlot;
-    if (slot == null) throw const WorkspaceVideoCapacityException();
+    if (slot == null) {
+      throw const WorkspaceVideoCapacityException();
+    }
     final lease = VideoPlayerLease._(slot, this);
     _videoPlayerLeases.add(lease);
     return _claimVideoPlayback(stopFileSession: stopFileSession).then(
@@ -281,7 +306,9 @@ class PlaybackCoordinator {
 
   /// Reinitialize an existing owner while retaining its slot lease.
   Future<void> claimVideoForLease(VideoPlayerLease lease, {bool stopFileSession = true}) {
-    if (!_videoPlayerLeases.contains(lease)) throw const WorkspaceVideoCapacityException();
+    if (!_videoPlayerLeases.contains(lease)) {
+      throw const WorkspaceVideoCapacityException();
+    }
     return _claimVideoPlayback(stopFileSession: stopFileSession);
   }
 
@@ -292,10 +319,14 @@ class PlaybackCoordinator {
   Future<void> _claimVideoPlayback({required bool stopFileSession}) async {
     await _stopKaraoke?.call();
     await _stopNarration?.call();
-    if (stopFileSession) await _stopFileSession?.call();
+    if (stopFileSession) {
+      await _stopFileSession?.call();
+    }
     await _stopTheme();
     final stop = _stopMusicSession;
-    if (stop == null || _workspaceRetainsMusic) return;
+    if (stop == null || _workspaceRetainsMusic) {
+      return;
+    }
     try {
       await stop();
     } catch (e, st) {

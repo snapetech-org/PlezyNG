@@ -10,7 +10,12 @@ void main() {
     expect(rules.removeFinishedDays, 0);
   });
   test('stored per-show rules round trip and stay bounded', () {
-    final rules = PodcastPolicy.fromJson({'keepLatest': 99999, 'removeFinishedDays': -1, 'notify': true, 'wifiOnly': false});
+    final rules = PodcastPolicy.fromJson({
+      'keepLatest': 99999,
+      'removeFinishedDays': -1,
+      'notify': true,
+      'wifiOnly': false,
+    });
     final restored = PodcastPolicy.fromJson(rules.toJson());
     expect(restored.keepLatest, 50);
     expect(restored.removeFinishedDays, 0);

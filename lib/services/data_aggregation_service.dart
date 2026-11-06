@@ -128,7 +128,9 @@ Map<String, int> _searchKindCounts(Iterable<MediaItem> items) {
 /// external rows that have no local section, and those are not something the
 /// user hid.
 List<MediaItem> _withoutHiddenLibraries(List<MediaItem> items, Set<String>? hiddenLibraryKeys) {
-  if (hiddenLibraryKeys == null || hiddenLibraryKeys.isEmpty) return items;
+  if (hiddenLibraryKeys == null || hiddenLibraryKeys.isEmpty) {
+    return items;
+  }
   return items.where((item) {
     final libraryKey = item.libraryGlobalKey;
     return libraryKey == null || !hiddenLibraryKeys.contains(libraryKey);
@@ -139,11 +141,15 @@ List<MediaItem> _withoutHiddenLibraries(List<MediaItem> items, Set<String>? hidd
 /// which hold cross-server `serverId:libraryId` global keys. Backends that
 /// cannot attribute a search hit to a library need these to scope the request.
 Set<String> _hiddenLibraryIdsOn(String serverId, Set<String>? hiddenLibraryKeys) {
-  if (hiddenLibraryKeys == null || hiddenLibraryKeys.isEmpty) return const {};
+  if (hiddenLibraryKeys == null || hiddenLibraryKeys.isEmpty) {
+    return const {};
+  }
   final ids = <String>{};
   for (final key in hiddenLibraryKeys) {
     final parsed = parseGlobalKey(key);
-    if (parsed != null && parsed.serverId == serverId) ids.add(parsed.ratingKey);
+    if (parsed != null && parsed.serverId == serverId) {
+      ids.add(parsed.ratingKey);
+    }
   }
   return ids;
 }
@@ -168,10 +174,16 @@ class DataAggregationService {
     final libraries = await getMediaLibrariesFromAllServers(serverIds: serverIds);
     final byServer = <String, List<MediaLibrary>>{};
     for (final library in libraries.libraries) {
-      if (library.hidden || hiddenLibraryKeys?.contains(library.globalKey) == true) continue;
-      if (library.kind != MediaKind.movie && library.kind != MediaKind.show) continue;
+      if (library.hidden || hiddenLibraryKeys?.contains(library.globalKey) == true) {
+        continue;
+      }
+      if (library.kind != MediaKind.movie && library.kind != MediaKind.show) {
+        continue;
+      }
       final sid = library.serverId;
-      if (sid != null) byServer.putIfAbsent(sid, () => []).add(library);
+      if (sid != null) {
+        byServer.putIfAbsent(sid, () => []).add(library);
+      }
     }
     final fetched = await _fanOut<MediaItem>(
       clients,
@@ -185,7 +197,9 @@ class DataAggregationService {
             final page = await client.fetchCollectionsPage(library.id, start: start, size: 200);
             items.addAll(page.items);
             start += page.items.length;
-            if (page.items.isEmpty || start >= page.totalCount) break;
+            if (page.items.isEmpty || start >= page.totalCount) {
+              break;
+            }
           }
           result.addAll(
             items.map(
@@ -215,7 +229,9 @@ class DataAggregationService {
   /// profile's expected servers, which can come online a status emission
   /// before the visibility filter promotes them.
   Map<String, MediaServerClient> _clientsFor(Set<String>? serverIds) {
-    if (serverIds == null) return _serverManager.visibleOnlineClients;
+    if (serverIds == null) {
+      return _serverManager.visibleOnlineClients;
+    }
     final clients = _serverManager.onlineClients;
     return {
       for (final entry in clients.entries)
@@ -285,7 +301,9 @@ class DataAggregationService {
     required Future<R> Function(AbortController abort) run,
   }) {
     final leg = AbortController();
-    if (parent != null) unawaited(parent.trigger.then((_) => leg.abort()));
+    if (parent != null) {
+      unawaited(parent.trigger.then((_) => leg.abort()));
+    }
     return run(leg).timeout(
       deadline,
       onTimeout: () {
@@ -426,19 +444,25 @@ class DataAggregationService {
   }
 
   ContinueWatchingRows _limitContinueWatching(ContinueWatchingRows rows, int? limit) {
-    if (limit == null || limit >= rows.items.length) return rows;
+    if (limit == null || limit >= rows.items.length) {
+      return rows;
+    }
     final items = rows.items.sublist(0, limit);
     return (items: items, copies: {for (final item in items) item.globalKey: ?rows.copies[item.globalKey]});
   }
 
   Future<ContinueWatchingRows> _deduplicateContinueWatching(List<MediaItem> items) async {
     const noCopies = <String, List<MediaItem>>{};
-    if (items.length < 2) return (items: items, copies: noCopies);
+    if (items.length < 2) {
+      return (items: items, copies: noCopies);
+    }
 
     final bucketCounts = <String, int>{};
     for (final item in items) {
       final bucket = _continueWatchingTitleBucket(item);
-      if (bucket == null) continue;
+      if (bucket == null) {
+        continue;
+      }
       bucketCounts[bucket] = (bucketCounts[bucket] ?? 0) + 1;
     }
 
@@ -446,13 +470,17 @@ class DataAggregationService {
       for (final entry in bucketCounts.entries)
         if (entry.value > 1) entry.key,
     };
-    if (duplicateBuckets.isEmpty) return (items: items, copies: noCopies);
+    if (duplicateBuckets.isEmpty) {
+      return (items: items, copies: noCopies);
+    }
 
     final externalIdLoads = <String, Future<ExternalIds>>{};
     final identityKeysByIndex = <int, Set<String>>{};
     final identityKeyLoads = <Future<void>>[];
     for (var i = 0; i < items.length; i++) {
-      if (!duplicateBuckets.contains(_continueWatchingTitleBucket(items[i]))) continue;
+      if (!duplicateBuckets.contains(_continueWatchingTitleBucket(items[i]))) {
+        continue;
+      }
       final index = i;
       identityKeyLoads.add(
         _continueWatchingIdentityKeys(items[index], externalIdLoads).then((keys) => identityKeysByIndex[index] = keys),
@@ -495,7 +523,9 @@ class DataAggregationService {
           break;
         }
       }
-      if (joined) continue;
+      if (joined) {
+        continue;
+      }
 
       final groupIndex = groups.length;
       groups.add([item]);
@@ -506,12 +536,16 @@ class DataAggregationService {
       result.add(item);
     }
 
-    if (groupSlots.isEmpty) return (items: result, copies: noCopies);
+    if (groupSlots.isEmpty) {
+      return (items: result, copies: noCopies);
+    }
     final lastPlayed = await LocalPlaybackHistory.snapshot();
     final copies = <String, List<MediaItem>>{};
     for (final slot in groupSlots.entries) {
       final members = groups[slot.value];
-      if (members.length < 2) continue;
+      if (members.length < 2) {
+        continue;
+      }
       final shown = _preferLocallyLastPlayed(members, lastPlayed);
       result[slot.key] = shown;
       copies[shown.globalKey] = [...members]..sort(compareLibraryCopies);
@@ -541,14 +575,18 @@ class DataAggregationService {
 
   String? _continueWatchingTitleBucket(MediaItem item) {
     final scope = _continueWatchingIdentityScope(item);
-    if (scope == null) return null;
+    if (scope == null) {
+      return null;
+    }
 
     final title = switch (item.kind) {
       MediaKind.episode || MediaKind.season => item.grandparentTitle ?? item.parentTitle ?? item.title,
       _ => item.title,
     };
     final normalized = title?.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-    if (normalized == null || normalized.isEmpty) return null;
+    if (normalized == null || normalized.isEmpty) {
+      return null;
+    }
     return '$scope:$normalized';
   }
 
@@ -557,7 +595,9 @@ class DataAggregationService {
     Map<String, Future<ExternalIds>> externalIdLoads,
   ) async {
     final scope = _continueWatchingIdentityScope(item);
-    if (scope == null) return const {};
+    if (scope == null) {
+      return const {};
+    }
 
     final keys = <String>{};
     final serverId = item.serverId;
@@ -606,20 +646,34 @@ class DataAggregationService {
 
   void _addExternalIdentityKeys(Set<String> keys, String scope, ExternalIds externalIds) {
     final imdb = externalIds.imdb?.trim().toLowerCase();
-    if (imdb != null && imdb.isNotEmpty) keys.add('$scope:imdb:$imdb');
+    if (imdb != null && imdb.isNotEmpty) {
+      keys.add('$scope:imdb:$imdb');
+    }
     final tmdb = externalIds.tmdb;
-    if (tmdb != null) keys.add('$scope:tmdb:$tmdb');
+    if (tmdb != null) {
+      keys.add('$scope:tmdb:$tmdb');
+    }
     final tvdb = externalIds.tvdb;
-    if (tvdb != null) keys.add('$scope:tvdb:$tvdb');
+    if (tvdb != null) {
+      keys.add('$scope:tvdb:$tvdb');
+    }
     final anidb = externalIds.anidb;
-    if (anidb != null) keys.add('$scope:anidb:$anidb');
+    if (anidb != null) {
+      keys.add('$scope:anidb:$anidb');
+    }
   }
 
   String? _stableMediaGuid(String? guid) {
     final value = guid?.trim();
-    if (value == null || value.isEmpty) return null;
-    if (!value.contains('://')) return null;
-    if (value.contains('agents.none://')) return null;
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    if (!value.contains('://')) {
+      return null;
+    }
+    if (value.contains('agents.none://')) {
+      return null;
+    }
     return value.toLowerCase();
   }
 
@@ -737,15 +791,23 @@ class DataAggregationService {
             if (music.succeeded && !globalDiagnostics.failed && !globalDiagnostics.cancelled) {
               legSucceededServerIds.add(serverId);
             }
-            if (music.failed) legFailedServerIds.add(serverId);
-            if (music.cancelled) legCancelledServerIds.add(serverId);
+            if (music.failed) {
+              legFailedServerIds.add(serverId);
+            }
+            if (music.cancelled) {
+              legCancelledServerIds.add(serverId);
+            }
           }
-          if (globalError != null) Error.throwWithStackTrace(globalError, globalStackTrace!);
+          if (globalError != null) {
+            Error.throwWithStackTrace(globalError, globalStackTrace!);
+          }
           hubs = [...globalHubs, if (music != null) ...music.hubs];
         } else {
           // A fallback backend cannot run a hub leg without the libraries its
           // prefetch failed to discover.
-          if (useGlobalHubs && prefetchDegraded) return const <MediaHub>[];
+          if (useGlobalHubs && prefetchDegraded) {
+            return const <MediaHub>[];
+          }
           final libraryHubs = await _fetchLibraryHubsForClient(
             client,
             limit: hubItemLimit,
@@ -756,8 +818,12 @@ class DataAggregationService {
           if (libraryHubs.succeeded || (!libraryHubs.failed && !libraryHubs.cancelled)) {
             legSucceededServerIds.add(serverId);
           }
-          if (libraryHubs.failed) legFailedServerIds.add(serverId);
-          if (libraryHubs.cancelled) legCancelledServerIds.add(serverId);
+          if (libraryHubs.failed) {
+            legFailedServerIds.add(serverId);
+          }
+          if (libraryHubs.cancelled) {
+            legCancelledServerIds.add(serverId);
+          }
           hubs = libraryHubs.hubs;
         }
         final processed = _postProcessHubs(hubs, serverId: ServerId(serverId), hiddenLibraryKeys: hiddenLibraryKeys);
@@ -771,8 +837,12 @@ class DataAggregationService {
     );
 
     for (final entry in globalDiagnosticsByServer.entries) {
-      if (entry.value.failed) legFailedServerIds.add(entry.key);
-      if (entry.value.cancelled) legCancelledServerIds.add(entry.key);
+      if (entry.value.failed) {
+        legFailedServerIds.add(entry.key);
+      }
+      if (entry.value.cancelled) {
+        legCancelledServerIds.add(entry.key);
+      }
     }
 
     final all = fetched.items;
@@ -813,9 +883,15 @@ class DataAggregationService {
   }) async {
     final libs = libraries ?? await client.fetchLibraries();
     final visible = libs.where((l) {
-      if (!kinds.contains(l.kind)) return false;
-      if (l.hidden) return false;
-      if (hiddenLibraryKeys != null && hiddenLibraryKeys.contains(l.globalKey)) return false;
+      if (!kinds.contains(l.kind)) {
+        return false;
+      }
+      if (l.hidden) {
+        return false;
+      }
+      if (hiddenLibraryKeys != null && hiddenLibraryKeys.contains(l.globalKey)) {
+        return false;
+      }
       return true;
     }).toList();
 
@@ -836,7 +912,9 @@ class DataAggregationService {
     Future<void> worker() async {
       while (true) {
         final index = next++;
-        if (index >= visible.length) return;
+        if (index >= visible.length) {
+          return;
+        }
         final library = visible[index];
         final diagnostics = HubFetchDiagnostics();
         try {
@@ -851,7 +929,9 @@ class DataAggregationService {
           results[index] = restrictToRecentHubKinds.contains(library.kind)
               ? hubs.where(_looksLikeRecentAddedOrReleasedHub).toList()
               : hubs;
-          if (hubs.isNotEmpty || (!diagnostics.failed && !diagnostics.cancelled)) succeeded = true;
+          if (hubs.isNotEmpty || (!diagnostics.failed && !diagnostics.cancelled)) {
+            succeeded = true;
+          }
         } catch (e, st) {
           if (_isCancellation(e)) {
             cancelled = true;
@@ -861,8 +941,12 @@ class DataAggregationService {
             appLogger.e('Failed to fetch library hubs for ${library.globalKey}', error: e, stackTrace: st);
           }
         }
-        if (diagnostics.failed) failed = true;
-        if (diagnostics.cancelled) cancelled = true;
+        if (diagnostics.failed) {
+          failed = true;
+        }
+        if (diagnostics.cancelled) {
+          cancelled = true;
+        }
       }
     }
 
@@ -900,11 +984,15 @@ class DataAggregationService {
           .map((hub) {
             final filteredItems = hub.items.where((item) {
               final libraryId = item.libraryId;
-              if (libraryId == null) return true;
+              if (libraryId == null) {
+                return true;
+              }
               final globalKey = buildGlobalKey(ServerId(serverId), libraryId);
               return !hiddenLibraryKeys.contains(globalKey);
             }).toList();
-            if (filteredItems.isEmpty) return null;
+            if (filteredItems.isEmpty) {
+              return null;
+            }
             return hub.copyWith(items: filteredItems, size: filteredItems.length);
           })
           .whereType<MediaHub>()
@@ -936,28 +1024,35 @@ class DataAggregationService {
     AbortController? abort,
     void Function(SearchAggregationResult result)? onProgress,
   }) async {
-    if (query.trim().isEmpty) return _emptySearchResult;
+    if (query.trim().isEmpty) {
+      return _emptySearchResult;
+    }
 
     abort?.throwIfAborted();
     final clients = _serverManager.visibleOnlineClients;
-    if (clients.isEmpty) return _emptySearchResult;
+    if (clients.isEmpty) {
+      return _emptySearchResult;
+    }
 
     final resultLimit = limit ?? defaultMediaSearchLimit;
     final fetchLimit = resultLimit < defaultMediaSearchLimit ? defaultMediaSearchLimit : resultLimit;
 
     final settled = <String, ({List<MediaItem> titles, List<MediaPerson> people})>{};
     void progress(String serverId, List<MediaItem> titles, List<MediaPerson> people) {
-      if (onProgress == null || abort?.isAborted == true) return;
+      if (onProgress == null || abort?.isAborted == true) {
+        return;
+      }
       settled[serverId] = (titles: titles, people: people);
       final visible = _withoutHiddenLibraries([
         for (final id in clients.keys) ...?settled[id]?.titles,
       ], hiddenLibraryKeys);
       final persons = [for (final id in clients.keys) ...?settled[id]?.people];
       onProgress((
-        hits: rankSearchHits([
-          for (final item in visible) MediaSearchHit(item),
-          for (final person in persons) PersonSearchHit(person),
-        ], query, limit: resultLimit),
+        hits: rankSearchHits(
+          [for (final item in visible) MediaSearchHit(item), for (final person in persons) PersonSearchHit(person)],
+          query,
+          limit: resultLimit,
+        ),
         candidates: visible,
         people: persons,
         succeededServerIds: Set<String>.unmodifiable(settled.keys),

@@ -107,7 +107,9 @@ class IptvSourceRepository {
         ],
       ),
     );
-    if (changed != 1) throw const IptvImportException('source_missing');
+    if (changed != 1) {
+      throw const IptvImportException('source_missing');
+    }
   }
 
   Future<IptvSourceConfiguration?> configuration(String profileId, String sourceId) async {
@@ -117,9 +119,13 @@ class IptvSourceRepository {
           variables: [Variable(profileId), Variable(sourceId)],
         )
         .getSingleOrNull();
-    if (row == null) return null;
+    if (row == null) {
+      return null;
+    }
     final clear = await CredentialVault.reveal(row.read<String>('config_ciphertext'));
-    if (clear == null) throw const IptvImportException('credential_unavailable');
+    if (clear == null) {
+      throw const IptvImportException('credential_unavailable');
+    }
     try {
       return IptvSourceConfiguration.fromJson(jsonDecode(clear) as Map<String, dynamic>);
     } on Object {
@@ -191,7 +197,9 @@ class IptvSourceRepository {
       for (final row in rows) {
         final id = row.read<String>('channel_id');
         final override = overrides[id];
-        if (override?.read<int>('hidden') == 1) continue;
+        if (override?.read<int>('hidden') == 1) {
+          continue;
+        }
         final customTitle = override?.readNullable<String>('custom_title')?.trim();
         final groupOverride = override?.readNullable<String>('group_override')?.trim();
         final guideIdOverride = override?.readNullable<String>('guide_id_override')?.trim();
@@ -232,7 +240,9 @@ class IptvSourceRepository {
 
   Future<List<IptvEditableChannel>> editableChannels(String profileId, String sourceId) async {
     final source = await _source(profileId, sourceId);
-    if (source == null) throw const IptvImportException('source_missing');
+    if (source == null) {
+      throw const IptvImportException('source_missing');
+    }
     final rows = await _database
         .customSelect(
           '''
@@ -275,7 +285,9 @@ class IptvSourceRepository {
     required bool parentalLocked,
   }) async {
     final source = await _source(profileId, sourceId);
-    if (source == null) throw const IptvImportException('source_missing');
+    if (source == null) {
+      throw const IptvImportException('source_missing');
+    }
     final title = customTitle?.trim();
     final group = groupOverride?.trim();
     final guideId = guideIdOverride?.trim();
@@ -306,7 +318,9 @@ class IptvSourceRepository {
         ],
       ),
     );
-    if (changed != 1) throw const IptvImportException('source_missing');
+    if (changed != 1) {
+      throw const IptvImportException('source_missing');
+    }
   }
 
   Future<Set<String>> lockedGroups(String profileId, String sourceId) async {
@@ -327,8 +341,12 @@ class IptvSourceRepository {
   }) async {
     final source = await _source(profileId, sourceId);
     final title = groupTitle.trim();
-    if (source == null) throw const IptvImportException('source_missing');
-    if (title.isEmpty || title.length > 120) throw const IptvImportException('source_invalid');
+    if (source == null) {
+      throw const IptvImportException('source_missing');
+    }
+    if (title.isEmpty || title.length > 120) {
+      throw const IptvImportException('source_invalid');
+    }
     final key = iptvGroupLockKey(title);
     await _database.runIdentityMutation(() async {
       if (locked) {
@@ -376,7 +394,9 @@ class IptvSourceRepository {
 
   Future<void> saveFavoriteOrder(String profileId, String sourceId, List<String> channelIds) async {
     final source = await _source(profileId, sourceId);
-    if (source == null) throw const IptvImportException('source_missing');
+    if (source == null) {
+      throw const IptvImportException('source_missing');
+    }
     final orderedIds = channelIds.toSet().toList();
     await _database.runIdentityMutation(
       () => _database.transaction(() async {
@@ -443,20 +463,30 @@ class IptvSourceRepository {
   Future<List<IptvSourceSummary>> vodSources(String profileId) async {
     final available = <IptvSourceSummary>[];
     for (final source in await sources(profileId)) {
-      if (!source.kind.supportsXtreamVod) continue;
+      if (!source.kind.supportsXtreamVod) {
+        continue;
+      }
       final config = await configuration(profileId, source.id);
-      if (config?.supportsXtreamCatalog == true) available.add(source);
+      if (config?.supportsXtreamCatalog == true) {
+        available.add(source);
+      }
     }
     return available;
   }
 
   Future<List<IptvVodCategory>> fetchVodCategories(String profileId, String sourceId, IptvVodKind kind) async {
     final config = await configuration(profileId, sourceId);
-    if (config == null) throw const IptvImportException('source_missing');
-    if (!config.supportsXtreamCatalog) throw const IptvImportException('vod_unavailable');
+    if (config == null) {
+      throw const IptvImportException('source_missing');
+    }
+    if (!config.supportsXtreamCatalog) {
+      throw const IptvImportException('vod_unavailable');
+    }
     final action = kind == IptvVodKind.movie ? 'get_vod_categories' : 'get_series_categories';
     final stored = await _source(profileId, sourceId);
-    if (stored == null) throw const IptvImportException('source_missing');
+    if (stored == null) {
+      throw const IptvImportException('source_missing');
+    }
     final transport = SourceTransport(allowHttp: config.allowHttp);
     try {
       final response = await _xtreamJson(transport, config.playerApiUri(action));
@@ -466,7 +496,9 @@ class IptvSourceRepository {
         final row = sourceMap(value);
         final id = _valueString(row, const ['category_id', 'id']);
         final name = _valueString(row, const ['category_name', 'name']);
-        if (id == null || name == null) continue;
+        if (id == null || name == null) {
+          continue;
+        }
         categories.add(IptvVodCategory(id: id, name: name, kind: kind));
       }
       await _replaceVodCategories(stored, kind, categories);
@@ -489,10 +521,16 @@ class IptvSourceRepository {
     String? categoryId,
   }) async {
     final config = await configuration(profileId, sourceId);
-    if (config == null) throw const IptvImportException('source_missing');
-    if (!config.supportsXtreamCatalog) throw const IptvImportException('vod_unavailable');
+    if (config == null) {
+      throw const IptvImportException('source_missing');
+    }
+    if (!config.supportsXtreamCatalog) {
+      throw const IptvImportException('vod_unavailable');
+    }
     final stored = await _source(profileId, sourceId);
-    if (stored == null) throw const IptvImportException('source_missing');
+    if (stored == null) {
+      throw const IptvImportException('source_missing');
+    }
     final action = kind == IptvVodKind.movie ? 'get_vod_streams' : 'get_series';
     final transport = SourceTransport(allowHttp: config.allowHttp);
     try {
@@ -501,13 +539,17 @@ class IptvSourceRepository {
         config.playerApiUri(action, parameters: categoryId == null ? const {} : {'category_id': categoryId}),
       );
       final rows = _xtreamRows(response);
-      if (rows.length > IptvPlaylistParser.maxEntries) throw const IptvImportException('invalid_data');
+      if (rows.length > IptvPlaylistParser.maxEntries) {
+        throw const IptvImportException('invalid_data');
+      }
       final items = <IptvVodItem>[];
       for (final value in rows) {
         final row = sourceMap(value);
         final id = _valueString(row, kind == IptvVodKind.movie ? const ['stream_id', 'id'] : const ['series_id', 'id']);
         final title = _valueString(row, const ['name', 'title']);
-        if (id == null || title == null) continue;
+        if (id == null || title == null) {
+          continue;
+        }
         final info = sourceMap(row['info']);
         final poster = _safeVodArtwork(
           _valueString(row, const ['stream_icon', 'cover', 'cover_big', 'poster']) ??
@@ -561,7 +603,9 @@ class IptvSourceRepository {
       throw const IptvImportException('invalid_data');
     }
     final config = await configuration(profileId, sourceId);
-    if (config == null || !config.supportsXtreamCatalog) throw const IptvImportException('source_missing');
+    if (config == null || !config.supportsXtreamCatalog) {
+      throw const IptvImportException('source_missing');
+    }
     final transport = SourceTransport(allowHttp: config.allowHttp);
     try {
       final response = await _xtreamJson(
@@ -673,7 +717,9 @@ class IptvSourceRepository {
   /// requests for every global-search keystroke.
   Future<List<IptvVodItem>> searchVod(String profileId, String query, {int limit = 40}) async {
     final value = query.trim();
-    if (value.isEmpty) return const [];
+    if (value.isEmpty) {
+      return const [];
+    }
     final rows = await _database
         .customSelect(
           '''
@@ -767,7 +813,9 @@ class IptvSourceRepository {
     if (itemId.isEmpty || itemId.length > 180 || episodeId.length > 180 || positionMs < 0 || durationMs < 0) {
       throw const IptvImportException('invalid_data');
     }
-    if (await _source(profileId, sourceId) == null) throw const IptvImportException('source_missing');
+    if (await _source(profileId, sourceId) == null) {
+      throw const IptvImportException('source_missing');
+    }
     final duration = durationMs.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt();
     final position = positionMs.clamp(0, 14 * 24 * 60 * 60 * 1000).toInt();
     await _database.customStatement(
@@ -808,7 +856,9 @@ class IptvSourceRepository {
     final fingerprints = <String, String>{};
     for (final sourceId in rows.map((row) => row.read<String>('source_id')).toSet()) {
       final config = await configuration(profileId, sourceId);
-      if (config != null) fingerprints[sourceId] = _progressSourceFingerprint(config);
+      if (config != null) {
+        fingerprints[sourceId] = _progressSourceFingerprint(config);
+      }
     }
     return [
       for (final row in rows)
@@ -832,10 +882,14 @@ class IptvSourceRepository {
     final fingerprints = <String, String>{};
     for (final source in await sources(profileId)) {
       final config = await configuration(profileId, source.id);
-      if (config != null) fingerprints.putIfAbsent(_progressSourceFingerprint(config), () => source.id);
+      if (config != null) {
+        fingerprints.putIfAbsent(_progressSourceFingerprint(config), () => source.id);
+      }
     }
     for (final raw in remoteRows.take(1000)) {
-      if (raw is! Map) continue;
+      if (raw is! Map) {
+        continue;
+      }
       final row = Map<String, dynamic>.from(raw);
       final fingerprint = row['source'];
       final kind = row['kind'];
@@ -864,7 +918,9 @@ class IptvSourceRepository {
         continue;
       }
       final sourceId = fingerprints[fingerprint];
-      if (sourceId == null) continue;
+      if (sourceId == null) {
+        continue;
+      }
       await _database.customStatement(
         '''
         INSERT INTO iptv_vod_progress(source_id, kind, item_id, episode_id, position_ms, duration_ms, updated_at, finished)
@@ -921,7 +977,9 @@ class IptvSourceRepository {
     bool series = false,
   }) async {
     final config = await configuration(profileId, sourceId);
-    if (config == null) throw const IptvImportException('source_missing');
+    if (config == null) {
+      throw const IptvImportException('source_missing');
+    }
     try {
       return config.vodStreamUri(itemId: itemId, extension: extension, series: series);
     } on Object {
@@ -1011,7 +1069,9 @@ class IptvSourceRepository {
         endsAt <= startsAt) {
       throw const IptvImportException('recording_schedule_invalid');
     }
-    if (await _source(profileId, sourceId) == null) throw const IptvImportException('source_missing');
+    if (await _source(profileId, sourceId) == null) {
+      throw const IptvImportException('source_missing');
+    }
     final id = _uuid.v4();
     final stamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     try {
@@ -1028,7 +1088,9 @@ class IptvSourceRepository {
                 variables: [Variable(profileId), Variable(sourceId), Variable(channelId), Variable(startsAt)],
               )
               .getSingleOrNull();
-          if (active != null) throw const IptvImportException('recording_schedule_exists');
+          if (active != null) {
+            throw const IptvImportException('recording_schedule_exists');
+          }
           await _database.customStatement(
             '''
           DELETE FROM iptv_recording_schedules
@@ -1174,9 +1236,9 @@ class IptvSourceRepository {
     // Interrupted rows remain playable when their journaled file survived.
     // Older versions journaled the final name instead of the active partial;
     // recover that exact app-owned legacy partial without sweeping/deleting it.
-    final interrupted = await _database.customSelect(
-      "SELECT id, profile_id, file_path FROM iptv_recordings WHERE state='interrupted'",
-    ).get();
+    final interrupted = await _database
+        .customSelect("SELECT id, profile_id, file_path FROM iptv_recordings WHERE state='interrupted'")
+        .get();
     for (final row in interrupted) {
       final id = row.read<String>('id');
       final profile = row.read<String>('profile_id');
@@ -1184,7 +1246,9 @@ class IptvSourceRepository {
         var file = File(row.read<String>('file_path'));
         if (!await file.exists() && RegExp(r'^[a-f0-9-]{36}$', caseSensitive: false).hasMatch(id)) {
           final legacy = File(p.join(file.parent.path, '.$id.partial.ts'));
-          if (await legacy.exists()) file = legacy;
+          if (await legacy.exists()) {
+            file = legacy;
+          }
         }
         if (await file.exists()) {
           final archive = await IptvHlsArchive.mediaDirectory(file);
@@ -1197,12 +1261,14 @@ class IptvSourceRepository {
             }
           }
           final size = await IptvHlsArchive.retainedBytes(file);
-          await _database.runIdentityMutation(() => _database.customStatement(
-            "UPDATE iptv_recordings SET file_path=?, size_bytes=?, "
-            "error_code=CASE WHEN error_code IN ('recovery_io_failed','recovery_data_invalid') "
-            "THEN 'app_interrupted' ELSE error_code END WHERE profile_id=? AND id=? AND state='interrupted'",
-            [file.path, size, profile, id],
-          ));
+          await _database.runIdentityMutation(
+            () => _database.customStatement(
+              "UPDATE iptv_recordings SET file_path=?, size_bytes=?, "
+              "error_code=CASE WHEN error_code IN ('recovery_io_failed','recovery_data_invalid') "
+              "THEN 'app_interrupted' ELSE error_code END WHERE profile_id=? AND id=? AND state='interrupted'",
+              [file.path, size, profile, id],
+            ),
+          );
         }
       } on FileSystemException {
         await _markRecordingRecoveryFailure(profile, id, 'recovery_io_failed');
@@ -1213,10 +1279,12 @@ class IptvSourceRepository {
   }
 
   Future<void> _markRecordingRecoveryFailure(String profileId, String recordingId, String code) =>
-      _database.runIdentityMutation(() => _database.customStatement(
-        "UPDATE iptv_recordings SET error_code=? WHERE profile_id=? AND id=? AND state='interrupted'",
-        [code, profileId, recordingId],
-      ));
+      _database.runIdentityMutation(
+        () => _database.customStatement(
+          "UPDATE iptv_recordings SET error_code=? WHERE profile_id=? AND id=? AND state='interrupted'",
+          [code, profileId, recordingId],
+        ),
+      );
 
   Future<void> cancelLocalRecordingSchedule(String profileId, String scheduleId) async {
     await _database.runIdentityMutation(
@@ -1248,7 +1316,11 @@ class IptvSourceRepository {
           DateTime.now().millisecondsSinceEpoch ~/ 1000,
           durationSeconds,
           sizeBytes,
-          completed ? 'complete' : (sizeBytes ?? 0) > 0 ? 'interrupted' : 'failed',
+          completed
+              ? 'complete'
+              : (sizeBytes ?? 0) > 0
+              ? 'interrupted'
+              : 'failed',
           errorCode,
           profileId,
           recordingId,
@@ -1269,9 +1341,13 @@ class IptvSourceRepository {
   Future<List<IptvDispatcharrRecording>> dispatcharrRecordings(String profileId) async {
     final records = <IptvDispatcharrRecording>[];
     for (final source in await sources(profileId)) {
-      if (source.kind != IptvInputKind.dispatcharr) continue;
+      if (source.kind != IptvInputKind.dispatcharr) {
+        continue;
+      }
       final config = await configuration(profileId, source.id);
-      if (config?.supportsDispatcharrDvr != true) continue;
+      if (config?.supportsDispatcharrDvr != true) {
+        continue;
+      }
       final client = DispatcharrDvrClient(config!);
       try {
         records.addAll(await client.recordings());
@@ -1286,9 +1362,13 @@ class IptvSourceRepository {
   Future<List<IptvDispatcharrRule>> dispatcharrRules(String profileId) async {
     final rules = <IptvDispatcharrRule>[];
     for (final source in await sources(profileId)) {
-      if (source.kind != IptvInputKind.dispatcharr) continue;
+      if (source.kind != IptvInputKind.dispatcharr) {
+        continue;
+      }
       final config = await configuration(profileId, source.id);
-      if (config?.supportsDispatcharrDvr != true) continue;
+      if (config?.supportsDispatcharrDvr != true) {
+        continue;
+      }
       final client = DispatcharrDvrClient(config!);
       try {
         rules.addAll(await client.rules());
@@ -1304,7 +1384,9 @@ class IptvSourceRepository {
     IptvDispatcharrRecording recording,
   ) async {
     final config = await configuration(profileId, recording.sourceId);
-    if (config?.supportsDispatcharrDvr != true) throw const IptvImportException('dvr_unavailable');
+    if (config?.supportsDispatcharrDvr != true) {
+      throw const IptvImportException('dvr_unavailable');
+    }
     final client = DispatcharrDvrClient(config!);
     try {
       return (
@@ -1318,7 +1400,9 @@ class IptvSourceRepository {
 
   Future<void> stopDispatcharrRecording(String profileId, IptvDispatcharrRecording recording) async {
     final config = await configuration(profileId, recording.sourceId);
-    if (config?.supportsDispatcharrDvr != true) throw const IptvImportException('dvr_unavailable');
+    if (config?.supportsDispatcharrDvr != true) {
+      throw const IptvImportException('dvr_unavailable');
+    }
     final client = DispatcharrDvrClient(config!);
     try {
       await client.stopRecording(recording.id);
@@ -1331,7 +1415,9 @@ class IptvSourceRepository {
 
   Future<void> deleteDispatcharrRecording(String profileId, IptvDispatcharrRecording recording) async {
     final config = await configuration(profileId, recording.sourceId);
-    if (config?.supportsDispatcharrDvr != true) throw const IptvImportException('dvr_unavailable');
+    if (config?.supportsDispatcharrDvr != true) {
+      throw const IptvImportException('dvr_unavailable');
+    }
     final client = DispatcharrDvrClient(config!);
     try {
       await client.deleteRecording(recording.id);
@@ -1344,7 +1430,9 @@ class IptvSourceRepository {
 
   Future<void> deleteDispatcharrRule(String profileId, IptvDispatcharrRule rule) async {
     final config = await configuration(profileId, rule.sourceId);
-    if (config?.supportsDispatcharrDvr != true) throw const IptvImportException('dvr_unavailable');
+    if (config?.supportsDispatcharrDvr != true) {
+      throw const IptvImportException('dvr_unavailable');
+    }
     final client = DispatcharrDvrClient(config!);
     try {
       await client.deleteRule(rule);
@@ -1357,9 +1445,13 @@ class IptvSourceRepository {
 
   Future<void> scheduleDispatcharrRecording(String profileId, LiveTvChannel channel, LiveTvProgram program) async {
     final sourceId = channel.iptvSourceId;
-    if (sourceId == null) throw const IptvImportException('dvr_unavailable');
+    if (sourceId == null) {
+      throw const IptvImportException('dvr_unavailable');
+    }
     final config = await configuration(profileId, sourceId);
-    if (config?.supportsDispatcharrDvr != true) throw const IptvImportException('dvr_unavailable');
+    if (config?.supportsDispatcharrDvr != true) {
+      throw const IptvImportException('dvr_unavailable');
+    }
     final client = DispatcharrDvrClient(config!);
     try {
       await client.schedule(channel: channel, program: program);
@@ -1386,7 +1478,9 @@ class IptvSourceRepository {
           variables: [Variable(profileId), Variable(sourceId), Variable(channelId)],
         )
         .getSingleOrNull();
-    if (row == null) return null;
+    if (row == null) {
+      return null;
+    }
     return CredentialVault.reveal(row.read<String>('stream_url_ciphertext'));
   }
 
@@ -1397,7 +1491,9 @@ class IptvSourceRepository {
     LiveTvProgram? program,
   }) async {
     final config = await configuration(profileId, sourceId);
-    if (config == null) return null;
+    if (config == null) {
+      return null;
+    }
     final row = await _database
         .customSelect(
           '''
@@ -1408,20 +1504,26 @@ class IptvSourceRepository {
           variables: [Variable(profileId), Variable(sourceId), Variable(channelId)],
         )
         .getSingleOrNull();
-    if (row == null) return null;
+    if (row == null) {
+      return null;
+    }
     final streamCiphertext = row.read<String>('stream_url_ciphertext');
     final catchupCiphertext = row.readNullable<String>('catchup_source_ciphertext');
     final catchupDays = row.readNullable<int>('catchup_days');
     final headersCiphertext = row.readNullable<String>('stream_headers_ciphertext');
     final headersJson = headersCiphertext == null ? null : await CredentialVault.reveal(headersCiphertext);
-    if (headersCiphertext != null && headersJson == null) throw const IptvImportException('credential_unavailable');
+    if (headersCiphertext != null && headersJson == null) {
+      throw const IptvImportException('credential_unavailable');
+    }
     final headers = <String, String>{};
     if (headersJson != null) {
       try {
         final decoded = jsonDecode(headersJson);
         if (decoded is Map) {
           for (final entry in decoded.entries) {
-            if (entry.key is! String || entry.value is! String) continue;
+            if (entry.key is! String || entry.value is! String) {
+              continue;
+            }
             final key = (entry.key as String).toLowerCase();
             if (key == 'user-agent' || key == 'referer' || key == 'origin') {
               headers[key == 'user-agent'
@@ -1451,7 +1553,9 @@ class IptvSourceRepository {
         return _catchupUrl(catchupTemplate, program, config);
       }
       final value = await CredentialVault.reveal(streamCiphertext);
-      if (value == null) return null;
+      if (value == null) {
+        return null;
+      }
       if (config.kind == IptvInputKind.stalker) {
         final command = _stalkerCommand(value);
         final client = StalkerPortalClient(config);
@@ -1469,7 +1573,9 @@ class IptvSourceRepository {
     }
 
     final url = await resolve();
-    if (url == null) return null;
+    if (url == null) {
+      return null;
+    }
     return IptvLiveTvPlaybackSession(
       initialUrl: url,
       refreshUrl: resolve,
@@ -1487,7 +1593,9 @@ class IptvSourceRepository {
 
   String _stalkerCommand(String stored) {
     const prefix = 'stalker:';
-    if (!stored.startsWith(prefix)) throw const IptvImportException('invalid_stream_address');
+    if (!stored.startsWith(prefix)) {
+      throw const IptvImportException('invalid_stream_address');
+    }
     try {
       final payload = sourceMap(jsonDecode(stored.substring(prefix.length)));
       final command = payload['cmd'];
@@ -1527,10 +1635,14 @@ class IptvSourceRepository {
       final recordingRoot = p.normalize(p.join(appSupport.path, 'iptv-recordings'));
       for (final recording in recordings) {
         final path = p.normalize(recording.filePath);
-        if (!p.isWithin(recordingRoot, path)) continue;
+        if (!p.isWithin(recordingRoot, path)) {
+          continue;
+        }
         try {
           final file = File(path);
-          if (await file.exists()) await file.delete();
+          if (await file.exists()) {
+            await file.delete();
+          }
         } on Object {
           // A stale file is safer than blocking profile removal.
         }
@@ -1542,9 +1654,13 @@ class IptvSourceRepository {
 
   Future<int> refresh(String profileId, String sourceId) async {
     final source = await _source(profileId, sourceId);
-    if (source == null) throw const IptvImportException('source_missing');
+    if (source == null) {
+      throw const IptvImportException('source_missing');
+    }
     final config = await configuration(profileId, sourceId);
-    if (config == null) throw const IptvImportException('source_missing');
+    if (config == null) {
+      throw const IptvImportException('source_missing');
+    }
 
     final transport = SourceTransport(allowHttp: config.allowHttp);
     StalkerPortalClient? stalker;
@@ -1567,17 +1683,23 @@ class IptvSourceRepository {
           headers: const {'Accept': 'audio/x-mpegurl, application/vnd.apple.mpegurl, text/plain, */*'},
         );
         final playlist = IptvPlaylistParser.parse(playlistBody, base: playlistUri, allowHttp: config.allowHttp);
-        if (playlist.isHls) throw const IptvImportException('playlist_is_stream');
+        if (playlist.isHls) {
+          throw const IptvImportException('playlist_is_stream');
+        }
         playlistEntries = playlist.entries;
         playlistGuideUri = playlist.guideUri;
       }
 
       final guideUris = <Uri>[];
       final primaryGuideUri = config.guideUri() ?? playlistGuideUri;
-      if (primaryGuideUri != null) guideUris.add(primaryGuideUri);
+      if (primaryGuideUri != null) {
+        guideUris.add(primaryGuideUri);
+      }
       for (final address in config.additionalGuideEndpoints) {
         final uri = Uri.parse(address.trim());
-        if (!guideUris.contains(uri)) guideUris.add(uri);
+        if (!guideUris.contains(uri)) {
+          guideUris.add(uri);
+        }
       }
       final programmes = <IptvXmltvProgramme>[];
       final guideLogos = <String, String>{};
@@ -1611,7 +1733,9 @@ class IptvSourceRepository {
       final tvgToChannelId = <String, String>{};
       for (final channel in playlistEntries) {
         final tvgId = effectiveTvgIds[channel.id];
-        if (tvgId != null) tvgToChannelId.putIfAbsent(tvgId, () => channel.id);
+        if (tvgId != null) {
+          tvgToChannelId.putIfAbsent(tvgId, () => channel.id);
+        }
       }
       final mappedPrograms = <IptvProgrammeSnapshot>[
         for (final program in programmes)
@@ -1786,7 +1910,9 @@ class IptvSourceRepository {
     required List<String> columns,
     required List<List<Object?>> rows,
   }) async {
-    if (rows.isEmpty) return;
+    if (rows.isEmpty) {
+      return;
+    }
     final rowsPerStatement = (900 ~/ columns.length).clamp(1, 100).toInt();
     for (var start = 0; start < rows.length; start += rowsPerStatement) {
       final chunk = rows.skip(start).take(rowsPerStatement).toList(growable: false);
@@ -1913,11 +2039,15 @@ class IptvSourceRepository {
   }
 
   List<dynamic> _xtreamRows(Object? value) {
-    if (value is List) return value;
+    if (value is List) {
+      return value;
+    }
     if (value is Map) {
       final map = sourceMap(value);
       for (final key in const ['data', 'results', 'streams', 'categories', 'series']) {
-        if (map[key] is List) return map[key] as List;
+        if (map[key] is List) {
+          return map[key] as List;
+        }
       }
     }
     throw const IptvImportException('invalid_data');
@@ -1927,7 +2057,9 @@ class IptvSourceRepository {
     final row = sourceMap(raw);
     final id = _valueString(row, const ['id', 'stream_id', 'episode_id']);
     final title = _valueString(row, const ['title', 'name', 'episode_name']);
-    if (id == null || title == null) return;
+    if (id == null || title == null) {
+      return;
+    }
     final info = sourceMap(row['info']);
     final season = _valueInt(row, const ['season', 'season_number']) ?? seasonHint ?? 0;
     final episode = _valueInt(row, const ['episode_num', 'episode', 'episode_number', 'index']) ?? 0;
@@ -1960,9 +2092,13 @@ class IptvSourceRepository {
   String? _valueString(Map<String, dynamic> row, List<String> keys) {
     for (final key in keys) {
       final value = row[key];
-      if (value == null) continue;
+      if (value == null) {
+        continue;
+      }
       final text = '$value'.trim();
-      if (text.isNotEmpty && text.toLowerCase() != 'null' && text != '0') return text;
+      if (text.isNotEmpty && text.toLowerCase() != 'null' && text != '0') {
+        return text;
+      }
     }
     return null;
   }
@@ -1970,8 +2106,12 @@ class IptvSourceRepository {
   String? _firstStringValue(Map<String, dynamic> row, List<String> keys) {
     for (final key in keys) {
       final value = row[key];
-      if (value is String && value.trim().isNotEmpty) return value.trim();
-      if (value is List && value.isNotEmpty && value.first is String) return (value.first as String).trim();
+      if (value is String && value.trim().isNotEmpty) {
+        return value.trim();
+      }
+      if (value is List && value.isNotEmpty && value.first is String) {
+        return (value.first as String).trim();
+      }
     }
     return null;
   }
@@ -1979,10 +2119,14 @@ class IptvSourceRepository {
   int? _valueInt(Map<String, dynamic> row, List<String> keys) {
     for (final key in keys) {
       final value = row[key];
-      if (value is num) return value.toInt();
+      if (value is num) {
+        return value.toInt();
+      }
       if (value is String) {
         final parsed = int.tryParse(value.trim());
-        if (parsed != null) return parsed;
+        if (parsed != null) {
+          return parsed;
+        }
       }
     }
     return null;
@@ -1991,30 +2135,42 @@ class IptvSourceRepository {
   double? _valueDouble(Map<String, dynamic> row, List<String> keys) {
     for (final key in keys) {
       final value = row[key];
-      if (value is num && value.isFinite) return value.toDouble();
+      if (value is num && value.isFinite) {
+        return value.toDouble();
+      }
       if (value is String) {
         final parsed = double.tryParse(value.trim());
-        if (parsed != null && parsed.isFinite) return parsed;
+        if (parsed != null && parsed.isFinite) {
+          return parsed;
+        }
       }
     }
     return null;
   }
 
   int? _durationSeconds(String? value) {
-    if (value == null) return null;
+    if (value == null) {
+      return null;
+    }
     final parts = value.split(':').map(int.tryParse).toList();
-    if (parts.length != 3 || parts.any((part) => part == null || part < 0)) return int.tryParse(value);
+    if (parts.length != 3 || parts.any((part) => part == null || part < 0)) {
+      return int.tryParse(value);
+    }
     return parts[0]! * 3600 + parts[1]! * 60 + parts[2]!;
   }
 
   String? _safeCatalogText(String? value, int maxLength) {
     final clean = value?.replaceAll(RegExp(r'[\x00-\x1f\x7f]'), '').trim();
-    if (clean == null || clean.isEmpty) return null;
+    if (clean == null || clean.isEmpty) {
+      return null;
+    }
     return clean.length <= maxLength ? clean : clean.substring(0, maxLength);
   }
 
   String? _safeVodArtwork(String? raw, IptvSourceConfiguration config) {
-    if (raw == null || raw.length > UniversalMediaAddress.maxLength) return null;
+    if (raw == null || raw.length > UniversalMediaAddress.maxLength) {
+      return null;
+    }
     try {
       final uri = UniversalMediaAddress.parse(raw, allowHttp: config.allowHttp, base: config.xtreamBaseUri);
       return uri.toString();
@@ -2055,7 +2211,9 @@ class IptvSourceRepository {
           variables: [Variable(profileId), Variable(sourceId)],
         )
         .getSingleOrNull();
-    if (row == null) return null;
+    if (row == null) {
+      return null;
+    }
     return _StoredIptvSource(
       id: row.read<String>('id'),
       profileId: row.read<String>('profile_id'),
@@ -2072,7 +2230,9 @@ class IptvSourceRepository {
   String _catchupUrl(String template, LiveTvProgram program, IptvSourceConfiguration config) {
     final start = program.beginsAt;
     final end = program.endsAt;
-    if (start == null || end == null || end <= start) throw const IptvImportException('catchup_unavailable');
+    if (start == null || end == null || end <= start) {
+      throw const IptvImportException('catchup_unavailable');
+    }
     final duration = end - start;
     final startTime = _catchupTimestamp(start);
     final endTime = _catchupTimestamp(end);
@@ -2171,14 +2331,18 @@ class IptvSourceRepository {
         !RegExp(r'^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$').hasMatch(config.macAddress.trim().toUpperCase())) {
       throw const IptvImportException('source_invalid');
     }
-    if (config.additionalGuideEndpoints.length > 8) throw const IptvImportException('source_invalid');
+    if (config.additionalGuideEndpoints.length > 8) {
+      throw const IptvImportException('source_invalid');
+    }
     final apiEndpoint = config.dispatcharrApiEndpoint.trim();
     final apiKey = config.dispatcharrApiKey.trim();
     if (apiEndpoint.isNotEmpty != apiKey.isNotEmpty) {
       throw const IptvImportException('source_invalid');
     }
     if (apiEndpoint.isNotEmpty) {
-      if (config.kind != IptvInputKind.dispatcharr) throw const IptvImportException('source_invalid');
+      if (config.kind != IptvInputKind.dispatcharr) {
+        throw const IptvImportException('source_invalid');
+      }
       final uri = Uri.tryParse(apiEndpoint);
       if (uri == null || uri.host.isEmpty || uri.userInfo.isNotEmpty || uri.hasFragment || uri.hasQuery) {
         throw const IptvImportException('source_invalid');

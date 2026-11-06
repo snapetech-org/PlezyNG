@@ -39,7 +39,9 @@ class IptvScheduledStreamRecorder {
     if (uri.path.toLowerCase().endsWith('.m3u8')) {
       return _recordHls(uri);
     }
-    if (await _recordDirect(uri)) return _recordHls(uri);
+    if (await _recordDirect(uri)) {
+      return _recordHls(uri);
+    }
     final filename = uri.pathSegments.isEmpty ? '' : uri.pathSegments.last;
     final extension = RegExp(
       r'\.(ts|mp2t|m2ts|mp4|m4v|mkv|mp3|aac|m4a|mpg|mpeg|webm)$',
@@ -55,7 +57,9 @@ class IptvScheduledStreamRecorder {
     await _archive?.stop();
     await _subscription?.cancel();
     final directDone = _directDone;
-    if (directDone != null && !directDone.isCompleted) directDone.complete();
+    if (directDone != null && !directDone.isCompleted) {
+      directDone.complete();
+    }
     _transport?.close();
   }
 
@@ -80,7 +84,9 @@ class IptvScheduledStreamRecorder {
     var reachedScheduledEnd = false;
     late final StreamSubscription<List<int>> subscription;
     void finish([Object? error, StackTrace? stackTrace]) {
-      if (done.isCompleted) return;
+      if (done.isCompleted) {
+        return;
+      }
       if (error == null) {
         done.complete();
       } else {
@@ -92,9 +98,14 @@ class IptvScheduledStreamRecorder {
       (bytes) {
         subscription.pause();
         sink.add(bytes);
-        unawaited(sink.flush().then((_) => subscription.resume(), onError: (Object error, StackTrace stackTrace) {
-          finish(error, stackTrace);
-        }));
+        unawaited(
+          sink.flush().then(
+            (_) => subscription.resume(),
+            onError: (Object error, StackTrace stackTrace) {
+              finish(error, stackTrace);
+            },
+          ),
+        );
       },
       onError: (Object error, StackTrace stackTrace) => finish(error, stackTrace),
       onDone: finish,
@@ -123,7 +134,9 @@ class IptvScheduledStreamRecorder {
       _transport = null;
       _directDone = null;
     }
-    if (_stopped && await outputFile.length() == 0) throw const FileSystemException('No stream data received');
+    if (_stopped && await outputFile.length() == 0) {
+      throw const FileSystemException('No stream data received');
+    }
     return false;
   }
 

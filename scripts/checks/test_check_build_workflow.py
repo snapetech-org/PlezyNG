@@ -348,7 +348,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_libmpv_cache_without_lock_identity_is_rejected(self) -> None:
         workflow = self._workflow().replace(
-            "hashFiles('mpv-build.lock.json')",
+            "hashFiles('mpv-build.lock.json', 'scripts/fetch_linux_libmpv.py')",
             "hashFiles('linux/packaging/native-inputs.json')",
             1,
         )
@@ -522,23 +522,15 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("versioned builds must build webOS independently", result.stderr)
 
-    def test_unapproved_webos_ipk_upload_is_rejected(self) -> None:
-        workflow = self._workflow()
-        evidence_step = "      - name: Upload WebOS validation evidence without vendor runtime binaries\n"
-        injected_upload = """      - name: Upload experimental WebOS candidate for this build
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: webos-ipk-experimental
-          path: ${{ steps.webos-build.outputs.output_dir }}/*
-
-"""
-        self.assertIn(evidence_step, workflow)
-        workflow = workflow.replace(evidence_step, injected_upload + evidence_step, 1)
-
+    def test_webos_release_cannot_skip_package_source_verification(self) -> None:
+        workflow = self._workflow().replace(
+            'python3 tools/webos/check_release_package.py',
+            'echo missing package verification', 1,
+        )
+        self.assertNotEqual(workflow, self._workflow())
         result = self._run(workflow)
-
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("unapproved WebOS candidates must stay inside", result.stderr)
+        self.assertIn('verify the built webOS package', result.stderr)
 
     def test_versioned_tizen_build_stays_arm_and_store_gated(self) -> None:
         workflow = self._workflow().replace(

@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "../../../shared/visualization/render_helper.h"
-#include <windows.h>
-#include <mutex>
+
 #include <gl/GL.h>
 #include <wincodec.h>
+#include <windows.h>
 #include <wrl/client.h>
+
+#include <mutex>
 
 using namespace plezy::visualization;
 namespace {
@@ -124,7 +126,7 @@ MilkRustImage Decode(const std::filesystem::path& path) {
   Check(converter->CopyPixels(nullptr, image.width * 4, static_cast<UINT>(image.rgba.size()), image.rgba.data()));
   return image;
 }
-}
+}  // namespace
 
 int wmain(int argc, wchar_t** argv) {
   if (argc != 3 || std::wstring(argv[1]) != L"--plezy-render-pipe") return 64;

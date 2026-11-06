@@ -122,6 +122,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$visualizerUi$en visualizerUi = Translations$visualizerUi$en.internal(_root);
 	late final Translations$romm$en romm = Translations$romm$en.internal(_root);
 	late final Translations$subtitleCapture$en subtitleCapture = Translations$subtitleCapture$en.internal(_root);
+	late final Translations$karaokeUi$en karaokeUi = Translations$karaokeUi$en.internal(_root);
 }
 
 // Path: app
@@ -1638,11 +1639,8 @@ class Translations$settings$en {
 	/// en: 'Experimental Dolby Vision'
 	String get experimentalDolbyVision => 'Experimental Dolby Vision';
 
-	/// en: 'Use the experimental FEL renderer on the next playback. Requires a separate engine build.'
-	String get experimentalDolbyVisionDescription => 'Use the experimental FEL renderer on the next playback. Requires a separate engine build.';
-
-	/// en: 'This experiment is currently available on Linux only.'
-	String get dvExperimentUnavailableDescription => 'This experiment is currently available on Linux only.';
+	/// en: 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.'
+	String get experimentalDolbyVisionDescription => 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.';
 
 	/// en: 'Compatibility fallback'
 	String get dvCompatibilityFallback => 'Compatibility fallback';
@@ -2143,6 +2141,33 @@ class Translations$settings$en {
 
 	/// en: 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.'
 	String get subtitleOnMuteDescription => 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.';
+
+	/// en: 'Offline HDR10 / SDR export'
+	String get dvOfflineTitle => 'Offline HDR10 / SDR export';
+
+	/// en: 'Create a compatible video from synchronized Dolby Vision base and enhancement HEVC files. All tools are included and run locally. Originals are preserved; picture quality depends on the source.'
+	String get dvOfflineDescription => 'Create a compatible video from synchronized Dolby Vision base and enhancement HEVC files. All tools are included and run locally. Originals are preserved; picture quality depends on the source.';
+
+	/// en: 'Choose base-layer HEVC file'
+	String get dvOfflineBase => 'Choose base-layer HEVC file';
+
+	/// en: 'Choose enhancement-layer HEVC file'
+	String get dvOfflineEnhancement => 'Choose enhancement-layer HEVC file';
+
+	/// en: 'Source frame rate (for example 24000/1001)'
+	String get dvOfflineFrameRate => 'Source frame rate (for example 24000/1001)';
+
+	/// en: 'Choose different synchronized layer files and a frame rate from 1 to 120 fps.'
+	String get dvOfflineInvalid => 'Choose different synchronized layer files and a frame rate from 1 to 120 fps.';
+
+	/// en: 'Choose a new .mkv filename. Existing media and reports are preserved.'
+	String get dvOfflineNewOutput => 'Choose a new .mkv filename. Existing media and reports are preserved.';
+
+	/// en: 'HDR10 · 10-bit HEVC'
+	String get dvOfflineHdr10 => 'HDR10 · 10-bit HEVC';
+
+	/// en: 'SDR · H.264'
+	String get dvOfflineSdr => 'SDR · H.264';
 }
 
 // Path: themeEditor
@@ -10955,29 +10980,14 @@ class Translations$games$en {
 	/// en: 'Browse your games and connect gaming computers. In-app playback depends on this device’s streaming support.'
 	String get enableDescription => 'Browse your games and connect gaming computers. In-app playback depends on this device’s streaming support.';
 
-	/// en: 'Your games, from your computers.'
-	String get subtitle => 'Your games, from your computers.';
-
 	/// en: 'Your computers'
 	String get computers => 'Your computers';
-
-	/// en: 'Nearby computers'
-	String get nearby => 'Nearby computers';
 
 	/// en: 'Find computers'
 	String get findComputers => 'Find computers';
 
 	/// en: 'Add computer'
 	String get addComputer => 'Add computer';
-
-	/// en: 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.'
-	String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-
-	/// en: 'Add your gaming computer to get started.'
-	String get empty => 'Add your gaming computer to get started.';
-
-	/// en: 'No computers found on this network. You can enter an address manually.'
-	String get noNearby => 'No computers found on this network. You can enter an address manually.';
 
 	/// en: 'Computer name'
 	String get name => 'Computer name';
@@ -11060,9 +11070,6 @@ class Translations$games$en {
 	/// en: 'Connection timed out. Check the computer, pairing code and network before trying again.'
 	String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
 
-	/// en: 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.'
-	String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.';
-
 	/// en: 'On-screen controller'
 	String get touchControls => 'On-screen controller';
 
@@ -11080,9 +11087,6 @@ class Translations$games$en {
 
 	/// en: 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.'
 	String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-
-	/// en: 'On-screen controls'
-	String get touchSetup => 'On-screen controls';
 
 	/// en: 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.'
 	String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
@@ -11116,9 +11120,6 @@ class Translations$games$en {
 
 	/// en: 'Cancel'
 	String get cancel => 'Cancel';
-
-	/// en: 'Looking for computers…'
-	String get scanning => 'Looking for computers…';
 
 	/// en: 'Save shortcut'
 	String get saveShortcut => 'Save shortcut';
@@ -11162,12 +11163,6 @@ class Translations$games$en {
 	/// en: 'Steam account linked. Its library is private or unavailable, so no games were imported.'
 	String get steamLibraryPrivate => 'Steam account linked. Its library is private or unavailable, so no games were imported.';
 
-	/// en: 'Steam could not refresh the library. Showing the last available catalog.'
-	String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
-
-	/// en: 'Showing up to 2,000 games. The Steam catalog was truncated.'
-	String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
-
 	/// en: 'Connecting…'
 	String get connecting => 'Connecting…';
 
@@ -11191,9 +11186,6 @@ class Translations$games$en {
 
 	/// en: 'Connect a gaming computer to play this game inside Pleazyng.'
 	String get connectToPlay => 'Connect a gaming computer to play this game inside Pleazyng.';
-
-	/// en: 'Steam on your computer checks installation, access and cloud saves when you connect. A saved game or computer does not mean it is available now.'
-	String get availabilityHint => 'Steam on your computer checks installation, access and cloud saves when you connect. A saved game or computer does not mean it is available now.';
 
 	/// en: 'From Steam'
 	String get steamSource => 'From Steam';
@@ -11417,14 +11409,8 @@ class Translations$games$en {
 	/// en: 'Disconnecting leaves the game running on the computer.'
 	String get disconnectHelp => 'Disconnecting leaves the game running on the computer.';
 
-	/// en: 'The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.'
-	String get streamFailed => 'The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.';
-
 	/// en: 'Steam activity'
 	String get steamActivity => 'Steam activity';
-
-	/// en: 'Load news and achievements for your linked account. Activity is kept only while these details are open.'
-	String get steamActivityHelp => 'Load news and achievements for your linked account. Activity is kept only while these details are open.';
 
 	/// en: 'Include friends playing'
 	String get includeFriends => 'Include friends playing';
@@ -11494,9 +11480,6 @@ class Translations$games$en {
 
 	/// en: 'Open this game’s Steam page in your browser? Your browser’s Steam sign-in and privacy settings apply.'
 	String get openSteamPageHelp => 'Open this game’s Steam page in your browser? Your browser’s Steam sign-in and privacy settings apply.';
-
-	/// en: 'Computer actions'
-	String get hostActions => 'Computer actions';
 
 	/// en: 'Launch on computer'
 	String get launchOnComputer => 'Launch on computer';
@@ -11846,12 +11829,6 @@ class Translations$games$en {
 	/// en: 'Install on $computer'
 	String lanInstallTarget({required Object computer}) => 'Install on ${computer}';
 
-	/// en: 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.'
-	String get lanInstallSubmitted => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.';
-
-	/// en: 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.'
-	String get cloudSettingsHelp => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.';
-
 	/// en: 'Ultra HD · capable hardware required'
 	String get qualityUltraHd => 'Ultra HD · capable hardware required';
 
@@ -11966,14 +11943,8 @@ class Translations$games$en {
 	/// en: 'Steam account linked'
 	String get accountLinked => 'Steam account linked';
 
-	/// en: 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.'
-	String get computerSetupHint => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.';
-
 	/// en: 'Manage connections'
 	String get manageConnections => 'Manage connections';
-
-	/// en: 'Library status'
-	String get accountStatus => 'Library status';
 
 	/// en: 'Clear search and filters'
 	String get clearGameFilters => 'Clear search and filters';
@@ -12011,12 +11982,6 @@ class Translations$games$en {
 	/// en: 'Preferred computer'
 	String get preferredComputer => 'Preferred computer';
 
-	/// en: 'Prefer this computer'
-	String get preferComputer => 'Prefer this computer';
-
-	/// en: 'Choose automatically'
-	String get automaticComputer => 'Choose automatically';
-
 	/// en: 'Installation comes from the last library check. Your computer confirms availability when you connect.'
 	String get inventorySnapshotHelp => 'Installation comes from the last library check. Your computer confirms availability when you connect.';
 
@@ -12040,9 +12005,6 @@ class Translations$games$en {
 
 	/// en: 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.'
 	String get streamRecoveryHelp => 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.';
-
-	/// en: 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.'
-	String get steamAttribution => 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.';
 
 	/// en: 'News and achievements load when requested. Friends activity is optional.'
 	String get steamActivityPrivacy => 'News and achievements load when requested. Friends activity is optional.';
@@ -12073,6 +12035,63 @@ class Translations$games$en {
 
 	/// en: 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.'
 	String get allowCloudSettingsHelp => 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.';
+
+	/// en: 'Steam'
+	String get steam_f71a8503 => 'Steam';
+
+	/// en: '${value1} / ${value2} GiB'
+	String gib({required Object value1, required Object value2}) => '${value1} / ${value2} GiB';
+
+	/// en: '${value1} GiB'
+	String gib_da17b9f0({required Object value1}) => '${value1} GiB';
+
+	/// en: '${value1} · ${value2} MiB'
+	String mib({required Object value1, required Object value2}) => '${value1} · ${value2} MiB';
+
+	/// en: 'Steam AppID: ${value1}'
+	String steamAppID({required Object value1}) => 'Steam AppID: ${value1}';
+
+	/// en: '${value1} · Vulkan'
+	String vulkan({required Object value1}) => '${value1} · Vulkan';
+
+	/// en: 'Nearby computers'
+	String get nearby => 'Nearby computers';
+
+	/// en: 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.'
+	String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+
+	/// en: 'No computers found on this network. You can enter an address manually.'
+	String get noNearby => 'No computers found on this network. You can enter an address manually.';
+
+	/// en: 'Looking for computers…'
+	String get scanning => 'Looking for computers…';
+
+	/// en: 'Steam could not refresh the library. Showing the last available catalog.'
+	String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+
+	/// en: 'Showing up to 2,000 games. The Steam catalog was truncated.'
+	String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
+
+	/// en: 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.'
+	String get lanInstallSubmitted => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.';
+
+	/// en: 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.'
+	String get cloudSettingsHelp => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.';
+
+	/// en: 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.'
+	String get computerSetupHint => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.';
+
+	/// en: 'Library status'
+	String get accountStatus => 'Library status';
+
+	/// en: 'Prefer this computer'
+	String get preferComputer => 'Prefer this computer';
+
+	/// en: 'Choose automatically'
+	String get automaticComputer => 'Choose automatically';
+
+	/// en: 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.'
+	String get steamAttribution => 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.';
 
 	/// en: 'Steam Cloud on computer'
 	String get cloudAccountSetting => 'Steam Cloud on computer';
@@ -12361,9 +12380,6 @@ class Translations$subtitleAiUi$en {
 
 	/// en: 'Glossary check found ${count} possible mismatches. Review these cues before attaching.'
 	String glossaryMismatchMany({required Object count}) => 'Glossary check found ${count} possible mismatches. Review these cues before attaching.';
-
-	/// en: 'Downloading the English speech model and speech detector…'
-	String get downloadingTheEnglishSpeechModelAndS_d75c5cb7 => 'Downloading the English speech model and speech detector…';
 
 	/// en: 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}'
 	String generatedCueCountAndDuration({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}';
@@ -13093,6 +13109,33 @@ class Translations$visualizerUi$en {
 
 	/// en: 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.'
 	String get milkRustShaderSupportNotice => 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.';
+
+	/// en: '${value1} MB download · ${value2} MB installed'
+	String mbDownloadMBInstalled({required Object value1, required Object value2}) => '${value1} MB download · ${value2} MB installed';
+
+	/// en: '${value1}% saved · ${value2}'
+	String saved({required Object value1, required Object value2}) => '${value1}% saved · ${value2}';
+
+	/// en: 'Discard saved download'
+	String get discardSavedDownload => 'Discard saved download';
+
+	/// en: 'Preset preview'
+	String get presetPreview => 'Preset preview';
+
+	/// en: 'Copy, export and compose preset'
+	String get copyExportAndComposePreset => 'Copy, export and compose preset';
+
+	/// en: 'Export preset, assets and notices'
+	String get exportPresetAssetsAndNotices => 'Export preset, assets and notices';
+
+	/// en: 'Add shape or wave to a new copy'
+	String get addShapeOrWaveToANewCopy => 'Add shape or wave to a new copy';
+
+	/// en: 'Export shape fragments'
+	String get exportShapeFragments => 'Export shape fragments';
+
+	/// en: 'Export wave fragments'
+	String get exportWaveFragments => 'Export wave fragments';
 }
 
 // Path: romm
@@ -13693,6 +13736,522 @@ class Translations$subtitleCapture$en {
 
 	/// en: 'GPU speech processing failed. Retrying on CPU…'
 	String get cpuFallback => 'GPU speech processing failed. Retrying on CPU…';
+}
+
+// Path: karaokeUi
+class Translations$karaokeUi$en {
+	Translations$karaokeUi$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Choose a microphone'
+	String get chooseAMicrophone => 'Choose a microphone';
+
+	/// en: 'Microphone and private take'
+	String get microphoneAndPrivateTake => 'Microphone and private take';
+
+	/// en: 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.'
+	String get pitchFeedbackAndDryRecordingUseYourSelectedMicrophone => 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.';
+
+	/// en: 'Input offset: ${value1} ms · ${value2}'
+	String inputOffsetMs({required Object value1, required Object value2}) => 'Input offset: ${value1} ms · ${value2}';
+
+	/// en: 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.'
+	String comfortableRangeSavedMIDISuggestedKey({required Object value1, required Object value2, required Object value3}) => 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.';
+
+	/// en: 'Save my comfortable range'
+	String get saveMyComfortableRange => 'Save my comfortable range';
+
+	/// en: 'Lyric timing'
+	String get lyricTiming => 'Lyric timing';
+
+	/// en: 'Reference note'
+	String get referenceNote => 'Reference note';
+
+	/// en: 'Freestyle / not scored'
+	String get freestyleNotScored => 'Freestyle / not scored';
+
+	/// en: 'Golden note'
+	String get goldenNote => 'Golden note';
+
+	/// en: 'Section timing'
+	String get sectionTiming => 'Section timing';
+
+	/// en: 'Instrumental / intro'
+	String get instrumentalIntro => 'Instrumental / intro';
+
+	/// en: 'Edit ${value1}'
+	String edit({required Object value1}) => 'Edit ${value1}';
+
+	/// en: 'Redo'
+	String get redo => 'Redo';
+
+	/// en: 'Original files stay unchanged. Review imported or generated notes against the backing track before enabling scoring.'
+	String get originalFilesStayUnchangedReviewImportedOrGeneratedNotes => 'Original files stay unchanged. Review imported or generated notes against the backing track before enabling scoring.';
+
+	/// en: 'Waveform · tap to seek during this rendition'
+	String get waveformTapToSeekDuringThisRendition => 'Waveform · tap to seek during this rendition';
+
+	/// en: 'Generate a waveform from Prepare to see the audio timeline here.'
+	String get generateAWaveformFromPrepareToSeeTheAudio => 'Generate a waveform from Prepare to see the audio timeline here.';
+
+	/// en: 'Import lyrics / UltraStar'
+	String get importLyricsUltraStar => 'Import lyrics / UltraStar';
+
+	/// en: 'Add note'
+	String get addNote => 'Add note';
+
+	/// en: 'Tap line ${value1}'
+	String tapLine({required Object value1}) => 'Tap line ${value1}';
+
+	/// en: 'Reset tap cursor'
+	String get resetTapCursor => 'Reset tap cursor';
+
+	/// en: 'Export ${value1}'
+	String export({required Object value1}) => 'Export ${value1}';
+
+	/// en: 'Lyric offset: ${value1} ms'
+	String lyricOffsetMs({required Object value1}) => 'Lyric offset: ${value1} ms';
+
+	/// en: 'I auditioned this chart and verified the notes, parts and timing'
+	String get iAuditionedThisChartAndVerifiedTheNotesParts => 'I auditioned this chart and verified the notes, parts and timing';
+
+	/// en: 'Enables reference-based scoring for this local revision.'
+	String get enablesReferenceBasedScoringForThisLocalRevision => 'Enables reference-based scoring for this local revision.';
+
+	/// en: 'Sections and medley cues'
+	String get sectionsAndMedleyCues => 'Sections and medley cues';
+
+	/// en: 'Add section from current playback times'
+	String get addSectionFromCurrentPlaybackTimes => 'Add section from current playback times';
+
+	/// en: 'Delete line'
+	String get deleteLine => 'Delete line';
+
+	/// en: 'Reference notes'
+	String get referenceNotes => 'Reference notes';
+
+	/// en: '${value1} · MIDI ${value2} · ${value3}'
+	String midi({required Object value1, required Object value2, required Object value3}) => '${value1} · MIDI ${value2} · ${value3}';
+
+	/// en: 'Delete note'
+	String get deleteNote => 'Delete note';
+
+	/// en: 'Add a question you authored or may use'
+	String get addAQuestionYouAuthoredOrMayUse => 'Add a question you authored or may use';
+
+	/// en: 'Trivia / lyric completion / name that tune prompt'
+	String get triviaLyricCompletionNameThatTunePrompt => 'Trivia / lyric completion / name that tune prompt';
+
+	/// en: 'Options, one per line'
+	String get optionsOnePerLine => 'Options, one per line';
+
+	/// en: 'Correct option number (starting at 1)'
+	String get correctOptionNumberStartingAt1 => 'Correct option number (starting at 1)';
+
+	/// en: 'Party rounds'
+	String get partyRounds => 'Party rounds';
+
+	/// en: 'Scores stay private. Leaderboards compare reviewed charts with matching settings and calibrated, unassisted input. No-score singing is always available.'
+	String get scoresStayPrivateLeaderboardsCompareReviewedChartsWithMatching => 'Scores stay private. Leaderboards compare reviewed charts with matching settings and calibrated, unassisted input. No-score singing is always available.';
+
+	/// en: 'Start a round-robin tournament with present singers'
+	String get startARoundRobinTournamentWithPresentSingers => 'Start a round-robin tournament with present singers';
+
+	/// en: 'Round ${value1}'
+	String round({required Object value1}) => 'Round ${value1}';
+
+	/// en: 'Match ${value1}: ${value2}'
+	String match({required Object value1, required Object value2}) => 'Match ${value1}: ${value2}';
+
+	/// en: 'Verified eligible scores · ${value1}'
+	String verifiedEligibleScores({required Object value1}) => 'Verified eligible scores · ${value1}';
+
+	/// en: 'Each singer needs a calibrated, unassisted result on the same reviewed rendition and settings before this match can be resolved.'
+	String get eachSingerNeedsACalibratedUnassistedResultOnThe => 'Each singer needs a calibrated, unassisted result on the same reviewed rendition and settings before this match can be resolved.';
+
+	/// en: 'Winner: ${value1}'
+	String winner({required Object value1}) => 'Winner: ${value1}';
+
+	/// en: '${value1} wins'
+	String wins({required Object value1}) => '${value1} wins';
+
+	/// en: 'Choose team'
+	String get chooseTeam => 'Choose team';
+
+	/// en: '${value1} average'
+	String average({required Object value1}) => '${value1} average';
+
+	/// en: 'Begin a fresh score round'
+	String get beginAFreshScoreRound => 'Begin a fresh score round';
+
+	/// en: 'Start sections from the next queued songs'
+	String get startSectionsFromTheNextQueuedSongs => 'Start sections from the next queued songs';
+
+	/// en: 'Quiz interludes'
+	String get quizInterludes => 'Quiz interludes';
+
+	/// en: 'Add question'
+	String get addQuestion => 'Add question';
+
+	/// en: 'Close and reveal answer'
+	String get closeAndRevealAnswer => 'Close and reveal answer';
+
+	/// en: 'Return to singer rotation'
+	String get returnToSingerRotation => 'Return to singer rotation';
+
+	/// en: 'Ask phones'
+	String get askPhones => 'Ask phones';
+
+	/// en: 'Recent private scores'
+	String get recentPrivateScores => 'Recent private scores';
+
+	/// en: '${value1} · ${value2} · key ${value3} · tempo ${value4}'
+	String keyTempo({required Object value1, required Object value2, required Object value3, required Object value4}) => '${value1} · ${value2} · key ${value3} · tempo ${value4}';
+
+	/// en: 'Preparation companion'
+	String get preparationCompanion => 'Preparation companion';
+
+	/// en: 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.'
+	String get runThePlezyNGKaraokeCompanionOnYourComputerHTTPS => 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.';
+
+	/// en: 'Companion URL'
+	String get companionURL => 'Companion URL';
+
+	/// en: 'Token'
+	String get token => 'Token';
+
+	/// en: 'Choose the source asset'
+	String get chooseTheSourceAsset => 'Choose the source asset';
+
+	/// en: 'Prepare ${value1}'
+	String prepare({required Object value1}) => 'Prepare ${value1}';
+
+	/// en: 'Companion settings'
+	String get companionSettings => 'Companion settings';
+
+	/// en: 'Preparation runs between performances. Originals stay unchanged. Generated backing, alignment and pitch proposals must be auditioned and reviewed.'
+	String get preparationRunsBetweenPerformancesOriginalsStayUnchangedGeneratedBacki => 'Preparation runs between performances. Originals stay unchanged. Generated backing, alignment and pitch proposals must be auditioned and reviewed.';
+
+	/// en: 'Configure companion'
+	String get configureCompanion => 'Configure companion';
+
+	/// en: 'Retry / reconnect'
+	String get retryReconnect => 'Retry / reconnect';
+
+	/// en: 'Remove companion job'
+	String get removeCompanionJob => 'Remove companion job';
+
+	/// en: 'Download / apply for review'
+	String get downloadApplyForReview => 'Download / apply for review';
+
+	/// en: 'Assign singers and parts'
+	String get assignSingersAndParts => 'Assign singers and parts';
+
+	/// en: 'Part ${value1}'
+	String part({required Object value1}) => 'Part ${value1}';
+
+	/// en: 'Queue assigned singers'
+	String get queueAssignedSingers => 'Queue assigned singers';
+
+	/// en: 'Room connection'
+	String get roomConnection => 'Room connection';
+
+	/// en: 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.'
+	String get useHTTPSToEnablePhonePitchAndPrivateVocal => 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.';
+
+	/// en: 'LAN songbook only'
+	String get lanSongbookOnly => 'LAN songbook only';
+
+	/// en: 'Configure HTTPS'
+	String get configureHTTPS => 'Configure HTTPS';
+
+	/// en: 'Select trusted PEM certificate'
+	String get selectTrustedPEMCertificate => 'Select trusted PEM certificate';
+
+	/// en: 'Select private PEM key'
+	String get selectPrivatePEMKey => 'Select private PEM key';
+
+	/// en: 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.'
+	String get thisInvitationExpiresIn30MinutesConnectedGuestsCan => 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.';
+
+	/// en: 'Copy invitation'
+	String get copyInvitation => 'Copy invitation';
+
+	/// en: 'Create read-only stage link'
+	String get createReadOnlyStageLink => 'Create read-only stage link';
+
+	/// en: 'Create one-use host handover link'
+	String get createOneUseHostHandoverLink => 'Create one-use host handover link';
+
+	/// en: 'Revoke guests and replace invitation'
+	String get revokeGuestsAndReplaceInvitation => 'Revoke guests and replace invitation';
+
+	/// en: 'Close room'
+	String get closeRoom => 'Close room';
+
+	/// en: 'Karaoke tools'
+	String get karaokeTools => 'Karaoke tools';
+
+	/// en: 'Private takes'
+	String get privateTakes => 'Private takes';
+
+	/// en: 'Venue, collections and readiness'
+	String get venueCollectionsAndReadiness => 'Venue, collections and readiness';
+
+	/// en: 'Recently added'
+	String get recentlyAdded => 'Recently added';
+
+	/// en: 'Scored charts'
+	String get scoredCharts => 'Scored charts';
+
+	/// en: 'Fits my range'
+	String get fitsMyRange => 'Fits my range';
+
+	/// en: 'All genres'
+	String get allGenres => 'All genres';
+
+	/// en: 'All languages'
+	String get allLanguages => 'All languages';
+
+	/// en: 'All decades'
+	String get allDecades => 'All decades';
+
+	/// en: 'All difficulty levels'
+	String get allDifficultyLevels => 'All difficulty levels';
+
+	/// en: 'Difficulty ${value1} / 5'
+	String difficulty5({required Object value1}) => 'Difficulty ${value1} / 5';
+
+	/// en: 'Request duet / group'
+	String get requestDuetGroup => 'Request duet / group';
+
+	/// en: 'Prepare backing, timing and guidance'
+	String get prepareBackingTimingAndGuidance => 'Prepare backing, timing and guidance';
+
+	/// en: 'Export private duet invitation'
+	String get exportPrivateDuetInvitation => 'Export private duet invitation';
+
+	/// en: 'Allow guest votes on waiting songs'
+	String get allowGuestVotesOnWaitingSongs => 'Allow guest votes on waiting songs';
+
+	/// en: 'Mark sourced'
+	String get markSourced => 'Mark sourced';
+
+	/// en: 'Dismiss suggestion'
+	String get dismissSuggestion => 'Dismiss suggestion';
+
+	/// en: 'Resolved missing-song suggestions'
+	String get resolvedMissingSongSuggestions => 'Resolved missing-song suggestions';
+
+	/// en: 'Reopen suggestion'
+	String get reopenSuggestion => 'Reopen suggestion';
+
+	/// en: 'Restart'
+	String get restart => 'Restart';
+
+	/// en: 'End performance'
+	String get endPerformance => 'End performance';
+
+	/// en: 'Vocal mixer'
+	String get vocalMixer => 'Vocal mixer';
+
+	/// en: 'Mute stem'
+	String get muteStem => 'Mute stem';
+
+	/// en: 'Guide vocals'
+	String get guideVocals => 'Guide vocals';
+
+	/// en: 'Instrumental'
+	String get instrumental => 'Instrumental';
+
+	/// en: '${value1} · ${value2} BPM · ${value3} · estimated'
+	String bpmEstimated({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated';
+
+	/// en: 'Mix and export privately'
+	String get mixAndExportPrivately => 'Mix and export privately';
+
+	/// en: 'The dry vocal stays unchanged. Choose gains, effects and trim for a new render.'
+	String get theDryVocalStaysUnchangedChooseGainsEffectsAnd => 'The dry vocal stays unchanged. Choose gains, effects and trim for a new render.';
+
+	/// en: 'Backing'
+	String get backing => 'Backing';
+
+	/// en: 'Vocal'
+	String get vocal => 'Vocal';
+
+	/// en: 'Echo wet'
+	String get echoWet => 'Echo wet';
+
+	/// en: 'Noise gate'
+	String get noiseGate => 'Noise gate';
+
+	/// en: 'Trim start (ms)'
+	String get trimStartMs => 'Trim start (ms)';
+
+	/// en: 'Output duration (ms)'
+	String get outputDurationMs => 'Output duration (ms)';
+
+	/// en: 'Mix approved response ${value1}'
+	String mixApprovedResponse({required Object value1}) => 'Mix approved response ${value1}';
+
+	/// en: 'Include a camera/video file I choose'
+	String get includeACameraVideoFileIChoose => 'Include a camera/video file I choose';
+
+	/// en: 'Overlay timed lyrics'
+	String get overlayTimedLyrics => 'Overlay timed lyrics';
+
+	/// en: 'Render'
+	String get render => 'Render';
+
+	/// en: 'Stop preview'
+	String get stopPreview => 'Stop preview';
+
+	/// en: 'Accept duet invitation'
+	String get acceptDuetInvitation => 'Accept duet invitation';
+
+	/// en: 'Import duet response'
+	String get importDuetResponse => 'Import duet response';
+
+	/// en: '${value1}: ${value2}. Use the assigned part and keep the backing rendition, key, and tempo fixed.'
+	String useTheAssignedPartAndKeepTheBackingRendition({required Object value1, required Object value2}) => '${value1}: ${value2}. Use the assigned part and keep the backing rendition, key, and tempo fixed.';
+
+	/// en: 'Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.'
+	String get recordingsRemainPrivateExportCreatesAFileYouCan => 'Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.';
+
+	/// en: '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}'
+	String keyTempo_f457ce13({required Object value1, required Object value2, required Object value3, required Object value4, required Object value5}) => '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}';
+
+	/// en: 'Recover recording'
+	String get recoverRecording => 'Recover recording';
+
+	/// en: 'Link this take to the duet invitation'
+	String get linkThisTakeToTheDuetInvitation => 'Link this take to the duet invitation';
+
+	/// en: 'Listen to dry take'
+	String get listenToDryTake => 'Listen to dry take';
+
+	/// en: 'Mix / export audio or video'
+	String get mixExportAudioOrVideo => 'Mix / export audio or video';
+
+	/// en: 'Export portable take'
+	String get exportPortableTake => 'Export portable take';
+
+	/// en: 'Download completed render'
+	String get downloadCompletedRender => 'Download completed render';
+
+	/// en: 'Approve duet merge after listening'
+	String get approveDuetMergeAfterListening => 'Approve duet merge after listening';
+
+	/// en: 'Save setlist'
+	String get saveSetlist => 'Save setlist';
+
+	/// en: 'Resolve collection conflicts'
+	String get resolveCollectionConflicts => 'Resolve collection conflicts';
+
+	/// en: 'New singers and setlists will be added. Choose which preferences to keep when the same singer or setlist already exists. Media packages are imported separately.'
+	String get newSingersAndSetlistsWillBeAddedChooseWhich => 'New singers and setlists will be added. Choose which preferences to keep when the same singer or setlist already exists. Media packages are imported separately.';
+
+	/// en: 'Keep existing preferences'
+	String get keepExistingPreferences => 'Keep existing preferences';
+
+	/// en: 'Use imported preferences'
+	String get useImportedPreferences => 'Use imported preferences';
+
+	/// en: 'Instrumental filler'
+	String get instrumentalFiller => 'Instrumental filler';
+
+	/// en: 'Stage banner'
+	String get stageBanner => 'Stage banner';
+
+	/// en: 'Stage text size'
+	String get stageTextSize => 'Stage text size';
+
+	/// en: 'Display offset: ${value1} ms'
+	String displayOffsetMs({required Object value1}) => 'Display offset: ${value1} ms';
+
+	/// en: 'Per-singer pending request limit'
+	String get perSingerPendingRequestLimit => 'Per-singer pending request limit';
+
+	/// en: 'Open request kiosk'
+	String get openRequestKiosk => 'Open request kiosk';
+
+	/// en: 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.'
+	String get theKioskLimitsThisScreenToSongRequestsUse => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.';
+
+	/// en: 'Saved sets'
+	String get savedSets => 'Saved sets';
+
+	/// en: 'Create a setlist'
+	String get createASetlist => 'Create a setlist';
+
+	/// en: '${value1} songs'
+	String songs({required Object value1}) => '${value1} songs';
+
+	/// en: 'Queue this setlist'
+	String get queueThisSetlist => 'Queue this setlist';
+
+	/// en: 'Audit complete offline assets'
+	String get auditCompleteOfflineAssets => 'Audit complete offline assets';
+
+	/// en: 'Remove setlist'
+	String get removeSetlist => 'Remove setlist';
+
+	/// en: 'Play a rotating local instrumental while the next singer prepares. It stops when the next karaoke request starts.'
+	String get playARotatingLocalInstrumentalWhileTheNextSinger => 'Play a rotating local instrumental while the next singer prepares. It stops when the next karaoke request starts.';
+
+	/// en: '${value1} filler renditions selected'
+	String fillerRenditionsSelected({required Object value1}) => '${value1} filler renditions selected';
+
+	/// en: 'Portability'
+	String get portability => 'Portability';
+
+	/// en: 'Export singers, favorites and sets'
+	String get exportSingersFavoritesAndSets => 'Export singers, favorites and sets';
+
+	/// en: 'Import collection'
+	String get importCollection => 'Import collection';
+
+	/// en: 'Choose an existing synced folder in the system file picker to exchange these files. Imports resolve preferences explicitly; packages retain their rendition IDs and checksums.'
+	String get chooseAnExistingSyncedFolderInTheSystemFile => 'Choose an existing synced folder in the system file picker to exchange these files. Imports resolve preferences explicitly; packages retain their rendition IDs and checksums.';
+
+	/// en: '${value1} MiB'
+	String mib({required Object value1}) => '${value1} MiB';
+
+	/// en: 'Remove package'
+	String get removePackage => 'Remove package';
+
+	/// en: 'This build'
+	String get thisBuild => 'This build';
+
+	/// en: 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.'
+	String get packageImportLyricStageCDGHostingQuizzesEditing => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.';
+
+	/// en: 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.'
+	String get separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.';
+
+	/// en: 'Host exit PIN'
+	String get hostExitPIN => 'Host exit PIN';
+
+	/// en: 'Unlock'
+	String get unlock => 'Unlock';
+
+	/// en: 'Request sent to the host'
+	String get requestSentToTheHost => 'Request sent to the host';
+
+	/// en: 'Request a song'
+	String get requestASong => 'Request a song';
+
+	/// en: 'Host unlock'
+	String get hostUnlock => 'Host unlock';
+
+	/// en: 'Choose your singer name'
+	String get chooseYourSingerName => 'Choose your singer name';
+
+	/// en: 'Search songs'
+	String get searchSongs => 'Search songs';
 }
 
 // Path: appIcon.names
@@ -16777,8 +17336,7 @@ extension on Translations {
 			'settings.dvConversionDv81Description' => 'Force inline RPU conversion to Dolby Vision profile 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision RPU/EL layers and present plain HEVC',
 			'settings.experimentalDolbyVision' => 'Experimental Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Use the experimental FEL renderer on the next playback. Requires a separate engine build.',
-			'settings.dvExperimentUnavailableDescription' => 'This experiment is currently available on Linux only.',
+			'settings.experimentalDolbyVisionDescription' => 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.',
 			'settings.dvCompatibilityFallback' => 'Compatibility fallback',
 			'settings.dvCompatibilityFallbackDescription' => 'Use the standard renderer if the experiment cannot start. FEL data may be lost.',
 			'settings.dvExperimentDiagnostics' => 'Video experiment logging',
@@ -16949,6 +17507,15 @@ extension on Translations {
 			'settings.videoCodecOptionDescription' => 'Allow direct playback for this codec when supported. Unchecked codecs are transcoded by the media server.',
 			'settings.subtitleOnMute' => 'Show subtitles when muted',
 			'settings.subtitleOnMuteDescription' => 'Temporarily select an available subtitle while muted, then restore the previous choice when sound returns unless you choose another track.',
+			'settings.dvOfflineTitle' => 'Offline HDR10 / SDR export',
+			'settings.dvOfflineDescription' => 'Create a compatible video from synchronized Dolby Vision base and enhancement HEVC files. All tools are included and run locally. Originals are preserved; picture quality depends on the source.',
+			'settings.dvOfflineBase' => 'Choose base-layer HEVC file',
+			'settings.dvOfflineEnhancement' => 'Choose enhancement-layer HEVC file',
+			'settings.dvOfflineFrameRate' => 'Source frame rate (for example 24000/1001)',
+			'settings.dvOfflineInvalid' => 'Choose different synchronized layer files and a frame rate from 1 to 120 fps.',
+			'settings.dvOfflineNewOutput' => 'Choose a new .mkv filename. Existing media and reports are preserved.',
+			'settings.dvOfflineHdr10' => 'HDR10 · 10-bit HEVC',
+			'settings.dvOfflineSdr' => 'SDR · H.264',
 			'themeEditor.builtIn' => 'Built-in',
 			'themeEditor.presets' => 'Presets',
 			'themeEditor.custom' => 'Custom',
@@ -17265,6 +17832,8 @@ extension on Translations {
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
 			'videoControls.sleepTimerDurationHeader' => 'Timer',
 			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
 			'videoControls.continueWatching' => 'Continue',
@@ -17273,8 +17842,6 @@ extension on Translations {
 			'videoControls.playButton' => 'Play',
 			'videoControls.pauseButton' => 'Pause',
 			'videoControls.playbackPaused' => 'Paused',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.playbackResumed' => 'Playing',
 			'videoControls.loadingVideo' => 'Loading video',
 			'videoControls.showPlaybackControls' => 'Show playback controls',
@@ -17779,6 +18346,8 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
 			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
+			_ => null,
+		} ?? switch (path) {
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForced' => 'Only non-forced subtitles',
@@ -17787,8 +18356,6 @@ extension on Translations {
 			'accountPreferences.forcedSubtitleOptions.onlyForcedDescription' => 'Use only tracks marked as forced.',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForcedDescription' => 'Exclude tracks marked as forced.',
 			'accountPreferences.displayMissingEpisodes' => 'Show missing episodes',
-			_ => null,
-		} ?? switch (path) {
 			'accountPreferences.displayMissingEpisodesDescription' => 'List episodes the server knows about but has no file for.',
 			'accountPreferences.hidePlayedInLatest' => 'Hide watched items in Latest',
 			'accountPreferences.hidePlayedInLatestDescription' => 'Leave items you have already watched out of the server\'s Latest rows.',
@@ -18293,6 +18860,8 @@ extension on Translations {
 			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
+			_ => null,
+		} ?? switch (path) {
 			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
 			'explore.relation.spinOff' => 'Spin-off',
@@ -18301,8 +18870,6 @@ extension on Translations {
 			'explore.relation.parentStory' => 'Parent story',
 			'explore.relation.adaptation' => 'Adaptation',
 			'explore.relation.other' => 'Related',
-			_ => null,
-		} ?? switch (path) {
 			'explore.broadcast' => ({required Object day, required Object time}) => 'Airs ${day} at ${time}',
 			'explore.broadcastWithZone' => ({required Object day, required Object time, required Object timezone}) => 'Airs ${day} at ${time} ${timezone}',
 			'explore.detail.originalTitle' => 'Original title',
@@ -18807,6 +19374,8 @@ extension on Translations {
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			'downloads.convertingOnServer' => 'Converting on server…',
+			_ => null,
+		} ?? switch (path) {
 			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
 			'downloads.errorPostProcessing' => ({required Object reason}) => 'Post-processing failed: ${reason}',
@@ -18815,8 +19384,6 @@ extension on Translations {
 			'downloads.reasonDeviceStorageFull' => 'this device is out of storage',
 			'downloads.notificationDownloading' => 'Downloading...',
 			'downloads.notificationComplete' => 'Download complete',
-			_ => null,
-		} ?? switch (path) {
 			'downloads.notificationPaused' => 'Download paused',
 			'shaders.title' => 'Shaders',
 			'shaders.noShaderDescription' => 'No video enhancement',
@@ -19321,6 +19888,8 @@ extension on Translations {
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
+			_ => null,
+		} ?? switch (path) {
 			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
@@ -19329,8 +19898,6 @@ extension on Translations {
 			'services.deviceCode.title' => ({required Object service}) => 'Activate Pleazyng on ${service}',
 			'services.deviceCode.instructions' => 'Scan the QR code, or visit the address below and enter this code:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Open ${service} to activate',
-			_ => null,
-		} ?? switch (path) {
 			'services.deviceCode.copyCode' => 'Copy activation code',
 			'services.deviceCode.waitingForAuthorization' => 'Waiting for authorization…',
 			'services.deviceCode.codeCopied' => 'Code copied',
@@ -19835,6 +20402,8 @@ extension on Translations {
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.shareFfmpegMissing' => 'FFmpeg or the H.264/AAC encoders are unavailable. Install FFmpeg with H.264 and AAC encoder support.',
 			'universalMedia.shareFailed' => 'The stream could not start or stopped unexpectedly. Check FFmpeg and network access.',
 			'universalMedia.shareActive' => 'The stream is ready on your private network.',
@@ -19843,8 +20412,6 @@ extension on Translations {
 			'universalMedia.shareUrlCopied' => 'Stream address copied.',
 			'universalMedia.shareOpenUrl' => 'Open this address in a player on the other device',
 			'universalMedia.shareQrLabel' => 'QR code for the temporary stream address',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.shareQrHelp' => 'Scan with a compatible player connected to the same private network.',
 			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.',
 			'universalMedia.shareCopyUrl' => 'Copy stream address',
@@ -20298,14 +20865,9 @@ extension on Translations {
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
 			'games.enableDescription' => 'Browse your games and connect gaming computers. In-app playback depends on this device’s streaming support.',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
-			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
-			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
-			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
 			'games.port' => 'Service port',
@@ -20333,14 +20895,12 @@ extension on Translations {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.',
 			'games.touchControls' => 'On-screen controller',
 			'games.inputReleaseHint' => 'Press Shift+Escape to release game input and return to the workspace controls.',
 			'games.leftStick' => 'Left stick',
 			'games.rightStick' => 'Right stick',
 			'games.touchResizeHint' => 'Enlarge this game window or use full screen to show the controller.',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -20352,7 +20912,6 @@ extension on Translations {
 			'games.help' => 'Games help',
 			'games.helpBody' => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.',
 			'games.cancel' => 'Cancel',
-			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
@@ -20369,8 +20928,6 @@ extension on Translations {
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
-			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
-			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
@@ -20379,7 +20936,6 @@ extension on Translations {
 			'games.chooseComputer' => 'Choose computer',
 			'games.connectComputer' => 'Connect a computer',
 			'games.connectToPlay' => 'Connect a gaming computer to play this game inside Pleazyng.',
-			'games.availabilityHint' => 'Steam on your computer checks installation, access and cloud saves when you connect. A saved game or computer does not mean it is available now.',
 			'games.steamSource' => 'From Steam',
 			'games.disconnected' => 'Disconnected',
 			'games.installed' => 'Installed',
@@ -20454,9 +21010,7 @@ extension on Translations {
 			'games.reconnect' => 'Reconnect',
 			'games.reconnecting' => 'Reconnecting…',
 			'games.disconnectHelp' => 'Disconnecting leaves the game running on the computer.',
-			'games.streamFailed' => 'The stream stopped. Check that the computer is reachable and Steam Remote Play is enabled.',
 			'games.steamActivity' => 'Steam activity',
-			'games.steamActivityHelp' => 'Load news and achievements for your linked account. Activity is kept only while these details are open.',
 			'games.includeFriends' => 'Include friends playing',
 			'games.includeFriendsHelp' => 'Also ask Steam which friends are playing this game. Respects Steam privacy settings. Off by default.',
 			'games.loadSteamActivity' => 'Load Steam activity',
@@ -20480,7 +21034,6 @@ extension on Translations {
 			'games.steamWorkshop' => 'Workshop',
 			'games.openSteamPage' => 'Open Steam page',
 			'games.openSteamPageHelp' => 'Open this game’s Steam page in your browser? Your browser’s Steam sign-in and privacy settings apply.',
-			'games.hostActions' => 'Computer actions',
 			'games.launchOnComputer' => 'Launch on computer',
 			'games.installOnComputer' => 'Install on computer',
 			'games.hostLibrary' => 'Open Steam on computer',
@@ -20597,8 +21150,6 @@ extension on Translations {
 			'games.lanInstallCandidates' => 'These computers last reported the game installed. This does not confirm they are online, nearby or eligible to transfer:',
 			'games.lanInstallNoCandidates' => 'No other computer has reported this game installed yet. Refresh inventories after enabling sharing on your computers.',
 			'games.lanInstallTarget' => ({required Object computer}) => 'Install on ${computer}',
-			'games.lanInstallSubmitted' => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.',
-			'games.cloudSettingsHelp' => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.',
 			'games.qualityUltraHd' => 'Ultra HD · capable hardware required',
 			'games.qualityHighRefresh' => 'High refresh rate · capable display required',
 			'games.textInput' => 'Enter text in game',
@@ -20637,9 +21188,7 @@ extension on Translations {
 			'games.computerSetupTitle' => 'Play from a computer',
 			'games.computerSetupHelp' => 'Connect Steam Remote Play or Sunshine on your network. You can play without linking a Steam account.',
 			'games.accountLinked' => 'Steam account linked',
-			'games.computerSetupHint' => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.',
 			'games.manageConnections' => 'Manage connections',
-			'games.accountStatus' => 'Library status',
 			'games.clearGameFilters' => 'Clear search and filters',
 			'games.emptyLibraryTitle' => 'Your games will appear here',
 			'games.emptyLibraryHelp' => 'Connect a computer to load its games, or link Steam to browse your account’s library.',
@@ -20650,8 +21199,6 @@ extension on Translations {
 			'games.savedComputers' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computer', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} saved computers', ), 
 			'games.connectToPlayShort' => 'Connect a computer to play',
 			'games.preferredComputer' => 'Preferred computer',
-			'games.preferComputer' => 'Prefer this computer',
-			'games.automaticComputer' => 'Choose automatically',
 			'games.inventorySnapshotHelp' => 'Installation comes from the last library check. Your computer confirms availability when you connect.',
 			'games.streamingGroup' => 'Picture and sound',
 			'games.advancedStreaming' => 'Advanced streaming',
@@ -20660,7 +21207,6 @@ extension on Translations {
 			'games.gameOptions' => ({required Object game}) => 'Options for ${game}',
 			'games.streamConnectHelp' => 'Keep this computer awake. Pairing and network access are checked as the stream starts.',
 			'games.streamRecoveryHelp' => 'Check the computer and connection, then reconnect. Disconnecting here leaves the game running on the computer.',
-			'games.steamAttribution' => 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.',
 			'games.steamActivityPrivacy' => 'News and achievements load when requested. Friends activity is optional.',
 			'games.disconnecting' => 'Disconnecting…',
 			'games.useAsController' => 'Use as controller',
@@ -20671,6 +21217,25 @@ extension on Translations {
 			'games.steamSessionSignIn' => 'Connected for this session. This device could not save sign-in securely. Reconnect after changing profiles or restarting Pleazyng.',
 			'games.allowCloudSettings' => 'Allow Steam Cloud settings changes',
 			'games.allowCloudSettingsHelp' => 'Let paired Companion devices change this Steam account’s Cloud setting. Requires host actions and explicit consent in the installed Steam host extension.',
+			'games.steam_f71a8503' => 'Steam',
+			'games.gib' => ({required Object value1, required Object value2}) => '${value1} / ${value2} GiB',
+			'games.gib_da17b9f0' => ({required Object value1}) => '${value1} GiB',
+			'games.mib' => ({required Object value1, required Object value2}) => '${value1} · ${value2} MiB',
+			'games.steamAppID' => ({required Object value1}) => 'Steam AppID: ${value1}',
+			'games.vulkan' => ({required Object value1}) => '${value1} · Vulkan',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
+			'games.lanInstallSubmitted' => 'Installation requested. Check Steam Downloads on the target computer, then refresh this library to confirm installation.',
+			'games.cloudSettingsHelp' => 'Use Steam’s game properties to change this game’s Cloud setting, or Steam Settings → Cloud for the account setting. Steam does not expose a public account-wide write API to Pleazyng. Cloud file actions below are separate and require authorized service scopes.',
+			'games.computerSetupHint' => 'Keep the computer awake and Steam Remote Play or Sunshine enabled. Select a computer below to pair and load its games.',
+			'games.accountStatus' => 'Library status',
+			'games.preferComputer' => 'Prefer this computer',
+			'games.automaticComputer' => 'Choose automatically',
+			'games.steamAttribution' => 'Steam is a trademark of Valve Corporation. Pleazyng is an independent application.',
 			'games.cloudAccountSetting' => 'Steam Cloud on computer',
 			'games.cloudBridgeUnavailable' => 'Steam Cloud settings are unavailable. Enable the host extension and both host-action and Cloud-settings permissions on the selected computer, using the same Steam account.',
 			'games.enableAccountCloud' => 'Enable Steam Cloud',
@@ -20752,7 +21317,6 @@ extension on Translations {
 			'subtitleAiUi.uploadedToServerLibraryNote' => ' Uploaded to the server library.',
 			'subtitleAiUi.glossaryMismatchOne' => ({required Object count}) => 'Glossary check found ${count} possible mismatch. Review these cues before attaching.',
 			'subtitleAiUi.glossaryMismatchMany' => ({required Object count}) => 'Glossary check found ${count} possible mismatches. Review these cues before attaching.',
-			'subtitleAiUi.downloadingTheEnglishSpeechModelAndS_d75c5cb7' => 'Downloading the English speech model and speech detector…',
 			'subtitleAiUi.generatedCueCountAndDuration' => ({required Object cueCount, required Object durationMinutes, required Object speechStatus, required Object providerLabel, required Object placementEvidence, required Object uploadedNote}) => 'Generated ${cueCount} cues from ${durationMinutes} minutes of audio. ${speechStatus}. Requested/initialized backend: ${providerLabel}. Placement evidence: ${placementEvidence}. Original audio remains unchanged.${uploadedNote}',
 			'subtitleAiUi.transcribingAudioAndAligningSubtitleText' => 'Transcribing audio and aligning subtitle text…',
 			'subtitleAiUi.synchronizationOperationApplied' => ({required Object operation, required Object matchedCueCount, required Object totalCueCount, required Object confidence, required Object discontinuityCount, required Object rate, required Object baseOffset, required Object source, required Object uploadedNote}) => '${operation} applied to ${matchedCueCount} of ${totalCueCount} cues (${confidence}% match confidence). ${discontinuityCount} timing discontinuities detected; rate ${rate}×, base offset ${baseOffset} ms. Original: ${source}.${uploadedNote}',
@@ -20866,13 +21430,13 @@ extension on Translations {
 			'subtitleAiUi.saveGlossary' => 'Save glossary',
 			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
 			'subtitleAiUi.requiresACUDAEnabledArgosCTranslate2_25eb4fab' => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
 			'subtitleAiUi.translateAnExistingSubtitle' => 'Translate an existing subtitle',
 			'subtitleAiUi.timingAndSourceFileRemainUnchanged' => 'Timing and source file remain unchanged',
 			'subtitleAiUi.couldNotSeekToThisTranscriptCue' => 'Could not seek to this transcript cue.',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.capturedTranscript' => 'Captured transcript',
 			'subtitleAiUi.onlyWatchedPortionsAreIncludedSelect_bb56a271' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'subtitleAiUi.searchTranscript' => 'Search transcript',
@@ -20983,6 +21547,15 @@ extension on Translations {
 			'visualizerUi.reorderInPlaylist' => 'Reorder in playlist',
 			'visualizerUi.presetDetailsAndNotices' => 'Preset details and notices',
 			'visualizerUi.milkRustShaderSupportNotice' => 'MilkRust supports a bounded shader profile, saved .milk2 patterns and sprite layers. Unsupported shaders or trailer extensions report an error. Renderer fidelity and transitions remain unqualified on devices.',
+			'visualizerUi.mbDownloadMBInstalled' => ({required Object value1, required Object value2}) => '${value1} MB download · ${value2} MB installed',
+			'visualizerUi.saved' => ({required Object value1, required Object value2}) => '${value1}% saved · ${value2}',
+			'visualizerUi.discardSavedDownload' => 'Discard saved download',
+			'visualizerUi.presetPreview' => 'Preset preview',
+			'visualizerUi.copyExportAndComposePreset' => 'Copy, export and compose preset',
+			'visualizerUi.exportPresetAssetsAndNotices' => 'Export preset, assets and notices',
+			'visualizerUi.addShapeOrWaveToANewCopy' => 'Add shape or wave to a new copy',
+			'visualizerUi.exportShapeFragments' => 'Export shape fragments',
+			'visualizerUi.exportWaveFragments' => 'Export wave fragments',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -21177,6 +21750,175 @@ extension on Translations {
 			'subtitleCapture.processingAudio' => 'Processing audio locally…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Processing audio locally (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU speech processing failed. Retrying on CPU…',
+			'karaokeUi.chooseAMicrophone' => 'Choose a microphone',
+			'karaokeUi.microphoneAndPrivateTake' => 'Microphone and private take',
+			'karaokeUi.pitchFeedbackAndDryRecordingUseYourSelectedMicrophone' => 'Pitch feedback and dry recording use your selected microphone. Use an external mixer for amplification.',
+			'karaokeUi.inputOffsetMs' => ({required Object value1, required Object value2}) => 'Input offset: ${value1} ms · ${value2}',
+			'karaokeUi.comfortableRangeSavedMIDISuggestedKey' => ({required Object value1, required Object value2, required Object value3}) => 'Comfortable range saved: ${value1}–${value2} MIDI. Suggested key: ${value3}.',
+			'karaokeUi.saveMyComfortableRange' => 'Save my comfortable range',
+			'karaokeUi.lyricTiming' => 'Lyric timing',
+			'karaokeUi.referenceNote' => 'Reference note',
+			'karaokeUi.freestyleNotScored' => 'Freestyle / not scored',
+			'karaokeUi.goldenNote' => 'Golden note',
+			'karaokeUi.sectionTiming' => 'Section timing',
+			'karaokeUi.instrumentalIntro' => 'Instrumental / intro',
+			'karaokeUi.edit' => ({required Object value1}) => 'Edit ${value1}',
+			'karaokeUi.redo' => 'Redo',
+			'karaokeUi.originalFilesStayUnchangedReviewImportedOrGeneratedNotes' => 'Original files stay unchanged. Review imported or generated notes against the backing track before enabling scoring.',
+			'karaokeUi.waveformTapToSeekDuringThisRendition' => 'Waveform · tap to seek during this rendition',
+			'karaokeUi.generateAWaveformFromPrepareToSeeTheAudio' => 'Generate a waveform from Prepare to see the audio timeline here.',
+			'karaokeUi.importLyricsUltraStar' => 'Import lyrics / UltraStar',
+			'karaokeUi.addNote' => 'Add note',
+			'karaokeUi.tapLine' => ({required Object value1}) => 'Tap line ${value1}',
+			'karaokeUi.resetTapCursor' => 'Reset tap cursor',
+			'karaokeUi.export' => ({required Object value1}) => 'Export ${value1}',
+			'karaokeUi.lyricOffsetMs' => ({required Object value1}) => 'Lyric offset: ${value1} ms',
+			'karaokeUi.iAuditionedThisChartAndVerifiedTheNotesParts' => 'I auditioned this chart and verified the notes, parts and timing',
+			'karaokeUi.enablesReferenceBasedScoringForThisLocalRevision' => 'Enables reference-based scoring for this local revision.',
+			'karaokeUi.sectionsAndMedleyCues' => 'Sections and medley cues',
+			'karaokeUi.addSectionFromCurrentPlaybackTimes' => 'Add section from current playback times',
+			'karaokeUi.deleteLine' => 'Delete line',
+			'karaokeUi.referenceNotes' => 'Reference notes',
+			'karaokeUi.midi' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · MIDI ${value2} · ${value3}',
+			'karaokeUi.deleteNote' => 'Delete note',
+			'karaokeUi.addAQuestionYouAuthoredOrMayUse' => 'Add a question you authored or may use',
+			'karaokeUi.triviaLyricCompletionNameThatTunePrompt' => 'Trivia / lyric completion / name that tune prompt',
+			'karaokeUi.optionsOnePerLine' => 'Options, one per line',
+			'karaokeUi.correctOptionNumberStartingAt1' => 'Correct option number (starting at 1)',
+			'karaokeUi.partyRounds' => 'Party rounds',
+			'karaokeUi.scoresStayPrivateLeaderboardsCompareReviewedChartsWithMatching' => 'Scores stay private. Leaderboards compare reviewed charts with matching settings and calibrated, unassisted input. No-score singing is always available.',
+			'karaokeUi.startARoundRobinTournamentWithPresentSingers' => 'Start a round-robin tournament with present singers',
+			'karaokeUi.round' => ({required Object value1}) => 'Round ${value1}',
+			'karaokeUi.match' => ({required Object value1, required Object value2}) => 'Match ${value1}: ${value2}',
+			'karaokeUi.verifiedEligibleScores' => ({required Object value1}) => 'Verified eligible scores · ${value1}',
+			'karaokeUi.eachSingerNeedsACalibratedUnassistedResultOnThe' => 'Each singer needs a calibrated, unassisted result on the same reviewed rendition and settings before this match can be resolved.',
+			'karaokeUi.winner' => ({required Object value1}) => 'Winner: ${value1}',
+			'karaokeUi.wins' => ({required Object value1}) => '${value1} wins',
+			'karaokeUi.chooseTeam' => 'Choose team',
+			'karaokeUi.average' => ({required Object value1}) => '${value1} average',
+			'karaokeUi.beginAFreshScoreRound' => 'Begin a fresh score round',
+			'karaokeUi.startSectionsFromTheNextQueuedSongs' => 'Start sections from the next queued songs',
+			'karaokeUi.quizInterludes' => 'Quiz interludes',
+			'karaokeUi.addQuestion' => 'Add question',
+			'karaokeUi.closeAndRevealAnswer' => 'Close and reveal answer',
+			'karaokeUi.returnToSingerRotation' => 'Return to singer rotation',
+			'karaokeUi.askPhones' => 'Ask phones',
+			'karaokeUi.recentPrivateScores' => 'Recent private scores',
+			'karaokeUi.keyTempo' => ({required Object value1, required Object value2, required Object value3, required Object value4}) => '${value1} · ${value2} · key ${value3} · tempo ${value4}',
+			'karaokeUi.preparationCompanion' => 'Preparation companion',
+			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Run the Pleazyng karaoke companion on your computer. HTTPS is required for a remote host. The token is saved in the OS credential store.',
+			'karaokeUi.companionURL' => 'Companion URL',
+			'karaokeUi.token' => 'Token',
+			'karaokeUi.chooseTheSourceAsset' => 'Choose the source asset',
+			'karaokeUi.prepare' => ({required Object value1}) => 'Prepare ${value1}',
+			'karaokeUi.companionSettings' => 'Companion settings',
+			'karaokeUi.preparationRunsBetweenPerformancesOriginalsStayUnchangedGeneratedBacki' => 'Preparation runs between performances. Originals stay unchanged. Generated backing, alignment and pitch proposals must be auditioned and reviewed.',
+			'karaokeUi.configureCompanion' => 'Configure companion',
+			'karaokeUi.retryReconnect' => 'Retry / reconnect',
+			'karaokeUi.removeCompanionJob' => 'Remove companion job',
+			'karaokeUi.downloadApplyForReview' => 'Download / apply for review',
+			'karaokeUi.assignSingersAndParts' => 'Assign singers and parts',
+			'karaokeUi.part' => ({required Object value1}) => 'Part ${value1}',
+			'karaokeUi.queueAssignedSingers' => 'Queue assigned singers',
+			'karaokeUi.roomConnection' => 'Room connection',
+			'karaokeUi.useHTTPSToEnablePhonePitchAndPrivateVocal' => 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.',
+			'karaokeUi.lanSongbookOnly' => 'LAN songbook only',
+			'karaokeUi.configureHTTPS' => 'Configure HTTPS',
+			'karaokeUi.selectTrustedPEMCertificate' => 'Select trusted PEM certificate',
+			'karaokeUi.selectPrivatePEMKey' => 'Select private PEM key',
+			'karaokeUi.thisInvitationExpiresIn30MinutesConnectedGuestsCan' => 'This invitation expires in 30 minutes. Connected guests can request songs for 8 hours, until revoked or the room closes.',
+			'karaokeUi.copyInvitation' => 'Copy invitation',
+			'karaokeUi.createReadOnlyStageLink' => 'Create read-only stage link',
+			'karaokeUi.createOneUseHostHandoverLink' => 'Create one-use host handover link',
+			'karaokeUi.revokeGuestsAndReplaceInvitation' => 'Revoke guests and replace invitation',
+			'karaokeUi.closeRoom' => 'Close room',
+			'karaokeUi.karaokeTools' => 'Karaoke tools',
+			'karaokeUi.privateTakes' => 'Private takes',
+			'karaokeUi.venueCollectionsAndReadiness' => 'Venue, collections and readiness',
+			'karaokeUi.recentlyAdded' => 'Recently added',
+			'karaokeUi.scoredCharts' => 'Scored charts',
+			'karaokeUi.fitsMyRange' => 'Fits my range',
+			'karaokeUi.allGenres' => 'All genres',
+			'karaokeUi.allLanguages' => 'All languages',
+			'karaokeUi.allDecades' => 'All decades',
+			'karaokeUi.allDifficultyLevels' => 'All difficulty levels',
+			'karaokeUi.difficulty5' => ({required Object value1}) => 'Difficulty ${value1} / 5',
+			'karaokeUi.requestDuetGroup' => 'Request duet / group',
+			'karaokeUi.prepareBackingTimingAndGuidance' => 'Prepare backing, timing and guidance',
+			'karaokeUi.exportPrivateDuetInvitation' => 'Export private duet invitation',
+			'karaokeUi.allowGuestVotesOnWaitingSongs' => 'Allow guest votes on waiting songs',
+			'karaokeUi.markSourced' => 'Mark sourced',
+			'karaokeUi.dismissSuggestion' => 'Dismiss suggestion',
+			'karaokeUi.resolvedMissingSongSuggestions' => 'Resolved missing-song suggestions',
+			'karaokeUi.reopenSuggestion' => 'Reopen suggestion',
+			'karaokeUi.restart' => 'Restart',
+			'karaokeUi.endPerformance' => 'End performance',
+			'karaokeUi.vocalMixer' => 'Vocal mixer',
+			'karaokeUi.muteStem' => 'Mute stem',
+			'karaokeUi.guideVocals' => 'Guide vocals',
+			'karaokeUi.instrumental' => 'Instrumental',
+			'karaokeUi.bpmEstimated' => ({required Object value1, required Object value2, required Object value3}) => '${value1} · ${value2} BPM · ${value3} · estimated',
+			'karaokeUi.mixAndExportPrivately' => 'Mix and export privately',
+			'karaokeUi.theDryVocalStaysUnchangedChooseGainsEffectsAnd' => 'The dry vocal stays unchanged. Choose gains, effects and trim for a new render.',
+			'karaokeUi.backing' => 'Backing',
+			'karaokeUi.vocal' => 'Vocal',
+			'karaokeUi.echoWet' => 'Echo wet',
+			'karaokeUi.noiseGate' => 'Noise gate',
+			'karaokeUi.trimStartMs' => 'Trim start (ms)',
+			'karaokeUi.outputDurationMs' => 'Output duration (ms)',
+			'karaokeUi.mixApprovedResponse' => ({required Object value1}) => 'Mix approved response ${value1}',
+			'karaokeUi.includeACameraVideoFileIChoose' => 'Include a camera/video file I choose',
+			'karaokeUi.overlayTimedLyrics' => 'Overlay timed lyrics',
+			'karaokeUi.render' => 'Render',
+			'karaokeUi.stopPreview' => 'Stop preview',
+			'karaokeUi.acceptDuetInvitation' => 'Accept duet invitation',
+			'karaokeUi.importDuetResponse' => 'Import duet response',
+			'karaokeUi.useTheAssignedPartAndKeepTheBackingRendition' => ({required Object value1, required Object value2}) => '${value1}: ${value2}. Use the assigned part and keep the backing rendition, key, and tempo fixed.',
+			'karaokeUi.recordingsRemainPrivateExportCreatesAFileYouCan' => 'Recordings remain private. Export creates a file you can choose to share. Rendering uses your configured preparation companion.',
+			'karaokeUi.keyTempo_f457ce13' => ({required Object value1, required Object value2, required Object value3, required Object value4, required Object value5}) => '${value1} · ${value2} · key ${value3} · tempo ${value4} · ${value5}',
+			'karaokeUi.recoverRecording' => 'Recover recording',
+			'karaokeUi.linkThisTakeToTheDuetInvitation' => 'Link this take to the duet invitation',
+			'karaokeUi.listenToDryTake' => 'Listen to dry take',
+			'karaokeUi.mixExportAudioOrVideo' => 'Mix / export audio or video',
+			'karaokeUi.exportPortableTake' => 'Export portable take',
+			'karaokeUi.downloadCompletedRender' => 'Download completed render',
+			'karaokeUi.approveDuetMergeAfterListening' => 'Approve duet merge after listening',
+			'karaokeUi.saveSetlist' => 'Save setlist',
+			'karaokeUi.resolveCollectionConflicts' => 'Resolve collection conflicts',
+			'karaokeUi.newSingersAndSetlistsWillBeAddedChooseWhich' => 'New singers and setlists will be added. Choose which preferences to keep when the same singer or setlist already exists. Media packages are imported separately.',
+			'karaokeUi.keepExistingPreferences' => 'Keep existing preferences',
+			'karaokeUi.useImportedPreferences' => 'Use imported preferences',
+			'karaokeUi.instrumentalFiller' => 'Instrumental filler',
+			'karaokeUi.stageBanner' => 'Stage banner',
+			'karaokeUi.stageTextSize' => 'Stage text size',
+			'karaokeUi.displayOffsetMs' => ({required Object value1}) => 'Display offset: ${value1} ms',
+			'karaokeUi.perSingerPendingRequestLimit' => 'Per-singer pending request limit',
+			'karaokeUi.openRequestKiosk' => 'Open request kiosk',
+			'karaokeUi.theKioskLimitsThisScreenToSongRequestsUse' => 'The kiosk limits this screen to song requests. Use the operating system’s kiosk controls to restrict access to the rest of the device.',
+			'karaokeUi.savedSets' => 'Saved sets',
+			'karaokeUi.createASetlist' => 'Create a setlist',
+			'karaokeUi.songs' => ({required Object value1}) => '${value1} songs',
+			'karaokeUi.queueThisSetlist' => 'Queue this setlist',
+			'karaokeUi.auditCompleteOfflineAssets' => 'Audit complete offline assets',
+			'karaokeUi.removeSetlist' => 'Remove setlist',
+			'karaokeUi.playARotatingLocalInstrumentalWhileTheNextSinger' => 'Play a rotating local instrumental while the next singer prepares. It stops when the next karaoke request starts.',
+			'karaokeUi.fillerRenditionsSelected' => ({required Object value1}) => '${value1} filler renditions selected',
+			'karaokeUi.portability' => 'Portability',
+			'karaokeUi.exportSingersFavoritesAndSets' => 'Export singers, favorites and sets',
+			'karaokeUi.importCollection' => 'Import collection',
+			'karaokeUi.chooseAnExistingSyncedFolderInTheSystemFile' => 'Choose an existing synced folder in the system file picker to exchange these files. Imports resolve preferences explicitly; packages retain their rendition IDs and checksums.',
+			'karaokeUi.mib' => ({required Object value1}) => '${value1} MiB',
+			'karaokeUi.removePackage' => 'Remove package',
+			'karaokeUi.thisBuild' => 'This build',
+			'karaokeUi.packageImportLyricStageCDGHostingQuizzesEditing' => 'Package import, lyric stage, CD+G, hosting, quizzes, editing and private collection export are implemented in source. Device qualification has not been performed.',
+			'karaokeUi.separationAlignmentAnalysisMIDIRenderingAndTakeProductionRequire' => 'Separation, alignment, analysis, MIDI rendering and take production require a configured companion with the corresponding dependencies and approved models. KaraFun OEM and public community services are unavailable until their contracts/services are supplied.',
+			'karaokeUi.hostExitPIN' => 'Host exit PIN',
+			'karaokeUi.unlock' => 'Unlock',
+			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
+			'karaokeUi.requestASong' => 'Request a song',
+			'karaokeUi.hostUnlock' => 'Host unlock',
+			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
+			'karaokeUi.searchSongs' => 'Search songs',
 			_ => null,
 		};
 	}

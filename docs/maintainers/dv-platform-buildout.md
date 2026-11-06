@@ -1,5 +1,12 @@
 # Dolby Vision platform buildout and testing handoff
 
+Availability changed on 2026-11-05: implemented experiments belong in ordinary
+compatible builds behind a persisted, default-off Settings switch. Qualification
+does not gate inclusion. [Normal-build integration](dv-native-ports.md) records
+the rebased Android/Linux/Windows producer, bundled Apple runtime and offline
+tools. The dated standalone experiments below retain their historical evidence;
+references to unchanged production pins describe those earlier runs.
+
 Updated 2026-10-26. This is the implementation and testing entry point. Read the
 [Linux evidence](dv-engine-luna-handoff.md) and [platform research](../plezyng/dolby-vision-platform-research.md)
 alongside it. Experimental playback remains opt-in; no release engine, system

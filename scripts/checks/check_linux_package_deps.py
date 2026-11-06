@@ -29,6 +29,7 @@ BUNDLED_MODULES = {"mpv"}
 
 # pkg-config module -> runtime package name for each distro.
 RUNTIME_PACKAGES = {
+    "webkit2gtk-4.1": {"deb": "libwebkit2gtk-4.1-0", "rpm": "webkit2gtk4.1", "pacman": "webkit2gtk-4.1"},
     "gtk+-3.0": {"deb": "libgtk-3-0", "rpm": "gtk3", "pacman": "gtk3"},
     "libsecret-1": {"deb": "libsecret-1-0", "rpm": "libsecret", "pacman": "libsecret"},
     "webkit2gtk-4.1": {"deb": "libwebkit2gtk-4.1-0", "rpm": "webkit2gtk4.1", "pacman": "webkit2gtk-4.1"},

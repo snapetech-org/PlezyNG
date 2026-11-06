@@ -1,7 +1,7 @@
 import 'subtitle_capture_status.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_whisper_ggml/flutter_whisper.dart' as whisper;
@@ -83,27 +83,34 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   /// Called by the live-session owner only for a same-channel DVR reopen.
   /// Caption times stay on the original timeline while the source clock rebases.
   Future<Object?> suspendForDvrReopen(SubtitlePcmCaptureSource player, {required int targetPositionMs}) async {
-    if (!_running || !identical(player, _player) || !player.isLivePlayback || _liveHandoff != null) return null;
+    if (!_running || !identical(player, _player) || !player.isLivePlayback || _liveHandoff != null) {
+      return null;
+    }
     final token = Object();
     _liveHandoff = token;
     _handoffPositionMs = targetPositionMs + _capturePositionOffsetMs;
     _audioGeneration++;
     _samples.clear();
     liveCaption.value = null;
-    try { await player.setSubtitlePcmCaptureEnabled(false); }
-    on Object {
+    try {
+      await player.setSubtitlePcmCaptureEnabled(false);
+    } on Object {
       _liveHandoff = null;
       _discardCapturedTimeline();
       await stop();
       rethrow;
     }
-    while (_polling) { await Future<void>.delayed(const Duration(milliseconds: 20)); }
+    while (_polling) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
     await _inferenceFuture;
     return identical(_liveHandoff, token) ? token : null;
   }
 
   Future<void> resumeAfterDvrReopen(Object token, {required bool opened}) async {
-    if (!identical(_liveHandoff, token)) return;
+    if (!identical(_liveHandoff, token)) {
+      return;
+    }
     final player = _player;
     if (!opened || player == null || player.disposed || !player.isLivePlayback) {
       _liveHandoff = null;
@@ -116,7 +123,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _audioTrackId = player.subtitlePcmAudioTrackId;
     _captureTimeline = SubtitleCaptureTimeline(
       live: true,
-      seekGeneration: player is SubtitlePcmTimelineSource ? (player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration : 0,
+      seekGeneration: player is SubtitlePcmTimelineSource
+          ? (player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration
+          : 0,
     );
     _resetAudioWindow(_handoffPositionMs * 1000);
     _liveHandoff = null;
@@ -173,8 +182,11 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       loadedSession = await SubtitleWhisperCppService.instance.loadLiveCpuSession(
         onProgress: (phase, received, total) {
           final status = SubtitleCaptureStatus(
-            phase == SubtitleModelLoadPhase.downloading ? SubtitleCapturePhase.downloadingModel : SubtitleCapturePhase.loadingModel,
-            received: received, total: total,
+            phase == SubtitleModelLoadPhase.downloading
+                ? SubtitleCapturePhase.downloadingModel
+                : SubtitleCapturePhase.loadingModel,
+            received: received,
+            total: total,
           );
           onProgress?.call(status);
           _setStatus(status);
@@ -201,7 +213,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       _playerGeneration = startGeneration;
       _captureTimeline = SubtitleCaptureTimeline(
         live: player.isLivePlayback,
-        seekGeneration: player is SubtitlePcmTimelineSource ? (player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration : 0,
+        seekGeneration: player is SubtitlePcmTimelineSource
+            ? (player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration
+            : 0,
       );
       _latestLivePtsMs = 0;
       _capturePositionOffsetMs = 0;
@@ -237,7 +251,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     _running = false;
 
     var invalidReason = _invalidCaptureSessionReason(player);
-    if (invalidReason != null) _discardCapturedTimeline();
+    if (invalidReason != null) {
+      _discardCapturedTimeline();
+    }
 
     if (player != null) {
       try {
@@ -260,7 +276,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       await _inferenceFuture;
     }
     invalidReason ??= _invalidCaptureSessionReason(player);
-    if (invalidReason != null) _discardCapturedTimeline();
+    if (invalidReason != null) {
+      _discardCapturedTimeline();
+    }
 
     while (invalidReason == null &&
         _lastError == null &&
@@ -268,10 +286,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _invalidCaptureSessionReason(player) == null) {
       _startInference(finalChunk: false);
       final inference = _inferenceFuture;
-      if (inference == null) break;
+      if (inference == null) {
+        break;
+      }
       await inference;
       invalidReason ??= _invalidCaptureSessionReason(player);
-      if (invalidReason != null) _discardCapturedTimeline();
+      if (invalidReason != null) {
+        _discardCapturedTimeline();
+      }
     }
     if (invalidReason == null &&
         _lastError == null &&
@@ -279,15 +301,23 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _invalidCaptureSessionReason(player) == null) {
       _startInference(finalChunk: true);
       final inference = _inferenceFuture;
-      if (inference != null) await inference;
+      if (inference != null) {
+        await inference;
+      }
     }
     invalidReason ??= _invalidCaptureSessionReason(player);
-    if (invalidReason != null) _discardCapturedTimeline();
+    if (invalidReason != null) {
+      _discardCapturedTimeline();
+    }
 
-    if (invalidReason == null) _publishTranscript();
+    if (invalidReason == null) {
+      _publishTranscript();
+    }
     final session = _session;
     _session = null;
-    if (session != null) await session.dispose();
+    if (session != null) {
+      await session.dispose();
+    }
     _player = null;
     _playerGeneration = null;
     _audioTrackId = null;
@@ -308,7 +338,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   SubtitleCaptureStatus? _invalidCaptureSessionReason(SubtitlePcmCaptureSource? player) {
-    if (player == null) return const SubtitleCaptureStatus(SubtitleCapturePhase.playbackEnded);
+    if (player == null) {
+      return const SubtitleCaptureStatus(SubtitleCapturePhase.playbackEnded);
+    }
     if (player.disposed || player.mediaSessionGeneration != _playerGeneration) {
       return const SubtitleCaptureStatus(SubtitleCapturePhase.playbackChanged);
     }
@@ -319,7 +351,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   bool _isCurrentInference(int generation) =>
-      _liveHandoff == null && generation == _audioGeneration && _invalidCaptureSessionReason(_player) == null &&
+      _liveHandoff == null &&
+      generation == _audioGeneration &&
+      _invalidCaptureSessionReason(_player) == null &&
       (_player is! SubtitlePcmTimelineSource ||
           (_player as SubtitlePcmTimelineSource).subtitlePcmSeekGeneration == _captureTimeline?.seekGeneration);
 
@@ -338,9 +372,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   Future<void> _poll() async {
-    if (!_running || _polling || _starting || _liveHandoff != null) return;
+    if (!_running || _polling || _starting || _liveHandoff != null) {
+      return;
+    }
     final player = _player;
-    if (player == null) return;
+    if (player == null) {
+      return;
+    }
     final invalidReason = _invalidCaptureSessionReason(player);
     if (invalidReason != null) {
       _running = false;
@@ -363,9 +401,7 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         final started = _startedAt;
         final lastPacket = _lastPacketAt;
         if (started != null && lastPacket == null && DateTime.now().difference(started) > const Duration(seconds: 8)) {
-          _setStatus(
-            const SubtitleCaptureStatus(SubtitleCapturePhase.captureUnavailable),
-          );
+          _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.captureUnavailable));
         } else if (lastPacket != null && DateTime.now().difference(lastPacket) > const Duration(seconds: 8)) {
           _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.waitingForAudio));
         }
@@ -388,10 +424,14 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   void _appendPackets(List<Map<String, Object?>> packets) {
     for (final packet in packets) {
       final raw = packet['pcm'];
-      if (raw is! Uint8List) continue;
+      if (raw is! Uint8List) {
+        continue;
+      }
       final rawPtsUs = (packet['presentationTimeUs'] as num?)?.toInt();
       final clock = _player is SubtitlePcmTimelineSource ? _player as SubtitlePcmTimelineSource : null;
-      final ptsUs = rawPtsUs == null ? null : rawPtsUs + (clock?.timelineOffset.inMicroseconds ?? 0) + _capturePositionOffsetMs * 1000;
+      final ptsUs = rawPtsUs == null
+          ? null
+          : rawPtsUs + (clock?.timelineOffset.inMicroseconds ?? 0) + _capturePositionOffsetMs * 1000;
       final sampleRate = (packet['sampleRate'] as num?)?.toInt();
       final channels = (packet['channels'] as num?)?.toInt();
       final encoding = packet['encoding']?.toString();
@@ -408,7 +448,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       final bytesPerSample = encoding == 'pcm16' ? 2 : 4;
       final bytesPerFrame = bytesPerSample * channels;
       final frames = raw.length ~/ bytesPerFrame;
-      if (frames <= 0) continue;
+      if (frames <= 0) {
+        continue;
+      }
 
       final changedFormat =
           (_lastSampleRate != null && _lastSampleRate != sampleRate) ||
@@ -422,14 +464,20 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         _resetAudioWindow(ptsUs);
         liveCaption.value = null;
       }
-      final action = _captureTimeline?.accept(
-        ptsUs: ptsUs,
-        durationUs: (frames * 1000000 / sampleRate).round(),
-        seekGeneration: clock?.subtitlePcmSeekGeneration ?? 0,
-        seekTargetUs: clock?.subtitlePcmSeekTarget == null ? null : clock!.subtitlePcmSeekTarget!.inMicroseconds + _capturePositionOffsetMs * 1000,
-        formatChanged: changedFormat,
-      ) ?? SubtitleCapturePacketAction.append;
-      if (action == SubtitleCapturePacketAction.discard) continue;
+      final action =
+          _captureTimeline?.accept(
+            ptsUs: ptsUs,
+            durationUs: (frames * 1000000 / sampleRate).round(),
+            seekGeneration: clock?.subtitlePcmSeekGeneration ?? 0,
+            seekTargetUs: clock?.subtitlePcmSeekTarget == null
+                ? null
+                : clock!.subtitlePcmSeekTarget!.inMicroseconds + _capturePositionOffsetMs * 1000,
+            formatChanged: changedFormat,
+          ) ??
+          SubtitleCapturePacketAction.append;
+      if (action == SubtitleCapturePacketAction.discard) {
+        continue;
+      }
       if (action == SubtitleCapturePacketAction.resetTimeline) {
         _discardCapturedTimeline();
         _latestLivePtsMs = 0;
@@ -484,7 +532,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   void _trimOldSamples() {
-    if (_samples.length <= _maximumQueuedSamples) return;
+    if (_samples.length <= _maximumQueuedSamples) {
+      return;
+    }
     final trim = _samples.length - _maximumQueuedSamples;
     _samples.removeRange(0, trim);
     _streamStartMs = (_streamStartMs ?? 0) + trim * 1000.0 / _sampleRate;
@@ -501,8 +551,12 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   }
 
   void _startInference({required bool finalChunk}) {
-    if (_inferenceFuture != null || _session == null || _streamStartMs == null) return;
-    if (_samples.length < _windowSamples && !(finalChunk && _samples.length >= _minimumFinalSamples)) return;
+    if (_inferenceFuture != null || _session == null || _streamStartMs == null) {
+      return;
+    }
+    if (_samples.length < _windowSamples && !(finalChunk && _samples.length >= _minimumFinalSamples)) {
+      return;
+    }
     final count = math.min(_windowSamples, _samples.length).toInt();
     final samples = Float32List.fromList(_samples.take(count).toList(growable: false));
     final startMs = _streamStartMs!.round();
@@ -511,26 +565,34 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     final session = _session!;
     _inferenceFuture = _transcribeWindow(session, samples, startMs, generation)
         .then<void>((_) {
-          if (!_isCurrentInference(generation)) return;
+          if (!_isCurrentInference(generation)) {
+            return;
+          }
           if (consume <= _samples.length) {
             _samples.removeRange(0, consume);
             _streamStartMs = (_streamStartMs ?? startMs.toDouble()) + consume * 1000.0 / _sampleRate;
           }
         })
         .catchError((Object error) {
-          if (!_isCurrentInference(generation)) return;
+          if (!_isCurrentInference(generation)) {
+            return;
+          }
           _lastError = error;
           _running = false;
           _timer?.cancel();
           _timer = null;
           final player = _player;
-          if (player != null) unawaited(player.setSubtitlePcmCaptureEnabled(false));
+          if (player != null) {
+            unawaited(player.setSubtitlePcmCaptureEnabled(false));
+          }
           _setStatus(const SubtitleCaptureStatus(SubtitleCapturePhase.inferenceFailed));
         })
         .whenComplete(() {
           _inferenceFuture = null;
           _publishTranscript();
-          if (_running && _isCurrentInference(generation)) _startInference(finalChunk: false);
+          if (_running && _isCurrentInference(generation)) {
+            _startInference(finalChunk: false);
+          }
         });
   }
 
@@ -540,7 +602,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     int startMs,
     int generation,
   ) async {
-    if (samples.length < _minimumFinalSamples) return;
+    if (samples.length < _minimumFinalSamples) {
+      return;
+    }
     final result = await session.transcribe(
       samples,
       config: whisper.WhisperTranscribeConfig(
@@ -551,9 +615,13 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         noSpeechThreshold: 0.6,
       ),
     );
-    if (!_isCurrentInference(generation)) return;
+    if (!_isCurrentInference(generation)) {
+      return;
+    }
     final language = result.language.trim();
-    if (language.isNotEmpty && language.toLowerCase() != 'auto') _detectedLanguage = language;
+    if (language.isNotEmpty && language.toLowerCase() != 'auto') {
+      _detectedLanguage = language;
+    }
     for (final word in SubtitleWordTimingBuilder.fromWhisperSegments(
       result.segments,
       durationMs: SubtitleRetimer.maximumTimeMs,
@@ -563,27 +631,41 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     }
     for (final segment in result.segments) {
       final text = segment.text.trim().replaceAll(RegExp(r'\s+'), ' ');
-      if (text.isEmpty || text.length > 600) continue;
+      if (text.isEmpty || text.length > 600) {
+        continue;
+      }
       final start = startMs + segment.start.inMilliseconds;
       final end = startMs + segment.end.inMilliseconds;
-      if (start < 0 || end <= start || end > SubtitleRetimer.maximumTimeMs) continue;
+      if (start < 0 || end <= start || end > SubtitleRetimer.maximumTimeMs) {
+        continue;
+      }
       _mergeCue(SubtitleCue(index: 0, startMs: start, endMs: end, text: text));
     }
   }
 
   void _mergeWordTiming(SubtitleWordTiming timing) {
-    if (timing.text.isEmpty || timing.endMs <= timing.startMs) return;
+    if (timing.text.isEmpty || timing.endMs <= timing.startMs) {
+      return;
+    }
     final normalized = _normalize(timing.text);
     for (var index = _wordTimings.length - 1; index >= 0; index--) {
       final previous = _wordTimings[index];
-      if (previous.endMs < timing.startMs - 1200) break;
+      if (previous.endMs < timing.startMs - 1200) {
+        break;
+      }
       final overlap = math.max(0, math.min(previous.endMs, timing.endMs) - math.max(previous.startMs, timing.startMs));
       final shorterDuration = math.max(1, math.min(previous.endMs - previous.startMs, timing.endMs - timing.startMs));
-      if (overlap / shorterDuration < 0.45 || _normalize(previous.text) != normalized) continue;
-      if (timing.confidence > previous.confidence) _wordTimings[index] = timing;
+      if (overlap / shorterDuration < 0.45 || _normalize(previous.text) != normalized) {
+        continue;
+      }
+      if (timing.confidence > previous.confidence) {
+        _wordTimings[index] = timing;
+      }
       return;
     }
-    if (_wordTimings.length < 250000) _wordTimings.add(timing);
+    if (_wordTimings.length < 250000) {
+      _wordTimings.add(timing);
+    }
   }
 
   void _mergeCue(SubtitleCue cue) {
@@ -591,12 +673,18 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
     final existingIndex = _cues.indexWhere((existing) {
       final overlap = math.max(0, math.min(existing.endMs, cue.endMs) - math.max(existing.startMs, cue.startMs));
       final shorterDuration = math.max(1, math.min(existing.endMs - existing.startMs, cue.endMs - cue.startMs));
-      if (overlap / shorterDuration < 0.35) return false;
+      if (overlap / shorterDuration < 0.35) {
+        return false;
+      }
       final left = _normalize(existing.text);
-      if (left == normalized) return true;
+      if (left == normalized) {
+        return true;
+      }
       final leftWords = left.split(' ').where((word) => word.isNotEmpty).toSet();
       final rightWords = normalized.split(' ').where((word) => word.isNotEmpty).toSet();
-      if (leftWords.isEmpty || rightWords.isEmpty) return false;
+      if (leftWords.isEmpty || rightWords.isEmpty) {
+        return false;
+      }
       final similarity = leftWords.intersection(rightWords).length / leftWords.union(rightWords).length;
       return similarity >= 0.68;
     });
@@ -621,7 +709,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
 
   void _publishTranscript() {
     final player = _player;
-    if (_cues.isEmpty) return;
+    if (_cues.isEmpty) {
+      return;
+    }
     final cueEnd = _cues.map((cue) => cue.endMs).reduce((left, right) => left > right ? left : right);
     final playerDuration = player?.state.duration.inMilliseconds ?? 0;
     final duration = math.max(cueEnd, playerDuration);
@@ -641,7 +731,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
   void _publishCurrentCaption() {
     final player = _player;
     if (!_running || _liveHandoff != null || player == null || _cues.isEmpty) {
-      if (liveCaption.value != null) liveCaption.value = null;
+      if (liveCaption.value != null) {
+        liveCaption.value = null;
+      }
       return;
     }
     final position = player.currentPosition.inMilliseconds + _capturePositionOffsetMs;
@@ -651,7 +743,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
         current = cue;
         break;
       }
-      if (cue.startMs < position - 5000) break;
+      if (cue.startMs < position - 5000) {
+        break;
+      }
     }
     final next = current == null
         ? null
@@ -670,7 +764,9 @@ final class SubtitlePlaybackTranscriptionService extends ChangeNotifier {
       .replaceAll(RegExp(r'\s+'), ' ');
 
   void _setStatus(SubtitleCaptureStatus status) {
-    if (_status == status) return;
+    if (_status == status) {
+      return;
+    }
     _status = status;
     notifyListeners();
   }

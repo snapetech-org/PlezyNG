@@ -38,9 +38,15 @@ String? _renewalText(Map<String, dynamic> data, String key, {int maxLength = 409
 
 int? _renewalNumber(Map<String, dynamic> data, String key) {
   final value = data[key];
-  if (value is int) return value;
-  if (value is num && value.isFinite && value >= 0) return value.toInt();
-  if (value is String) return int.tryParse(value);
+  if (value is int) {
+    return value;
+  }
+  if (value is num && value.isFinite && value >= 0) {
+    return value.toInt();
+  }
+  if (value is String) {
+    return int.tryParse(value);
+  }
   return null;
 }
 
@@ -88,14 +94,20 @@ Future<Map<String, dynamic>> _renewalJson(
       request.write(jsonEncode(jsonBody));
     }
     final response = await request.close().timeout(const Duration(seconds: 20));
-    if (response.statusCode != HttpStatus.ok) throw const SourceException(SourceFailure.unavailable);
+    if (response.statusCode != HttpStatus.ok) {
+      throw const SourceException(SourceFailure.unavailable);
+    }
     final bytes = <int>[];
     await for (final chunk in response.timeout(const Duration(seconds: 20))) {
-      if (bytes.length + chunk.length > 65536) throw const SourceException(SourceFailure.invalidData);
+      if (bytes.length + chunk.length > 65536) {
+        throw const SourceException(SourceFailure.invalidData);
+      }
       bytes.addAll(chunk);
     }
     final decoded = jsonDecode(utf8.decode(bytes));
-    if (decoded is! Map) throw const SourceException(SourceFailure.invalidData);
+    if (decoded is! Map) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     return Map<String, dynamic>.from(decoded);
   } finally {
     hardDeadline.cancel();
@@ -107,7 +119,9 @@ Future<Map<String, dynamic>> _refreshProviderToken(Map<String, dynamic> descript
   final provider = _renewalText(descriptor, 'provider', maxLength: 32);
   final clientId = _renewalText(descriptor, 'clientId');
   final refreshToken = _renewalText(descriptor, 'refreshToken', maxLength: 8192);
-  if (clientId == null || refreshToken == null) throw const SourceException(SourceFailure.authentication);
+  if (clientId == null || refreshToken == null) {
+    throw const SourceException(SourceFailure.authentication);
+  }
   final endpoint = switch (provider) {
     'googleDrive' => Uri.https('oauth2.googleapis.com', '/token'),
     'oneDrive' => Uri.https('login.microsoftonline.com', '/common/oauth2/v2.0/token'),
@@ -172,14 +186,20 @@ Future<Map<String, dynamic>> _remoteCloudApi(
 
 String? _remoteCloudId(Map<String, dynamic> descriptor, String key, {int maxLength = 128}) {
   final value = _renewalText(descriptor, key, maxLength: maxLength);
-  if (value == null || value == '.' || value == '..' || value.contains('/') || value.contains('\\')) return null;
+  if (value == null || value == '.' || value == '..' || value.contains('/') || value.contains('\\')) {
+    return null;
+  }
   return value;
 }
 
 String? _remoteCloudFileId(Map<String, dynamic> descriptor) {
   final value = _renewalText(descriptor, 'providerFileId', maxLength: 1024);
-  if (value == null || value == '.' || value == '..' || value.contains('\\')) return null;
-  if (value.split('/').any((segment) => segment == '.' || segment == '..')) return null;
+  if (value == null || value == '.' || value == '..' || value.contains('\\')) {
+    return null;
+  }
+  if (value.split('/').any((segment) => segment == '.' || segment == '..')) {
+    return null;
+  }
   return value;
 }
 
@@ -254,7 +274,9 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
     final stableRevision = 'realDebrid:$providerId:$fileId:$size';
     _checkRenewedRepresentation(descriptor, stableRevision, size);
     final rawLink = (info['links'] as List)[fileIndex];
-    if (rawLink is! String || rawLink.length > 8192) throw const SourceException(SourceFailure.invalidData);
+    if (rawLink is! String || rawLink.length > 8192) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final unrestricted = await _remoteCloudApi(
       'api.real-debrid.com',
       '/rest/1.0/unrestrict/link',
@@ -264,12 +286,16 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
     );
     final rawUrl = unrestricted['download'];
     final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
-    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) throw const SourceException(SourceFailure.permission);
+    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) {
+      throw const SourceException(SourceFailure.permission);
+    }
     return _RenewedBackgroundLease(uri, const {}, refreshDescriptor: updatedDescriptor);
   }
 
   if (service == 'allDebrid') {
-    if (!RegExp(r'^\d{1,32}$').hasMatch(providerId)) throw const SourceException(SourceFailure.permission);
+    if (!RegExp(r'^\d{1,32}$').hasMatch(providerId)) {
+      throw const SourceException(SourceFailure.permission);
+    }
     final response = await _remoteCloudApi(
       'api.alldebrid.com',
       '/v4.1/magnet/files',
@@ -283,12 +309,18 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
     }
     final files = <({String path, String link, int? size})>[];
     void collect(Object? rows, String parent, int depth) {
-      if (depth > 20 || files.length >= 10000 || rows is! List) return;
+      if (depth > 20 || files.length >= 10000 || rows is! List) {
+        return;
+      }
       for (final raw in rows) {
-        if (raw is! Map || files.length >= 10000) continue;
+        if (raw is! Map || files.length >= 10000) {
+          continue;
+        }
         final row = Map<String, dynamic>.from(raw);
         final name = row['n'];
-        if (name is! String || name.isEmpty || name.length > 512) continue;
+        if (name is! String || name.isEmpty || name.length > 512) {
+          continue;
+        }
         final path = parent.isEmpty ? name : '$parent/$name';
         final children = row['e'];
         if (children is List) {
@@ -301,7 +333,9 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
 
     collect((magnets.first as Map)['files'], '', 0);
     final selected = files.where((file) => file.path == fileId).firstOrNull;
-    if (selected == null) throw const SourceException(SourceFailure.conflict);
+    if (selected == null) {
+      throw const SourceException(SourceFailure.conflict);
+    }
     final stableRevision = 'allDebrid:$providerId:$fileId:${selected.size}';
     _checkRenewedRepresentation(descriptor, stableRevision, selected.size);
     final unlocked = await _remoteCloudApi(
@@ -313,7 +347,9 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
     );
     final rawUrl = unlocked['link'];
     final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
-    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) throw const SourceException(SourceFailure.permission);
+    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) {
+      throw const SourceException(SourceFailure.permission);
+    }
     return _RenewedBackgroundLease(uri, const {});
   }
 
@@ -332,19 +368,25 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
       query: {'id': ?parentId},
     );
     final content = list['content'];
-    if (content is! List) throw const SourceException(SourceFailure.invalidData);
+    if (content is! List) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final file = content
         .whereType<Map>()
         .map((row) => Map<String, dynamic>.from(row))
         .where((row) => '${row['id']}' == fileId && row['type'] == 'file')
         .firstOrNull;
-    if (file == null) throw const SourceException(SourceFailure.conflict);
+    if (file == null) {
+      throw const SourceException(SourceFailure.conflict);
+    }
     final size = _renewalNumber(file, 'size');
     final stableRevision = 'premiumize:${parentId ?? 'root'}:$fileId:$size';
     _checkRenewedRepresentation(descriptor, stableRevision, size);
     final rawUrl = file['link'];
     final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
-    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) throw const SourceException(SourceFailure.permission);
+    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) {
+      throw const SourceException(SourceFailure.permission);
+    }
     return _RenewedBackgroundLease(uri, const {});
   }
 
@@ -369,13 +411,17 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
       throw const SourceException(SourceFailure.conflict);
     }
     final rawFiles = torrent['files'];
-    if (rawFiles is! List) throw const SourceException(SourceFailure.invalidData);
+    if (rawFiles is! List) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     final file = rawFiles
         .whereType<Map>()
         .map((row) => Map<String, dynamic>.from(row))
         .where((row) => '${row['id']}' == fileId)
         .firstOrNull;
-    if (file == null) throw const SourceException(SourceFailure.conflict);
+    if (file == null) {
+      throw const SourceException(SourceFailure.conflict);
+    }
     final size = _renewalNumber(file, 'size');
     final stableRevision = 'torbox:$providerId:$fileId:$size';
     _checkRenewedRepresentation(descriptor, stableRevision, size);
@@ -393,7 +439,9 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
     );
     final rawUrl = request['data'];
     final uri = rawUrl is String ? Uri.tryParse(rawUrl) : null;
-    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) throw const SourceException(SourceFailure.permission);
+    if (uri == null || !_safeRemoteCloudDownloadUri(uri)) {
+      throw const SourceException(SourceFailure.permission);
+    }
     return _RenewedBackgroundLease(uri, const {});
   }
 
@@ -402,7 +450,9 @@ Future<_RenewedBackgroundLease> _renewRemoteCloudBackgroundLease(Map<String, dyn
 
 Future<_RenewedBackgroundLease> _renewBackgroundLease(Map<String, dynamic> descriptor) async {
   final provider = _renewalText(descriptor, 'provider', maxLength: 32);
-  if (provider == 'remoteCloud') return _renewRemoteCloudBackgroundLease(descriptor);
+  if (provider == 'remoteCloud') {
+    return _renewRemoteCloudBackgroundLease(descriptor);
+  }
   if (provider == 's3') {
     final rawUri = _renewalText(descriptor, 'uri', maxLength: 4096);
     final uri = Uri.tryParse(rawUri ?? '');
@@ -475,7 +525,9 @@ Future<_RenewedBackgroundLease> _renewBackgroundLease(Map<String, dynamic> descr
   }
   if (provider == 'oneDrive') {
     final fileId = _renewalText(descriptor, 'fileId', maxLength: 2048);
-    if (fileId == null) throw const SourceException(SourceFailure.permission);
+    if (fileId == null) {
+      throw const SourceException(SourceFailure.permission);
+    }
     final driveId = _renewalText(descriptor, 'driveId', maxLength: 2048);
     final encodedFileId = Uri.encodeComponent(fileId);
     final encodedDriveId = driveId == null ? null : Uri.encodeComponent(driveId);
@@ -509,7 +561,9 @@ Future<_RenewedBackgroundLease> _renewBackgroundLease(Map<String, dynamic> descr
   }
   if (provider == 'dropbox') {
     final fileId = _renewalText(descriptor, 'fileId', maxLength: 2048);
-    if (fileId == null) throw const SourceException(SourceFailure.permission);
+    if (fileId == null) {
+      throw const SourceException(SourceFailure.permission);
+    }
     final link = await _renewalJson(
       Uri.https('api.dropboxapi.com', '/2/files/get_temporary_link'),
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -542,13 +596,21 @@ Future<Task?> resolveEncryptedBackgroundLease(Task original) async {
   }
   try {
     final clear = await CredentialVault.reveal(original.metaData);
-    if (clear == null || clear.length > 12288) return null;
+    if (clear == null || clear.length > 12288) {
+      return null;
+    }
     final decoded = jsonDecode(clear);
-    if (decoded is! Map) return null;
+    if (decoded is! Map) {
+      return null;
+    }
     final descriptor = Map<String, dynamic>.from(decoded);
-    if (descriptor['taskId'] != original.taskId) return null;
+    if (descriptor['taskId'] != original.taskId) {
+      return null;
+    }
     final refresh = descriptor['refresh'];
-    if (refresh is Map && descriptor['uri'] != _encryptedLeaseTaskUrl) return null;
+    if (refresh is Map && descriptor['uri'] != _encryptedLeaseTaskUrl) {
+      return null;
+    }
     final Uri uri;
     final headers = <String, String>{};
     String metadata = original.metaData;
@@ -591,14 +653,20 @@ Future<Task?> resolveEncryptedBackgroundLease(Task original) async {
     } else {
       final rawUri = Uri.tryParse(descriptor['uri'] as String? ?? '');
       final rawHeaders = descriptor['headers'];
-      if (rawUri == null || rawHeaders is! Map) return null;
+      if (rawUri == null || rawHeaders is! Map) {
+        return null;
+      }
       uri = rawUri;
       for (final entry in rawHeaders.entries) {
-        if (entry.key is! String || entry.value is! String) return null;
+        if (entry.key is! String || entry.value is! String) {
+          return null;
+        }
         headers[entry.key as String] = entry.value as String;
       }
       final lease = ContentLease(uri, headers: headers, backgroundTransferSafe: true);
-      if (!lease.canPersistEncryptedAuthForBackgroundTransfer) return null;
+      if (!lease.canPersistEncryptedAuthForBackgroundTransfer) {
+        return null;
+      }
     }
     final originalOptions = original.options;
     final safeOptions = originalOptions == null
@@ -622,11 +690,15 @@ class TransferCancellation {
   Future<void> get aborted => _aborted.future;
   void cancel() {
     cancelled = true;
-    if (!_aborted.isCompleted) _aborted.complete();
+    if (!_aborted.isCompleted) {
+      _aborted.complete();
+    }
   }
 
   void check() {
-    if (cancelled) throw const SourceException(SourceFailure.cancelled);
+    if (cancelled) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
   }
 }
 
@@ -652,9 +724,13 @@ class PublicationDownloads {
   static bool get _supportsNativeBackgroundDownloads => Platform.isAndroid || Platform.isIOS;
 
   Future<void> _ensureNativeDownloader() {
-    if (!_supportsNativeBackgroundDownloads) return Future<void>.value();
+    if (!_supportsNativeBackgroundDownloads) {
+      return Future<void>.value();
+    }
     final existing = _nativeDownloaderSetup;
-    if (existing != null) return existing;
+    if (existing != null) {
+      return existing;
+    }
     final setup = () async {
       FileDownloader().registerCallbacks(
         group: _nativeDownloadGroup,
@@ -703,9 +779,13 @@ class PublicationDownloads {
     final total = update.hasExpectedFileSize && update.expectedFileSize > 0
         ? update.expectedFileSize
         : context.expectedSize;
-    if (total <= 0) return;
+    if (total <= 0) {
+      return;
+    }
     final bytes = (total * update.progress.clamp(0.0, 1.0)).round().clamp(0, total).toInt();
-    if (bytes == context.bytes && bytes < total) return;
+    if (bytes == context.bytes && bytes < total) {
+      return;
+    }
     context.bytes = bytes;
     context.task.onProgress?.call(bytes, total);
     context.progressWrites = context.progressWrites
@@ -734,7 +814,9 @@ class PublicationDownloads {
   }
 
   Future<bool> _isValidNativePartial(File partial, int expectedSize) async {
-    if (!await partial.exists()) return false;
+    if (!await partial.exists()) {
+      return false;
+    }
     final stat = await partial.stat();
     return stat.type == FileSystemEntityType.file && stat.size > 0 && stat.size == expectedSize;
   }
@@ -830,7 +912,9 @@ class PublicationDownloads {
                 (savedPayload != null &&
                     leasePayload != null &&
                     _sameEncryptedRefreshRequest(savedPayload, leasePayload)));
-        if (sameRequest) protectedLease = savedLease;
+        if (sameRequest) {
+          protectedLease = savedLease;
+        }
       } else if (record != null) {
         sameRequest = sameRequest && record.task.metaData.isEmpty && record.task.options?.auth == null;
       }
@@ -847,7 +931,9 @@ class PublicationDownloads {
         record = null;
       }
       if (record != null && record.status == TaskStatus.complete) {
-        if (await _isValidNativePartial(partial, expectedSize)) return;
+        if (await _isValidNativePartial(partial, expectedSize)) {
+          return;
+        }
         await FileDownloader().database.deleteRecordWithId(taskId);
         record = null;
       }
@@ -866,8 +952,12 @@ class PublicationDownloads {
         await FileDownloader().database.deleteRecordWithId(taskId);
       }
 
-      if (await partial.exists()) await partial.delete();
-      if (await validatorFile.exists()) await validatorFile.delete();
+      if (await partial.exists()) {
+        await partial.delete();
+      }
+      if (await validatorFile.exists()) {
+        await validatorFile.delete();
+      }
       task.cancellation.check();
       final nativeTask = UriDownloadTask(
         taskId: taskId,
@@ -916,7 +1006,9 @@ class PublicationDownloads {
     unawaited(cancellation.aborted.then((_) => _pauseNativeTask(taskId)));
     final record = await FileDownloader().database.recordForId(taskId);
     if (record?.status == TaskStatus.complete) {
-      if (await _isValidNativePartial(partial, expectedSize)) return;
+      if (await _isValidNativePartial(partial, expectedSize)) {
+        return;
+      }
       throw const SourceException(SourceFailure.invalidData);
     }
     if (record != null && record.status.isFinalState && record.status != TaskStatus.complete) {
@@ -935,7 +1027,9 @@ class PublicationDownloads {
   }
 
   static Future<void> _pauseNativeTask(String taskId) async {
-    if (!_supportsNativeBackgroundDownloads) return;
+    if (!_supportsNativeBackgroundDownloads) {
+      return;
+    }
     try {
       final record = await FileDownloader().database.recordForId(taskId);
       if (record == null || record.status.isFinalState || record.status == TaskStatus.paused) {
@@ -951,10 +1045,14 @@ class PublicationDownloads {
   }
 
   static Future<void> _removeNativeTask(String taskId) async {
-    if (!_supportsNativeBackgroundDownloads) return;
+    if (!_supportsNativeBackgroundDownloads) {
+      return;
+    }
     await _ensureNativeSetupForRemoval();
     final record = await FileDownloader().database.recordForId(taskId);
-    if (record == null) return;
+    if (record == null) {
+      return;
+    }
     if (!record.status.isFinalState && record.status != TaskStatus.paused) {
       await FileDownloader().cancelTaskWithId(taskId);
       var stillActive = true;
@@ -966,7 +1064,9 @@ class PublicationDownloads {
         }
         await Future<void>.delayed(const Duration(milliseconds: 100));
       }
-      if (stillActive) throw const SourceException(SourceFailure.conflict);
+      if (stillActive) {
+        throw const SourceException(SourceFailure.conflict);
+      }
     }
     await FileDownloader().database.deleteRecordWithId(taskId);
   }
@@ -1001,8 +1101,12 @@ class PublicationDownloads {
 
   Future<File?> local(String profile, String sourceId, PublicationFile file) async {
     final pendingRemoval = _removals[sourceKey(profile, key(sourceId, file))];
-    if (pendingRemoval != null) await pendingRemoval;
-    return file.sampleOnly ? null : _verifiedLocal(profile, file, await repository.download(profile, key(sourceId, file)));
+    if (pendingRemoval != null) {
+      await pendingRemoval;
+    }
+    return file.sampleOnly
+        ? null
+        : _verifiedLocal(profile, file, await repository.download(profile, key(sourceId, file)));
   }
 
   Future<File?> _verifiedLocal(String profile, PublicationFile file, Map<String, dynamic>? record) async {
@@ -1011,11 +1115,15 @@ class PublicationDownloads {
     }
     final value = File(record['path'] as String);
     final expected = p.join(directory.path, sourceDigest(profile));
-    if (!p.isWithin(expected, value.path)) throw const SourceException(SourceFailure.permission);
+    if (!p.isWithin(expected, value.path)) {
+      throw const SourceException(SourceFailure.permission);
+    }
     try {
       // A disappearing file is an availability change, not a screen failure.
       final stat = await value.stat();
-      if (stat.type != FileSystemEntityType.file || stat.size != record['bytes']) return null;
+      if (stat.type != FileSystemEntityType.file || stat.size != record['bytes']) {
+        return null;
+      }
       return value;
     } on FileSystemException {
       return null;
@@ -1035,10 +1143,14 @@ class PublicationDownloads {
     for (final entry in entries) {
       for (final file in entry.files) {
         final identity = offlineFileIdentity(entry.sourceId, file);
-        if (!checked.add(identity)) continue;
+        if (!checked.add(identity)) {
+          continue;
+        }
         final record = byKey[key(entry.sourceId, file)];
         try {
-          if (await _verifiedLocal(profile, file, record) != null) verified.add(identity);
+          if (await _verifiedLocal(profile, file, record) != null) {
+            verified.add(identity);
+          }
         } on SourceException {
           // An invalid ledger path must never make a publication look ready.
         }
@@ -1058,7 +1170,9 @@ class PublicationDownloads {
         continue;
       }
       final file = File(path);
-      if (await file.exists()) continue;
+      if (await file.exists()) {
+        continue;
+      }
       if (row['state'] != 'queued' && row['state'] != 'running') {
         await repository.forgetDownload(profile, row['key'] as String);
       }
@@ -1078,15 +1192,25 @@ class PublicationDownloads {
     final profileRoot = p.join(directory.path, sourceDigest(profile));
     final importsRoot = p.join(profileRoot, 'imports');
     final importDirectory = Directory(importsRoot);
-    if (!await importDirectory.exists()) return;
+    if (!await importDirectory.exists()) {
+      return;
+    }
     await for (final entity in importDirectory.list(followLinks: false)) {
-      if (entity is! File) continue;
+      if (entity is! File) {
+        continue;
+      }
       final name = p.basename(entity.path);
-      if (classifySourceFile(name) == SourceItemKind.unknown) continue;
+      if (classifySourceFile(name) == SourceItemKind.unknown) {
+        continue;
+      }
       final id = p.relative(entity.path, from: importsRoot);
-      if (id.isEmpty || id == '.' || !p.isWithin(importsRoot, entity.path)) continue;
+      if (id.isEmpty || id == '.' || !p.isWithin(importsRoot, entity.path)) {
+        continue;
+      }
       final stat = await entity.stat();
-      if (stat.type != FileSystemEntityType.file || stat.size <= 0) continue;
+      if (stat.type != FileSystemEntityType.file || stat.size <= 0) {
+        continue;
+      }
       final file = PublicationFile(
         id: id,
         name: name,
@@ -1126,7 +1250,9 @@ class PublicationDownloads {
     required int chunkBytes,
     required bool unknownSize,
   }) {
-    if (chunkBytes <= 0 || !_supportsFreeSpaceProbe) return Future.value(() {});
+    if (chunkBytes <= 0 || !_supportsFreeSpaceProbe) {
+      return Future.value(() {});
+    }
     final previous = _storageCheckQueue;
     final gate = Completer<void>();
     _storageCheckQueue = gate.future;
@@ -1138,17 +1264,23 @@ class PublicationDownloads {
         } on Object {
           throw const SourceException(SourceFailure.storageUnavailable);
         }
-        if (available == null) throw const SourceException(SourceFailure.storageUnavailable);
+        if (available == null) {
+          throw const SourceException(SourceFailure.storageUnavailable);
+        }
         final remainingReservations = await repository.activeDownloadReservationBytes();
         final pendingWrites = _pendingStorageWrites.values.fold<int>(0, (sum, bytes) => sum + bytes);
         final incomingUnknownBytes = unknownSize ? chunkBytes : 0;
         final required = minimumFreeStorageReserveBytes + remainingReservations + pendingWrites + incomingUnknownBytes;
-        if (available < required) throw const SourceException(SourceFailure.storageLow);
+        if (available < required) {
+          throw const SourceException(SourceFailure.storageLow);
+        }
         final pendingKey = sourceKey(profile, transferKey);
         _pendingStorageWrites[pendingKey] = (_pendingStorageWrites[pendingKey] ?? 0) + chunkBytes;
         var released = false;
         return () {
-          if (released) return;
+          if (released) {
+            return;
+          }
           released = true;
           final remaining = (_pendingStorageWrites[pendingKey] ?? 0) - chunkBytes;
           if (remaining <= 0) {
@@ -1170,10 +1302,14 @@ class PublicationDownloads {
     String label = '',
     void Function(int, int?)? onProgress,
   }) async {
-    if (file.sampleOnly) throw const SourceException(SourceFailure.permission);
+    if (file.sampleOnly) {
+      throw const SourceException(SourceFailure.permission);
+    }
     final transferKey = sourceKey(profile, key(adapter.source.id, file));
     final existing = _pending[transferKey];
-    if (existing != null) return existing;
+    if (existing != null) {
+      return existing;
+    }
     final cancellation = TransferCancellation();
     final completer = Completer<File>();
     final task = _DownloadTask(
@@ -1212,7 +1348,9 @@ class PublicationDownloads {
       _queue.addLast(task);
       _drainQueue();
     } on Object catch (error, stackTrace) {
-      if (!completer.isCompleted) completer.completeError(error, stackTrace);
+      if (!completer.isCompleted) {
+        completer.completeError(error, stackTrace);
+      }
     }
     return pending;
   }
@@ -1220,7 +1358,9 @@ class PublicationDownloads {
   /// Requeues transfers interrupted by process death. Explicitly paused and
   /// failed jobs stay available for an intentional retry.
   Future<void> restoreProfile(String profile, SourceAdapter? Function(String) resolveAdapter) async {
-    if (_supportsNativeBackgroundDownloads) await _ensureNativeDownloader();
+    if (_supportsNativeBackgroundDownloads) {
+      await _ensureNativeDownloader();
+    }
     for (final row in await repository.downloads(profile)) {
       if (row['state'] == 'importing') {
         // A picker-backed input grant cannot be resumed after process death.
@@ -1291,7 +1431,9 @@ class PublicationDownloads {
       } on Object {
         // Malformed legacy rows remain subject to the normal recovery checks.
       }
-      if (row['state'] != 'queued' && row['state'] != 'running') continue;
+      if (row['state'] != 'queued' && row['state'] != 'running') {
+        continue;
+      }
       try {
         final sourceId = row['source_id'] as String;
         final file = PublicationFile.fromJson(sourceMap(jsonDecode(row['file_payload'] as String)));
@@ -1337,13 +1479,17 @@ class PublicationDownloads {
       await _removeNativeTask(_nativeTaskId(profile, sourceId, file));
     } on Object {
       await _pauseNativeTask(_nativeTaskId(profile, sourceId, file));
-      if (!complete) await repository.setDownloadState(profile, rowKey, 'failed');
+      if (!complete) {
+        await repository.setDownloadState(profile, rowKey, 'failed');
+      }
       return;
     }
     final profileRoot = p.join(directory.path, sourceDigest(profile));
     final paths = <String>{row['path'] as String? ?? '', _target(profile, sourceId, file).path};
     for (final path in paths) {
-      if (path.isEmpty || !p.isWithin(profileRoot, path)) continue;
+      if (path.isEmpty || !p.isWithin(profileRoot, path)) {
+        continue;
+      }
       try {
         final target = File(path);
         if (await target.exists() && (await target.stat()).type == FileSystemEntityType.file) {
@@ -1354,7 +1500,9 @@ class PublicationDownloads {
       }
       if (path.endsWith('.partial')) {
         final validator = File('${p.withoutExtension(path)}.validator');
-        if (p.isWithin(profileRoot, validator.path) && await validator.exists()) await validator.delete();
+        if (p.isWithin(profileRoot, validator.path) && await validator.exists()) {
+          await validator.delete();
+        }
       }
     }
     if (complete) {
@@ -1417,7 +1565,9 @@ class PublicationDownloads {
                       .setDownloadState(task.profile, key(task.adapter.source.id, task.file), 'completed')
                       .catchError((_) {}),
                 );
-                if (!task.completer.isCompleted) task.completer.complete(file);
+                if (!task.completer.isCompleted) {
+                  task.completer.complete(file);
+                }
               },
               onError: (Object error, StackTrace stackTrace) {
                 unawaited(
@@ -1429,7 +1579,9 @@ class PublicationDownloads {
                       )
                       .catchError((_) {}),
                 );
-                if (!task.completer.isCompleted) task.completer.completeError(error, stackTrace);
+                if (!task.completer.isCompleted) {
+                  task.completer.completeError(error, stackTrace);
+                }
               },
             )
             .whenComplete(() {
@@ -1449,12 +1601,16 @@ class PublicationDownloads {
     String label,
     void Function(int, int?)? onProgress,
   ) async {
-    if (file.sampleOnly) throw const SourceException(SourceFailure.permission);
+    if (file.sampleOnly) {
+      throw const SourceException(SourceFailure.permission);
+    }
     final recordKey = key(adapter.source.id, file);
     await repository.setDownloadState(profile, recordKey, 'running');
     final cached = await local(profile, adapter.source.id, file);
     cancel.check();
-    if (cached != null) return cached;
+    if (cached != null) {
+      return cached;
+    }
     final folder = Directory(p.join(directory.path, sourceDigest(profile)));
     await folder.create(recursive: true);
     cancel.check();
@@ -1513,7 +1669,9 @@ class PublicationDownloads {
         await for (final bytes in directStream.stream.timeout(const Duration(seconds: 45))) {
           cancel.check();
           final nextReceived = received + bytes.length;
-          if (nextReceived > directStream.size) throw const SourceException(SourceFailure.invalidData);
+          if (nextReceived > directStream.size) {
+            throw const SourceException(SourceFailure.invalidData);
+          }
           final releaseStorage = await reserveStorageWrite(
             profile: profile,
             transferKey: transferKey,
@@ -1543,11 +1701,15 @@ class PublicationDownloads {
       } finally {
         await output.close();
       }
-      if (received != directStream.size) throw const SourceException(SourceFailure.invalidData);
+      if (received != directStream.size) {
+        throw const SourceException(SourceFailure.invalidData);
+      }
     } else {
       // A byte range is safe to append only when HTTP can condition it on the
       // exact representation previously received. Otherwise restart.
-      if (offset > 0 && validator == null) offset = 0;
+      if (offset > 0 && validator == null) {
+        offset = 0;
+      }
       var lease = await adapter.resolve(file);
       expectedSize ??= lease.size;
       cancel.check();
@@ -1572,7 +1734,9 @@ class PublicationDownloads {
         );
         releaseStorage();
         final queuedTask = _tasks[transferKey];
-        if (queuedTask == null) throw const SourceException(SourceFailure.cancelled);
+        if (queuedTask == null) {
+          throw const SourceException(SourceFailure.cancelled);
+        }
         await _runNativeDownload(
           task: queuedTask,
           lease: lease,
@@ -1602,7 +1766,9 @@ class PublicationDownloads {
           await for (final bytes in input.openRead()) {
             cancel.check();
             final nextBytes = copiedBytes + bytes.length;
-            if (nextBytes > inputSize) throw const SourceException(SourceFailure.invalidData);
+            if (nextBytes > inputSize) {
+              throw const SourceException(SourceFailure.invalidData);
+            }
             final releaseStorage = await reserveStorageWrite(
               profile: profile,
               transferKey: transferKey,
@@ -1632,7 +1798,9 @@ class PublicationDownloads {
         } finally {
           await output.close();
         }
-        if (copiedBytes != inputSize) throw const SourceException(SourceFailure.invalidData);
+        if (copiedBytes != inputSize) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
       } else {
         var response = await adapter.transport.send(
           'GET',
@@ -1665,10 +1833,14 @@ class PublicationDownloads {
         if (response.statusCode < 200 || response.statusCode >= 300) {
           await response.stream.listen(null).cancel();
           // A stale or complete partial is never promoted on a 416 response.
-          if (response.statusCode == 416 && await partial.exists()) await partial.delete();
+          if (response.statusCode == 416 && await partial.exists()) {
+            await partial.delete();
+          }
         }
         SourceTransport.check(response.statusCode);
-        if (offset > 0 && response.statusCode != 206) offset = 0;
+        if (offset > 0 && response.statusCode != 206) {
+          offset = 0;
+        }
         final rangeHeader = RegExp(r'^bytes (\d+)-(\d+)/(\d+|\*)$').firstMatch(response.headers['content-range'] ?? '');
         final contentLength = int.tryParse(response.headers['content-length'] ?? '');
         if (expectedSize == null) {
@@ -1709,8 +1881,12 @@ class PublicationDownloads {
               rangeTotal != null && (rangeEnd! >= rangeTotal || expectedSize != null && rangeTotal != expectedSize) ||
               rangeTotal == null && expectedSize != null && rangeEnd! + 1 != expectedSize) {
             await response.stream.listen(null).cancel();
-            if (await partial.exists()) await partial.delete();
-            if (await validatorFile.exists()) await validatorFile.delete();
+            if (await partial.exists()) {
+              await partial.delete();
+            }
+            if (await validatorFile.exists()) {
+              await validatorFile.delete();
+            }
             throw const SourceException(SourceFailure.invalidData);
           }
         }
@@ -1768,7 +1944,9 @@ class PublicationDownloads {
     // edition uses a different name and cannot overwrite an active reader.
     await partial.rename(target.path);
     try {
-      if (await validatorFile.exists()) await validatorFile.delete();
+      if (await validatorFile.exists()) {
+        await validatorFile.delete();
+      }
       cancel.check();
       await repository.recordDownload(
         profile,
@@ -1783,7 +1961,9 @@ class PublicationDownloads {
       );
       cancel.check();
     } catch (_) {
-      if (await target.exists()) await target.delete();
+      if (await target.exists()) {
+        await target.delete();
+      }
       rethrow;
     }
     if (usedNativeBackgroundTask) {
@@ -1826,7 +2006,9 @@ class PublicationDownloads {
     }
     if (task != null && _queue.remove(task)) {
       unawaited(repository.setDownloadState(profile, key(sourceId, file), 'paused').catchError((_) {}));
-      if (!task.completer.isCompleted) task.completer.completeError(const SourceException(SourceFailure.cancelled));
+      if (!task.completer.isCompleted) {
+        task.completer.completeError(const SourceException(SourceFailure.cancelled));
+      }
       _drainQueue();
     }
   }
@@ -1838,13 +2020,17 @@ class PublicationDownloads {
       await _pauseNativeTask(_nativeTaskId(profile, sourceId, file));
     }
     final pending = _pending[transferKey];
-    if (pending != null) await pending.then<void>((_) {}, onError: (Object _) {});
+    if (pending != null) {
+      await pending.then<void>((_) {}, onError: (Object _) {});
+    }
     await repository.setDownloadState(profile, key(sourceId, file), 'paused');
   }
 
   Future<void> removeQueuedJob(String profile, String downloadKey) async {
     var row = await repository.download(profile, downloadKey);
-    if (row == null) return;
+    if (row == null) {
+      return;
+    }
     final sourceId = row['source_id'] as String? ?? '';
     final interruptedImport = row['state'] == 'orphaned';
     final task = _tasks.values
@@ -1858,7 +2044,9 @@ class PublicationDownloads {
         row['file_payload'] != '{}') {
       try {
         final file = PublicationFile.fromJson(sourceMap(jsonDecode(row['file_payload'] as String)));
-        if (key(sourceId, file) == downloadKey) await cancelAndWait(profile, sourceId, file);
+        if (key(sourceId, file) == downloadKey) {
+          await cancelAndWait(profile, sourceId, file);
+        }
       } on SourceException {
         rethrow;
       } on Object {
@@ -1866,11 +2054,17 @@ class PublicationDownloads {
       }
     }
     row = await repository.download(profile, downloadKey);
-    if (row == null) return;
-    if (row['complete'] == 1) throw const SourceException(SourceFailure.conflict);
+    if (row == null) {
+      return;
+    }
+    if (row['complete'] == 1) {
+      throw const SourceException(SourceFailure.conflict);
+    }
     final path = row['path'] as String? ?? '';
     final expected = p.join(directory.path, sourceDigest(profile));
-    if (path.isEmpty || !p.isWithin(expected, path)) throw const SourceException(SourceFailure.permission);
+    if (path.isEmpty || !p.isWithin(expected, path)) {
+      throw const SourceException(SourceFailure.permission);
+    }
     if (!interruptedImport && sourceId.isNotEmpty && row['file_payload'] is String && row['file_payload'] != '{}') {
       try {
         final nativeFile = PublicationFile.fromJson(sourceMap(jsonDecode(row['file_payload'] as String)));
@@ -1884,10 +2078,14 @@ class PublicationDownloads {
       }
     }
     final partial = File(path);
-    if (await partial.exists()) await partial.delete();
+    if (await partial.exists()) {
+      await partial.delete();
+    }
     if (path.endsWith('.partial')) {
       final validator = File('${p.withoutExtension(path)}.validator');
-      if (await validator.exists() && p.isWithin(expected, validator.path)) await validator.delete();
+      if (await validator.exists() && p.isWithin(expected, validator.path)) {
+        await validator.delete();
+      }
     }
     if (sourceId.isNotEmpty && row['file_payload'] is String && row['file_payload'] != '{}') {
       PublicationFile? descriptor;
@@ -1910,7 +2108,9 @@ class PublicationDownloads {
           }
         } else {
           final target = _target(profile, sourceId, descriptor);
-          if (target.path != path && p.isWithin(expected, target.path) && await target.exists()) await target.delete();
+          if (target.path != path && p.isWithin(expected, target.path) && await target.exists()) {
+            await target.delete();
+          }
         }
       }
     }
@@ -1927,7 +2127,9 @@ class PublicationDownloads {
       }
       if (_queue.remove(task)) {
         unawaited(repository.setDownloadState(profile, key(sourceId, task.file), 'paused').catchError((_) {}));
-        if (!task.completer.isCompleted) task.completer.completeError(const SourceException(SourceFailure.cancelled));
+        if (!task.completer.isCompleted) {
+          task.completer.completeError(const SourceException(SourceFailure.cancelled));
+        }
       }
     }
     _drainQueue();
@@ -1938,13 +2140,17 @@ class PublicationDownloads {
       }),
     );
     for (final row in await repository.downloads(profile)) {
-      if (row['source_id'] != sourceId || row['complete'] == 1) continue;
+      if (row['source_id'] != sourceId || row['complete'] == 1) {
+        continue;
+      }
       final downloadKey = row['key'] as String;
       try {
         await removeQueuedJob(profile, downloadKey);
       } on SourceException {
         final current = await repository.download(profile, downloadKey);
-        if (current != null && current['complete'] != 1) await repository.forgetDownload(profile, downloadKey);
+        if (current != null && current['complete'] != 1) {
+          await repository.forgetDownload(profile, downloadKey);
+        }
       }
     }
   }
@@ -1960,28 +2166,44 @@ class PublicationDownloads {
     final identity = sourceKey(profile, key(sourceId, file));
     final previous = _removals[identity];
     late final Future<void> removal;
-    removal = () async {
-      if (previous != null) await previous;
-      bool allowed() => shouldRemove?.call() ?? true;
-      if (!allowed()) return;
-      final record = await repository.download(profile, key(sourceId, file));
-      if (!allowed()) return;
-      if (record != null) {
-        final path = record['path'] as String;
-        if (!p.isWithin(p.join(directory.path, sourceDigest(profile)), path)) {
-          throw const SourceException(SourceFailure.permission);
-        }
-        final target = File(path);
-        final exists = await target.exists();
-        if (!allowed()) return;
-        if (exists) await target.delete();
-      }
-      if (allowed()) await repository.forgetDownload(profile, key(sourceId, file));
-    }().whenComplete(() { if (identical(_removals[identity], removal)) _removals.remove(identity); });
+    removal =
+        () async {
+          if (previous != null) {
+            await previous;
+          }
+          bool allowed() => shouldRemove?.call() ?? true;
+          if (!allowed()) {
+            return;
+          }
+          final record = await repository.download(profile, key(sourceId, file));
+          if (!allowed()) {
+            return;
+          }
+          if (record != null) {
+            final path = record['path'] as String;
+            if (!p.isWithin(p.join(directory.path, sourceDigest(profile)), path)) {
+              throw const SourceException(SourceFailure.permission);
+            }
+            final target = File(path);
+            final exists = await target.exists();
+            if (!allowed()) {
+              return;
+            }
+            if (exists) {
+              await target.delete();
+            }
+          }
+          if (allowed()) {
+            await repository.forgetDownload(profile, key(sourceId, file));
+          }
+        }().whenComplete(() {
+          if (identical(_removals[identity], removal)) {
+            _removals.remove(identity);
+          }
+        });
     _removals[identity] = removal;
     return removal;
   }
-
 }
 
 class _NativeDownloadContext {
@@ -2018,20 +2240,30 @@ class _DownloadTask {
 }
 
 ({int offset, int length})? _byteRange(String? value, int size) {
-  if (value == null) return (offset: 0, length: size);
+  if (value == null) {
+    return (offset: 0, length: size);
+  }
   final match = RegExp(r'^bytes=(\d*)-(\d*)$').firstMatch(value);
-  if (match == null || size < 0) return null;
+  if (match == null || size < 0) {
+    return null;
+  }
   final first = match[1]!, last = match[2]!;
-  if ((first.isEmpty && last.isEmpty) || size == 0) return null;
+  if ((first.isEmpty && last.isEmpty) || size == 0) {
+    return null;
+  }
   if (first.isEmpty) {
     final suffix = int.tryParse(last);
-    if (suffix == null || suffix <= 0) return null;
+    if (suffix == null || suffix <= 0) {
+      return null;
+    }
     final length = math.min(suffix, size).toInt();
     return (offset: size - length, length: length);
   }
   final offset = int.tryParse(first);
   final end = last.isEmpty ? size - 1 : int.tryParse(last);
-  if (offset == null || end == null || offset >= size || end < offset) return null;
+  if (offset == null || end == null || offset >= size || end < offset) {
+    return null;
+  }
   final boundedEnd = math.min(end, size - 1).toInt();
   return (offset: offset, length: boundedEnd - offset + 1);
 }
@@ -2068,12 +2300,16 @@ class SourceStreamGateway {
   final _abort = Completer<void>();
 
   Future<void> _ensureServer() {
-    if (_server != null) return Future<void>.value();
+    if (_server != null) {
+      return Future<void>.value();
+    }
     return _serverStarting ??= _startServer().whenComplete(() => _serverStarting = null);
   }
 
   Future<void> _startServer() async {
-    if (_server != null) return;
+    if (_server != null) {
+      return;
+    }
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     if (!valid() || _abort.isCompleted) {
       await server.close(force: true);
@@ -2084,10 +2320,16 @@ class SourceStreamGateway {
   }
 
   void _removeDirectRegistration(String id) {
-    if ((_activeDirectRequests[id] ?? 0) > 0) return;
+    if ((_activeDirectRequests[id] ?? 0) > 0) {
+      return;
+    }
     final removed = _directUris.remove(id);
-    if (removed == null) return;
-    if (_directIdsByUri[removed.cacheKey] == id) _directIdsByUri.remove(removed.cacheKey);
+    if (removed == null) {
+      return;
+    }
+    if (_directIdsByUri[removed.cacheKey] == id) {
+      _directIdsByUri.remove(removed.cacheKey);
+    }
     _nonDeduplicatedDirectIds.remove(id);
     final referenceKey = _manifestReferenceKeys.remove(id);
     if (referenceKey != null && _manifestReferenceIds[referenceKey] == id) {
@@ -2102,12 +2344,16 @@ class SourceStreamGateway {
   void _pruneRetiredReferences() {
     final now = _clock();
     for (final entry in _retiredReferences.entries.toList(growable: false)) {
-      if (!entry.value.isAfter(now)) _removeDirectRegistration(entry.key);
+      if (!entry.value.isAfter(now)) {
+        _removeDirectRegistration(entry.key);
+      }
     }
   }
 
   Future<Uri> register(SourceAdapter adapter, PublicationFile file) async {
-    if (!valid()) throw const SourceException(SourceFailure.cancelled);
+    if (!valid()) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
     await _ensureServer();
     final id = sourceDigest(sourceKey(adapter.source.id, file.id));
     _files[id] = (adapter: adapter, file: file);
@@ -2124,7 +2370,9 @@ class SourceStreamGateway {
     SourceUriRenewal? renew,
     bool deduplicate = true,
   }) async {
-    if (!valid()) throw const SourceException(SourceFailure.cancelled);
+    if (!valid()) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
     if (uri.hasFragment || uri.userInfo.isNotEmpty || !const {'http', 'https'}.contains(uri.scheme)) {
       throw const SourceException(SourceFailure.permission);
     }
@@ -2162,7 +2410,9 @@ class SourceStreamGateway {
   }
 
   Map<String, String> _validateDirectHeaders(Map<String, String> headers) {
-    if (headers.length > 32) throw const SourceException(SourceFailure.invalidData);
+    if (headers.length > 32) {
+      throw const SourceException(SourceFailure.invalidData);
+    }
     const forbidden = {
       'host',
       'content-length',
@@ -2186,7 +2436,9 @@ class SourceStreamGateway {
         throw const SourceException(SourceFailure.invalidData);
       }
       final normalizedName = name.toLowerCase();
-      if (safe.containsKey(normalizedName)) throw const SourceException(SourceFailure.invalidData);
+      if (safe.containsKey(normalizedName)) {
+        throw const SourceException(SourceFailure.invalidData);
+      }
       safe[normalizedName] = value;
     }
     return Map.unmodifiable(safe);
@@ -2212,8 +2464,12 @@ class SourceStreamGateway {
     required SourceUriRenewal renew,
   }) async {
     final current = _directUris[id];
-    if (current == null) throw const SourceException(SourceFailure.cancelled);
-    if (current.uri != expiredUri || !_sameDirectHeaders(current.headers, expiredHeaders)) return current;
+    if (current == null) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
+    if (current.uri != expiredUri || !_sameDirectHeaders(current.headers, expiredHeaders)) {
+      return current;
+    }
 
     final inFlight = _directRenewals[id];
     if (inFlight != null) {
@@ -2234,19 +2490,29 @@ class SourceStreamGateway {
       }
       final safeHeaders = _validateDirectHeaders(refreshed.headers);
       final latest = _directUris[id];
-      if (latest == null) throw const SourceException(SourceFailure.cancelled);
+      if (latest == null) {
+        throw const SourceException(SourceFailure.cancelled);
+      }
       // A newer concurrent renewal owns the slot; do not overwrite it with an
       // older callback result that happened to complete later.
-      if (latest.uri != expiredUri || !_sameDirectHeaders(latest.headers, expiredHeaders)) return latest;
+      if (latest.uri != expiredUri || !_sameDirectHeaders(latest.headers, expiredHeaders)) {
+        return latest;
+      }
       final key = _directCacheKey(refreshed.uri, safeHeaders);
       final expiredKey = current.cacheKey;
       final next = (uri: refreshed.uri, headers: safeHeaders, cacheKey: key, renew: renew);
       _directUris[id] = next;
-      if (_directIdsByUri[expiredKey] == id) _directIdsByUri.remove(expiredKey);
-      if (!_nonDeduplicatedDirectIds.contains(id)) _directIdsByUri.putIfAbsent(key, () => id);
+      if (_directIdsByUri[expiredKey] == id) {
+        _directIdsByUri.remove(expiredKey);
+      }
+      if (!_nonDeduplicatedDirectIds.contains(id)) {
+        _directIdsByUri.putIfAbsent(key, () => id);
+      }
       return next;
     } finally {
-      if (identical(_directRenewals[id], pending)) unawaited(_directRenewals.remove(id));
+      if (identical(_directRenewals[id], pending)) {
+        unawaited(_directRenewals.remove(id));
+      }
     }
   }
 
@@ -2315,10 +2581,14 @@ class SourceStreamGateway {
               'bytes ${content.offset}-${content.offset + content.length - 1}/${content.size}',
             );
           }
-          if (request.method == 'HEAD') return;
+          if (request.method == 'HEAD') {
+            return;
+          }
           await request.response.addStream(
             content.stream.timeout(const Duration(seconds: 45)).map((bytes) {
-              if (!valid()) throw const SourceException(SourceFailure.cancelled);
+              if (!valid()) {
+                throw const SourceException(SourceFailure.cancelled);
+              }
               return bytes;
             }),
           );
@@ -2330,8 +2600,12 @@ class SourceStreamGateway {
         lease = await ref.adapter.resolve(ref.file);
         _leases[segments[1]] = lease;
       }
-      if (!valid()) throw const SourceException(SourceFailure.cancelled);
-      if (lease.uri.scheme == 'file') throw const SourceException(SourceFailure.invalidData);
+      if (!valid()) {
+        throw const SourceException(SourceFailure.cancelled);
+      }
+      if (lease.uri.scheme == 'file') {
+        throw const SourceException(SourceFailure.invalidData);
+      }
       var response = await ref.adapter.transport.send(
         'GET',
         lease.uri,
@@ -2352,7 +2626,9 @@ class SourceStreamGateway {
           abort: _abort.future,
         );
       }
-      if (response.statusCode < 200 || response.statusCode >= 300) await response.stream.listen(null).cancel();
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        await response.stream.listen(null).cancel();
+      }
       SourceTransport.check(response.statusCode);
       request.response.statusCode = response.statusCode;
       request.response.headers.set('Cache-Control', 'no-store');
@@ -2365,7 +2641,9 @@ class SourceStreamGateway {
         'last-modified',
       ]) {
         final value = response.headers[name];
-        if (value != null) request.response.headers.set(name, value);
+        if (value != null) {
+          request.response.headers.set(name, value);
+        }
       }
       if (request.method == 'HEAD') {
         await response.stream.listen(null).cancel();
@@ -2373,7 +2651,9 @@ class SourceStreamGateway {
       }
       await request.response.addStream(
         response.stream.timeout(const Duration(seconds: 45)).map((bytes) {
-          if (!valid()) throw const SourceException(SourceFailure.cancelled);
+          if (!valid()) {
+            throw const SourceException(SourceFailure.cancelled);
+          }
           return bytes;
         }),
       );
@@ -2391,8 +2671,12 @@ class SourceStreamGateway {
   Uri _manifestUri(Uri base, String value) {
     final uri = base.resolve(value.trim());
     final scheme = uri.scheme.toLowerCase();
-    if (scheme == 'skd' || scheme == 'data') return uri;
-    if (!const {'http', 'https'}.contains(scheme) || uri.hasFragment || uri.userInfo.isNotEmpty ||
+    if (scheme == 'skd' || scheme == 'data') {
+      return uri;
+    }
+    if (!const {'http', 'https'}.contains(scheme) ||
+        uri.hasFragment ||
+        uri.userInfo.isNotEmpty ||
         (base.scheme == 'https' && scheme != 'https')) {
       throw const SourceException(SourceFailure.permission);
     }
@@ -2416,7 +2700,9 @@ class SourceStreamGateway {
     // FairPlay's skd: key URI is handled by the platform DRM path. Inline
     // data: URIs are self-contained. Never hand file: or another network
     // scheme from a remote manifest to the native player.
-    if (scheme == 'skd' || scheme == 'data') return raw;
+    if (scheme == 'skd' || scheme == 'data') {
+      return raw;
+    }
     // Manifest children can point at a CDN or a different host. Request
     // credentials are scoped to the stream origin and must never follow them.
     final childHeaders = sameSourceOrigin(base, uri) ? headers : const <String, String>{};
@@ -2458,9 +2744,13 @@ class SourceStreamGateway {
     );
     final tail = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     _manifestRewrites[parentId] = tail;
-    unawaited(tail.whenComplete(() {
-      if (identical(_manifestRewrites[parentId], tail)) _manifestRewrites.remove(parentId);
-    }));
+    unawaited(
+      tail.whenComplete(() {
+        if (identical(_manifestRewrites[parentId], tail)) {
+          _manifestRewrites.remove(parentId);
+        }
+      }),
+    );
     return result;
   }
 
@@ -2481,12 +2771,14 @@ class SourceStreamGateway {
     var validatedReferences = 0;
     for (final raw in lines) {
       final line = raw.trim();
-      if (line.isEmpty) continue;
-      final values = line.startsWith('#')
-          ? attributeUri.allMatches(line).map((match) => match.group(1)!)
-          : [line];
+      if (line.isEmpty) {
+        continue;
+      }
+      final values = line.startsWith('#') ? attributeUri.allMatches(line).map((match) => match.group(1)!) : [line];
       for (final value in values) {
-        if (++validatedReferences > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        if (++validatedReferences > _maximumManifestReferences) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
         _manifestUri(base, value);
       }
     }
@@ -2496,9 +2788,13 @@ class SourceStreamGateway {
     try {
       for (var index = 0; index < lines.length; index++) {
         var line = lines[index].trim();
-        if (line.trim().isEmpty) continue;
+        if (line.trim().isEmpty) {
+          continue;
+        }
         if (!line.startsWith('#')) {
-          if (referenceIndex >= _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+          if (referenceIndex >= _maximumManifestReferences) {
+            throw const SourceException(SourceFailure.invalidData);
+          }
           line = await _registerManifestUri(
             base,
             line,
@@ -2532,7 +2828,9 @@ class SourceStreamGateway {
           }
           referenceIndex += matches.length;
         }
-        if (rewrittenUris > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        if (rewrittenUris > _maximumManifestReferences) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
         lines[index] = line;
       }
       final previous = _manifestChildren[parentId] ?? const <String>{};
@@ -2546,7 +2844,9 @@ class SourceStreamGateway {
       _manifestChildren[parentId] = children;
       return lines.join('\n');
     } catch (_) {
-      for (final id in created) _removeDirectRegistration(id);
+      for (final id in created) {
+        _removeDirectRegistration(id);
+      }
       rethrow;
     }
   }
@@ -2556,15 +2856,21 @@ class SourceStreamGateway {
     final attributeUri = RegExp(r'URI="([^"]+)"');
     for (final rawLine in manifest.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n')) {
       final line = rawLine.trim();
-      if (line.isEmpty) continue;
+      if (line.isEmpty) {
+        continue;
+      }
       if (!line.startsWith('#')) {
         references.add(base.resolve(line));
-        if (references.length > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        if (references.length > _maximumManifestReferences) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
         continue;
       }
       for (final match in attributeUri.allMatches(line)) {
         references.add(base.resolve(match.group(1)!));
-        if (references.length > _maximumManifestReferences) throw const SourceException(SourceFailure.invalidData);
+        if (references.length > _maximumManifestReferences) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
       }
     }
     return references;
@@ -2575,7 +2881,9 @@ class SourceStreamGateway {
     required SourceUriRenewal parentRenew,
   }) async {
     var parent = _directUris[parentId];
-    if (parent == null) throw const SourceException(SourceFailure.cancelled);
+    if (parent == null) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
     final transport = SourceTransport(allowHttp: parent.uri.scheme == 'http');
     try {
       var response = await transport.send(
@@ -2587,7 +2895,9 @@ class SourceStreamGateway {
       );
       if (const {HttpStatus.unauthorized, HttpStatus.forbidden, HttpStatus.gone}.contains(response.statusCode)) {
         await response.stream.drain<void>();
-        if (!valid()) throw const SourceException(SourceFailure.cancelled);
+        if (!valid()) {
+          throw const SourceException(SourceFailure.cancelled);
+        }
         parent = await _renewDirectUri(
           parentId,
           expiredUri: parent.uri,
@@ -2613,14 +2923,20 @@ class SourceStreamGateway {
       const maxManifestBytes = 2 * 1024 * 1024;
       final bytes = <int>[];
       await for (final chunk in response.stream.timeout(const Duration(seconds: 30))) {
-        if (!valid()) throw const SourceException(SourceFailure.cancelled);
-        if (bytes.length + chunk.length > maxManifestBytes) throw const SourceException(SourceFailure.invalidData);
+        if (!valid()) {
+          throw const SourceException(SourceFailure.cancelled);
+        }
+        if (bytes.length + chunk.length > maxManifestBytes) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
         bytes.addAll(chunk);
       }
       final base = response.request?.url ?? parent.uri;
       final headers = sameSourceOrigin(parent.uri, base) ? parent.headers : const <String, String>{};
       final manifest = utf8.decode(bytes, allowMalformed: true);
-      if (!manifest.trimLeft().startsWith('#EXTM3U')) throw const SourceException(SourceFailure.invalidData);
+      if (!manifest.trimLeft().startsWith('#EXTM3U')) {
+        throw const SourceException(SourceFailure.invalidData);
+      }
       return (base: base, headers: headers, manifest: manifest);
     } finally {
       transport.close();
@@ -2633,7 +2949,9 @@ class SourceStreamGateway {
     required int referenceIndex,
     required String expectedPath,
   }) async {
-    if (!valid()) throw const SourceException(SourceFailure.cancelled);
+    if (!valid()) {
+      throw const SourceException(SourceFailure.cancelled);
+    }
     final refreshed = await _readRenewedManifest(parentId, parentRenew: parentRenew);
     final references = _hlsReferences(refreshed.manifest, refreshed.base);
     if (referenceIndex < 0 || referenceIndex >= references.length) {
@@ -2680,7 +2998,9 @@ class SourceStreamGateway {
       if (const {HttpStatus.unauthorized, HttpStatus.forbidden, HttpStatus.gone}.contains(upstream.statusCode) &&
           renew != null) {
         await upstream.stream.drain<void>();
-        if (!valid()) throw const SourceException(SourceFailure.cancelled);
+        if (!valid()) {
+          throw const SourceException(SourceFailure.cancelled);
+        }
         final refreshed = await _renewDirectUri(
           id,
           expiredUri: currentUri,
@@ -2709,7 +3029,9 @@ class SourceStreamGateway {
         'last-modified',
       ]) {
         final value = upstream.headers[name];
-        if (value != null) request.response.headers.set(name, value);
+        if (value != null) {
+          request.response.headers.set(name, value);
+        }
       }
       if (request.method == 'HEAD') {
         await upstream.stream.listen(null).cancel();
@@ -2721,7 +3043,9 @@ class SourceStreamGateway {
       if (!isHls || upstream.statusCode < 200 || upstream.statusCode >= 300) {
         await request.response.addStream(
           upstream.stream.timeout(const Duration(seconds: 45)).map((bytes) {
-            if (!valid()) throw const SourceException(SourceFailure.cancelled);
+            if (!valid()) {
+              throw const SourceException(SourceFailure.cancelled);
+            }
             return bytes;
           }),
         );
@@ -2731,7 +3055,9 @@ class SourceStreamGateway {
       const maxManifestBytes = 2 * 1024 * 1024;
       final bytes = <int>[];
       await for (final chunk in upstream.stream.timeout(const Duration(seconds: 30))) {
-        if (bytes.length + chunk.length > maxManifestBytes) throw const SourceException(SourceFailure.invalidData);
+        if (bytes.length + chunk.length > maxManifestBytes) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
         bytes.addAll(chunk);
       }
       final manifest = utf8.decode(bytes, allowMalformed: true);
@@ -2760,7 +3086,9 @@ class SourceStreamGateway {
     _retiredReferences.clear();
     _activeDirectRequests.clear();
     _manifestRewrites.clear();
-    if (!_abort.isCompleted) _abort.complete();
+    if (!_abort.isCompleted) {
+      _abort.complete();
+    }
     await _server?.close(force: true);
     _server = null;
   }

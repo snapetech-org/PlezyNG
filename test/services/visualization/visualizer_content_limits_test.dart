@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/visualization/visualizer_content_limits.dart';
 import 'package:plezy/services/visualization/visualizer_pack_store.dart';
 
+// Header validation runs in normal CI before native image decoding.
 void main() {
   test('portable library paths reject aliasing and Windows device names', () {
     for (final path in [
@@ -66,8 +67,7 @@ void main() {
     }
     expect(() => VisualizerContentLimits.imagePixels('.png', Uint8List(4)), throwsFormatException);
     // Dimension headers alone must not bypass the complete chunk walk.
-    expect(() => VisualizerContentLimits.imagePixels('.png', pngHeader(16, 16).sublist(0, 33)),
-        throwsFormatException);
+    expect(() => VisualizerContentLimits.imagePixels('.png', pngHeader(16, 16).sublist(0, 33)), throwsFormatException);
   });
 
   test('JPEG segment lengths cannot skip beyond the bounded input', () {

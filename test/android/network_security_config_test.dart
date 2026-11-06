@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/utils/certificate_trust.dart';
+import 'package:plezy/services/plezy_server.dart';
 import 'package:xml/xml.dart';
 
 const _configPath = 'android/app/src/main/res/xml/network_security_config.xml';
@@ -108,7 +109,13 @@ void main() {
     // The other direction: a listed domain that no scanned source produces means
     // the scan lost sight of the file that owns it, and a host change there would
     // silently fall through to base-config and its user certificate authorities.
+    // Retain system-only trust for the legacy namespace even though the fork
+    // now rejects it before constructing optional service requests.
+    for (final host in ['plezy.app', 'ice.plezy.app', 'ICE.PLEZY.APP']) {
+      expect(() => requirePleazyngServiceUrl('https://$host'), throwsStateError);
+    }
     final unobservedDomains = _expectedDomains
+        .where((domain) => domain != 'plezy.app')
         .where((domain) => !discoveredHosts.any((host) => host == domain || host.endsWith('.$domain')))
         .toList();
     expect(

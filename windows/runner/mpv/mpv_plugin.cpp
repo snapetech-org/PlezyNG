@@ -1,10 +1,11 @@
 #include "mpv_plugin.h"
 
+#include <commctrl.h>
+
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <limits>
-#include <algorithm>
-#include <commctrl.h>
 
 static flutter::EncodableMap DisplayModeToMap(const mpv::DisplayMode& mode) {
   flutter::EncodableMap m;
@@ -116,11 +117,10 @@ std::wstring DetachedText(const std::string& text) {
 }
 std::string DetachedArgument(const flutter::EncodableMap& map, const char* key) {
   const auto found = map.find(flutter::EncodableValue(key));
-  return found != map.end() && std::holds_alternative<std::string>(found->second)
-      ? std::get<std::string>(found->second) : std::string();
+  return found != map.end() && std::holds_alternative<std::string>(found->second) ? std::get<std::string>(found->second)
+                                                                                  : std::string();
 }
-LRESULT CALLBACK DetachedButtonProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam,
-                                    UINT_PTR, DWORD_PTR) {
+LRESULT CALLBACK DetachedButtonProc(HWND window, UINT message, WPARAM wparam, LPARAM lparam, UINT_PTR, DWORD_PTR) {
   if (message == WM_KEYDOWN && wparam == VK_TAB) {
     const HWND next = GetNextDlgTabItem(GetParent(window), window, (GetKeyState(VK_SHIFT) & 0x8000) != 0);
     if (next) SetFocus(next);
@@ -132,7 +132,8 @@ LRESULT CALLBACK DetachedButtonProc(HWND window, UINT message, WPARAM wparam, LP
 }  // namespace
 
 void MpvPlayerPlugin::SaveDetachedGeometry() {
-  if (!detached_window_ || detached_geometry_key_.empty() || IsIconic(detached_window_) || IsZoomed(detached_window_)) return;
+  if (!detached_window_ || detached_geometry_key_.empty() || IsIconic(detached_window_) || IsZoomed(detached_window_))
+    return;
   RECT rect{};
   if (GetWindowRect(detached_window_, &rect)) {
     RegSetKeyValueW(HKEY_CURRENT_USER, detached_geometry_key_.c_str(), L"Bounds", REG_BINARY, &rect, sizeof(rect));
@@ -142,9 +143,11 @@ void MpvPlayerPlugin::SaveDetachedGeometry() {
 void MpvPlayerPlugin::DetachedAction(const char* action) {
   if (!event_sink_ || detached_token_.empty()) return;
   using V = flutter::EncodableValue;
-  event_sink_->Success(V(flutter::EncodableMap{{V("type"), V("event")},
-      {V("name"), V("detached-window-action")},
-      {V("data"), V(flutter::EncodableMap{{V("token"), V(detached_token_)}, {V("action"), V(action)}})}}));
+  event_sink_->Success(
+      V(flutter::EncodableMap{
+          {V("type"), V("event")},
+          {V("name"), V("detached-window-action")},
+          {V("data"), V(flutter::EncodableMap{{V("token"), V(detached_token_)}, {V("action"), V(action)}})}}));
 }
 
 void MpvPlayerPlugin::LayoutDetachedVideo(HWND window) {
@@ -169,8 +172,13 @@ LRESULT CALLBACK MpvPlayerPlugin::DetachedWindowProc(HWND window, UINT message, 
   }
   if (!self) return DefWindowProc(window, message, wparam, lparam);
   switch (message) {
-    case WM_SIZE: self->LayoutDetachedVideo(window); self->SaveDetachedGeometry(); return 0;
-    case WM_MOVE: self->SaveDetachedGeometry(); return 0;
+    case WM_SIZE:
+      self->LayoutDetachedVideo(window);
+      self->SaveDetachedGeometry();
+      return 0;
+    case WM_MOVE:
+      self->SaveDetachedGeometry();
+      return 0;
     case WM_GETMINMAXINFO: {
       auto* info = reinterpret_cast<MINMAXINFO*>(lparam);
       info->ptMinTrackSize = {360, 240};
@@ -178,25 +186,38 @@ LRESULT CALLBACK MpvPlayerPlugin::DetachedWindowProc(HWND window, UINT message, 
     }
     case WM_DPICHANGED: {
       const auto* rect = reinterpret_cast<RECT*>(lparam);
-      SetWindowPos(window, nullptr, rect->left, rect->top, rect->right - rect->left,
-                   rect->bottom - rect->top, SWP_NOZORDER | SWP_NOACTIVATE);
+      SetWindowPos(
+          window, nullptr, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top,
+          SWP_NOZORDER | SWP_NOACTIVATE);
       return 0;
     }
     case WM_COMMAND:
       if (HIWORD(wparam) == BN_CLICKED) {
         switch (LOWORD(wparam)) {
-          case 100: self->DetachedAction("seekBackward"); return 0;
-          case 101: self->DetachedAction("togglePlayback"); return 0;
-          case 102: self->DetachedAction("seekForward"); return 0;
-          case 103: self->AttachVideoWindow(true); return 0;
+          case 100:
+            self->DetachedAction("seekBackward");
+            return 0;
+          case 101:
+            self->DetachedAction("togglePlayback");
+            return 0;
+          case 102:
+            self->DetachedAction("seekForward");
+            return 0;
+          case 103:
+            self->AttachVideoWindow(true);
+            return 0;
         }
       }
       break;
-    case WM_CLOSE: self->AttachVideoWindow(true); return 0;
+    case WM_CLOSE:
+      self->AttachVideoWindow(true);
+      return 0;
     case WM_DISPLAYCHANGE:
       if (self->player_) self->player_->NotifyDisplayChange(wparam, lparam);
       break;
-    case WM_NCDESTROY: SetWindowLongPtr(window, GWLP_USERDATA, 0); break;
+    case WM_NCDESTROY:
+      SetWindowLongPtr(window, GWLP_USERDATA, 0);
+      break;
   }
   return DefWindowProc(window, message, wparam, lparam);
 }
@@ -221,10 +242,13 @@ bool MpvPlayerPlugin::DetachVideoWindow(const flutter::EncodableMap& args) {
   if (geometry.size() == 64 && geometry.find_first_not_of("abcdef0123456789") == std::string::npos) {
     detached_geometry_key_ = L"Software\\Plezy\\DetachedWindows\\" + DetachedText(geometry);
     DWORD bytes = sizeof(saved);
-    restore = RegGetValueW(HKEY_CURRENT_USER, detached_geometry_key_.c_str(), L"Bounds", RRF_RT_REG_BINARY,
-        nullptr, &saved, &bytes) == ERROR_SUCCESS && bytes == sizeof(saved) &&
-        static_cast<int64_t>(saved.right) - saved.left >= 360 && static_cast<int64_t>(saved.right) - saved.left <= 16384 &&
-        static_cast<int64_t>(saved.bottom) - saved.top >= 240 && static_cast<int64_t>(saved.bottom) - saved.top <= 16384;
+    restore = RegGetValueW(
+                  HKEY_CURRENT_USER, detached_geometry_key_.c_str(), L"Bounds", RRF_RT_REG_BINARY, nullptr, &saved,
+                  &bytes) == ERROR_SUCCESS &&
+              bytes == sizeof(saved) && static_cast<int64_t>(saved.right) - saved.left >= 360 &&
+              static_cast<int64_t>(saved.right) - saved.left <= 16384 &&
+              static_cast<int64_t>(saved.bottom) - saved.top >= 240 &&
+              static_cast<int64_t>(saved.bottom) - saved.top <= 16384;
     // Removed displays must not strand the title bar beyond every work area.
     MONITORINFO monitor{sizeof(MONITORINFO)};
     if (restore && GetMonitorInfo(MonitorFromRect(&saved, MONITOR_DEFAULTTONEAREST), &monitor)) {
@@ -232,13 +256,14 @@ bool MpvPlayerPlugin::DetachVideoWindow(const flutter::EncodableMap& args) {
       const int height = (std::min)(saved.bottom - saved.top, monitor.rcWork.bottom - monitor.rcWork.top);
       saved.left = (std::max)(monitor.rcWork.left, (std::min)(saved.left, monitor.rcWork.right - width));
       saved.top = (std::max)(monitor.rcWork.top, (std::min)(saved.top, monitor.rcWork.bottom - height));
-      saved.right = saved.left + width; saved.bottom = saved.top + height;
+      saved.right = saved.left + width;
+      saved.bottom = saved.top + height;
     }
   }
-  HWND window = CreateWindowExW(0, class_name, title.c_str(), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-      restore ? saved.left : CW_USEDEFAULT, restore ? saved.top : CW_USEDEFAULT,
-      restore ? saved.right - saved.left : 900, restore ? saved.bottom - saved.top : 560,
-      nullptr, nullptr, cls.hInstance, this);
+  HWND window = CreateWindowExW(
+      0, class_name, title.c_str(), WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, restore ? saved.left : CW_USEDEFAULT,
+      restore ? saved.top : CW_USEDEFAULT, restore ? saved.right - saved.left : 900,
+      restore ? saved.bottom - saved.top : 560, nullptr, nullptr, cls.hInstance, this);
   if (!window) return false;
   HWND video = player_->GetHwnd();
   video_parent_ = GetParent(video);
@@ -260,8 +285,9 @@ bool MpvPlayerPlugin::DetachVideoWindow(const flutter::EncodableMap& args) {
   const char* keys[] = {"back", "playPause", "forward", "restore"};
   for (int i = 0; i < 4; ++i) {
     const auto label = DetachedText(DetachedArgument(labels, keys[i]));
-    HWND button = CreateWindowW(L"BUTTON", label.c_str(), WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-        0, 0, 1, 1, window, reinterpret_cast<HMENU>(static_cast<INT_PTR>(100 + i)), cls.hInstance, nullptr);
+    HWND button = CreateWindowW(
+        L"BUTTON", label.c_str(), WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON, 0, 0, 1, 1, window,
+        reinterpret_cast<HMENU>(static_cast<INT_PTR>(100 + i)), cls.hInstance, nullptr);
     if (button) SetWindowSubclass(button, DetachedButtonProc, 1, 0);
   }
   LayoutDetachedVideo(window);
@@ -518,14 +544,17 @@ void MpvPlayerPlugin::HandleMethodCall(
   }
   if (method == "detachVideoWindow") {
     const auto* args = method_call.arguments();
-    result->Success(flutter::EncodableValue(args && std::holds_alternative<flutter::EncodableMap>(*args) &&
-        DetachVideoWindow(std::get<flutter::EncodableMap>(*args))));
+    result->Success(
+        flutter::EncodableValue(
+            args && std::holds_alternative<flutter::EncodableMap>(*args) &&
+            DetachVideoWindow(std::get<flutter::EncodableMap>(*args))));
     return;
   } else if (method == "attachVideoWindow") {
     const auto* args = method_call.arguments();
     if (detached_window_ && (!args || !std::holds_alternative<flutter::EncodableMap>(*args) ||
-        DetachedArgument(std::get<flutter::EncodableMap>(*args), "token") != detached_token_)) {
-      result->Success(flutter::EncodableValue(false)); return;
+                             DetachedArgument(std::get<flutter::EncodableMap>(*args), "token") != detached_token_)) {
+      result->Success(flutter::EncodableValue(false));
+      return;
     }
     AttachVideoWindow(false);
     result->Success(flutter::EncodableValue(detached_window_ == nullptr));
@@ -880,8 +909,10 @@ void MpvPlayerPlugin::HandleMethodCall(
     double dpr = get_double("devicePixelRatio");
 
     if (player_) {
-      if (detached_window_) video_rect_ = rect;
-      else player_->SetRect(rect, dpr);
+      if (detached_window_)
+        video_rect_ = rect;
+      else
+        player_->SetRect(rect, dpr);
     }
 
     result->Success();

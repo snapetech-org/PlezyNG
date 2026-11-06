@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Reject CRLF header injection in the Apple experimental playback bridge, including headers supplied through MPV change-list commands.
+
 - Size Apple Flutter SDK download and extraction disk preflights from verified archive metadata while retaining Python 3.9 support and the existing runner disk margin.
 
 - Target Amazon API uploads by the console App ID and preserve listing metadata, artwork and review state during binary updates.
@@ -9,6 +11,7 @@
 - Fix Android Clang compilation of the visualization GPU drain callback while preserving the graphics loader ABI.
 
 - Fix malformed Steam input-only and Granite patch headers that blocked fresh Android/Fire TV builds, and expose native source preparation errors before compilation.
+- Keep service endpoint regression tests and store-preview tooling aligned with the current Pleazyng integration.
 
 - Require a signed Amazon Fire TV / Stick APK and verification receipt in release assets, with an Android-only validation build and the renamed Amazon lifetime unlock SKU.
 - Translate all caption and speech-processing status messages across 37 locales, verify generated locale resolution, and record the completed audit regression checks and remaining delivery gaps.
@@ -18,6 +21,19 @@
 - Keep configured service endpoints on system certificate trust, validate storefront brokers, repair rebrand-sensitive regression fixtures, and verify native torrent reads beyond 4 GiB.
 - Record current release availability separately from historical publication evidence when the recorded release is no longer returned by GitHub.
 
+- Share a Dart source formatter that preserves canonical generated files, preventing formatting and generation from repeatedly invalidating each other.
+
+- Run the full Flutter application regression suite in the required CI analysis job so platform and integration regressions cannot pass on analysis checks alone.
+
+- Repair integrated Games, RomM, karaoke, visualizer, localization and native runtime build failures. Keep optional fork services from breaking local Games and companion remote sessions when no relay is configured, and preserve results and filters during progressive search.
+
+- Include webOS and Tizen in every complete versioned release, verify actual package source and checksums, and build the release matrix once after exact-source CI. Keep physical-device qualification separate from feature availability.
+- Isolate offline converter workers from app and Python loader overrides so bundled runtimes also work on newer Linux distributions with a different system shell.
+- Prepare 3.0.1 with matching webOS metadata and a shared Linux client SDK that resolves without the producer's private Lua and Wayland protocol build dependencies.
+- Open bundled offline HDR10/SDR exports from Playback settings when Dolby Vision experiments are enabled; select synchronized layer files and save a new local MKV without replacing source files.
+- Package a self-contained Linux FEL-derived HDR10/SDR converter with its Python runtime, decoder, compositor and encoders; verify actual exports without network access or system tools. Keep Apple experimental video below Flutter controls and make incremental runtime packaging repeatable.
+- Bundle experimental Dolby Vision/FEL playback in normal compatible builds and use a persisted, default-off Settings switch. Add an in-app Apple runtime for macOS 15 and iOS/tvOS 18 while retaining the normal app deployment floors; device output remains unqualified.
+- Keep Android FEL reconstruction controlled by the runtime experimental setting when a FEL-capable engine is bundled.
 - Build the pinned MilkRust runtime with its corrected dependency lock and compiler fixes, keep isolated rustup installs independent, and verify bundled presets through actual GL/GLES rendering.
 - Correct the v2 torrent transfer fixture and update remote playback reporting and P2P storage documentation.
 
@@ -404,6 +420,18 @@
 - Keep temporary HLS sharing within its startup window for long-GOP sources by forcing keyframes at the segment cadence; verify that playlist and media segments remain token-scoped and the listener closes cleanly.
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
+## [3.0.1] - 2026-11-05
+
+- Adopt the Pleazyng name, artwork and package identities. Ship ordered native PCM capture for the new visualization and playback transcription features, and repair integrated Games, RomM, karaoke and offline conversion paths.
+
+- Include Android, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS in the complete release; verify package provenance and checksums before publication.
+- Fix the black screen after Plex sign-in when a profile attaches before its file-source database opens.
+- Bundle implemented experimental Dolby Vision/FEL paths in normal compatible packages with a persisted, default-off Playback settings switch. Include the Apple runtime and Linux offline HDR10/SDR exporter; physical output qualification remains device-specific.
+- Integrate retained desktop multiview surfaces, MilkRust visualizer runtimes, karaoke preparation and capture, Steam/RomM workflows, podcast synchronization, native themes, and recording recovery improvements.
+- Ship ABI-matched Android FFmpeg headers and a Linux shared client SDK that resolves without the native producer's private build dependencies.
+- Automate Apple job sequencing and cleanup, reuse checksum-verified native components, and build the complete application matrix once after exact-source CI.
+- Announce stable releases to Discord automatically with resumable per-message delivery receipts.
+
 ## [3.0.0] - 2026-10-27
 
 This release gathers PlezyNG’s feature work since the fork, platform expansion, and security updates. Experimental playback and platform paths remain identified as experimental below.
@@ -467,7 +495,7 @@ This release gathers PlezyNG’s feature work since the fork, platform expansion
 
 - Add a Games category with LAN discovery, profile libraries, pairing and Android Moonlight streaming; add experimental Android Steam account catalog and streaming support and experimental Pyrowave support.
 - Add a retained Multiview workspace for video, music, sources and publications, with floating/split layouts, shared audio and input ownership, two simultaneous video sessions, and an Android Steam game surface.
-- Add profile-aware Dolby Vision routing and server-transcode compatibility checks. Provide isolated experimental P7 FEL paths for Android, Windows and Apple, plus a Linux gpu-next option and offline HDR/SDR tools; these experiments remain outside the production engine pin and require device qualification.
+- Add profile-aware Dolby Vision routing and server-transcode compatibility checks. Add experimental P7 FEL implementations for Android, Windows and Apple, plus a Linux gpu-next option and offline HDR/SDR tools. Availability is controlled at runtime; qualification describes tested device output.
 
 #### Platforms and release channels
 

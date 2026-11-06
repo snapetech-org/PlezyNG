@@ -640,8 +640,6 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision profile 8.1 форматына түрлендіру';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision қабаттарын алып тастап, HEVC ретінде көрсету';
 	@override String get experimentalDolbyVision => 'Тәжірибелік Dolby Vision';
-	@override String get experimentalDolbyVisionDescription => 'Келесі ойнатуда тәжірибелік FEL рендерерін пайдалану. Қозғалтқыштың бөлек құрастырылымы қажет.';
-	@override String get dvExperimentUnavailableDescription => 'Бұл тәжірибе әзірге тек Linux жүйесінде қолжетімді.';
 	@override String get dvCompatibilityFallback => 'Үйлесімді қосалқы режим';
 	@override String get dvCompatibilityFallbackDescription => 'Тәжірибе басталмаса, стандартты рендерерді пайдалану. FEL деректері жоғалуы мүмкін.';
 	@override String get dvExperimentDiagnostics => 'Бейне тәжірибесін журналға жазу';
@@ -3882,14 +3880,9 @@ class _Translations$games$kk extends Translations$games$en {
 	// Translations
 	@override String get title => 'Games';
 	@override String get enable => 'Show Games for this profile';
-	@override String get subtitle => 'Your games, from your computers.';
 	@override String get computers => 'Your computers';
-	@override String get nearby => 'Nearby computers';
 	@override String get findComputers => 'Find computers';
 	@override String get addComputer => 'Add computer';
-	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
-	@override String get empty => 'Add your gaming computer to get started.';
-	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
 	@override String get name => 'Computer name';
 	@override String get address => 'IP address or hostname';
 	@override String get port => 'Service port';
@@ -3916,10 +3909,8 @@ class _Translations$games$kk extends Translations$games$en {
 	@override String get forgetDescription => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.';
 	@override String get unavailable => 'The connection could not complete. Check that the computer is awake and paired, then try again.';
 	@override String get timeout => 'Connection timed out. Check the computer, pairing code and network before trying again.';
-	@override String get libraryHint => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.';
 	@override String get touchControls => 'On-screen controller';
 	@override String get touchDescription => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.';
-	@override String get touchSetup => 'On-screen controls';
 	@override String get touchSetupHint => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.';
 	@override String get addGame => 'Add game shortcut';
 	@override String get gameName => 'Game name';
@@ -3930,7 +3921,6 @@ class _Translations$games$kk extends Translations$games$en {
 	@override String get mac => 'MAC address (optional)';
 	@override String get help => 'Games help';
 	@override String get cancel => 'Cancel';
-	@override String get scanning => 'Looking for computers…';
 	@override String get saveShortcut => 'Save shortcut';
 	@override String get manualHint => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.';
 	@override String get engineUnavailable => 'In-app streaming is not available here yet';
@@ -3943,12 +3933,16 @@ class _Translations$games$kk extends Translations$games$en {
 	@override String get unlinkSteamAccountConfirm => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.';
 	@override String get steamAccountLinked => 'Steam account linked. Games imported.';
 	@override String get steamLibraryPrivate => 'Steam account linked. Its library is private or unavailable, so no games were imported.';
-	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
-	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 	@override String get connecting => 'Connecting…';
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get nearby => 'Nearby computers';
+	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
+	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
+	@override String get scanning => 'Looking for computers…';
+	@override String get steamLibraryStale => 'Steam could not refresh the library. Showing the last available catalog.';
+	@override String get steamLibraryTruncated => 'Showing up to 2,000 games. The Steam catalog was truncated.';
 }
 
 // Path: deepLinks
@@ -5828,8 +5822,6 @@ extension on TranslationsKk {
 			'settings.dvConversionDv81Description' => 'Dolby Vision profile 8.1 форматына түрлендіру',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision қабаттарын алып тастап, HEVC ретінде көрсету',
 			'settings.experimentalDolbyVision' => 'Тәжірибелік Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Келесі ойнатуда тәжірибелік FEL рендерерін пайдалану. Қозғалтқыштың бөлек құрастырылымы қажет.',
-			'settings.dvExperimentUnavailableDescription' => 'Бұл тәжірибе әзірге тек Linux жүйесінде қолжетімді.',
 			'settings.dvCompatibilityFallback' => 'Үйлесімді қосалқы режим',
 			'settings.dvCompatibilityFallbackDescription' => 'Тәжірибе басталмаса, стандартты рендерерді пайдалану. FEL деректері жоғалуы мүмкін.',
 			'settings.dvExperimentDiagnostics' => 'Бейне тәжірибесін журналға жазу',
@@ -5838,10 +5830,10 @@ extension on TranslationsKk {
 			'settings.disableDolbyVisionDescription' => 'Файлда бар болса, Dolby Vision орнына HDR10 немесе HLG қабатын ойнату',
 			'settings.hdrSdrConversion' => 'HDR-ды SDR-ға түрлендіру',
 			'settings.hdrSdrConversionDescription' => 'Дисплей HDR көрсете алмаған кезде HDR бейнесін не түрлендіретінін таңдаңыз.',
-			_ => null,
-		} ?? switch (path) {
 			'settings.hdrSdrConversionAuto' => 'Автоматты',
 			'settings.hdrSdrConversionAutoDescription' => 'Android 9 және жаңарақ нұсқаларда құрылғы, ескі нұсқаларда ойнатқыш',
+			_ => null,
+		} ?? switch (path) {
 			'settings.hdrSdrConversionDevice' => 'Құрылғы',
 			'settings.hdrSdrConversionDeviceDescription' => 'Түрлендіруді құрылғының бейне жабдығы орындайды. Ең жылдамы, бірақ түстер құрылғыға байланысты',
 			'settings.hdrSdrConversionPlayer' => 'Ойнатқыш',
@@ -6352,10 +6344,10 @@ extension on TranslationsKk {
 			'videoControls.segmentLoop' => 'Бөлімді қайталау',
 			'videoControls.addBookmark' => 'Бетбелгі қосу',
 			'videoControls.bookmarkName' => 'Бетбелгі атауы',
-			_ => null,
-		} ?? switch (path) {
 			'videoControls.bookmarkNameHint' => 'Мысалы, кіріспе көрінісі',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Бетбелгі ${n}',
+			_ => null,
+		} ?? switch (path) {
 			'videoControls.bookmarkNameRequired' => 'Бұл бетбелгіге атау енгізіңіз.',
 			'videoControls.deleteBookmark' => 'Бетбелгіні өшіру',
 			'videoControls.bookmarkLimitReached' => 'Бұл элементте 100 бетбелгі бар.',
@@ -6866,10 +6858,10 @@ extension on TranslationsKk {
 			'libraries.hideLibrary' => 'Кітапхананы жасыру',
 			'libraries.libraryOptions' => 'Кітапхана параметрлері',
 			'libraries.content' => 'кітапхана мазмұны',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Кітапхананы таңдау',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.noRecommendations' => 'Ұсыныстар жоқ',
 			'libraries.noCollections' => 'Бұл кітапханада топтамалар жоқ',
 			'libraries.noFoldersFound' => 'Қапшықтар табылмады',
@@ -7380,10 +7372,10 @@ extension on TranslationsKk {
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
 			'watchTogether.openSessionControls' => 'Басқару элементтерін ашу',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.reconnecting' => 'Қайта қосылуда...',
 			'watchTogether.reconnectingDescription' => 'Байланыс үзілді. Бөлмеге автоматты түрде қайта қосыласыз.',
 			'watchTogether.connected' => 'Қосылды',
@@ -7894,10 +7886,10 @@ extension on TranslationsKk {
 			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
 			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
 			'metadataEdit.artworkUpdated' => 'Суреттер жаңартылды',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.artworkUpdateFailed' => 'Суреттерді жаңарту мүмкін болмады',
 			'metadataEdit.noArtworkAvailable' => 'Сурет қолжетімсіз',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Сурет опциясы ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Сурет опциясы ${index}, таңдалды',
 			'metadataEdit.notSet' => 'Орнатылмаған',
@@ -8408,10 +8400,10 @@ extension on TranslationsKk {
 			'universalMedia.noFavorites' => 'Қазіргі таңда бүкіл әлемде өте көп айтылады.Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Өткен қабырғасы',
 			'universalMedia.filesHelp' => 'Аудио, видео, немесе ISO файлы бар. Файлы және URL-дер библиографияның аяқталуы мүмкін емес.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.chooseFiles' => 'Серіктің файл',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.wifiTransfer' => 'Wi-Fi қосылу үшін дағдарысты',
 			'universalMedia.wifiTransferHelp' => 'Біздің веб-сайты мен электрондық пошталардан басқа да сіздің сайын өздерінің бір-бірімен танымал.',
 			'universalMedia.wifiTransferIntro' => 'Осылайша «Барселона» АҚ-ның «Аль-Каида» бағдарламасын көшіруге, «Файлы» және «Книги» библиотекасы бар.',
@@ -8922,10 +8914,10 @@ extension on TranslationsKk {
 			'sourceSetup.metadataNoMatches' => 'Онлайн сәйкес атаулар табылмады. Басқа атауды байқап көріңіз.',
 			'sourceSetup.metadataSearch' => 'Онлайн метадеректерді іздеу',
 			'sourceSetup.metadataLoading' => 'Онлайн фильмдер мен сериалдар туралы мәліметтер ізделуде…',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataFromTrakt' => 'Trakt қызметінен онлайн метадеректер',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Атауға автоматты сәйкестік табылмады. Сәйкес нәтижені таңдау үшін атауды іздеңіз.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.metadataFailed' => 'Онлайн метадеректер жүктелмеді. Ойнату мен жергілікті мәліметтер әлі де қолжетімді.',
 			'sourceSetup.videoDetailsLoading' => 'Бейне мәліметтері жүктелуде',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API кілті қажет',
@@ -8987,14 +8979,9 @@ extension on TranslationsKk {
 			'comics.collections' => 'Жинақтар',
 			'games.title' => 'Games',
 			'games.enable' => 'Show Games for this profile',
-			'games.subtitle' => 'Your games, from your computers.',
 			'games.computers' => 'Your computers',
-			'games.nearby' => 'Nearby computers',
 			'games.findComputers' => 'Find computers',
 			'games.addComputer' => 'Add computer',
-			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
-			'games.empty' => 'Add your gaming computer to get started.',
-			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
 			'games.name' => 'Computer name',
 			'games.address' => 'IP address or hostname',
 			'games.port' => 'Service port',
@@ -9021,10 +9008,8 @@ extension on TranslationsKk {
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
 			'games.timeout' => 'Connection timed out. Check the computer, pairing code and network before trying again.',
-			'games.libraryHint' => 'Choose a computer to connect and load its games. Once connected, choose a game to play inside Pleazyng.',
 			'games.touchControls' => 'On-screen controller',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
-			'games.touchSetup' => 'On-screen controls',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
@@ -9035,7 +9020,6 @@ extension on TranslationsKk {
 			'games.mac' => 'MAC address (optional)',
 			'games.help' => 'Games help',
 			'games.cancel' => 'Cancel',
-			'games.scanning' => 'Looking for computers…',
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
@@ -9048,12 +9032,16 @@ extension on TranslationsKk {
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
 			'games.steamLibraryPrivate' => 'Steam account linked. Its library is private or unavailable, so no games were imported.',
-			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
-			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'games.connecting' => 'Connecting…',
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
+			'games.nearby' => 'Nearby computers',
+			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
+			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
+			'games.scanning' => 'Looking for computers…',
+			'games.steamLibraryStale' => 'Steam could not refresh the library. Showing the last available catalog.',
+			'games.steamLibraryTruncated' => 'Showing up to 2,000 games. The Steam catalog was truncated.',
 			'deepLinks.invalid' => 'Бұл Pleazyng сілтемесі жарамсыз.',
 			'deepLinks.profileNotFound' => ({required Object profile}) => '«${profile}» профиліне сәйкес профиль табылмады.',
 			'deepLinks.serverUnavailable' => 'Бұл сілтеме үшін серверге қосыла алмадық.',

@@ -104,7 +104,9 @@ class VisualizerPackInstallCancellation {
   Future<void> get abortTrigger => _abort.future;
 
   void cancel() {
-    if (!_abort.isCompleted) _abort.complete();
+    if (!_abort.isCompleted) {
+      _abort.complete();
+    }
   }
 }
 
@@ -138,8 +140,7 @@ class VisualizerPackStore {
   Future<List<VisualizerPackDownload>> pendingDownloads() =>
       _assetOperation(() async => (await _downloader()).pending());
 
-  Future<void> discardDownload(String sha256) =>
-      _assetOperation(() async => (await _downloader()).discard(sha256));
+  Future<void> discardDownload(String sha256) => _assetOperation(() async => (await _downloader()).discard(sha256));
 
   final http.Client _client;
   final String? profileId;
@@ -166,9 +167,13 @@ class VisualizerPackStore {
     final root = await _root();
     var total = addedBytes, count = 0;
     Future<void> countDirectory(Directory directory, int depth, bool packLane) async {
-      if (!await directory.exists()) return;
+      if (!await directory.exists()) {
+        return;
+      }
       await for (final item in directory.list(followLinks: false)) {
-        if (++count > 100000) throw const VisualizerPackException('The preset library contains too many files.');
+        if (++count > 100000) {
+          throw const VisualizerPackException('The preset library contains too many files.');
+        }
         final name = p.basename(item.path);
         if ((depth == 0 && (name.startsWith('.stage-') || name.endsWith('.partial'))) ||
             (packLane && depth == 1 && item is Directory && name.endsWith('.previous')) ||
@@ -206,14 +211,18 @@ class VisualizerPackStore {
     // previous complete version before the installed library is enumerated.
     for (final lane in ['packs', 'community-packs']) {
       final packs = Directory(p.join(root.path, lane));
-      if (!await packs.exists()) continue;
+      if (!await packs.exists()) {
+        continue;
+      }
       await for (final entity in packs.list(followLinks: false)) {
         final name = p.basename(entity.path);
         if ((entity is Directory && name.startsWith('.stage-')) || (entity is File && name.endsWith('.partial'))) {
           await entity.delete(recursive: true);
         } else if (entity is Directory) {
           await for (final backup in entity.list(followLinks: false)) {
-            if (backup is! Directory || !backup.path.endsWith('.previous')) continue;
+            if (backup is! Directory || !backup.path.endsWith('.previous')) {
+              continue;
+            }
             final target = backup.path.substring(0, backup.path.length - '.previous'.length);
             if (!await Directory(target).exists()) {
               await backup.rename(target);
@@ -227,14 +236,18 @@ class VisualizerPackStore {
     final resolved = Directory(p.join(root.path, 'resolved'));
     if (await resolved.exists()) {
       await for (final item in resolved.list(followLinks: false)) {
-        if (item is Directory && p.basename(item.path).startsWith('.stage-')) await item.delete(recursive: true);
+        if (item is Directory && p.basename(item.path).startsWith('.stage-')) {
+          await item.delete(recursive: true);
+        }
       }
     }
     final imports = Directory(p.join(root.path, 'imports'));
     if (await imports.exists()) {
       final partialName = RegExp(r'^[a-f0-9]{64}-.*\.(milk|milk2)\.partial$', caseSensitive: false);
       await for (final file in imports.list(followLinks: false)) {
-        if (file is File && partialName.hasMatch(p.basename(file.path))) await file.delete();
+        if (file is File && partialName.hasMatch(p.basename(file.path))) {
+          await file.delete();
+        }
       }
     }
     return root;
@@ -242,7 +255,9 @@ class VisualizerPackStore {
 
   Future<File> _preferenceFile(String name) async {
     final root = await _root();
-    if (profileId == null) return File(p.join(root.path, '$name.json'));
+    if (profileId == null) {
+      return File(p.join(root.path, '$name.json'));
+    }
     final key = sha256.convert(utf8.encode(profileId!)).toString();
     final directory = Directory(p.join(root.path, 'profiles', key));
     await directory.create(recursive: true);
@@ -254,7 +269,9 @@ class VisualizerPackStore {
     final target = await _preferenceFile(name);
     // A crash after the old file was moved aside leaves a readable backup.
     for (final file in [target, File('${target.path}.previous')]) {
-      if (!await file.exists() || await file.length() > 512 * 1024) continue;
+      if (!await file.exists() || await file.length() > 512 * 1024) {
+        continue;
+      }
       try {
         return jsonDecode(await file.readAsString());
       } on Object {
@@ -266,20 +283,26 @@ class VisualizerPackStore {
 
   Future<void> _savePreference(String name, Object value) {
     final encoded = jsonEncode(value); // Snapshot before entering the queue.
-    if (encoded.length > 512 * 1024) throw const VisualizerPackException('Visualization preferences are too large.');
+    if (encoded.length > 512 * 1024) {
+      throw const VisualizerPackException('Visualization preferences are too large.');
+    }
     final operation = _preferencesTail.then((_) async {
       final target = await _preferenceFile(name);
       final temporary = File('${target.path}.tmp');
       final backup = File('${target.path}.previous');
       await temporary.writeAsString(encoded, flush: true);
       if (await target.exists()) {
-        if (await backup.exists()) await backup.delete();
+        if (await backup.exists()) {
+          await backup.delete();
+        }
         await target.rename(backup.path);
       }
       try {
         await temporary.rename(target.path);
       } on Object {
-        if (!await target.exists() && await backup.exists()) await backup.rename(target.path);
+        if (!await target.exists() && await backup.exists()) {
+          await backup.rename(target.path);
+        }
         rethrow;
       }
     });
@@ -290,7 +313,9 @@ class VisualizerPackStore {
   Future<Set<String>> favoriteIds() async {
     try {
       final decoded = await _readPreference('favorites');
-      if (decoded is! List) return <String>{};
+      if (decoded is! List) {
+        return <String>{};
+      }
       return decoded.whereType<String>().where((value) => value.length <= 512).take(2500).toSet();
     } on Object {
       return <String>{};
@@ -312,7 +337,9 @@ class VisualizerPackStore {
 
   Future<List<VisualizerPlaylist>> playlists() async {
     final value = await _readPreference('playlists');
-    if (value is! Map || value['schemaVersion'] != 1 || value['playlists'] is! List) return [];
+    if (value is! Map || value['schemaVersion'] != 1 || value['playlists'] is! List) {
+      return [];
+    }
     return decodePlaylists(value);
   }
 
@@ -360,17 +387,25 @@ class VisualizerPackStore {
   Future<VisualizerPackDependencies> _dependencies() async =>
       VisualizerPackDependencies(Directory(await (await _root()).resolveSymbolicLinks()), safeArchivePath);
 
-  Future<void> _ensureDependencies(Directory owner, {bool download = false,
-      VisualizerPackInstallCancellation? cancellation}) async {
+  Future<void> _ensureDependencies(
+    Directory owner, {
+    bool download = false,
+    VisualizerPackInstallCancellation? cancellation,
+  }) async {
     final manifest = await _readPackManifest(owner), resolver = await _dependencies();
     for (final dependency in VisualizerTextureDependency.parse(manifest['dependencies'])) {
       try {
         await resolver.locate(dependency);
       } on FormatException {
-        if (!download) rethrow;
-        final candidates = catalogEntries.where((entry) => entry.identity == dependency.identity &&
-            entry.kind == 'textures' && canDownload(entry));
-        if (candidates.length != 1) rethrow;
+        if (!download) {
+          rethrow;
+        }
+        final candidates = catalogEntries.where(
+          (entry) => entry.identity == dependency.identity && entry.kind == 'textures' && canDownload(entry),
+        );
+        if (candidates.length != 1) {
+          rethrow;
+        }
         await _install(candidates.single, cancellation: cancellation);
         await resolver.locate(dependency);
       }
@@ -380,10 +415,15 @@ class VisualizerPackStore {
   Future<void> _protectDependencyReplacement(Directory stage) async {
     final manifest = await _readPackManifest(stage);
     final integrity = await _readBounded(File(p.join(stage.path, 'integrity.json')), maxFileBytes);
-    final conflicts = await (await _dependencies()).dependents(manifest['id'] as String,
-        version: manifest['version'] as String, replacingIntegrity: sha256.convert(integrity).toString());
+    final conflicts = await (await _dependencies()).dependents(
+      manifest['id'] as String,
+      version: manifest['version'] as String,
+      replacingIntegrity: sha256.convert(integrity).toString(),
+    );
     if (conflicts.isNotEmpty) {
-      throw VisualizerPackException('This version would replace textures pinned by ${conflicts.join(', ')}. Use a new version.');
+      throw VisualizerPackException(
+        'This version would replace textures pinned by ${conflicts.join(', ')}. Use a new version.',
+      );
     }
   }
 
@@ -397,10 +437,15 @@ class VisualizerPackStore {
   Future<List<VisualizerPresetFile>> _presetsForPack(String path) async {
     final library = await (await _root()).resolveSymbolicLinks();
     final root = await Directory(path).resolveSymbolicLinks();
-    if (!p.isWithin(library, root)) throw const VisualizerPackException('Pack is outside the local library.');
+    if (!p.isWithin(library, root)) {
+      throw const VisualizerPackException('Pack is outside the local library.');
+    }
     final manifest = await _readPackManifest(Directory(root));
-    final resolved = await (await _dependencies()).resolve(Directory(root), manifest,
-        (bytes, replacing) => _reserveLibraryBytes(bytes, replacing: replacing));
+    final resolved = await (await _dependencies()).resolve(
+      Directory(root),
+      manifest,
+      (bytes, replacing) => _reserveLibraryBytes(bytes, replacing: replacing),
+    );
     var textureRoot = resolved.path;
     if (manifest['distributionStatus'] == 'local-only' && manifest['presetRoot'] == 'source') {
       textureRoot = await Directory(p.join(root, 'source')).resolveSymbolicLinks();
@@ -410,17 +455,20 @@ class VisualizerPackStore {
     }
     final assets = <String, Map>{};
     for (final asset in (manifest['assets'] as List? ?? const [])) {
-      if (asset is Map && asset['path'] is String) assets[asset['path'] as String] = asset;
+      if (asset is Map && asset['path'] is String) {
+        assets[asset['path'] as String] = asset;
+      }
     }
     final presets = <VisualizerPresetFile>[];
     for (final item in manifest['presets'] as List) {
-      if (item is! Map || item['file'] is! String) continue;
+      if (item is! Map || item['file'] is! String) {
+        continue;
+      }
       final relative = safeArchivePath(item['file'] as String);
       final file = await _resolvePreset(resolved.path, relative);
       final asset = assets[relative];
       VisualizerContentLimits.checkEngineRequirement(item);
-      final requiresMilkRust = item['requiredEngine'] == 'milkrust' ||
-          await _presetRequiresMilkRust(file);
+      final requiresMilkRust = item['requiredEngine'] == 'milkrust' || await _presetRequiresMilkRust(file);
       String? thumbnail;
       if (item['thumbnail'] is String) {
         try {
@@ -429,7 +477,9 @@ class VisualizerPackStore {
           final extension = p.extension(canonical).toLowerCase();
           if (p.isWithin(root, canonical) && ['.png', '.jpg', '.jpeg', '.webp'].contains(extension)) {
             final bytes = await _readBounded(candidate, 512 * 1024);
-            if (VisualizerContentLimits.imagePixels(extension, bytes) <= 1024 * 1024) thumbnail = canonical;
+            if (VisualizerContentLimits.imagePixels(extension, bytes) <= 1024 * 1024) {
+              thumbnail = canonical;
+            }
           }
         } on Object {
           // Thumbnails are optional; a missing preview never hides the preset.
@@ -458,7 +508,9 @@ class VisualizerPackStore {
   }
 
   Future<VisualizerPresetFile> importedPreset(String name) async {
-    if (name != p.basename(name)) throw const VisualizerPackException('Invalid preset filename.');
+    if (name != p.basename(name)) {
+      throw const VisualizerPackException('Invalid preset filename.');
+    }
     final library = await (await _root()).resolveSymbolicLinks();
     final root = await Directory(p.join(library, 'imports')).resolveSymbolicLinks();
     final file = await _resolvePreset(root, name);
@@ -483,36 +535,66 @@ class VisualizerPackStore {
     final files = <String, Uint8List>{};
     var total = 0, visited = 0;
     Future<void> snapshot(Directory directory, int depth) async {
-      if (depth > 32) throw const VisualizerPackException('Preset assets exceed the directory depth limit.');
+      if (depth > 32) {
+        throw const VisualizerPackException('Preset assets exceed the directory depth limit.');
+      }
       await for (final item in directory.list(followLinks: false)) {
-        if (++visited > maxFileCount) throw const VisualizerPackException('Preset export exceeds 2,500 entries.');
-        if (p.basename(item.path).startsWith('.')) continue;
-        if (item is Link) throw const VisualizerPackException('Preset exports cannot contain links.');
-        if (item is Directory) { await snapshot(item, depth + 1); continue; }
-        if (item is! File) throw const VisualizerPackException('Preset assets must be regular files.');
+        if (++visited > maxFileCount) {
+          throw const VisualizerPackException('Preset export exceeds 2,500 entries.');
+        }
+        if (p.basename(item.path).startsWith('.')) {
+          continue;
+        }
+        if (item is Link) {
+          throw const VisualizerPackException('Preset exports cannot contain links.');
+        }
+        if (item is Directory) {
+          await snapshot(item, depth + 1);
+          continue;
+        }
+        if (item is! File) {
+          throw const VisualizerPackException('Preset assets must be regular files.');
+        }
         final path = safeArchivePath(p.split(p.relative(item.path, from: root)).join('/'));
         final extension = p.extension(path).toLowerCase();
-        if ((extension == '.milk' || extension == '.milk2') && path != relative) continue;
+        if ((extension == '.milk' || extension == '.milk2') && path != relative) {
+          continue;
+        }
         final bytes = await _readBounded(item, maxFileBytes);
         total += bytes.length;
-        if (total > maxLocalPackExpandedBytes) throw const VisualizerPackException('Preset export exceeds 64 MiB.');
+        if (total > maxLocalPackExpandedBytes) {
+          throw const VisualizerPackException('Preset export exceeds 64 MiB.');
+        }
         files[path] = bytes;
       }
     }
+
     await snapshot(Directory(root), 0);
-    if (!files.containsKey(relative)) throw const VisualizerPackException('The selected preset is missing.');
-    final notice = utf8.encode(jsonEncode({
-      'schemaVersion': 1, 'kind': 'plezy-preset-local-copy', 'title': preset.title,
-      'author': preset.author, 'license': preset.license, 'contentNotice': preset.notice,
-      'sourcePresetSha256': sha256.convert(files[relative]!).toString(),
-      'files': files.entries.map((item) => {'path': item.key, 'sha256': sha256.convert(item.value).toString()}).toList(),
-    }));
+    if (!files.containsKey(relative)) {
+      throw const VisualizerPackException('The selected preset is missing.');
+    }
+    final notice = utf8.encode(
+      jsonEncode({
+        'schemaVersion': 1,
+        'kind': 'plezy-preset-local-copy',
+        'title': preset.title,
+        'author': preset.author,
+        'license': preset.license,
+        'contentNotice': preset.notice,
+        'sourcePresetSha256': sha256.convert(files[relative]!).toString(),
+        'files': files.entries
+            .map((item) => {'path': item.key, 'sha256': sha256.convert(item.value).toString()})
+            .toList(),
+      }),
+    );
     if (total + notice.length > maxLocalPackExpandedBytes || files.length >= maxFileCount) {
       throw const VisualizerPackException('Preset provenance exceeds the export budget.');
     }
     var noticeName = 'PLEZY-EXPORT-PROVENANCE.json', suffix = 0;
     final names = files.keys.map((name) => name.toLowerCase()).toSet();
-    while (names.contains(noticeName.toLowerCase())) { noticeName = 'PLEZY-EXPORT-PROVENANCE-${++suffix}.json'; }
+    while (names.contains(noticeName.toLowerCase())) {
+      noticeName = 'PLEZY-EXPORT-PROVENANCE-${++suffix}.json';
+    }
     files[noticeName] = Uint8List.fromList(notice);
     return (files: files, selected: relative);
   }
@@ -528,7 +610,9 @@ class VisualizerPackStore {
       archive.addFile(ArchiveFile(path, data.length, data));
     }
     final result = Uint8List.fromList(ZipEncoder().encode(archive));
-    if (result.length > maxLocalPackArchiveBytes) throw const VisualizerPackException('The exported archive exceeds 32 MiB.');
+    if (result.length > maxLocalPackArchiveBytes) {
+      throw const VisualizerPackException('The exported archive exceeds 32 MiB.');
+    }
     return result;
   });
 
@@ -542,7 +626,9 @@ class VisualizerPackStore {
   Future<Uint8List> exportFragments(VisualizerPresetFile preset, String kind) => _assetOperation(() async {
     final snapshot = await _presetSnapshot(preset);
     final fragments = VisualizerFragments.extract(snapshot.files[snapshot.selected]!, kind);
-    if (fragments.isEmpty) throw VisualizerPackException('This preset has no custom ${kind}s.');
+    if (fragments.isEmpty) {
+      throw VisualizerPackException('This preset has no custom ${kind}s.');
+    }
     snapshot.files.remove(snapshot.selected);
     for (final fragment in fragments.entries) {
       final data = Uint8List.fromList(utf8.encode(fragment.value));
@@ -563,8 +649,10 @@ class VisualizerPackStore {
         final snapshot = await _presetSnapshot(preset);
         final composed = VisualizerFragments.compose(snapshot.files[snapshot.selected]!, fragment, kind);
         snapshot.files.remove(snapshot.selected);
-        final selected = p.posix.join(p.posix.dirname(snapshot.selected),
-            '${p.posix.basenameWithoutExtension(snapshot.selected)} + $kind.milk');
+        final selected = p.posix.join(
+          p.posix.dirname(snapshot.selected),
+          '${p.posix.basenameWithoutExtension(snapshot.selected)} + $kind.milk',
+        );
         snapshot.files[selected] = Uint8List.fromList(utf8.encode(composed));
         snapshot.files['fragments/${sha256.convert(fragment)}.$kind'] = Uint8List.fromList(fragment);
         if (snapshot.files.length > maxFileCount ||
@@ -580,7 +668,9 @@ class VisualizerPackStore {
       final imported = await importPresetFolder(temporary.path);
       return (await presetsForPack(imported.path)).single;
     } finally {
-      if (await temporary.exists()) await temporary.delete(recursive: true);
+      if (await temporary.exists()) {
+        await temporary.delete(recursive: true);
+      }
     }
   }
 
@@ -594,7 +684,9 @@ class VisualizerPackStore {
       }
     }
     for (final pack in await importedPacks()) {
-      if (pack.isDamaged) continue;
+      if (pack.isDamaged) {
+        continue;
+      }
       try {
         result.addAll(await presetsForPack(pack.path));
       } on Object {
@@ -612,10 +704,9 @@ class VisualizerPackStore {
     return result;
   }
 
-  static Future<bool> _presetRequiresMilkRust(String path) async =>
-      VisualizerContentLimits.presetRequiresMilkRust(
-        await _readBounded(File(path), VisualizerContentLimits.maxPresetBytes),
-      );
+  static Future<bool> _presetRequiresMilkRust(String path) async => VisualizerContentLimits.presetRequiresMilkRust(
+    await _readBounded(File(path), VisualizerContentLimits.maxPresetBytes),
+  );
 
   static Future<String> _resolvePreset(String root, String relative) async {
     final safe = safeArchivePath(relative);
@@ -633,10 +724,9 @@ class VisualizerPackStore {
   /// Read a file with a hard byte ceiling even if its size changes after a
   /// preceding stat or integrity check.
   static Future<Uint8List> _readBounded(File file, int maxBytes) async {
-    final bytes = await file.openRead(0, maxBytes + 1).fold<List<int>>(
-      <int>[],
-      (result, chunk) => result..addAll(chunk),
-    );
+    final bytes = await file
+        .openRead(0, maxBytes + 1)
+        .fold<List<int>>(<int>[], (result, chunk) => result..addAll(chunk));
     if (bytes.length > maxBytes) {
       throw FormatException('File exceeds the $maxBytes-byte read limit.');
     }
@@ -646,21 +736,33 @@ class VisualizerPackStore {
   Future<List<VisualizerInstalledPack>> installedPacks() async {
     await _catalog.loadCached();
     final root = Directory(p.join((await _root()).path, 'packs'));
-    if (!await root.exists()) return const [];
+    if (!await root.exists()) {
+      return const [];
+    }
     final installed = <VisualizerInstalledPack>[];
     final known = {for (final entry in _catalog.knownEntries) entry.identity: entry};
     final current = {for (final entry in _catalog.entries) entry.id: entry};
     var visited = 0;
     await for (final versions in root.list(followLinks: false)) {
-      if (versions is! Directory || !_isSafePackIdentifier(p.basename(versions.path))) continue;
-      if (++visited > 2500) throw const VisualizerPackException('Too many installed pack directories.');
+      if (versions is! Directory || !_isSafePackIdentifier(p.basename(versions.path))) {
+        continue;
+      }
+      if (++visited > 2500) {
+        throw const VisualizerPackException('Too many installed pack directories.');
+      }
       await for (final directory in versions.list(followLinks: false)) {
-        if (++visited > 5000) throw const VisualizerPackException('Too many installed pack versions.');
-        if (directory is! Directory || !_isSafePackIdentifier(p.basename(directory.path))) continue;
+        if (++visited > 5000) {
+          throw const VisualizerPackException('Too many installed pack versions.');
+        }
+        if (directory is! Directory || !_isSafePackIdentifier(p.basename(directory.path))) {
+          continue;
+        }
         try {
           final manifest = await _readPackManifest(directory);
           final id = p.basename(versions.path), version = p.basename(directory.path);
-          if (manifest['id'] != id || manifest['version'] != version) continue;
+          if (manifest['id'] != id || manifest['version'] != version) {
+            continue;
+          }
           var entry = current[id] ?? known['$id@$version'];
           // A receipt is display metadata, never download authorization. It
           // keeps removed/expired catalog versions usable and removable offline.
@@ -675,7 +777,9 @@ class VisualizerPackStore {
               continue;
             }
             entry = VisualizerPackCatalogEntry.fromJson(data['entry'] as Map<String, dynamic>);
-            if (entry.id != id || entry.version != version) continue;
+            if (entry.id != id || entry.version != version) {
+              continue;
+            }
           }
           installed.add(VisualizerInstalledPack(entry: entry, path: directory.path));
         } on Object {
@@ -694,12 +798,18 @@ class VisualizerPackStore {
 
   Future<List<VisualizerImportedPack>> importedPacks() async {
     final root = Directory(p.join((await _root()).path, 'community-packs'));
-    if (!await root.exists()) return const [];
+    if (!await root.exists()) {
+      return const [];
+    }
     final packs = <VisualizerImportedPack>[];
     await for (final idDirectory in root.list(followLinks: false)) {
-      if (idDirectory is! Directory || p.basename(idDirectory.path).startsWith('.stage-')) continue;
+      if (idDirectory is! Directory || p.basename(idDirectory.path).startsWith('.stage-')) {
+        continue;
+      }
       await for (final versionDirectory in idDirectory.list(followLinks: false)) {
-        if (versionDirectory is! Directory || p.basename(versionDirectory.path).endsWith('.previous')) continue;
+        if (versionDirectory is! Directory || p.basename(versionDirectory.path).endsWith('.previous')) {
+          continue;
+        }
         try {
           final manifest = await _readPackManifest(versionDirectory);
           packs.add(_packSummary(manifest, versionDirectory.path));
@@ -745,7 +855,9 @@ class VisualizerPackStore {
       await Isolate.run(() => _extractArchive(snapshot.path, contents.path, requireManifest: false));
       return await importPresetFolder(contents.path);
     } finally {
-      if (await temporary.exists()) await temporary.delete(recursive: true);
+      if (await temporary.exists()) {
+        await temporary.delete(recursive: true);
+      }
     }
   }
 
@@ -759,7 +871,9 @@ class VisualizerPackStore {
     VisualizerPackInstallCancellation? cancellation,
   }) => _assetOperation(() async {
     void checkCancellation() {
-      if (cancellation?.isCanceled ?? false) throw const VisualizerPackCanceledException();
+      if (cancellation?.isCanceled ?? false) {
+        throw const VisualizerPackCanceledException();
+      }
     }
 
     checkCancellation();
@@ -776,19 +890,27 @@ class VisualizerPackStore {
     final records = <Map<String, Object>>[], presets = <Map<String, Object>>[];
     final spellings = <String, String>{};
     Future<void> snapshot(Directory directory, int depth) async {
-      if (depth > 32) throw const VisualizerPackException('Preset folders may be at most 32 levels deep.');
+      if (depth > 32) {
+        throw const VisualizerPackException('Preset folders may be at most 32 levels deep.');
+      }
       await for (final entity in directory.list(followLinks: false)) {
         checkCancellation();
         if (++visited > maxFileCount) {
           throw const VisualizerPackException('Choose a folder with at most 2,500 files and directories.');
         }
         // Repository metadata and OS sidecars are not preset content.
-        if (p.basename(entity.path).startsWith('.')) continue;
-        if (entity is Link) throw const VisualizerPackException('Preset folders cannot contain symbolic links.');
+        if (p.basename(entity.path).startsWith('.')) {
+          continue;
+        }
+        if (entity is Link) {
+          throw const VisualizerPackException('Preset folders cannot contain symbolic links.');
+        }
         final relative = safeArchivePath(p.split(p.relative(entity.path, from: source)).join('/'));
         safeArchivePath('source/$relative');
         final prior = spellings.putIfAbsent(relative.toLowerCase(), () => relative);
-        if (prior != relative) throw const VisualizerPackException('Preset folder paths disagree on casing.');
+        if (prior != relative) {
+          throw const VisualizerPackException('Preset folder paths disagree on casing.');
+        }
         final canonical = await entity.resolveSymbolicLinks();
         if (!p.isWithin(source, canonical)) {
           throw const VisualizerPackException('A preset folder path points outside its source.');
@@ -797,7 +919,9 @@ class VisualizerPackStore {
           await snapshot(entity, depth + 1);
           continue;
         }
-        if (entity is! File) throw const VisualizerPackException('Preset folders may only contain regular files.');
+        if (entity is! File) {
+          throw const VisualizerPackException('Preset folders may only contain regular files.');
+        }
         final extension = p.extension(relative).toLowerCase();
         final name = p.basename(relative).toLowerCase();
         final notice =
@@ -851,7 +975,9 @@ class VisualizerPackStore {
 
     try {
       await snapshot(Directory(source), 0);
-      if (presets.isEmpty) throw const VisualizerPackException('The folder contains no .milk or .milk2 presets.');
+      if (presets.isEmpty) {
+        throw const VisualizerPackException('The folder contains no .milk or .milk2 presets.');
+      }
       records.sort((a, b) => (a['path'] as String).compareTo(b['path'] as String));
       presets.sort((a, b) => (a['file'] as String).compareTo(b['file'] as String));
       final id = 'local-folder-${sha256.convert(utf8.encode(jsonEncode(records)))}';
@@ -880,12 +1006,18 @@ class VisualizerPackStore {
       await _reserveLibraryBytes(bytesCopied + metadata.length, replacing: target.path);
       checkCancellation();
       await target.parent.create(recursive: true);
-      if (await backup.exists()) await backup.delete(recursive: true);
-      if (await target.exists()) await target.rename(backup.path);
+      if (await backup.exists()) {
+        await backup.delete(recursive: true);
+      }
+      if (await target.exists()) {
+        await target.rename(backup.path);
+      }
       try {
         await stage.rename(target.path);
       } catch (_) {
-        if (await backup.exists() && !await target.exists()) await backup.rename(target.path);
+        if (await backup.exists() && !await target.exists()) {
+          await backup.rename(target.path);
+        }
         rethrow;
       }
       if (await backup.exists()) {
@@ -897,7 +1029,9 @@ class VisualizerPackStore {
       }
       return _packSummary(manifest, target.path);
     } finally {
-      if (await stage.exists()) await stage.delete(recursive: true);
+      if (await stage.exists()) {
+        await stage.delete(recursive: true);
+      }
     }
   });
 
@@ -923,14 +1057,18 @@ class VisualizerPackStore {
       try {
         await for (final chunk in archive.openRead(0, maxLocalPackArchiveBytes + 1)) {
           copied += chunk.length;
-          if (copied > announcedSize) throw const VisualizerPackException('The selected pack changed during import.');
+          if (copied > announcedSize) {
+            throw const VisualizerPackException('The selected pack changed during import.');
+          }
           sink.add(chunk);
         }
         await sink.flush();
       } finally {
         await sink.close();
       }
-      if (copied != announcedSize) throw const VisualizerPackException('The selected pack changed during import.');
+      if (copied != announcedSize) {
+        throw const VisualizerPackException('The selected pack changed during import.');
+      }
       await stage.create(recursive: true);
       final extracted = await Isolate.run(() => _extractArchive(snapshot.path, stage.path));
       final expandedBytes = extracted.values.fold<int>(0, (sum, size) => sum + size);
@@ -944,8 +1082,12 @@ class VisualizerPackStore {
       await _reserveLibraryBytes(expandedBytes, replacing: target.path);
       final backup = Directory('${target.path}.previous');
       await target.parent.create(recursive: true);
-      if (await backup.exists()) await backup.delete(recursive: true);
-      if (await target.exists()) await target.rename(backup.path);
+      if (await backup.exists()) {
+        await backup.delete(recursive: true);
+      }
+      if (await target.exists()) {
+        await target.rename(backup.path);
+      }
       try {
         await stage.rename(target.path);
         if (await backup.exists()) {
@@ -957,7 +1099,9 @@ class VisualizerPackStore {
           }
         }
       } catch (_) {
-        if (await backup.exists() && !await target.exists()) await backup.rename(target.path);
+        if (await backup.exists() && !await target.exists()) {
+          await backup.rename(target.path);
+        }
         rethrow;
       }
       return VisualizerImportedPack(
@@ -971,10 +1115,14 @@ class VisualizerPackStore {
         isDamaged: false,
       );
     } catch (_) {
-      if (await stage.exists()) await stage.delete(recursive: true);
+      if (await stage.exists()) {
+        await stage.delete(recursive: true);
+      }
       rethrow;
     } finally {
-      if (await snapshot.exists()) await snapshot.delete();
+      if (await snapshot.exists()) {
+        await snapshot.delete();
+      }
     }
   }
 
@@ -990,10 +1138,14 @@ class VisualizerPackStore {
     if (!p.isWithin(root.path, target.path)) {
       throw const VisualizerPackException('The local pack path is invalid.');
     }
-    if (await target.exists()) await target.delete(recursive: true);
+    if (await target.exists()) {
+      await target.delete(recursive: true);
+    }
     await (await _dependencies()).removeViews(pack.id, version: pack.version);
     final parent = target.parent;
-    if (await parent.exists() && await parent.list().isEmpty) await parent.delete();
+    if (await parent.exists() && await parent.list().isEmpty) {
+      await parent.delete();
+    }
   }
 
   Future<void> install(
@@ -1006,14 +1158,22 @@ class VisualizerPackStore {
   /// The receipt survives removal so reopening the library respects that choice.
   /// A failed/interrupted first install retries on the next library opening.
   Future<void> ensureStarterPack() => _assetOperation(() async {
-    if (!isStorageSupported) return;
+    if (!isStorageSupported) {
+      return;
+    }
     final root = await _root();
     await _catalog.loadCached();
     for (final entry in VisualizerPackCatalogEntry.available) {
-      if (!_catalog.authorizes(entry)) continue;
-      if (entry.bundledAsset == null) continue;
+      if (!_catalog.authorizes(entry)) {
+        continue;
+      }
+      if (entry.bundledAsset == null) {
+        continue;
+      }
       final receipt = File(p.join(root.path, '${entry.id}-${entry.version}.bundled'));
-      if (await receipt.exists()) continue;
+      if (await receipt.exists()) {
+        continue;
+      }
       final target = Directory(p.join(root.path, 'packs', entry.id, entry.version));
       var valid = false;
       try {
@@ -1022,7 +1182,9 @@ class VisualizerPackStore {
       } on Object {
         /* Install or repair only the application-owned starter. */
       }
-      if (!valid) await _install(entry);
+      if (!valid) {
+        await _install(entry);
+      }
       await receipt.writeAsString(entry.sha256, flush: true);
     }
   });
@@ -1033,7 +1195,9 @@ class VisualizerPackStore {
     void Function(double progress)? onProgress,
   }) async {
     void checkCancellation() {
-      if (cancellation?.isCanceled ?? false) throw const VisualizerPackCanceledException();
+      if (cancellation?.isCanceled ?? false) {
+        throw const VisualizerPackCanceledException();
+      }
     }
 
     checkCancellation();
@@ -1055,8 +1219,12 @@ class VisualizerPackStore {
     final stage = Directory(p.join(packsRoot.path, '.stage-${entry.id}-${entry.version}'));
     final target = Directory(p.join(packsRoot.path, entry.id, entry.version));
     final backup = Directory('${target.path}.previous');
-    if (await download.exists()) await download.delete();
-    if (await stage.exists()) await stage.delete(recursive: true);
+    if (await download.exists()) {
+      await download.delete();
+    }
+    if (await stage.exists()) {
+      await stage.delete(recursive: true);
+    }
 
     try {
       if (entry.bundledAsset != null) {
@@ -1096,15 +1264,21 @@ class VisualizerPackStore {
         throw const VisualizerPackException('The archive uses a reserved application receipt path.');
       }
       final receipt = utf8.encode(jsonEncode({'schemaVersion': 1, 'entry': entry.toJson()}));
-      if (receipt.length > 32 * 1024) throw const VisualizerPackException('Catalog receipt exceeds its limit.');
+      if (receipt.length > 32 * 1024) {
+        throw const VisualizerPackException('Catalog receipt exceeds its limit.');
+      }
       await File(p.join(stage.path, _catalogReceipt)).writeAsBytes(receipt, flush: true);
       await _reserveLibraryBytes(entry.expandedBytes + receipt.length, replacing: target.path);
       checkCancellation();
       checkAuthorization();
 
       await target.parent.create(recursive: true);
-      if (await backup.exists()) await backup.delete(recursive: true);
-      if (await target.exists()) await target.rename(backup.path);
+      if (await backup.exists()) {
+        await backup.delete(recursive: true);
+      }
+      if (await target.exists()) {
+        await target.rename(backup.path);
+      }
       try {
         await stage.rename(target.path);
         if (await backup.exists()) {
@@ -1115,18 +1289,26 @@ class VisualizerPackStore {
           }
         }
       } catch (_) {
-        if (await backup.exists() && !await target.exists()) await backup.rename(target.path);
+        if (await backup.exists() && !await target.exists()) {
+          await backup.rename(target.path);
+        }
         rethrow;
       }
       onProgress?.call(1);
     } catch (error) {
-      if (await stage.exists()) await stage.delete(recursive: true);
-      if (error is http.RequestAbortedException) throw const VisualizerPackCanceledException();
+      if (await stage.exists()) {
+        await stage.delete(recursive: true);
+      }
+      if (error is http.RequestAbortedException) {
+        throw const VisualizerPackCanceledException();
+      }
       rethrow;
     } finally {
       requestAbort.cancel();
       if (entry.bundledAsset != null) {
-        if (await download.exists()) await download.delete();
+        if (await download.exists()) {
+          await download.delete();
+        }
       } else if (downloaded) {
         // Completed archives are removed after activation or validation failure.
         // Interrupted transfers retain their bounded journal for explicit retry.
@@ -1138,16 +1320,22 @@ class VisualizerPackStore {
   Future<void> remove(VisualizerPackCatalogEntry entry) => _assetOperation(() => _remove(entry));
 
   Future<void> _remove(VisualizerPackCatalogEntry entry) async {
-    if (!_isSafePackIdentifier(entry.id)) throw const VisualizerPackException('Invalid pack identity.');
+    if (!_isSafePackIdentifier(entry.id)) {
+      throw const VisualizerPackException('Invalid pack identity.');
+    }
     await _checkRemoval(entry.id);
     final root = Directory(p.join((await _root()).path, 'packs', entry.id));
-    if (await root.exists()) await root.delete(recursive: true);
+    if (await root.exists()) {
+      await root.delete(recursive: true);
+    }
     await (await _dependencies()).removeViews(entry.id);
   }
 
   Future<List<String>> importedPresets() async {
     final root = Directory(p.join((await _root()).path, 'imports'));
-    if (!await root.exists()) return const [];
+    if (!await root.exists()) {
+      return const [];
+    }
     return root
         .list(followLinks: false)
         .where(
@@ -1194,12 +1382,9 @@ class VisualizerPackStore {
     if (announcedSize <= 0 || announcedSize > VisualizerContentLimits.maxPresetBytes) {
       throw const VisualizerPackException('Preset files must be at most 2 MB.');
     }
-    final bytes = await File(
-      sourcePath,
-    ).openRead(0, VisualizerContentLimits.maxPresetBytes + 1).fold<List<int>>(
-      <int>[],
-      (buffer, chunk) => buffer..addAll(chunk),
-    );
+    final bytes = await File(sourcePath)
+        .openRead(0, VisualizerContentLimits.maxPresetBytes + 1)
+        .fold<List<int>>(<int>[], (buffer, chunk) => buffer..addAll(chunk));
     if (bytes.length != announcedSize) {
       throw const VisualizerPackException('The selected preset changed while it was being imported.');
     }
@@ -1214,7 +1399,9 @@ class VisualizerPackStore {
     }
     final root = Directory(p.join((await _root()).path, 'imports'));
     final file = File(p.join(root.path, name));
-    if (await file.exists()) await file.delete();
+    if (await file.exists()) {
+      await file.delete();
+    }
   }
 
   void dispose() => _client.close();
@@ -1285,7 +1472,9 @@ class VisualizerPackStore {
       final archive = ZipDecoder().decodeStream(input);
       final files = <String, int>{};
       for (final entry in archive) {
-        if (!entry.isFile) continue;
+        if (!entry.isFile) {
+          continue;
+        }
         final name = safeArchivePath(entry.name);
         if (entry.isSymbolicLink || entry.size < 0 || entry.size > maxFileBytes) {
           throw const VisualizerPackException('The pack contains a link or oversized file.');
@@ -1357,7 +1546,9 @@ class VisualizerPackStore {
         throw const VisualizerPackException('A pack integrity record is malformed.');
       }
       final relative = safeArchivePath(record['path'] as String);
-      if (!listedFiles.add(relative)) throw const VisualizerPackException('The pack integrity index has duplicates.');
+      if (!listedFiles.add(relative)) {
+        throw const VisualizerPackException('The pack integrity index has duplicates.');
+      }
       final size = record['size'] as int;
       final expectedDigest = record['sha256'] as String;
       if (size < 0 || size > maxFileBytes || !RegExp(r'^[a-f0-9]{64}$').hasMatch(expectedDigest)) {
@@ -1391,7 +1582,9 @@ class VisualizerPackStore {
     }
     final licensePaths = <String>{};
     for (final rawPath in licenseFiles) {
-      if (rawPath is! String) throw const VisualizerPackException('The license notice path is invalid.');
+      if (rawPath is! String) {
+        throw const VisualizerPackException('The license notice path is invalid.');
+      }
       final relative = safeArchivePath(rawPath);
       if (!licensePaths.add(relative)) {
         throw const VisualizerPackException('The pack repeats a license notice path.');
@@ -1410,7 +1603,9 @@ class VisualizerPackStore {
       throw const VisualizerPackException('The pack is missing its content notice or source provenance.');
     }
     for (final value in sourceUrls) {
-      if (value is! String) throw const VisualizerPackException('A pack source URL is invalid.');
+      if (value is! String) {
+        throw const VisualizerPackException('A pack source URL is invalid.');
+      }
       final uri = Uri.tryParse(value);
       if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
         throw const VisualizerPackException('Pack source URLs must use HTTPS.');
@@ -1477,9 +1672,7 @@ class VisualizerPackStore {
           }
         } else if (extension == '.milk' || extension == '.milk2') {
           final file = File(p.joinAll([directory.path, ...relative.split('/')]));
-          VisualizerContentLimits.checkPreset(
-            await _readBounded(file, VisualizerContentLimits.maxPresetBytes),
-          );
+          VisualizerContentLimits.checkPreset(await _readBounded(file, VisualizerContentLimits.maxPresetBytes));
         }
       } on FormatException catch (error) {
         throw VisualizerPackException('$relative: ${error.message}');
@@ -1487,7 +1680,9 @@ class VisualizerPackStore {
     }
     final textures = parsed['textures'];
     if (textures != null) {
-      if (textures is! List) throw const VisualizerPackException('Invalid texture list.');
+      if (textures is! List) {
+        throw const VisualizerPackException('Invalid texture list.');
+      }
       for (final texture in textures) {
         if (texture is! Map ||
             texture['file'] is! String ||
@@ -1501,10 +1696,11 @@ class VisualizerPackStore {
       throw const VisualizerPackException('A texture pack must contain declared textures.');
     }
     final presets = parsed['presets'];
-    if (presets is! List || (presets.isEmpty && parsed['kind'] != 'textures') ||
+    if (presets is! List ||
+        (presets.isEmpty && parsed['kind'] != 'textures') ||
         (parsed['kind'] == 'textures' && presets.isNotEmpty) ||
-        (expectedEntry != null && (presets.length != expectedEntry.presetCount ||
-            (parsed['kind'] ?? 'presets') != expectedEntry.kind))) {
+        (expectedEntry != null &&
+            (presets.length != expectedEntry.presetCount || (parsed['kind'] ?? 'presets') != expectedEntry.kind))) {
       throw const VisualizerPackException('The preset list is empty or does not match the catalog.');
     }
     final presetPaths = <String>{};
@@ -1528,7 +1724,9 @@ class VisualizerPackStore {
     final dynamic parsed;
     try {
       final file = File(p.join(directory.path, 'manifest.json'));
-      if (await file.length() > maxFileBytes) throw const FormatException('Manifest exceeds its size limit.');
+      if (await file.length() > maxFileBytes) {
+        throw const FormatException('Manifest exceeds its size limit.');
+      }
       parsed = jsonDecode(await file.readAsString());
     } on Object {
       throw const VisualizerPackException('The pack manifest is unreadable.');
@@ -1558,7 +1756,9 @@ class VisualizerPackStore {
   static VisualizerImportedPack _packSummary(Map<String, dynamic> manifest, String path) {
     final authors = <String>{};
     final packAuthor = manifest['author'];
-    if (packAuthor is String && packAuthor.trim().isNotEmpty) authors.add(packAuthor.trim());
+    if (packAuthor is String && packAuthor.trim().isNotEmpty) {
+      authors.add(packAuthor.trim());
+    }
     final presetSearchTerms = <String>{};
     final presets = manifest['presets'];
     if (presets is List) {
@@ -1566,7 +1766,9 @@ class VisualizerPackStore {
         if (preset is Map) {
           for (final key in ['title', 'id']) {
             final value = preset[key];
-            if (value is String && value.trim().isNotEmpty) presetSearchTerms.add(value.trim());
+            if (value is String && value.trim().isNotEmpty) {
+              presetSearchTerms.add(value.trim());
+            }
           }
           final tags = preset['tags'];
           if (tags is List) {
@@ -1580,7 +1782,9 @@ class VisualizerPackStore {
       for (final asset in assets) {
         if (asset is Map) {
           final author = asset['author'];
-          if (author is String && author.trim().isNotEmpty) authors.add(author.trim());
+          if (author is String && author.trim().isNotEmpty) {
+            authors.add(author.trim());
+          }
         }
       }
     }
@@ -1630,7 +1834,9 @@ class _BoundedPackOutput extends OutputStream {
   @override
   void writeBytes(List<int> bytes, {int? length}) {
     final count = length ?? bytes.length;
-    if (count < 0 || count > bytes.length) throw RangeError.range(count, 0, bytes.length);
+    if (count < 0 || count > bytes.length) {
+      throw RangeError.range(count, 0, bytes.length);
+    }
     if (this.length + count > limit) {
       throw const VisualizerPackException('A pack file expanded past its declared size.');
     }
@@ -1644,14 +1850,18 @@ class _BoundedPackOutput extends OutputStream {
     while (!stream.isEOS) {
       final remaining = limit - length;
       final bytes = stream.readBytes(remaining < 65536 ? remaining + 1 : 65536).toUint8List();
-      if (bytes.isEmpty) break;
+      if (bytes.isEmpty) {
+        break;
+      }
       writeBytes(bytes);
     }
   }
 
   @override
   void writeByte(int value) {
-    if (length + 1 > limit) throw const VisualizerPackException('A pack file expanded past its declared size.');
+    if (length + 1 > limit) {
+      throw const VisualizerPackException('A pack file expanded past its declared size.');
+    }
     output.writeByte(value);
   }
 

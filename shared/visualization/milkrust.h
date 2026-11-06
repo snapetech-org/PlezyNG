@@ -37,25 +37,21 @@ int milkrust_texture(
  * are honored. Shader textures use preset time; sprites use sprite-local time.
  */
 int milkrust_texture_gif(
-    milkrust_handle handle, const uint8_t* name, size_t name_length,
-    const uint8_t* encoded, size_t length);
+    milkrust_handle handle, const uint8_t* name, size_t name_length, const uint8_t* encoded, size_t length);
 /* Upload bounded encoded PNG, including APNG. Animated frames and timing are
  * decoded and composited by the shared bounded Rust decoder. */
 int milkrust_texture_png(
-    milkrust_handle handle, const uint8_t* name, size_t name_length,
-    const uint8_t* encoded, size_t length);
+    milkrust_handle handle, const uint8_t* name, size_t name_length, const uint8_t* encoded, size_t length);
 /* Upload bounded encoded WebP, including animated files. */
 int milkrust_texture_webp(
-    milkrust_handle handle, const uint8_t* name, size_t name_length,
-    const uint8_t* encoded, size_t length);
+    milkrust_handle handle, const uint8_t* name, size_t name_length, const uint8_t* encoded, size_t length);
 /* Supply local wall-clock fields before each render. Weekday is Sunday=0. */
 int milkrust_set_clock(
-    milkrust_handle handle, int32_t year, uint32_t month, uint32_t day, uint32_t weekday,
-    uint32_t hour, uint32_t minute, uint32_t second, uint32_t milliseconds);
+    milkrust_handle handle, int32_t year, uint32_t month, uint32_t day, uint32_t weekday, uint32_t hour,
+    uint32_t minute, uint32_t second, uint32_t milliseconds);
 /* Per-frame pointer input; coordinates are normalized to [0,1]. */
 int milkrust_set_mouse(
-    milkrust_handle handle, int32_t mouse_down, double mouse_x, double mouse_y,
-    double mouse_dx, double mouse_dy);
+    milkrust_handle handle, int32_t mouse_down, double mouse_x, double mouse_y, double mouse_dx, double mouse_dy);
 /* Interleaved float stereo at 44100 Hz. At most 4096 frames/call. A new generation
  * discards pre-seek audio. Call from the render consumer, never the real-time AO.
  */

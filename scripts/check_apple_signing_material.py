@@ -78,6 +78,10 @@ def main() -> int:
                 # the randomly encrypted PKCS12 reaches the private temp dir.
                 identity_pem = run(['openssl', 'pkcs12', '-in', str(p12), '-passin',
                                     'env:APPLE_CERTIFICATE_PASSWORD', '-nodes'])
+                report['private_key_present_in_pkcs12'] = bool(re.search(
+                    rb'-----BEGIN (?:RSA |EC |ENCRYPTED )?PRIVATE KEY-----', identity_pem))
+                if not report['private_key_present_in_pkcs12']:
+                    raise ValueError('Configured PKCS12 contains the certificate but no private key; recover the original signing identity')
                 os.environ['PLEAZYNG_PREFLIGHT_P12_PASSWORD'] = secrets.token_urlsafe(32)
                 try:
                     compatible = run(['openssl', 'pkcs12', '-export', '-keypbe', 'PBE-SHA1-3DES',

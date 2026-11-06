@@ -440,7 +440,15 @@
       "Samsung Checkout integration and DPI configuration for paid unlock",
       "Partner Group approval for non-US countries",
       "EAA conformity declaration before applicable EU distribution"
-    ]
+    ],
+    "artwork": {
+      "source": "Approved Pleazyng brand masters; four exports tracked in brand.json and asset-manifest.json",
+      "assets_directory": "docs/maintainers/store-listing-assets/samsung",
+      "export_count": 596,
+      "validation": "Brand manifest/reference check and seven renderer tests passed; all portal dimension/color-mode/size limits checked",
+      "console_state": "Four images uploaded and previewed; owner accepted image-use/copyright acknowledgment and attempted Save. Portal rejects missing required screenshots. Entire App Images section not claimed saved; preserve staged Firefox form.",
+      "screenshots": "Not uploaded: require authentic qualified Tizen captures; 1280x720 or 1920x1080 JPEG under 500kB. Slot4 must show price information if IAP supported."
+    }
   },
   "hosted_support": {
     "english": "https://snape.tech/privacy/pleazyng/support/",

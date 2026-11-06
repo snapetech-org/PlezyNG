@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Size Apple Flutter SDK download and extraction disk preflights from verified archive metadata while retaining Python 3.9 support and the existing runner disk margin.
+
 - Target Amazon API uploads by the console App ID and preserve listing metadata, artwork and review state during binary updates.
 
 - Fix Android Clang compilation of the visualization GPU drain callback while preserving the graphics loader ABI.

@@ -20,6 +20,7 @@ import time
 import urllib.error
 import urllib.request
 import uuid
+import zipfile
 
 
 MANIFEST_URL = "https://storage.googleapis.com/flutter_infra_release/releases/releases_macos.json"
@@ -29,12 +30,11 @@ MAX_WORKERS = 16
 MAX_ATTEMPTS = 8
 READ_SIZE = 1024 * 1024
 # Keep this per-job SDK cache under RUNNER_TEMP so the worker removes it after
-# each job. The post-install check enforces the 30 GiB reserve. The pinned
-# Flutter 3.47.1 archive plus extracted SDK use about 6.2 GiB at peak. The 7 GiB
-# preflight budget leaves 0.8 GiB for APFS metadata; the post-install check still
-# requires the full 30 GiB reserve on the Mac runner.
+# each job. Measure the download/extraction peaks and preserve the existing
+# 0.8 GiB metadata margin: the pinned SDK's 6.2 GiB peak still fits the Mac
+# admission floor of 37 GiB. Every phase retains the full 30 GiB reserve.
 MIN_FREE_BYTES = 30 * 1024**3
-INSTALL_HEADROOM_BYTES = 7 * 1024**3
+INSTALL_SAFETY_MARGIN_BYTES = 4 * 1024**3 // 5
 CONTENT_RANGE_RE = re.compile(r"^bytes (\d+)-(\d+)/(\d+)$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -163,15 +163,29 @@ def require_per_job_cache_root(cache_root: Path, runner_temp: str | None) -> Pat
     return root
 
 
-def require_install_headroom(free_bytes: int) -> None:
-    required_bytes = MIN_FREE_BYTES + INSTALL_HEADROOM_BYTES
+def require_install_headroom(free_bytes: int, transient_bytes: int, phase: str) -> None:
+    if type(transient_bytes) is not int or transient_bytes < 0:
+        raise ValueError("Flutter SDK transient disk estimate must be a non-negative integer")
+    required_bytes = MIN_FREE_BYTES + transient_bytes + INSTALL_SAFETY_MARGIN_BYTES
     if free_bytes < required_bytes:
         raise RuntimeError(
-            f"Flutter SDK install needs {required_bytes / 1024**3:.0f} GiB free "
+            f"Flutter SDK {phase} needs {required_bytes / 1024**3:.2f} GiB free "
             f"({MIN_FREE_BYTES / 1024**3:.0f} GiB reserved plus "
-            f"{INSTALL_HEADROOM_BYTES / 1024**3:.0f} GiB install headroom); "
+            f"{transient_bytes / 1024**3:.2f} GiB transient plus "
+            f"{INSTALL_SAFETY_MARGIN_BYTES / 1024**3:.1f} GiB safety margin); "
             f"Mac JIT has {free_bytes / 1024**3:.1f} GiB free"
         )
+
+
+def _archive_uncompressed_size(archive_path: Path) -> int:
+    try:
+        with zipfile.ZipFile(archive_path) as archive:
+            sizes = [member.file_size for member in archive.infolist()]
+    except (zipfile.BadZipFile, zipfile.LargeZipFile) as exc:
+        raise RuntimeError("verified Flutter archive is not a valid ZIP") from exc
+    if any(size < 0 for size in sizes):
+        raise RuntimeError("Flutter archive contains an invalid uncompressed size")
+    return sum(sizes)
 
 
 def _archive_length(url: str) -> int:
@@ -246,6 +260,7 @@ def download_archive(
     *,
     segment_bytes: int = SEGMENT_BYTES,
     max_workers: int = MAX_WORKERS,
+    expected_size: int | None = None,
 ) -> Path:
     if not SHA256_RE.fullmatch(expected_sha256):
         raise ValueError("invalid expected Flutter archive SHA-256")
@@ -258,7 +273,12 @@ def download_archive(
     if destination.exists():
         destination.unlink()
 
-    total = _archive_length(url)
+    if expected_size is None:
+        total = _archive_length(url)
+    elif type(expected_size) is int and expected_size > 0:
+        total = expected_size
+    else:
+        raise ValueError("expected Flutter archive size must be a positive integer")
     ranges = [
         (start, min(start + segment_bytes - 1, total - 1))
         for start in range(0, total, segment_bytes)
@@ -356,11 +376,20 @@ def ensure_sdk(version: str, cache_root: Path) -> Path:
             print(f"Reusing verified Flutter {version} SDK from local APFS cache.", flush=True)
             return cache_path
 
+        archive_size = _archive_length(metadata["archive_url"])
         free_bytes = shutil.disk_usage(cache_root).free
-        require_install_headroom(free_bytes)
+        # Ranged parts and the assembled archive briefly coexist.
+        require_install_headroom(free_bytes, archive_size * 2, "download")
         downloads = _ensure_private_directory(cache_root / ".downloads")
         archive = downloads / metadata["archive_name"]
-        download_archive(metadata["archive_url"], metadata["sha256"], archive)
+        download_archive(
+            metadata["archive_url"], metadata["sha256"], archive, expected_size=archive_size
+        )
+        expanded_size = _archive_uncompressed_size(archive)
+        # The archive already occupies disk; reserve room for the expanded SDK.
+        require_install_headroom(
+            shutil.disk_usage(cache_root).free, expanded_size, "extraction"
+        )
         cache_path = _extract_sdk_archive(archive, cache_root, version, metadata["sha256"])
         archive.unlink(missing_ok=True)
         for part in downloads.glob(f".{archive.name}.part-*"):

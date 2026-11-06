@@ -203,9 +203,10 @@ val androidLiteRtModelRoot = providers.environmentVariable("PLEZY_LITERT_MODEL_R
   ?: defaultAndroidLiteRtModelRoot
 val bundleAndroidLiteRtModels = providers.environmentVariable("PLEZY_LITERT_BUNDLE_MODELS").orNull != "0"
 val androidLiteRtModelArtifactsRevision = "e80ebf0d8d3a0d98d2ab05319548f844d18e0655"
-val androidLiteRtSamsungRuntimeRoot = providers.environmentVariable("PLEZY_LITERT_SAMSUNG_RUNTIME_ROOT").orNull
+val androidLiteRtSamsungRuntimeOverride = providers.environmentVariable("PLEZY_LITERT_SAMSUNG_RUNTIME_ROOT").orNull
   ?.takeIf(String::isNotBlank)
-  ?.let { File(it) }
+val androidLiteRtSamsungRuntimeRoot = androidLiteRtSamsungRuntimeOverride?.let { File(it) }
+  ?: layout.buildDirectory.dir("plezy-litert-samsung-runtime").get().asFile
 val androidHtpVersions = listOf("V68", "V69", "V73", "V75", "V79", "V81")
 data class AndroidAnvilContextTargetSpec(val resolution: String, val socId: Int, val dspArch: String)
 val androidAnvilContextTargets = linkedMapOf(
@@ -503,8 +504,21 @@ val downloadAndroidLiteRtArtifacts = tasks.register("downloadAndroidLiteRtArtifa
     }
   }
 }
+val buildAndroidSamsungLiteRtRuntime = tasks.register<Exec>("buildAndroidSamsungLiteRtRuntime") {
+  val bootstrap = rootProject.file("../scripts/motion/prepare_android_samsung_litert_runtime.py")
+  inputs.files(
+    bootstrap,
+    rootProject.file("../scripts/motion/build_android_samsung_litert_runtime.sh"),
+    rootProject.file("../scripts/motion/android_litert_samsung_flatbuffers.patch")
+  )
+  outputs.dir(androidLiteRtSamsungRuntimeRoot)
+  onlyIf { androidLiteRtSamsungRuntimeOverride == null }
+  doFirst { environment("ANDROID_HOME", android.sdkDirectory.absolutePath) }
+  commandLine("python3", bootstrap.absolutePath, "--output", androidLiteRtSamsungRuntimeRoot.absolutePath)
+}
 val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifacts") {
   dependsOn(downloadAndroidLiteRtArtifacts)
+  dependsOn(buildAndroidSamsungLiteRtRuntime)
   from(provider { zipTree(File(androidLiteRtArtifactDir, "litert_cc_sdk.zip")) }) {
     include("litert_cc_sdk/litert/**")
     eachFile {
@@ -551,7 +565,7 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
     )
     eachFile { relativePath = RelativePath(true, "jniLibs", "x86_64", name) }
   }
-  androidLiteRtSamsungRuntimeRoot?.let { runtimeRoot ->
+  androidLiteRtSamsungRuntimeRoot.let { runtimeRoot ->
     inputs.file(runtimeRoot.resolve("BUILD_INFO.txt"))
     inputs.file(runtimeRoot.resolve("SHA256SUMS"))
     from(runtimeRoot) {
@@ -566,14 +580,14 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
       into("assets/litert/samsung/litecore")
     }
     from(runtimeRoot) {
-      include("BUILD_INFO.txt", "SHA256SUMS")
+      include("BUILD_INFO.txt", "SHA256SUMS", "source.json", "Exynos_AI_LiteCore_License.pdf")
       into("assets/litert/samsung")
     }
   }
   includeEmptyDirs = false
   into(androidLiteRtRuntimeDir)
   doFirst {
-    androidLiteRtSamsungRuntimeRoot?.let { runtimeRoot ->
+    androidLiteRtSamsungRuntimeRoot.let { runtimeRoot ->
       val required = listOf(
         runtimeRoot.resolve("arm64-v8a/libLiteRtCompilerPlugin_Samsung.so"),
         runtimeRoot.resolve("arm64-v8a/libLiteRtDispatch_Samsung.so"),
@@ -587,7 +601,7 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
         .orEmpty()
       if (missing.isNotEmpty() || sdkLibraries.size < 2) {
         throw GradleException(
-          "PLEZY_LITERT_SAMSUNG_RUNTIME_ROOT must contain both LiteRT plugins and the LiteCore " +
+          "Samsung runtime packaging requires both LiteRT plugins and the LiteCore " +
             "Android runtime under litecore/lib/arm64-v8a; missing: ${missing.joinToString()}"
         )
       }

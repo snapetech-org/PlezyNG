@@ -62,7 +62,7 @@ trap cleanup_staging EXIT
       //litert/vendors/samsung/dispatch:dispatch_api_so
 )
 
-bazel_bin="$(cd "$source_root" && realpath "$(bazel info bazel-bin)")"
+bazel_bin="$(cd "$source_root" && realpath "$(bazel info --config=android_arm64 bazel-bin)")"
 find_android_library() {
   local search_root="$1"
   local library_name="$2"

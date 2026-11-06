@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Build and bundle the Samsung neural provider automatically in ordinary Android builds, retaining vendor licensing and checksum-bound source receipts.
+
 - Include implemented neural/NPU experiments in normal compatible builds with the persisted Motion smoothing → Neural opt-in, and bundle Intel NPU and Vulkan GPU providers together on Linux x64.
 - Reject CRLF header injection in the Apple experimental playback bridge, including headers supplied through MPV change-list commands.
 - Refuse incomplete native engine pin promotions and retain checksum-bound package receipts for every required architecture and implemented neural path.

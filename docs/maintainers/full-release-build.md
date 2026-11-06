@@ -240,3 +240,21 @@ performance or qualification.
 
 The standalone PME developer build retains its pinned default runtime, and
 explicit developer runtime/provider variants remain available.
+
+### Samsung neural provider packaging
+
+Normal Android builds run `buildAndroidSamsungLiteRtRuntime` before staging
+LiteRT. The bootstrap pins LiteRT v2.3.0, Bazel 7.7.0 and Samsung AI LiteCore
+1.2.0, verifies downloads, and compiles the Android ARM64 compiler/dispatch
+plugins. The source patch supplies the missing FlatBuffers link dependency;
+the build queries the same ARM64 Bazel configuration when finding outputs.
+Developer runtime overrides remain optional.
+
+SDK headers, the downloaded SDK and Bazel intermediates stay in private task
+storage outside public Actions caches. The APK embeds only the original vendor
+object libraries, the compiled provider plugins, licensing, hashes and source
+receipt. Cache validation rejects changed pins, missing libraries, corrupted
+bytes and host-architecture payloads. Both new JNI plugins have 16 KiB ELF
+alignment. Vendor LiteCore objects remain unchanged in their existing runtime
+asset layout; device/loader compatibility and NPU execution remain subject to
+runtime detection, fallback and physical device qualification.

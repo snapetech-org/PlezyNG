@@ -1,0 +1,10 @@
+--- a/litert/vendors/samsung/compiler/BUILD
++++ b/litert/vendors/samsung/compiler/BUILD
+@@ -50,6 +50,7 @@
+     deps = [
+         ":compile_model",
+         ":create_model",
++        "@flatbuffers//:flatbuffers",
+         "//litert/c:litert_builder_header",
+         "//litert/c:litert_common",
+         "//litert/c:litert_environment_options_header",

@@ -46,7 +46,6 @@
     "Google Play",
     "Amazon Appstore",
     "Snap Store",
-    "Fedora COPR",
     "Launchpad PPA",
     "Chocolatey",
     "AUR",
@@ -78,11 +77,31 @@
     "old_draft_retirement": "pending metadata migration"
   },
   "copr": {
+    "owner": "slskdn",
     "old_project": "slskdn/plezyng",
     "old_project_id": 267110,
-    "state": "owner login required; two saved logins rejected; awaiting human MFA/authentication",
+    "old_project_deleted": true,
+    "old_project_api_status": 404,
+    "old_project_builds": 0,
     "new_project": "slskdn/pleazyng",
-    "new_project_public_api": "404 before migration"
+    "new_project_id": 269950,
+    "url": "https://copr.fedorainfracloud.org/coprs/slskdn/pleazyng/",
+    "chroots": [
+      "fedora-43-aarch64",
+      "fedora-43-x86_64",
+      "fedora-44-aarch64",
+      "fedora-44-x86_64",
+      "fedora-45-aarch64",
+      "fedora-45-x86_64",
+      "fedora-rawhide-aarch64",
+      "fedora-rawhide-x86_64"
+    ],
+    "description_updated": true,
+    "installation_instructions_updated": true,
+    "repository_variable_saved": "slskdn/pleazyng",
+    "credential_rotated": false,
+    "session_preserved": true,
+    "state": "registration and automation target migrated; first qualified release upload pending"
   },
   "aur": {
     "publisher": "keefshape",

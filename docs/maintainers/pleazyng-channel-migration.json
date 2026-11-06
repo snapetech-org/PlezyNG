@@ -294,8 +294,13 @@
   "microsoft_store": {
     "account_entered": "keith@snape.tech",
     "portal": "https://partner.microsoft.com/dashboard",
-    "state": "Signed in successfully; no Windows publishing workspace listed; checking Store developer registration",
-    "registration_or_package_changes_made": false
+    "state": "Authenticated; no enrolled Windows workspace visible. Store company enrollment opened and requires owner business verification (D-U-N-S or documents). No business details submitted.",
+    "registration_or_package_changes_made": false,
+    "pending": [
+      "Owner complete company verification or choose individual developer enrollment",
+      "Reserve Pleazyng app name and record assigned package/publisher identities after enrollment",
+      "Validate qualified Windows package and Store publishing credentials"
+    ]
   },
   "homebrew": {
     "tap_repository": "snapetech-org/homebrew-slskdn",

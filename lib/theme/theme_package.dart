@@ -128,6 +128,12 @@ final class ThemePackage {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: base.elevatedButtonTheme.style?.copyWith(shape: WidgetStatePropertyAll(shape)),
       ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: base.outlinedButtonTheme.style?.copyWith(shape: WidgetStatePropertyAll(shape)),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: base.textButtonTheme.style?.copyWith(shape: WidgetStatePropertyAll(shape)),
+      ),
       navigationBarTheme: base.navigationBarTheme.copyWith(
         indicatorShape: NavigationIndicatorShape(
           markerColor: palette.accent,

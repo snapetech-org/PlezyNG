@@ -240,8 +240,7 @@ ThemeData monoThemeUncached(MonoPalette palette) => _buildMonoTheme(palette, pla
 
 ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
   final brightness = c.brightness;
-  final fallbackFonts = platform == TargetPlatform.linux
-      ? const ['Go Noto Current', 'Go Noto Current Hangul'] : null;
+  final fallbackFonts = platform == TargetPlatform.linux ? const ['Go Noto Current', 'Go Noto Current Hangul'] : null;
   final onAccent = c.onAccent;
   final clickableCursor = WidgetStateProperty.resolveWith<MouseCursor>(
     (states) => states.contains(WidgetState.disabled) ? MouseCursor.defer : SystemMouseCursors.click,
@@ -334,9 +333,7 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
           bodyMedium: Typography.englishLike2021.bodyMedium?.copyWith(color: c.text),
           bodySmall: Typography.englishLike2021.bodySmall?.copyWith(color: c.textMuted),
         )
-        .apply(
-          fontFamilyFallback: fallbackFonts,
-        ),
+        .apply(fontFamilyFallback: fallbackFonts),
     cardTheme: CardThemeData(
       color: c.surface,
       elevation: 0,
@@ -346,8 +343,12 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
     inputDecorationTheme: _inputDecorationTheme(c.text, c.textMuted),
     elevatedButtonTheme: ElevatedButtonThemeData(style: buttonStyle),
     filledButtonTheme: FilledButtonThemeData(style: buttonStyle),
-    textButtonTheme: TextButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
-    outlinedButtonTheme: OutlinedButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(mouseCursor: clickableCursor, shape: buttonStyle.shape),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(mouseCursor: clickableCursor, shape: buttonStyle.shape),
+    ),
     iconButtonTheme: IconButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
     sliderTheme: SliderThemeData(
       // The mono scheme maps surfaceContainerHighest (the M3 default inactive

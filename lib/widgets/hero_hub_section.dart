@@ -1,5 +1,6 @@
 import '../i18n/presentation_formats.dart';
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -17,6 +18,7 @@ import '../media/media_server_client.dart';
 import '../providers/watch_state_store.dart';
 import '../services/settings_service.dart';
 import '../theme/mono_tokens.dart';
+import '../theme/mono_motion.dart';
 import '../utils/content_utils.dart';
 import '../utils/formatters.dart';
 import '../utils/layout_constants.dart';
@@ -447,11 +449,26 @@ class HeroHubSectionState extends State<HeroHubSection> {
     // fades to black anyway and was never the actual problem — the real
     // one was the art's TOP getting cropped (see heroAspectRatio below,
     // and the alignment fix on _scrollIntoView from earlier this session).
-    final heroHeight = isTv
+    final preferredHeight = isTv
         ? MediaQuery.sizeOf(context).height * 0.8
         : useSideNav
         ? MediaQuery.sizeOf(context).height * 0.75
         : 500 + statusBarHeight;
+    // Keep the carousel stable across items while reserving enough height for
+    // its title, two fact lines, summary and action at the current text scale.
+    // A short desktop window may scroll the hero instead of clipping its title.
+    final largeScreen = ScreenBreakpoints.isWideTabletOrLarger(MediaQuery.sizeOf(context).width);
+    final minimumHeight =
+        (isTv ? TvLayoutConstants.heroLogoHeight : 120.0) +
+        MediaQuery.textScalerOf(context).scale(isTv ? 18 : 14) * (isTv ? 7.35 : 6) +
+        (isTv
+            ? 88
+            : largeScreen
+            ? 80
+            : 50) +
+        (isTv ? 32 : 24) +
+        60;
+    final heroHeight = math.max(preferredHeight, minimumHeight + statusBarHeight);
 
     return Focus(
       focusNode: _focusNode,
@@ -862,7 +879,9 @@ class HeroHubSectionState extends State<HeroHubSection> {
             child: Align(
               alignment: alignLeft ? AlignmentDirectional.centerStart : Alignment.center,
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isTv ? TvLayoutConstants.heroContentMaxWidth : double.infinity),
+                constraints: BoxConstraints(
+                  maxWidth: alignLeft ? TvLayoutConstants.heroContentMaxWidth : double.infinity,
+                ),
                 child: Column(
                   crossAxisAlignment: alignLeft ? CrossAxisAlignment.start : CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -949,16 +968,19 @@ class HeroHubSectionState extends State<HeroHubSection> {
             final colorScheme = Theme.of(context).colorScheme;
             final backgroundColor = showFocus ? colorScheme.primary : Colors.white;
             final foregroundColor = showFocus ? colorScheme.onPrimary : Colors.black;
+            final radius = BorderRadius.circular(
+              tokens(context).radiusMd * (isTv ? TvLayoutConstants.scaleOf(context) : 1),
+            );
             return InkWell(
               onTap: () => navigateToVideoPlayer(context, metadata: heroItem),
-              borderRadius: BorderRadius.all(Radius.circular(isTv ? 32 : 24)),
+              borderRadius: radius,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
+                duration: MonoMotion.press(context),
                 curve: Curves.easeOutCubic,
                 padding: EdgeInsets.symmetric(horizontal: isTv ? 34 : 24, vertical: isTv ? 16 : 12),
                 decoration: BoxDecoration(
                   color: backgroundColor,
-                  borderRadius: BorderRadius.all(Radius.circular(isTv ? 32 : 24)),
+                  borderRadius: radius,
                   boxShadow: showFocus
                       ? [BoxShadow(color: colorScheme.primary.withValues(alpha: 0.35), blurRadius: 28, spreadRadius: 4)]
                       : null,
@@ -968,11 +990,13 @@ class HeroHubSectionState extends State<HeroHubSection> {
                   children: [
                     AppIcon(Symbols.play_arrow_rounded, fill: 1, size: isTv ? 28 : 20, color: foregroundColor),
                     const SizedBox(width: 8),
-                    Text(
-                      hasProgress
-                          ? t.discover.minutesLeft(minutes: formatDecimal(minutesLeft, maximumDecimals: 0))
-                          : t.common.play,
-                      style: TextStyle(color: foregroundColor, fontWeight: FontWeight.bold, fontSize: isTv ? 18 : 14),
+                    Flexible(
+                      child: Text(
+                        hasProgress
+                            ? t.discover.minutesLeft(minutes: formatDecimal(minutesLeft, maximumDecimals: 0))
+                            : t.common.play,
+                        style: TextStyle(color: foregroundColor, fontWeight: FontWeight.bold, fontSize: isTv ? 18 : 14),
+                      ),
                     ),
                   ],
                 ),

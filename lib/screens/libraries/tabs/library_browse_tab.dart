@@ -1185,7 +1185,11 @@ class _LibraryBrowseTabState extends BaseLibraryTabState<MediaItem, LibraryBrows
           ),
           if (_isFiltersChipVisible)
             FocusableListTile(
-              leading: const AppIcon(Symbols.filter_alt_rounded, fill: 1),
+              leading: AppIcon(
+                Symbols.filter_alt_rounded,
+                fill: _selectedFilters.isEmpty ? 0 : 1,
+                weight: _selectedFilters.isEmpty ? 500 : 600,
+              ),
               title: Text(
                 _selectedFilters.isEmpty
                     ? t.libraries.filters
@@ -1196,7 +1200,7 @@ class _LibraryBrowseTabState extends BaseLibraryTabState<MediaItem, LibraryBrows
             ),
           if (_isSortChipVisible)
             FocusableListTile(
-              leading: const AppIcon(Symbols.sort_rounded, fill: 1),
+              leading: const AppIcon(Symbols.sort_rounded, fill: 0, weight: 500),
               title: Text(t.libraries.sort),
               subtitle: _selectedSort == null ? null : Text(_selectedSort!.title),
               trailing: AppIcon(inlineEndChevron, fill: 1),

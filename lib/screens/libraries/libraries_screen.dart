@@ -985,7 +985,7 @@ class _LibrariesScreenState extends State<LibrariesScreen>
                   icon: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      const AppIcon(Symbols.tune_rounded, fill: 1),
+                      const AppIcon(Symbols.tune_rounded, fill: 1, weight: 600),
                       Positioned(
                         top: -2,
                         right: -2,
@@ -1003,8 +1003,11 @@ class _LibrariesScreenState extends State<LibrariesScreen>
                 )
               : null,
         ),
-      FocusableAction(icon: Symbols.mic_rounded, tooltip: karaokeText(context, 'title'),
-        onPressed: () => unawaited(openKaraoke(context))),
+      FocusableAction(
+        icon: Symbols.mic_rounded,
+        tooltip: karaokeText(context, 'title'),
+        onPressed: () => unawaited(openKaraoke(context)),
+      ),
       FocusableAction(icon: Symbols.refresh_rounded, tooltip: t.common.refresh, onPressed: manualRefresh),
       FocusableAction(
         icon: Symbols.auto_awesome_rounded,

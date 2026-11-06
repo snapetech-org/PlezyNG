@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Declare the Vulkan loader and other shared-bundle runtime dependencies consistently in PPA, COPR and Snap packages, and verify alternate recipes against the canonical Linux package lists.
+
 - Curated title extras with strict identity and publisher checks, bounded previews, profile-specific exclusions, and optional evidence-backed AI search.
 - Isolate Steam relay regression tests from a running desktop Steam client and model server deletion permission before validating shared-file deletion.
 - Add Microsoft Store lifetime billing with verified online licence ownership and separate trial/IAP MSIX payloads; preserve free direct Windows downloads.

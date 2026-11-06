@@ -42,6 +42,10 @@ def _ci_smoke_packages() -> set[str]:
 
 
 class LinuxBundleWorkflowPackagesTest(unittest.TestCase):
+    def test_release_and_smoke_hosts_install_the_vulkan_loader(self) -> None:
+        self.assertIn("libvulkan1", _release_packages())
+        self.assertIn("libvulkan1", _ci_smoke_packages())
+
     def test_versioned_linux_build_installs_required_gstreamer_plugins(self) -> None:
         missing = REQUIRED_GSTREAMER_PACKAGES - _release_packages()
         self.assertEqual(set(), missing, f"build.yml is missing GStreamer packages: {sorted(missing)}")

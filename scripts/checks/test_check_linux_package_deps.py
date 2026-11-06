@@ -24,6 +24,9 @@ FIXTURE_FILES = (
     "packaging/build-packages.py",
     "packaging/bundle-libs.sh",
     "packaging/aur/PKGBUILD",
+    "packaging/ppa/debian/control",
+    "packaging/copr/pleazyng.spec",
+    "packaging/snap/snapcraft.yaml",
 )
 # The subset the checker parses for pkg_check_modules and the link graph. Each
 # one carries targets the others cannot see, so none of them is optional.
@@ -42,6 +45,23 @@ SUCCESS_LINE = "linux/runner CMake dependency checks passed"
 
 
 class LinuxPackageDepsGuardTest(unittest.TestCase):
+    def test_alternate_recipes_cannot_drop_the_vulkan_loader(self) -> None:
+        for recipe, line in (
+            ("packaging/ppa/debian/control", " libvulkan1,\n"),
+            ("packaging/copr/pleazyng.spec", "Requires:       vulkan-loader\n"),
+            ("packaging/snap/snapcraft.yaml", "      - libvulkan1\n"),
+        ):
+            with self.subTest(recipe=recipe):
+                result = self._run(**{recipe: self._mutate(recipe, line, "")})
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("vulkan", result.stderr)
+
+    def test_vulkan_loader_must_remain_host_provided(self) -> None:
+        bundle = self._mutate("packaging/bundle-libs.sh", r"libvulkan\.so|", "")
+        result = self._run(**{"packaging/bundle-libs.sh": bundle})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("no longer excludes", result.stderr)
+
     def _run(self, omit: tuple[str, ...] = (), **edits: str) -> subprocess.CompletedProcess[str]:
         """Copy the real linux/ inputs, apply edits, and check the copy."""
         with tempfile.TemporaryDirectory(prefix="pleazyng-linux-deps-test-") as directory:

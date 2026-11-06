@@ -1,4 +1,7 @@
 // Produces labeled interface previews, not device or store screenshots.
+// This opt-in Flutter test harness lives outside test/ so normal runs do not render previews.
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';

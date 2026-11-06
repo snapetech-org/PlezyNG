@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep service endpoint regression tests and store-preview tooling aligned with the current Pleazyng integration.
+
 - Require a signed Amazon Fire TV / Stick APK and verification receipt in release assets, with an Android-only validation build and the renamed Amazon lifetime unlock SKU.
 - Translate all caption and speech-processing status messages across 37 locales, verify generated locale resolution, and record the completed audit regression checks and remaining delivery gaps.
 

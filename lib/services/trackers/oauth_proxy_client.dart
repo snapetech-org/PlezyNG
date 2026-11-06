@@ -27,9 +27,8 @@ class OAuthProxyClient {
   final String? _relayBaseUrl;
   String get _baseUrl => _relayBaseUrl == null ? baseUrl : requirePleazyngServiceUrl(_relayBaseUrl);
 
-  OAuthProxyClient({http.Client? httpClient, String? relayBaseUrl})
-    : _http = httpClient ?? platform.createPlatformClient(),
-      _relayBaseUrl = relayBaseUrl;
+  OAuthProxyClient({http.Client? httpClient, this._relayBaseUrl})
+    : _http = httpClient ?? platform.createPlatformClient();
 
   void dispose() => _http.close();
 

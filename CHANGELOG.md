@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Translate all caption and speech-processing status messages across 37 locales, verify generated locale resolution, and record the completed audit regression checks and remaining delivery gaps.
+
 - Keep configured service endpoints on system certificate trust, validate storefront brokers, repair rebrand-sensitive regression fixtures, and verify native torrent reads beyond 4 GiB.
 - Record current release availability separately from historical publication evidence when the recorded release is no longer returned by GitHub.
 

@@ -113,6 +113,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$householdSetup$zh householdSetup = Translations$householdSetup$zh.internal(_root);
 	@override late final Translations$issueReport$zh issueReport = Translations$issueReport$zh.internal(_root);
 	@override late final Translations$romm$zh romm = Translations$romm$zh.internal(_root);
+	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
 }
 
 // Path: app
@@ -4170,6 +4171,41 @@ class Translations$romm$zh extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class Translations$subtitleCapture$zh extends Translations$subtitleCapture$en {
+	Translations$subtitleCapture$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => '正在加载本地语音模型…';
+	@override String loadingModelProgress({required Object percent}) => '正在加载本地语音模型（${percent}%）…';
+	@override String get downloadingModel => '正在下载语音模型…';
+	@override String downloadingModelProgress({required Object percent}) => '正在下载语音模型（${percent}%）…';
+	@override String get capturing => '正在本地捕获已解码的音频。字幕即将显示。';
+	@override String get startFailed => '无法启动实时字幕。请检查音频输出后重试。';
+	@override String get inferenceFailed => '语音识别失败。请停止捕获后重试。';
+	@override String get noSpeech => '未能从语音生成字幕。请检查音轨后重试。';
+	@override String captured({required Object count}) => '从已观看部分捕获的字幕条目数：${count}。';
+	@override String get playbackEnded => '播放已结束。捕获的转录文本已丢弃。';
+	@override String get playbackChanged => '播放内容已更改。捕获的转录文本已丢弃。';
+	@override String get audioTrackChanged => '音轨已更改。请在当前音轨上重新启动捕获。';
+	@override String listening({required Object count}) => '正在通过 CPU 在本地监听。已捕获的音频数据包：${count}。';
+	@override String get captureUnavailable => '当前音频输出无法提供已解码的音频。请尝试受支持的音频输出。';
+	@override String get waitingForAudio => '正在等待已解码的音频。播放可能已暂停。';
+	@override String get captureStopped => '实时捕获已停止。请检查播放状态后重试。';
+	@override String get preparing => '正在准备实时字幕…';
+	@override String get downloadingDetector => '正在下载语音检测器…';
+	@override String downloadingDetectorProgress({required Object percent}) => '正在下载语音检测器（${percent}%）…';
+	@override String get transcribing => '正在本地转录音频…';
+	@override String transcribingProgress({required Object percent}) => '正在本地转录音频（${percent}%）…';
+	@override String get translating => '正在本地将语音翻译为英语…';
+	@override String translatingProgress({required Object percent}) => '正在本地将语音翻译为英语（${percent}%）…';
+	@override String get processingAudio => '正在本地处理音频…';
+	@override String processingAudioProgress({required Object percent}) => '正在本地处理音频（${percent}%）…';
+	@override String get cpuFallback => 'GPU 语音处理失败。正在通过 CPU 重试…';
 }
 
 // Path: appIcon.names
@@ -9204,6 +9240,32 @@ extension on TranslationsZh {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => '正在加载本地语音模型…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => '正在加载本地语音模型（${percent}%）…',
+			'subtitleCapture.downloadingModel' => '正在下载语音模型…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => '正在下载语音模型（${percent}%）…',
+			'subtitleCapture.capturing' => '正在本地捕获已解码的音频。字幕即将显示。',
+			'subtitleCapture.startFailed' => '无法启动实时字幕。请检查音频输出后重试。',
+			'subtitleCapture.inferenceFailed' => '语音识别失败。请停止捕获后重试。',
+			'subtitleCapture.noSpeech' => '未能从语音生成字幕。请检查音轨后重试。',
+			'subtitleCapture.captured' => ({required Object count}) => '从已观看部分捕获的字幕条目数：${count}。',
+			'subtitleCapture.playbackEnded' => '播放已结束。捕获的转录文本已丢弃。',
+			'subtitleCapture.playbackChanged' => '播放内容已更改。捕获的转录文本已丢弃。',
+			'subtitleCapture.audioTrackChanged' => '音轨已更改。请在当前音轨上重新启动捕获。',
+			'subtitleCapture.listening' => ({required Object count}) => '正在通过 CPU 在本地监听。已捕获的音频数据包：${count}。',
+			'subtitleCapture.captureUnavailable' => '当前音频输出无法提供已解码的音频。请尝试受支持的音频输出。',
+			'subtitleCapture.waitingForAudio' => '正在等待已解码的音频。播放可能已暂停。',
+			'subtitleCapture.captureStopped' => '实时捕获已停止。请检查播放状态后重试。',
+			'subtitleCapture.preparing' => '正在准备实时字幕…',
+			'subtitleCapture.downloadingDetector' => '正在下载语音检测器…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => '正在下载语音检测器（${percent}%）…',
+			'subtitleCapture.transcribing' => '正在本地转录音频…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => '正在本地转录音频（${percent}%）…',
+			'subtitleCapture.translating' => '正在本地将语音翻译为英语…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => '正在本地将语音翻译为英语（${percent}%）…',
+			'subtitleCapture.processingAudio' => '正在本地处理音频…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '正在本地处理音频（${percent}%）…',
+			'subtitleCapture.cpuFallback' => 'GPU 语音处理失败。正在通过 CPU 重试…',
 			_ => null,
 		};
 	}

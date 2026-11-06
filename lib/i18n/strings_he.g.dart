@@ -113,6 +113,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$he householdSetup = _Translations$householdSetup$he._(_root);
 	@override late final _Translations$issueReport$he issueReport = _Translations$issueReport$he._(_root);
 	@override late final _Translations$romm$he romm = _Translations$romm$he._(_root);
+	@override late final _Translations$subtitleCapture$he subtitleCapture = _Translations$subtitleCapture$he._(_root);
 }
 
 // Path: app
@@ -4183,6 +4184,41 @@ class _Translations$romm$he extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$he extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$he._(TranslationsHe root) : this._root = root, super.internal(root);
+
+	final TranslationsHe _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'טוען את מודל הדיבור המקומי…';
+	@override String loadingModelProgress({required Object percent}) => 'טוען את מודל הדיבור המקומי (${percent}%)…';
+	@override String get downloadingModel => 'מוריד את מודל הדיבור…';
+	@override String downloadingModelProgress({required Object percent}) => 'מוריד את מודל הדיבור (${percent}%)…';
+	@override String get capturing => 'לוכד שמע מפוענח באופן מקומי. הכתוביות יופיעו בקרוב.';
+	@override String get startFailed => 'לא ניתן היה להפעיל כתוביות בזמן אמת. יש לבדוק את פלט השמע ולנסות שוב.';
+	@override String get inferenceFailed => 'זיהוי הדיבור נכשל. יש לעצור את הלכידה ולנסות שוב.';
+	@override String get noSpeech => 'לא נוצרו כתוביות מהדיבור. יש לבדוק את רצועת השמע ולנסות שוב.';
+	@override String captured({required Object count}) => 'קטעי כתוביות שנלכדו מהחלק שנצפה: ${count}.';
+	@override String get playbackEnded => 'הניגון הסתיים. התמליל שנלכד נמחק.';
+	@override String get playbackChanged => 'הניגון השתנה. התמליל שנלכד נמחק.';
+	@override String get audioTrackChanged => 'רצועת השמע השתנתה. יש להתחיל שוב את הלכידה ברצועה הנוכחית.';
+	@override String listening({required Object count}) => 'מאזין מקומית באמצעות CPU. חבילות שמע שנלכדו: ${count}.';
+	@override String get captureUnavailable => 'שמע מפוענח אינו זמין בפלט הזה. יש לנסות פלט שמע נתמך.';
+	@override String get waitingForAudio => 'ממתין לשמע מפוענח. ייתכן שהניגון מושהה.';
+	@override String get captureStopped => 'הלכידה בזמן אמת נעצרה. יש לבדוק את הניגון ולנסות שוב.';
+	@override String get preparing => 'מכין כתוביות בזמן אמת…';
+	@override String get downloadingDetector => 'מוריד את גלאי הדיבור…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'מוריד את גלאי הדיבור (${percent}%)…';
+	@override String get transcribing => 'מתמלל שמע באופן מקומי…';
+	@override String transcribingProgress({required Object percent}) => 'מתמלל שמע באופן מקומי (${percent}%)…';
+	@override String get translating => 'מתרגם דיבור לאנגלית באופן מקומי…';
+	@override String translatingProgress({required Object percent}) => 'מתרגם דיבור לאנגלית באופן מקומי (${percent}%)…';
+	@override String get processingAudio => 'מעבד שמע באופן מקומי…';
+	@override String processingAudioProgress({required Object percent}) => 'מעבד שמע באופן מקומי (${percent}%)…';
+	@override String get cpuFallback => 'עיבוד הדיבור באמצעות GPU נכשל. מנסה שוב באמצעות CPU…';
 }
 
 // Path: appIcon.names
@@ -9217,6 +9253,32 @@ extension on TranslationsHe {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'טוען את מודל הדיבור המקומי…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'טוען את מודל הדיבור המקומי (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'מוריד את מודל הדיבור…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'מוריד את מודל הדיבור (${percent}%)…',
+			'subtitleCapture.capturing' => 'לוכד שמע מפוענח באופן מקומי. הכתוביות יופיעו בקרוב.',
+			'subtitleCapture.startFailed' => 'לא ניתן היה להפעיל כתוביות בזמן אמת. יש לבדוק את פלט השמע ולנסות שוב.',
+			'subtitleCapture.inferenceFailed' => 'זיהוי הדיבור נכשל. יש לעצור את הלכידה ולנסות שוב.',
+			'subtitleCapture.noSpeech' => 'לא נוצרו כתוביות מהדיבור. יש לבדוק את רצועת השמע ולנסות שוב.',
+			'subtitleCapture.captured' => ({required Object count}) => 'קטעי כתוביות שנלכדו מהחלק שנצפה: ${count}.',
+			'subtitleCapture.playbackEnded' => 'הניגון הסתיים. התמליל שנלכד נמחק.',
+			'subtitleCapture.playbackChanged' => 'הניגון השתנה. התמליל שנלכד נמחק.',
+			'subtitleCapture.audioTrackChanged' => 'רצועת השמע השתנתה. יש להתחיל שוב את הלכידה ברצועה הנוכחית.',
+			'subtitleCapture.listening' => ({required Object count}) => 'מאזין מקומית באמצעות CPU. חבילות שמע שנלכדו: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'שמע מפוענח אינו זמין בפלט הזה. יש לנסות פלט שמע נתמך.',
+			'subtitleCapture.waitingForAudio' => 'ממתין לשמע מפוענח. ייתכן שהניגון מושהה.',
+			'subtitleCapture.captureStopped' => 'הלכידה בזמן אמת נעצרה. יש לבדוק את הניגון ולנסות שוב.',
+			'subtitleCapture.preparing' => 'מכין כתוביות בזמן אמת…',
+			'subtitleCapture.downloadingDetector' => 'מוריד את גלאי הדיבור…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'מוריד את גלאי הדיבור (${percent}%)…',
+			'subtitleCapture.transcribing' => 'מתמלל שמע באופן מקומי…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'מתמלל שמע באופן מקומי (${percent}%)…',
+			'subtitleCapture.translating' => 'מתרגם דיבור לאנגלית באופן מקומי…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'מתרגם דיבור לאנגלית באופן מקומי (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'מעבד שמע באופן מקומי…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'מעבד שמע באופן מקומי (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'עיבוד הדיבור באמצעות GPU נכשל. מנסה שוב באמצעות CPU…',
 			_ => null,
 		};
 	}

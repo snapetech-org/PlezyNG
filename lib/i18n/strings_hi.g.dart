@@ -113,6 +113,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$hi householdSetup = _Translations$householdSetup$hi._(_root);
 	@override late final _Translations$issueReport$hi issueReport = _Translations$issueReport$hi._(_root);
 	@override late final _Translations$romm$hi romm = _Translations$romm$hi._(_root);
+	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
 }
 
 // Path: app
@@ -4175,6 +4176,41 @@ class _Translations$romm$hi extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$hi extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'स्थानीय वाक् मॉडल लोड हो रहा है…';
+	@override String loadingModelProgress({required Object percent}) => 'स्थानीय वाक् मॉडल लोड हो रहा है (${percent}%)…';
+	@override String get downloadingModel => 'वाक् मॉडल डाउनलोड हो रहा है…';
+	@override String downloadingModelProgress({required Object percent}) => 'वाक् मॉडल डाउनलोड हो रहा है (${percent}%)…';
+	@override String get capturing => 'डिकोड किया गया ऑडियो स्थानीय रूप से कैप्चर हो रहा है। उपशीर्षक जल्द दिखाई देंगे।';
+	@override String get startFailed => 'लाइव उपशीर्षक शुरू नहीं हो सके। ऑडियो आउटपुट जाँचें और फिर कोशिश करें।';
+	@override String get inferenceFailed => 'वाक् पहचान विफल हुई। कैप्चर रोकें और फिर कोशिश करें।';
+	@override String get noSpeech => 'बोली से कोई उपशीर्षक नहीं बना। ऑडियो ट्रैक जाँचें और फिर कोशिश करें।';
+	@override String captured({required Object count}) => 'देखे गए हिस्से से कैप्चर किए गए उपशीर्षक खंड: ${count}।';
+	@override String get playbackEnded => 'प्लेबैक समाप्त हुआ। कैप्चर किया गया प्रतिलेख हटा दिया गया।';
+	@override String get playbackChanged => 'प्लेबैक बदल गया। कैप्चर किया गया प्रतिलेख हटा दिया गया।';
+	@override String get audioTrackChanged => 'ऑडियो ट्रैक बदल गया। वर्तमान ट्रैक पर कैप्चर फिर शुरू करें।';
+	@override String listening({required Object count}) => 'CPU पर स्थानीय रूप से सुना जा रहा है। कैप्चर किए गए ऑडियो पैकेट: ${count}।';
+	@override String get captureUnavailable => 'इस ऑडियो आउटपुट पर डिकोड किया गया ऑडियो उपलब्ध नहीं है। कोई समर्थित ऑडियो आउटपुट आज़माएँ।';
+	@override String get waitingForAudio => 'डिकोड किए गए ऑडियो की प्रतीक्षा है। प्लेबैक रुका हुआ हो सकता है।';
+	@override String get captureStopped => 'लाइव कैप्चर रुक गया। प्लेबैक जाँचें और फिर कोशिश करें।';
+	@override String get preparing => 'लाइव उपशीर्षक तैयार हो रहे हैं…';
+	@override String get downloadingDetector => 'वाक् डिटेक्टर डाउनलोड हो रहा है…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'वाक् डिटेक्टर डाउनलोड हो रहा है (${percent}%)…';
+	@override String get transcribing => 'ऑडियो का स्थानीय रूप से प्रतिलेखन हो रहा है…';
+	@override String transcribingProgress({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रतिलेखन हो रहा है (${percent}%)…';
+	@override String get translating => 'बोली का स्थानीय रूप से अंग्रेज़ी में अनुवाद हो रहा है…';
+	@override String translatingProgress({required Object percent}) => 'बोली का स्थानीय रूप से अंग्रेज़ी में अनुवाद हो रहा है (${percent}%)…';
+	@override String get processingAudio => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है…';
+	@override String processingAudioProgress({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है (${percent}%)…';
+	@override String get cpuFallback => 'GPU पर वाक् प्रसंस्करण विफल हुआ। CPU पर फिर कोशिश हो रही है…';
 }
 
 // Path: appIcon.names
@@ -9209,6 +9245,32 @@ extension on TranslationsHi {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'स्थानीय वाक् मॉडल लोड हो रहा है…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'स्थानीय वाक् मॉडल लोड हो रहा है (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'वाक् मॉडल डाउनलोड हो रहा है…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'वाक् मॉडल डाउनलोड हो रहा है (${percent}%)…',
+			'subtitleCapture.capturing' => 'डिकोड किया गया ऑडियो स्थानीय रूप से कैप्चर हो रहा है। उपशीर्षक जल्द दिखाई देंगे।',
+			'subtitleCapture.startFailed' => 'लाइव उपशीर्षक शुरू नहीं हो सके। ऑडियो आउटपुट जाँचें और फिर कोशिश करें।',
+			'subtitleCapture.inferenceFailed' => 'वाक् पहचान विफल हुई। कैप्चर रोकें और फिर कोशिश करें।',
+			'subtitleCapture.noSpeech' => 'बोली से कोई उपशीर्षक नहीं बना। ऑडियो ट्रैक जाँचें और फिर कोशिश करें।',
+			'subtitleCapture.captured' => ({required Object count}) => 'देखे गए हिस्से से कैप्चर किए गए उपशीर्षक खंड: ${count}।',
+			'subtitleCapture.playbackEnded' => 'प्लेबैक समाप्त हुआ। कैप्चर किया गया प्रतिलेख हटा दिया गया।',
+			'subtitleCapture.playbackChanged' => 'प्लेबैक बदल गया। कैप्चर किया गया प्रतिलेख हटा दिया गया।',
+			'subtitleCapture.audioTrackChanged' => 'ऑडियो ट्रैक बदल गया। वर्तमान ट्रैक पर कैप्चर फिर शुरू करें।',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPU पर स्थानीय रूप से सुना जा रहा है। कैप्चर किए गए ऑडियो पैकेट: ${count}।',
+			'subtitleCapture.captureUnavailable' => 'इस ऑडियो आउटपुट पर डिकोड किया गया ऑडियो उपलब्ध नहीं है। कोई समर्थित ऑडियो आउटपुट आज़माएँ।',
+			'subtitleCapture.waitingForAudio' => 'डिकोड किए गए ऑडियो की प्रतीक्षा है। प्लेबैक रुका हुआ हो सकता है।',
+			'subtitleCapture.captureStopped' => 'लाइव कैप्चर रुक गया। प्लेबैक जाँचें और फिर कोशिश करें।',
+			'subtitleCapture.preparing' => 'लाइव उपशीर्षक तैयार हो रहे हैं…',
+			'subtitleCapture.downloadingDetector' => 'वाक् डिटेक्टर डाउनलोड हो रहा है…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'वाक् डिटेक्टर डाउनलोड हो रहा है (${percent}%)…',
+			'subtitleCapture.transcribing' => 'ऑडियो का स्थानीय रूप से प्रतिलेखन हो रहा है…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रतिलेखन हो रहा है (${percent}%)…',
+			'subtitleCapture.translating' => 'बोली का स्थानीय रूप से अंग्रेज़ी में अनुवाद हो रहा है…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'बोली का स्थानीय रूप से अंग्रेज़ी में अनुवाद हो रहा है (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU पर वाक् प्रसंस्करण विफल हुआ। CPU पर फिर कोशिश हो रही है…',
 			_ => null,
 		};
 	}

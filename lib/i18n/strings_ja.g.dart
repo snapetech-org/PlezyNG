@@ -113,6 +113,7 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ja householdSetup = _Translations$householdSetup$ja._(_root);
 	@override late final _Translations$issueReport$ja issueReport = _Translations$issueReport$ja._(_root);
 	@override late final _Translations$romm$ja romm = _Translations$romm$ja._(_root);
+	@override late final _Translations$subtitleCapture$ja subtitleCapture = _Translations$subtitleCapture$ja._(_root);
 }
 
 // Path: app
@@ -4170,6 +4171,41 @@ class _Translations$romm$ja extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$ja extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+	final TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'ローカル音声モデルを読み込んでいます…';
+	@override String loadingModelProgress({required Object percent}) => 'ローカル音声モデルを読み込んでいます（${percent}%）…';
+	@override String get downloadingModel => '音声モデルをダウンロードしています…';
+	@override String downloadingModelProgress({required Object percent}) => '音声モデルをダウンロードしています（${percent}%）…';
+	@override String get capturing => 'デコードされた音声をローカルでキャプチャしています。まもなく字幕が表示されます。';
+	@override String get startFailed => 'ライブ字幕を開始できませんでした。音声出力を確認して、もう一度お試しください。';
+	@override String get inferenceFailed => '音声認識に失敗しました。キャプチャを停止して、もう一度お試しください。';
+	@override String get noSpeech => '音声から字幕が生成されませんでした。音声トラックを確認して、もう一度お試しください。';
+	@override String captured({required Object count}) => '視聴した部分から取得した字幕の数：${count}。';
+	@override String get playbackEnded => '再生が終了しました。キャプチャした文字起こしは破棄されました。';
+	@override String get playbackChanged => '再生が変更されました。キャプチャした文字起こしは破棄されました。';
+	@override String get audioTrackChanged => '音声トラックが変更されました。現在のトラックでキャプチャを再開してください。';
+	@override String listening({required Object count}) => 'CPUでローカル音声を認識しています。取得した音声パケット数：${count}。';
+	@override String get captureUnavailable => 'この音声出力ではデコードされた音声を取得できません。対応する音声出力をお試しください。';
+	@override String get waitingForAudio => 'デコードされた音声を待っています。再生が一時停止している可能性があります。';
+	@override String get captureStopped => 'ライブキャプチャが停止しました。再生を確認して、もう一度お試しください。';
+	@override String get preparing => 'ライブ字幕を準備しています…';
+	@override String get downloadingDetector => '音声検出器をダウンロードしています…';
+	@override String downloadingDetectorProgress({required Object percent}) => '音声検出器をダウンロードしています（${percent}%）…';
+	@override String get transcribing => '音声をローカルで文字起こししています…';
+	@override String transcribingProgress({required Object percent}) => '音声をローカルで文字起こししています（${percent}%）…';
+	@override String get translating => '音声をローカルで英語に翻訳しています…';
+	@override String translatingProgress({required Object percent}) => '音声をローカルで英語に翻訳しています（${percent}%）…';
+	@override String get processingAudio => '音声をローカルで処理しています…';
+	@override String processingAudioProgress({required Object percent}) => '音声をローカルで処理しています（${percent}%）…';
+	@override String get cpuFallback => 'GPUでの音声処理に失敗しました。CPUで再試行しています…';
 }
 
 // Path: appIcon.names
@@ -9204,6 +9240,32 @@ extension on TranslationsJa {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'ローカル音声モデルを読み込んでいます…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'ローカル音声モデルを読み込んでいます（${percent}%）…',
+			'subtitleCapture.downloadingModel' => '音声モデルをダウンロードしています…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => '音声モデルをダウンロードしています（${percent}%）…',
+			'subtitleCapture.capturing' => 'デコードされた音声をローカルでキャプチャしています。まもなく字幕が表示されます。',
+			'subtitleCapture.startFailed' => 'ライブ字幕を開始できませんでした。音声出力を確認して、もう一度お試しください。',
+			'subtitleCapture.inferenceFailed' => '音声認識に失敗しました。キャプチャを停止して、もう一度お試しください。',
+			'subtitleCapture.noSpeech' => '音声から字幕が生成されませんでした。音声トラックを確認して、もう一度お試しください。',
+			'subtitleCapture.captured' => ({required Object count}) => '視聴した部分から取得した字幕の数：${count}。',
+			'subtitleCapture.playbackEnded' => '再生が終了しました。キャプチャした文字起こしは破棄されました。',
+			'subtitleCapture.playbackChanged' => '再生が変更されました。キャプチャした文字起こしは破棄されました。',
+			'subtitleCapture.audioTrackChanged' => '音声トラックが変更されました。現在のトラックでキャプチャを再開してください。',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPUでローカル音声を認識しています。取得した音声パケット数：${count}。',
+			'subtitleCapture.captureUnavailable' => 'この音声出力ではデコードされた音声を取得できません。対応する音声出力をお試しください。',
+			'subtitleCapture.waitingForAudio' => 'デコードされた音声を待っています。再生が一時停止している可能性があります。',
+			'subtitleCapture.captureStopped' => 'ライブキャプチャが停止しました。再生を確認して、もう一度お試しください。',
+			'subtitleCapture.preparing' => 'ライブ字幕を準備しています…',
+			'subtitleCapture.downloadingDetector' => '音声検出器をダウンロードしています…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => '音声検出器をダウンロードしています（${percent}%）…',
+			'subtitleCapture.transcribing' => '音声をローカルで文字起こししています…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => '音声をローカルで文字起こししています（${percent}%）…',
+			'subtitleCapture.translating' => '音声をローカルで英語に翻訳しています…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => '音声をローカルで英語に翻訳しています（${percent}%）…',
+			'subtitleCapture.processingAudio' => '音声をローカルで処理しています…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '音声をローカルで処理しています（${percent}%）…',
+			'subtitleCapture.cpuFallback' => 'GPUでの音声処理に失敗しました。CPUで再試行しています…',
 			_ => null,
 		};
 	}

@@ -113,6 +113,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$bg householdSetup = _Translations$householdSetup$bg._(_root);
 	@override late final _Translations$issueReport$bg issueReport = _Translations$issueReport$bg._(_root);
 	@override late final _Translations$romm$bg romm = _Translations$romm$bg._(_root);
+	@override late final _Translations$subtitleCapture$bg subtitleCapture = _Translations$subtitleCapture$bg._(_root);
 }
 
 // Path: app
@@ -4175,6 +4176,41 @@ class _Translations$romm$bg extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$bg extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$bg._(TranslationsBg root) : this._root = root, super.internal(root);
+
+	final TranslationsBg _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Зареждане на локалния модел за реч…';
+	@override String loadingModelProgress({required Object percent}) => 'Зареждане на локалния модел за реч (${percent}%)…';
+	@override String get downloadingModel => 'Изтегляне на модела за реч…';
+	@override String downloadingModelProgress({required Object percent}) => 'Изтегляне на модела за реч (${percent}%)…';
+	@override String get capturing => 'Декодираното аудио се прихваща локално. Субтитрите ще се появят скоро.';
+	@override String get startFailed => 'Субтитрите на живо не можаха да стартират. Проверете аудиоизхода и опитайте отново.';
+	@override String get inferenceFailed => 'Разпознаването на реч е неуспешно. Спрете прихващането и опитайте отново.';
+	@override String get noSpeech => 'Не бяха създадени субтитри от речта. Проверете аудиопистата и опитайте отново.';
+	@override String captured({required Object count}) => 'Създадени субтитри от гледаната част: ${count}.';
+	@override String get playbackEnded => 'Възпроизвеждането приключи. Прихванатият текст беше изтрит.';
+	@override String get playbackChanged => 'Възпроизвеждането се промени. Прихванатият текст беше изтрит.';
+	@override String get audioTrackChanged => 'Аудиопистата се промени. Стартирайте прихващането отново за текущата писта.';
+	@override String listening({required Object count}) => 'Локално прослушване чрез CPU. Прихванати аудиопакети: ${count}.';
+	@override String get captureUnavailable => 'Декодираното аудио не е достъпно през този аудиоизход. Опитайте поддържан аудиоизход.';
+	@override String get waitingForAudio => 'Изчакване на декодирано аудио. Възпроизвеждането може да е на пауза.';
+	@override String get captureStopped => 'Прихващането на живо спря. Проверете възпроизвеждането и опитайте отново.';
+	@override String get preparing => 'Подготовка на субтитрите на живо…';
+	@override String get downloadingDetector => 'Изтегляне на детектора за реч…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Изтегляне на детектора за реч (${percent}%)…';
+	@override String get transcribing => 'Локално транскрибиране на аудиото…';
+	@override String transcribingProgress({required Object percent}) => 'Локално транскрибиране на аудиото (${percent}%)…';
+	@override String get translating => 'Локален превод на речта на английски…';
+	@override String translatingProgress({required Object percent}) => 'Локален превод на речта на английски (${percent}%)…';
+	@override String get processingAudio => 'Локална обработка на аудиото…';
+	@override String processingAudioProgress({required Object percent}) => 'Локална обработка на аудиото (${percent}%)…';
+	@override String get cpuFallback => 'Обработката на речта чрез GPU е неуспешна. Повторен опит чрез CPU…';
 }
 
 // Path: appIcon.names
@@ -9209,6 +9245,32 @@ extension on TranslationsBg {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Зареждане на локалния модел за реч…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Зареждане на локалния модел за реч (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Изтегляне на модела за реч…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Изтегляне на модела за реч (${percent}%)…',
+			'subtitleCapture.capturing' => 'Декодираното аудио се прихваща локално. Субтитрите ще се появят скоро.',
+			'subtitleCapture.startFailed' => 'Субтитрите на живо не можаха да стартират. Проверете аудиоизхода и опитайте отново.',
+			'subtitleCapture.inferenceFailed' => 'Разпознаването на реч е неуспешно. Спрете прихващането и опитайте отново.',
+			'subtitleCapture.noSpeech' => 'Не бяха създадени субтитри от речта. Проверете аудиопистата и опитайте отново.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Създадени субтитри от гледаната част: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Възпроизвеждането приключи. Прихванатият текст беше изтрит.',
+			'subtitleCapture.playbackChanged' => 'Възпроизвеждането се промени. Прихванатият текст беше изтрит.',
+			'subtitleCapture.audioTrackChanged' => 'Аудиопистата се промени. Стартирайте прихващането отново за текущата писта.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Локално прослушване чрез CPU. Прихванати аудиопакети: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Декодираното аудио не е достъпно през този аудиоизход. Опитайте поддържан аудиоизход.',
+			'subtitleCapture.waitingForAudio' => 'Изчакване на декодирано аудио. Възпроизвеждането може да е на пауза.',
+			'subtitleCapture.captureStopped' => 'Прихващането на живо спря. Проверете възпроизвеждането и опитайте отново.',
+			'subtitleCapture.preparing' => 'Подготовка на субтитрите на живо…',
+			'subtitleCapture.downloadingDetector' => 'Изтегляне на детектора за реч…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Изтегляне на детектора за реч (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Локално транскрибиране на аудиото…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Локално транскрибиране на аудиото (${percent}%)…',
+			'subtitleCapture.translating' => 'Локален превод на речта на английски…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Локален превод на речта на английски (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Локална обработка на аудиото…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Локална обработка на аудиото (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Обработката на речта чрез GPU е неуспешна. Повторен опит чрез CPU…',
 			_ => null,
 		};
 	}

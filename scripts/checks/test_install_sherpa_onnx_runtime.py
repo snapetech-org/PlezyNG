@@ -89,6 +89,12 @@ class InstallSherpaOnnxRuntimeTest(unittest.TestCase):
             for name in INSTALLER.LIBRARIES:
                 (source / name).write_bytes(("locked:" + name).encode())
                 (bundle_lib / name).write_bytes(b"stale bundle copy")
+            self.assertEqual(
+                INSTALLER.resolve_runtime(config, "arm64"),
+                (source / "libonnxruntime.so").resolve(),
+            )
+            with self.assertRaisesRegex(ValueError, "runtime is missing"):
+                INSTALLER.resolve_runtime(config, "x64")
 
             result = type(
                 "Result",

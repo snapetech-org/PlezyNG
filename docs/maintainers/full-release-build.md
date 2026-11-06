@@ -226,3 +226,17 @@ checkouts and the verified source archive are removed after the workflow run;
 GitHub retains the workflow logs and release artifacts. The scratch directory
 and its receipt remain for review and should be cleaned only after the release
 has completed and its outputs have been transferred or retained deliberately.
+
+### Linux speech and neural runtime
+
+Ordinary Linux builds select the locked `sherpa_onnx_linux` ONNX Runtime for
+both speech and motion processing before CMake installs the bundle. PME still
+compiles against the pinned API-v27 SDK. This avoids installing a second ORT
+version and overwriting its symlink target later. The shared 1.28.2 runtime
+has been loaded in the pinned Ubuntu 24.04 container with API 27, and both the
+OpenVINO and WebGPU provider libraries registered successfully. This verifies
+runtime compatibility and packaging; it does not establish device inference
+performance or qualification.
+
+The standalone PME developer build retains its pinned default runtime, and
+explicit developer runtime/provider variants remain available.

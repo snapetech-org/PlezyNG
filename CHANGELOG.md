@@ -443,7 +443,7 @@
 - Keep temporary HLS sharing within its startup window for long-GOP sources by forcing keyframes at the segment cadence; verify that playlist and media segments remain token-scoped and the listener closes cleanly.
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
-## [3.0.1] - 2026-11-05
+## [3.0.1] - 2026-11-06
 
 - Adopt the Pleazyng name, artwork and package identities. Ship ordered native PCM capture for the new visualization and playback transcription features, and repair integrated Games, RomM, karaoke and offline conversion paths.
 

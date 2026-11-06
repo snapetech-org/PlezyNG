@@ -112,19 +112,6 @@ class _PlayerMockupState extends State<PlayerMockup> {
                   ],
                 ),
               ),
-              const ColoredBox(
-                color: Color(0xFF0A1118),
-                child: SizedBox(
-                  height: 28,
-                  width: double.infinity,
-                  child: Center(
-                    child: Text(
-                      'PLAYER UI MOCKUP · Sample video still / simulated controls',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF78D8CC), fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

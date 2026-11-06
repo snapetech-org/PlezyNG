@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
-  "source_sha": "b13b18be264edeeba0d636d1d97fb8c595a6230e",
+  "source_sha": "3b0831c0a4755073a549eb74640137e4524909a3",
   "store_upload_eligible": false,
+  "visible_labels": false,
   "method": "Production Flutter widgets rendered by flutter_test with appearance fixtures; demo metadata; no device execution",
   "images": [
     {
@@ -12,10 +13,10 @@
       ],
       "dimensions": [
         1920,
-        1248
+        1200
       ],
-      "sha256": "108a32d7a3ce41c1a57bc7afba13da877755e4a7ab449f0ed63c161a6899fd66",
-      "kind": "labeled-widget-preview"
+      "sha256": "a7a8a48201ad4c6bdefcc528cc2bcbeb7047820b69b7a4b50b992c3856e754eb",
+      "kind": "widget-preview"
     },
     {
       "name": "phone-player-mockup-preview.png",
@@ -25,10 +26,10 @@
       ],
       "dimensions": [
         2400,
-        1128
+        1080
       ],
-      "sha256": "d74e6660f7f3dfc99b9a93fa89c5e516a2bd7041b467beb18540e832ad6c37d2",
-      "kind": "labeled-widget-preview"
+      "sha256": "bf37ba9269165bd119ecd2573d778de375af9dc7949ef78373a12ce88009fc57",
+      "kind": "widget-preview"
     }
   ],
   "kind": "player-ui-mockup",

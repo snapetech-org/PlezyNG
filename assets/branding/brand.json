@@ -4588,6 +4588,22 @@
         1024
       ],
       "appearance": "light"
+    },
+    {
+      "path": "docs/maintainers/store-listing-assets/amazon/fire-tv-icon-1280x720.png",
+      "role": "feature",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "path": "docs/maintainers/store-listing-assets/amazon/fire-tv-background-1920x1080.png",
+      "role": "feature",
+      "size": [
+        1920,
+        1080
+      ]
     }
   ],
   "sources": {

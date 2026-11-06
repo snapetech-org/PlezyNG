@@ -14,6 +14,14 @@ class PlatformCoverageTest(unittest.TestCase):
     def test_complete_platform_matrix(self):
         self.assertEqual(missing_assets(self.names), [])
 
+    def test_firetv_is_required_even_without_store_secrets(self):
+        self.names.remove('pleazyng-amazon-firetv.apk')
+        self.assertEqual(missing_assets(self.names), ['Fire TV / Stick: pleazyng-amazon-firetv.apk'])
+
+    def test_firetv_requires_verification_evidence(self):
+        self.names.remove('pleazyng-amazon-firetv-provenance.json')
+        self.assertEqual(missing_assets(self.names), ['Fire TV / Stick: pleazyng-amazon-firetv-provenance.json'])
+
     def test_webos_cannot_be_replaced_with_a_candidate_build_receipt(self):
         self.names = {name for name in self.names if not name.endswith('.ipk')}
         self.names.add('webos-candidate-build-success.json')

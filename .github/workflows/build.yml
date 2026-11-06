@@ -36,6 +36,7 @@ on:
           - release
           - webos-validation
           - macos-validation
+          - android-validation
         default: release
       build_version:
         description: Semantic version for artifact names; releases reuse a tag on main only when later commits contain allowlisted release infrastructure changes
@@ -194,12 +195,16 @@ jobs:
             echo "GPU subtitle backends are available only in full build mode." >&2
             exit 1
           fi
-          if [[ "$MODE" != "release" && "$MODE" != "webos-validation" && "$MODE" != "macos-validation" ]]; then
+          if [[ "$MODE" != "release" && "$MODE" != "webos-validation" && "$MODE" != "macos-validation" && "$MODE" != "android-validation" ]]; then
             echo "Unsupported platform mode: $MODE" >&2
             exit 1
           fi
           if [[ "$MODE" == "webos-validation" && "$ACTION" != "build" ]]; then
             echo "webOS-only validation requires the build action." >&2
+            exit 1
+          fi
+          if [[ "$MODE" == "android-validation" && "$ACTION" != "build" ]]; then
+            echo "Android-only validation requires the build action." >&2
             exit 1
           fi
           if [[ "$MODE" == "macos-validation" && "$ACTION" != "build" ]]; then
@@ -225,8 +230,8 @@ jobs:
             fi
             VERSION="$RELEASE_TAG"
           fi
-          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" || "$MODE" != "release" || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
-            echo "The hybrid execution profile requires a full CPU-backend release build from refs/heads/main." >&2
+          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" || ( "$MODE" != "release" && "$MODE" != "android-validation" ) || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
+            echo "The hybrid execution profile requires a CPU-backend release or Android validation build from refs/heads/main." >&2
             exit 1
           fi
           if [[ "$MODE" == "release" && "$VERSION" == "3.0.0" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
@@ -257,6 +262,11 @@ jobs:
             RELEASE_TAG=""
             VERSION=""
             INCLUDE_WEBOS_BUILD=true
+            INCLUDE_WEBOS_RELEASE=false
+            INCLUDE_TIZEN_BUILD=false
+            INCLUDE_APPLE_STORE_BUILD=false
+          elif [[ "$MODE" == "android-validation" ]]; then
+            INCLUDE_WEBOS_BUILD=false
             INCLUDE_WEBOS_RELEASE=false
             INCLUDE_TIZEN_BUILD=false
             INCLUDE_APPLE_STORE_BUILD=false
@@ -365,12 +375,16 @@ jobs:
             echo "runner_pool must be 'private' for the broker route used by constrained jobs." >&2
             exit 1
           fi
-          if [[ "$MODE" != "release" && "$MODE" != "webos-validation" && "$MODE" != "macos-validation" ]]; then
+          if [[ "$MODE" != "release" && "$MODE" != "webos-validation" && "$MODE" != "macos-validation" && "$MODE" != "android-validation" ]]; then
             echo "Unsupported platform mode: $MODE" >&2
             exit 1
           fi
           if [[ "$MODE" == "webos-validation" && "$ACTION" != "build" ]]; then
             echo "webOS-only validation requires the build action." >&2
+            exit 1
+          fi
+          if [[ "$MODE" == "android-validation" && "$ACTION" != "build" ]]; then
+            echo "Android-only validation requires the build action." >&2
             exit 1
           fi
           if [[ "$MODE" == "macos-validation" && "$ACTION" != "build" ]]; then
@@ -466,6 +480,11 @@ jobs:
           echo "This manual run builds only the WebOS ARM package on the private Linux JIT route."
           echo "No draft release is created."
 
+      - name: Validate Android-only mode input
+        if: ${{ steps.request.outputs.mode == 'android-validation' }}
+        run: |
+          echo "Build signed Android and Fire TV artifacts only; no release or store submission."
+
       - name: Validate macOS-only mode input
         if: ${{ steps.request.outputs.mode == 'macos-validation' }}
         run: |
@@ -473,7 +492,7 @@ jobs:
           echo "No draft release is created."
 
   build-android:
-    if: ${{ inputs.reuse_android_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ inputs.reuse_android_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
     needs: validate-trusted-ref
     timeout-minutes: 360
     env:
@@ -489,26 +508,26 @@ jobs:
           persist-credentials: false
 
       - name: Setup Java
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5
         with:
           distribution: "temurin"
           java-version: "21"
 
       - name: Configure Java downloads for the private JIT proxy
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.execution_profile != 'hybrid' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && needs.validate-trusted-ref.outputs.execution_profile != 'hybrid' }}
         run: python3 scripts/prepare_android_sdk.py proxy
 
       - name: Restore Android FFmpeg source cache
         id: ffmpeg-source-cache
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ runner.temp }}/pleazyng-ffmpeg-source
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Prepare verified Android FFmpeg source archive
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         shell: bash
         env:
           PLEZY_EXECUTION_PROFILE: ${{ needs.validate-trusted-ref.outputs.execution_profile }}
@@ -520,29 +539,29 @@ jobs:
           fi
 
       - name: Save Android FFmpeg source cache
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.ffmpeg-source-cache.outputs.cache-hit != 'true' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && steps.ffmpeg-source-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ runner.temp }}/pleazyng-ffmpeg-source
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-ffmpeg-source-${{ hashFiles('android/app/build.gradle.kts') }}
 
       - name: Setup Android SDK
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
         with:
           cmdline-tools-version: '15859902'
           log-accepted-android-sdk-licenses: false
 
       - name: Install the pinned Android SDK, NDK, and CMake
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.execution_profile != 'hybrid' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && needs.validate-trusted-ref.outputs.execution_profile != 'hybrid' }}
         run: python3 scripts/prepare_android_sdk.py install
 
       - name: Install pinned Android SDK, NDK, and CMake with direct egress
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' }}
         run: python3 scripts/prepare_android_sdk.py install --direct-egress
 
       - name: Setup Flutter
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: "stable"
@@ -552,7 +571,7 @@ jobs:
           pub-cache: false
 
       - name: Cache Pub dependencies
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: |
@@ -560,7 +579,7 @@ jobs:
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache Gradle
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: |
@@ -569,16 +588,16 @@ jobs:
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
       - name: Install shared Gradle repositories
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         run: python3 scripts/prepare_gradle_repositories.py
 
       - name: Install dependencies
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         run: flutter pub get --enforce-lockfile --no-example
 
       - name: Configure Android signing
         id: android-signing
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
@@ -593,9 +612,8 @@ jobs:
             if [[ -n "$value" ]]; then configured=$((configured + 1)); else missing=$((missing + 1)); fi
           done
           if (( configured == 0 )); then
-            echo "Android signing secrets are not configured; this release APK will use the CI debug key."
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "Signed Fire TV release assets require all four Android signing secrets." >&2
+            exit 1
           fi
           if (( missing != 0 )); then
             echo "Android signing secrets are incomplete; configure all four Android signing secrets." >&2
@@ -635,27 +653,33 @@ jobs:
           PY
 
       - name: Build APKs
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         run: flutter build apk --release --split-per-abi ${{ env.RELEASE_DART_DEFINES }} --obfuscate --split-debug-info=debug-info/android-apk --extra-gen-snapshot-options=--save-obfuscation-map=debug-info/android-apk/obfuscation.map.json
 
       - name: Package APKs
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         run: |
           tar -czf pleazyng-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/pleazyng.apk/'
           tar -czf pleazyng-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/pleazyng.apk/'
           tar -czf pleazyng-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/pleazyng.apk/'
 
       - name: Build signed Android App Bundle
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && steps.android-signing.outputs.configured == 'true' }}
         run: |
           flutter build appbundle --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --obfuscate --split-debug-info=debug-info/android-play
           cp build/app/outputs/bundle/release/app-release.aab pleazyng-android-play.aab
 
       - name: Build signed Amazon Appstore APK
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && steps.android-signing.outputs.configured == 'true' }}
         run: |
-          AMAZON=1 ORG_GRADLE_PROJECT_openiapStore=amazon flutter build apk --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --dart-define=AMAZON_STORE=true --obfuscate --split-debug-info=debug-info/android-amazon
+          AMAZON=1 ORG_GRADLE_PROJECT_openiapStore=amazon flutter build apk --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --dart-define=AMAZON_STORE=true --dart-define=LIFETIME_UNLOCK_PRODUCT_ID=pleazyng_lifetime_unlock --obfuscate --split-debug-info=debug-info/android-amazon
           cp build/app/outputs/flutter-apk/app-release.apk pleazyng-amazon-firetv.apk
+
+      - name: Verify signed Fire TV release APK
+        run: >-
+          python3 scripts/verify_firetv_apk.py pleazyng-amazon-firetv.apk
+          --build-tools "$ANDROID_HOME/build-tools/36.1.0"
+          --output pleazyng-amazon-firetv-provenance.json
 
       - name: Capture Android JIT memory diagnostics
         if: always()
@@ -675,11 +699,11 @@ jobs:
           fi
 
       - name: Clean up keystore
-        if: ${{ always() && needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ always() && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         run: rm -f android/app/upload-keystore.jks android/key.properties
 
       - name: Attest APKs
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
@@ -688,15 +712,16 @@ jobs:
             pleazyng-android-x86_64.tar.gz
 
       - name: Attest Android App Bundle
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && steps.android-signing.outputs.configured == 'true' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
             pleazyng-android-play.aab
             pleazyng-amazon-firetv.apk
+            pleazyng-amazon-firetv-provenance.json
 
       - name: Upload APKs
-        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: android-apk
@@ -706,6 +731,7 @@ jobs:
             pleazyng-android-x86_64.tar.gz
             pleazyng-android-play.aab
             pleazyng-amazon-firetv.apk
+            pleazyng-amazon-firetv-provenance.json
           if-no-files-found: warn
 
   build-webos:
@@ -3051,9 +3077,8 @@ jobs:
             if [ -f artifacts/android-apk/pleazyng-android-play.aab ]; then
               echo artifacts/android-apk/pleazyng-android-play.aab
             fi
-            if [ -f artifacts/android-apk/pleazyng-amazon-firetv.apk ]; then
-              echo artifacts/android-apk/pleazyng-amazon-firetv.apk
-            fi
+            echo artifacts/android-apk/pleazyng-amazon-firetv.apk
+            echo artifacts/android-apk/pleazyng-amazon-firetv-provenance.json
             echo 'artifacts/linux-x64/*'
             echo 'artifacts/linux-arm64/*'
             echo appcast.xml

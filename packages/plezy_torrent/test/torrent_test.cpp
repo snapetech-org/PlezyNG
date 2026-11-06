@@ -22,6 +22,7 @@ namespace lt = libtorrent;
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 void verify_transfer(bool multiple_files, bool v2 = false) {
+  std::cout << "transfer multiple_files=" << multiple_files << " v2=" << v2 << std::endl;
   assert(pt_abi_version() == 1);
   assert(pt_open("invalid", "/tmp", -1, 1LL << 26, 16384) == nullptr);
   const auto root = fs::temp_directory_path() / ("plezy-p2p-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
@@ -29,7 +30,10 @@ void verify_transfer(bool multiple_files, bool v2 = false) {
   std::vector<char> data(2 * 1024 * 1024 + 271);
   for (size_t i = 0; i < data.size(); ++i) data[i] = static_cast<char>((i * 31 + i / 251) % 256);
   fs::create_directories(root / "seed" / "pack");
-  std::ofstream out(root / "seed" / "pack" / "fixture.mp4", std::ios::binary);
+  // A v2 single-file torrent has no enclosing directory in its file tree.
+  // Write exactly the path advertised by the fixture for both versions.
+  const auto media_path = multiple_files ? "pack/fixture.mp4" : "fixture.mp4";
+  std::ofstream out(root / "seed" / media_path, std::ios::binary);
   out.write(data.data(), data.size()); out.close();
   lt::file_storage files;
   if (multiple_files) {
@@ -39,7 +43,7 @@ void verify_transfer(bool multiple_files, bool v2 = false) {
     std::string padding(12345, 'x'); prefix << padding; prefix.close();
     files.add_file("pack/readme.txt", padding.size());
   }
-  files.add_file("pack/fixture.mp4", data.size());
+  files.add_file(media_path, data.size());
   lt::create_torrent create(files, 16 * 1024, v2 ? lt::create_torrent::v2_only : lt::create_torrent::v1_only);
   lt::set_piece_hashes(create, (root / "seed").string());
   auto metadata = std::make_shared<lt::torrent_info>(create.generate());
@@ -83,6 +87,16 @@ void verify_transfer(bool multiple_files, bool v2 = false) {
       deadline = std::chrono::steady_clock::now() + 40s;
       while (read == -2 && std::chrono::steady_clock::now() < deadline) {
         read = pt_read(stream, position, buffer.data(), end - position); std::this_thread::sleep_for(50ms);
+      }
+      if (read <= 0) {
+        std::vector<lt::alert*> alerts;
+        seed.pop_alerts(&alerts);
+        for (auto* alert : alerts) std::cerr << alert->message() << std::endl;
+        const auto status = source.status();
+        std::cerr << "read=" << read << " position=" << position
+                  << " size=" << size << " seed peers=" << status.num_peers
+                  << " uploaded=" << status.total_payload_upload
+                  << " error=" << status.errc.message() << std::endl;
       }
       assert(read > 0);
       assert(std::equal(buffer.begin(), buffer.begin() + read, reinterpret_cast<uint8_t*>(data.data()) + position));

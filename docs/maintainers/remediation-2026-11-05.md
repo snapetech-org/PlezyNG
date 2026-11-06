@@ -12,7 +12,7 @@ release qualification. Changes are committed directly to `main` in small batches
 | D02-D03 | Recording stop and interrupted-file salvage | Implemented: finish in-flight resources; retain nonempty captures and recover journaled partials | Early EOF and mid-segment deadline regression cases added; execution pending |
 | D04-D05 | HLS rendition/map handling | Implemented as self-contained local HLS archives with separate audio, per-segment maps, AES-128 resources, discontinuities and programme timestamps; shared recording playback/deletion/recovery integrated | Archive regression cases added; native player/device execution pending |
 | D06 | Bound credential payload caching; avoid caching encryption outputs | Implemented | Regression cases added; execution pending |
-| D07 | Native P2P hash capability alignment | Implemented: SHA-256 multihash magnets and native v2 acceptance | Native v2 transfer regression added; execution pending |
+| D07 | Native P2P hash capability alignment | Implemented: SHA-256 multihash magnets and native v2 acceptance | Native v1, v2 and multi-file transfer, verified range/seek/EOF regressions compile and pass on Linux; platform/device qualification pending |
 | D08 | External stream server reporting | Implemented: matched online items use their server reporting client with offline fallback | Provider/server session acceptance pending |
 | D09 | Progressive unified search | Implemented: independent source results, per-server title/people progress, generation/profile guarded publishing and usable results while remaining legs load | Partial publication and A/B/A race regressions added; execution pending |
 | D12 | Provider progress outbox rejects its own action kinds | Fixed: valid position/finished/restart/restore/cloud/podcast progress payloads are dispatched by their typed payload and checked against the outbox key | Source trace completed; provider acceptance pending |
@@ -24,7 +24,7 @@ release qualification. Changes are committed directly to `main` in small batches
 | D18 | One unreadable recording prevents all startup recovery and scheduler ticks | Recording recovery isolates filesystem/format errors per row, preserves files and journal paths, records a retryable recovery error, and continues other rows. Database failures still propagate | Unreadable-archive plus healthy-recording regression added; Flutter execution pending |
 | D19 | Database bootstrap marks recordings failed before the salvage worker can find them | Bootstrap now preserves interrupted/app_interrupted; the repository adopts only the exact legacy failed/interrupted combination and leaves ordinary failed captures alone | Actual production SQL executed against SQLite and preserves the required state. Production-open and legacy-adoption Dart regressions added; Flutter execution pending |
 | D10 | Translation fallbacks and localized service status | Live-capture and file speech download/loading/transcription/translation/inference/CPU-fallback progress now carry typed phases/counts; UI resolves selected-locale messages and numbers at build time. English/Arabic/German status catalogs and generated accessors added, with machine-authored provenance. Other untranslated feature messages remain explicitly tracked | Locale/source/placeholder checks pass. Typed status/language-resolution cases added; Flutter execution, remaining translations and native-speaker/large-text/RTL qualification pending |
-| G01 | Native visualizer delivery | Reconciled PR #82 with ABI v2 MilkRust pin, native helpers, process/lifetime containment, platform runtime/source/notice builders, webOS SoLoud PCM and required bundle admission. Preserved current workflow policy; desktop/Android/Apple builders support local and compatible hosted/private workers | Five C++ regression binaries compile/pass; 3 receipt checks, 15 Tizen package checks and 8 webOS package checks pass. Actual Rust runtime, patched mpv artifacts, app/SDK packages and GPU/device qualification pending |
+| G01 | Native visualizer delivery | Reconciled PR #82 with ABI v2 MilkRust pin, native helpers, process/lifetime containment, platform runtime/source/notice builders, webOS SoLoud PCM and required bundle admission. Preserved current workflow policy; desktop/Android/Apple builders support local and compatible hosted/private workers | Five C++ regression binaries compile/pass; 3 receipt checks, 15 Tizen package checks and 8 webOS package checks pass. Linux Rust ABI v2 build, source/notice packaging and actual GL/GLES bundled-preset rendering pass on Mesa llvmpipe. Patched mpv artifacts, app/SDK packages and hardware/device qualification pending |
 | G02 | Signed catalog activation | Publication/provisioning tooling retained; app continues to fail closed on its empty public root | Latest MilkRust PR #20 still records content/catalog-trust.json as not-provisioned with no keys. Production signing custody and reviewed public keys are unavailable; no keys or qualifications were fabricated |
 | G03 | Live/DVR subtitle capture | Implemented: decoded-route capability gate; two-hour cue history; explicit DVR seeks preserve cues; unexplained live clock rollback clears the old epoch; same-channel server DVR reopen suspends/rebases capture; channel/audio changes invalidate it | Clock/seek/format regression cases added; native route, rollover and server-DVR device execution pending |
 | G04 | P2P storage policy for large media | Implemented: per-profile 4/16/64/128/256 GiB choices, 64 GiB default, aggregate lease reservations, known-size checks and 512 MiB free-space reserve; native metadata checks the actual file requirement | Native transfer/large-file, low-space and concurrent-device execution pending |
@@ -42,6 +42,30 @@ release qualification. Changes are committed directly to `main` in small batches
 
 ### Follow-up integration checks
 
+The native torrent engine now passes real v1/v2 and multi-file transfers,
+metadata, verified byte ranges, reverse seeks and EOF under libtorrent 2.0.11.
+The v2 regression fixture had placed its seed under a directory absent from its
+single-file v2 metadata; it now writes the advertised path and prints useful
+failure diagnostics. This test does not establish large-file or mobile throughput.
+
+MilkRust's previous source pin could not build with `--locked`. The new exact
+pin `16490403726ba0240249b41903855583f4f9292d` carries its dependency-lock and
+native compiler repairs. The isolated build disables rustup self-update so it
+does not look for a launcher inside its temporary Cargo home. The full Linux
+builder now produces the ABI v2 library, source archive, notices and receipt.
+Both bundled presets render 12 distinct nonblank frames from real PCM through
+desktop OpenGL and GLES on Mesa llvmpipe. The reusable smoke script also rejects
+identical output across different presets and terminates a driver hang after
+30 seconds. This establishes software rendering, not hardware qualification.
+
+Two supplementary MilkRust source-test files report 10 passes and three failed
+assertions: `resource_limits` still expects shape index 63 to be accepted where
+the runtime now enforces MilkDrop 3's four-shape contract; `shader_translation`
+expects an older texture-call spelling and the formerly missing WGSL remainder
+path. Those upstream fixtures remain unresolved; no all-green MilkRust suite or
+pixel-reference parity is claimed.
+
+
 Search cancellation now preserves the prior visible result set, while selected
 kind/People filters remain active until all sources finish. Optional Steam
 relay configuration no longer throws while settings render. Diagnostic and
@@ -49,7 +73,10 @@ OAuth clients accept a validated per-instance endpoint so tests exercise the
 same request construction without depending on compiled deployment secrets.
 Targeted search/log/podcast checks pass; the follow-up migration, Games, callback
 and theme batch passes 54 cases with seven explicit platform/environment skips.
-The broad Flutter run is still in progress. It exposed a newly introduced
+The broad Flutter run is still in progress. The 96-case sequential rerun across
+search, startup recovery, dialogs, Discover and NFS setup passes. The optional
+Go server and healthcheck packages also pass their complete test suites under
+Go 1.27.3. The broad run exposed a newly introduced
 focus-button assumption that scoped Material themes always contain MonoTokens;
 the synchronized main control now supplies a fallback when that extension is absent.
 
@@ -108,16 +135,18 @@ The production recording-bootstrap UPDATE was extracted and executed against
 SQLite to verify its interrupted/app_interrupted state contract. Recipe/fixture
 checks do not establish that an actual application package was built.
 
-Flutter/Dart, Go, CMake and platform SDKs are absent in this environment. The
-connected GitHub tools support source commits but expose neither workflow
-dispatch nor release-asset upload; existing CI/release workflows are opt-in. No
-workflow trigger was changed to bypass that boundary, and no full application
-build or device qualification is claimed.
+Flutter 3.47.1 / Dart 3.13.1, Go 1.27.3, Rust 1.97.0, CMake and a local Clang
+compiler are available at this checkpoint. Apple/Android/TV SDKs and the Linux
+application development dependencies are not installed here. The connected
+GitHub tools expose neither workflow dispatch nor release-asset upload;
+existing CI/release workflows remain opt-in. No workflow trigger was changed
+to bypass that boundary, and no full application package or device qualification
+is claimed.
 
 Remaining source/product scope includes the explicit translation backlog,
 non-video detached surfaces and application-crash playback restart, karaoke
 licensed catalog/hosted-sharing/proprietary-format/live-monitor scope, and
-packaged signed emulator-core delivery. Production catalog root provisioning
+platform emulator-core package/signing qualification. Production catalog root provisioning
 requires reviewed public keys and real signing custody. The existing v3.0.0
 webOS delivery gap requires an eligible artifact and release attachment. The
 per-feature acceptance column remains authoritative; this checkpoint does not

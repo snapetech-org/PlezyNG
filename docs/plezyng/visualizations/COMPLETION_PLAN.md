@@ -824,7 +824,7 @@ MilkRust PR #20 now includes commit 467adacec200d0fd5551cf5b5c9dee9d0621f750 (AB
 
 ## 2026-10-30 final code integration
 
-The final MilkRust source pin is `bbda9e997a47e2ca4b820e790d65ea6caeaeb8e7` (ABI v2), including lexical sampler
+The final MilkRust source pin is `16490403726ba0240249b41903855583f4f9292d` (ABI v2), including lexical sampler
 dimensions in the Butterchurn shader converter. PlezyNG's PR is reconciled with
 main `bf752e1e306aa3c9dcc85e066c7bd477dbe56ff8`, preserving its Android, Apple,
 Linux and Windows build fixes together with visualization packaging and native

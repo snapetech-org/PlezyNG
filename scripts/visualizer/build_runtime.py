@@ -119,7 +119,11 @@ def build(args):
                 env.pop(name, None)
         env.update(RUSTUP_HOME=str(work / "rustup"), CARGO_HOME=str(work / "cargo"), CARGO_TARGET_DIR=str(work / "target"))
         targets = [TARGETS[args.platform][a] for a in architectures]
-        run("rustup", "toolchain", "install", RUST, "--profile", "minimal", "--target", ",".join(targets), env=env)
+        # This build owns an isolated Cargo/Rustup home, not the host's
+        # rustup launcher. Its implicit self-update otherwise fails after
+        # successfully installing the toolchain into this temporary home.
+        run("rustup", "toolchain", "install", RUST, "--profile", "minimal",
+            "--no-self-update", "--target", ",".join(targets), env=env)
         apple_sdk = {"macos": "macosx", "ios": "iphoneos", "ios-simulator": "iphonesimulator",
                      "tvos": "appletvos", "tvos-simulator": "appletvsimulator"}.get(args.platform)
         if apple_sdk:

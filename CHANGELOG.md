@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Build the pinned MilkRust runtime with its corrected dependency lock and compiler fixes, keep isolated rustup installs independent, and verify bundled presets through actual GL/GLES rendering.
+- Correct the v2 torrent transfer fixture and update remote playback reporting and P2P storage documentation.
+
 - Preserve search results on cancellation and filters during partial responses, and keep optional relay absence from crashing settings.
 
 - Build and package the three default RomM emulator cores with the app, preserve their source/notices, validate Android delivery, and install the desktop host after bundle cleanup.

@@ -25,9 +25,11 @@ acknowledgements before resuming or advertising the media length.
 
 Reads translate the selected file's offset into torrent piece coordinates,
 prioritize seek targets and bounded read-ahead, and request disk reads only
-after libtorrent reports a verified piece. The defaults cap a lease at 4 GiB
-including boundary-piece allowance, 64 peer connections, eight cached pieces,
-and 256 KiB/s upload. Metadata rejects more than 10,000 files and pieces over
+after libtorrent reports a verified piece. Per-profile storage choices are
+4/16/64/128/256 GiB with a 64 GiB default, shared reservation accounting and
+512 MiB of free-space headroom. Native metadata includes boundary-piece
+allowance in the actual file requirement. Peer limits remain 64 connections,
+eight cached pieces and 256 KiB/s upload. Metadata rejects more than 10,000 files and pieces over
 16 MiB. The app permits two active or opening leases; reservation happens
 before any async metadata work. Each lease owns its session and
 private spool; player release, profile change and disabling native playback
@@ -49,7 +51,8 @@ Supported discovery is v1/v2 magnets, DHT, PEX and HTTP/UDP tracker hints.
 SHA-256 add-on hashes use the BEP 9 multihash topic (`urn:btmh:1220...`) and
 the native libtorrent 2 engine accepts either identity. HTTPS-only/private-tracker
 workflows remain outside this transport's current contract. Local discovery and
-automatic router port mapping are off. Native v2 regression execution is pending.
+automatic router port mapping are off. Native v1/v2 and multi-file transfer/seek/EOF regressions compile and pass on
+Linux; package/device qualification remains open.
 
 ## Packaging and OS work
 

@@ -1,7 +1,6 @@
 # Debrid, Stremio and remote streaming
 
-Status (2026-10-28): the connected-stream feature is on
-`codex/debrid-stremio-integration-20261028`. Native libtorrent playback and
+Status (2026-11-05): the connected-stream feature is integrated on `main`. Native libtorrent playback and
 source-build packaging, OS-scheduled provider preparation, and a persistent
 cloud/server canonical library are implemented. The existing shared player
 and mixed server/cloud/add-on episode queue remain the playback boundary.
@@ -52,9 +51,9 @@ Prepared 2026-10-27 (America/Regina). The planning baseline was inspected at
   flow, subtitle controls and PiP. Catalog-only streams also use that player
   and keep resume state source-local. Signed stream URLs and headers stay behind
   the session loopback gateway. Expired primary links get one single-flight
-  re-resolution of the same add-on candidate or provider job. Resume offsets
-  are durably queued for the owning server without sending an active “now
-  playing” session for an external stream.
+  re-resolution of the same add-on candidate or provider job. Matched online items report active sessions through their owning server client.
+  Resume offsets are also durably queued, with offline reconciliation when the
+  reporting client is unavailable. Catalog-only streams keep source-local state.
 - Catalog-only episode queues use the same player queue, previous/next flow,
   and controls as server playback. Queue rows retain stable catalog identity;
   the next cloud lease or Stremio stream is re-resolved on advance, so expiring
@@ -105,7 +104,7 @@ and the existing source sheet opens the chosen copy without adding a top-level
 navigation entry. Profile isolation and hidden libraries are respected.
 
 Native peer playback is an explicit opt-in in existing streaming settings.
-Eligible v1 magnet choices use pinned libtorrent sources through a private
+Eligible v1 and v2 magnet choices use pinned libtorrent sources through a private
 loopback byte-range lease in the shared player. Playback owns peer traffic and
 spool cleanup. Android, Apple, desktop, webOS and Tizen build/package hooks are
 included; local single-file and multi-file transfer/seek tests pass. Signed
@@ -146,8 +145,8 @@ help sentence at setup, rather than requiring users to learn the architecture.
 
 1. Implement Real-Debrid, AllDebrid, Premiumize and TorBox as native account,
    cloud-library and resolution adapters. Use each service's actual auth flow.
-   The current branch has account, supported stream-resolution paths, and
-   on-demand video-file browsing, but not a unified cloud catalog.
+   The app has account and supported stream-resolution paths, on-demand
+   video-file browsing, and persistent canonical cards joining verified copies.
 2. Implement the Stremio HTTP add-on protocol as a data adapter. The current
    branch supports manifests, catalogs, search/paging, metadata and streams.
    Run no add-on JavaScript, Node server, downloaded executable or arbitrary
@@ -172,8 +171,8 @@ help sentence at setup, rather than requiring users to learn the architecture.
     source-specific limits, and existing server progress-reporting behavior.
 11. No PlezyNG-hosted stream proxy or credential service is required for the core
     feature. Optional companion input and user-owned bridges remain optional.
-12. Commit implementation in coherent checkpoints on the owner-authorized PR
-    branch. Do not dispatch CI as part of this plan. For later authorized build/CI work, follow root `AGENTS.md`; compatible hosted runners may be used when their requirements fit.
+12. Commit implementation in coherent checkpoints on the owner-authorized target.
+    This remediation is committed directly to main; no branch is created. For later authorized build/CI work, follow root `AGENTS.md`; compatible hosted runners may be used when their requirements fit.
 
 ## Delivery scope
 

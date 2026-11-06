@@ -113,6 +113,7 @@ class TranslationsNb extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$nb householdSetup = _Translations$householdSetup$nb._(_root);
 	@override late final _Translations$issueReport$nb issueReport = _Translations$issueReport$nb._(_root);
 	@override late final _Translations$romm$nb romm = _Translations$romm$nb._(_root);
+	@override late final _Translations$subtitleCapture$nb subtitleCapture = _Translations$subtitleCapture$nb._(_root);
 }
 
 // Path: app
@@ -4175,6 +4176,41 @@ class _Translations$romm$nb extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$nb extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$nb._(TranslationsNb root) : this._root = root, super.internal(root);
+
+	final TranslationsNb _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Laster inn den lokale talemodellen…';
+	@override String loadingModelProgress({required Object percent}) => 'Laster inn den lokale talemodellen (${percent}%)…';
+	@override String get downloadingModel => 'Laster ned talemodellen…';
+	@override String downloadingModelProgress({required Object percent}) => 'Laster ned talemodellen (${percent}%)…';
+	@override String get capturing => 'Fanger opp dekodet lyd lokalt. Undertekster vises snart.';
+	@override String get startFailed => 'Direkteundertekster kunne ikke startes. Kontroller lydutgangen og prøv igjen.';
+	@override String get inferenceFailed => 'Talegjenkjenning mislyktes. Stopp lydfangsten og prøv igjen.';
+	@override String get noSpeech => 'Ingen undertekster ble laget fra talen. Kontroller lydsporet og prøv igjen.';
+	@override String captured({required Object count}) => 'Antall undertekstsegmenter fra den viste delen: ${count}.';
+	@override String get playbackEnded => 'Avspillingen er avsluttet. Den innsamlede transkripsjonen ble slettet.';
+	@override String get playbackChanged => 'Avspillingen ble endret. Den innsamlede transkripsjonen ble slettet.';
+	@override String get audioTrackChanged => 'Lydsporet ble endret. Start lydfangsten på nytt for det gjeldende sporet.';
+	@override String listening({required Object count}) => 'Lytter lokalt med CPU. Oppfangede lydpakker: ${count}.';
+	@override String get captureUnavailable => 'Dekodet lyd er ikke tilgjengelig via denne lydutgangen. Prøv en støttet lydutgang.';
+	@override String get waitingForAudio => 'Venter på dekodet lyd. Avspillingen kan være satt på pause.';
+	@override String get captureStopped => 'Direktefangsten stoppet. Kontroller avspillingen og prøv igjen.';
+	@override String get preparing => 'Forbereder direkteundertekster…';
+	@override String get downloadingDetector => 'Laster ned taledetektoren…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Laster ned taledetektoren (${percent}%)…';
+	@override String get transcribing => 'Transkriberer lyd lokalt…';
+	@override String transcribingProgress({required Object percent}) => 'Transkriberer lyd lokalt (${percent}%)…';
+	@override String get translating => 'Oversetter tale til engelsk lokalt…';
+	@override String translatingProgress({required Object percent}) => 'Oversetter tale til engelsk lokalt (${percent}%)…';
+	@override String get processingAudio => 'Behandler lyd lokalt…';
+	@override String processingAudioProgress({required Object percent}) => 'Behandler lyd lokalt (${percent}%)…';
+	@override String get cpuFallback => 'Talebehandling på GPU mislyktes. Prøver igjen med CPU…';
 }
 
 // Path: appIcon.names
@@ -9209,6 +9245,32 @@ extension on TranslationsNb {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Laster inn den lokale talemodellen…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Laster inn den lokale talemodellen (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Laster ned talemodellen…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Laster ned talemodellen (${percent}%)…',
+			'subtitleCapture.capturing' => 'Fanger opp dekodet lyd lokalt. Undertekster vises snart.',
+			'subtitleCapture.startFailed' => 'Direkteundertekster kunne ikke startes. Kontroller lydutgangen og prøv igjen.',
+			'subtitleCapture.inferenceFailed' => 'Talegjenkjenning mislyktes. Stopp lydfangsten og prøv igjen.',
+			'subtitleCapture.noSpeech' => 'Ingen undertekster ble laget fra talen. Kontroller lydsporet og prøv igjen.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Antall undertekstsegmenter fra den viste delen: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Avspillingen er avsluttet. Den innsamlede transkripsjonen ble slettet.',
+			'subtitleCapture.playbackChanged' => 'Avspillingen ble endret. Den innsamlede transkripsjonen ble slettet.',
+			'subtitleCapture.audioTrackChanged' => 'Lydsporet ble endret. Start lydfangsten på nytt for det gjeldende sporet.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Lytter lokalt med CPU. Oppfangede lydpakker: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Dekodet lyd er ikke tilgjengelig via denne lydutgangen. Prøv en støttet lydutgang.',
+			'subtitleCapture.waitingForAudio' => 'Venter på dekodet lyd. Avspillingen kan være satt på pause.',
+			'subtitleCapture.captureStopped' => 'Direktefangsten stoppet. Kontroller avspillingen og prøv igjen.',
+			'subtitleCapture.preparing' => 'Forbereder direkteundertekster…',
+			'subtitleCapture.downloadingDetector' => 'Laster ned taledetektoren…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Laster ned taledetektoren (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Transkriberer lyd lokalt…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Transkriberer lyd lokalt (${percent}%)…',
+			'subtitleCapture.translating' => 'Oversetter tale til engelsk lokalt…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Oversetter tale til engelsk lokalt (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Behandler lyd lokalt…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Behandler lyd lokalt (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Talebehandling på GPU mislyktes. Prøver igjen med CPU…',
 			_ => null,
 		};
 	}

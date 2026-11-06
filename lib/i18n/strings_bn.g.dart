@@ -113,6 +113,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$bn householdSetup = _Translations$householdSetup$bn._(_root);
 	@override late final _Translations$issueReport$bn issueReport = _Translations$issueReport$bn._(_root);
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
+	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
 }
 
 // Path: app
@@ -4175,6 +4176,41 @@ class _Translations$romm$bn extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$bn extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'স্থানীয় বাক্‌ শনাক্তকরণ মডেল লোড হচ্ছে…';
+	@override String loadingModelProgress({required Object percent}) => 'স্থানীয় বাক্‌ শনাক্তকরণ মডেল লোড হচ্ছে (${percent}%)…';
+	@override String get downloadingModel => 'বাক্‌ শনাক্তকরণ মডেল ডাউনলোড হচ্ছে…';
+	@override String downloadingModelProgress({required Object percent}) => 'বাক্‌ শনাক্তকরণ মডেল ডাউনলোড হচ্ছে (${percent}%)…';
+	@override String get capturing => 'ডিকোড করা অডিও এই ডিভাইসে ক্যাপচার করা হচ্ছে। শীঘ্রই সাবটাইটেল দেখা যাবে।';
+	@override String get startFailed => 'লাইভ সাবটাইটেল চালু করা যায়নি। অডিও আউটপুট পরীক্ষা করে আবার চেষ্টা করুন।';
+	@override String get inferenceFailed => 'বাক্‌ শনাক্তকরণ ব্যর্থ হয়েছে। ক্যাপচার বন্ধ করে আবার চেষ্টা করুন।';
+	@override String get noSpeech => 'কথা থেকে কোনো সাবটাইটেল তৈরি হয়নি। অডিও ট্র্যাক পরীক্ষা করে আবার চেষ্টা করুন।';
+	@override String captured({required Object count}) => 'দেখা অংশের কথা থেকে তৈরি সাবটাইটেলের সংখ্যা: ${count}।';
+	@override String get playbackEnded => 'প্লেব্যাক শেষ হয়েছে। ক্যাপচার করা প্রতিলিপি মুছে ফেলা হয়েছে।';
+	@override String get playbackChanged => 'প্লেব্যাক পরিবর্তিত হয়েছে। ক্যাপচার করা প্রতিলিপি মুছে ফেলা হয়েছে।';
+	@override String get audioTrackChanged => 'অডিও ট্র্যাক পরিবর্তিত হয়েছে। বর্তমান ট্র্যাকে আবার ক্যাপচার শুরু করুন।';
+	@override String listening({required Object count}) => 'CPU ব্যবহার করে এই ডিভাইসে শোনা হচ্ছে। ক্যাপচার করা অডিও প্যাকেট: ${count}।';
+	@override String get captureUnavailable => 'এই অডিও আউটপুটে ডিকোড করা অডিও পাওয়া যাচ্ছে না। সমর্থিত কোনো অডিও আউটপুট ব্যবহার করুন।';
+	@override String get waitingForAudio => 'ডিকোড করা অডিওর জন্য অপেক্ষা করা হচ্ছে। প্লেব্যাক বিরতিতে থাকতে পারে।';
+	@override String get captureStopped => 'লাইভ ক্যাপচার বন্ধ হয়েছে। প্লেব্যাক পরীক্ষা করে আবার চেষ্টা করুন।';
+	@override String get preparing => 'লাইভ সাবটাইটেল প্রস্তুত হচ্ছে…';
+	@override String get downloadingDetector => 'কথা শনাক্ত করার ডিটেক্টর ডাউনলোড হচ্ছে…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'কথা শনাক্ত করার ডিটেক্টর ডাউনলোড হচ্ছে (${percent}%)…';
+	@override String get transcribing => 'এই ডিভাইসে অডিও থেকে প্রতিলিপি তৈরি হচ্ছে…';
+	@override String transcribingProgress({required Object percent}) => 'এই ডিভাইসে অডিও থেকে প্রতিলিপি তৈরি হচ্ছে (${percent}%)…';
+	@override String get translating => 'এই ডিভাইসে কথার ইংরেজি অনুবাদ হচ্ছে…';
+	@override String translatingProgress({required Object percent}) => 'এই ডিভাইসে কথার ইংরেজি অনুবাদ হচ্ছে (${percent}%)…';
+	@override String get processingAudio => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে…';
+	@override String processingAudioProgress({required Object percent}) => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে (${percent}%)…';
+	@override String get cpuFallback => 'GPU-তে বাক্‌ প্রক্রিয়াকরণ ব্যর্থ হয়েছে। CPU-তে আবার চেষ্টা করা হচ্ছে…';
 }
 
 // Path: appIcon.names
@@ -9209,6 +9245,32 @@ extension on TranslationsBn {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'স্থানীয় বাক্‌ শনাক্তকরণ মডেল লোড হচ্ছে…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'স্থানীয় বাক্‌ শনাক্তকরণ মডেল লোড হচ্ছে (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'বাক্‌ শনাক্তকরণ মডেল ডাউনলোড হচ্ছে…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'বাক্‌ শনাক্তকরণ মডেল ডাউনলোড হচ্ছে (${percent}%)…',
+			'subtitleCapture.capturing' => 'ডিকোড করা অডিও এই ডিভাইসে ক্যাপচার করা হচ্ছে। শীঘ্রই সাবটাইটেল দেখা যাবে।',
+			'subtitleCapture.startFailed' => 'লাইভ সাবটাইটেল চালু করা যায়নি। অডিও আউটপুট পরীক্ষা করে আবার চেষ্টা করুন।',
+			'subtitleCapture.inferenceFailed' => 'বাক্‌ শনাক্তকরণ ব্যর্থ হয়েছে। ক্যাপচার বন্ধ করে আবার চেষ্টা করুন।',
+			'subtitleCapture.noSpeech' => 'কথা থেকে কোনো সাবটাইটেল তৈরি হয়নি। অডিও ট্র্যাক পরীক্ষা করে আবার চেষ্টা করুন।',
+			'subtitleCapture.captured' => ({required Object count}) => 'দেখা অংশের কথা থেকে তৈরি সাবটাইটেলের সংখ্যা: ${count}।',
+			'subtitleCapture.playbackEnded' => 'প্লেব্যাক শেষ হয়েছে। ক্যাপচার করা প্রতিলিপি মুছে ফেলা হয়েছে।',
+			'subtitleCapture.playbackChanged' => 'প্লেব্যাক পরিবর্তিত হয়েছে। ক্যাপচার করা প্রতিলিপি মুছে ফেলা হয়েছে।',
+			'subtitleCapture.audioTrackChanged' => 'অডিও ট্র্যাক পরিবর্তিত হয়েছে। বর্তমান ট্র্যাকে আবার ক্যাপচার শুরু করুন।',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPU ব্যবহার করে এই ডিভাইসে শোনা হচ্ছে। ক্যাপচার করা অডিও প্যাকেট: ${count}।',
+			'subtitleCapture.captureUnavailable' => 'এই অডিও আউটপুটে ডিকোড করা অডিও পাওয়া যাচ্ছে না। সমর্থিত কোনো অডিও আউটপুট ব্যবহার করুন।',
+			'subtitleCapture.waitingForAudio' => 'ডিকোড করা অডিওর জন্য অপেক্ষা করা হচ্ছে। প্লেব্যাক বিরতিতে থাকতে পারে।',
+			'subtitleCapture.captureStopped' => 'লাইভ ক্যাপচার বন্ধ হয়েছে। প্লেব্যাক পরীক্ষা করে আবার চেষ্টা করুন।',
+			'subtitleCapture.preparing' => 'লাইভ সাবটাইটেল প্রস্তুত হচ্ছে…',
+			'subtitleCapture.downloadingDetector' => 'কথা শনাক্ত করার ডিটেক্টর ডাউনলোড হচ্ছে…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'কথা শনাক্ত করার ডিটেক্টর ডাউনলোড হচ্ছে (${percent}%)…',
+			'subtitleCapture.transcribing' => 'এই ডিভাইসে অডিও থেকে প্রতিলিপি তৈরি হচ্ছে…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'এই ডিভাইসে অডিও থেকে প্রতিলিপি তৈরি হচ্ছে (${percent}%)…',
+			'subtitleCapture.translating' => 'এই ডিভাইসে কথার ইংরেজি অনুবাদ হচ্ছে…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'এই ডিভাইসে কথার ইংরেজি অনুবাদ হচ্ছে (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU-তে বাক্‌ প্রক্রিয়াকরণ ব্যর্থ হয়েছে। CPU-তে আবার চেষ্টা করা হচ্ছে…',
 			_ => null,
 		};
 	}

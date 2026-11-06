@@ -113,6 +113,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$hu householdSetup = _Translations$householdSetup$hu._(_root);
 	@override late final _Translations$issueReport$hu issueReport = _Translations$issueReport$hu._(_root);
 	@override late final _Translations$romm$hu romm = _Translations$romm$hu._(_root);
+	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
 }
 
 // Path: app
@@ -4175,6 +4176,41 @@ class _Translations$romm$hu extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$hu extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'A helyi beszédmodell betöltése…';
+	@override String loadingModelProgress({required Object percent}) => 'A helyi beszédmodell betöltése (${percent}%)…';
+	@override String get downloadingModel => 'A beszédmodell letöltése…';
+	@override String downloadingModelProgress({required Object percent}) => 'A beszédmodell letöltése (${percent}%)…';
+	@override String get capturing => 'A dekódolt hang helyi rögzítése folyamatban. A feliratok hamarosan megjelennek.';
+	@override String get startFailed => 'Az élő feliratozás nem indítható. Ellenőrizze a hangkimenetet, majd próbálja újra.';
+	@override String get inferenceFailed => 'A beszédfelismerés sikertelen. Állítsa le a rögzítést, majd próbálja újra.';
+	@override String get noSpeech => 'Nem készültek feliratok a beszédből. Ellenőrizze a hangsávot, majd próbálja újra.';
+	@override String captured({required Object count}) => 'A megtekintett részből rögzített feliratszegmensek: ${count}.';
+	@override String get playbackEnded => 'A lejátszás véget ért. A rögzített átirat törölve lett.';
+	@override String get playbackChanged => 'A lejátszás megváltozott. A rögzített átirat törölve lett.';
+	@override String get audioTrackChanged => 'A hangsáv megváltozott. Indítsa újra a rögzítést az aktuális sávon.';
+	@override String listening({required Object count}) => 'Helyi figyelés CPU-val. Rögzített hangcsomagok: ${count}.';
+	@override String get captureUnavailable => 'Ezen a hangkimeneten nem érhető el dekódolt hang. Próbáljon támogatott hangkimenetet.';
+	@override String get waitingForAudio => 'Várakozás dekódolt hangra. A lejátszás szünetelhet.';
+	@override String get captureStopped => 'Az élő rögzítés leállt. Ellenőrizze a lejátszást, majd próbálja újra.';
+	@override String get preparing => 'Élő feliratok előkészítése…';
+	@override String get downloadingDetector => 'A beszéddetektor letöltése…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'A beszéddetektor letöltése (${percent}%)…';
+	@override String get transcribing => 'A hang helyi átírása…';
+	@override String transcribingProgress({required Object percent}) => 'A hang helyi átírása (${percent}%)…';
+	@override String get translating => 'A beszéd helyi fordítása angolra…';
+	@override String translatingProgress({required Object percent}) => 'A beszéd helyi fordítása angolra (${percent}%)…';
+	@override String get processingAudio => 'A hang helyi feldolgozása…';
+	@override String processingAudioProgress({required Object percent}) => 'A hang helyi feldolgozása (${percent}%)…';
+	@override String get cpuFallback => 'A GPU-s beszédfeldolgozás sikertelen. Újrapróbálkozás CPU-val…';
 }
 
 // Path: appIcon.names
@@ -9209,6 +9245,32 @@ extension on TranslationsHu {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'A helyi beszédmodell betöltése…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'A helyi beszédmodell betöltése (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'A beszédmodell letöltése…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'A beszédmodell letöltése (${percent}%)…',
+			'subtitleCapture.capturing' => 'A dekódolt hang helyi rögzítése folyamatban. A feliratok hamarosan megjelennek.',
+			'subtitleCapture.startFailed' => 'Az élő feliratozás nem indítható. Ellenőrizze a hangkimenetet, majd próbálja újra.',
+			'subtitleCapture.inferenceFailed' => 'A beszédfelismerés sikertelen. Állítsa le a rögzítést, majd próbálja újra.',
+			'subtitleCapture.noSpeech' => 'Nem készültek feliratok a beszédből. Ellenőrizze a hangsávot, majd próbálja újra.',
+			'subtitleCapture.captured' => ({required Object count}) => 'A megtekintett részből rögzített feliratszegmensek: ${count}.',
+			'subtitleCapture.playbackEnded' => 'A lejátszás véget ért. A rögzített átirat törölve lett.',
+			'subtitleCapture.playbackChanged' => 'A lejátszás megváltozott. A rögzített átirat törölve lett.',
+			'subtitleCapture.audioTrackChanged' => 'A hangsáv megváltozott. Indítsa újra a rögzítést az aktuális sávon.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Helyi figyelés CPU-val. Rögzített hangcsomagok: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Ezen a hangkimeneten nem érhető el dekódolt hang. Próbáljon támogatott hangkimenetet.',
+			'subtitleCapture.waitingForAudio' => 'Várakozás dekódolt hangra. A lejátszás szünetelhet.',
+			'subtitleCapture.captureStopped' => 'Az élő rögzítés leállt. Ellenőrizze a lejátszást, majd próbálja újra.',
+			'subtitleCapture.preparing' => 'Élő feliratok előkészítése…',
+			'subtitleCapture.downloadingDetector' => 'A beszéddetektor letöltése…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'A beszéddetektor letöltése (${percent}%)…',
+			'subtitleCapture.transcribing' => 'A hang helyi átírása…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'A hang helyi átírása (${percent}%)…',
+			'subtitleCapture.translating' => 'A beszéd helyi fordítása angolra…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'A beszéd helyi fordítása angolra (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'A hang helyi feldolgozása…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'A hang helyi feldolgozása (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'A GPU-s beszédfeldolgozás sikertelen. Újrapróbálkozás CPU-val…',
 			_ => null,
 		};
 	}

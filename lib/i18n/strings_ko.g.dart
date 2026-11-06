@@ -113,6 +113,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ko householdSetup = _Translations$householdSetup$ko._(_root);
 	@override late final _Translations$issueReport$ko issueReport = _Translations$issueReport$ko._(_root);
 	@override late final _Translations$romm$ko romm = _Translations$romm$ko._(_root);
+	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
 }
 
 // Path: app
@@ -4170,6 +4171,41 @@ class _Translations$romm$ko extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$ko extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => '로컬 음성 모델을 불러오는 중…';
+	@override String loadingModelProgress({required Object percent}) => '로컬 음성 모델을 불러오는 중 (${percent}%)…';
+	@override String get downloadingModel => '음성 모델 다운로드 중…';
+	@override String downloadingModelProgress({required Object percent}) => '음성 모델 다운로드 중 (${percent}%)…';
+	@override String get capturing => '디코딩된 오디오를 로컬에서 캡처하고 있습니다. 곧 자막이 표시됩니다.';
+	@override String get startFailed => '실시간 자막을 시작할 수 없습니다. 오디오 출력을 확인하고 다시 시도하세요.';
+	@override String get inferenceFailed => '음성 인식에 실패했습니다. 캡처를 중지하고 다시 시도하세요.';
+	@override String get noSpeech => '음성에서 자막이 생성되지 않았습니다. 오디오 트랙을 확인하고 다시 시도하세요.';
+	@override String captured({required Object count}) => '시청한 부분에서 캡처한 자막 구간 수: ${count}.';
+	@override String get playbackEnded => '재생이 끝났습니다. 캡처한 대본이 삭제되었습니다.';
+	@override String get playbackChanged => '재생이 변경되었습니다. 캡처한 대본이 삭제되었습니다.';
+	@override String get audioTrackChanged => '오디오 트랙이 변경되었습니다. 현재 트랙에서 캡처를 다시 시작하세요.';
+	@override String listening({required Object count}) => 'CPU를 사용해 로컬에서 듣고 있습니다. 캡처한 오디오 패킷 수: ${count}.';
+	@override String get captureUnavailable => '이 오디오 출력에서는 디코딩된 오디오를 사용할 수 없습니다. 지원되는 오디오 출력을 사용해 보세요.';
+	@override String get waitingForAudio => '디코딩된 오디오를 기다리는 중입니다. 재생이 일시 정지되었을 수 있습니다.';
+	@override String get captureStopped => '실시간 캡처가 중지되었습니다. 재생을 확인하고 다시 시도하세요.';
+	@override String get preparing => '실시간 자막 준비 중…';
+	@override String get downloadingDetector => '음성 감지기 다운로드 중…';
+	@override String downloadingDetectorProgress({required Object percent}) => '음성 감지기 다운로드 중 (${percent}%)…';
+	@override String get transcribing => '로컬에서 오디오를 텍스트로 변환하는 중…';
+	@override String transcribingProgress({required Object percent}) => '로컬에서 오디오를 텍스트로 변환하는 중 (${percent}%)…';
+	@override String get translating => '로컬에서 음성을 영어로 번역하는 중…';
+	@override String translatingProgress({required Object percent}) => '로컬에서 음성을 영어로 번역하는 중 (${percent}%)…';
+	@override String get processingAudio => '로컬에서 오디오 처리 중…';
+	@override String processingAudioProgress({required Object percent}) => '로컬에서 오디오 처리 중 (${percent}%)…';
+	@override String get cpuFallback => 'GPU 음성 처리에 실패했습니다. CPU로 다시 시도하는 중…';
 }
 
 // Path: appIcon.names
@@ -9204,6 +9240,32 @@ extension on TranslationsKo {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => '로컬 음성 모델을 불러오는 중…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => '로컬 음성 모델을 불러오는 중 (${percent}%)…',
+			'subtitleCapture.downloadingModel' => '음성 모델 다운로드 중…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => '음성 모델 다운로드 중 (${percent}%)…',
+			'subtitleCapture.capturing' => '디코딩된 오디오를 로컬에서 캡처하고 있습니다. 곧 자막이 표시됩니다.',
+			'subtitleCapture.startFailed' => '실시간 자막을 시작할 수 없습니다. 오디오 출력을 확인하고 다시 시도하세요.',
+			'subtitleCapture.inferenceFailed' => '음성 인식에 실패했습니다. 캡처를 중지하고 다시 시도하세요.',
+			'subtitleCapture.noSpeech' => '음성에서 자막이 생성되지 않았습니다. 오디오 트랙을 확인하고 다시 시도하세요.',
+			'subtitleCapture.captured' => ({required Object count}) => '시청한 부분에서 캡처한 자막 구간 수: ${count}.',
+			'subtitleCapture.playbackEnded' => '재생이 끝났습니다. 캡처한 대본이 삭제되었습니다.',
+			'subtitleCapture.playbackChanged' => '재생이 변경되었습니다. 캡처한 대본이 삭제되었습니다.',
+			'subtitleCapture.audioTrackChanged' => '오디오 트랙이 변경되었습니다. 현재 트랙에서 캡처를 다시 시작하세요.',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPU를 사용해 로컬에서 듣고 있습니다. 캡처한 오디오 패킷 수: ${count}.',
+			'subtitleCapture.captureUnavailable' => '이 오디오 출력에서는 디코딩된 오디오를 사용할 수 없습니다. 지원되는 오디오 출력을 사용해 보세요.',
+			'subtitleCapture.waitingForAudio' => '디코딩된 오디오를 기다리는 중입니다. 재생이 일시 정지되었을 수 있습니다.',
+			'subtitleCapture.captureStopped' => '실시간 캡처가 중지되었습니다. 재생을 확인하고 다시 시도하세요.',
+			'subtitleCapture.preparing' => '실시간 자막 준비 중…',
+			'subtitleCapture.downloadingDetector' => '음성 감지기 다운로드 중…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => '음성 감지기 다운로드 중 (${percent}%)…',
+			'subtitleCapture.transcribing' => '로컬에서 오디오를 텍스트로 변환하는 중…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => '로컬에서 오디오를 텍스트로 변환하는 중 (${percent}%)…',
+			'subtitleCapture.translating' => '로컬에서 음성을 영어로 번역하는 중…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => '로컬에서 음성을 영어로 번역하는 중 (${percent}%)…',
+			'subtitleCapture.processingAudio' => '로컬에서 오디오 처리 중…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '로컬에서 오디오 처리 중 (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU 음성 처리에 실패했습니다. CPU로 다시 시도하는 중…',
 			_ => null,
 		};
 	}

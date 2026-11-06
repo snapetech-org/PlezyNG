@@ -114,6 +114,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$householdSetup$zh_Hant householdSetup = _Translations$householdSetup$zh_Hant._(_root);
 	@override late final _Translations$issueReport$zh_Hant issueReport = _Translations$issueReport$zh_Hant._(_root);
 	@override late final _Translations$romm$zh_Hant romm = _Translations$romm$zh_Hant._(_root);
+	@override late final _Translations$subtitleCapture$zh_Hant subtitleCapture = _Translations$subtitleCapture$zh_Hant._(_root);
 }
 
 // Path: app
@@ -4171,6 +4172,41 @@ class _Translations$romm$zh_Hant extends Translations$romm$zh {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$zh_Hant extends Translations$subtitleCapture$zh {
+	_Translations$subtitleCapture$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => '正在載入本機語音模型…';
+	@override String loadingModelProgress({required Object percent}) => '正在載入本機語音模型（${percent}%）…';
+	@override String get downloadingModel => '正在下載語音模型…';
+	@override String downloadingModelProgress({required Object percent}) => '正在下載語音模型（${percent}%）…';
+	@override String get capturing => '正在本機擷取已解碼的音訊。字幕即將顯示。';
+	@override String get startFailed => '無法啟動即時字幕。請檢查音訊輸出後重試。';
+	@override String get inferenceFailed => '語音辨識失敗。請停止擷取後重試。';
+	@override String get noSpeech => '未能從語音產生字幕。請檢查音軌後重試。';
+	@override String captured({required Object count}) => '從已觀看部分擷取的字幕項目數：${count}。';
+	@override String get playbackEnded => '播放已結束。擷取的轉錄文字已捨棄。';
+	@override String get playbackChanged => '播放內容已變更。擷取的轉錄文字已捨棄。';
+	@override String get audioTrackChanged => '音軌已變更。請在目前音軌上重新啟動擷取。';
+	@override String listening({required Object count}) => '正在透過 CPU 在本機聆聽。已擷取的音訊封包：${count}。';
+	@override String get captureUnavailable => '目前音訊輸出無法提供已解碼的音訊。請嘗試支援的音訊輸出。';
+	@override String get waitingForAudio => '正在等待已解碼的音訊。播放可能已暫停。';
+	@override String get captureStopped => '即時擷取已停止。請檢查播放狀態後重試。';
+	@override String get preparing => '正在準備即時字幕…';
+	@override String get downloadingDetector => '正在下載語音偵測器…';
+	@override String downloadingDetectorProgress({required Object percent}) => '正在下載語音偵測器（${percent}%）…';
+	@override String get transcribing => '正在本機轉錄音訊…';
+	@override String transcribingProgress({required Object percent}) => '正在本機轉錄音訊（${percent}%）…';
+	@override String get translating => '正在本機將語音翻譯為英語…';
+	@override String translatingProgress({required Object percent}) => '正在本機將語音翻譯為英語（${percent}%）…';
+	@override String get processingAudio => '正在本機處理音訊…';
+	@override String processingAudioProgress({required Object percent}) => '正在本機處理音訊（${percent}%）…';
+	@override String get cpuFallback => 'GPU 語音處理失敗。正在透過 CPU 重試…';
 }
 
 // Path: appIcon.names
@@ -9205,6 +9241,32 @@ extension on TranslationsZhHant {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => '正在載入本機語音模型…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => '正在載入本機語音模型（${percent}%）…',
+			'subtitleCapture.downloadingModel' => '正在下載語音模型…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => '正在下載語音模型（${percent}%）…',
+			'subtitleCapture.capturing' => '正在本機擷取已解碼的音訊。字幕即將顯示。',
+			'subtitleCapture.startFailed' => '無法啟動即時字幕。請檢查音訊輸出後重試。',
+			'subtitleCapture.inferenceFailed' => '語音辨識失敗。請停止擷取後重試。',
+			'subtitleCapture.noSpeech' => '未能從語音產生字幕。請檢查音軌後重試。',
+			'subtitleCapture.captured' => ({required Object count}) => '從已觀看部分擷取的字幕項目數：${count}。',
+			'subtitleCapture.playbackEnded' => '播放已結束。擷取的轉錄文字已捨棄。',
+			'subtitleCapture.playbackChanged' => '播放內容已變更。擷取的轉錄文字已捨棄。',
+			'subtitleCapture.audioTrackChanged' => '音軌已變更。請在目前音軌上重新啟動擷取。',
+			'subtitleCapture.listening' => ({required Object count}) => '正在透過 CPU 在本機聆聽。已擷取的音訊封包：${count}。',
+			'subtitleCapture.captureUnavailable' => '目前音訊輸出無法提供已解碼的音訊。請嘗試支援的音訊輸出。',
+			'subtitleCapture.waitingForAudio' => '正在等待已解碼的音訊。播放可能已暫停。',
+			'subtitleCapture.captureStopped' => '即時擷取已停止。請檢查播放狀態後重試。',
+			'subtitleCapture.preparing' => '正在準備即時字幕…',
+			'subtitleCapture.downloadingDetector' => '正在下載語音偵測器…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => '正在下載語音偵測器（${percent}%）…',
+			'subtitleCapture.transcribing' => '正在本機轉錄音訊…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => '正在本機轉錄音訊（${percent}%）…',
+			'subtitleCapture.translating' => '正在本機將語音翻譯為英語…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => '正在本機將語音翻譯為英語（${percent}%）…',
+			'subtitleCapture.processingAudio' => '正在本機處理音訊…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '正在本機處理音訊（${percent}%）…',
+			'subtitleCapture.cpuFallback' => 'GPU 語音處理失敗。正在透過 CPU 重試…',
 			_ => null,
 		};
 	}

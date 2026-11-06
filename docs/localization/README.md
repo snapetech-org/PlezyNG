@@ -87,6 +87,13 @@ or native-speaker review.
 in the application's license screen. Model weights and translation tooling
 caches are not shipped.
 
+The [caption-status record](subtitle-capture-status-2026-11-05.json) now covers
+all 26 messages in all 37 locales, with exact namespace hashes and explicit
+AI-authoring/review limits. The [source-name review](rebrand-source-review-2026-11-06.json)
+records the 110 English source hashes that changed only through the app-name
+substitution. The wider fallback backlog remains tracked separately; this does
+not confer language approval on other feature messages.
+
 ## Updating messages
 
 1. Edit `lib/i18n/en.i18n.json` and the affected locale catalogs together. Keep a

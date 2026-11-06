@@ -113,6 +113,7 @@ class TranslationsPl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$pl householdSetup = _Translations$householdSetup$pl._(_root);
 	@override late final _Translations$issueReport$pl issueReport = _Translations$issueReport$pl._(_root);
 	@override late final _Translations$romm$pl romm = _Translations$romm$pl._(_root);
+	@override late final _Translations$subtitleCapture$pl subtitleCapture = _Translations$subtitleCapture$pl._(_root);
 }
 
 // Path: app
@@ -4221,6 +4222,41 @@ class _Translations$romm$pl extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$pl extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$pl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Ładowanie lokalnego modelu mowy…';
+	@override String loadingModelProgress({required Object percent}) => 'Ładowanie lokalnego modelu mowy (${percent}%)…';
+	@override String get downloadingModel => 'Pobieranie modelu mowy…';
+	@override String downloadingModelProgress({required Object percent}) => 'Pobieranie modelu mowy (${percent}%)…';
+	@override String get capturing => 'Zdekodowany dźwięk jest przechwytywany lokalnie. Napisy wkrótce się pojawią.';
+	@override String get startFailed => 'Nie udało się uruchomić napisów na żywo. Sprawdź wyjście dźwięku i spróbuj ponownie.';
+	@override String get inferenceFailed => 'Rozpoznawanie mowy nie powiodło się. Zatrzymaj przechwytywanie i spróbuj ponownie.';
+	@override String get noSpeech => 'Nie utworzono napisów z mowy. Sprawdź ścieżkę dźwiękową i spróbuj ponownie.';
+	@override String captured({required Object count}) => 'Liczba fragmentów napisów z obejrzanej części: ${count}.';
+	@override String get playbackEnded => 'Odtwarzanie zakończyło się. Przechwycona transkrypcja została usunięta.';
+	@override String get playbackChanged => 'Odtwarzanie zmieniło się. Przechwycona transkrypcja została usunięta.';
+	@override String get audioTrackChanged => 'Ścieżka dźwiękowa zmieniła się. Uruchom przechwytywanie ponownie dla bieżącej ścieżki.';
+	@override String listening({required Object count}) => 'Lokalne nasłuchiwanie przy użyciu CPU. Przechwycone pakiety dźwięku: ${count}.';
+	@override String get captureUnavailable => 'Zdekodowany dźwięk jest niedostępny na tym wyjściu. Wypróbuj obsługiwane wyjście dźwięku.';
+	@override String get waitingForAudio => 'Oczekiwanie na zdekodowany dźwięk. Odtwarzanie może być wstrzymane.';
+	@override String get captureStopped => 'Przechwytywanie na żywo zostało zatrzymane. Sprawdź odtwarzanie i spróbuj ponownie.';
+	@override String get preparing => 'Przygotowywanie napisów na żywo…';
+	@override String get downloadingDetector => 'Pobieranie detektora mowy…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Pobieranie detektora mowy (${percent}%)…';
+	@override String get transcribing => 'Lokalne transkrybowanie dźwięku…';
+	@override String transcribingProgress({required Object percent}) => 'Lokalne transkrybowanie dźwięku (${percent}%)…';
+	@override String get translating => 'Lokalne tłumaczenie mowy na angielski…';
+	@override String translatingProgress({required Object percent}) => 'Lokalne tłumaczenie mowy na angielski (${percent}%)…';
+	@override String get processingAudio => 'Lokalne przetwarzanie dźwięku…';
+	@override String processingAudioProgress({required Object percent}) => 'Lokalne przetwarzanie dźwięku (${percent}%)…';
+	@override String get cpuFallback => 'Przetwarzanie mowy na GPU nie powiodło się. Ponowna próba na CPU…';
 }
 
 // Path: appIcon.names
@@ -9259,6 +9295,32 @@ extension on TranslationsPl {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Ładowanie lokalnego modelu mowy…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Ładowanie lokalnego modelu mowy (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Pobieranie modelu mowy…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Pobieranie modelu mowy (${percent}%)…',
+			'subtitleCapture.capturing' => 'Zdekodowany dźwięk jest przechwytywany lokalnie. Napisy wkrótce się pojawią.',
+			'subtitleCapture.startFailed' => 'Nie udało się uruchomić napisów na żywo. Sprawdź wyjście dźwięku i spróbuj ponownie.',
+			'subtitleCapture.inferenceFailed' => 'Rozpoznawanie mowy nie powiodło się. Zatrzymaj przechwytywanie i spróbuj ponownie.',
+			'subtitleCapture.noSpeech' => 'Nie utworzono napisów z mowy. Sprawdź ścieżkę dźwiękową i spróbuj ponownie.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Liczba fragmentów napisów z obejrzanej części: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Odtwarzanie zakończyło się. Przechwycona transkrypcja została usunięta.',
+			'subtitleCapture.playbackChanged' => 'Odtwarzanie zmieniło się. Przechwycona transkrypcja została usunięta.',
+			'subtitleCapture.audioTrackChanged' => 'Ścieżka dźwiękowa zmieniła się. Uruchom przechwytywanie ponownie dla bieżącej ścieżki.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Lokalne nasłuchiwanie przy użyciu CPU. Przechwycone pakiety dźwięku: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Zdekodowany dźwięk jest niedostępny na tym wyjściu. Wypróbuj obsługiwane wyjście dźwięku.',
+			'subtitleCapture.waitingForAudio' => 'Oczekiwanie na zdekodowany dźwięk. Odtwarzanie może być wstrzymane.',
+			'subtitleCapture.captureStopped' => 'Przechwytywanie na żywo zostało zatrzymane. Sprawdź odtwarzanie i spróbuj ponownie.',
+			'subtitleCapture.preparing' => 'Przygotowywanie napisów na żywo…',
+			'subtitleCapture.downloadingDetector' => 'Pobieranie detektora mowy…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Pobieranie detektora mowy (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Lokalne transkrybowanie dźwięku…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Lokalne transkrybowanie dźwięku (${percent}%)…',
+			'subtitleCapture.translating' => 'Lokalne tłumaczenie mowy na angielski…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Lokalne tłumaczenie mowy na angielski (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Lokalne przetwarzanie dźwięku…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Lokalne przetwarzanie dźwięku (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Przetwarzanie mowy na GPU nie powiodło się. Ponowna próba na CPU…',
 			_ => null,
 		};
 	}

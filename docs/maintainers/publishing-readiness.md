@@ -1,6 +1,8 @@
 # Pleazyng publishing readiness
 
-Checked 2026-11-05. The [live migration receipt](pleazyng-channel-migration.json)
+Checked 2026-11-05. Owner incorporated **SNAPE TECHNOLOGIES LIMITED**, Saskatchewan corporation **102247318**, on this date and authorized company verification across stores. The supplied Certificate of Incorporation is retained privately; it does not establish a CRA/GST account or D-U-N-S number. The owner separately confirmed registered address/contact details. Microsoft company enrollment is submitted; email is verified, business and employment verification are pending. The console estimates five business days. The D-U-N-S request was submitted through Apple and awaits D&B processing. Apple/Google organization conversion is now requested by the owner and requires their supported verification flows.
+
+The [live migration receipt](pleazyng-channel-migration.json)
 records console evidence. A configured credential or upload workflow is not proof
 of an accepted package, active beta, or approved store release. Repository names
 remain unchanged.
@@ -8,6 +10,8 @@ remain unchanged.
 Pricing is decided: seven days of all features free, then one USD $2.99 lifetime
 unlock on supported paid platforms. Free package channels remain free. Do not
 publish a free/unlocked build to a paid store and describe it as the paid model.
+
+Owner requested a roughly 24-hour hold on GST/HST-dependent tax submissions while CRA accepts the new number. Continue non-tax setup; do not substitute the Saskatchewan corporation number for a tax account. LG and Samsung store setup is explicitly included and scheduled last in this work.
 
 ## No business-registration prerequisite identified
 
@@ -28,7 +32,7 @@ currently claimed to have published the new release.
 | Official Homebrew Cask | Candidate generator available | Same signing requirements, then upstream acceptance/audit/review; approval is not automated |
 | Google Play internal test | New app/package, testing-only service account access, upload workflow and review grant configured | First signed Play AAB, Play App Signing, purchase product and real-device purchase/review-access validation; internal distribution must be explicitly activated |
 | Google Play closed beta | Sign-in/review instructions, privacy, category/contact, rating and other declarations saved | Data safety, real Android screenshots/listing, first AAB and requested permissions declarations, tester/country configuration, IAP validation and Google review |
-| Google Play production / open testing | Existing personal developer account; no company conversion requested | Closed-test eligibility and production-access approval. Console requires 12 opted-in testers for 14 continuous days; this does not delay starting the closed test |
+| Google Play production / open testing | Existing personal developer account; organization conversion now requested | Closed-test eligibility and production-access approval. Current personal-account console requires 12 opted-in testers for 14 continuous days; this does not delay starting the closed test. Recheck eligibility after an approved organization conversion |
 | Amazon Fire TV Appstore | Existing app and entitlement renamed; USD $2.99 IAP and new artwork saved; subsequent binary upload automation configured | Qualified APK, three actual TV screenshots, account tax/payment verification, declarations and purchase testing. Amazon requires first-version submission in Developer Console; later updates can use its API |
 | Apple TestFlight | Active Individual Developer Program membership, team `DM9A59DC85`, new identifiers and upload API credentials | New-bundle signing/provisioning and signed IPA, processing, beta information/groups, export compliance and external beta review. Validate billing separately before promising full paid-feature testing |
 | Apple iOS / tvOS App Store | Existing app reused, new identifiers and USD $2.99 non-consumable configured; upload automation available | Same signing/build gates plus real screenshots, privacy/review metadata, IAP screenshot and purchase/restore validation, paid agreement activation and Apple review |
@@ -41,8 +45,8 @@ currently claimed to have published the new release.
 | Channel / goal | Exact gate | What can be prepared now |
 | --- | --- | --- |
 | Apple paid unlock | Free Apps Agreement is Active, Paid Apps Agreement is Pending User Info. W-8BEN and U.S. foreign-status certificate are Active. Canadian GST/HST Form 506 is Missing Tax Info and owner submission returns “The Tax ID entered already exists.” Bank update is Processing | Continue builds, identifiers, metadata and testing preparation. Resolve the duplicate Canadian tax record with Apple Finance; do not invent another tax ID or repeatedly recreate the form. This is not a D-U-N-S gate |
-| Apple company seller name | Current membership is Individual; organization enrollment requires legal-entity verification and D-U-N-S | Publish eligible apps under the individual seller once other gates pass; company conversion is separate |
-| Microsoft Store company route | Authenticated account has no Windows publishing workspace. Company onboarding requires D-U-N-S or business verification documents; none submitted | Prepare assets and packaging. After enrollment, copy Microsoft's assigned package/publisher identities exactly, configure signing/submission credentials and implement/validate the required trial/purchase path. Existing free direct-download build does not implement Microsoft Store billing |
+| Apple company seller name | Current membership is Individual; conversion form opened, organization enrollment requires legal-entity verification and D-U-N-S | Publish eligible apps under the individual seller once other gates pass; company conversion is now requested; D-U-N-S/Apple verification remain |
+| Microsoft Store company route | Authenticated account has no Windows publishing workspace. Company onboarding accepts documents instead of D-U-N-S. Incorporation certificate uploaded and legal name/registration extracted correctly; owner-confirmed company/contact details saved and agreement accepted; Microsoft business/employment verification pending | Prepare assets and packaging. After enrollment, copy Microsoft's assigned package/publisher identities exactly, configure signing/submission credentials and implement/validate the required trial/purchase path. Existing free direct-download build does not implement Microsoft Store billing |
 | Microsoft Store individual alternative | Enrollment also offers Individual; owner identity verification and account setup would apply | Does not inherently require company papers, but individual enrollment has not been completed; do not claim a reserved listing or automated Store publication |
 | Samsung Tizen TV | Seller partnership/certification, account/region eligibility, production signing profile and TV testing remain unverified. EU distribution asks for business registration information; Samsung Checkout needs separate integration and configuration | Development tester TPK exists; preserve its tester-only status. Prepare listing and authentic TV captures. Billing and full Seller Office publication are not automated |
 | LG webOS Content Store | Seller Lounge approval/account verification and target-device qualification remain unverified; legacy LG Billing service is discontinued | IPK/handoff build support exists. Store submission is manual; do not assume native IAP or invent a payment provider. A supported payment integration needs separate implementation if monetized |

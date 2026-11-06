@@ -75,7 +75,8 @@
     "paid_apps_agreement": "Pending User Info",
     "banking": "Processing; console says updates within 24 hours",
     "us_tax_forms": "W-8BEN and foreign-status certificate Active; submitted 2026-10-21",
-    "canada_tax_form": "GST/HST Form 506 Missing Tax Info; owner submission rejected with The Tax ID entered already exists. Do not repeatedly resubmit or alter identifier; existing-record reconciliation pending."
+    "canada_tax_form": "GST/HST Form 506 Missing Tax Info; owner submission rejected with The Tax ID entered already exists. Do not repeatedly resubmit or alter identifier; existing-record reconciliation pending.",
+    "organization_conversion": "Form prepared with exact company name; requires issued D-U-N-S before submitting conversion request"
   },
   "automation_before": {
     "AUR_PACKAGE_NAME": "plezyng-bin",
@@ -305,13 +306,22 @@
   "microsoft_store": {
     "account_entered": "keith@snape.tech",
     "portal": "https://partner.microsoft.com/dashboard",
-    "state": "Authenticated; no enrolled Windows workspace visible. Store company enrollment opened and requires owner business verification (D-U-N-S or documents). No business details submitted.",
-    "registration_or_package_changes_made": false,
+    "state": "Company enrollment submitted; email Verified, business and employment verification Pending. Console typically 5 business days; publishing disabled until completed.",
+    "registration_or_package_changes_made": true,
     "pending": [
-      "Owner complete company verification or choose individual developer enrollment",
-      "Reserve Pleazyng app name and record assigned package/publisher identities after enrollment",
-      "Validate qualified Windows package and Store publishing credentials"
-    ]
+      "Microsoft business and employment verification review",
+      "Finish account setup once Microsoft enables it",
+      "Reserve Pleazyng and copy assigned MSIX identity",
+      "Store trial/purchase implementation and qualified package/submission validation"
+    ],
+    "legal_name": "SNAPE TECHNOLOGIES LIMITED",
+    "publisher_name": "Snape Technologies Limited",
+    "corporation_number": "102247318",
+    "document": "Certificate of Incorporation uploaded; legal details and contact details saved",
+    "developer_agreement": "Owner accepted on VM 2026-11-05",
+    "email_verification": "Owner completed code verification for keith@snape.tech",
+    "public_support_email": "support@snape.tech",
+    "public_support_website": "https://github.com/snapetech-org"
   },
   "homebrew": {
     "tap_repository": "snapetech-org/homebrew-slskdn",
@@ -354,10 +364,19 @@
     "incorporated": "2026-11-05",
     "certificate_verified": "One-page digitally signed Certificate of Incorporation supplied by owner; retained privately, not committed",
     "certificate_sha256": "dbb8472a2a066decc461994ea8fba76ee83c4b29ad147373ddc5919386dc0114",
-    "registered_address": "Awaiting owner confirmation; certificate does not list address",
+    "registered_address": "Confirmed by owner; retained in private store forms, not committed",
     "cra_business_number": "Not established by incorporation certificate",
     "gst_hst_account": "Not established by incorporation certificate",
     "duns_number": "Not established by incorporation certificate",
-    "authorization": "Owner explicitly requested company verification/update across app stores on 2026-11-05"
+    "authorization": "Owner explicitly requested company verification/update across app stores on 2026-11-05",
+    "director": "Keith Snape",
+    "contact_email": "keith@snape.tech",
+    "account_conversion_authorized": true,
+    "public_support_email": "support@snape.tech",
+    "public_support_website": "https://github.com/snapetech-org",
+    "public_support_basis": "Owner entered these in Microsoft enrollment and requested continuation",
+    "duns_request": "Submitted by owner after CAPTCHA on 2026-11-05; Apple page confirms information being processed and D&B confirmation email pending",
+    "tax_hold": "Owner directed GST/HST-dependent tax submissions to wait approximately 24 hours for CRA to accept the new number; continue all non-tax work. No new corporate tax identifier recorded or substituted.",
+    "tv_store_order": "LG and Samsung explicitly included, to be set up last after other supported channels"
   }
 }

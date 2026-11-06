@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "group": "amazon-firetv",
+  "captures": [
+    {
+      "schema_version": 1,
+      "capture": "tv-01-welcome.png",
+      "kind": "android-tv-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "c0ff534a1c04b7378a3c513c8f5621856a1abf593574dd4aa062db6299ea4480",
+      "serial": "emulator-5580",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "density": "Physical density: 320",
+      "manufacturer": "Google",
+      "model": "sdk_google_atv64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5580",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "06ca9740031cb818669ea53d3b26a29e32da89bdb7c6d05a5f214ce8847f4732",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "tv-01-welcome-1920x1080.png"
+    },
+    {
+      "schema_version": 1,
+      "capture": "tv-02-home.png",
+      "kind": "android-tv-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "3afa987adf0df2d3f0ed0ed26f86e685b9900b0bc07461229cdd83961460b916",
+      "serial": "emulator-5580",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "density": "Physical density: 320",
+      "manufacturer": "Google",
+      "model": "sdk_google_atv64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5580",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "098a5a646c7e24d7e3a3f825e19a8b36545788ea94527271f765f0e981332015",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "tv-02-home-1920x1080.png"
+    },
+    {
+      "schema_version": 1,
+      "capture": "tv-03-library.png",
+      "kind": "android-tv-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "fb86a814ff9ae282e2baa929bae3e3e444a98dfcd5d8f61e809269aae96c60f2",
+      "serial": "emulator-5580",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "density": "Physical density: 320",
+      "manufacturer": "Google",
+      "model": "sdk_google_atv64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5580",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "e25d36c14edd8bc8a7e22aa6f187092875b26ac8222abd8c0cf8ba1e764b74e4",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "tv-03-library-1920x1080.png"
+    },
+    {
+      "schema_version": 1,
+      "capture": "tv-04-details.png",
+      "kind": "android-tv-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "ddd17d810859e3f89fa2e04a517877f2f13b61608e15fdac12a8056d691b0e26",
+      "serial": "emulator-5580",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "density": "Physical density: 320",
+      "manufacturer": "Google",
+      "model": "sdk_google_atv64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5580",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "35535dd6f51f02729391acf7eac928ee71f1a4fc76c384138d8cebb8bb64e432",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "tv-04-details-1920x1080.png"
+    }
+  ],
+  "qualification": "Actual app captures; emulator images do not establish Fire OS hardware, playback or IAP qualification"
+}

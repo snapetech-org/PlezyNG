@@ -4,6 +4,8 @@
 
 - Include implemented neural/NPU experiments in normal compatible builds with the persisted Motion smoothing → Neural opt-in, and bundle Intel NPU and Vulkan GPU providers together on Linux x64.
 - Reject CRLF header injection in the Apple experimental playback bridge, including headers supplied through MPV change-list commands.
+- Refuse incomplete native engine pin promotions and retain checksum-bound package receipts for every required architecture and implemented neural path.
+
 - Keep Homebrew release checks aligned with verified repository downloads and versioned Cask publication.
 
 - Size Apple Flutter SDK download and extraction disk preflights from verified archive metadata while retaining Python 3.9 support and the existing runner disk margin.

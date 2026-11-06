@@ -67,6 +67,16 @@ explicit native build of an ancestor of current `main` are eligible. The next
 native build then rebuilds only the groups still stale. A partial recovery never
 updates Pleazyng's pins or bypasses the final all-platform verification.
 
+`scripts/set_native_revision.sh` also checks Snapetech producer manifests before
+changing any of the eleven Apple, application-lock and Android verification pin
+sites. Every required Android ABI, Linux/Windows architecture and Apple slice
+must have a schema-4 package receipt for ordered PCM and its implemented neural
+filters. Archive checksums, binary hashes and actual machine inventories must
+agree. Mixed or missing receipts leave every pin unchanged. Accepted receipts
+are retained under `nativePackages` in `mpv-build.lock.json`; they establish
+compiled inclusion, while `executionQualified: false` remains valid and does
+not claim device playback or display qualification.
+
 Android CI, release, and embedded-engine workflows share
 `scripts/prepare_android_sdk.py`. It configures Java and Gradle proxy settings
 before SDK setup, reads every checked-in Android module's SDK/NDK/CMake pins,

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "group": "google-play-phone",
+  "captures": [
+    {
+      "schema_version": 1,
+      "capture": "phone-01-welcome.png",
+      "kind": "phone-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "1f979448551652e88f477ef39cecdcad0997f4b08121cfdf625ccd6a9832a60b",
+      "serial": "emulator-5582",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "density": "Physical density: 420",
+      "manufacturer": "Google",
+      "model": "sdk_gphone64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5582",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "8ea7b9a39396222571f64e3aca40cc81982c9bae84e55913dda35a1ae090ce79",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "phone-01-welcome-1080x1920.png"
+    },
+    {
+      "schema_version": 1,
+      "capture": "phone-03-library.png",
+      "kind": "phone-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "bebf2a63aeba50ac8a557675d6ea02453302ad26bf21bddb307b2ae5d8c56311",
+      "serial": "emulator-5582",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "density": "Physical density: 420",
+      "manufacturer": "Google",
+      "model": "sdk_gphone64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5582",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "0a6baad3892d2d1bb47ecf0ff927417cec18edd17c06f7d1184b43c60f597bff",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "phone-03-library-browse-1080x1920.png"
+    },
+    {
+      "schema_version": 1,
+      "capture": "phone-04-details.png",
+      "kind": "phone-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "9dcdb8896d801d22cd95dc4751b84f031c1d46690a3cce98bede6811c3339088",
+      "serial": "emulator-5582",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "density": "Physical density: 420",
+      "manufacturer": "Google",
+      "model": "sdk_gphone64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5582",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "60d70c6f4cb822fbeaf4ae4d200b3d12304b9c778dcb365f4aa88137182e6bb1",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "phone-04-media-details-1080x1920.png"
+    }
+  ],
+  "qualification": "Actual app captures; emulator images do not establish Fire OS hardware, playback or IAP qualification"
+}

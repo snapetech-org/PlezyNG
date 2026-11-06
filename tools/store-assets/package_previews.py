@@ -25,7 +25,7 @@ for source in sorted(args.input.glob('*-preview.png')):
     if '-player-' in source.stem:
         area = image.crop((image.width // 5, image.height // 5, image.width * 4 // 5, image.height * 3 // 5))
         # Check the video area, not the controls or preview footer.
-        non_dark = sum(max(pixel) > 70 for pixel in area.getdata()) / (area.width * area.height)
+        non_dark = sum(area.convert('L').histogram()[71:]) / (area.width * area.height)
         if min(ImageStat.Stat(area).stddev) <= 20 or non_dark <= .3:
             raise ValueError(f'{source.name}: empty video area; do not package blank player previews')
     labeled = Image.new('RGB', (image.width, image.height + 48), '#0a1118')

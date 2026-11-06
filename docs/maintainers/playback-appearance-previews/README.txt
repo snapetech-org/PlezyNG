@@ -9,12 +9,6 @@ Source: ad1940b3d45497ece50222574873b1be3eb86464
 desktop-appearance-dark-preview.png
 desktop-appearance-light-preview.png
 desktop-appearance-oled-preview.png
-desktop-player-dark-preview.png
-desktop-player-light-preview.png
-desktop-player-oled-preview.png
 desktop-subtitle-style-dark-preview.png
 desktop-subtitle-style-light-preview.png
 desktop-subtitle-style-oled-preview.png
-phone-player-dark-preview.png
-phone-player-light-preview.png
-phone-player-oled-preview.png

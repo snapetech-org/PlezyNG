@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "capture": "tablet-dark-library.png",
+  "kind": "tablet-emulator",
+  "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+  "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+  "capture_sha256": "656ef6fc982f56cd7defc9c3d75ef81947dc5f89b961e339f63c66f6e6683ecf",
+  "serial": "emulator-5582",
+  "dimensions": [
+    2560,
+    1600
+  ],
+  "density": "Physical density: 420\nOverride density: 320",
+  "manufacturer": "Google",
+  "model": "sdk_gphone64_x86_64",
+  "sdk": "36",
+  "command": [
+    "adb",
+    "-s",
+    "emulator-5582",
+    "exec-out",
+    "screencap",
+    "-p"
+  ],
+  "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification"
+}

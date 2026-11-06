@@ -136,7 +136,24 @@
     "health_declaration": "No health features; saved",
     "advertising_id_declaration": "No; source manifest/dependencies checked and saved",
     "trader_status": "Inherited existing developer-account trader status confirmed for app; saved",
-    "iarc_terms": "Prepared email and All Other App Types; awaiting owner acceptance onscreen"
+    "iarc_terms": "Owner accepted in Firefox; checked before continuing",
+    "content_rating": {
+      "state": "Completed; saved in console 2026-11-05 18:59 America/Regina",
+      "email": "keith@snape.tech",
+      "category": "All Other App Types",
+      "online_content": true,
+      "digital_purchases": true,
+      "ratings": {
+        "Brazil": "14+",
+        "ESRB": "Everyone",
+        "PEGI": "3",
+        "USK": "0",
+        "IARC": "3+"
+      },
+      "migration_basis": "Compared old app questionnaire from 2026-10-25 and preserved its classification; no developer-supplied media catalog"
+    },
+    "target_audience_old": "18 and over; verified in old app console",
+    "review_access_pending": "Old app uses public Jellyfin demo for core playback. Release owner confirmed no verified paid-feature reviewer access beyond trial. Google requires full access and explicitly disallows reliance on free trials; do not confirm full access or invent bypass. New target audience setup is gated on Sign in details."
   },
   "copr": {
     "owner": "slskdn",
@@ -273,5 +290,11 @@
       "IAP test/submission validation"
     ],
     "state": "draft names, IAP SKU/copy, and artwork migrated in place; binary and submission verification pending"
+  },
+  "microsoft_store": {
+    "account_entered": "keith@snape.tech",
+    "portal": "https://partner.microsoft.com/dashboard",
+    "state": "Awaiting owner Authenticator approval in dedicated Firefox",
+    "registration_or_package_changes_made": false
   }
 }

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Use the macOS SDK's OpenGL 4.1 profile constant in both visualization hosts so the bundled runtime compiles on current Xcode versions.
+
 - Isolate Apple Dolby Vision runtime subbuilds from the enclosing app's Xcode settings, preserving unique framework outputs, pinned dependencies and the older API deployment floor.
 
 - Select Rust compiler tools from the isolated pinned toolchain so Apple visualization builds do not depend on global Rust shims.

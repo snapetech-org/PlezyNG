@@ -63,6 +63,7 @@ const List<String> profileScopedCredentialBaseKeys = <String>[
   ...trackerSessionBaseKeys,
   seerrSessionBaseKey,
   'remote_streaming_v1',
+  'extras_credentials_v1',
 ];
 
 final RegExp _profileScopedCredentialPattern = RegExp(

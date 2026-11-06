@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Curated title extras with strict identity and publisher checks, bounded previews, profile-specific exclusions, and optional evidence-backed AI search.
+
 - Refuse incomplete native engine pin promotions and retain checksum-bound package receipts for every required architecture and implemented neural path.
 
 - Keep Homebrew release checks aligned with verified repository downloads and versioned Cask publication.

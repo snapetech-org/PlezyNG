@@ -35,6 +35,28 @@ void main() {
     publisherId: 'studio',
     contentGroup: group,
   );
+  test('MediaBrowser restrictions and unknown policies block unrated providers', () {
+    const allowed = {'EnableMediaPlayback': true, 'EnableAllFolders': true};
+    expect(mediaBrowserAllowsExternalExtras(null), false);
+    expect(mediaBrowserAllowsExternalExtras({}), false);
+    expect(mediaBrowserAllowsExternalExtras(allowed), true);
+    for (final restriction in [
+      {'MaxParentalRating': 13},
+      {'EnableAllFolders': false},
+      {
+        'BlockedTags': ['adult'],
+      },
+      {
+        'BlockUnratedItems': ['Movie'],
+      },
+      {
+        'AccessSchedules': [1],
+      },
+      {'IsDisabled': true},
+    ]) {
+      expect(mediaBrowserAllowsExternalExtras({...allowed, ...restriction}), false);
+    }
+  });
   test('publisher reputation cannot admit another film or remake', () {
     expect(
       policy.select(
@@ -58,40 +80,15 @@ void main() {
     );
   });
   test('catalogue association and publisher verification are independent', () {
+    expect(policy.select([entry(verified: false)], subject, const ExtrasPreferences()), isEmpty);
+    expect(policy.select([entry(associated: false)], subject, const ExtrasPreferences()), isEmpty);
     expect(
-      policy.select(
-        [entry(verified: false)],
-        subject,
-        const ExtrasPreferences(),
-      ),
-      isEmpty,
-    );
-    expect(
-      policy.select(
-        [entry(associated: false)],
-        subject,
-        const ExtrasPreferences(),
-      ),
-      isEmpty,
-    );
-    expect(
-      policy.select(
-        [entry(verified: false, associated: false, reviewed: true)],
-        subject,
-        const ExtrasPreferences(),
-      ),
+      policy.select([entry(verified: false, associated: false, reviewed: true)], subject, const ExtrasPreferences()),
       hasLength(1),
     );
   });
   test('franchise associations must disclose their broader scope', () {
-    expect(
-      policy.select(
-        [entry(scope: ExtraScope.franchise)],
-        subject,
-        const ExtrasPreferences(),
-      ),
-      isEmpty,
-    );
+    expect(policy.select([entry(scope: ExtraScope.franchise)], subject, const ExtrasPreferences()), isEmpty);
     expect(
       policy.select(
         [entry(scope: ExtraScope.franchise, label: 'About the trilogy')],
@@ -101,56 +98,20 @@ void main() {
       hasLength(1),
     );
   });
-  test(
-    'AI mode does not change admission, including a single weak candidate',
-    () {
-      for (final mode in ExtrasAiMode.values) {
-        expect(
-          policy.select(
-            [entry(verified: false)],
-            subject,
-            ExtrasPreferences(aiMode: mode),
-          ),
-          isEmpty,
-        );
-      }
-    },
-  );
+  test('AI mode does not change admission, including a single weak candidate', () {
+    for (final mode in ExtrasAiMode.values) {
+      expect(policy.select([entry(verified: false)], subject, ExtrasPreferences(aiMode: mode)), isEmpty);
+    }
+  });
   test('unknown spoiler status is not assumed safe', () {
-    const unwatched = ExtrasSubject(
-      key: 'movie/tmdb:120',
-      identities: {},
-      title: 'Fellowship',
-    );
-    expect(
-      policy.select([entry()], unwatched, const ExtrasPreferences()),
-      isEmpty,
-    );
-    expect(
-      policy.select(
-        [entry()],
-        unwatched,
-        const ExtrasPreferences(showSpoilers: true),
-      ),
-      hasLength(1),
-    );
+    const unwatched = ExtrasSubject(key: 'movie/tmdb:120', identities: {}, title: 'Fellowship');
+    expect(policy.select([entry()], unwatched, const ExtrasPreferences()), isEmpty);
+    expect(policy.select([entry()], unwatched, const ExtrasPreferences(showSpoilers: true)), hasLength(1));
   });
   test('restricted and offline profiles never receive external candidates', () {
     for (final s in [
-      const ExtrasSubject(
-        key: 'movie/tmdb:120',
-        identities: {},
-        title: '',
-        watched: true,
-        restricted: true,
-      ),
-      const ExtrasSubject(
-        key: 'movie/tmdb:120',
-        identities: {},
-        title: '',
-        watched: true,
-        offline: true,
-      ),
+      const ExtrasSubject(key: 'movie/tmdb:120', identities: {}, title: '', watched: true, restricted: true),
+      const ExtrasSubject(key: 'movie/tmdb:120', identities: {}, title: '', watched: true, offline: true),
     ]) {
       expect(policy.select([entry()], s, const ExtrasPreferences()), isEmpty);
     }
@@ -174,19 +135,12 @@ void main() {
       isEmpty,
     );
     expect(
-      policy.select(
-        [entry(kind: ExtraKind.analysis)],
-        subject,
-        const ExtrasPreferences(includeAnalysis: true),
-      ),
+      policy.select([entry(kind: ExtraKind.analysis)], subject, const ExtrasPreferences(includeAnalysis: true)),
       hasLength(1),
     );
   });
   test('deduplicates provider URLs and reviewed content groups', () {
-    expect(
-      policy.select([entry(), entry()], subject, const ExtrasPreferences()),
-      hasLength(1),
-    );
+    expect(policy.select([entry(), entry()], subject, const ExtrasPreferences()), hasLength(1));
     expect(
       policy.select(
         [entry(group: 'film'), entry(id: 'abcdefghijk', group: 'film')],
@@ -196,65 +150,41 @@ void main() {
       hasLength(1),
     );
   });
-  test(
-    'preview is diverse, deterministic and at most four without padding',
-    () {
-      final entries = List.generate(
-        10,
-        (i) => entry(
-          id: '1234567890$i',
-          kind: i < 7 ? ExtraKind.makingOf : ExtraKind.interview,
-        ),
-      );
-      final preview = policy.preview(
-        policy.select(entries, subject, const ExtrasPreferences()),
-      );
-      expect(preview, hasLength(4));
-      expect(preview[1].kind, ExtraKind.interview);
-      expect(policy.preview([entry()]), hasLength(1));
-      expect(policy.preview([]), isEmpty);
-    },
-  );
-  test(
-    'watch URL normalization strips tracking and rejects hostile routes',
-    () {
-      expect(
-        canonicalExtraUrl(Uri.parse('https://youtu.be/abcdefghijk?t=20')),
-        Uri.parse('https://www.youtube.com/watch?v=abcdefghijk'),
-      );
-      for (final value in [
-        'javascript:alert(1)',
-        'https://youtube.com.evil.test/watch?v=abcdefghijk',
-        'https://secret@youtube.com/watch?v=abcdefghijk',
-        'https://youtube.com:8443/watch?v=abcdefghijk',
-        'https://youtube.com/redirect?q=https://evil.test',
-        'http://youtube.com/watch?v=abcdefghijk',
-      ]) {
-        expect(canonicalExtraUrl(Uri.parse(value)), isNull);
-      }
-    },
-  );
+  test('preview is diverse, deterministic and at most four without padding', () {
+    final entries = List.generate(
+      10,
+      (i) => entry(id: '1234567890$i', kind: i < 7 ? ExtraKind.makingOf : ExtraKind.interview),
+    );
+    final preview = policy.preview(policy.select(entries, subject, const ExtrasPreferences()));
+    expect(preview, hasLength(4));
+    expect(preview[1].kind, ExtraKind.interview);
+    expect(policy.preview([entry()]), hasLength(1));
+    expect(policy.preview([]), isEmpty);
+  });
+  test('watch URL normalization strips tracking and rejects hostile routes', () {
+    expect(
+      canonicalExtraUrl(Uri.parse('https://youtu.be/abcdefghijk?t=20')),
+      Uri.parse('https://www.youtube.com/watch?v=abcdefghijk'),
+    );
+    for (final value in [
+      'javascript:alert(1)',
+      'https://youtube.com.evil.test/watch?v=abcdefghijk',
+      'https://secret@youtube.com/watch?v=abcdefghijk',
+      'https://youtube.com:8443/watch?v=abcdefghijk',
+      'https://youtube.com/redirect?q=https://evil.test',
+      'http://youtube.com/watch?v=abcdefghijk',
+    ]) {
+      expect(canonicalExtraUrl(Uri.parse(value)), isNull);
+    }
+  });
   test('metadata cannot create local playback or confer user approval', () {
-    final candidate = ExtraEntry.parse({
-      ...entry().toJson(),
-      'origin': 'library',
-      'nativeKey': 'server-secret',
-    });
+    final candidate = ExtraEntry.parse({...entry().toJson(), 'origin': 'library', 'nativeKey': 'server-secret'});
     expect(candidate?.isLibrary, false);
     expect(candidate?.origin, ExtraOrigin.search);
-    expect(
-      ExtraEntry.parse({...entry().toJson(), 'origin': 'user'})?.origin,
-      ExtraOrigin.search,
-    );
+    expect(ExtraEntry.parse({...entry().toJson(), 'origin': 'user'})?.origin, ExtraOrigin.search);
   });
   test('conventional topic and transcript search works with AI off', () {
-    expect(
-      extraMatchesQuery(
-        entry(kind: ExtraKind.makeup),
-        'how they made the prosthetics',
-      ),
-      true,
-    );
+    expect(extraMatchesQuery(entry(kind: ExtraKind.makeup), 'how they made the prosthetics'), true);
     const extra = ExtraEntry(
       id: 'local',
       parentIdentities: {},
@@ -262,13 +192,7 @@ void main() {
       kind: ExtraKind.makingOf,
       origin: ExtraOrigin.library,
       analysisAllowed: true,
-      passages: [
-        ExtraPassage(
-          startSeconds: 20,
-          endSeconds: 30,
-          text: 'The prosthetics were fitted here.',
-        ),
-      ],
+      passages: [ExtraPassage(startSeconds: 20, endSeconds: 30, text: 'The prosthetics were fitted here.')],
     );
     expect(searchExtraPassages(extra, 'prosthetics').single.startSeconds, 20);
   });

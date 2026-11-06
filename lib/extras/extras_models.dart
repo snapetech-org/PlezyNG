@@ -187,7 +187,15 @@ class ExtraEntry {
       description: field('description', 4000),
       language: field('language', 20),
       durationSeconds: duration is int && duration > 0 && duration <= 86400 ? duration : null,
-      thumbnailUrl: thumbnail?.scheme == 'https' && thumbnail!.userInfo.isEmpty ? thumbnail.toString() : null,
+      thumbnailUrl:
+          thumbnail?.scheme == 'https' &&
+              thumbnail!.userInfo.isEmpty &&
+              thumbnail.port == 443 &&
+              (thumbnail.host == 'i.ytimg.com' ||
+                  thumbnail.host == 'img.youtube.com' ||
+                  thumbnail.host.endsWith('.vimeocdn.com'))
+          ? thumbnail.toString()
+          : null,
       verifiedPublisher: raw['verifiedPublisher'] == true,
       catalogAssociated: raw['catalogAssociated'] == true,
       reviewedAssociation: raw['reviewedAssociation'] == true,

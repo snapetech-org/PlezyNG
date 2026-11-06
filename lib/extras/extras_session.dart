@@ -59,7 +59,8 @@ ExtrasSubject extrasSubjectForCatalog(
 
 ExtraKind nativeExtraKind(MediaItem item) {
   final raw = item.raw;
-  final type = '${raw?['ExtraType'] ?? raw?['extraType'] ?? raw?['subtype'] ?? ''}'.toLowerCase().replaceAll(
+  final subtype = item is PlexMediaItem ? item.subtype : null;
+  final type = '${raw?['ExtraType'] ?? raw?['extraType'] ?? raw?['subtype'] ?? subtype ?? ''}'.toLowerCase().replaceAll(
     RegExp('[ _-]'),
     '',
   );
@@ -98,6 +99,7 @@ class ExtrasSession extends ChangeNotifier {
     required this.store,
     this.library = const [],
     this.isCurrent,
+    this.externalAllowed,
     this.catalog = const [],
     ExtrasRepository? repository,
   }) : repository = repository ?? ExtrasRepository(store);
@@ -105,11 +107,14 @@ class ExtrasSession extends ChangeNotifier {
   final ExtrasStore store;
   List<MediaItem> library;
   List<ExtraEntry> catalog;
-  final bool Function()? isCurrent;
+  final bool Function()? isCurrent, externalAllowed;
+  bool get externalPermitted => active && !subject.restricted && (externalAllowed?.call() ?? true);
   bool get active => !_disposed && (isCurrent?.call() ?? true);
   final ExtrasRepository repository;
   ExtrasPreferences preferences = const ExtrasPreferences();
-  List<ExtraEntry> entries = const [];
+  List<ExtraEntry> _entries = const [];
+  List<ExtraEntry> get entries => externalPermitted ? _entries : _entries.where((e) => e.isLibrary).toList();
+  set entries(List<ExtraEntry> value) => _entries = value;
   bool loading = false, unavailable = false;
   int _generation = 0;
   bool _disposed = false;

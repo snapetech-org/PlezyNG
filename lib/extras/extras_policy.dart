@@ -128,3 +128,15 @@ List<ExtraPassage> searchExtraPassages(ExtraEntry entry, String query) {
   );
   return passages.take(8).toList();
 }
+
+/// MediaBrowser policy must be known before external, unrated providers can
+/// appear beside a user's filtered server library. Shared by Jellyfin/Emby.
+bool mediaBrowserAllowsExternalExtras(Object? policy) {
+  if (policy is! Map || policy['EnableMediaPlayback'] != true || policy['IsDisabled'] == true) return false;
+  if (policy['MaxParentalRating'] != null || policy['EnableAllFolders'] == false) return false;
+  for (final key in ['BlockedTags', 'BlockedMediaFolders', 'BlockUnratedItems', 'AccessSchedules']) {
+    final value = policy[key];
+    if (value != null && (value is! List || value.isNotEmpty)) return false;
+  }
+  return true;
+}

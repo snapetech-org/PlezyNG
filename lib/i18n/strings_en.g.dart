@@ -13752,9 +13752,6 @@ class Translations$bonusExtras$en {
 	/// en: 'Copy link'
 	String get copyLink => 'Copy link';
 
-	/// en: 'Link copied'
-	String get copied => 'Link copied';
-
 	/// en: 'This device cannot open the provider. Scan the code or copy the link.'
 	String get playbackUnavailable => 'This device cannot open the provider. Scan the code or copy the link.';
 
@@ -13845,9 +13842,6 @@ class Translations$bonusExtras$en {
 	/// en: 'Enter a title and a valid HTTPS YouTube or Vimeo video link.'
 	String get invalidLink => 'Enter a title and a valid HTTPS YouTube or Vimeo video link.';
 
-	/// en: 'Source'
-	String get source => 'Source';
-
 	/// en: 'Reset hidden extras and publishers'
 	String get showHidden => 'Reset hidden extras and publishers';
 
@@ -13890,17 +13884,8 @@ class Translations$bonusExtras$en {
 	/// en: 'Resume extra'
 	String get resume => 'Resume extra';
 
-	/// en: 'About the franchise'
-	String get aboutFranchise => 'About the franchise';
-
 	/// en: 'Online extras are unavailable for this profile.'
 	String get restricted => 'Online extras are unavailable for this profile.';
-
-	/// en: 'About this extra'
-	String get about => 'About this extra';
-
-	/// en: 'Refresh'
-	String get refresh => 'Refresh';
 
 	late final Translations$bonusExtras$kind$en kind = Translations$bonusExtras$kind$en.internal(_root);
 }
@@ -21442,7 +21427,6 @@ extension on Translations {
 			'bonusExtras.watchHere' => 'Watch here',
 			'bonusExtras.sendToPhone' => 'Open on your phone',
 			'bonusExtras.copyLink' => 'Copy link',
-			'bonusExtras.copied' => 'Link copied',
 			'bonusExtras.playbackUnavailable' => 'This device cannot open the provider. Scan the code or copy the link.',
 			'bonusExtras.providerNotice' => 'Playback opens the provider’s player and may include its recommendations.',
 			'bonusExtras.external' => 'Online',
@@ -21473,7 +21457,6 @@ extension on Translations {
 			'bonusExtras.linkTitle' => 'Extra title',
 			'bonusExtras.linkUrl' => 'YouTube or Vimeo link',
 			'bonusExtras.invalidLink' => 'Enter a title and a valid HTTPS YouTube or Vimeo video link.',
-			'bonusExtras.source' => 'Source',
 			'bonusExtras.showHidden' => 'Reset hidden extras and publishers',
 			'bonusExtras.clearCache' => 'Clear discovery cache',
 			'bonusExtras.transcript' => 'Search transcript',
@@ -21488,10 +21471,7 @@ extension on Translations {
 			'bonusExtras.completed' => 'Completed',
 			'bonusExtras.markCompleted' => 'Mark completed',
 			'bonusExtras.resume' => 'Resume extra',
-			'bonusExtras.aboutFranchise' => 'About the franchise',
 			'bonusExtras.restricted' => 'Online extras are unavailable for this profile.',
-			'bonusExtras.about' => 'About this extra',
-			'bonusExtras.refresh' => 'Refresh',
 			'bonusExtras.kind.makingOf' => 'Making of',
 			'bonusExtras.kind.effects' => 'Effects and stunts',
 			'bonusExtras.kind.makeup' => 'Makeup and costumes',

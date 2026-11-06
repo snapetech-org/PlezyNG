@@ -401,7 +401,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     });
   }
 
-  void _syncCuratedExtras() {
+  Future<void> _syncCuratedExtras() async {
     if (!_canUseDetail || (!_metadata.isMovie && !_metadata.isShow)) return;
     final locale = WidgetsBinding.instance.platformDispatcher.locale;
     final subject = extrasSubjectForMedia(
@@ -423,7 +423,29 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       session.subject = subject;
       session.library = _extras ?? const [];
     }
-    unawaited(_curatedExtras!.refresh());
+    final current = _curatedExtras!;
+    try {
+      if (widget.isOffline) {
+        final downloads = context.read<DownloadProvider>();
+        final restored = <MediaItem>[];
+        for (final ref in await current.store.libraryReferences(subject.key)) {
+          if (!current.active) return;
+          final cached = await downloads.lookupOfflineMetadata(ServerId(ref.serverId), ref.id);
+          final item = cached?.copyWith(serverId: ref.serverId);
+          if (item != null && downloads.isDownloaded(item.globalKey)) restored.add(item);
+        }
+        if (!current.active) return;
+        current.library = restored;
+      } else if (_hasLoadedExtras && _extras != null) {
+        await current.store.saveLibraryReferences(subject.key, [
+          for (final item in _extras!)
+            if (item.serverId != null) (serverId: item.serverId!, id: item.id),
+        ]);
+      }
+    } catch (_) {
+      /* Missing offline metadata leaves an empty native selection. */
+    }
+    if (current.active) await current.refresh();
   }
 
   void _browseExtras() {
@@ -1116,7 +1138,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     super.didChangeDependencies();
     if (_curatedExtras == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_canUseDetail && _curatedExtras == null) _syncCuratedExtras();
+        if (_canUseDetail && _curatedExtras == null) unawaited(_syncCuratedExtras());
       });
     }
     final music = Provider.of<MusicPlaybackService?>(context, listen: false);
@@ -2504,7 +2526,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       },
       markLoaded: () => _hasLoadedExtras = true,
     );
-    _syncCuratedExtras();
+    await _syncCuratedExtras();
   }
 
   /// Load related hubs (collections, similar, "more from" director/actor).
@@ -3809,7 +3831,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                             ],
 
                             // Trailers & Extras Section
-                            if (_curatedExtras != null) ...[
+                            if (_curatedExtras != null && _extraPreviews?.isNotEmpty == true) ...[
                               Wrap(
                                 key: _extrasSectionKey,
                                 spacing: 16,

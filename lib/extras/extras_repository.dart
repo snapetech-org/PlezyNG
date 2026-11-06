@@ -38,28 +38,38 @@ Future<Map<String, dynamic>> extrasJsonRequest(
   String token = '',
   Duration timeout = const Duration(seconds: 12),
 }) async {
-  final request = http.Request('POST', uri)
-    ..followRedirects = false
-    ..headers['Content-Type'] = 'application/json'
-    ..headers['Accept'] = 'application/json'
-    ..body = jsonEncode(body);
-  if (token.isNotEmpty) request.headers['Authorization'] = 'Bearer $token';
-  final response = await client.send(request).timeout(timeout);
-  if (response.statusCode != 200) {
-    throw StateError('Extras service response ${response.statusCode}');
-  }
-  final bytes = <int>[];
-  await for (final chunk in response.stream.timeout(timeout)) {
-    if (bytes.length + chunk.length > 1024 * 1024) {
-      throw const FormatException('Extras response too large');
+  final aborted = Completer<void>();
+  final timer = Timer(timeout, () {
+    if (!aborted.isCompleted) aborted.complete();
+  });
+  try {
+    final request = http.AbortableRequest('POST', uri, abortTrigger: aborted.future)
+      ..followRedirects = false
+      ..headers['Content-Type'] = 'application/json'
+      ..headers['Accept'] = 'application/json'
+      ..body = jsonEncode(body);
+    if (token.isNotEmpty) request.headers['Authorization'] = 'Bearer $token';
+    final response = await client.send(request).timeout(timeout);
+    if (response.statusCode != 200) {
+      unawaited(response.stream.listen((_) {}).cancel());
+      throw StateError('Extras service response ${response.statusCode}');
     }
-    bytes.addAll(chunk);
+    final bytes = <int>[];
+    await for (final chunk in response.stream.timeout(timeout)) {
+      if (bytes.length + chunk.length > 1024 * 1024) {
+        throw const FormatException('Extras response too large');
+      }
+      bytes.addAll(chunk);
+    }
+    final decoded = jsonDecode(utf8.decode(bytes));
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('Invalid extras response');
+    }
+    return decoded;
+  } finally {
+    timer.cancel();
+    if (!aborted.isCompleted) aborted.complete();
   }
-  final decoded = jsonDecode(utf8.decode(bytes));
-  if (decoded is! Map<String, dynamic>) {
-    throw const FormatException('Invalid extras response');
-  }
-  return decoded;
 }
 
 class ExtrasResult {

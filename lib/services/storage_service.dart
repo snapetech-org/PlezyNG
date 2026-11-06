@@ -516,7 +516,7 @@ class StorageService extends BaseSharedPreferencesService {
 
   // Clear all user-related data (for logout)
   Future<void> clearUserData() async {
-    await Future.wait([clearCredentials(), clearLibraryPreferences()]);
+    await Future.wait([clearCredentials(), clearLibraryPreferences(), ExtrasStore.clearAll()]);
   }
 
   // Multi-Server Support Methods

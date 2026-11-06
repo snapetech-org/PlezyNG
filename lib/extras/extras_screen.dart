@@ -1,3 +1,8 @@
+import 'package:provider/provider.dart';
+import '../providers/download_provider.dart';
+import '../providers/multi_server_provider.dart';
+import '../media/ids.dart';
+import '../utils/download_utils.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
@@ -53,7 +58,7 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
       entries,
       session.preferences,
       token: await _aiToken(),
-      restricted: session.subject.restricted,
+      restricted: !session.externalPermitted,
       offline: session.subject.offline,
     );
     if (mounted && generation == _generation) {
@@ -68,8 +73,12 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
     for (final entry in entries) await _withTranscript(entry),
   ];
   Future<ExtraEntry> _withTranscript(ExtraEntry entry) async {
-    final imported = await session.store.transcript(entry.id);
-    return imported == null ? entry : entry.withPassages(imported, userSupplied: true);
+    try {
+      final imported = await session.store.transcript(entry.id);
+      return imported == null ? entry : entry.withPassages(imported, userSupplied: true);
+    } catch (_) {
+      return entry;
+    }
   }
 
   Future<String> _aiToken() async {
@@ -135,44 +144,74 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
         ),
       ),
     );
-    if (accepted == true && session.active) {
-      final uri = canonicalExtraUrl(Uri.parse(url.text.trim()))!;
-      await session.store.add(
-        ExtraEntry(
-          id: 'personal:${sha256.convert(utf8.encode('${session.subject.key}|$uri'))}',
-          parentIdentities: session.subject.allIdentities,
-          title: title.text.trim(),
-          kind: ExtraKind.other,
-          origin: ExtraOrigin.user,
-          url: uri,
-        ),
-      );
-      await session.refresh();
+    try {
+      if (accepted == true && session.active) {
+        final uri = canonicalExtraUrl(Uri.parse(url.text.trim()))!;
+        await session.store.add(
+          ExtraEntry(
+            id: 'personal:${sha256.convert(utf8.encode('${session.subject.key}|$uri'))}',
+            parentIdentities: session.subject.allIdentities,
+            title: title.text.trim(),
+            kind: ExtraKind.other,
+            origin: ExtraOrigin.user,
+            url: uri,
+          ),
+        );
+        await session.refresh();
+      }
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.bonusExtras.failed)));
+    } finally {
+      title.dispose();
+      url.dispose();
     }
-    title.dispose();
-    url.dispose();
   }
 
   Future<void> _action(ExtraEntry entry, String action) async {
     if (!session.active) return;
-    if (action == 'transcript') {
-      await _transcript(entry);
-      return;
+    try {
+      if (action == 'download' || action == 'deleteDownload') {
+        final native = session.nativeItem(entry);
+        final downloads = context.read<DownloadProvider?>();
+        final server = serverIdOrNull(native?.serverId);
+        final client = server == null ? null : context.read<MultiServerProvider?>()?.getClientForServer(server);
+        if (native == null || downloads == null) return;
+        if (action == 'deleteDownload') {
+          await downloads.deleteDownload(native.globalKey);
+        } else if (client != null) {
+          await queueDownloadWithFeedback(context, metadata: native, client: client, downloadProvider: downloads);
+        }
+        if (mounted) setState(() {});
+        return;
+      }
+      if (action == 'transcript') {
+        await _transcript(entry);
+        return;
+      }
+      if (action == 'completed') {
+        await session.store.recordProgress(entry.id, completed: true);
+        if (mounted) setState(() {});
+        return;
+      }
+      if (action == 'remove') {
+        await session.store.removePersonal(entry.id);
+      } else {
+        await session.store.exclude(session.subject, entry, action);
+      }
+      await session.refresh();
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.bonusExtras.failed)));
     }
-    if (action == 'completed') {
-      await session.store.recordProgress(entry.id, completed: true);
-      if (mounted) setState(() {});
-      return;
-    }
-    if (action == 'remove') {
-      await session.store.removePersonal(entry.id);
-    } else {
-      await session.store.exclude(session.subject, entry, action);
-    }
-    await session.refresh();
   }
 
   List<PopupMenuEntry<String>> _menu(ExtraEntry entry) => [
+    if (entry.isLibrary &&
+        context.read<DownloadProvider?>()?.syncRulesSupported == true &&
+        session.nativeItem(entry) != null)
+      if (context.read<DownloadProvider>().isDownloaded(session.nativeItem(entry)!.globalKey))
+        PopupMenuItem(value: 'deleteDownload', child: Text(t.downloads.deleteDownload))
+      else if (!session.subject.offline)
+        PopupMenuItem(value: 'download', child: Text(t.downloads.downloadNow)),
     PopupMenuItem(value: 'hide', child: Text(t.bonusExtras.hide)),
     PopupMenuItem(value: 'wrong', child: Text(t.bonusExtras.wrongTitle)),
     if (entry.publisherId.isNotEmpty && !entry.isLibrary)
@@ -283,6 +322,8 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
                   if (session.unavailable)
                     Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(t.bonusExtras.partial)),
                   if (session.subject.restricted) Text(t.bonusExtras.restricted),
+                  if (!session.subject.watched && !session.preferences.showSpoilers)
+                    Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(t.bonusExtras.spoilerHint)),
                   if (filtered.isEmpty && !session.loading)
                     Padding(padding: const EdgeInsets.symmetric(vertical: 24), child: Text(t.bonusExtras.empty)),
                   for (final entry in filtered)
@@ -305,13 +346,34 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
                               ].join(' · '),
                             ),
                             leading: const AppIcon(Symbols.play_circle_rounded),
-                            onTap: () => unawaited(playExtra(context, session, entry)),
+                            onTap: () async {
+                              await playExtra(context, session, entry);
+                              if (mounted) setState(() {});
+                            },
                             onLongPress: () => unawaited(_longPress(entry)),
                             trailing: PopupMenuButton<String>(
                               tooltip: t.common.options,
                               itemBuilder: (_) => _menu(entry),
                               onSelected: (action) => unawaited(_action(entry, action)),
                             ),
+                          ),
+                          FutureBuilder<Map<String, dynamic>>(
+                            future: session.store.progress(entry.id),
+                            builder: (context, snapshot) {
+                              final progress = snapshot.data;
+                              if (progress == null || progress['opened'] == null) return const SizedBox.shrink();
+                              final seconds = progress['seconds'] is int ? progress['seconds'] as int : 0;
+                              return Padding(
+                                padding: const EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 12),
+                                child: Text(
+                                  progress['completed'] == true
+                                      ? t.bonusExtras.completed
+                                      : seconds > 0
+                                      ? '${t.bonusExtras.resume} · ${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}'
+                                      : t.bonusExtras.opened,
+                                ),
+                              );
+                            },
                           ),
                           for (final passage in _answer.passages[entry.id] ?? const <ExtraPassage>[])
                             FocusableListTile(
@@ -597,7 +659,7 @@ class _ExtraTranscriptScreenState extends State<ExtraTranscriptScreen> {
       [_entry],
       widget.session.preferences,
       token: await _token(),
-      restricted: widget.session.subject.restricted,
+      restricted: !widget.session.externalPermitted,
       offline: widget.session.subject.offline,
     );
     if (mounted && generation == _generation) {

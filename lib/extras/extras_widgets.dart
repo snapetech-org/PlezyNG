@@ -1,3 +1,4 @@
+import '../services/jellyfin_client.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -29,20 +30,31 @@ ExtrasSession createExtrasSession(
 }) {
   final profiles = context.read<ActiveProfileProvider?>();
   final profileId = profiles?.activeId;
+  bool current() =>
+      profileId != null &&
+      profiles?.activeId == profileId &&
+      profiles?.isBinding != true &&
+      (isCurrent?.call() ?? true);
   return ExtrasSession(
     subject: subject,
-    store: ExtrasStore(profileId ?? 'unbound'),
+    store: ExtrasStore(profileId ?? 'unbound', isCurrent: current),
     library: library,
     catalog: catalog,
-    isCurrent: () =>
-        profileId != null &&
-        profiles?.activeId == profileId &&
-        profiles?.isBinding != true &&
-        (isCurrent?.call() ?? true),
+    isCurrent: current,
+    externalAllowed: () => current() && !extrasRestricted(context),
   );
 }
 
-bool extrasRestricted(BuildContext context) => context.read<ActiveProfileProvider?>()?.active?.plexRestricted ?? true;
+bool extrasRestricted(BuildContext context) {
+  final profile = context.read<ActiveProfileProvider?>()?.active;
+  if (profile == null || profile.plexRestricted) return true;
+  final servers = context.read<MultiServerProvider?>();
+  for (final id in servers?.serverIds ?? <String>[]) {
+    final client = servers?.getClientForServer(ServerId(id));
+    if (client is JellyfinClient && !client.allowsExternalExtras) return true;
+  }
+  return false;
+}
 
 /// Display-only identities never carry a server token, stream, or library ID.
 MediaItem extraDisplayItem(ExtraEntry entry) => MediaItem(
@@ -161,6 +173,16 @@ class ExtrasShelf extends StatelessWidget {
     listenable: session,
     builder: (context, _) {
       final entries = session.preview;
+      if (entries.isEmpty) {
+        return Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
+            onPressed: () => unawaited(openExtras(context, session)),
+            icon: const AppIcon(Symbols.movie_filter_rounded),
+            label: Text(t.bonusExtras.title),
+          ),
+        );
+      }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

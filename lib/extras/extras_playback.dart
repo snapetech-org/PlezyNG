@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import '../utils/platform_detector.dart';
 import '../utils/video_player_navigation.dart';
 import '../widgets/app_icon.dart';
 import 'extras_models.dart';
+import 'extras_youtube_player.dart';
 import 'extras_session.dart';
 
 /// Provider media is never resolved to a raw stream or sent through the native
@@ -34,7 +34,7 @@ Future<void> playExtra(BuildContext context, ExtrasSession session, ExtraEntry e
     );
     return;
   }
-  if (session.subject.restricted || session.subject.offline || canonicalExtraUrl(entry.url) == null) return;
+  if (!session.externalPermitted || session.subject.offline || canonicalExtraUrl(entry.url) == null) return;
   if (!context.mounted || !session.active) return;
   await Navigator.of(context).push<void>(
     MaterialPageRoute(
@@ -95,7 +95,7 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
   }
 
   Future<void> _open() async {
-    if (!widget.session.active) return;
+    if (!widget.session.externalPermitted) return;
     var launched = false;
     try {
       launched = await launchUrl(_watchUrl, mode: LaunchMode.externalApplication);
@@ -110,20 +110,6 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
       }
     }
     if (mounted) setState(() => _failed = !launched);
-  }
-
-  String _html() {
-    final id = widget.entry.url!.queryParameters['v'];
-    final videoJson = jsonEncode(id);
-    return '''<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-<body style="margin:0;background:#000"><div id="player"></div><script>
-var player; function send(kind,value) {if(window.flutter_inappwebview) window.flutter_inappwebview.callHandler('extras',kind,value);}
-function onYouTubeIframeAPIReady(){player=new YT.Player('player',{width:'100%',height:window.innerHeight,videoId:$videoJson,
-playerVars:{playsinline:1,rel:0,start:$_position,origin:'https://pleazyng.app'},events:{onError:function(e){send('error',e.data);},
-onStateChange:function(e){if(e.data===0)send('ended',Math.floor(player.getCurrentTime()));}}});}
-setInterval(function(){if(player&&player.getCurrentTime&&player.getPlayerState()===1)send('position',Math.floor(player.getCurrentTime()));},5000);
-window.addEventListener('resize',function(){if(player&&player.setSize)player.setSize(window.innerWidth,window.innerHeight);});
-</script><script src="https://www.youtube.com/iframe_api"></script></body></html>''';
   }
 
   @override
@@ -142,7 +128,7 @@ window.addEventListener('resize',function(){if(player&&player.setSize)player.set
                 Expanded(
                   child: InAppWebView(
                     initialData: InAppWebViewInitialData(
-                      data: _html(),
+                      data: extraYoutubePlayerHtml(widget.entry.url!.queryParameters['v']!, _position),
                       baseUrl: WebUri('https://pleazyng.app/'),
                       historyUrl: WebUri('https://pleazyng.app/'),
                     ),
@@ -164,7 +150,10 @@ window.addEventListener('resize',function(){if(player&&player.setSize)player.set
                       controller.addJavaScriptHandler(
                         handlerName: 'extras',
                         callback: (arguments) async {
-                          if (!mounted || !widget.session.active || arguments.length != 2 || arguments[1] is! num) {
+                          if (!mounted ||
+                              !widget.session.externalPermitted ||
+                              arguments.length != 2 ||
+                              arguments[1] is! num) {
                             return null;
                           }
                           final kind = arguments[0], value = (arguments[1] as num).toInt();
@@ -174,13 +163,18 @@ window.addEventListener('resize',function(){if(player&&player.setSize)player.set
                           }
                           if (value < 0 || value > 86400 || (kind != 'position' && kind != 'ended')) return null;
                           _position = value;
+                          if (kind == 'ended') setState(() => _embedded = false);
                           if (kind == 'ended' || (_position - _lastSaved).abs() >= 10) {
                             _lastSaved = _position;
-                            await widget.session.store.recordProgress(
-                              widget.entry.id,
-                              seconds: _position,
-                              completed: kind == 'ended',
-                            );
+                            try {
+                              await widget.session.store.recordProgress(
+                                widget.entry.id,
+                                seconds: _position,
+                                completed: kind == 'ended',
+                              );
+                            } catch (_) {
+                              /* Player remains usable without persistence. */
+                            }
                           }
                           return null;
                         },

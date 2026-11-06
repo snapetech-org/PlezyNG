@@ -10,7 +10,9 @@ import 'extras_models.dart';
 /// All preferences, personal links, exclusions and progress belong to the
 /// captured profile. A late response can never write into the newly active one.
 class ExtrasStore {
-  ExtrasStore(this.profileId);
+  ExtrasStore(this.profileId, {this.isCurrent});
+  final bool Function()? isCurrent;
+  bool get _active => isCurrent?.call() ?? true;
   final String profileId;
   String get _scope => sha256.convert(utf8.encode(profileId)).toString();
   String get _key => 'extras_v1_$_scope';
@@ -29,6 +31,7 @@ class ExtrasStore {
   }
 
   Future<void> _mutate(void Function(Map<String, dynamic>) edit) async {
+    if (!_active) return;
     final previous = _writes[_key];
     final future = () async {
       if (previous != null) {
@@ -39,6 +42,7 @@ class ExtrasStore {
         }
       }
       final data = await _read();
+      if (!_active) return;
       edit(data);
       final encoded = jsonEncode(data);
       if (encoded.length > 3 * 1024 * 1024) {
@@ -71,19 +75,18 @@ class ExtrasStore {
     };
     data['preferences'] = prefs.toJson();
   });
-  Future<List<ExtraEntry>> personalEntries() async => ((await _read())['personal'] as List? ?? const [])
-      .map((raw) => ExtraEntry.parse(raw, userAdded: true))
-      .whereType<ExtraEntry>()
-      .toList();
+  Future<List<ExtraEntry>> personalEntries() async => extraList(
+    (await _read())['personal'],
+  ).map((raw) => ExtraEntry.parse(raw, userAdded: true)).whereType<ExtraEntry>().toList();
   Future<void> add(ExtraEntry entry) => _mutate((data) {
-    final entries = (data['personal'] as List? ?? []).where((e) => e is Map && e['id'] != entry.id).toList();
+    final entries = extraList(data['personal']).where((e) => e is Map && e['id'] != entry.id).toList();
     if (entries.length >= 500) {
       throw StateError('Personal extras limit reached');
     }
     data['personal'] = [...entries, entry.toJson()];
   });
   Future<void> removePersonal(String id) => _mutate((data) {
-    data['personal'] = (data['personal'] as List? ?? []).where((e) => e is Map && e['id'] != id).toList();
+    data['personal'] = extraList(data['personal']).where((e) => e is Map && e['id'] != id).toList();
   });
   Future<String> secret(String name) async {
     final raw = (await BaseSharedPreferencesService.sharedCache()).getString(_secretKey);
@@ -95,8 +98,10 @@ class ExtrasStore {
   }
 
   Future<void> saveSecrets({required String discovery, required String ai}) async {
+    if (!_active) return;
     final encrypted = await CredentialVault.protect(jsonEncode({'discovery': discovery, 'ai': ai}));
-    await (await BaseSharedPreferencesService.sharedCache()).setString(_secretKey, encrypted);
+    final prefs = await BaseSharedPreferencesService.sharedCache();
+    if (_active) await prefs.setString(_secretKey, encrypted);
   }
 
   Future<({List<ExtraEntry> entries, DateTime fetched})?> cache(String key) async {
@@ -168,6 +173,24 @@ class ExtrasStore {
     }
     data['transcripts'] = all;
   });
+  Future<List<({String serverId, String id})>> libraryReferences(String subject) async {
+    final all = (await _read())['library'];
+    return [
+      for (final row in extraList(all is Map ? all[subject] : null))
+        if (row is Map && row['serverId'] is String && row['id'] is String)
+          (serverId: row['serverId'] as String, id: row['id'] as String),
+    ];
+  }
+
+  Future<void> saveLibraryReferences(String subject, List<({String serverId, String id})> refs) => _mutate((data) {
+    final all = Map<String, dynamic>.from(data['library'] is Map ? data['library'] as Map : {});
+    all.remove(subject);
+    all[subject] = refs.take(100).map((r) => {'serverId': r.serverId, 'id': r.id}).toList();
+    while (all.length > 100) {
+      all.remove(all.keys.first);
+    }
+    data['library'] = all;
+  });
   Future<void> clear() async {
     final pending = _writes[_key];
     if (pending != null) {
@@ -199,3 +222,5 @@ class ExtrasStore {
 
   Future<void> clearCache() => _mutate((data) => data.remove('cache'));
 }
+
+List<dynamic> extraList(Object? value) => value is List ? value : const [];

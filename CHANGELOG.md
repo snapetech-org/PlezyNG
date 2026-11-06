@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Check localization source-review snapshots and generated native resources before committing, matching the release CI checks.
 - Derive tvOS framework deployment metadata from every selected Mach-O slice, correcting read-only build copies while preserving shared caches and genuine higher runtime requirements.
 - Accept canonical and legacy Pleazyng deep links in the shared Apple handler, with native alias tests and registration consistency checks.
 - Harden edge OAuth against oversized-body stalls, cross-site session creation and single-client daily quota exhaustion; apply consistent browser security headers.

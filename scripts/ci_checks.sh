@@ -66,8 +66,11 @@ fi
 rm -f "$out"
 
 section "translation hygiene"
-if python3 scripts/checks/clean_translations.py --check --strict; then
-  ok "locale files normalized and no unused keys found"
+if python3 scripts/checks/clean_translations.py --check --strict &&
+  python3 scripts/checks/check_localizations.py &&
+  python3 scripts/codegen/generate_localized_quantities.py --check &&
+  python3 scripts/codegen/generate_platform_locales.py --check; then
+  ok "locale files, source review, placeholders and native resources verified"
 else
   fail "translation files need cleanup or contain unused keys"
   FAILED=1

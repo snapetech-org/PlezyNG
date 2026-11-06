@@ -32,6 +32,14 @@ class UpdatePackagesWorkflowTest(unittest.TestCase):
         result = self.run_guard(WORKFLOW.read_text())
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_homebrew_checkout_cannot_target_an_unrelated_tap(self) -> None:
+        workflow = WORKFLOW.read_text()
+        original = "repository: snapetech-org/homebrew-pleazyng"
+        self.assertIn(original, workflow)
+        result = self.run_guard(workflow.replace(original, "repository: other/unrelated-tap", 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("dedicated Pleazyng tap", result.stderr)
+
     def test_homebrew_download_cannot_target_another_repository(self) -> None:
         workflow = WORKFLOW.read_text()
         original = 'gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY"'

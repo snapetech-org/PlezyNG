@@ -368,16 +368,23 @@
     "public_support_website": "https://github.com/snapetech-org"
   },
   "homebrew": {
-    "tap_repository": "snapetech-org/homebrew-slskdn",
+    "tap_repository": "snapetech-org/homebrew-pleazyng",
     "cask_token": "snapetech-pleazyng",
-    "inventory": "Tap has Formula/slskdn.rb and Formula/slskr.rb; no Casks directory or old/new app Cask",
+    "inventory": "Dedicated Pleazyng tap created with README; no Cask published until signed/notarized release is qualified.",
     "automation": "Update Packages now verifies the published attested Cask, manifest, DMG hash and notarization before writing Casks/snapetech-pleazyng.rb to the publisher tap",
     "pending": [
-      "HOMEBREW_TAP_TOKEN restricted to Contents write on publisher tap",
       "First signed/notarized release with prepare_homebrew_cask enabled",
       "Live workflow validation on selected public macOS runner; no publication dispatched"
     ],
-    "signing_setup": "Developer ID issued and dedicated secrets configured; API-key notarization workflow wired. First signed/notarized release and live validation still pending."
+    "signing_setup": "Developer ID issued and dedicated secrets configured; API-key notarization workflow wired. First signed/notarized release and live validation still pending.",
+    "target_correction": "Owner identified homebrew-slskdn as unrelated; no Cask or token was published there. Existing repositories not renamed.",
+    "credential": {
+      "secret": "HOMEBREW_TAP_TOKEN",
+      "token_id": 22476985,
+      "scope": "Resource owner snapetech-org; only homebrew-pleazyng; Contents read/write plus required Metadata read; no organization permissions",
+      "expires": "2027-11-06",
+      "state": "Created through authenticated owner UI and stored directly in PlezyNG repository Actions secret; actual workflow publication remains unvalidated"
+    }
   },
   "chocolatey": {
     "package_id": "pleazyng",

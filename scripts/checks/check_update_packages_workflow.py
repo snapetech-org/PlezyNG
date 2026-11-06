@@ -48,6 +48,10 @@ require(
 )
 
 homebrew = job("update-homebrew")
+require(
+    "repository: snapetech-org/homebrew-pleazyng" in homebrew,
+    "Homebrew publisher must target the dedicated Pleazyng tap",
+)
 appcast = job("update-appcast-branch")
 require(
     "update-winget:" not in text,

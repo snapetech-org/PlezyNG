@@ -42,8 +42,8 @@ Replace the example version with the exact stable release version. The generator
 
 ## Custom tap option
 
-The Update Packages workflow publishes the verified candidate to `Casks/snapetech-pleazyng.rb` in `snapetech-org/homebrew-slskdn`. Configure `HOMEBREW_TAP_TOKEN` with Contents write access limited to that tap repository. Without it, the Homebrew job stays disabled and reports the missing credential; the ordinary repository token cannot write across repositories. The tap currently has no Pleazyng Cask, and no qualified signed/notarized release has been published through this path. The workflow must pass on its selected runner before automation is considered verified.
+The Update Packages workflow publishes the verified candidate to `Casks/snapetech-pleazyng.rb` in `snapetech-org/homebrew-pleazyng`. Configure `HOMEBREW_TAP_TOKEN` with Contents write access limited to that tap repository. This fine-grained token is now configured, restricted to the dedicated Pleazyng tap with Contents read/write and required Metadata read; it expires November 6, 2027. The ordinary repository token cannot write across repositories. The tap currently has no Pleazyng Cask, and no qualified signed/notarized release has been published through this path. The workflow must pass on its selected runner before automation is considered verified.
 
-After the first qualified publication, install with `brew install --cask snapetech-org/slskdn/snapetech-pleazyng`. Keep the version and checksum pinned to a published release; do not use a moving `latest` DMG URL.
+After the first qualified publication, install with `brew install --cask snapetech-org/pleazyng/snapetech-pleazyng`. Keep the version and checksum pinned to a published release; do not use a moving `latest` DMG URL.
 
 There is no `plezy` Cask entry: Pleazyng is distributed under the `snapetech-pleazyng` token. Do not add a quarantine-removal postflight. Only publish signed and notarized Pleazyng builds that pass Gatekeeper.

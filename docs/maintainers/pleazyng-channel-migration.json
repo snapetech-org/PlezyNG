@@ -408,7 +408,10 @@
     "developer_agreement": "Owner accepted on VM 2026-11-05",
     "email_verification": "Owner completed code verification for keith@snape.tech",
     "public_support_email": "support@snape.tech",
-    "public_support_website": "https://github.com/snapetech-org"
+    "public_support_website": "https://github.com/snapetech-org",
+    "billing_implementation": "Pinned in_app_purchase_msstore0.1.0 with source-reviewed StoreContext bridge; adapter accepts only matching durable non-subscription products and verifies complete online licence ownership before granting purchase-stream access. Offline/error/malformed reads preserve cached entitlement.",
+    "packaging": "Separate IAP-enabled x64/arm64 Store payloads; hashed AOT/executable/plugin receipts verified before MSIX assembly. Direct Windows artifacts remain unlocked. Requires assigned MSSTORE_LIFETIME_PRODUCT_ID plus existing Partner Center identity variables.",
+    "technical_validation": "48 focused Dart billing tests and analyzer passed; two Python build/receipt tests passed; PowerShell/YAML/Bash syntax checked. Windows plugin native compile, Store install/purchase/refund and new workflow revision qualification remain pending."
   },
   "homebrew": {
     "tap_repository": "snapetech-org/homebrew-pleazyng",

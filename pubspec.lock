@@ -992,6 +992,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.4"
+  in_app_purchase_msstore:
+    dependency: "direct main"
+    description:
+      name: in_app_purchase_msstore
+      sha256: "55c249c860dfd803473fc6707c2608833d55c15532f2e52ec40ebacbbe36144d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   in_app_purchase_platform_interface:
     dependency: "direct main"
     description:

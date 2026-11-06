@@ -402,7 +402,9 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       } else {
         final productIds = {lifetimeUnlockProductId};
         final response = await store.platform.queryProductDetails(productIds);
-        _product = response.productDetails.firstWhereOrNull((p) => p.id == lifetimeUnlockProductId);
+        _product = response.productDetails.firstWhereOrNull(
+          (p) => p.id == lifetimeUnlockProductId && store.acceptsProduct(p),
+        );
         if (_product == null) {
           // StoreKit 2 reports a query that found no product as the error
           // `storekit_no_response` rather than an empty result.

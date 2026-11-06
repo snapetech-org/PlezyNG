@@ -16,6 +16,7 @@
 #include <flutter_secure_storage_windows/flutter_secure_storage_windows_plugin.h>
 #include <flutter_tts/flutter_tts_plugin.h>
 #include <flutter_whisper_ggml/flutter_whisper_plugin_c_api.h>
+#include <in_app_purchase_msstore/in_app_purchase_ms_store_plugin_c_api.h>
 #include <os_media_controls/os_media_controls_plugin_c_api.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
 #include <record_windows/record_windows_plugin_c_api.h>
@@ -46,6 +47,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FlutterTtsPlugin"));
   FlutterWhisperPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FlutterWhisperPluginCApi"));
+  InAppPurchaseMsStorePluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("InAppPurchaseMsStorePluginCApi"));
   OsMediaControlsPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("OsMediaControlsPluginCApi"));
   PermissionHandlerWindowsPluginRegisterWithRegistrar(

@@ -867,11 +867,21 @@ for artifact in (
     "windows-installer",
 ):
     require(f"name: {artifact}" in package_windows, f"Windows packaging lost {artifact}")
+installer_step = re.search(r'(?ms)^      - name: Build installer and portables\n.*?(?=^      - |\Z)', package_windows)
 require(
     "windows-arm64-build" not in package_windows
     and "windows-arm64-portable" not in package_windows
-    and "-Arm64BuildDir" not in package_windows,
+    and installer_step is not None
+    and "-Arm64BuildDir" not in installer_step.group(),
     "the Windows installer and Chocolatey packages remain x64; ARM64 is a separate portable archive",
+)
+require(
+    'name: windows-store-x64-build' in package_windows
+    and 'name: windows-store-arm64-build' in package_windows
+    and '-X64BuildDir "build-store-x64"' in package_windows
+    and '-Arm64BuildDir "build-store-arm64"' in package_windows
+    and '-LifetimeProductId $env:MSSTORE_LIFETIME_PRODUCT_ID' in package_windows,
+    "Microsoft Store MSIX must consume separate trial/IAP payloads for both architectures",
 )
 
 require(

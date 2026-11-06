@@ -16,6 +16,7 @@ param(
     [string]$Publisher,
     [string]$PublisherDisplayName,
     [string]$AppDisplayName = "Pleazyng",
+    [string]$LifetimeProductId,
     # Write generated manifests for manual inspection without packaging builds.
     [switch]$EmitManifestOnly
 )
@@ -212,6 +213,10 @@ if ($BuildDirs.Count -eq 0) {
 Write-Host "Architectures found:" -ForegroundColor Green
 foreach ($Architecture in $BuildDirs.Keys) {
     Write-Host "  $($Architecture): $($BuildDirs[$Architecture])"
+    & python scripts/build_microsoft_store.py --verify-only --bundle $BuildDirs[$Architecture] --arch $Architecture --product-id $LifetimeProductId
+    if ($LASTEXITCODE -ne 0) {
+        throw "Microsoft Store packaging requires a verified trial/IAP payload for $Architecture."
+    }
 }
 
 # Locate the SDK tools. The newest kit that actually ships both wins; older

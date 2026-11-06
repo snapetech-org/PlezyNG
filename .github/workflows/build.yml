@@ -2141,6 +2141,22 @@ jobs:
           name: windows-${{ matrix.arch }}-build
           path: build/windows/${{ matrix.arch }}/runner/Release/
 
+      - name: Build separate Microsoft Store trial and unlock payload
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        shell: pwsh
+        env:
+          MSSTORE_LIFETIME_PRODUCT_ID: ${{ vars.MSSTORE_LIFETIME_PRODUCT_ID }}
+          FLUTTER_WHISPER_GPU_BACKEND: ${{ inputs.subtitle_gpu_backend == 'vulkan' && matrix.arch == 'x64' && 'VULKAN' || inputs.subtitle_gpu_backend == 'cuda' && matrix.arch == 'x64' && 'CUDA' || 'CPU' }}
+        run: python scripts/build_microsoft_store.py --arch "${{ matrix.arch }}"
+
+      - name: Upload Microsoft Store ${{ matrix.arch }} payload
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: windows-store-${{ matrix.arch }}-build
+          path: build/windows/${{ matrix.arch }}/runner/Release/
+          if-no-files-found: error
+
   package-windows:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: [validate-trusted-ref, build-windows]
@@ -2186,17 +2202,34 @@ jobs:
       - name: Build installer and portables
         run: .\windows\build-installer.ps1 -X64BuildDir "build-x64" -Version "${{ steps.version.outputs.version }}"
 
+      - name: Download Microsoft Store x64 payload
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: windows-store-x64-build
+          path: build-store-x64
+
+      - name: Download Microsoft Store arm64 payload
+        if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: windows-store-arm64-build
+          path: build-store-arm64
+
       - name: Build Microsoft Store MSIX bundle
         if: ${{ vars.MSSTORE_PACKAGE_NAME != '' && vars.MSSTORE_PUBLISHER != '' && vars.MSSTORE_PUBLISHER_DISPLAY_NAME != '' }}
         env:
           MSSTORE_PACKAGE_NAME: ${{ vars.MSSTORE_PACKAGE_NAME }}
           MSSTORE_PUBLISHER: ${{ vars.MSSTORE_PUBLISHER }}
           MSSTORE_PUBLISHER_DISPLAY_NAME: ${{ vars.MSSTORE_PUBLISHER_DISPLAY_NAME }}
+          MSSTORE_LIFETIME_PRODUCT_ID: ${{ vars.MSSTORE_LIFETIME_PRODUCT_ID }}
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
         shell: pwsh
         run: |
           .\windows\build-msix.ps1 `
-            -X64BuildDir "build-x64" `
+            -X64BuildDir "build-store-x64" `
+            -Arm64BuildDir "build-store-arm64" `
+            -LifetimeProductId $env:MSSTORE_LIFETIME_PRODUCT_ID `
             -Version $env:RELEASE_VERSION `
             -IdentityName $env:MSSTORE_PACKAGE_NAME `
             -Publisher $env:MSSTORE_PUBLISHER `

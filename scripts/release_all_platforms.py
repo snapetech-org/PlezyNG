@@ -1125,6 +1125,24 @@ def configured_repo_names(kind: str) -> set[str]:
     return {row["name"] for row in rows if isinstance(row, dict) and isinstance(row.get("name"), str)}
 
 
+def configured_repo_variables() -> dict[str, str]:
+    rows = gh_json("variable", "list", "--repo", PLEZY_REPO, "--json", "name,value")
+    if not isinstance(rows, list):
+        raise ReleaseError("Could not read repository publication settings.")
+    return {row["name"]: str(row.get("value", "")) for row in rows
+            if isinstance(row, dict) and isinstance(row.get("name"), str)}
+
+
+def play_publication_settings(settings: dict[str, str]) -> tuple[str, str]:
+    track = settings.get("GOOGLE_PLAY_TRACK", "internal")
+    status = settings.get("GOOGLE_PLAY_RELEASE_STATUS", "draft")
+    if track not in {"internal", "alpha", "beta"}:
+        raise ReleaseError("Automatic Google Play publication must use an internal or closed testing track.")
+    if status not in {"draft", "completed"}:
+        raise ReleaseError("Automatic Google Play status must be draft or completed.")
+    return track, status
+
+
 def ensure_channel_run(
     workflow: str,
     title: str,
@@ -1172,41 +1190,47 @@ def publish_configured_channels(
     release = release_metadata(tag)
     assets = {asset.get("name") for asset in release.get("assets", []) if isinstance(asset, dict)}
     secrets = configured_repo_names("secret")
-    variables = configured_repo_names("variable")
+    publication_settings = configured_repo_variables()
+    variables = set(publication_settings)
+    play_track, play_status = play_publication_settings(publication_settings)
 
     specs = [
         {
-            "name": "Google Play internal draft",
+            "name": f"Google Play {play_track} {play_status}",
+            "readiness_flag": "GOOGLE_PLAY_BOOTSTRAP_COMPLETE",
             "workflow": "publish-app-stores.yml",
-            "title": f"action:publish-app-stores:pool:private:tag:{tag}:channel:google-play",
-            "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
-                       "channel": "google-play", "play_track": "internal", "play_release_status": "draft"},
+            "title": f"action:publish-app-stores:pool:public:tag:{tag}:channel:google-play",
+            "fields": {"action": "publish-app-stores", "runner_pool": "public", "release_tag": tag,
+                       "channel": "google-play", "play_track": play_track, "play_release_status": play_status},
             "secrets": {"GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"}, "variables": set(),
             "assets": {"pleazyng-android-play.aab", "SHA256SUMS.txt"},
         },
         {
             "name": "Amazon Appstore upload",
+            "readiness_flag": "AMAZON_APPSTORE_BOOTSTRAP_COMPLETE",
             "workflow": "publish-app-stores.yml",
-            "title": f"action:publish-app-stores:pool:private:tag:{tag}:channel:amazon-appstore",
-            "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
+            "title": f"action:publish-app-stores:pool:public:tag:{tag}:channel:amazon-appstore",
+            "fields": {"action": "publish-app-stores", "runner_pool": "public", "release_tag": tag,
                        "channel": "amazon-appstore", "play_track": "internal", "play_release_status": "draft"},
             "secrets": {"AMAZON_APPSTORE_CLIENT_ID", "AMAZON_APPSTORE_CLIENT_SECRET"}, "variables": {"AMAZON_APPSTORE_APP_ID"},
             "assets": {"pleazyng-amazon-firetv.apk", "SHA256SUMS.txt"},
         },
         {
             "name": "Apple App Store Connect iOS upload",
+            "readiness_flag": "APPLE_STORE_UPLOAD_READY",
             "workflow": "publish-app-stores.yml",
-            "title": f"action:publish-app-stores:pool:private:tag:{tag}:channel:app-store-ios",
-            "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
+            "title": f"action:publish-app-stores:pool:public:tag:{tag}:channel:app-store-ios",
+            "fields": {"action": "publish-app-stores", "runner_pool": "public", "release_tag": tag,
                        "channel": "app-store-ios", "play_track": "internal", "play_release_status": "draft"},
             "secrets": {"APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY"}, "variables": set(),
             "assets": {"pleazyng-ios-appstore.ipa", "SHA256SUMS.txt"},
         },
         {
             "name": "Apple App Store Connect tvOS upload",
+            "readiness_flag": "APPLE_STORE_UPLOAD_READY",
             "workflow": "publish-app-stores.yml",
-            "title": f"action:publish-app-stores:pool:private:tag:{tag}:channel:app-store-tvos",
-            "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
+            "title": f"action:publish-app-stores:pool:public:tag:{tag}:channel:app-store-tvos",
+            "fields": {"action": "publish-app-stores", "runner_pool": "public", "release_tag": tag,
                        "channel": "app-store-tvos", "play_track": "internal", "play_release_status": "draft"},
             "secrets": {"APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY"}, "variables": set(),
             "assets": {"pleazyng-tvos-appstore.ipa", "SHA256SUMS.txt"},
@@ -1272,10 +1296,10 @@ def publish_configured_channels(
             "assets": {"SHA256SUMS.txt"},
         },
         {
-            "name": "Homebrew cask and Sparkle appcast",
+            "name": "Sparkle appcast (Homebrew when configured)",
             "workflow": "update-packages.yml",
-            "title": f"action:update-packages:pool:private:tag:{tag}",
-            "fields": {"action": "update-packages", "runner_pool": "private", "release_tag": tag},
+            "title": f"action:update-packages:pool:public:tag:{tag}",
+            "fields": {"action": "update-packages", "runner_pool": "public", "release_tag": tag},
             "secrets": set(), "variables": set(),
             "assets": {"pleazyng-macos.dmg", "appcast.xml"},
         },
@@ -1288,10 +1312,10 @@ def publish_configured_channels(
         "MACOS_CERTIFICATE_BASE64", "MACOS_CERTIFICATE_PASSWORD", "KEYCHAIN_PASSWORD",
         "APPLE_ID", "APPLE_APP_SPECIFIC_PASSWORD", "APPLE_TEAM_ID",
     }
-    if not macos_signing.issubset(secrets):
+    if not (macos_signing | {"HOMEBREW_TAP_TOKEN"}).issubset(secrets):
         skipped.append({
             "channel": "Homebrew Cask",
-            "reason": "Developer ID signing and notarization secrets are not configured; appcast update remains enabled.",
+            "reason": "Developer ID signing/notarization or tap token is not configured; appcast update remains enabled.",
         })
     if not {"WINDOWS_SIGNING_CERTIFICATE_BASE64", "WINDOWS_SIGNING_CERTIFICATE_PASSWORD"}.issubset(secrets):
         skipped.append({
@@ -1312,6 +1336,13 @@ def publish_configured_channels(
             "reason": "the webOS IPK is built as a candidate; exact-artifact eligibility is not enabled.",
         })
     for spec in specs:
+        readiness_flag = spec.get("readiness_flag")
+        if readiness_flag and publication_settings.get(readiness_flag) != "true":
+            skipped.append({
+                "channel": spec["name"],
+                "reason": f"{readiness_flag} is not true; first-console submission or signed-build validation is incomplete.",
+            })
+            continue
         missing_secrets = sorted(spec["secrets"] - secrets)
         missing_variables = sorted(spec["variables"] - variables)
         if missing_secrets or missing_variables:

@@ -162,7 +162,9 @@
     },
     "target_audience_old": "18 and over; verified in old app console",
     "review_access_pending": "Signed Android store-review grant implementation/key configured; private grant and Jellyfin demo instructions saved in new app Sign in details. Source tests pass; actual signed build redemption with expired trial required before review submission.",
-    "sign_in_details": "Saved; full-feature review code plus public Jellyfin sample library, no trial/purchase required by grant"
+    "sign_in_details": "Saved; full-feature review code plus public Jellyfin sample library, no trial/purchase required by grant",
+    "target_audience_saved": "18 and over; saved and console dashboard now 10 of 12 app setup tasks complete",
+    "data_safety": "Draft in progress; source-verified account/transit answers saved and three personal-info types selected; not yet finalized"
   },
   "copr": {
     "owner": "slskdn",
@@ -344,5 +346,18 @@
     "features": "All features",
     "scope": "Platforms with supported store billing; free package channels remain free",
     "owner_confirmed": "2026-11-05"
+  },
+  "company": {
+    "legal_name": "SNAPE TECHNOLOGIES LIMITED",
+    "jurisdiction": "Saskatchewan, Canada",
+    "corporation_number": "102247318",
+    "incorporated": "2026-11-05",
+    "certificate_verified": "One-page digitally signed Certificate of Incorporation supplied by owner; retained privately, not committed",
+    "certificate_sha256": "dbb8472a2a066decc461994ea8fba76ee83c4b29ad147373ddc5919386dc0114",
+    "registered_address": "Awaiting owner confirmation; certificate does not list address",
+    "cra_business_number": "Not established by incorporation certificate",
+    "gst_hst_account": "Not established by incorporation certificate",
+    "duns_number": "Not established by incorporation certificate",
+    "authorization": "Owner explicitly requested company verification/update across app stores on 2026-11-05"
   }
 }

@@ -74,6 +74,10 @@
 # Serialization is deterministic: two-space indent, sorted keys, trailing
 # newline. Consumers must fail when their group is missing rather than fall
 # back to an unpinned source.
+# Snapetech production revisions additionally require every platform's schema-4
+# package capability receipt: ordered PCM and the implemented neural filters,
+# bound to the exact archive checksum and real binary architectures. Partial or
+# mixed-generation producer manifests must not replace any application pin.
 #
 # Usage:
 #   scripts/set_native_revision.sh <full-40-char-commit-sha> [--repo <path-or-url>]
@@ -500,6 +504,116 @@ def library_symbols(label: str, group: str, library: str, entry: dict) -> dict |
     return copied if len(copied) == len(symbols) else None
 
 
+def native_package_receipts(platforms: dict) -> dict:
+    """Validate the fork's complete native implementation before moving pins.
+
+    These are producer inspections of packaged bytes, not device qualification.
+    Keep the receipts in the app lock so promotion does not discard that proof.
+    """
+    required_symbols = {
+        "mpv_plezy_audio_tap_version", "mpv_plezy_audio_tap_enable",
+        "mpv_plezy_audio_tap_read", "mpv_plezy_audio_tap_read_next",
+    }
+    apple_required = {
+        ("ios", "", "arm64"), ("ios", "simulator", "arm64"),
+        ("ios", "simulator", "x86_64"), ("ios", "maccatalyst", "arm64"),
+        ("ios", "maccatalyst", "x86_64"), ("macos", "", "arm64"),
+        ("macos", "", "x86_64"), ("tvos", "", "arm64"),
+        ("tvos", "", "arm64e"), ("tvos", "simulator", "arm64"),
+        ("tvos", "simulator", "x86_64"),
+    }
+    packages = {}
+    for group, library, field, variants in (
+        ("android", "mpv-android", None, {"aar": {"arm64", "armv7", "i386", "x86_64"}}),
+        ("apple", "libmpv", "frameworks", {"Libmpv": {"arm64", "arm64e", "x86_64"}}),
+        ("linux", "libmpv-linux", "prebuilt", {"x86_64": {"x86_64"}, "aarch64": {"arm64"}}),
+        ("windows", "libmpv-windows", "prebuilt", {"x86_64": {"x86_64"}, "aarch64": {"arm64"}}),
+    ):
+        section = platforms.get(group)
+        libraries = section.get("libraries") if isinstance(section, dict) else None
+        entry = libraries.get(library) if isinstance(libraries, dict) else None
+        entries = entry.get(field) if field and isinstance(entry, dict) else {"aar": entry}
+        packages[group] = {}
+        for variant, expected_arches in variants.items():
+            label = f"native package {group}/{variant}"
+            package = entries.get(variant) if isinstance(entries, dict) else None
+            receipt = package.get("capabilities") if isinstance(package, dict) else None
+            if not isinstance(receipt, dict):
+                errors.append(f"{label}: missing packaged native capability receipt")
+                continue
+            checksum = package.get("checksum")
+            if (not isinstance(package.get("asset"), str) or not package["asset"] or
+                    not isinstance(checksum, str) or not CHECKSUM_RE.fullmatch(checksum) or
+                    receipt.get("artifactSha256") != checksum):
+                errors.append(f"{label}: capability receipt does not match the archive checksum")
+            if (type(receipt.get("inspectionSchema")) is not int or receipt["inspectionSchema"] != 4 or
+                    type(receipt.get("orderedSubtitlePcmAbi")) is not int or receipt["orderedSubtitlePcmAbi"] != 1 or
+                    receipt.get("motionPlatform") != group or
+                    not isinstance(receipt.get("requiredSymbols"), list) or
+                    not required_symbols.issubset(x for x in receipt["requiredSymbols"] if isinstance(x, str))):
+                errors.append(f"{label}: requires schema-4 ordered-PCM and neural inspection")
+            binaries = receipt.get("binaries")
+            architectures = receipt.get("binaryArchitectures")
+            hashes = receipt.get("binarySha256")
+            filters = receipt.get("neuralFilters")
+            if (not isinstance(binaries, list) or not binaries or
+                    any(not isinstance(x, str) for x in binaries) or len(set(binaries)) != len(binaries) or
+                    not all(isinstance(x, dict) and set(x) == set(binaries) for x in (architectures, hashes, filters))):
+                errors.append(f"{label}: incomplete native binary inventory")
+                continue
+            found = set()
+            for binary in binaries:
+                arches = architectures[binary]
+                features = filters[binary]
+                if (not isinstance(arches, list) or not arches or
+                        any(not isinstance(x, str) for x in arches) or len(set(arches)) != len(arches) or
+                        not isinstance(features, dict) or set(features) != set(arches) or
+                        not isinstance(hashes[binary], str) or not CHECKSUM_RE.fullmatch(hashes[binary])):
+                    errors.append(f"{label}: invalid binary architecture or hash inventory")
+                    continue
+                found.update(arches)
+                for arch in arches:
+                    required = {"pme"} if group in ("linux", "windows") else (
+                        {"videotoolbox"} if group == "apple" else {"anvil", "litert"} if arch == "arm64" else set()
+                    )
+                    declared = features[arch]
+                    if not isinstance(declared, list) or not required.issubset(x for x in declared if isinstance(x, str)):
+                        errors.append(f"{label}: {binary}/{arch} omits implemented neural filters")
+            if found != expected_arches:
+                errors.append(f"{label}: native binary architectures do not match {sorted(expected_arches)}")
+            if group == "android":
+                for abi, arch in (("arm64-v8a", "arm64"), ("armeabi-v7a", "armv7"), ("x86", "i386"), ("x86_64", "x86_64")):
+                    if architectures.get(f"jni/{abi}/libmpv.so") != [arch]:
+                        errors.append(f"{label}: missing or mismatched Android ABI {abi}")
+            if group == "apple":
+                coverage, used = set(), set()
+                slices = receipt.get("appleSlices")
+                if not isinstance(slices, list):
+                    errors.append(f"{label}: missing Apple slice inventory")
+                    continue
+                for item in slices:
+                    if (not isinstance(item, dict) or not isinstance(item.get("binary"), str) or
+                            not isinstance(item.get("platform"), str) or not isinstance(item.get("variant"), str) or
+                            not isinstance(item.get("architectures"), list) or
+                            any(not isinstance(x, str) for x in item["architectures"]) or
+                            item["binary"] not in architectures or item["binary"] in used or
+                            item.get("architectures") != architectures[item["binary"]]):
+                        errors.append(f"{label}: invalid Apple slice inventory")
+                        continue
+                    used.add(item["binary"])
+                    for arch in item["architectures"]:
+                        coordinate = (item["platform"], item["variant"], arch)
+                        if coordinate in coverage:
+                            errors.append(f"{label}: duplicate Apple platform architecture")
+                        coverage.add(coordinate)
+                if used != set(binaries) or not apple_required.issubset(coverage):
+                    errors.append(f"{label}: missing required Apple platform architectures")
+            packages[group][variant] = {
+                "asset": package.get("asset"), "checksum": checksum, "capabilities": receipt,
+            }
+    return packages
+
+
 def build_lock() -> dict | None:
     """The lock for this commit, or None with errors recorded.
 
@@ -635,6 +749,8 @@ def build_lock() -> dict | None:
         "formatVersion": 1,
         "repo": LOCK_REPO,
     }
+    if LOCK_REPO.lower() == "snapetech-org/mpv-build":
+        lock["nativePackages"] = native_package_receipts(platforms)
     return lock
 
 

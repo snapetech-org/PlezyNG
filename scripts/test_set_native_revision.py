@@ -166,6 +166,61 @@ def artifacts_fixture() -> dict:
     }
 
 
+def complete_native_artifacts() -> dict:
+    """Synthetic producer receipts: compiled capabilities, never device proof."""
+    artifacts = artifacts_fixture()
+    platforms = artifacts["platforms"]
+    linux = platforms["linux"]["libraries"]["libmpv-linux"]["prebuilt"]
+    linux["aarch64"] = {"asset": "libmpv-linux-dd44ee55ff66-aarch64.tar.zst", "checksum": "7" * 64}
+    platforms["windows"] = {
+        "assetBase": "https://github.com/snapetech-org/mpv-build/releases/download/binaries-windows",
+        "libraries": {"libmpv-windows": {
+            "key": "0123456789ab",
+            "prebuilt": {arch: {"asset": f"libmpv-windows-0123456789ab-{arch}.zip", "checksum": str(index) * 64}
+                         for arch, index in (("x86_64", 8), ("aarch64", 9))},
+        }},
+    }
+
+    def receipt(package: dict, group: str, architectures: dict, slices=None) -> None:
+        def features(arch):
+            if group in ("linux", "windows"):
+                return ["pme"]
+            if group == "apple":
+                return ["videotoolbox"]
+            return ["anvil", "litert"] if arch == "arm64" else []
+
+        package["capabilities"] = {
+            "artifactSha256": package["checksum"], "orderedSubtitlePcmAbi": 1,
+            "inspectionSchema": 4, "motionPlatform": group, "executionQualified": False,
+            "requiredSymbols": ["mpv_plezy_audio_tap_version", "mpv_plezy_audio_tap_enable",
+                                "mpv_plezy_audio_tap_read", "mpv_plezy_audio_tap_read_next"],
+            "binaries": sorted(architectures), "binaryArchitectures": architectures,
+            "binarySha256": {name: "b" * 64 for name in architectures},
+            "neuralFilters": {name: {arch: features(arch) for arch in arches} for name, arches in architectures.items()},
+            "appleSlices": slices or [],
+        }
+
+    aar = platforms["android"]["libraries"]["mpv-android"]
+    receipt(aar, "android", {f"jni/{abi}/libmpv.so": [arch] for abi, arch in (
+        ("arm64-v8a", "arm64"), ("armeabi-v7a", "armv7"), ("x86", "i386"), ("x86_64", "x86_64"),
+    )})
+    for group in ("linux", "windows"):
+        for arch, package in platforms[group]["libraries"][f"libmpv-{group}"]["prebuilt"].items():
+            receipt(package, group, {"libmpv-2.dll" if group == "windows" else "lib/libmpv.so":
+                                    ["arm64" if arch == "aarch64" else arch]})
+    slices = []
+    for platform, variant, arches in (
+        ("ios", "", ["arm64"]), ("ios", "simulator", ["arm64", "x86_64"]),
+        ("ios", "maccatalyst", ["arm64", "x86_64"]), ("macos", "", ["arm64", "x86_64"]),
+        ("tvos", "", ["arm64", "arm64e"]), ("tvos", "simulator", ["arm64", "x86_64"]),
+    ):
+        slices.append({"binary": f"Libmpv.xcframework/{platform}-{variant or 'device'}/Libmpv",
+                       "platform": platform, "variant": variant, "architectures": arches})
+    receipt(platforms["apple"]["libraries"]["libmpv"]["frameworks"]["Libmpv"], "apple",
+            {item["binary"]: item["architectures"] for item in slices}, slices)
+    return artifacts
+
+
 class SetNativeRevisionTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = Path(tempfile.mkdtemp(prefix="set-native-revision-test."))
@@ -701,6 +756,66 @@ class SetNativeRevisionTest(unittest.TestCase):
         self.assertIn("libmpv-linux.symbols.x86_64.checksum", result.stderr)
         self.assertEqual(self._snapshot(), before)
         self.assertFalse((self.root / "mpv-build.lock.json").exists())
+
+    def _fork_producer(self, artifacts: dict, name="native-producer") -> tuple[Path, str]:
+        repo, commit = self._make_mpv_build(name, artifacts=artifacts)
+        subprocess.run(["git", "-C", str(repo), "remote", "add", "origin",
+                        "https://github.com/snapetech-org/mpv-build.git"], check=True)
+        return repo, commit
+
+    def test_fork_promotion_preserves_complete_package_receipts_without_claiming_execution(self) -> None:
+        repo, commit = self._fork_producer(complete_native_artifacts())
+        result = self._run(commit, "--repo", str(repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self._assert_pinned(commit, "https://github.com/snapetech-org/mpv-build")
+        lock = json.loads((self.root / "mpv-build.lock.json").read_text())
+        self.assertEqual(set(lock["nativePackages"]), {"android", "apple", "linux", "windows"})
+        self.assertEqual(set(lock["nativePackages"]["windows"]), {"x86_64", "aarch64"})
+        for group in lock["nativePackages"].values():
+            for package in group.values():
+                self.assertEqual(package["checksum"], package["capabilities"]["artifactSha256"])
+                self.assertIs(package["capabilities"]["executionQualified"], False)
+        second = self._run(commit, "--repo", str(repo))
+        self.assertEqual(second.returncode, 0, second.stderr)
+        self.assertIn("unchanged", second.stdout)
+
+    def test_partial_or_mismatched_fork_receipts_never_change_any_pin(self) -> None:
+        for index, case in enumerate(("missing-windows", "missing-arch", "old-schema", "wrong-checksum",
+                                      "wrong-machine", "missing-neural", "missing-apple-slice", "swapped-android-abis")):
+            with self.subTest(case=case):
+                artifacts = complete_native_artifacts()
+                platforms = artifacts["platforms"]
+                windows = platforms["windows"]["libraries"]["libmpv-windows"]["prebuilt"]
+                receipt = windows["aarch64"]["capabilities"]
+                if case == "missing-windows":
+                    del platforms["windows"]
+                elif case == "missing-arch":
+                    del windows["aarch64"]
+                elif case == "old-schema":
+                    receipt["inspectionSchema"] = 3
+                elif case == "wrong-checksum":
+                    receipt["artifactSha256"] = "0" * 64
+                elif case == "wrong-machine":
+                    receipt["binaryArchitectures"]["libmpv-2.dll"] = ["x86_64"]
+                    receipt["neuralFilters"]["libmpv-2.dll"] = {"x86_64": ["pme"]}
+                elif case == "missing-neural":
+                    receipt["neuralFilters"]["libmpv-2.dll"]["arm64"] = []
+                elif case == "missing-apple-slice":
+                    platforms["apple"]["libraries"]["libmpv"]["frameworks"]["Libmpv"]["capabilities"]["appleSlices"].pop()
+                else:
+                    aar = platforms["android"]["libraries"]["mpv-android"]["capabilities"]
+                    for abi, arch in (("arm64-v8a", "x86_64"), ("x86_64", "arm64")):
+                        binary = f"jni/{abi}/libmpv.so"
+                        aar["binaryArchitectures"][binary] = [arch]
+                        aar["neuralFilters"][binary] = {arch: ["anvil", "litert"] if arch == "arm64" else []}
+                repo, commit = self._fork_producer(artifacts, f"native-producer-{index}")
+                before = self._snapshot()
+                result = self._run(commit, "--repo", str(repo))
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn("native package", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertEqual(self._snapshot(), before)
+                self.assertFalse((self.root / "mpv-build.lock.json").exists())
 
 
 if __name__ == "__main__":

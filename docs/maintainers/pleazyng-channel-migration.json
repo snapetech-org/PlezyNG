@@ -131,7 +131,12 @@
     "government_app_declaration": "No; saved",
     "category_saved": "Video Players & Editors",
     "contact_email_saved": "keith@snape.tech",
-    "website_saved": "https://github.com/snapetech-org/PlezyNG"
+    "website_saved": "https://github.com/snapetech-org/PlezyNG",
+    "financial_features_declaration": "No financial features; saved",
+    "health_declaration": "No health features; saved",
+    "advertising_id_declaration": "No; source manifest/dependencies checked and saved",
+    "trader_status": "Inherited existing developer-account trader status confirmed for app; saved",
+    "iarc_terms": "Prepared email and All Other App Types; awaiting owner acceptance onscreen"
   },
   "copr": {
     "owner": "slskdn",

@@ -415,7 +415,7 @@
   "samsung_tv": {
     "portal": "https://seller.samsungapps.com/tv",
     "login": "keith@snape.tech",
-    "state": "Samsung Account reports no account for this ID; account creation terms on screen awaiting owner acceptance/private registration details",
+    "state": "Owner created/verified Samsung Account and signed in as Keith Snape, keith@snape.tech. TV Seller Office signup has Canada/Saskatchewan set; separate seller terms/privacy agreement on screen awaiting owner acceptance and Join.",
     "seller_membership": "Not registered yet; public seller initially US-only; other regions require partner approval",
     "tax_submission": "Not attempted"
   }

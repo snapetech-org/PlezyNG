@@ -81,6 +81,59 @@ partnership decisions cannot be guaranteed by CI automation. Keep any review or
 publication receipt explicit about whether it proves upload, review submission,
 approval, or customer availability.
 
+## Activation handoff
+
+This is a staged launch, not a claim that every channel has a single API switch.
+Use the current exact-main release qualification run owned by the release task;
+do not start a duplicate build or upload an older screenshot-capture APK as the
+final candidate.
+
+1. Finish company verification: D-U-N-S issuance, Google organization payments
+   profile/document/contact verification and Apple membership conversion;
+   Microsoft business/employment approval. Confirm the exact legal seller and
+   package identities in each portal after approval. Google's verified website
+   is already `https://snape.tech/`; public developer-name change is under review.
+2. After the owner's CRA hold, complete each store's corporation tax/payment
+   forms. Reconcile Apple's existing duplicate-ID record through its supported
+   finance route. Do not replace the still-active individual records with
+   guessed corporate values. Amazon's locked company type/publisher name needs
+   the [prepared conversion request](amazon-company-conversion-request.md).
+3. Qualify the final signed store artifacts: new Play/Amazon package and signing
+   identity; Play/Amazon USD $2.99 entitlement purchase/restore; disclosed Android
+   review-grant redemption after trial expiry and restart; iOS/tvOS signing,
+   StoreKit purchase/restore and processing. Complete each store's remaining
+   permissions, privacy, reviewer, screenshot and compliance fields.
+4. Complete first publication in its required console. Google needs its first
+   signed AAB/App Signing and new product bootstrap. Amazon requires the first
+   version through Developer Console. Apple needs processed signed builds and
+   explicit review/TestFlight setup. Enable only the matching readiness flag
+   after its own upload and validation evidence exists; retain that evidence.
+5. Publish the qualified version through the release owner. Full publication
+   runs the configured downstream package publishers. Google automatic routing
+   remains testing-only. If Google approves Organization conversion and removes
+   the personal testing gate, confirm Production access, grant the app-specific
+   production release permission and use a reviewed Production submission;
+   do not silently widen the existing testing-only service account.
+6. Verify customer-facing listings/downloads and record upload, review,
+   approval and availability separately. Keep Samsung/LG manual certification
+   and partner/device requirements explicit; their handoff bundles do not submit
+   vendor reviews.
+
+For a subsequent store upload from an already qualified release, the explicit
+workflow accepts these parameters (substitute the real qualified tag and channel;
+this example preserves a Play draft):
+
+```sh
+gh workflow run publish-app-stores.yml --repo snapetech-org/PlezyNG --ref main \
+  -f action=publish-app-stores -f runner_pool=public -f release_tag=vX.Y.Z \
+  -f channel=google-play -f play_track=alpha -f play_release_status=draft
+```
+
+Supported channel values are `google-play`, `amazon-appstore`, `app-store-ios`
+and `app-store-tvos`. A successful upload does not prove review approval or
+availability. Tax-dependent tasks remain deferred; registration, preparation
+and technical validation can continue independently.
+
 ## Authoritative references
 
 - [Google test setup](https://support.google.com/googleplay/android-developer/answer/9845334)

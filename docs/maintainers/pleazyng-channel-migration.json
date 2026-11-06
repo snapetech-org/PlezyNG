@@ -375,6 +375,8 @@
     "public_support_email": "support@snape.tech",
     "public_support_website": "https://github.com/snapetech-org",
     "public_support_basis": "Owner entered these in Microsoft enrollment and requested continuation",
-    "duns_request": "Submitted by owner after CAPTCHA on 2026-11-05; Apple page confirms information being processed and D&B confirmation email pending"
+    "duns_request": "Submitted by owner after CAPTCHA on 2026-11-05; Apple page confirms information being processed and D&B confirmation email pending",
+    "tax_hold": "Owner directed GST/HST-dependent tax submissions to wait approximately 24 hours for CRA to accept the new number; continue all non-tax work. No new corporate tax identifier recorded or substituted.",
+    "tv_store_order": "LG and Samsung explicitly included, to be set up last after other supported channels"
   }
 }

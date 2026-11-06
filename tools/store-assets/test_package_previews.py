@@ -11,7 +11,7 @@ FIXTURE = SCRIPT.parent / 'fixtures/caminandes-frame.jpg'
 
 
 class PreviewPackagingTests(unittest.TestCase):
-    def package(self, image, name):
+    def package(self, image, name, *, presentation=False):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         root = Path(temporary.name)
@@ -20,7 +20,7 @@ class PreviewPackagingTests(unittest.TestCase):
         image.save(inputs / name)
         output = root / 'output'
         result = subprocess.run([sys.executable, str(SCRIPT), '--input', str(inputs),
-                                 '--output', str(output), '--source-sha', 'a' * 40],
+                                 '--output', str(output), '--source-sha', 'a' * 40] + (['--presentation'] if presentation else []),
                                 capture_output=True, text=True)
         return result, output
 
@@ -42,6 +42,20 @@ class PreviewPackagingTests(unittest.TestCase):
         self.assertEqual(manifest['sample_frame']['license'], 'CC BY-SA 3.0')
         self.assertTrue((output / manifest['sample_frame']['attribution']).is_file())
         self.assertIn('not native playback', (output / 'README.txt').read_text())
+
+    def test_presentation_export_preserves_pixels_and_provenance_without_footer(self):
+        with Image.open(FIXTURE) as source:
+            original = source.convert('RGB')
+            result, output = self.package(original, 'phone-player-mockup-preview.png', presentation=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        with Image.open(output / 'phone-player-mockup-preview.png') as exported:
+            self.assertEqual(exported.size, original.size)
+            self.assertEqual(exported.tobytes(), original.tobytes())
+        manifest = json.loads((output / 'manifest.json').read_text())
+        self.assertFalse(manifest['visible_labels'])
+        self.assertFalse(manifest['video_decoding_performed'])
+        self.assertFalse(manifest['store_upload_eligible'])
+        self.assertTrue((output / 'ATTRIBUTION.md').exists())
 
     def test_non_video_panel_can_have_an_intentionally_plain_background(self):
         result, output = self.package(Image.new('RGB', (800, 450), '#0b1118'),

@@ -157,7 +157,7 @@ Actual signed-app emulator captures with [build provenance](docs/maintainers/sto
 </details>
 
 [Subtitle and appearance variants](docs/maintainers/playback-appearance-previews/contact-sheet.jpg)
-· [Image credits](docs/maintainers/player-mockups/README.txt)
+· [Image credits](docs/maintainers/player-mockups/ATTRIBUTION.md)
 
 ## Dolby Vision experiments
 

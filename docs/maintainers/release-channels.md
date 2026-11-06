@@ -1,5 +1,7 @@
 # Pleazyng release channels
 
+See [the current publishing readiness matrix](publishing-readiness.md) for business, technical and review gates and staged automation settings.
+
 Live account migration is in progress. See [the dated channel migration receipt](pleazyng-channel-migration.json) for verified new records, API access and pending steps. The older readiness snapshots below describe their audit dates and do not prove current publication readiness.
 
 This is the release support boundary for the Pleazyng client and its separate relay service. A client platform or package channel is active when the manual release workflow creates the package and attaches it to a GitHub Release, or when a named publisher workflow submits that release's package.

@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# Public hosted runners by default; optional private routing preserves native OS/architecture.
 name: Publish Pleazyng store builds
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:channel:{3}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.channel) }}
 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Store publication action authorized by private JIT routing
+        description: Store publication action
         required: true
         type: choice
         options: [publish-app-stores]
@@ -14,7 +14,8 @@ on:
         description: Runner pool for this publication
         required: true
         type: choice
-        options: [private]
+        default: public
+        options: [public, private]
       release_tag:
         description: Published GitHub release tag whose signed store build should be submitted
         required: true
@@ -48,12 +49,13 @@ on:
           - completed
           - inProgress
 
-# Several publication gates run before checkout in fresh private guests.
+# Publication gates run before any external store mutation.
 env:
   GH_REPO: ${{ github.repository }}
 
 permissions:
   contents: read
+  attestations: read
 
 concurrency:
   group: app-store-publish-${{ inputs.release_tag }}-${{ inputs.channel }}
@@ -62,7 +64,7 @@ concurrency:
 jobs:
   validate-release:
     name: Validate published release
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-release"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-release"]}}', github.run_id)) }}
     outputs:
       release_tag: ${{ steps.validate.outputs.release_tag }}
     steps:
@@ -136,7 +138,7 @@ jobs:
     name: Upload to Google Play
     needs: validate-release
     if: ${{ inputs.channel == 'google-play' }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-google-play"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-google-play"]}}', github.run_id)) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -154,6 +156,12 @@ jobs:
             --dir "$RUNNER_TEMP/store-assets"
           cd "$RUNNER_TEMP/store-assets"
           sha256sum --check --ignore-missing SHA256SUMS.txt
+
+      - name: Install native Ruby extension tools on public Linux
+        if: inputs.runner_pool == 'public'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev libyaml-dev libffi-dev zlib1g-dev
 
       - name: Verify provisioned native Ruby extension tools
         shell: bash
@@ -185,7 +193,7 @@ jobs:
     name: Upload to Amazon Appstore
     needs: validate-release
     if: ${{ inputs.channel == 'amazon-appstore' }}
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-amazon-appstore"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-amazon-appstore"]}}', github.run_id)) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -205,6 +213,12 @@ jobs:
           sha256sum --check --ignore-missing SHA256SUMS.txt
           python3 "$GITHUB_WORKSPACE/scripts/verify_firetv_apk.py" pleazyng-amazon-firetv.apk \
             --receipt pleazyng-amazon-firetv-provenance.json
+
+      - name: Install native Ruby extension tools on public Linux
+        if: inputs.runner_pool == 'public'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev libyaml-dev libffi-dev zlib1g-dev
 
       - name: Verify provisioned native Ruby extension tools
         shell: bash
@@ -236,7 +250,7 @@ jobs:
     name: Upload to Apple App Store Connect
     needs: validate-release
     if: ${{ inputs.channel == 'app-store-ios' || inputs.channel == 'app-store-tvos' }}
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-apple-app-store"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-apple-app-store"]}}', github.run_id)) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -267,7 +281,18 @@ jobs:
             --pattern "$IPA_ASSET" --pattern SHA256SUMS.txt \
             --dir "$RUNNER_TEMP/store-assets"
           cd "$RUNNER_TEMP/store-assets"
-          sha256sum --check --ignore-missing SHA256SUMS.txt
+          python3 - <<'PYHASH'
+          import hashlib, os
+          from pathlib import Path
+          asset = os.environ["IPA_ASSET"]
+          entries = [line.split() for line in Path("SHA256SUMS.txt").read_text().splitlines()]
+          expected = [parts[0].lower() for parts in entries if len(parts) == 2 and parts[1] == asset]
+          with open(asset, "rb") as source:
+              actual = hashlib.file_digest(source, "sha256").hexdigest()
+          if expected != [actual]:
+              raise SystemExit("Signed IPA checksum missing, ambiguous, or mismatched")
+          PYHASH
+          gh attestation verify "$IPA_ASSET" --repo "$GITHUB_REPOSITORY"
 
       - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
         with:

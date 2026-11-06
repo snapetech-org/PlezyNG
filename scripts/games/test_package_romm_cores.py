@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import tarfile
@@ -86,6 +87,43 @@ class CorrespondingSourceTests(unittest.TestCase):
 
 
 class AppleCacheTests(unittest.TestCase):
+    def test_xcode_library_paths_resolve_the_active_sdk(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for suffix in ('-appletvos', '-appletvsimulator', '-iphoneos', '-iphonesimulator', ''):
+                with self.subTest(suffix=suffix), patch.dict(os.environ, {'EFFECTIVE_PLATFORM_NAME': suffix}):
+                    libraries = {}
+                    for core in package.DEFAULT_CORES:
+                        library = root / ('Release' + suffix) / (core + '.framework') / core
+                        library.parent.mkdir(parents=True, exist_ok=True)
+                        library.write_bytes(b'built framework')
+                        libraries[core] = library.resolve()
+                    values = [f'{core}={root}/Release${{EFFECTIVE_PLATFORM_NAME}}/{core}.framework/{core}'
+                              for core in package.DEFAULT_CORES]
+                    self.assertEqual(package.parse_inputs(values), libraries)
+
+    def test_xcode_placeholder_requires_an_available_valid_sdk_setting(self):
+        values = [f'{core}=/Release${{EFFECTIVE_PLATFORM_NAME}}/{core}'
+                  for core in package.DEFAULT_CORES]
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(ValueError, 'EFFECTIVE_PLATFORM_NAME'):
+                package.parse_inputs(values)
+        with patch.dict(os.environ, {'EFFECTIVE_PLATFORM_NAME': '/../other'}):
+            with self.assertRaisesRegex(ValueError, 'EFFECTIVE_PLATFORM_NAME'):
+                package.parse_inputs(values)
+
+    def test_other_dollar_values_in_paths_are_not_expanded(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / '${HOME}'
+            root.mkdir()
+            libraries = {}
+            for core in package.DEFAULT_CORES:
+                library = root / core
+                library.write_bytes(b'built library')
+                libraries[core] = library.resolve()
+            self.assertEqual(package.parse_inputs([f'{core}={path}' for core, path in libraries.items()]),
+                             libraries)
+
     def test_cache_verifies_every_framework_and_corresponding_source(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

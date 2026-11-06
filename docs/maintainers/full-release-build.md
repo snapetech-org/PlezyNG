@@ -102,6 +102,28 @@ Android's parent `settings.gradle.kts` cannot configure that build by itself.
 The CI and release Flutter, pub, and Gradle cache keys must match; the repository
 checks enforce this so a green CI run warms the release caches.
 
+Desktop CI stages the pinned MilkRust runtime with
+`scripts/visualizer/build_runtime.py` before any Flutter or CMake configuration;
+the source receipt remains mandatory, including in native reliability and Linux
+package smoke jobs. Apple CI runs locked pub dependency resolution, then
+`scripts/refresh_apple_spm.sh`, before Flutter configuration can consult a stale
+SwiftPM mirror. The full Flutter application suite belongs to the required Unit
+Tests job; code analysis does not repeat it.
+
+Xcode embeds `${EFFECTIVE_PLATFORM_NAME}` in CMake target-file arguments for
+embedded SDKs, as described in the
+[CMake property documentation](https://cmake.org/cmake/help/latest/prop_gbl/XCODE_EMIT_EFFECTIVE_PLATFORM_NAME.html).
+The RomM source packager resolves that one placeholder from the active Xcode
+phase environment, retaining separate device/simulator paths and strict checks
+that every built core, source archive, licence and checksum exists. Do not work
+around this by dropping a core or disabling its notices target.
+
+The dependency job also verifies the current public release ledger live. A
+documented absence requires a missing latest/tag response and a successful
+authenticated release list; authentication, network and server errors still
+fail the job. After publishing, update the ledger and README from the actual
+GitHub release metadata rather than leaving the prior absence claim in place.
+
 For a transient dependency-download failure, preserve the failed job log and
 let other platform jobs finish. Once the workflow is completed, retry that job
 and its dependents with `gh run rerun RUN_ID --job JOB_ID`. After the targeted

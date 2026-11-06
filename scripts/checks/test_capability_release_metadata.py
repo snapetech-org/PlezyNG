@@ -2,6 +2,8 @@ import copy
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
+import urllib.error
 
 import check_capability_manifest as check
 
@@ -54,6 +56,56 @@ class PublishedReleaseMetadataTest(unittest.TestCase):
                     observation['listedReleases'].append({'draft': False, 'prerelease': False})
                 check.check_release_availability(self.release, observation)
                 self.assertTrue(check.ERRORS)
+
+    def test_live_documented_absence_needs_successful_list_and_missing_tag(self):
+        with patch.object(check, '_release_json', side_effect=[
+            (404, None), (200, [{'draft': True, 'prerelease': False}]), (404, None),
+        ]):
+            check.check_live_release(self.release, 'snapetech-org/PlezyNG', 'test-token')
+        self.assertEqual(check.ERRORS, [])
+
+    def test_live_published_release_still_requires_matching_metadata(self):
+        self.release.update(publicLatestAvailable=True, publicationStatus='published')
+        with patch.object(check, '_release_json', return_value=(200, self.metadata)):
+            check.check_live_release(self.release, 'snapetech-org/PlezyNG', 'test-token')
+        self.assertEqual(check.ERRORS, [])
+        self.metadata['tag_name'] = 'v0.0.1'
+        with patch.object(check, '_release_json', return_value=(200, self.metadata)):
+            check.check_live_release(self.release, 'snapetech-org/PlezyNG', 'test-token')
+        self.assertTrue(check.ERRORS)
+
+    def test_latest_reappearance_invalidates_documented_absence(self):
+        with patch.object(check, '_release_json', return_value=(200, self.metadata)):
+            check.check_live_release(self.release, 'snapetech-org/PlezyNG', 'test-token')
+        self.assertTrue(any('availability ledger' in error for error in check.ERRORS))
+
+    def test_latest_404_does_not_hide_an_inaccessible_release_list(self):
+        with patch.object(check, '_release_json', side_effect=[(404, None), (404, None)]):
+            with self.assertRaisesRegex(ValueError, 'successful release list'):
+                check.check_live_release(self.release, 'snapetech-org/PlezyNG', 'test-token')
+
+    def test_missing_latest_does_not_allow_reappearing_tag_or_stable_list(self):
+        for listed, tag in [([], (200, self.metadata)),
+                            ([{'draft': False, 'prerelease': False}], (404, None))]:
+            with self.subTest(listed=listed, tag_status=tag[0]):
+                check.ERRORS.clear()
+                with patch.object(check, '_release_json', side_effect=[(404, None), (200, listed), tag]):
+                    check.check_live_release(self.release, 'snapetech-org/PlezyNG', 'test-token')
+                self.assertTrue(check.ERRORS)
+
+    def test_authentication_and_server_errors_are_not_absence(self):
+        for status in (401, 403, 500):
+            with self.subTest(status=status):
+                error = urllib.error.HTTPError('https://api.github.com/test', status, 'failure', None, None)
+                with patch.object(check.urllib.request, 'urlopen', side_effect=error):
+                    with self.assertRaisesRegex(ValueError, f'HTTP {status}'):
+                        check.check_live_release(self.release, 'snapetech-org/PlezyNG', 'test-token')
+
+    def test_missing_authentication_does_not_make_requests(self):
+        with patch.object(check, '_release_json') as request:
+            with self.assertRaisesRegex(ValueError, 'GH_TOKEN'):
+                check.check_live_release(self.release, 'snapetech-org/PlezyNG', '')
+            request.assert_not_called()
 
 
 if __name__ == '__main__':

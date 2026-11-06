@@ -7,6 +7,7 @@ import gzip
 import hashlib
 import io
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
@@ -76,6 +77,15 @@ def parse_inputs(values):
         name, separator, path = value.partition("=")
         if not separator or name not in DEFAULT_CORES or name in result:
             raise ValueError("Core paths require one unique default-core=path entry")
+        # Xcode's TARGET_FILE generator expression leaves this placeholder in
+        # custom-command arguments (CMake's documented embedded-SDK behavior).
+        # VERBATIM correctly prevents shell expansion, so resolve only this
+        # known build setting from the running Xcode phase's environment.
+        if '${EFFECTIVE_PLATFORM_NAME}' in path:
+            platform = os.environ.get('EFFECTIVE_PLATFORM_NAME')
+            if platform is None or re.fullmatch(r'(?:-[A-Za-z0-9_]+)?', platform) is None:
+                raise ValueError('Xcode core paths require EFFECTIVE_PLATFORM_NAME')
+            path = path.replace('${EFFECTIVE_PLATFORM_NAME}', platform)
         result[name] = Path(path).resolve(strict=True)
     if result.keys() != DEFAULT_CORES:
         raise ValueError("Every default core must have source and a built library")

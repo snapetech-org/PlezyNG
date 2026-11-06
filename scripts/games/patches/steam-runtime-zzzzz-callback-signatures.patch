@@ -1,0 +1,202 @@
+diff --git a/src/ihs_timer.c b/src/ihs_timer.c
+--- a/src/ihs_timer.c
++++ b/src/ihs_timer.c
+@@ -52,7 +52,7 @@
+     IHS_Thread *thread;
+ } state = {NULL, NULL, NULL};
+
+-static void TimerThreadWorker();
++static void TimerThreadWorker(void *context);
+
+ static bool ItemIdentical(IHS_QueueItem *item, void *context);
+
+@@ -61,17 +61,17 @@
+  */
+
+
+-static bool TimerExecute(IHS_Timer *timer, void *context);
+-
+-static void TimerDestroy(IHS_Timer *timer, void *context);
++static bool TimerExecute(IHS_QueueItem *item, void *context);
++
++static void TimerDestroy(IHS_QueueItem *item, void *context);
+
+ /*
+  * Task functions
+  */
+
+-static bool TaskExecute(IHS_TimerTask *task, IHS_Timer *timer);
+-
+-static void TaskDestroy(IHS_TimerTask *task, IHS_Timer *timer);
++static bool TaskExecute(IHS_QueueItem *item, void *context);
++
++static void TaskDestroy(IHS_QueueItem *item, void *context);
+
+ void IHS_TimerInit() {
+     state.lock = IHS_MutexCreate();
+@@ -80,7 +80,7 @@
+
+ void IHS_TimerQuit() {
+     IHS_MutexLock(state.lock);
+-    IHS_QueueDestroy(state.timers, (IHS_QueueConsumerFunction *) TimerDestroy, NULL);
++    IHS_QueueDestroy(state.timers, TimerDestroy, NULL);
+     IHS_MutexUnlock(state.lock);
+     IHS_MutexDestroy(state.lock);
+ }
+@@ -220,12 +220,13 @@
+     return IHS_MonotonicNanos() / 1000000;
+ }
+
+-static void TimerThreadWorker() {
++static void TimerThreadWorker(void *context) {
++    (void) context;
+     size_t iterated;
+     do {
+         IHS_MutexLock(state.lock);
+-        iterated = IHS_QueuePollEach(state.timers, (IHS_QueuePredicateFunction *) TimerExecute, NULL,
+-                                     (IHS_QueueConsumerFunction *) TimerDestroy, NULL);
++        iterated = IHS_QueuePollEach(state.timers, TimerExecute, NULL,
++                                     TimerDestroy, NULL);
+         IHS_MutexUnlock(state.lock);
+         IHS_SleepMicros(1000);
+     } while (iterated > 0);
+@@ -239,22 +240,24 @@
+  * Timer functions
+  */
+
+-static bool TimerExecute(IHS_Timer *timer, void *context) {
++static bool TimerExecute(IHS_QueueItem *item, void *context) {
++    IHS_Timer *timer = (IHS_Timer *) item;
+     (void) context;
+     if (timer->tasks == NULL) {
+         return true;
+     }
+     IHS_MutexLock(timer->mutex);
+-    IHS_QueuePollEach(timer->tasks, (IHS_QueuePredicateFunction *) TaskExecute, timer,
+-                      (IHS_QueueConsumerFunction *) TaskDestroy, timer);
++    IHS_QueuePollEach(timer->tasks, TaskExecute, timer,
++                      TaskDestroy, timer);
+     IHS_MutexUnlock(timer->mutex);
+     return false;
+ }
+
+-static void TimerDestroy(IHS_Timer *timer, void *context) {
+-    (void) context;
+-    IHS_MutexLock(timer->mutex);
+-    IHS_QueueDestroy(timer->tasks, (IHS_QueueConsumerFunction *) TaskDestroy, timer);
++static void TimerDestroy(IHS_QueueItem *item, void *context) {
++    IHS_Timer *timer = (IHS_Timer *) item;
++    (void) context;
++    IHS_MutexLock(timer->mutex);
++    IHS_QueueDestroy(timer->tasks, TaskDestroy, timer);
+     timer->tasks = NULL;
+     IHS_MutexUnlock(timer->mutex);
+     IHS_MutexDestroy(timer->mutex);
+@@ -264,8 +267,9 @@
+  * Task functions
+  */
+
+-static bool TaskExecute(IHS_TimerTask *task, IHS_Timer *timer) {
+-    (void) timer;
++static bool TaskExecute(IHS_QueueItem *item, void *context) {
++    IHS_TimerTask *task = (IHS_TimerTask *) item;
++    (void) context;
+     if (task->nextExecution == 0) {
+         return true;
+     }
+@@ -281,8 +285,9 @@
+     return false;
+ }
+
+-static void TaskDestroy(IHS_TimerTask *task, IHS_Timer *timer) {
+-    (void) timer;
++static void TaskDestroy(IHS_QueueItem *item, void *context) {
++    IHS_TimerTask *task = (IHS_TimerTask *) item;
++    (void) context;
+     if (task->owner) *task->owner = NULL;
+     if (task->end) {
+         task->end(task->context);
+diff --git a/tests/test_enumeration.c b/tests/test_enumeration.c
+--- a/tests/test_enumeration.c
++++ b/tests/test_enumeration.c
+@@ -38,7 +38,7 @@
+
+ static void TestLinkedList();
+
+-static void NoOp();
++static void NoOp(void *context);
+
+ int main(int argc, char *argv[]) {
+     TestArray();
+@@ -92,6 +92,6 @@
+     return ((LinkedListNode *) cur)->next;
+ }
+
+-static void NoOp() {
+-
++static void NoOp(void *context) {
++    (void) context;
+ }
+\ No newline at end of file
+diff --git a/src/base.c b/src/base.c
+--- a/src/base.c
++++ b/src/base.c
+@@ -36,7 +36,7 @@
+ #include "ihs_buffer.h"
+ #include "session/channels/ch_control.h"
+
+-static void BaseWorker(IHS_Base *base);
++static void BaseWorker(void *context);
+
+ static void BaseUpdateSecretKey(IHS_Base *base, const uint8_t *secretKey);
+
+@@ -157,7 +157,7 @@
+         IHS_BaseUnlock(base);
+         return false;
+     }
+-    base->worker = IHS_ThreadCreate((IHS_ThreadFunction *)BaseWorker, name, base);
++    base->worker = IHS_ThreadCreate(BaseWorker, name, base);
+     IHS_BaseLog(base, IHS_LogLevelInfo, "Worker", "Worker thread %s created", name);
+     IHS_BaseUnlock(base);
+     return true;
+@@ -211,7 +211,8 @@
+     IHS_MutexUnlock(base->lock);
+ }
+
+-static void BaseWorker(IHS_Base *base) {
++static void BaseWorker(void *context) {
++    IHS_Base *base = context;
+     assert(base != NULL);
+     IHS_UDPSocket *socket = IHS_UDPSocketOpen(base->broadcast);
+     IHS_BaseLock(base);
+diff --git a/src/session/channels/ch_data.c b/src/session/channels/ch_data.c
+--- a/src/session/channels/ch_data.c
++++ b/src/session/channels/ch_data.c
+@@ -33,7 +33,7 @@
+
+ #define DISCARD_DIFF IHS_SESSION_PACKET_TIMESTAMP_FROM_MILLIS(200)
+
+-static void DataThreadWorker(IHS_SessionChannelData *channel);
++static void DataThreadWorker(void *context);
+
+ static void DataThreadInterrupt(IHS_SessionChannelData *channel);
+
+@@ -61,7 +61,7 @@
+     }
+     char threadName[16];
+     snprintf(threadName, 16, "IHS%s", DataChannelName(channel->type));
+-    dataCh->worker = IHS_ThreadCreate((IHS_ThreadFunction *)DataThreadWorker, threadName, dataCh);
++    dataCh->worker = IHS_ThreadCreate(DataThreadWorker, threadName, dataCh);
+     channel->initFailed = dataCh->worker == NULL;
+     return !channel->initFailed;
+ }
+@@ -131,7 +131,8 @@
+     return offset;
+ }
+
+-static void DataThreadWorker(IHS_SessionChannelData *channel) {
++static void DataThreadWorker(void *context) {
++    IHS_SessionChannelData *channel = context;
+     const IHS_SessionChannelDataClass *cls = (const IHS_SessionChannelDataClass *)channel->base.cls;
+     IHS_SessionFrame frame;
+     IHS_BufferInit(&frame.body, 1024, 1024 * 1024);

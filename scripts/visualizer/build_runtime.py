@@ -113,7 +113,13 @@ def build(args):
             return
         raise ValueError("Existing MilkRust artifact differs from this build; use a new output directory")
     if output.exists():
-        raise ValueError("MilkRust output already exists without a valid receipt")
+        # Xcode creates parents of declared output files before script phases.
+        # Accept only that empty directory, never unreceipted contents. rmdir
+        # also fails safely if another process adds a file after this check.
+        try:
+            output.rmdir()
+        except OSError as error:
+            raise ValueError(f"MilkRust output already exists without a valid receipt: {output}") from error
     with tempfile.TemporaryDirectory(prefix="plezy-milkrust-", dir=os.environ.get("RUNNER_TEMP")) as tmp:
         work = Path(tmp)
         source = work / "source"

@@ -125,6 +125,11 @@ plugins. CocoaPods records local spec checksums from the JSON it installs under
 through normal pod installation or the CocoaPods sandbox serializer, then verify
 `pod install --deployment`; hashing the Ruby source directly gives the wrong lock.
 
+Xcode creates directories declared by build-phase output paths before running
+the phase. MilkRust accepts a fresh empty output directory; reusable artifacts
+still require an exact, digest-verified receipt. Nonempty outputs without a
+valid receipt remain an error.
+
 Xcode embeds `${EFFECTIVE_PLATFORM_NAME}` in CMake target-file arguments for
 embedded SDKs, as described in the
 [CMake property documentation](https://cmake.org/cmake/help/latest/prop_gbl/XCODE_EMIT_EFFECTIVE_PLATFORM_NAME.html).

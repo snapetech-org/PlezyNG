@@ -62,7 +62,7 @@ class LocalRenderBackend final : public RenderBackend {
     engine_ = std::make_unique<MilkRustEngine>(context_->Loader(), context_->IsGles());
   }
   void Load(const std::string& path, const std::string& root, double = 0) override {
-    Engine().Load(std::filesystem::u8path(path), std::filesystem::u8path(root), decoder_);
+    Engine().Load(PathFromUtf8(path), PathFromUtf8(root), decoder_);
   }
   void Pcm(const float* samples, size_t frames, uint32_t generation) override {
     Engine().Pcm(samples, frames, generation);

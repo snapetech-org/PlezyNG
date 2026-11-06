@@ -52,7 +52,7 @@ diff --git a/src/session/channels/ch_control_negotiation.c b/src/session/channel
              /* Not a fallback verdict: a Windows host omitting HEVC from this
               * announcement has been seen encoding HEVC anyway — our streaming
               * request advertises supports_video_hevc, and the video channel's
-@@ -209,7 +211,7 @@
+@@ -209,13 +211,13 @@
  
      PROTOBUF_C_SET_VALUE(clientConfig, desired_resolution_x, (int32_t) ihsConf.maxWidth);
      PROTOBUF_C_SET_VALUE(clientConfig, desired_resolution_y, (int32_t) ihsConf.maxHeight);
@@ -60,7 +60,14 @@ diff --git a/src/session/channels/ch_control_negotiation.c b/src/session/channel
 +    PROTOBUF_C_SET_VALUE(clientConfig, enable_input_streaming, ihsConf.enableInput);
      PROTOBUF_C_SET_VALUE(clientConfig, enable_hardware_decoding, true);
      PROTOBUF_C_SET_VALUE(clientConfig, enable_performance_overlay, true);
++    PROTOBUF_C_SET_VALUE(clientConfig, enable_audio_streaming, ihsConf.enableAudio);
      if (ihsConf.enableAudio) {
+         PROTOBUF_C_SET_VALUE(clientConfig, audio_channels,
+             ihsConf.audioChannels == 4 || ihsConf.audioChannels == 6 ? ihsConf.audioChannels : 2);
+-        PROTOBUF_C_SET_VALUE(clientConfig, enable_audio_streaming, true);
+     }
+     // Mic streaming is opt-in: only advertise when the user has registered mic callbacks.
+     // Steam's server keys off this flag — without it the server never issues Start, so
 @@ -225,7 +227,7 @@
      if (session->callbacks.microphone != NULL) {
          PROTOBUF_C_SET_VALUE(clientConfig, enable_microphone_streaming, true);
@@ -110,3 +117,64 @@ diff --git a/src/session/channels/ch_control_negotiation.c b/src/session/channel
 +    if (ihsConf.enableVideo && ihsConf.enableHevc) {
          PROTOBUF_C_SET_VALUE(clientCaps, supports_video_hevc_obsolete, true);
      }
+diff --git a/tests/session/test_protocol_evidence.c b/tests/session/test_protocol_evidence.c
+--- a/tests/session/test_protocol_evidence.c
++++ b/tests/session/test_protocol_evidence.c
+@@ -384,3 +384,4 @@
+     s->state.connectionState = IHS_SessionConnectionStateNegotiating;
+-    IHS_SessionConfig requested = {.enableAudio = true, .maxWidth = 1280, .maxHeight = 720,
++    IHS_SessionConfig requested = {.enableAudio = true, .enableVideo = true, .enableInput = true,
++        .maxWidth = 1280, .maxHeight = 720,
+         .maxFps = 60, .maxBitrateKbps = bitrate, .quality = (IHS_StreamQuality)preference};
+@@ -425,6 +426,7 @@
+ }
+-static void negotiation_pyrowave(void) {
++static void negotiation_pyrowave(bool video, bool input) {
+     IHS_Session *s = session_new();
+     s->state.connectionState = IHS_SessionConnectionStateNegotiating;
+-    IHS_SessionConfig requested = {.enableAudio = true, .enableHevc = true, .enablePyrowave = true,
++    IHS_SessionConfig requested = {.enableAudio = video, .enableVideo = video, .enableInput = input,
++        .enableHevc = true, .enablePyrowave = true,
+         .maxWidth = 1280, .maxHeight = 720, .maxFps = 60, .maxBitrateKbps = 30000};
+@@ -450,8 +452,22 @@
+     assert(config && config->config && config->streaming_client_config && config->streaming_client_caps);
+-    assert(config->config->selected_video_codec == k_EStreamVideoCodecPyrowave);
+-    assert(config->streaming_client_config->enable_video_pyrowave);
+-    assert(config->streaming_client_caps->n_supported_video_codecs == 3);
+-    assert(config->streaming_client_caps->supported_video_codecs[0] == k_EStreamVideoCodecPyrowave);
+-    assert(config->streaming_client_caps->supported_video_codecs[1] == k_EStreamVideoCodecHEVC);
+-    assert(config->streaming_client_caps->supported_video_codecs[2] == k_EStreamVideoCodecH264);
++    assert(config->streaming_client_config->enable_video_streaming == video);
++    assert(config->streaming_client_config->enable_audio_streaming == video);
++    assert(config->streaming_client_config->enable_input_streaming == input);
++    assert(config->config->has_selected_video_codec == video);
++    if (video) {
++        assert(config->config->selected_video_codec == k_EStreamVideoCodecPyrowave);
++        assert(config->streaming_client_config->enable_video_pyrowave);
++        assert(config->streaming_client_caps->n_supported_video_codecs == 3);
++        assert(config->streaming_client_caps->supported_video_codecs[0] == k_EStreamVideoCodecPyrowave);
++        assert(config->streaming_client_caps->supported_video_codecs[1] == k_EStreamVideoCodecHEVC);
++        assert(config->streaming_client_caps->supported_video_codecs[2] == k_EStreamVideoCodecH264);
++    } else {
++        assert(config->config->selected_video_codec == k_EStreamVideoCodecNone);
++        assert(!config->streaming_client_config->enable_video_pyrowave);
++        assert(!config->streaming_client_config->enable_video_hevc);
++        assert(!config->streaming_client_caps->supports_video_hevc_obsolete);
++        assert(config->streaming_client_caps->n_supported_video_codecs == 0);
++        assert(config->streaming_client_caps->n_supported_audio_codecs == 0);
++        assert(config->streaming_client_caps->n_supported_colorspaces == 0);
++    }
+     cnegotiation_set_config_msg__free_unpacked(config, NULL);
+@@ -466,3 +482,4 @@
+     s->state.connectionState = IHS_SessionConnectionStateNegotiating;
+-    IHS_SessionConfig requested = {.enableAudio = true, .enableHevc = true, .enablePyrowave = true,
++    IHS_SessionConfig requested = {.enableAudio = true, .enableVideo = true, .enableInput = true,
++        .enableHevc = true, .enablePyrowave = true,
+         .maxWidth = 1280, .maxHeight = 720, .maxFps = 60, .maxBitrateKbps = 30000};
+@@ -548,3 +565,5 @@
+     }
+-    negotiation_pyrowave();
++    negotiation_pyrowave(true, true);
++    negotiation_pyrowave(false, true); /* Controller-only: no media codec or colorspace. */
++    negotiation_pyrowave(true, false); /* Watch-only: media without input. */
+     negotiation_pyrowave_unavailable();

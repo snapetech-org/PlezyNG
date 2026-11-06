@@ -77,7 +77,7 @@ class RemoteRenderBackend : public RenderBackend {
     const auto response = Request(render_protocol::Command::Hello, payload);
     render_protocol::Reader reader(response);
     if (reader.U32() != uint32_t(backend) ||
-        reader.U32() != (backend == render_protocol::Backend::MilkRust ? MILKRUST_ABI_VERSION : 0))
+        reader.U32() != (backend == render_protocol::Backend::MilkRust ? uint32_t(MILKRUST_ABI_VERSION) : 0u))
       throw std::runtime_error("Visualization helper ABI does not match this app.");
     const auto features = reader.U32();
     reader.End();

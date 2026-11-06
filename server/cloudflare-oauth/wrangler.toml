@@ -1,0 +1,23 @@
+name = "pleazyng-oauth"
+main = "worker.mjs"
+compatibility_date = "2026-11-06"
+workers_dev = false
+# Routes are attached separately only after source and live validation.
+[vars]
+PUBLIC_ORIGIN = "https://pleazyng-api.snape.tech"
+[observability]
+enabled = false
+[[durable_objects.bindings]]
+name = "SESSIONS"
+class_name = "OAuthSession"
+[[durable_objects.bindings]]
+name = "ADMISSION"
+class_name = "OAuthAdmission"
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["OAuthSession", "OAuthAdmission"]
+
+[[ratelimits]]
+name = "START_LIMIT"
+namespace_id = "182791"
+simple = { limit = 3, period = 60 }

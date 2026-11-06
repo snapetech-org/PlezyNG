@@ -76,3 +76,7 @@ tools/lending_gateway/config.json
 __pycache__/
 *.pyc
 
+
+# Task-local Cloudflare emulator/build output
+/.wrangler/
+/server/cloudflare-oauth/.wrangler/

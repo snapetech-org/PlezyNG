@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Host MyAnimeList and AniList sign-in on a bounded Cloudflare OAuth service while preserving existing callback URLs and local Trakt and Steam authentication.
+
 - Add Trakt browser sign-in with S256 PKCE through the owned HTTPS relay while retaining TV device-code sign-in; include Trakt attribution and privacy/disconnect information.
 
 - Sign macOS helpers and nested code before sealing their containers, preserve helper entitlements, and refresh runtime receipt hashes after final signing.

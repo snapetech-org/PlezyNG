@@ -38,3 +38,14 @@ Simkl documents free commercial usage below $150 monthly revenue and requires a 
 5. Record accepted terms and any commercial permission accurately. Reconnect tokens tied to another registration without discarding unrelated local data. A working health endpoint is not provider qualification.
 
 Discord’s current source uses dynamic HTTPS poster assets, so the uploaded static `pleazyng` asset is available for future use rather than a required client key. No bot/OAuth registration is needed for this existing desktop IPC Rich Presence path. Both public repository variables (`PLEAZYNG_DISCORD_APPLICATION_ID`, `PLEAZYNG_RELAY_BASE_URL`) are staged and read back; current workflow source does not consume them, so this is not activation or end-to-end qualification.
+
+## OAuth hosting split
+
+MyAnimeList and AniList now have a dedicated Cloudflare OAuth implementation,
+with unchanged callback URLs and expiring, single-use sessions. The deployment
+and provider configuration are independent: an empty AniList secret keeps it
+disabled. Trakt browser PKCE and Steam remain on the local Go relay; Trakt TV
+sign-in remains direct device-code. See
+[Cloudflare OAuth operations](../../server/cloudflare-oauth/README.md) for the
+route contract, limits, verification, secrets and rollback. No application
+client secret belongs in a release artifact.

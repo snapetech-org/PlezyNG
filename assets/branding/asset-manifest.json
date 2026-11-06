@@ -28,8 +28,8 @@
       "sha256": "09fbc48657b7d46d251054b1cdcdefa88115711253c4ff5ed2d92dcd9244bbd9"
     }
   },
-  "config_sha256": "ecccb8befa39583f80ce849ef2d6e65121229938733faaf421c0aa7c515e9054",
-  "generator_sha256": "ccc87c78bc2892bbfbecad392883e420be1a0001e6c09d8e6fd18fee1e8634e9",
+  "config_sha256": "e27653437fdb29dc2e8400d7b039d33b4bc948bd72da72865e1782654efac79c",
+  "generator_sha256": "09dd39f85f012dac475bb5ece9316ee1e55ad10c8ee08a660ebe902faf4a793f",
   "exports": {
     "android/app/src/main/res/drawable-hdpi/ic_stat_notification.png": "dc8fe7b03a70c8a6f1a8089a8985df7c77c51ca675b6c486296e03dc0edb1646",
     "android/app/src/main/res/drawable-hdpi/plezyng_launcher_foreground.png": "720244083e2f2bbf53847592d93b3b07ee6ebffe964abb7b719f10d08ce51f09",
@@ -466,6 +466,10 @@
     "docs/maintainers/store-listing-assets/amazon/icon-small-114.png": "5aadddd420208e598595381d204139ab858828a86c015da2dad35c595752d6f9",
     "docs/maintainers/store-listing-assets/google-play/app-icon-512.png": "bd3b88f2f2ab4e040e39b1e91d098ab8d2930825b259a21cb6f2cb342a15e932",
     "docs/maintainers/store-listing-assets/google-play/feature-graphic-1024x500.png": "b2a1b48c44c4d3e2c685e6ad93615a9a167f5ff6240cc330b89a2257745b5f11",
+    "docs/maintainers/store-listing-assets/samsung/detail-background-1920x1080.jpg": "59c9ffc9015a0b4e087f6fec2f9beed544fbf13ff7a440113e4f46392ce350ca",
+    "docs/maintainers/store-listing-assets/samsung/icon-512x423.png": "dfe36b57f6dccf4798fded3b76bb47171fa8ffe3194f4ca78d05b5b7fc823fd8",
+    "docs/maintainers/store-listing-assets/samsung/icon-background-1920x1080.png": "11fbc0699781ef0bcf40dc0b819c76f6c72c7bd012de90030ca6e995db8b6634",
+    "docs/maintainers/store-listing-assets/samsung/logo-transparent-1920x1080.png": "29bc452a8aade21233cdccfe859f8767c17099ccaa9d256b3098129946572c91",
     "ios/Runner/AlternateAppIcons.xcassets/AppIcon-crt.appiconset/icon.png": "7dcb7876c0c7a1e332f52ac46018d8439a91ad7d3537b5835a57c8d15a1b8c1f",
     "ios/Runner/AlternateAppIcons.xcassets/AppIcon-ember.appiconset/icon.png": "8bb47c6af7677e14f069257120d829f36353a08223f43abfbe80b592428c63f2",
     "ios/Runner/AlternateAppIcons.xcassets/AppIcon-facet.appiconset/icon.png": "caa2b008da1902f65b023a867b81f2cf8d651d3c07f11b947f290fe8ab5c71a5",

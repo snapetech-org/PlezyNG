@@ -154,6 +154,8 @@ class BrandRenderer:
             out = io.BytesIO()
             if suffix == ".webp":
                 image.save(out, format="WEBP", lossless=True, method=6, exact=True)
+            elif suffix == ".jpg":
+                image.convert("RGB").save(out, format="JPEG", quality=90, optimize=False, progressive=False)
             elif suffix == ".ico":
                 sizes = [(n, n) for n in (16, 24, 32, 48, 64, 128, 256)]
                 frames = [self.frame(s, fit, appearance=appearance, compact=target.get("compact")) for s in sizes]

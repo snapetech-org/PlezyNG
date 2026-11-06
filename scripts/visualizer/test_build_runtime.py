@@ -2,12 +2,71 @@
 from pathlib import Path
 from types import SimpleNamespace
 import json
+import os
 from unittest import mock
 import subprocess
 import tempfile
 import unittest
 
 import build_runtime
+
+
+class RustToolchainTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.home = self.root / 'rustup'
+        self.bin = self.home / 'toolchains' / (build_runtime.RUST + '-aarch64-apple-darwin') / 'bin'
+        self.bin.mkdir(parents=True)
+        for name in ('rustc', 'rustdoc'):
+            (self.bin / name).write_text('synthetic tool path fixture; not executable')
+        self.env = {'RUSTUP_HOME': str(self.home), 'CARGO_HOME': str(self.root / 'cargo'),
+                    'PATH': '/usr/bin:/bin', 'RUSTC': '/unrelated/rustc',
+                    'RUSTDOC': '/unrelated/rustdoc', 'RUSTC_WRAPPER': '/unrelated/wrapper'}
+
+    def selected_tool(self, command, **kwargs):
+        self.assertEqual(command[:4], ['rustup', 'which', '--toolchain', build_runtime.RUST])
+        self.assertIs(kwargs['env'], self.env)
+        return str(self.bin / command[-1]) + '\n'
+
+    def test_pinned_tools_override_host_selection_without_global_shims(self):
+        with mock.patch.object(build_runtime.subprocess, 'check_output', side_effect=self.selected_tool):
+            build_runtime.configure_rust_tools(self.env)
+        self.assertEqual(self.env['RUSTC'], str(self.bin / 'rustc'))
+        self.assertEqual(self.env['RUSTDOC'], str(self.bin / 'rustdoc'))
+        self.assertEqual(self.env['PATH'].split(os.pathsep)[0], str(self.bin))
+        self.assertNotIn('RUSTC_WRAPPER', self.env)
+        self.assertEqual(self.env['RUSTUP_HOME'], str(self.home))
+        self.assertEqual(self.env['CARGO_HOME'], str(self.root / 'cargo'))
+
+    def test_missing_and_host_tools_are_rejected(self):
+        host_tool = self.root / 'host/rustc'
+        host_tool.parent.mkdir()
+        host_tool.write_text('unrelated host compiler')
+        for value, message in [(str(self.root / 'absent'), 'missing'),
+                               (str(host_tool), 'escapes'), ('relative/rustc', 'missing')]:
+            with self.subTest(value=value), mock.patch.object(
+                    build_runtime.subprocess, 'check_output', return_value=value):
+                with self.assertRaisesRegex(ValueError, message):
+                    build_runtime.configure_rust_tools(self.env)
+
+    def test_another_toolchain_version_is_rejected(self):
+        other = self.home / 'toolchains/1.96.0-aarch64-apple-darwin/bin/rustc'
+        other.parent.mkdir(parents=True)
+        other.write_text('wrong compiler version fixture')
+        with mock.patch.object(build_runtime.subprocess, 'check_output', return_value=str(other)):
+            with self.assertRaisesRegex(ValueError, 'Unexpected pinned Rust tool path'):
+                build_runtime.configure_rust_tools(self.env)
+
+    def test_mixed_host_toolchains_are_rejected(self):
+        other = self.home / 'toolchains' / (build_runtime.RUST + '-x86_64-apple-darwin') / 'bin/rustdoc'
+        other.parent.mkdir(parents=True)
+        other.write_text('other host tool fixture')
+        with mock.patch.object(build_runtime.subprocess, 'check_output',
+                               side_effect=[str(self.bin / 'rustc'), str(other)]):
+            with self.assertRaisesRegex(ValueError, 'same toolchain'):
+                build_runtime.configure_rust_tools(self.env)
 
 
 class RuntimeOutputTests(unittest.TestCase):

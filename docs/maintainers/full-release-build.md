@@ -130,6 +130,14 @@ the phase. MilkRust accepts a fresh empty output directory; reusable artifacts
 still require an exact, digest-verified receipt. Nonempty outputs without a
 valid receipt remain an error.
 
+MilkRust resolves its compiler tools from its isolated pinned Rustup toolchain.
+Homebrew's Rustup manager can be installed without global `rustc`/`cargo` shims;
+the build must select its own toolchain binaries explicitly.
+
+Hosted Linux sanitizer jobs replace the Azure Ubuntu mirror with the main HTTPS
+archive and use bounded network timeouts and retries. Private runner sources and
+proxy configuration remain unchanged.
+
 Xcode embeds `${EFFECTIVE_PLATFORM_NAME}` in CMake target-file arguments for
 embedded SDKs, as described in the
 [CMake property documentation](https://cmake.org/cmake/help/latest/prop_gbl/XCODE_EMIT_EFFECTIVE_PLATFORM_NAME.html).

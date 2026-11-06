@@ -261,7 +261,11 @@ class HdrPlane {
       layer_ = [CAMetalLayer layer];
       layer_.device = gpu;
       layer_.pixelFormat = MTLPixelFormatBGR10A2Unorm;
+#if !TARGET_OS_TV
+      // This opt-in belongs to macOS/iOS. tvOS retains the native 10-bit PQ
+      // plane, using its HDR display mode without this unavailable layer API.
       layer_.wantsExtendedDynamicRangeContent = YES;
+#endif
       layer_.framebufferOnly = YES;
       layer_.maximumDrawableCount = 2;
       layer_.allowsNextDrawableTimeout = YES;

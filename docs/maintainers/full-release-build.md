@@ -37,6 +37,35 @@ The assertion follows the launcher PID through runner startup and ends when that
 one-job process exits, so active builds no longer depend on a manually timed
 awake command.
 
+Hybrid CI runs Linux AddressSanitizer and ThreadSanitizer on separate hosted
+machines concurrently. The one-job matrix limit remains for the private profile;
+Apple jobs serialize independently because they share one physical Mac.
+
+Hosted Ubuntu images may route APT through `mirror+file:` entries. Editing only
+`sources.list` or `ubuntu.sources` leaves `/etc/apt/apt-mirrors*.txt` pointing at
+the slow Azure HTTP mirror. CI and release jobs run
+`scripts/configure_hosted_apt.py` with GitHub's `runner.environment` context before
+package installation or the APT cache action. It handles all three source forms,
+selects the official ports archive for ARM64 and adds network retries/timeouts.
+It returns before reading or changing any private runner's APT configuration.
+
+The macOS app combines Rust, LuaJIT, Objective-C and C++ exception handlers.
+Apple's compact-unwind format cannot encode all four personalities in one
+image. The `Isolate LuaJIT runtime` phase repackages SwiftPM's checksum-verified
+LuaJIT archive as `libplezy_luajit.dylib`, links it before the original static
+framework, and embeds/signs it with the application. It retains ordinary unwind
+metadata and the production native pins. The packaged
+`playback-notices/luajit-runtime.json` records input/output hashes, architectures,
+deployment target and the build command. Do not replace this with flags that
+disable unwind metadata: linking alone does not prove exception recovery.
+
+Release signing handles bare Mach-O helpers in both `Contents/MacOS` and
+`Contents/Frameworks` before sealing nested frameworks/XPC bundles. Preserve
+existing nested entitlements, then run
+`scripts/apple/finalize_macos_runtime_receipts.py` after the final library signing
+and before signing the app. The receipt retains its build-stage digest separately
+from the final embedded digest; later signing must not silently stale it.
+
 Release actions reuse an existing immutable version tag. If the tag is an
 ancestor of `main`, the workflow permits only release infrastructure, changelog,
 maintainer documentation, and the WebOS compatibility lock to differ from the

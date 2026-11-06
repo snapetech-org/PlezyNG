@@ -122,3 +122,26 @@ The queue controller performs the post-job checks and exact-path cleanup after
 archiving evidence. In single-job troubleshooting mode, do those steps manually
 before starting another job. Leave the runner cache, persistent service, NFS
 mounts, and unrelated run directories in place.
+
+## VPN and mount recovery after reboot
+
+The host's launch daemon `com.snapetech.plezyng-native-build-nfs` runs every 60
+seconds and installs the same export at both documented mount paths. Its
+canonical helper is [`scripts/mount_macos_native_build_nfs.sh`](../../scripts/mount_macos_native_build_nfs.sh),
+installed as `/usr/local/sbin/plezyng-native-build-mount.sh` with root ownership
+and mode 755. Install a new copy atomically, then kickstart only this mount job.
+Do not restart the runner broker or unmount a workspace in use.
+
+The helper verifies MagicDNS, the expected client address on the tunnel route,
+and ports 111/20048/2049. If needed it starts the existing saved Tailscale VPN
+service with a bounded command. It preserves credentials, the VPN profile,
+export permissions, and active mounts. Healthy connectivity does not depend on
+the GUI app's CLI returning a status document: that CLI was observed hanging
+while encrypted ping, SSH and NFS were already working.
+
+For a stuck Connecting state, verify the actual tunnel before changing anything.
+The November 5 recovery retained the existing VPN profile, refreshed only the
+installed Tailscale app/extension registration, restarted those components and
+started the saved VPN service. The recovered route answered a 3 ms ping and
+NFS write/fsync/read validation. Preserve the diagnostics in private task
+storage; do not delete keychains, authentication state or VPN profiles.

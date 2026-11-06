@@ -3588,7 +3588,13 @@
     "productQueryFailed": "Couldn't load the store price. Check your connection and try again.",
     "purchaseFailed": "The purchase didn't go through. Try again.",
     "restoreFailed": "Couldn't reach the store to restore your purchase. Try again.",
-    "nothingToRestore": "No Pleazyng lifetime purchase was found for this store account."
+    "nothingToRestore": "No Pleazyng lifetime purchase was found for this store account.",
+    "reviewAccess": "Store review access",
+    "reviewAccessActive": "Store review access active",
+    "reviewAccessInstructions": "Enter the review code provided in the store review instructions. This does not make a purchase.",
+    "reviewCode": "Review code",
+    "reviewCodeInvalid": "The review code is invalid or expired.",
+    "activateReviewAccess": "Activate"
   },
   "detail": {
     "endsAt": "Ends at ${time}"

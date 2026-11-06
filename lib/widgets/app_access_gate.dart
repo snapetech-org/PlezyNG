@@ -9,6 +9,7 @@ import '../services/supporter/supporter_service.dart';
 import '../services/supporter/supporter_mode.dart';
 import 'app_icon.dart';
 import 'loading_indicator_box.dart';
+import 'store_review_access_button.dart';
 
 /// Blocks store builds after the seven-day full-feature trial expires.
 /// Developer and free builds pass through without a paywall.
@@ -166,6 +167,7 @@ class _AppAccessGateState extends State<AppAccessGate> {
                       ),
                     ),
                   const SizedBox(height: 8),
+                  StoreReviewAccessButton(service: service),
                   FocusableButton(
                     focusNode: _restoreFocusNode,
                     onPressed: busy ? null : () => unawaited(service.restore()),

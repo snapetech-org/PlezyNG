@@ -957,6 +957,9 @@ class SettingsService extends BaseSharedPreferencesService {
   /// Start time for the Pleazyng seven-day, full-app trial. This is local
   /// runtime state: it is not exported or cleared by Reset All Settings.
   static const appAccessTrialStartedAtEpochMs = IntPref('app_access_trial_started_at_ms');
+
+  /// Signed Android store-review grant; never an in-app purchase receipt.
+  static const storeReviewAccessGrant = StringPref('store_review_access_grant');
   static const rememberTrackSelections = BoolPref('remember_track_selections', defaultValue: true);
 
   /// Ask which source audio and subtitle tracks to use before opening a video.

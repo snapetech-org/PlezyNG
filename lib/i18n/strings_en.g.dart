@@ -8641,6 +8641,24 @@ class Translations$appAccess$en {
 
 	/// en: 'No Pleazyng lifetime purchase was found for this store account.'
 	String get nothingToRestore => 'No Pleazyng lifetime purchase was found for this store account.';
+
+	/// en: 'Store review access'
+	String get reviewAccess => 'Store review access';
+
+	/// en: 'Store review access active'
+	String get reviewAccessActive => 'Store review access active';
+
+	/// en: 'Enter the review code provided in the store review instructions. This does not make a purchase.'
+	String get reviewAccessInstructions => 'Enter the review code provided in the store review instructions. This does not make a purchase.';
+
+	/// en: 'Review code'
+	String get reviewCode => 'Review code';
+
+	/// en: 'The review code is invalid or expired.'
+	String get reviewCodeInvalid => 'The review code is invalid or expired.';
+
+	/// en: 'Activate'
+	String get activateReviewAccess => 'Activate';
 }
 
 // Path: detail
@@ -19544,6 +19562,12 @@ extension on Translations {
 			'appAccess.purchaseFailed' => 'The purchase didn\'t go through. Try again.',
 			'appAccess.restoreFailed' => 'Couldn\'t reach the store to restore your purchase. Try again.',
 			'appAccess.nothingToRestore' => 'No Pleazyng lifetime purchase was found for this store account.',
+			'appAccess.reviewAccess' => 'Store review access',
+			'appAccess.reviewAccessActive' => 'Store review access active',
+			'appAccess.reviewAccessInstructions' => 'Enter the review code provided in the store review instructions. This does not make a purchase.',
+			'appAccess.reviewCode' => 'Review code',
+			'appAccess.reviewCodeInvalid' => 'The review code is invalid or expired.',
+			'appAccess.activateReviewAccess' => 'Activate',
 			'detail.endsAt' => ({required Object time}) => 'Ends at ${time}',
 			'watchLink.serverUnavailable' => 'Couldn\'t reach a Plex server for this link.',
 			'watchLink.notFound' => 'Couldn\'t find this show or movie on your Plex servers.',
@@ -19819,14 +19843,14 @@ extension on Translations {
 			'universalMedia.shareUrlCopied' => 'Stream address copied.',
 			'universalMedia.shareOpenUrl' => 'Open this address in a player on the other device',
 			'universalMedia.shareQrLabel' => 'QR code for the temporary stream address',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.shareQrHelp' => 'Scan with a compatible player connected to the same private network.',
 			'universalMedia.shareHttpHint' => 'This stream uses unencrypted HTTP. In Pleazyng, allow HTTP before opening it.',
 			'universalMedia.shareCopyUrl' => 'Copy stream address',
 			'universalMedia.shareExpiresLabel' => 'Link expires at',
 			'universalMedia.shareStarting' => 'Preparing the stream…',
 			'universalMedia.shareStart' => 'Start sharing',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.shareStop' => 'Stop sharing',
 			'universalMedia.extensionsMode' => 'Extensions and CLI',
 			'universalMedia.extensionsIntro' => 'Add a data-only search extension to find media. Choose a result to load it into the familiar Open media form.',
@@ -20333,14 +20357,14 @@ extension on Translations {
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
+			_ => null,
+		} ?? switch (path) {
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
 			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, Pleazyng reconnects using a compatible codec.',
 			'games.steamLibrary' => 'Steam library',
 			'games.linkSteamAccount' => 'Link Steam account',
 			'games.refreshSteamAccount' => 'Refresh Steam account',
-			_ => null,
-		} ?? switch (path) {
 			'games.unlinkSteamAccount' => 'Unlink Steam account',
 			'games.unlinkSteamAccountConfirm' => 'Remove this account and its imported catalog from this profile? Your paired computers and shortcuts stay available.',
 			'games.steamAccountLinked' => 'Steam account linked. Games imported.',
@@ -20847,14 +20871,14 @@ extension on Translations {
 			'subtitleAiUi.translateAnExistingSubtitle' => 'Translate an existing subtitle',
 			'subtitleAiUi.timingAndSourceFileRemainUnchanged' => 'Timing and source file remain unchanged',
 			'subtitleAiUi.couldNotSeekToThisTranscriptCue' => 'Could not seek to this transcript cue.',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.capturedTranscript' => 'Captured transcript',
 			'subtitleAiUi.onlyWatchedPortionsAreIncludedSelect_bb56a271' => 'Only watched portions are included. Selecting a cue seeks to its start.',
 			'subtitleAiUi.searchTranscript' => 'Search transcript',
 			'subtitleAiUi.clearSearch' => 'Clear search',
 			'subtitleAiUi.hideFutureDialogue' => 'Hide future dialogue',
 			'subtitleAiUi.showCuesFromTheCurrentPlayheadAndEarlier' => 'Show cues from the current playhead and earlier',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.clearSecondarySubtitle' => 'Clear secondary subtitle',
 			'subtitleAiUi.subtitleReplayLeadIn' => 'Subtitle replay lead-in',
 			'subtitleAiUi.subtitleReplayLeadInOffset' => ({required Object milliseconds}) => '${milliseconds} ms before the cue',

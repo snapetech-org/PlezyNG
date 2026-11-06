@@ -1,6 +1,6 @@
 # Apple Store signing
 
-The existing Apple Distribution identity is usable. Native macOS qualification imported the configured PKCS12, verified the private key against its certificate, signed a small executable and passed strict signature verification. No certificate was issued or revoked. This checks signing material, not a complete app archive, App Store processing or purchase behavior.
+The existing Apple Distribution identity is usable. Native macOS qualification imported the configured PKCS12, verified the private key against its certificate, signed a small executable and passed strict signature verification. No certificate was issued or revoked. The final [native preflight](https://github.com/snapetech-org/PlezyNG/actions/runs/42169674435) also passed all three new profiles and both actual projects’ signing bindings; its [bounded report](qualification/apple-signing-20261105.json) is retained. This checks signing material, not a complete app archive, App Store processing or purchase behavior.
 
 The original PKCS12 required a compatible SHA1/3DES re-encoding for Security.framework. The isolated keychain also needs the checksum-pinned official Apple WWDR G3 intermediate and membership in the user keychain search list. `scripts/apple_signing_material.py` provides the same verified context for the preflight and release jobs, restores the original search list, deletes its keychain and removes task-owned temporary material. It never changes the default keychain or system trust.
 

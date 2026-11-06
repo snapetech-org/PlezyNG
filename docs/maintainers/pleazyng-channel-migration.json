@@ -170,7 +170,9 @@
       "profile_state": "Created through authenticated portal, CMS integrity checked locally, app/platform/team/group/certificate bindings validated; three dedicated Actions profile secrets configured. Old profiles preserved.",
       "archive_state": "Shared isolated signing context and separate per-target manual archive/export source implemented. Full app archive/export, App Store processing and StoreKit/device qualification remain pending coordinated release.",
       "certificate_capacity": "Apple Distribution maximum reached; existing usable identity avoids replacement or revocation",
-      "private_material": "Profile backups retained outside repository with private permissions; failed Mac host export produced no identity and its task-owned password/helper were cleaned"
+      "private_material": "Profile backups retained outside repository with private permissions; failed Mac host export produced no identity and its task-owned password/helper were cleaned",
+      "profiles_and_projects_qualification_run": 42169674435,
+      "profiles_and_projects_qualification": "Passed native shared identity context, all three current profiles, correct platform/team/group/certificate bindings, and manual Release settings for actual iOS/tvOS project targets. Full archive/export and Store processing remain unverified."
     }
   },
   "automation_before": {

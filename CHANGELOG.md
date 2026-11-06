@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Publish QAIRT context manifests atomically and reject previously published output directories, preserving valid package metadata after interrupted builds.
+- Identify native Tizen video output in playback diagnostics when the player reports no output property.
+- Keep Google Tensor export filenames and provider keys consistent with runtime model packs, accepting compiler-suffixed output names without selecting other targets.
+
 - Keep local and CI build validation independent of SDK analytics requests while retaining every diagnostic and check.
 
 - Retain Windows visualization helper debug symbols in the build artifacts directory rather than shipping them in the application bundle.

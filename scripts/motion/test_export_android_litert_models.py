@@ -1,8 +1,11 @@
 import hashlib
 import tempfile
 import unittest
+import types
+from unittest.mock import patch
 from pathlib import Path
 
+from scripts.motion import export_android_litert_models as exporter
 from scripts.motion.export_android_litert_models import preserve_google_tensor_aot_records
 
 
@@ -100,6 +103,35 @@ class PreserveGoogleTensorAotRecordsTest(unittest.TestCase):
                 self.output_manifest,
             )
 
+
+
+class GoogleTensorExportNamingTest(unittest.TestCase):
+    def test_sdk_names_produce_runtime_provider_keys(self):
+        self.assertEqual(exporter.google_tensor_provider_key("Tensor_G5"), "google-tensor-g5")
+        self.assertEqual(exporter.google_tensor_provider_key("Tensor_G6"), "google-tensor-g6")
+
+    def test_native_and_suffixed_compiler_outputs_use_the_same_pack_identity(self):
+        target = types.SimpleNamespace(
+            SocModel=types.SimpleNamespace(TENSOR_G5="G5"), Target=lambda value: value,
+        )
+        for suffix in ["", "_compiled"]:
+            with self.subTest(suffix=suffix), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                model = root / "float.tflite"
+                model.write_bytes(b"input model")
+
+                def compile_model(source, *, target, output_dir, **flags):
+                    Path(output_dir, f"anvil-s-720p_Google_Tensor_G5{suffix}.tflite").write_bytes(b"compiled model")
+                    # Other model/SoC outputs must not be mistaken for this target.
+                    Path(output_dir, "other_Google_Tensor_G5.tflite").write_bytes(b"other")
+                    Path(output_dir, "anvil-s-720p_Google_Tensor_G50.tflite").write_bytes(b"other")
+                    return types.SimpleNamespace()
+
+                with patch.object(exporter, "verify_model_interface") as verify:
+                    result = exporter.export_google_tensor_aot(model, compile_model, target, "anvil-s", "720p", "Tensor_G5", root, root)
+                self.assertEqual(result["file"], "anvil-s-720p-google-tensor-g5.tflite")
+                self.assertEqual((root / result["file"]).read_bytes(), b"compiled model")
+                verify.assert_called_once()
 
 if __name__ == "__main__":
     unittest.main()

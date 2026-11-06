@@ -15,9 +15,10 @@ import 'package:plezy/widgets/video_controls/widgets/performance_overlay/perform
 
 /// Player fake that answers mpv property queries from a fixed map.
 class _PropertyPlayer implements Player {
-  _PropertyPlayer(this.properties);
+  _PropertyPlayer(this.properties, {this.type = 'mpv'});
 
   final Map<String, String> properties;
+  final String type;
 
   @override
   final PlayerStreams streams = const PlayerStreams(
@@ -49,13 +50,13 @@ class _PropertyPlayer implements Player {
   bool get providesNativeStats => false;
 
   @override
-  String get playerType => 'mpv';
+  String get playerType => type;
 
   @override
   Future<String?> getProperty(String name) async => properties[name];
 
   @override
-  Future<String> runtimePlayerType() async => 'mpv';
+  Future<String> runtimePlayerType() async => type;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -101,6 +102,25 @@ Future<PerformanceStats> _firstStats(
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  for (final (type, expectedOutput) in [('webos', 'webos-native'), ('tizen', 'tizen-native'), ('mpv', null)]) {
+    test('$type stats identify the native output when no output property is reported', () async {
+      final stats = await _firstStats(_PropertyPlayer(const {}, type: type));
+      expect(stats.playbackCapabilityReport?.playerType, type);
+      expect(stats.playbackCapabilityReport?.videoOutput, expectedOutput);
+    });
+  }
+
+  test('native TV stats preserve an explicitly reported video output', () async {
+    final stats = await _firstStats(
+      _PropertyPlayer({
+        'video-params/w': '1920',
+        'video-params/h': '1080',
+        'current-vo': 'reported-output',
+      }, type: 'tizen'),
+    );
+    expect(stats.playbackCapabilityReport?.videoOutput, 'reported-output');
+  });
 
   test('HDR configuration logs source changes once instead of logging every stats poll', () async {
     MemoryLogOutput.clearLogs();

@@ -197,6 +197,10 @@ def configure_google_tensor_aot() -> tuple[Any, Any]:
     return compile_model, google_tensor_target
 
 
+def google_tensor_provider_key(soc_model: str) -> str:
+    return f"google-tensor-{soc_model.removeprefix('Tensor_').lower().replace('_', '-')}"
+
+
 def export_google_tensor_aot(
     input_model: Path,
     aot_compile: Any,
@@ -216,7 +220,7 @@ def export_google_tensor_aot(
         compiler_flags["google_tensor_sharding_intensity"] = "maximum"
 
     export_name = f"{model_name}-{resolution}"
-    filename = f"{export_name}-google-tensor-{soc_model.lower().replace('_', '-')}.tflite"
+    filename = f"{export_name}-{google_tensor_provider_key(soc_model)}.tflite"
     destination = output_dir / filename
     with tempfile.TemporaryDirectory(
         prefix=f"plezy-google-tensor-aot-{model_name}-{resolution}-{soc_model.lower()}-",
@@ -233,8 +237,11 @@ def export_google_tensor_aot(
         if hasattr(compilation, "compilation_report"):
             print(f"Google Tensor {soc_model} compile report for {model_name}/{resolution}:")
             print(compilation.compilation_report())
-        suffix = f"_Google_Tensor_{soc_model.removeprefix('Tensor_')}.tflite"
-        compiled_models = sorted(export_dir.rglob(f"*{suffix}"))
+        target_marker = f"{export_name}_Google_Tensor_{soc_model.removeprefix('Tensor_')}"
+        compiled_models = sorted(
+            path for path in export_dir.rglob("*.tflite")
+            if path.name == target_marker + ".tflite" or path.name.startswith(target_marker + "_")
+        )
         if len(compiled_models) != 1 or compiled_models[0].stat().st_size == 0:
             outputs = sorted(path.name for path in export_dir.rglob("*.tflite"))
             raise RuntimeError(
@@ -751,7 +758,7 @@ def main() -> int:
                 and resolution in google_tensor_resolutions
             ):
                 for soc_model in args.google_tensor_socs:
-                    provider_key = f"google-tensor-{soc_model.lower().replace('_', '-')}"
+                    provider_key = google_tensor_provider_key(soc_model)
                     output_variants[resolution][provider_key] = export_google_tensor_aot(
                         float_path,
                         google_tensor_aot_compile,

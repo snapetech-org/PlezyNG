@@ -23,6 +23,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -137,6 +138,12 @@ def calibration_manifest(
 
 
 def reject_stale_contexts(output: Path, targets: list[str], models: list[str]) -> None:
+    manifest = output / "manifest.json"
+    if manifest.exists() or manifest.is_symlink():
+        raise ValueError(
+            "Output directory already contains manifest.json; use a fresh --output-dir "
+            "so an interrupted build cannot leave a stale package manifest"
+        )
     selected_paths = {
         f"{target_id}/{model_id}-{TARGETS[target_id]['resolution']}/context.serialized.bin"
         for target_id in targets
@@ -165,6 +172,21 @@ def reject_stale_contexts(output: Path, targets: list[str], models: list[str]) -
                     raise ValueError(
                         f"Context output path escapes the selected output directory: {candidate}"
                     )
+
+
+def publish_manifest(output: Path, manifest: dict[str, Any]) -> Path:
+    """Expose a complete manifest only after all context builds have succeeded."""
+    payload = json.dumps(manifest, indent=2) + "\n"
+    descriptor, temporary = tempfile.mkstemp(prefix=".manifest.", suffix=".partial", dir=output)
+    temporary_path = Path(temporary)
+    manifest_path = output / "manifest.json"
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as destination:
+            destination.write(payload)
+        os.replace(temporary_path, manifest_path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+    return manifest_path
 
 
 def run(command: list[str], *, env: dict[str, str], cwd: Path) -> None:
@@ -473,8 +495,7 @@ def main() -> int:
         "calibration": calibration_manifest(calibration_root, calibration_by_resolution),
         "contexts": prepared,
     }
-    manifest_path = output / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    manifest_path = publish_manifest(output, manifest)
     print(f"\nPrepared {len(prepared)} ANVIL contexts. Manifest: {manifest_path}", flush=True)
     return 0
 

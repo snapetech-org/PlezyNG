@@ -33,6 +33,11 @@ builds and validate their outputs; do not omit a platform to get a green run
 without the owner's explicit approval. A published release missing a required
 platform is incomplete. Keep artifact provenance and qualification truthful.
 
+The complete build published on GitHub is the successful core release. Treat
+notification, store and package-channel delivery failures as separate follow-up
+work. Repair or retry those lanes against the existing immutable artifacts;
+preserve core success and avoid another all-platform build for a delivery error.
+
 ## Experimental features — owner directive, 2026-11-05
 
 Include implemented experimental Dolby Vision/FEL paths and HDR/SDR tools in

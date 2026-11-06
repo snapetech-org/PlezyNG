@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Preserve successful GitHub releases when later notifications or store/package publication fail, and support targeted channel retries against immutable release artifacts.
+- Keep WinGet and Chocolatey metadata preparation independent of required platform artifacts and checksums.
+
 - Keep edge-hosted provider authorization redirects in the browser instead of following them inside the relay.
 
 - Host MyAnimeList and AniList sign-in on a bounded Cloudflare OAuth service while preserving existing callback URLs and local Trakt and Steam authentication.

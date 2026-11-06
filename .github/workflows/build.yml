@@ -2154,6 +2154,8 @@ jobs:
           }
 
       - name: Package Chocolatey release
+        id: chocolatey-package
+        continue-on-error: true
         shell: pwsh
         env:
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.release_tag }}
@@ -2232,6 +2234,8 @@ jobs:
           subject-path: pleazyng-windows.msixbundle
 
       - name: Attest Chocolatey package
+        if: steps.chocolatey-package.outcome == 'success'
+        continue-on-error: true
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: release-packages/pleazyng.${{ steps.version.outputs.version }}.nupkg
@@ -2259,6 +2263,8 @@ jobs:
           path: pleazyng-windows.msixbundle
 
       - name: Upload Chocolatey package
+        if: steps.chocolatey-package.outcome == 'success'
+        continue-on-error: true
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-chocolatey
@@ -2838,6 +2844,7 @@ jobs:
           path: artifacts/windows-msix
 
       - name: Download Chocolatey package
+        continue-on-error: true
         if: ${{ inputs.reuse_platform_run_id == '' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -2875,6 +2882,8 @@ jobs:
         run: ls -R artifacts
 
       - name: Generate WinGet manifest bundle
+        id: winget-manifests
+        continue-on-error: true
         env:
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.release_tag }}
           RELEASE_VERSION: ${{ needs.validate-trusted-ref.outputs.version }}
@@ -2903,7 +2912,13 @@ jobs:
         with:
           subject-path: |
             artifacts/SHA256SUMS.txt
-            artifacts/pleazyng-winget-manifests-${{ needs.validate-trusted-ref.outputs.version }}.zip
+
+      - name: Attest WinGet manifests
+        if: steps.winget-manifests.outcome == 'success'
+        continue-on-error: true
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: artifacts/pleazyng-winget-manifests-${{ needs.validate-trusted-ref.outputs.version }}.zip
 
       - name: Attest Homebrew Cask candidate
         if: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' }}
@@ -3021,8 +3036,12 @@ jobs:
             if [ -f artifacts/windows-msix/pleazyng-windows.msixbundle ]; then
               echo artifacts/windows-msix/pleazyng-windows.msixbundle
             fi
-            echo artifacts/windows-chocolatey/pleazyng.*.nupkg
-            echo "artifacts/pleazyng-winget-manifests-${RELEASE_VERSION}.zip"
+            for channel_package in artifacts/windows-chocolatey/pleazyng.*.nupkg; do
+              if [[ -f "$channel_package" ]]; then echo "$channel_package"; fi
+            done
+            if [[ -f "artifacts/pleazyng-winget-manifests-${RELEASE_VERSION}.zip" ]]; then
+              echo "artifacts/pleazyng-winget-manifests-${RELEASE_VERSION}.zip"
+            fi
             echo artifacts/tizen/pleazyng-tizen-arm-tester-handoff.zip
             if [ -f artifacts/android-apk/pleazyng-android-play.aab ]; then
               echo artifacts/android-apk/pleazyng-android-play.aab

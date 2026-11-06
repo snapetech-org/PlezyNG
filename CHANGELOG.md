@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix Android Clang compilation of the visualization GPU drain callback while preserving the graphics loader ABI.
+
 - Fix malformed Steam input-only and Granite patch headers that blocked fresh Android/Fire TV builds, and expose native source preparation errors before compilation.
 
 - Require a signed Amazon Fire TV / Stick APK and verification receipt in release assets, with an Android-only validation build and the renamed Amazon lifetime unlock SKU.

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Pin all native playback platforms to the current verified fork revision and reject stale native dependencies before release builds.
+
 - Sign macOS helpers and nested code before sealing their containers, preserve helper entitlements, and refresh runtime receipt hashes after final signing.
 
 - Preserve macOS exception handling across the bundled Rust, LuaJIT, Objective-C and C++ runtimes by packaging the pinned LuaJIT archive as a separate signed dynamic library.

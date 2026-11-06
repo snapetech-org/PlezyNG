@@ -787,6 +787,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          sudo python3 scripts/configure_hosted_apt.py '${{ runner.environment }}'
           free_kib="$(df -Pk "$RUNNER_TEMP" | awk 'NR == 2 { print $4 }')"
           minimum_free_kib=$((60 * 1024 * 1024))
           if [[ ! "$free_kib" =~ ^[0-9]+$ ]] || (( free_kib < minimum_free_kib )); then
@@ -2294,6 +2295,10 @@ jobs:
           path: |
             ~/.pub-cache
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
+
+      - name: Configure hosted Ubuntu package sources
+        shell: bash
+        run: sudo python3 scripts/configure_hosted_apt.py '${{ runner.environment }}'
 
       - name: Cache APT packages
         uses: awalsh128/cache-apt-pkgs-action@553a35bb8ebd9fcabcb1c9451aa4c98e1b4ca8a9 # latest

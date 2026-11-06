@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Preserve macOS exception handling across the bundled Rust, LuaJIT, Objective-C and C++ runtimes by packaging the pinned LuaJIT archive as a separate signed dynamic library.
+- Update the iOS native tests to import the renamed Pleazyng application module.
+- Keep the native tvOS Steam HDR plane compatible with the tvOS SDK while preserving its 10-bit PQ presentation path.
+- Run the two Linux sanitizer jobs concurrently on hosted runners while preserving private-runner serialization.
+- Configure hosted Ubuntu mirror-list files as well as classic and Deb822 package sources, so CI and release downloads use the official HTTPS archive with bounded network retries.
+
 - Use the macOS SDK's OpenGL 4.1 profile constant in both visualization hosts so the bundled runtime compiles on current Xcode versions.
 
 - Isolate Apple Dolby Vision runtime subbuilds from the enclosing app's Xcode settings, preserving unique framework outputs, pinned dependencies and the older API deployment floor.

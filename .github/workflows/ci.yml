@@ -107,6 +107,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo python3 scripts/configure_hosted_apt.py '${{ runner.environment }}'
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang build-essential cmake
           flutter pub get
@@ -190,6 +191,7 @@ jobs:
 
       - name: Install unit test system dependencies
         run: |
+          sudo python3 scripts/configure_hosted_apt.py '${{ runner.environment }}'
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang build-essential ffmpeg
 
@@ -499,7 +501,7 @@ jobs:
       contents: read
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: ${{ inputs.execution_profile == 'hybrid' && 2 || 1 }}
       matrix:
         include:
           - sanitizer: address
@@ -534,20 +536,9 @@ jobs:
 
       - name: Install Linux native test dependencies
         run: |
-          native_apt_options=()
-          if [[ "${RUNNER_ENVIRONMENT:-}" == "github-hosted" ]]; then
-            # The Azure HTTP mirror can trickle large codec packages for tens
-            # of minutes. Keep the signed Ubuntu suites, using the main HTTPS
-            # archive on hosted VMs; retain private sources and proxies.
-            for native_apt_source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
-              if [[ -f "$native_apt_source" ]]; then
-                sudo sed -i -E 's|https?://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$native_apt_source"
-              fi
-            done
-            native_apt_options=(-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
-          fi
-          sudo apt-get "${native_apt_options[@]}" update
-          sudo apt-get "${native_apt_options[@]}" install -y --no-install-recommends \
+          sudo python3 scripts/configure_hosted_apt.py '${{ runner.environment }}'
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
             clang cmake ninja-build pkg-config libgtk-3-dev libsecret-1-dev liblzma-dev \
             libstdc++-12-dev libmpv-dev libepoxy-dev libcurl4-openssl-dev libevdev-dev \
             libwayland-dev libegl-dev libvulkan-dev mesa-vulkan-drivers \
@@ -1287,6 +1278,7 @@ jobs:
       # bundle-libs.sh resolves off the host into the bundle.
       - name: Install packaging dependencies
         run: |
+          sudo python3 scripts/configure_hosted_apt.py '${{ runner.environment }}'
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libwebkit2gtk-4.1-dev libsecret-1-dev liblzma-dev \

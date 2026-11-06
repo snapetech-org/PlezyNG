@@ -374,16 +374,18 @@ add_subdirectory("runner")
 
 # Keep MSVC link by-products out of the runnable bundle directory. CI uploads
 # the executable output directory directly, so import and static libraries
-# and the runner's PDB emitted there would otherwise be packaged with the
+# and the app/helper PDBs emitted there would otherwise be packaged with the
 # application.
 set_target_properties(
   ${BINARY_NAME}
+  plezy_visualizer_helper
   simdutf
   PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/link-artifacts/$<CONFIG>"
 )
 set_target_properties(
   ${BINARY_NAME}
+  plezy_visualizer_helper
   PROPERTIES
     PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/link-artifacts/$<CONFIG>"
 )

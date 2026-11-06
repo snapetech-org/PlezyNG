@@ -1,0 +1,234 @@
+{
+  "source_revision": "cb2b28000bef75e92d8ed8855cccb06a5212f782",
+  "producer_sources": {
+    "tools/store-assets/feature_capture_test.dart": "80349b4dc4efbf297d133d23bd7d806cf791e798f7f483a936f5124a7f738dcc",
+    "tools/store-assets/feature_fixtures.dart": "6ed62662d2ba09cd8708635fd37b43f9d41fcb613703dfbeac80120c705112a0",
+    "tools/store-assets/feature_live_tv.dart": "8b22539a9575a324a765642632e3bc0ed8146019d527cdd3a4f716571494b064",
+    "tools/store-assets/feature_reader_capture.cjs": "6449475b295f6cd0b277c0fd84c61fd76628ec8a2ccc8cddae7460b2c3fdcb9a",
+    "tools/store-assets/feature_reader_capture_test.dart": "e8ec41d15dd011ad721636e18f87cb30e3f041c419f166dd0047d78e31bc03cf",
+    "tools/store-assets/feature_workspace.dart": "f6a58e496e5ecc0b96ccda9a76076f7c3370137c56bba2f4095cfe81cb0138f1"
+  },
+  "images": [
+    {
+      "file": "ebook-reader-dark.png",
+      "title": "EPUB reading",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "c7d7876f18da1363fc06b1ac3c78bfccdce4988808913d377a8eaac2a807ee75",
+      "component": "lib/screens/sources/publication_reader_screen.dart",
+      "component_sha256": "4a523ab5db9eadb9b5bb44aa7b398735c8742c001df462a4e6438975759bc6d3",
+      "renderer": "Production PublicationServer / Foliate browser engine",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "ebook-reader-phone-dark.png",
+      "title": "Phone EPUB reading",
+      "dimensions": [
+        585,
+        1266
+      ],
+      "sha256": "e49c020626dfc2e96c18e5e701af1c18a4e285d75a8c317f5dd987ff917750ab",
+      "component": "lib/screens/sources/publication_reader_screen.dart",
+      "component_sha256": "4a523ab5db9eadb9b5bb44aa7b398735c8742c001df462a4e6438975759bc6d3",
+      "renderer": "Production PublicationServer / Foliate browser engine",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "ebook-reading-settings-dark.png",
+      "title": "Reading settings",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "8e2fe1c5e64278435e6ce8fba94bf5a8097f96255cdafeffae44a61f257ba379",
+      "component": "lib/screens/sources/publication_reader_screen.dart",
+      "component_sha256": "4a523ab5db9eadb9b5bb44aa7b398735c8742c001df462a4e6438975759bc6d3",
+      "renderer": "Production PublicationServer / Foliate browser engine",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "book-library-detail-dark.png",
+      "title": "Book editions",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "75ab776d93b5133ce4aaaa04e97757fb68a8c3fd63988d6f0ed2965c5e70d42b",
+      "component": "lib/screens/sources/source_detail_screen.dart",
+      "component_sha256": "6c76ff2998383343f8b320235b03221701b72441199bc94ddc3dc5167bbde645",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "audiobook-player-dark.png",
+      "title": "Audiobook chapters and controls",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "sha256": "6df2c993244b865adc3cd98262f56110e038ac92047e280375c9ea34e5f3d44c",
+      "component": "lib/screens/sources/source_player_screen.dart",
+      "component_sha256": "415ee1451324e27038cedae6177662d209b2daad475db20c1e4bf51bbfb04246",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "podcast-player-dark.png",
+      "title": "Podcast chapters and controls",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "sha256": "a6df876f4d103fd245a0684e2cea843241b793599971bc57f350d60f5034ef5a",
+      "component": "lib/screens/sources/source_player_screen.dart",
+      "component_sha256": "415ee1451324e27038cedae6177662d209b2daad475db20c1e4bf51bbfb04246",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "music-player-dark.png",
+      "title": "Music and queue",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "d3854c7c871ff3a2ef524fabe39a4bea8515147f5b0ab3a87a38addf80f3b883",
+      "component": "lib/screens/music/now_playing_screen.dart",
+      "component_sha256": "6169654e189a163bab404dd596a74c022bb14b63b7d4d936bbe071b0cebd66d7",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "steam-library-dark.png",
+      "title": "Steam library",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "93e09667dacbf98f1cfd1c68a46ac7d8673498765a4e39386b248aab6bf0a569",
+      "component": "lib/screens/games/game_library_view.dart",
+      "component_sha256": "0ac2562a03705824d98996386f4892cc1907be6a3e345e3d6e38590787eee48d",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "steam-controller-layout-dark.png",
+      "title": "Controller layout",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "sha256": "afb064ebe4dbab3ff1cc26dd9c48cfaedfa1f69002d02a0024ef4809203638ca",
+      "component": "lib/screens/games/steam_input_dialog.dart",
+      "component_sha256": "9348165aac8bf1edeb2c49e8b22da27755d9c7d2f624287967b042ce14842b68",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "steam-touch-layout-dark.png",
+      "title": "Touch controller layout",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "sha256": "02adcf2dea12392cf237add753ae1a2d3a870c14ad7aa37a700163fbe41db023",
+      "component": "lib/screens/games/steam_touch_layout_dialog.dart",
+      "component_sha256": "158b17064f156d21dedd955ed76d69071827ae92f86520e421b6e4f5ebcdb9c0",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "connected-sources-dark.png",
+      "title": "Files and cloud sources",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "c961edfb419054aee3cbd1e5898c86c15585d61e5d7b07795f449c7bb370d607",
+      "component": "lib/screens/sources/sources_screen.dart",
+      "component_sha256": "27ec6b06bcca2edc5d528019a9a5031138935a547277dca389ac6fe2c9c2d108",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "open-media-dark.png",
+      "title": "Open media",
+      "dimensions": [
+        1080,
+        2400
+      ],
+      "sha256": "67ec82e194a6372ca6409614b47ff2281c09e9b6e45be2f33881ce40bc83939c",
+      "component": "lib/screens/sources/open_media_screen.dart",
+      "component_sha256": "6ace6ca862348d10dbcecf37a47fb26e67987e6a557370d7e9efafc9d4562df8",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "find-your-next-dark.png",
+      "title": "Find your next",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "e278e7fe659e1688fb30eac4c2ed591a89d348d9eafede87a23d61ddfaa42133",
+      "component": "lib/screens/discovery/discovery_deck_view.dart",
+      "component_sha256": "229c03ca1a0e067e2237bdef6f0c8812a63edf0f66fd6f845dde6f082580742f",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "subtitle-ai-dark.png",
+      "title": "AI subtitles",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "229f3e23ab64240317f3faf0f46376a8691fe37e710ede4321c877c9a38fea15",
+      "component": "lib/widgets/video_controls/sheets/subtitle_ai_sheet.dart",
+      "component_sha256": "1dd0fa1b5721a4b0f8bf39b8ce06efa525fcc25e3662859b7cd1c4bc3b13c3b4",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "multiview-dark.png",
+      "title": "Multiview workspace",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "ce1878ef58660bd57494155e70df0e793b8415ae63a2fb39501db277e42558a3",
+      "component": "lib/multiview/workspace_overlay.dart",
+      "component_sha256": "e3e1991dbcd0aa39ee301125d87dfa4c96240ecffd26c1cf2a58a0f33d87e690",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "live-tv-guide-dark.png",
+      "title": "Live TV guide",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "11bb0d5ed23ee480197a1c13a5ad30a8f86269c47e0b22474652e88c00c29b59",
+      "component": "lib/screens/livetv/tabs/guide_tab.dart",
+      "component_sha256": "09944be54cbc884c08369c06dac35c246efcd811c05f562c5981837eec08b1de",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "visualizer-library-dark.png",
+      "title": "Visualizer library",
+      "dimensions": [
+        1920,
+        1350
+      ],
+      "sha256": "93db72c96eeb3ab0ade0d33ca46c38c946307b71abc3ff3bbc3c1b96f12b2bb4",
+      "component": "lib/widgets/music/visualizer_preset_browser.dart",
+      "component_sha256": "ab302cc2c215b2442d2f406cd7159e3006ab0d587e1d0694ef254d58f21d43cb",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    }
+  ]
+}

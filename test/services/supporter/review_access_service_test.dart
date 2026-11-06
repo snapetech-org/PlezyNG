@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/services/supporter/supporter_mode.dart';
 import 'package:plezy/services/supporter/supporter_service.dart';
+import 'package:plezy/widgets/store_review_access_button.dart';
 
 import '../../test_helpers/prefs.dart';
 
@@ -76,5 +78,27 @@ void main() {
     expect(service.supportsReviewAccess, isFalse);
     expect(await service.redeemReviewAccess(token), isFalse);
     expect(service.hasAccess, isFalse);
+  });
+
+  testWidgets('review dialog rejects invalid code and closes cleanly on cancel', (tester) async {
+    final service = create();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: StoreReviewAccessButton(service: service)),
+      ),
+    );
+    await tester.tap(find.text('Store review access'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'invalid');
+    await tester.tap(find.text('Activate'));
+    await tester.pumpAndSettle();
+    expect(find.text('The review code is invalid or expired.'), findsOneWidget);
+    expect(service.hasReviewAccess, isFalse);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+    debugDefaultTargetPlatformOverride = null;
   });
 }

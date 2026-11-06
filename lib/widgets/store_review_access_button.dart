@@ -18,64 +18,72 @@ class StoreReviewAccessButton extends StatelessWidget {
     );
   }
 
-  Future<void> _redeem(BuildContext context) async {
-    final controller = TextEditingController();
-    String? error;
-    var busy = false;
+  Future<void> _redeem(BuildContext context) => showDialog<void>(
+    context: context,
+    builder: (_) => _ReviewAccessDialog(service: service),
+  );
+}
+
+class _ReviewAccessDialog extends StatefulWidget {
+  const _ReviewAccessDialog({required this.service});
+  final SupporterService service;
+
+  @override
+  State<_ReviewAccessDialog> createState() => _ReviewAccessDialogState();
+}
+
+class _ReviewAccessDialogState extends State<_ReviewAccessDialog> {
+  final _controller = TextEditingController();
+  String? _error;
+  bool _busy = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _activate() async {
+    setState(() => _busy = true);
+    var accepted = false;
     try {
-      await showDialog<void>(
-        context: context,
-        builder: (dialogContext) => StatefulBuilder(
-          builder: (context, setState) => AlertDialog(
-            title: Text(t.appAccess.reviewAccess),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(t.appAccess.reviewAccessInstructions),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  enabled: !busy,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                  maxLength: 4096,
-                  decoration: InputDecoration(labelText: t.appAccess.reviewCode, errorText: error),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(onPressed: busy ? null : () => Navigator.pop(context), child: Text(t.common.cancel)),
-              FilledButton(
-                onPressed: busy
-                    ? null
-                    : () async {
-                        setState(() => busy = true);
-                        var accepted = false;
-                        try {
-                          accepted = await service.redeemReviewAccess(controller.text);
-                        } catch (_) {
-                          // No token, signature, or store credentials in logs.
-                        }
-                        if (!context.mounted) return;
-                        if (accepted) {
-                          Navigator.pop(context);
-                        } else {
-                          setState(() {
-                            busy = false;
-                            error = t.appAccess.reviewCodeInvalid;
-                          });
-                        }
-                      },
-                child: Text(t.appAccess.activateReviewAccess),
-              ),
-            ],
-          ),
-        ),
-      );
-    } finally {
-      // Dialog route transitions finish after showDialog completes.
-      WidgetsBinding.instance.addPostFrameCallback((_) => controller.dispose());
+      accepted = await widget.service.redeemReviewAccess(_controller.text);
+    } catch (_) {
+      // Never log the grant, signature, or store credentials.
+    }
+    if (!mounted) return;
+    if (accepted) {
+      Navigator.pop(context);
+    } else {
+      setState(() {
+        _busy = false;
+        _error = t.appAccess.reviewCodeInvalid;
+      });
     }
   }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(t.appAccess.reviewAccess),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(t.appAccess.reviewAccessInstructions),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _controller,
+          autofocus: true,
+          enabled: !_busy,
+          autocorrect: false,
+          enableSuggestions: false,
+          maxLength: 4096,
+          decoration: InputDecoration(labelText: t.appAccess.reviewCode, errorText: _error),
+        ),
+      ],
+    ),
+    actions: [
+      TextButton(onPressed: _busy ? null : () => Navigator.pop(context), child: Text(t.common.cancel)),
+      FilledButton(onPressed: _busy ? null : _activate, child: Text(t.appAccess.activateReviewAccess)),
+    ],
+  );
 }

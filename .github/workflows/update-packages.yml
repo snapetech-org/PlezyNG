@@ -121,7 +121,7 @@ jobs:
   update-homebrew:
     needs: resolve-release
     if: needs.resolve-release.outputs.homebrew_enabled == 'true'
-    runs-on: macos-14
+    runs-on: macos-15
     permissions:
       contents: read
       attestations: read

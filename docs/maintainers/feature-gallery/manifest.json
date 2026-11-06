@@ -1,7 +1,7 @@
 {
-  "source_revision": "cb2b28000bef75e92d8ed8855cccb06a5212f782",
+  "source_revision": "009ffdb3d5d930603cda46ff3cc331c6c4fff8b4",
   "producer_sources": {
-    "tools/store-assets/feature_capture_test.dart": "80349b4dc4efbf297d133d23bd7d806cf791e798f7f483a936f5124a7f738dcc",
+    "tools/store-assets/feature_capture_test.dart": "6dd917df57936047abe672dd3c2baf789941871571715a9e037956d0f00b3133",
     "tools/store-assets/feature_fixtures.dart": "6ed62662d2ba09cd8708635fd37b43f9d41fcb613703dfbeac80120c705112a0",
     "tools/store-assets/feature_live_tv.dart": "8b22539a9575a324a765642632e3bc0ed8146019d527cdd3a4f716571494b064",
     "tools/store-assets/feature_reader_capture.cjs": "6449475b295f6cd0b277c0fd84c61fd76628ec8a2ccc8cddae7460b2c3fdcb9a",
@@ -123,6 +123,19 @@
       "sha256": "afb064ebe4dbab3ff1cc26dd9c48cfaedfa1f69002d02a0024ef4809203638ca",
       "component": "lib/screens/games/steam_input_dialog.dart",
       "component_sha256": "9348165aac8bf1edeb2c49e8b22da27755d9c7d2f624287967b042ce14842b68",
+      "renderer": "Production Flutter widgets",
+      "state": "Local populated gallery fixture; no live account or native playback qualification"
+    },
+    {
+      "file": "steam-touch-game-dark.png",
+      "title": "Game with touch controls",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "sha256": "ee3ae48b6de3fbdcdd4da4a3d12fcd14a35141d8e06e2ff5de6c67e6e0c0d39b",
+      "component": "lib/screens/games/steam_touch_controls.dart",
+      "component_sha256": "89e58d4513473bd17f95a0b8da6c9fafdf0d1e55ac23954ecc93a48597a91f52",
       "renderer": "Production Flutter widgets",
       "state": "Local populated gallery fixture; no live account or native playback qualification"
     },

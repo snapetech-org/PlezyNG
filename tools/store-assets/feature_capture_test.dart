@@ -46,6 +46,7 @@ import '../../test/appearance/appearance_fixtures.dart';
 import '../../test/test_helpers/multi_server_fixtures.dart';
 import '../../test/test_helpers/prefs.dart';
 import 'feature_fixtures.dart';
+import 'package:plezy/screens/games/steam_touch_controls.dart';
 import 'feature_workspace.dart';
 import 'feature_live_tv.dart';
 import 'package:plezy/screens/livetv/tabs/guide_tab.dart';
@@ -98,6 +99,7 @@ void main() {
     'steam-library',
     'steam-controller-layout',
     'steam-touch-layout',
+    'steam-touch-game',
     'connected-sources',
     'open-media',
     'find-your-next',
@@ -118,7 +120,7 @@ void main() {
             scene == 'podcast-player' ||
             scene == 'open-media' ||
             scene == 'steam-controller-layout';
-        final landscapePhone = scene == 'steam-touch-layout';
+        final landscapePhone = scene == 'steam-touch-layout' || scene == 'steam-touch-game';
         PlatformDetector.debugSetIsDesktopOSOverride(!phone && !landscapePhone);
         TvDetectionService.debugSetAppleTVOverride(false);
         addTearDown(() => PlatformDetector.debugSetIsDesktopOSOverride(null));
@@ -288,6 +290,18 @@ void main() {
               players: 4,
               isCurrent: () => true,
               apply: (_) async {},
+            ),
+          ),
+          'steam-touch-game' => Scaffold(
+            body: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.memory(
+                  File('tools/store-assets/fixtures/games/stardew-gameplay.jpg').readAsBytesSync(),
+                  fit: BoxFit.contain,
+                ),
+                SteamTouchControls(onButton: (_, _) {}, onStick: (_, _) {}, onRelease: () {}),
+              ],
             ),
           ),
           'steam-touch-layout' => SteamTouchLayoutDialog(initial: SteamTouchLayout()),

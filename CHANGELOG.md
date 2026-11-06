@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix malformed Steam input-only and Granite patch headers that blocked fresh Android/Fire TV builds, and expose native source preparation errors before compilation.
+
 - Require a signed Amazon Fire TV / Stick APK and verification receipt in release assets, with an Android-only validation build and the renamed Amazon lifetime unlock SKU.
 - Translate all caption and speech-processing status messages across 37 locales, verify generated locale resolution, and record the completed audit regression checks and remaining delivery gaps.
 - Batch Android download capacity checks with bounded byte/time budgets, retain disk-full handling through flush/close, and keep restored downloads with missing managed media available for retry.

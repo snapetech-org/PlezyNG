@@ -11,6 +11,7 @@ import '../../../i18n/strings.g.dart';
 import '../../../focus/focus_theme.dart';
 import '../../../focus/focusable_wrapper.dart';
 import 'player_focus_disc.dart';
+import 'player_chrome_style.dart';
 
 /// A volume control widget that displays a mute/unmute button and volume slider.
 ///
@@ -218,7 +219,7 @@ class _VolumeControlState extends State<VolumeControl> {
                 label: '${volume.round()}%',
                 onChanged: widget.volumeController.preview,
                 onChangeEnd: widget.volumeController.commit,
-                activeColor: Colors.white,
+                activeColor: PlayerChromeStyle.accent(context),
                 inactiveColor: Colors.white.withValues(alpha: 0.3),
               ),
             ),

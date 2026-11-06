@@ -343,8 +343,12 @@ ThemeData _buildMonoTheme(MonoPalette c, {required TargetPlatform platform}) {
     inputDecorationTheme: _inputDecorationTheme(c.text, c.textMuted),
     elevatedButtonTheme: ElevatedButtonThemeData(style: buttonStyle),
     filledButtonTheme: FilledButtonThemeData(style: buttonStyle),
-    textButtonTheme: TextButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
-    outlinedButtonTheme: OutlinedButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(mouseCursor: clickableCursor, shape: buttonStyle.shape),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: ButtonStyle(mouseCursor: clickableCursor, shape: buttonStyle.shape),
+    ),
     iconButtonTheme: IconButtonThemeData(style: ButtonStyle(mouseCursor: clickableCursor)),
     sliderTheme: SliderThemeData(
       // The mono scheme maps surfaceContainerHighest (the M3 default inactive

@@ -78,7 +78,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
             decoration: pillInputDecoration(
               context,
               hintText: widget.hintText,
-              prefixIcon: const AppIcon(Symbols.search_rounded, fill: 1),
+              prefixIcon: const AppIcon(Symbols.search_rounded, fill: 0, weight: 500),
               suffixIcon: hasText ? const SizedBox(width: 48) : null,
             ),
           ),
@@ -89,7 +89,10 @@ class _SearchInputFieldState extends State<SearchInputField> {
               onNavigateLeft: widget.focusNode.requestFocus,
               onNavigateDown: widget.onNavigateDown,
               autoScroll: false,
-              child: IconButton(icon: const AppIcon(Symbols.clear_rounded, fill: 1), onPressed: _clearSearch),
+              child: IconButton(
+                icon: const AppIcon(Symbols.clear_rounded, fill: 0, weight: 500),
+                onPressed: _clearSearch,
+              ),
             ),
         ],
       ),

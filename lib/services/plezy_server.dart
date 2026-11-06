@@ -4,6 +4,10 @@ const String pleazyngRelayBaseUrl = String.fromEnvironment('PLEAZYNG_RELAY_BASE_
 const String _comicCommerceBaseUrl = String.fromEnvironment('PLEAZYNG_COMIC_COMMERCE_BASE_URL');
 const String _watchmodeBaseUrl = String.fromEnvironment('PLEAZYNG_WATCHMODE_AVAILABILITY_BASE_URL');
 
+/// Build-owned endpoints use public certificate authorities. They are consumed
+/// by Dart clients rather than Android's media/download network stack.
+const List<String> pleazyngConfiguredServiceUrls = [pleazyngRelayBaseUrl, _comicCommerceBaseUrl, _watchmodeBaseUrl];
+
 bool get isPleazyngRelayConfigured => pleazyngRelayBaseUrl.trim().isNotEmpty;
 
 /// Validate before constructing a request. Missing configuration must never

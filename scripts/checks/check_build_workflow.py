@@ -1570,6 +1570,14 @@ for protected_job in (
     )
 
 android_job = job("build-android")
+require(
+    "android-validation" in android_job
+    and "Signed Fire TV release assets require all four Android signing secrets" in android_job
+    and "scripts/verify_firetv_apk.py pleazyng-amazon-firetv.apk" in android_job
+    and "--dart-define=LIFETIME_UNLOCK_PRODUCT_ID=pleazyng_lifetime_unlock" in android_job
+    and "pleazyng-amazon-firetv-provenance.json" in android_job,
+    "Android releases must build and verify a signed Amazon TV APK with the current lifetime SKU",
+)
 android_memory_diagnostics = named_step(android_job, "Capture Android JIT memory diagnostics")
 android_ffmpeg_prepare = named_step(android_job, "Prepare verified Android FFmpeg source archive")
 android_gradle_properties = (ROOT / "android/gradle.properties").read_text(encoding="utf-8")

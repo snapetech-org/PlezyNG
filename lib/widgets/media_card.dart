@@ -290,7 +290,7 @@ class MediaCard extends StatefulWidget {
   /// Grid cells are sized as artwork plus this band. A fixed cell aspect ratio
   /// cannot hold the artwork's shape: the band does not shrink with the cell,
   /// so narrow (dense) cells squeezed the artwork and cropped it (#2830).
-  static double gridCaptionBandHeight(BuildContext context) {
+  static double gridCaptionBandHeight(BuildContext context, {double? posterTitleGap}) {
     final defaultTextStyle = DefaultTextStyle.of(context);
     final textDirection = Directionality.of(context);
     final textScaler = MediaQuery.textScalerOf(context);
@@ -310,7 +310,7 @@ class MediaCard extends StatefulWidget {
     }
 
     return gridCardPadding.vertical +
-        context.settingsRead(SettingsService.gridSpacing).posterTitleGap +
+        (posterTitleGap ?? context.settingsRead(SettingsService.gridSpacing).posterTitleGap) +
         lineHeight(_gridTitleStyle) +
         lineHeight(_MediaCardHelpers._captionMetricsStyle(context));
   }

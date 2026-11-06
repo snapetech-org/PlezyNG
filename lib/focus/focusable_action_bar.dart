@@ -43,7 +43,7 @@ class FocusableAction {
   const FocusableAction({
     this.icon = Symbols.circle_rounded,
     this.iconColor,
-    this.iconFill = 1.0,
+    this.iconFill = 0.0,
     this.iconSize = 24,
     this.debugLabel,
     this.focusNode,
@@ -353,7 +353,13 @@ class FocusableActionBarState extends State<FocusableActionBar> {
                 child:
                     action.child ??
                     IconButton(
-                      icon: AppIcon(action.icon, size: action.iconSize, fill: action.iconFill, color: action.iconColor),
+                      icon: AppIcon(
+                        action.icon,
+                        size: action.iconSize,
+                        fill: action.isSelected == true ? 1 : action.iconFill,
+                        weight: action.isSelected == true ? 600 : 500,
+                        color: action.iconColor,
+                      ),
                       tooltip: action.tooltip,
                       isSelected: action.isSelected,
                       onPressed: action.onPressed,

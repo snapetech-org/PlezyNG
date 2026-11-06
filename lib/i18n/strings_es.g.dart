@@ -113,6 +113,7 @@ class TranslationsEs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$householdSetup$es householdSetup = Translations$householdSetup$es.internal(_root);
 	@override late final Translations$issueReport$es issueReport = Translations$issueReport$es.internal(_root);
 	@override late final Translations$romm$es romm = Translations$romm$es.internal(_root);
+	@override late final Translations$subtitleCapture$es subtitleCapture = Translations$subtitleCapture$es.internal(_root);
 }
 
 // Path: app
@@ -4176,6 +4177,41 @@ class Translations$romm$es extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class Translations$subtitleCapture$es extends Translations$subtitleCapture$en {
+	Translations$subtitleCapture$es.internal(TranslationsEs root) : this._root = root, super.internal(root);
+
+	final TranslationsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Cargando el modelo de voz local…';
+	@override String loadingModelProgress({required Object percent}) => 'Cargando el modelo de voz local (${percent}%)…';
+	@override String get downloadingModel => 'Descargando el modelo de voz…';
+	@override String downloadingModelProgress({required Object percent}) => 'Descargando el modelo de voz (${percent}%)…';
+	@override String get capturing => 'Capturando audio decodificado de forma local. Los subtítulos aparecerán en breve.';
+	@override String get startFailed => 'No se pudieron iniciar los subtítulos en directo. Comprueba la salida de audio e inténtalo de nuevo.';
+	@override String get inferenceFailed => 'El reconocimiento de voz falló. Detén la captura e inténtalo de nuevo.';
+	@override String get noSpeech => 'No se generaron subtítulos de voz. Comprueba la pista de audio e inténtalo de nuevo.';
+	@override String captured({required Object count}) => 'Segmentos de subtítulos capturados de la parte vista: ${count}.';
+	@override String get playbackEnded => 'La reproducción terminó. Se descartó la transcripción capturada.';
+	@override String get playbackChanged => 'La reproducción cambió. Se descartó la transcripción capturada.';
+	@override String get audioTrackChanged => 'La pista de audio cambió. Inicia la captura de nuevo en la pista actual.';
+	@override String listening({required Object count}) => 'Escuchando localmente con la CPU. Paquetes de audio capturados: ${count}.';
+	@override String get captureUnavailable => 'El audio decodificado no está disponible con esta salida. Prueba una salida de audio compatible.';
+	@override String get waitingForAudio => 'Esperando audio decodificado. La reproducción puede estar en pausa.';
+	@override String get captureStopped => 'La captura en directo se detuvo. Comprueba la reproducción e inténtalo de nuevo.';
+	@override String get preparing => 'Preparando subtítulos en directo…';
+	@override String get downloadingDetector => 'Descargando el detector de voz…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Descargando el detector de voz (${percent}%)…';
+	@override String get transcribing => 'Transcribiendo audio localmente…';
+	@override String transcribingProgress({required Object percent}) => 'Transcribiendo audio localmente (${percent}%)…';
+	@override String get translating => 'Traduciendo la voz al inglés localmente…';
+	@override String translatingProgress({required Object percent}) => 'Traduciendo la voz al inglés localmente (${percent}%)…';
+	@override String get processingAudio => 'Procesando audio localmente…';
+	@override String processingAudioProgress({required Object percent}) => 'Procesando audio localmente (${percent}%)…';
+	@override String get cpuFallback => 'El procesamiento de voz en la GPU falló. Reintentando con la CPU…';
 }
 
 // Path: appIcon.names
@@ -9204,6 +9240,32 @@ extension on TranslationsEs {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Cargando el modelo de voz local…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Cargando el modelo de voz local (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Descargando el modelo de voz…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Descargando el modelo de voz (${percent}%)…',
+			'subtitleCapture.capturing' => 'Capturando audio decodificado de forma local. Los subtítulos aparecerán en breve.',
+			'subtitleCapture.startFailed' => 'No se pudieron iniciar los subtítulos en directo. Comprueba la salida de audio e inténtalo de nuevo.',
+			'subtitleCapture.inferenceFailed' => 'El reconocimiento de voz falló. Detén la captura e inténtalo de nuevo.',
+			'subtitleCapture.noSpeech' => 'No se generaron subtítulos de voz. Comprueba la pista de audio e inténtalo de nuevo.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Segmentos de subtítulos capturados de la parte vista: ${count}.',
+			'subtitleCapture.playbackEnded' => 'La reproducción terminó. Se descartó la transcripción capturada.',
+			'subtitleCapture.playbackChanged' => 'La reproducción cambió. Se descartó la transcripción capturada.',
+			'subtitleCapture.audioTrackChanged' => 'La pista de audio cambió. Inicia la captura de nuevo en la pista actual.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Escuchando localmente con la CPU. Paquetes de audio capturados: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'El audio decodificado no está disponible con esta salida. Prueba una salida de audio compatible.',
+			'subtitleCapture.waitingForAudio' => 'Esperando audio decodificado. La reproducción puede estar en pausa.',
+			'subtitleCapture.captureStopped' => 'La captura en directo se detuvo. Comprueba la reproducción e inténtalo de nuevo.',
+			'subtitleCapture.preparing' => 'Preparando subtítulos en directo…',
+			'subtitleCapture.downloadingDetector' => 'Descargando el detector de voz…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Descargando el detector de voz (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Transcribiendo audio localmente…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Transcribiendo audio localmente (${percent}%)…',
+			'subtitleCapture.translating' => 'Traduciendo la voz al inglés localmente…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Traduciendo la voz al inglés localmente (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Procesando audio localmente…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Procesando audio localmente (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'El procesamiento de voz en la GPU falló. Reintentando con la CPU…',
 			_ => null,
 		};
 	}

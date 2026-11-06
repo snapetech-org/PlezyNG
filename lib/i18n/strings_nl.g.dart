@@ -113,6 +113,7 @@ class TranslationsNl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$nl householdSetup = _Translations$householdSetup$nl._(_root);
 	@override late final _Translations$issueReport$nl issueReport = _Translations$issueReport$nl._(_root);
 	@override late final _Translations$romm$nl romm = _Translations$romm$nl._(_root);
+	@override late final _Translations$subtitleCapture$nl subtitleCapture = _Translations$subtitleCapture$nl._(_root);
 }
 
 // Path: app
@@ -4169,6 +4170,41 @@ class _Translations$romm$nl extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$nl extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$nl._(TranslationsNl root) : this._root = root, super.internal(root);
+
+	final TranslationsNl _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Lokaal spraakmodel laden…';
+	@override String loadingModelProgress({required Object percent}) => 'Lokaal spraakmodel laden (${percent}%)…';
+	@override String get downloadingModel => 'Spraakmodel downloaden…';
+	@override String downloadingModelProgress({required Object percent}) => 'Spraakmodel downloaden (${percent}%)…';
+	@override String get capturing => 'Gedecodeerde audio wordt lokaal vastgelegd. Ondertiteling verschijnt binnenkort.';
+	@override String get startFailed => 'Liveondertiteling kon niet worden gestart. Controleer de audio-uitvoer en probeer het opnieuw.';
+	@override String get inferenceFailed => 'Spraakherkenning is mislukt. Stop de opname en probeer het opnieuw.';
+	@override String get noSpeech => 'Er is geen ondertiteling uit de spraak gegenereerd. Controleer het audiospoor en probeer het opnieuw.';
+	@override String captured({required Object count}) => 'Ondertitelsegmenten uit het bekeken gedeelte: ${count}.';
+	@override String get playbackEnded => 'Het afspelen is beëindigd. De vastgelegde transcriptie is verwijderd.';
+	@override String get playbackChanged => 'Het afspelen is gewijzigd. De vastgelegde transcriptie is verwijderd.';
+	@override String get audioTrackChanged => 'Het audiospoor is gewijzigd. Start de opname opnieuw voor het huidige spoor.';
+	@override String listening({required Object count}) => 'Lokaal luisteren via de CPU. Vastgelegde audiopakketten: ${count}.';
+	@override String get captureUnavailable => 'Gedecodeerde audio is niet beschikbaar via deze uitvoer. Probeer een ondersteunde audio-uitvoer.';
+	@override String get waitingForAudio => 'Wachten op gedecodeerde audio. Het afspelen is mogelijk gepauzeerd.';
+	@override String get captureStopped => 'De liveopname is gestopt. Controleer het afspelen en probeer het opnieuw.';
+	@override String get preparing => 'Liveondertiteling voorbereiden…';
+	@override String get downloadingDetector => 'Spraakdetector downloaden…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Spraakdetector downloaden (${percent}%)…';
+	@override String get transcribing => 'Audio lokaal transcriberen…';
+	@override String transcribingProgress({required Object percent}) => 'Audio lokaal transcriberen (${percent}%)…';
+	@override String get translating => 'Spraak lokaal naar het Engels vertalen…';
+	@override String translatingProgress({required Object percent}) => 'Spraak lokaal naar het Engels vertalen (${percent}%)…';
+	@override String get processingAudio => 'Audio lokaal verwerken…';
+	@override String processingAudioProgress({required Object percent}) => 'Audio lokaal verwerken (${percent}%)…';
+	@override String get cpuFallback => 'Spraakverwerking op de GPU is mislukt. Opnieuw proberen via de CPU…';
 }
 
 // Path: appIcon.names
@@ -9197,6 +9233,32 @@ extension on TranslationsNl {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Lokaal spraakmodel laden…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Lokaal spraakmodel laden (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Spraakmodel downloaden…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Spraakmodel downloaden (${percent}%)…',
+			'subtitleCapture.capturing' => 'Gedecodeerde audio wordt lokaal vastgelegd. Ondertiteling verschijnt binnenkort.',
+			'subtitleCapture.startFailed' => 'Liveondertiteling kon niet worden gestart. Controleer de audio-uitvoer en probeer het opnieuw.',
+			'subtitleCapture.inferenceFailed' => 'Spraakherkenning is mislukt. Stop de opname en probeer het opnieuw.',
+			'subtitleCapture.noSpeech' => 'Er is geen ondertiteling uit de spraak gegenereerd. Controleer het audiospoor en probeer het opnieuw.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Ondertitelsegmenten uit het bekeken gedeelte: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Het afspelen is beëindigd. De vastgelegde transcriptie is verwijderd.',
+			'subtitleCapture.playbackChanged' => 'Het afspelen is gewijzigd. De vastgelegde transcriptie is verwijderd.',
+			'subtitleCapture.audioTrackChanged' => 'Het audiospoor is gewijzigd. Start de opname opnieuw voor het huidige spoor.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Lokaal luisteren via de CPU. Vastgelegde audiopakketten: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Gedecodeerde audio is niet beschikbaar via deze uitvoer. Probeer een ondersteunde audio-uitvoer.',
+			'subtitleCapture.waitingForAudio' => 'Wachten op gedecodeerde audio. Het afspelen is mogelijk gepauzeerd.',
+			'subtitleCapture.captureStopped' => 'De liveopname is gestopt. Controleer het afspelen en probeer het opnieuw.',
+			'subtitleCapture.preparing' => 'Liveondertiteling voorbereiden…',
+			'subtitleCapture.downloadingDetector' => 'Spraakdetector downloaden…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Spraakdetector downloaden (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Audio lokaal transcriberen…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Audio lokaal transcriberen (${percent}%)…',
+			'subtitleCapture.translating' => 'Spraak lokaal naar het Engels vertalen…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Spraak lokaal naar het Engels vertalen (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Audio lokaal verwerken…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Audio lokaal verwerken (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Spraakverwerking op de GPU is mislukt. Opnieuw proberen via de CPU…',
 			_ => null,
 		};
 	}

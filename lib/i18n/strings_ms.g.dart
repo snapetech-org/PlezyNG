@@ -113,6 +113,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$ms householdSetup = _Translations$householdSetup$ms._(_root);
 	@override late final _Translations$issueReport$ms issueReport = _Translations$issueReport$ms._(_root);
 	@override late final _Translations$romm$ms romm = _Translations$romm$ms._(_root);
+	@override late final _Translations$subtitleCapture$ms subtitleCapture = _Translations$subtitleCapture$ms._(_root);
 }
 
 // Path: app
@@ -4146,6 +4147,41 @@ class _Translations$romm$ms extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$ms extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$ms._(TranslationsMs root) : this._root = root, super.internal(root);
+
+	final TranslationsMs _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Memuatkan model pertuturan setempat…';
+	@override String loadingModelProgress({required Object percent}) => 'Memuatkan model pertuturan setempat (${percent}%)…';
+	@override String get downloadingModel => 'Memuat turun model pertuturan…';
+	@override String downloadingModelProgress({required Object percent}) => 'Memuat turun model pertuturan (${percent}%)…';
+	@override String get capturing => 'Menangkap audio yang dinyahkod secara setempat. Sari kata akan muncul sebentar lagi.';
+	@override String get startFailed => 'Sari kata langsung tidak dapat dimulakan. Semak output audio dan cuba lagi.';
+	@override String get inferenceFailed => 'Pengecaman pertuturan gagal. Hentikan tangkapan dan cuba lagi.';
+	@override String get noSpeech => 'Tiada sari kata pertuturan dihasilkan. Semak trek audio dan cuba lagi.';
+	@override String captured({required Object count}) => 'Segmen sari kata yang ditangkap daripada bahagian yang ditonton: ${count}.';
+	@override String get playbackEnded => 'Main balik tamat. Transkrip yang ditangkap telah dibuang.';
+	@override String get playbackChanged => 'Main balik berubah. Transkrip yang ditangkap telah dibuang.';
+	@override String get audioTrackChanged => 'Trek audio berubah. Mulakan tangkapan semula pada trek semasa.';
+	@override String listening({required Object count}) => 'Mendengar secara setempat menggunakan CPU. Paket audio yang ditangkap: ${count}.';
+	@override String get captureUnavailable => 'Audio yang dinyahkod tidak tersedia melalui output ini. Cuba output audio yang disokong.';
+	@override String get waitingForAudio => 'Menunggu audio yang dinyahkod. Main balik mungkin dijeda.';
+	@override String get captureStopped => 'Tangkapan langsung berhenti. Semak main balik dan cuba lagi.';
+	@override String get preparing => 'Menyediakan sari kata langsung…';
+	@override String get downloadingDetector => 'Memuat turun pengesan pertuturan…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Memuat turun pengesan pertuturan (${percent}%)…';
+	@override String get transcribing => 'Mentranskripsikan audio secara setempat…';
+	@override String transcribingProgress({required Object percent}) => 'Mentranskripsikan audio secara setempat (${percent}%)…';
+	@override String get translating => 'Menterjemahkan pertuturan kepada bahasa Inggeris secara setempat…';
+	@override String translatingProgress({required Object percent}) => 'Menterjemahkan pertuturan kepada bahasa Inggeris secara setempat (${percent}%)…';
+	@override String get processingAudio => 'Memproses audio secara setempat…';
+	@override String processingAudioProgress({required Object percent}) => 'Memproses audio secara setempat (${percent}%)…';
+	@override String get cpuFallback => 'Pemprosesan pertuturan pada GPU gagal. Mencuba semula pada CPU…';
 }
 
 // Path: appIcon.names
@@ -9172,6 +9208,32 @@ extension on TranslationsMs {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Memuatkan model pertuturan setempat…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Memuatkan model pertuturan setempat (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Memuat turun model pertuturan…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Memuat turun model pertuturan (${percent}%)…',
+			'subtitleCapture.capturing' => 'Menangkap audio yang dinyahkod secara setempat. Sari kata akan muncul sebentar lagi.',
+			'subtitleCapture.startFailed' => 'Sari kata langsung tidak dapat dimulakan. Semak output audio dan cuba lagi.',
+			'subtitleCapture.inferenceFailed' => 'Pengecaman pertuturan gagal. Hentikan tangkapan dan cuba lagi.',
+			'subtitleCapture.noSpeech' => 'Tiada sari kata pertuturan dihasilkan. Semak trek audio dan cuba lagi.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Segmen sari kata yang ditangkap daripada bahagian yang ditonton: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Main balik tamat. Transkrip yang ditangkap telah dibuang.',
+			'subtitleCapture.playbackChanged' => 'Main balik berubah. Transkrip yang ditangkap telah dibuang.',
+			'subtitleCapture.audioTrackChanged' => 'Trek audio berubah. Mulakan tangkapan semula pada trek semasa.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Mendengar secara setempat menggunakan CPU. Paket audio yang ditangkap: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Audio yang dinyahkod tidak tersedia melalui output ini. Cuba output audio yang disokong.',
+			'subtitleCapture.waitingForAudio' => 'Menunggu audio yang dinyahkod. Main balik mungkin dijeda.',
+			'subtitleCapture.captureStopped' => 'Tangkapan langsung berhenti. Semak main balik dan cuba lagi.',
+			'subtitleCapture.preparing' => 'Menyediakan sari kata langsung…',
+			'subtitleCapture.downloadingDetector' => 'Memuat turun pengesan pertuturan…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Memuat turun pengesan pertuturan (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Mentranskripsikan audio secara setempat…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Mentranskripsikan audio secara setempat (${percent}%)…',
+			'subtitleCapture.translating' => 'Menterjemahkan pertuturan kepada bahasa Inggeris secara setempat…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Menterjemahkan pertuturan kepada bahasa Inggeris secara setempat (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Memproses audio secara setempat…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Memproses audio secara setempat (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Pemprosesan pertuturan pada GPU gagal. Mencuba semula pada CPU…',
 			_ => null,
 		};
 	}

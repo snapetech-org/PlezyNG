@@ -46,6 +46,8 @@ void main() {
     for (final shape in [
       theme.filledButtonTheme.style!.shape!.resolve({}),
       theme.elevatedButtonTheme.style!.shape!.resolve({}),
+      theme.outlinedButtonTheme.style!.shape!.resolve({}),
+      theme.textButtonTheme.style!.shape!.resolve({}),
       theme.navigationBarTheme.indicatorShape,
       theme.navigationRailTheme.indicatorShape,
     ]) {

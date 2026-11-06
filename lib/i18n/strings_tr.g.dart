@@ -113,6 +113,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$tr householdSetup = _Translations$householdSetup$tr._(_root);
 	@override late final _Translations$issueReport$tr issueReport = _Translations$issueReport$tr._(_root);
 	@override late final _Translations$romm$tr romm = _Translations$romm$tr._(_root);
+	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
 }
 
 // Path: app
@@ -4169,6 +4170,41 @@ class _Translations$romm$tr extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$tr extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Yerel konuşma modeli yükleniyor…';
+	@override String loadingModelProgress({required Object percent}) => 'Yerel konuşma modeli yükleniyor (${percent}%)…';
+	@override String get downloadingModel => 'Konuşma modeli indiriliyor…';
+	@override String downloadingModelProgress({required Object percent}) => 'Konuşma modeli indiriliyor (${percent}%)…';
+	@override String get capturing => 'Kodu çözülmüş ses yerel olarak yakalanıyor. Altyazılar kısa süre içinde görünecek.';
+	@override String get startFailed => 'Canlı altyazılar başlatılamadı. Ses çıkışını kontrol edip yeniden deneyin.';
+	@override String get inferenceFailed => 'Konuşma tanıma başarısız oldu. Yakalamayı durdurup yeniden deneyin.';
+	@override String get noSpeech => 'Konuşmadan altyazı üretilemedi. Ses parçasını kontrol edip yeniden deneyin.';
+	@override String captured({required Object count}) => 'İzlenen bölümden yakalanan altyazı parçaları: ${count}.';
+	@override String get playbackEnded => 'Oynatma sona erdi. Yakalanan döküm silindi.';
+	@override String get playbackChanged => 'Oynatma değişti. Yakalanan döküm silindi.';
+	@override String get audioTrackChanged => 'Ses parçası değişti. Geçerli parçada yakalamayı yeniden başlatın.';
+	@override String listening({required Object count}) => 'CPU ile yerel olarak dinleniyor. Yakalanan ses paketleri: ${count}.';
+	@override String get captureUnavailable => 'Bu ses çıkışında kodu çözülmüş ses kullanılamıyor. Desteklenen bir ses çıkışı deneyin.';
+	@override String get waitingForAudio => 'Kodu çözülmüş ses bekleniyor. Oynatma duraklatılmış olabilir.';
+	@override String get captureStopped => 'Canlı yakalama durdu. Oynatmayı kontrol edip yeniden deneyin.';
+	@override String get preparing => 'Canlı altyazılar hazırlanıyor…';
+	@override String get downloadingDetector => 'Konuşma algılayıcısı indiriliyor…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Konuşma algılayıcısı indiriliyor (${percent}%)…';
+	@override String get transcribing => 'Ses yerel olarak yazıya dökülüyor…';
+	@override String transcribingProgress({required Object percent}) => 'Ses yerel olarak yazıya dökülüyor (${percent}%)…';
+	@override String get translating => 'Konuşma yerel olarak İngilizceye çevriliyor…';
+	@override String translatingProgress({required Object percent}) => 'Konuşma yerel olarak İngilizceye çevriliyor (${percent}%)…';
+	@override String get processingAudio => 'Ses yerel olarak işleniyor…';
+	@override String processingAudioProgress({required Object percent}) => 'Ses yerel olarak işleniyor (${percent}%)…';
+	@override String get cpuFallback => 'GPU ile konuşma işleme başarısız oldu. CPU ile yeniden deneniyor…';
 }
 
 // Path: appIcon.names
@@ -9197,6 +9233,32 @@ extension on TranslationsTr {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Yerel konuşma modeli yükleniyor…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Yerel konuşma modeli yükleniyor (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Konuşma modeli indiriliyor…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Konuşma modeli indiriliyor (${percent}%)…',
+			'subtitleCapture.capturing' => 'Kodu çözülmüş ses yerel olarak yakalanıyor. Altyazılar kısa süre içinde görünecek.',
+			'subtitleCapture.startFailed' => 'Canlı altyazılar başlatılamadı. Ses çıkışını kontrol edip yeniden deneyin.',
+			'subtitleCapture.inferenceFailed' => 'Konuşma tanıma başarısız oldu. Yakalamayı durdurup yeniden deneyin.',
+			'subtitleCapture.noSpeech' => 'Konuşmadan altyazı üretilemedi. Ses parçasını kontrol edip yeniden deneyin.',
+			'subtitleCapture.captured' => ({required Object count}) => 'İzlenen bölümden yakalanan altyazı parçaları: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Oynatma sona erdi. Yakalanan döküm silindi.',
+			'subtitleCapture.playbackChanged' => 'Oynatma değişti. Yakalanan döküm silindi.',
+			'subtitleCapture.audioTrackChanged' => 'Ses parçası değişti. Geçerli parçada yakalamayı yeniden başlatın.',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPU ile yerel olarak dinleniyor. Yakalanan ses paketleri: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Bu ses çıkışında kodu çözülmüş ses kullanılamıyor. Desteklenen bir ses çıkışı deneyin.',
+			'subtitleCapture.waitingForAudio' => 'Kodu çözülmüş ses bekleniyor. Oynatma duraklatılmış olabilir.',
+			'subtitleCapture.captureStopped' => 'Canlı yakalama durdu. Oynatmayı kontrol edip yeniden deneyin.',
+			'subtitleCapture.preparing' => 'Canlı altyazılar hazırlanıyor…',
+			'subtitleCapture.downloadingDetector' => 'Konuşma algılayıcısı indiriliyor…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Konuşma algılayıcısı indiriliyor (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Ses yerel olarak yazıya dökülüyor…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Ses yerel olarak yazıya dökülüyor (${percent}%)…',
+			'subtitleCapture.translating' => 'Konuşma yerel olarak İngilizceye çevriliyor…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Konuşma yerel olarak İngilizceye çevriliyor (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Ses yerel olarak işleniyor…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Ses yerel olarak işleniyor (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU ile konuşma işleme başarısız oldu. CPU ile yeniden deneniyor…',
 			_ => null,
 		};
 	}

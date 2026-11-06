@@ -113,6 +113,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$th householdSetup = _Translations$householdSetup$th._(_root);
 	@override late final _Translations$issueReport$th issueReport = _Translations$issueReport$th._(_root);
 	@override late final _Translations$romm$th romm = _Translations$romm$th._(_root);
+	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
 }
 
 // Path: app
@@ -4146,6 +4147,41 @@ class _Translations$romm$th extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$th extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'กำลังโหลดโมเดลเสียงพูดในเครื่อง…';
+	@override String loadingModelProgress({required Object percent}) => 'กำลังโหลดโมเดลเสียงพูดในเครื่อง (${percent}%)…';
+	@override String get downloadingModel => 'กำลังดาวน์โหลดโมเดลเสียงพูด…';
+	@override String downloadingModelProgress({required Object percent}) => 'กำลังดาวน์โหลดโมเดลเสียงพูด (${percent}%)…';
+	@override String get capturing => 'กำลังจับเสียงที่ถอดรหัสแล้วภายในเครื่อง คำบรรยายจะปรากฏในไม่ช้า';
+	@override String get startFailed => 'ไม่สามารถเริ่มคำบรรยายสดได้ ตรวจสอบเอาต์พุตเสียงแล้วลองอีกครั้ง';
+	@override String get inferenceFailed => 'การรู้จำเสียงพูดล้มเหลว หยุดการจับเสียงแล้วลองอีกครั้ง';
+	@override String get noSpeech => 'ไม่มีคำบรรยายที่สร้างจากเสียงพูด ตรวจสอบแทร็กเสียงแล้วลองอีกครั้ง';
+	@override String captured({required Object count}) => 'จำนวนช่วงคำบรรยายที่จับจากส่วนที่รับชม: ${count}';
+	@override String get playbackEnded => 'การเล่นสิ้นสุดแล้ว ข้อความที่ถอดเสียงไว้ถูกลบแล้ว';
+	@override String get playbackChanged => 'การเล่นเปลี่ยนไป ข้อความที่ถอดเสียงไว้ถูกลบแล้ว';
+	@override String get audioTrackChanged => 'แทร็กเสียงเปลี่ยนไป เริ่มจับเสียงอีกครั้งบนแทร็กปัจจุบัน';
+	@override String listening({required Object count}) => 'กำลังฟังภายในเครื่องโดยใช้ CPU จำนวนแพ็กเก็ตเสียงที่จับได้: ${count}';
+	@override String get captureUnavailable => 'ไม่มีเสียงที่ถอดรหัสแล้วบนเอาต์พุตนี้ ลองใช้เอาต์พุตเสียงที่รองรับ';
+	@override String get waitingForAudio => 'กำลังรอเสียงที่ถอดรหัสแล้ว การเล่นอาจหยุดชั่วคราวอยู่';
+	@override String get captureStopped => 'การจับเสียงสดหยุดแล้ว ตรวจสอบการเล่นแล้วลองอีกครั้ง';
+	@override String get preparing => 'กำลังเตรียมคำบรรยายสด…';
+	@override String get downloadingDetector => 'กำลังดาวน์โหลดตัวตรวจจับเสียงพูด…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'กำลังดาวน์โหลดตัวตรวจจับเสียงพูด (${percent}%)…';
+	@override String get transcribing => 'กำลังถอดเสียงเป็นข้อความภายในเครื่อง…';
+	@override String transcribingProgress({required Object percent}) => 'กำลังถอดเสียงเป็นข้อความภายในเครื่อง (${percent}%)…';
+	@override String get translating => 'กำลังแปลเสียงพูดเป็นภาษาอังกฤษภายในเครื่อง…';
+	@override String translatingProgress({required Object percent}) => 'กำลังแปลเสียงพูดเป็นภาษาอังกฤษภายในเครื่อง (${percent}%)…';
+	@override String get processingAudio => 'กำลังประมวลผลเสียงภายในเครื่อง…';
+	@override String processingAudioProgress({required Object percent}) => 'กำลังประมวลผลเสียงภายในเครื่อง (${percent}%)…';
+	@override String get cpuFallback => 'การประมวลผลเสียงพูดด้วย GPU ล้มเหลว กำลังลองอีกครั้งด้วย CPU…';
 }
 
 // Path: appIcon.names
@@ -9172,6 +9208,32 @@ extension on TranslationsTh {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'กำลังโหลดโมเดลเสียงพูดในเครื่อง…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'กำลังโหลดโมเดลเสียงพูดในเครื่อง (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'กำลังดาวน์โหลดโมเดลเสียงพูด…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'กำลังดาวน์โหลดโมเดลเสียงพูด (${percent}%)…',
+			'subtitleCapture.capturing' => 'กำลังจับเสียงที่ถอดรหัสแล้วภายในเครื่อง คำบรรยายจะปรากฏในไม่ช้า',
+			'subtitleCapture.startFailed' => 'ไม่สามารถเริ่มคำบรรยายสดได้ ตรวจสอบเอาต์พุตเสียงแล้วลองอีกครั้ง',
+			'subtitleCapture.inferenceFailed' => 'การรู้จำเสียงพูดล้มเหลว หยุดการจับเสียงแล้วลองอีกครั้ง',
+			'subtitleCapture.noSpeech' => 'ไม่มีคำบรรยายที่สร้างจากเสียงพูด ตรวจสอบแทร็กเสียงแล้วลองอีกครั้ง',
+			'subtitleCapture.captured' => ({required Object count}) => 'จำนวนช่วงคำบรรยายที่จับจากส่วนที่รับชม: ${count}',
+			'subtitleCapture.playbackEnded' => 'การเล่นสิ้นสุดแล้ว ข้อความที่ถอดเสียงไว้ถูกลบแล้ว',
+			'subtitleCapture.playbackChanged' => 'การเล่นเปลี่ยนไป ข้อความที่ถอดเสียงไว้ถูกลบแล้ว',
+			'subtitleCapture.audioTrackChanged' => 'แทร็กเสียงเปลี่ยนไป เริ่มจับเสียงอีกครั้งบนแทร็กปัจจุบัน',
+			'subtitleCapture.listening' => ({required Object count}) => 'กำลังฟังภายในเครื่องโดยใช้ CPU จำนวนแพ็กเก็ตเสียงที่จับได้: ${count}',
+			'subtitleCapture.captureUnavailable' => 'ไม่มีเสียงที่ถอดรหัสแล้วบนเอาต์พุตนี้ ลองใช้เอาต์พุตเสียงที่รองรับ',
+			'subtitleCapture.waitingForAudio' => 'กำลังรอเสียงที่ถอดรหัสแล้ว การเล่นอาจหยุดชั่วคราวอยู่',
+			'subtitleCapture.captureStopped' => 'การจับเสียงสดหยุดแล้ว ตรวจสอบการเล่นแล้วลองอีกครั้ง',
+			'subtitleCapture.preparing' => 'กำลังเตรียมคำบรรยายสด…',
+			'subtitleCapture.downloadingDetector' => 'กำลังดาวน์โหลดตัวตรวจจับเสียงพูด…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'กำลังดาวน์โหลดตัวตรวจจับเสียงพูด (${percent}%)…',
+			'subtitleCapture.transcribing' => 'กำลังถอดเสียงเป็นข้อความภายในเครื่อง…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'กำลังถอดเสียงเป็นข้อความภายในเครื่อง (${percent}%)…',
+			'subtitleCapture.translating' => 'กำลังแปลเสียงพูดเป็นภาษาอังกฤษภายในเครื่อง…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'กำลังแปลเสียงพูดเป็นภาษาอังกฤษภายในเครื่อง (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'กำลังประมวลผลเสียงภายในเครื่อง…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'กำลังประมวลผลเสียงภายในเครื่อง (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'การประมวลผลเสียงพูดด้วย GPU ล้มเหลว กำลังลองอีกครั้งด้วย CPU…',
 			_ => null,
 		};
 	}

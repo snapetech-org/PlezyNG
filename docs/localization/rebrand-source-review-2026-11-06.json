@@ -1,0 +1,447 @@
+{
+  "date": "2026-11-06",
+  "scope": "Only the app-name substitutions in the English source since the previous source snapshot. Every old digest was reproduced by substituting the previous app name; no other wording or interpolation changed. Current locale catalogs contain neither PlezyNG nor Plezy NG. This review does not extend semantic or native-speaker approval to existing translations.",
+  "messageCount": 110,
+  "messages": {
+    "app.title": {
+      "beforeDigest": "5eb79655ca322491",
+      "afterDigest": "03d10291ebf26ff1"
+    },
+    "appIcon.lockedHint": {
+      "beforeDigest": "61ab161583f9de1e",
+      "afterDigest": "a788b0027f3b3685"
+    },
+    "appIcon.launcherHint": {
+      "beforeDigest": "6afcc90877a6d943",
+      "afterDigest": "d4387318dfcf2511"
+    },
+    "appIcon.tvLauncherHint": {
+      "beforeDigest": "ea7e9ba19500600f",
+      "afterDigest": "a61db55a4f3ac4b0"
+    },
+    "auth.localDataRecoveryRequired": {
+      "beforeDigest": "dfe377c109fd360b",
+      "afterDigest": "fcb076f7ef170955"
+    },
+    "settings.supportDeveloper": {
+      "beforeDigest": "3e435b3f23428475",
+      "afterDigest": "86e3fc617822ab7b"
+    },
+    "settings.lifetimeAccess": {
+      "beforeDigest": "f56154893afe47f0",
+      "afterDigest": "85df1a73036a3099"
+    },
+    "settings.newEpisodeNotificationsDescription": {
+      "beforeDigest": "aba35a8f6daf1176",
+      "afterDigest": "1d5a0b903b333b11"
+    },
+    "settings.importSettingsInvalidFile": {
+      "beforeDigest": "ce62ed0dbd875b3b",
+      "afterDigest": "aaec33b7033a7cc7"
+    },
+    "settings.neuralInterpolationUnavailableDescription": {
+      "beforeDigest": "5e959fb11f451b00",
+      "afterDigest": "48dec0f3b525ecda"
+    },
+    "settings.startInFullscreenDescription": {
+      "beforeDigest": "8d0cb63cf5bc2650",
+      "afterDigest": "30241697d5ec9b0b"
+    },
+    "settings.exportDialogTitle": {
+      "beforeDigest": "2a4ac30c1c131e8d",
+      "afterDigest": "5289657482559b05"
+    },
+    "settings.languageDescription": {
+      "beforeDigest": "bfb3b25480925235",
+      "afterDigest": "cb0ab9e5a4e7f9e3"
+    },
+    "settings.contentScreensaverDelayDescription": {
+      "beforeDigest": "7334219ddf6313c2",
+      "afterDigest": "cd93ccf33e8b0bd4"
+    },
+    "settings.startupSectionDescription": {
+      "beforeDigest": "a37cbff9a2ab53a9",
+      "afterDigest": "aed2574668cecc8e"
+    },
+    "settings.checkForUpdatesDescription": {
+      "beforeDigest": "7cb72f2419bccf8d",
+      "afterDigest": "ae88c3fc789fef1f"
+    },
+    "mediaMenu.deleteScopeUnverifiedProbeFailed": {
+      "beforeDigest": "26ace2248252632a",
+      "afterDigest": "59fb1f1a438dd5bd"
+    },
+    "mediaMenu.deleteScopeUnverifiedNoFileInfo": {
+      "beforeDigest": "8bcf65324f6a6a5d",
+      "afterDigest": "9f54e6b09eba489a"
+    },
+    "accessibility.systemHint": {
+      "beforeDigest": "394c9662b4fce9c3",
+      "afterDigest": "2aded013c2007a3c"
+    },
+    "accessibility.textSizeDescription": {
+      "beforeDigest": "6c69ad27a47a9244",
+      "afterDigest": "7516266e96722c93"
+    },
+    "profiles.addPlezyProfile": {
+      "beforeDigest": "d8fcf4b2f8aedf2d",
+      "afterDigest": "3909a74912a3b778"
+    },
+    "connections.editMediaBrowserIntro": {
+      "beforeDigest": "e04f824295d5a876",
+      "afterDigest": "74317bc802221bc2"
+    },
+    "iptv.xtreamHelp": {
+      "beforeDigest": "2bc55732b5ed4ead",
+      "afterDigest": "a533d4c5747fbcda"
+    },
+    "iptv.recordingAppClosed": {
+      "beforeDigest": "412780df55b858f2",
+      "afterDigest": "c283cab42d54f34e"
+    },
+    "iptv.localRecordingScheduled": {
+      "beforeDigest": "1ef85a7b8bf64201",
+      "afterDigest": "6af61ad5c56aa70a"
+    },
+    "accountPreferences.storedOnAccount": {
+      "beforeDigest": "6387af2906322ad8",
+      "afterDigest": "81ed40c8c699286c"
+    },
+    "startup.failedTitle": {
+      "beforeDigest": "7527f80e1423ec52",
+      "afterDigest": "d8e7163dd42e6268"
+    },
+    "startup.failedBodyRepairable": {
+      "beforeDigest": "8d5ad5276726e4a4",
+      "afterDigest": "f2bb7ee8397eee9a"
+    },
+    "startup.repairBodyCommon": {
+      "beforeDigest": "5e99a77a65b84bd7",
+      "afterDigest": "9b1385efd3b64cd9"
+    },
+    "startup.repairBodySessionsUncertain": {
+      "beforeDigest": "e2c038fb7aba7b2c",
+      "afterDigest": "98a309b85e1ae62b"
+    },
+    "startup.restartRequiredBody": {
+      "beforeDigest": "2839289716f9dd59",
+      "afterDigest": "5dcbaf35b91a65ac"
+    },
+    "startup.quitPlezy": {
+      "beforeDigest": "668fa284b023b902",
+      "afterDigest": "01e1a828d85dfe0e"
+    },
+    "startup.previousFailureTitle": {
+      "beforeDigest": "2b24b85205a3f5e0",
+      "afterDigest": "0a85ff19320f123d"
+    },
+    "watchTogether.inviteMessage": {
+      "beforeDigest": "0cd42e7299d3257b",
+      "afterDigest": "92ee9a89d3975986"
+    },
+    "watchTogether.unavailableDescription": {
+      "beforeDigest": "220c4a08a379f434",
+      "afterDigest": "ace09b12f4eb6a98"
+    },
+    "watchTogether.errors.clientBlocked": {
+      "beforeDigest": "b0c8bbcb722df516",
+      "afterDigest": "518281020b5072b6"
+    },
+    "downloads.orphanReviewDescription": {
+      "beforeDigest": "f87285826c9da5d8",
+      "afterDigest": "d2320a45a1b32c82"
+    },
+    "downloads.orphanCleanupFailed": {
+      "beforeDigest": "fcee53e1a7b1eba3",
+      "afterDigest": "7c42b17a57155724"
+    },
+    "downloads.backgroundWarning.sheetIntro": {
+      "beforeDigest": "c0dff99023f10a97",
+      "afterDigest": "460b60d8f65877ba"
+    },
+    "downloads.backgroundWarning.sheetIntroDegraded": {
+      "beforeDigest": "312318cf9346f285",
+      "afterDigest": "d62cbb9bafb8692f"
+    },
+    "downloads.backgroundWarning.reasonBackgroundRestricted": {
+      "beforeDigest": "1b2a44252ec44804",
+      "afterDigest": "9a9f989a22d6f7a8"
+    },
+    "downloads.backgroundWarning.reasonStandbyRestricted": {
+      "beforeDigest": "4a419341e6970d19",
+      "afterDigest": "7cac1ae108f69c44"
+    },
+    "downloads.backgroundWarning.reasonOemUnknown": {
+      "beforeDigest": "806bdc968e866727",
+      "afterDigest": "aa1ac74ec77c79c1"
+    },
+    "companionRemote.pairing.discoveryDescription": {
+      "beforeDigest": "b08cacaa6fd2b3b6",
+      "afterDigest": "b737ad1b3da1e674"
+    },
+    "companionRemote.pairing.noDevicesHint": {
+      "beforeDigest": "77bfd12dca7afe09",
+      "afterDigest": "c2eb8d9bfb3f9681"
+    },
+    "companionRemote.pairing.sessionNotFound": {
+      "beforeDigest": "091f32597b3b50ec",
+      "afterDigest": "c6b1767239023430"
+    },
+    "trakt.disconnectConfirmBody": {
+      "beforeDigest": "fe7c6f2d857d3eaf",
+      "afterDigest": "fad7f7594eb2f98c"
+    },
+    "trakt.watchedSyncDescription": {
+      "beforeDigest": "b6db3fd4a6d133af",
+      "afterDigest": "2501202a6f4258f5"
+    },
+    "seerr.noSignInMethods": {
+      "beforeDigest": "5a6052bd5ec0ef08",
+      "afterDigest": "679530c9954b1d0d"
+    },
+    "seerr.disconnectConfirmBody": {
+      "beforeDigest": "d91fe87c468935b9",
+      "afterDigest": "14de3336a9356624"
+    },
+    "seerr.behindAuthProxy": {
+      "beforeDigest": "cc6699c28b95f4bc",
+      "afterDigest": "ef1dada1e5fd6da0"
+    },
+    "services.planNote": {
+      "beforeDigest": "71270efa008060a8",
+      "afterDigest": "f6f8608a984d197a"
+    },
+    "services.commissionDisclosure": {
+      "beforeDigest": "967a9df3f8903936",
+      "afterDigest": "26016997bf4a449a"
+    },
+    "services.disconnectConfirmBody": {
+      "beforeDigest": "9796febd6a5af255",
+      "afterDigest": "920df421687a80b2"
+    },
+    "services.simklReconnect.subtitle": {
+      "beforeDigest": "bfe7a5c280a9d123",
+      "afterDigest": "b4fd95813138f06a"
+    },
+    "services.deviceCode.title": {
+      "beforeDigest": "07f79f356e8f63c0",
+      "afterDigest": "555602fa4a6a7e3a"
+    },
+    "streaming.stremioImportInstructions": {
+      "beforeDigest": "c5f9b1d2ef1d032e",
+      "afterDigest": "1a776a9259dd3824"
+    },
+    "streaming.stremioImportPreviewBody": {
+      "beforeDigest": "25e0ec48254070c6",
+      "afterDigest": "962dbfe5caab285e"
+    },
+    "streaming.manifestUrlHint": {
+      "beforeDigest": "760af6f45b5584de",
+      "afterDigest": "6504a331d8e77341"
+    },
+    "streaming.addonError": {
+      "beforeDigest": "0a1d0ab8f200cfad",
+      "afterDigest": "ba23eb6dd398c168"
+    },
+    "streaming.realDebridInstructions": {
+      "beforeDigest": "b88761f1c899eef9",
+      "afterDigest": "5a213db4203ac38f"
+    },
+    "streaming.allDebridInstructions": {
+      "beforeDigest": "314ccb612405dec5",
+      "afterDigest": "e26d1f8048e89ebc"
+    },
+    "streaming.apiKeyHint": {
+      "beforeDigest": "c5de25a0f39b123e",
+      "afterDigest": "5e20d460ef384603"
+    },
+    "streaming.disconnectBody": {
+      "beforeDigest": "5e78d59dab3dae35",
+      "afterDigest": "f762691a1061cfa2"
+    },
+    "streaming.remoteNeedsExternalId": {
+      "beforeDigest": "5e3adcafdf8c6696",
+      "afterDigest": "068a0cd05d2b8f30"
+    },
+    "streaming.preparationForeground": {
+      "beforeDigest": "87f14c7af362ba47",
+      "afterDigest": "97377727a653cf98"
+    },
+    "appAccess.description": {
+      "beforeDigest": "1245b74f68037d05",
+      "afterDigest": "082efcc98ef8b77d"
+    },
+    "appAccess.trialEndedDescription": {
+      "beforeDigest": "b3fbca7a6a4de305",
+      "afterDigest": "1edcfd0176644045"
+    },
+    "appAccess.lifetimeTitle": {
+      "beforeDigest": "bb71fe962a9b955f",
+      "afterDigest": "147c0159bf6d3870"
+    },
+    "appAccess.lifetimeBody": {
+      "beforeDigest": "9ffcb3d8cc772514",
+      "afterDigest": "753a240c997532b0"
+    },
+    "appAccess.manageTitle": {
+      "beforeDigest": "f56154893afe47f0",
+      "afterDigest": "85df1a73036a3099"
+    },
+    "appAccess.productNotFound": {
+      "beforeDigest": "d452f3579b9a873b",
+      "afterDigest": "9cf072bf479eed27"
+    },
+    "appAccess.nothingToRestore": {
+      "beforeDigest": "61fb41a77069eb31",
+      "afterDigest": "bd1530b2db4638df"
+    },
+    "homeLayout.resetToast": {
+      "beforeDigest": "cd48740ace4b364e",
+      "afterDigest": "936d24d0f4f6c941"
+    },
+    "homeLayout.resetHeroTitle": {
+      "beforeDigest": "a3742d9d5f26565f",
+      "afterDigest": "f9286ce3971a85ff"
+    },
+    "homeLayout.managePlexRows": {
+      "beforeDigest": "8154430fd4f25c48",
+      "afterDigest": "360f0b61306befc7"
+    },
+    "homeLayout.resetHeroButton": {
+      "beforeDigest": "86752f6ab30b94aa",
+      "afterDigest": "70d8d2b0889be256"
+    },
+    "platform.localNetworkPermission": {
+      "beforeDigest": "38b23f5a8f2ae6ff",
+      "afterDigest": "a7aaaed53c06135f"
+    },
+    "platform.locationPermission": {
+      "beforeDigest": "7ef7976599ae1aa9",
+      "afterDigest": "5b9a9ad28e2d241d"
+    },
+    "universalMedia.intro": {
+      "beforeDigest": "7d0eb3fb596009d7",
+      "afterDigest": "4775f992ae87484e"
+    },
+    "universalMedia.wifiBrowserTitle": {
+      "beforeDigest": "7c087938a2dca675",
+      "afterDigest": "dd4b5f7cea950113"
+    },
+    "universalMedia.uploadComplete": {
+      "beforeDigest": "cb139c7a8d3563b3",
+      "afterDigest": "f73735f1e62d7f7e"
+    },
+    "universalMedia.replaceRecordingHelp": {
+      "beforeDigest": "d500917eac312aa8",
+      "afterDigest": "0288fc5ba386365d"
+    },
+    "universalMedia.converterReplaceHelp": {
+      "beforeDigest": "91536509de0f542b",
+      "afterDigest": "125c487d97b4da36"
+    },
+    "universalMedia.capturePrivacy": {
+      "beforeDigest": "1aecb3c972d0f75d",
+      "afterDigest": "539a0d30bee9e123"
+    },
+    "universalMedia.shareIntro": {
+      "beforeDigest": "9f117a8550785156",
+      "afterDigest": "e6dbae3b510e2f71"
+    },
+    "universalMedia.shareHttpHint": {
+      "beforeDigest": "b8fe994158905f75",
+      "afterDigest": "df21cd5b871c3f31"
+    },
+    "universalMedia.extensionRemoveHelp": {
+      "beforeDigest": "1ace773a36f2bd79",
+      "afterDigest": "383fd5c4d531dbc9"
+    },
+    "fileSources.syncLocationHint": {
+      "beforeDigest": "5d8978c961ae432b",
+      "afterDigest": "2ca33003649f4d91"
+    },
+    "fileSources.browserReaderHelp": {
+      "beforeDigest": "da4e786cb2d62399",
+      "afterDigest": "1fdd52855a595bca"
+    },
+    "fileSources.errorStorageUnavailable": {
+      "beforeDigest": "2d6f4f3d3dece8e3",
+      "afterDigest": "92cf5e68e7bc84c6"
+    },
+    "lending.gatewayHint": {
+      "beforeDigest": "ac2b7f7aedfbd075",
+      "afterDigest": "b2a4be4e52b22367"
+    },
+    "audiobook.syncPrivacy": {
+      "beforeDigest": "e9e3eb04d05cd46c",
+      "afterDigest": "4073f84640168c55"
+    },
+    "sourceSetup.nfsEncryptionFailure": {
+      "beforeDigest": "cf4acad97b26ff11",
+      "afterDigest": "7b3274139fc95752"
+    },
+    "games.libraryHint": {
+      "beforeDigest": "09dd8ed00223dc5e",
+      "afterDigest": "65c481de0218a0fc"
+    },
+    "games.steamBetaDescription": {
+      "beforeDigest": "f624e0483cf7b3fa",
+      "afterDigest": "07bccbcd65c2f9df"
+    },
+    "games.connectToPlay": {
+      "beforeDigest": "c116214a2d90b6cb",
+      "afterDigest": "87608da56ff8f6af"
+    },
+    "games.remoteSessionsHelp": {
+      "beforeDigest": "e57333390c8d69e5",
+      "afterDigest": "d8ce5335e284004e"
+    },
+    "games.streamAudioHelp": {
+      "beforeDigest": "f46606c3a610d5da",
+      "afterDigest": "dd3ffbe3c3049417"
+    },
+    "games.steamCloudHelp": {
+      "beforeDigest": "332d3e4f6abae0d4",
+      "afterDigest": "e9d4f04742ffd076"
+    },
+    "games.steamFamiliesHelp": {
+      "beforeDigest": "c072ad0b821c3bdd",
+      "afterDigest": "ce0425a5a9b42c8f"
+    },
+    "games.cloudAccessHelp": {
+      "beforeDigest": "bdc2c78eb01ea99f",
+      "afterDigest": "d7642f96d7de8d3e"
+    },
+    "games.familyAuthorizeHelp": {
+      "beforeDigest": "e659125b2b819247",
+      "afterDigest": "381dcd98c35331e6"
+    },
+    "games.familyScanHelp": {
+      "beforeDigest": "46ca248fa83a4335",
+      "afterDigest": "d83b9ee563e23357"
+    },
+    "games.controllerLayoutHelp": {
+      "beforeDigest": "f6be757c983fec1b",
+      "afterDigest": "3e9591314be80489"
+    },
+    "games.cloudSettingsHelp": {
+      "beforeDigest": "e567b6bc5942d91f",
+      "afterDigest": "c4aac2aa53cfc129"
+    },
+    "games.steamAttribution": {
+      "beforeDigest": "881f235518586cfc",
+      "afterDigest": "3da319747beb462b"
+    },
+    "games.steamSessionSignIn": {
+      "beforeDigest": "fed423c2f80f2755",
+      "afterDigest": "c51a84a8a836aace"
+    },
+    "deepLinks.invalid": {
+      "beforeDigest": "ce9dce152f1e1796",
+      "afterDigest": "ab42ec788d2e48ca"
+    },
+    "romm.linkHelp": {
+      "beforeDigest": "89108f58755cf427",
+      "afterDigest": "677f1c1decc03ed7"
+    }
+  }
+}

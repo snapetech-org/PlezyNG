@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import '../focus/back_press.dart';
 import '../focus/dpad_navigator.dart';
 import '../focus/input_mode_tracker.dart';
+import '../theme/mono_tokens.dart';
 import '../utils/platform_detector.dart';
 
 /// Entry in the sheet page stack.
@@ -163,9 +164,17 @@ class OverlaySheetController {
         sheetAnimationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
         // The host path insets its sheet by the bottom safe area; mirror that
         // here so the last row clears the home indicator / gesture nav bar.
-        builder: (context) => SafeArea(top: false, child: builder(context)),
+        builder: (context) => Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+          child: SafeArea(top: false, child: builder(context)),
+        ),
         constraints: effectiveConstraints,
         backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(Theme.of(context).extension<MonoTokens>()?.radiusLg ?? 20),
+          ),
+        ),
         barrierColor: Colors.black54,
         isDismissible: barrierDismissible,
         isScrollControlled: isScrollControlled,
@@ -702,9 +711,8 @@ class _OverlaySheetHostState extends State<OverlaySheetHost> with SingleTickerPr
     // hit testing never depends on the sheet child's just-invalidated layout.
     final slideDirection = isTop ? -1.0 : 1.0;
     final slideDistance = size.height;
-    final borderRadius = isTop
-        ? const BorderRadius.vertical(bottom: Radius.circular(16))
-        : const BorderRadius.vertical(top: Radius.circular(16));
+    final corner = Radius.circular(Theme.of(context).extension<MonoTokens>()?.radiusLg ?? 20);
+    final borderRadius = isTop ? BorderRadius.vertical(bottom: corner) : BorderRadius.vertical(top: corner);
 
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -864,7 +872,12 @@ class _OverlaySheetHostState extends State<OverlaySheetHost> with SingleTickerPr
       );
     }
 
-    return sheet;
+    // A host above Scaffold does not inherit its keyboard-resized body.
+    // Reduce the overlay's available height so focused fields stay visible.
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: sheet,
+    );
   }
 }
 

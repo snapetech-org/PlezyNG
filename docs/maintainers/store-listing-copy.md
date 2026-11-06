@@ -48,3 +48,5 @@ placeholder TV imagery is included. Confirm locale, age-rating, region,
 review-account, and certification fields in the seller portal before submission.
 
 Google Play's short-description limit is 80 characters. Apple allows a 30-character subtitle and a 4,000-character description. See [Google Play listing guidance](https://support.google.com/googleplay/android-developer/answer/9866151) and [App Store Connect platform metadata](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information).
+
+Amazon Fire TV artwork uses the approved brand export targets `amazon/fire-tv-icon-1280x720.png` and `amazon/fire-tv-background-1920x1080.png` under the store asset directory. These are listing artwork; the Fire TV screenshot slots still require actual app captures.

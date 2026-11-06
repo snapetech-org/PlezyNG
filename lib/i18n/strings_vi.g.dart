@@ -113,6 +113,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$vi householdSetup = _Translations$householdSetup$vi._(_root);
 	@override late final _Translations$issueReport$vi issueReport = _Translations$issueReport$vi._(_root);
 	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
+	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
 }
 
 // Path: app
@@ -4146,6 +4147,41 @@ class _Translations$romm$vi extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$vi extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Đang tải mô hình giọng nói cục bộ vào bộ nhớ…';
+	@override String loadingModelProgress({required Object percent}) => 'Đang tải mô hình giọng nói cục bộ vào bộ nhớ (${percent}%)…';
+	@override String get downloadingModel => 'Đang tải xuống mô hình giọng nói…';
+	@override String downloadingModelProgress({required Object percent}) => 'Đang tải xuống mô hình giọng nói (${percent}%)…';
+	@override String get capturing => 'Đang thu âm thanh đã giải mã trên thiết bị. Phụ đề sẽ sớm xuất hiện.';
+	@override String get startFailed => 'Không thể bắt đầu phụ đề trực tiếp. Kiểm tra đầu ra âm thanh rồi thử lại.';
+	@override String get inferenceFailed => 'Nhận dạng giọng nói thất bại. Dừng thu âm thanh rồi thử lại.';
+	@override String get noSpeech => 'Không tạo được phụ đề từ lời nói. Kiểm tra bản âm thanh rồi thử lại.';
+	@override String captured({required Object count}) => 'Số đoạn phụ đề thu được từ phần đã xem: ${count}.';
+	@override String get playbackEnded => 'Phát đã kết thúc. Bản chép lời đã thu được đã bị xóa.';
+	@override String get playbackChanged => 'Nội dung phát đã thay đổi. Bản chép lời đã thu được đã bị xóa.';
+	@override String get audioTrackChanged => 'Bản âm thanh đã thay đổi. Bắt đầu thu lại trên bản hiện tại.';
+	@override String listening({required Object count}) => 'Đang nghe trên thiết bị bằng CPU. Số gói âm thanh đã thu: ${count}.';
+	@override String get captureUnavailable => 'Không có âm thanh đã giải mã trên đầu ra này. Hãy thử một đầu ra âm thanh được hỗ trợ.';
+	@override String get waitingForAudio => 'Đang chờ âm thanh đã giải mã. Có thể việc phát đang tạm dừng.';
+	@override String get captureStopped => 'Đã dừng thu âm thanh trực tiếp. Kiểm tra việc phát rồi thử lại.';
+	@override String get preparing => 'Đang chuẩn bị phụ đề trực tiếp…';
+	@override String get downloadingDetector => 'Đang tải xuống bộ phát hiện giọng nói…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Đang tải xuống bộ phát hiện giọng nói (${percent}%)…';
+	@override String get transcribing => 'Đang chép lời âm thanh trên thiết bị…';
+	@override String transcribingProgress({required Object percent}) => 'Đang chép lời âm thanh trên thiết bị (${percent}%)…';
+	@override String get translating => 'Đang dịch lời nói sang tiếng Anh trên thiết bị…';
+	@override String translatingProgress({required Object percent}) => 'Đang dịch lời nói sang tiếng Anh trên thiết bị (${percent}%)…';
+	@override String get processingAudio => 'Đang xử lý âm thanh trên thiết bị…';
+	@override String processingAudioProgress({required Object percent}) => 'Đang xử lý âm thanh trên thiết bị (${percent}%)…';
+	@override String get cpuFallback => 'Xử lý giọng nói bằng GPU thất bại. Đang thử lại bằng CPU…';
 }
 
 // Path: appIcon.names
@@ -9172,6 +9208,32 @@ extension on TranslationsVi {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Đang tải mô hình giọng nói cục bộ vào bộ nhớ…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Đang tải mô hình giọng nói cục bộ vào bộ nhớ (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Đang tải xuống mô hình giọng nói…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Đang tải xuống mô hình giọng nói (${percent}%)…',
+			'subtitleCapture.capturing' => 'Đang thu âm thanh đã giải mã trên thiết bị. Phụ đề sẽ sớm xuất hiện.',
+			'subtitleCapture.startFailed' => 'Không thể bắt đầu phụ đề trực tiếp. Kiểm tra đầu ra âm thanh rồi thử lại.',
+			'subtitleCapture.inferenceFailed' => 'Nhận dạng giọng nói thất bại. Dừng thu âm thanh rồi thử lại.',
+			'subtitleCapture.noSpeech' => 'Không tạo được phụ đề từ lời nói. Kiểm tra bản âm thanh rồi thử lại.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Số đoạn phụ đề thu được từ phần đã xem: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Phát đã kết thúc. Bản chép lời đã thu được đã bị xóa.',
+			'subtitleCapture.playbackChanged' => 'Nội dung phát đã thay đổi. Bản chép lời đã thu được đã bị xóa.',
+			'subtitleCapture.audioTrackChanged' => 'Bản âm thanh đã thay đổi. Bắt đầu thu lại trên bản hiện tại.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Đang nghe trên thiết bị bằng CPU. Số gói âm thanh đã thu: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Không có âm thanh đã giải mã trên đầu ra này. Hãy thử một đầu ra âm thanh được hỗ trợ.',
+			'subtitleCapture.waitingForAudio' => 'Đang chờ âm thanh đã giải mã. Có thể việc phát đang tạm dừng.',
+			'subtitleCapture.captureStopped' => 'Đã dừng thu âm thanh trực tiếp. Kiểm tra việc phát rồi thử lại.',
+			'subtitleCapture.preparing' => 'Đang chuẩn bị phụ đề trực tiếp…',
+			'subtitleCapture.downloadingDetector' => 'Đang tải xuống bộ phát hiện giọng nói…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Đang tải xuống bộ phát hiện giọng nói (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Đang chép lời âm thanh trên thiết bị…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Đang chép lời âm thanh trên thiết bị (${percent}%)…',
+			'subtitleCapture.translating' => 'Đang dịch lời nói sang tiếng Anh trên thiết bị…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Đang dịch lời nói sang tiếng Anh trên thiết bị (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Đang xử lý âm thanh trên thiết bị…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Đang xử lý âm thanh trên thiết bị (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Xử lý giọng nói bằng GPU thất bại. Đang thử lại bằng CPU…',
 			_ => null,
 		};
 	}

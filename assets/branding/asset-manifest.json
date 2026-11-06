@@ -28,7 +28,7 @@
       "sha256": "09fbc48657b7d46d251054b1cdcdefa88115711253c4ff5ed2d92dcd9244bbd9"
     }
   },
-  "config_sha256": "e78bc191d9e722bfc384bc54eac484ee35c9c3926f8c6a29c0c159e48e91c605",
+  "config_sha256": "ecccb8befa39583f80ce849ef2d6e65121229938733faaf421c0aa7c515e9054",
   "generator_sha256": "ccc87c78bc2892bbfbecad392883e420be1a0001e6c09d8e6fd18fee1e8634e9",
   "exports": {
     "android/app/src/main/res/drawable-hdpi/ic_stat_notification.png": "dc8fe7b03a70c8a6f1a8089a8985df7c77c51ca675b6c486296e03dc0edb1646",
@@ -460,6 +460,8 @@
     "assets/pleazyng_adaptive_foreground.png": "1ee58db836133c5eb4ca6619fbbbb9f6da0b8f6eea2496e37f4a969ea9b51572",
     "assets/pleazyng_adaptive_foreground.svg": "bb17fae90910e9ceb71662f3639fa18e5b7f093c5cc9ff898d1ca2905f04bbb4",
     "assets/pleazyng_top_shelf.svg": "29430734aa3ff834f9b799806ac9be20ffdc75ae14d7eb7969f4aa83217c3c75",
+    "docs/maintainers/store-listing-assets/amazon/fire-tv-background-1920x1080.png": "00435433f0859881d88a4eb42f6db8fdf3d5fb1258f15b2c18944949cd3af7bf",
+    "docs/maintainers/store-listing-assets/amazon/fire-tv-icon-1280x720.png": "ecdb2765e3ff7d0e3ff614ba72880f7ca95f5dae16b3bac5d3f269dc33d2e310",
     "docs/maintainers/store-listing-assets/amazon/icon-large-512.png": "bd3b88f2f2ab4e040e39b1e91d098ab8d2930825b259a21cb6f2cb342a15e932",
     "docs/maintainers/store-listing-assets/amazon/icon-small-114.png": "5aadddd420208e598595381d204139ab858828a86c015da2dad35c595752d6f9",
     "docs/maintainers/store-listing-assets/google-play/app-icon-512.png": "bd3b88f2f2ab4e040e39b1e91d098ab8d2930825b259a21cb6f2cb342a15e932",

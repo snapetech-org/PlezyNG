@@ -1073,7 +1073,7 @@ class _LibrariesScreenState extends State<LibrariesScreen>
                   icon: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      const AppIcon(Symbols.tune_rounded, fill: 1),
+                      const AppIcon(Symbols.tune_rounded, fill: 1, weight: 600),
                       Positioned(
                         top: -2,
                         right: -2,

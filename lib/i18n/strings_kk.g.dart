@@ -113,6 +113,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$kk householdSetup = _Translations$householdSetup$kk._(_root);
 	@override late final _Translations$issueReport$kk issueReport = _Translations$issueReport$kk._(_root);
 	@override late final _Translations$romm$kk romm = _Translations$romm$kk._(_root);
+	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
 }
 
 // Path: app
@@ -4169,6 +4170,41 @@ class _Translations$romm$kk extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$kk extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Жергілікті сөйлеу моделі жүктелуде…';
+	@override String loadingModelProgress({required Object percent}) => 'Жергілікті сөйлеу моделі жүктелуде (${percent}%)…';
+	@override String get downloadingModel => 'Сөйлеу моделі жүктеп алынуда…';
+	@override String downloadingModelProgress({required Object percent}) => 'Сөйлеу моделі жүктеп алынуда (${percent}%)…';
+	@override String get capturing => 'Декодталған дыбыс жергілікті түрде түсірілуде. Субтитрлер жақында пайда болады.';
+	@override String get startFailed => 'Тікелей субтитрлерді бастау мүмкін болмады. Дыбыс шығысын тексеріп, қайталап көріңіз.';
+	@override String get inferenceFailed => 'Сөйлеуді тану сәтсіз аяқталды. Түсіруді тоқтатып, қайталап көріңіз.';
+	@override String get noSpeech => 'Сөйлеуден субтитрлер жасалмады. Аудио жолды тексеріп, қайталап көріңіз.';
+	@override String captured({required Object count}) => 'Қаралған бөліктен алынған субтитр үзінділері: ${count}.';
+	@override String get playbackEnded => 'Ойнату аяқталды. Алынған транскрипт жойылды.';
+	@override String get playbackChanged => 'Ойнату өзгерді. Алынған транскрипт жойылды.';
+	@override String get audioTrackChanged => 'Аудио жол өзгерді. Ағымдағы жолда түсіруді қайта бастаңыз.';
+	@override String listening({required Object count}) => 'CPU арқылы жергілікті тыңдалуда. Алынған дыбыс пакеттері: ${count}.';
+	@override String get captureUnavailable => 'Бұл дыбыс шығысында декодталған дыбыс қолжетімсіз. Қолдау көрсетілетін дыбыс шығысын қолданып көріңіз.';
+	@override String get waitingForAudio => 'Декодталған дыбыс күтілуде. Ойнату кідіртілген болуы мүмкін.';
+	@override String get captureStopped => 'Тікелей түсіру тоқтады. Ойнатуды тексеріп, қайталап көріңіз.';
+	@override String get preparing => 'Тікелей субтитрлер дайындалуда…';
+	@override String get downloadingDetector => 'Сөйлеу детекторы жүктеп алынуда…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Сөйлеу детекторы жүктеп алынуда (${percent}%)…';
+	@override String get transcribing => 'Дыбыс жергілікті түрде мәтінге айналдырылуда…';
+	@override String transcribingProgress({required Object percent}) => 'Дыбыс жергілікті түрде мәтінге айналдырылуда (${percent}%)…';
+	@override String get translating => 'Сөйлеу жергілікті түрде ағылшын тіліне аударылуда…';
+	@override String translatingProgress({required Object percent}) => 'Сөйлеу жергілікті түрде ағылшын тіліне аударылуда (${percent}%)…';
+	@override String get processingAudio => 'Дыбыс жергілікті түрде өңделуде…';
+	@override String processingAudioProgress({required Object percent}) => 'Дыбыс жергілікті түрде өңделуде (${percent}%)…';
+	@override String get cpuFallback => 'GPU арқылы сөйлеуді өңдеу сәтсіз аяқталды. CPU арқылы қайта әрекет жасалуда…';
 }
 
 // Path: appIcon.names
@@ -9197,6 +9233,32 @@ extension on TranslationsKk {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Жергілікті сөйлеу моделі жүктелуде…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Жергілікті сөйлеу моделі жүктелуде (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Сөйлеу моделі жүктеп алынуда…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Сөйлеу моделі жүктеп алынуда (${percent}%)…',
+			'subtitleCapture.capturing' => 'Декодталған дыбыс жергілікті түрде түсірілуде. Субтитрлер жақында пайда болады.',
+			'subtitleCapture.startFailed' => 'Тікелей субтитрлерді бастау мүмкін болмады. Дыбыс шығысын тексеріп, қайталап көріңіз.',
+			'subtitleCapture.inferenceFailed' => 'Сөйлеуді тану сәтсіз аяқталды. Түсіруді тоқтатып, қайталап көріңіз.',
+			'subtitleCapture.noSpeech' => 'Сөйлеуден субтитрлер жасалмады. Аудио жолды тексеріп, қайталап көріңіз.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Қаралған бөліктен алынған субтитр үзінділері: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Ойнату аяқталды. Алынған транскрипт жойылды.',
+			'subtitleCapture.playbackChanged' => 'Ойнату өзгерді. Алынған транскрипт жойылды.',
+			'subtitleCapture.audioTrackChanged' => 'Аудио жол өзгерді. Ағымдағы жолда түсіруді қайта бастаңыз.',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPU арқылы жергілікті тыңдалуда. Алынған дыбыс пакеттері: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Бұл дыбыс шығысында декодталған дыбыс қолжетімсіз. Қолдау көрсетілетін дыбыс шығысын қолданып көріңіз.',
+			'subtitleCapture.waitingForAudio' => 'Декодталған дыбыс күтілуде. Ойнату кідіртілген болуы мүмкін.',
+			'subtitleCapture.captureStopped' => 'Тікелей түсіру тоқтады. Ойнатуды тексеріп, қайталап көріңіз.',
+			'subtitleCapture.preparing' => 'Тікелей субтитрлер дайындалуда…',
+			'subtitleCapture.downloadingDetector' => 'Сөйлеу детекторы жүктеп алынуда…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Сөйлеу детекторы жүктеп алынуда (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Дыбыс жергілікті түрде мәтінге айналдырылуда…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Дыбыс жергілікті түрде мәтінге айналдырылуда (${percent}%)…',
+			'subtitleCapture.translating' => 'Сөйлеу жергілікті түрде ағылшын тіліне аударылуда…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Сөйлеу жергілікті түрде ағылшын тіліне аударылуда (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Дыбыс жергілікті түрде өңделуде…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Дыбыс жергілікті түрде өңделуде (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU арқылы сөйлеуді өңдеу сәтсіз аяқталды. CPU арқылы қайта әрекет жасалуда…',
 			_ => null,
 		};
 	}

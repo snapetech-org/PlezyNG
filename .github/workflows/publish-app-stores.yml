@@ -199,10 +199,12 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/store-assets"
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
-            --pattern pleazyng-amazon-firetv.apk --pattern SHA256SUMS.txt \
+            --pattern pleazyng-amazon-firetv.apk --pattern pleazyng-amazon-firetv-provenance.json --pattern SHA256SUMS.txt \
             --dir "$RUNNER_TEMP/store-assets"
           cd "$RUNNER_TEMP/store-assets"
           sha256sum --check --ignore-missing SHA256SUMS.txt
+          python3 "$GITHUB_WORKSPACE/scripts/verify_firetv_apk.py" pleazyng-amazon-firetv.apk \
+            --receipt pleazyng-amazon-firetv-provenance.json
 
       - name: Verify provisioned native Ruby extension tools
         shell: bash

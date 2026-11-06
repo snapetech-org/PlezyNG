@@ -30,6 +30,31 @@ class PublishedReleaseMetadataTest(unittest.TestCase):
         check.check_published_release(self.release, self.metadata)
         self.assertTrue(any('webOS' in error for error in check.ERRORS))
 
+    def test_unavailable_release_uses_current_observation_without_erasing_history(self):
+        observation = json.loads((check.ROOT / self.release['availabilityEvidence']).read_text())
+        check.check_release_availability(self.release, observation)
+        check.check_published_release(self.release, self.metadata)
+        self.assertEqual(check.ERRORS, [])
+
+    def test_publication_or_tag_reappearance_invalidates_unavailable_status(self):
+        original = json.loads((check.ROOT / self.release['availabilityEvidence']).read_text())
+        for mutation in ('latest', 'tag', 'list', 'date', 'stable'):
+            with self.subTest(mutation=mutation):
+                check.ERRORS.clear()
+                observation = copy.deepcopy(original)
+                if mutation == 'latest':
+                    observation['latestStatus'] = 200
+                elif mutation == 'tag':
+                    observation['tagStatus'] = 200
+                elif mutation == 'list':
+                    observation['listStatus'] = 403
+                elif mutation == 'date':
+                    observation['observedAt'] = 'old'
+                else:
+                    observation['listedReleases'].append({'draft': False, 'prerelease': False})
+                check.check_release_availability(self.release, observation)
+                self.assertTrue(check.ERRORS)
+
 
 if __name__ == '__main__':
     unittest.main()

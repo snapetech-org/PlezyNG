@@ -113,6 +113,7 @@ class TranslationsSv extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$sv householdSetup = _Translations$householdSetup$sv._(_root);
 	@override late final _Translations$issueReport$sv issueReport = _Translations$issueReport$sv._(_root);
 	@override late final _Translations$romm$sv romm = _Translations$romm$sv._(_root);
+	@override late final _Translations$subtitleCapture$sv subtitleCapture = _Translations$subtitleCapture$sv._(_root);
 }
 
 // Path: app
@@ -4169,6 +4170,41 @@ class _Translations$romm$sv extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$sv extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$sv._(TranslationsSv root) : this._root = root, super.internal(root);
+
+	final TranslationsSv _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Läser in den lokala talmodellen…';
+	@override String loadingModelProgress({required Object percent}) => 'Läser in den lokala talmodellen (${percent}%)…';
+	@override String get downloadingModel => 'Laddar ned talmodellen…';
+	@override String downloadingModelProgress({required Object percent}) => 'Laddar ned talmodellen (${percent}%)…';
+	@override String get capturing => 'Avkodat ljud fångas upp lokalt. Undertexter visas snart.';
+	@override String get startFailed => 'Liveundertexter kunde inte startas. Kontrollera ljudutgången och försök igen.';
+	@override String get inferenceFailed => 'Taligenkänningen misslyckades. Stoppa ljudinsamlingen och försök igen.';
+	@override String get noSpeech => 'Inga undertexter skapades från talet. Kontrollera ljudspåret och försök igen.';
+	@override String captured({required Object count}) => 'Antal undertextsegment från den visade delen: ${count}.';
+	@override String get playbackEnded => 'Uppspelningen avslutades. Den insamlade transkriptionen raderades.';
+	@override String get playbackChanged => 'Uppspelningen ändrades. Den insamlade transkriptionen raderades.';
+	@override String get audioTrackChanged => 'Ljudspåret ändrades. Starta ljudinsamlingen igen för det aktuella spåret.';
+	@override String listening({required Object count}) => 'Lyssnar lokalt med CPU. Insamlade ljudpaket: ${count}.';
+	@override String get captureUnavailable => 'Avkodat ljud är inte tillgängligt via den här ljudutgången. Prova en ljudutgång som stöds.';
+	@override String get waitingForAudio => 'Väntar på avkodat ljud. Uppspelningen kan vara pausad.';
+	@override String get captureStopped => 'Liveinsamlingen stoppades. Kontrollera uppspelningen och försök igen.';
+	@override String get preparing => 'Förbereder liveundertexter…';
+	@override String get downloadingDetector => 'Laddar ned taldetektorn…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Laddar ned taldetektorn (${percent}%)…';
+	@override String get transcribing => 'Transkriberar ljud lokalt…';
+	@override String transcribingProgress({required Object percent}) => 'Transkriberar ljud lokalt (${percent}%)…';
+	@override String get translating => 'Översätter tal till engelska lokalt…';
+	@override String translatingProgress({required Object percent}) => 'Översätter tal till engelska lokalt (${percent}%)…';
+	@override String get processingAudio => 'Bearbetar ljud lokalt…';
+	@override String processingAudioProgress({required Object percent}) => 'Bearbetar ljud lokalt (${percent}%)…';
+	@override String get cpuFallback => 'Talbearbetning på GPU misslyckades. Försöker igen med CPU…';
 }
 
 // Path: appIcon.names
@@ -9197,6 +9233,32 @@ extension on TranslationsSv {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Läser in den lokala talmodellen…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Läser in den lokala talmodellen (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Laddar ned talmodellen…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Laddar ned talmodellen (${percent}%)…',
+			'subtitleCapture.capturing' => 'Avkodat ljud fångas upp lokalt. Undertexter visas snart.',
+			'subtitleCapture.startFailed' => 'Liveundertexter kunde inte startas. Kontrollera ljudutgången och försök igen.',
+			'subtitleCapture.inferenceFailed' => 'Taligenkänningen misslyckades. Stoppa ljudinsamlingen och försök igen.',
+			'subtitleCapture.noSpeech' => 'Inga undertexter skapades från talet. Kontrollera ljudspåret och försök igen.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Antal undertextsegment från den visade delen: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Uppspelningen avslutades. Den insamlade transkriptionen raderades.',
+			'subtitleCapture.playbackChanged' => 'Uppspelningen ändrades. Den insamlade transkriptionen raderades.',
+			'subtitleCapture.audioTrackChanged' => 'Ljudspåret ändrades. Starta ljudinsamlingen igen för det aktuella spåret.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Lyssnar lokalt med CPU. Insamlade ljudpaket: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Avkodat ljud är inte tillgängligt via den här ljudutgången. Prova en ljudutgång som stöds.',
+			'subtitleCapture.waitingForAudio' => 'Väntar på avkodat ljud. Uppspelningen kan vara pausad.',
+			'subtitleCapture.captureStopped' => 'Liveinsamlingen stoppades. Kontrollera uppspelningen och försök igen.',
+			'subtitleCapture.preparing' => 'Förbereder liveundertexter…',
+			'subtitleCapture.downloadingDetector' => 'Laddar ned taldetektorn…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Laddar ned taldetektorn (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Transkriberar ljud lokalt…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Transkriberar ljud lokalt (${percent}%)…',
+			'subtitleCapture.translating' => 'Översätter tal till engelska lokalt…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Översätter tal till engelska lokalt (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Bearbetar ljud lokalt…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Bearbetar ljud lokalt (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Talbearbetning på GPU misslyckades. Försöker igen med CPU…',
 			_ => null,
 		};
 	}

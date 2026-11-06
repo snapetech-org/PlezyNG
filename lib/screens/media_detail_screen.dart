@@ -271,7 +271,7 @@ const tvDetailRevealGateKey = ValueKey<String>('tvDetailRevealGate');
 
 /// Geometry of the non-TV hero's chip rows. Every chip — plain text, the
 /// scores pill, the tappable rating chip — sizes its content to
-/// [chipContentHeight] so icons and text never make one chip taller than its
+/// [_HeroChips.contentHeight] so icons and text never make one chip taller than its
 /// neighbours. TV renders a different metadata line and keeps its own metrics.
 abstract final class _HeroChips {
   /// Gap between chips, and between the two chip rows.
@@ -279,9 +279,11 @@ abstract final class _HeroChips {
   static const double paddingH = 10;
   static const double paddingV = 5;
 
-  /// Height of a chip's content box: fits the 13px label and a 16px icon.
-  static const double contentHeight = 20;
-  static const double height = contentHeight + paddingV * 2;
+  /// Grow the shared content box with its 13px label while retaining room for
+  /// the 16px icon. The hero's row budget must use the same scaled height.
+  static double contentHeight(BuildContext context) =>
+      math.max(20, MediaQuery.textScalerOf(context).scale(13) * 20 / 13);
+  static double height(BuildContext context) => contentHeight(context) + paddingV * 2;
 
   /// Gap between the last chip row and the action buttons; shorter heroes
   /// (under 180px of content) use the compact value.
@@ -292,8 +294,8 @@ abstract final class _HeroChips {
   static const BorderRadius radius = BorderRadius.all(Radius.circular(100));
 
   /// Constrains chip content to one shared height, centred.
-  static Widget content(Widget child) => SizedBox(
-    height: contentHeight,
+  static Widget content(BuildContext context, Widget child) => SizedBox(
+    height: contentHeight(context),
     child: Center(widthFactor: 1, child: child),
   );
 }
@@ -1338,7 +1340,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         color: colorScheme.secondaryContainer.withValues(alpha: 0.8),
         borderRadius: _HeroChips.radius,
       ),
-      child: isTv ? content : _HeroChips.content(content),
+      child: isTv ? content : _HeroChips.content(context, content),
     );
   }
 
@@ -1450,6 +1452,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
             borderRadius: _HeroChips.radius,
           ),
           child: _HeroChips.content(
+            context,
             InlineRatingBadges(
               ratings: kept == ratings.length ? ratings : ratings.sublist(0, kept),
               textStyle: chipTextStyle,
@@ -1573,6 +1576,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
               padding: _HeroChips.padding,
               decoration: BoxDecoration(color: bgColor, borderRadius: _HeroChips.radius),
               child: _HeroChips.content(
+                context,
                 Row(
                   mainAxisSize: .min,
                   children: [
@@ -3616,7 +3620,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
               _heroChromeHeight +
               _heroLogoHeight +
               _heroLogoGap +
-              _HeroChips.height * heroChipRows +
+              _HeroChips.height(context) * heroChipRows +
               _HeroChips.spacing * (heroChipRows - 1) +
               _HeroChips.actionGap +
               _heroActionHeight +
@@ -4908,7 +4912,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         const desiredLogoHeight = _heroLogoHeight;
         const desiredLogoWidth = 400.0;
         const actionHeight = _heroActionHeight;
-        const chipHeight = _HeroChips.height;
+        final chipHeight = _HeroChips.height(context);
         const rowGap = _HeroChips.spacing;
         // Phone widths stack the logo, chips and actions on the centre line —
         // the collection page's compact header. Wider heroes keep the
@@ -4972,7 +4976,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
         Widget chipRow(List<Widget> chips) => ClipRect(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: chipHeight),
+            constraints: BoxConstraints(maxHeight: chipHeight),
             child: Align(
               alignment: blockAlignment,
               heightFactor: 1,

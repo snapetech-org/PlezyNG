@@ -92,9 +92,32 @@ class VideoTimelineBar extends StatelessWidget {
                 final remaining = position - duration; // We want this to be negative
 
                 return RepaintBoundary(
-                  child: horizontalLayout
-                      ? _buildHorizontalLayout(position, duration, remaining, bufferRanges)
-                      : _buildVerticalLayout(position, duration, remaining, bufferRanges),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Reserve usable seeking space beside scaled timestamps.
+                      double timestampWidth(Duration time) {
+                        final painter = TextPainter(
+                          text: TextSpan(
+                            text: formatDurationTimestamp(time),
+                            style: DefaultTextStyle.of(context).style.merge(_timestampStyle),
+                          ),
+                          textDirection: TextDirection.ltr,
+                          textScaler: MediaQuery.textScalerOf(context),
+                          maxLines: 1,
+                        )..layout();
+                        final width = painter.width;
+                        painter.dispose();
+                        return width;
+                      }
+
+                      final fits =
+                          !horizontalLayout ||
+                          constraints.maxWidth >= timestampWidth(position) + timestampWidth(remaining) + 144;
+                      return horizontalLayout && fits
+                          ? _buildHorizontalLayout(position, duration, remaining, bufferRanges)
+                          : _buildVerticalLayout(position, duration, remaining, bufferRanges);
+                    },
+                  ),
                 );
               },
             );
@@ -139,10 +162,15 @@ class VideoTimelineBar extends StatelessWidget {
         _buildSlider(position, duration, bufferRanges),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            textDirection: TextDirection.ltr,
-            mainAxisAlignment: .spaceBetween,
-            children: [_buildTimestamp(position), _buildRemainingTimestamp(remaining)],
+          child: SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              textDirection: TextDirection.ltr,
+              alignment: WrapAlignment.spaceBetween,
+              spacing: 12,
+              runSpacing: 4,
+              children: [_buildTimestamp(position), _buildRemainingTimestamp(remaining)],
+            ),
           ),
         ),
       ],
@@ -156,7 +184,7 @@ class VideoTimelineBar extends StatelessWidget {
   );
 
   Widget _buildTimestamp(Duration time) {
-    return Text(formatDurationTimestamp(time), style: _timestampStyle);
+    return Text(formatDurationTimestamp(time), style: _timestampStyle, textDirection: TextDirection.ltr);
   }
 
   Widget _buildRemainingTimestamp(Duration remaining) {
@@ -166,7 +194,11 @@ class VideoTimelineBar extends StatelessWidget {
       builder: (context, finishTime) {
         if (finishTime == null) return _buildTimestamp(remaining);
         final clock = formatClockTime(finishTime, is24Hour: MediaQuery.alwaysUse24HourFormatOf(context));
-        return Text('${formatDurationTimestamp(remaining)} · $clock', style: _timestampStyle);
+        return Text(
+          '${formatDurationTimestamp(remaining)} · $clock',
+          style: _timestampStyle,
+          textDirection: TextDirection.ltr,
+        );
       },
     );
   }

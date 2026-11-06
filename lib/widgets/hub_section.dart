@@ -704,7 +704,11 @@ class HubSectionState extends State<HubSection> with MountedSetStateMixin, Skele
                         ? EdgeInsetsDirectional.only(end: cardGap)
                         : EdgeInsets.symmetric(horizontal: cardGap / 2);
 
-                    final containerHeight = posterHeight + (isTv ? 48 : 33);
+                    final captionHeight = math.max(
+                      isTv ? 48.0 : 33.0,
+                      MediaCard.gridCaptionBandHeight(context, posterTitleGap: 2),
+                    );
+                    final containerHeight = posterHeight + captionHeight;
                     final focusBorderWidth = FocusTheme.focusBorderWidth;
                     final focusExtra = focusBorderWidth * 2; // border on both sides
                     _itemExtent = cardWidth + focusExtra + cardGap;
@@ -809,7 +813,10 @@ class HubSectionState extends State<HubSection> with MountedSetStateMixin, Skele
                               keyboardMode: isKeyboardMode,
                               skeleton: () => Padding(
                                 padding: cardPadding,
-                                child: SizedBox(width: cardWidth, child: const SkeletonMediaCard()),
+                                child: SizedBox(
+                                  width: cardWidth,
+                                  child: SkeletonMediaCard(posterHeight: posterHeight),
+                                ),
                               ),
                               build: () => Padding(
                                 key: _itemKeyFor(index),

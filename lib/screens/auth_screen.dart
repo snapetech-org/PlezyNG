@@ -529,7 +529,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 children: [
                   BackendBadge(backend: MediaBackend.plex, size: badgeSize),
                   SizedBox(width: 8 * scale),
-                  Text(t.auth.signInWithPlex),
+                  Flexible(child: Text(t.auth.signInWithPlex, textAlign: TextAlign.center)),
                 ],
               ),
             ),

@@ -23,8 +23,9 @@ Optional semantic styles:
 | `layout` | `navigation` | `adaptive`, `sidebar`, `bottom`; default `adaptive` |
 
 Geometry updates shared native tokens, card/dialog shapes and list padding.
-Primary buttons and navigation selection shapes follow `radiusMd`; poster
-corners follow `radiusSm`. Selection markers follow the leading edge in RTL.
+Primary and secondary buttons and navigation selection shapes follow `radiusMd`;
+poster corners follow `radiusSm`, and overlay sheets follow `radiusLg`.
+Selection markers follow the leading edge in RTL.
 Typography updates the text theme. Navigation changes the application shell:
 sidebar is used when the viewport has at least 840 logical pixels; bottom uses
 the bottom bar. TV and automotive keep their existing focus/navigation contracts.

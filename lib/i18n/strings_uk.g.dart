@@ -113,6 +113,7 @@ class TranslationsUk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$uk householdSetup = _Translations$householdSetup$uk._(_root);
 	@override late final _Translations$issueReport$uk issueReport = _Translations$issueReport$uk._(_root);
 	@override late final _Translations$romm$uk romm = _Translations$romm$uk._(_root);
+	@override late final _Translations$subtitleCapture$uk subtitleCapture = _Translations$subtitleCapture$uk._(_root);
 }
 
 // Path: app
@@ -4211,6 +4212,41 @@ class _Translations$romm$uk extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$uk extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$uk._(TranslationsUk root) : this._root = root, super.internal(root);
+
+	final TranslationsUk _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Завантаження локальної мовленнєвої моделі…';
+	@override String loadingModelProgress({required Object percent}) => 'Завантаження локальної мовленнєвої моделі (${percent}%)…';
+	@override String get downloadingModel => 'Завантаження мовленнєвої моделі з мережі…';
+	@override String downloadingModelProgress({required Object percent}) => 'Завантаження мовленнєвої моделі з мережі (${percent}%)…';
+	@override String get capturing => 'Декодований звук захоплюється локально. Субтитри незабаром з’являться.';
+	@override String get startFailed => 'Не вдалося запустити субтитри наживо. Перевірте аудіовихід і спробуйте ще раз.';
+	@override String get inferenceFailed => 'Розпізнавання мовлення не вдалося. Зупиніть захоплення та спробуйте ще раз.';
+	@override String get noSpeech => 'Субтитри з мовлення не створено. Перевірте звукову доріжку та спробуйте ще раз.';
+	@override String captured({required Object count}) => 'Фрагментів субтитрів із переглянутої частини: ${count}.';
+	@override String get playbackEnded => 'Відтворення завершилося. Отриману транскрипцію видалено.';
+	@override String get playbackChanged => 'Відтворення змінилося. Отриману транскрипцію видалено.';
+	@override String get audioTrackChanged => 'Звукова доріжка змінилася. Запустіть захоплення знову для поточної доріжки.';
+	@override String listening({required Object count}) => 'Локальне прослуховування за допомогою CPU. Захоплено аудіопакетів: ${count}.';
+	@override String get captureUnavailable => 'Декодований звук недоступний через цей аудіовихід. Спробуйте підтримуваний аудіовихід.';
+	@override String get waitingForAudio => 'Очікування декодованого звуку. Відтворення може бути призупинено.';
+	@override String get captureStopped => 'Захоплення наживо зупинилося. Перевірте відтворення та спробуйте ще раз.';
+	@override String get preparing => 'Підготовка субтитрів наживо…';
+	@override String get downloadingDetector => 'Завантаження детектора мовлення…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Завантаження детектора мовлення (${percent}%)…';
+	@override String get transcribing => 'Локальне транскрибування аудіо…';
+	@override String transcribingProgress({required Object percent}) => 'Локальне транскрибування аудіо (${percent}%)…';
+	@override String get translating => 'Локальний переклад мовлення англійською…';
+	@override String translatingProgress({required Object percent}) => 'Локальний переклад мовлення англійською (${percent}%)…';
+	@override String get processingAudio => 'Локальна обробка аудіо…';
+	@override String processingAudioProgress({required Object percent}) => 'Локальна обробка аудіо (${percent}%)…';
+	@override String get cpuFallback => 'Обробка мовлення на GPU не вдалася. Повторна спроба на CPU…';
 }
 
 // Path: appIcon.names
@@ -9241,6 +9277,32 @@ extension on TranslationsUk {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Завантаження локальної мовленнєвої моделі…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Завантаження локальної мовленнєвої моделі (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Завантаження мовленнєвої моделі з мережі…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Завантаження мовленнєвої моделі з мережі (${percent}%)…',
+			'subtitleCapture.capturing' => 'Декодований звук захоплюється локально. Субтитри незабаром з’являться.',
+			'subtitleCapture.startFailed' => 'Не вдалося запустити субтитри наживо. Перевірте аудіовихід і спробуйте ще раз.',
+			'subtitleCapture.inferenceFailed' => 'Розпізнавання мовлення не вдалося. Зупиніть захоплення та спробуйте ще раз.',
+			'subtitleCapture.noSpeech' => 'Субтитри з мовлення не створено. Перевірте звукову доріжку та спробуйте ще раз.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Фрагментів субтитрів із переглянутої частини: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Відтворення завершилося. Отриману транскрипцію видалено.',
+			'subtitleCapture.playbackChanged' => 'Відтворення змінилося. Отриману транскрипцію видалено.',
+			'subtitleCapture.audioTrackChanged' => 'Звукова доріжка змінилася. Запустіть захоплення знову для поточної доріжки.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Локальне прослуховування за допомогою CPU. Захоплено аудіопакетів: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Декодований звук недоступний через цей аудіовихід. Спробуйте підтримуваний аудіовихід.',
+			'subtitleCapture.waitingForAudio' => 'Очікування декодованого звуку. Відтворення може бути призупинено.',
+			'subtitleCapture.captureStopped' => 'Захоплення наживо зупинилося. Перевірте відтворення та спробуйте ще раз.',
+			'subtitleCapture.preparing' => 'Підготовка субтитрів наживо…',
+			'subtitleCapture.downloadingDetector' => 'Завантаження детектора мовлення…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Завантаження детектора мовлення (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Локальне транскрибування аудіо…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Локальне транскрибування аудіо (${percent}%)…',
+			'subtitleCapture.translating' => 'Локальний переклад мовлення англійською…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Локальний переклад мовлення англійською (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Локальна обробка аудіо…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Локальна обробка аудіо (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Обробка мовлення на GPU не вдалася. Повторна спроба на CPU…',
 			_ => null,
 		};
 	}

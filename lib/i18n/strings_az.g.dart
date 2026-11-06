@@ -113,6 +113,7 @@ class TranslationsAz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$az householdSetup = _Translations$householdSetup$az._(_root);
 	@override late final _Translations$issueReport$az issueReport = _Translations$issueReport$az._(_root);
 	@override late final _Translations$romm$az romm = _Translations$romm$az._(_root);
+	@override late final _Translations$subtitleCapture$az subtitleCapture = _Translations$subtitleCapture$az._(_root);
 }
 
 // Path: app
@@ -4169,6 +4170,41 @@ class _Translations$romm$az extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$az extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$az._(TranslationsAz root) : this._root = root, super.internal(root);
+
+	final TranslationsAz _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Yerli nitq modeli yüklənir…';
+	@override String loadingModelProgress({required Object percent}) => 'Yerli nitq modeli yüklənir (${percent}%)…';
+	@override String get downloadingModel => 'Nitq modeli endirilir…';
+	@override String downloadingModelProgress({required Object percent}) => 'Nitq modeli endirilir (${percent}%)…';
+	@override String get capturing => 'Dekodlaşdırılmış səs yerli olaraq qeydə alınır. Subtitrlər tezliklə görünəcək.';
+	@override String get startFailed => 'Canlı subtitrləri başlatmaq mümkün olmadı. Səs çıxışını yoxlayıb yenidən cəhd edin.';
+	@override String get inferenceFailed => 'Nitqin tanınması alınmadı. Qeydi dayandırıb yenidən cəhd edin.';
+	@override String get noSpeech => 'Nitqdən subtitr yaradılmadı. Səs cığırını yoxlayıb yenidən cəhd edin.';
+	@override String captured({required Object count}) => 'Baxılmış hissədən alınan nitq subtitrləri: ${count}.';
+	@override String get playbackEnded => 'Oynatma bitdi. Qeydə alınmış transkript silindi.';
+	@override String get playbackChanged => 'Oynatma dəyişdi. Qeydə alınmış transkript silindi.';
+	@override String get audioTrackChanged => 'Səs cığırı dəyişdi. Cari cığırda qeydi yenidən başladın.';
+	@override String listening({required Object count}) => 'CPU ilə yerli olaraq dinlənilir. Qeydə alınmış səs paketləri: ${count}.';
+	@override String get captureUnavailable => 'Bu səs çıxışında dekodlaşdırılmış səs mövcud deyil. Dəstəklənən səs çıxışını sınayın.';
+	@override String get waitingForAudio => 'Dekodlaşdırılmış səs gözlənilir. Oynatma dayandırılmış ola bilər.';
+	@override String get captureStopped => 'Canlı qeyd dayandı. Oynatmanı yoxlayıb yenidən cəhd edin.';
+	@override String get preparing => 'Canlı subtitrlər hazırlanır…';
+	@override String get downloadingDetector => 'Nitq aşkarlama modeli endirilir…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Nitq aşkarlama modeli endirilir (${percent}%)…';
+	@override String get transcribing => 'Səs yerli olaraq mətnə çevrilir…';
+	@override String transcribingProgress({required Object percent}) => 'Səs yerli olaraq mətnə çevrilir (${percent}%)…';
+	@override String get translating => 'Nitq yerli olaraq ingilis dilinə tərcümə olunur…';
+	@override String translatingProgress({required Object percent}) => 'Nitq yerli olaraq ingilis dilinə tərcümə olunur (${percent}%)…';
+	@override String get processingAudio => 'Səs yerli olaraq emal olunur…';
+	@override String processingAudioProgress({required Object percent}) => 'Səs yerli olaraq emal olunur (${percent}%)…';
+	@override String get cpuFallback => 'GPU ilə nitq emalı alınmadı. CPU ilə yenidən cəhd edilir…';
 }
 
 // Path: appIcon.names
@@ -9197,6 +9233,32 @@ extension on TranslationsAz {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Yerli nitq modeli yüklənir…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Yerli nitq modeli yüklənir (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Nitq modeli endirilir…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Nitq modeli endirilir (${percent}%)…',
+			'subtitleCapture.capturing' => 'Dekodlaşdırılmış səs yerli olaraq qeydə alınır. Subtitrlər tezliklə görünəcək.',
+			'subtitleCapture.startFailed' => 'Canlı subtitrləri başlatmaq mümkün olmadı. Səs çıxışını yoxlayıb yenidən cəhd edin.',
+			'subtitleCapture.inferenceFailed' => 'Nitqin tanınması alınmadı. Qeydi dayandırıb yenidən cəhd edin.',
+			'subtitleCapture.noSpeech' => 'Nitqdən subtitr yaradılmadı. Səs cığırını yoxlayıb yenidən cəhd edin.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Baxılmış hissədən alınan nitq subtitrləri: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Oynatma bitdi. Qeydə alınmış transkript silindi.',
+			'subtitleCapture.playbackChanged' => 'Oynatma dəyişdi. Qeydə alınmış transkript silindi.',
+			'subtitleCapture.audioTrackChanged' => 'Səs cığırı dəyişdi. Cari cığırda qeydi yenidən başladın.',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPU ilə yerli olaraq dinlənilir. Qeydə alınmış səs paketləri: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Bu səs çıxışında dekodlaşdırılmış səs mövcud deyil. Dəstəklənən səs çıxışını sınayın.',
+			'subtitleCapture.waitingForAudio' => 'Dekodlaşdırılmış səs gözlənilir. Oynatma dayandırılmış ola bilər.',
+			'subtitleCapture.captureStopped' => 'Canlı qeyd dayandı. Oynatmanı yoxlayıb yenidən cəhd edin.',
+			'subtitleCapture.preparing' => 'Canlı subtitrlər hazırlanır…',
+			'subtitleCapture.downloadingDetector' => 'Nitq aşkarlama modeli endirilir…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Nitq aşkarlama modeli endirilir (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Səs yerli olaraq mətnə çevrilir…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Səs yerli olaraq mətnə çevrilir (${percent}%)…',
+			'subtitleCapture.translating' => 'Nitq yerli olaraq ingilis dilinə tərcümə olunur…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Nitq yerli olaraq ingilis dilinə tərcümə olunur (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Səs yerli olaraq emal olunur…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Səs yerli olaraq emal olunur (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU ilə nitq emalı alınmadı. CPU ilə yenidən cəhd edilir…',
 			_ => null,
 		};
 	}

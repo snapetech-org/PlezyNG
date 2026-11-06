@@ -113,6 +113,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$fa householdSetup = _Translations$householdSetup$fa._(_root);
 	@override late final _Translations$issueReport$fa issueReport = _Translations$issueReport$fa._(_root);
 	@override late final _Translations$romm$fa romm = _Translations$romm$fa._(_root);
+	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
 }
 
 // Path: app
@@ -4169,6 +4170,41 @@ class _Translations$romm$fa extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$fa extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'در حال بارگذاری مدل گفتار محلی…';
+	@override String loadingModelProgress({required Object percent}) => 'در حال بارگذاری مدل گفتار محلی (${percent}%)…';
+	@override String get downloadingModel => 'در حال دانلود مدل گفتار…';
+	@override String downloadingModelProgress({required Object percent}) => 'در حال دانلود مدل گفتار (${percent}%)…';
+	@override String get capturing => 'صدای رمزگشایی‌شده به‌صورت محلی دریافت می‌شود. زیرنویس‌ها به‌زودی نمایش داده می‌شوند.';
+	@override String get startFailed => 'زیرنویس زنده شروع نشد. خروجی صدا را بررسی کنید و دوباره تلاش کنید.';
+	@override String get inferenceFailed => 'تشخیص گفتار ناموفق بود. دریافت صدا را متوقف کنید و دوباره تلاش کنید.';
+	@override String get noSpeech => 'هیچ زیرنویسی از گفتار تولید نشد. مسیر صوتی را بررسی کنید و دوباره تلاش کنید.';
+	@override String captured({required Object count}) => 'تعداد قطعه‌های زیرنویس دریافت‌شده از بخش تماشاشده: ${count}.';
+	@override String get playbackEnded => 'پخش پایان یافت. متن پیاده‌شده حذف شد.';
+	@override String get playbackChanged => 'پخش تغییر کرد. متن پیاده‌شده حذف شد.';
+	@override String get audioTrackChanged => 'مسیر صوتی تغییر کرد. دریافت صدا را برای مسیر فعلی دوباره شروع کنید.';
+	@override String listening({required Object count}) => 'گوش‌دادن به‌صورت محلی با CPU. بسته‌های صوتی دریافت‌شده: ${count}.';
+	@override String get captureUnavailable => 'صدای رمزگشایی‌شده از این خروجی در دسترس نیست. یک خروجی صدای پشتیبانی‌شده را امتحان کنید.';
+	@override String get waitingForAudio => 'در انتظار صدای رمزگشایی‌شده. ممکن است پخش موقتاً متوقف شده باشد.';
+	@override String get captureStopped => 'دریافت زنده متوقف شد. پخش را بررسی کنید و دوباره تلاش کنید.';
+	@override String get preparing => 'در حال آماده‌سازی زیرنویس زنده…';
+	@override String get downloadingDetector => 'در حال دانلود تشخیص‌دهندهٔ گفتار…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'در حال دانلود تشخیص‌دهندهٔ گفتار (${percent}%)…';
+	@override String get transcribing => 'در حال پیاده‌سازی متن صدا به‌صورت محلی…';
+	@override String transcribingProgress({required Object percent}) => 'در حال پیاده‌سازی متن صدا به‌صورت محلی (${percent}%)…';
+	@override String get translating => 'در حال ترجمهٔ گفتار به انگلیسی به‌صورت محلی…';
+	@override String translatingProgress({required Object percent}) => 'در حال ترجمهٔ گفتار به انگلیسی به‌صورت محلی (${percent}%)…';
+	@override String get processingAudio => 'در حال پردازش صدا به‌صورت محلی…';
+	@override String processingAudioProgress({required Object percent}) => 'در حال پردازش صدا به‌صورت محلی (${percent}%)…';
+	@override String get cpuFallback => 'پردازش گفتار با GPU ناموفق بود. تلاش دوباره با CPU…';
 }
 
 // Path: appIcon.names
@@ -9197,6 +9233,32 @@ extension on TranslationsFa {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'در حال بارگذاری مدل گفتار محلی…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'در حال بارگذاری مدل گفتار محلی (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'در حال دانلود مدل گفتار…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'در حال دانلود مدل گفتار (${percent}%)…',
+			'subtitleCapture.capturing' => 'صدای رمزگشایی‌شده به‌صورت محلی دریافت می‌شود. زیرنویس‌ها به‌زودی نمایش داده می‌شوند.',
+			'subtitleCapture.startFailed' => 'زیرنویس زنده شروع نشد. خروجی صدا را بررسی کنید و دوباره تلاش کنید.',
+			'subtitleCapture.inferenceFailed' => 'تشخیص گفتار ناموفق بود. دریافت صدا را متوقف کنید و دوباره تلاش کنید.',
+			'subtitleCapture.noSpeech' => 'هیچ زیرنویسی از گفتار تولید نشد. مسیر صوتی را بررسی کنید و دوباره تلاش کنید.',
+			'subtitleCapture.captured' => ({required Object count}) => 'تعداد قطعه‌های زیرنویس دریافت‌شده از بخش تماشاشده: ${count}.',
+			'subtitleCapture.playbackEnded' => 'پخش پایان یافت. متن پیاده‌شده حذف شد.',
+			'subtitleCapture.playbackChanged' => 'پخش تغییر کرد. متن پیاده‌شده حذف شد.',
+			'subtitleCapture.audioTrackChanged' => 'مسیر صوتی تغییر کرد. دریافت صدا را برای مسیر فعلی دوباره شروع کنید.',
+			'subtitleCapture.listening' => ({required Object count}) => 'گوش‌دادن به‌صورت محلی با CPU. بسته‌های صوتی دریافت‌شده: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'صدای رمزگشایی‌شده از این خروجی در دسترس نیست. یک خروجی صدای پشتیبانی‌شده را امتحان کنید.',
+			'subtitleCapture.waitingForAudio' => 'در انتظار صدای رمزگشایی‌شده. ممکن است پخش موقتاً متوقف شده باشد.',
+			'subtitleCapture.captureStopped' => 'دریافت زنده متوقف شد. پخش را بررسی کنید و دوباره تلاش کنید.',
+			'subtitleCapture.preparing' => 'در حال آماده‌سازی زیرنویس زنده…',
+			'subtitleCapture.downloadingDetector' => 'در حال دانلود تشخیص‌دهندهٔ گفتار…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'در حال دانلود تشخیص‌دهندهٔ گفتار (${percent}%)…',
+			'subtitleCapture.transcribing' => 'در حال پیاده‌سازی متن صدا به‌صورت محلی…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'در حال پیاده‌سازی متن صدا به‌صورت محلی (${percent}%)…',
+			'subtitleCapture.translating' => 'در حال ترجمهٔ گفتار به انگلیسی به‌صورت محلی…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'در حال ترجمهٔ گفتار به انگلیسی به‌صورت محلی (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'در حال پردازش صدا به‌صورت محلی…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'در حال پردازش صدا به‌صورت محلی (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'پردازش گفتار با GPU ناموفق بود. تلاش دوباره با CPU…',
 			_ => null,
 		};
 	}

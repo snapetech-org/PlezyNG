@@ -32,12 +32,13 @@ class AppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (icon == null) return const SizedBox.shrink();
+    final style = AppIconStyle.maybeOf(context);
     return Icon(
       icon,
       size: size,
       color: color,
-      fill: fill ?? AppIconDefaults.fill,
-      weight: weight ?? AppIconDefaults.weight,
+      fill: fill ?? style?.fill ?? AppIconDefaults.fill,
+      weight: weight ?? style?.weight ?? AppIconDefaults.weight,
       grade: grade ?? AppIconDefaults.grade,
       opticalSize: opticalSize ?? AppIconDefaults.opticalSize,
       shadows: shadows ?? AppIconDefaults.shadows,
@@ -45,6 +46,19 @@ class AppIcon extends StatelessWidget {
       textDirection: textDirection,
     );
   }
+}
+
+/// Local defaults for utility icons; explicit selected/playback styles win.
+class AppIconStyle extends InheritedWidget {
+  const AppIconStyle({super.key, this.fill = 0, this.weight = 500, required super.child});
+
+  final double fill;
+  final double weight;
+
+  static AppIconStyle? maybeOf(BuildContext context) => context.dependOnInheritedWidgetOfExactType<AppIconStyle>();
+
+  @override
+  bool updateShouldNotify(AppIconStyle oldWidget) => fill != oldWidget.fill || weight != oldWidget.weight;
 }
 
 /// Central place to adjust default Material Symbol variations.

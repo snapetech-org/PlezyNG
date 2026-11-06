@@ -113,6 +113,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$uz householdSetup = _Translations$householdSetup$uz._(_root);
 	@override late final _Translations$issueReport$uz issueReport = _Translations$issueReport$uz._(_root);
 	@override late final _Translations$romm$uz romm = _Translations$romm$uz._(_root);
+	@override late final _Translations$subtitleCapture$uz subtitleCapture = _Translations$subtitleCapture$uz._(_root);
 }
 
 // Path: app
@@ -4169,6 +4170,41 @@ class _Translations$romm$uz extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$uz extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$uz._(TranslationsUz root) : this._root = root, super.internal(root);
+
+	final TranslationsUz _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Mahalliy nutq modeli yuklanmoqda…';
+	@override String loadingModelProgress({required Object percent}) => 'Mahalliy nutq modeli yuklanmoqda (${percent}%)…';
+	@override String get downloadingModel => 'Nutq modeli yuklab olinmoqda…';
+	@override String downloadingModelProgress({required Object percent}) => 'Nutq modeli yuklab olinmoqda (${percent}%)…';
+	@override String get capturing => 'Dekodlangan audio qurilmada qayd etilmoqda. Subtitrlar tez orada ko‘rinadi.';
+	@override String get startFailed => 'Jonli subtitrlarni boshlab bo‘lmadi. Audio chiqishini tekshirib, qayta urinib ko‘ring.';
+	@override String get inferenceFailed => 'Nutqni tanib olish bajarilmadi. Qayd etishni to‘xtatib, qayta urinib ko‘ring.';
+	@override String get noSpeech => 'Nutqdan subtitrlar yaratilmagan. Audio yo‘lakni tekshirib, qayta urinib ko‘ring.';
+	@override String captured({required Object count}) => 'Ko‘rilgan qismdan olingan subtitr bo‘laklari: ${count}.';
+	@override String get playbackEnded => 'Ijro tugadi. Olingan transkript o‘chirildi.';
+	@override String get playbackChanged => 'Ijro o‘zgardi. Olingan transkript o‘chirildi.';
+	@override String get audioTrackChanged => 'Audio yo‘lak o‘zgardi. Joriy yo‘lakda qayd etishni qayta boshlang.';
+	@override String listening({required Object count}) => 'CPU yordamida qurilmada tinglanmoqda. Qayd etilgan audio paketlar: ${count}.';
+	@override String get captureUnavailable => 'Bu audio chiqishida dekodlangan audio mavjud emas. Qo‘llab-quvvatlanadigan audio chiqishini sinab ko‘ring.';
+	@override String get waitingForAudio => 'Dekodlangan audio kutilmoqda. Ijro pauza qilingan bo‘lishi mumkin.';
+	@override String get captureStopped => 'Jonli qayd etish to‘xtadi. Ijroni tekshirib, qayta urinib ko‘ring.';
+	@override String get preparing => 'Jonli subtitrlar tayyorlanmoqda…';
+	@override String get downloadingDetector => 'Nutq detektori yuklab olinmoqda…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Nutq detektori yuklab olinmoqda (${percent}%)…';
+	@override String get transcribing => 'Audio qurilmada matnga aylantirilmoqda…';
+	@override String transcribingProgress({required Object percent}) => 'Audio qurilmada matnga aylantirilmoqda (${percent}%)…';
+	@override String get translating => 'Nutq qurilmada ingliz tiliga tarjima qilinmoqda…';
+	@override String translatingProgress({required Object percent}) => 'Nutq qurilmada ingliz tiliga tarjima qilinmoqda (${percent}%)…';
+	@override String get processingAudio => 'Audio qurilmada qayta ishlanmoqda…';
+	@override String processingAudioProgress({required Object percent}) => 'Audio qurilmada qayta ishlanmoqda (${percent}%)…';
+	@override String get cpuFallback => 'GPU yordamida nutqni qayta ishlash bajarilmadi. CPU yordamida qayta urinilmoqda…';
 }
 
 // Path: appIcon.names
@@ -9197,6 +9233,32 @@ extension on TranslationsUz {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Mahalliy nutq modeli yuklanmoqda…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Mahalliy nutq modeli yuklanmoqda (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Nutq modeli yuklab olinmoqda…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Nutq modeli yuklab olinmoqda (${percent}%)…',
+			'subtitleCapture.capturing' => 'Dekodlangan audio qurilmada qayd etilmoqda. Subtitrlar tez orada ko‘rinadi.',
+			'subtitleCapture.startFailed' => 'Jonli subtitrlarni boshlab bo‘lmadi. Audio chiqishini tekshirib, qayta urinib ko‘ring.',
+			'subtitleCapture.inferenceFailed' => 'Nutqni tanib olish bajarilmadi. Qayd etishni to‘xtatib, qayta urinib ko‘ring.',
+			'subtitleCapture.noSpeech' => 'Nutqdan subtitrlar yaratilmagan. Audio yo‘lakni tekshirib, qayta urinib ko‘ring.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Ko‘rilgan qismdan olingan subtitr bo‘laklari: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Ijro tugadi. Olingan transkript o‘chirildi.',
+			'subtitleCapture.playbackChanged' => 'Ijro o‘zgardi. Olingan transkript o‘chirildi.',
+			'subtitleCapture.audioTrackChanged' => 'Audio yo‘lak o‘zgardi. Joriy yo‘lakda qayd etishni qayta boshlang.',
+			'subtitleCapture.listening' => ({required Object count}) => 'CPU yordamida qurilmada tinglanmoqda. Qayd etilgan audio paketlar: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Bu audio chiqishida dekodlangan audio mavjud emas. Qo‘llab-quvvatlanadigan audio chiqishini sinab ko‘ring.',
+			'subtitleCapture.waitingForAudio' => 'Dekodlangan audio kutilmoqda. Ijro pauza qilingan bo‘lishi mumkin.',
+			'subtitleCapture.captureStopped' => 'Jonli qayd etish to‘xtadi. Ijroni tekshirib, qayta urinib ko‘ring.',
+			'subtitleCapture.preparing' => 'Jonli subtitrlar tayyorlanmoqda…',
+			'subtitleCapture.downloadingDetector' => 'Nutq detektori yuklab olinmoqda…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Nutq detektori yuklab olinmoqda (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Audio qurilmada matnga aylantirilmoqda…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Audio qurilmada matnga aylantirilmoqda (${percent}%)…',
+			'subtitleCapture.translating' => 'Nutq qurilmada ingliz tiliga tarjima qilinmoqda…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Nutq qurilmada ingliz tiliga tarjima qilinmoqda (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Audio qurilmada qayta ishlanmoqda…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Audio qurilmada qayta ishlanmoqda (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'GPU yordamida nutqni qayta ishlash bajarilmadi. CPU yordamida qayta urinilmoqda…',
 			_ => null,
 		};
 	}

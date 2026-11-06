@@ -202,8 +202,14 @@ def check_manifest(data: dict) -> None:
     require(isinstance(public_latest, bool), "release.publicLatestAvailable must be boolean")
     if public_latest is False:
         require("/releases/latest/download" not in readme.lower(), "README links a latest asset while no public latest release exists")
-        require(release.get("publicationStatus") == "draft", "a missing public latest release must be labeled draft")
+        require(release.get("publicationStatus") in {"draft", "unavailable"}, "a missing public latest release must be labeled draft or unavailable")
         require("draft" in readme.lower() and "no public" in readme.lower(), "README must explain that no public latest download exists")
+        if release.get("publicationStatus") == "unavailable":
+            try:
+                observation = json.loads((ROOT / release["availabilityEvidence"]).read_text(encoding="utf-8"))
+                check_release_availability(release, observation)
+            except (OSError, ValueError, TypeError, KeyError) as error:
+                ERRORS.append(f"release availability evidence is unreadable: {error}")
     elif public_latest is True:
         require(release.get("publicationStatus") == "published", "a public latest release must be labeled published")
         evidence = ROOT / str(release.get("evidence", ""))
@@ -230,6 +236,20 @@ def check_published_release(release: dict, metadata: dict) -> None:
     require(isinstance(names, list) and bool(names), "published release evidence has no assets")
     missing_webos = not any(isinstance(name, str) and name.endswith(".ipk") for name in names or [])
     require(("webos" in release.get("missingPublicPlatforms", [])) == missing_webos, "webOS publication status differs from actual release assets")
+
+
+def check_release_availability(release: dict, observation: dict) -> None:
+    """Keep historical publication evidence separate from current availability."""
+    require(observation.get("observedAt") == release.get("availabilityCheckedOn"), "release availability dates differ")
+    require(observation.get("latestStatus") == 404, "unavailable latest release needs an observed 404")
+    require(observation.get("tag") == release.get("tag"), "release availability tag differs")
+    require(observation.get("tagStatus") == 404, "unavailable recorded release needs an observed tag 404")
+    require(observation.get("listStatus") == 200, "release availability needs a successful list response")
+    releases = observation.get("listedReleases")
+    require(isinstance(releases, list), "release availability needs the observed release list")
+    if isinstance(releases, list):
+        require(all(isinstance(item, dict) and (item.get("draft") is True or item.get("prerelease") is True)
+                    for item in releases), "a stable public release is present in the availability observation")
 
 
 def main() -> int:

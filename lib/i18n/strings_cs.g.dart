@@ -113,6 +113,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$householdSetup$cs householdSetup = _Translations$householdSetup$cs._(_root);
 	@override late final _Translations$issueReport$cs issueReport = _Translations$issueReport$cs._(_root);
 	@override late final _Translations$romm$cs romm = _Translations$romm$cs._(_root);
+	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
 }
 
 // Path: app
@@ -4211,6 +4212,41 @@ class _Translations$romm$cs extends Translations$romm$en {
 	@override String get slow_down => 'Waiting for approval…';
 	@override String get access_denied => 'Device access was declined.';
 	@override String get expired_token => 'This pairing code expired. Start pairing again.';
+}
+
+// Path: subtitleCapture
+class _Translations$subtitleCapture$cs extends Translations$subtitleCapture$en {
+	_Translations$subtitleCapture$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get loadingModel => 'Načítání místního modelu řeči…';
+	@override String loadingModelProgress({required Object percent}) => 'Načítání místního modelu řeči (${percent}%)…';
+	@override String get downloadingModel => 'Stahování modelu řeči…';
+	@override String downloadingModelProgress({required Object percent}) => 'Stahování modelu řeči (${percent}%)…';
+	@override String get capturing => 'Dekódovaný zvuk se zachycuje místně. Titulky se brzy zobrazí.';
+	@override String get startFailed => 'Živé titulky se nepodařilo spustit. Zkontrolujte zvukový výstup a zkuste to znovu.';
+	@override String get inferenceFailed => 'Rozpoznávání řeči selhalo. Zastavte zachytávání a zkuste to znovu.';
+	@override String get noSpeech => 'Z řeči nebyly vytvořeny žádné titulky. Zkontrolujte zvukovou stopu a zkuste to znovu.';
+	@override String captured({required Object count}) => 'Počet titulků zachycených ze sledované části: ${count}.';
+	@override String get playbackEnded => 'Přehrávání skončilo. Zachycený přepis byl odstraněn.';
+	@override String get playbackChanged => 'Přehrávání se změnilo. Zachycený přepis byl odstraněn.';
+	@override String get audioTrackChanged => 'Zvuková stopa se změnila. Spusťte zachytávání znovu pro aktuální stopu.';
+	@override String listening({required Object count}) => 'Místní poslech pomocí CPU. Zachycené zvukové pakety: ${count}.';
+	@override String get captureUnavailable => 'Dekódovaný zvuk není na tomto výstupu dostupný. Zkuste podporovaný zvukový výstup.';
+	@override String get waitingForAudio => 'Čekání na dekódovaný zvuk. Přehrávání může být pozastavené.';
+	@override String get captureStopped => 'Živé zachytávání se zastavilo. Zkontrolujte přehrávání a zkuste to znovu.';
+	@override String get preparing => 'Příprava živých titulků…';
+	@override String get downloadingDetector => 'Stahování detektoru řeči…';
+	@override String downloadingDetectorProgress({required Object percent}) => 'Stahování detektoru řeči (${percent}%)…';
+	@override String get transcribing => 'Místní přepis zvuku…';
+	@override String transcribingProgress({required Object percent}) => 'Místní přepis zvuku (${percent}%)…';
+	@override String get translating => 'Místní překlad řeči do angličtiny…';
+	@override String translatingProgress({required Object percent}) => 'Místní překlad řeči do angličtiny (${percent}%)…';
+	@override String get processingAudio => 'Místní zpracování zvuku…';
+	@override String processingAudioProgress({required Object percent}) => 'Místní zpracování zvuku (${percent}%)…';
+	@override String get cpuFallback => 'Zpracování řeči na GPU selhalo. Nový pokus na CPU…';
 }
 
 // Path: appIcon.names
@@ -9241,6 +9277,32 @@ extension on TranslationsCs {
 			'romm.slow_down' => 'Waiting for approval…',
 			'romm.access_denied' => 'Device access was declined.',
 			'romm.expired_token' => 'This pairing code expired. Start pairing again.',
+			'subtitleCapture.loadingModel' => 'Načítání místního modelu řeči…',
+			'subtitleCapture.loadingModelProgress' => ({required Object percent}) => 'Načítání místního modelu řeči (${percent}%)…',
+			'subtitleCapture.downloadingModel' => 'Stahování modelu řeči…',
+			'subtitleCapture.downloadingModelProgress' => ({required Object percent}) => 'Stahování modelu řeči (${percent}%)…',
+			'subtitleCapture.capturing' => 'Dekódovaný zvuk se zachycuje místně. Titulky se brzy zobrazí.',
+			'subtitleCapture.startFailed' => 'Živé titulky se nepodařilo spustit. Zkontrolujte zvukový výstup a zkuste to znovu.',
+			'subtitleCapture.inferenceFailed' => 'Rozpoznávání řeči selhalo. Zastavte zachytávání a zkuste to znovu.',
+			'subtitleCapture.noSpeech' => 'Z řeči nebyly vytvořeny žádné titulky. Zkontrolujte zvukovou stopu a zkuste to znovu.',
+			'subtitleCapture.captured' => ({required Object count}) => 'Počet titulků zachycených ze sledované části: ${count}.',
+			'subtitleCapture.playbackEnded' => 'Přehrávání skončilo. Zachycený přepis byl odstraněn.',
+			'subtitleCapture.playbackChanged' => 'Přehrávání se změnilo. Zachycený přepis byl odstraněn.',
+			'subtitleCapture.audioTrackChanged' => 'Zvuková stopa se změnila. Spusťte zachytávání znovu pro aktuální stopu.',
+			'subtitleCapture.listening' => ({required Object count}) => 'Místní poslech pomocí CPU. Zachycené zvukové pakety: ${count}.',
+			'subtitleCapture.captureUnavailable' => 'Dekódovaný zvuk není na tomto výstupu dostupný. Zkuste podporovaný zvukový výstup.',
+			'subtitleCapture.waitingForAudio' => 'Čekání na dekódovaný zvuk. Přehrávání může být pozastavené.',
+			'subtitleCapture.captureStopped' => 'Živé zachytávání se zastavilo. Zkontrolujte přehrávání a zkuste to znovu.',
+			'subtitleCapture.preparing' => 'Příprava živých titulků…',
+			'subtitleCapture.downloadingDetector' => 'Stahování detektoru řeči…',
+			'subtitleCapture.downloadingDetectorProgress' => ({required Object percent}) => 'Stahování detektoru řeči (${percent}%)…',
+			'subtitleCapture.transcribing' => 'Místní přepis zvuku…',
+			'subtitleCapture.transcribingProgress' => ({required Object percent}) => 'Místní přepis zvuku (${percent}%)…',
+			'subtitleCapture.translating' => 'Místní překlad řeči do angličtiny…',
+			'subtitleCapture.translatingProgress' => ({required Object percent}) => 'Místní překlad řeči do angličtiny (${percent}%)…',
+			'subtitleCapture.processingAudio' => 'Místní zpracování zvuku…',
+			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Místní zpracování zvuku (${percent}%)…',
+			'subtitleCapture.cpuFallback' => 'Zpracování řeči na GPU selhalo. Nový pokus na CPU…',
 			_ => null,
 		};
 	}

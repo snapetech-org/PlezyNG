@@ -21,8 +21,40 @@ from build_adapters import verify_swift_pins
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def run(args, *, cwd=None):
-    subprocess.run(list(map(str, args)), cwd=cwd, check=True)
+def run(args, *, cwd=None, env=None):
+    subprocess.run(list(map(str, args)), cwd=cwd, env=env, check=True)
+
+
+def build_environment(base=None):
+    # A Run Script exports the enclosing app's resolved build settings. In
+    # particular, EXECUTABLE_DEBUG_DYLIB_PATH makes every nested package target
+    # link the same app dylib. Start with execution/network settings only; Xcode
+    # must resolve product, compiler, SDK and signing settings for its own graph.
+    base = os.environ if base is None else base
+    allowed = {
+        "HOME", "PATH", "USER", "LOGNAME", "SHELL", "TMPDIR", "LANG",
+        "DEVELOPER_DIR", "SSH_AUTH_SOCK", "XDG_CACHE_HOME",
+        "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY",
+        "http_proxy", "https_proxy", "all_proxy", "no_proxy",
+        "SSL_CERT_FILE", "SSL_CERT_DIR", "CURL_CA_BUNDLE",
+    }
+    env = {key: value for key, value in base.items()
+           if key in allowed or key.startswith(("LC_", "GIT_"))}
+    # System Git runs LFS smudge inside Xcode's package fetch. Keep this scoped
+    # to child processes, without changing the enclosing app's environment or
+    # the authenticated developer's global Git configuration.
+    config = {
+        "filter.lfs.process": "git-lfs filter-process",
+        "filter.lfs.required": "true",
+        "filter.lfs.smudge": "git-lfs smudge -- %f",
+        "filter.lfs.clean": "git-lfs clean -- %f",
+    }
+    start = int(env.get("GIT_CONFIG_COUNT", "0"))
+    env["GIT_CONFIG_COUNT"] = str(start + len(config))
+    for index, (key, value) in enumerate(config.items(), start=start):
+        env[f"GIT_CONFIG_KEY_{index}"] = key
+        env[f"GIT_CONFIG_VALUE_{index}"] = value
+    return env
 
 
 def build(work: Path, sdk: str, configuration: str, architectures: list[str]) -> Path:
@@ -63,26 +95,14 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
     }
     spec_path = work / "project.json"
     spec_path.write_text(json.dumps(spec, indent=2) + "\n")
-    run(["xcodegen", "generate", "--spec", spec_path, "--project", work])
+    env = build_environment()
+    run(["xcodegen", "generate", "--spec", spec_path, "--project", work], env=env)
     project = work / "PlezyNGDVRuntimeBuild.xcodeproj"
     resolved = project / "project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
     resolved.parent.mkdir(parents=True, exist_ok=True)
     if not resolved.exists():
         resolved.write_text(json.dumps({"pins": pins, "version": 2}, indent=2) + "\n")
     verify_swift_pins(resolved, pins, required=aether["swift_required_pins"] + ["aetherengine"])
-    # System Git runs LFS smudge inside Xcode's package fetch. No global Git
-    # configuration or authenticated developer profile is changed.
-    config = {
-        "filter.lfs.process": "git-lfs filter-process",
-        "filter.lfs.required": "true",
-        "filter.lfs.smudge": "git-lfs smudge -- %f",
-        "filter.lfs.clean": "git-lfs clean -- %f",
-    }
-    start = int(os.environ.get("GIT_CONFIG_COUNT", "0"))
-    os.environ["GIT_CONFIG_COUNT"] = str(start + len(config))
-    for index, (key, value) in enumerate(config.items(), start=start):
-        os.environ[f"GIT_CONFIG_KEY_{index}"] = key
-        os.environ[f"GIT_CONFIG_VALUE_{index}"] = value
     common = [
         "xcodebuild", "-project", project, "-scheme", "PlezyNGDVBuild",
         "-configuration", configuration, "-sdk", sdk, "-destination", destination,
@@ -90,9 +110,9 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
         "-scmProvider", "system", "-disableAutomaticPackageResolution",
         "-onlyUsePackageVersionsFromResolvedFile", "-jobs", "2",
     ]
-    run(common + ["-resolvePackageDependencies"], cwd=work)
+    run(common + ["-resolvePackageDependencies"], cwd=work, env=env)
     verify_swift_pins(resolved, pins, required=aether["swift_required_pins"] + ["aetherengine"])
-    run(common + ["ARCHS=" + " ".join(architectures), "ONLY_ACTIVE_ARCH=NO", "CODE_SIGNING_ALLOWED=NO", "build"], cwd=work)
+    run(common + ["ARCHS=" + " ".join(architectures), "ONLY_ACTIVE_ARCH=NO", "CODE_SIGNING_ALLOWED=NO", "build"], cwd=work, env=env)
     verify_swift_pins(resolved, pins, required=aether["swift_required_pins"] + ["aetherengine"])
     products = work / "DerivedData/Build/Products"
     # Keep only products for the requested SDK/configuration; never pick a

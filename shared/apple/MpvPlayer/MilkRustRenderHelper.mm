@@ -15,7 +15,7 @@ class AppleContext final : public NativeContext {
   AppleContext() {
 #if TARGET_OS_OSX
     CGLPixelFormatAttribute attrs[] = {kCGLPFAOpenGLProfile,
-        static_cast<CGLPixelFormatAttribute>(kCGLOGLPVersion_4_1_Core), kCGLPFAAccelerated,
+        static_cast<CGLPixelFormatAttribute>(kCGLOGLPVersion_GL4_Core), kCGLPFAAccelerated,
         static_cast<CGLPixelFormatAttribute>(0)};
     CGLPixelFormatObj format = nullptr; GLint count = 0;
     auto result = CGLChoosePixelFormat(attrs, &format, &count);

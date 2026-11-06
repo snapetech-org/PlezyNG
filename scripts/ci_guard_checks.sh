@@ -27,6 +27,6 @@ for checker in \
   python3 "$checker"
 done
 
-for guard_test in scripts/test_*.py scripts/*/test_*.py; do
+for guard_test in scripts/test_*.py scripts/*/test_*.py tools/dv-engine/test_apple_runtime.py; do
   PYTHONPATH="$ROOT_DIR:$ROOT_DIR/scripts${PYTHONPATH:+:$PYTHONPATH}" python3 "$guard_test"
 done

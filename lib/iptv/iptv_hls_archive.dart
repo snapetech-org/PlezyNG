@@ -21,9 +21,11 @@ class IptvHlsArchive {
     required this.output,
     required this.directory,
     required this.endsAt,
+    DateTime Function()? now,
     this.maximumBytes = 64 * 1024 * 1024 * 1024,
-  });
+  }) : _now = now ?? DateTime.now;
 
+  final DateTime Function() _now;
   final Uri uri;
   final bool allowHttp;
   final Map<String, String> headers;
@@ -71,7 +73,7 @@ class IptvHlsArchive {
       if (variant?.audio case final audio?) tracks.add(_ArchiveTrack(audio, 'audio'));
       await _writeMaster(tracks, variant?.bandwidth ?? 1000000);
       var failures = 0;
-      while (!_stopped && DateTime.now().isBefore(endsAt)) {
+      while (!_stopped && _now().isBefore(endsAt)) {
         _keys.clear(); // A publisher may rotate a key behind the same URI.
         try {
           await Future.wait(tracks.map((track) => _captureTrack(transport, track)));
@@ -79,13 +81,13 @@ class IptvHlsArchive {
           await _checkpoint(tracks, complete: false);
           if (tracks.every((track) => track.ended)) break;
           final delay = tracks.map((track) => track.targetDuration).reduce((a, b) => a < b ? a : b);
-          final remaining = endsAt.difference(DateTime.now());
+          final remaining = endsAt.difference(_now());
           if (remaining > Duration.zero) {
             final wait = Duration(milliseconds: (delay * 500).clamp(250, 4000).toInt());
             await Future<void>.delayed(wait < remaining ? wait : remaining);
           }
         } on Object {
-          if (_stopped || !DateTime.now().isBefore(endsAt)) break;
+          if (_stopped || !_now().isBefore(endsAt)) break;
           if (++failures > 3) rethrow;
           await Future<void>.delayed(Duration(seconds: failures));
         }
@@ -113,7 +115,7 @@ class IptvHlsArchive {
     track.targetDuration = parsed.targetDuration;
     track.ended = parsed.ended;
     for (final segment in parsed.segments) {
-      if (_stopped || !DateTime.now().isBefore(endsAt)) break;
+      if (_stopped || !_now().isBefore(endsAt)) break;
       final identity =
           '${segment.continuity}:${segment.sequence}:${segment.uri}:${segment.range?.offset}:${segment.range?.length}';
       if (track.seen.contains(identity)) continue;
@@ -156,8 +158,7 @@ class IptvHlsArchive {
       track.lastSequence = segment.sequence;
       if (segment.duration.ceil() > track.targetDuration) track.targetDuration = segment.duration.ceil();
       track.seen.add(identity);
-      if (track.segments.length == 1 ||
-          DateTime.now().difference(track.lastPublishedAt) >= const Duration(seconds: 2)) {
+      if (track.segments.length == 1 || _now().difference(track.lastPublishedAt) >= const Duration(seconds: 2)) {
         await _writeTrack(track, complete: false);
       }
     }
@@ -271,7 +272,7 @@ class IptvHlsArchive {
     }
     if (complete) text.writeln('#EXT-X-ENDLIST');
     await _atomicText(File(p.join(directory.path, '${track.name}.m3u8')), text.toString());
-    track.lastPublishedAt = DateTime.now();
+    track.lastPublishedAt = _now();
   }
 
   Future<void> _checkpoint(List<_ArchiveTrack> tracks, {required bool complete}) => _atomicText(

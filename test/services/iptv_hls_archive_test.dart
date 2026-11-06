@@ -20,6 +20,8 @@ void main() {
   });
 
   test('scheduled completion never decrypts a truncated AES segment', () async {
+    var now = DateTime.utc(2026, 1, 1);
+    final endsAt = now.add(const Duration(seconds: 1));
     final directory = await Directory.systemTemp.createTemp('plezy-hls-aes-');
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     final key = Uint8List.fromList(List.generate(16, (i) => i));
@@ -41,9 +43,9 @@ void main() {
       } else if (request.uri.path == '/key') {
         request.response.add(key);
       } else {
-        started.complete();
         request.response.add(ciphertext.sublist(0, 17));
         await request.response.flush();
+        started.complete();
         await release.future;
         request.response.add(ciphertext.sublist(17));
       }
@@ -54,7 +56,8 @@ void main() {
       uri: Uri.parse('http://127.0.0.1:${server.port}/live.m3u8'),
       allowHttp: true,
       outputFile: output,
-      endsAt: DateTime.now().add(const Duration(milliseconds: 200)),
+      endsAt: endsAt,
+      now: () => now,
     );
     addTearDown(() async {
       if (!release.isCompleted) {
@@ -65,8 +68,13 @@ void main() {
       await directory.delete(recursive: true);
     });
     final recording = recorder.record();
-    await started.future;
-    await Future<void>.delayed(const Duration(milliseconds: 250));
+    // Observe the admitted partial segment before advancing the recording
+    // clock. Slow CI startup cannot expire the schedule before the request.
+    await Future.any<void>([
+      started.future,
+      recording.then<void>((_) => fail('Recording finished before the segment request')),
+    ]);
+    now = endsAt.add(const Duration(milliseconds: 1));
     release.complete();
     await recording;
     final media = await IptvHlsArchive.mediaDirectory(output);
@@ -74,6 +82,7 @@ void main() {
   });
 
   test('archive retains external audio, per-segment maps and discontinuities', () async {
+    final now = DateTime.utc(2026, 1, 1);
     final directory = await Directory.systemTemp.createTemp('plezy-hls-archive-');
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     final fixtures = <String, String>{
@@ -107,7 +116,8 @@ void main() {
       allowHttp: true,
       outputFile: output,
       archiveDirectory: media,
-      endsAt: DateTime.now().add(const Duration(seconds: 20)),
+      endsAt: now.add(const Duration(seconds: 20)),
+      now: () => now,
     );
     addTearDown(() async {
       await recorder.stop();

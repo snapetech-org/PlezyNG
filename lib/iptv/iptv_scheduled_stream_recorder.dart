@@ -15,9 +15,11 @@ class IptvScheduledStreamRecorder {
     this.headers = const {},
     required this.outputFile,
     required this.endsAt,
+    DateTime Function()? now,
     this.archiveDirectory,
-  });
+  }) : _now = now ?? DateTime.now;
 
+  final DateTime Function() _now;
   final Uri uri;
   final bool allowHttp;
   final Map<String, String> headers;
@@ -112,17 +114,14 @@ class IptvScheduledStreamRecorder {
       cancelOnError: true,
     );
     _subscription = subscription;
-    _stopTimer = Timer(
-      endsAt.difference(DateTime.now()).isNegative ? Duration.zero : endsAt.difference(DateTime.now()),
-      () {
-        reachedScheduledEnd = true;
-        _stopped = true;
-        unawaited(subscription.cancel().then((_) => finish()));
-      },
-    );
+    _stopTimer = Timer(endsAt.difference(_now()).isNegative ? Duration.zero : endsAt.difference(_now()), () {
+      reachedScheduledEnd = true;
+      _stopped = true;
+      unawaited(subscription.cancel().then((_) => finish()));
+    });
     try {
       await done.future;
-      if (!reachedScheduledEnd && !_stopped && DateTime.now().isBefore(endsAt)) {
+      if (!reachedScheduledEnd && !_stopped && _now().isBefore(endsAt)) {
         throw const FileSystemException('Stream ended before the scheduled programme ended');
       }
     } finally {
@@ -149,6 +148,7 @@ class IptvScheduledStreamRecorder {
       output: outputFile,
       directory: archiveDirectory ?? Directory('${outputFile.path}.media'),
       endsAt: endsAt,
+      now: _now,
     );
     _archive = archive;
     await archive.record();

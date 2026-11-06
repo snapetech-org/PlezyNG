@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Make scheduled HLS completion tests independent of machine speed while preserving complete-segment AES decryption checks.
+
 - Isolate RomM manual PDF rendering behind the TV platform adapter, preserving supported PDF viewers and detecting unsupported Tizen imports before native builds.
 
 - Prepare the complete Pleazyng 3.0.2 corrective release with package build 161, preserving the earlier immutable tags.

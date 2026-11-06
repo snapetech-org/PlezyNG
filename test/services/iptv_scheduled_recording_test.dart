@@ -7,6 +7,7 @@ import 'package:plezy/iptv/iptv_hls_archive.dart';
 
 void main() {
   test('early direct-stream EOF preserves the captured bytes for salvage', () async {
+    final now = DateTime.utc(2026, 1, 1);
     final directory = await Directory.systemTemp.createTemp('plezy-recording-');
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     server.listen((request) async {
@@ -18,7 +19,8 @@ void main() {
       uri: Uri.parse('http://127.0.0.1:${server.port}/channel.ts'),
       allowHttp: true,
       outputFile: output,
-      endsAt: DateTime.now().add(const Duration(minutes: 1)),
+      endsAt: now.add(const Duration(minutes: 1)),
+      now: () => now,
     );
     addTearDown(() async {
       await recorder.stop();
@@ -30,6 +32,8 @@ void main() {
   });
 
   test('scheduled end during an HLS response retains complete segment bytes', () async {
+    var now = DateTime.utc(2026, 1, 1);
+    final endsAt = now.add(const Duration(seconds: 1));
     final directory = await Directory.systemTemp.createTemp('plezy-hls-recording-');
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     final segmentStarted = Completer<void>();
@@ -38,9 +42,9 @@ void main() {
       if (request.uri.path == '/live.m3u8') {
         request.response.write('#EXTM3U\n#EXT-X-TARGETDURATION:1\n#EXTINF:1,\nsegment.ts\n');
       } else {
-        segmentStarted.complete();
         request.response.add(List<int>.filled(188, 0x47));
         await request.response.flush();
+        segmentStarted.complete();
         await releaseSegment.future;
         request.response.add(List<int>.filled(188, 0x47));
       }
@@ -51,7 +55,8 @@ void main() {
       uri: Uri.parse('http://127.0.0.1:${server.port}/live.m3u8'),
       allowHttp: true,
       outputFile: output,
-      endsAt: DateTime.now().add(const Duration(milliseconds: 200)),
+      endsAt: endsAt,
+      now: () => now,
     );
     addTearDown(() async {
       if (!releaseSegment.isCompleted) releaseSegment.complete();
@@ -60,8 +65,11 @@ void main() {
       await directory.delete(recursive: true);
     });
     final recording = recorder.record();
-    await segmentStarted.future;
-    await Future<void>.delayed(const Duration(milliseconds: 250));
+    await Future.any<void>([
+      segmentStarted.future,
+      recording.then<void>((_) => fail('Recording finished before the segment request')),
+    ]);
+    now = endsAt.add(const Duration(milliseconds: 1));
     releaseSegment.complete();
     await recording;
     expect(recorder.fileExtension, '.m3u8');

@@ -1590,19 +1590,32 @@ jobs:
 
           APP_PATH="build/macos/Build/Products/Release/Pleazyng.app"
 
-          # Deep sign everything inside-out: executables, dylibs, XPC services, app bundles, frameworks
+          APP_EXECUTABLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")
+          test -x "$APP_PATH/Contents/MacOS/plezy_visualizer_helper"
+
+          # Sign executable payloads before sealing their containing frameworks.
+          # The visualizer helper is in MacOS, outside the Frameworks directory.
+          find "$APP_PATH/Contents/Frameworks" "$APP_PATH/Contents/MacOS" -type f -perm +111 ! -name "*.dylib" ! -path "*/Headers/*" ! -path "*/Modules/*" -print0 \
+            | while IFS= read -r -d '' exe; do
+              if [[ "$exe" == "$APP_PATH/Contents/MacOS/$APP_EXECUTABLE" ]]; then continue; fi
+              kind="$(/usr/bin/file -b "$exe")"
+              if [[ "$kind" != *"Mach-O"* || "$kind" == *"ar archive"* || "$kind" == *" object"* ]]; then continue; fi
+              preserve=()
+              if codesign -d "$exe" >/dev/null 2>&1; then preserve=(--preserve-metadata=entitlements); fi
+              codesign --force --sign "$IDENTITY" --timestamp --options runtime "${preserve[@]}" "$exe"
+            done
+
+          # Seal nested bundles and libraries inside-out after their children.
           find "$APP_PATH/Contents/Frameworks" \( -name "*.xpc" -o -name "*.app" -o -name "*.framework" -o -name "*.dylib" \) -print0 \
             | sort -zr \
             | while IFS= read -r -d '' item; do
               echo "Signing: $item"
-              codesign --force --sign "$IDENTITY" --timestamp --options runtime "$item"
+              preserve=()
+              if codesign -d "$item" >/dev/null 2>&1; then preserve=(--preserve-metadata=entitlements); fi
+              codesign --force --sign "$IDENTITY" --timestamp --options runtime "${preserve[@]}" "$item"
             done
 
-          # Sign any remaining bare executables (e.g. Sparkle's Autoupdate)
-          find "$APP_PATH/Contents/Frameworks" -type f -perm +111 ! -name "*.dylib" ! -path "*/Headers/*" ! -path "*/Modules/*" -print0 \
-            | while IFS= read -r -d '' exe; do
-              codesign --force --sign "$IDENTITY" --timestamp --options runtime "$exe" 2>/dev/null || true
-            done
+          python3 scripts/apple/finalize_macos_runtime_receipts.py "$APP_PATH"
 
           # Sign the app bundle itself
           echo "Signing app bundle: $APP_PATH"

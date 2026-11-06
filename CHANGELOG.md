@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Sign macOS helpers and nested code before sealing their containers, preserve helper entitlements, and refresh runtime receipt hashes after final signing.
+
 - Preserve macOS exception handling across the bundled Rust, LuaJIT, Objective-C and C++ runtimes by packaging the pinned LuaJIT archive as a separate signed dynamic library.
 - Update the iOS native tests to import the renamed Pleazyng application module.
 - Keep the native tvOS Steam HDR plane compatible with the tvOS SDK while preserving its 10-bit PQ presentation path.

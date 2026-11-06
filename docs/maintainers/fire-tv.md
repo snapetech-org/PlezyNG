@@ -79,3 +79,12 @@ The packager requires Pillow. It adds a visible preview label, a contact sheet,
 manifest and ZIP. These fixtures do not represent a complete running app session;
 they include synthetic movie metadata and test/debug UI. They are not eligible
 for store screenshot slots. Keep them separate from native captures.
+
+Package native captures with `tools/store-assets/package_captures.py --input
+/path/native-captures --output /path/store-sets --group amazon-firetv` (or
+`google-play-phone` / `google-play-tablet`). It requires three distinct TV frames
+or two phone/tablet frames from one build. It verifies image hashes, opacity and
+dimensions before writing 24-bit RGB PNGs and a provenance manifest; it never
+resizes or crops. Configure a phone emulator to 1080×1920 before launching the
+app, rather than exporting a tall 1080×2400 frame that exceeds Google Play's
+maximum 2:1 aspect ratio. Preserve raw captures alongside upload copies.

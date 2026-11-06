@@ -5,6 +5,7 @@
 - Require compiled PME Vulkan evidence in every Linux and Windows native package before promoting application pins.
 
 - Declare the Vulkan loader and other shared-bundle runtime dependencies consistently in PPA, COPR and Snap packages, and verify alternate recipes against the canonical Linux package lists.
+- Repair Apple Distribution PKCS12 import and certificate-chain resolution, validate new-bundle profiles, and archive iOS/tvOS with separate app/extension signing bindings.
 
 - Curated title extras with strict identity and publisher checks, bounded previews, profile-specific exclusions, and optional evidence-backed AI search.
 - Isolate Steam relay regression tests from a running desktop Steam client and model server deletion permission before validating shared-file deletion.

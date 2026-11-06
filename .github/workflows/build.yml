@@ -1051,55 +1051,23 @@ jobs:
         id: ios-signing
         env:
           INCLUDE_APPLE_STORE_BUILD: ${{ needs.validate-trusted-ref.outputs.include_apple_store_build }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
           if [[ "$INCLUDE_APPLE_STORE_BUILD" != "true" ]]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "Signed iOS App Store IPA disabled; the unsigned developer IPA remains the GitHub release artifact."
+            echo "Signed iOS App Store IPA disabled; unsigned developer artifact remains available."
             exit 0
           fi
-          values=("$APPLE_API_KEY_ID" "$APPLE_API_ISSUER_ID" "$APPLE_API_PRIVATE_KEY" "$APPLE_TEAM_ID")
-          configured=0
-          missing=0
-          for value in "${values[@]}"; do
-            if [[ -n "$value" ]]; then configured=$((configured + 1)); else missing=$((missing + 1)); fi
+          for name in APPLE_TEAM_ID APPLE_DISTRIBUTION_CERTIFICATE_BASE64 APPLE_CERTIFICATE_PASSWORD IOS_PROVISIONING_PROFILE_BASE64; do
+            if [[ -z "${!name}" ]]; then
+              echo "Missing required Apple signing secret: $name" >&2
+              exit 1
+            fi
           done
-          if (( configured == 0 )); then
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "Apple cloud signing is not configured; only the unsigned developer IPA will be attached."
-            exit 0
-          fi
-          if (( missing != 0 )); then
-            echo "Apple cloud-signing secrets are incomplete." >&2
-            exit 1
-          fi
-
-          umask 077
-          api_key_path="$RUNNER_TEMP/pleazyng-ios-api-key.p8"
-          export_options_path="$RUNNER_TEMP/pleazyng-ios-export-options.plist"
-          printf '%s' "$APPLE_API_PRIVATE_KEY" > "$api_key_path"
-          echo "api_key_path=$api_key_path" >> "$GITHUB_OUTPUT"
-          echo "export_options_path=$export_options_path" >> "$GITHUB_OUTPUT"
-          cat > "$export_options_path" <<PLIST
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store-connect</string>
-            <key>signingStyle</key>
-            <string>automatic</string>
-            <key>teamID</key>
-            <string>$APPLE_TEAM_ID</string>
-            <key>uploadSymbols</key>
-            <true/>
-          </dict>
-          </plist>
-          PLIST
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
       - name: Build iOS (no codesign)
@@ -1113,31 +1081,14 @@ jobs:
           cp -r build/ios/iphoneos/Pleazyng.app Payload/
           zip -r pleazyng-ios-unsigned.ipa Payload
 
-      - name: Prepare a default keychain for Xcode cloud signing
-        if: steps.ios-signing.outputs.configured == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          keychain_path="$RUNNER_TEMP/pleazyng-ios-cloud-signing.keychain-db"
-          if [[ -e "$keychain_path" || -L "$keychain_path" ]]; then
-            echo "Refusing to reuse an existing iOS signing keychain: $keychain_path" >&2
-            exit 1
-          fi
-          keychain_password="$(/usr/bin/uuidgen)"
-          security create-keychain -p "$keychain_password" "$keychain_path"
-          security set-keychain-settings -lut 21600 "$keychain_path"
-          security unlock-keychain -p "$keychain_password" "$keychain_path"
-          security list-keychains -d user -s "$keychain_path"
-          security default-keychain -d user -s "$keychain_path"
 
       - name: Build signed iOS App Store IPA
         if: steps.ios-signing.outputs.configured == 'true'
         env:
-          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_API_KEY_PATH: ${{ steps.ios-signing.outputs.api_key_path }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-          EXPORT_OPTIONS_PATH: ${{ steps.ios-signing.outputs.export_options_path }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
@@ -1145,52 +1096,14 @@ jobs:
           flutter build ios --release --no-codesign \
             ${{ env.RELEASE_DART_DEFINES }} \
             --dart-define=SUPPORTER_MODE=iap \
-            --obfuscate \
-            --split-debug-info=debug-info/ios-app-store
+            --dart-define=ENABLE_UPDATE_CHECK=false \
+            --obfuscate --split-debug-info=debug-info/ios-app-store
+          python3 "$GITHUB_WORKSPACE/scripts/build_apple_store_archive.py" \
+            --platform ios \
+            --archive-path "$APPLE_LOCAL_BUILD_DIR/ios-store.xcarchive" \
+            --export-path "$APPLE_LOCAL_BUILD_DIR/ios-store-export" \
+            --derived-data "$APPLE_LOCAL_BUILD_DIR/ios-store-derived-data"
 
-          archive_path="$APPLE_LOCAL_BUILD_DIR/ios-store.xcarchive"
-          export_path="$APPLE_LOCAL_BUILD_DIR/ios-store-export"
-          derived_data_path="$APPLE_LOCAL_BUILD_DIR/ios-store-derived-data"
-          xcodebuild archive \
-            -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            -archivePath "$archive_path" \
-            -derivedDataPath "$derived_data_path" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$APPLE_API_KEY_PATH" \
-            -authenticationKeyID "$APPLE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPLE_API_ISSUER_ID" \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
-            COMPILER_INDEX_STORE_ENABLE=NO \
-            archive
-          xcodebuild -exportArchive \
-            -archivePath "$archive_path" \
-            -exportPath "$export_path" \
-            -exportOptionsPlist "$EXPORT_OPTIONS_PATH" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$APPLE_API_KEY_PATH" \
-            -authenticationKeyID "$APPLE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPLE_API_ISSUER_ID"
-          ipa_path=$(find "$export_path" -maxdepth 1 -type f -name '*.ipa' -print -quit)
-          if [[ -z "$ipa_path" ]]; then
-            echo "Xcode did not produce an iOS App Store IPA." >&2
-            exit 1
-          fi
-          cp "$ipa_path" pleazyng-ios-appstore.ipa
-
-      - name: Remove the temporary iOS signing keychain
-        if: always() && steps.ios-signing.outputs.configured == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          keychain_path="$RUNNER_TEMP/pleazyng-ios-cloud-signing.keychain-db"
-          if [[ -e "$keychain_path" || -L "$keychain_path" ]]; then
-            security delete-keychain "$keychain_path"
-          fi
 
       - name: Copy iOS packages to the workflow workspace
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
@@ -1212,13 +1125,18 @@ jobs:
         with:
           subject-path: pleazyng-ios-appstore.ipa
 
-      - name: Remove iOS signing material
-        if: always() && steps.ios-signing.outputs.api_key_path != ''
-        env:
-          APPLE_API_KEY_PATH: ${{ steps.ios-signing.outputs.api_key_path }}
-          EXPORT_OPTIONS_PATH: ${{ steps.ios-signing.outputs.export_options_path }}
+      - name: Retain iOS signing report
+        if: always() && steps.ios-signing.outputs.configured == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ios-store-signing-report
+          path: ${{ env.PLEZYNG_APPLE_WORKSPACE }}/pleazyng-ios-signing-report.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Remove iOS signing archive outputs
+        if: always() && steps.ios-signing.outputs.configured == 'true'
         run: |
-          rm -f "$APPLE_API_KEY_PATH" "$EXPORT_OPTIONS_PATH"
           rm -rf "$APPLE_LOCAL_BUILD_DIR/ios-store.xcarchive" \
             "$APPLE_LOCAL_BUILD_DIR/ios-store-export" \
             "$APPLE_LOCAL_BUILD_DIR/ios-store-derived-data"
@@ -1342,55 +1260,24 @@ jobs:
         id: tvos-signing
         env:
           INCLUDE_APPLE_STORE_BUILD: ${{ needs.validate-trusted-ref.outputs.include_apple_store_build }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-          APPLE_API_PRIVATE_KEY: ${{ secrets.APPLE_API_PRIVATE_KEY }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          TVOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.TVOS_PROVISIONING_PROFILE_BASE64 }}
+          TVOS_TOPSHELF_PROVISIONING_PROFILE_BASE64: ${{ secrets.TVOS_TOPSHELF_PROVISIONING_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
           if [[ "$INCLUDE_APPLE_STORE_BUILD" != "true" ]]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "Signed tvOS App Store IPA disabled; the unsigned developer IPA remains the GitHub release artifact."
+            echo "Signed tvOS App Store IPA disabled; unsigned developer artifact remains available."
             exit 0
           fi
-          values=("$APPLE_API_KEY_ID" "$APPLE_API_ISSUER_ID" "$APPLE_API_PRIVATE_KEY" "$APPLE_TEAM_ID")
-          configured=0
-          missing=0
-          for value in "${values[@]}"; do
-            if [[ -n "$value" ]]; then configured=$((configured + 1)); else missing=$((missing + 1)); fi
+          for name in APPLE_TEAM_ID APPLE_DISTRIBUTION_CERTIFICATE_BASE64 APPLE_CERTIFICATE_PASSWORD TVOS_PROVISIONING_PROFILE_BASE64 TVOS_TOPSHELF_PROVISIONING_PROFILE_BASE64; do
+            if [[ -z "${!name}" ]]; then
+              echo "Missing required Apple signing secret: $name" >&2
+              exit 1
+            fi
           done
-          if (( configured == 0 )); then
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "Apple cloud signing is not configured; only the unsigned developer IPA will be attached."
-            exit 0
-          fi
-          if (( missing != 0 )); then
-            echo "Apple cloud-signing secrets are incomplete." >&2
-            exit 1
-          fi
-
-          umask 077
-          api_key_path="$RUNNER_TEMP/pleazyng-tvos-api-key.p8"
-          export_options_path="$RUNNER_TEMP/pleazyng-tvos-export-options.plist"
-          printf '%s' "$APPLE_API_PRIVATE_KEY" > "$api_key_path"
-          echo "api_key_path=$api_key_path" >> "$GITHUB_OUTPUT"
-          echo "export_options_path=$export_options_path" >> "$GITHUB_OUTPUT"
-          cat > "$export_options_path" <<PLIST
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store-connect</string>
-            <key>signingStyle</key>
-            <string>automatic</string>
-            <key>teamID</key>
-            <string>$APPLE_TEAM_ID</string>
-            <key>uploadSymbols</key>
-            <true/>
-          </dict>
-          </plist>
-          PLIST
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
       - name: Build tvOS app
@@ -1423,47 +1310,18 @@ jobs:
         if: steps.tvos-signing.outputs.configured == 'true'
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_API_KEY_PATH: ${{ steps.tvos-signing.outputs.api_key_path }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-          EXPORT_OPTIONS_PATH: ${{ steps.tvos-signing.outputs.export_options_path }}
+          APPLE_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          TVOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.TVOS_PROVISIONING_PROFILE_BASE64 }}
+          TVOS_TOPSHELF_PROVISIONING_PROFILE_BASE64: ${{ secrets.TVOS_TOPSHELF_PROVISIONING_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
-          archive_path="$APPLE_LOCAL_BUILD_DIR/tvos-store.xcarchive"
-          export_path="$APPLE_LOCAL_BUILD_DIR/tvos-store-export"
-          derived_data_path="$APPLE_LOCAL_BUILD_DIR/tvos-store-derived-data"
-          mkdir -p "$export_path"
-          xcodebuild archive \
-            -workspace tvos/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -sdk appletvos \
-            -destination 'generic/platform=tvOS' \
-            -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
-            -archivePath "$archive_path" \
-            -derivedDataPath "$derived_data_path" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$APPLE_API_KEY_PATH" \
-            -authenticationKeyID "$APPLE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPLE_API_ISSUER_ID" \
-            ARCHS=arm64 \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            COMPILER_INDEX_STORE_ENABLE=NO
-          xcodebuild -exportArchive \
-            -archivePath "$archive_path" \
-            -exportPath "$export_path" \
-            -exportOptionsPlist "$EXPORT_OPTIONS_PATH" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$APPLE_API_KEY_PATH" \
-            -authenticationKeyID "$APPLE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPLE_API_ISSUER_ID"
-          ipa_path=$(find "$export_path" -maxdepth 1 -type f -name '*.ipa' -print -quit)
-          if [[ -z "$ipa_path" ]]; then
-            echo "Xcode did not produce a tvOS App Store IPA." >&2
-            exit 1
-          fi
-          cp "$ipa_path" pleazyng-tvos-appstore.ipa
+          python3 "$GITHUB_WORKSPACE/scripts/build_apple_store_archive.py" \
+            --platform tvos \
+            --archive-path "$APPLE_LOCAL_BUILD_DIR/tvos-store.xcarchive" \
+            --export-path "$APPLE_LOCAL_BUILD_DIR/tvos-store-export" \
+            --derived-data "$APPLE_LOCAL_BUILD_DIR/tvos-store-derived-data" \
+            --source-packages "$APPLE_SOURCE_PACKAGES_DIR"
 
       - name: Attest unsigned tvOS developer package
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
@@ -1476,13 +1334,18 @@ jobs:
         with:
           subject-path: pleazyng-tvos-appstore.ipa
 
-      - name: Remove tvOS signing material
-        if: always() && steps.tvos-signing.outputs.api_key_path != ''
-        env:
-          APPLE_API_KEY_PATH: ${{ steps.tvos-signing.outputs.api_key_path }}
-          EXPORT_OPTIONS_PATH: ${{ steps.tvos-signing.outputs.export_options_path }}
+      - name: Retain tvOS signing report
+        if: always() && steps.tvos-signing.outputs.configured == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: tvos-store-signing-report
+          path: ${{ github.workspace }}/pleazyng-tvos-signing-report.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Remove tvOS signing archive outputs
+        if: always() && steps.tvos-signing.outputs.configured == 'true'
         run: |
-          rm -f "$APPLE_API_KEY_PATH" "$EXPORT_OPTIONS_PATH"
           rm -rf "$APPLE_LOCAL_BUILD_DIR/tvos-store.xcarchive" \
             "$APPLE_LOCAL_BUILD_DIR/tvos-store-export" \
             "$APPLE_LOCAL_BUILD_DIR/tvos-store-derived-data"

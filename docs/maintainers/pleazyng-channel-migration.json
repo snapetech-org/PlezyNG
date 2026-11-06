@@ -124,12 +124,15 @@
       "full_description": "Canonical Pleazyng copy",
       "icon": "app-icon-512.png",
       "feature_graphic": "feature-graphic-1024x500.png",
-      "state": "Saved as draft; final Save blocked by minimum two phone or tablet screenshots",
+      "state": "Three authentic phone screenshots uploaded into editor; final listing review/Save still pending",
       "artwork_ai_labels_selected": [
         "App icon",
         "Feature graphic"
       ],
-      "authentic_android_screenshots_pending": true
+      "authentic_android_screenshots_pending": false,
+      "screenshot_provenance": "Signed Amazon-flavor Android APK source 28486bba2bb42d25bc17d127ca73c5ccc27ba1a3 running on Android emulators; common app UI, not proof of Play billing or final release qualification",
+      "phone_screenshots": 3,
+      "tablet_screenshots_uploaded_pending_validation": 2
     },
     "production_access_gate": {
       "closed_test_minimum_testers": 12,
@@ -164,8 +167,8 @@
     "target_audience_old": "18 and over; verified in old app console",
     "review_access_pending": "Signed Android store-review grant implementation/key configured; private grant and Jellyfin demo instructions saved in new app Sign in details. Source tests pass; actual signed build redemption with expired trial required before review submission.",
     "sign_in_details": "Saved; full-feature review code plus public Jellyfin sample library, no trial/purchase required by grant",
-    "target_audience_saved": "18 and over; saved and console dashboard now 10 of 12 app setup tasks complete",
-    "data_safety": "Draft in progress; source-verified account/transit answers saved and three personal-info types selected; not yet finalized"
+    "target_audience_saved": "18 and over; saved",
+    "data_safety": "Completed and saved in console 2026-11-05 20:29 America/Regina; all eight source-audited optional types, purposes and security answers recorded in google-play-data-safety.md; dashboard 11 of 12 app setup tasks complete"
   },
   "copr": {
     "owner": "slskdn",

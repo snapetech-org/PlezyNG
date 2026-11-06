@@ -123,6 +123,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$romm$en romm = Translations$romm$en.internal(_root);
 	late final Translations$subtitleCapture$en subtitleCapture = Translations$subtitleCapture$en.internal(_root);
 	late final Translations$karaokeUi$en karaokeUi = Translations$karaokeUi$en.internal(_root);
+	late final Translations$bonusExtras$en bonusExtras = Translations$bonusExtras$en.internal(_root);
 }
 
 // Path: app
@@ -4714,9 +4715,6 @@ class Translations$discover$en {
 	String get cast => 'Cast';
 
 	late final Translations$discover$findNext$en findNext = Translations$discover$findNext$en.internal(_root);
-
-	/// en: 'Trailers & Extras'
-	String get extras => 'Trailers & Extras';
 
 	/// en: 'Studio'
 	String get studio => 'Studio';
@@ -14254,6 +14252,206 @@ class Translations$karaokeUi$en {
 	String get searchSongs => 'Search songs';
 }
 
+// Path: bonusExtras
+class Translations$bonusExtras$en {
+	Translations$bonusExtras$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Extras'
+	String get title => 'Extras';
+
+	/// en: 'See all extras'
+	String get seeAll => 'See all extras';
+
+	/// en: 'Find more'
+	String get findMore => 'Find more';
+
+	/// en: 'No verified extras found for this title.'
+	String get empty => 'No verified extras found for this title.';
+
+	/// en: 'Search extras or a topic'
+	String get search => 'Search extras or a topic';
+
+	/// en: 'All'
+	String get all => 'All';
+
+	/// en: 'Extras settings'
+	String get settings => 'Extras settings';
+
+	/// en: 'Add a link'
+	String get addLink => 'Add a link';
+
+	/// en: 'Hide this extra'
+	String get hide => 'Hide this extra';
+
+	/// en: 'Wrong title'
+	String get wrongTitle => 'Wrong title';
+
+	/// en: 'Hide publisher'
+	String get hidePublisher => 'Hide publisher';
+
+	/// en: 'Remove personal link'
+	String get remove => 'Remove personal link';
+
+	/// en: 'Open in provider app or browser'
+	String get openProvider => 'Open in provider app or browser';
+
+	/// en: 'Watch here'
+	String get watchHere => 'Watch here';
+
+	/// en: 'Open on your phone'
+	String get sendToPhone => 'Open on your phone';
+
+	/// en: 'Copy link'
+	String get copyLink => 'Copy link';
+
+	/// en: 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.'
+	String get playbackUnavailable => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.';
+
+	/// en: 'Playback opens the provider’s player and may include its recommendations.'
+	String get providerNotice => 'Playback opens the provider’s player and may include its recommendations.';
+
+	/// en: 'Online'
+	String get external => 'Online';
+
+	/// en: 'In your library'
+	String get library => 'In your library';
+
+	/// en: 'Personal link'
+	String get personal => 'Personal link';
+
+	/// en: 'Language not specified'
+	String get unknownLanguage => 'Language not specified';
+
+	/// en: 'Show extras that may contain spoilers'
+	String get spoilers => 'Show extras that may contain spoilers';
+
+	/// en: 'Unwatched titles hide extras unless their spoiler status is verified.'
+	String get spoilerHint => 'Unwatched titles hide extras unless their spoiler status is verified.';
+
+	/// en: 'Discover verified online extras'
+	String get externalEnabled => 'Discover verified online extras';
+
+	/// en: 'Include reviewed filmmaking analysis'
+	String get includeAnalysis => 'Include reviewed filmmaking analysis';
+
+	/// en: 'Discovery server address'
+	String get serviceUrl => 'Discovery server address';
+
+	/// en: 'Discovery access token'
+	String get serviceToken => 'Discovery access token';
+
+	/// en: 'AI assistance'
+	String get aiMode => 'AI assistance';
+
+	/// en: 'Off'
+	String get aiOff => 'Off';
+
+	/// en: 'On this device'
+	String get aiDevice => 'On this device';
+
+	/// en: 'On my server'
+	String get aiServer => 'On my server';
+
+	/// en: 'Cloud'
+	String get aiCloud => 'Cloud';
+
+	/// en: 'AI server address'
+	String get aiUrl => 'AI server address';
+
+	/// en: 'Model name'
+	String get aiModel => 'Model name';
+
+	/// en: 'AI access token'
+	String get aiToken => 'AI access token';
+
+	/// en: 'AI receives your question and permitted transcript passages only when you search. Off keeps ordinary topic and transcript search available.'
+	String get aiNotice => 'AI receives your question and permitted transcript passages only when you search. Off keeps ordinary topic and transcript search available.';
+
+	/// en: 'On this device requires an installed OpenAI-compatible runtime on localhost.'
+	String get deviceNotice => 'On this device requires an installed OpenAI-compatible runtime on localhost.';
+
+	/// en: 'Save'
+	String get save => 'Save';
+
+	/// en: 'Cancel'
+	String get cancel => 'Cancel';
+
+	/// en: 'Check the server addresses and model name. Cloud requires HTTPS; device mode requires localhost.'
+	String get invalidSettings => 'Check the server addresses and model name. Cloud requires HTTPS; device mode requires localhost.';
+
+	/// en: 'Extras could not be updated. Your available library extras remain accessible.'
+	String get failed => 'Extras could not be updated. Your available library extras remain accessible.';
+
+	/// en: 'Some online sources are unavailable. Showing the available results.'
+	String get partial => 'Some online sources are unavailable. Showing the available results.';
+
+	/// en: 'Extra title'
+	String get linkTitle => 'Extra title';
+
+	/// en: 'YouTube or Vimeo link'
+	String get linkUrl => 'YouTube or Vimeo link';
+
+	/// en: 'Enter a title and a valid HTTPS YouTube or Vimeo video link.'
+	String get invalidLink => 'Enter a title and a valid HTTPS YouTube or Vimeo video link.';
+
+	/// en: 'Reset hidden extras and publishers'
+	String get showHidden => 'Reset hidden extras and publishers';
+
+	/// en: 'Clear discovery cache'
+	String get clearCache => 'Clear discovery cache';
+
+	/// en: 'Search transcript'
+	String get transcript => 'Search transcript';
+
+	/// en: 'Import SRT or VTT transcript'
+	String get importTranscript => 'Import SRT or VTT transcript';
+
+	/// en: 'Use a transcript you have permission to process. It stays in this profile; AI uses it only with your selected mode.'
+	String get transcriptHint => 'Use a transcript you have permission to process. It stays in this profile; AI uses it only with your selected mode.';
+
+	/// en: 'No searchable transcript is available.'
+	String get noTranscript => 'No searchable transcript is available.';
+
+	/// en: 'Transcript imported'
+	String get transcriptImported => 'Transcript imported';
+
+	/// en: 'The transcript could not be read or exceeds the size limit.'
+	String get invalidTranscript => 'The transcript could not be read or exceeds the size limit.';
+
+	/// en: 'Ordinary search is available; AI did not return supported evidence.'
+	String get aiFallback => 'Ordinary search is available; AI did not return supported evidence.';
+
+	/// en: 'Search'
+	String get searchAction => 'Search';
+
+	/// en: 'Opened'
+	String get opened => 'Opened';
+
+	/// en: 'Completed'
+	String get completed => 'Completed';
+
+	/// en: 'Mark completed'
+	String get markCompleted => 'Mark completed';
+
+	/// en: 'Resume extra'
+	String get resume => 'Resume extra';
+
+	/// en: 'Online extras are unavailable for this profile.'
+	String get restricted => 'Online extras are unavailable for this profile.';
+
+	late final Translations$bonusExtras$kind$en kind = Translations$bonusExtras$kind$en.internal(_root);
+
+	/// en: 'Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.'
+	String get setupHint => 'Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.';
+
+	/// en: 'This extra is no longer available with your current settings.'
+	String get playbackBlocked => 'This extra is no longer available with your current settings.';
+}
+
 // Path: appIcon.names
 class Translations$appIcon$names$en {
 	Translations$appIcon$names$en.internal(this._root);
@@ -16798,6 +16996,45 @@ class Translations$services$trackerDescriptions$en {
 	String get mdblist => 'Show MDBList ratings and lists in recommendations and Explore.';
 }
 
+// Path: bonusExtras.kind
+class Translations$bonusExtras$kind$en {
+	Translations$bonusExtras$kind$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Making of'
+	String get makingOf => 'Making of';
+
+	/// en: 'Effects and stunts'
+	String get effects => 'Effects and stunts';
+
+	/// en: 'Makeup and costumes'
+	String get makeup => 'Makeup and costumes';
+
+	/// en: 'Interviews'
+	String get interview => 'Interviews';
+
+	/// en: 'Deleted scenes'
+	String get deletedScene => 'Deleted scenes';
+
+	/// en: 'Bloopers'
+	String get bloopers => 'Bloopers';
+
+	/// en: 'Commentary'
+	String get commentary => 'Commentary';
+
+	/// en: 'Trailers'
+	String get trailer => 'Trailers';
+
+	/// en: 'Filmmaking analysis'
+	String get analysis => 'Filmmaking analysis';
+
+	/// en: 'Other extras'
+	String get other => 'Other extras';
+}
+
 /// The flat map containing all translations for locale <en>.
 /// Only for edge cases! For simple maps, use the map function of this library.
 ///
@@ -18522,7 +18759,6 @@ extension on Translations {
 			'discover.findNext.skippedFeedback' => 'Skipped for now',
 			'discover.findNext.releaseToConfirm' => 'Release to confirm',
 			'discover.findNext.remoteHint' => 'Cover focused: ← / → choose · Select opens details · ↑ / ↓ moves focus',
-			'discover.extras' => 'Trailers & Extras',
 			'discover.studio' => 'Studio',
 			'discover.rating' => 'Rating',
 			'discover.director' => 'Director',
@@ -18860,9 +19096,9 @@ extension on Translations {
 			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
+			'explore.relation.sequel' => 'Sequel',
 			_ => null,
 		} ?? switch (path) {
-			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
 			'explore.relation.spinOff' => 'Spin-off',
 			'explore.relation.alternativeVersion' => 'Alternative version',
@@ -19374,9 +19610,9 @@ extension on Translations {
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			'downloads.convertingOnServer' => 'Converting on server…',
+			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			_ => null,
 		} ?? switch (path) {
-			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
 			'downloads.errorPostProcessing' => ({required Object reason}) => 'Post-processing failed: ${reason}',
 			'downloads.reasonFileNotSaved' => 'the file could not be saved on this device',
@@ -19888,9 +20124,9 @@ extension on Translations {
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
+			'services.names.simkl' => 'Simkl',
 			_ => null,
 		} ?? switch (path) {
-			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
 			'services.simklReconnect.title' => 'Reconnect Simkl',
@@ -20402,9 +20638,9 @@ extension on Translations {
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
+			'universalMedia.shareFfmpegMissing' => 'FFmpeg or the H.264/AAC encoders are unavailable. Install FFmpeg with H.264 and AAC encoder support.',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.shareFfmpegMissing' => 'FFmpeg or the H.264/AAC encoders are unavailable. Install FFmpeg with H.264 and AAC encoder support.',
 			'universalMedia.shareFailed' => 'The stream could not start or stopped unexpectedly. Check FFmpeg and network access.',
 			'universalMedia.shareActive' => 'The stream is ready on your private network.',
 			'universalMedia.shareEnded' => 'The media reached the end and is no longer being shared.',
@@ -20916,9 +21152,9 @@ extension on Translations {
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
+			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			_ => null,
 		} ?? switch (path) {
-			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
 			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, Pleazyng reconnects using a compatible codec.',
 			'games.steamLibrary' => 'Steam library',
@@ -21430,9 +21666,9 @@ extension on Translations {
 			'subtitleAiUi.saveGlossary' => 'Save glossary',
 			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
+			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
 			_ => null,
 		} ?? switch (path) {
-			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
 			'subtitleAiUi.requiresACUDAEnabledArgosCTranslate2_25eb4fab' => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
 			'subtitleAiUi.translateAnExistingSubtitle' => 'Translate an existing subtitle',
 			'subtitleAiUi.timingAndSourceFileRemainUnchanged' => 'Timing and source file remain unchanged',
@@ -21919,6 +22155,81 @@ extension on Translations {
 			'karaokeUi.hostUnlock' => 'Host unlock',
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
 			'karaokeUi.searchSongs' => 'Search songs',
+			'bonusExtras.title' => 'Extras',
+			'bonusExtras.seeAll' => 'See all extras',
+			'bonusExtras.findMore' => 'Find more',
+			'bonusExtras.empty' => 'No verified extras found for this title.',
+			'bonusExtras.search' => 'Search extras or a topic',
+			'bonusExtras.all' => 'All',
+			'bonusExtras.settings' => 'Extras settings',
+			'bonusExtras.addLink' => 'Add a link',
+			'bonusExtras.hide' => 'Hide this extra',
+			'bonusExtras.wrongTitle' => 'Wrong title',
+			'bonusExtras.hidePublisher' => 'Hide publisher',
+			'bonusExtras.remove' => 'Remove personal link',
+			'bonusExtras.openProvider' => 'Open in provider app or browser',
+			'bonusExtras.watchHere' => 'Watch here',
+			'bonusExtras.sendToPhone' => 'Open on your phone',
+			'bonusExtras.copyLink' => 'Copy link',
+			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',
+			'bonusExtras.providerNotice' => 'Playback opens the provider’s player and may include its recommendations.',
+			'bonusExtras.external' => 'Online',
+			'bonusExtras.library' => 'In your library',
+			'bonusExtras.personal' => 'Personal link',
+			'bonusExtras.unknownLanguage' => 'Language not specified',
+			'bonusExtras.spoilers' => 'Show extras that may contain spoilers',
+			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
+			'bonusExtras.externalEnabled' => 'Discover verified online extras',
+			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
+			_ => null,
+		} ?? switch (path) {
+			'bonusExtras.serviceUrl' => 'Discovery server address',
+			'bonusExtras.serviceToken' => 'Discovery access token',
+			'bonusExtras.aiMode' => 'AI assistance',
+			'bonusExtras.aiOff' => 'Off',
+			'bonusExtras.aiDevice' => 'On this device',
+			'bonusExtras.aiServer' => 'On my server',
+			'bonusExtras.aiCloud' => 'Cloud',
+			'bonusExtras.aiUrl' => 'AI server address',
+			'bonusExtras.aiModel' => 'Model name',
+			'bonusExtras.aiToken' => 'AI access token',
+			'bonusExtras.aiNotice' => 'AI receives your question and permitted transcript passages only when you search. Off keeps ordinary topic and transcript search available.',
+			'bonusExtras.deviceNotice' => 'On this device requires an installed OpenAI-compatible runtime on localhost.',
+			'bonusExtras.save' => 'Save',
+			'bonusExtras.cancel' => 'Cancel',
+			'bonusExtras.invalidSettings' => 'Check the server addresses and model name. Cloud requires HTTPS; device mode requires localhost.',
+			'bonusExtras.failed' => 'Extras could not be updated. Your available library extras remain accessible.',
+			'bonusExtras.partial' => 'Some online sources are unavailable. Showing the available results.',
+			'bonusExtras.linkTitle' => 'Extra title',
+			'bonusExtras.linkUrl' => 'YouTube or Vimeo link',
+			'bonusExtras.invalidLink' => 'Enter a title and a valid HTTPS YouTube or Vimeo video link.',
+			'bonusExtras.showHidden' => 'Reset hidden extras and publishers',
+			'bonusExtras.clearCache' => 'Clear discovery cache',
+			'bonusExtras.transcript' => 'Search transcript',
+			'bonusExtras.importTranscript' => 'Import SRT or VTT transcript',
+			'bonusExtras.transcriptHint' => 'Use a transcript you have permission to process. It stays in this profile; AI uses it only with your selected mode.',
+			'bonusExtras.noTranscript' => 'No searchable transcript is available.',
+			'bonusExtras.transcriptImported' => 'Transcript imported',
+			'bonusExtras.invalidTranscript' => 'The transcript could not be read or exceeds the size limit.',
+			'bonusExtras.aiFallback' => 'Ordinary search is available; AI did not return supported evidence.',
+			'bonusExtras.searchAction' => 'Search',
+			'bonusExtras.opened' => 'Opened',
+			'bonusExtras.completed' => 'Completed',
+			'bonusExtras.markCompleted' => 'Mark completed',
+			'bonusExtras.resume' => 'Resume extra',
+			'bonusExtras.restricted' => 'Online extras are unavailable for this profile.',
+			'bonusExtras.kind.makingOf' => 'Making of',
+			'bonusExtras.kind.effects' => 'Effects and stunts',
+			'bonusExtras.kind.makeup' => 'Makeup and costumes',
+			'bonusExtras.kind.interview' => 'Interviews',
+			'bonusExtras.kind.deletedScene' => 'Deleted scenes',
+			'bonusExtras.kind.bloopers' => 'Bloopers',
+			'bonusExtras.kind.commentary' => 'Commentary',
+			'bonusExtras.kind.trailer' => 'Trailers',
+			'bonusExtras.kind.analysis' => 'Filmmaking analysis',
+			'bonusExtras.kind.other' => 'Other extras',
+			'bonusExtras.setupHint' => 'Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.',
+			'bonusExtras.playbackBlocked' => 'This extra is no longer available with your current settings.',
 			_ => null,
 		};
 	}

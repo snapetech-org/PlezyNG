@@ -1628,7 +1628,6 @@ class _Translations$discover$bn extends Translations$discover$en {
 	@override String get overview => 'বিবরণ';
 	@override String get cast => 'কাস্ট';
 	@override late final _Translations$discover$findNext$bn findNext = _Translations$discover$findNext$bn._(_root);
-	@override String get extras => 'ট্রাইলিং & অতিরিক্ত';
 	@override String get studio => 'স্টুডিও';
 	@override String get rating => 'রেটিং';
 	@override String get director => 'পরিচালক';
@@ -6787,7 +6786,6 @@ extension on TranslationsBn {
 			'discover.findNext.skippedFeedback' => 'আপাতত এড়িয়ে যাওয়া হয়েছে',
 			'discover.findNext.releaseToConfirm' => 'নিশ্চিত করতে ছেড়ে দিন',
 			'discover.findNext.remoteHint' => 'প্রচ্ছদে ফোকাস: ← / → বেছে নিন · নির্বাচন বোতাম: বিস্তারিত · ↑ / ↓ ফোকাস বদলান',
-			'discover.extras' => 'ট্রাইলিং & অতিরিক্ত',
 			'discover.studio' => 'স্টুডিও',
 			'discover.rating' => 'রেটিং',
 			'discover.director' => 'পরিচালক',
@@ -6860,9 +6858,9 @@ extension on TranslationsBn {
 			'libraries.content' => 'লাইব্রেরি বিষয়বস্তু',
 			'libraries.selectLibrary' => 'লাইব্রেরি নির্বাচন',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ফিল্টার (${count})',
+			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			'libraries.noCollections' => 'এই লাইব্রেরিতে কোন সংগ্রহ নেই',
 			'libraries.noFoldersFound' => 'কোন ফাইল পাওয়া যায়নি',
 			'libraries.folders' => 'ফোল্ডার',
@@ -7374,9 +7372,9 @@ extension on TranslationsBn {
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
+			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			'watchTogether.reconnectingDescription' => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।',
 			'watchTogether.connected' => 'সংযুক্ত',
 			'watchTogether.disconnected' => 'বিচ্ছিন্ন',
@@ -7888,9 +7886,9 @@ extension on TranslationsBn {
 			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
 			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ছবির বিকল্প ${index}, নির্বাচিত',
 			'metadataEdit.notSet' => 'সিস্টেম না',
 			'metadataEdit.libraryDefault' => 'লাইব্রেরি ভুল',
@@ -8402,9 +8400,9 @@ extension on TranslationsBn {
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
+			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
 			'universalMedia.wifiTransferHelp' => 'সমর্থিত ফাইলগুলি এক ব্রাউজার থেকে একই বিশ্বাসযোগ্য নেটওয়ার্কে স্থানান্তর করুন।',
 			'universalMedia.wifiTransferIntro' => 'অন্য ডিভাইসের একটি ব্রাউজারে এই ঠিকানা খোঁজ করুন. ফাইলগুলি নির্বাচন করে এই ডিভিশনের ফাইল এবং বই লাইব্রিয়ামে যোগ করুন.',
 			'universalMedia.wifiTransferPrivacy' => 'এই ডিভাইস আপনার স্থানীয় নেটওয়ার্কের মাধ্যমে ফাইল গ্রহণ করে. যে কেউ এই ঠিকানা জানে, আপনি ট্রান্সফার বন্ধ করা পর্যন্ত ফাইল পাঠাতে পারেন বা ঠিকানা 15 মিনিট পরে শেষ হয়. সর্বোচ্চ: 100 ফাইল, 4 জিবি প্রতি ফিল, 10 জিबी মোট।',
@@ -8916,9 +8914,9 @@ extension on TranslationsBn {
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
+			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',
 			'sourceSetup.videoDetailsLoading' => 'ভিডিওর তথ্য লোড হচ্ছে',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API কী প্রয়োজন',
 			'sourceSetup.subtitleKeyHelp' => 'এই ফাইল উৎসটি সম্পাদনা করে তার ঐচ্ছিক সাবটাইটেল সেটিংসে OpenSubtitles API কী যোগ করুন।',

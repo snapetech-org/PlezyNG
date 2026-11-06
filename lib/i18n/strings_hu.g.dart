@@ -1628,7 +1628,6 @@ class _Translations$discover$hu extends Translations$discover$en {
 	@override String get overview => 'Áttekintés';
 	@override String get cast => 'Szereplők';
 	@override late final _Translations$discover$findNext$hu findNext = _Translations$discover$findNext$hu._(_root);
-	@override String get extras => 'Előzetesek és extrák';
 	@override String get studio => 'Stúdió';
 	@override String get rating => 'Értékelés';
 	@override String get director => 'Rendező';
@@ -6787,7 +6786,6 @@ extension on TranslationsHu {
 			'discover.findNext.skippedFeedback' => 'Most kihagyva',
 			'discover.findNext.releaseToConfirm' => 'Engedd el a megerősítéshez',
 			'discover.findNext.remoteHint' => 'Borító kijelölve: ← / → választás · Kiválasztás: részletek · ↑ / ↓ fókusz mozgatása',
-			'discover.extras' => 'Előzetesek és extrák',
 			'discover.studio' => 'Stúdió',
 			'discover.rating' => 'Értékelés',
 			'discover.director' => 'Rendező',
@@ -6860,9 +6858,9 @@ extension on TranslationsHu {
 			'libraries.content' => 'könyvtár tartalma',
 			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Szűrők (${count})',
+			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			'libraries.noCollections' => 'Nincsenek gyűjtemények ebben a könyvtárban',
 			'libraries.noFoldersFound' => 'Nem találhatók mappák',
 			'libraries.folders' => 'mappák',
@@ -7374,9 +7372,9 @@ extension on TranslationsHu {
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Csatlakozz a Watch Together-szobámhoz a Plezyben: nyisd meg a Watch Together (Közös nézés) menüt, válaszd a Csatlakozás szobához lehetőséget, és írd be ezt a kódot: ${code}.',
 			'watchTogether.openSessionControls' => 'Watch Together munkamenet-vezérlők megnyitása',
+			'watchTogether.reconnecting' => 'Újracsatlakozás...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Újracsatlakozás...',
 			'watchTogether.reconnectingDescription' => 'Megszakadt a kapcsolat. Automatikusan visszacsatlakozol a szobához.',
 			'watchTogether.connected' => 'Csatlakozva',
 			'watchTogether.disconnected' => 'Kapcsolat bontva',
@@ -7888,9 +7886,9 @@ extension on TranslationsHu {
 			'metadataEdit.artworkUpdated' => 'Képek frissítve',
 			'metadataEdit.artworkUpdateFailed' => 'Nem sikerült a képek frissítése',
 			'metadataEdit.noArtworkAvailable' => 'Nincsenek elérhető képek',
+			'metadataEdit.artworkOption' => ({required Object index}) => '${index}. képváltozat',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => '${index}. képváltozat',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '${index}. képváltozat, kiválasztva',
 			'metadataEdit.notSet' => 'Nincs beállítva',
 			'metadataEdit.libraryDefault' => 'Könyvtári alapértelmezés',
@@ -8402,9 +8400,9 @@ extension on TranslationsHu {
 			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
 			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
+			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Támogatott fájlok átadása egy böngészőről ugyanazon megbízható hálózaton.',
 			'universalMedia.wifiTransferIntro' => 'Nyissa meg ezt a címet egy böngészőben egy másik eszközön. Válassza ki a fájlokat, hogy hozzáadják őket a készülék Fájlok és könyvek könyvtárába.',
 			'universalMedia.wifiTransferPrivacy' => 'Ez a készülék fogadja a fájlokat a helyi hálózaton keresztül. Bárki, aki ismeri ezt az címet, elküldheti azokat addig, amíg nem hagyja abba az átutalást vagy a cím 15 perc elteltével megszűnik. Maximum: 100 fájlt, 4 GiB fájlokonként, 10 GiB összesen.',
@@ -8916,9 +8914,9 @@ extension on TranslationsHu {
 			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
 			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',
+			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',
 			'sourceSetup.videoDetailsLoading' => 'Videóadatok betöltése',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-kulcs szükséges',
 			'sourceSetup.subtitleKeyHelp' => 'Szerkeszd ezt a fájlforrást, és adj hozzá OpenSubtitles-API-kulcsot az opcionális feliratbeállításoknál.',

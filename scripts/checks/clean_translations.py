@@ -20,6 +20,8 @@ import re
 import sys
 from pathlib import Path
 
+from check_localizations import load_english_fallbacks, messages
+
 ROOT = Path(__file__).resolve().parents[2]
 I18N_DIR = ROOT / "lib" / "i18n"
 LIB_DIR = ROOT / "lib"
@@ -33,6 +35,7 @@ USAGE_RES = (
     ),
 )
 DOT_WS_RE = re.compile(r"\s*\.\s*")
+INDEXED_USAGE_RE = re.compile(r'''\bt\s*\[\s*(['"])([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)(\.\$[^'"\n]+)?\1\s*\]''')
 PLURAL_CATEGORIES = ("zero", "one", "two", "few", "many", "other")
 
 
@@ -82,8 +85,11 @@ def locale_plural_categories(en_node, loc_node) -> tuple[str, ...]:
     return tuple(category for category in PLURAL_CATEGORIES if category in found)
 
 
-def normalize(en_node, loc_node, path: str, stats: dict, plural_categories: tuple[str, ...]):
+def normalize(en_node, loc_node, path: str, stats: dict, plural_categories: tuple[str, ...], fallback_keys=frozenset()):
     """Rebuild loc_node to match en_node while preserving locale plural categories."""
+    canonical_path = re.sub(r"\([^)]*\)$", "", path)
+    if loc_node is _MISSING and canonical_path in fallback_keys:
+        return _MISSING
     if is_plural_map(en_node):
         if not isinstance(loc_node, dict):
             if loc_node is not _MISSING:
@@ -105,6 +111,7 @@ def normalize(en_node, loc_node, path: str, stats: dict, plural_categories: tupl
         return result
 
     if isinstance(en_node, dict):
+        missing_branch = loc_node is _MISSING
         if not isinstance(loc_node, dict):
             if loc_node is not _MISSING:
                 stats["type_fixed"] += 1
@@ -114,20 +121,23 @@ def normalize(en_node, loc_node, path: str, stats: dict, plural_categories: tupl
         result = {}
         for key, value in en_node.items():
             sub_path = f"{path}.{key}" if path else key
-            result[key] = normalize(
+            child = normalize(
                 value,
                 loc_node.get(key, _MISSING),
                 sub_path,
                 stats,
                 plural_categories,
+                fallback_keys,
             )
+            if child is not _MISSING:
+                result[key] = child
         for key in loc_node:
             if key not in en_node:
                 sub_path = f"{path}.{key}" if path else key
                 dropped = count_leaves(loc_node[key])
                 stats["removed"] += dropped
                 print(f"  INFO dropping orphan '{sub_path}' ({dropped} leaf key{'s' if dropped != 1 else ''})")
-        return result
+        return _MISSING if missing_branch and en_node and not result else result
 
     if loc_node is _MISSING:
         stats["added"] += 1
@@ -162,6 +172,9 @@ def clean_pass(check_only: bool) -> bool:
     """Returns True if any file was (or would be) changed."""
     en_path = I18N_DIR / f"{SOURCE_LOCALE}.i18n.json"
     en = load_json(en_path)
+    fallback_keys, errors = load_english_fallbacks(I18N_DIR, SOURCE_LOCALE, messages(en))
+    if errors:
+        raise ValueError('; '.join(errors))
     changed_any = False
 
     locale_files = sorted(
@@ -179,7 +192,7 @@ def clean_pass(check_only: bool) -> bool:
             continue
         stats = {"added": 0, "removed": 0, "type_fixed": 0, "unchanged": 0}
         plural_categories = locale_plural_categories(en, loc)
-        normalized = normalize(en, loc, "", stats, plural_categories)
+        normalized = normalize(en, loc, "", stats, plural_categories, fallback_keys)
         new_text = dump_json(normalized)
         old_text = path.read_text(encoding="utf-8")
         file_changed = new_text != old_text
@@ -208,11 +221,8 @@ def clean_pass(check_only: bool) -> bool:
 def collect_references() -> set[str]:
     refs: set[str] = set()
     for dart_file in LIB_DIR.rglob("*.dart"):
-        # Skip i18n sources and generated files.
-        try:
-            rel = dart_file.relative_to(LIB_DIR)
-        except ValueError:
-            continue
+        # Authored localization helpers are consumers too. Only generated files
+        # are excluded; otherwise their own accessors would hide unused keys.
         if dart_file.name.endswith((".g.dart", ".freezed.dart")):
             continue
         text = dart_file.read_text(encoding="utf-8", errors="replace")
@@ -224,6 +234,10 @@ def collect_references() -> set[str]:
             for match in usage_re.finditer(text):
                 chain = DOT_WS_RE.sub(".", match.group(1))
                 refs.add(chain)
+        for match in INDEXED_USAGE_RE.finditer(text):
+            # A dynamic suffix is a reachable parent branch, not evidence that
+            # every leaf is directly used. The existing report distinguishes it.
+            refs.add(match.group(2))
     return refs
 
 
@@ -312,7 +326,11 @@ def main() -> int:
 
     if run_clean:
         print(f"=== Cleanup pass (source: {en_path.relative_to(ROOT)}) ===")
-        changed = clean_pass(check_only=args.check)
+        try:
+            changed = clean_pass(check_only=args.check)
+        except ValueError as error:
+            print(str(error), file=sys.stderr)
+            return 2
         if args.check and changed:
             print("\n(--check) one or more files would be rewritten.")
 

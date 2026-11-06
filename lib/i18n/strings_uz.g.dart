@@ -1628,7 +1628,6 @@ class _Translations$discover$uz extends Translations$discover$en {
 	@override String get overview => 'Tavsif';
 	@override String get cast => 'Aktyorlar';
 	@override late final _Translations$discover$findNext$uz findNext = _Translations$discover$findNext$uz._(_root);
-	@override String get extras => 'Treylerlar va qoʻshimchalar';
 	@override String get studio => 'Studiya';
 	@override String get rating => 'Reyting';
 	@override String get director => 'Rejissyor';
@@ -6787,7 +6786,6 @@ extension on TranslationsUz {
 			'discover.findNext.skippedFeedback' => 'Hozircha o‘tkazib yuborildi',
 			'discover.findNext.releaseToConfirm' => 'Tasdiqlash uchun qo‘yib yuboring',
 			'discover.findNext.remoteHint' => 'Muqova fokusda bo‘lganda: ← / → tanlash · Tanlash tugmasi: tafsilotlar · ↑ / ↓ fokusni ko‘chirish',
-			'discover.extras' => 'Treylerlar va qoʻshimchalar',
 			'discover.studio' => 'Studiya',
 			'discover.rating' => 'Reyting',
 			'discover.director' => 'Rejissyor',
@@ -6860,9 +6858,9 @@ extension on TranslationsUz {
 			'libraries.content' => 'kutubxona tarkibi',
 			'libraries.selectLibrary' => 'Kutubxonani tanlash',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlar (${count})',
+			'libraries.noRecommendations' => 'Tavsiyalar yoʻq',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Tavsiyalar yoʻq',
 			'libraries.noCollections' => 'Ushbu kutubxonada toʻplamlar yoʻq',
 			'libraries.noFoldersFound' => 'Jildlar topilmadi',
 			'libraries.folders' => 'jildlar',
@@ -7374,9 +7372,9 @@ extension on TranslationsUz {
 			'watchTogether.inviteCopied' => 'Taklif nusxalandi. Uni xabarga joylashtiring.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.',
 			'watchTogether.openSessionControls' => 'Boshqaruv elementlarini ochish',
+			'watchTogether.reconnecting' => 'Qayta ulanmoqda...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Qayta ulanmoqda...',
 			'watchTogether.reconnectingDescription' => 'Ulanish uzildi. Xonaga avtomatik ravishda qayta qoʻshilasiz.',
 			'watchTogether.connected' => 'Ulandi',
 			'watchTogether.disconnected' => 'Uzildi',
@@ -7888,9 +7886,9 @@ extension on TranslationsUz {
 			'metadataEdit.artworkUpdated' => 'Rasmlar yangilandi',
 			'metadataEdit.artworkUpdateFailed' => 'Rasmlarni yangilab boʻlmadi',
 			'metadataEdit.noArtworkAvailable' => 'Rasm mavjud emas',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Rasm opsiyasi ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Rasm opsiyasi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Rasm opsiyasi ${index}, tanlandi',
 			'metadataEdit.notSet' => 'Oʻrnatilmagan',
 			'metadataEdit.libraryDefault' => 'Kutubxona standarti',
@@ -8402,9 +8400,9 @@ extension on TranslationsUz {
 			'universalMedia.filesHelp' => 'Audio, video, o ISO fillar bir temporary quue. Fillar və URL\'ler library istoriyaya qo‘zilmaydi.',
 			'universalMedia.chooseFiles' => 'Filmi seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
+			'universalMedia.wifiTransfer' => 'Filmi Wi-Fi-dan qaytadi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Filmi Wi-Fi-dan qaytadi',
 			'universalMedia.wifiTransferHelp' => 'Transfer supported files from a browser on the same trusted network.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başka bir cihazda bir browser\'da açın. Fillar seçin bu cihazın Fillar və kitaplar kütüphanaya eklemek.',
 			'universalMedia.wifiTransferPrivacy' => 'This device receives files via your local network. Anyone who knows this address can send files until you stop the transfer or the address expires after 15 minutes. Maximum: 100 fil, 4 GiB per file, 10 GiB total.',
@@ -8916,9 +8914,9 @@ extension on TranslationsUz {
 			'sourceSetup.metadataLoading' => 'Onlayn film va serial tafsilotlari qidirilmoqda…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt xizmatidan onlayn metama’lumotlar',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nomga avtomatik moslik topilmadi. Mos natijani tanlash uchun nomni qidiring.',
+			'sourceSetup.metadataFailed' => 'Onlayn metama’lumotlarni yuklab bo‘lmadi. Ijro va mahalliy tafsilotlar hali ham mavjud.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Onlayn metama’lumotlarni yuklab bo‘lmadi. Ijro va mahalliy tafsilotlar hali ham mavjud.',
 			'sourceSetup.videoDetailsLoading' => 'Video tafsilotlari yuklanmoqda',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API kaliti zarur',
 			'sourceSetup.subtitleKeyHelp' => 'Ushbu fayl manbasini tahrirlang va ixtiyoriy subtitr sozlamalariga OpenSubtitles API kalitini qo‘shing.',

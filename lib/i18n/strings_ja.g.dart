@@ -1626,7 +1626,6 @@ class _Translations$discover$ja extends Translations$discover$en {
 	@override String get overview => 'あらすじ';
 	@override String get cast => 'キャスト';
 	@override late final _Translations$discover$findNext$ja findNext = _Translations$discover$findNext$ja._(_root);
-	@override String get extras => '予告編とエクストラ';
 	@override String get studio => 'スタジオ';
 	@override String get rating => '評価';
 	@override String get director => '監督';
@@ -6782,7 +6781,6 @@ extension on TranslationsJa {
 			'discover.findNext.skippedFeedback' => 'いったんスキップしました',
 			'discover.findNext.releaseToConfirm' => '離して確定',
 			'discover.findNext.remoteHint' => '表紙にフォーカス：← / → で選択・決定で詳細・↑ / ↓ でフォーカス移動',
-			'discover.extras' => '予告編とエクストラ',
 			'discover.studio' => 'スタジオ',
 			'discover.rating' => '評価',
 			'discover.director' => '監督',
@@ -6855,9 +6853,9 @@ extension on TranslationsJa {
 			'libraries.content' => 'ライブラリコンテンツ',
 			'libraries.selectLibrary' => 'ライブラリを選択',
 			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
+			'libraries.noRecommendations' => 'おすすめがありません',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'おすすめがありません',
 			'libraries.noCollections' => 'このライブラリにコレクションがありません',
 			'libraries.noFoldersFound' => 'フォルダが見つかりません',
 			'libraries.folders' => 'フォルダ',
@@ -7369,9 +7367,9 @@ extension on TranslationsJa {
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
 			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
+			'watchTogether.reconnecting' => '再接続中…',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => '再接続中…',
 			'watchTogether.reconnectingDescription' => '接続が切断されました。自動的にルームに再参加します。',
 			'watchTogether.connected' => '接続済み',
 			'watchTogether.disconnected' => '切断されました',
@@ -7883,9 +7881,9 @@ extension on TranslationsJa {
 			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
 			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
 			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}、選択済み',
 			'metadataEdit.notSet' => '未設定',
 			'metadataEdit.libraryDefault' => 'ライブラリのデフォルト',
@@ -8397,9 +8395,9 @@ extension on TranslationsJa {
 			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
 			'universalMedia.chooseFiles' => 'ファイルを選択',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
+			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
 			'universalMedia.wifiTransferHelp' => '同じ信頼できるネットワーク上のブラウザからサポートされたファイルを転送します。',
 			'universalMedia.wifiTransferIntro' => 'このアドレスを別のデバイスでブラウザで開きます. ファイルを選択して、このデバイスのファイルと本の図書館に追加します。',
 			'universalMedia.wifiTransferPrivacy' => 'このデバイスは、地元のネットワークを通じてファイルを受け取ります. このアドレスを知っている人は、送信を停止するまでファイルを送信することができますか? 15 分後にアドレスが終了します. 最大: 100 ファイル、1 ファイルあたり 4 GiB, 10 GiB 合計。',
@@ -8911,9 +8909,9 @@ extension on TranslationsJa {
 			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
 			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
+			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',
 			'sourceSetup.videoDetailsLoading' => '動画の情報を読み込み中',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles の API キーが必要です',
 			'sourceSetup.subtitleKeyHelp' => 'このファイルソースを編集し、任意の字幕設定に OpenSubtitles の API キーを追加してください。',

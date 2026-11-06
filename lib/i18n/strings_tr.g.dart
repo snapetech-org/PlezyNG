@@ -1628,7 +1628,6 @@ class _Translations$discover$tr extends Translations$discover$en {
 	@override String get overview => 'Genel Bakış';
 	@override String get cast => 'Oyuncular';
 	@override late final _Translations$discover$findNext$tr findNext = _Translations$discover$findNext$tr._(_root);
-	@override String get extras => 'Fragmanlar ve Ekstralar';
 	@override String get studio => 'Stüdyo';
 	@override String get rating => 'Derecelendirme';
 	@override String get director => 'Yönetmen';
@@ -6787,7 +6786,6 @@ extension on TranslationsTr {
 			'discover.findNext.skippedFeedback' => 'Şimdilik atlandı',
 			'discover.findNext.releaseToConfirm' => 'Onaylamak için bırakın',
 			'discover.findNext.remoteHint' => 'Kapak odakta: ← / → seç · Seç tuşu: ayrıntılar · ↑ / ↓ odağı taşı',
-			'discover.extras' => 'Fragmanlar ve Ekstralar',
 			'discover.studio' => 'Stüdyo',
 			'discover.rating' => 'Derecelendirme',
 			'discover.director' => 'Yönetmen',
@@ -6860,9 +6858,9 @@ extension on TranslationsTr {
 			'libraries.content' => 'kitaplık içeriği',
 			'libraries.selectLibrary' => 'Kitaplık seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
+			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			'libraries.noCollections' => 'Bu kitaplıkta koleksiyon yok',
 			'libraries.noFoldersFound' => 'Klasör bulunamadı',
 			'libraries.folders' => 'klasörler',
@@ -7374,9 +7372,9 @@ extension on TranslationsTr {
 			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
 			'watchTogether.openSessionControls' => 'Birlikte İzle oturum kontrollerini aç',
+			'watchTogether.reconnecting' => 'Yeniden bağlanılıyor...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Yeniden bağlanılıyor...',
 			'watchTogether.reconnectingDescription' => 'Bağlantı koptu. Odaya otomatik olarak yeniden katılacaksınız.',
 			'watchTogether.connected' => 'Bağlı',
 			'watchTogether.disconnected' => 'Bağlantı kesildi',
@@ -7888,9 +7886,9 @@ extension on TranslationsTr {
 			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
 			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
 			'metadataEdit.noArtworkAvailable' => 'Görsel bulunmuyor',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}, seçildi',
 			'metadataEdit.notSet' => 'Ayarlanmadı',
 			'metadataEdit.libraryDefault' => 'Kitaplık varsayılanı',
@@ -8402,9 +8400,9 @@ extension on TranslationsTr {
 			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
 			'universalMedia.chooseFiles' => 'Dosyaları seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
+			'universalMedia.wifiTransfer' => 'Wi-Fi üzerinden dosyaları gönderin',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Wi-Fi üzerinden dosyaları gönderin',
 			'universalMedia.wifiTransferHelp' => 'Desteklenen dosyaları aynı güvenilir ağda bir tarayıcıdan aktarın.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başka bir cihazda bir tarayıcıda açın. dosyaları bu cihazın Dosya ve kitap kütüphanesine eklemek için seçin.',
 			'universalMedia.wifiTransferPrivacy' => 'Bu cihaz yerel ağınız üzerinden dosyaları alır. bu adresi bilen herkes transferin durdurulana kadar dosyayı gönderebilir veya adres 15 dakika sonra sona erer. Maksimum: 100 dosya, dosya başına 4 GiB, toplam 10 GiB.',
@@ -8916,9 +8914,9 @@ extension on TranslationsTr {
 			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',
+			'sourceSetup.metadataFailed' => 'Çevrimiçi meta veriler yüklenemedi. Oynatma ve yerel bilgiler hâlâ kullanılabilir.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Çevrimiçi meta veriler yüklenemedi. Oynatma ve yerel bilgiler hâlâ kullanılabilir.',
 			'sourceSetup.videoDetailsLoading' => 'Video bilgileri yükleniyor',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API anahtarı gerekli',
 			'sourceSetup.subtitleKeyHelp' => 'Bu dosya kaynağını düzenleyin ve isteğe bağlı altyazı ayarlarına OpenSubtitles API anahtarı ekleyin.',

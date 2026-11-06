@@ -1,3 +1,4 @@
+import '../extras/extras_policy.dart' show mediaBrowserAllowsExternalExtras;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -404,6 +405,10 @@ class JellyfinClient
   /// current-user probe response — admin status changed server-side should
   /// propagate without forcing the user to re-auth.
   JellyfinConnection _connection;
+  bool _allowsExternalExtras = false;
+
+  /// Unknown or restricted user policy never authorizes unrated extras.
+  bool get allowsExternalExtras => _allowsExternalExtras;
   @override
   JellyfinConnection get connection => _connection;
 
@@ -502,6 +507,7 @@ class JellyfinClient
         final data = response.data;
         if (response.statusCode >= 200 && response.statusCode < 300 && data is Map<String, dynamic>) {
           final policy = data['Policy'];
+          _allowsExternalExtras = mediaBrowserAllowsExternalExtras(policy);
           if (policy is Map<String, dynamic>) {
             canDownloadSubtitles = _embyPolicyAllowsSubtitleDownloading(policy);
           }
@@ -701,6 +707,7 @@ class JellyfinClient
   /// account from a generic transport failure.
   @override
   Future<HealthStatus> checkHealth() async {
+    _allowsExternalExtras = false;
     try {
       final response = await _http.get(
         paths.currentUser,

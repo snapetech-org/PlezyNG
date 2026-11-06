@@ -66,7 +66,21 @@
       "iphone_screenshot_size": "1179x2556",
       "tvos_description_keywords_contact_copyright_saved": true,
       "tvos_screenshots": 0,
-      "fresh_brand_and_tv_captures_pending": true
+      "fresh_brand_and_tv_captures_pending": true,
+      "platform_draft_versions": {
+        "iOS": "3.0.1",
+        "tvOS": "3.0.1",
+        "macOS": "3.0.1"
+      },
+      "intended_build": "160",
+      "review_contact_notes": "Saved owner contact and explicit Jellyfin demo empty-password instructions for iOS/tvOS/macOS; removed stale PlezyNG review wording. No review submitted.",
+      "hosted_support_url": "https://snape.tech/privacy/pleazyng/support/",
+      "copyright": "2026 Snape Technologies Limited",
+      "release_behavior": {
+        "iOS": "Automatically release after Apple approval",
+        "tvOS": "Automatically release after Apple approval",
+        "macOS": "Not yet verified"
+      }
     },
     "membership_type": "Individual",
     "membership_renewal": "2027-10-19",
@@ -87,6 +101,35 @@
       "state": "Issued through authenticated portal; matching private key and Apple G2 signature chain verified locally. No existing certificate revoked. Dedicated MACOS_CERTIFICATE_BASE64 and MACOS_CERTIFICATE_PASSWORD secrets configured; existing iOS distribution secrets preserved.",
       "notarization": "Existing App Store Connect API key path wired; actual native import/codesign/notarization/Gatekeeper validation still required.",
       "private_backup": "Retained outside repository with private directory/file permissions"
+    },
+    "testflight": {
+      "state": "English US beta information and review details saved; no builds uploaded",
+      "checked_at": "2026-11-05 22:39 CST",
+      "feedback": "support@snape.tech",
+      "privacy_url": "https://snape.tech/privacy/pleazyng/",
+      "review_access": "Official Jellyfin evaluation server; demo user and empty password. Portal password field explicitly contains leave-blank instructions, repeated in review notes. Actual Apple app connection/purchase qualification remains pending.",
+      "internal_group": {
+        "name": "Pleazyng Internal",
+        "id": "914557fe-ec9a-43e2-b83f-30e7c732e475",
+        "automatic_distribution": true,
+        "testers": 0,
+        "builds": 0,
+        "invitations_sent": false
+      },
+      "external_testing": "External group/public link not created before first processed build; Apple beta review still required"
+    },
+    "mac_app_store": {
+      "state": "macOS platform added to existing app; version3.0.1 draft, English description/keywords, hosted support URL, company copyright and review contact/notes saved",
+      "checked_at": "2026-11-05 22:43 CST",
+      "builds": 0,
+      "screenshots": 0,
+      "gates": [
+        "Separate sandboxed Mac App Store package/export and native StoreKit purchase/restore qualification",
+        "App Store signing/profile/installer certificate as required",
+        "Authentic Mac screenshots",
+        "Active paid agreement/tax/bank verification and Apple review"
+      ],
+      "direct_dmg": "Existing direct Developer ID build remains separate and unlocked; not suitable as paid Store package"
     }
   },
   "automation_before": {

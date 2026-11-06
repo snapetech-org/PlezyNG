@@ -1630,7 +1630,6 @@ class Translations$discover$es extends Translations$discover$en {
 	@override String get overview => 'Resumen';
 	@override String get cast => 'Reparto';
 	@override late final Translations$discover$findNext$es findNext = Translations$discover$findNext$es.internal(_root);
-	@override String get extras => 'Tráilers y extras';
 	@override String get studio => 'Estudio';
 	@override String get rating => 'Valoración';
 	@override String get director => 'Director';
@@ -6794,7 +6793,6 @@ extension on TranslationsEs {
 			'discover.findNext.skippedFeedback' => 'Omitido por ahora',
 			'discover.findNext.releaseToConfirm' => 'Suelta para confirmar',
 			'discover.findNext.remoteHint' => 'Portada enfocada: ← / → elegir · Seleccionar: detalles · ↑ / ↓ mover el foco',
-			'discover.extras' => 'Tráilers y extras',
 			'discover.studio' => 'Estudio',
 			'discover.rating' => 'Valoración',
 			'discover.director' => 'Director',
@@ -6867,9 +6865,9 @@ extension on TranslationsEs {
 			'libraries.content' => 'contenido de la biblioteca',
 			'libraries.selectLibrary' => 'Seleccionar biblioteca',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtros (${count})',
+			'libraries.noRecommendations' => 'No hay recomendaciones disponibles',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'No hay recomendaciones disponibles',
 			'libraries.noCollections' => 'No hay colecciones en esta biblioteca',
 			'libraries.noFoldersFound' => 'No se encontraron carpetas',
 			'libraries.folders' => 'carpetas',
@@ -7381,9 +7379,9 @@ extension on TranslationsEs {
 			'watchTogether.inviteCopied' => 'Invitación copiada. Pégala en un mensaje.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Únete a mi sala de Ver juntos en Pleazyng: abre «Ver juntos», elige «Unirse a una sala» e introduce ${code}.',
 			'watchTogether.openSessionControls' => 'Abrir los controles de la sesión de Ver juntos',
+			'watchTogether.reconnecting' => 'Reconectando...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Reconectando...',
 			'watchTogether.reconnectingDescription' => 'Se perdió la conexión. Volverás a unirte a la sala automáticamente.',
 			'watchTogether.connected' => 'Conectado',
 			'watchTogether.disconnected' => 'Desconectado',
@@ -7895,9 +7893,9 @@ extension on TranslationsEs {
 			'metadataEdit.artworkUpdated' => 'Imágenes actualizadas',
 			'metadataEdit.artworkUpdateFailed' => 'Error al actualizar las imágenes',
 			'metadataEdit.noArtworkAvailable' => 'No hay imágenes disponibles',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Opción de imagen ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Opción de imagen ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opción de imagen ${index}, seleccionada',
 			'metadataEdit.notSet' => 'No establecido',
 			'metadataEdit.libraryDefault' => 'Predeterminado de biblioteca',
@@ -8409,9 +8407,9 @@ extension on TranslationsEs {
 			'universalMedia.filesHelp' => 'Seleccione los archivos de audio, vídeo o ISO para una cueva temporal.Los archivos y las URL no se añaden a la historia de la biblioteca.',
 			'universalMedia.chooseFiles' => 'Elegir archivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: '1 Archivo seleccionado', many: '${count} archivos seleccionados', other: '${count} archivos seleccionados', ), 
+			'universalMedia.wifiTransfer' => 'Enviar archivos a través de Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Enviar archivos a través de Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transferir archivos apoyados de un navegador en la misma red confiada.',
 			'universalMedia.wifiTransferIntro' => 'Abre esta dirección en un navegador en otro dispositivo. Seleccione los archivos para agregarlos a la biblioteca de archivos y libros de este dispositivo.',
 			'universalMedia.wifiTransferPrivacy' => 'Este dispositivo recibe archivos a través de su red local.Cualquier persona que conoce esta dirección puede enviar archivos hasta que se detenga la transferencia o la dirección expire después de 15 minutos.Másimo: 100 archivos, 4 GiB por archivo, 10 GiB total.',
@@ -8923,9 +8921,9 @@ extension on TranslationsEs {
 			'sourceSetup.metadataLoading' => 'Buscando información de películas y series en línea…',
 			'sourceSetup.metadataFromTrakt' => 'Metadatos en línea de Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'No se encontró una coincidencia automática para el título. Busca el título para elegir una coincidencia.',
+			'sourceSetup.metadataFailed' => 'No se pudieron cargar los metadatos en línea. La reproducción y la información local siguen disponibles.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'No se pudieron cargar los metadatos en línea. La reproducción y la información local siguen disponibles.',
 			'sourceSetup.videoDetailsLoading' => 'Cargando información del vídeo',
 			'sourceSetup.subtitleKeyRequired' => 'Se necesita una clave API de OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Edita esta fuente de archivos y añade una clave API de OpenSubtitles en los ajustes opcionales de subtítulos.',

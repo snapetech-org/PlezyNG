@@ -1642,7 +1642,6 @@ class _Translations$discover$pl extends Translations$discover$en {
 	@override String get overview => 'Opis';
 	@override String get cast => 'Obsada';
 	@override late final _Translations$discover$findNext$pl findNext = _Translations$discover$findNext$pl._(_root);
-	@override String get extras => 'Zwiastuny i dodatki';
 	@override String get studio => 'Studio';
 	@override String get rating => 'Ocena';
 	@override String get director => 'Reżyser';
@@ -6837,7 +6836,6 @@ extension on TranslationsPl {
 			'discover.findNext.skippedFeedback' => 'Na razie pominięto',
 			'discover.findNext.releaseToConfirm' => 'Puść, aby potwierdzić',
 			'discover.findNext.remoteHint' => 'Okładka zaznaczona: ← / → wybór · Wybierz: szczegóły · ↑ / ↓ zmiana fokusu',
-			'discover.extras' => 'Zwiastuny i dodatki',
 			'discover.studio' => 'Studio',
 			'discover.rating' => 'Ocena',
 			'discover.director' => 'Reżyser',
@@ -6910,9 +6908,9 @@ extension on TranslationsPl {
 			'libraries.content' => 'zawartość biblioteki',
 			'libraries.selectLibrary' => 'Wybierz bibliotekę',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
+			'libraries.noRecommendations' => 'Brak dostępnych rekomendacji',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Brak dostępnych rekomendacji',
 			'libraries.noCollections' => 'Brak kolekcji w tej bibliotece',
 			'libraries.noFoldersFound' => 'Nie znaleziono folderów',
 			'libraries.folders' => 'foldery',
@@ -7424,9 +7422,9 @@ extension on TranslationsPl {
 			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w Pleazyng: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			'watchTogether.openSessionControls' => 'Otwórz sterowanie sesją „Oglądaj razem”',
+			'watchTogether.reconnecting' => 'Ponowne łączenie...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Ponowne łączenie...',
 			'watchTogether.reconnectingDescription' => 'Połączenie zostało przerwane. Ponowne dołączenie do pokoju nastąpi automatycznie.',
 			'watchTogether.connected' => 'Połączono',
 			'watchTogether.disconnected' => 'Rozłączono',
@@ -7938,9 +7936,9 @@ extension on TranslationsPl {
 			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
 			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			'metadataEdit.noArtworkAvailable' => 'Brak dostępnej grafiki',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Opcja grafiki ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Opcja grafiki ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opcja grafiki ${index}, wybrana',
 			'metadataEdit.notSet' => 'Nie ustawiono',
 			'metadataEdit.libraryDefault' => 'Domyślne dla biblioteki',
@@ -8452,9 +8450,9 @@ extension on TranslationsPl {
 			'universalMedia.filesHelp' => 'Wybierz pliki audio, wideo lub ISO dla tymczasowego odcinka. pliki i adresy URL nie są dodawane do historii biblioteki.',
 			'universalMedia.chooseFiles' => 'Wybierz pliki',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: '1 wybrane pliki', few: '${count} wybrane pliki', many: '${count} wybrane pliki', other: '${count} wybrane pliki', ), 
+			'universalMedia.wifiTransfer' => 'Wyślij pliki za pośrednictwem Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Wyślij pliki za pośrednictwem Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Przekazywanie plików obsługiwanych z przeglądarki na tej samej zaufanej sieci.',
 			'universalMedia.wifiTransferIntro' => 'Otwórz ten adres w przeglądarce na innym urządzeniu. Wybierz pliki, aby dodać je do biblioteki plików i książek tego urządzenia.',
 			'universalMedia.wifiTransferPrivacy' => 'Ten urządzenie otrzymuje pliki za pośrednictwem sieci lokalnej.Każdy, kto zna tę adresę może wysłać pliki do momentu zaprzestania transferu lub adres wygasł po 15 minutach. maksymalnie: 100 plików, 4 GiB na plik, 10 GiB w sumie.',
@@ -8966,9 +8964,9 @@ extension on TranslationsPl {
 			'sourceSetup.metadataLoading' => 'Wyszukiwanie informacji o filmach i serialach w internecie…',
 			'sourceSetup.metadataFromTrakt' => 'Metadane z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nie znaleziono automatycznego dopasowania tytułu. Wyszukaj tytuł, aby wybrać dopasowanie.',
+			'sourceSetup.metadataFailed' => 'Nie udało się wczytać metadanych z internetu. Odtwarzanie i informacje lokalne nadal są dostępne.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Nie udało się wczytać metadanych z internetu. Odtwarzanie i informacje lokalne nadal są dostępne.',
 			'sourceSetup.videoDetailsLoading' => 'Wczytywanie szczegółów wideo',
 			'sourceSetup.subtitleKeyRequired' => 'Wymagany klucz API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Edytuj to źródło plików i dodaj klucz API OpenSubtitles w opcjonalnych ustawieniach napisów.',

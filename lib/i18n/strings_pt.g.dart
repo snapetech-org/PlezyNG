@@ -1630,7 +1630,6 @@ class Translations$discover$pt extends Translations$discover$en {
 	@override String get overview => 'Sinopse';
 	@override String get cast => 'Elenco';
 	@override late final Translations$discover$findNext$pt findNext = Translations$discover$findNext$pt.internal(_root);
-	@override String get extras => 'Trailers e extras';
 	@override String get studio => 'Estúdio';
 	@override String get rating => 'Avaliação';
 	@override String get director => 'Diretor';
@@ -6794,7 +6793,6 @@ extension on TranslationsPt {
 			'discover.findNext.skippedFeedback' => 'Ignorado por agora',
 			'discover.findNext.releaseToConfirm' => 'Solte para confirmar',
 			'discover.findNext.remoteHint' => 'Capa em foco: ← / → escolher · Selecionar: detalhes · ↑ / ↓ mover o foco',
-			'discover.extras' => 'Trailers e extras',
 			'discover.studio' => 'Estúdio',
 			'discover.rating' => 'Avaliação',
 			'discover.director' => 'Diretor',
@@ -6867,9 +6865,9 @@ extension on TranslationsPt {
 			'libraries.content' => 'conteúdo da biblioteca',
 			'libraries.selectLibrary' => 'Selecionar biblioteca',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtros (${count})',
+			'libraries.noRecommendations' => 'Nenhuma recomendação disponível',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Nenhuma recomendação disponível',
 			'libraries.noCollections' => 'Nenhuma coleção nesta biblioteca',
 			'libraries.noFoldersFound' => 'Nenhuma pasta encontrada',
 			'libraries.folders' => 'pastas',
@@ -7381,9 +7379,9 @@ extension on TranslationsPt {
 			'watchTogether.inviteCopied' => 'Convite copiado. Cole-o em uma mensagem.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Entre na minha sala do Assistir Juntos no Pleazyng: abra "Assistir Juntos", escolha "Entrar na sala" e insira ${code}.',
 			'watchTogether.openSessionControls' => 'Abrir os controles da sessão Assistir Juntos',
+			'watchTogether.reconnecting' => 'Reconectando...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Reconectando...',
 			'watchTogether.reconnectingDescription' => 'A conexão caiu. Você voltará à sala automaticamente.',
 			'watchTogether.connected' => 'Conectado',
 			'watchTogether.disconnected' => 'Desconectado',
@@ -7895,9 +7893,9 @@ extension on TranslationsPt {
 			'metadataEdit.artworkUpdated' => 'Arte atualizada',
 			'metadataEdit.artworkUpdateFailed' => 'Falha ao atualizar arte',
 			'metadataEdit.noArtworkAvailable' => 'Nenhuma arte disponível',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Opção de arte ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Opção de arte ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opção de arte ${index}, selecionada',
 			'metadataEdit.notSet' => 'Não definido',
 			'metadataEdit.libraryDefault' => 'Padrão da biblioteca',
@@ -8409,9 +8407,9 @@ extension on TranslationsPt {
 			'universalMedia.filesHelp' => 'Escolha arquivos de áudio, vídeo ou ISO para uma quebra temporária. arquivos e URLs não são adicionados ao histórico da biblioteca.',
 			'universalMedia.chooseFiles' => 'Escolha arquivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
+			'universalMedia.wifiTransfer' => 'Enviar arquivos por Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Enviar arquivos por Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transferir arquivos suportados de um navegador na mesma rede confiável.',
 			'universalMedia.wifiTransferIntro' => 'Abra este endereço num navegador em outro dispositivo. selecione arquivos para adicioná-los à biblioteca de Arquivos e Livros deste dispositivo.',
 			'universalMedia.wifiTransferPrivacy' => 'Este dispositivo recebe arquivos através da sua rede local. Qualquer pessoa que conhece este endereço pode enviar arquivos até você parar a transferência ou o endereçamento expira após 15 minutos. Máximo: 100 arquivos, 4 GiB por arquivo, 10 GiB total.',
@@ -8923,9 +8921,9 @@ extension on TranslationsPt {
 			'sourceSetup.metadataLoading' => 'Buscando detalhes de filmes e séries online…',
 			'sourceSetup.metadataFromTrakt' => 'Metadados online do Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nenhuma correspondência automática encontrada para o título. Pesquise o título para escolher uma correspondência.',
+			'sourceSetup.metadataFailed' => 'Não foi possível carregar os metadados online. A reprodução e os detalhes locais continuam disponíveis.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Não foi possível carregar os metadados online. A reprodução e os detalhes locais continuam disponíveis.',
 			'sourceSetup.videoDetailsLoading' => 'Carregando detalhes do vídeo',
 			'sourceSetup.subtitleKeyRequired' => 'É necessária uma chave API do OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Edite esta fonte de arquivos e adicione uma chave API do OpenSubtitles nas configurações opcionais de legendas.',

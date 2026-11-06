@@ -1656,7 +1656,6 @@ class _Translations$discover$ar extends Translations$discover$en {
 	@override String get overview => 'نظرة عامة';
 	@override String get cast => 'كاست';
 	@override late final _Translations$discover$findNext$ar findNext = _Translations$discover$findNext$ar._(_root);
-	@override String get extras => 'تريلر و إضافات';
 	@override String get studio => 'الاستوديو';
 	@override String get rating => 'تصنيف';
 	@override String get director => 'المخرج';
@@ -6887,7 +6886,6 @@ extension on TranslationsAr {
 			'discover.findNext.skippedFeedback' => 'تم التخطي حاليًا',
 			'discover.findNext.releaseToConfirm' => 'أفلت للتأكيد',
 			'discover.findNext.remoteHint' => 'عندما يكون التركيز على الغلاف: ← / → للاختيار · زر التحديد للتفاصيل · ↑ / ↓ لنقل التركيز',
-			'discover.extras' => 'تريلر و إضافات',
 			'discover.studio' => 'الاستوديو',
 			'discover.rating' => 'تصنيف',
 			'discover.director' => 'المخرج',
@@ -6960,9 +6958,9 @@ extension on TranslationsAr {
 			'libraries.content' => 'مكتبة المحتوى',
 			'libraries.selectLibrary' => 'اختيار المكتبة',
 			'libraries.filtersWithCount' => ({required Object count}) => 'الفلاتر (${count})',
+			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			'libraries.noCollections' => 'لا توجد مجموعات في هذه المكتبة',
 			'libraries.noFoldersFound' => 'لا توجد ملفات',
 			'libraries.folders' => 'المجلدات',
@@ -7474,9 +7472,9 @@ extension on TranslationsAr {
 			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'انضم إلى غرفة Watch Together في Pleazyng: افتح غرفة Watch Together واختر انضم إلى غرفة وانضم إلى ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch معا مراقبة الجلسة',
+			'watchTogether.reconnecting' => 'إعادة الاتصال...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'إعادة الاتصال...',
 			'watchTogether.reconnectingDescription' => 'انقطع الاتصال.تصل إلى الغرفة تلقائيًا.',
 			'watchTogether.connected' => 'متصلة',
 			'watchTogether.disconnected' => 'انقطاع الاتصال',
@@ -7988,9 +7986,9 @@ extension on TranslationsAr {
 			'metadataEdit.artworkUpdated' => 'الفنون المحدثة',
 			'metadataEdit.artworkUpdateFailed' => 'فشل في تحديث أعمال الفن',
 			'metadataEdit.noArtworkAvailable' => 'لا توجد أعمال فنية متاحة',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'الخيارات الفنية ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'الخيارات الفنية ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'الخيار الفن ${index}، اختياري',
 			'metadataEdit.notSet' => 'لا تضع',
 			'metadataEdit.libraryDefault' => 'مكتبة الافتراضية',
@@ -8502,9 +8500,9 @@ extension on TranslationsAr {
 			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
 			'universalMedia.chooseFiles' => 'اختيار الملفات',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
+			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'نقل الملفات المدعومة من متصفح على نفس الشبكة الموثوقة.',
 			'universalMedia.wifiTransferIntro' => 'افتح هذا العنوان في متصفح على جهاز آخر.اختر الملفات لإضافتها إلى مكتبة الملفين والكتب لهذا الجهاز.',
 			'universalMedia.wifiTransferPrivacy' => 'يمكن لأي شخص يعرف هذا العنوان إرسال الملفات حتى تتوقف عن نقلها أو تنتهي العنوان بعد 15 دقيقة.',
@@ -9016,9 +9014,9 @@ extension on TranslationsAr {
 			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
 			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
 			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',
+			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',
 			'sourceSetup.videoDetailsLoading' => 'جارٍ تحميل معلومات الفيديو',
 			'sourceSetup.subtitleKeyRequired' => 'يلزم مفتاح API لخدمة OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'عدّل مصدر الملفات هذا وأضف مفتاح API لخدمة OpenSubtitles في إعدادات الترجمة النصية الاختيارية.',

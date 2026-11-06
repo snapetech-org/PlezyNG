@@ -1628,7 +1628,6 @@ class _Translations$discover$nb extends Translations$discover$en {
 	@override String get overview => 'Oversikt';
 	@override String get cast => 'Skuespillere';
 	@override late final _Translations$discover$findNext$nb findNext = _Translations$discover$findNext$nb._(_root);
-	@override String get extras => 'Trailere og ekstramateriale';
 	@override String get studio => 'Studio';
 	@override String get rating => 'Vurdering';
 	@override String get director => 'Regissør';
@@ -6787,7 +6786,6 @@ extension on TranslationsNb {
 			'discover.findNext.skippedFeedback' => 'Hoppet over foreløpig',
 			'discover.findNext.releaseToConfirm' => 'Slipp for å bekrefte',
 			'discover.findNext.remoteHint' => 'Omslag i fokus: ← / → velg · Velg: detaljer · ↑ / ↓ flytt fokus',
-			'discover.extras' => 'Trailere og ekstramateriale',
 			'discover.studio' => 'Studio',
 			'discover.rating' => 'Vurdering',
 			'discover.director' => 'Regissør',
@@ -6860,9 +6858,9 @@ extension on TranslationsNb {
 			'libraries.content' => 'bibliotekinnhold',
 			'libraries.selectLibrary' => 'Velg bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtre (${count})',
+			'libraries.noRecommendations' => 'Ingen anbefalinger tilgjengelig',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Ingen anbefalinger tilgjengelig',
 			'libraries.noCollections' => 'Ingen samlinger i dette biblioteket',
 			'libraries.noFoldersFound' => 'Ingen mapper funnet',
 			'libraries.folders' => 'mapper',
@@ -7374,9 +7372,9 @@ extension on TranslationsNb {
 			'watchTogether.inviteCopied' => 'Invitasjon kopiert. Lim den inn i en melding.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bli med i Se sammen-rommet mitt i Pleazyng: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.',
 			'watchTogether.openSessionControls' => 'Åpne øktkontroller for Se sammen',
+			'watchTogether.reconnecting' => 'Kobler til på nytt...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Kobler til på nytt...',
 			'watchTogether.reconnectingDescription' => 'Tilkoblingen ble brutt. Du blir automatisk med i rommet igjen.',
 			'watchTogether.connected' => 'Tilkoblet',
 			'watchTogether.disconnected' => 'Frakoblet',
@@ -7888,9 +7886,9 @@ extension on TranslationsNb {
 			'metadataEdit.artworkUpdated' => 'Grafikk oppdatert',
 			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke oppdatere grafikken',
 			'metadataEdit.noArtworkAvailable' => 'Ingen grafikk tilgjengelig',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikkalternativ ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikkalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Grafikkalternativ ${index}, valgt',
 			'metadataEdit.notSet' => 'Ikke angitt',
 			'metadataEdit.libraryDefault' => 'Bibliotekstandard',
@@ -8402,9 +8400,9 @@ extension on TranslationsNb {
 			'universalMedia.filesHelp' => 'Velg audio, video eller ISO-filer for en midlertidig kue. filer og URL\'er er ikke lagt til bibliotekets historie.',
 			'universalMedia.chooseFiles' => 'Velg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: '1 utvalgte filer', other: '${count} utvalgte filer', ), 
+			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Overføring av støttet filer fra en nettleser på samme pålitelige nettverk.',
 			'universalMedia.wifiTransferIntro' => 'Åpne denne adressen i en nettleser på en annen enhet.Velg filer for å legge dem til filer og bøker biblioteket på denne enheten.',
 			'universalMedia.wifiTransferPrivacy' => 'Denne enheten mottar filer over ditt lokale nettverk. Enhver som kjenner denne adressen kan sende filer til du stopper overføringen eller adressen utløper etter 15 minutter. Maksimum: 100 filer, 4 GiB per fil, 10 GiB totalt.',
@@ -8916,9 +8914,9 @@ extension on TranslationsNb {
 			'sourceSetup.metadataLoading' => 'Søker etter film- og serieinformasjon på nettet…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata fra Trakt på nettet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Fant ikke et automatisk titteltreff. Søk etter tittelen for å velge et treff.',
+			'sourceSetup.metadataFailed' => 'Kunne ikke laste metadata fra nettet. Avspilling og lokal informasjon er fortsatt tilgjengelig.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Kunne ikke laste metadata fra nettet. Avspilling og lokal informasjon er fortsatt tilgjengelig.',
 			'sourceSetup.videoDetailsLoading' => 'Laster videoinformasjon',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-nøkkel kreves',
 			'sourceSetup.subtitleKeyHelp' => 'Rediger denne filkilden og legg til en OpenSubtitles-API-nøkkel i de valgfrie undertekstinnstillingene.',

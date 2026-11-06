@@ -1628,7 +1628,6 @@ class _Translations$discover$az extends Translations$discover$en {
 	@override String get overview => 'İcmal';
 	@override String get cast => 'Aktyorlar';
 	@override late final _Translations$discover$findNext$az findNext = _Translations$discover$findNext$az._(_root);
-	@override String get extras => 'Treylerlər və Əlavələr';
 	@override String get studio => 'Studiya';
 	@override String get rating => 'Reytinq';
 	@override String get director => 'Rejissor';
@@ -6787,7 +6786,6 @@ extension on TranslationsAz {
 			'discover.findNext.skippedFeedback' => 'Hələlik keçildi',
 			'discover.findNext.releaseToConfirm' => 'Təsdiqləmək üçün buraxın',
 			'discover.findNext.remoteHint' => 'Üz qabığı fokusda: ← / → seçin · Seçim düyməsi: təfərrüatlar · ↑ / ↓ fokusu dəyişin',
-			'discover.extras' => 'Treylerlər və Əlavələr',
 			'discover.studio' => 'Studiya',
 			'discover.rating' => 'Reytinq',
 			'discover.director' => 'Rejissor',
@@ -6860,9 +6858,9 @@ extension on TranslationsAz {
 			'libraries.content' => 'kitabxana məzmunu',
 			'libraries.selectLibrary' => 'Kitabxana seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
+			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			'libraries.noCollections' => 'Bu kitabxanada kolleksiya yoxdur',
 			'libraries.noFoldersFound' => 'Qovluq tapılmadı',
 			'libraries.folders' => 'qovluqlar',
@@ -7374,9 +7372,9 @@ extension on TranslationsAz {
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
 			'watchTogether.openSessionControls' => 'Birlikdə İzlə seans idarəetmələrini aç',
+			'watchTogether.reconnecting' => 'Yenidən qoşulunur...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Yenidən qoşulunur...',
 			'watchTogether.reconnectingDescription' => 'Əlaqə kəsildi. Otağa avtomatik olaraq yenidən qoşulacaqsınız.',
 			'watchTogether.connected' => 'Qoşulub',
 			'watchTogether.disconnected' => 'Əlaqə kəsilib',
@@ -7888,9 +7886,9 @@ extension on TranslationsAz {
 			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
 			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
 			'metadataEdit.noArtworkAvailable' => 'Şəkil əlçatan deyil',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}, seçildi',
 			'metadataEdit.notSet' => 'Təyin edilməyib',
 			'metadataEdit.libraryDefault' => 'Kitabxana defoltu',
@@ -8402,9 +8400,9 @@ extension on TranslationsAz {
 			'universalMedia.filesHelp' => 'Video, audio və ISO filləri seçin. Fillər və URL-lər kütüphane tarihinə daxil olmaz.',
 			'universalMedia.chooseFiles' => 'Fillər seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '1 seçilmiş fil', other: '${count} seçilmiş dosyalar', ), 
+			'universalMedia.wifiTransfer' => 'Fillər Wi-Fi yoluyla göndərilir',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Fillər Wi-Fi yoluyla göndərilir',
 			'universalMedia.wifiTransferHelp' => 'Desteklə olan dosyaları bir browserdan aynı güvenilir ağda göndərir.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başqa cihazda bir browserda açın.Bu cihazın Fillər və kitab kütüphanasına ekləmək üçün dosyaları seçin.',
 			'universalMedia.wifiTransferPrivacy' => 'Bu cihaz yerel ağınızdan dosyaları alınır.Bu adresi bilən kimsə, transferin durdurulana qədər və ya adres 15 min sonra sona erdirilmə qədər dosyalarını göndərir. Maksimum: 100 dosya, 4 GiB fil başına, 10 GiB toplam.',
@@ -8916,9 +8914,9 @@ extension on TranslationsAz {
 			'sourceSetup.metadataLoading' => 'Onlayn film və serial məlumatları axtarılır…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt-dan onlayn metadata',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Avtomatik ad uyğunluğu tapılmadı. Uyğun nəticəni seçmək üçün adı axtarın.',
+			'sourceSetup.metadataFailed' => 'Onlayn metadata yüklənmədi. Oynatma və yerli məlumatlar hələ də əlçatandır.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Onlayn metadata yüklənmədi. Oynatma və yerli məlumatlar hələ də əlçatandır.',
 			'sourceSetup.videoDetailsLoading' => 'Video məlumatları yüklənir',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API açarı tələb olunur',
 			'sourceSetup.subtitleKeyHelp' => 'Bu fayl mənbəyini redaktə edin və istəyə bağlı altyazı ayarlarına OpenSubtitles API açarı əlavə edin.',

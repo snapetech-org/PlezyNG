@@ -1630,7 +1630,6 @@ class _Translations$discover$it extends Translations$discover$en {
 	@override String get overview => 'Panoramica';
 	@override String get cast => 'Attori';
 	@override late final _Translations$discover$findNext$it findNext = _Translations$discover$findNext$it._(_root);
-	@override String get extras => 'Trailer ed extra';
 	@override String get studio => 'Studio';
 	@override String get rating => 'Valutazione';
 	@override String get director => 'Regista';
@@ -6794,7 +6793,6 @@ extension on TranslationsIt {
 			'discover.findNext.skippedFeedback' => 'Saltato per ora',
 			'discover.findNext.releaseToConfirm' => 'Rilascia per confermare',
 			'discover.findNext.remoteHint' => 'Copertina selezionata: ← / → scegli · Seleziona: dettagli · ↑ / ↓ sposta il focus',
-			'discover.extras' => 'Trailer ed extra',
 			'discover.studio' => 'Studio',
 			'discover.rating' => 'Valutazione',
 			'discover.director' => 'Regista',
@@ -6867,9 +6865,9 @@ extension on TranslationsIt {
 			'libraries.content' => 'contenuto della libreria',
 			'libraries.selectLibrary' => 'Seleziona libreria',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtri (${count})',
+			'libraries.noRecommendations' => 'Nessun consiglio disponibile',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Nessun consiglio disponibile',
 			'libraries.noCollections' => 'Nessuna raccolta in questa libreria',
 			'libraries.noFoldersFound' => 'Nessuna cartella trovata',
 			'libraries.folders' => 'cartelle',
@@ -7381,9 +7379,9 @@ extension on TranslationsIt {
 			'watchTogether.inviteCopied' => 'Invito copiato. Incollalo in un messaggio.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Unisciti alla mia stanza di Guarda insieme su Pleazyng: apri «Guarda insieme», scegli «Unisciti a una stanza» e inserisci ${code}.',
 			'watchTogether.openSessionControls' => 'Apri i controlli della sessione di Guarda insieme',
+			'watchTogether.reconnecting' => 'Riconnessione...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Riconnessione...',
 			'watchTogether.reconnectingDescription' => 'La connessione si è interrotta. Rientrerai automaticamente nella stanza.',
 			'watchTogether.connected' => 'Connesso',
 			'watchTogether.disconnected' => 'Disconnesso',
@@ -7895,9 +7893,9 @@ extension on TranslationsIt {
 			'metadataEdit.artworkUpdated' => 'Immagini aggiornate',
 			'metadataEdit.artworkUpdateFailed' => 'Impossibile aggiornare le immagini',
 			'metadataEdit.noArtworkAvailable' => 'Nessuna immagine disponibile',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Opzione immagine ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Opzione immagine ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opzione immagine ${index}, selezionata',
 			'metadataEdit.notSet' => 'Non impostato',
 			'metadataEdit.libraryDefault' => 'Predefinito della libreria',
@@ -8409,9 +8407,9 @@ extension on TranslationsIt {
 			'universalMedia.filesHelp' => 'Selezionare file audio, video o ISO per una coppia temporanea. File e URL non vengono aggiunti alla storia della biblioteca.',
 			'universalMedia.chooseFiles' => 'Scegli i file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('it'))(n, one: '1 file selezionati', many: '${count} file selezionati', other: '${count} file selezionati', ), 
+			'universalMedia.wifiTransfer' => 'Invia file tramite Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Invia file tramite Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Trasferire i file supportati da un browser sulla stessa rete affidata.',
 			'universalMedia.wifiTransferIntro' => 'Apri questo indirizzo in un browser su un altro dispositivo. Scegli i file per aggiungerli alla libreria dei file e dei libri di questo dispositivo.',
 			'universalMedia.wifiTransferPrivacy' => 'Questo dispositivo riceve file attraverso la tua rete locale. chiunque conosce questo indirizzo può inviare file fino a quando non si ferma il trasferimento o l\'indirizzo scade dopo 15 minuti. massimo: 100 file, 4 GiB per file, 10 GiB totale.',
@@ -8923,9 +8921,9 @@ extension on TranslationsIt {
 			'sourceSetup.metadataLoading' => 'Ricerca online dei dettagli di film e serie TV…',
 			'sourceSetup.metadataFromTrakt' => 'Metadati online da Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nessuna corrispondenza automatica trovata per il titolo. Cerca il titolo per scegliere una corrispondenza.',
+			'sourceSetup.metadataFailed' => 'Impossibile caricare i metadati online. La riproduzione e i dettagli locali restano disponibili.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Impossibile caricare i metadati online. La riproduzione e i dettagli locali restano disponibili.',
 			'sourceSetup.videoDetailsLoading' => 'Caricamento dei dettagli del video',
 			'sourceSetup.subtitleKeyRequired' => 'È necessaria una chiave API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Modifica questa fonte di file e aggiungi una chiave API OpenSubtitles nelle impostazioni facoltative dei sottotitoli.',

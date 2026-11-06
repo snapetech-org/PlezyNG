@@ -1,3 +1,4 @@
+import '../../extras/extras_models.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../media/library_filter_result.dart';
@@ -130,6 +131,9 @@ class CatalogHub {
 /// Where two calls remain, run them concurrently and isolate their failures:
 /// a failed related call must still yield the enriched item and its cast.
 class CatalogDetail {
+  /// Provider candidates require independent publisher and work verification.
+  final List<ExtraEntry> extras;
+
   /// The opening item enriched with everything the detail body added, via
   /// [CatalogItem.enrichedWith]. Equal to the input item when the provider
   /// has no detail endpoint.
@@ -155,6 +159,7 @@ class CatalogDetail {
 
   const CatalogDetail({
     required this.item,
+    this.extras = const [],
     this.cast = const [],
     this.related = const [],
     this.relations = const [],

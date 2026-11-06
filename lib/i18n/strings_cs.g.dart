@@ -1640,7 +1640,6 @@ class _Translations$discover$cs extends Translations$discover$en {
 	@override String get overview => 'Přehled';
 	@override String get cast => 'Castová';
 	@override late final _Translations$discover$findNext$cs findNext = _Translations$discover$findNext$cs._(_root);
-	@override String get extras => 'Trailery a extras';
 	@override String get studio => 'Studio';
 	@override String get rating => 'Hodnocení';
 	@override String get director => 'Režisér';
@@ -6831,7 +6830,6 @@ extension on TranslationsCs {
 			'discover.findNext.skippedFeedback' => 'Zatím přeskočeno',
 			'discover.findNext.releaseToConfirm' => 'Uvolněním potvrďte',
 			'discover.findNext.remoteHint' => 'Vybraný obal: ← / → volba · Vybrat: podrobnosti · ↑ / ↓ přesun výběru',
-			'discover.extras' => 'Trailery a extras',
 			'discover.studio' => 'Studio',
 			'discover.rating' => 'Hodnocení',
 			'discover.director' => 'Režisér',
@@ -6904,9 +6902,9 @@ extension on TranslationsCs {
 			'libraries.content' => 'Obsah knihovny',
 			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
+			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
 			'libraries.noFoldersFound' => 'Žádné složky nenajdete',
 			'libraries.folders' => 'Složky',
@@ -7418,9 +7416,9 @@ extension on TranslationsCs {
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
+			'watchTogether.reconnecting' => 'Připojení...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Připojení...',
 			'watchTogether.reconnectingDescription' => 'Připojení je zrušené. automaticky se připojíte k místnosti.',
 			'watchTogether.connected' => 'připojené',
 			'watchTogether.disconnected' => 'Rozpojení',
@@ -7932,9 +7930,9 @@ extension on TranslationsCs {
 			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
 			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
 			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Umělecká volba ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Umělecká volba ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Možnost umělecké práce ${index}, vybraná',
 			'metadataEdit.notSet' => 'Není nastaven',
 			'metadataEdit.libraryDefault' => 'knihovny defektní',
@@ -8446,9 +8444,9 @@ extension on TranslationsCs {
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
+			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Přenos podporovaných souborů z prohlížeče na stejnou důvěryhodnou síť.',
 			'universalMedia.wifiTransferIntro' => 'Otevřete tuto adresu v prohlížeči na jiném zařízení. Vyberte soubory, abyste je přidali do knihovny souborů a knih tohoto zařízení.',
 			'universalMedia.wifiTransferPrivacy' => 'Toto zařízení přijímá soubory přes vaši místní síť.Každý, kdo zná tuto adresu může poslat soubory až do zastavení přenosu nebo adresa vyprší po 15 minutách. Maximální: 100 souborů, 4 GiB na soubor, 10 GiB celkem.',
@@ -8960,9 +8958,9 @@ extension on TranslationsCs {
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
+			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',
 			'sourceSetup.videoDetailsLoading' => 'Načítání informací o videu',
 			'sourceSetup.subtitleKeyRequired' => 'Je vyžadován klíč API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Upravte tento souborový zdroj a přidejte klíč API OpenSubtitles do volitelných nastavení titulků.',

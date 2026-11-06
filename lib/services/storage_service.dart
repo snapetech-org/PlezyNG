@@ -1,3 +1,4 @@
+import '../extras/extras_store.dart';
 import 'dart:convert';
 import '../media/ids.dart';
 import '../media/library_filter_selection.dart';
@@ -515,7 +516,7 @@ class StorageService extends BaseSharedPreferencesService {
 
   // Clear all user-related data (for logout)
   Future<void> clearUserData() async {
-    await Future.wait([clearCredentials(), clearLibraryPreferences()]);
+    await Future.wait([clearCredentials(), clearLibraryPreferences(), ExtrasStore.clearAll()]);
   }
 
   // Multi-Server Support Methods
@@ -607,11 +608,13 @@ class StorageService extends BaseSharedPreferencesService {
   /// of the same home user — only call when that user's access is being torn
   /// down entirely (profile delete / account sign-out).
   Future<void> clearUserScopedPreferencesForProfile(String profileId) async {
+    await ExtrasStore(profileId).clear();
     await _clearKeysWithPrefix(_userPrefixForProfileId(profileId));
   }
 
   /// Remove user-scoped prefs for every scope (full logout).
   Future<void> clearAllUserScopedPreferences() async {
+    await ExtrasStore.clearAll();
     await _clearKeysWithPrefix('user_');
   }
 

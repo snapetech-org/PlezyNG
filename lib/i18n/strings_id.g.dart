@@ -1621,7 +1621,6 @@ class _Translations$discover$id extends Translations$discover$en {
 	@override String get overview => 'Tinjauan';
 	@override String get cast => 'Tembak';
 	@override late final _Translations$discover$findNext$id findNext = _Translations$discover$findNext$id._(_root);
-	@override String get extras => 'Trailer dan Ekstras';
 	@override String get studio => 'Studio yang';
 	@override String get rating => 'Peringkat';
 	@override String get director => 'Direktur';
@@ -6762,7 +6761,6 @@ extension on TranslationsId {
 			'discover.findNext.skippedFeedback' => 'Dilewati untuk saat ini',
 			'discover.findNext.releaseToConfirm' => 'Lepaskan untuk mengonfirmasi',
 			'discover.findNext.remoteHint' => 'Saat sampul terfokus: ← / → memilih · Pilih: detail · ↑ / ↓ pindah fokus',
-			'discover.extras' => 'Trailer dan Ekstras',
 			'discover.studio' => 'Studio yang',
 			'discover.rating' => 'Peringkat',
 			'discover.director' => 'Direktur',
@@ -6835,9 +6833,9 @@ extension on TranslationsId {
 			'libraries.content' => 'Perpustakaan konten',
 			'libraries.selectLibrary' => 'Pilih perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
+			'libraries.noRecommendations' => 'Tidak ada rekomendasi tersedia',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Tidak ada rekomendasi tersedia',
 			'libraries.noCollections' => 'Tidak ada koleksi di perpustakaan ini',
 			'libraries.noFoldersFound' => 'Tidak ditemukan folder',
 			'libraries.folders' => 'Folder',
@@ -7349,9 +7347,9 @@ extension on TranslationsId {
 			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Watch bersama saya di Pleazyng: buka Watch bersama, pilih Join Room dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kontrol sesi',
+			'watchTogether.reconnecting' => 'Menghubungkan kembali...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Menghubungkan kembali...',
 			'watchTogether.reconnectingDescription' => 'Koneksi terputus.Anda masuk ke ruangan secara otomatis.',
 			'watchTogether.connected' => 'terhubung',
 			'watchTogether.disconnected' => 'terhubung',
@@ -7863,9 +7861,9 @@ extension on TranslationsId {
 			'metadataEdit.artworkUpdated' => 'Artwork dikemas kini',
 			'metadataEdit.artworkUpdateFailed' => 'gagal memperbarui karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tidak ada seni yang tersedia',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Opsi seni ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Opsi seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opsi seni ${index}, dipilih',
 			'metadataEdit.notSet' => 'Tidak menetapkan',
 			'metadataEdit.libraryDefault' => 'Perpustakaan default',
@@ -8377,9 +8375,9 @@ extension on TranslationsId {
 			'universalMedia.filesHelp' => 'Pilih file audio, video, atau ISO untuk catatan sementara.File dan URL tidak ditambahkan ke sejarah perpustakaan.',
 			'universalMedia.chooseFiles' => 'Pilih file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} file terpilih', ), 
+			'universalMedia.wifiTransfer' => 'Mengirim file melalui Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Mengirim file melalui Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Memindahkan file yang didukung dari browser pada jaringan yang sama.',
 			'universalMedia.wifiTransferIntro' => 'Buka alamat ini dalam browser pada perangkat lain. pilih file untuk menambahkan mereka ke perpustakaan File dan buku perangkat ini.',
 			'universalMedia.wifiTransferPrivacy' => 'Setiap orang yang tahu alamat ini dapat mengirim file sampai Anda menghentikan transfer atau alamat berakhir setelah 15 menit. maksimum: 100 file, 4 GiB per file, 10 GiB total.',
@@ -8891,9 +8889,9 @@ extension on TranslationsId {
 			'sourceSetup.metadataLoading' => 'Mencari detail film dan acara TV secara daring…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata daring dari Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tidak ditemukan kecocokan judul otomatis. Cari judulnya untuk memilih kecocokan.',
+			'sourceSetup.metadataFailed' => 'Metadata daring tidak dapat dimuat. Pemutaran dan detail lokal tetap tersedia.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Metadata daring tidak dapat dimuat. Pemutaran dan detail lokal tetap tersedia.',
 			'sourceSetup.videoDetailsLoading' => 'Memuat detail video',
 			'sourceSetup.subtitleKeyRequired' => 'Kunci API OpenSubtitles diperlukan',
 			'sourceSetup.subtitleKeyHelp' => 'Edit sumber file ini dan tambahkan kunci API OpenSubtitles di pengaturan subtitel opsionalnya.',

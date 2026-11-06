@@ -1642,7 +1642,6 @@ class _Translations$discover$ru extends Translations$discover$en {
 	@override String get overview => 'Обзор';
 	@override String get cast => 'В ролях';
 	@override late final _Translations$discover$findNext$ru findNext = _Translations$discover$findNext$ru._(_root);
-	@override String get extras => 'Трейлеры и доп. материалы';
 	@override String get studio => 'Студия';
 	@override String get rating => 'Рейтинг';
 	@override String get director => 'Режиссёр';
@@ -6837,7 +6836,6 @@ extension on TranslationsRu {
 			'discover.findNext.skippedFeedback' => 'Пока пропущено',
 			'discover.findNext.releaseToConfirm' => 'Отпустите для подтверждения',
 			'discover.findNext.remoteHint' => 'Фокус на обложке: ← / → выбор · Кнопка выбора: подробности · ↑ / ↓ перемещение фокуса',
-			'discover.extras' => 'Трейлеры и доп. материалы',
 			'discover.studio' => 'Студия',
 			'discover.rating' => 'Рейтинг',
 			'discover.director' => 'Режиссёр',
@@ -6910,9 +6908,9 @@ extension on TranslationsRu {
 			'libraries.content' => 'содержимое библиотеки',
 			'libraries.selectLibrary' => 'Выбрать библиотеку',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтры (${count})',
+			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			'libraries.noCollections' => 'В этой библиотеке нет коллекций',
 			'libraries.noFoldersFound' => 'Папки не найдены',
 			'libraries.folders' => 'папки',
@@ -7424,9 +7422,9 @@ extension on TranslationsRu {
 			'watchTogether.inviteCopied' => 'Приглашение скопировано. Вставьте его в сообщение.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присоединяйтесь к совместному просмотру в Pleazyng: откройте «Смотреть вместе», выберите «Войти в комнату» и введите ${code}.',
 			'watchTogether.openSessionControls' => 'Открыть управление сессией «Смотреть вместе»',
+			'watchTogether.reconnecting' => 'Переподключение...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Переподключение...',
 			'watchTogether.reconnectingDescription' => 'Соединение прервалось. Вы автоматически вернётесь в комнату.',
 			'watchTogether.connected' => 'Подключено',
 			'watchTogether.disconnected' => 'Отключено',
@@ -7938,9 +7936,9 @@ extension on TranslationsRu {
 			'metadataEdit.artworkUpdated' => 'Обложка обновлена',
 			'metadataEdit.artworkUpdateFailed' => 'Не удалось обновить обложку',
 			'metadataEdit.noArtworkAvailable' => 'Обложки недоступны',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант обложки ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант обложки ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант обложки ${index}, выбран',
 			'metadataEdit.notSet' => 'Не задано',
 			'metadataEdit.libraryDefault' => 'По умолчанию библиотеки',
@@ -8452,9 +8450,9 @@ extension on TranslationsRu {
 			'universalMedia.filesHelp' => 'Выберите аудио, видео или файлы ISO для временного перевода.Файлы и URL не добавляются в историю библиотеки.',
 			'universalMedia.chooseFiles' => 'Выберите файлы',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '1 Выбранный файл', few: '${count} выбранные файлы', many: '${count} выбранные файлы', other: '${count} выбранные файлы', ), 
+			'universalMedia.wifiTransfer' => 'Передача файлов через Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Передача файлов через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача поддерживаемых файлов из браузера в той же надежной сети.',
 			'universalMedia.wifiTransferIntro' => 'Откройте этот адрес в браузере на другом устройстве.Выберите файлы, чтобы добавить их в библиотеку файлов и книг этого устройства.',
 			'universalMedia.wifiTransferPrivacy' => 'Каждый, кто знает эту адресу, может отправить файлы до тех пор, пока вы не прекратите передачу или адрес истекает через 15 минут. Максимум: 100 файлов, 4 ГБ за файл, 10 ГБ в общей сложности.',
@@ -8966,9 +8964,9 @@ extension on TranslationsRu {
 			'sourceSetup.metadataLoading' => 'Поиск сведений о фильмах и сериалах в интернете…',
 			'sourceSetup.metadataFromTrakt' => 'Метаданные из Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматическое совпадение названия не найдено. Найдите название, чтобы выбрать совпадение.',
+			'sourceSetup.metadataFailed' => 'Не удалось загрузить метаданные из интернета. Воспроизведение и локальные сведения по-прежнему доступны.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Не удалось загрузить метаданные из интернета. Воспроизведение и локальные сведения по-прежнему доступны.',
 			'sourceSetup.videoDetailsLoading' => 'Загрузка сведений о видео',
 			'sourceSetup.subtitleKeyRequired' => 'Требуется ключ API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Измените этот файловый источник и добавьте ключ API OpenSubtitles в необязательных настройках субтитров.',

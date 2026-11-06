@@ -1,3 +1,4 @@
+import json
 import tempfile
 import sys
 import unittest
@@ -10,6 +11,16 @@ import clean_translations
 
 
 class CollectReferencesTest(unittest.TestCase):
+    def test_authored_helpers_and_indexed_access_are_reachable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            lib = Path(directory)
+            (lib / "i18n").mkdir()
+            (lib / "i18n" / "status.dart").write_text("String status() => t.capture.ready; final messages = t.subtitleCapture;")
+            (lib / "widget.dart").write_text("final label = context.t['romm.$id']; final title = t['extras.title'];")
+            with patch.object(clean_translations, "LIB_DIR", lib):
+                references = clean_translations.collect_references()
+        self.assertEqual(references, {"capture.ready", "subtitleCapture", "romm", "extras.title"})
+
     def test_collects_global_and_explicit_translation_access(self):
         with tempfile.TemporaryDirectory() as directory:
             lib = Path(directory)
@@ -73,6 +84,30 @@ final third = Translations . of ( context ) . libraries . hiddenLibrariesCount;
 
 
 class NormalizePluralTest(unittest.TestCase):
+    def test_approved_fallbacks_stay_absent_without_removing_real_translations(self):
+        en = {"extras": {"title": "Extras"}, "common": {"save": "Save", "new": "New"}, "missing": "Missing"}
+        locale = {"common": {"save": "Enregistrer"}}
+        stats = {"added": 0, "removed": 0, "type_fixed": 0, "unchanged": 0}
+        result = clean_translations.normalize(
+            en, locale, "", stats, ("one", "other"), {"extras.title", "common.save", "common.new"}
+        )
+        self.assertEqual(result, {"common": {"save": "Enregistrer"}, "missing": ""})
+        self.assertEqual(stats["added"], 1)
+
+    def test_cleanup_rejects_invalid_fallback_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            i18n = root / 'lib' / 'i18n'
+            i18n.mkdir(parents=True)
+            (root / 'slang.yaml').write_text('fallback_strategy: base_locale_empty_string\n')
+            (i18n / 'en.i18n.json').write_text('{"title":"Title"}')
+            (i18n / 'english_fallbacks.json').write_text(json.dumps({
+                'baseLocale': 'en', 'reason': 'Pending review', 'keys': ['not.a.key']
+            }))
+            with patch.object(clean_translations, 'I18N_DIR', i18n):
+                with self.assertRaisesRegex(ValueError, 'unknown English message'):
+                    clean_translations.clean_pass(check_only=True)
+
     def _normalize(self, en, locale):
         stats = {"added": 0, "removed": 0, "type_fixed": 0, "unchanged": 0}
         categories = clean_translations.locale_plural_categories(en, locale)

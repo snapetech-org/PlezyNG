@@ -1630,7 +1630,6 @@ class Translations$discover$fr extends Translations$discover$en {
 	@override String get overview => 'Aperçu';
 	@override String get cast => 'Distribution';
 	@override late final Translations$discover$findNext$fr findNext = Translations$discover$findNext$fr.internal(_root);
-	@override String get extras => 'Bandes-annonces et bonus';
 	@override String get studio => 'Studio';
 	@override String get rating => 'Évaluation';
 	@override String get director => 'Réalisateur';
@@ -6794,7 +6793,6 @@ extension on TranslationsFr {
 			'discover.findNext.skippedFeedback' => 'Ignoré pour le moment',
 			'discover.findNext.releaseToConfirm' => 'Relâchez pour confirmer',
 			'discover.findNext.remoteHint' => 'Couverture sélectionnée : ← / → choisir · Sélectionner : détails · ↑ / ↓ : déplacer la sélection',
-			'discover.extras' => 'Bandes-annonces et bonus',
 			'discover.studio' => 'Studio',
 			'discover.rating' => 'Évaluation',
 			'discover.director' => 'Réalisateur',
@@ -6867,9 +6865,9 @@ extension on TranslationsFr {
 			'libraries.content' => 'contenu de la bibliothèque',
 			'libraries.selectLibrary' => 'Sélectionner la bibliothèque',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtres (${count})',
+			'libraries.noRecommendations' => 'Aucune recommandation disponible',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Aucune recommandation disponible',
 			'libraries.noCollections' => 'Aucune collection dans cette bibliothèque',
 			'libraries.noFoldersFound' => 'Aucun dossier trouvé',
 			'libraries.folders' => 'dossiers',
@@ -7381,9 +7379,9 @@ extension on TranslationsFr {
 			'watchTogether.inviteCopied' => 'Invitation copiée. Collez-la dans un message.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Rejoignez mon salon Regarder ensemble dans Pleazyng : ouvrez « Regarder ensemble », choisissez « Rejoindre un salon » et saisissez ${code}.',
 			'watchTogether.openSessionControls' => 'Ouvrir les commandes de la session Regarder ensemble',
+			'watchTogether.reconnecting' => 'Reconnexion...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Reconnexion...',
 			'watchTogether.reconnectingDescription' => 'La connexion a été interrompue. Vous rejoindrez le salon automatiquement.',
 			'watchTogether.connected' => 'Connecté',
 			'watchTogether.disconnected' => 'Déconnecté',
@@ -7895,9 +7893,9 @@ extension on TranslationsFr {
 			'metadataEdit.artworkUpdated' => 'Illustrations mises à jour',
 			'metadataEdit.artworkUpdateFailed' => 'Échec de la mise à jour des illustrations',
 			'metadataEdit.noArtworkAvailable' => 'Aucune illustration disponible',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Option d\'illustration ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Option d\'illustration ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Option d\'illustration ${index}, sélectionnée',
 			'metadataEdit.notSet' => 'Non défini',
 			'metadataEdit.libraryDefault' => 'Par défaut de la bibliothèque',
@@ -8409,9 +8407,9 @@ extension on TranslationsFr {
 			'universalMedia.filesHelp' => 'Choisissez des fichiers audio, vidéo ou ISO pour une couverture temporaire.Fichiers et URL ne sont pas ajoutés à l\'histoire de la bibliothèque.',
 			'universalMedia.chooseFiles' => 'Choisir des fichiers',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 fichier sélectionné', many: '${count} fichiers sélectionnés', other: '${count} fichiers sélectionnés', ), 
+			'universalMedia.wifiTransfer' => 'Envoyer des fichiers via Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Envoyer des fichiers via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transfert des fichiers soutenus d\'un navigateur sur le même réseau fiable.',
 			'universalMedia.wifiTransferIntro' => 'Ouvrez cette adresse dans un navigateur sur un autre appareil. Sélectionnez les fichiers pour les ajouter à la bibliothèque des Fichiers et livres de cet appareil .',
 			'universalMedia.wifiTransferPrivacy' => 'Ce dispositif reçoit des fichiers sur votre réseau local.Celui qui connaît cette adresse peut envoyer des ficher jusqu\'à ce que vous arrêtez le transfert ou l\'adresse expire après 15 minutes.Maximum: 100 fichières, 4 GiB par fichier, 10 GiB total.',
@@ -8923,9 +8921,9 @@ extension on TranslationsFr {
 			'sourceSetup.metadataLoading' => 'Recherche en ligne d’informations sur les films et séries…',
 			'sourceSetup.metadataFromTrakt' => 'Métadonnées en ligne de Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Aucune correspondance automatique trouvée pour le titre. Recherchez le titre pour choisir une correspondance.',
+			'sourceSetup.metadataFailed' => 'Impossible de charger les métadonnées en ligne. La lecture et les informations locales restent disponibles.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Impossible de charger les métadonnées en ligne. La lecture et les informations locales restent disponibles.',
 			'sourceSetup.videoDetailsLoading' => 'Chargement des détails de la vidéo',
 			'sourceSetup.subtitleKeyRequired' => 'Clé API OpenSubtitles requise',
 			'sourceSetup.subtitleKeyHelp' => 'Modifiez cette source de fichiers et ajoutez une clé API OpenSubtitles dans ses réglages facultatifs de sous-titres.',

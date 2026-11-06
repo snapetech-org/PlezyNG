@@ -1630,7 +1630,6 @@ class _Translations$discover$he extends Translations$discover$en {
 	@override String get overview => 'סקירה כללית';
 	@override String get cast => 'קסט';
 	@override late final _Translations$discover$findNext$he findNext = _Translations$discover$findNext$he._(_root);
-	@override String get extras => 'טריילר & Extras';
 	@override String get studio => 'סטודיו';
 	@override String get rating => 'דירוג';
 	@override String get director => 'במאי';
@@ -6795,7 +6794,6 @@ extension on TranslationsHe {
 			'discover.findNext.skippedFeedback' => 'דולג לעת עתה',
 			'discover.findNext.releaseToConfirm' => 'שחררו לאישור',
 			'discover.findNext.remoteHint' => 'כשהעטיפה במיקוד: ← / → בחירה · לחצן בחירה: פרטים · ↑ / ↓ העברת מיקוד',
-			'discover.extras' => 'טריילר & Extras',
 			'discover.studio' => 'סטודיו',
 			'discover.rating' => 'דירוג',
 			'discover.director' => 'במאי',
@@ -6868,9 +6866,9 @@ extension on TranslationsHe {
 			'libraries.content' => 'ספרייה תוכן',
 			'libraries.selectLibrary' => 'בחר ספרייה',
 			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
+			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			'libraries.noCollections' => 'אין אוסף בספריה זו',
 			'libraries.noFoldersFound' => 'לא נמצאו קבצים',
 			'libraries.folders' => 'תיקיות',
@@ -7382,9 +7380,9 @@ extension on TranslationsHe {
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- Pleazyng: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch יחד בדיקת ישיבה',
+			'watchTogether.reconnecting' => 'חיבור מחדש...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'חיבור מחדש...',
 			'watchTogether.reconnectingDescription' => 'הקשר נעלם, אתה נכנס לחדר באופן אוטומטי.',
 			'watchTogether.connected' => 'מחוברים',
 			'watchTogether.disconnected' => 'נפרד',
@@ -7896,9 +7894,9 @@ extension on TranslationsHe {
 			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
 			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
 			'metadataEdit.noArtworkAvailable' => 'אין יצירות אמנות זמינות',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}, נבחר',
 			'metadataEdit.notSet' => 'לא קבע',
 			'metadataEdit.libraryDefault' => 'ספרייה פגום',
@@ -8410,9 +8408,9 @@ extension on TranslationsHe {
 			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
 			'universalMedia.chooseFiles' => 'בחירת קבצים',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
+			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'העברת קבצים תומכים מתוך דפדפן באותו רשת מאובטחת.',
 			'universalMedia.wifiTransferIntro' => 'פתח את כתובת זו בדפדפן במכשיר אחר. בחר קבצים כדי להוסיף אותם לספריה של קבצי מכשיר זה וספרים.',
 			'universalMedia.wifiTransferPrivacy' => 'מכשיר זה מקבל קבצים ברשת המקומית שלך.כל מי שיודע את הכתובת הזו יכול לשלוח קבצי עד שתפסיק להעביר או שהכתובת תסתיים לאחר 15 דקות.',
@@ -8924,9 +8922,9 @@ extension on TranslationsHe {
 			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
 			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',
+			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',
 			'sourceSetup.videoDetailsLoading' => 'פרטי הווידאו נטענים',
 			'sourceSetup.subtitleKeyRequired' => 'נדרש מפתח API של OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'יש לערוך את מקור הקבצים הזה ולהוסיף מפתח API של OpenSubtitles בהגדרות הכתוביות האופציונליות שלו.',

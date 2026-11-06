@@ -201,14 +201,18 @@ class SeerrExternalIds {
 }
 
 class SeerrRelatedVideo {
+  final String? name;
+  final String? language;
   final String? url;
   final String? key;
   final String? type;
   final String? site;
 
-  const SeerrRelatedVideo({this.url, this.key, this.type, this.site});
+  const SeerrRelatedVideo({this.url, this.key, this.type, this.site, this.name, this.language});
 
   factory SeerrRelatedVideo.fromJson(Map<String, dynamic> json) => SeerrRelatedVideo(
+    name: json['name'] as String?,
+    language: json['iso_639_1'] as String?,
     url: json['url'] as String?,
     key: json['key'] as String?,
     type: json['type'] as String?,

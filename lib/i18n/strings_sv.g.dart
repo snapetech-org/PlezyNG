@@ -1628,7 +1628,6 @@ class _Translations$discover$sv extends Translations$discover$en {
 	@override String get overview => 'Översikt';
 	@override String get cast => 'Rollbesättning';
 	@override late final _Translations$discover$findNext$sv findNext = _Translations$discover$findNext$sv._(_root);
-	@override String get extras => 'Trailrar och extramaterial';
 	@override String get studio => 'Studio';
 	@override String get rating => 'Betyg';
 	@override String get director => 'Regissör';
@@ -6787,7 +6786,6 @@ extension on TranslationsSv {
 			'discover.findNext.skippedFeedback' => 'Överhoppad för tillfället',
 			'discover.findNext.releaseToConfirm' => 'Släpp för att bekräfta',
 			'discover.findNext.remoteHint' => 'Omslag i fokus: ← / → välj · Välj: detaljer · ↑ / ↓ flytta fokus',
-			'discover.extras' => 'Trailrar och extramaterial',
 			'discover.studio' => 'Studio',
 			'discover.rating' => 'Betyg',
 			'discover.director' => 'Regissör',
@@ -6860,9 +6858,9 @@ extension on TranslationsSv {
 			'libraries.content' => 'bibliotekets innehåll',
 			'libraries.selectLibrary' => 'Välj bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
+			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			'libraries.noCollections' => 'Inga samlingar i det här biblioteket',
 			'libraries.noFoldersFound' => 'Inga mappar hittades',
 			'libraries.folders' => 'mappar',
@@ -7374,9 +7372,9 @@ extension on TranslationsSv {
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i Pleazyng: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
 			'watchTogether.openSessionControls' => 'Öppna sessionskontroller för Titta tillsammans',
+			'watchTogether.reconnecting' => 'Återansluter...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Återansluter...',
 			'watchTogether.reconnectingDescription' => 'Anslutningen bröts. Du går automatiskt med i rummet igen.',
 			'watchTogether.connected' => 'Ansluten',
 			'watchTogether.disconnected' => 'Frånkopplad',
@@ -7888,9 +7886,9 @@ extension on TranslationsSv {
 			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
 			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
 			'metadataEdit.noArtworkAvailable' => 'Inget bildmaterial är tillgängligt',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Bildalternativ ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Bildalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Bildalternativ ${index}, valt',
 			'metadataEdit.notSet' => 'Inte angiven',
 			'metadataEdit.libraryDefault' => 'Biblioteksstandard',
@@ -8402,9 +8400,9 @@ extension on TranslationsSv {
 			'universalMedia.filesHelp' => 'Välj ljud, video eller ISO-filer för en tillfällig spårning. filer och URL-adresser läggs inte till i bibliotekshistorik.',
 			'universalMedia.chooseFiles' => 'Välj filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: '1 Utvalda filer', other: '${count} valda filer', ), 
+			'universalMedia.wifiTransfer' => 'Skicka filer via Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Skicka filer via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Överföra stödda filer från en webbläsare på samma betrodda nätverk.',
 			'universalMedia.wifiTransferIntro' => 'Öppna denna adress i en webbläsare på en annan enhet. Välj filer för att lägga till dem i den här enhetens Filer och böcker bibliotek.',
 			'universalMedia.wifiTransferPrivacy' => 'Den här enheten får filer via ditt lokala nätverk.Vem som känner till denna adress kan skicka filer tills du stoppar överföringen eller adressen löper ut efter 15 minuter.Maksimum: 100 filer, 4 GiB per fil, 10 GiB totalt.',
@@ -8916,9 +8914,9 @@ extension on TranslationsSv {
 			'sourceSetup.metadataLoading' => 'Söker efter film- och serieinformation på nätet…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata från Trakt på nätet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Ingen automatisk titelträff hittades. Sök efter titeln för att välja en träff.',
+			'sourceSetup.metadataFailed' => 'Metadata från nätet kunde inte läsas in. Uppspelning och lokal information är fortfarande tillgängliga.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Metadata från nätet kunde inte läsas in. Uppspelning och lokal information är fortfarande tillgängliga.',
 			'sourceSetup.videoDetailsLoading' => 'Läser in videoinformation',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-nyckel krävs',
 			'sourceSetup.subtitleKeyHelp' => 'Redigera den här filkällan och lägg till en OpenSubtitles-API-nyckel i dess valfria undertextinställningar.',

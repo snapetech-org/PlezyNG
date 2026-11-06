@@ -1640,7 +1640,6 @@ class _Translations$discover$uk extends Translations$discover$en {
 	@override String get overview => 'Опис';
 	@override String get cast => 'Каст';
 	@override late final _Translations$discover$findNext$uk findNext = _Translations$discover$findNext$uk._(_root);
-	@override String get extras => 'Трейлери та екстраси';
 	@override String get studio => 'Студія';
 	@override String get rating => 'Рейтинг';
 	@override String get director => 'Режисер';
@@ -6831,7 +6830,6 @@ extension on TranslationsUk {
 			'discover.findNext.skippedFeedback' => 'Наразі пропущено',
 			'discover.findNext.releaseToConfirm' => 'Відпустіть для підтвердження',
 			'discover.findNext.remoteHint' => 'Фокус на обкладинці: ← / → вибір · Кнопка вибору: подробиці · ↑ / ↓ переміщення фокусу',
-			'discover.extras' => 'Трейлери та екстраси',
 			'discover.studio' => 'Студія',
 			'discover.rating' => 'Рейтинг',
 			'discover.director' => 'Режисер',
@@ -6904,9 +6902,9 @@ extension on TranslationsUk {
 			'libraries.content' => 'Бібліотека контент',
 			'libraries.selectLibrary' => 'Вибір бібліотеки',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
+			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			_ => null,
 		} ?? switch (path) {
-			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			'libraries.noCollections' => 'Ніяких колекцій в цій бібліотеці',
 			'libraries.noFoldersFound' => 'Не знайдено жодних паперів',
 			'libraries.folders' => 'Теки',
@@ -7418,9 +7416,9 @@ extension on TranslationsUk {
 			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
+			'watchTogether.reconnecting' => 'Відновлення...',
 			_ => null,
 		} ?? switch (path) {
-			'watchTogether.reconnecting' => 'Відновлення...',
 			'watchTogether.reconnectingDescription' => 'З\'єднання припинено. Ви приєднуєтеся до кімнати автоматично.',
 			'watchTogether.connected' => 'Зв\'язані',
 			'watchTogether.disconnected' => 'Відключені',
@@ -7932,9 +7930,9 @@ extension on TranslationsUk {
 			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
 			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			_ => null,
 		} ?? switch (path) {
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вибір художнього твору ${index}, вибраний',
 			'metadataEdit.notSet' => 'Не встановлюйте',
 			'metadataEdit.libraryDefault' => 'Бібліотека дефолт',
@@ -8446,9 +8444,9 @@ extension on TranslationsUk {
 			'universalMedia.filesHelp' => 'Виберіть аудіо, відео або файли ISO для тимчасового перегляду. Файли та URL-адреси не додаються до історії бібліотеки.',
 			'universalMedia.chooseFiles' => 'Вибір файлів',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
+			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
-			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача підтримуваних файлів з браузера в тій же надійній мережі.',
 			'universalMedia.wifiTransferIntro' => 'Відкрийте цю адресу в браузері на іншому пристрої. Виберіть файли, щоб додати їх до бібліотеки файлів та книг цього пристрою.',
 			'universalMedia.wifiTransferPrivacy' => 'Цей пристрій отримує файли через вашу локальну мережу.Кожен, хто знає цю адресу, може відправити файли до припинення передачі або адреса закінчується після 15 хвилин.Максимум: 100 файлів, 4 ГБ за файл, 10 ГБ в цілому.',
@@ -8960,9 +8958,9 @@ extension on TranslationsUk {
 			'sourceSetup.metadataLoading' => 'Пошук відомостей про фільми й серіали в інтернеті…',
 			'sourceSetup.metadataFromTrakt' => 'Метадані з Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматичного збігу назви не знайдено. Знайдіть назву, щоб вибрати збіг.',
+			'sourceSetup.metadataFailed' => 'Не вдалося завантажити метадані з інтернету. Відтворення та локальні відомості залишаються доступними.',
 			_ => null,
 		} ?? switch (path) {
-			'sourceSetup.metadataFailed' => 'Не вдалося завантажити метадані з інтернету. Відтворення та локальні відомості залишаються доступними.',
 			'sourceSetup.videoDetailsLoading' => 'Завантаження відомостей про відео',
 			'sourceSetup.subtitleKeyRequired' => 'Потрібен ключ API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Змініть це файлове джерело й додайте ключ API OpenSubtitles у необов’язкових налаштуваннях субтитрів.',

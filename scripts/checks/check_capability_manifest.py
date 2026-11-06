@@ -5,8 +5,12 @@ from __future__ import annotations
 
 import json
 import argparse
+import os
 import re
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
 
 from workflow_yaml import job_block, scalar
@@ -252,9 +256,72 @@ def check_release_availability(release: dict, observation: dict) -> None:
                     for item in releases), "a stable public release is present in the availability observation")
 
 
+def _release_json(repository: str, suffix: str, token: str) -> tuple[int, object]:
+    request = urllib.request.Request(
+        f"https://api.github.com/repos/{repository}/releases{suffix}",
+        headers={"Authorization": f"Bearer {token}",
+                 "Accept": "application/vnd.github+json",
+                 "X-GitHub-Api-Version": "2022-11-28"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            payload = response.read(16 * 1024 * 1024 + 1)
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return 404, None
+        raise ValueError(f"GitHub release request failed (HTTP {error.code}).") from None
+    except (urllib.error.URLError, OSError) as error:
+        raise ValueError(f"GitHub release request failed ({type(error).__name__}).") from None
+    if len(payload) > 16 * 1024 * 1024:
+        raise ValueError("GitHub release response exceeded the size limit.")
+    return 200, json.loads(payload)
+
+
+def check_live_release(release: dict, repository: str, token: str) -> None:
+    """Check documented availability without treating authentication failures as absence."""
+    if not token or re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is None:
+        raise ValueError("Live release validation requires GH_TOKEN and GITHUB_REPOSITORY.")
+    status, latest = _release_json(repository, "/latest", token)
+    if status == 200:
+        require(release.get("publicLatestAvailable") is True,
+                "a public latest release exists; update the release availability ledger")
+        if not isinstance(latest, dict):
+            raise ValueError("GitHub latest release metadata is not an object.")
+        check_published_release(release, latest)
+        return
+
+    require(release.get("publicLatestAvailable") is False,
+            "the recorded public latest release is unavailable")
+    require(release.get("publicationStatus") in {"draft", "unavailable"},
+            "missing latest release must be explicitly documented")
+    # A successful authenticated list distinguishes an absent latest release
+    # from inaccessible repository metadata. Check every bounded list page.
+    for page in range(1, 21):
+        list_status, listed = _release_json(repository, f"?per_page=100&page={page}", token)
+        if list_status != 200 or not isinstance(listed, list):
+            raise ValueError("Cannot verify release absence without a successful release list.")
+        require(all(isinstance(item, dict) and
+                    (item.get("draft") is True or item.get("prerelease") is True)
+                    for item in listed), "the release list contains an undocumented public stable release")
+        if len(listed) < 100:
+            break
+    else:
+        raise ValueError("GitHub release list exceeded the pagination limit.")
+    tag = urllib.parse.quote(str(release.get("tag", "")), safe="")
+    tag_status, tagged = _release_json(repository, f"/tags/{tag}", token)
+    if release.get("publicationStatus") == "unavailable":
+        require(tag_status == 404, "the recorded unavailable release tag has reappeared")
+    elif tag_status == 200:
+        require(isinstance(tagged, dict) and
+                (tagged.get("draft") is True or tagged.get("prerelease") is True),
+                "the recorded draft release is now public and stable")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--release-metadata", type=Path, help="Independently fetched GitHub latest-release JSON")
+    live = parser.add_mutually_exclusive_group()
+    live.add_argument("--release-metadata", type=Path, help="Independently fetched GitHub latest-release JSON")
+    live.add_argument("--live", action="store_true", help="Validate current GitHub publication or documented absence")
     args = parser.parse_args()
     data = _load_manifest()
     if data is not None:
@@ -264,6 +331,12 @@ def main() -> int:
                 check_published_release(data["release"], json.loads(args.release_metadata.read_text(encoding="utf-8")))
             except (OSError, ValueError, TypeError) as error:
                 ERRORS.append(f"cannot read independent release metadata: {error}")
+        if args.live:
+            try:
+                check_live_release(data["release"], os.environ.get("GITHUB_REPOSITORY", ""),
+                                   os.environ.get("GH_TOKEN", ""))
+            except (OSError, ValueError, TypeError) as error:
+                ERRORS.append(f"cannot validate live release availability: {error}")
     if ERRORS:
         for error in ERRORS:
             print(f"ERROR: {error}", file=sys.stderr)

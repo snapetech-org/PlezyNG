@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Prepare the pinned visualization runtime before desktop CI configuration, refresh Apple packages before Flutter configuration, and resolve Xcode SDK paths when packaging bundled game cores.
+- Validate documented release absence against authenticated GitHub metadata without treating authentication or server failures as an absent release.
+
 - Preserve UTF-8 extension bytes when selecting visualizer texture decoders under C++20.
 
 - Allow explicit signed Apple archive and notarized Homebrew Cask qualification during GitHub-only releases, validating requested steps and assets without enabling store uploads.
@@ -46,7 +49,7 @@
 
 - Share a Dart source formatter that preserves canonical generated files, preventing formatting and generation from repeatedly invalidating each other.
 
-- Run the full Flutter application regression suite in the required CI analysis job so platform and integration regressions cannot pass on analysis checks alone.
+- Run the full Flutter application regression suite once in the required Unit Tests job, preserving browser and vendor coverage without repeating the suite during code analysis.
 
 - Repair integrated Games, RomM, karaoke, visualizer, localization and native runtime build failures. Keep optional fork services from breaking local Games and companion remote sessions when no relay is configured, and preserve results and filters during progressive search.
 

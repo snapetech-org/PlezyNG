@@ -137,9 +137,6 @@ jobs:
       - name: Analyze code
         run: dart run scripts/checks/check_analyzer.dart
 
-      - name: Run application regression tests
-        run: flutter test --concurrency 2 --reporter expanded
-
       - name: Check for unused code
         run: |
           echo "🔍 Checking for unused code..."
@@ -546,6 +543,10 @@ jobs:
             libwayland-dev libegl-dev libvulkan-dev mesa-vulkan-drivers \
             libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
+      - name: Build bundled MilkRust for Linux
+        shell: bash
+        run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures "x64" --output build/visualizer-native
+
       - name: Prepare Flutter Linux configuration
         run: |
           flutter pub get --enforce-lockfile --no-example
@@ -782,21 +783,21 @@ jobs:
         if: matrix.platform == 'iOS'
         run: plutil -lint ios/Runner.xcodeproj/project.pbxproj
 
-      - name: Prepare iOS Flutter build settings
-        if: matrix.platform == 'iOS'
-        run: flutter build ios --config-only --simulator --debug --no-pub
-
       - name: Refresh pinned iOS Swift packages
         if: matrix.platform == 'iOS'
         run: scripts/refresh_apple_spm.sh ios
 
-      - name: Prepare macOS Flutter build settings
-        if: matrix.platform == 'macOS'
-        run: flutter build macos --config-only --debug --no-pub
+      - name: Prepare iOS Flutter build settings
+        if: matrix.platform == 'iOS'
+        run: flutter build ios --config-only --simulator --debug --no-pub
 
       - name: Refresh pinned macOS Swift packages
         if: matrix.platform == 'macOS'
         run: scripts/refresh_apple_spm.sh macos
+
+      - name: Prepare macOS Flutter build settings
+        if: matrix.platform == 'macOS'
+        run: flutter build macos --config-only --debug --no-pub
 
       - name: Prepare tvOS Flutter engine
         if: matrix.platform == 'tvOS'
@@ -1128,6 +1129,10 @@ jobs:
         shell: pwsh
         run: .\windows\tool\download-pinned-torrent-dependencies.ps1
 
+      - name: Build bundled MilkRust for Windows
+        shell: pwsh
+        run: python scripts/visualizer/build_runtime.py --platform windows --architectures "${{ matrix.arch }}" --output build/visualizer-native
+
       - name: Prepare Flutter Windows configuration
         shell: pwsh
         run: flutter build windows --debug --config-only --no-pub
@@ -1185,9 +1190,7 @@ jobs:
       - name: Validate published release facts
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api "repos/${GITHUB_REPOSITORY}/releases/latest" > "$RUNNER_TEMP/published-release.json"
-          python3 scripts/checks/check_capability_manifest.py --release-metadata "$RUNNER_TEMP/published-release.json"
+        run: python3 scripts/checks/check_capability_manifest.py --live
 
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
@@ -1337,6 +1340,10 @@ jobs:
             echo "::error::the built libmpv does not link libwayland-client, so the video plane cannot work"
             exit 1
           }
+
+      - name: Build bundled MilkRust for Linux
+        shell: bash
+        run: python3 scripts/visualizer/build_runtime.py --platform linux --architectures "x64" --output build/visualizer-native
 
       - name: Build the release bundle
         run: |

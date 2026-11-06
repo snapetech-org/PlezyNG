@@ -240,7 +240,9 @@ which flutter-tizen documents for 2021+ TV models. This is a draft registration,
 not certification or a published store release. The earlier community tester
 milestone and its signing limitations remain distinct.
 
-English title/description and service information are saved. Both privacy URLs
+English title/description, service information, US region and player/feature
+declarations are saved. The listing describes the conservative H.264 up-to-1080p
+profile with AAC/MP3, rather than promising HDR/Dolby Vision. Both privacy URLs
 are saved and publicly verified:
 
 - https://snape.tech/privacy/pleazyng/
@@ -270,9 +272,9 @@ captures do not establish Tizen behavior and were not substituted.
 The Public Group can distribute only in the US. Partner Group approval is
 required for other countries. Applicable EU distribution needs an EAA conformity
 declaration backed by actual accessibility qualification. Samsung Checkout/DPI
-and the app's purchase path still need implementation and validation for the
-chosen trial/one-time unlock. No billing capability or production signing is
-asserted from this draft. Use the qualified release TPK, not the tester package,
+configuration and actual TV purchase validation remain for the chosen
+trial/one-time unlock. The source integration below is implemented; a working
+store payment or production signing is not asserted from this draft. Use the qualified release TPK, not the tester package,
 for final submission and model/device testing.
 
 ### Samsung Checkout build integration
@@ -306,3 +308,45 @@ its product record, bank verification, partner signing, real purchase/restore,
 region checks and review remain external prerequisites. Seller Office's four
 Checkout checklist confirmations must reflect completed work; do not mark
 payment testing or bank setup complete just to save the page.
+
+DPI company details are staged in the authenticated Firefox form. Settlement
+bank fields are mandatory, and the owner does not yet have a business bank
+account. Do not substitute a personal account or mark the bank checklist done.
+
+### Verification information handoff
+
+The official Seller Office `App_Description_template_eng_v.1.42.zip` was
+downloaded through the authenticated portal. Its presentation requires the
+actual application's UI structure, complete usage scenarios, menu/function
+screenshots, remote key policy, and language-switch instructions. The template
+is not a completed submission: authentic Tizen captures and physical key tests
+are still required. Keep sample/template screenshots out of the final deck.
+
+Prepare the review sequence against the final production-signed store build:
+
+1. Launch and open the bundled privacy notice before connecting an account.
+   Verify English/Korean text rendering, focus, scrolling and return navigation.
+2. Connect the reviewer-accessible live media server through the supported
+   server/account flow. Verify URL/text entry with the Samsung on-screen
+   keyboard, validation errors and successful connection. Record actual private
+   credentials in Seller Office only, with access for every selected model group.
+3. Open a library, browse and search, open media details, start playback, select
+   available audio/subtitle tracks, pause, seek, resume and return to browsing.
+   Include H.264/AAC direct play and server-transcoded HLS within the current
+   profile; record tested TV/model/firmware and server/media versions.
+4. Open lifetime access and check the seven-day trial. After configured DPI
+   onboarding, show the store-localized one-time price (US base $2.99), purchase,
+   restart and restore. Test cancellation, failed verification and unavailable
+   store without granting a false lifetime entitlement. Capture the actual
+   pricing screen for required screenshot slot 4.
+5. Test D-pad focus and Select/Enter in every preceding screen. Record short
+   Return and long Return/Exit on hardware, playback transport keys, keyboard
+   dismissal and root-screen exit behavior. Do not copy the template's example
+   channel/color-key actions into the policy table unless implemented and tested.
+6. Document the actual app-language selector and supported TV text rendering.
+   Service Info currently declares English UI; the bilingual privacy reader does
+   not itself establish a Korean UI localization qualification.
+
+The Android signed review grant is not a Samsung reviewer entitlement. Do not
+promise that it works on Tizen. Supply the real Samsung review/purchase flow
+and complete any reviewer-access requirement before release submission.

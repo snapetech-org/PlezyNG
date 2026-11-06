@@ -76,7 +76,18 @@
     "banking": "Processing; console says updates within 24 hours",
     "us_tax_forms": "W-8BEN and foreign-status certificate Active; submitted 2026-10-21",
     "canada_tax_form": "GST/HST Form 506 Missing Tax Info; owner submission rejected with The Tax ID entered already exists. Do not repeatedly resubmit or alter identifier; existing-record reconciliation pending.",
-    "organization_conversion": "Form prepared with exact company name; requires issued D-U-N-S before submitting conversion request"
+    "organization_conversion": "Form prepared with exact company name; requires issued D-U-N-S before submitting conversion request",
+    "macos_developer_id": {
+      "certificate_id": "AU5K8APH38",
+      "type": "Developer ID Application",
+      "team": "DM9A59DC85",
+      "subject": "Developer ID Application: I KEITH SNAPE (DM9A59DC85)",
+      "expires_utc": "2027-12-06T04:03:30Z",
+      "sha256": "1DB22DAA1A374FBB1BE76ED8D3CF79A04971210888625610572D98BBFEDDC72D",
+      "state": "Issued through authenticated portal; matching private key and Apple G2 signature chain verified locally. No existing certificate revoked. Dedicated MACOS_CERTIFICATE_BASE64 and MACOS_CERTIFICATE_PASSWORD secrets configured; existing iOS distribution secrets preserved.",
+      "notarization": "Existing App Store Connect API key path wired; actual native import/codesign/notarization/Gatekeeper validation still required.",
+      "private_backup": "Retained outside repository with private directory/file permissions"
+    }
   },
   "automation_before": {
     "AUR_PACKAGE_NAME": "plezyng-bin",
@@ -357,15 +368,23 @@
     "public_support_website": "https://github.com/snapetech-org"
   },
   "homebrew": {
-    "tap_repository": "snapetech-org/homebrew-slskdn",
+    "tap_repository": "snapetech-org/homebrew-pleazyng",
     "cask_token": "snapetech-pleazyng",
-    "inventory": "Tap has Formula/slskdn.rb and Formula/slskr.rb; no Casks directory or old/new app Cask",
+    "inventory": "Dedicated Pleazyng tap created with README; no Cask published until signed/notarized release is qualified.",
     "automation": "Update Packages now verifies the published attested Cask, manifest, DMG hash and notarization before writing Casks/snapetech-pleazyng.rb to the publisher tap",
     "pending": [
-      "HOMEBREW_TAP_TOKEN restricted to Contents write on publisher tap",
       "First signed/notarized release with prepare_homebrew_cask enabled",
       "Live workflow validation on selected public macOS runner; no publication dispatched"
-    ]
+    ],
+    "signing_setup": "Developer ID issued and dedicated secrets configured; API-key notarization workflow wired. First signed/notarized release and live validation still pending.",
+    "target_correction": "Owner identified homebrew-slskdn as unrelated; no Cask or token was published there. Existing repositories not renamed.",
+    "credential": {
+      "secret": "HOMEBREW_TAP_TOKEN",
+      "token_id": 22476985,
+      "scope": "Resource owner snapetech-org; only homebrew-pleazyng; Contents read/write plus required Metadata read; no organization permissions",
+      "expires": "2027-11-06",
+      "state": "Created through authenticated owner UI and stored directly in PlezyNG repository Actions secret; actual workflow publication remains unvalidated"
+    }
   },
   "chocolatey": {
     "package_id": "pleazyng",
@@ -415,12 +434,12 @@
   "samsung_tv": {
     "portal": "https://seller.samsungapps.com/tv",
     "login": "keith@snape.tech",
-    "state": "TV Seller Office membership active; corporate Public Group and Pleazyng Tizen.NET app created; title/description and service information saved",
+    "state": "TV Seller Office membership active; corporate Public Group and Pleazyng Tizen.NET app created; title/description, service/privacy, US region and feature/player information saved",
     "seller_membership": "Public Group: SNAPE TECHNOLOGIES LIMITED; initially US-only; other regions require Partner Group approval",
     "tax_submission": "Not attempted",
     "app_id": "3202611050784",
     "package_type": "Tizen.NET Application (TPK), 2021+ Samsung TVs per flutter-tizen publishing guidance",
-    "title_description": "Saved English title Pleazyng, server-client description and Plex/Jellyfin/Emby/media/video tags",
+    "title_description": "Saved English Pleazyng title and server-client description; corrected to current H.264 up to 1080p / AAC or MP3 playback profile without HDR/Dolby Vision promise; Plex/Jellyfin/Emby/media/video tags",
     "service_information": {
       "category": "Videos",
       "rating": "ALL (self-declared; not Samsung certification)",
@@ -437,7 +456,7 @@
     "gates": [
       "Production-signed TPK and physical TV qualification",
       "Authentic Tizen screenshots; Android TV captures are not substituted",
-      "Samsung Checkout integration and DPI configuration for paid unlock",
+      "Samsung Checkout DPI business-bank onboarding, app/product/security-key configuration, production partner signing and real TV purchase testing",
       "Partner Group approval for non-US countries",
       "EAA conformity declaration before applicable EU distribution"
     ],
@@ -448,6 +467,52 @@
       "validation": "Brand manifest/reference check and seven renderer tests passed; all portal dimension/color-mode/size limits checked",
       "console_state": "Four images uploaded and previewed; owner accepted image-use/copyright acknowledgment and attempted Save. Portal rejects missing required screenshots. Entire App Images section not claimed saved; preserve staged Firefox form.",
       "screenshots": "Not uploaded: require authentic qualified Tizen captures; 1280x720 or 1920x1080 JPEG under 500kB. Slot4 must show price information if IAP supported."
+    },
+    "checkout": {
+      "portal": "https://dpi.samsungcheckout.com",
+      "group_id": "G2026118697",
+      "state": "Owner accepted updated Samsung Account terms; DPI signed in. Company form filled with registered details; no save submitted because settlement bank fields are required. Owner confirms no business bank account yet.",
+      "settlement_gate": "Business bank account: bank/branch/address/country, holder, account number, bank code SWIFT/IBAN and applicable routing details required by DPI. No personal account substituted.",
+      "app_product": "DPI app ID, security key and lifetime SKU not issued/configured yet",
+      "source_implementation_commit": "1870c9517",
+      "source_validation": "43 Dart billing tests, 21 Tizen package tests and focused analyzer passed; no live TV payment, native store build or workflow revision validation claimed",
+      "seller_office_billing": "Samsung Checkout selected in separate draft tab. Payment/bank/SKU checklist confirmations remain unchecked; Billing Info not saved."
+    },
+    "service_country": {
+      "saved": "United States of America",
+      "confirmed_at": "2026-11-05 22:10 CST",
+      "rating_certificates": "No third-party rating certificate selected or uploaded; self-declared Service Info rating remains ALL. Portal accepted US region save."
+    },
+    "player_information": {
+      "state": "Saved; App Feature Info and Player both show completed indicators",
+      "confirmed_at": "2026-11-05 22:08 CST",
+      "features": [
+        "Player",
+        "Keyboard"
+      ],
+      "video_codec": [
+        "H.264"
+      ],
+      "audio_codec": [
+        "AAC",
+        "MP3"
+      ],
+      "containers": [
+        "MP4(FMP4)",
+        "MPEG-TS"
+      ],
+      "drm": [],
+      "streaming": [
+        "HLS",
+        "HTTP(HTTPS)"
+      ],
+      "player_api": "Other: native Flutter/Tizen player.h backend",
+      "subtitles": [
+        "WebVTT",
+        "Other: SRT"
+      ],
+      "other": "Flutter native Tizen player; SRT/WebVTT; 1080p H.264 profile. No DRM. Server/device dependent.",
+      "qualification": "Source-grounded declarations; actual physical TV qualification remains outstanding"
     }
   },
   "hosted_support": {

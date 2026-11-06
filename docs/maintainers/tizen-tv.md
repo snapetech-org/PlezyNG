@@ -274,3 +274,35 @@ and the app's purchase path still need implementation and validation for the
 chosen trial/one-time unlock. No billing capability or production signing is
 asserted from this draft. Use the qualified release TPK, not the tester package,
 for final submission and model/device testing.
+
+### Samsung Checkout build integration
+
+The app now has an opt-in Samsung Checkout adapter using the pinned official
+`in_app_purchase_tizen` 0.1.9 plugin. Store history checks paginate invoices,
+verify active lifetime invoices with DPI, recognize explicit cancellations, and
+preserve cached ownership on unavailable/failed/incomplete or empty histories.
+Purchase events require invoice verification before granting lifetime access.
+The shared seven-day trial remains in effect. Local billing tests do not prove a
+successful payment on a real Samsung TV.
+
+Use `scripts/tizen/package.py build --store` with the existing package arguments,
+ARM architecture, a non-tester **partner-level Samsung profile**, and protected
+`SAMSUNG_DPI_APP_ID` / `SAMSUNG_DPI_SECURITY_KEY` environment values from DPI.
+The staging step adds billing/SSO privileges only for the paid store build.
+Dart defines are passed through a temporary mode-0600 file removed on success or
+failure; the key is not printed in command arguments or retained in the staged
+source tree. The key is necessarily compiled into the client per the official
+plugin protocol. Never commit it or put it in a public handoff archive.
+
+The Tizen workflow exposes `store_build` (default false) and the two matching
+optional GitHub secrets. The ordinary developer/tester TPK does not gain paid
+store privileges or claim purchase support. Missing DPI configuration, tester
+mode or x64 architecture rejects the paid build. The signing profile still
+needs actual partner privilege validation, and the workflow revision needs a
+live qualified store build before it is considered validated.
+
+Checkout DPI is a separate authenticated portal. Company/settlement onboarding,
+its product record, bank verification, partner signing, real purchase/restore,
+region checks and review remain external prerequisites. Seller Office's four
+Checkout checklist confirmations must reflect completed work; do not mark
+payment testing or bank setup complete just to save the page.

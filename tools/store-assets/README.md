@@ -40,3 +40,30 @@ the sample-frame attribution and mockup metadata into generated packs.
 For clean README gallery exports, use `package_previews.py --presentation`.
 This omits visible footer labels while preserving source, rendering method, image
 hashes and credits in the accompanying files.
+
+## Feature gallery
+
+These opt-in harnesses use production screens, populated local fixture providers,
+and the production PublicationServer/Foliate EPUB engine. No credentials or live
+account are needed. Install the existing pinned reader harness dependencies first:
+
+```sh
+(cd tools/reader-tests && npm ci --ignore-scripts)
+export PLEAZYNG_FEATURE_OUTPUT=/absolute/task-scratch/feature-raw
+flutter test tools/store-assets/feature_reader_capture_test.dart --reporter expanded
+flutter test tools/store-assets/feature_capture_test.dart --reporter expanded
+python3 tools/store-assets/package_feature_gallery.py "$PLEAZYNG_FEATURE_OUTPUT" docs/maintainers/feature-gallery
+```
+
+The reader driver uses `/usr/bin/chromium` by default; override with
+`PLEZY_CHROME_PATH` if necessary. Reader capture must run first: multiview uses
+its reflowed reader surface. Each Flutter scene uses an isolated in-memory source
+database. The fixture artwork server binds loopback only and closes at teardown.
+Music artwork is primed into the real image cache before capture.
+
+Review every output visually before committing, including reader text contrast,
+loaded album/game covers, chapter labels, and workspace placement. The internal
+reader workspace surface is excluded from the 17-image public export. The export
+keeps original dimensions and removes alpha only when every pixel is opaque.
+Manifest entries identify component hashes and fixture state; audio, gameplay,
+streaming, and native decoder execution are separate runtime qualifications.

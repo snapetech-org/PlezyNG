@@ -36,6 +36,32 @@ class PackageTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'require.*MilkRust'):
             package.build(SimpleNamespace(visualizer_native=None, visualizer_manifest_sha256=None))
 
+    def test_store_build_rejects_tester_emulator_and_missing_credentials(self):
+        args = SimpleNamespace(store=True, tester=True, arch='arm')
+        with self.assertRaisesRegex(ValueError, 'non-tester'):
+            package.samsung_store_defines(args, {})
+        args.tester, args.arch = False, 'x64'
+        with self.assertRaisesRegex(ValueError, 'ARM'):
+            package.samsung_store_defines(args, {})
+        args.arch = 'arm'
+        with self.assertRaisesRegex(ValueError, 'SAMSUNG_DPI'):
+            package.samsung_store_defines(args, {})
+        values = package.samsung_store_defines(args, {'SAMSUNG_DPI_APP_ID': 'fixture', 'SAMSUNG_DPI_SECURITY_KEY': 'test-only'})
+        self.assertEqual(values['SUPPORTER_MODE'], 'iap')
+        self.assertIsNone(package.samsung_store_defines(SimpleNamespace(store=False), {}))
+
+    def test_checkout_privileges_are_added_only_to_staged_manifest_without_duplicates(self):
+        staged = self.root / 'tizen-manifest.xml'
+        staged.write_bytes(self.manifest)
+        package.enable_samsung_checkout(staged)
+        package.enable_samsung_checkout(staged)
+        root = package.ET.parse(staged).getroot()
+        names = [item.text for item in root.findall('t:privileges/t:privilege', package.NS)]
+        self.assertEqual(names.count('http://developer.samsung.com/privilege/billing'), 1)
+        self.assertEqual(names.count('http://developer.samsung.com/privilege/sso.partner'), 1)
+        self.assertEqual(names.count('http://tizen.org/privilege/appmanager.launch'), 1)
+        self.assertNotIn(b'sso.partner', self.manifest)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

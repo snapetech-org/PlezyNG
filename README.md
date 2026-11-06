@@ -28,6 +28,90 @@ The gallery leads with dark and OLED layouts. TV, phone and tablet captures
 come from the signed app on emulators using a public Jellyfin demo library.
 A smaller light-mode comparison and more light captures appear below.
 
+### Books, audiobooks and podcasts
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/ebook-reader-dark.png"><img src="docs/maintainers/feature-gallery/ebook-reader-dark.png" alt="EPUB reading with columns and reader tools" width="840" loading="lazy"></a>
+  <br>
+  <sub>EPUB reading with columns and reader tools</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/ebook-reader-phone-dark.png"><img src="docs/maintainers/feature-gallery/ebook-reader-phone-dark.png" alt="Phone EPUB reading" width="200" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/audiobook-player-dark.png"><img src="docs/maintainers/feature-gallery/audiobook-player-dark.png" alt="Audiobook chapters, speed and bookmarks" width="224" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/podcast-player-dark.png"><img src="docs/maintainers/feature-gallery/podcast-player-dark.png" alt="Podcast listening and chapter navigation" width="224" loading="lazy"></a>
+  <br>
+  <sub>Phone EPUB reading · Audiobook chapters, speed and bookmarks · Podcast listening and chapter navigation</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/ebook-reading-settings-dark.png"><img src="docs/maintainers/feature-gallery/ebook-reading-settings-dark.png" alt="Reading fonts, spacing and themes" width="412" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/book-library-detail-dark.png"><img src="docs/maintainers/feature-gallery/book-library-detail-dark.png" alt="Book details with EPUB and audio editions" width="412" loading="lazy"></a>
+  <br>
+  <sub>Reading fonts, spacing and themes · Book details with EPUB and audio editions</sub>
+</p>
+
+### Music and visualizers
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/music-player-dark.png"><img src="docs/maintainers/feature-gallery/music-player-dark.png" alt="Music artwork, playback controls and queue" width="840" loading="lazy"></a>
+  <br>
+  <sub>Music artwork, playback controls and queue</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/visualizer-library-dark.png"><img src="docs/maintainers/feature-gallery/visualizer-library-dark.png" alt="Visualizer preset library and filters" width="840" loading="lazy"></a>
+  <br>
+  <sub>Visualizer preset library and filters</sub>
+</p>
+
+### Steam games and controls
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/steam-library-dark.png"><img src="docs/maintainers/feature-gallery/steam-library-dark.png" alt="Steam library with installed games" width="840" loading="lazy"></a>
+  <br>
+  <sub>Steam library with installed games</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/steam-controller-layout-dark.png"><img src="docs/maintainers/feature-gallery/steam-controller-layout-dark.png" alt="Gamepad controller layout" width="200" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/steam-touch-layout-dark.png"><img src="docs/maintainers/feature-gallery/steam-touch-layout-dark.png" alt="Arrange touch controls" width="620" loading="lazy"></a>
+  <br>
+  <sub>Gamepad controller layout · Arrange touch controls</sub>
+</p>
+
+### Workspaces, live TV and discovery
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/multiview-dark.png"><img src="docs/maintainers/feature-gallery/multiview-dark.png" alt="Multiview workspace with reading and playback panes" width="840" loading="lazy"></a>
+  <br>
+  <sub>Multiview workspace with reading and playback panes</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/live-tv-guide-dark.png"><img src="docs/maintainers/feature-gallery/live-tv-guide-dark.png" alt="Live TV channels and programme guide" width="412" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/find-your-next-dark.png"><img src="docs/maintainers/feature-gallery/find-your-next-dark.png" alt="Find your next book or media pick" width="412" loading="lazy"></a>
+  <br>
+  <sub>Live TV channels and programme guide · Find your next book or media pick</sub>
+</p>
+
+### Sources and subtitle tools
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/connected-sources-dark.png"><img src="docs/maintainers/feature-gallery/connected-sources-dark.png" alt="Files, OPDS, audiobooks, NAS and cloud sources" width="600" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/open-media-dark.png"><img src="docs/maintainers/feature-gallery/open-media-dark.png" alt="Open a link, playlist or local media" width="224" loading="lazy"></a>
+  <br>
+  <sub>Files, OPDS, audiobooks, NAS and cloud sources · Open a link, playlist or local media</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/subtitle-ai-dark.png"><img src="docs/maintainers/feature-gallery/subtitle-ai-dark.png" alt="AI subtitles, transcription and translation tools" width="840" loading="lazy"></a>
+  <br>
+  <sub>AI subtitles, transcription and translation tools</sub>
+</p>
+
+[Feature image credits](docs/maintainers/feature-gallery/README.md#image-credits).
+
 ### TV
 
 <p align="center">

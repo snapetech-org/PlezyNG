@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "publishers": [
+    {
+      "id": "UCoIp9ExTikEf3EktFIpzvOw",
+      "name": "Wētā FX",
+      "evidenceUrl": "https://www.wetafx.co.nz/videos/the-lord-of-the-rings-the-fellowship-of-the-ring-vfx",
+      "verifiedAt": "2026-11-06"
+    },
+    {
+      "id": "UCCBJv-2y0qRjM9E2tSGtT7Q",
+      "name": "Wētā Workshop",
+      "evidenceUrl": "https://www.youtube.com/channel/UCCBJv-2y0qRjM9E2tSGtT7Q",
+      "verifiedAt": "2026-11-06"
+    },
+    {
+      "id": "UCjmJDM5pRKbUlVIzDYYWb6g",
+      "name": "Warner Bros.",
+      "evidenceUrl": "https://www.youtube.com/channel/UCjmJDM5pRKbUlVIzDYYWb6g",
+      "verifiedAt": "2026-11-06"
+    }
+  ],
+  "associations": [
+    {
+      "videoId": "rX3nTAoZAAE",
+      "publisherId": "UCoIp9ExTikEf3EktFIpzvOw",
+      "parents": [
+        "movie/tmdb:120"
+      ],
+      "kind": "effects",
+      "scope": "work",
+      "evidenceUrl": "https://www.wetafx.co.nz/videos/the-lord-of-the-rings-the-fellowship-of-the-ring-vfx",
+      "identityEvidenceUrl": "https://www.acmi.net.au/works/61431--the-lord-of-the-rings-the-fellowship-of-the-ring/",
+      "reviewedBy": "Pleazyng source-link review",
+      "reviewedAt": "2026-11-06",
+      "spoilerSafe": false,
+      "analysisAllowed": false
+    },
+    {
+      "videoId": "L5GUFxkSqyM",
+      "publisherId": "UCoIp9ExTikEf3EktFIpzvOw",
+      "parents": [
+        "movie/tmdb:120"
+      ],
+      "kind": "effects",
+      "scope": "work",
+      "evidenceUrl": "https://www.wetafx.co.nz/videos/the-lord-of-the-rings-the-fellowship-of-the-ring-vfx-breakdown",
+      "identityEvidenceUrl": "https://www.acmi.net.au/works/61431--the-lord-of-the-rings-the-fellowship-of-the-ring/",
+      "reviewedBy": "Pleazyng source-link review",
+      "reviewedAt": "2026-11-06",
+      "spoilerSafe": false,
+      "analysisAllowed": false
+    }
+  ]
+}

@@ -1007,6 +1007,27 @@ void main() {
       p.dispose();
     });
 
+    test('native extras claim a clip download without expanding its parent', () async {
+      final clip = testMediaItem(
+        id: '1',
+        backend: MediaBackend.plex,
+        kind: MediaKind.clip,
+        title: 'Making of',
+        serverId: ServerId('srv'),
+      );
+      final provider = DownloadProvider.forTesting(downloadManager: downloadManager, database: db);
+      await provider.ensureInitialized();
+      provider.debugSeedState(
+        downloads: {'srv:1': const DownloadProgress(globalKey: 'srv:1', status: DownloadStatus.completed)},
+        metadata: {'srv:1': clip},
+        ownedDownloadKeys: const {},
+      );
+      expect(await provider.queueDownload(clip, _ThrowingClient()), 1);
+      expect(await db.getDownloadOwnerKeysForProfile('test-profile'), {'srv:1'});
+      expect(provider.downloadedMovies, isEmpty);
+      provider.dispose();
+    });
+
     test('queueDownload claims an existing physical download instead of duplicating it', () async {
       final p = DownloadProvider.forTesting(downloadManager: downloadManager, database: db);
       await p.ensureInitialized();

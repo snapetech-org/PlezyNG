@@ -402,6 +402,11 @@ class TvBrowseRail extends StatefulWidget {
   final VoidCallback? onNavigateToSidebar;
   final VoidCallback? onBack;
   final FutureOr<bool> Function(MediaHub hub, MediaItem item)? onActivateItem;
+
+  /// Specialized title supplements keep their own browser and playback routes.
+  final bool Function(MediaHub hub)? onViewAllHub;
+  final bool Function(MediaHub hub, MediaItem item)? onContextMenuItem;
+  final Widget? Function(BuildContext context, MediaHub hub, MediaItem item, double width, double height)? cardBuilder;
   final double tallPosterScale;
   final double widePosterScale;
   final String? initialHubId;
@@ -442,6 +447,9 @@ class TvBrowseRail extends StatefulWidget {
     this.onNavigateToSidebar,
     this.onBack,
     this.onActivateItem,
+    this.onViewAllHub,
+    this.onContextMenuItem,
+    this.cardBuilder,
     this.tallPosterScale = 1.0,
     this.widePosterScale = 1.0,
     this.initialHubId,
@@ -1228,7 +1236,9 @@ class TvBrowseRailState extends State<TvBrowseRail> with TickerProviderStateMixi
       _showLeadingContextMenu(hub);
       return;
     }
-    if (_itemAtSlot(hub, _itemIndex) == null) return;
+    final item = _itemAtSlot(hub, _itemIndex);
+    if (item == null) return;
+    if (widget.onContextMenuItem?.call(hub, item) == true) return;
     if (_isPersonHub(hub)) return;
     if (hub.heroStyle) {
       _heroMenuKeyFor(hub).currentState?.showContextMenu(context);
@@ -1272,6 +1282,7 @@ class TvBrowseRailState extends State<TvBrowseRail> with TickerProviderStateMixi
   }
 
   void _navigateToHubDetail(MediaHub hub) {
+    if (widget.onViewAllHub?.call(hub) == true) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -1958,7 +1969,8 @@ class TvBrowseRailState extends State<TvBrowseRail> with TickerProviderStateMixi
         showGlow: focus.$2,
         // The card draws the border itself (poster rect for
         // standard cards, whole card when full-bleed).
-        delegateFocusBorder: true,
+        delegateFocusBorder:
+            widget.cardBuilder?.call(context, hub, item, metrics.cardWidth, metrics.posterHeight) == null,
         glowSize: fullCardLayout ? Size(metrics.cardWidth, metrics.posterHeight) : null,
         onTap: () {
           _selectHubItem(_liveHub(hub, hubIndex), hubIndex, itemIndex);
@@ -1968,7 +1980,7 @@ class TvBrowseRailState extends State<TvBrowseRail> with TickerProviderStateMixi
             ? null
             : () {
                 _selectHubItem(_liveHub(hub, hubIndex), hubIndex, itemIndex);
-                _cardKeyFor(hub, itemIndex).currentState?.showContextMenu();
+                _showContextMenuForCurrentItem();
               },
         child: child!,
       ),
@@ -2008,6 +2020,8 @@ class TvBrowseRailState extends State<TvBrowseRail> with TickerProviderStateMixi
     required double scale,
     required bool fullCardLayout,
   }) {
+    final custom = widget.cardBuilder?.call(context, hub, item, metrics.cardWidth, metrics.posterHeight);
+    if (custom != null) return custom;
     final artworkDim = _artworkDimForHub(context, hubIndex);
     return metrics.isPersonHub
         ? MergeSemantics(

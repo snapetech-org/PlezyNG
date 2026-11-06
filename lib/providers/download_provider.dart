@@ -1632,7 +1632,10 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       await NotificationPermission.ensure();
       if (!_isQueueOwnershipCurrent(ownership)) return 0;
 
-      if (metadata.isMovie || metadata.isEpisode || metadata.kind == MediaKind.track) {
+      if (metadata.isMovie ||
+          metadata.isEpisode ||
+          metadata.kind == MediaKind.track ||
+          metadata.kind == MediaKind.clip) {
         final queued = await _queueSingleDownload(
           metadata,
           client,

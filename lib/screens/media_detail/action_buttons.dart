@@ -534,6 +534,17 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       ?remoteStreamAction,
       ?versionAction,
       ?trailerAction,
+      if (_curatedExtras != null)
+        FocusableAction(
+          debugLabel: 'detail_extras',
+          onPressed: _browseExtras,
+          builder: (context, state) => iconActionButton(
+            state,
+            onPressed: _browseExtras,
+            icon: const AppIcon(Symbols.movie_filter_rounded),
+            tooltip: t.bonusExtras.title,
+          ),
+        ),
       ?castAction,
       ?shuffleAction,
       ?downloadAction,

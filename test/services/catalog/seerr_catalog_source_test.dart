@@ -1,3 +1,4 @@
+import 'package:plezy/extras/extras_models.dart';
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -742,6 +743,13 @@ void main() {
             'relatedVideos': [
               {'site': 'YouTube', 'key': 'clip', 'type': 'Clip'},
               {'site': 'YouTube', 'key': 'm8e-FF8MsqU', 'type': 'Trailer'},
+              {
+                'site': 'YouTube',
+                'key': 'abcdefghijk',
+                'type': 'Behind the Scenes',
+                'name': 'The sets',
+                'iso_639_1': 'en',
+              },
             ],
             'credits': {
               'crew': [
@@ -764,6 +772,12 @@ void main() {
       expect(detail.item.runtimeMinutes, 136);
       expect(detail.item.certification, 'R');
       expect(detail.item.trailerUrl, 'https://www.youtube.com/watch?v=m8e-FF8MsqU');
+      final extra = detail.extras.singleWhere((e) => e.kind == ExtraKind.makingOf);
+      expect(extra.title, 'The sets');
+      expect(extra.parentIdentities, {'movie/tmdb:603'});
+      expect(extra.catalogAssociated, true);
+      expect(extra.verifiedPublisher, false);
+      expect(extra.reviewedAssociation, false);
       expect(detail.item.airStatus, isNull);
       expect(detail.item.ids.imdb, 'tt0133093');
       expect(detail.item.isAdult, isTrue);

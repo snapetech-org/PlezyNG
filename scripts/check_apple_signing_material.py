@@ -74,17 +74,27 @@ def main() -> int:
                 # OpenSSL 3's default PBES2 PKCS12 encoding is not accepted by
                 # every macOS Security.framework version. Re-encode the same
                 # existing identity with Apple's compatible SHA1/3DES format.
-                # The unencrypted PEM exists only in subprocess memory; only
-                # the randomly encrypted PKCS12 reaches the private temp dir.
+                # The transient PEM is mode0600 inside the mode0700 temporary
+                # directory and is removed immediately after conversion.
                 identity_pem = run(['openssl', 'pkcs12', '-in', str(p12), '-passin',
                                     'env:APPLE_CERTIFICATE_PASSWORD', '-nodes'])
                 report['private_key_present_in_pkcs12'] = bool(re.search(
                     rb'-----BEGIN (?:RSA |EC |ENCRYPTED )?PRIVATE KEY-----', identity_pem))
                 if not report['private_key_present_in_pkcs12']:
                     raise ValueError('Configured PKCS12 contains the certificate but no private key; recover the original signing identity')
+                private_public = run(['openssl', 'pkey', '-pubout', '-outform', 'DER'], data=identity_pem)
+                certificate_public = run(['openssl', 'x509', '-pubkey', '-noout'], data=pem)
+                certificate_public = run(['openssl', 'pkey', '-pubin', '-outform', 'DER'], data=certificate_public)
+                report['private_key_matches_certificate'] = private_public == certificate_public
+                if not report['private_key_matches_certificate']:
+                    raise ValueError('Configured PKCS12 private key does not match its Apple Distribution certificate')
+                identity_file = stage / 'identity.pem'
+                identity_file.write_bytes(identity_pem)
+                identity_file.chmod(0o600)
                 os.environ['PLEAZYNG_PREFLIGHT_P12_PASSWORD'] = secrets.token_urlsafe(32)
                 try:
-                    compatible = run(['openssl', 'pkcs12', '-export', '-keypbe', 'PBE-SHA1-3DES',
+                    compatible = run(['openssl', 'pkcs12', '-export', '-in', str(identity_file),
+                                      '-inkey', str(identity_file), '-keypbe', 'PBE-SHA1-3DES',
                                       '-certpbe', 'PBE-SHA1-3DES', '-macalg', 'sha1',
                                       '-passout', 'env:PLEAZYNG_PREFLIGHT_P12_PASSWORD'], data=identity_pem)
                     identity_pem = b''
@@ -93,6 +103,7 @@ def main() -> int:
                          os.environ['PLEAZYNG_PREFLIGHT_P12_PASSWORD'], '-T', '/usr/bin/codesign'])
                     report['compatible_pkcs12_encoding'] = True
                 finally:
+                    identity_file.unlink(missing_ok=True)
                     os.environ.pop('PLEAZYNG_PREFLIGHT_P12_PASSWORD', None)
                 identities = run(['security', 'find-identity', '-p', 'codesigning', str(keychain)]).decode()
                 if fingerprint not in identities:

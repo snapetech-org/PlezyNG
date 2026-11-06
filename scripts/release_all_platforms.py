@@ -1549,6 +1549,9 @@ def main() -> int:
             pin_sha = commit_and_push_native_pin(
                 worktree, native_repo, native_sha, ffmpeg_version, ffmpeg_sha256
             )
+        # Include immutable-tag reuse: that path otherwise skips native refresh.
+        # Stale tagged native inputs require the next version, never a moved tag.
+        command(["python3", "scripts/sync_native_revision.py", "--check"], cwd=worktree)
         progress["plezyng_commit"] = pin_sha
         stage = "Pleazyng CI"
         progress["stage"] = stage

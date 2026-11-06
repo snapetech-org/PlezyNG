@@ -1,5 +1,25 @@
 # One-command Pleazyng 3.0.1 release
 
+## Current native dependency
+
+Every new application build must use the latest verified
+`snapetech-org/mpv-build/main` revision. Refresh all native pin sites with
+`python3 scripts/sync_native_revision.py` before validation. This clones the
+fork's current main, verifies the content keys for Apple, Android, Linux and
+Windows, then invokes the existing atomic capability-receipt pin writer.
+Missing native publications fail without changing application pins; use the
+release driver below to build or recover the missing native groups first.
+
+The release workflow's initial gate and the local release driver's preflight
+run `python3 scripts/sync_native_revision.py --check`. A stale revision or a
+different producer repository stops the build before platform compilation.
+This also applies when reusing an immutable release tag: if its native pin is
+stale, advance the application version rather than moving the tag. A build
+already in flight retains its exact validated native pin; future builds check
+the live producer again. Published releases retain their original provenance.
+
+## Release procedure
+
 After exact-main CI and platform canaries pass, run the complete 3.0.1 release
 from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
 x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple

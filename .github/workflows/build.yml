@@ -130,6 +130,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Require current verified fork native dependency
+        run: python3 scripts/sync_native_revision.py --check
+
       - name: Resolve release request
         id: request
         shell: bash

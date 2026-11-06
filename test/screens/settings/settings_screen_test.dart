@@ -690,8 +690,10 @@ class _SettingsHarness {
     accountPreferences.dispose();
     await plexHome.dispose();
     await database.close();
-    expect(trackerHttpClients, hasLength(6));
-    expect(trackerHttpClients.toSet(), hasLength(6));
+    // Include both Trakt device and browser auth owners, as well as MAL's
+    // separate proxy/token clients. Every client must still close exactly once.
+    expect(trackerHttpClients, hasLength(7));
+    expect(trackerHttpClients.toSet(), hasLength(7));
     for (final client in trackerHttpClients) {
       expect(client.closeCount, 1);
     }

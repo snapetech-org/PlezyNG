@@ -45,9 +45,9 @@ void main() {
     final companionProviders = <CompanionRemoteProvider>[];
     final disposedActiveIds = <String>[];
     final trackerHttpClients = <FakeHttpClient>[];
-    // TrackersProvider owns six eager auth HTTP clients across the five
-    // services (MAL's proxy and token exchange use separate clients).
-    const trackerAuthClientsPerProfile = 6;
+    // Five tracker services own seven eager HTTP clients: MAL has separate
+    // proxy/token clients, and Trakt has separate device/browser auth clients.
+    const trackerAuthClientsPerProfile = 7;
     FakeHttpClient trackerHttpClientFactory() {
       final client = FakeHttpClient(200, const <int>[]);
       trackerHttpClients.add(client);

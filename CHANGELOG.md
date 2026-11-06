@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - Harden edge OAuth against oversized-body stalls, cross-site session creation and single-client daily quota exhaustion; apply consistent browser security headers.
+- Preserve successful GitHub releases when later notifications or store/package publication fail, and support targeted channel retries against immutable release artifacts.
+- Keep WinGet and Chocolatey metadata preparation independent of required platform artifacts and checksums.
 
 - Keep edge-hosted provider authorization redirects in the browser instead of following them inside the relay.
 

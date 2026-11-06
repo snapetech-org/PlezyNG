@@ -1065,13 +1065,36 @@ def publish_github_release(tag: str) -> dict:
     published = release_metadata(tag)
     if published.get("draft") or not published.get("published_at"):
         raise ReleaseError(f"GitHub release {tag} was not promoted to a published release.")
-    # GITHUB_TOKEN publication does not emit another workflow's release event.
-    # The notification workflow serializes by tag and resumes delivery receipts,
-    # so this also safely overlaps a release event emitted by a user/App token.
-    command(["gh", "workflow", "run", "discord-release.yml", "--repo", PLEZY_REPO,
-             "--ref", "main", "-f", "action=announce-release", "-f", "runner_pool=hosted",
-             "-f", f"release_tag={tag}"])
     return published
+
+
+def post_release_actions(tag: str, version: str, *, release_sha: str,
+                         include_webos_release: bool, publish_channels: bool) -> dict:
+    """Retryable delivery follows the already verified GitHub publication."""
+    result = {"published_channels": [], "skipped_channels": [],
+              "channel_failures": [], "notification_failures": []}
+    # GITHUB_TOKEN publication does not emit another workflow's release event.
+    # Tag serialization and persisted receipts make a repeated dispatch safe.
+    try:
+        command(["gh", "workflow", "run", "discord-release.yml", "--repo", PLEZY_REPO,
+                 "--ref", "main", "-f", "action=announce-release", "-f", "runner_pool=hosted",
+                 "-f", f"release_tag={tag}"])
+    except Exception as error:
+        result["notification_failures"].append(str(error))
+    if publish_channels:
+        try:
+            completed, skipped, failures = publish_configured_channels(
+                tag, version, release_sha=release_sha,
+                include_webos_release=include_webos_release,
+            )
+            result.update(published_channels=completed, skipped_channels=skipped,
+                          channel_failures=failures)
+        except Exception as error:
+            result["channel_failures"].append(str(error))
+    else:
+        result["skipped_channels"] = [{"channel": "configured release channels",
+                                       "reason": "GitHub-only publication requested"}]
+    return result
 
 
 def validate_release_outputs(
@@ -1094,7 +1117,6 @@ def validate_release_outputs(
         "pleazyng-android-arm64-v8a.tar.gz", "pleazyng-android-armeabi-v7a.tar.gz", "pleazyng-android-x86_64.tar.gz",
         "pleazyng-ios-unsigned.ipa", "pleazyng-tvos-unsigned.ipa", "pleazyng-macos.dmg",
         "pleazyng-windows-x64-portable.7z", "pleazyng-windows-installer.exe",
-        f"pleazyng-winget-manifests-{version}.zip", f"pleazyng.{version}.nupkg",
         "pleazyng-linux-x64.tar.gz", "pleazyng-linux-x64.deb", "pleazyng-linux-x64.rpm",
         "pleazyng-linux-x64.pkg.tar.zst", "pleazyng-linux-x64.flatpak", "pleazyng-linux-x64.snap",
         "pleazyng-linux-arm64.tar.gz", "pleazyng-linux-arm64.deb", "pleazyng-linux-arm64.rpm",
@@ -1211,7 +1233,12 @@ def publish_configured_channels(
     secrets = configured_repo_names("secret")
     publication_settings = configured_repo_variables()
     variables = set(publication_settings)
-    play_track, play_status = play_publication_settings(publication_settings)
+    play_error = None
+    try:
+        play_track, play_status = play_publication_settings(publication_settings)
+    except ReleaseError as error:
+        play_error = str(error)
+        play_track, play_status = "internal", "draft"
 
     specs = [
         {
@@ -1355,6 +1382,9 @@ def publish_configured_channels(
             "reason": "the webOS IPK is built as a candidate; exact-artifact eligibility is not enabled.",
         })
     for spec in specs:
+        if spec["fields"].get("channel") == "google-play" and play_error:
+            failures.append(f"Google Play configuration: {play_error}")
+            continue
         readiness_flag = spec.get("readiness_flag")
         if readiness_flag and publication_settings.get(readiness_flag) != "true":
             skipped.append({
@@ -1568,13 +1598,8 @@ def main() -> int:
         else:
             ci = ensure_ci(pin_sha, execution_profile=args.execution_profile)
         progress["ci_run"] = ci["databaseId"]
-        apple_store_secrets = {
-            "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
-        }
-        include_apple_store_build = (
-            args.include_apple_store_build
-            or (args.publish and apple_store_secrets.issubset(configured_repo_names("secret")))
-        )
+        # Store variants are explicit preparation, never implied by publishing.
+        include_apple_store_build = args.include_apple_store_build
         progress["include_apple_store_build"] = include_apple_store_build
         if not tag_reused:
             # Exact-source CI runs first. Build every release package once after
@@ -1620,6 +1645,7 @@ def main() -> int:
         published_channels: list[dict] = []
         skipped_channels: list[dict] = []
         channel_failures: list[str] = []
+        notification_failures: list[str] = []
         release_published = False
         if args.publish or args.publish_github_only:
             ensure_remote_main_sha(pin_sha, f"publishing Pleazyng {tag}")
@@ -1629,24 +1655,23 @@ def main() -> int:
             publish_github_release(tag)
             release_published = True
             progress["release_published"] = True
-            if args.publish:
-                stage = "publish configured release channels"
-                progress["stage"] = stage
-                save_progress()
-                published_channels, skipped_channels, channel_failures = publish_configured_channels(
-                    tag,
-                    args.version,
-                    release_sha=pin_sha,
-                    include_webos_release=args.include_webos_release,
-                )
-                progress["published_channels"] = published_channels
-                progress["skipped_channels"] = skipped_channels
-                progress["channel_failures"] = channel_failures
-                save_progress()
-                if channel_failures:
-                    raise ReleaseError("Release channel publication failures:\n- " + "\n- ".join(channel_failures))
-            else:
-                skipped_channels = [{"channel": "configured release channels", "reason": "GitHub-only publication requested"}]
+            # Persist core success before any notification/store/package work.
+            progress["status"] = "success"
+            progress["stage"] = "post-release followups"
+            save_progress()
+            followups = post_release_actions(
+                tag, args.version, release_sha=pin_sha,
+                include_webos_release=args.include_webos_release,
+                publish_channels=args.publish,
+            )
+            published_channels = followups["published_channels"]
+            skipped_channels = followups["skipped_channels"]
+            channel_failures = followups["channel_failures"]
+            notification_failures = followups["notification_failures"]
+            progress.update(followups)
+            save_progress()
+            if channel_failures or notification_failures:
+                print("GitHub release is published; post-release delivery needs a separate retry.")
         else:
             metadata = release_metadata(tag)
             release_published = not metadata.get("draft") and bool(metadata.get("published_at"))
@@ -1666,6 +1691,8 @@ def main() -> int:
             "prepare_homebrew_cask": args.prepare_homebrew_cask,
             "published_channels": published_channels,
             "skipped_channels": skipped_channels,
+            "channel_failures": channel_failures,
+            "notification_failures": notification_failures,
             "webos_built": True,
             "webos_attached_to_public_release": args.include_webos_release,
             "tizen_built": True,

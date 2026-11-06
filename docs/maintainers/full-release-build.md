@@ -96,12 +96,21 @@ draft release remains tied to the existing tag.
 ```sh
 python3 scripts/release_all_platforms.py --version 3.0.1 \
   --execution-profile hybrid --publish-github-only \
-  --include-apple-store-build --prepare-homebrew-cask \
+  --include-webos-release \
   --ffmpeg-source-cache /mnt/disks/scratch/task-scratch/plezyng-release-3.0.1-20261103/ffmpeg-preflight \
   --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.1-20261103/release-final
 ```
 
-The explicit signing and Homebrew options require signed iOS/tvOS archives and a
+The core command builds every required platform, verifies its artifacts and
+checksums, then publishes GitHub. It records that success before attempting
+Discord or configured distribution channels. Delivery failures remain in the
+summary for separate repair/retry against the immutable release; they do not
+turn publication into a failed core build. WinGet and Chocolatey metadata are
+attached when produced, while installers and all required Linux formats remain
+mandatory. See [channel retries](release-channel-retries.md).
+
+Use explicit signing and Homebrew qualification options separately when those
+preparations are requested. They require signed iOS/tvOS archives and a
 notarized macOS Cask candidate, even for GitHub-only publication. They do not
 enable store uploads or tap publication. Successful-run reuse checks the requested
 signing, notarization and Cask steps; asset validation requires both signed IPAs

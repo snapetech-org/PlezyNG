@@ -1,6 +1,7 @@
 #include "mpv_plugin.h"
 
 #include <commctrl.h>
+#include <flutter_windows.h>
 
 #include <algorithm>
 #include <cmath>
@@ -154,7 +155,7 @@ void MpvPlayerPlugin::LayoutDetachedVideo(HWND window) {
   if (window != detached_window_ || !player_ || !player_->GetHwnd()) return;
   RECT rect{};
   GetClientRect(window, &rect);
-  const UINT dpi = GetDpiForWindow(window);
+  const UINT dpi = FlutterDesktopGetDpiForMonitor(MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST));
   const int bar = MulDiv(52, dpi, 96);
   const int width = (std::max)(1L, rect.right / 4);
   SetWindowPos(player_->GetHwnd(), HWND_TOP, 0, 0, rect.right, (std::max)(1L, rect.bottom - bar), SWP_NOACTIVATE);

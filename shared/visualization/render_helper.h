@@ -66,7 +66,7 @@ namespace plezy::visualization {
             if (!engine) throw std::runtime_error("Could not create the isolated visualization renderer.");
             hello = true;
             U32(response, kind);
-            U32(response, kind == uint32_t(Backend::MilkRust) ? MILKRUST_ABI_VERSION : 0);
+            U32(response, kind == uint32_t(Backend::MilkRust) ? uint32_t(MILKRUST_ABI_VERSION) : 0u);
             U32(response, engine->CanPresent() ? kCanPresent : 0);
             break;
           }

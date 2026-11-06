@@ -70,6 +70,12 @@ void AwaitRetired(NativeWorker& worker) {
 int main() {
   try {
     {
+      const std::string path = "visualizers/caf\xC3\xA9/\xE6\xB3\xA2.milk";
+      const auto encoded = PathFromUtf8(path).generic_u8string();
+      Require(std::string(reinterpret_cast<const char*>(encoded.data()), encoded.size()) == path,
+          "Visualization path changed its UTF-8 bytes.");
+    }
+    {
       RenderQuality quality(RenderBudget::Desktop());
       quality.Resize(3840, 2160);
       Require(quality.Size() == std::make_pair(1920, 1080), "Desktop render cap is incorrect.");

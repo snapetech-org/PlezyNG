@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Respect disabled audio in controller-only Steam sessions and keep codec negotiation tests explicit about video and input capabilities.
+- Match Steam worker, timer and queue callback signatures to the APIs that call them.
+- Accept Xcode-created empty visualization output directories while retaining artifact verification.
+- Keep Windows visualization paths and ABI comparisons compatible with strict C++20 builds, and use the existing Flutter monitor-DPI helper for detached playback windows.
+
 - Build the renamed application target in both Linux native reliability jobs, with one shared check for Linux and Windows target names.
 - Correct Apple local pod checksums using CocoaPods' installed JSON specs, preserving dependency versions and deployment locking.
 - Repair mGBA DMA logging for Windows compilers without changing log behavior; ship the generated build source, hashes and recipe alongside pristine upstream sources.

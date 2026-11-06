@@ -34,21 +34,21 @@ manifest = {'schema_version': 1, 'source_sha': args.source_sha, 'store_upload_el
             'method': 'Production Flutter widgets rendered by flutter_test with appearance fixtures; demo metadata; no device execution',
             'images': records}
 (args.output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-(args.output / 'README.txt').write_text('Pleazyng interface previews\n\nThese are production Flutter widgets with synthetic fixture data, not screenshots from a running packaged app.\nDo not upload them to store screenshot slots or describe them as Fire TV hardware captures.\n\nSource: ' + args.source_sha + '\n\nTV, phone, tablet and desktop layouts: login, home, detail and appearance.\nNative captures and their APK/device receipts belong in a separate directory.\n')
-sheet = Image.new('RGB', (1920, 2000), '#101820')
+(args.output / 'README.txt').write_text('Pleazyng interface previews\n\nThese are production Flutter widgets with synthetic fixture data, not screenshots from a running packaged app.\nDo not upload them to store screenshot slots or describe them as Fire TV hardware captures.\nPlayer previews use simulated state and do not run a native decoder.\n\nSource: ' + args.source_sha + '\n\n' + '\n'.join(record['name'] for record in records) + '\n')
+columns = 3
+rows = (len(records) + columns - 1) // columns
+sheet = Image.new('RGB', (1920, 125 + rows * 455), '#101820')
 draw = ImageDraw.Draw(sheet)
 draw.text((36, 25), 'Pleazyng · Interface previews', font=heading, fill='white')
 draw.text((36, 74), 'Flutter widgets with sample data · not device screenshots · not for store submission', font=font, fill='#78d8cc')
-for row, device in enumerate(('tv', 'phone', 'tablet', 'desktop')):
-    y = 125 + row * 455
-    draw.text((36, y), device.upper(), font=heading, fill='white')
-    for col, scene in enumerate(('login', 'home', 'detail', 'settings')):
-        path = args.output / f'{device}-{scene}-preview.png'
-        image = Image.open(path).convert('RGB')
-        thumb = ImageOps.contain(image, (445, 365))
-        x = 36 + col * 470
-        sheet.paste(thumb, (x + (445-thumb.width)//2, y+48))
-        draw.text((x+8, y+418), scene.title(), font=font, fill='#b8c9d7')
+for index, record in enumerate(records):
+    row, col = divmod(index, columns)
+    x, y = 20 + col * 640, 125 + row * 455
+    with Image.open(args.output / record['name']) as source:
+        thumb = ImageOps.contain(source.convert('RGB'), (600, 385))
+    sheet.paste(thumb, (x + (600 - thumb.width) // 2, y))
+    label = record['name'].removesuffix('-preview.png').replace('-', ' ').title()
+    draw.text((x + 8, y + 405), label, font=font, fill='#b8c9d7')
 sheet.save(args.output / 'contact-sheet.jpg', quality=92)
 with zipfile.ZipFile(args.output / 'pleazyng-interface-previews.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(args.output.iterdir()):

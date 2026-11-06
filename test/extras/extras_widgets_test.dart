@@ -21,7 +21,7 @@ void main() {
     kind: ExtraKind.makingOf,
     origin: ExtraOrigin.reviewed,
     reviewedAssociation: true,
-    url: Uri.parse('https://www.youtube.com/watch?v=12345678901'),
+    url: Uri.parse('https://www.youtube.com/watch?v=1234567890$index'),
     publisher: 'Production studio',
   );
   ExtrasSession session() => ExtrasSession(
@@ -112,6 +112,20 @@ void main() {
     expect(find.text(t.bonusExtras.watchHere), findsNothing);
     expect(find.text(t.bonusExtras.copyLink), findsNothing);
     expect(find.text(t.bonusExtras.sendToPhone), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('revoking external access removes a visible handoff and QR immediately on refresh', (tester) async {
+    final state = session();
+    addTearDown(state.dispose);
+    await host(tester, ExtraPlaybackScreen(session: state, entry: entry(0)));
+    expect(find.text(t.bonusExtras.openProvider), findsOneWidget);
+    await state.store.savePreferences(const ExtrasPreferences(externalEnabled: false));
+    await state.refresh();
+    await tester.pumpAndSettle();
+    expect(find.text(t.bonusExtras.openProvider), findsNothing);
+    expect(find.text(t.bonusExtras.sendToPhone), findsNothing);
+    expect(find.text(t.bonusExtras.playbackUnavailable), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

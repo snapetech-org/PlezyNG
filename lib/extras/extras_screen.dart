@@ -63,7 +63,7 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
       entries,
       session.preferences,
       token: await _aiToken(),
-      restricted: !session.externalPermitted,
+      restricted: !session.profilePermitted,
       offline: session.subject.offline,
     );
     if (mounted && generation == _generation) {
@@ -674,7 +674,7 @@ class _ExtraTranscriptScreenState extends State<ExtraTranscriptScreen> {
       [_entry],
       widget.session.preferences,
       token: await _token(),
-      restricted: !widget.session.externalPermitted,
+      restricted: !widget.session.profilePermitted,
       offline: widget.session.subject.offline,
     );
     if (mounted && generation == _generation) {

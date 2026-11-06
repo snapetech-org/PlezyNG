@@ -18,7 +18,7 @@ import 'extras_session.dart';
 /// Provider media is never resolved to a raw stream or sent through the native
 /// movie player. Handoff progress means opened, not completed.
 Future<void> playExtra(BuildContext context, ExtrasSession session, ExtraEntry entry, {int? seconds}) async {
-  if (!session.active) return;
+  if (!session.allows(entry)) return;
   final native = session.nativeItem(entry);
   if (native != null) {
     await session.store.recordProgress(entry.id, seconds: seconds);
@@ -54,6 +54,7 @@ class ExtraPlaybackScreen extends StatefulWidget {
 
 class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsBindingObserver {
   InAppWebViewController? _web;
+  Timer? _startupTimer;
   bool _embedded = false, _failed = false;
   int _position = 0, _lastSaved = -10;
   bool get _canEmbed =>
@@ -63,7 +64,7 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
       widget.entry.url?.host == 'www.youtube.com';
   Uri get _watchUrl {
     final uri = canonicalExtraUrl(widget.entry.url)!;
-    final start = widget.start ?? _position;
+    final start = _position;
     if (start <= 0) return uri;
     return uri.host == 'vimeo.com'
         ? uri.replace(fragment: 't=${start}s')
@@ -73,8 +74,34 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
   @override
   void initState() {
     super.initState();
+    _position = widget.start ?? 0;
     WidgetsBinding.instance.addObserver(this);
+    widget.session.addListener(_sessionChanged);
     unawaited(_load());
+  }
+
+  void _sessionChanged() {
+    if (!mounted) return;
+    if (!widget.session.allows(widget.entry)) {
+      _startupTimer?.cancel();
+      _web = null;
+    }
+    setState(() {
+      if (!widget.session.allows(widget.entry)) _embedded = false;
+    });
+  }
+
+  void _startEmbed() {
+    if (!widget.session.allows(widget.entry)) return;
+    _startupTimer?.cancel();
+    _startupTimer = Timer(const Duration(seconds: 15), _failEmbed);
+    setState(() => _embedded = true);
+  }
+
+  void _failEmbed() {
+    _startupTimer?.cancel();
+    _web = null;
+    if (mounted) setState(() => _failed = true);
   }
 
   Future<void> _load() async {
@@ -84,18 +111,20 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
     } catch (_) {
       /* Playback does not require saved progress. */
     }
-    if (mounted) setState(() => _position = widget.start ?? (progress['seconds'] as int? ?? 0));
+    if (mounted && !_embedded) setState(() => _position = widget.start ?? (progress['seconds'] as int? ?? 0));
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) {
-      unawaited(_web?.evaluateJavascript(source: 'if(window.player) player.pauseVideo();'));
+      unawaited(
+        _web?.evaluateJavascript(source: 'if(window.player) player.pauseVideo();').catchError((Object _) => null),
+      );
     }
   }
 
   Future<void> _open() async {
-    if (!widget.session.externalPermitted) return;
+    if (!widget.session.allows(widget.entry)) return;
     var launched = false;
     try {
       launched = await launchUrl(_watchUrl, mode: LaunchMode.externalApplication);
@@ -103,18 +132,36 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
       /* QR remains available */
     }
     if (launched) {
+      _startupTimer?.cancel();
+      _web = null;
       try {
         await widget.session.store.recordProgress(widget.entry.id);
       } catch (_) {
         /* Handoff already succeeded. */
       }
     }
-    if (mounted) setState(() => _failed = !launched);
+    if (mounted) {
+      setState(() {
+        _failed = !launched;
+        if (launched) _embedded = false;
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant ExtraPlaybackScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.session != widget.session) {
+      oldWidget.session.removeListener(_sessionChanged);
+      widget.session.addListener(_sessionChanged);
+    }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    widget.session.removeListener(_sessionChanged);
+    _startupTimer?.cancel();
     super.dispose();
   }
 
@@ -122,7 +169,9 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(widget.entry.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
     body: SafeArea(
-      child: _embedded && !_failed
+      child: !widget.session.allows(widget.entry)
+          ? Center(child: Text(t.bonusExtras.playbackUnavailable, textAlign: TextAlign.center))
+          : _embedded && !_failed
           ? Column(
               children: [
                 Expanded(
@@ -151,19 +200,27 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
                         handlerName: 'extras',
                         callback: (arguments) async {
                           if (!mounted) return null;
-                          if (!widget.session.externalPermitted) {
-                            setState(() => _embedded = false);
+                          if (!widget.session.allows(widget.entry)) {
+                            _sessionChanged();
                             return null;
                           }
                           if (arguments.length != 2 || arguments[1] is! num) return null;
                           final kind = arguments[0], value = (arguments[1] as num).toInt();
+                          if (kind == 'ready') {
+                            _startupTimer?.cancel();
+                            return null;
+                          }
                           if (kind == 'error') {
-                            setState(() => _failed = true);
+                            _failEmbed();
                             return null;
                           }
                           if (value < 0 || value > 86400 || (kind != 'position' && kind != 'ended')) return null;
                           _position = value;
-                          if (kind == 'ended') setState(() => _embedded = false);
+                          if (kind == 'ended') {
+                            _startupTimer?.cancel();
+                            _web = null;
+                            setState(() => _embedded = false);
+                          }
                           if (kind == 'ended' || (_position - _lastSaved).abs() >= 10) {
                             _lastSaved = _position;
                             try {
@@ -188,10 +245,10 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
                           : NavigationActionPolicy.CANCEL;
                     },
                     onReceivedError: (_, request, _) {
-                      if (mounted && request.isForMainFrame == true) setState(() => _failed = true);
+                      if (request.isForMainFrame == true) _failEmbed();
                     },
                     onReceivedHttpError: (_, request, _) {
-                      if (mounted && request.isForMainFrame == true) setState(() => _failed = true);
+                      if (request.isForMainFrame == true) _failEmbed();
                     },
                     onPermissionRequest: (_, request) async =>
                         PermissionResponse(resources: request.resources, action: PermissionResponseAction.DENY),
@@ -215,7 +272,7 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
                       const SizedBox(height: 16),
                       if (_canEmbed && !_failed)
                         FilledButton.icon(
-                          onPressed: () => setState(() => _embedded = true),
+                          onPressed: _startEmbed,
                           icon: const AppIcon(Symbols.play_arrow_rounded),
                           label: Text(t.bonusExtras.watchHere),
                         ),

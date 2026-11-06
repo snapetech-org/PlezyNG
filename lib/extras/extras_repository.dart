@@ -143,8 +143,11 @@ class ExtrasRepository {
           throw const FormatException('Unsupported extras protocol');
         }
         final entries = (response['entries'] as List).take(80).map(ExtraEntry.parse).whereType<ExtraEntry>().toList();
-        if (!_closed) await store.saveCache(cacheKey, entries);
-        return ExtrasResult(entries, serviceUnavailable: response['partial'] == true);
+        final partial = response['partial'] == true;
+        // An upstream failure must remain retryable and must not replace a
+        // previously complete cache with an incomplete or empty selection.
+        if (!_closed && !partial) await store.saveCache(cacheKey, entries);
+        return ExtrasResult(entries, serviceUnavailable: partial);
       } catch (_) {
         return ExtrasResult(cached?.entries ?? const [], serviceUnavailable: true, cached: cached != null);
       }

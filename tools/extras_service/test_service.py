@@ -99,6 +99,16 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(result['entries'], [])
         self.assertTrue(result['partial'])
 
+    def test_missing_catalogue_credentials_do_not_cache_an_empty_success(self):
+        result = self.request(self.discovery(tmdb=''))
+        self.assertEqual(result['entries'], [])
+        self.assertTrue(result['partial'])
+        # Restarting with credentials against the same persistent cache must
+        # discover the title immediately, without a 24-hour empty-result delay.
+        recovered = self.request(self.discovery())
+        self.assertEqual(len(recovered['entries']), 1)
+        self.assertFalse(recovered['partial'])
+
     def test_region_age_private_and_deleted_results_are_excluded(self):
         for transform in [lambda v: v['status'].update(privacyStatus='private'),
                           lambda v: v['contentDetails'].update(regionRestriction={'blocked': ['CA']}),

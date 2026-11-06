@@ -110,17 +110,27 @@ class ExtrasSession extends ChangeNotifier {
   List<MediaItem> library;
   List<ExtraEntry> catalog;
   final bool Function()? isCurrent, externalAllowed;
-  bool get externalPermitted => active && !subject.restricted && (externalAllowed?.call() ?? true);
+  bool get profilePermitted => active && !subject.restricted && (externalAllowed?.call() ?? true);
+  bool get externalPermitted => profilePermitted && !subject.offline && preferences.externalEnabled;
   bool get active => !_disposed && (isCurrent?.call() ?? true);
   final ExtrasRepository repository;
   ExtrasPreferences preferences = const ExtrasPreferences();
   List<ExtraEntry> _entries = const [];
-  List<ExtraEntry> get entries => externalPermitted ? _entries : _entries.where((e) => e.isLibrary).toList();
+  List<ExtraEntry> get entries {
+    if (!active) return const [];
+    return const ExtrasPolicy().select(
+      externalPermitted ? _entries : _entries.where((e) => e.isLibrary),
+      subject,
+      preferences,
+    );
+  }
+
   set entries(List<ExtraEntry> value) => _entries = value;
   bool loading = false, unavailable = false;
   int _generation = 0;
   bool _disposed = false;
   List<ExtraEntry> get preview => const ExtrasPolicy().preview(entries);
+  bool allows(ExtraEntry entry) => entries.any((e) => e.id == entry.id && e.duplicateKey == entry.duplicateKey);
   MediaItem? nativeItem(ExtraEntry entry) => library.where((item) => item.globalKey == entry.nativeKey).firstOrNull;
   void _notify() {
     if (!_disposed) notifyListeners();
@@ -138,6 +148,10 @@ class ExtrasSession extends ChangeNotifier {
       preferences = prefs;
       entries = const ExtrasPolicy().select(local, subject, prefs);
       _notify();
+      if (!externalPermitted) {
+        unavailable = false;
+        return;
+      }
       final result = await repository.load(
         subject,
         library: libraryExtraEntries(subject, library),

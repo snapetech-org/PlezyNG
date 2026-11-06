@@ -231,7 +231,9 @@ class Discovery:
         return sorted(set(aliases.values())), aliases, failed
 
     def _discover(self, identities, language, region, expand, analysis, query):
-        candidates, partial = {}, False
+        # Missing catalogue credentials still permit reviewed links, but must
+        # not turn an incomplete lookup into a 24-hour cached empty success.
+        candidates, partial = {}, not bool(self.tmdb_token and self.youtube_key)
         for video_id, reviewed in self.associations.items():
             if set(identities).intersection(reviewed["parents"]):
                 candidates[video_id] = dict(reviewed)

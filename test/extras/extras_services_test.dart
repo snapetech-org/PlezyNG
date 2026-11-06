@@ -109,6 +109,77 @@ void main() {
     expect(calls, 1);
   });
 
+  test('partial discovery remains retryable and only a complete result is cached', () async {
+    final store = ExtrasStore('a');
+    await store.savePreferences(const ExtrasPreferences(serviceUrl: 'https://extras.example/'));
+    var calls = 0;
+    final repo = ExtrasRepository(
+      store,
+      client: MockClient((_) async {
+        calls++;
+        return http.Response(
+          jsonEncode({
+            'version': 1,
+            'partial': calls == 1,
+            'entries': calls == 1 ? [] : [candidate().toJson()],
+          }),
+          200,
+        );
+      }),
+    );
+    addTearDown(repo.close);
+    final failed = await repo.load(subject);
+    expect(failed.entries, isEmpty);
+    expect(failed.serviceUnavailable, true);
+    final recovered = await repo.load(subject);
+    expect(recovered.entries.single.id, candidate().id);
+    expect(recovered.serviceUnavailable, false);
+    expect((await repo.load(subject)).cached, true);
+    expect(calls, 2);
+  });
+
+  test('live profile restrictions prevent requests and stale entry activation', () async {
+    final store = ExtrasStore('a');
+    await store.savePreferences(const ExtrasPreferences(serviceUrl: 'https://extras.example/'));
+    var permitted = true, active = true, calls = 0;
+    final repo = ExtrasRepository(
+      store,
+      client: MockClient((_) async {
+        calls++;
+        return http.Response(
+          jsonEncode({
+            'version': 1,
+            'entries': [candidate().toJson()],
+          }),
+          200,
+        );
+      }),
+    );
+    final session = ExtrasSession(
+      subject: subject,
+      store: store,
+      repository: repo,
+      externalAllowed: () => permitted,
+      isCurrent: () => active,
+    );
+    addTearDown(session.dispose);
+    await session.refresh();
+    expect(session.allows(candidate()), true);
+    permitted = false;
+    expect(session.entries, isEmpty);
+    expect(session.allows(candidate()), false);
+    await session.refresh(findMore: true);
+    expect(calls, 1);
+    permitted = true;
+    await store.savePreferences(const ExtrasPreferences(externalEnabled: false));
+    await session.refresh();
+    expect(session.externalPermitted, false);
+    expect(session.profilePermitted, true); // Native local inference is independent.
+    active = false;
+    expect(session.entries, isEmpty);
+    expect(session.profilePermitted, false);
+  });
+
   test('offline and restricted discovery never calls the service', () async {
     final store = ExtrasStore('a');
     await store.savePreferences(const ExtrasPreferences(serviceUrl: 'https://extras.example/'));

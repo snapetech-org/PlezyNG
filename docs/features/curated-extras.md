@@ -63,6 +63,9 @@ video, stops on a changed video identity, and returns to the handoff screen at
 completion. `rel=0` is not treated as a guarantee that provider recommendations
 are absent. An embed failure offers the provider/QR route. Vimeo personal links
 use the provider handoff, including the chosen timestamp.
+If the embedded player never becomes ready, a 15-second watchdog returns to that
+handoff. A live permission change removes both playback actions and the QR link;
+stale cards and transcript passages cannot reopen an entry that is no longer admitted.
 
 Opening an external URL records **Opened**, never **Completed**. Only an observed
 completion of the selected iframe video or an explicit user action marks it
@@ -118,6 +121,7 @@ YouTube metadata alone never grants transcript/AI permission.
 - Client metadata cache: 24 query keys / 1 MiB, 12-hour freshness, 29-day maximum
   fallback age. Discovery unavailable may use still-eligible cached metadata.
   Each entry is still checked by current preferences; Clear cache removes it.
+  Partial responses remain retryable and never replace a complete cache entry.
 - Personal links and progress: 500 each. Imported transcripts: 20 / 512 KiB total,
   256 KiB per stored transcript. Offline references: 100 titles × at most 100 IDs.
 - Requests disable redirects, bound responses to 1 MiB and impose deadlines.

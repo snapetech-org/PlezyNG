@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Restore the Tizen visualization helper execute permission after SDK packaging without changing signed file contents, and retain failed package diagnostics.
+
 - Make scheduled HLS completion tests independent of machine speed while preserving complete-segment AES decryption checks.
 
 - Isolate RomM manual PDF rendering behind the TV platform adapter, preserving supported PDF viewers and detecting unsupported Tizen imports before native builds.

@@ -90,6 +90,71 @@ class PackageTest(unittest.TestCase):
                 archive.writestr(info, content)
         return path
 
+    def test_helper_mode_normalization_preserves_every_signed_file(self):
+        _, _, _, entries = self.visualizer_fixture()
+        path = self.archive(extra=entries)
+        def strip_mode(info):
+            if info.filename == 'lib/plezy_visualizer_helper':
+                info.create_system = 0
+                info.external_attr = 0o100644 << 16
+        self.rewrite_metadata(path, strip_mode)
+        with zipfile.ZipFile(path) as source:
+            before = {row.filename: source.read(row) for row in source.infolist()}
+        with self.assertRaisesRegex(ValueError, 'not executable'):
+            package.inspect_package(path, 'arm')
+        self.assertTrue(package.normalize_visualizer_helper_mode(path, 'arm'))
+        self.assertIsNotNone(package.inspect_package(path, 'arm')['visualizer'])
+        with zipfile.ZipFile(path) as fixed:
+            self.assertEqual(before, {row.filename: fixed.read(row) for row in fixed.infolist()})
+            helper = fixed.getinfo('lib/plezy_visualizer_helper')
+            self.assertEqual(helper.create_system, 3)
+            self.assertEqual((helper.external_attr >> 16) & 0o777, 0o755)
+        digest = package.sha256(path)
+        self.assertFalse(package.normalize_visualizer_helper_mode(path, 'arm'))
+        self.assertEqual(package.sha256(path), digest)
+
+    def test_resigning_repairs_sdk_stripped_helper_mode(self):
+        _, _, _, entries = self.visualizer_fixture()
+        source = self.archive(extra=entries)
+        def signer(*command, cwd=None):
+            target = Path(command[-1])
+            with zipfile.ZipFile(target) as archive:
+                rows = [(row, archive.read(row)) for row in archive.infolist()]
+            with zipfile.ZipFile(target, 'w') as archive:
+                for row, contents in rows:
+                    if row.filename == 'lib/plezy_visualizer_helper':
+                        row.create_system = 0
+                        row.external_attr = 0o100644 << 16
+                    if row.filename in {'author-signature.xml', 'signature1.xml'}:
+                        contents = b'<Signature>new synthetic signature</Signature>'
+                    archive.writestr(row, contents)
+        output = self.root / 'resigned-mode'
+        with patch.object(package, 'run', side_effect=signer):
+            package.resign(SimpleNamespace(package=source, sha256=package.sha256(source),
+                                           arch='arm', output=output, security_profile='TV'))
+        result = output / 'pleazyng-tizen-arm-signed.tpk'
+        self.assertEqual(package.package_payload(source), package.package_payload(result))
+        with zipfile.ZipFile(result) as archive:
+            self.assertEqual((archive.getinfo('lib/plezy_visualizer_helper').external_attr >> 16) & 0o777, 0o755)
+
+    def rewrite_metadata(self, path, update):
+        with zipfile.ZipFile(path) as source:
+            rows = [(row, source.read(row)) for row in source.infolist()]
+        with zipfile.ZipFile(path, 'w') as target:
+            for row, contents in rows:
+                update(row)
+                target.writestr(row, contents)
+
+    def test_unverified_helper_cannot_gain_execute_permission(self):
+        _, _, _, entries = self.visualizer_fixture()
+        entries['lib/plezy_visualizer_helper'] += b'tampered'
+        path = self.archive(extra=entries)
+        self.rewrite_metadata(path, lambda row: setattr(row, 'external_attr', 0o100644 << 16))
+        before = package.sha256(path)
+        with self.assertRaisesRegex(ValueError, 'unverified visualization helper'):
+            package.normalize_visualizer_helper_mode(path, 'arm')
+        self.assertEqual(package.sha256(path), before)
+
     def test_report_is_structural_not_hardware_qualification(self):
         path = self.archive()
         report = package.inspect_package(path, 'arm')

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import nullcontext
+import copy
 import hashlib
 import json
 import os
@@ -12,6 +13,7 @@ import re
 import secrets
 import shutil
 import struct
+import stat
 import subprocess
 import sys
 import tarfile
@@ -87,6 +89,58 @@ def stage_visualizer(source, destination, bundle, manifest_digest, arch):
         shutil.copyfile(bundle / name, target)
         target.chmod(0o755 if name == 'plezy_visualizer_helper' else 0o644)
     return data
+
+
+
+def normalize_visualizer_helper_mode(path, arch):
+    """Restore helper execute metadata without changing any signed entry bytes."""
+    path = Path(path)
+    with zipfile.ZipFile(path) as source:
+        rows = source.infolist()
+        names = [row.filename for row in rows]
+        if len(names) != len(set(names)):
+            raise ValueError('Duplicate TPK entries cannot be normalized')
+        helper = 'lib/plezy_visualizer_helper'
+        if helper not in names:
+            return False
+        info = source.getinfo(helper)
+        if stat.S_IFMT(info.external_attr >> 16) not in {0, stat.S_IFREG}:
+            raise ValueError('Visualization helper must be a regular file')
+        if info.create_system == 3 and (info.external_attr >> 16) & 0o111:
+            return False
+        manifest = source.getinfo('res/visualizer/milkrust-native.json')
+        if manifest.file_size > 65536 or not 0 < info.file_size <= VISUALIZER_FILES['plezy_visualizer_helper'][1]:
+            raise ValueError('Invalid visualization helper metadata size')
+        data = visualizer_metadata(source.read(manifest), arch)
+        with source.open(info) as stream:
+            if hashlib.file_digest(stream, 'sha256').hexdigest() != data['helperSha256']:
+                raise ValueError('Cannot normalize an unverified visualization helper')
+        with source.open(info) as stream:
+            if elf_arch(stream.read(64)) != arch:
+                raise ValueError('Visualization helper has the wrong TV architecture')
+        before = {row.filename: hashlib.sha256(source.read(row)).hexdigest() for row in rows}
+        descriptor, temporary = tempfile.mkstemp(prefix='.' + path.name + '-mode-', dir=path.parent)
+        os.close(descriptor)
+        try:
+            with zipfile.ZipFile(temporary, 'w') as fixed:
+                fixed.comment = source.comment
+                for row in rows:
+                    updated = copy.copy(row)
+                    if row.filename == helper:
+                        updated.create_system = 3
+                        updated.external_attr = (0o100755 << 16) | (row.external_attr & 0xffff)
+                    with source.open(row) as contents, fixed.open(updated, 'w') as output:
+                        shutil.copyfileobj(contents, output)
+            with zipfile.ZipFile(temporary) as fixed:
+                after = {row.filename: hashlib.sha256(fixed.read(row)).hexdigest() for row in fixed.infolist()}
+            if before != after:
+                raise ValueError('TPK permission normalization changed signed contents')
+            Path(temporary).chmod(path.stat().st_mode & 0o777)
+        except BaseException:
+            Path(temporary).unlink(missing_ok=True)
+            raise
+    os.replace(temporary, path)
+    return True
 
 
 def inspect_visualizer(archive, names, arch):
@@ -607,7 +661,15 @@ def build(args):
         if len(packages) != 1:
             raise ValueError('Expected exactly one newly built TPK')
         native_report = json.loads((Path(args.native) / 'native-build.json').read_text())
-        report = inspect_package(packages[0], args.arch, required_libraries={'libflutter_whisper_plugin.so'})
+        try:
+            normalized_mode = normalize_visualizer_helper_mode(packages[0], args.arch)
+            report = inspect_package(packages[0], args.arch, required_libraries={'libflutter_whisper_plugin.so'})
+        except (ValueError, OSError, zipfile.BadZipFile):
+            diagnostics = output / 'diagnostics'
+            diagnostics.mkdir(exist_ok=True)
+            shutil.copyfile(packages[0], diagnostics / 'unverified.tpk')
+            raise
+        report['helper_mode_normalized'] = normalized_mode
         if report['visualizer'] is None:
             raise ValueError('The Tizen SDK omitted the required visualization helper/runtime bundle')
         with zipfile.ZipFile(packages[0]) as archive:
@@ -673,6 +735,7 @@ def resign(args):
         candidates = list(Path(temp).glob('*.tpk'))
         if len(candidates) != 1:
             raise ValueError('Expected one re-signed TPK')
+        normalize_visualizer_helper_mode(candidates[0], args.arch)
         report = inspect_package(candidates[0], args.arch)
         if package_payload(candidates[0]) != payload:
             raise ValueError('Re-signing changed the application payload')

@@ -2,18 +2,7 @@
 /// media-server URL belongs in these objects or in the public discovery cache.
 library;
 
-enum ExtraKind {
-  makingOf,
-  effects,
-  makeup,
-  interview,
-  deletedScene,
-  bloopers,
-  commentary,
-  trailer,
-  analysis,
-  other,
-}
+enum ExtraKind { makingOf, effects, makeup, interview, deletedScene, bloopers, commentary, trailer, analysis, other }
 
 enum ExtraOrigin { library, user, reviewed, catalog, search }
 
@@ -50,18 +39,10 @@ class ExtrasSubject {
 }
 
 class ExtraPassage {
-  const ExtraPassage({
-    required this.startSeconds,
-    required this.endSeconds,
-    required this.text,
-  });
+  const ExtraPassage({required this.startSeconds, required this.endSeconds, required this.text});
   final int startSeconds, endSeconds;
   final String text;
-  Map<String, Object?> toJson() => {
-    'start': startSeconds,
-    'end': endSeconds,
-    'text': text,
-  };
+  Map<String, Object?> toJson() => {'start': startSeconds, 'end': endSeconds, 'text': text};
   static ExtraPassage? parse(Object? raw) {
     if (raw is! Map) return null;
     final start = raw['start'], end = raw['end'], text = raw['text'];
@@ -72,8 +53,9 @@ class ExtraPassage {
         end > 86400 ||
         text is! String ||
         text.trim().isEmpty ||
-        text.length > 2000)
+        text.length > 2000) {
       return null;
+    }
     return ExtraPassage(startSeconds: start, endSeconds: end, text: text);
   }
 }
@@ -104,14 +86,7 @@ class ExtraEntry {
     this.contentGroup = '',
     this.passages = const [],
   });
-  final String id,
-      title,
-      publisherId,
-      publisher,
-      description,
-      language,
-      scopeLabel,
-      contentGroup;
+  final String id, title, publisherId, publisher, description, language, scopeLabel, contentGroup;
   final Set<String> parentIdentities;
   final ExtraKind kind;
   final ExtraOrigin origin;
@@ -119,13 +94,33 @@ class ExtraEntry {
   final Uri? url;
   final String? nativeKey, thumbnailUrl;
   final int? durationSeconds;
-  final bool verifiedPublisher,
-      catalogAssociated,
-      reviewedAssociation,
-      spoilerSafe,
-      available,
-      analysisAllowed;
+  final bool verifiedPublisher, catalogAssociated, reviewedAssociation, spoilerSafe, available, analysisAllowed;
   final List<ExtraPassage> passages;
+  ExtraEntry withPassages(List<ExtraPassage> value, {bool userSupplied = false}) => ExtraEntry(
+    id: id,
+    parentIdentities: parentIdentities,
+    title: title,
+    kind: kind,
+    origin: origin,
+    publisherId: publisherId,
+    publisher: publisher,
+    url: url,
+    nativeKey: nativeKey,
+    scope: scope,
+    scopeLabel: scopeLabel,
+    description: description,
+    language: language,
+    durationSeconds: durationSeconds,
+    thumbnailUrl: thumbnailUrl,
+    verifiedPublisher: verifiedPublisher,
+    catalogAssociated: catalogAssociated,
+    reviewedAssociation: reviewedAssociation,
+    spoilerSafe: spoilerSafe,
+    available: available,
+    analysisAllowed: analysisAllowed || userSupplied,
+    contentGroup: contentGroup,
+    passages: value,
+  );
   bool get isLibrary => origin == ExtraOrigin.library && nativeKey != null;
   String get duplicateKey => canonicalExtraUrl(url)?.toString() ?? id;
   Map<String, Object?> toJson() => {
@@ -160,23 +155,15 @@ class ExtraEntry {
         id.length > 200 ||
         title is! String ||
         title.trim().isEmpty ||
-        title.length > 500)
+        title.length > 500) {
       return null;
-    final url = canonicalExtraUrl(
-      Uri.tryParse(raw['url'] is String ? raw['url'] as String : ''),
-    );
+    }
+    final url = canonicalExtraUrl(Uri.tryParse(raw['url'] is String ? raw['url'] as String : ''));
     if (url == null) return null;
-    final parents = extraStrings(raw['parents'])
-        .where((p) => p.length <= 200)
-        .take(12)
-        .toSet();
+    final parents = extraStrings(raw['parents']).where((p) => p.length <= 200).take(12).toSet();
     if (parents.isEmpty) return null;
-    String field(String key, [int max = 500]) => raw[key] is String
-        ? (raw[key] as String).substring(
-            0,
-            (raw[key] as String).length.clamp(0, max),
-          )
-        : '';
+    String field(String key, [int max = 500]) =>
+        raw[key] is String ? (raw[key] as String).substring(0, (raw[key] as String).length.clamp(0, max)) : '';
     final duration = raw['durationSeconds'];
     final thumbnail = Uri.tryParse(field('thumbnailUrl', 2000));
     return ExtraEntry(
@@ -199,12 +186,8 @@ class ExtraEntry {
       publisher: field('publisher'),
       description: field('description', 4000),
       language: field('language', 20),
-      durationSeconds: duration is int && duration > 0 && duration <= 86400
-          ? duration
-          : null,
-      thumbnailUrl: thumbnail?.scheme == 'https' && thumbnail!.userInfo.isEmpty
-          ? thumbnail.toString()
-          : null,
+      durationSeconds: duration is int && duration > 0 && duration <= 86400 ? duration : null,
+      thumbnailUrl: thumbnail?.scheme == 'https' && thumbnail!.userInfo.isEmpty ? thumbnail.toString() : null,
       verifiedPublisher: raw['verifiedPublisher'] == true,
       catalogAssociated: raw['catalogAssociated'] == true,
       reviewedAssociation: raw['reviewedAssociation'] == true,
@@ -213,11 +196,7 @@ class ExtraEntry {
       analysisAllowed: raw['analysisAllowed'] == true,
       contentGroup: field('contentGroup', 200),
       passages: raw['passages'] is List
-          ? (raw['passages'] as List)
-                .take(500)
-                .map(ExtraPassage.parse)
-                .whereType<ExtraPassage>()
-                .toList()
+          ? (raw['passages'] as List).take(500).map(ExtraPassage.parse).whereType<ExtraPassage>().toList()
           : const [],
     );
   }
@@ -225,38 +204,33 @@ class ExtraEntry {
 
 T extraEnum<T extends Enum>(List<T> values, Object? raw, T fallback) =>
     values.where((e) => e.name == raw).firstOrNull ?? fallback;
-List<String> extraStrings(Object? raw) =>
-    raw is List ? raw.whereType<String>().toList() : const [];
+List<String> extraStrings(Object? raw) => raw is List ? raw.whereType<String>().toList() : const [];
 
 /// Canonical provider watch URLs only. Reject arbitrary protocols, credentials,
 /// ports, redirects and hosts; never send media-server credentials to a provider.
 Uri? canonicalExtraUrl(Uri? uri) {
-  if (uri == null ||
-      uri.scheme != 'https' ||
-      uri.userInfo.isNotEmpty ||
-      (uri.hasPort && uri.port != 443))
+  if (uri == null || uri.scheme != 'https' || uri.userInfo.isNotEmpty || (uri.hasPort && uri.port != 443)) {
     return null;
+  }
   final host = uri.host.toLowerCase();
   String? id;
-  if (host == 'youtu.be' && uri.pathSegments.length == 1)
+  if (host == 'youtu.be' && uri.pathSegments.length == 1) {
     id = uri.pathSegments.first;
-  if (const {
-    'youtube.com',
-    'www.youtube.com',
-    'm.youtube.com',
-    'www.youtube-nocookie.com',
-  }.contains(host)) {
-    if (uri.path == '/watch') id = uri.queryParameters['v'];
-    if (uri.pathSegments.length == 2 &&
-        const {'embed', 'shorts'}.contains(uri.pathSegments.first))
-      id = uri.pathSegments.last;
   }
-  if (id != null && RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(id))
+  if (const {'youtube.com', 'www.youtube.com', 'm.youtube.com', 'www.youtube-nocookie.com'}.contains(host)) {
+    if (uri.path == '/watch') id = uri.queryParameters['v'];
+    if (uri.pathSegments.length == 2 && const {'embed', 'shorts'}.contains(uri.pathSegments.first)) {
+      id = uri.pathSegments.last;
+    }
+  }
+  if (id != null && RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(id)) {
     return Uri.https('www.youtube.com', '/watch', {'v': id});
+  }
   if (const {'vimeo.com', 'www.vimeo.com'}.contains(host) &&
       uri.pathSegments.length == 1 &&
-      RegExp(r'^[0-9]{1,15}$').hasMatch(uri.pathSegments.first))
+      RegExp(r'^[0-9]{1,15}$').hasMatch(uri.pathSegments.first)) {
     return Uri.https('vimeo.com', '/${uri.pathSegments.first}');
+  }
   return null;
 }
 

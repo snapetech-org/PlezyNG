@@ -7,11 +7,7 @@ import 'extras_policy.dart';
 import 'extras_repository.dart';
 
 class ExtrasAiResult {
-  const ExtrasAiResult({
-    this.kinds = const {},
-    this.passages = const {},
-    this.usedAi = false,
-  });
+  const ExtrasAiResult({this.kinds = const {}, this.passages = const {}, this.usedAi = false});
   final Set<ExtraKind> kinds;
   final Map<String, List<ExtraPassage>> passages;
   final bool usedAi;
@@ -34,23 +30,20 @@ class ExtrasAi {
     final fallback = ExtrasAiResult(
       passages: {
         for (final e in admitted)
-          if (searchExtraPassages(e, query).isNotEmpty)
-            e.id: searchExtraPassages(e, query),
+          if (searchExtraPassages(e, query).isNotEmpty) e.id: searchExtraPassages(e, query),
       },
     );
     if (restricted ||
-        offline ||
+        (offline && prefs.aiMode != ExtrasAiMode.device) ||
         prefs.aiMode == ExtrasAiMode.off ||
         prefs.aiModel.trim().isEmpty ||
-        query.trim().isEmpty)
+        query.trim().isEmpty) {
       return fallback;
-    final endpoint = extrasServiceUri(
-      prefs.aiUrl,
-      deviceOnly: prefs.aiMode == ExtrasAiMode.device,
-    );
-    if (endpoint == null ||
-        (prefs.aiMode == ExtrasAiMode.cloud && endpoint.scheme != 'https'))
+    }
+    final endpoint = extrasServiceUri(prefs.aiUrl, deviceOnly: prefs.aiMode == ExtrasAiMode.device);
+    if (endpoint == null || (prefs.aiMode == ExtrasAiMode.cloud && endpoint.scheme != 'https')) {
       return fallback;
+    }
     final evidence = admitted.where((e) => e.analysisAllowed).take(12).toList();
     try {
       final response = await extrasJsonRequest(
@@ -80,10 +73,7 @@ class ExtrasAi {
                       (e) => {
                         'id': e.id,
                         'kind': e.kind.name,
-                        'passages': e.passages
-                            .take(20)
-                            .map((p) => p.toJson())
-                            .toList(),
+                        'passages': e.passages.take(20).map((p) => p.toJson()).toList(),
                       },
                     )
                     .toList(),
@@ -95,32 +85,28 @@ class ExtrasAi {
         timeout: const Duration(seconds: 15),
       );
       final choices = response['choices'];
-      if (choices is! List || choices.isEmpty || choices.first is! Map)
+      if (choices is! List || choices.isEmpty || choices.first is! Map) {
         return fallback;
+      }
       final message = (choices.first as Map)['message'];
       final content = message is Map ? message['content'] : null;
       if (content is! String || content.length > 12000) return fallback;
       final answer = jsonDecode(content);
       if (answer is! Map) return fallback;
       final result = <String, List<ExtraPassage>>{};
-      for (final raw
-          in answer['passages'] is List
-              ? (answer['passages'] as List).take(8)
-              : const []) {
+      for (final raw in answer['passages'] is List ? (answer['passages'] as List).take(8) : const []) {
         if (raw is! Map) continue;
         final entry = evidence.where((e) => e.id == raw['id']).firstOrNull;
         final passage = entry?.passages
-            .where(
-              (p) => p.startSeconds == raw['start'] && p.text == raw['quote'],
-            )
+            .where((p) => p.startSeconds == raw['start'] && p.text == raw['quote'])
             .firstOrNull;
-        if (entry != null && passage != null)
+        if (entry != null && passage != null) {
           (result[entry.id] ??= []).add(passage);
+        }
       }
-      final kinds = extraStrings(answer['kinds'])
-          .map((v) => ExtraKind.values.where((k) => k.name == v).firstOrNull)
-          .whereType<ExtraKind>()
-          .toSet();
+      final kinds = extraStrings(
+        answer['kinds'],
+      ).map((v) => ExtraKind.values.where((k) => k.name == v).firstOrNull).whereType<ExtraKind>().toSet();
       return ExtrasAiResult(
         kinds: kinds,
         passages: {...fallback.passages, ...result},

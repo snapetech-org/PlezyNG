@@ -1,3 +1,8 @@
+import '../extras/extras_models.dart';
+import '../extras/extras_session.dart';
+import '../extras/extras_widgets.dart';
+import '../extras/extras_screen.dart';
+import '../extras/extras_playback.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import '../media/ids.dart';
@@ -49,7 +54,6 @@ import '../media/media_server_user_profile.dart';
 import '../media/media_rating.dart';
 import '../media/media_role.dart';
 import '../media/paged_media_list_state.dart';
-import '../widgets/media_card.dart';
 import '../widgets/media_rating_badge.dart';
 import '../widgets/fitted_metadata_line.dart';
 import '../widgets/dialog_action_button.dart';
@@ -386,6 +390,52 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
   bool get _canUseDetail => mounted && !_isDeleted;
   List<MediaItem>? _extras;
+  ExtrasSession? _curatedExtras;
+  List<MediaItem>? get _extraPreviews => _curatedExtras?.preview.map(extraDisplayItem).toList();
+  ExtraEntry? _extraForDisplay(MediaItem item) =>
+      _curatedExtras?.entries.where((e) => 'extra:${e.id}' == item.id).firstOrNull;
+  void _extrasChanged() {
+    if (!_canUseDetail) return;
+    setState(() {
+      _focusedExtraIndex = _focusedExtraIndex.clamp(0, math.max(0, (_extraPreviews?.length ?? 0) - 1));
+    });
+  }
+
+  void _syncCuratedExtras() {
+    if (!_canUseDetail || (!_metadata.isMovie && !_metadata.isShow)) return;
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    final subject = extrasSubjectForMedia(
+      _fullMetadata ?? _metadata,
+      restricted: extrasRestricted(context),
+      offline: widget.isOffline,
+      language: LocaleSettings.currentLocale.languageCode,
+      region: locale.countryCode ?? 'US',
+    );
+    final session = _curatedExtras;
+    if (session == null) {
+      _curatedExtras = createExtrasSession(
+        context,
+        subject,
+        library: _extras ?? const [],
+        isCurrent: () => _canUseDetail,
+      )..addListener(_extrasChanged);
+    } else {
+      session.subject = subject;
+      session.library = _extras ?? const [];
+    }
+    unawaited(_curatedExtras!.refresh());
+  }
+
+  void _browseExtras() {
+    final session = _curatedExtras;
+    if (session != null && session.active) unawaited(openExtras(context, session));
+  }
+
+  void _activateExtraPreview(MediaItem item) {
+    final entry = _extraForDisplay(item), session = _curatedExtras;
+    if (entry != null && session != null) unawaited(playExtra(context, session, entry));
+  }
+
   List<MediaHub> _relatedHubs = [];
   List<GlobalKey<HubSectionState>> _relatedHubKeys = [];
   bool _hasLoadedExtras = false;
@@ -583,7 +633,6 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   int _focusedExtraIndex = 0;
   final ValueNotifier<int> _focusedExtraIndexNotifier = ValueNotifier<int>(0);
   late final FocusNode _extrasFocusNode;
-  final Map<int, GlobalKey<MediaCardState>> _extraCardKeys = {};
   final _extrasSectionKey = GlobalKey();
 
   // Locked focus pattern for overview
@@ -1065,6 +1114,11 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_curatedExtras == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_canUseDetail && _curatedExtras == null) _syncCuratedExtras();
+      });
+    }
     final music = Provider.of<MusicPlaybackService?>(context, listen: false);
     if (!identical(music, _themeMusic)) {
       _unbindThemeMusic?.call();
@@ -1210,6 +1264,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
   @override
   void dispose() {
+    _curatedExtras?.removeListener(_extrasChanged);
+    _curatedExtras?.dispose();
     _themeLifecycle?.dispose();
     _releaseThemeSong();
     _libraryContentSubscription?.cancel();
@@ -2431,8 +2487,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   }
 
   /// Load extras (trailers, featurettes, behind-the-scenes, etc.).
-  Future<void> _loadExtras() {
-    return _loadSupplementalSection<List<MediaItem>>(
+  Future<void> _loadExtras() async {
+    await _loadSupplementalSection<List<MediaItem>>(
       resolveClient: () => getServerBoundMediaClient(context),
       fetch: (client) => client.fetchExtras(_metadata.id),
       apply: (extras) {
@@ -2448,6 +2504,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       },
       markLoaded: () => _hasLoadedExtras = true,
     );
+    _syncCuratedExtras();
   }
 
   /// Load related hubs (collections, similar, "more from" director/actor).
@@ -2510,7 +2567,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   void _focusSectionAboveInfoRows() {
     if (_relatedHubs.isNotEmpty) {
       _relatedHubKeys.last.currentState?.requestFocusFromMemory();
-    } else if (_extras != null && _extras!.isNotEmpty) {
+    } else if (_extraPreviews != null && _extraPreviews!.isNotEmpty) {
       _extrasFocusNode.requestFocus();
       _scrollSectionIntoView(_extrasSectionKey);
     } else {
@@ -2662,7 +2719,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       return;
     }
 
-    if (_extras != null && _extras!.isNotEmpty) {
+    if (_extraPreviews != null && _extraPreviews!.isNotEmpty) {
       _extrasFocusNode.requestFocus();
       _scrollSectionIntoView(_extrasSectionKey);
       return;
@@ -2855,7 +2912,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       return KeyEventResult.handled;
     }
 
-    final extras = _extras;
+    final extras = _extraPreviews;
     if (extras == null || extras.isEmpty) {
       _extrasSelectLongPress.reset();
       return KeyEventResult.ignored;
@@ -2866,12 +2923,12 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       isOwnerActive: () => mounted,
       onShortPress: () {
         if (_focusedExtraIndex < extras.length) {
-          navigateToVideoPlayer(context, metadata: extras[_focusedExtraIndex], isLaunchCurrent: () => _canUseDetail);
+          _activateExtraPreview(extras[_focusedExtraIndex]);
         }
       },
       onLongPress: () {
-        if (_focusedExtraIndex < _extraCardKeys.length) {
-          _extraCardKeys[_focusedExtraIndex]?.currentState?.showContextMenu();
+        if (_focusedExtraIndex < extras.length) {
+          _browseExtras();
         }
       },
     );
@@ -2896,7 +2953,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
     // RIGHT: next extra
     if (key.isInlineEnd(context)) {
-      if (_focusedExtraIndex < _extras!.length - 1) {
+      if (_focusedExtraIndex < _extraPreviews!.length - 1) {
         _focusedExtraIndex++;
         _focusedExtraIndexNotifier.value = _focusedExtraIndex;
         scrollListToIndex(
@@ -2948,7 +3005,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
 
   /// Focus the first visible section below cast.
   void _focusSectionBelowCast() {
-    if (_extras != null && _extras!.isNotEmpty) {
+    if (_extraPreviews != null && _extraPreviews!.isNotEmpty) {
       _extrasFocusNode.requestFocus();
       _scrollSectionIntoView(_extrasSectionKey);
     } else if (_relatedHubs.isNotEmpty) {
@@ -2964,7 +3021,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       hubIndex: hubIndex,
       isUp: isUp,
       onTopBoundary: () {
-        if (_extras != null && _extras!.isNotEmpty) {
+        if (_extraPreviews != null && _extraPreviews!.isNotEmpty) {
           _extrasFocusNode.requestFocus();
           _scrollSectionIntoView(_extrasSectionKey);
         } else {
@@ -3752,10 +3809,17 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                             ],
 
                             // Trailers & Extras Section
-                            if (!widget.isOffline && _extras != null && _extras!.isNotEmpty) ...[
-                              Text(key: _extrasSectionKey, t.discover.extras, style: sectionTitleStyle),
-                              const SizedBox(height: 12),
-                              _buildExtrasSection(),
+                            if (_curatedExtras != null) ...[
+                              Wrap(
+                                key: _extrasSectionKey,
+                                spacing: 16,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Text(t.bonusExtras.title, style: sectionTitleStyle),
+                                  TextButton(onPressed: _browseExtras, child: Text(t.bonusExtras.seeAll)),
+                                ],
+                              ),
+                              if (_extraPreviews?.isNotEmpty == true) _buildExtrasSection(),
                               SizedBox(height: isTv ? 24 : 12),
                             ],
 
@@ -3953,6 +4017,28 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
               onActiveHubChanged: _handleTvDetailHubChanged,
               onActivateItem: _handleTvDetailRailItemActivated,
               trailingForHub: _tvDetailTrailingState,
+              onViewAllHub: (hub) {
+                if (hub.id != _tvDetailExtrasHubId) return false;
+                _browseExtras();
+                return true;
+              },
+              onContextMenuItem: (hub, item) {
+                if (hub.id != _tvDetailExtrasHubId) return false;
+                _browseExtras();
+                return true;
+              },
+              cardBuilder: (context, hub, item, width, height) {
+                final entry = hub.id == _tvDetailExtrasHubId ? _extraForDisplay(item) : null;
+                return entry == null
+                    ? null
+                    : ExtraCard(
+                        session: _curatedExtras!,
+                        entry: entry,
+                        width: width,
+                        height: height,
+                        interactive: false,
+                      );
+              },
               leadingItemForHub: _tvDetailLeadingItemForHub,
               onRetryHub: _retryTvDetailHub,
               onNavigateUp: _focusTvDetailActionRow,
@@ -4536,14 +4622,15 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         MediaHub(id: _tvDetailActorsHubId, title: t.discover.cast, type: 'person', items: actors, size: actors.length),
       );
     }
-    if (_extras != null && _extras!.isNotEmpty) {
+    if (_curatedExtras != null && _extraPreviews?.isNotEmpty == true) {
       hubs.add(
         MediaHub(
           id: _tvDetailExtrasHubId,
-          title: t.discover.extras,
+          title: t.bonusExtras.title,
           type: 'clip',
-          items: _extras!,
-          size: _extras!.length,
+          items: _extraPreviews!,
+          size: _curatedExtras!.entries.length,
+          more: true,
         ),
       );
     }
@@ -4602,6 +4689,10 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   }
 
   Future<bool> _handleTvDetailRailItemActivated(MediaHub hub, MediaItem item) async {
+    if (hub.id == _tvDetailExtrasHubId) {
+      _activateExtraPreview(item);
+      return true;
+    }
     if (_isTvDetailEpisodeHub(hub) && item.isEpisode) {
       await navigateToVideoPlayerWithRefresh(
         context,
@@ -5123,26 +5214,25 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                 scrollDirection: Axis.horizontal,
                 clipBehavior: Clip.none,
                 padding: const EdgeInsets.symmetric(vertical: 5),
-                itemCount: _extras!.length,
+                itemCount: _extraPreviews!.length,
                 itemBuilder: (context, index) {
-                  final extra = _extras![index];
+                  final extra = _extraPreviews![index];
                   final isFocused = hasFocus && index == _focusedExtraIndex;
-                  final cardKey = _extraCardKeys.putIfAbsent(index, () => GlobalKey<MediaCardState>());
 
                   return Padding(
                     padding: const EdgeInsetsDirectional.only(end: 4),
                     child: FocusBuilders.buildLockedFocusWrapper(
                       context: context,
                       isFocused: isFocused,
-                      onTap: () =>
-                          navigateToVideoPlayer(context, metadata: extra, isLaunchCurrent: () => _canUseDetail),
-                      delegateFocusBorder: true,
-                      child: MediaCard(
-                        key: cardKey,
-                        item: extra,
+                      onTap: () => _activateExtraPreview(extra),
+                      delegateFocusBorder: false,
+                      onLongPress: _browseExtras,
+                      child: ExtraCard(
+                        session: _curatedExtras!,
+                        entry: _extraForDisplay(extra)!,
                         width: cardWidth,
-                        height: posterHeight,
-                        viewModeOverride: ViewMode.grid,
+                        height: posterHeight + 42,
+                        interactive: false,
                       ),
                     ),
                   );

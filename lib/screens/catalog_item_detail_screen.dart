@@ -1,3 +1,6 @@
+import '../extras/extras_models.dart';
+import '../extras/extras_session.dart';
+import '../extras/extras_widgets.dart';
 import 'dart:ui' as ui;
 
 import 'package:plezy/i18n/presentation_formats.dart';
@@ -87,6 +90,27 @@ class CatalogItemDetailScreen extends StatefulWidget {
 }
 
 class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
+  ExtrasSession? _extras;
+  void _syncExtras(CatalogItem item, [List<ExtraEntry> candidates = const []]) {
+    if (!mounted || (item.kind != MediaKind.movie && item.kind != MediaKind.show)) return;
+    final locale = WidgetsBinding.instance.platformDispatcher.locale;
+    final subject = extrasSubjectForCatalog(
+      item,
+      restricted: extrasRestricted(context),
+      language: LocaleSettings.currentLocale.languageCode,
+      region: locale.countryCode ?? 'US',
+    );
+    final current = _extras;
+    if (current == null) {
+      _extras = createExtrasSession(context, subject, catalog: candidates, isCurrent: () => mounted);
+      setState(() {});
+    } else {
+      current.subject = subject;
+      current.catalog = candidates;
+    }
+    unawaited(_extras!.refresh());
+  }
+
   final _actionBarKey = GlobalKey<FocusableActionBarState>();
   final _backButtonFocusNode = FocusNode(debugLabel: 'catalog_detail_back');
   final _castSectionKey = GlobalKey();
@@ -169,12 +193,16 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
       }
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _actionBarKey.currentState?.requestFocusOnFirst();
+      if (mounted) {
+        _actionBarKey.currentState?.requestFocusOnFirst();
+        if (_extras == null) _syncExtras(widget.item);
+      }
     });
   }
 
   @override
   void dispose() {
+    _extras?.dispose();
     _copyServers?.removeListener(_onPlaybackEnvironmentChanged);
     _copyNetwork?.removeListener(_onPlaybackEnvironmentChanged);
     _backButtonFocusNode.dispose();
@@ -377,6 +405,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
           _relationEntries = relationEntries;
           _episodes = detail.episodes;
         });
+        _syncExtras(detail.item, detail.extras);
         if (!hadActions && _hasActions) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) _actionBarKey.currentState?.requestFocusOnFirst();
@@ -2114,6 +2143,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
                               const SizedBox(height: 28),
                               _buildCastSection(theme, cast),
                             ],
+                            if (_extras != null) ...[const SizedBox(height: 24), ExtrasShelf(session: _extras!)],
                             if (_hasRelations) ...[const SizedBox(height: 24), _buildRelationsSection(theme)],
                             if (_related case final List<CatalogItem> related when related.isNotEmpty) ...[
                               const SizedBox(height: 20),

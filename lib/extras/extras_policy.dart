@@ -1,67 +1,51 @@
 import 'extras_models.dart';
 
-enum ExtraRejection {
-  unrelated,
-  unsupported,
-  unverified,
-  hidden,
-  unavailable,
-  restricted,
-  spoilers,
-  disabled,
-}
+enum ExtraRejection { unrelated, unsupported, unverified, hidden, unavailable, restricted, spoilers, disabled }
 
 /// An empty result is successful. No score, popularity, AI output or shortage
 /// of candidates can override these independent admission checks.
 class ExtrasPolicy {
   const ExtrasPolicy();
-  ExtraRejection? rejection(
-    ExtraEntry entry,
-    ExtrasSubject subject,
-    ExtrasPreferences prefs,
-  ) {
-    if (!entry.parentIdentities.any(subject.allIdentities.contains))
+  ExtraRejection? rejection(ExtraEntry entry, ExtrasSubject subject, ExtrasPreferences prefs) {
+    if (!entry.parentIdentities.any(subject.allIdentities.contains)) {
       return ExtraRejection.unrelated;
+    }
     if (prefs.hiddenIds.contains(entry.id) ||
         prefs.wrongMatches.contains('${subject.key}|${entry.id}') ||
-        (entry.publisherId.isNotEmpty &&
-            prefs.hiddenPublishers.contains(entry.publisherId)))
+        (entry.publisherId.isNotEmpty && prefs.hiddenPublishers.contains(entry.publisherId))) {
       return ExtraRejection.hidden;
+    }
     if (!entry.available) return ExtraRejection.unavailable;
-    if (!entry.isLibrary && (subject.restricted || subject.offline))
+    if (!entry.isLibrary && (subject.restricted || subject.offline)) {
       return ExtraRejection.restricted;
-    if (!entry.isLibrary && !prefs.externalEnabled)
+    }
+    if (!entry.isLibrary && !prefs.externalEnabled) {
       return ExtraRejection.disabled;
-    if (!entry.isLibrary && canonicalExtraUrl(entry.url) == null)
+    }
+    if (!entry.isLibrary && canonicalExtraUrl(entry.url) == null) {
       return ExtraRejection.unsupported;
-    if (entry.scope != ExtraScope.work && entry.scopeLabel.trim().isEmpty)
+    }
+    if (entry.scope != ExtraScope.work && entry.scopeLabel.trim().isEmpty) {
       return ExtraRejection.unrelated;
+    }
     if (entry.origin != ExtraOrigin.user && !entry.isLibrary) {
-      if (entry.kind == ExtraKind.other ||
-          (entry.kind == ExtraKind.analysis && !prefs.includeAnalysis))
+      if (entry.kind == ExtraKind.other || (entry.kind == ExtraKind.analysis && !prefs.includeAnalysis)) {
         return ExtraRejection.unsupported;
-      if (!entry.reviewedAssociation &&
-          !(entry.verifiedPublisher && entry.catalogAssociated))
+      }
+      if (!entry.reviewedAssociation && !(entry.verifiedPublisher && entry.catalogAssociated)) {
         return ExtraRejection.unverified;
+      }
     }
     // Explicitly added links remain accessible inside this title. They never
     // authorize another title, publisher, or automatically found candidate.
-    if (!subject.watched &&
-        !prefs.showSpoilers &&
-        !entry.spoilerSafe &&
-        entry.origin != ExtraOrigin.user)
+    if (!subject.watched && !prefs.showSpoilers && !entry.spoilerSafe && entry.origin != ExtraOrigin.user) {
       return ExtraRejection.spoilers;
+    }
     return null;
   }
 
-  List<ExtraEntry> select(
-    Iterable<ExtraEntry> candidates,
-    ExtrasSubject subject,
-    ExtrasPreferences prefs,
-  ) {
-    final eligible = candidates
-        .where((e) => rejection(e, subject, prefs) == null)
-        .toList();
+  List<ExtraEntry> select(Iterable<ExtraEntry> candidates, ExtrasSubject subject, ExtrasPreferences prefs) {
+    final eligible = candidates.where((e) => rejection(e, subject, prefs) == null).toList();
     int priority(ExtraEntry e) =>
         (e.isLibrary
                 ? 0
@@ -84,8 +68,9 @@ class ExtrasPolicy {
     final result = <ExtraEntry>[];
     for (final entry in eligible) {
       if (!seen.add(entry.duplicateKey)) continue;
-      if (entry.contentGroup.isNotEmpty && !groups.add(entry.contentGroup))
+      if (entry.contentGroup.isNotEmpty && !groups.add(entry.contentGroup)) {
         continue;
+      }
       result.add(entry);
     }
     return List.unmodifiable(result);
@@ -102,23 +87,8 @@ class ExtrasPolicy {
 }
 
 const extraTopicWords = <ExtraKind, List<String>>{
-  ExtraKind.makingOf: [
-    'making',
-    'production',
-    'behind',
-    'scenes',
-    'filming',
-    'sets',
-    'miniatures',
-  ],
-  ExtraKind.effects: [
-    'effects',
-    'vfx',
-    'cgi',
-    'animation',
-    'creatures',
-    'stunts',
-  ],
+  ExtraKind.makingOf: ['making', 'production', 'behind', 'scenes', 'filming', 'sets', 'miniatures'],
+  ExtraKind.effects: ['effects', 'vfx', 'cgi', 'animation', 'creatures', 'stunts'],
   ExtraKind.makeup: ['makeup', 'prosthetics', 'costumes', 'creatures'],
   ExtraKind.interview: ['interview', 'cast', 'director', 'crew'],
   ExtraKind.deletedScene: ['deleted', 'extended', 'alternate'],
@@ -134,44 +104,27 @@ Set<String> extraQueryWords(String value) => value
     .where(
       (s) =>
           s.length > 1 &&
-          !const {
-            'the',
-            'how',
-            'they',
-            'did',
-            'made',
-            'with',
-            'and',
-            'about',
-            'this',
-            'show',
-            'me',
-          }.contains(s),
+          !const {'the', 'how', 'they', 'did', 'made', 'with', 'and', 'about', 'this', 'show', 'me'}.contains(s),
     )
     .toSet();
 
 bool extraMatchesQuery(ExtraEntry entry, String query) {
   final words = extraQueryWords(query);
   if (words.isEmpty) return true;
-  final text =
-      '${entry.title} ${entry.description} ${entry.publisher} ${extraTopicWords[entry.kind]?.join(' ') ?? ''}'
-          .toLowerCase();
+  final text = '${entry.title} ${entry.description} ${entry.publisher} ${extraTopicWords[entry.kind]?.join(' ') ?? ''}'
+      .toLowerCase();
   return words.any(text.contains) ||
-      entry.passages.any((p) => words.any(p.text.toLowerCase().contains));
+      (entry.analysisAllowed && entry.passages.any((p) => words.any(p.text.toLowerCase().contains)));
 }
 
 List<ExtraPassage> searchExtraPassages(ExtraEntry entry, String query) {
   if (!entry.analysisAllowed) return const [];
   final words = extraQueryWords(query);
   if (words.isEmpty) return entry.passages.take(8).toList();
-  final passages = entry.passages
-      .where((p) => words.any(p.text.toLowerCase().contains))
-      .toList();
+  final passages = entry.passages.where((p) => words.any(p.text.toLowerCase().contains)).toList();
   passages.sort(
-    (a, b) => words
-        .where(b.text.toLowerCase().contains)
-        .length
-        .compareTo(words.where(a.text.toLowerCase().contains).length),
+    (a, b) =>
+        words.where(b.text.toLowerCase().contains).length.compareTo(words.where(a.text.toLowerCase().contains).length),
   );
   return passages.take(8).toList();
 }

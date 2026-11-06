@@ -1,3 +1,4 @@
+import '../../extras/extras_models.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../media/media_kind.dart';
@@ -104,6 +105,7 @@ class SeerrCatalogSource implements CatalogSource {
     final origin = await originFuture;
 
     return CatalogDetail(
+      extras: _extraCandidates(details?.relatedVideos, item),
       item: details == null ? item : item.enrichedWith(_toDetailCatalogItem(details, item.kind, origin)),
       cast: details == null ? const [] : _toCast(details, castLimit, origin),
       related: related == null ? const [] : _toPage(related, origin).items.take(relatedLimit).toList(),
@@ -364,6 +366,29 @@ class SeerrCatalogSource implements CatalogSource {
       if (value(entry) case final String result) return result;
     }
     return null;
+  }
+
+  static List<ExtraEntry> _extraCandidates(List<SeerrRelatedVideo>? videos, CatalogItem item) {
+    final identity = '${item.kind == MediaKind.movie ? 'movie' : 'show'}/tmdb:${item.ids.tmdb}';
+    return [
+      for (final video in videos ?? const <SeerrRelatedVideo>[])
+        if (video.site?.toLowerCase() == 'youtube' && RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(video.key ?? ''))
+          ExtraEntry(
+            id: 'youtube:${video.key}',
+            parentIdentities: {identity},
+            title: video.name ?? '',
+            kind: switch (video.type?.toLowerCase()) {
+              'behind the scenes' || 'featurette' => ExtraKind.makingOf,
+              'bloopers' => ExtraKind.bloopers,
+              'trailer' || 'teaser' => ExtraKind.trailer,
+              _ => ExtraKind.other,
+            },
+            origin: ExtraOrigin.catalog,
+            catalogAssociated: true,
+            language: video.language ?? '',
+            url: Uri.https('www.youtube.com', '/watch', {'v': video.key!}),
+          ),
+    ];
   }
 
   static String? _trailerUrl(List<SeerrRelatedVideo>? videos) {

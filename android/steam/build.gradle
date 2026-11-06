@@ -1,9 +1,16 @@
 apply plugin: 'com.android.library'
 
 def recipe = rootProject.file('../scripts/games/prepare_steam.py')
-providers.exec {
+def steamPreparation = providers.exec {
+    ignoreExitValue = true
     commandLine System.getProperty('os.name').toLowerCase().contains('windows') ? 'python' : 'python3', recipe.absolutePath
-}.result.get().assertNormalExitValue()
+}
+def steamPreparationResult = steamPreparation.result.get()
+if (steamPreparationResult.exitValue != 0) {
+    logger.error(steamPreparation.standardOutput.asText.get())
+    logger.error(steamPreparation.standardError.asText.get())
+}
+steamPreparationResult.assertNormalExitValue()
 
 android {
     namespace 'org.snapetech.plezyng.games.steam'

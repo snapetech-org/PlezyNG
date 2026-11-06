@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:plezy/exceptions/media_server_exceptions.dart';
 import 'package:plezy/media/media_backend.dart';
+import 'package:plezy/media/media_browser_dialect.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/media/media_server_client.dart';
@@ -42,6 +43,81 @@ void main() {
     );
     addTearDown(client.close);
     return (client: client, requests: requests);
+  }
+
+  for (final dialect in MediaBrowserDialect.values) {
+    group('$dialect deletion recheck', () {
+      for (final permission in [true, false, null]) {
+        test('only a fresh explicit grant ($permission) permits DELETE', () async {
+          var grant = true;
+          final methods = <String>[];
+          final client = JellyfinClient.forTesting(
+            connection: testJellyfinConnection(dialect: dialect),
+            httpClient: MockClient((request) async {
+              methods.add(request.method);
+              if (request.method == 'DELETE') return http.Response('', 204);
+              return jsonResponse({
+                'Items': [
+                  {'Id': item.id, 'CanDelete': grant ? true : permission},
+                ],
+              });
+            }),
+          );
+          addTearDown(client.close);
+          expect(await client.fetchDeletePermission(item), isTrue);
+          grant = false; // Permission can change while confirmation is open.
+          expect(await client.deleteMediaItem(item), permission == true);
+          expect(methods, permission == true ? ['GET', 'GET', 'DELETE'] : ['GET', 'GET']);
+        });
+      }
+
+      for (final status in [401, 403, 500]) {
+        test('permission HTTP $status never reaches DELETE', () async {
+          final methods = <String>[];
+          final client = JellyfinClient.forTesting(
+            connection: testJellyfinConnection(dialect: dialect),
+            httpClient: MockClient((request) async {
+              methods.add(request.method);
+              return http.Response('', status);
+            }),
+          );
+          addTearDown(client.close);
+          await expectLater(client.deleteMediaItem(item), throwsA(isA<MediaServerHttpException>()));
+          expect(methods, ['GET']);
+        });
+      }
+
+      test('a vanished item cannot be deleted', () async {
+        final methods = <String>[];
+        final client = JellyfinClient.forTesting(
+          connection: testJellyfinConnection(dialect: dialect),
+          httpClient: MockClient((request) async {
+            methods.add(request.method);
+            return jsonResponse({'Items': <Object>[]});
+          }),
+        );
+        addTearDown(client.close);
+        expect(await client.deleteMediaItem(item), isFalse);
+        expect(methods, ['GET']);
+      });
+
+      test('a failed DELETE remains an error after the grant', () async {
+        final client = JellyfinClient.forTesting(
+          connection: testJellyfinConnection(dialect: dialect),
+          httpClient: MockClient(
+            (request) async => request.method == 'DELETE'
+                ? http.Response('', 403)
+                : jsonResponse({
+                    'Items': [
+                      {'Id': item.id, 'CanDelete': true},
+                    ],
+                  }),
+          ),
+        );
+        addTearDown(client.close);
+        await expectLater(client.deleteMediaItem(item), throwsA(isA<MediaServerHttpException>()));
+      });
+    });
   }
 
   group('JellyfinClient.fetchDeletePermission', () {

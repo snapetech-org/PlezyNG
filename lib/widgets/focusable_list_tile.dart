@@ -101,9 +101,11 @@ class _FocusableListTileState extends State<FocusableListTile> with FocusableTil
         onLongPress: () => widget.onLongPress?.call(),
       );
     }
-    if (event is KeyDownEvent && event.logicalKey.isContextMenuKey) {
-      _selectPress.reset();
-      widget.onLongPress?.call();
+    if (event.logicalKey.isContextMenuKey) {
+      if (event is KeyDownEvent) {
+        _selectPress.reset();
+        widget.onLongPress?.call();
+      }
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;

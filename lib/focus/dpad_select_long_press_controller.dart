@@ -13,7 +13,7 @@ class DpadSelectLongPressController {
   static const defaultDuration = Duration(milliseconds: 500);
 
   Timer? _timer;
-  bool _isKeyDown = false;
+  PhysicalKeyboardKey? _pressedKey;
 
   KeyEventResult handleKeyEvent(
     KeyEvent event, {
@@ -27,11 +27,11 @@ class DpadSelectLongPressController {
     if (event is KeyDownEvent) {
       // Some platforms report another down instead of a repeat. Only the
       // transition from up to down may start (or restart) the timer.
-      if (!_isKeyDown) {
-        _isKeyDown = true;
+      if (_pressedKey == null) {
+        _pressedKey = event.physicalKey;
         _timer?.cancel();
         _timer = Timer(duration, () {
-          if (!isOwnerActive() || !_isKeyDown) return;
+          if (!isOwnerActive() || _pressedKey == null) return;
           SelectKeyUpSuppressor.suppressSelectUntilKeyUp();
           onLongPress();
         });
@@ -42,10 +42,13 @@ class DpadSelectLongPressController {
     if (event is KeyRepeatEvent) return KeyEventResult.handled;
 
     if (event is KeyUpEvent) {
+      // A second controller/keyboard SELECT must not release the first one's
+      // hold or accidentally turn it into a short press.
+      if (_pressedKey != event.physicalKey) return KeyEventResult.handled;
       final timerWasActive = _timer?.isActive ?? false;
       _timer?.cancel();
-      if (timerWasActive && _isKeyDown) onShortPress();
-      _isKeyDown = false;
+      _pressedKey = null;
+      if (timerWasActive && isOwnerActive()) onShortPress();
       return KeyEventResult.handled;
     }
 
@@ -54,7 +57,7 @@ class DpadSelectLongPressController {
 
   void reset() {
     _timer?.cancel();
-    _isKeyDown = false;
+    _pressedKey = null;
   }
 
   void dispose() => reset();

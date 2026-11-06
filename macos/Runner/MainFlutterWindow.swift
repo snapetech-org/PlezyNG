@@ -2,10 +2,27 @@ import Cocoa
 import FlutterMacOS
 
 class MainFlutterWindow: NSWindow {
+  private var downloadStorageChannel: FlutterMethodChannel?
+
   override func awakeFromNib() {
     let project = FlutterDartProject()
     project.dartEntrypointArguments = Array(CommandLine.arguments.dropFirst())
     let flutterViewController = FlutterViewController(project: project)
+    DownloadBackupPolicy.refreshExistingRoots()
+    let storageChannel = FlutterMethodChannel(
+      name: "com.pleazyng/download_storage", binaryMessenger: flutterViewController.engine.binaryMessenger)
+    storageChannel.setMethodCallHandler { call, result in
+      guard call.method == "excludeFromBackup", let path = call.arguments as? String else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      do {
+        result(try DownloadBackupPolicy.exclude(URL(fileURLWithPath: path)))
+      } catch {
+        result(FlutterError(code: "backup_exclusion", message: "Could not update download backup policy", details: nil))
+      }
+    }
+    downloadStorageChannel = storageChannel
     let preparationWorker = CommandLine.arguments.contains("--plezy-preparation-worker")
     if preparationWorker {
       NSApp.setActivationPolicy(.prohibited)

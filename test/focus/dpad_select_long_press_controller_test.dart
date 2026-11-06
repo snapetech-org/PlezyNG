@@ -49,6 +49,52 @@ void main() {
 
   tearDown(SelectKeyUpSuppressor.clearSuppression);
 
+  test('release from another SELECT key cannot finish the held press', () {
+    fakeAsync((async) {
+      final presses = _PressRecorder();
+      presses.handle(_down);
+      presses.handle(
+        const KeyDownEvent(
+          physicalKey: PhysicalKeyboardKey.gameButtonA,
+          logicalKey: LogicalKeyboardKey.gameButtonA,
+          timeStamp: Duration.zero,
+        ),
+      );
+      presses.handle(
+        const KeyUpEvent(
+          physicalKey: PhysicalKeyboardKey.gameButtonA,
+          logicalKey: LogicalKeyboardKey.gameButtonA,
+          timeStamp: Duration.zero,
+        ),
+      );
+      expect(presses.shortPresses, 0);
+      async.elapse(const Duration(milliseconds: 500));
+      expect(presses.longPresses, 1);
+      presses.handle(_up);
+      expect(presses.shortPresses, 0);
+    });
+  });
+
+  test('an inactive owner cannot fire a short press on release', () {
+    fakeAsync((async) {
+      final controller = DpadSelectLongPressController();
+      var active = true;
+      var actions = 0;
+      void dispatch(KeyEvent event) => controller.handleKeyEvent(
+        event,
+        isOwnerActive: () => active,
+        onShortPress: () => actions++,
+        onLongPress: () => actions++,
+      );
+      dispatch(_down);
+      active = false;
+      dispatch(_up);
+      async.elapse(const Duration(seconds: 1));
+      expect(actions, 0);
+      controller.dispose();
+    });
+  });
+
   test('initial down starts once and down/repeat events do not restart it', () {
     fakeAsync((async) {
       final presses = _PressRecorder();

@@ -214,6 +214,54 @@ void main() {
       if (videoFilePath != null) await db.updateVideoFilePath('srv:item-1', videoFilePath);
     }
 
+    test('restored metadata without managed media becomes manually retryable', () async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      await seedRow(db, DownloadStatus.completed, taskId: 'old-task', videoFilePath: 'downloads/movie.mkv');
+      await db.updateDownloadProgress('srv:item-1', 100, 999, 999);
+      await db.addToQueue(mediaGlobalKey: 'srv:item-1');
+      final manager = await managerFor(db);
+
+      expect(await manager.reconcileMissingManagedDownloads(), 1);
+      final row = (await db.getDownloadedMedia('srv:item-1'))!;
+      expect(row.status, DownloadStatus.failed.index);
+      expect(row.errorMessage, t.downloads.errorFileNotFound);
+      expect(row.videoFilePath, isNull);
+      expect(row.nextMissingPartIndex, 0);
+      expect(row.bgTaskId, isNull);
+      expect(row.progress, 0);
+      expect(await db.getNextQueueItem(), isNull);
+      expect(cancelledIds, isEmpty);
+      expect(await manager.reconcileMissingManagedDownloads(), 0);
+    });
+
+    for (final stored in ['/unmounted/external/movie.mkv', 'content://provider/movie', '../outside.mkv']) {
+      test('restore reconciliation leaves custom storage untouched: $stored', () async {
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(db.close);
+        await seedRow(db, DownloadStatus.completed, videoFilePath: stored);
+        final manager = await managerFor(db);
+        expect(await manager.reconcileMissingManagedDownloads(), 0);
+        expect((await db.getDownloadedMedia('srv:item-1'))!.status, DownloadStatus.completed.index);
+      });
+    }
+
+    test('existing media stays complete; a missing stacked part becomes retryable without deleting files', () async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      const stored = 'downloads/movie.mkv';
+      await seedRow(db, DownloadStatus.completed, videoFilePath: stored);
+      final file = File(await DownloadStorageService.instance.ensureAbsolutePath(stored));
+      await file.parent.create(recursive: true);
+      await file.writeAsBytes([1, 2, 3]);
+      final manager = await managerFor(db);
+      expect(await manager.reconcileMissingManagedDownloads(), 0);
+      await db.updateAdditionalPartPaths('srv:item-1', ['downloads/part2.mkv']);
+      expect(await manager.reconcileMissingManagedDownloads(), 1);
+      expect(await file.readAsBytes(), [1, 2, 3]);
+      expect((await db.getDownloadedMedia('srv:item-1'))!.additionalPartPathList, [null]);
+    });
+
     test('cancels a still-live task targeting the previous app location and requeues it', () async {
       final db = AppDatabase.forTesting(NativeDatabase.memory());
       addTearDown(db.close);

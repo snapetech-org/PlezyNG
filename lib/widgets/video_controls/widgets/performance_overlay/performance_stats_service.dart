@@ -13,6 +13,7 @@ import '../../../../services/neural_model_pack_service.dart';
 import '../../../../services/settings_service.dart';
 import '../../../../utils/app_logger.dart';
 import '../../../../utils/codec_utils.dart';
+import '../../../../utils/hdr_diagnostics.dart';
 import 'performance_stats.dart';
 
 /// Service that polls player properties and provides performance stats via a stream.
@@ -92,6 +93,7 @@ class PerformanceStatsService {
   bool _disposed = false;
   MediaDisplayCriteria? _sourceDisplayCriteria;
   bool? _isTranscoding;
+  String? _lastHdrDiagnostic;
 
   PerformanceStatsService(
     this.player, {
@@ -682,7 +684,33 @@ class PerformanceStatsService {
   }
 
   void _emit(PerformanceStats stats) {
-    if (!_disposed && !_statsController.isClosed) _statsController.add(stats);
+    if (_disposed || _statsController.isClosed) return;
+    final settings = SettingsService.instanceOrNull;
+    final platform = const bool.fromEnvironment('PLEZY_WEBOS')
+        ? 'webos'
+        : const bool.fromEnvironment('PLEZY_TIZEN')
+        ? 'tizen'
+        : const bool.fromEnvironment('PLEZY_TVOS')
+        ? 'tvos'
+        : Platform.operatingSystem;
+    final diagnostic = jsonEncode(
+      hdrConfigurationDiagnostic(
+        platform: platform,
+        backend: stats.playerType,
+        requested: settings?.read(SettingsService.enableHDR),
+        sourceIsHdr: stats.playbackCapabilityReport?.sourceIsHdr,
+        sourceTransfer: stats.gamma,
+        sourcePrimaries: stats.primaries,
+        videoOutput: stats.playbackCapabilityReport?.videoOutput,
+        toneMapping: settings?.read(SettingsService.hdrToneMapping).name,
+        linuxOutputOverride: platform == 'linux' ? Platform.environment['PLEAZYNG_HDR_OUTPUT'] : null,
+      ),
+    );
+    if (diagnostic != _lastHdrDiagnostic) {
+      _lastHdrDiagnostic = diagnostic;
+      appLogger.d('HDR configuration: $diagnostic');
+    }
+    _statsController.add(stats);
   }
 
   Future<String?> _optionalPlayerProperty(String name) async {

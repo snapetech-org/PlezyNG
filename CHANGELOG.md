@@ -2,10 +2,13 @@
 
 ## [Unreleased]
 
+- Fix malformed Steam input-only and Granite patch headers that blocked fresh Android/Fire TV builds, and expose native source preparation errors before compilation.
 - Keep service endpoint regression tests and store-preview tooling aligned with the current Pleazyng integration.
 
 - Require a signed Amazon Fire TV / Stick APK and verification receipt in release assets, with an Android-only validation build and the renamed Amazon lifetime unlock SKU.
 - Translate all caption and speech-processing status messages across 37 locales, verify generated locale resolution, and record the completed audit regression checks and remaining delivery gaps.
+- Batch Android download capacity checks with bounded byte/time budgets, retain disk-full handling through flush/close, and keep restored downloads with missing managed media available for retry.
+- Exclude replaceable Android/macOS offline media from backup, recheck Jellyfin/Emby deletion permissions, prevent repeated remote context actions, and record consistent HDR configuration diagnostics across platforms.
 
 - Keep configured service endpoints on system certificate trust, validate storefront brokers, repair rebrand-sensitive regression fixtures, and verify native torrent reads beyond 4 GiB.
 - Record current release availability separately from historical publication evidence when the recorded release is no longer returned by GitHub.

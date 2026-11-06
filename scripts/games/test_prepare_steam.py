@@ -15,6 +15,15 @@ def hold(destination, entered, release):
 
 
 class SourceLockTest(unittest.TestCase):
+    def test_checked_in_patches_parse_without_recounting_headers(self):
+        patches = sorted((ROOT / 'scripts/games/patches').glob('steam-*.patch'))
+        self.assertTrue(patches)
+        for patch in patches:
+            with self.subTest(patch=patch.name):
+                result = subprocess.run(['git', 'apply', '--numstat', str(patch)],
+                                        capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_appledouble_sidecars_are_removed_from_prepared_sources(self):
         with tempfile.TemporaryDirectory() as temporary:
             source = Path(temporary) / 'steam'

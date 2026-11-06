@@ -46,7 +46,6 @@
     "Google Play",
     "Amazon Appstore",
     "Snap Store",
-    "Launchpad PPA",
     "Chocolatey",
     "AUR",
     "WinGet",
@@ -112,5 +111,27 @@
     "repository_variable_saved": "pleazyng-bin",
     "state": "automation target updated; package created by first valid signed release recipe push",
     "credential_rotated": false
+  },
+  "launchpad": {
+    "publisher_display": "slskdn",
+    "publisher_id": "keefshape",
+    "login_alias": "slskdn@proton.me",
+    "old_ppa": "ppa:keefshape/plezyng",
+    "old_ppa_packages": 0,
+    "old_ppa_retirement": "Deletion requested; Launchpad confirmed repository will be removed shortly; old API fields redacted",
+    "new_ppa": "ppa:keefshape/pleazyng",
+    "url": "https://launchpad.net/~keefshape/+archive/ubuntu/pleazyng",
+    "display_name": "Pleazyng",
+    "processors": [
+      "amd64",
+      "arm64"
+    ],
+    "processors_saved_and_reopened_verified": true,
+    "enabled": true,
+    "publish": true,
+    "archive_signing_key_fingerprint": "6B9FD538B227D626B25B962DFDE8A7CB0BA791D6",
+    "upload_signing_key_rotated": false,
+    "repository_variable_saved": "ppa:keefshape/pleazyng",
+    "state": "registration and automation target migrated; first qualified source upload pending"
   }
 }

@@ -631,5 +631,31 @@
     "app_id_candidate": "org.snapetech.pleazyng",
     "app_id_state": "Availability confirmation OK in Create App; not claimed reserved/persisted without IPK",
     "tax_submission": "Not requested by this seller/group onboarding; no tax identifier entered"
+  },
+  "owned_relay": {
+    "verified_date": "2026-11-06",
+    "endpoint": "https://pleazyng-api.snape.tech",
+    "source_commit": "4eb97fe98dcf1115a98aa4c081c43ad981c12d44",
+    "deployment": "SnapeTech-controlled service and dedicated connector; private infrastructure receipt retained",
+    "health_http_status": 200,
+    "secure_websocket_protocol": 2,
+    "verified_operations": [
+      "create",
+      "join",
+      "leave",
+      "endSession"
+    ],
+    "test_room_removed": true,
+    "public_scanner_status": 403,
+    "origin_scanner_status": 404,
+    "knock_boundary_status": 404,
+    "listeners": "Loopback only; backend/origin/metrics closed from peer LAN",
+    "app_compile_activation": false,
+    "provider_oauth_qualified": false,
+    "remaining": [
+      "Own provider registrations, credentials and callback consent testing",
+      "Enable validated endpoint through a separately qualified client release",
+      "Container image release qualification remains separate"
+    ]
   }
 }

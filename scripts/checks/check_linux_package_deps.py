@@ -9,6 +9,7 @@ machines; the built-bundle check covers plugin links unavailable before `pub get
 from pathlib import Path
 import ast
 import re
+import shlex
 import sys
 
 
@@ -183,6 +184,16 @@ modules = pkgconfig_modules()
 depends = declared_depends()
 
 require(bool(depends), "no distro depends lists were found, so nothing was checked")
+
+# The AUR recipe installs the same release bundle as our pacman package. It
+# needs every one of that bundle's host libraries, including plugin runtimes.
+aur_path = LINUX / "packaging/aur/PKGBUILD"
+aur_match = re.search(r"(?m)^depends=\(([^)]*)\)", read(aur_path))
+require(aur_match is not None, f"{aur_path}: missing literal depends array")
+if aur_match:
+    aur_depends = set(shlex.split(aur_match.group(1)))
+    for dependency in depends.get("pacman", []):
+        require(dependency in aur_depends, f"AUR recipe must depend on '{dependency}' for the shared Linux release bundle")
 
 # These libraries must remain host-provided; bundling them would invalidate this guard.
 bundle = read(BUNDLE_SH)

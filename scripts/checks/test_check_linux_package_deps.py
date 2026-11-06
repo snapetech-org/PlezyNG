@@ -23,6 +23,7 @@ FIXTURE_FILES = (
     "flutter/CMakeLists.txt",
     "packaging/build-packages.py",
     "packaging/bundle-libs.sh",
+    "packaging/aur/PKGBUILD",
 )
 # The subset the checker parses for pkg_check_modules and the link graph. Each
 # one carries targets the others cannot see, so none of them is optional.
@@ -83,6 +84,19 @@ class LinuxPackageDepsGuardTest(unittest.TestCase):
                     "packaging/build-packages.py", f'            "{package}",\n', "")})
                 self.assertEqual(result.returncode, 1)
                 self.assertIn(package, result.stderr)
+
+    def test_aur_cannot_omit_plugin_and_gpu_runtime_dependencies(self) -> None:
+        for package in ("webkit2gtk-4.1", "libsecret", "libvdpau", "vulkan-icd-loader"):
+            with self.subTest(package=package):
+                result = self._run(**{"packaging/aur/PKGBUILD": self._mutate(
+                    "packaging/aur/PKGBUILD", f"'{package}'", "")})
+                self.assertEqual(result.returncode, 1)
+                self.assertIn(f"AUR recipe must depend on '{package}'", result.stderr)
+
+    def test_missing_aur_recipe_fails_closed(self) -> None:
+        result = self._run(omit=("packaging/aur/PKGBUILD",))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("PKGBUILD", result.stderr)
 
     def test_a_missing_cmake_input_is_named_rather_than_skipped(self) -> None:
         """Losing one of these used to shrink the walk instead of failing it.

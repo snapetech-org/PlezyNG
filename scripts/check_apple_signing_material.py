@@ -14,6 +14,7 @@ import secrets
 import subprocess
 import sys
 import tempfile
+import urllib.request
 
 
 def run(command: list[str], *, data: bytes | None = None) -> bytes:
@@ -22,7 +23,12 @@ def run(command: list[str], *, data: bytes | None = None) -> bytes:
         # Commands can include passwords. Never include argv or untrusted
         # diagnostics in logs, exception messages, reports or artifacts.
         operation = command[1] if len(command) > 1 else ''
-        raise RuntimeError(f'{Path(command[0]).name} {operation} signing check failed (exit {result.returncode})')
+        safe_diagnostics = [message for message in (
+            'errSecInternalComponent', 'unable to build chain', 'User interaction is not allowed',
+            'no identity found', 'The specified item could not be found',
+        ) if message.lower() in result.stderr.decode(errors='replace').lower()]
+        raise RuntimeError(f'{Path(command[0]).name} {operation} signing check failed (exit {result.returncode}); '
+                           + '; '.join(safe_diagnostics))
     return result.stdout
 
 
@@ -109,6 +115,18 @@ def main() -> int:
                 if fingerprint not in identities:
                     raise ValueError('Imported certificate has no matching code-signing private key')
                 report['matching_private_key'] = True
+                # Import the pinned public intermediate into this isolated
+                # keychain only. Do not modify system trust or other keychains.
+                chain_url = 'https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer'
+                with urllib.request.urlopen(chain_url, timeout=30) as response:
+                    chain = response.read(16384)
+                chain_hash = 'dcf21878c77f4198e4b4614f03d696d89c66c66008d4244e1b99161aac91601f'
+                if hashlib.sha256(chain).hexdigest() != chain_hash:
+                    raise ValueError('Apple WWDR G3 intermediate checksum mismatch')
+                chain_path = stage / 'AppleWWDRCAG3.cer'
+                chain_path.write_bytes(chain)
+                run(['security', 'import', str(chain_path), '-k', str(keychain)])
+                report['wwdr_g3_sha256'] = chain_hash
                 run(['security', 'set-key-partition-list', '-S', 'apple-tool:,apple:,codesign:',
                      '-s', '-k', password, str(keychain)])
                 probe = stage / 'signing-probe'

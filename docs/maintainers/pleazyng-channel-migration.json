@@ -428,9 +428,11 @@
         "English"
       ],
       "privacy_collection": "Yes",
-      "english_privacy_url_saved": "https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.md",
-      "korean_privacy_url_saved": "https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.ko.md",
-      "privacy_guide": "Read and reading-confirmation saved; product compliance must still be qualified"
+      "english_privacy_url_saved": "https://snape.tech/privacy/pleazyng/",
+      "korean_privacy_url_saved": "https://snape.tech/privacy/pleazyng/ko/",
+      "privacy_guide": "Read and reading-confirmation saved; product compliance must still be qualified",
+      "hosted_privacy_save_confirmed": "2026-11-05 21:21 CST",
+      "app_notice": "Offline English/Korean privacy reader added on sign-in and About screens; six focused widget/layout tests passed, focused analyzer clean. Physical TV qualification remains required."
     },
     "gates": [
       "Production-signed TPK and physical TV qualification",
@@ -438,7 +440,15 @@
       "Samsung Checkout integration and DPI configuration for paid unlock",
       "Partner Group approval for non-US countries",
       "EAA conformity declaration before applicable EU distribution"
-    ]
+    ],
+    "artwork": {
+      "source": "Approved Pleazyng brand masters; four exports tracked in brand.json and asset-manifest.json",
+      "assets_directory": "docs/maintainers/store-listing-assets/samsung",
+      "export_count": 596,
+      "validation": "Brand manifest/reference check and seven renderer tests passed; all portal dimension/color-mode/size limits checked",
+      "console_state": "Four images uploaded and previewed; owner accepted image-use/copyright acknowledgment and attempted Save. Portal rejects missing required screenshots. Entire App Images section not claimed saved; preserve staged Firefox form.",
+      "screenshots": "Not uploaded: require authentic qualified Tizen captures; 1280x720 or 1920x1080 JPEG under 500kB. Slot4 must show price information if IAP supported."
+    }
   },
   "hosted_support": {
     "english": "https://snape.tech/privacy/pleazyng/support/",
@@ -453,14 +463,19 @@
   },
   "lg_webos": {
     "portal": "https://seller.lgappstv.com",
-    "account": "keith@snape.tech",
-    "state": "Canada/English LG account signup terms on VM; owner asked to accept required terms and create/verify account. Proton Pass found no matching LG login. Corporate Seller enrollment not submitted.",
+    "account": "keithsnape@snape.tech",
+    "state": "Seller profile saved (North America, SNAPE TECHNOLOGIES LIMITED, nickname SnapeTech); company Group created and owner is its manager. Create App flow accepts org.snapetech.pleazyng and webOS, but requires first IPK before remaining listing sections unlock. No IPK uploaded or QA submission made.",
     "gates": [
       "Owner account verification and LG terms acceptance",
       "Corporate Seller verification using incorporation certificate",
       "Qualified IPK and authentic webOS captures",
       "LG QA and content approval",
       "Supported payment integration; legacy LG Billing discontinued"
-    ]
+    ],
+    "account_basis": "Owner signed in and approved LG terms using this account; preserve authenticated session",
+    "group_name": "SNAPE TECHNOLOGIES LIMITED",
+    "app_id_candidate": "org.snapetech.pleazyng",
+    "app_id_state": "Availability confirmation OK in Create App; not claimed reserved/persisted without IPK",
+    "tax_submission": "Not requested by this seller/group onboarding; no tax identifier entered"
   }
 }

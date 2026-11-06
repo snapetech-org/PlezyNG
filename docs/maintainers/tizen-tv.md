@@ -230,3 +230,47 @@ The two vendored plugins retain upstream licenses, versions and archive
 digests in `packages/tizen_plugins/*/UPSTREAM.json`. Their patch notes explain
 the lifecycle and missing-symbol fixes. Both vendored plugins have now compiled in the ARM SDK build. Their runtime
 behavior still needs the TV checklist.
+
+
+## Samsung Seller Office bootstrap (November 5, 2026)
+
+Company Public Group **SNAPE TECHNOLOGIES LIMITED** and Pleazyng app
+**3202611050784** now exist. The selected package route is Tizen.NET (TPK),
+which flutter-tizen documents for 2021+ TV models. This is a draft registration,
+not certification or a published store release. The earlier community tester
+milestone and its signing limitations remain distinct.
+
+English title/description and service information are saved. Both privacy URLs
+are saved and publicly verified:
+
+- https://snape.tech/privacy/pleazyng/
+- https://snape.tech/privacy/pleazyng/ko/
+
+The app bundles both notices for offline reading from sign-in and About.
+Keyboard arrows and page keys scroll the reader. Widget checks do not replace
+physical Samsung TV qualification or establish privacy-guide certification.
+
+Four approved brand exports are reproducible through
+`python3 scripts/codegen/generate_brand_assets.py`:
+
+| File under `docs/maintainers/store-listing-assets/samsung/` | Portal slot |
+| --- | --- |
+| `logo-transparent-1920x1080.png` | RGBA transparent logo, under 300kB |
+| `icon-background-1920x1080.png` | RGB icon background, under 300kB |
+| `icon-512x423.png` | Full-color small icon, under 300kB |
+| `detail-background-1920x1080.jpg` | App detail background, under 2MB |
+
+All four uploaded/previewed successfully and the owner accepted image-use and
+copyright acknowledgment. The portal rejected Save because required screenshots
+are absent: **do not claim the App Images section is saved**. The Firefox form
+remains staged. Required screenshots are authentic Tizen 1280x720 or 1920x1080
+JPEGs under 500kB each. If IAP is supported, slot 4 must show pricing. Android TV
+captures do not establish Tizen behavior and were not substituted.
+
+The Public Group can distribute only in the US. Partner Group approval is
+required for other countries. Applicable EU distribution needs an EAA conformity
+declaration backed by actual accessibility qualification. Samsung Checkout/DPI
+and the app's purchase path still need implementation and validation for the
+chosen trial/one-time unlock. No billing capability or production signing is
+asserted from this draft. Use the qualified release TPK, not the tester package,
+for final submission and model/device testing.

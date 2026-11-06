@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -11,6 +10,7 @@ import '../../widgets/settings_section.dart';
 import '../../i18n/strings.g.dart';
 import '../../theme/mono_tokens.dart';
 import 'licenses_screen.dart';
+import 'privacy_screen.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -74,11 +74,8 @@ class AboutScreen extends StatelessWidget {
                       FocusableListTile(
                         leading: const AppIcon(Symbols.lock_rounded, fill: 1),
                         title: Text(t.about.privacyPolicy),
-                        trailing: const AppIcon(Symbols.open_in_new_rounded, fill: 1),
-                        onTap: () => launchUrl(
-                          Uri.parse('https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.md'),
-                          mode: LaunchMode.externalApplication,
-                        ),
+                        onTap: () =>
+                            Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const PrivacyScreen())),
                       ),
                     ],
                   ),

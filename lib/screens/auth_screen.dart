@@ -39,6 +39,7 @@ import 'sources/source_widgets.dart';
 import 'profile/profile_switch_screen.dart';
 import 'settings/add_direct_plex_screen.dart';
 import 'settings/add_jellyfin_screen.dart';
+import 'settings/privacy_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({
@@ -620,6 +621,14 @@ class _AuthScreenState extends State<AuthScreen> {
             onPressed: busy ? null : () => unawaited(sourceAction(context, _connectToFiles)),
             style: actionStyle,
             child: Text(t.fileSources.useFiles),
+          ),
+        ),
+        SizedBox(height: gap),
+        FocusableButton(
+          onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const PrivacyScreen())),
+          child: TextButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const PrivacyScreen())),
+            child: Text(t.about.privacyPolicy),
           ),
         ),
         if (kDebugMode) ...[

@@ -2,6 +2,7 @@
   "schema_version": 1,
   "source_sha": "ad1940b3d45497ece50222574873b1be3eb86464",
   "store_upload_eligible": false,
+  "visible_labels": false,
   "method": "Production Flutter widgets rendered by flutter_test with appearance fixtures; demo metadata; no device execution",
   "images": [
     {
@@ -12,10 +13,10 @@
       ],
       "dimensions": [
         1920,
-        1248
+        1200
       ],
-      "sha256": "de1a837c89047692c8f92bb781a5f5ac7e7e075a26e77041fde4978d2d2b6de5",
-      "kind": "labeled-widget-preview"
+      "sha256": "b842d9417fede62333a19bb0af00fbad13f9f16c51ca985c9f772b0880890375",
+      "kind": "widget-preview"
     },
     {
       "name": "desktop-appearance-light-preview.png",
@@ -25,10 +26,10 @@
       ],
       "dimensions": [
         1920,
-        1248
+        1200
       ],
-      "sha256": "bc57ad8e7ce31600f17738af678121e9117e21f9c8b3900e1d65356e997c0089",
-      "kind": "labeled-widget-preview"
+      "sha256": "4fb29661b9325dafea41d1af1c37e3b58cf6c70f9e4afdc043016efafe5991c5",
+      "kind": "widget-preview"
     },
     {
       "name": "desktop-appearance-oled-preview.png",
@@ -38,49 +39,10 @@
       ],
       "dimensions": [
         1920,
-        1248
-      ],
-      "sha256": "85685781c001e88c818f2e246f2995f5c903a08807d8962f7a958423179e56bf",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "desktop-player-dark-preview.png",
-      "render_dimensions": [
-        1920,
         1200
       ],
-      "dimensions": [
-        1920,
-        1248
-      ],
-      "sha256": "37f4b22a008346de912b16265377c085bdaf59c5e5d7f0985921948b0594afd4",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "desktop-player-light-preview.png",
-      "render_dimensions": [
-        1920,
-        1200
-      ],
-      "dimensions": [
-        1920,
-        1248
-      ],
-      "sha256": "2367362c9cc74293e0a0f224fd19cdd27b42b1811888e8143d0785e3574f24e2",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "desktop-player-oled-preview.png",
-      "render_dimensions": [
-        1920,
-        1200
-      ],
-      "dimensions": [
-        1920,
-        1248
-      ],
-      "sha256": "37f4b22a008346de912b16265377c085bdaf59c5e5d7f0985921948b0594afd4",
-      "kind": "labeled-widget-preview"
+      "sha256": "00a164fc7b8b6888331d8e51e240365ad3509871ca9a2ef5ca2c65a3d535d049",
+      "kind": "widget-preview"
     },
     {
       "name": "desktop-subtitle-style-dark-preview.png",
@@ -90,10 +52,10 @@
       ],
       "dimensions": [
         1920,
-        1248
+        1200
       ],
-      "sha256": "8df06ad87e0d38f43a0119dcc00aabc3ec90b9428d050b4c8234103fafb52db7",
-      "kind": "labeled-widget-preview"
+      "sha256": "2fece7e51b8b31c9993697d4f683b6fa1e981e953f19256599e5e5ed1df9ec31",
+      "kind": "widget-preview"
     },
     {
       "name": "desktop-subtitle-style-light-preview.png",
@@ -103,10 +65,10 @@
       ],
       "dimensions": [
         1920,
-        1248
+        1200
       ],
-      "sha256": "f7126f880e2163b8cad6d437cb1cb139fd7a1d9a21e028b90cf50eecd2413ba1",
-      "kind": "labeled-widget-preview"
+      "sha256": "a87505c17b82e1eafdd4d39368e803d32ce039e7b56ab90fd459d9289864ab67",
+      "kind": "widget-preview"
     },
     {
       "name": "desktop-subtitle-style-oled-preview.png",
@@ -116,49 +78,10 @@
       ],
       "dimensions": [
         1920,
-        1248
+        1200
       ],
-      "sha256": "025ce37b9381af54ae43d842f5e081f92a16bc01487d80c5b6f4c3079e12ce29",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "phone-player-dark-preview.png",
-      "render_dimensions": [
-        2400,
-        1080
-      ],
-      "dimensions": [
-        2400,
-        1128
-      ],
-      "sha256": "66527259bbb502b0498821b8911ccb14077cfeac8b2d2151fd1d9c216246ccce",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "phone-player-light-preview.png",
-      "render_dimensions": [
-        2400,
-        1080
-      ],
-      "dimensions": [
-        2400,
-        1128
-      ],
-      "sha256": "7069f1f38dbabfdbaebf1d034c00540157f9a95be142db1a3fd62e876d313528",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "phone-player-oled-preview.png",
-      "render_dimensions": [
-        2400,
-        1080
-      ],
-      "dimensions": [
-        2400,
-        1128
-      ],
-      "sha256": "66527259bbb502b0498821b8911ccb14077cfeac8b2d2151fd1d9c216246ccce",
-      "kind": "labeled-widget-preview"
+      "sha256": "6c867ba9c4cda5018581be566c745dc005e095920d9e18ca968b92238c4cabf6",
+      "kind": "widget-preview"
     }
   ]
 }

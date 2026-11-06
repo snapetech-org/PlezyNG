@@ -9,3 +9,10 @@ for name in preset_transition native_worker render_thread legacy_image render_pr
     -o "$test_output/$name"
   "$test_output/$name"
 done
+
+# The worker includes the engine header. C++20 changes filesystem::u8string()
+# to char8_t, so compile and run this existing test in both supported modes.
+"${CXX:-g++}" -std=c++20 -pthread \
+  "$repo_root/test/native/visualizer_native_worker_test.cc" -ldl \
+  -o "$test_output/native_worker_cxx20"
+"$test_output/native_worker_cxx20"

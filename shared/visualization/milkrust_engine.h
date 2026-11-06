@@ -149,7 +149,7 @@ class MilkRustEngine {
     for (std::string name; std::getline(lines, name);) {
       const auto asset = Resolve(canonical_root, file.parent_path(), name);
       if (asset.empty()) continue;  // Engine reports a missing asset if the active stage needs it.
-      const auto extension = Fold(asset.extension().u8string());
+      const auto extension = Fold(Utf8Bytes(asset.extension().u8string()));
       if (extension == ".webp") {
         const auto encoded_size = std::filesystem::file_size(asset);
         if (!encoded_size || encoded_size > 16 * 1024 * 1024)

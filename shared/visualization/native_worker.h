@@ -40,7 +40,8 @@ class NativeWorker {
 
  private:
   static bool IsPresetPath(const std::filesystem::path& path) {
-    auto extension = path.extension().u8string();
+    const auto utf8_extension = path.extension().u8string();
+    std::string extension(utf8_extension.begin(), utf8_extension.end());
     for (auto& character : extension) {
       if (character >= 'A' && character <= 'Z') character += 'a' - 'A';
     }

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve UTF-8 extension bytes when selecting visualizer texture decoders under C++20.
+
 - Allow explicit signed Apple archive and notarized Homebrew Cask qualification during GitHub-only releases, validating requested steps and assets without enabling store uploads.
 
 - Bundle the pinned native Vulkan loader alongside libmpv and shaderc, preserving its symlink chain and rejecting stale native archives without it.

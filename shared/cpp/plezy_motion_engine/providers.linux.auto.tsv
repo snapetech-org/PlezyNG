@@ -1,0 +1,5 @@
+# Normal x64 builds carry both the Intel NPU and portable Vulkan GPU plugins.
+# Runtime device discovery and full-graph placement determine availability.
+OpenVINOExecutionProvider	NPU	libonnxruntime_providers_openvino_plugin.so
+WebGPUExecutionProvider	GPU	libonnxruntime_providers_webgpu.so
+OpenVINOExecutionProvider	GPU	libonnxruntime_providers_openvino_plugin.so

@@ -8,15 +8,16 @@ set(PME_PROVIDER_DEPENDENCY_LIBRARIES "" CACHE STRING "Non-ORT shared libraries 
 set(PME_PROVIDER_NOTICE_FILES "" CACHE STRING "Provider licenses and third-party notices to bundle")
 set(PME_PROVIDER_RUNTIME_FILES "" CACHE STRING "Non-library runtime data files required by providers")
 option(PME_BUILD_RUNTIME_PROBE "Build the standalone PME provider/inference diagnostic" OFF)
-set(PLEZY_ORT_LINUX_VARIANT "cpu" CACHE STRING "Linux ONNX Runtime bundle: cpu, amd-migraphx, openvino, or webgpu")
-set_property(CACHE PLEZY_ORT_LINUX_VARIANT PROPERTY STRINGS cpu amd-migraphx openvino webgpu)
+set(PLEZY_ORT_LINUX_VARIANT "cpu" CACHE STRING "Linux ONNX Runtime bundle: auto, cpu, amd-migraphx, openvino, or webgpu")
+set_property(CACHE PLEZY_ORT_LINUX_VARIANT PROPERTY STRINGS auto cpu amd-migraphx openvino webgpu)
 
 if(UNIX AND NOT APPLE)
-  if(NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "cpu" AND
+  if(NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "auto" AND
+     NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "cpu" AND
      NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "amd-migraphx" AND
      NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "openvino" AND
      NOT PLEZY_ORT_LINUX_VARIANT STREQUAL "webgpu")
-    message(FATAL_ERROR "PLEZY_ORT_LINUX_VARIANT must be 'cpu', 'amd-migraphx', 'openvino', or 'webgpu'")
+    message(FATAL_ERROR "PLEZY_ORT_LINUX_VARIANT must be 'auto', 'cpu', 'amd-migraphx', 'openvino', or 'webgpu'")
   endif()
 endif()
 
@@ -187,7 +188,8 @@ if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "amd-migraphx")
   set(PME_LINUX_PROVIDER_MANIFEST "${CMAKE_CURRENT_LIST_DIR}/providers.linux.migraphx.tsv")
 endif()
 
-if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "openvino")
+if(UNIX AND NOT APPLE AND (PLEZY_ORT_LINUX_VARIANT STREQUAL "openvino" OR
+   (PLEZY_ORT_LINUX_VARIANT STREQUAL "auto" AND PLEZY_ORT_PLATFORM STREQUAL "linux-x64")))
   if(NOT PLEZY_ORT_PLATFORM STREQUAL "linux-x64")
     message(FATAL_ERROR "The pinned OpenVINO Plugin EP wheel requires Linux x86_64")
   endif()
@@ -254,10 +256,35 @@ if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "openvino")
     "${PLEZY_OPENVINO_EP_EXTRACT_DIR}/OpenVINO-Plugin-METADATA.txt"
     "${CMAKE_CURRENT_LIST_DIR}/licenses/OpenVINO-Plugin-LICENSE.txt"
   )
-  list(APPEND PME_PROVIDER_RUNTIME_FILES "${PLEZY_OPENVINO_EP_EXTRACT_DIR}/OpenVINO-Plugin-cache.json")
+  list(APPEND PME_PROVIDER_RUNTIME_FILES "${PLEZY_OPENVINO_EP_EXTRACT_DIR}/cache.json")
+
+  # OpenVINO's GPU plugin links the OpenCL ICD loader. Bundle the small loader
+  # rather than relying on an unrelated system package; device drivers remain
+  # supplied by the host. The NPU and WebGPU paths share this normal bundle.
+  include(FetchContent)
+  set(OPENCL_HEADERS_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+  set(OPENCL_HEADERS_BUILD_CXX_TESTS OFF CACHE BOOL "" FORCE)
+  set(OPENCL_ICD_LOADER_BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+  set(ENABLE_OPENCL_LAYERS OFF CACHE BOOL "" FORCE)
+  set(ENABLE_OPENCL_LAYERINFO OFF CACHE BOOL "" FORCE)
+  FetchContent_Declare(plezy_opencl_headers
+    URL "https://github.com/KhronosGroup/OpenCL-Headers/archive/refs/tags/v2026.05.29.tar.gz"
+    URL_HASH "SHA256=d9e6c48357de5002da11ce45de600e0c3ffe6ab4f628a3b9fe2b38603161658a"
+  )
+  FetchContent_Declare(plezy_opencl_loader
+    URL "https://github.com/KhronosGroup/OpenCL-ICD-Loader/archive/refs/tags/v2026.05.29.tar.gz"
+    URL_HASH "SHA256=48fd0c5181db7cd046f4f731d5955694892e10998d49d09ee0d997e7e04fd939"
+  )
+  FetchContent_MakeAvailable(plezy_opencl_headers plezy_opencl_loader)
+  install(TARGETS OpenCL LIBRARY DESTINATION lib COMPONENT Runtime)
+  install(FILES "${plezy_opencl_loader_SOURCE_DIR}/LICENSE"
+    DESTINATION lib RENAME OpenCL-ICD-Loader-LICENSE.txt COMPONENT Runtime)
+  install(FILES "${plezy_opencl_headers_SOURCE_DIR}/LICENSE"
+    DESTINATION lib RENAME OpenCL-Headers-LICENSE.txt COMPONENT Runtime)
 endif()
 
-if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "webgpu")
+if(UNIX AND NOT APPLE AND (PLEZY_ORT_LINUX_VARIANT STREQUAL "webgpu" OR
+   PLEZY_ORT_LINUX_VARIANT STREQUAL "auto"))
   if(PLEZY_ORT_PLATFORM STREQUAL "linux-x64")
     set(PLEZY_WEBGPU_EP_WHEEL_NAME "onnxruntime_ep_webgpu-0.5.0-py3-none-manylinux_2_28_x86_64.whl")
     set(PLEZY_WEBGPU_EP_WHEEL_SHA256 "b6baa3e223d9a679023388b1179e5597b6bc0d282ba72f2afe38d46ef37deeb4")
@@ -325,6 +352,11 @@ if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "webgpu")
   set(PME_LINUX_PROVIDER_MANIFEST "${CMAKE_CURRENT_LIST_DIR}/providers.linux.webgpu.tsv")
 endif()
 
+if(UNIX AND NOT APPLE AND PLEZY_ORT_LINUX_VARIANT STREQUAL "auto" AND
+   PLEZY_ORT_PLATFORM STREQUAL "linux-x64")
+  set(PME_LINUX_PROVIDER_MANIFEST "${CMAKE_CURRENT_LIST_DIR}/providers.linux.auto.tsv")
+endif()
+
 find_path(ONNXRUNTIME_INCLUDE_DIR
   NAMES onnxruntime_c_api.h
   HINTS
@@ -359,6 +391,9 @@ foreach(provider_library IN LISTS PME_PROVIDER_LIBRARIES PME_PROVIDER_DEPENDENCY
 endforeach()
 
 add_library(plezy_motion_engine SHARED pme_runtime.cpp)
+if(TARGET OpenCL)
+  add_dependencies(plezy_motion_engine OpenCL)
+endif()
 if(WIN32)
   target_compile_features(plezy_motion_engine PRIVATE cxx_std_20)
 else()

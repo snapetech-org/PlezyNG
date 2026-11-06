@@ -43,6 +43,12 @@ experiment available. Ship the required native components and verify packaging;
 a toggle without its implementation does not satisfy this requirement.
 Keep experiments off by default and report qualification status accurately.
 
+The same rule applies to implemented NPU/neural experiments: include their
+native filters, compatible provider runtimes and models in normal releases.
+Playback → Motion smoothing → Neural is the persisted opt-in; Off remains the
+default. Runtime hardware/stream availability and accurate provider diagnostics
+remain required, without a device-qualification or build-time inclusion gate.
+
 
 ## Dart generation and formatting
 

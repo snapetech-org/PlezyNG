@@ -12,12 +12,12 @@ add_executable(${BINARY_NAME}
   "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
 )
 
-# Package the portable Vulkan-backed provider in Linux app builds by default.
-# A caller may explicitly select cpu, amd-migraphx, or openvino instead. The
-# standalone PME CMake project keeps its minimal CPU default.
+# Package supported NPU and portable Vulkan providers in ordinary app builds.
+# Provider selection happens after the user opts in to Neural in Settings.
+# The standalone PME project retains its minimal developer configuration.
 if(NOT DEFINED PLEZY_ORT_LINUX_VARIANT)
-  set(PLEZY_ORT_LINUX_VARIANT "webgpu" CACHE STRING
-    "Linux ONNX Runtime bundle: cpu, amd-migraphx, openvino, or webgpu")
+  set(PLEZY_ORT_LINUX_VARIANT "auto" CACHE STRING
+    "Linux ONNX Runtime bundle: auto, cpu, amd-migraphx, openvino, or webgpu")
 endif()
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/../shared/cpp/plezy_motion_engine" plezy_motion_engine)

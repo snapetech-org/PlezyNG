@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Include implemented neural/NPU experiments in normal compatible builds with the persisted Motion smoothing → Neural opt-in, and bundle Intel NPU and Vulkan GPU providers together on Linux x64.
+
 - Fix malformed Steam input-only and Granite patch headers that blocked fresh Android/Fire TV builds, and expose native source preparation errors before compilation.
 - Keep service endpoint regression tests and store-preview tooling aligned with the current Pleazyng integration.
 

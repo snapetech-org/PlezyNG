@@ -354,10 +354,13 @@
     "incorporated": "2026-11-05",
     "certificate_verified": "One-page digitally signed Certificate of Incorporation supplied by owner; retained privately, not committed",
     "certificate_sha256": "dbb8472a2a066decc461994ea8fba76ee83c4b29ad147373ddc5919386dc0114",
-    "registered_address": "Awaiting owner confirmation; certificate does not list address",
+    "registered_address": "Confirmed by owner; retained in private store forms, not committed",
     "cra_business_number": "Not established by incorporation certificate",
     "gst_hst_account": "Not established by incorporation certificate",
     "duns_number": "Not established by incorporation certificate",
-    "authorization": "Owner explicitly requested company verification/update across app stores on 2026-11-05"
+    "authorization": "Owner explicitly requested company verification/update across app stores on 2026-11-05",
+    "director": "Keith Snape",
+    "contact_email": "keith@snape.tech",
+    "account_conversion_authorized": true
   }
 }

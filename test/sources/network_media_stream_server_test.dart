@@ -7,7 +7,10 @@ import 'package:plezy/sources/network_media_stream_server.dart';
 void main() {
   test('serves token-scoped HLS only to a private peer and closes cleanly', () async {
     final version = await Process.run('ffmpeg', const ['-hide_banner', '-version']);
-    if (version.exitCode != 0) { markTestSkipped('FFmpeg is not installed'); return; }
+    if (version.exitCode != 0) {
+      markTestSkipped('FFmpeg is not installed');
+      return;
+    }
 
     final List<NetworkInterface> interfaces;
     try {
@@ -19,7 +22,10 @@ void main() {
     final hasPrivateAddress = interfaces.any(
       (interface) => interface.addresses.any(NetworkMediaStreamPolicy.isPrivateIPv4),
     );
-    if (!hasPrivateAddress) { markTestSkipped('No private IPv4 address is available'); return; }
+    if (!hasPrivateAddress) {
+      markTestSkipped('No private IPv4 address is available');
+      return;
+    }
 
     final directory = await Directory.systemTemp.createTemp('plezy-stream-server-test-');
     final input = File('${directory.path}/sample.mp4');

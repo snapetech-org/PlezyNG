@@ -52,14 +52,40 @@ def inspect_apk(apk: Path, build_tools: Path) -> dict:
     }
 
 
+
+def verify_receipt(apk: Path, receipt_path: Path) -> dict:
+    receipt = json.loads(receipt_path.read_text())
+    with apk.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    if (receipt.get('schema_version') != 1
+            or receipt.get('artifact') != apk.name
+            or receipt.get('sha256') != digest
+            or receipt.get('size_bytes') != apk.stat().st_size
+            or receipt.get('package') != 'org.snapetech.pleazyng'
+            or receipt.get('leanback_launcher') is not True
+            or receipt.get('debug_certificate') is not False
+            or not {'armeabi-v7a', 'arm64-v8a'}.issubset(receipt.get('abis', []))
+            or not receipt.get('signer_sha256')
+            or not all(re.fullmatch(r'[0-9a-f]{64}', value) for value in receipt['signer_sha256'])):
+        raise ValueError('Fire TV verification receipt does not match this signed release APK')
+    return receipt
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('apk', type=Path)
-    parser.add_argument('--build-tools', required=True, type=Path)
-    parser.add_argument('--output', required=True, type=Path)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--build-tools', type=Path)
+    mode.add_argument('--receipt', type=Path, help='Check an attested build receipt against the downloaded APK')
+    parser.add_argument('--output', type=Path)
     args = parser.parse_args()
-    receipt = inspect_apk(args.apk, args.build_tools)
-    args.output.write_text(json.dumps(receipt, indent=2) + '\n')
+    if args.receipt:
+        verify_receipt(args.apk, args.receipt)
+    else:
+        if not args.output:
+            parser.error('--output is required when inspecting an APK')
+        receipt = inspect_apk(args.apk, args.build_tools)
+        args.output.write_text(json.dumps(receipt, indent=2) + '\n')
     print(f"Verified signed Fire TV APK: {args.apk.name}")
 
 

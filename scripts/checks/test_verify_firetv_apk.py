@@ -1,4 +1,6 @@
 from pathlib import Path
+import hashlib
+import json
 import subprocess
 import sys
 import tempfile
@@ -7,7 +9,7 @@ from unittest.mock import patch
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from verify_firetv_apk import inspect_apk
+from verify_firetv_apk import inspect_apk, verify_receipt
 
 
 class FireTVAPKTest(unittest.TestCase):
@@ -57,6 +59,40 @@ class FireTVAPKTest(unittest.TestCase):
         with patch('verify_firetv_apk.subprocess.run', side_effect=subprocess.CalledProcessError(1, 'apksigner')):
             with self.assertRaises(subprocess.CalledProcessError):
                 inspect_apk(Path('app.apk'), Path('/fixture'))
+
+
+class FireTVReceiptTest(unittest.TestCase):
+    def exercise(self, mutate=None):
+        with tempfile.TemporaryDirectory() as directory:
+            apk = Path(directory) / 'app.apk'
+            apk.write_bytes(b'signed APK fixture')
+            receipt = {
+                'schema_version': 1, 'artifact': apk.name,
+                'sha256': hashlib.sha256(apk.read_bytes()).hexdigest(),
+                'size_bytes': apk.stat().st_size, 'package': 'org.snapetech.pleazyng',
+                'leanback_launcher': True, 'debug_certificate': False,
+                'abis': ['armeabi-v7a', 'arm64-v8a'], 'signer_sha256': ['a' * 64],
+            }
+            if mutate:
+                mutate(receipt)
+            path = Path(directory) / 'receipt.json'
+            path.write_text(json.dumps(receipt))
+            return verify_receipt(apk, path)
+
+    def test_matching_receipt(self):
+        self.assertEqual(self.exercise()['package'], 'org.snapetech.pleazyng')
+
+    def test_tampered_apk_hash(self):
+        with self.assertRaisesRegex(ValueError, 'does not match'):
+            self.exercise(lambda receipt: receipt.update(sha256='b' * 64))
+
+    def test_debug_receipt(self):
+        with self.assertRaisesRegex(ValueError, 'does not match'):
+            self.exercise(lambda receipt: receipt.update(debug_certificate=True))
+
+    def test_old_package_receipt(self):
+        with self.assertRaisesRegex(ValueError, 'does not match'):
+            self.exercise(lambda receipt: receipt.update(package='org.snapetech.plezyng'))
 
 
 if __name__ == '__main__':

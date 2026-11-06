@@ -34,7 +34,7 @@ omission even if signing secrets are absent. Never rename an older package to
 represent a new build or attach it to a different source revision.
 
 `publish-app-stores.yml`, channel `amazon-appstore`, downloads and checks the
-release APK and uploads it through Fastlane to the existing Amazon edit, without
+release APK plus its receipt, verifies their matching package/hash/signing evidence, and uploads it through Fastlane to the existing Amazon edit, without
 submitting for review. Draft GitHub releases are accepted for this binary upload.
 Listing assets, IAP Test submission, export compliance, device targeting and
 final store review remain separate console steps. Preserve the draft price.
@@ -45,3 +45,37 @@ screen dimensions, density and capture command. Emulator captures must say
 emulator; Android TV emulation is not Fire OS device qualification. Keep mockups
 outside store screenshot slots and label them as interface concepts. Do not
 include account credentials, private libraries, or invented playback claims.
+
+## Native captures and labeled previews
+
+After installing the signed candidate on an explicitly selected test AVD/device,
+open a public demo library or other screenshot-cleared content. Capture at least
+three distinct TV views (for example home, library and details); record emulator
+limits separately from Fire OS hardware testing. Use the signed universal APK
+on the TV, phone and tablet AVDs so image provenance matches the candidate:
+
+```sh
+python3 scripts/capture_app_screenshot.py --serial emulator-5580 \
+  --kind android-tv-emulator --apk /path/pleazyng-amazon-firetv.apk \
+  --source-sha FULL_APK_SOURCE_SHA --name tv-home --output /path/native-captures
+```
+
+The tool checks that Pleazyng is resumed and that the installed base APK hash
+matches the supplied file. Capture receipts include source, APK/image hashes,
+model, OS SDK, density and dimensions. TV captures must already be 1920×1080;
+the tool never stretches phone images into TV screenshots.
+
+For concept review before a native capture is available, render the production
+Flutter widgets with the repository's synthetic appearance fixtures:
+
+```sh
+PLEAZYNG_PREVIEW_OUTPUT=/path/raw-previews flutter test --no-pub \
+  tools/store-assets/preview_capture_test.dart
+python3 tools/store-assets/package_previews.py --input /path/raw-previews \
+  --output /path/interface-previews --source-sha FULL_SOURCE_SHA
+```
+
+The packager requires Pillow. It adds a visible preview label, a contact sheet,
+manifest and ZIP. These fixtures do not represent a complete running app session;
+they include synthetic movie metadata and test/debug UI. They are not eligible
+for store screenshot slots. Keep them separate from native captures.

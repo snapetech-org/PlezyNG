@@ -64,8 +64,11 @@ completion. `rel=0` is not treated as a guarantee that provider recommendations
 are absent. An embed failure offers the provider/QR route. Vimeo personal links
 use the provider handoff, including the chosen timestamp.
 If the embedded player never becomes ready, a 15-second watchdog returns to that
-handoff. A live permission change removes both playback actions and the QR link;
-stale cards and transcript passages cannot reopen an entry that is no longer admitted.
+handoff. A missing native WebView implementation also falls back without a build
+error. Handoff links retain the latest observed playback position. A live permission
+change removes both playback actions and the QR link; stale cards and transcript
+passages cannot reopen an entry that is no longer admitted. A progress-storage
+failure does not prevent native playback.
 
 Opening an external URL records **Opened**, never **Completed**. Only an observed
 completion of the selected iframe video or an explicit user action marks it
@@ -135,7 +138,10 @@ YouTube metadata alone never grants transcript/AI permission.
 See [service setup](../../tools/extras_service/README.md). It is optional and
 self-hosted; this PR does not provision a public hosted endpoint or API accounts.
 Configure its URL/token from any title's Extras settings. Without it, native extras,
-personal links and imported-transcript search remain available.
+personal links and imported-transcript search remain available. Empty unconfigured
+titles explain setup; Find more appears only when discovery is configured and
+permitted. Missing credentials and partial upstream results remain retryable rather
+than being cached as a complete empty catalogue.
 
 The service validates exact TMDB associations, checks YouTube uploader, public
 availability, age restrictions and region, then emits versioned records. Missing
@@ -151,24 +157,35 @@ spoofing, wrong work/remake, duplicate uploads, spoilers, permissions, profile
 changes, encrypted settings, bounded caches, native download ownership, inference
 fabrication, failures, HTTP authentication, quotas and registry validation. Widget
 coverage exercises 320-pixel screens at 200% text size, RTL, desktop previews and TV
-QR controls. Existing detail-screen and TV-navigation regression suites also run.
+QR controls. Simulated Android, iOS, macOS and Windows WebView implementations
+exercise the startup deadline, missing runtime, ready/completion bridge and resume
+handoff. These tests exercise shared client behavior, not native platform binaries.
+Existing detail-screen and TV-navigation regression suites also run.
 `scripts/test_extras_service.py` connects the credential-free service tests to
 the existing shared CI guard lane.
 
-Validation on 2026-11-06, with current main `91f7d446ce42` merged and the pinned
+Validation on 2026-11-06 UTC, with main `2acba07d0e08` merged and the pinned
 Flutter 3.47.1 SDK:
 
-- All 380 affected Flutter regression tests pass, including the new main privacy
-  screen tests and the bounded transcript-evidence retrieval regression.
-- All 19 discovery-service tests pass, using local fixtures and loopback HTTP.
+- All 396 affected Flutter regression tests pass, including privacy and Samsung
+  supporter-store tests from main, partial-discovery recovery, live permission
+  revocation, player recovery and bounded transcript-evidence retrieval.
+- All 20 discovery-service tests pass, using local fixtures and loopback HTTP.
 - Focused Dart analysis reports no issues; generated-file freshness, changed-Dart
   formatting, container image pins, changelog range validation and diff checks pass.
-- The repository-wide check script is not green: it reports issues in existing
-  formatting, translation cleanup, workflow guards, icons, analyzer/unused code and
-  native-format checks. This host also lacks `swift-format`. An isolated checkout
-  of main at `dc13cce55054` reproduces the same 221 hardcoded-string and 223 localization findings;
-  this feature adds neither. Generated-file freshness was rerun successfully after
-  code generation. No global check or supported platform is disabled by this PR.
+- The full workflow/script guard suite passes. Its Python path now includes the
+  shared release-coverage module required by the Apple runner tests.
+- Localization coverage/source hashes pass for all 37 locales, and locale
+  normalization passes. Nine cleanup-checker and eight localization-checker tests
+  pass. The cleaner respects validated explicit English fallbacks and recognizes
+  authored translation helpers, parent-branch access and indexed translation use.
+  Existing translated values remain intact; unreviewed copy remains explicitly
+  English rather than being presented as reviewed translations.
+- The repository-wide check script is still not green. Remaining findings include
+  existing Dart/native formatting, icons, analyzer/unused code, 222 hardcoded strings
+  outside Extras and 10 unused translation keys. This host lacks `swift-format`.
+  No global check or supported platform is disabled by this PR. Local check results
+  do not imply a hosted CI or multi-platform release build has run.
 
 These are source and host-side tests. Physical Android/iOS/Windows/macOS/TV playback,
 provider login/age/region behavior, app launch support and vendor-store packages

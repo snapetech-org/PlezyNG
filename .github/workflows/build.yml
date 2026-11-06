@@ -477,7 +477,7 @@ jobs:
       - name: Validate Android-only mode input
         if: ${{ steps.request.outputs.mode == 'android-validation' }}
         run: |
-          echo "Build signed Android and Fire TV artifacts only; no release or store submission."
+          echo "Build the signed Fire TV APK only; no release or store submission."
 
       - name: Validate macOS-only mode input
         if: ${{ steps.request.outputs.mode == 'macos-validation' }}
@@ -647,18 +647,18 @@ jobs:
           PY
 
       - name: Build APKs
-        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
+        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
         run: flutter build apk --release --split-per-abi ${{ env.RELEASE_DART_DEFINES }} --obfuscate --split-debug-info=debug-info/android-apk --extra-gen-snapshot-options=--save-obfuscation-map=debug-info/android-apk/obfuscation.map.json
 
       - name: Package APKs
-        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
+        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
         run: |
           tar -czf pleazyng-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/pleazyng.apk/'
           tar -czf pleazyng-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/pleazyng.apk/'
           tar -czf pleazyng-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/pleazyng.apk/'
 
       - name: Build signed Android App Bundle
-        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && steps.android-signing.outputs.configured == 'true' }}
+        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
         run: |
           flutter build appbundle --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --obfuscate --split-debug-info=debug-info/android-play
           cp build/app/outputs/bundle/release/app-release.aab pleazyng-android-play.aab
@@ -697,7 +697,7 @@ jobs:
         run: rm -f android/app/upload-keystore.jks android/key.properties
 
       - name: Attest APKs
-        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
+        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
@@ -706,13 +706,28 @@ jobs:
             pleazyng-android-x86_64.tar.gz
 
       - name: Attest Android App Bundle
-        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && steps.android-signing.outputs.configured == 'true' }}
+        if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
             pleazyng-android-play.aab
+
+      - name: Attest signed Fire TV APK
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: |
             pleazyng-amazon-firetv.apk
             pleazyng-amazon-firetv-provenance.json
+
+      - name: Retain failed Fire TV APK for diagnosis
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: amazon-firetv-diagnostics
+          path: |
+            pleazyng-amazon-firetv.apk
+            pleazyng-amazon-firetv-provenance.json
+          if-no-files-found: ignore
 
       - name: Upload APKs
         if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}

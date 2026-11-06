@@ -106,7 +106,37 @@
     ],
     "production_permission": false,
     "credential_rotated": false,
-    "old_draft_retirement": "pending metadata migration"
+    "old_draft_retirement": "pending metadata migration",
+    "privacy_policy_saved": "https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.md",
+    "listing": {
+      "locale": "en-US",
+      "name": "Pleazyng",
+      "short_description": "Plex client with Jellyfin and Emby support, offline downloads, and HDR",
+      "full_description": "Canonical Pleazyng copy",
+      "icon": "app-icon-512.png",
+      "feature_graphic": "feature-graphic-1024x500.png",
+      "state": "Saved as draft; final Save blocked by minimum two phone or tablet screenshots",
+      "artwork_ai_labels_selected": [
+        "App icon",
+        "Feature graphic"
+      ],
+      "authentic_android_screenshots_pending": true
+    },
+    "production_access_gate": {
+      "closed_test_minimum_testers": 12,
+      "closed_test_minimum_days": 14,
+      "current_opted_in_testers": 0
+    },
+    "ads_declaration": "No ads; saved",
+    "government_app_declaration": "No; saved",
+    "category_saved": "Video Players & Editors",
+    "contact_email_saved": "keith@snape.tech",
+    "website_saved": "https://github.com/snapetech-org/PlezyNG",
+    "financial_features_declaration": "No financial features; saved",
+    "health_declaration": "No health features; saved",
+    "advertising_id_declaration": "No; source manifest/dependencies checked and saved",
+    "trader_status": "Inherited existing developer-account trader status confirmed for app; saved",
+    "iarc_terms": "Prepared email and All Other App Types; awaiting owner acceptance onscreen"
   },
   "copr": {
     "owner": "slskdn",

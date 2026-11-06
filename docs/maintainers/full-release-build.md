@@ -38,9 +38,17 @@ draft release remains tied to the existing tag.
 ```sh
 python3 scripts/release_all_platforms.py --version 3.0.1 \
   --execution-profile hybrid --publish-github-only \
+  --include-apple-store-build --prepare-homebrew-cask \
   --ffmpeg-source-cache /mnt/disks/scratch/task-scratch/plezyng-release-3.0.1-20261103/ffmpeg-preflight \
   --scratch /mnt/disks/scratch/task-scratch/plezyng-release-3.0.1-20261103/release-final
 ```
+
+The explicit signing and Homebrew options require signed iOS/tvOS archives and a
+notarized macOS Cask candidate, even for GitHub-only publication. They do not
+enable store uploads or tap publication. Successful-run reuse checks the requested
+signing, notarization and Cask steps; asset validation requires both signed IPAs
+and `snapetech-pleazyng.rb`. These options default off and require a full build;
+they cannot be combined with platform-artifact recovery.
 
 The command validates CI on the exact current `main` SHA, then runs the complete
 release build. When a version tag already exists, it reuses that immutable tag

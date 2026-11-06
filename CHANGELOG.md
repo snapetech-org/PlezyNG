@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Allow explicit signed Apple archive and notarized Homebrew Cask qualification during GitHub-only releases, validating requested steps and assets without enabling store uploads.
+
 - Bundle the pinned native Vulkan loader alongside libmpv and shaderc, preserving its symlink chain and rejecting stale native archives without it.
 
 - Require compiled PME Vulkan evidence in every Linux and Windows native package before promoting application pins.

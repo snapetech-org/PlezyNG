@@ -777,6 +777,7 @@ def ensure_candidate_build(
     *,
     execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
+    prepare_homebrew_cask: bool = False,
     include_webos_build: bool = True,
 ) -> dict:
     """Require a complete nonpublishing release-mode build before creating the immutable tag."""
@@ -809,6 +810,14 @@ def ensure_candidate_build(
                     ("Build tvOS developer package (arm64)", "Build signed tvOS App Store IPA"),
                 )
             )
+        if prepare_homebrew_cask:
+            complete = complete and all(
+                run_has_successful_step(PLEZY_REPO, existing, job_name, step_name)
+                for job_name, step_name in (
+                    ("build-macos", "Notarize Application"),
+                    ("build-macos", "Verify Gatekeeper acceptance for Homebrew Cask"),
+                )
+            )
         if complete:
             print(f"Reusing successful release-mode candidate run {existing['databaseId']} for {version}.")
             return existing
@@ -839,7 +848,7 @@ def ensure_candidate_build(
             "include_tizen_build": "true",
             "include_apple_store_build": "true" if include_apple_store_build else "false",
             "subtitle_gpu_backend": "cpu",
-            "prepare_homebrew_cask": "false",
+            "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
         },
         f"Pleazyng {version} all-platform release-mode candidate",
         expected_title=run_title,
@@ -912,6 +921,7 @@ def ensure_release(
     include_webos_release: bool,
     execution_profile: str = "hybrid",
     include_apple_store_build: bool = False,
+    prepare_homebrew_cask: bool = False,
     reuse_platform_run_id: int | None = None,
     reuse_android_run_id: int | None = None,
     include_webos_build: bool = True,
@@ -922,8 +932,8 @@ def ensure_release(
         raise ReleaseError("Every versioned release requires its successful webOS build and public artifact.")
     run_title = f"action:release:pool:private:tag:{tag}"
     if reuse_platform_run_id:
-        if execution_profile != "hybrid" or include_apple_store_build:
-            raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile.")
+        if execution_profile != "hybrid" or include_apple_store_build or prepare_homebrew_cask:
+            raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile without fresh Apple or Homebrew qualification.")
         options = {}
         if reuse_android_run_id:
             options["android_run"] = reuse_android_run_id
@@ -958,6 +968,16 @@ def ensure_release(
                     ("Build tvOS developer package (arm64)", "Build signed tvOS App Store IPA"),
                 )
             )
+        if prepare_homebrew_cask:
+            complete = complete and all(
+                run_has_successful_step(PLEZY_REPO, existing, job_name, step_name)
+                for job_name, step_name in (
+                    ("build-macos", "Notarize Application"),
+                    ("build-macos", "Verify Gatekeeper acceptance for Homebrew Cask"),
+                    ("create-release", "Generate Homebrew Cask candidate"),
+                    ("create-release", "Attest Homebrew Cask candidate"),
+                )
+            )
         if complete:
             print(f"Reusing successful release build run {existing['databaseId']} for {tag}.")
             return existing
@@ -976,6 +996,7 @@ def ensure_release(
         "include_webos_release": "true" if include_webos_release else "false",
         "include_tizen_build": "true",
         "include_apple_store_build": "true" if include_apple_store_build else "false",
+        "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
     }
     if reuse_platform_run_id:
         fields["reuse_platform_run_id"] = str(reuse_platform_run_id)
@@ -1060,6 +1081,7 @@ def validate_release_outputs(
     include_webos_release: bool,
     execution_profile: str = "private",
     include_apple_store_build: bool = False,
+    prepare_homebrew_cask: bool = False,
 ) -> None:
     release = release_metadata(tag)
     assets = {
@@ -1101,13 +1123,10 @@ def validate_release_outputs(
     }
     if android_signing.issubset(secrets):
         required.update({"pleazyng-android-play.aab", "pleazyng-amazon-firetv.apk"})
-    apple_store_signing = {
-        "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
-    }
-    if include_apple_store_build and apple_store_signing.issubset(secrets):
-        required.add("pleazyng-ios-appstore.ipa")
-    if include_apple_store_build and apple_store_signing.issubset(secrets):
-        required.add("pleazyng-tvos-appstore.ipa")
+    if include_apple_store_build:
+        required.update({"pleazyng-ios-appstore.ipa", "pleazyng-tvos-appstore.ipa"})
+    if prepare_homebrew_cask:
+        required.add("snapetech-pleazyng.rb")
 
     missing = sorted(required - assets)
     if missing:
@@ -1396,6 +1415,14 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Use hosted runners for compatible jobs by default; private JIT remains available for constrained work.",
     )
+    parser.add_argument(
+        "--include-apple-store-build", action="store_true",
+        help="Build and qualify signed iOS/tvOS archives, including with GitHub-only publication; does not enable store uploads.",
+    )
+    parser.add_argument(
+        "--prepare-homebrew-cask", action="store_true",
+        help="Notarize macOS and prepare/attest its Homebrew Cask candidate; does not publish to a tap.",
+    )
     publication = parser.add_mutually_exclusive_group()
     publication.add_argument(
         "--publish",
@@ -1441,9 +1468,10 @@ def main() -> int:
         raise ReleaseError("Complete releases require the hybrid profile, including native Windows ARM64 CI.")
     if args.reuse_platform_run and (
         args.reuse_platform_run < 1 or args.publish
+        or args.include_apple_store_build or args.prepare_homebrew_cask
         or args.execution_profile != "hybrid"
     ):
-        raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication.")
+        raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication without fresh Apple or Homebrew qualification.")
     if args.reuse_android_run and (args.reuse_android_run < 1 or not args.reuse_platform_run):
         raise ReleaseError("Android reuse requires a verified platform source run.")
     if args.skip_webos_build:
@@ -1461,7 +1489,9 @@ def main() -> int:
     worktree: Path | None = None
     stage = "startup"
     progress = {"version": args.version, "execution_profile": args.execution_profile,
-                "status": "running", "stage": stage}
+                "status": "running", "stage": stage,
+                "include_apple_store_build": args.include_apple_store_build,
+                "prepare_homebrew_cask": args.prepare_homebrew_cask}
 
     def save_progress() -> None:
         progress_path.write_text(json.dumps(progress, indent=2) + "\n", encoding="utf-8")
@@ -1539,8 +1569,10 @@ def main() -> int:
             "APPLE_API_KEY_ID", "APPLE_API_ISSUER_ID", "APPLE_API_PRIVATE_KEY", "APPLE_TEAM_ID",
         }
         include_apple_store_build = (
-            args.publish and apple_store_secrets.issubset(configured_repo_names("secret"))
+            args.include_apple_store_build
+            or (args.publish and apple_store_secrets.issubset(configured_repo_names("secret")))
         )
+        progress["include_apple_store_build"] = include_apple_store_build
         if not tag_reused:
             # Exact-source CI runs first. Build every release package once after
             # tagging; never publish until the complete artifact checks pass.
@@ -1562,6 +1594,7 @@ def main() -> int:
             include_webos_release=args.include_webos_release,
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
+            prepare_homebrew_cask=args.prepare_homebrew_cask,
             **({"reuse_platform_run_id": args.reuse_platform_run} if args.reuse_platform_run else {}),
             **({"reuse_android_run_id": args.reuse_android_run} if args.reuse_android_run else {}),
             **({"include_webos_build": False} if args.skip_webos_build else {}),
@@ -1578,6 +1611,7 @@ def main() -> int:
             include_webos_release=args.include_webos_release,
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
+            prepare_homebrew_cask=args.prepare_homebrew_cask,
         )
 
         published_channels: list[dict] = []
@@ -1625,6 +1659,8 @@ def main() -> int:
             "release_run": release["databaseId"],
             "release_url": f"https://github.com/{PLEZY_REPO}/releases/tag/{tag}",
             "release_published": release_published,
+            "include_apple_store_build": include_apple_store_build,
+            "prepare_homebrew_cask": args.prepare_homebrew_cask,
             "published_channels": published_channels,
             "skipped_channels": skipped_channels,
             "webos_built": True,

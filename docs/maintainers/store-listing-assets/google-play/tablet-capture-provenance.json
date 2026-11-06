@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "group": "google-play-tablet",
+  "captures": [
+    {
+      "schema_version": 1,
+      "capture": "tablet-01-library.png",
+      "kind": "tablet-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "d8eb00df1b07d4f2fe98eb69565ab0372140062624d4ed964285f3df6336bc4a",
+      "serial": "emulator-5584",
+      "dimensions": [
+        2560,
+        1600
+      ],
+      "density": "Physical density: 320",
+      "manufacturer": "Google",
+      "model": "sdk_gphone64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5584",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "fea07a569d3fcf29b0b4cbb52c7198b204ee9126c38f8dab3eb9addf222fcbf4",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png"
+    },
+    {
+      "schema_version": 1,
+      "capture": "tablet-02-details.png",
+      "kind": "tablet-emulator",
+      "source_sha": "28486bba2bb42d25bc17d127ca73c5ccc27ba1a3",
+      "apk_sha256": "cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a",
+      "capture_sha256": "7728660d2947730d263d45849a930e22111638848ddd50dd17b1e0a6b931eb54",
+      "serial": "emulator-5584",
+      "dimensions": [
+        2560,
+        1600
+      ],
+      "density": "Physical density: 320",
+      "manufacturer": "Google",
+      "model": "sdk_gphone64_x86_64",
+      "sdk": "36",
+      "command": [
+        "adb",
+        "-s",
+        "emulator-5584",
+        "exec-out",
+        "screencap",
+        "-p"
+      ],
+      "qualification": "Actual app capture; emulator does not establish Fire OS hardware or IAP qualification",
+      "export_sha256": "2d0640c62739d0db5d045287f34b7c9857065fad45df440b1aac72187e6a3e4c",
+      "export_format": "24-bit RGB PNG; pixels unchanged; alpha removed only after opacity check",
+      "repository_asset": "docs/maintainers/store-listing-assets/google-play/tablet-02-details-2560x1600.png"
+    }
+  ],
+  "qualification": "Actual app captures; emulator images do not establish Fire OS hardware, playback or IAP qualification"
+}

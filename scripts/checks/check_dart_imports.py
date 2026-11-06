@@ -34,7 +34,7 @@ def trivia(source: str, at: int) -> int:
     return at
 
 
-def relative_directives(source: str) -> list[str]:
+def directive_uris(source: str) -> list[str]:
     """Only read the directive header; examples in executable strings are inert."""
     paths, at = [], 0
     while at < len(source):
@@ -63,9 +63,13 @@ def relative_directives(source: str) -> list[str]:
                 text.append(source[at]); at += 1
             at += 1
             value = "".join(text)
-            if directive != "library" and ":" not in value:
+            if directive != "library":
                 paths.append(value)
     return paths
+
+
+def relative_directives(source: str) -> list[str]:
+    return [uri for uri in directive_uris(source) if ":" not in uri]
 
 
 def missing_targets(path: str, source: str, tracked: set[str]) -> list[dict[str, str]]:

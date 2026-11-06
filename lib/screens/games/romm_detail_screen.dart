@@ -4,7 +4,7 @@ import '../../i18n/strings.g.dart' as l10n;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pdfrx/pdfrx.dart';
+import 'romm_manual_view.dart';
 import '../../games/romm/romm_controller.dart';
 import '../../games/romm/romm_link.dart';
 import '../../games/romm/romm_models.dart';
@@ -302,13 +302,13 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
   }
 
   Future<void> _manual() async {
-    final bytes = await (await widget.controller.client(
-      _game.connectionId,
-    )).asset(_game.manual, maximum: 64 * 1024 * 1024);
+    final bytes = RommManualView.supported
+        ? await (await widget.controller.client(_game.connectionId)).asset(_game.manual, maximum: 64 * 1024 * 1024)
+        : Uint8List(0);
     if (!mounted || !live) {
       return;
     }
-    if (bytes.length < 5 || String.fromCharCodes(bytes.take(5)) != '%PDF-') {
+    if (RommManualView.supported && (bytes.length < 5 || String.fromCharCodes(bytes.take(5)) != '%PDF-')) {
       throw const RommFailure('romm.invalidFile');
     }
     await rommPush<void>(
@@ -316,7 +316,7 @@ class _RommDetailScreenState extends State<RommDetailScreen> {
       widget.controller,
       Scaffold(
         appBar: AppBar(title: Text(rommText(context, 'manual'))),
-        body: PdfViewer.data(bytes, sourceName: 'romm-${_game.id}.pdf'),
+        body: RommManualView(bytes: bytes, sourceName: 'romm-${_game.id}.pdf'),
       ),
       connectionId: _game.connectionId,
     );

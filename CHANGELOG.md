@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Isolate RomM manual PDF rendering behind the TV platform adapter, preserving supported PDF viewers and detecting unsupported Tizen imports before native builds.
+
 - Prepare the complete Pleazyng 3.0.2 corrective release with package build 161, preserving the earlier immutable tags.
 
 - Publish QAIRT context manifests atomically and reject previously published output directories, preserving valid package metadata after interrupted builds.

@@ -265,6 +265,7 @@ class PackageTest(unittest.TestCase):
             'tizen/tizen-manifest.xml': self.manifest.decode(),
             'scripts/tizen/smb_build_hook.dart': '// staged hook',
             'scripts/tizen/publication_reader_screen.dart': '// TV reader',
+            'scripts/tizen/romm_manual_view.dart': '// TV manual',
             'assets/pleazyng.png': 'fixture image',
         }
         for name, content in files.items():
@@ -290,6 +291,7 @@ class PackageTest(unittest.TestCase):
         self.assertIn('path: packages/existing', pubspec)
         self.assertNotIn('pdfrx:', pubspec)
         self.assertEqual((stage / 'lib/screens/sources/publication_reader_screen.dart').read_text(), '// TV reader')
+        self.assertEqual((stage / 'lib/screens/games/romm_manual_view.dart').read_text(), '// TV manual')
         self.assertIn('path: packages/dart_smb2_tizen', pubspec)
         self.assertFalse((stage / 'author.p12').exists())
         self.assertIn('version="3.4.5"', (stage / 'tizen/tizen-manifest.xml').read_text())
@@ -299,6 +301,53 @@ class PackageTest(unittest.TestCase):
         (native / 'libdart_smb2.so').write_bytes(elf() + b'tampered')
         with self.assertRaisesRegex(ValueError, 'Native input mismatch'):
             package.stage(source, self.root / 'invalid-stage', native, 'arm')
+
+
+class PdfAdapterPreflightTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        subprocess.run(['git', 'init', '-q', self.root], check=True)
+        self.files = {
+            'lib/screens/sources/publication_reader_screen.dart': "import 'package:pdfrx/pdfrx.dart';",
+            'lib/screens/games/romm_manual_view.dart': "import 'package:pdfrx/pdfrx.dart';",
+            'lib/screens/games/romm_detail_screen.dart': "import 'romm_manual_view.dart';",
+            **{value: '// Compatible TV adapter' for value in package.PDF_READER_ADAPTERS.values()},
+        }
+        for name, text in self.files.items():
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text)
+        subprocess.run(['git', '-C', self.root, 'add', '.'], check=True)
+
+    def test_staged_adapters_keep_the_normal_pdf_sources_unchanged(self):
+        before = {name: (self.root / name).read_bytes() for name in self.files}
+        package.preflight_pdf_readers(self.root)
+        self.assertEqual(before, {name: (self.root / name).read_bytes() for name in self.files})
+
+    def test_original_romm_import_fails_before_any_native_build(self):
+        target = self.root / 'lib/screens/games/romm_detail_screen.dart'
+        target.write_text("import 'package:pdfrx/pdfrx.dart';")
+        with self.assertRaisesRegex(ValueError, 'romm_detail_screen.dart: package:pdfrx/'):
+            package.preflight_pdf_readers(self.root)
+
+    def test_conditional_pdf_engine_imports_are_not_missed(self):
+        target = self.root / 'lib/screens/games/romm_detail_screen.dart'
+        target.write_text("export 'base.dart' if (dart.library.io) 'package:pdfrx_engine/pdfrx_engine.dart';")
+        with self.assertRaisesRegex(ValueError, 'package:pdfrx_engine/'):
+            package.preflight_pdf_readers(self.root)
+
+    def test_comment_and_executable_examples_are_inert(self):
+        target = self.root / 'lib/screens/games/romm_detail_screen.dart'
+        target.write_text("// import 'package:pdfrx/pdfrx.dart';\nimport 'romm_manual_view.dart';\n"
+                          'const example = "import \'package:pdfrx/pdfrx.dart\';";')
+        package.preflight_pdf_readers(self.root)
+
+    def test_missing_tv_adapter_is_rejected(self):
+        (self.root / 'scripts/tizen/romm_manual_view.dart').unlink()
+        with self.assertRaisesRegex(ValueError, 'Missing tracked Tizen PDF adapter'):
+            package.preflight_pdf_readers(self.root)
 
 
 if __name__ == '__main__':

@@ -22,6 +22,8 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'scripts/checks'))
+from check_dart_imports import directive_uris  # noqa: E402
 PINS = json.loads((Path(__file__).with_name('toolchain.json')).read_text())
 APP_ID = 'org.snapetech.pleazyng'
 NS = {'t': 'http://tizen.org/ns/packages'}
@@ -385,7 +387,37 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
     (out / 'native-build.json').write_text(json.dumps(report, indent=2) + '\n')
 
 
+
+PDF_READER_ADAPTERS = {
+    'lib/screens/sources/publication_reader_screen.dart': 'scripts/tizen/publication_reader_screen.dart',
+    'lib/screens/games/romm_manual_view.dart': 'scripts/tizen/romm_manual_view.dart',
+}
+
+
+def preflight_pdf_readers(source):
+    """Check the actual staged Dart imports before installing or building SDKs."""
+    source = Path(source)
+    tracked = set(subprocess.check_output(['git', '-C', str(source), 'ls-files', '-z']).decode().split('\0'))
+    for replacement in PDF_READER_ADAPTERS.values():
+        if replacement not in tracked or not (source / replacement).is_file():
+            raise ValueError(f'Missing tracked Tizen PDF adapter: {replacement}')
+    failures = []
+    for name in sorted(tracked):
+        if not name.startswith('lib/') or not name.endswith('.dart'):
+            continue
+        staged = source / PDF_READER_ADAPTERS.get(name, name)
+        if not staged.is_file():
+            raise ValueError(f'Missing tracked Tizen Dart source: {name}')
+        for uri in directive_uris(staged.read_text()):
+            if uri.startswith(('package:pdfrx/', 'package:pdfrx_engine/')):
+                failures.append(f'{name}: {uri}')
+    if failures:
+        raise ValueError('Unsupported PDFium import remains in staged Tizen source: ' + '; '.join(failures))
+    print('Verified Tizen PDF adapter import closure before native builds.')
+
+
 def stage(source, destination, native_dir, arch, *, visualizer_native=None, visualizer_manifest_sha256=None):
+    preflight_pdf_readers(source)
     # Copy only Git-tracked inputs, including local modifications, so tokens,
     # profiles and build caches cannot be swept into the package.
     tracked = subprocess.check_output(['git', '-C', str(source), 'ls-files', '-z']).decode().split('\0')
@@ -479,9 +511,10 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
     text, removed = re.subn(r'^  pdfrx:.*\n', '', text, flags=re.M)
     if removed != 1:
         raise ValueError('Review the Tizen reader exclusion after dependency changes')
-    reader = destination / 'lib/screens/sources/publication_reader_screen.dart'
-    reader.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source / 'scripts/tizen/publication_reader_screen.dart', reader)
+    for relative, replacement in PDF_READER_ADAPTERS.items():
+        reader = destination / relative
+        reader.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source / replacement, reader)
     pubspec.write_text(text)
     version = re.search(r'^version:\s*(\d+\.\d+\.\d+)', text, re.M)
     if version is None:
@@ -719,6 +752,8 @@ public class ProfilePassword {
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
+    preflight = sub.add_parser('preflight', help='Check staged source compatibility before native builds')
+    preflight.add_argument('--source', type=Path, default=ROOT)
     n = sub.add_parser('native')
     n.add_argument('--toolchain', required=True, help='Samsung SDK CMake toolchain file (compiler, sysroot, ABI)')
     n.add_argument('--output', required=True)
@@ -752,7 +787,9 @@ def main():
         p.add_argument('--arch', choices=ELF_TARGETS, default='arm')
     args = parser.parse_args()
     try:
-        if args.command == 'inspect':
+        if args.command == 'preflight':
+            preflight_pdf_readers(args.source)
+        elif args.command == 'inspect':
             print(json.dumps(inspect_package(args.package, args.arch), indent=2))
         else:
             {'native': native, 'build': build, 'install': install, 'resign': resign,

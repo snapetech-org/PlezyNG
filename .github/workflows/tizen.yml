@@ -102,6 +102,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      - name: Verify staged Tizen source compatibility
+        run: python3 scripts/tizen/package.py preflight
       - name: Install Tizen host test prerequisites
         shell: bash
         run: |
@@ -148,6 +150,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      - name: Verify staged Tizen source compatibility
+        run: python3 scripts/tizen/package.py preflight
       - name: Install Tizen host build prerequisites
         shell: bash
         run: |

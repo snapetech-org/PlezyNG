@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "source_sha": "3b0831c0a4755073a549eb74640137e4524909a3",
+  "store_upload_eligible": false,
+  "visible_labels": false,
+  "method": "Production Flutter widgets rendered by flutter_test with appearance fixtures; demo metadata; no device execution",
+  "images": [
+    {
+      "name": "desktop-player-mockup-preview.png",
+      "render_dimensions": [
+        1920,
+        1200
+      ],
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "a7a8a48201ad4c6bdefcc528cc2bcbeb7047820b69b7a4b50b992c3856e754eb",
+      "kind": "widget-preview"
+    },
+    {
+      "name": "phone-player-mockup-preview.png",
+      "render_dimensions": [
+        2400,
+        1080
+      ],
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "sha256": "bf37ba9269165bd119ecd2573d778de375af9dc7949ef78373a12ce88009fc57",
+      "kind": "widget-preview"
+    }
+  ],
+  "kind": "player-ui-mockup",
+  "video_decoding_performed": false,
+  "sample_frame": {
+    "title": "Caminandes 2: Gran Dillama",
+    "author": "Blender Foundation / Blender Institute",
+    "time_seconds": 30,
+    "source": "https://commons.wikimedia.org/wiki/File:Caminandes,_Gran_Dillama_-_Blender_Foundation.webm",
+    "license": "CC BY-SA 3.0",
+    "attribution": "ATTRIBUTION.md",
+    "fixture_sha256": "191defd4dd98ffd82893e9404f83d8ef2cfa24f35f613efb872ca63527f3202c"
+  }
+}

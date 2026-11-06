@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'samsung_supporter_store.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -76,12 +78,16 @@ abstract class SupporterStore {
   /// refund or revocation rather than a purchase.
   bool isRevocation(PurchaseDetails purchase);
 
+  /// Additional platform receipt verification before granting a stream event.
+  Future<bool> verifyPurchase(PurchaseDetails purchase) async => true;
+
   /// The store for this device, or null where in_app_purchase has none.
   ///
   /// The first [InAppPurchase.instance] registers this OS's implementation:
   /// Google Play on Android and StoreKit 2 on iOS and macOS. tvOS reports iOS
   /// to Dart, so it gets StoreKit 2 from the plugin copy in the tvOS Runner.
   static SupporterStore? forThisDevice() {
+    if (const bool.fromEnvironment('PLEZY_TIZEN')) return SamsungSupporterStore.configured();
     final os = defaultTargetPlatform;
     if (os != TargetPlatform.android && os != TargetPlatform.iOS && os != TargetPlatform.macOS) return null;
     final iap = InAppPurchase.instance;

@@ -495,7 +495,39 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
     manifest.write_text(manifest_text)
 
 
+def samsung_store_defines(args, environment):
+    """Store builds need their own credentials and a non-tester profile."""
+    if not getattr(args, 'store', False):
+        return None
+    if args.tester or args.arch != 'arm':
+        raise ValueError('Samsung Checkout store builds require ARM and a non-tester signing profile')
+    app_id = environment.get('SAMSUNG_DPI_APP_ID', '').strip()
+    key = environment.get('SAMSUNG_DPI_SECURITY_KEY', '').strip()
+    if not app_id or not key:
+        raise ValueError('Samsung Checkout store builds require SAMSUNG_DPI_APP_ID and SAMSUNG_DPI_SECURITY_KEY')
+    return {'PLEZY_TIZEN': 'true', 'SUPPORTER_MODE': 'iap',
+            'SAMSUNG_DPI_APP_ID': app_id, 'SAMSUNG_DPI_SECURITY_KEY': key}
+
+
+def enable_samsung_checkout(manifest):
+    """Only the staged paid build requests Samsung partner-level privileges."""
+    tree = ET.parse(manifest)
+    ET.register_namespace('', NS['t'])
+    root = tree.getroot()
+    privileges = root.find('t:privileges', NS)
+    if privileges is None:
+        privileges = ET.SubElement(root, '{' + NS['t'] + '}privileges')
+    existing = {item.text for item in privileges}
+    for name in ('http://developer.samsung.com/privilege/billing',
+                 'http://developer.samsung.com/privilege/sso.partner',
+                 'http://tizen.org/privilege/appmanager.launch'):
+        if name not in existing:
+            ET.SubElement(privileges, '{' + NS['t'] + '}privilege').text = name
+    tree.write(manifest, encoding='utf-8', xml_declaration=True)
+
+
 def build(args):
+    store_defines = samsung_store_defines(args, os.environ)
     if not args.visualizer_native or not args.visualizer_manifest_sha256:
         raise ValueError('TV packages require the app-pinned MilkRust runtime and manifest digest; run scripts/tizen/build_milkrust.py first')
     sdk = Path(args.sdk).resolve(strict=True)
@@ -526,8 +558,18 @@ def build(args):
         stage(ROOT, project, args.native, args.arch, visualizer_native=args.visualizer_native,
               visualizer_manifest_sha256=args.visualizer_manifest_sha256)
         run(flutter, 'pub', 'get', cwd=project)
-        run(flutter, 'build', 'tpk', '--release', '--device-profile', 'tv', '--target-arch', args.arch,
-            '--security-profile', args.security_profile, '--dart-define=PLEZY_TIZEN=true', cwd=project)
+        build_command = [flutter, 'build', 'tpk', '--release', '--device-profile', 'tv',
+                         '--target-arch', args.arch, '--security-profile', args.security_profile]
+        if store_defines:
+            enable_samsung_checkout(project / 'tizen/tizen-manifest.xml')
+            # Keep the DPI key out of argv/logs and retained staged projects.
+            # NamedTemporaryFile is mode 0600 and is removed even on failure.
+            with tempfile.NamedTemporaryFile(mode='w', prefix='pleazyng-samsung-billing-', suffix='.json') as defines:
+                json.dump(store_defines, defines)
+                defines.flush()
+                run(*build_command, '--dart-define-from-file=' + defines.name, cwd=project)
+        else:
+            run(*build_command, '--dart-define=PLEZY_TIZEN=true', cwd=project)
         packages = list((project / 'build/tizen/tpk').glob('*.tpk'))
         if len(packages) != 1:
             raise ValueError('Expected exactly one newly built TPK')
@@ -552,6 +594,7 @@ def build(args):
         report['target_scope'] = ('experimental Tizen 6-9; Tizen 10/GCC 14.2 is not qualified'
                                   if args.arch == 'arm' else 'experimental x64 emulator; not a TV build')
         report['signing'] = 'development-only-requires-tv-resigning' if args.tester else 'selected-profile-requires-device-verification'
+        report['billing_mode'] = 'samsung-checkout-trial-and-lifetime-unlock-unqualified' if store_defines else 'developer-no-store-billing'
         report['tv_install_verified'] = False
         report['catalogue_eligible'] = False
         (output / (name + '.json')).write_text(json.dumps(report, indent=2) + '\n')
@@ -686,6 +729,7 @@ def main():
     b.add_argument('--native', required=True, help='Output from native subcommand')
     b.add_argument('--output', default=str(ROOT / 'build/tizen-release'))
     b.add_argument('--security-profile', required=True, help='Existing Samsung Certificate Manager profile name')
+    b.add_argument('--store', action='store_true', help='Compile Samsung Checkout trial/unlock; requires DPI environment and partner signing')
     b.add_argument('--tester', action='store_true', help='Produce a development-signed handoff; tester must re-sign for their TV')
     b.add_argument('--work-dir', help='Optional empty directory to preserve the staged project and build diagnostics')
     b.add_argument('--visualizer-native', help='Optional reviewed MilkRust artifact directory with runtime, source and notices')

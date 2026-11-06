@@ -4604,6 +4604,41 @@
         1920,
         1080
       ]
+    },
+    {
+      "path": "docs/maintainers/store-listing-assets/samsung/logo-transparent-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "role": "wordmark",
+      "appearance": "dark"
+    },
+    {
+      "path": "docs/maintainers/store-listing-assets/samsung/icon-background-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "role": "background"
+    },
+    {
+      "path": "docs/maintainers/store-listing-assets/samsung/icon-512x423.png",
+      "size": [
+        512,
+        423
+      ],
+      "role": "plate",
+      "fit": 0.76
+    },
+    {
+      "path": "docs/maintainers/store-listing-assets/samsung/detail-background-1920x1080.jpg",
+      "size": [
+        1920,
+        1080
+      ],
+      "role": "artwork",
+      "appearance": "dark"
     }
   ],
   "sources": {

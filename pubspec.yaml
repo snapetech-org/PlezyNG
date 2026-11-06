@@ -167,6 +167,7 @@ dependencies:
   # supply the refund/revocation queries the app-facing API lacks.
   in_app_purchase: ^3.3.1
   in_app_purchase_android: ^0.5.4
+  in_app_purchase_tizen: 0.1.9
   in_app_purchase_platform_interface: ^1.4.1
   in_app_purchase_storekit: ^0.4.13+3
   openwatchparty: ^1.1.0
@@ -254,6 +255,8 @@ flutter:
     # flutter_inappwebview_macos 1.2.0-beta.3 fails SwiftPM builds on Xcode 26.
     enable-swift-package-manager: false
   assets:
+    - PRIVACY.md
+    - PRIVACY.ko.md
     - assets/wifi_transfer/upload_page.html
     - assets/reader/
     - assets/provider_marks/

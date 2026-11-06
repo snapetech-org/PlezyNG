@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "source_sha": "36031d770beed616d0016c4109b9d2aa1f0fb46b",
+  "store_upload_eligible": false,
+  "method": "Production Flutter widgets rendered by flutter_test with appearance fixtures; demo metadata; no device execution",
+  "images": [
+    {
+      "name": "desktop-detail-preview.png",
+      "render_dimensions": [
+        1920,
+        1200
+      ],
+      "dimensions": [
+        1920,
+        1248
+      ],
+      "sha256": "59ba9f8220bce27e43f4ab9615f8e9b10a0e6f7988ce5447a760cf672b78cd92",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "desktop-home-preview.png",
+      "render_dimensions": [
+        1920,
+        1200
+      ],
+      "dimensions": [
+        1920,
+        1248
+      ],
+      "sha256": "98aa3392ebff00af325c84cd3c3d707443ab6ad28a41f2539ee90dce63a53847",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "desktop-login-preview.png",
+      "render_dimensions": [
+        1920,
+        1200
+      ],
+      "dimensions": [
+        1920,
+        1248
+      ],
+      "sha256": "ca9e73d6f8ed9c6567c45668374fef83a0e8cac23b3d50025f77462d559d2082",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "desktop-settings-preview.png",
+      "render_dimensions": [
+        1920,
+        1200
+      ],
+      "dimensions": [
+        1920,
+        1248
+      ],
+      "sha256": "de1a837c89047692c8f92bb781a5f5ac7e7e075a26e77041fde4978d2d2b6de5",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "phone-detail-preview.png",
+      "render_dimensions": [
+        1080,
+        2400
+      ],
+      "dimensions": [
+        1080,
+        2448
+      ],
+      "sha256": "6697a29a37fa92dd2bd85a2f3a0752e0e909edd67a4da2291dbb468015fe3060",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "phone-home-preview.png",
+      "render_dimensions": [
+        1080,
+        2400
+      ],
+      "dimensions": [
+        1080,
+        2448
+      ],
+      "sha256": "3faf577c0c0005122aa7ba9e00141d270714159e50f714ba73ab7d1b7df04426",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "phone-login-preview.png",
+      "render_dimensions": [
+        1080,
+        2400
+      ],
+      "dimensions": [
+        1080,
+        2448
+      ],
+      "sha256": "1bbdcbb2df097baebe34e4befb0c19ce1872f4be7bd9c5431c5d9cfcdba0e8e6",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "phone-settings-preview.png",
+      "render_dimensions": [
+        1080,
+        2400
+      ],
+      "dimensions": [
+        1080,
+        2448
+      ],
+      "sha256": "207bc55c826da318ee4ac60d0e78d848270acca1b35c2680d8a08a830f3f179f",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tablet-detail-preview.png",
+      "render_dimensions": [
+        1600,
+        2560
+      ],
+      "dimensions": [
+        1600,
+        2608
+      ],
+      "sha256": "df192141d6b27ef89c36eeaeea45382f28a10be751d83e156a81b390f7e06b0b",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tablet-home-preview.png",
+      "render_dimensions": [
+        1600,
+        2560
+      ],
+      "dimensions": [
+        1600,
+        2608
+      ],
+      "sha256": "7c8b42ff67f798d117274dc3eea4c22a665be0d946287c57663223644e875f2d",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tablet-login-preview.png",
+      "render_dimensions": [
+        1600,
+        2560
+      ],
+      "dimensions": [
+        1600,
+        2608
+      ],
+      "sha256": "ad70deb6c570517bb610adc24490e856a4633b41010580ca098f4b0de69e2b21",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tablet-settings-preview.png",
+      "render_dimensions": [
+        1600,
+        2560
+      ],
+      "dimensions": [
+        1600,
+        2608
+      ],
+      "sha256": "2feee5eadfe2e296ed2c86f9d649a6583bb1698c6ebb7b1cd58ef3ee05b0ad47",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tv-detail-preview.png",
+      "render_dimensions": [
+        1920,
+        1080
+      ],
+      "dimensions": [
+        1920,
+        1128
+      ],
+      "sha256": "884de5acff7ce792074a600f1e6766a77fd24ea563f546317f0a8cfb753bdfcd",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tv-home-preview.png",
+      "render_dimensions": [
+        1920,
+        1080
+      ],
+      "dimensions": [
+        1920,
+        1128
+      ],
+      "sha256": "9a69d80d8aa885db2ed4723fee373c66459c7aabff9c84a317ea24485253c4ca",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tv-login-preview.png",
+      "render_dimensions": [
+        1920,
+        1080
+      ],
+      "dimensions": [
+        1920,
+        1128
+      ],
+      "sha256": "0444a86dfb9d212fcc908dcbe0c317ddf8759ce582d0ac492023fa9d182ee160",
+      "kind": "labeled-widget-preview"
+    },
+    {
+      "name": "tv-settings-preview.png",
+      "render_dimensions": [
+        1920,
+        1080
+      ],
+      "dimensions": [
+        1920,
+        1128
+      ],
+      "sha256": "6b67bc47a8b2746b10a3c576f052e9818154523fd9b08689fa60c1aa5007dc21",
+      "kind": "labeled-widget-preview"
+    }
+  ]
+}

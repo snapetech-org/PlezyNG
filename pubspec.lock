@@ -1008,6 +1008,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.13+3"
+  in_app_purchase_tizen:
+    dependency: "direct main"
+    description:
+      name: in_app_purchase_tizen
+      sha256: "1b6ed6df6603e4783c3e9de3df2bc6fb9e2c6af45f684956cf514d358efd9c1c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.9"
   intl:
     dependency: "direct main"
     description:

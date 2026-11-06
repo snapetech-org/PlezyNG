@@ -21,6 +21,228 @@ The [debrid, Stremio and remote-streaming guide](docs/plezyng/remote-streams/REA
 
 The [Discord client and PiP feasibility plan](docs/plezyng/discord/README.md) preserves an optional future design, its research, architecture, and validation gates. It is deferred; no client implementation or delivery commitment is implied.
 
+## Screenshots
+
+Browse the layouts below; select any image for its full-resolution version.
+The gallery leads with dark and OLED layouts. TV, phone and tablet captures
+come from the signed app on emulators using a public Jellyfin demo library.
+A smaller light-mode comparison and more light captures appear below.
+
+### Books, audiobooks and podcasts
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/ebook-reader-dark.png"><img src="docs/maintainers/feature-gallery/ebook-reader-dark.png" alt="EPUB reading with columns and reader tools" width="840" loading="lazy"></a>
+  <br>
+  <sub>EPUB reading with columns and reader tools</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/ebook-reader-phone-dark.png"><img src="docs/maintainers/feature-gallery/ebook-reader-phone-dark.png" alt="Phone EPUB reading" width="200" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/audiobook-player-dark.png"><img src="docs/maintainers/feature-gallery/audiobook-player-dark.png" alt="Audiobook chapters, speed and bookmarks" width="224" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/podcast-player-dark.png"><img src="docs/maintainers/feature-gallery/podcast-player-dark.png" alt="Podcast listening and chapter navigation" width="224" loading="lazy"></a>
+  <br>
+  <sub>Phone EPUB reading · Audiobook chapters, speed and bookmarks · Podcast listening and chapter navigation</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/ebook-reading-settings-dark.png"><img src="docs/maintainers/feature-gallery/ebook-reading-settings-dark.png" alt="Reading fonts, spacing and themes" width="412" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/book-library-detail-dark.png"><img src="docs/maintainers/feature-gallery/book-library-detail-dark.png" alt="Book details with EPUB and audio editions" width="412" loading="lazy"></a>
+  <br>
+  <sub>Reading fonts, spacing and themes · Book details with EPUB and audio editions</sub>
+</p>
+
+### Music and visualizers
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/music-player-dark.png"><img src="docs/maintainers/feature-gallery/music-player-dark.png" alt="Music artwork, playback controls and queue" width="840" loading="lazy"></a>
+  <br>
+  <sub>Music artwork, playback controls and queue</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/visualizer-library-dark.png"><img src="docs/maintainers/feature-gallery/visualizer-library-dark.png" alt="Visualizer preset library and filters" width="840" loading="lazy"></a>
+  <br>
+  <sub>Visualizer preset library and filters</sub>
+</p>
+
+### Steam games and controls
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/steam-library-dark.png"><img src="docs/maintainers/feature-gallery/steam-library-dark.png" alt="Steam library with installed games" width="840" loading="lazy"></a>
+  <br>
+  <sub>Steam library with installed games</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/steam-controller-layout-dark.png"><img src="docs/maintainers/feature-gallery/steam-controller-layout-dark.png" alt="Gamepad controller layout" width="200" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/steam-touch-layout-dark.png"><img src="docs/maintainers/feature-gallery/steam-touch-layout-dark.png" alt="Arrange touch controls" width="620" loading="lazy"></a>
+  <br>
+  <sub>Gamepad controller layout · Arrange touch controls</sub>
+</p>
+
+### Workspaces, live TV and discovery
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/multiview-dark.png"><img src="docs/maintainers/feature-gallery/multiview-dark.png" alt="Multiview workspace with reading and playback panes" width="840" loading="lazy"></a>
+  <br>
+  <sub>Multiview workspace with reading and playback panes</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/live-tv-guide-dark.png"><img src="docs/maintainers/feature-gallery/live-tv-guide-dark.png" alt="Live TV channels and programme guide" width="412" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/find-your-next-dark.png"><img src="docs/maintainers/feature-gallery/find-your-next-dark.png" alt="Find your next book or media pick" width="412" loading="lazy"></a>
+  <br>
+  <sub>Live TV channels and programme guide · Find your next book or media pick</sub>
+</p>
+
+### Sources and subtitle tools
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/connected-sources-dark.png"><img src="docs/maintainers/feature-gallery/connected-sources-dark.png" alt="Files, OPDS, audiobooks, NAS and cloud sources" width="600" loading="lazy"></a>
+  <a href="docs/maintainers/feature-gallery/open-media-dark.png"><img src="docs/maintainers/feature-gallery/open-media-dark.png" alt="Open a link, playlist or local media" width="224" loading="lazy"></a>
+  <br>
+  <sub>Files, OPDS, audiobooks, NAS and cloud sources · Open a link, playlist or local media</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/feature-gallery/subtitle-ai-dark.png"><img src="docs/maintainers/feature-gallery/subtitle-ai-dark.png" alt="AI subtitles, transcription and translation tools" width="840" loading="lazy"></a>
+  <br>
+  <sub>AI subtitles, transcription and translation tools</sub>
+</p>
+
+[Feature image credits](docs/maintainers/feature-gallery/README.md#image-credits).
+
+### TV
+
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-02-home-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-02-home-1920x1080.png" alt="TV home with featured media and library rows" width="412" loading="lazy">
+  </a>
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-03-library-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-03-library-1920x1080.png" alt="TV movie library and remote navigation" width="412" loading="lazy">
+  </a>
+  <br>
+  <sub>Home · Library</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-04-details-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-04-details-1920x1080.png" alt="TV movie details and play action" width="412" loading="lazy">
+  </a>
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-01-welcome-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-01-welcome-1920x1080.png" alt="TV welcome and source connection choices" width="412" loading="lazy">
+  </a>
+  <br>
+  <sub>Media details · Welcome and connections</sub>
+</p>
+
+### Phone
+
+<p align="center">
+  <a href="docs/maintainers/readme-captures/phone-dark-welcome.png">
+    <img src="docs/maintainers/readme-captures/phone-dark-welcome.png" alt="Phone welcome and connection choices" width="224" loading="lazy">
+  </a>
+  <a href="docs/maintainers/readme-captures/phone-dark-library.png">
+    <img src="docs/maintainers/readme-captures/phone-dark-library.png" alt="Phone movie library browsing" width="224" loading="lazy">
+  </a>
+  <a href="docs/maintainers/readme-captures/phone-dark-details.png">
+    <img src="docs/maintainers/readme-captures/phone-dark-details.png" alt="Phone movie details and play action" width="224" loading="lazy">
+  </a>
+  <br>
+  <sub>Welcome · Library · Media details</sub>
+</p>
+
+### Tablet
+
+<p align="center">
+  <a href="docs/maintainers/readme-captures/tablet-dark-library.png">
+    <img src="docs/maintainers/readme-captures/tablet-dark-library.png" alt="Tablet movie library with sidebar" width="412" loading="lazy">
+  </a>
+  <a href="docs/maintainers/readme-captures/tablet-dark-details.png">
+    <img src="docs/maintainers/readme-captures/tablet-dark-details.png" alt="Tablet movie details with poster and metadata" width="412" loading="lazy">
+  </a>
+  <br>
+  <sub>Library · Media details</sub>
+</p>
+
+[Dark capture provenance](docs/maintainers/readme-captures/README.md) ·
+[TV and light capture provenance](docs/maintainers/store-listing-assets/README.md).
+
+### Playback controls
+
+<p align="center">
+  <a href="docs/maintainers/player-mockups/desktop-player-mockup-preview.png">
+    <img src="docs/maintainers/player-mockups/desktop-player-mockup-preview.png" alt="Desktop playback controls" width="840" loading="lazy">
+  </a>
+  <br>
+  <sub>Desktop · Playback controls</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/player-mockups/phone-player-mockup-preview.png">
+    <img src="docs/maintainers/player-mockups/phone-player-mockup-preview.png" alt="Landscape phone playback controls" width="840" loading="lazy">
+  </a>
+  <br>
+  <sub>Landscape phone · Playback controls</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/readme-captures/tablet-dark-player-settings.png">
+    <img src="docs/maintainers/readme-captures/tablet-dark-player-settings.png" alt="Android playback settings with player backend and buffering choices" width="840" loading="lazy">
+  </a>
+  <br>
+  <sub>Playback settings · Player backend, decoding and buffering</sub>
+</p>
+
+### Subtitle styling
+
+<p align="center">
+  <a href="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-dark-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-dark-preview.png" alt="Dark subtitle styling preview with size, position, colors and border controls" width="412" loading="lazy">
+  </a>
+  <a href="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-oled-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-oled-preview.png" alt="OLED subtitle styling preview with font and background controls" width="412" loading="lazy">
+  </a>
+  <br>
+  <sub>Dark · OLED — font size, position, text color, border and background</sub>
+</p>
+
+### Appearance variants
+
+<p align="center">
+  <a href="docs/maintainers/playback-appearance-previews/desktop-appearance-dark-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-appearance-dark-preview.png" alt="Dark appearance preview" width="320" loading="lazy">
+  </a>
+  <a href="docs/maintainers/playback-appearance-previews/desktop-appearance-oled-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-appearance-oled-preview.png" alt="OLED appearance preview" width="320" loading="lazy">
+  </a>
+  <a href="docs/maintainers/playback-appearance-previews/desktop-appearance-light-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-appearance-light-preview.png" alt="Light appearance is also available" width="176" loading="lazy">
+  </a>
+  <br>
+  <sub>Dark · OLED · Light is available too</sub>
+</p>
+
+<details>
+<summary>More light-mode screenshots — phone and tablet</summary>
+
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/google-play/phone-01-welcome-1080x1920.png"><img src="docs/maintainers/store-listing-assets/google-play/phone-01-welcome-1080x1920.png" alt="Light phone welcome" width="224" loading="lazy"></a>
+  <a href="docs/maintainers/store-listing-assets/google-play/phone-03-library-browse-1080x1920.png"><img src="docs/maintainers/store-listing-assets/google-play/phone-03-library-browse-1080x1920.png" alt="Light phone library" width="224" loading="lazy"></a>
+  <a href="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png"><img src="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png" alt="Light phone media details" width="224" loading="lazy"></a>
+</p>
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png"><img src="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png" alt="Light tablet library" width="412" loading="lazy"></a>
+  <a href="docs/maintainers/store-listing-assets/google-play/tablet-02-details-2560x1600.png"><img src="docs/maintainers/store-listing-assets/google-play/tablet-02-details-2560x1600.png" alt="Light tablet media details" width="412" loading="lazy"></a>
+</p>
+
+Actual signed-app emulator captures with [build provenance](docs/maintainers/store-listing-assets/README.md).
+
+</details>
+
+[Subtitle and appearance variants](docs/maintainers/playback-appearance-previews/contact-sheet.jpg)
+· [Image credits](docs/maintainers/player-mockups/ATTRIBUTION.md)
+
 ## Dolby Vision experiments
 
 Pleazyng has developed genuine Profile 7 FEL reconstruction alongside native and

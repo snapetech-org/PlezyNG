@@ -103,3 +103,24 @@ The first draft's APK and screenshot ZIPs are therefore a manual console handoff
 After that initial submission, the API flow updates subsequent versions using
 the configured Amazon App ID; it leaves review submission to the operator.
 Do not edit the same Amazon draft concurrently through the API and console.
+
+## Committed capture pack and next release
+
+The [screenshot review pack](store-listing-assets/README.md) contains four TV,
+three phone and two tablet captures, a contact sheet and exact capture-build
+signature/attestation evidence. The README gallery uses these native captures;
+synthetic interface previews are kept separately.
+
+For the next full release, retain `mode=release` and build a new signed Amazon
+APK from the final release source together with all other required platforms.
+Confirm the APK and matching provenance receipt appear in both the release
+assets and `SHA256SUMS.txt`; the required-platform coverage check rejects either
+missing file. The successful 3.0.0 capture candidate is evidence for screenshots,
+not a replacement for the next release build or later runtime qualification.
+
+Keep Amazon's initial console submission separate from subsequent API updates.
+Do not set `AMAZON_APPSTORE_BOOTSTRAP_COMPLETE=true` until that initial submission
+has completed. The automated upload verifies the new release APK against its
+receipt and leaves console metadata and screenshots intact. Verify physical Fire
+TV navigation, playback and lifetime purchase/restore before claiming device or
+billing qualification. Keep `pleazyng_lifetime_unlock` and its USD $2.99 price.

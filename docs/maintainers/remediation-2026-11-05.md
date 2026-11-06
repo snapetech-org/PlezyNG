@@ -52,7 +52,11 @@ One newly written matcher initially used too many positional arguments; its
 23-case file passes after using the iterable form. This is a completed broad
 run plus targeted verification, not a claim that a second full run was green.
 Full `lib`/`test` analysis reports **zero errors and zero warnings**; 186 style
-information messages remain. The Go suites, native torrent tests, Linux RomM
+information messages remain. After preserving main’s newer `1ceb0db` visual changes,
+all **136 appearance/theme cases**, including visual baselines and responsive
+geometry, pass. The final analyzer at the combined caption/visual tree again
+reports zero errors and zero warnings. These checks are recorded after
+`bd782e8`; platform binaries and device qualification remain separate. The Go suites, native torrent tests, Linux RomM
 host/cores and MilkRust GL/GLES render checks also pass as recorded below.
 
 Build-configured relay/store/availability hosts retain system-only certificate

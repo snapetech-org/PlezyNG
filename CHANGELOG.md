@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Isolate Steam relay regression tests from a running desktop Steam client and model server deletion permission before validating shared-file deletion.
+
 - Refuse incomplete native engine pin promotions and retain checksum-bound package receipts for every required architecture and implemented neural path.
 
 - Keep Homebrew release checks aligned with verified repository downloads and versioned Cask publication.

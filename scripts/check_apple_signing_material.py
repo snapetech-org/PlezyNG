@@ -21,7 +21,8 @@ def run(command: list[str], *, data: bytes | None = None) -> bytes:
     if result.returncode:
         # Commands can include passwords. Never include argv or untrusted
         # diagnostics in logs, exception messages, reports or artifacts.
-        raise RuntimeError(f'{Path(command[0]).name} signing check failed (exit {result.returncode})')
+        operation = command[1] if len(command) > 1 else ''
+        raise RuntimeError(f'{Path(command[0]).name} {operation} signing check failed (exit {result.returncode})')
     return result.stdout
 
 
@@ -70,8 +71,25 @@ def main() -> int:
             run(['security', 'create-keychain', '-p', password, str(keychain)])
             try:
                 run(['security', 'unlock-keychain', '-p', password, str(keychain)])
-                run(['security', 'import', str(p12), '-k', str(keychain), '-P',
-                     os.environ['APPLE_CERTIFICATE_PASSWORD'], '-T', '/usr/bin/codesign'])
+                # OpenSSL 3's default PBES2 PKCS12 encoding is not accepted by
+                # every macOS Security.framework version. Re-encode the same
+                # existing identity with Apple's compatible SHA1/3DES format.
+                # The unencrypted PEM exists only in subprocess memory; only
+                # the randomly encrypted PKCS12 reaches the private temp dir.
+                identity_pem = run(['openssl', 'pkcs12', '-in', str(p12), '-passin',
+                                    'env:APPLE_CERTIFICATE_PASSWORD', '-nodes'])
+                os.environ['PLEAZYNG_PREFLIGHT_P12_PASSWORD'] = secrets.token_urlsafe(32)
+                try:
+                    compatible = run(['openssl', 'pkcs12', '-export', '-keypbe', 'PBE-SHA1-3DES',
+                                      '-certpbe', 'PBE-SHA1-3DES', '-macalg', 'sha1',
+                                      '-passout', 'env:PLEAZYNG_PREFLIGHT_P12_PASSWORD'], data=identity_pem)
+                    identity_pem = b''
+                    p12.write_bytes(compatible)
+                    run(['security', 'import', str(p12), '-k', str(keychain), '-P',
+                         os.environ['PLEAZYNG_PREFLIGHT_P12_PASSWORD'], '-T', '/usr/bin/codesign'])
+                    report['compatible_pkcs12_encoding'] = True
+                finally:
+                    os.environ.pop('PLEAZYNG_PREFLIGHT_P12_PASSWORD', None)
                 identities = run(['security', 'find-identity', '-p', 'codesigning', str(keychain)]).decode()
                 if fingerprint not in identities:
                     raise ValueError('Imported certificate has no matching code-signing private key')

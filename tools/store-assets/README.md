@@ -17,8 +17,8 @@ opaque. The exported sets include provenance and a ZIP for manual console upload
 
 The opt-in harness also renders subtitle styling sheets and light/dark/OLED
 appearance variants. These use production widgets with simulated state, not a
-native video decoder. For README playback examples, capture an actual visible
-video frame and its controls from the running packaged app. Blank player
+native video decoder. Prefer a visible video frame and controls captured from the running packaged
+app; if unavailable, use a visibly labeled mockup and record the capture limit. Blank player
 fixtures are layout tests and must not be presented as playback screenshots.
 
 To render only the appearance variants, add `--name
@@ -33,3 +33,6 @@ inspect both the video area and control legibility before updating README assets
 The fixture's [attribution and image license](fixtures/README.md) travel with the
 renders. Native playback capture failures are recorded separately, never hidden
 by describing a mockup as a running video.
+
+The packager rejects player images whose central video area is empty, and carries
+the sample-frame attribution and mockup metadata into generated packs.

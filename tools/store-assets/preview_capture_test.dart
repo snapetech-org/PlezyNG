@@ -18,6 +18,7 @@ import 'package:plezy/widgets/video_controls/sheets/subtitle_style_sheet.dart';
 
 import '../../test/appearance/appearance_fixtures.dart';
 import '../../test/test_helpers/prefs.dart';
+import 'player_mockup.dart';
 
 void main() {
   final output = Platform.environment['PLEAZYNG_PREVIEW_OUTPUT'];
@@ -101,15 +102,6 @@ void main() {
   }
 
   for (final entry in {'dark': MonoPalette.dark, 'light': MonoPalette.light, 'oled': MonoPalette.oled}.entries) {
-    for (final device in ['desktop', 'phone']) {
-      preview(
-        name: '$device-player-${entry.key}',
-        device: device,
-        scene: () => appearanceScene(AppearanceScene.player),
-        palette: entry.value,
-        landscape: true,
-      );
-    }
     preview(
       name: 'desktop-appearance-${entry.key}',
       device: 'desktop',
@@ -128,5 +120,8 @@ void main() {
       ),
       palette: entry.value,
     );
+  }
+  for (final device in ['desktop', 'phone']) {
+    preview(name: '$device-player-mockup', device: device, landscape: true, scene: () => const PlayerMockup());
   }
 }

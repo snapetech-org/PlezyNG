@@ -15,11 +15,24 @@ frames, validates store dimensions/counts, and exports RGB PNGs without resizing
 cropping or compositing. It removes alpha only after checking every pixel is
 opaque. The exported sets include provenance and a ZIP for manual console upload.
 
-The opt-in harness also renders desktop and landscape-phone playback controls,
-subtitle styling sheets, and light/dark/OLED appearance variants. Player widgets
-use simulated state; these previews do not run a decoder or qualify playback.
-To render only those variants, add `--name
-'preview.*(player-|appearance-|subtitle-style-)'` to the Flutter command. Package
-that output into a separate directory so earlier preview manifests keep their
-original source revision. The contact-sheet generator includes every supplied
-preview, including new scene names.
+The opt-in harness also renders subtitle styling sheets and light/dark/OLED
+appearance variants. These use production widgets with simulated state, not a
+native video decoder. Prefer a visible video frame and controls captured from the running packaged
+app; if unavailable, use a visibly labeled mockup and record the capture limit. Blank player
+fixtures are layout tests and must not be presented as playback screenshots.
+
+To render only the appearance variants, add `--name
+'preview.*(appearance-|subtitle-style-)'` to the Flutter command. Keep new renders
+in a separate output directory so earlier manifests retain their original source
+revision. The contact sheet includes every supplied scene.
+
+`player_mockup.dart` composes production player controls over an attributed
+Caminandes still, with a visible **PLAYER UI MOCKUP** label. It uses simulated
+state and never starts a decoder. Run only these with `--name 'preview.*mockup'`;
+inspect both the video area and control legibility before updating README assets.
+The fixture's [attribution and image license](fixtures/README.md) travel with the
+renders. Native playback capture failures are recorded separately, never hidden
+by describing a mockup as a running video.
+
+The packager rejects player images whose central video area is empty, and carries
+the sample-frame attribution and mockup metadata into generated packs.

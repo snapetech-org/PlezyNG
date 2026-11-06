@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import zipfile
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageStat
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--input', required=True, type=Path)
@@ -22,6 +22,12 @@ except OSError:
 records = []
 for source in sorted(args.input.glob('*-preview.png')):
     image = Image.open(source).convert('RGB')
+    if '-player-' in source.stem:
+        area = image.crop((image.width // 5, image.height // 5, image.width * 4 // 5, image.height * 3 // 5))
+        # Check the video area, not the controls or preview footer.
+        non_dark = sum(area.convert('L').histogram()[71:]) / (area.width * area.height)
+        if min(ImageStat.Stat(area).stddev) <= 20 or non_dark <= .3:
+            raise ValueError(f'{source.name}: empty video area; do not package blank player previews')
     labeled = Image.new('RGB', (image.width, image.height + 48), '#0a1118')
     labeled.paste(image, (0, 0))
     draw = ImageDraw.Draw(labeled)
@@ -33,8 +39,21 @@ for source in sorted(args.input.glob('*-preview.png')):
 manifest = {'schema_version': 1, 'source_sha': args.source_sha, 'store_upload_eligible': False,
             'method': 'Production Flutter widgets rendered by flutter_test with appearance fixtures; demo metadata; no device execution',
             'images': records}
+if any('-player-mockup-' in record['name'] for record in records):
+    fixtures = Path(__file__).resolve().parent / 'fixtures'
+    manifest.update({'kind': 'player-ui-mockup', 'video_decoding_performed': False,
+                     'sample_frame': {'title': 'Caminandes 2: Gran Dillama',
+                                      'author': 'Blender Foundation / Blender Institute',
+                                      'time_seconds': 30,
+                                      'source': 'https://commons.wikimedia.org/wiki/File:Caminandes,_Gran_Dillama_-_Blender_Foundation.webm',
+                                      'license': 'CC BY-SA 3.0', 'attribution': 'ATTRIBUTION.md',
+                                      'fixture_sha256': hashlib.sha256((fixtures / 'caminandes-frame.jpg').read_bytes()).hexdigest()}})
+    (args.output / 'ATTRIBUTION.md').write_text((fixtures / 'README.md').read_text())
 (args.output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 (args.output / 'README.txt').write_text('Pleazyng interface previews\n\nThese are production Flutter widgets with synthetic fixture data, not screenshots from a running packaged app.\nDo not upload them to store screenshot slots or describe them as Fire TV hardware captures.\nPlayer previews use simulated state and do not run a native decoder.\n\nSource: ' + args.source_sha + '\n\n' + '\n'.join(record['name'] for record in records) + '\n')
+if manifest.get('kind') == 'player-ui-mockup':
+    with (args.output / 'README.txt').open('a') as note:
+        note.write('\nPLAYER UI MOCKUPS: sample film still and simulated state, not native playback. See ATTRIBUTION.md for image attribution and CC BY-SA 3.0 licensing.\n')
 columns = 3
 rows = (len(records) + columns - 1) // columns
 sheet = Image.new('RGB', (1920, 125 + rows * 455), '#101820')

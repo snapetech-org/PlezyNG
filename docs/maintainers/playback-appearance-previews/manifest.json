@@ -44,45 +44,6 @@
       "kind": "labeled-widget-preview"
     },
     {
-      "name": "desktop-player-dark-preview.png",
-      "render_dimensions": [
-        1920,
-        1200
-      ],
-      "dimensions": [
-        1920,
-        1248
-      ],
-      "sha256": "37f4b22a008346de912b16265377c085bdaf59c5e5d7f0985921948b0594afd4",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "desktop-player-light-preview.png",
-      "render_dimensions": [
-        1920,
-        1200
-      ],
-      "dimensions": [
-        1920,
-        1248
-      ],
-      "sha256": "2367362c9cc74293e0a0f224fd19cdd27b42b1811888e8143d0785e3574f24e2",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "desktop-player-oled-preview.png",
-      "render_dimensions": [
-        1920,
-        1200
-      ],
-      "dimensions": [
-        1920,
-        1248
-      ],
-      "sha256": "37f4b22a008346de912b16265377c085bdaf59c5e5d7f0985921948b0594afd4",
-      "kind": "labeled-widget-preview"
-    },
-    {
       "name": "desktop-subtitle-style-dark-preview.png",
       "render_dimensions": [
         1920,
@@ -119,45 +80,6 @@
         1248
       ],
       "sha256": "025ce37b9381af54ae43d842f5e081f92a16bc01487d80c5b6f4c3079e12ce29",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "phone-player-dark-preview.png",
-      "render_dimensions": [
-        2400,
-        1080
-      ],
-      "dimensions": [
-        2400,
-        1128
-      ],
-      "sha256": "66527259bbb502b0498821b8911ccb14077cfeac8b2d2151fd1d9c216246ccce",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "phone-player-light-preview.png",
-      "render_dimensions": [
-        2400,
-        1080
-      ],
-      "dimensions": [
-        2400,
-        1128
-      ],
-      "sha256": "7069f1f38dbabfdbaebf1d034c00540157f9a95be142db1a3fd62e876d313528",
-      "kind": "labeled-widget-preview"
-    },
-    {
-      "name": "phone-player-oled-preview.png",
-      "render_dimensions": [
-        2400,
-        1080
-      ],
-      "dimensions": [
-        2400,
-        1128
-      ],
-      "sha256": "66527259bbb502b0498821b8911ccb14077cfeac8b2d2151fd1d9c216246ccce",
       "kind": "labeled-widget-preview"
     }
   ]

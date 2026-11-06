@@ -36,9 +36,9 @@ def main():
                '--var', 'SESSION_SIGNING_KEY:local-only-test-signing-material-32-bytes']
     opener = urllib.request.build_opener(NoRedirect)
 
-    def request(path, body=None):
+    def request(path, body=None, extra_headers=None):
         req = urllib.request.Request(base + path, data=json.dumps(body).encode() if body else None,
-                                     headers={'Content-Type': 'application/json', 'CF-Connecting-IP': '192.0.2.10'})
+                                     headers={'Content-Type': 'application/json', 'CF-Connecting-IP': '192.0.2.10', **(extra_headers or {})})
         try:
             return opener.open(req, timeout=10)
         except urllib.error.HTTPError as exc:
@@ -59,6 +59,9 @@ def main():
                 time.sleep(0.25)
             else:
                 raise RuntimeError('workerd startup timed out')
+            assert request('/auth/start', {'service': 'mal'}, {'Origin': 'https://untrusted.example'}).status == 403
+            assert request('/auth/start', {'service': 'mal'}, {'Content-Type': 'text/plain'}).status == 415
+            assert request('/auth/start', {'service': 'mal', 'padding': 'x' * 1024}).status == 413
             response = request('/auth/start', {'service': 'mal'})
             assert response.status == 200, ('start', response.status)
             session = json.load(response)
@@ -71,7 +74,7 @@ def main():
             assert response.status == 200
             assert json.load(response) == {'error': 'access_denied'}
             assert request('/auth/result?session=' + session['session']).status == 410
-            print('workerd + SQLite + rate limiter: redirect, callback, single-use delivery passed')
+            print('workerd + SQLite + rate limiter: body/origin rejection, redirect, callback, single-use delivery passed')
         finally:
             if process.poll() is None:
                 os.killpg(process.pid, signal.SIGTERM)

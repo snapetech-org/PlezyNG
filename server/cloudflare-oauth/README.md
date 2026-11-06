@@ -42,6 +42,8 @@ are separately metered Durable Objects storage/compute, not an unlimited service
 The defaults deliberately bound admission:
 
 - 100 newly admitted edge sign-in sessions per UTC day, shared by both providers.
+- Ten admitted sessions per hashed client IP/UTC day, including cancelled/failed
+  attempts. Shared NAT users share this limit; rejected starts do not write state.
 - A Workers rate-limit binding permits three start attempts per client/minute
   per Cloudflare location; the admission object also enforces three successful
   admissions per hashed client/minute globally.
@@ -79,9 +81,13 @@ capability. Do not log complete URLs, authorization codes, capabilities, tokens,
 provider response bodies or configuration values.
 
 Workers invocation logs and traces are disabled, with query-string redaction
-also specified in deployment metadata. Responses are no-store; browser pages
+also specified in deployment metadata. Responses are no-store and carry MIME, referrer, frame and HSTS headers; browser pages
 have a restrictive CSP and no-referrer policy. The Worker never accepts arbitrary
-provider/token URLs. Start bodies are bounded to 512 bytes.
+provider/token URLs. Start bodies are bounded to 512 bytes and oversized streams are cancelled
+without waiting on cloned-stream cancellation. MAL/AniList starts require JSON
+and reject foreign/null browser Origins and cross-site Fetch Metadata. Native
+clients omit Origin; same-origin browser calls remain allowed. These checks apply
+only to the migrated providers and do not change Trakt/Steam pass-through.
 
 Token results and PKCE state exist temporarily in the object's encrypted-at-rest
 storage until single-use delivery or expiry. They are not a permanent token
@@ -185,3 +191,11 @@ Provider credentials can be changed independently of app releases. A 429 means
 admission or concurrent-poll limits, 410 means expired/consumed/invalid capability,
 and 503 means disabled provider or unavailable edge dependency. Do not log a
 failed request URL while investigating.
+
+## Security review
+
+See [the dated security review](security-review-20261106.md) for the tested
+controls, fixes, provider-specific PKCE compatibility and explicit residual risks.
+Login admission limits protect state/compute usage; they do not authenticate an
+application or guarantee availability. A distributed attacker can still exhaust
+a public free-tier request allowance or the global sign-in cap.

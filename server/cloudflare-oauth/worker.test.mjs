@@ -29,8 +29,8 @@ function fixture() {
     }};
   }
   env.SESSIONS = namespace(OAuthSession, sessions); env.ADMISSION = namespace(OAuthAdmission, admissions);
-  async function call(path, { method = 'GET', body, ip = '192.0.2.1' } = {}) {
-    return worker.fetch(new Request(`${origin}${path}`, { method, headers: { 'CF-Connecting-IP': ip, 'Content-Type': 'application/json' }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }), env);
+  async function call(path, { method = 'GET', body, ip = '192.0.2.1', headers = {} } = {}) {
+    return worker.fetch(new Request(`${origin}${path}`, { method, headers: { 'CF-Connecting-IP': ip, 'Content-Type': 'application/json', ...headers }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }), env);
   }
   async function start(service = 'mal') {
     const response = await call('/auth/start', { method: 'POST', body: { service } }); assert.equal(response.status, 200);
@@ -146,7 +146,7 @@ test('Trakt browser PKCE, Steam, legacy sessions, and unknown paths pass through
 test('unconfigured providers and oversized bodies cannot create state; expiry cleans secrets', async () => {
   const f = fixture(); f.env.ANILIST_CLIENT_SECRET = '';
   assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'anilist' } })).status, 503);
-  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal', padding: 'a'.repeat(1024) } })).status, 400);
+  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal', padding: 'a'.repeat(1024) } })).status, 413);
   assert.equal(f.admissions.size, 0);
   const s = await f.start(); await s.entry.object.alarm();
   assert.equal(s.entry.ctx.storage.values.size, 0);
@@ -159,4 +159,61 @@ test('edge start limiter rejects attempts before any object call', async () => {
   const f = fixture(); f.env.START_LIMIT.limit = async () => ({ success: false });
   assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal' } })).status, 429);
   assert.equal(f.admissions.size, 0); assert.equal(f.sessions.size, 0);
+});
+
+test('declared and streamed oversized bodies reject promptly without state allocation', async () => {
+  for (const declared of [true, false]) {
+    const f = fixture();
+    const body = declared ? 'x'.repeat(1024) : new ReadableStream({
+      start(controller) { controller.enqueue(new TextEncoder().encode('x'.repeat(1024))); controller.close(); },
+    });
+    const request = new Request(`${origin}/auth/start`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...(declared ? { 'Content-Length': '1024' } : {}) },
+      body, ...(declared ? {} : { duplex: 'half' }),
+    });
+    let timer;
+    try {
+      const response = await Promise.race([worker.fetch(request, f.env), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('body rejection hung')), 500); })]);
+      assert.equal(response.status, 413);
+      assert.equal(f.sessions.size, 0); assert.equal(f.admissions.size, 0);
+    } finally { clearTimeout(timer); }
+  }
+});
+
+test('browser-simple and cross-site starts cannot spend login quota', async () => {
+  const f = fixture();
+  for (const headers of [
+    { 'Content-Type': 'text/plain' }, { Origin: 'https://untrusted.example' },
+    { Origin: 'null' }, { 'Sec-Fetch-Site': 'cross-site' },
+  ]) {
+    const response = await f.call('/auth/start', { method: 'POST', body: { service: 'mal' }, headers });
+    assert.equal(response.status, headers['Content-Type'] ? 415 : 403);
+  }
+  assert.equal(f.sessions.size, 0); assert.equal(f.admissions.size, 0);
+  assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal' }, headers: { Origin: origin } })).status, 200);
+});
+
+test('one client cannot consume the global daily admission budget by waiting out burst limits', async t => {
+  let now = Date.now(); t.mock.method(Date, 'now', () => now);
+  const ctx = context(); const admission = new OAuthAdmission(ctx); await ctx.ready;
+  const req = client => new Request('https://quota.internal/admit', { method: 'POST', body: JSON.stringify({ client }) });
+  for (let i = 0; i < 10; i++) {
+    assert.equal((await admission.fetch(req('same-client'))).status, 204); now += 60_001;
+  }
+  const writes = ctx.storage.writes;
+  const reloadedCtx = context(ctx.storage); const reloaded = new OAuthAdmission(reloadedCtx); await reloadedCtx.ready;
+  assert.equal((await reloaded.fetch(req('same-client'))).status, 429);
+  assert.equal(ctx.storage.writes, writes);
+  assert.equal((await reloaded.fetch(req('other-client'))).status, 204);
+});
+
+test('edge responses carry no-store, referrer, MIME and frame protections', async () => {
+  const f = fixture(); const s = await f.start();
+  for (const response of [await f.call('/auth/edge-health'), await f.call('/auth/mal?state=' + s.state), await f.call('/auth/result?session=e1_invalid')]) {
+    assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
+    assert.equal(response.headers.get('Referrer-Policy'), 'no-referrer');
+    assert.equal(response.headers.get('X-Frame-Options'), 'DENY');
+    assert.match(response.headers.get('Strict-Transport-Security'), /max-age=31536000/);
+    assert.match(response.headers.get('Cache-Control'), /no-store/);
+  }
 });

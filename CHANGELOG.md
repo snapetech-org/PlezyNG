@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Harden edge OAuth against oversized-body stalls, cross-site session creation and single-client daily quota exhaustion; apply consistent browser security headers.
+
 - Keep edge-hosted provider authorization redirects in the browser instead of following them inside the relay.
 
 - Host MyAnimeList and AniList sign-in on a bounded Cloudflare OAuth service while preserving existing callback URLs and local Trakt and Steam authentication.

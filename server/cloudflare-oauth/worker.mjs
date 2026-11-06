@@ -1,13 +1,26 @@
 // OAuth sessions only. No D1/KV namespace and no request/token logging.
 const TTL_MS = 600_000;
 const DAILY_SESSIONS = 100;
+const DAILY_CLIENT_SESSIONS = 10;
 const POLL_MS = 50_000;
 const EDGE = new Set(['mal', 'anilist']);
 const encoder = new TextEncoder();
-const json = (value, status = 200, headers = {}) => new Response(JSON.stringify(value), {
-  status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store, private', ...headers },
+const SECURITY_HEADERS = Object.freeze({
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'no-referrer',
+  'X-Frame-Options': 'DENY',
+  'Strict-Transport-Security': 'max-age=31536000',
 });
-const empty = status => new Response(null, { status, headers: { 'Cache-Control': 'no-store, private' } });
+class PayloadTooLarge extends Error {}
+function discardBody(request) {
+  // Cancellation of a cloned (tee'd) stream can wait for its other branch.
+  // Never await it on the response path; cancel both branches independently.
+  try { void request.body?.cancel().catch(() => {}); } catch {}
+}
+const json = (value, status = 200, headers = {}) => new Response(JSON.stringify(value), {
+  status, headers: { ...SECURITY_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': 'no-store, private', ...headers },
+});
+const empty = status => new Response(null, { status, headers: { ...SECURITY_HEADERS, 'Cache-Control': 'no-store, private' } });
 const hex = bytes => [...bytes].map(v => v.toString(16).padStart(2, '0')).join('');
 const random = () => hex(crypto.getRandomValues(new Uint8Array(16)));
 const configured = (env, service) => service === 'mal' ? !!env.MAL_CLIENT_ID : !!(env.ANILIST_CLIENT_ID && env.ANILIST_CLIENT_SECRET);
@@ -43,19 +56,19 @@ function page(ok, status = 200) {
   // Static text only; never interpolate provider responses, state or codes.
   const title = ok ? 'Signed in to Pleazyng' : 'Sign-in could not be completed';
   return new Response(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${title}</title><body><h1>${title}</h1><p>Return to the app. You can close this tab.</p></body></html>`, {
-    status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, private',
-      'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'", 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff' },
+    status, headers: { ...SECURITY_HEADERS, 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, private',
+      'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'", 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff' },
   });
 }
 async function limitedText(request, limit) {
-  if (Number(request.headers.get('Content-Length')) > limit) throw new Error('body too large');
+  if (Number(request.headers.get('Content-Length')) > limit) { discardBody(request); throw new PayloadTooLarge(); }
   const reader = request.body?.getReader();
   if (!reader) return '';
   let total = 0; const parts = [];
   while (true) {
     const { done, value } = await reader.read(); if (done) break;
     total += value.length;
-    if (total > limit) { void reader.cancel().catch(() => {}); throw new Error('body too large'); }
+    if (total > limit) { void reader.cancel().catch(() => {}); throw new PayloadTooLarge(); }
     parts.push(value);
   }
   const bytes = new Uint8Array(total); let offset = 0;
@@ -72,10 +85,18 @@ export default {
         ? json({ ok: true, runtime: 'cloudflare', d1: false, providers: { mal: configured(env, 'mal'), anilist: configured(env, 'anilist') }, dailySessionLimit: DAILY_SESSIONS }) : empty(405);
       if (url.pathname === '/auth/start' && request.method === 'POST') {
         let body;
-        try { body = JSON.parse(await limitedText(request.clone(), 512)); } catch { await request.body?.cancel().catch(() => {}); return empty(400); }
+        try { body = JSON.parse(await limitedText(request.clone(), 512)); } catch (error) {
+          discardBody(request); return empty(error instanceof PayloadTooLarge ? 413 : 400);
+        }
         // New Trakt browser PKCE, Steam, and all other local providers retain
         // their original origin protocol and session keys.
         if (!EDGE.has(body?.service)) return fetch(request);
+        // Native clients send JSON without Origin. Block browser-simple posts
+        // and cross-site attempts from spending a victim's admission budget.
+        const contentType = (request.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase();
+        if (contentType !== 'application/json') return empty(415);
+        const origin = request.headers.get('Origin');
+        if ((origin !== null && origin !== base(env)) || request.headers.get('Sec-Fetch-Site') === 'cross-site') return empty(403);
         if (!configured(env, body.service)) return json({ error: 'provider_not_configured' }, 503);
         const ip = request.headers.get('CF-Connecting-IP');
         if (!ip) return empty(400);
@@ -129,10 +150,11 @@ export class OAuthAdmission {
   }
   async fetch(request) {
     const { client } = await request.json(); const now = Date.now();
-    const previous = this.data.clients[client] || { since: now, count: 0 };
-    const entry = now - previous.since >= 60_000 ? { since: now, count: 0 } : previous;
-    if (this.data.count >= DAILY_SESSIONS || entry.count >= 3) return json({ error: 'login_rate_limited' }, 429, { 'Retry-After': this.data.count >= DAILY_SESSIONS ? '3600' : '60' });
-    this.data.count++; entry.count++; this.data.clients[client] = entry;
+    const previous = this.data.clients[client] || { since: now, count: 0, total: 0 };
+    const total = previous.total || 0;
+    const entry = now - previous.since >= 60_000 ? { since: now, count: 0, total } : previous;
+    if (this.data.count >= DAILY_SESSIONS || total >= DAILY_CLIENT_SESSIONS || entry.count >= 3) return json({ error: 'login_rate_limited' }, 429, { 'Retry-After': this.data.count >= DAILY_SESSIONS || total >= DAILY_CLIENT_SESSIONS ? '3600' : '60' });
+    this.data.count++; entry.count++; entry.total = total + 1; this.data.clients[client] = entry;
     await this.ctx.storage.put('budget', this.data);
     // One cleanup alarm per day-object, not per request or poll.
     if (this.data.count === 1) await this.ctx.storage.setAlarm(now + 2 * 86_400_000);
@@ -170,7 +192,7 @@ export class OAuthSession {
         redirect_uri: `${base(this.env)}/auth/${this.data.service}/callback`, state: this.data.browser,
         ...(mal ? { code_challenge: this.data.verifier, code_challenge_method: 'plain' } : {}),
       });
-      return new Response(null, { status: 302, headers: { Location: url.toString(), 'Cache-Control': 'no-store, private', 'Referrer-Policy': 'no-referrer' } });
+      return new Response(null, { status: 302, headers: { ...SECURITY_HEADERS, Location: url.toString(), 'Cache-Control': 'no-store, private', 'Referrer-Policy': 'no-referrer' } });
     }
     if (action !== '/callback') return empty(404);
     if (this.data.claimed) return page(false, 404);

@@ -2,13 +2,15 @@
 
 ## [Unreleased]
 
+- Resolve webOS audio visualization namespaces, retain textures for the legacy SDK lifetime, and compile-check every audio plugin source before building the engine.
+
 - Restore the Tizen visualization helper execute permission after SDK packaging without changing signed file contents, and retain failed package diagnostics.
 
 - Make scheduled HLS completion tests independent of machine speed while preserving complete-segment AES decryption checks.
 
 - Isolate RomM manual PDF rendering behind the TV platform adapter, preserving supported PDF viewers and detecting unsupported Tizen imports before native builds.
 
-- Prepare the complete Pleazyng 3.0.2 corrective release with package build 161, preserving the earlier immutable tags.
+- Prepare the complete Pleazyng 3.0.3 corrective release with package build 162, preserving the earlier immutable tags.
 
 - Publish QAIRT context manifests atomically and reject previously published output directories, preserving valid package metadata after interrupted builds.
 - Identify native Tizen video output in playback diagnostics when the player reports no output property.

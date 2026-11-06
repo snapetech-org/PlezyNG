@@ -6,11 +6,14 @@
 #include "http.h"
 #include "audio_player.h"
 #include "visualizer_pcm.h"
+
 #include "log.h"
 
 #include <flutter/event_stream_handler_functions.h>
 #include <flutter/standard_method_codec.h>
 #include <mutex>
+
+using audioplayers_soloud_webos::VisualizerPcm;
 
 #ifdef TAG
 #undef TAG

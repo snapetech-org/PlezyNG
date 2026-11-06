@@ -36,6 +36,8 @@ static const char *kInvalidArgument = "Invalid argument";
 
 namespace {
 
+using audioplayers_soloud_webos::VisualizerHost;
+
 template <typename T>
 bool GetValueFromEncodableMap(const flutter::EncodableMap *map, const char *key,
                               T &out) {

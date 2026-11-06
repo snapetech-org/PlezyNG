@@ -202,6 +202,14 @@ NDK_INSTALLER="$(download_locked webos-ndk-installer.sh "$NDK_INSTALLER_URL" "$N
 BASE_ENGINE_ARCHIVE="$(download_locked webos-arm-release.zip "$BASE_ENGINE_URL" "$BASE_ENGINE_SHA256")"
 COMMON_ARCHIVE="$(download_locked webos-common.zip "$COMMON_ARCHIVE_URL" "$COMMON_ARCHIVE_SHA256")"
 
+# Validate native plugin APIs before downloading/building the Flutter engine.
+# Keep setup-python's loader path out of the LG installer; it needs system Python.
+env -u LD_LIBRARY_PATH PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+  bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
+WEBOS_NDK_ROOT="$NDK_ROOT" WEBOS_ENGINE_COMMON_ARCHIVE="$COMMON_ARCHIVE" \
+  WEBOS_PYTHON_BIN="$PYTHON_BIN" bash "$ROOT/tools/webos/check_audio_plugin_syntax.sh" \
+  2>&1 | tee "$LOG_ROOT/native-syntax.log"
+
 git -c protocol.file.allow=never clone --filter=blob:none --no-checkout \
   https://github.com/lg-flutter-webos/flutter-webos.git "$SDK_ROOT"
 git -C "$SDK_ROOT" checkout --detach "$SDK_REVISION"
@@ -288,14 +296,6 @@ export PYTHONPATH="$DEPOT_TOOLS_PYTHON_SITE${PYTHONPATH:+:$PYTHONPATH}"
 
 "$PYTHON_BIN" "$ROOT/tools/webos/verify_sdk_checkout.py" "$SDK_ROOT"
 
-# actions/setup-python adds a Python 3.14 wrapper to HOST_TOOLS, but that
-# interpreter needs LD_LIBRARY_PATH to load libpython. The LG installer
-# removes paths containing deleted directories by running its first Python
-# executable; give that installer a system-only PATH so it uses system Python
-# and keeps core utilities available after sanitizing PATH. The installer must
-# also start without the setup-python library path.
-env -u LD_LIBRARY_PATH PATH=/usr/bin:/bin:/usr/sbin:/sbin \
-  bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
 "$PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" --root "$NDK_ROOT" --verify
 
 export FLUTTER_WEBOS_SDK_ROOT="$SDK_ROOT"

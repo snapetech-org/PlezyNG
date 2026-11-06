@@ -86,14 +86,14 @@ struct PixelLease {
 };
 struct Session {
   flutter::TextureRegistrar* registrar;
+  std::shared_ptr<FrameSlot> slot = std::make_shared<FrameSlot>();
   std::shared_ptr<flutter::TextureVariant> texture;
   std::unique_ptr<NativeWorker> worker;
   int64_t texture_id = -1, lease;
   Session(flutter::TextureRegistrar* textures, std::shared_ptr<Binding> binding, int64_t id)
       : registrar(textures), lease(id) {
-    auto slot = std::make_shared<FrameSlot>();
     texture = std::make_shared<flutter::TextureVariant>(flutter::PixelBufferTexture(
-        [slot, binding](size_t, size_t) -> const FlutterDesktopPixelBuffer* {
+        [slot = slot, binding](size_t, size_t) -> const FlutterDesktopPixelBuffer* {
           try {
             std::lock_guard<std::mutex> lock(slot->mutex);
             if (!slot->frame || slot->leases.load() >= 4 || !binding->AcceptsFrame(slot->frame->audio_generation)) return nullptr;
@@ -103,18 +103,27 @@ struct Session {
     texture_id = registrar->RegisterTexture(texture.get());
     if (texture_id < 0) throw std::runtime_error("Flutter rejected the TV visualization texture.");
     try {
-      worker = std::make_unique<NativeWorker>([] { return std::make_unique<TvRenderBackend>(); },
+      Start(std::move(binding), id);
+    } catch (...) { registrar->UnregisterTexture(texture_id); throw; }
+  }
+  void Start(std::shared_ptr<Binding> binding, int64_t id) {
+    lease = id;
+    worker = std::make_unique<NativeWorker>([] { return std::make_unique<TvRenderBackend>(); },
           [binding](mpv_plezy_audio_block* block) { return binding->Read(block); },
-          [slot, binding, textures, id = texture_id](std::shared_ptr<const NativeFrame> frame) {
+          [slot = slot, binding, textures = registrar, id = texture_id](std::shared_ptr<const NativeFrame> frame) {
             if (!binding->AcceptsFrame(frame->audio_generation)) return;
             { std::lock_guard<std::mutex> lock(slot->mutex); slot->frame = std::move(frame); }
             textures->MarkTextureFrameAvailable(id);
           });
-    } catch (...) { registrar->UnregisterTexture(texture_id, [keep = texture] {}); throw; }
+  }
+  void Stop() {
+    worker.reset();  // Stop publishing before clearing the retained frame.
+    std::lock_guard<std::mutex> lock(slot->mutex);
+    slot->frame.reset();
   }
   ~Session() {
-    worker.reset();  // Stop publishing before unregistering; GL dies on its worker.
-    if (texture_id >= 0) registrar->UnregisterTexture(texture_id, [keep = std::move(texture)] {});
+    Stop();
+    if (texture_id >= 0) registrar->UnregisterTexture(texture_id);
   }
 };
 
@@ -209,18 +218,22 @@ struct VisualizerHost::Impl {
               {Value("engine"), Value("milkrust-webos-native")}})); return;
         }
         if (!reason.empty()) { result->Error("VISUALIZER_UNAVAILABLE", reason); return; }
-        if (session) { result->Error("VISUALIZER_BUSY", "A visualization session already owns this host."); return; }
+        if (session && session->worker) { result->Error("VISUALIZER_BUSY", "A visualization session already owns this host."); return; }
         if (next_lease == INT64_MAX) throw std::runtime_error("The visualization lease counter is exhausted.");
-        session = std::make_unique<Session>(textures, binding, ++next_lease);
+        // The webOS SDK only provides synchronous texture removal and requires
+        // textures to be out of use first. Keep one registration for the view's
+        // lifetime, reusing it across leases; in-flight pixel leases own frames.
+        if (session) session->Start(binding, ++next_lease);
+        else session = std::make_unique<Session>(textures, binding, ++next_lease);
         result->Success(Value(Map{{Value("sessionId"), Value(session->lease)}, {Value("textureId"), Value(session->texture_id)}}));
         return;
       }
       if (method != "visualizerLoad" && method != "visualizerResize" && method != "visualizerSetMouse" && method != "visualizerSetPaused" &&
           method != "visualizerStatus" && method != "visualizerDispose") { result->NotImplemented(); return; }
-      if (!session || Integer(args, "sessionId") != session->lease) {
+      if (!session || !session->worker || Integer(args, "sessionId") != session->lease) {
         result->Error("VISUALIZER_STALE", "The visualization session has expired."); return;
       }
-      if (method == "visualizerDispose") { binding->RenderActive(false); session.reset(); }
+      if (method == "visualizerDispose") { binding->RenderActive(false); session->Stop(); }
       else if (method == "visualizerLoad")
         session->worker->Load(String(args, "path"), String(args, "root"), Number(args, "transitionSeconds", 3));
       else if (method == "visualizerResize") {

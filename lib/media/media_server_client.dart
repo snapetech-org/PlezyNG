@@ -1113,13 +1113,13 @@ abstract interface class SeasonEpisodePagingClient {
 /// Optional capability for clients whose server can answer "may the signed-in
 /// user delete *this* item?" per item.
 ///
-/// Jellyfin-only by nature: `BaseItemDto.CanDelete` folds the global
+/// On MediaBrowser servers, `BaseItemDto.CanDelete` folds the global
 /// `EnableContentDeletion` grant, the per-library
 /// `EnableContentDeletionFromFolders` grant, and item state (virtual/missing
 /// files, in-progress recordings) into one server-computed boolean — none of
-/// which a client can reproduce. Plex exposes no per-item delete permission,
-/// so it deliberately does not implement this and callers keep using their
-/// account-level owner/admin gate for it.
+/// which a client can reproduce. Plex answers with its live server-wide
+/// `allowMediaDeletion` preference; callers must additionally require the
+/// account-level owner/admin gate for that backend.
 abstract interface class MediaDeletionPermissionClient {
   /// `true`/`false` as reported by the server for [item], or `null` when the
   /// server did not answer (item not visible to this user, unexpected shape).

@@ -320,3 +320,19 @@ architecture, protocol and digests. The player retains its PCM/session and
 Flutter pixel leases; both TV control handlers now forward pointer state.
 Firmware permissions, package installation, GL and recovery are unverified.
 There is no in-process fallback if child startup fails.
+
+
+## Linux runtime smoke check
+
+The pinned runtime builds with Rust 1.97.0. After running the normal builder,
+exercise both presets from the app's bundled pack with actual PCM and EGL:
+
+```sh
+python3 scripts/visualizer/smoke_runtime.py --runtime build/milkrust/libmilkrust_native.so --profile gles
+python3 scripts/visualizer/smoke_runtime.py --runtime build/milkrust/libmilkrust_native.so --profile gl
+```
+
+The child process has a 30-second deadline. It checks ABI v2, decoded PCM input,
+changing nonblank frames, distinct preset output and native teardown. Mesa
+llvmpipe passes both profiles locally. This is not hardware GPU, mpv capture,
+reference-image parity or platform-package qualification.

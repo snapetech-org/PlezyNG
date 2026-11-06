@@ -73,6 +73,7 @@ class _CallbackSession {
     required this.offlineWatchService,
     required this.mediaSourceId,
     this.partTimeline,
+    this.playSessionId,
   });
 
   final String id;
@@ -82,6 +83,7 @@ class _CallbackSession {
   final OfflineWatchSyncService? offlineWatchService;
   final String? mediaSourceId;
   final MediaPartTimeline? partTimeline;
+  final String? playSessionId;
 }
 
 /// How playback in an x-callback-url player ended: the `<result>` of its
@@ -133,6 +135,7 @@ class ExternalPlayerService {
       // An external player is handed one file. For an item stacked across
       // several files that is one part, on that part's clock.
       MediaPartTimeline? partTimeline;
+      String? playSessionId;
       final resume = (metadata?.viewOffsetMs ?? 0) > 0 ? Duration(milliseconds: metadata!.viewOffsetMs!) : null;
 
       if (videoUrl != null) {
@@ -158,6 +161,7 @@ class ExternalPlayerService {
         resolvedUrl = target.url;
         subtitles = target.subtitles;
         partTimeline = target.partTimeline;
+        playSessionId = target.playSessionId;
       } else {
         appLogger.e('ExternalPlayerService.launch requires either videoUrl or client+metadata');
         return false;
@@ -209,6 +213,7 @@ class ExternalPlayerService {
             offlineWatchService: offlineWatchService,
             mediaSourceId: mediaSourceId,
             partTimeline: partTimeline,
+            playSessionId: playSessionId,
             isLaunchCurrent: current,
           );
         }
@@ -226,6 +231,7 @@ class ExternalPlayerService {
           client: client,
           offlineWatchService: offlineWatchService,
           mediaSourceId: mediaSourceId,
+          playSessionId: playSessionId,
           partTimeline: partTimeline,
         );
         final options = ExternalPlayerLaunchOptions(
@@ -264,6 +270,7 @@ class ExternalPlayerService {
     required OfflineWatchSyncService? offlineWatchService,
     required String? mediaSourceId,
     MediaPartTimeline? partTimeline,
+    String? playSessionId,
   }) {
     return _callbackSession = _CallbackSession(
       id: Uuid().v4(),
@@ -273,6 +280,7 @@ class ExternalPlayerService {
       offlineWatchService: offlineWatchService,
       mediaSourceId: mediaSourceId,
       partTimeline: partTimeline,
+      playSessionId: playSessionId,
     );
   }
 
@@ -333,6 +341,7 @@ class ExternalPlayerService {
     required MediaItem metadata,
     MediaServerClient? client,
     String playerId = 'outplayer',
+    String? playSessionId,
   }) {
     return _beginCallbackSession(
       playerId: playerId,
@@ -340,6 +349,7 @@ class ExternalPlayerService {
       client: client,
       offlineWatchService: null,
       mediaSourceId: null,
+      playSessionId: playSessionId,
     ).id;
   }
 
@@ -409,6 +419,7 @@ class ExternalPlayerService {
         offlineWatchService: session.offlineWatchService,
         mediaSourceId: session.mediaSourceId,
         partTimeline: session.partTimeline,
+        playSessionId: session.playSessionId,
       );
       _callbackLog('progress report finished for ${session.metadata.id}');
     } catch (e, stackTrace) {
@@ -518,6 +529,7 @@ class ExternalPlayerService {
     OfflineWatchSyncService? offlineWatchService,
     String? mediaSourceId,
     MediaPartTimeline? partTimeline,
+    String? playSessionId,
     bool Function()? isLaunchCurrent,
   }) async {
     bool current() => isLaunchCurrent?.call() ?? true;
@@ -556,6 +568,7 @@ class ExternalPlayerService {
         itemId: metadata.id,
         position: position,
         duration: duration,
+        playSessionId: playSessionId,
         playMethod: 'DirectPlay',
         mediaSourceId: mediaSourceId,
       );
@@ -570,6 +583,7 @@ class ExternalPlayerService {
         itemId: metadata.id,
         position: position,
         duration: duration,
+        playSessionId: playSessionId,
         mediaSourceId: mediaSourceId,
       );
     } catch (e) {
@@ -623,6 +637,7 @@ class ExternalPlayerService {
     OfflineWatchSyncService? offlineWatchService,
     String? mediaSourceId,
     MediaPartTimeline? partTimeline,
+    String? playSessionId,
   }) {
     return _reportExternalProgress(
       _ExternalPlayerLaunchResult(
@@ -637,6 +652,7 @@ class ExternalPlayerService {
       offlineWatchService: offlineWatchService,
       mediaSourceId: mediaSourceId,
       partTimeline: partTimeline,
+      playSessionId: playSessionId,
     );
   }
 

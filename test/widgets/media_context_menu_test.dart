@@ -242,23 +242,19 @@ void main() {
       );
     });
 
-    test('Plex keeps its account-level gate', () {
-      expect(
-        isMediaDeletionAllowed(
-          itemBackend: MediaBackend.plex,
-          resolvedItemPermission: null,
-          isAdminActionAllowed: true,
-        ),
-        isTrue,
-      );
-      expect(
-        isMediaDeletionAllowed(
-          itemBackend: MediaBackend.plex,
-          resolvedItemPermission: null,
-          isAdminActionAllowed: false,
-        ),
-        isFalse,
-      );
+    test('Plex requires both the account grant and live server preference', () {
+      for (final permission in [true, false, null]) {
+        for (final admin in [true, false]) {
+          expect(
+            isMediaDeletionAllowed(
+              itemBackend: MediaBackend.plex,
+              resolvedItemPermission: permission,
+              isAdminActionAllowed: admin,
+            ),
+            admin && permission == true,
+          );
+        }
+      }
     });
 
     test('an item with no backend marker is never deletable', () {

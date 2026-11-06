@@ -224,6 +224,10 @@ class DownloadManagerService {
   bool _isRepairingArtwork = false;
   bool _disposed = false;
   bool _queueBlockedByStorageFailure = false;
+
+  /// Automatic rules must wait for an explicit download/retry after a capacity
+  /// failure. Otherwise their refresh loop repeatedly revives the failed row.
+  bool get isWaitingForStorageRecovery => _queueBlockedByStorageFailure;
   bool _loggedDownloadsUnsupported = false;
 
   // Debounce timers for DB progress writes (keyed by globalKey).
@@ -1853,7 +1857,8 @@ class DownloadManagerService {
   /// Queue [metadata] for download. Returns the item actually stored —
   /// identical to [metadata] unless library stamping filled `libraryId`/
   /// `libraryTitle`, so the caller can keep its in-memory copy in sync.
-  Future<MediaItem> queueDownload({
+  /// Returns null when an automatic request is held for storage recovery.
+  Future<MediaItem?> queueDownload({
     required MediaItem metadata,
     required MediaServerClient client,
     int priority = 0,
@@ -1861,8 +1866,10 @@ class DownloadManagerService {
     bool downloadArtwork = true,
     int mediaIndex = 0,
     TranscodeQualityPreset? downloadQuality,
+    bool userInitiated = true,
   }) async {
     if (_skipDownloadsUnsupported('queue download')) return metadata;
+    if (!userInitiated && _queueBlockedByStorageFailure) return null;
     // The setting is read from the already-loaded instance: queueing must not
     // be the call that first opens preferences, and a caller without settings
     // gets the original file.
@@ -1870,7 +1877,7 @@ class DownloadManagerService {
         downloadQuality ??
         SettingsService.instanceOrNull?.read(SettingsService.downloadQualityPreset) ??
         TranscodeQualityPreset.original;
-    _rearmQueueForUserAction('new download');
+    if (userInitiated) _rearmQueueForUserAction('new download');
 
     final globalKey = metadata.globalKey;
 
@@ -1890,6 +1897,8 @@ class DownloadManagerService {
     // Read before the upsert: a re-admitted stacked attempt's files are the
     // caller's to discard.
     final prior = await _database.getDownloadedMedia(globalKey);
+    // Metadata and database reads can yield to a native storage failure.
+    if (!userInitiated && _queueBlockedByStorageFailure) return null;
     final outcome = await _database.insertQueuedDownload(
       serverId: ServerId(metadata.serverId!),
       clientScopeId: client.cacheServerId == metadata.serverId ? null : client.cacheServerId,
@@ -1924,6 +1933,7 @@ class DownloadManagerService {
       }
     }
 
+    if (!userInitiated && _queueBlockedByStorageFailure) return null;
     _emitProgress(globalKey, DownloadStatus.queued, 0);
     _startQueueProcessing(client);
     return storedMetadata;

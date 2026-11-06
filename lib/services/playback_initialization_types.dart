@@ -163,11 +163,14 @@ class ExternalPlaybackTarget {
   final String url;
   final List<SubtitleTrack> subtitles;
 
+  /// Server playback identity shared by the stream and progress reports.
+  final String? playSessionId;
+
   /// Where [url] sits on its item when the item is stacked across several
   /// files: the external player gets that one file, on that file's clock.
   final MediaPartTimeline? partTimeline;
 
-  const ExternalPlaybackTarget({required this.url, this.subtitles = const [], this.partTimeline});
+  const ExternalPlaybackTarget({required this.url, this.subtitles = const [], this.partTimeline, this.playSessionId});
 }
 
 /// Reason the transcode branch fell back to direct play.

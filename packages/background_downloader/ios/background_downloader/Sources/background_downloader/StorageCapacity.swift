@@ -39,9 +39,15 @@ func checkDownloadStorage(at url: URL, remainingBytes: Int64 = 0) throws {
     guard config == -1 || config > 0 else { return }
     do {
         let values = try existingStorageURL(url).resourceValues(forKeys: [
-            .volumeAvailableCapacityKey, .volumeTotalCapacityKey
+            .volumeAvailableCapacityKey, .volumeAvailableCapacityForImportantUsageKey,
+            .volumeTotalCapacityKey
         ])
-        guard let free = values.volumeAvailableCapacity, free >= 0,
+        // User-requested media may reclaim purgeable caches. Raw free space
+        // alone can reject downloads that iOS is able to store safely.
+        let important = values.volumeAvailableCapacityForImportantUsage
+        let available = important.flatMap { $0 >= 0 ? $0 : nil }
+            ?? values.volumeAvailableCapacity.map { Int64($0) }
+        guard let free = available, free >= 0,
               let total = values.volumeTotalCapacity, total > 0 else {
             throw DownloadStorageError(message: "Download storage capacity could not be determined for \(url.path)")
         }

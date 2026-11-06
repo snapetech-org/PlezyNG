@@ -2253,6 +2253,56 @@ void main() {
   });
 
   group('storage exhaustion', () {
+    test('automatic rules preserve storage failures until an explicit download', () async {
+      final fixture = await _createSupplementaryFixture();
+      final key = fixture.metadata.globalKey;
+      final client = _SupplementaryClient(
+        metadata: fixture.metadata,
+        resolution: () => const DownloadResolution(videoUrl: 'https://example.test/video'),
+      );
+      final manager = DownloadManagerService(
+        database: fixture.db,
+        storageService: fixture.storage,
+        clientResolver: (serverId, {clientScopeId}) => client,
+        downloadsSupportedOverride: true,
+        queueProcessorOverride: (_) async {},
+        nativeOpsOverride: (
+          allTasks: () async => const <Task>[],
+          allRecords: () async => const <TaskRecord>[],
+          deleteRecord: (_) async {},
+          cancelTaskIds: (_) async => true,
+          resetGroup: () async => 0,
+          cleanUpOrphanedTempFiles: () async => 0,
+          rescheduleKilledTasks: () async => (<Task>[], <Task>[]),
+        ),
+      );
+      addTearDown(manager.disposeAndDrain);
+      await manager.queueDownload(metadata: fixture.metadata, client: client);
+      await fixture.db.updateBgTaskId(key, 'storage-task');
+      await fixture.db.updateDownloadStatus(key, DownloadStatus.downloading.index);
+      await manager.debugHandleTaskStatus(
+        TaskStatusUpdate(
+          _downloadTask('storage-task', key),
+          TaskStatus.failed,
+          TaskFileSystemException('Insufficient space to store the file'),
+        ),
+      );
+      final failed = await fixture.db.getDownloadedMedia(key);
+      expect(manager.isWaitingForStorageRecovery, isTrue);
+      expect(failed?.status, DownloadStatus.failed.index);
+      for (var pass = 0; pass < 3; pass++) {
+        expect(await manager.queueDownload(metadata: fixture.metadata, client: client, userInitiated: false), isNull);
+        final unchanged = await fixture.db.getDownloadedMedia(key);
+        expect(unchanged?.status, failed?.status);
+        expect(unchanged?.errorMessage, failed?.errorMessage);
+        expect(await fixture.db.select(fixture.db.downloadQueue).get(), isEmpty);
+      }
+      expect(await manager.queueDownload(metadata: fixture.metadata, client: client), isNotNull);
+      expect(manager.isWaitingForStorageRecovery, isFalse);
+      expect((await fixture.db.getDownloadedMedia(key))?.status, DownloadStatus.queued.index);
+      expect(await fixture.db.select(fixture.db.downloadQueue).get(), hasLength(1));
+    });
+
     for (final failure in [
       'write failed: ENOSPC (No space left on device)',
       'Insufficient space to store the file to be downloaded',

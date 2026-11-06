@@ -15,11 +15,18 @@
 - Package a self-contained Linux FEL-derived HDR10/SDR converter with its Python runtime, decoder, compositor and encoders; verify actual exports without network access or system tools. Keep Apple experimental video below Flutter controls and make incremental runtime packaging repeatable.
 - Bundle experimental Dolby Vision/FEL playback in normal compatible builds and use a persisted, default-off Settings switch. Add an in-app Apple runtime for macOS 15 and iOS/tvOS 18 while retaining the normal app deployment floors; device output remains unqualified.
 - Keep Android FEL reconstruction controlled by the runtime experimental setting when a FEL-capable engine is bundled.
+- Build the pinned MilkRust runtime with its corrected dependency lock and compiler fixes, keep isolated rustup installs independent, and verify bundled presets through actual GL/GLES rendering.
+- Correct the v2 torrent transfer fixture and update remote playback reporting and P2P storage documentation.
+
 - Preserve search results on cancellation and filters during partial responses, and keep optional relay absence from crashing settings.
 
 - Build and package the three default RomM emulator cores with the app, preserve their source/notices, validate Android delivery, and install the desktop host after bundle cleanup.
 
 - Preserve typography sizes when applying theme packages, reject encoded RomM path traversal before URL normalization, trim karaoke VTT terminators and distinguish damaged recording data from I/O failures.
+- Register the selected Plex version and stacked part before direct play; keep stream identity across external-player and Cast progress reports, and recheck server deletion permissions before removal.
+- Add held-select context actions to focusable list rows, a per-launch Linux HDR output override, and iOS backup exclusions for managed downloads and artwork.
+
+- Keep automatic download rules stopped after storage exhaustion until an explicit download or retry; batch desktop capacity checks within a bounded write budget and count reclaimable iOS storage.
 
 - Fix karaoke file-picker/TV APIs, nullable media titles and optional player interfaces; register desktop microphone capture plugins.
 - Patch Steam Cloud plugin build matching and cleanup dependencies while preserving the Decky Rollup preset.

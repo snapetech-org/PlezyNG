@@ -133,5 +133,44 @@
     "upload_signing_key_rotated": false,
     "repository_variable_saved": "ppa:keefshape/pleazyng",
     "state": "registration and automation target migrated; first qualified source upload pending"
+  },
+  "snap_store": {
+    "publisher_id": "keefshape",
+    "publisher_display_name": "Keith Snape",
+    "login_alias": "slskdn@proton.me",
+    "new_name": "pleazyng",
+    "new_registration_verified": true,
+    "url": "https://dashboard.snapcraft.io/snaps/pleazyng/",
+    "new_visibility": "public",
+    "old_name": "plezyng",
+    "old_revisions": 0,
+    "old_visibility": "private",
+    "old_retirement": "Private unused registration retained; no deletion control available before first revision",
+    "credential_secret": "SNAPCRAFT_STORE_CREDENTIALS",
+    "credential_updated_at": "2026-11-06T00:13:38Z",
+    "credential_scope": {
+      "snaps": [
+        "pleazyng"
+      ],
+      "permissions": [
+        "package_access",
+        "package_push",
+        "package_release"
+      ],
+      "channels": [
+        "stable",
+        "candidate",
+        "beta",
+        "edge"
+      ],
+      "ttl_days": 365
+    },
+    "credential_handling": "Generated in memory through installed Snapcraft client; sent directly to gh secret set; no credential file or displayed secret",
+    "pending": [
+      "First qualified snap upload",
+      "Listing/artwork edits require first published revision",
+      "Reissue scoped credential before 365-day expiry"
+    ],
+    "state": "name registered and scoped automation credential configured; first qualified release upload pending"
   }
 }

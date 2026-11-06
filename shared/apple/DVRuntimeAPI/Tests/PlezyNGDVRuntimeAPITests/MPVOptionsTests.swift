@@ -29,8 +29,9 @@ final class MPVOptionsTests: XCTestCase {
     for input in ["header=%999%x", "header=%-1%x", "header=%1%é", "header=%1%ab", "missing-separator"] {
       XCTAssertThrowsError(try MPVOptions.parse(input))
     }
-    for input in ["X-Test: value\r\nInjected: value", "Bad Name: value", "X: value\0"] {
-      XCTAssertThrowsError(try MPVOptions.headers(input))
+    for input in ["X-Test: value\r\nInjected: value", "X: value\r", "X: value\n", "Bad Name: value", "X: value\0"] {
+      XCTAssertThrowsError(try MPVOptions.headers(input), input.debugDescription)
+      XCTAssertThrowsError(try MPVOptions.headers(fromItems: [input]), input.debugDescription)
     }
   }
 }

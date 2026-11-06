@@ -82,7 +82,7 @@ resolved_output = "${{ needs.resolve-release.outputs.tag }}"
 require(f"RELEASE_TAG: {resolved_output}" in homebrew, "Homebrew must use the resolved tag")
 require(f"RELEASE_TAG: {resolved_output}" in appcast, "appcast must use the resolved tag")
 require(
-    "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG" in homebrew,
+    re.search(r'gh release download "\$RELEASE_TAG"\s+--repo "\$GITHUB_REPOSITORY"', homebrew) is not None,
     "Homebrew must download from this repository",
 )
 require(
@@ -94,7 +94,7 @@ require(
     "package workflow must not target upstream releases",
 )
 require(
-    'git commit -m "chore: update cask to $RELEASE_TAG"' in homebrew,
+    re.search(r'git commit -m "[^"\n]*\$RELEASE_TAG[^"\n]*"', homebrew) is not None,
     "Homebrew commit text must include the resolved tag",
 )
 require(

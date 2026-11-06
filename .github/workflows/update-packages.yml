@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# Runner policy: public hosted runners; no private resources required.
 name: Update Packages
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.release_tag) }}
 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Package update action authorized by private JIT routing
+        description: Package update action
         required: true
         type: choice
         options: [update-packages]
@@ -14,7 +14,7 @@ on:
         description: Runner pool for this update
         required: true
         type: choice
-        options: [private]
+        options: [public]
       release_tag:
         description: Published release tag to update packages for
         required: true
@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   resolve-release:
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-resolve-release"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     outputs:
@@ -52,6 +52,7 @@ jobs:
           EVENT_TAG: ${{ github.event.release.tag_name }}
           INPUT_TAG: ${{ inputs.release_tag }}
           GH_TOKEN: ${{ github.token }}
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
@@ -101,61 +102,84 @@ jobs:
             exit 1
           fi
 
+          if [[ -n "$HOMEBREW_TAP_TOKEN" && ! "$RESOLVED_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Homebrew Cask URLs require a stable vMAJOR.MINOR.PATCH tag." >&2
+            exit 1
+          fi
+
           echo "tag=$RESOLVED_TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           if [[ -n "$MACOS_CERTIFICATE_BASE64" && -n "$MACOS_CERTIFICATE_PASSWORD" && \
                 -n "$KEYCHAIN_PASSWORD" && -n "$APPLE_ID" && \
-                -n "$APPLE_APP_SPECIFIC_PASSWORD" && -n "$APPLE_TEAM_ID" ]]; then
+                -n "$APPLE_APP_SPECIFIC_PASSWORD" && -n "$APPLE_TEAM_ID" && -n "$HOMEBREW_TAP_TOKEN" ]]; then
             echo "homebrew_enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "homebrew_enabled=false" >> "$GITHUB_OUTPUT"
-            echo "Developer ID signing and notarization are not configured; skipping the Homebrew Cask update."
+            echo "Developer ID signing, notarization, or HOMEBREW_TAP_TOKEN is missing; skipping the Homebrew Cask update."
           fi
 
   update-homebrew:
     needs: resolve-release
     if: needs.resolve-release.outputs.homebrew_enabled == 'true'
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-update-homebrew"]}}', github.run_id)) }}
+    runs-on: macos-15
     permissions:
-      contents: write
+      contents: read
+      attestations: read
     env:
       RELEASE_TAG: ${{ needs.resolve-release.outputs.tag }}
       RELEASE_VERSION: ${{ needs.resolve-release.outputs.version }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.event.repository.default_branch }}
-          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Download and hash release
-        id: release
+      - name: Verify published Cask candidate and notarized disk image
         run: |
-          curl --fail-with-body -L -o pleazyng-macos.dmg \
-            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG/pleazyng-macos.dmg"
-          SHA256=$(shasum -a 256 pleazyng-macos.dmg | cut -d' ' -f1)
-          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pleazyng-homebrew"
+          cd "$RUNNER_TEMP/pleazyng-homebrew"
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern pleazyng-macos.dmg --pattern SHA256SUMS.txt \
+            --pattern snapetech-pleazyng.rb
+          gh attestation verify snapetech-pleazyng.rb --repo "$GITHUB_REPOSITORY"
+          gh attestation verify SHA256SUMS.txt --repo "$GITHUB_REPOSITORY"
+          python3 "$GITHUB_WORKSPACE/scripts/generate_homebrew_cask.py" \
+            --version "$RELEASE_VERSION" --checksums SHA256SUMS.txt --output expected.rb
+          cmp expected.rb snapetech-pleazyng.rb
+          EXPECTED_SHA=$(awk '$2 == "pleazyng-macos.dmg" {print $1}' SHA256SUMS.txt)
+          ACTUAL_SHA=$(shasum -a 256 pleazyng-macos.dmg | cut -d' ' -f1)
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+          xcrun stapler validate pleazyng-macos.dmg
+          spctl --assess --type open --context context:primary-signature --verbose pleazyng-macos.dmg
 
-      - name: Update cask
-        run: |
-          sed -i '' "s/version \".*\"/version \"$RELEASE_VERSION\"/" Casks/plezy.rb
-          sed -i '' "s/sha256 \".*\"/sha256 \"${{ steps.release.outputs.sha256 }}\"/" Casks/plezy.rb
+      - name: Check out publisher tap
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: snapetech-org/homebrew-slskdn
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: publisher-tap
 
-      - name: Commit
+      - name: Publish versioned Cask to publisher tap
+        working-directory: publisher-tap
         run: |
-          BRANCH="${{ github.event.repository.default_branch }}"
+          set -euo pipefail
+          mkdir -p Casks
+          cp "$RUNNER_TEMP/pleazyng-homebrew/snapetech-pleazyng.rb" Casks/snapetech-pleazyng.rb
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Casks/plezy.rb
+          git add Casks/snapetech-pleazyng.rb
           if ! git diff --staged --quiet; then
-            git commit -m "chore: update cask to $RELEASE_TAG"
-            git push origin "HEAD:$BRANCH"
+            git commit -m "Update Pleazyng Cask to $RELEASE_TAG"
+            git push origin HEAD
           else
-            echo "No cask changes to commit."
+            echo "No Cask changes to publish."
           fi
 
   update-appcast-branch:
     needs: resolve-release
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-update-appcast-branch"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     env:

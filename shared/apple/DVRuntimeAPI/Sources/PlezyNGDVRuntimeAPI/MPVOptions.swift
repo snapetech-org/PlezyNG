@@ -74,7 +74,9 @@ public enum MPVOptions {
       charactersIn: "!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
     var headers: [String: String] = [:]
     for item in items {
-      guard !item.contains("\r"), !item.contains("\n"), !item.contains("\0"),
+      // Swift combines CRLF into one Character, so validate the actual bytes.
+      let invalidControl = item.utf8.contains { $0 == 13 || $0 == 10 || $0 == 0 }
+      guard !invalidControl,
         let colon = item.firstIndex(of: ":")
       else { throw MPVOptionsError.invalidHeader }
       let name = String(item[..<colon])

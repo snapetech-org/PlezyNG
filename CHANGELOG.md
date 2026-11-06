@@ -3,6 +3,14 @@
 ## [Unreleased]
 
 - Include implemented neural/NPU experiments in normal compatible builds with the persisted Motion smoothing → Neural opt-in, and bundle Intel NPU and Vulkan GPU providers together on Linux x64.
+- Reject CRLF header injection in the Apple experimental playback bridge, including headers supplied through MPV change-list commands.
+- Keep Homebrew release checks aligned with verified repository downloads and versioned Cask publication.
+
+- Size Apple Flutter SDK download and extraction disk preflights from verified archive metadata while retaining Python 3.9 support and the existing runner disk margin.
+
+- Target Amazon API uploads by the console App ID and preserve listing metadata, artwork and review state during binary updates.
+
+- Fix Android Clang compilation of the visualization GPU drain callback while preserving the graphics loader ABI.
 
 - Fix malformed Steam input-only and Granite patch headers that blocked fresh Android/Fire TV builds, and expose native source preparation errors before compilation.
 - Keep service endpoint regression tests and store-preview tooling aligned with the current Pleazyng integration.

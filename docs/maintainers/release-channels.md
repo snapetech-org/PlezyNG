@@ -1,5 +1,7 @@
 # Pleazyng release channels
 
+See [the current publishing readiness matrix](publishing-readiness.md) for business, technical and review gates and staged automation settings.
+
 Live account migration is in progress. See [the dated channel migration receipt](pleazyng-channel-migration.json) for verified new records, API access and pending steps. The older readiness snapshots below describe their audit dates and do not prove current publication readiness.
 
 This is the release support boundary for the Pleazyng client and its separate relay service. A client platform or package channel is active when the manual release workflow creates the package and attaches it to a GitHub Release, or when a named publisher workflow submits that release's package.
@@ -56,7 +58,7 @@ Changing the install IDs means an install signed under upstream's identity canno
 | Launchpad PPA | Pleazyng archive registered; first source upload pending | `publish-ppa.yml` signs and uploads source packages for Jammy and Noble after a published release. `LAUNCHPAD_PPA` is `ppa:keefshape/pleazyng`, enabled for amd64 and arm64, using the existing Launchpad-registered `GPG_PRIVATE_KEY`. Deletion of the empty old archive was confirmed by Launchpad on 2026-11-05. |
 | Flathub | Not submitted | The attached Flatpak bundles use the prebuilt Linux bundle. Flathub requires its own source-built manifest submission and reviewer approval; it is not an automatic upload channel. |
 
-The app-store workflow does not build packages or submit store reviews. Run it from `main`, select a release tag, and choose a channel. It accepts a draft GitHub Release for Google Play internal/closed testing tracks, Amazon binary uploads, and iOS/tvOS App Store Connect build uploads. Production Play uploads still require a published stable GitHub Release. The workflow sends binaries only, with no listing metadata or screenshots. Samsung and LG TV handoff bundles use separate build outputs and must be uploaded through Seller Office or Seller Lounge manually; neither workflow claims an automated vendor-store submission. TV screenshots must be captured from the target device.
+The app-store workflow does not build packages or submit store reviews. Run it from `main`, select a release tag, and choose a channel. It accepts a draft GitHub Release for Google Play internal/closed testing tracks, Amazon binary updates after its first console submission, and iOS/tvOS App Store Connect build uploads. Production Play uploads still require a published stable GitHub Release. The workflow sends binaries only, with no listing metadata or screenshots. Samsung and LG TV handoff bundles use separate build outputs and must be uploaded through Seller Office or Seller Lounge manually; neither workflow claims an automated vendor-store submission. TV screenshots must be captured from the target device.
 
 For Google Play testing, select the `alpha` track (closed testing) and a signed AAB from the draft release; use release status `completed` to make it available to the invited test group after Google's review. The Alpha track has 178 regions and the five-member `Pleazyng Alpha testers` email list selected. Data safety and the default store listing are saved, and the feedback link points to GitHub Issues. Draft build 156 remains in the track; replace it with build 157 from the current release run, preview it, and send it to Google for review. The tester opt-in URL is `https://play.google.com/apps/testing/org.snapetech.plezyng`; it becomes active after rollout and only invited accounts can join. Keep at least 12 testers opted in for 14 continuous days before applying for production access. The README should keep the link marked inactive until rollout is complete.
 
@@ -79,7 +81,7 @@ For iOS and tvOS signing, the App Store Connect `.p8` key is supplied as the raw
 | Android release signing (APKs, Play AAB, Amazon APK) | `ANDROID_KEYSTORE_BASE64`, `ANDROID_STORE_PASSWORD`, `ANDROID_KEY_PASSWORD`, `ANDROID_KEY_ALIAS` |
 | Samsung TV build | Versioned builds bootstrap a pinned Linux ARM SDK and create a development tester profile. A TV-authorized package requires `tester_build=false`, a Samsung TV certificate profile and the encrypted `SAMSUNG_TIZEN_PROFILE_ARCHIVE_B64` secret; keep certificate and private-key material on the runner. |
 | Google Play submission | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` |
-| Amazon Appstore submission | `AMAZON_APPSTORE_CLIENT_ID`, `AMAZON_APPSTORE_CLIENT_SECRET` |
+| Amazon Appstore submission | `AMAZON_APPSTORE_CLIENT_ID`, `AMAZON_APPSTORE_CLIENT_SECRET`; repository variable `AMAZON_APPSTORE_APP_ID` |
 | iOS App Store signing and App Store Connect submission | `APPLE_API_KEY_ID`, `APPLE_API_ISSUER_ID`, `APPLE_API_PRIVATE_KEY`, `APPLE_TEAM_ID` |
 | tvOS App Store signing and App Store Connect submission | `APPLE_API_KEY_ID`, `APPLE_API_ISSUER_ID`, `APPLE_API_PRIVATE_KEY`, `APPLE_TEAM_ID` |
 | Microsoft Store EXE installer signing | `WINDOWS_SIGNING_CERTIFICATE_BASE64`, `WINDOWS_SIGNING_CERTIFICATE_PASSWORD` |

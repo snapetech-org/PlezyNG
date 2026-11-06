@@ -661,15 +661,19 @@ jobs:
           tar -czf pleazyng-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/pleazyng.apk/'
 
       - name: Build signed Android App Bundle
+        env:
+          REVIEW_ACCESS_PUBLIC_KEY: ${{ vars.REVIEW_ACCESS_PUBLIC_KEY }}
         if: ${{ needs.validate-trusted-ref.outputs.mode == 'release' && steps.android-signing.outputs.configured == 'true' }}
         run: |
-          flutter build appbundle --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --obfuscate --split-debug-info=debug-info/android-play
+          flutter build appbundle --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --dart-define=REVIEW_ACCESS_PUBLIC_KEY="$REVIEW_ACCESS_PUBLIC_KEY" --obfuscate --split-debug-info=debug-info/android-play
           cp build/app/outputs/bundle/release/app-release.aab pleazyng-android-play.aab
 
       - name: Build signed Amazon Appstore APK
+        env:
+          REVIEW_ACCESS_PUBLIC_KEY: ${{ vars.REVIEW_ACCESS_PUBLIC_KEY }}
         if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && steps.android-signing.outputs.configured == 'true' }}
         run: |
-          AMAZON=1 ORG_GRADLE_PROJECT_openiapStore=amazon flutter build apk --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --dart-define=AMAZON_STORE=true --dart-define=LIFETIME_UNLOCK_PRODUCT_ID=pleazyng_lifetime_unlock --obfuscate --split-debug-info=debug-info/android-amazon
+          AMAZON=1 ORG_GRADLE_PROJECT_openiapStore=amazon flutter build apk --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SUPPORTER_MODE=iap --dart-define=AMAZON_STORE=true --dart-define=REVIEW_ACCESS_PUBLIC_KEY="$REVIEW_ACCESS_PUBLIC_KEY" --dart-define=LIFETIME_UNLOCK_PRODUCT_ID=pleazyng_lifetime_unlock --obfuscate --split-debug-info=debug-info/android-amazon
           cp build/app/outputs/flutter-apk/app-release.apk pleazyng-amazon-firetv.apk
 
       - name: Verify signed Fire TV release APK

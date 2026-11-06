@@ -11,6 +11,7 @@ import '../settings_service.dart';
 import 'amazon_supporter_store.dart';
 import 'supporter_mode.dart';
 import 'supporter_store.dart';
+import 'review_access.dart';
 
 /// The StoreKit plugin's error code for a product query that found nothing.
 const _storeKitNoProducts = 'storekit_no_response';
@@ -134,19 +135,33 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
   /// stands in for the device's store in purchasable tests; without one, no
   /// billing runs and purchases report [SupporterError.storeUnavailable].
   @visibleForTesting
-  SupporterService.forTesting({required SupporterAvailability availability, bool? purchased, SupporterStore? store})
-    : this._(availability, purchased: purchased, createStore: store == null ? null : () => store);
+  SupporterService.forTesting({
+    required SupporterAvailability availability,
+    bool? purchased,
+    SupporterStore? store,
+    String reviewVerificationKey = ReviewAccess.publicKey,
+  }) : this._(
+         availability,
+         purchased: purchased,
+         reviewVerificationKey: reviewVerificationKey,
+         createStore: store == null ? null : () => store,
+       );
 
-  SupporterService._(this.availability, {bool? purchased, this._createStore})
-    : _purchased =
-          purchased ??
-          (availability == SupporterAvailability.purchasable &&
-              (SettingsService.instanceOrNull?.read(SettingsService.supporterEntitlementCached) ?? false)),
-      _trialStartedAtEpochMs =
-          SettingsService.instanceOrNull?.read(SettingsService.appAccessTrialStartedAtEpochMs) ?? 0;
+  SupporterService._(
+    this.availability, {
+    bool? purchased,
+    this._createStore,
+    this.reviewVerificationKey = ReviewAccess.publicKey,
+  }) : _purchased =
+           purchased ??
+           (availability == SupporterAvailability.purchasable &&
+               (SettingsService.instanceOrNull?.read(SettingsService.supporterEntitlementCached) ?? false)),
+       _trialStartedAtEpochMs =
+           SettingsService.instanceOrNull?.read(SettingsService.appAccessTrialStartedAtEpochMs) ?? 0;
 
   /// Fixed for the life of the process.
   final SupporterAvailability availability;
+  final String reviewVerificationKey;
 
   final SupporterStore? Function()? _createStore;
   bool _storeCreated = false;
@@ -159,6 +174,8 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
   openiap.Product? _amazonProduct;
   int _trialStartedAtEpochMs;
   Timer? _trialExpiryTimer;
+  Timer? _reviewExpiryTimer;
+  DateTime? _reviewExpiresAt;
   bool _ready = false;
 
   /// Bumped by every confirmed purchase or revocation from the purchase
@@ -195,7 +212,33 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
     return remaining.isNegative ? Duration.zero : remaining;
   }
 
-  bool get hasAccess => availability != SupporterAvailability.purchasable || _purchased || isTrialActive;
+  bool get hasReviewAccess => _reviewExpiresAt?.isAfter(DateTime.now().toUtc()) ?? false;
+
+  bool get supportsReviewAccess =>
+      availability == SupporterAvailability.purchasable && ReviewAccess.supportedFor(reviewVerificationKey);
+
+  /// Verifies and saves an explicitly provided store-review grant. It does not
+  /// change the trial clock or write the lifetime purchase cache.
+  Future<bool> redeemReviewAccess(String token) async {
+    if (!supportsReviewAccess) return false;
+    final expiry = await ReviewAccess.verify(token, verificationKey: reviewVerificationKey);
+    if (expiry == null || isDisposed) return false;
+    final settings = await SettingsService.getInstance();
+    await settings.write(SettingsService.storeReviewAccessGrant, token.trim());
+    if (isDisposed) return false;
+    _setReviewExpiry(expiry);
+    safeNotifyListeners();
+    return true;
+  }
+
+  void _setReviewExpiry(DateTime expiry) {
+    _reviewExpiresAt = expiry;
+    _reviewExpiryTimer?.cancel();
+    _reviewExpiryTimer = Timer(expiry.difference(DateTime.now().toUtc()), safeNotifyListeners);
+  }
+
+  bool get hasAccess =>
+      availability != SupporterAvailability.purchasable || _purchased || isTrialActive || hasReviewAccess;
 
   bool get shouldOfferTrial => availability == SupporterAvailability.purchasable && !_purchased && !hasStartedTrial;
 
@@ -210,7 +253,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
   bool get isUnlocked => switch (availability) {
     SupporterAvailability.hidden => false,
     SupporterAvailability.free => true,
-    SupporterAvailability.purchasable => _purchased || isTrialActive,
+    SupporterAvailability.purchasable => _purchased || isTrialActive || hasReviewAccess,
   };
 
   /// Starts a fresh trial automatically, then refreshes lifetime ownership.
@@ -227,6 +270,14 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
       // takes a confirmed revocation.
       if (settings.read(SettingsService.supporterEntitlementCached) && !_purchased) _purchased = true;
       _trialStartedAtEpochMs = settings.read(SettingsService.appAccessTrialStartedAtEpochMs);
+      if (supportsReviewAccess) {
+        final expiry = await ReviewAccess.verify(
+          settings.read(SettingsService.storeReviewAccessGrant),
+          verificationKey: reviewVerificationKey,
+        );
+        if (isDisposed) return;
+        if (expiry != null) _setReviewExpiry(expiry);
+      }
       _scheduleTrialExpiry();
       safeNotifyListeners();
 
@@ -797,6 +848,7 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
 
   @override
   void dispose() {
+    _reviewExpiryTimer?.cancel();
     unawaited(_purchaseSubscription?.cancel());
     unawaited(_amazonPurchaseSubscription?.cancel());
     unawaited(_amazonErrorSubscription?.cancel());

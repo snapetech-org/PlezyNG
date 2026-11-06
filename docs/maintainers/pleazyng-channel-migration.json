@@ -67,7 +67,15 @@
       "tvos_description_keywords_contact_copyright_saved": true,
       "tvos_screenshots": 0,
       "fresh_brand_and_tv_captures_pending": true
-    }
+    },
+    "membership_type": "Individual",
+    "membership_renewal": "2027-10-19",
+    "business_registration_gate": false,
+    "free_apps_agreement": "Active",
+    "paid_apps_agreement": "Pending User Info",
+    "banking": "Processing; console says updates within 24 hours",
+    "us_tax_forms": "W-8BEN and foreign-status certificate Active; submitted 2026-10-21",
+    "canada_tax_form": "GST/HST Form 506 Missing Tax Info; owner submission rejected with The Tax ID entered already exists. Do not repeatedly resubmit or alter identifier; existing-record reconciliation pending."
   },
   "automation_before": {
     "AUR_PACKAGE_NAME": "plezyng-bin",
@@ -153,7 +161,10 @@
       "migration_basis": "Compared old app questionnaire from 2026-10-25 and preserved its classification; no developer-supplied media catalog"
     },
     "target_audience_old": "18 and over; verified in old app console",
-    "review_access_pending": "Old app uses public Jellyfin demo for core playback. Release owner confirmed no verified paid-feature reviewer access beyond trial. Google requires full access and explicitly disallows reliance on free trials; do not confirm full access or invent bypass. New target audience setup is gated on Sign in details."
+    "review_access_pending": "Signed Android store-review grant implementation/key configured; private grant and Jellyfin demo instructions saved in new app Sign in details. Source tests pass; actual signed build redemption with expired trial required before review submission.",
+    "sign_in_details": "Saved; full-feature review code plus public Jellyfin sample library, no trial/purchase required by grant",
+    "target_audience_saved": "18 and over; saved and console dashboard now 10 of 12 app setup tasks complete",
+    "data_safety": "Draft in progress; source-verified account/transit answers saved and three personal-info types selected; not yet finalized"
   },
   "copr": {
     "owner": "slskdn",
@@ -294,7 +305,59 @@
   "microsoft_store": {
     "account_entered": "keith@snape.tech",
     "portal": "https://partner.microsoft.com/dashboard",
-    "state": "Awaiting owner Authenticator approval in dedicated Firefox",
-    "registration_or_package_changes_made": false
+    "state": "Authenticated; no enrolled Windows workspace visible. Store company enrollment opened and requires owner business verification (D-U-N-S or documents). No business details submitted.",
+    "registration_or_package_changes_made": false,
+    "pending": [
+      "Owner complete company verification or choose individual developer enrollment",
+      "Reserve Pleazyng app name and record assigned package/publisher identities after enrollment",
+      "Validate qualified Windows package and Store publishing credentials"
+    ]
+  },
+  "homebrew": {
+    "tap_repository": "snapetech-org/homebrew-slskdn",
+    "cask_token": "snapetech-pleazyng",
+    "inventory": "Tap has Formula/slskdn.rb and Formula/slskr.rb; no Casks directory or old/new app Cask",
+    "automation": "Update Packages now verifies the published attested Cask, manifest, DMG hash and notarization before writing Casks/snapetech-pleazyng.rb to the publisher tap",
+    "pending": [
+      "HOMEBREW_TAP_TOKEN restricted to Contents write on publisher tap",
+      "First signed/notarized release with prepare_homebrew_cask enabled",
+      "Live workflow validation on selected public macOS runner; no publication dispatched"
+    ]
+  },
+  "chocolatey": {
+    "package_id": "pleazyng",
+    "inventory": "Public OData API returned no exact plezyng or pleazyng package entry on 2026-11-05",
+    "automation": "Existing CHOCO_API_KEY preserved; first valid package push creates the entry",
+    "pending": [
+      "Qualified Windows package and first publish verification"
+    ]
+  },
+  "winget": {
+    "package_identifier": "SnapeTech.Pleazyng",
+    "inventory": "Official microsoft/winget-pkgs manifests/s/SnapeTech namespace returned 404 on 2026-11-05",
+    "automation": "Existing WINGET_CREATE_GITHUB_TOKEN preserved; first valid manifest submission pending",
+    "pending": [
+      "Qualified Windows installer and manifest submission/review"
+    ]
+  },
+  "pricing": {
+    "trial_days": 7,
+    "lifetime_unlock_base_usd": "2.99",
+    "features": "All features",
+    "scope": "Platforms with supported store billing; free package channels remain free",
+    "owner_confirmed": "2026-11-05"
+  },
+  "company": {
+    "legal_name": "SNAPE TECHNOLOGIES LIMITED",
+    "jurisdiction": "Saskatchewan, Canada",
+    "corporation_number": "102247318",
+    "incorporated": "2026-11-05",
+    "certificate_verified": "One-page digitally signed Certificate of Incorporation supplied by owner; retained privately, not committed",
+    "certificate_sha256": "dbb8472a2a066decc461994ea8fba76ee83c4b29ad147373ddc5919386dc0114",
+    "registered_address": "Awaiting owner confirmation; certificate does not list address",
+    "cra_business_number": "Not established by incorporation certificate",
+    "gst_hst_account": "Not established by incorporation certificate",
+    "duns_number": "Not established by incorporation certificate",
+    "authorization": "Owner explicitly requested company verification/update across app stores on 2026-11-05"
   }
 }

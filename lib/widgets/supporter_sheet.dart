@@ -13,6 +13,7 @@ import 'app_icon.dart';
 import 'bottom_sheet_header.dart';
 import 'loading_indicator_box.dart';
 import 'overlay_sheet.dart';
+import 'store_review_access_button.dart';
 
 /// Opens the lifetime access sheet: price, Buy and Restore Purchases.
 ///
@@ -180,6 +181,7 @@ class _SupporterSheetState extends State<SupporterSheet> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         BottomSheetHeader(title: t.appAccess.manageTitle),
+        StoreReviewAccessButton(service: _supporter),
         Flexible(
           child: SingleChildScrollView(
             controller: _scrollController,

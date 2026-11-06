@@ -13,7 +13,7 @@ class NativeContext {
   // Mobile hosts may defer graphics destruction while the app is backgrounded.
   virtual void PrepareDestroy() {}
   virtual void Drain() {
-    const auto finish = reinterpret_cast<void (*)()>(Loader()("glFinish"));
+    const auto finish = reinterpret_cast<void (*)()>(const_cast<void*>(Loader()("glFinish")));
     if (!finish) throw std::runtime_error("The graphics context cannot finish pending visualization work.");
     finish();
   }

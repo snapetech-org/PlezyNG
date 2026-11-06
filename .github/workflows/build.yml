@@ -595,6 +595,9 @@ jobs:
         if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         run: flutter pub get --enforce-lockfile --no-example
 
+      - name: Prepare pinned Steam sources with visible diagnostics
+        run: python3 scripts/games/prepare_steam.py
+
       - name: Configure Android signing
         id: android-signing
         if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}

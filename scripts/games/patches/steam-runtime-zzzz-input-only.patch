@@ -95,7 +95,7 @@ diff --git a/src/session/channels/ch_control_negotiation.c b/src/session/channel
      clientCaps.supported_video_codecs = supportedCodecs;
      clientCaps.n_supported_video_codecs = supportedVideoCodecCount;
      /* HDR is supported by the qualified Pyrowave native plane only. Never
-@@ -267,13 +270,13 @@
+@@ -267,12 +270,12 @@
      EStreamColorspace colorspaces[] = {k_EStreamColorspace_BT709, k_EStreamColorspace_BT709_Full,
                                       k_EStreamColorspace_HDR10};
      clientCaps.supported_colorspaces = colorspaces;

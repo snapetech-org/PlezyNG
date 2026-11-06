@@ -68,7 +68,10 @@ updates Pleazyng's pins or bypasses the final all-platform verification.
 changing any of the eleven Apple, application-lock and Android verification pin
 sites. Every required Android ABI, Linux/Windows architecture and Apple slice
 must have a schema-4 package receipt for ordered PCM and its implemented neural
-filters. Archive checksums, binary hashes and actual machine inventories must
+filters. Linux and Windows receipts must also contain boolean `pmeVulkan: true`,
+emitted only after the producer finds the compiled PME Vulkan reconstruction
+code marker in the actual binaries. A generic PME filter receipt is insufficient.
+Archive checksums, binary hashes and actual machine inventories must
 agree. Mixed or missing receipts leave every pin unchanged. Accepted receipts
 are retained under `nativePackages` in `mpv-build.lock.json`; they establish
 compiled inclusion, while `executionQualified: false` remains valid and does

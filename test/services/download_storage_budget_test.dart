@@ -13,6 +13,7 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('download-budget-');
     file = File('${directory.path}/video');
+    await file.create();
     sink = file.openWrite();
     sink.done.ignore();
   });

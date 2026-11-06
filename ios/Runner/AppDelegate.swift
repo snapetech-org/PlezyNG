@@ -100,7 +100,8 @@ enum DownloadBackupPolicy {
         do {
           result(try DownloadBackupPolicy.exclude(URL(fileURLWithPath: path)))
         } catch {
-          result(FlutterError(code: "backup_exclusion", message: "Could not update download backup policy", details: nil))
+          result(
+            FlutterError(code: "backup_exclusion", message: "Could not update download backup policy", details: nil))
         }
       }
     }

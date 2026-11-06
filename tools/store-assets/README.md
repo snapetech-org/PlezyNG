@@ -36,3 +36,7 @@ by describing a mockup as a running video.
 
 The packager rejects player images whose central video area is empty, and carries
 the sample-frame attribution and mockup metadata into generated packs.
+
+For clean README gallery exports, use `package_previews.py --presentation`.
+This omits visible footer labels while preserving source, rendering method, image
+hashes and credits in the accompanying files.

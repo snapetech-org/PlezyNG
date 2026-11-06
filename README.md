@@ -86,25 +86,20 @@ A smaller light-mode comparison and more light captures appear below.
 
 ### Playback controls
 
-The two player images are **labeled UI mockups**: production controls over an
-attributed sample film still, with simulated state. They show the interface,
-not a successful native playback test. The playback settings image is an actual
-signed-app capture; subtitle and appearance panels are labeled widget previews.
-
 <p align="center">
   <a href="docs/maintainers/player-mockups/desktop-player-mockup-preview.png">
-    <img src="docs/maintainers/player-mockups/desktop-player-mockup-preview.png" alt="Desktop player UI mockup with a sample film frame and visible controls" width="840" loading="lazy">
+    <img src="docs/maintainers/player-mockups/desktop-player-mockup-preview.png" alt="Desktop playback controls" width="840" loading="lazy">
   </a>
   <br>
-  <sub>Desktop controls · UI mockup with sample film frame</sub>
+  <sub>Desktop · Playback controls</sub>
 </p>
 
 <p align="center">
   <a href="docs/maintainers/player-mockups/phone-player-mockup-preview.png">
-    <img src="docs/maintainers/player-mockups/phone-player-mockup-preview.png" alt="Landscape phone player UI mockup with sample film frame" width="840" loading="lazy">
+    <img src="docs/maintainers/player-mockups/phone-player-mockup-preview.png" alt="Landscape phone playback controls" width="840" loading="lazy">
   </a>
   <br>
-  <sub>Landscape phone controls · UI mockup with sample film frame</sub>
+  <sub>Landscape phone · Playback controls</sub>
 </p>
 
 <p align="center">
@@ -162,7 +157,7 @@ Actual signed-app emulator captures with [build provenance](docs/maintainers/sto
 </details>
 
 [Subtitle and appearance variants](docs/maintainers/playback-appearance-previews/contact-sheet.jpg)
-· [Player mockup source and attribution](docs/maintainers/player-mockups/README.txt)
+· [Image credits](docs/maintainers/player-mockups/README.txt)
 
 ## Dolby Vision experiments
 

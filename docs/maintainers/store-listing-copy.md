@@ -55,3 +55,11 @@ Two additional authentic tablet captures (`2560x1600`) and their capture/export
 provenance are retained under `store-listing-assets/google-play/`. They show the
 same signed Android app on a tablet emulator. These captures do not establish
 Play billing, final-release or physical-device qualification.
+
+## Required Trakt attribution
+
+Include this notice in every applicable app-store description, including translated listings:
+
+Pleazyng uses Trakt but is not endorsed or certified by Trakt
+
+Do not omit the notice when shortening listing copy. It is also shown in the app's About screen.

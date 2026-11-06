@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,6 +24,8 @@ func TestValidatedOAuthAuthorizeURL(t *testing.T) {
 		valid   bool
 	}{
 		{"mal", "https://myanimelist.net/v1/oauth2/authorize", true},
+		{"trakt", "https://auth.trakt.tv/oauth/authorize", true},
+		{"trakt", "https://auth.trakt.tv.attacker.example/oauth/authorize", false},
 		{"anilist", "https://anilist.co/api/v2/oauth/authorize", true},
 		{"mal", "http://127.0.0.1:1234/oauth/authorize", true},
 		{"mal", "https://attacker.example/authorize", false},
@@ -1024,4 +1028,64 @@ func TestOAuthResultRateLimitedPerIP(t *testing.T) {
 			h.startSession(t, "mal", ip)
 		}
 	})
+}
+
+func TestTraktPKCEConfiguration(t *testing.T) {
+	t.Setenv("OAUTH_BASE_URL", "https://pleazyng-api.snape.tech")
+	t.Setenv("TRAKT_CLIENT_ID", "owned-trakt")
+	proxy, enabled := oauthConfigFromEnv(newClientIPResolver(nil))
+	cfg, ok := proxy.services["trakt"]
+	if !enabled || !ok || cfg.ClientID != "owned-trakt" || !cfg.UsePKCE || cfg.PKCEMethod != "S256" || cfg.ClientSecret != "" {
+		t.Fatalf("Trakt must be an owned public S256 client")
+	}
+	if cfg.AuthorizeURL != "https://auth.trakt.tv/oauth/authorize" || cfg.TokenURL != "https://api.trakt.tv/oauth/token" || proxy.redirectURI("trakt") != "https://pleazyng-api.snape.tech/auth/trakt/callback" {
+		t.Fatal("incorrect Trakt endpoints or owned callback")
+	}
+}
+
+func TestTraktS256AuthorizationExchangeAndOneTimeResult(t *testing.T) {
+	h := newOAuthHarness(t)
+	h.proxy.services["trakt"] = oauthServiceConfig{ClientID: "trakt-id", AuthorizeURL: h.upstream.srv.URL + "/oauth/authorize", TokenURL: h.upstream.srv.URL + "/oauth/token", UsePKCE: true, PKCEMethod: "S256"}
+	poll, state, _ := h.startSession(t, "trakt", "1.2.3.4")
+	h.proxy.mu.Lock()
+	session := h.proxy.browserStates[state]
+	h.proxy.mu.Unlock()
+	verifier := session.pkceVerifier()
+	client := &http.Client{CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+	response, err := client.Get(h.base + "/auth/trakt?state=" + url.QueryEscape(state))
+	if err != nil {
+		t.Fatal(err)
+	}
+	response.Body.Close()
+	location, err := url.Parse(response.Header.Get("Location"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	challenge := sha256.Sum256([]byte(verifier))
+	if response.StatusCode != 302 || location.Query().Get("code_challenge_method") != "S256" || location.Query().Get("code_challenge") != base64.RawURLEncoding.EncodeToString(challenge[:]) || location.Query().Get("code_challenge") == verifier {
+		t.Fatal("authorization did not protect verifier with S256")
+	}
+	if strings.Contains(location.RawQuery, poll) || location.Query().Get("client_secret") != "" {
+		t.Fatal("authorization leaked a capability or secret")
+	}
+	callback, err := client.Get(h.base + "/auth/trakt/callback?state=" + url.QueryEscape(state) + "&code=approved")
+	if err != nil {
+		t.Fatal(err)
+	}
+	callback.Body.Close()
+	form := h.upstream.form()
+	if form.Get("code_verifier") != verifier || form.Get("client_secret") != "" || form.Get("redirect_uri") != h.base+"/auth/trakt/callback" {
+		t.Fatal("incorrect public PKCE token exchange")
+	}
+	if session.pkceVerifier() != "" {
+		t.Fatal("verifier retained after exchange")
+	}
+	result := requestOAuthResult(h.base + "/auth/result?session=" + url.QueryEscape(poll))
+	if result.err != nil || result.status != 200 || result.body["accessToken"] == "" {
+		t.Fatalf("result unavailable: %d %v", result.status, result.err)
+	}
+	again := requestOAuthResult(h.base + "/auth/result?session=" + url.QueryEscape(poll))
+	if again.status != http.StatusGone {
+		t.Fatalf("result replay accepted: %d", again.status)
+	}
 }

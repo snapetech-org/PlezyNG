@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Pin all native playback platforms to the current verified fork revision and reject stale native dependencies before release builds.
+- Add Trakt browser sign-in with S256 PKCE through the owned HTTPS relay while retaining TV device-code sign-in; include Trakt attribution and privacy/disconnect information.
 
 - Sign macOS helpers and nested code before sealing their containers, preserve helper entitlements, and refresh runtime receipt hashes after final signing.
 

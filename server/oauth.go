@@ -73,7 +73,7 @@ type oauthSession struct {
 	browserState string
 	pollDigest   [sha256.Size]byte
 	service      string
-	codeVerifier string // MAL PKCE; empty for AniList. Cleared after token exchange.
+	codeVerifier string // One-time PKCE verifier; empty for AniList. Cleared after token exchange.
 	createdAt    time.Time
 	done         chan struct{}
 
@@ -180,6 +180,15 @@ func oauthConfigFromEnv(clientIPs clientIPResolver) (*oauthProxy, bool) {
 			TokenURL:     "https://myanimelist.net/v1/oauth2/token",
 			UsePKCE:      true,
 			PKCEMethod:   "plain", // MAL rejects S256 despite RFC 7636
+		}
+	}
+	if id := os.Getenv("TRAKT_CLIENT_ID"); id != "" {
+		services["trakt"] = oauthServiceConfig{
+			ClientID:     id,
+			AuthorizeURL: "https://auth.trakt.tv/oauth/authorize",
+			TokenURL:     "https://api.trakt.tv/oauth/token",
+			UsePKCE:      true,
+			PKCEMethod:   "S256",
 		}
 	}
 	if id := os.Getenv("ANILIST_CLIENT_ID"); id != "" {
@@ -352,7 +361,12 @@ func (p *oauthProxy) handleAuthorize(w http.ResponseWriter, r *http.Request, ser
 		q.Set("scope", cfg.Scopes)
 	}
 	if cfg.UsePKCE {
-		q.Set("code_challenge", sess.pkceVerifier()) // plain method ⇒ challenge == verifier
+		challenge := sess.pkceVerifier()
+		if cfg.PKCEMethod == "S256" {
+			digest := sha256.Sum256([]byte(challenge))
+			challenge = base64.RawURLEncoding.EncodeToString(digest[:])
+		}
+		q.Set("code_challenge", challenge)
 		q.Set("code_challenge_method", cfg.PKCEMethod)
 	}
 	// nosemgrep: go.lang.security.injection.open-redirect.open-redirect -- authorizeURL is reconstructed only from the provider-host allowlist below.
@@ -383,6 +397,8 @@ func validatedOAuthAuthorizeURL(service, configured string) (string, error) {
 		allowedHost = "myanimelist.net"
 	case "anilist":
 		allowedHost = "anilist.co"
+	case "trakt":
+		allowedHost = "auth.trakt.tv"
 	}
 	if host != allowedHost || allowedHost == "" {
 		return "", errors.New("OAuth authorize URL host is not allowlisted")
@@ -702,7 +718,7 @@ func randToken(numBytes int) string {
 	return base64.RawURLEncoding.EncodeToString(b)
 }
 
-// randPKCEVerifier returns MAL's RFC 7636 §4.1 verifier alphabet.
+// randPKCEVerifier returns the RFC 7636 §4.1 verifier alphabet.
 func randPKCEVerifier() string {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
 	b := make([]byte, oauthPKCEVerifierLen)

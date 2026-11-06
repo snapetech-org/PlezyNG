@@ -2001,7 +2001,8 @@
     "versionLabel": "Version ${version}",
     "appDescription": "A beautiful Plex, Jellyfin, and Emby client for Flutter",
     "viewLicensesDescription": "View licenses of third-party libraries",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "traktAttribution": "Pleazyng uses Trakt but is not endorsed or certified by Trakt"
   },
   "serverSelection": {
     "noServersFoundForAccount": "No servers found for ${username} (${email})",

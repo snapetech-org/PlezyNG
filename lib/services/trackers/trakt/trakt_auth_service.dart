@@ -7,6 +7,8 @@ import '../../../utils/abortable_http_request.dart';
 import '../../../utils/app_logger.dart';
 import '../device_code_auth_service.dart';
 import '../tracker_constants.dart';
+import '../oauth_proxy_auth_service.dart';
+import '../oauth_proxy_client.dart';
 import '../tracker_session.dart';
 import 'trakt_constants.dart';
 
@@ -90,4 +92,20 @@ class TraktAuthService extends DeviceCodeAuthServiceBase {
   @override
   TrackerSession buildSession(Map<String, dynamic> tokenResponse) =>
       TrackerSession.fromTokenResponse(TrackerService.trakt, tokenResponse);
+}
+
+/// Browser-capable clients use S256 PKCE with the owned HTTPS relay callback.
+/// No client secret or local callback listener is shipped in the app.
+class TraktBrowserAuthService extends OAuthProxyAuthServiceBase {
+  TraktBrowserAuthService({super.proxy});
+
+  @override
+  String get service => 'trakt';
+
+  @override
+  TrackerSession buildSession(OAuthProxyResult result) => TrackerSession.fromTokenResponse(TrackerService.trakt, {
+    'access_token': result.accessToken,
+    'refresh_token': result.refreshToken,
+    'expires_in': result.expiresIn,
+  });
 }

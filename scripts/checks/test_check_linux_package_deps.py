@@ -226,15 +226,14 @@ class LinuxPackageDepsGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(FULL_WALK_SUMMARY, result.stdout)
 
-    def test_the_dependency_lists_before_the_video_plane_are_rejected(self) -> None:
-        # Verbatim the deb list as it stood while the runner already linked
-        # wayland-client, wayland-egl and egl: the shipped bug.
-        packages = self._mutate(
-            "packaging/build-packages.py",
-            '"libwayland-client0",\n            "libwayland-cursor0",\n'
-            '            "libwayland-egl1",\n            "libegl1",\n',
-            "",
-        )
+    def test_removing_video_plane_host_dependencies_is_rejected(self) -> None:
+        # Reproduce the missing video-plane dependencies without depending on
+        # their adjacency to libraries added by other runtime components.
+        packages = self._source("packaging/build-packages.py")
+        for dependency in ("libwayland-client0", "libwayland-cursor0", "libwayland-egl1", "libegl1"):
+            line = f'            "{dependency}",\n'
+            self.assertIn(line, packages)
+            packages = packages.replace(line, "", 1)
 
         result = self._run(**{"packaging/build-packages.py": packages})
 

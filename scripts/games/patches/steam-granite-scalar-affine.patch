@@ -1,0 +1,20 @@
+diff --git a/math/muglm/muglm.cpp b/math/muglm/muglm.cpp
+index a309d65..1c42bc6 100644
+--- a/math/muglm/muglm.cpp
++++ b/math/muglm/muglm.cpp
+@@ -367,3 +367,6 @@ void transpose(mat4 &dst, const mat4 &src)
+ #else
+-	dst = transpose(src);
++	dst = mat4(vec4(src[0].x, src[1].x, src[2].x, src[3].x),
++	           vec4(src[0].y, src[1].y, src[2].y, src[3].y),
++	           vec4(src[0].z, src[1].z, src[2].z, src[3].z),
++	           vec4(src[0].w, src[1].w, src[2].w, src[3].w));
+ #endif
+@@ -415,5 +418,4 @@ void transpose_from_affine(mat4 &dst, const vec4 src[3])
+ #else
+-	mat4 m = transpose(src);
+-	for (int i = 0; i < 3; i++)
+-		dst[i] = m[i];
++	// Restore the implicit homogeneous row and all four output columns.
++	dst = transpose(mat4(src[0], src[1], src[2], vec4(0.0f, 0.0f, 0.0f, 1.0f)));
+ #endif

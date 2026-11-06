@@ -36,7 +36,8 @@ bool MicrophoneEncoder::push(const int16_t* samples, size_t count, const Send& s
     count -= copied;
     buffered_ += copied;
     if (buffered_ != frame) continue;
-    const int bytes = opus_encode(encoder_, pcm_.data(), frameSize_, packet_.data(), packet_.size());
+    const int bytes =
+        opus_encode(encoder_, pcm_.data(), frameSize_, packet_.data(), static_cast<opus_int32>(packet_.size()));
     buffered_ = 0;
     pcm_.fill(0);
     if (bytes < 1 || !send(packet_.data(), size_t(bytes))) {

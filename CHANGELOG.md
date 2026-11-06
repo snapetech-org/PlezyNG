@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Accept registered `pleazyng://` links in the Android native handler while retaining legacy aliases, and check native acceptance alongside platform registrations.
+- Keep Apple CocoaPods lockfiles aligned with the bundled game cores and recording plugins while preserving existing dependency pins.
+- Declare OpenGL/GLX and Wayland server libraries found in the complete Linux bundle across the Debian, RPM, PPA, COPR and Snap recipes.
+- Run independent Android, Linux native and server CI jobs in parallel while preserving all required release checks.
+- Build the bundled Windows game cores and streaming helpers with the conforming preprocessor, macro-safe controller argument names and warning-clean audio/video code.
+- Correct scalar affine matrix transposition and preserve translation in ARM64 streaming transforms.
+
 - Build the bundled Apple game host and cores on current SDKs with correct Objective-C++ audio support, SDK capability detection and finished-framework selection.
 - Keep Windows native CI aligned with the renamed application target and check out only the runtime's corresponding source when building MilkRust, avoiding unrelated overlong preset paths.
 - Restore the truncated Linux gamepad input/hotplug handlers from the checksum-verified upstream package, preserving local effects support, and include the standard exception header used by playback.

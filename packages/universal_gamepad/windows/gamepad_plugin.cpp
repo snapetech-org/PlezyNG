@@ -110,10 +110,10 @@ void GamepadPlugin::HandleMethodCall(
       const auto* value = field(key);
       int64_t number = -1;
       if (value) {
-        if (const auto* small = std::get_if<int32_t>(value))
-          number = *small;
-        else if (const auto* large = std::get_if<int64_t>(value))
-          number = *large;
+        if (const auto* int32_value = std::get_if<int32_t>(value))
+          number = *int32_value;
+        else if (const auto* int64_value = std::get_if<int64_t>(value))
+          number = *int64_value;
       }
       return number >= 0 && number <= maximum ? int(number) : -1;
     };

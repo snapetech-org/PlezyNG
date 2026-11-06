@@ -143,6 +143,7 @@ PODS:
     - Flutter
   - plezy_preparation (1.0.0):
     - Flutter
+  - plezy_romm_ios (1.0.0)
   - plezy_torrent (1.0.0)
   - PromisesObjC (2.4.1)
   - PromisesSwift (2.4.1):
@@ -150,6 +151,8 @@ PODS:
   - Protobuf (5.36.2)
   - RecaptchaInterop (101.0.0)
   - receive_sharing_intent (1.8.1):
+    - Flutter
+  - record_ios (2.0.0):
     - Flutter
   - Sentry/HybridSDK (8.58.4)
   - sentry_flutter (9.30.0):
@@ -210,8 +213,10 @@ DEPENDENCIES:
   - pdfium_flutter (from `.symlinks/plugins/pdfium_flutter/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - plezy_preparation (from `.symlinks/plugins/plezy_preparation/ios`)
+  - plezy_romm_ios (from `../native/games/romm/apple`)
   - plezy_torrent (from `.symlinks/plugins/plezy_torrent/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
+  - record_ios (from `.symlinks/plugins/record_ios/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sherpa_onnx_ios (from `.symlinks/plugins/sherpa_onnx_ios/ios`)
@@ -296,10 +301,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   plezy_preparation:
     :path: ".symlinks/plugins/plezy_preparation/ios"
+  plezy_romm_ios:
+    :path: "../native/games/romm/apple"
   plezy_torrent:
     :path: ".symlinks/plugins/plezy_torrent/ios"
   receive_sharing_intent:
     :path: ".symlinks/plugins/receive_sharing_intent/ios"
+  record_ios:
+    :path: ".symlinks/plugins/record_ios/ios"
   sentry_flutter:
     :path: ".symlinks/plugins/sentry_flutter/ios"
   shared_preferences_foundation:
@@ -356,12 +365,14 @@ SPEC CHECKSUMS:
   pdfium_flutter: f29beeb612293cc42df95beee223a4925ce2458e
   permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
   plezy_preparation: 1c43d4abad0d8f0c7fff0696c8c6ed20cbad09b4
+  plezy_romm_ios: 9dac051bc77d66d568c6de4564fc7371085d850f
   plezy_torrent: 646206c5854630107b208144991df32c209feddd
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   Protobuf: 2520aae1505ff88eabfd6a0687ad3feace61640f
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   receive_sharing_intent: 222384f00ffe7e952bbfabaa9e3967cb87e5fe00
+  record_ios: fc6c206fd2a2825fcbe2fd02adc85bfec42e80c1
   Sentry: 5321d74bdd28d6f6f8beaa1ca06f1fdc746bff49
   sentry_flutter: 52a33f5c4c91b05015a6d8c0b26c155776a07d7f
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
@@ -372,6 +383,6 @@ SPEC CHECKSUMS:
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   wakelock_plus: 5aaa6a7ccaf4749a96a7d8ff0721d68061ad62cf
 
-PODFILE CHECKSUM: 8f8b2b420d9c7fe82f92e8b6496e774a8c52d086
+PODFILE CHECKSUM: 0c516fb89ba6e27f460265842662f0f0bc77b005
 
 COCOAPODS: 1.17.0

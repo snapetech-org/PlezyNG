@@ -65,7 +65,10 @@ DISTROS = {
             "libwayland-client0",
             "libwayland-cursor0",
             "libwayland-egl1",
+            "libwayland-server0",
             "libegl1",
+            "libgl1",
+            "libglx0",
             # libEGL.so.1 defers to libGLdispatch.so.0, which is a separate
             # package Debian only pulls in behind libegl1. The runner links it
             # directly, so it is declared directly.
@@ -105,8 +108,10 @@ DISTROS = {
             "libwayland-client",
             "libwayland-cursor",
             "libwayland-egl",
+            "libwayland-server",
             "libglvnd",
             "libglvnd-egl",
+            "libglvnd-glx",
             "libva",
             "libvdpau",
             "vulkan-loader",

@@ -29,6 +29,12 @@ def check() -> None:
     root = ET.parse(ROOT / path).getroot()
     expect(path, {e.get("{http://schemas.android.com/apk/res/android}scheme", "") for e in root.iter("data")})
 
+    path = "android/app/src/main/kotlin/com/edde746/plezy/deeplink/DeepLinkPlugin.kt"
+    accepted = re.search(r'private val SCHEMES = setOf\(([^)]+)\)', (ROOT / path).read_text())
+    missing = SCHEMES - set(re.findall(r'"([^"]+)"', accepted[1] if accepted else ""))
+    if missing:
+        failures.append(f"{path}: native handler rejects registered {', '.join(sorted(missing))} schemes")
+
     for path in ROOT.glob("linux/packaging/**/*.desktop"):
         expect(str(path.relative_to(ROOT)), set(re.findall(r"x-scheme-handler/([^;]+);", path.read_text())))
 

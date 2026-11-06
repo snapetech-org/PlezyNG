@@ -9,6 +9,51 @@ from pathlib import Path
 import re
 import subprocess
 import zipfile
+import xml.etree.ElementTree as ET
+
+
+def has_tv_launcher(xmltree: str) -> bool:
+    """Read aapt's compiled manifest tree, including activity-alias launchers."""
+    root = ET.Element('root')
+    stack = [(-1, root)]
+    for line in xmltree.splitlines():
+        element = re.match(r'(\s*)E: ([\w.-]+)', line)
+        if element:
+            indent = len(element[1])
+            while stack[-1][0] >= indent:
+                stack.pop()
+            node = ET.SubElement(stack[-1][1], element[2])
+            stack.append((indent, node))
+            continue
+        attribute = re.match(r'\s*A: (android:[\w]+)(?:\([^)]*\))?=(.*)', line)
+        if attribute:
+            value = attribute[2]
+            quoted = re.match(r'"([^"]*)"', value)
+            if quoted:
+                value = quoted[1]
+            elif value == '(type 0x12)0x0':
+                value = 'false'
+            elif value == '(type 0x12)0xffffffff':
+                value = 'true'
+            stack[-1][1].set(attribute[1], value)
+    for application in root.iter('application'):
+        if application.get('android:enabled') == 'false':
+            continue
+        for activity in application:
+            if activity.tag not in {'activity', 'activity-alias'}:
+                continue
+            if activity.get('android:enabled') == 'false' or activity.get('android:exported') != 'true':
+                continue
+            target = activity.get('android:targetActivity')
+            if target and any(node.get('android:name') == target and node.get('android:enabled') == 'false'
+                              for node in application.findall('activity')):
+                continue
+            for intent in activity.findall('intent-filter'):
+                actions = {node.get('android:name') for node in intent.findall('action')}
+                categories = {node.get('android:name') for node in intent.findall('category')}
+                if 'android.intent.action.MAIN' in actions and 'android.intent.category.LEANBACK_LAUNCHER' in categories:
+                    return True
+    return False
 
 
 def inspect_apk(apk: Path, build_tools: Path) -> dict:
@@ -27,8 +72,12 @@ def inspect_apk(apk: Path, build_tools: Path) -> dict:
     ).stdout
     if not re.search(r"^package: name='org\.snapetech\.pleazyng' ", badging, re.MULTILINE):
         raise ValueError('Unexpected Fire TV package identity')
-    if not re.search(r'^leanback-launchable-activity:', badging, re.MULTILINE):
-        raise ValueError('Fire TV APK has no Leanback launcher entry')
+    manifest = subprocess.run(
+        [str(build_tools / 'aapt'), 'dump', 'xmltree', str(apk), 'AndroidManifest.xml'],
+        check=True, capture_output=True, text=True,
+    ).stdout
+    if not has_tv_launcher(manifest):
+        raise ValueError('Fire TV APK has no enabled exported Leanback launcher entry')
     if re.search(r"^uses-feature: name='android.hardware.touchscreen'", badging, re.MULTILINE):
         raise ValueError('Fire TV APK must not require a touchscreen')
     with zipfile.ZipFile(apk) as archive:

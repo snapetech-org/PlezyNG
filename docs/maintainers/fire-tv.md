@@ -13,12 +13,12 @@ SKU has that identifier, updated name/description/artwork, and the retained USD
 $2.99 base price. Apple and Google store records must be reconciled separately.
 
 `verify_firetv_apk.py` verifies the APK signature, rejects Android debug signing,
-checks `org.snapetech.pleazyng`, the Leanback launcher, optional touchscreen,
+checks `org.snapetech.pleazyng`, the enabled/exported Leanback launcher activity or alias in the compiled manifest, optional touchscreen,
 both ARM runtimes, and the bundled Amazon authentication public key. Its receipt
 records the APK hash, size, signer fingerprint, version and static qualification.
 GitHub attests and publishes both files. This is not playback or IAP qualification.
 
-To produce only Android artifacts from current main, without creating or changing
+To produce only the signed Amazon APK from current main, without creating or changing
 a release or uploading to a store:
 
 ```sh
@@ -28,7 +28,7 @@ gh workflow run build.yml -R snapetech-org/PlezyNG --ref main \
   -f include_webos_release=false -f include_tizen_build=false
 ```
 
-Download the successful run's `android-apk` artifact. Full release mode includes
+Download the successful run's `android-apk` artifact. In Android validation mode it contains the Amazon APK and receipt; generic Android APKs and the Play bundle are built only in full release mode. Full release mode includes
 these files in the draft assets and SHA256SUMS; the coverage gate rejects an
 omission even if signing secrets are absent. Never rename an older package to
 represent a new build or attach it to a different source revision.

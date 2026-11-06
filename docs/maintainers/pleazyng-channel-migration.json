@@ -656,6 +656,38 @@
       "Own provider registrations, credentials and callback consent testing",
       "Enable validated endpoint through a separately qualified client release",
       "Container image release qualification remains separate"
+    ],
+    "repository_variable_staged": "PLEAZYNG_RELAY_BASE_URL"
+  },
+  "discord": {
+    "verified_date": "2026-11-06",
+    "application_id": "1568149865551237160",
+    "application_name": "Pleazyng",
+    "icon_source": "assets/pleazyng-app-icon.png",
+    "icon_source_sha256": "cebc6bae388b58d062285f2d7047942e357571aafa0cd69206227bf4226c6950",
+    "description_saved": true,
+    "privacy_url": "https://snape.tech/privacy/pleazyng/",
+    "rich_presence_asset_key": "pleazyng",
+    "rich_presence_asset_saved": true,
+    "owner_completed_creation_terms": true,
+    "repository_variable": "PLEAZYNG_DISCORD_APPLICATION_ID",
+    "repository_variable_verified": true,
+    "client_compile_activation": false,
+    "runtime_qualified": false,
+    "notes": [
+      "Current client uses dynamic HTTPS poster assets, not a required static asset key",
+      "No bot token created, OAuth scope added, server invitation or external message sent",
+      "Enable through a subsequent qualified client revision; current release source hold preserved"
+    ]
+  },
+  "myanimelist": {
+    "verified_date": "2026-11-06",
+    "state": "Owner submitted signup; site requests completion through registration email",
+    "api_client_created": false,
+    "pending": [
+      "Owner email verification and login",
+      "Owned client registration and matching public client configuration",
+      "Consent, PKCE/exchange, refresh and tracker synchronization qualification"
     ]
   }
 }

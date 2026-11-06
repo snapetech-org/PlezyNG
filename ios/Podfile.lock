@@ -365,14 +365,14 @@ SPEC CHECKSUMS:
   pdfium_flutter: f29beeb612293cc42df95beee223a4925ce2458e
   permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
   plezy_preparation: 1c43d4abad0d8f0c7fff0696c8c6ed20cbad09b4
-  plezy_romm_ios: 9dac051bc77d66d568c6de4564fc7371085d850f
+  plezy_romm_ios: 4a8169c78c098e09ec9ad8a318a20d67b682258d
   plezy_torrent: 646206c5854630107b208144991df32c209feddd
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   Protobuf: 2520aae1505ff88eabfd6a0687ad3feace61640f
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   receive_sharing_intent: 222384f00ffe7e952bbfabaa9e3967cb87e5fe00
-  record_ios: fc6c206fd2a2825fcbe2fd02adc85bfec42e80c1
+  record_ios: 390a30c7caaf8b5d0fb1cb1d2fd5064b48b4520c
   Sentry: 5321d74bdd28d6f6f8beaa1ca06f1fdc746bff49
   sentry_flutter: 52a33f5c4c91b05015a6d8c0b26c155776a07d7f
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb

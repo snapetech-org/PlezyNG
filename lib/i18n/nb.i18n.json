@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Kan ikke laste opp priset på butikken. sjekk koblingen din og prøv igjen.",
     "purchaseFailed": "Kjøpet gikk ikke gjennom. prøv igjen.",
     "restoreFailed": "Kan ikke nå butikken for å gjenopprette kjøpet. prøv igjen.",
-    "nothingToRestore": "No. Pleazyng livslang kjøp ble funnet for denne butikken konto."
+    "nothingToRestore": "No. Pleazyng livslang kjøp ble funnet for denne butikken konto.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Slutter kl. ${time}"

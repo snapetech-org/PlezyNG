@@ -3680,7 +3680,13 @@
     "productQueryFailed": "تعذر تحميل السعر من المتجر. تحقق من اتصالك وحاول مرة أخرى.",
     "purchaseFailed": "لم تكتمل عملية الشراء. حاول مرة أخرى.",
     "restoreFailed": "تعذر الاتصال بالمتجر لاستعادة عملية الشراء. حاول مرة أخرى.",
-    "nothingToRestore": "لم يُعثر على عملية شراء Pleazyng مدى الحياة لحساب المتجر هذا."
+    "nothingToRestore": "لم يُعثر على عملية شراء Pleazyng مدى الحياة لحساب المتجر هذا.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "النهاية في ${time}"

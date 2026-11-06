@@ -3575,7 +3575,13 @@
     "productQueryFailed": "Tidak boleh memuatkan harga kedai. semak sambungan anda dan cuba lagi.",
     "purchaseFailed": "Pembelian tidak berjalan. cuba lagi.",
     "restoreFailed": "Tidak boleh sampai ke kedai untuk memulihkan pembelian anda. cuba lagi.",
-    "nothingToRestore": "Nombor Pleazyng pembelian seumur hidup telah ditemui untuk akaun kedai ini."
+    "nothingToRestore": "Nombor Pleazyng pembelian seumur hidup telah ditemui untuk akaun kedai ini.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Berakhir pada ${time}"

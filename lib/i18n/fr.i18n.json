@@ -3599,7 +3599,13 @@
     "productQueryFailed": "Je ne pourrais pas charger le prix du magasin. vérifier votre connexion et essayer à nouveau.",
     "purchaseFailed": "L’achat n’a pas été effectué, essayez-le encore.",
     "restoreFailed": "Je ne pouvais pas aller au magasin pour restaurer votre achat.",
-    "nothingToRestore": "Le numéro Pleazyng achat à vie a été trouvé pour ce compte de magasin."
+    "nothingToRestore": "Le numéro Pleazyng achat à vie a été trouvé pour ce compte de magasin.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Se termine à ${time}"

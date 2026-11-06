@@ -3638,7 +3638,13 @@
     "productQueryFailed": "Nie można pobierać ceny sklepu. sprawdź połączenie i spróbuj ponownie.",
     "purchaseFailed": "Zakup nie przeszedł, spróbuj ponownie.",
     "restoreFailed": "Nie mogłem dotrzeć do sklepu, aby odzyskać zakup. spróbuj ponownie.",
-    "nothingToRestore": "Nr Pleazyng zakup na całe życie znaleziono na tym koncie sklepu."
+    "nothingToRestore": "Nr Pleazyng zakup na całe życie znaleziono na tym koncie sklepu.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Kończy się o ${time}"

@@ -3599,7 +3599,13 @@
     "productQueryFailed": "Non poteva caricare il prezzo del negozio. verificare la connessione e provare di nuovo.",
     "purchaseFailed": "L’acquisto non è andato via, prova di nuovo.",
     "restoreFailed": "Non potevo raggiungere il negozio per ripristinare l'acquisto. prova di nuovo.",
-    "nothingToRestore": "N. Pleazyng acquisto a vita è stato trovato per questo account del negozio."
+    "nothingToRestore": "N. Pleazyng acquisto a vita è stato trovato per questo account del negozio.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Termina alle ${time}"

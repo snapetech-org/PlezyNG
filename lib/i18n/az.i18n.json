@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Bu barədə xəbər verir ki, bu barədə “Global News Network” və “Global News Network” xəbər verir.",
     "purchaseFailed": "İnşallah bu işə qayıtmayıb.Bir daha baxın.",
     "restoreFailed": "Mən bu işdən qayıtmaq üçün mağazaya gəlməyirəm.",
-    "nothingToRestore": "Bu mağazanın hesabı üçün Pleazyng ömür boyu satın alınmışdır."
+    "nothingToRestore": "Bu mağazanın hesabı üçün Pleazyng ömür boyu satın alınmışdır.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Bitiş vaxtı: ${time}"

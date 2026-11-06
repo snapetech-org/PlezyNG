@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Jeg kunne ikke opkræve butikken pris. Tjek din forbindelse og prøv igen.",
     "purchaseFailed": "Købet er ikke gået igennem. prøv igen.",
     "restoreFailed": "Jeg kunne ikke komme til butikken for at genoprette din køb. prøv igen.",
-    "nothingToRestore": "Pleazyng livslang køb blev fundet for denne butik konto."
+    "nothingToRestore": "Pleazyng livslang køb blev fundet for denne butik konto.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Slutter kl. ${time}"

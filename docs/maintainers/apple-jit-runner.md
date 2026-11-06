@@ -96,8 +96,11 @@ bash scripts/launch_apple_jit_runner.sh "$run_id" "$job_id"
 
 The launcher checks that the job is queued and has the native Apple labels, that
 there is no other run-scoped Apple JIT runner online or busy, that both NFS
-mounts point to the same export, and that the Mac has at least 37 GiB free on
-APFS and 40 GiB free on NFS. It verifies the cached runner archive's SHA-256
+mounts point to the same export, and that the Mac has at least 12 GiB free on
+APFS and 40 GiB free on NFS. Flutter installation measures each download and
+extraction peak, retaining 4 GiB locally plus 0.8 GiB for metadata; it does not
+reserve an additional 30 GiB when the build workspace is on NFS.
+It verifies the cached runner archive's SHA-256
 before creating a unique per-run, per-job, per-attempt directory. The default
 SSH target is the Mac's stable Tailscale address `keith@100.64.0.3`; override it
 with `APPLE_JIT_SSH_TARGET` only if that identity changes.

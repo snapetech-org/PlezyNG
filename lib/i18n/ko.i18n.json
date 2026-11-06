@@ -3592,7 +3592,13 @@
     "productQueryFailed": "가게 가격을 충전 할 수 없습니다. 연결을 확인하고 다시 시도하십시오.",
     "purchaseFailed": "구매가 끝나지 않았는데 다시 한번 시도해 보세요.",
     "restoreFailed": "당신의 구매를 복구하기 위해 상점에 도달 할 수 없습니다.다시 시도하십시오.",
-    "nothingToRestore": "No. Pleazyng 생명 구매는 이 가게 계정에서 찾을 수 있습니다."
+    "nothingToRestore": "No. Pleazyng 생명 구매는 이 가게 계정에서 찾을 수 있습니다.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "${time}에 종료"

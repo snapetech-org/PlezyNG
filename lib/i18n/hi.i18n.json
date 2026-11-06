@@ -3596,7 +3596,13 @@
     "productQueryFailed": "दुकान की कीमत पर लोड नहीं किया जा सकता. अपने कनेक्शन की जांच करें और फिर से कोशिश करें.",
     "purchaseFailed": "खरीदारी नहीं हुई. फिर से कोशिश करें.",
     "restoreFailed": "आप अपनी खरीद को पुनर्स्थापित करने के लिए दुकान तक नहीं पहुंच सकते. फिर से कोशिश करें.",
-    "nothingToRestore": "इस स्टोर खाते के लिए Pleazyng जीवन भर खरीद पाया गया था।"
+    "nothingToRestore": "इस स्टोर खाते के लिए Pleazyng जीवन भर खरीद पाया गया था।",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "${time} पर समाप्त"

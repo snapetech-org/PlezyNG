@@ -3632,7 +3632,13 @@
     "productQueryFailed": "Nemohla jsem si stáhnout cenu obchodu. zkontrolujte připojení a zkuste znovu.",
     "purchaseFailed": "Nákup neprošel, zkuste to znovu.",
     "restoreFailed": "Nemohla jsem se dostat do obchodu, abyste obnovili nákup. zkuste znovu.",
-    "nothingToRestore": "Číslo Pleazyng pro životní nákup byl nalezen pro tento obchodní účet."
+    "nothingToRestore": "Číslo Pleazyng pro životní nákup byl nalezen pro tento obchodní účet.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Končí na ${time}"

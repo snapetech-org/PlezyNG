@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Nem tudtam feltölteni a bolt árat. Ellenőrizze a kapcsolatot, és próbáljon meg újra.",
     "purchaseFailed": "A vásárlás nem ment át. próbáljon újra.",
     "restoreFailed": "Nem tudtam eljutni a boltba, hogy visszaállítsam a vásárlást. próbáljon újra.",
-    "nothingToRestore": "A Pleazyng életévét megvásárlás találta ebben a boltban."
+    "nothingToRestore": "A Pleazyng életévét megvásárlás találta ebben a boltban.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Vége: ${time}"

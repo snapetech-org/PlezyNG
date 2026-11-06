@@ -3596,7 +3596,13 @@
     "productQueryFailed": "দোকান মূল্য লোড করতে পারবেন না. আপনার সংযোগ চেক করুন এবং আবার চেষ্টা করুন।",
     "purchaseFailed": "কেনাকাটা শেষ হয়নি, আবারও চেষ্টা করুন।",
     "restoreFailed": "আপনি আপনার কেনাকাটা ফিরিয়ে দিতে দোকান পৌঁছাতে পারবেন না. আবার চেষ্টা করুন.",
-    "nothingToRestore": "এই স্টোর অ্যাকাউন্টের জন্য নম্বর Pleazyng লাইভ লাইভ ক্রয় পাওয়া যায়।"
+    "nothingToRestore": "এই স্টোর অ্যাকাউন্টের জন্য নম্বর Pleazyng লাইভ লাইভ ক্রয় পাওয়া যায়।",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "ফাইনাল ${time}"

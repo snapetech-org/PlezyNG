@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Mağaza fiyatını yüklemeyeceğim. bağlantınızı kontrol edin ve tekrar deneyin.",
     "purchaseFailed": "Satın almak için bir şey yapmadım. tekrar deneyin.",
     "restoreFailed": "Alışverişinizi geri getirmek için mağazaya ulaşamazdım. tekrar deneyin.",
-    "nothingToRestore": "Bu mağaza hesabı için Pleazyng ömür boyu satın alma numarası bulundu."
+    "nothingToRestore": "Bu mağaza hesabı için Pleazyng ömür boyu satın alma numarası bulundu.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Bitiş saati: ${time}"

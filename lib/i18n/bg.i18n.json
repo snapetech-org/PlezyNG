@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Не може да се наложи цената на магазина. проверете връзката си и опитайте отново.",
     "purchaseFailed": "Купуването не мина, опитайте отново.",
     "restoreFailed": "Не може да стигне до магазина, за да възстановите покупката си. опитайте отново.",
-    "nothingToRestore": "No Pleazyng за цял живот покупка е намерена за този магазин сметка."
+    "nothingToRestore": "No Pleazyng за цял живот покупка е намерена за този магазин сметка.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Свършва в ${time}"

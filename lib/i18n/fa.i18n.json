@@ -3596,7 +3596,13 @@
     "productQueryFailed": "نمی توانم قیمت فروشگاه را بارگذاری کنم، اتصال خود را بررسی کنید و دوباره امتحان کنید.",
     "purchaseFailed": "خرید به پایان نرسید، دوباره امتحان کنید.",
     "restoreFailed": "من نمی توانستم به فروشگاه بروم تا خرید خود را بازگردانم.",
-    "nothingToRestore": "شماره Pleazyng خرید طول عمر برای این حساب فروشگاه یافت شد."
+    "nothingToRestore": "شماره Pleazyng خرید طول عمر برای این حساب فروشگاه یافت شد.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "در نهایت در ${time}"

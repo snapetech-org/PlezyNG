@@ -3632,7 +3632,13 @@
     "productQueryFailed": "Ціна магазину не може бути завантажена. перевірте зв'язок і спробуйте знову.",
     "purchaseFailed": "Купівля не пройшла. спробуйте знову.",
     "restoreFailed": "Я не міг би дістатися до магазину, щоб відновити вашу покупку. спробуйте знову.",
-    "nothingToRestore": "Номер Pleazyng життєвий купівля був знайдений для цього облікового запису магазину."
+    "nothingToRestore": "Номер Pleazyng життєвий купівля був знайдений для цього облікового запису магазину.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Завершився на ${time}"

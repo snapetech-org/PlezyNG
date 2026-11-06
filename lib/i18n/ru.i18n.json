@@ -3638,7 +3638,13 @@
     "productQueryFailed": "Не смог бы загрузить цену магазина. проверьте связь и попробуйте снова.",
     "purchaseFailed": "Покупка не прошла, попробуйте снова.",
     "restoreFailed": "Не смог бы добраться до магазина, чтобы восстановить покупку. попробуйте снова.",
-    "nothingToRestore": "No Pleazyng жизнедеятельность покупки была найдена для этого аккаунта магазина."
+    "nothingToRestore": "No Pleazyng жизнедеятельность покупки была найдена для этого аккаунта магазина.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Закончится в ${time}"

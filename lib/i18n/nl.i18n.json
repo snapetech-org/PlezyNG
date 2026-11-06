@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Kan de winkelprijs niet opladen. check your connection and try again.",
     "purchaseFailed": "De aankoop is niet doorlopen. probeer het nogmaals.",
     "restoreFailed": "Ik kon niet naar de winkel komen om uw aankoop te herstellen. probeer het weer.",
-    "nothingToRestore": "Nr. Pleazyng levenslange aankoop is gevonden voor dit winkelaccount."
+    "nothingToRestore": "Nr. Pleazyng levenslange aankoop is gevonden voor dit winkelaccount.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Eindigt om ${time}"

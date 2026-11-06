@@ -3599,7 +3599,13 @@
     "productQueryFailed": "Não podia carregar o preço da loja. Verifique a sua conexão e tente novamente.",
     "purchaseFailed": "A compra não passou, tente novamente.",
     "restoreFailed": "Não poderia chegar à loja para restaurar a sua compra. tente novamente.",
-    "nothingToRestore": "No Pleazyng compra de vida foi encontrado para esta conta da loja."
+    "nothingToRestore": "No Pleazyng compra de vida foi encontrado para esta conta da loja.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Termina às ${time}"

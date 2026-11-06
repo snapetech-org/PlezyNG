@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Do‘kondagi narxni yuklab bo‘lmadi. Ulanishingizni tekshirib, qayta urinib ko‘ring.",
     "purchaseFailed": "Bu qotomiyadi ko‘zadi. qaytarga ko‘z.",
     "restoreFailed": "Sizga buyni qaytarga qotʻyadi. qaytarga qaytarga.",
-    "nothingToRestore": "No Pleazyng lifetime buy bu mağazalar hesab için bulgan."
+    "nothingToRestore": "No Pleazyng lifetime buy bu mağazalar hesab için bulgan.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Tugash vaqti: ${time}"

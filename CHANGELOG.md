@@ -10,7 +10,8 @@
 
 - Keep Homebrew release checks aligned with verified repository downloads and versioned Cask publication.
 
-- Size Apple Flutter SDK download and extraction disk preflights from verified archive metadata while retaining Python 3.9 support and the existing runner disk margin.
+- Size Apple Flutter SDK disk preflights from verified archive metadata with a 4 GiB local reserve and 12 GiB runner admission floor; recover NFS mounts through the stable VPN route without depending on a hung app command.
+- Complete privacy translation fallbacks and stabilize local artwork regression checks by waiting for actual asynchronous file resolution.
 
 - Target Amazon API uploads by the console App ID and preserve listing metadata, artwork and review state during binary updates.
 

@@ -32,13 +32,13 @@ from scripts.cache_macos_flutter_sdk import (
 
 
 class FlutterSdkCacheTest(unittest.TestCase):
-    def test_measured_peaks_preserve_reserve_and_current_mac_admission_floor(self) -> None:
+    def test_measured_peaks_fit_small_local_reserve(self) -> None:
         gib = 1024**3
-        self.assertEqual(MIN_FREE_BYTES, 30 * gib)
+        self.assertEqual(MIN_FREE_BYTES, 4 * gib)
         self.assertEqual(INSTALL_SAFETY_MARGIN_BYTES, 4 * gib // 5)
         archive_size = int(2.2 * gib)
         expanded_size = 4 * gib
-        free_at_start = int(37.4 * gib)
+        free_at_start = 11 * gib
         require_install_headroom(free_at_start, archive_size * 2, "download")
         require_install_headroom(free_at_start - archive_size, expanded_size, "extraction")
         with self.assertRaisesRegex(RuntimeError, "extraction needs"):
@@ -89,8 +89,8 @@ class FlutterSdkCacheTest(unittest.TestCase):
             stack.enter_context(patch(module + "download_archive", return_value=root / "sdk.zip"))
             stack.enter_context(patch(module + "_archive_uncompressed_size", return_value=6 * 1024**3))
             stack.enter_context(patch(module + "shutil.disk_usage", side_effect=[
-                SimpleNamespace(free=37 * 1024**3),
-                SimpleNamespace(free=35 * 1024**3),
+                SimpleNamespace(free=12 * 1024**3),
+                SimpleNamespace(free=10 * 1024**3),
             ]))
             extract = stack.enter_context(patch(module + "_extract_sdk_archive"))
             with self.assertRaisesRegex(RuntimeError, "extraction needs"):

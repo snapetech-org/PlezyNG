@@ -3592,7 +3592,13 @@
     "productQueryFailed": "无法收取商店价格,请检查您的连接并尝试一次。",
     "purchaseFailed": "購買不錯了,再試一次。",
     "restoreFailed": "无法到达商店恢复您的购买,再试一次。",
-    "nothingToRestore": "已找到第 Pleazyng 终身购买号,用于此商店帐户。"
+    "nothingToRestore": "已找到第 Pleazyng 终身购买号,用于此商店帐户。",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "结束时间：${time}"

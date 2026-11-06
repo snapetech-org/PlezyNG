@@ -3575,7 +3575,13 @@
     "productQueryFailed": "ไม่สามารถโหลดราคาร้านค้าได้ ตรวจสอบการเชื่อมต่อของคุณและลองอีกครั้ง",
     "purchaseFailed": "การซื้อไม่ได้ผ่านการทดลองอีกครั้ง",
     "restoreFailed": "ฉันไม่สามารถเข้าถึงร้านค้าเพื่อรับคืนการซื้อของคุณ ลองอีกครั้ง",
-    "nothingToRestore": "หมายเลขการซื้อตลอดชีวิต Pleazyng ได้รับการค้นหาสําหรับบัญชีร้านค้านี้"
+    "nothingToRestore": "หมายเลขการซื้อตลอดชีวิต Pleazyng ได้รับการค้นหาสําหรับบัญชีร้านค้านี้",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "เสร็จสิ้นที่ ${time}"

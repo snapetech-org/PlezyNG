@@ -3575,7 +3575,13 @@
     "productQueryFailed": "Tidak bisa menagih harga toko. periksa koneksi Anda dan coba lagi.",
     "purchaseFailed": "Pembelian tidak berjalan. coba lagi.",
     "restoreFailed": "Tidak bisa sampai ke toko untuk memulihkan pembelian Anda. coba lagi.",
-    "nothingToRestore": "Nombor Pleazyng pembelian seumur hidup ditemukan untuk akun toko ini."
+    "nothingToRestore": "Nombor Pleazyng pembelian seumur hidup ditemukan untuk akun toko ini.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Berakhir di ${time}"

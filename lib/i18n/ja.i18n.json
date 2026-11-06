@@ -3592,7 +3592,13 @@
     "productQueryFailed": "ストア価格を負担することはできません. 接続をチェックして再度試してみてください。",
     "purchaseFailed": "買い物は終わりませんでした!また試してみてください。",
     "restoreFailed": "買い物を回復するために店に到達できなかったので、また試してみてください。",
-    "nothingToRestore": "購入番号 Pleazyng は、このストアのアカウントに検索されました。"
+    "nothingToRestore": "購入番号 Pleazyng は、このストアのアカウントに検索されました。",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "${time}に終了"

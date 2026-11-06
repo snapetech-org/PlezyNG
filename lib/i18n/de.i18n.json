@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Kann den Shoppreis nicht laden. Überprüfen Sie Ihre Verbindung und versuchen Sie es wieder.",
     "purchaseFailed": "Der Kauf ist nicht durchgeführt worden. versuchen Sie erneut.",
     "restoreFailed": "Ich konnte nicht zum Shop kommen, um Ihren Kauf wiederherzustellen. versuchen Sie erneut.",
-    "nothingToRestore": "No. Pleazyng Lebensdauer Kauf wurde für diesen Store-Konto gefunden."
+    "nothingToRestore": "No. Pleazyng Lebensdauer Kauf wurde für diesen Store-Konto gefunden.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Endet um ${time}"

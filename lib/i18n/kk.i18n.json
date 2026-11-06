@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Бұл үшін бір-бірімен танымал, бірақ танымал, таңтардан танымал, оныншы және оныншы.",
     "purchaseFailed": "Қаншама жылы қазір, қайтып келді.",
     "restoreFailed": "Бұл үшін бір-бірімен бір-бірін бір-бірин бір-біректік қайраңды.",
-    "nothingToRestore": "Қаланың тұрақты тұрғындарының саны Pleazyng адамды құрайды."
+    "nothingToRestore": "Қаланың тұрақты тұрғындарының саны Pleazyng адамды құрайды.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Аяқталу уақыты: ${time}"

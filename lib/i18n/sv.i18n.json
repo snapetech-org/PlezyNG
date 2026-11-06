@@ -3596,7 +3596,13 @@
     "productQueryFailed": "Kan inte ladda butikspriset. kontrollera din anslutning och försök igen.",
     "purchaseFailed": "Köpet gick inte igenom. försök igen.",
     "restoreFailed": "Jag kunde inte nå butiken för att återställa din inköp. försök igen.",
-    "nothingToRestore": "Nr Pleazyng livslängd köp hittades för detta butikskonto."
+    "nothingToRestore": "Nr Pleazyng livslängd köp hittades för detta butikskonto.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Slutar kl. ${time}"

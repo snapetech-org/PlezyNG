@@ -3575,7 +3575,13 @@
     "productQueryFailed": "Không thể tải giá cửa hàng. kiểm tra kết nối của bạn và thử lại.",
     "purchaseFailed": "Mua sắm không qua được. thử lại.",
     "restoreFailed": "Tôi không thể đến cửa hàng để khôi phục mua hàng của bạn. thử lại.",
-    "nothingToRestore": "Số Pleazyng mua hàng đời đã được tìm thấy cho tài khoản cửa hàng này."
+    "nothingToRestore": "Số Pleazyng mua hàng đời đã được tìm thấy cho tài khoản cửa hàng này.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "Kết thúc tại ${time}"

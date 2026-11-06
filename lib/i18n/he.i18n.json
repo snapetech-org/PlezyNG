@@ -3600,7 +3600,13 @@
     "productQueryFailed": "לא יכולתי להעלות את מחיר החנות.בדוק את החיבור שלך ולנסות שוב.",
     "purchaseFailed": "הקנייה לא עברה, נסה שוב.",
     "restoreFailed": "לא יכולתי להגיע לחנות כדי להחזיר את הרכישה שלך.",
-    "nothingToRestore": "מספר Pleazyng רכישה לכל החיים נמצאה עבור חשבון החנות הזה."
+    "nothingToRestore": "מספר Pleazyng רכישה לכל החיים נמצאה עבור חשבון החנות הזה.",
+    "reviewAccess": "",
+    "reviewAccessActive": "",
+    "reviewAccessInstructions": "",
+    "reviewCode": "",
+    "reviewCodeInvalid": "",
+    "activateReviewAccess": ""
   },
   "detail": {
     "endsAt": "תגיות קשורות ${time}"

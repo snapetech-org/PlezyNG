@@ -21,6 +21,32 @@ The [debrid, Stremio and remote-streaming guide](docs/plezyng/remote-streams/REA
 
 The [Discord client and PiP feasibility plan](docs/plezyng/discord/README.md) preserves an optional future design, its research, architecture, and validation gates. It is deferred; no client implementation or delivery commitment is implied.
 
+## Screenshots
+
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-03-library-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-03-library-1920x1080.png" alt="Pleazyng TV library with movie posters and remote navigation" width="840">
+  </a>
+  <br>
+  <sub>TV · Library</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png">
+    <img src="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png" alt="Pleazyng phone media details" width="192">
+  </a>
+  &nbsp;
+  <a href="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png">
+    <img src="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png" alt="Pleazyng tablet library with sidebar and movie posters" width="544">
+  </a>
+  <br>
+  <sub>Phone · Media details &nbsp; | &nbsp; Tablet · Library</sub>
+</p>
+
+Actual app captures on Android TV, phone and tablet emulators using a public demo
+library. Tap an image for full resolution, or [view all nine screenshots and their
+build provenance](docs/maintainers/store-listing-assets/README.md).
+
 ## Dolby Vision experiments
 
 Pleazyng has developed genuine Profile 7 FEL reconstruction alongside native and

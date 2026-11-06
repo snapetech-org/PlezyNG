@@ -703,6 +703,17 @@ class SupporterService extends ChangeNotifier with DisposableChangeNotifierMixin
 
   Future<void> _handleLifetimeUnlockPurchase(SupporterStore store, PurchaseDetails purchase) async {
     final status = purchase.status;
+    if (status == PurchaseStatus.purchased || status == PurchaseStatus.restored) {
+      try {
+        if (!await store.verifyPurchase(purchase)) {
+          _failPurchase(store);
+          return;
+        }
+      } on Object {
+        _failPurchase(store);
+        return;
+      }
+    }
     if (store is AppStoreSupporterStore &&
         !store.isRevocation(purchase) &&
         (status == PurchaseStatus.purchased || status == PurchaseStatus.restored)) {

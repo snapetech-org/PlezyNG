@@ -36,6 +36,10 @@ on:
         type: choice
         options: [arm, x64]
         default: arm
+      store_build:
+        description: Build Samsung Checkout trial/unlock (requires DPI credentials and partner certificate)
+        type: boolean
+        default: false
       security_profile:
         description: Existing profile; non-tester builds import the encrypted Samsung bundle
         type: string
@@ -65,6 +69,10 @@ on:
         type: boolean
         required: false
         default: true
+      store_build:
+        description: Build Samsung Checkout trial/unlock (requires DPI credentials and partner certificate)
+        type: boolean
+        default: false
       security_profile:
         description: Existing Samsung profile name
         type: string
@@ -77,6 +85,10 @@ on:
         default: false
     secrets:
       SAMSUNG_TIZEN_PROFILE_ARCHIVE_B64:
+        required: false
+      SAMSUNG_DPI_APP_ID:
+        required: false
+      SAMSUNG_DPI_SECURITY_KEY:
         required: false
 
 permissions:
@@ -265,11 +277,16 @@ jobs:
           digest=$(python3 -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())' "$bundle/milkrust-native.json")
           printf 'PLEZY_TIZEN_MILKRUST_BUNDLE=%s\nPLEZY_TIZEN_MILKRUST_MANIFEST_SHA256=%s\n' "$bundle" "$digest" >> "$GITHUB_ENV"
       - name: Build and inspect signed TV package
+        env:
+          STORE_BUILD: ${{ inputs.store_build }}
+          SAMSUNG_DPI_APP_ID: ${{ secrets.SAMSUNG_DPI_APP_ID }}
+          SAMSUNG_DPI_SECURITY_KEY: ${{ secrets.SAMSUNG_DPI_SECURITY_KEY }}
         shell: bash
         run: |
           set -euo pipefail
           options=()
           if [[ "$TESTER_BUILD" == true ]]; then options+=(--tester); fi
+          if [[ "$STORE_BUILD" == true ]]; then options+=(--store); fi
           python3 scripts/tizen/package.py build \
             --sdk "$PLEZY_FLUTTER_TIZEN_ROOT" --arch "$PACKAGE_ARCH" \
             --native build/tizen-native --security-profile "$SIGNING_PROFILE" \

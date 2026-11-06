@@ -415,8 +415,52 @@
   "samsung_tv": {
     "portal": "https://seller.samsungapps.com/tv",
     "login": "keith@snape.tech",
-    "state": "Owner created/verified Samsung Account and signed in as Keith Snape, keith@snape.tech. TV Seller Office signup has Canada/Saskatchewan set; separate seller terms/privacy agreement on screen awaiting owner acceptance and Join.",
-    "seller_membership": "Not registered yet; public seller initially US-only; other regions require partner approval",
-    "tax_submission": "Not attempted"
+    "state": "TV Seller Office membership active; corporate Public Group and Pleazyng Tizen.NET app created; title/description and service information saved",
+    "seller_membership": "Public Group: SNAPE TECHNOLOGIES LIMITED; initially US-only; other regions require Partner Group approval",
+    "tax_submission": "Not attempted",
+    "app_id": "3202611050784",
+    "package_type": "Tizen.NET Application (TPK), 2021+ Samsung TVs per flutter-tizen publishing guidance",
+    "title_description": "Saved English title Pleazyng, server-client description and Plex/Jellyfin/Emby/media/video tags",
+    "service_information": {
+      "category": "Videos",
+      "rating": "ALL (self-declared; not Samsung certification)",
+      "ui_languages": [
+        "English"
+      ],
+      "privacy_collection": "Yes",
+      "english_privacy_url_saved": "https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.md",
+      "korean_privacy_url_saved": "https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.ko.md",
+      "privacy_guide": "Read and reading-confirmation saved; product compliance must still be qualified"
+    },
+    "gates": [
+      "Production-signed TPK and physical TV qualification",
+      "Authentic Tizen screenshots; Android TV captures are not substituted",
+      "Samsung Checkout integration and DPI configuration for paid unlock",
+      "Partner Group approval for non-US countries",
+      "EAA conformity declaration before applicable EU distribution"
+    ]
+  },
+  "hosted_support": {
+    "english": "https://snape.tech/privacy/pleazyng/support/",
+    "korean": "https://snape.tech/privacy/pleazyng/support/ko/",
+    "english_privacy": "https://snape.tech/privacy/pleazyng/",
+    "korean_privacy": "https://snape.tech/privacy/pleazyng/ko/",
+    "site_source_commit": "c9e8c8e",
+    "cloudflare_deployment_run": 42155093736,
+    "state": "Cloudflare Pages deployment succeeded; all four public URLs return HTTP 200 and byte-match rendered source",
+    "deployment_url": "https://c83652dc.snape-tech.pages.dev",
+    "verified_at": "2026-11-05 21:13 CST"
+  },
+  "lg_webos": {
+    "portal": "https://seller.lgappstv.com",
+    "account": "keith@snape.tech",
+    "state": "Canada/English LG account signup terms on VM; owner asked to accept required terms and create/verify account. Proton Pass found no matching LG login. Corporate Seller enrollment not submitted.",
+    "gates": [
+      "Owner account verification and LG terms acceptance",
+      "Corporate Seller verification using incorporation certificate",
+      "Qualified IPK and authentic webOS captures",
+      "LG QA and content approval",
+      "Supported payment integration; legacy LG Billing discontinued"
+    ]
   }
 }

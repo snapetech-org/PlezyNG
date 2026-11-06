@@ -179,6 +179,111 @@ class DerivedDataCleanupTests(unittest.TestCase):
         cleanup.clean(self.derived, self.runner, "42", "1", "success")
         self.assertTrue(other.exists())
 
+    def test_busy_or_unobservable_consumers_prevent_main_from_cleaning(self):
+        owned = self.fixture("Runner-owned")
+        runner = Path("/Users/gha-jit-macos/Library/Caches/gha-jit-macos/runs/42-123-attempt1/runner")
+        failures = [
+            (None, SystemExit),
+            (subprocess.CalledProcessError(1, "ps"), subprocess.CalledProcessError),
+            (subprocess.TimeoutExpired("ps", 5), subprocess.TimeoutExpired),
+        ]
+        for query_error, expected_error in failures:
+            with self.subTest(query_error=query_error):
+                elapsed = [0]
+                def advance(seconds):
+                    elapsed[0] += seconds
+                with (
+                    patch.object(sys, "argv", ["cleanup", "42", "1", str(runner), "success"]),
+                    patch.object(Path, "is_dir", return_value=True),
+                    patch.object(cleanup.time, "monotonic", side_effect=lambda: elapsed[0]),
+                    patch.object(cleanup.time, "sleep", side_effect=advance),
+                    patch.object(cleanup.subprocess, "check_output",
+                                 return_value="/another/job/xcodebuild\n", side_effect=query_error),
+                    patch.object(cleanup, "clean") as clean,
+                ):
+                    with self.assertRaises(expected_error):
+                        cleanup.main()
+                    clean.assert_not_called()
+                self.assertEqual((owned / "Build/product").read_text(), "product")
+                self.assertEqual((owned / "Logs/build.log").read_text(), "diagnostic")
+                self.assertFalse((self.runner / "_diag/derived-data").exists())
+
+    def test_main_cleans_and_retains_logs_after_transient_consumer_exits(self):
+        owned = self.fixture("Runner-owned")
+        runner = Path("/Users/gha-jit-macos/Library/Caches/gha-jit-macos/runs/42-123-attempt1/runner")
+        clean = cleanup.clean
+        is_dir = Path.is_dir
+        elapsed = [0]
+        def advance(seconds):
+            elapsed[0] += seconds
+        def clean_fixture(derived, runner_root, run_id, attempt, conclusion):
+            return clean(self.derived, self.runner, run_id, attempt, conclusion)
+        with (
+            patch.object(sys, "argv", ["cleanup", "42", "1", str(runner), "success"]),
+            patch.object(Path, "is_dir", autospec=True,
+                         side_effect=lambda path: path == runner / "_diag" or is_dir(path)),
+            patch.object(cleanup.time, "monotonic", side_effect=lambda: elapsed[0]),
+            patch.object(cleanup.time, "sleep", side_effect=advance),
+            patch.object(cleanup.subprocess, "check_output", side_effect=[
+                "/other/Runner.Listener\n", "/usr/bin/python3\n",
+            ]) as ps,
+            patch.object(cleanup, "clean", side_effect=clean_fixture) as cleaned,
+        ):
+            cleanup.main()
+        self.assertEqual(ps.call_count, 2)
+        self.assertEqual(elapsed[0], 1)
+        cleaned.assert_called_once()
+        self.assertFalse(owned.exists())
+        self.assertEqual((self.runner / "_diag/derived-data/Runner-owned/Logs/build.log").read_text(),
+                         "diagnostic")
+
+
+class ConsumerIdleWaitTests(unittest.TestCase):
+    def setUp(self):
+        self.elapsed = 0
+        clock = patch.object(cleanup.time, "monotonic", side_effect=lambda: self.elapsed)
+        sleep = patch.object(cleanup.time, "sleep", side_effect=self.advance)
+        clock.start()
+        self.sleep = sleep.start()
+        self.addCleanup(clock.stop)
+        self.addCleanup(sleep.stop)
+
+    def advance(self, seconds):
+        self.elapsed += seconds
+
+    def test_idle_host_returns_without_sleeping(self):
+        with patch.object(cleanup.subprocess, "check_output", return_value="/usr/bin/python3\n") as ps:
+            cleanup.wait_for_idle()
+        self.sleep.assert_not_called()
+        self.assertEqual(ps.call_args.kwargs["timeout"], 5)
+
+    def test_waits_for_both_listener_and_build_to_exit(self):
+        with patch.object(cleanup.subprocess, "check_output", side_effect=[
+            "/one/job/Runner.Listener\n/another/job/xcodebuild\n",
+            "/another/job/xcodebuild\n", "/usr/bin/python3\n",
+        ]) as ps:
+            cleanup.wait_for_idle()
+        self.assertEqual(ps.call_count, 3)
+        self.assertEqual(self.elapsed, 2)
+
+    def test_persistent_consumer_stops_at_deadline(self):
+        with patch.object(cleanup.subprocess, "check_output", return_value="/other/Runner.Listener\n") as ps:
+            with self.assertRaisesRegex(SystemExit, "within 2s.*Runner.Listener.*keeping DerivedData"):
+                cleanup.wait_for_idle(timeout=2)
+        self.assertEqual(self.elapsed, 2)
+        self.assertEqual([call.kwargs["timeout"] for call in ps.call_args_list], [2, 1])
+
+    def test_process_query_time_counts_toward_deadline(self):
+        def slow_query(*args, **kwargs):
+            self.elapsed += 1.75
+            return "/other/xcodebuild\n"
+        with patch.object(cleanup.subprocess, "check_output", side_effect=slow_query) as ps:
+            with self.assertRaisesRegex(SystemExit, "keeping DerivedData"):
+                cleanup.wait_for_idle(timeout=2)
+        self.assertEqual(self.elapsed, 2)
+        self.sleep.assert_called_once_with(0.25)
+        ps.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()

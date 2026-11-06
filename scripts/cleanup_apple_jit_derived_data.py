@@ -7,6 +7,7 @@ import plistlib
 import re
 import shutil
 import subprocess
+import time
 from pathlib import Path, PurePosixPath
 
 
@@ -78,6 +79,40 @@ def clean(derived_root, runner_root, run_id, attempt, conclusion):
     return cleaned
 
 
+def wait_for_idle(timeout=30):
+    """Wait briefly for exiting consumers; never clean without an idle sample."""
+    deadline = time.monotonic() + timeout
+    active = []
+    announced = False
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            consumers = ", ".join(active) or "idle state not confirmed"
+            raise SystemExit(
+                f"Apple build consumers did not become idle within {timeout:g}s "
+                f"({consumers}); keeping DerivedData."
+            )
+        # A stalled process query must not make the bounded wait unbounded.
+        # Query failures propagate, preserving all output for diagnosis.
+        processes = subprocess.check_output(
+            ["/bin/ps", "-U", "gha-jit-macos", "-o", "comm="],
+            text=True, timeout=min(5, remaining),
+        )
+        active = sorted({
+            Path(line.strip()).name for line in processes.splitlines()
+            if Path(line.strip()).name in {"Runner.Listener", "xcodebuild"}
+        })
+        if not active:
+            return
+        if not announced:
+            print(f"Waiting up to {timeout:g}s for Apple build consumers: {', '.join(active)}",
+                  flush=True)
+            announced = True
+        remaining = deadline - time.monotonic()
+        if remaining > 0:
+            time.sleep(min(1, remaining))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run_id")
@@ -93,9 +128,7 @@ def main():
         or (args.runner_root / "_diag").is_symlink()
         or not (args.runner_root / "_diag").is_dir()):
         raise SystemExit("Refusing cleanup outside the exact completed JIT runner root.")
-    processes = subprocess.check_output(["/bin/ps", "-U", "gha-jit-macos", "-o", "comm="], text=True)
-    if any(Path(line.strip()).name in {"Runner.Listener", "xcodebuild"} for line in processes.splitlines()):
-        raise SystemExit("An Apple build consumer is active; keeping DerivedData.")
+    wait_for_idle()
     clean(Path.home() / "Library/Developer/Xcode/DerivedData", args.runner_root,
           args.run_id, args.attempt, args.conclusion)
 

@@ -50,6 +50,15 @@ job exits. It archives matching logs (and all build products after failure),
 then removes only output belonging to that run and attempt. Other workspaces
 and shared caches remain available.
 
+The DerivedData helper waits up to 30 seconds for service-user `Runner.Listener`
+and `xcodebuild` consumers to exit, including consumers from other jobs. It only
+starts cleanup after observing neither process. The wait includes process-query
+time; a persistent consumer, failed query, or query timeout leaves all output in
+place and fails the launcher for diagnosis. This handles a listener that is
+still exiting after GitHub reports job completion without bypassing the global
+consumer check. Exact runner/workspace ownership and diagnostic retention checks
+still apply.
+
 The build-only NFS export on kspld0 is configured in
 `/etc/exports.d/plezyng-mpv-build.exports`. Keep its reproducible scratch data on
 `async` writes; `sync` made metadata-heavy workspace copies, Git checkouts and

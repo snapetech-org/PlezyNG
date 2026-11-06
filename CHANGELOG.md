@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Require compiled PME Vulkan evidence in every Linux and Windows native package before promoting application pins.
+
 - Build and bundle the Samsung neural provider automatically in ordinary Android builds, retaining vendor licensing and checksum-bound source receipts.
 
 - Include implemented neural/NPU experiments in normal compatible builds with the persisted Motion smoothing → Neural opt-in, and bundle Intel NPU and Vulkan GPU providers together on Linux x64.

@@ -199,6 +199,8 @@ def complete_native_artifacts() -> dict:
             "neuralFilters": {name: {arch: features(arch) for arch in arches} for name, arches in architectures.items()},
             "appleSlices": slices or [],
         }
+        if group in ("linux", "windows"):
+            package["capabilities"]["pmeVulkan"] = True
 
     aar = platforms["android"]["libraries"]["mpv-android"]
     receipt(aar, "android", {f"jni/{abi}/libmpv.so": [arch] for abi, arch in (
@@ -816,6 +818,27 @@ class SetNativeRevisionTest(unittest.TestCase):
                 self.assertNotIn("Traceback", result.stderr)
                 self.assertEqual(self._snapshot(), before)
                 self.assertFalse((self.root / "mpv-build.lock.json").exists())
+
+    def test_desktop_promotion_requires_compiled_vulkan_for_every_package(self) -> None:
+        for group in ("linux", "windows"):
+            for variant in ("x86_64", "aarch64"):
+                for value in (None, False, 1, "true"):
+                    with self.subTest(group=group, variant=variant, value=value):
+                        artifacts = complete_native_artifacts()
+                        receipt = artifacts["platforms"][group]["libraries"][f"libmpv-{group}"]["prebuilt"][variant]["capabilities"]
+                        if value is None:
+                            del receipt["pmeVulkan"]
+                        else:
+                            receipt["pmeVulkan"] = value
+                        repo, commit = self._fork_producer(
+                            artifacts, f"vulkan-{group}-{variant}-{str(value).lower()}",
+                        )
+                        before = self._snapshot()
+                        result = self._run(commit, "--repo", str(repo))
+                        self.assertEqual(result.returncode, 1, result.stderr)
+                        self.assertIn("compiled PME Vulkan", result.stderr)
+                        self.assertEqual(self._snapshot(), before)
+                        self.assertFalse((self.root / "mpv-build.lock.json").exists())
 
 
 if __name__ == "__main__":

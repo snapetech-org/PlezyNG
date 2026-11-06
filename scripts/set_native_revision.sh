@@ -552,6 +552,8 @@ def native_package_receipts(platforms: dict) -> dict:
                     not isinstance(receipt.get("requiredSymbols"), list) or
                     not required_symbols.issubset(x for x in receipt["requiredSymbols"] if isinstance(x, str))):
                 errors.append(f"{label}: requires schema-4 ordered-PCM and neural inspection")
+            if group in ("linux", "windows") and receipt.get("pmeVulkan") is not True:
+                errors.append(f"{label}: requires compiled PME Vulkan reconstruction evidence")
             binaries = receipt.get("binaries")
             architectures = receipt.get("binaryArchitectures")
             hashes = receipt.get("binarySha256")

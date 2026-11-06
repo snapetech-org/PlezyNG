@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Build the renamed application target in both Linux native reliability jobs, with one shared check for Linux and Windows target names.
+- Correct Apple local pod checksums using CocoaPods' installed JSON specs, preserving dependency versions and deployment locking.
+- Repair mGBA DMA logging for Windows compilers without changing log behavior; ship the generated build source, hashes and recipe alongside pristine upstream sources.
+
 - Accept registered `pleazyng://` links in the Android native handler while retaining legacy aliases, and check native acceptance alongside platform registrations.
 - Keep Apple CocoaPods lockfiles aligned with the bundled game cores and recording plugins while preserving existing dependency pins.
 - Declare OpenGL/GLX and Wayland server libraries found in the complete Linux bundle across the Debian, RPM, PPA, COPR and Snap recipes.

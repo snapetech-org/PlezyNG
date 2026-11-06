@@ -119,6 +119,12 @@ package smoke jobs. Apple CI runs locked pub dependency resolution, then
 SwiftPM mirror. The full Flutter application suite belongs to the required Unit
 Tests job; code analysis does not repeat it.
 
+Keep all three CocoaPods lockfiles aligned with native pods and resolved Flutter
+plugins. CocoaPods records local spec checksums from the JSON it installs under
+`Pods/Local Podspecs`, rather than the original Ruby `.podspec` file. Regenerate
+through normal pod installation or the CocoaPods sandbox serializer, then verify
+`pod install --deployment`; hashing the Ruby source directly gives the wrong lock.
+
 Xcode embeds `${EFFECTIVE_PLATFORM_NAME}` in CMake target-file arguments for
 embedded SDKs, as described in the
 [CMake property documentation](https://cmake.org/cmake/help/latest/prop_gbl/XCODE_EMIT_EFFECTIVE_PLATFORM_NAME.html).

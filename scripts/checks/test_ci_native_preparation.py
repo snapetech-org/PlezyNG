@@ -32,12 +32,16 @@ class NativePreparationOrderTests(unittest.TestCase):
                 self.assertNotRegex(job(workflow, name), r'(?m)^    needs:')
                 self.assertNotIn('${{ needs.', job(workflow, name))
 
-    def test_windows_build_uses_the_current_application_target(self):
-        cmake = (ROOT / 'windows/CMakeLists.txt').read_text()
-        binary = re.search(r'set\(BINARY_NAME "([^"]+)"\)', cmake)
-        self.assertIsNotNone(binary)
-        build = step(job(WORKFLOW.read_text(), 'windows-native-test'), 'Build Windows native reliability tests')
-        self.assertRegex(build, rf'(?m)^\s+{re.escape(binary[1])} `\s*$')
+    def test_desktop_native_builds_use_the_current_application_target(self):
+        workflow = WORKFLOW.read_text()
+        for platform in ('linux', 'windows'):
+            with self.subTest(platform=platform):
+                cmake = (ROOT / f'{platform}/CMakeLists.txt').read_text()
+                binary = re.search(r'set\(BINARY_NAME "([^"]+)"\)', cmake)
+                self.assertIsNotNone(binary)
+                build = step(job(workflow, f'{platform}-native-test'),
+                             f'Build {platform.title()} native reliability tests')
+                self.assertRegex(build, rf'(?m)^\s+{re.escape(binary[1])} [\\`]\s*$')
 
     def test_desktop_runtime_is_ready_before_flutter_and_cmake(self):
         text = WORKFLOW.read_text()

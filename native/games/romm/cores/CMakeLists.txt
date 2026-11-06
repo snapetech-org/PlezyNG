@@ -47,8 +47,49 @@ function(plezy_add_mgba)
   endif()
   add_subdirectory("${romm_mgba_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/mgba" EXCLUDE_FROM_ALL)
   if(MSVC)
-    # The pinned core has conditional directives inside variadic log arguments.
     target_compile_options(mgba_libretro PRIVATE /Zc:preprocessor)
+    # A directive inside an unfinished mLOG call is undefined preprocessing
+    # behavior, including with /Zc:preprocessor. Give each branch a complete
+    # call. Keep the verified upstream checkout pristine and ship this generated
+    # translation unit plus its hashes alongside the corresponding-source recipe.
+    set(dma_source "${romm_mgba_SOURCE_DIR}/src/gba/dma.c")
+    file(READ "${dma_source}" dma)
+    string(REPLACE "\r\n" "\n" dma "${dma}")
+    set(dma_original [=[#ifndef __LIBRETRO__
+		mLOG(GBA_DMA, INFO, "Starting DMA %i 0x%08X -> 0x%08X (%04X:%04X)", dma,
+#else
+		mLOG(GBA_DMA, DEBUG, "Starting DMA %i 0x%08X -> 0x%08X (%04X:%04X)", dma,
+#endif
+		     currentDma->nextSource, currentDma->nextDest,
+		     currentDma->reg, currentDma->count & 0xFFFF);]=])
+    set(dma_portable [=[#ifndef __LIBRETRO__
+		mLOG(GBA_DMA, INFO, "Starting DMA %i 0x%08X -> 0x%08X (%04X:%04X)", dma,
+		     currentDma->nextSource, currentDma->nextDest,
+		     currentDma->reg, currentDma->count & 0xFFFF);
+#else
+		mLOG(GBA_DMA, DEBUG, "Starting DMA %i 0x%08X -> 0x%08X (%04X:%04X)", dma,
+		     currentDma->nextSource, currentDma->nextDest,
+		     currentDma->reg, currentDma->count & 0xFFFF);
+#endif]=])
+    string(FIND "${dma}" "${dma_original}" dma_match)
+    if(dma_match EQUAL -1)
+      message(FATAL_ERROR "Pinned mGBA DMA logging source changed; review the portability fix")
+    endif()
+    string(REPLACE "${dma_original}" "${dma_portable}" dma "${dma}")
+    set(romm_mgba_dma "${CMAKE_CURRENT_BINARY_DIR}/mgba-dma.c")
+    file(WRITE "${romm_mgba_dma}" "${dma}")
+    get_target_property(mgba_sources mgba_libretro SOURCES)
+    list(FIND mgba_sources "${dma_source}" dma_index)
+    if(dma_index EQUAL -1)
+      message(FATAL_ERROR "Pinned mGBA target no longer compiles the expected DMA source")
+    endif()
+    list(REMOVE_AT mgba_sources ${dma_index})
+    set_property(TARGET mgba_libretro PROPERTY SOURCES "${mgba_sources};${romm_mgba_dma}")
+    file(SHA256 "${dma_source}" dma_upstream_hash)
+    file(SHA256 "${romm_mgba_dma}" dma_build_hash)
+    file(WRITE "${romm_mgba_dma}.json"
+      "{\"upstreamPath\":\"src/gba/dma.c\",\"upstreamSha256\":\"${dma_upstream_hash}\",\"buildSource\":\"mgba-dma.c\",\"buildSourceSha256\":\"${dma_build_hash}\",\"recipe\":\"../native/games/romm/cores/CMakeLists.txt\"}\n")
+    set(romm_mgba_dma "${romm_mgba_dma}" PARENT_SCOPE)
   endif()
 endfunction()
 plezy_add_mgba()
@@ -167,3 +208,11 @@ add_custom_target(plezy_romm_notices
   DEPENDS gambatte_libretro mgba_libretro fceumm_libretro
   VERBATIM)
 add_dependencies(plezy_retro plezy_romm_notices)
+if(MSVC)
+  add_custom_command(TARGET plezy_romm_notices POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${ROMM_NOTICES_DIR}/build-recipe/mgba"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+      "${romm_mgba_dma}" "${romm_mgba_dma}.json"
+      "${ROMM_NOTICES_DIR}/build-recipe/mgba"
+    VERBATIM)
+endif()

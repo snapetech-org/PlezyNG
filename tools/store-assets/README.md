@@ -63,7 +63,7 @@ Music artwork is primed into the real image cache before capture.
 
 Review every output visually before committing, including reader text contrast,
 loaded album/game covers, chapter labels, and workspace placement. The internal
-reader workspace surface is excluded from the 17-image public export. The export
+reader workspace surface is excluded from the 18-image public export. The export
 keeps original dimensions and removes alpha only when every pixel is opaque.
 Manifest entries identify component hashes and fixture state; audio, gameplay,
 streaming, and native decoder execution are separate runtime qualifications.

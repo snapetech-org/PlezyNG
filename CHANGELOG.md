@@ -5,6 +5,7 @@
 - Retain Windows visualization helper debug symbols in the build artifacts directory rather than shipping them in the application bundle.
 
 - Build the Tizen visualization helper with the bundled Khronos EGL headers and include those headers and notices in its corresponding source archive.
+- Prepare Apple release sources from the exact Git revision without copying ignored caches or filesystem provenance metadata over NFS.
 
 - Check localization source-review snapshots and generated native resources before committing, matching the release CI checks.
 - Derive tvOS framework deployment metadata from every selected Mach-O slice, correcting read-only build copies while preserving shared caches and genuine higher runtime requirements.

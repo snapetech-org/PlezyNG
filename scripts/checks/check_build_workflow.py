@@ -1209,6 +1209,11 @@ for apple_job_name, workspace_label in (
         else "Prepare NFS source workspace and local APFS macOS build output"
     )
     stage_step = named_step(apple_release_job, stage_step_name)
+    require(
+        'python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$GITHUB_SHA"'
+        in stage_step and 'ditto "$GITHUB_WORKSPACE/."' not in stage_step,
+        f"{workspace_label} release must stage tracked sources without copying ignored caches or APFS attributes",
+    )
     xcode_step_name = (
         "Build iOS (no codesign)" if apple_job_name == "build-ios" else "Build macOS"
     )

@@ -65,6 +65,8 @@ RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
     "scripts/checks/test_apple_jit_queue.py",
     "scripts/launch_apple_jit_runner.sh",
     "scripts/cleanup_apple_jit_derived_data.py",
+    "scripts/copy_apple_jit_sources.py",
+    "scripts/checks/test_copy_apple_jit_sources.py",
     "scripts/launch_queued_apple_jit_jobs.py",
     "scripts/prepare_android_sdk.py",
     "scripts/prepare_gradle_repositories.py",

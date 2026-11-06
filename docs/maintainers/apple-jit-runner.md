@@ -34,6 +34,14 @@ The controller accepts only trusted `workflow_dispatch` runs from PlezyNG
 preserves launcher logs, GitHub job logs, and `_diag` archives in the supplied
 evidence directory.
 
+The iOS and macOS source workspaces use a shared local Git clone of the exact
+job revision. This copies tracked sources without ignored caches, checkout
+credentials, or APFS provenance attributes. The clone borrows Git objects from
+the original job checkout, which must remain present until all job consumers
+exit; it is task scratch, not an independently retained source archive. The
+helper refuses modified tracked source or a nonempty destination. Existing task
+ownership checks and AppleDouble checks remain in place.
+
 Swift package resolution also uses the job's local APFS DerivedData path.
 It must not fall back to `~/Library/Developer/Xcode/DerivedData`, where aborted
 jobs previously left build output outside the runner cleanup root.

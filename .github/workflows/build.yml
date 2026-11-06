@@ -354,7 +354,7 @@ jobs:
           while IFS= read -r changed_file; do
             [[ -z "$changed_file" ]] && continue
             case "$changed_file" in
-              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
+              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
                 ;;
               *)
                 echo "Release tag $RELEASE_TAG differs from main in non-release source '$changed_file'; refusing to build mixed source." >&2
@@ -1025,7 +1025,7 @@ jobs:
           short_root="$(bash scripts/prepare_apple_jit_scratch.sh ios 40 local-xcode)"
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
           APPLE_LOCAL_BUILD_DIR="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-ios-xcode/build"
-          ditto "$GITHUB_WORKSPACE/." "$short_root/"
+          python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$GITHUB_SHA"
           bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
             echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2
@@ -1442,7 +1442,7 @@ jobs:
           short_root="$(bash scripts/prepare_apple_jit_scratch.sh macos 40 local-xcode)"
           runner_temp_real="$(cd "$RUNNER_TEMP" && pwd -P)"
           APPLE_LOCAL_BUILD_DIR="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-macos-xcode/build"
-          ditto "$GITHUB_WORKSPACE/." "$short_root/"
+          python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$GITHUB_SHA"
           bash "$short_root/scripts/clean_appledouble_sidecars.sh" "$short_root"
           if [[ -e "$short_root/build" || -L "$short_root/build" ]]; then
             echo "Refusing to replace existing build output in the new Apple workspace: $short_root/build" >&2

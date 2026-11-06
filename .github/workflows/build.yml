@@ -2486,7 +2486,7 @@ jobs:
 
       - name: Copy wrapper script into bundle
         shell: bash
-        run: cp linux/packaging/pleazyng.sh "$BUNDLE_DIR/plezy.sh"
+        run: bash linux/packaging/prepare-bundle-launcher.sh "$BUNDLE_DIR"
 
       # Same check the package smoke build runs, against the artifact that
       # actually ships: a library nobody declares is a broken install, and it is
@@ -2548,7 +2548,7 @@ jobs:
           rm -rf "$snap_dir/src"
           mkdir -p "$snap_dir/src" "$snap_dir/gui"
           cp -a "$BUNDLE_DIR"/. "$snap_dir/src/"
-          cp linux/packaging/pleazyng.sh "$snap_dir/plezy.sh"
+          install -Dm755 linux/packaging/pleazyng.sh "$snap_dir/pleazyng.sh"
           cp linux/packaging/snap/pleazyng.desktop "$snap_dir/gui/pleazyng.desktop"
           cp assets/pleazyng.png "$snap_dir/gui/pleazyng.png"
           sed -i "s/^version: .*/version: '$RELEASE_TAG'/" "$snap_dir/snapcraft.yaml"

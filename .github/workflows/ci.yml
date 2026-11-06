@@ -1376,7 +1376,7 @@ jobs:
         run: bash linux/packaging/bundle-libs.sh build/linux/x64/release/bundle
 
       - name: Copy wrapper script into the bundle
-        run: cp linux/packaging/pleazyng.sh build/linux/x64/release/bundle/plezy.sh
+        run: bash linux/packaging/prepare-bundle-launcher.sh build/linux/x64/release/bundle
 
       # Derives what the resolved bundle still needs from the host and proves
       # every one of those libraries is declared. This is the check that would

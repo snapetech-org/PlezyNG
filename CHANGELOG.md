@@ -13,6 +13,7 @@
 - Build the Tizen visualization helper with the bundled Khronos EGL headers and include those headers and notices in its corresponding source archive.
 - Prepare Apple release sources from the exact Git revision without copying ignored caches or filesystem provenance metadata over NFS.
 
+- Stage the executable Pleazyng launcher consistently across Linux release bundles, CI, Snap and COPR packaging.
 - Check localization source-review snapshots and generated native resources before committing, matching the release CI checks.
 - Derive tvOS framework deployment metadata from every selected Mach-O slice, correcting read-only build copies while preserving shared caches and genuine higher runtime requirements.
 - Accept canonical and legacy Pleazyng deep links in the shared Apple handler, with native alias tests and registration consistency checks.

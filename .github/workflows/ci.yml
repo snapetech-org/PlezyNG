@@ -129,11 +129,7 @@ jobs:
         run: bash scripts/ci_guard_checks.sh
 
       - name: Verify formatting
-        run: |
-          paths=(lib)
-          [ ! -d test ] || paths+=(test)
-          find "${paths[@]}" -name "*.dart" ! -name "*.g.dart" ! -name "*.freezed.dart" -type f -print0 |
-            xargs -0 -r dart format --output=none --set-exit-if-changed
+        run: bash scripts/format_dart.sh --check
 
       - name: Verify icon consistency
         run: dart run scripts/checks/check_icon_consistency.dart

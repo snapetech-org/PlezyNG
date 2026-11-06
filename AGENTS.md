@@ -43,3 +43,7 @@ experiment available. Ship the required native components and verify packaging;
 a toggle without its implementation does not satisfy this requirement.
 Keep experiments off by default and report qualification status accurately.
 
+
+## Dart generation and formatting
+
+Use `scripts/format_dart.sh` for maintained Dart source and `scripts/format_dart.sh --check` to verify it. Regenerate translations and model outputs with `scripts/codegen.sh`; preserve those canonical outputs instead of formatting generated files manually.

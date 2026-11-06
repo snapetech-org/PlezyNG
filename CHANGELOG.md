@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Share a Dart source formatter that preserves canonical generated files, preventing formatting and generation from repeatedly invalidating each other.
+
 - Run the full Flutter application regression suite in the required CI analysis job so platform and integration regressions cannot pass on analysis checks alone.
 
 - Repair integrated Games, RomM, karaoke, visualizer, localization and native runtime build failures. Keep optional fork services from breaking local Games and companion remote sessions when no relay is configured, and preserve results and filters during progressive search.

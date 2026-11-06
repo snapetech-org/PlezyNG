@@ -153,7 +153,7 @@
       "migration_basis": "Compared old app questionnaire from 2026-10-25 and preserved its classification; no developer-supplied media catalog"
     },
     "target_audience_old": "18 and over; verified in old app console",
-    "review_access_pending": "Old app uses public Jellyfin demo for core playback; full paid-feature access has not been verified. Google explicitly disallows reliance on free trials. New target audience setup requires Sign in details first."
+    "review_access_pending": "Old app uses public Jellyfin demo for core playback. Release owner confirmed no verified paid-feature reviewer access beyond trial. Google requires full access and explicitly disallows reliance on free trials; do not confirm full access or invent bypass. New target audience setup is gated on Sign in details."
   },
   "copr": {
     "owner": "slskdn",
@@ -290,5 +290,11 @@
       "IAP test/submission validation"
     ],
     "state": "draft names, IAP SKU/copy, and artwork migrated in place; binary and submission verification pending"
+  },
+  "microsoft_store": {
+    "account_entered": "keith@snape.tech",
+    "portal": "https://partner.microsoft.com/dashboard",
+    "state": "Awaiting owner Authenticator approval in dedicated Firefox",
+    "registration_or_package_changes_made": false
   }
 }

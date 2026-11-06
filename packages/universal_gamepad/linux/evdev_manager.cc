@@ -688,3 +688,122 @@ void EvdevManager::OnInput(DeviceInfo& info, const std::string& path) {
             fl_value_append_take(fe, fl_value_new_int(ButtonMapping::kDpadUp));
             bool pressed = ev.value < 0;
             fl_value_append_take(fe, fl_value_new_bool(pressed ? TRUE : FALSE));
+            fl_value_append_take(fe, fl_value_new_float(pressed ? 1.0 : 0.0));
+            ForwardEvent(fe);
+            fl_value_unref(fe);
+          }
+          {
+            FlValue* fe = fl_value_new_list();
+            fl_value_append_take(fe, fl_value_new_int(1));
+            fl_value_append_take(fe, fl_value_new_int(gid));
+            fl_value_append_take(fe, fl_value_new_int(ts));
+            fl_value_append_take(fe, fl_value_new_int(ButtonMapping::kDpadDown));
+            bool pressed = ev.value > 0;
+            fl_value_append_take(fe, fl_value_new_bool(pressed ? TRUE : FALSE));
+            fl_value_append_take(fe, fl_value_new_float(pressed ? 1.0 : 0.0));
+            ForwardEvent(fe);
+            fl_value_unref(fe);
+          }
+        }
+
+      } else if (ButtonMapping::IsTriggerAxis(ev.code)) {
+        int button_index = ButtonMapping::TriggerAxisToButtonIndex(ev.code);
+        if (button_index < 0) continue;
+
+        const struct input_absinfo& ai = info.abs_info[ev.code];
+        double range = ai.maximum - ai.minimum;
+        double value = (range != 0)
+                           ? static_cast<double>(ev.value - ai.minimum) / range
+                           : 0.0;
+
+        // Throttle: skip if value hasn't changed meaningfully.
+        int trigger_idx = (ev.code == ABS_Z) ? 0 : 1;
+        if (!std::isnan(info.last_trigger[trigger_idx]) &&
+            std::fabs(value - info.last_trigger[trigger_idx]) < kAxisEpsilon) {
+          continue;
+        }
+        info.last_trigger[trigger_idx] = value;
+
+        bool pressed = value > 0.5;
+        int64_t ts = NowMillis();
+        // Wire format: [1, gamepadId, timestamp, buttonIndex, pressed, value]
+        FlValue* fe = fl_value_new_list();
+        fl_value_append_take(fe, fl_value_new_int(1));
+        fl_value_append_take(fe, fl_value_new_int(info.id));
+        fl_value_append_take(fe, fl_value_new_int(ts));
+        fl_value_append_take(fe, fl_value_new_int(button_index));
+        fl_value_append_take(fe, fl_value_new_bool(pressed ? TRUE : FALSE));
+        fl_value_append_take(fe, fl_value_new_float(value));
+        ForwardEvent(fe);
+        fl_value_unref(fe);
+
+      } else {
+        int w3c_index = ButtonMapping::EvdevAxisToW3C(ev.code);
+        if (w3c_index < 0) continue;
+
+        const struct input_absinfo& ai = info.abs_info[ev.code];
+        double range = ai.maximum - ai.minimum;
+        double value = (range != 0)
+                           ? 2.0 * (ev.value - ai.minimum) / range - 1.0
+                           : 0.0;
+
+        // Throttle: skip if value hasn't changed meaningfully.
+        if (w3c_index < 4 &&
+            !std::isnan(info.last_axis[w3c_index]) &&
+            std::fabs(value - info.last_axis[w3c_index]) < kAxisEpsilon) {
+          continue;
+        }
+        if (w3c_index < 4) info.last_axis[w3c_index] = value;
+
+        int64_t ts = NowMillis();
+        // Wire format: [2, gamepadId, timestamp, axisIndex, value]
+        FlValue* fe = fl_value_new_list();
+        fl_value_append_take(fe, fl_value_new_int(2));
+        fl_value_append_take(fe, fl_value_new_int(info.id));
+        fl_value_append_take(fe, fl_value_new_int(ts));
+        fl_value_append_take(fe, fl_value_new_int(w3c_index));
+        fl_value_append_take(fe, fl_value_new_float(value));
+        ForwardEvent(fe);
+        fl_value_unref(fe);
+      }
+    }
+  }
+
+  // Handle SYN_DROPPED: re-sync the device.
+  if (rc == LIBEVDEV_READ_STATUS_SYNC) {
+    while ((rc = libevdev_next_event(info.evdev, LIBEVDEV_READ_FLAG_SYNC,
+                                      &ev)) == LIBEVDEV_READ_STATUS_SYNC) {
+      // Drain sync events.
+    }
+  }
+
+  if (rc == -ENODEV || rc == -EIO) {
+    g_debug("evdev: removing unavailable gamepad %s: %s", path.c_str(), g_strerror(-rc));
+    ScheduleRemoveDevice(path);
+  }
+}
+
+void EvdevManager::OnDirectoryChanged(GFileMonitor* monitor, GFile* file,
+                                       GFile* other,
+                                       GFileMonitorEvent event_type,
+                                       gpointer user_data) {
+  auto* self = static_cast<EvdevManager*>(user_data);
+
+  g_autofree gchar* basename = g_file_get_basename(file);
+  if (!IsEventNodeName(basename)) return;
+
+  g_autofree gchar* path = g_file_get_path(file);
+  if (!path) return;
+
+  if (event_type == G_FILE_MONITOR_EVENT_CREATED ||
+      event_type == G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED ||
+      event_type == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT) {
+    if (!self->AddDevice(path)) {
+      self->ScheduleScanRetry(kHotplugRetryAttempts);
+    }
+  } else if (event_type == G_FILE_MONITOR_EVENT_DELETED ||
+             event_type == G_FILE_MONITOR_EVENT_UNMOUNTED) {
+    self->RemoveDevice(path);
+    self->ScheduleScanRetry(kHotplugRetryAttempts);
+  }
+}

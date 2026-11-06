@@ -87,6 +87,35 @@ class CorrespondingSourceTests(unittest.TestCase):
 
 
 class AppleCacheTests(unittest.TestCase):
+    def test_framework_collection_requires_a_built_binary_not_an_xcode_stub(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            name = 'PlezyRetro'
+            stub = root / 'build/EagerLinkingTBDs/Release-iphoneos' / (name + '.framework')
+            stub.mkdir(parents=True)
+            (stub / (name + '.tbd')).write_text('stub')
+            with self.assertRaisesRegex(RuntimeError, 'found 0'):
+                apple.find_framework(root, name, 'iphoneos')
+            framework = root / 'Release-iphoneos' / (name + '.framework')
+            framework.mkdir(parents=True)
+            (framework / name).write_bytes(b'built library')
+            self.assertEqual(apple.find_framework(root, name, 'iphoneos'), framework)
+            other = root / 'other/Release-iphoneos' / (name + '.framework')
+            other.mkdir(parents=True)
+            (other / name).write_bytes(b'another library')
+            with self.assertRaisesRegex(RuntimeError, 'found 2'):
+                apple.find_framework(root, name, 'iphoneos')
+
+    def test_framework_collection_accepts_versioned_macos_binary(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            framework = root / 'Release/PlezyRetro.framework'
+            version = framework / 'Versions/A'
+            version.mkdir(parents=True)
+            (version / 'PlezyRetro').write_bytes(b'built universal library')
+            (framework / 'PlezyRetro').symlink_to('Versions/A/PlezyRetro')
+            self.assertEqual(apple.find_framework(root, 'PlezyRetro', 'macosx'), framework)
+
     def test_xcode_library_paths_resolve_the_active_sdk(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

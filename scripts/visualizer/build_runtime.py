@@ -40,6 +40,16 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def checkout_runtime_source(source, revision):
+    # Build exactly the source paths included in the corresponding-source
+    # archive. Unrelated preset collections contain Windows-overlong paths and
+    # are neither compiled into nor distributed with the native runtime.
+    run("git", "config", "core.longpaths", "true", cwd=source)
+    run("git", "sparse-checkout", "set", "--no-cone", "--",
+        *["/" + path for path in SOURCE_PATHS], cwd=source)
+    run("git", "checkout", "--detach", revision, cwd=source)
+
+
 def valid_files(output, files):
     if not isinstance(files, dict) or not files or len(files) > 32:
         return False
@@ -109,7 +119,7 @@ def build(args):
         source = work / "source"
         run("git", "-c", "protocol.file.allow=never", "clone", "--filter=blob:none", "--no-checkout", lock["repository"], source)
         run("git", "fetch", "--no-tags", "origin", lock["ref"], cwd=source)
-        run("git", "checkout", "--detach", lock["commit"], cwd=source)
+        checkout_runtime_source(source, lock["commit"])
         actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=source, text=True).strip()
         if actual != lock["commit"]:
             raise ValueError("MilkRust source identity changed")

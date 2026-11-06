@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.22)
 project(plezy_retro LANGUAGES C CXX)
+if(APPLE)
+  # miniaudio's Apple audio-session implementation imports Objective-C APIs.
+  # Keep the portable host source, but compile it as Objective-C++ on Apple.
+  enable_language(OBJCXX)
+  set_source_files_properties(retro_host.cpp PROPERTIES LANGUAGE OBJCXX)
+endif()
 include(FetchContent)
 # Immutable inputs, fetched only by an authorized build, never at runtime.
 FetchContent_Declare(romm_libretro_common GIT_REPOSITORY https://github.com/libretro/libretro-common.git GIT_TAG d9597c359a5ca8399a4e244f816e7e975a92a2aa SOURCE_SUBDIR _plezy_headers_only)
@@ -12,7 +18,10 @@ set_target_properties(plezy_retro PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBI
 if(WIN32)
   target_link_libraries(plezy_retro PRIVATE winmm ole32)
 elseif(APPLE)
-  target_link_libraries(plezy_retro PRIVATE "-framework CoreAudio" "-framework AudioToolbox" "-framework CoreFoundation")
+  set_target_properties(plezy_retro PROPERTIES OBJCXX_STANDARD 17
+    OBJCXX_STANDARD_REQUIRED YES OBJCXX_VISIBILITY_PRESET hidden)
+  target_link_libraries(plezy_retro PRIVATE "-framework CoreAudio" "-framework AudioToolbox"
+    "-framework CoreFoundation" "-framework Foundation" "-framework AVFoundation")
 elseif(ANDROID)
   target_link_libraries(plezy_retro PRIVATE log android dl m)
   target_link_options(plezy_retro PRIVATE "-Wl,-z,max-page-size=16384")

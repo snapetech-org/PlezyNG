@@ -69,6 +69,17 @@ def source_fingerprint(platform):
     return checksum.hexdigest()
 
 
+def find_framework(directory, name, sdk):
+    # Xcode also creates .framework directories containing only .tbd stubs in
+    # EagerLinkingTBDs. Package the actual executable, including versioned macOS
+    # framework symlinks, rather than treating those temporary stubs as slices.
+    candidates = [path for path in directory.rglob(name + '.framework')
+                  if path.parent.name.startswith('Release') and (path / name).is_file()]
+    if len(candidates) != 1:
+        raise RuntimeError(f'Expected one built {sdk} slice for {name}, found {len(candidates)}')
+    return candidates[0]
+
+
 def build(platform):
     specs = SPECS[platform]
     destination = PACKAGE / 'apple/Frameworks' / platform
@@ -93,11 +104,7 @@ def build(platform):
         run(*command)
         run('cmake', '--build', out, '--config', 'Release', '--parallel', str(os.cpu_count() or 2))
         for name in FRAMEWORKS:
-            candidates = [path for path in out.rglob(name + '.framework')
-                          if path.parent.name.startswith('Release')]
-            if len(candidates) != 1:
-                raise RuntimeError(f'Expected one {sdk} slice for {name}, found {len(candidates)}')
-            frameworks[name].append(candidates[0])
+            frameworks[name].append(find_framework(out, name, sdk))
         notices[sdk] = out / 'cores/notices'
         if not (notices[sdk] / 'romm-cores.json').is_file():
             raise RuntimeError(f'Missing corresponding source and core receipt for {sdk}')

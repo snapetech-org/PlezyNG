@@ -37,6 +37,14 @@ function(plezy_add_mgba)
   set(BUILD_TEST OFF)
   set(BUILD_SUITE OFF)
   set(DISABLE_DEPS ON)
+  if(APPLE)
+    # Upstream lowers its function probes to macOS 10.6, rejected by current
+    # SDKs. Detect the SDK declaration before that override; otherwise its
+    # fallback strlcpy declaration collides with Apple's fortified macro.
+    include(CheckSymbolExists)
+    check_symbol_exists(strlcpy "string.h" PLEZY_MGBA_HAVE_STRLCPY)
+    set(HAVE_STRLCPY "${PLEZY_MGBA_HAVE_STRLCPY}")
+  endif()
   add_subdirectory("${romm_mgba_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/mgba" EXCLUDE_FROM_ALL)
 endfunction()
 plezy_add_mgba()

@@ -27,6 +27,10 @@ independent platform jobs inside the dispatched release workflow.
 
 For Apple queue inspection and the one-job JIT launcher, see the
 [Apple JIT runner runbook](apple-jit-runner.md).
+Each ephemeral launcher holds its own `caffeinate -i -w` idle-sleep assertion.
+The assertion follows the launcher PID through runner startup and ends when that
+one-job process exits, so active builds no longer depend on a manually timed
+awake command.
 
 Release actions reuse an existing immutable version tag. If the tag is an
 ancestor of `main`, the workflow permits only release infrastructure, changelog,

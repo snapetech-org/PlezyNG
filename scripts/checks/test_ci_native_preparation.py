@@ -25,6 +25,13 @@ def step(text: str, name: str) -> str:
 
 
 class NativePreparationOrderTests(unittest.TestCase):
+    def test_windows_build_uses_the_current_application_target(self):
+        cmake = (ROOT / 'windows/CMakeLists.txt').read_text()
+        binary = re.search(r'set\(BINARY_NAME "([^"]+)"\)', cmake)
+        self.assertIsNotNone(binary)
+        build = step(job(WORKFLOW.read_text(), 'windows-native-test'), 'Build Windows native reliability tests')
+        self.assertRegex(build, rf'(?m)^\s+{re.escape(binary[1])} `\s*$')
+
     def test_desktop_runtime_is_ready_before_flutter_and_cmake(self):
         text = WORKFLOW.read_text()
         for job_name, platform, architectures in (

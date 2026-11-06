@@ -1151,7 +1151,7 @@ jobs:
         run: |
           $buildDir = "build/windows/${{ matrix.arch }}"
           cmake --build $buildDir --config Debug --parallel 2 --target `
-            plezy `
+            pleazyng `
             mpv_property_result_contract_test `
             mpv_player_property_contract_test `
             display_mode_manager_test `

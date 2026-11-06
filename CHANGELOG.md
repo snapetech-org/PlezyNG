@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Build the bundled Apple game host and cores on current SDKs with correct Objective-C++ audio support, SDK capability detection and finished-framework selection.
+- Keep Windows native CI aligned with the renamed application target and check out only the runtime's corresponding source when building MilkRust, avoiding unrelated overlong preset paths.
+- Restore the truncated Linux gamepad input/hotplug handlers from the checksum-verified upstream package, preserving local effects support, and include the standard exception header used by playback.
+- Keep the private Mac awake automatically for each ephemeral runner's lifetime, releasing the idle-sleep assertion when that runner exits.
+
 - Prepare the pinned visualization runtime before desktop CI configuration, refresh Apple packages before Flutter configuration, and resolve Xcode SDK paths when packaging bundled game cores.
 - Validate documented release absence against authenticated GitHub metadata without treating authentication or server failures as an absent release.
 

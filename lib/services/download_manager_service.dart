@@ -1058,6 +1058,11 @@ class DownloadManagerService {
 
     try {
       try {
+        await reconcileMissingManagedDownloads();
+      } catch (error) {
+        appLogger.w('Could not reconcile managed downloads after restore', error: error);
+      }
+      try {
         final repaired = await _database.repairMissingQueuedDownloadEntries();
         if (repaired > 0) {
           appLogger.i('Repaired $repaired missing download queue item(s)');
@@ -1181,6 +1186,63 @@ class DownloadManagerService {
     } catch (e) {
       appLogger.e('Failed to recover interrupted downloads', error: e);
     }
+  }
+
+  /// Backup restores retain metadata but deliberately omit regenerable media.
+  /// Keep those entries visible for manual retry instead of claiming they are
+  /// playable offline. Custom/removable/SAF locations are outside this policy.
+  Future<int> reconcileMissingManagedDownloads() async {
+    if (!downloadsSupported) return 0;
+    final root = path.normalize((await _storageService.getAppManagedDownloadsDirectory()).absolute.path);
+    var repaired = 0;
+    for (final row in await getAllDownloads()) {
+      if (row.status != DownloadStatus.completed.index || row.videoFilePath == null) continue;
+      final storedPaths = [row.videoFilePath!, ...?row.additionalPartPathList?.whereType<String>()];
+      final files = <String>[];
+      for (final stored in storedPaths) {
+        if (_storageService.isSafUri(stored)) break;
+        final absolute = path.normalize(await _storageService.ensureAbsolutePath(stored));
+        if (!path.isWithin(root, absolute)) break;
+        files.add(absolute);
+      }
+      if (files.length != storedPaths.length) continue;
+      try {
+        var missing = false;
+        for (final file in files) {
+          if (!await File(file).exists()) {
+            missing = true;
+            break;
+          }
+        }
+        if (!missing) continue;
+        final changed = await _database.transaction(() async {
+          final current = await _database.getDownloadedMedia(row.globalKey);
+          if (current == null ||
+              current.status != DownloadStatus.completed.index ||
+              current.videoFilePath != row.videoFilePath ||
+              current.additionalPartPaths != row.additionalPartPaths) {
+            return false;
+          }
+          await _database.resetDownloadParts(
+            row.globalKey,
+            additionalPartCount: row.additionalPartPathList?.length ?? 0,
+          );
+          await _database.updateBgTaskId(row.globalKey, null);
+          await _database.updateDownloadProgress(row.globalKey, 0, 0, 0);
+          await _database.updateDownloadStatus(row.globalKey, DownloadStatus.failed.index);
+          await _database.updateDownloadError(row.globalKey, t.downloads.errorFileNotFound);
+          await _database.removeFromQueue(row.globalKey);
+          return true;
+        });
+        if (changed) {
+          repaired++;
+          _emitProgress(row.globalKey, DownloadStatus.failed, 0, errorMessage: t.downloads.errorFileNotFound);
+        }
+      } on FileSystemException catch (error) {
+        appLogger.w('Could not check managed download after restore', error: error);
+      }
+    }
+    return repaired;
   }
 
   Future<void> _reconcileNativeDownloadTasks() async {

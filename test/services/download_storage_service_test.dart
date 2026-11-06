@@ -5,6 +5,7 @@ import 'package:plezy/media/ids.dart';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plezy/media/media_backend.dart';
@@ -49,6 +50,56 @@ void main() {
       expect(identical(first, second), isTrue);
       expect(second.artworkDirectoryPath, isNotNull);
       expect(second.artworkDirectoryPath, first.artworkDirectoryPath);
+    });
+  });
+
+  group('managed backup exclusions', () {
+    const channel = MethodChannel('com.pleazyng/download_storage');
+    final calls = <String>[];
+
+    setUp(() {
+      calls.clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+        expect(call.method, 'excludeFromBackup');
+        calls.add(call.arguments as String);
+        return true;
+      });
+    });
+    tearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null),
+    );
+
+    for (final platform in TargetPlatform.values) {
+      test('$platform applies policy only to managed Apple roots, including recreation', () async {
+        final service = DownloadStorageService.forTestingBackup(platform);
+        await service.initialize(await SettingsService.getInstance());
+        final directory = await service.getDownloadsDirectory();
+        await directory.delete(recursive: true);
+        await service.getDownloadsDirectory();
+        final apple = platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+        expect(calls, apple ? [p.join(tmpRoot.path, 'support', 'artwork'), directory.path, directory.path] : isEmpty);
+      });
+    }
+
+    test('custom directories do not receive backup exclusions', () async {
+      final settings = await SettingsService.getInstance();
+      final custom = p.join(tmpRoot.path, 'user', 'movies');
+      await settings.write(SettingsService.customDownloadPath, custom);
+      final service = DownloadStorageService.forTestingBackup(TargetPlatform.macOS);
+      await service.initialize(settings);
+      expect((await service.getDownloadsDirectory()).path, custom);
+      await Directory(custom).delete(recursive: true);
+      await service.getDownloadsDirectory();
+      expect(calls, isEmpty);
+    });
+
+    test('a failed backup-policy update does not fail storage initialization', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (_) async {
+        throw PlatformException(code: 'backup_exclusion');
+      });
+      final service = DownloadStorageService.forTestingBackup(TargetPlatform.macOS);
+      await service.initialize(await SettingsService.getInstance());
+      expect(await (await service.getDownloadsDirectory()).exists(), isTrue);
     });
   });
 

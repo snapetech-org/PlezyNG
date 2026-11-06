@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +9,7 @@ import 'package:plezy/models/motion_processing_mode.dart';
 import 'package:plezy/models/playback_capability_report.dart';
 import 'package:plezy/mpv/mpv.dart';
 import 'package:plezy/services/motion_processing_service.dart';
+import 'package:plezy/utils/app_logger.dart';
 import 'package:plezy/widgets/video_controls/widgets/performance_overlay/performance_stats.dart';
 import 'package:plezy/widgets/video_controls/widgets/performance_overlay/performance_stats_service.dart';
 
@@ -99,6 +101,37 @@ Future<PerformanceStats> _firstStats(
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('HDR configuration logs source changes once instead of logging every stats poll', () async {
+    MemoryLogOutput.clearLogs();
+    setLoggerLevel(true);
+    final properties = {'video-params/w': '1920', 'video-params/gamma': 'pq', 'video-params/primaries': 'bt.2020'};
+    final service = PerformanceStatsService(_PropertyPlayer(properties));
+    try {
+      var samples = 0;
+      final finished = service.statsStream.take(3).map((stats) {
+        samples++;
+        if (samples == 1) properties['video-params/gamma'] = 'bt.1886';
+        return stats;
+      }).toList();
+      service.startPolling();
+      await finished;
+      final records = MemoryLogOutput.getLogs()
+          .reversed // The log viewer stores newest entries first.
+          .map((entry) => entry.message)
+          .where((message) => message.startsWith('HDR configuration: '))
+          .map((message) => jsonDecode(message.substring('HDR configuration: '.length)) as Map<String, dynamic>)
+          .toList();
+      expect(records, hasLength(2));
+      expect(records.first['source_hdr'], isTrue);
+      expect(records.last['source_hdr'], isFalse);
+      expect(records.last.containsKey('hdr_active'), isFalse);
+    } finally {
+      service.dispose();
+      setLoggerLevel(false);
+      MemoryLogOutput.clearLogs();
+    }
+  });
 
   group('PerformanceStatsService audio display', () {
     test('spdif passthrough reports the source track, not the IEC carrier (#1300)', () async {

@@ -31,7 +31,8 @@ class DownloadStorageService {
   static const _storageChannel = MethodChannel('com.pleazyng/download_storage');
 
   Future<void> _excludeManagedRootFromBackup(Directory directory) async {
-    if (!Platform.isIOS) return;
+    final platform = _backupPlatformOverride ?? defaultTargetPlatform;
+    if (platform != TargetPlatform.iOS && platform != TargetPlatform.macOS) return;
     try {
       // The native handler accepts only managed roots. It also handles old
       // installations at launch; this call covers deletion/recreation in one
@@ -44,15 +45,21 @@ class DownloadStorageService {
 
   static DownloadStorageService? _instance;
   static DownloadStorageService get instance => _instance ??= DownloadStorageService._();
-  DownloadStorageService._() : _safAvailableOverride = false;
+  DownloadStorageService._() : _safAvailableOverride = false, _backupPlatformOverride = null;
 
   @visibleForTesting
-  DownloadStorageService.forTestingSaf(String baseUri) : _safAvailableOverride = true {
+  DownloadStorageService.forTestingBackup(TargetPlatform platform)
+    : _safAvailableOverride = false,
+      _backupPlatformOverride = platform;
+
+  @visibleForTesting
+  DownloadStorageService.forTestingSaf(String baseUri) : _safAvailableOverride = true, _backupPlatformOverride = null {
     _customDownloadPath = baseUri;
     _customPathType = 'saf';
   }
 
   final bool _safAvailableOverride;
+  final TargetPlatform? _backupPlatformOverride;
 
   /// Drop the cached singleton so the next [instance] call returns a fresh
   /// service. Test-only.
@@ -62,6 +69,7 @@ class DownloadStorageService {
   }
 
   Directory? _baseDownloadsDir;
+  bool _baseDownloadsIsManaged = false;
   String? _artworkDirectoryPath;
 
   SettingsService? _settingsService;
@@ -80,6 +88,7 @@ class DownloadStorageService {
     _customDownloadPath = settingsService.read(SettingsService.customDownloadPath);
     _customPathType = settingsService.read(SettingsService.customDownloadPathType) ?? 'file';
     _baseDownloadsDir = null;
+    _baseDownloadsIsManaged = false;
     _artworkDirectoryPath = null;
 
     await getArtworkDirectory();
@@ -90,6 +99,7 @@ class DownloadStorageService {
       _customDownloadPath = _settingsService!.read(SettingsService.customDownloadPath);
       _customPathType = _settingsService!.read(SettingsService.customDownloadPathType) ?? 'file';
       _baseDownloadsDir = null;
+      _baseDownloadsIsManaged = false;
       _artworkDirectoryPath = null;
       await getArtworkDirectory();
     }
@@ -165,7 +175,7 @@ class DownloadStorageService {
     if (cached != null) {
       if (!await cached.exists()) {
         await _ensureDirectoryExists(cached);
-        await _excludeManagedRootFromBackup(cached);
+        if (_baseDownloadsIsManaged) await _excludeManagedRootFromBackup(cached);
       }
       return cached;
     }
@@ -174,6 +184,7 @@ class DownloadStorageService {
       final customDir = Directory(_customDownloadPath!);
       if (await isDirectoryWritable(customDir)) {
         _baseDownloadsDir = customDir;
+        _baseDownloadsIsManaged = false;
         return _baseDownloadsDir!;
       }
       // Fall through to default if custom path is not writable
@@ -181,6 +192,7 @@ class DownloadStorageService {
 
     final baseDir = await _getBaseAppDir();
     _baseDownloadsDir = await _ensureDirectoryExists(Directory(path.join(baseDir.path, 'downloads')));
+    _baseDownloadsIsManaged = true;
     await _excludeManagedRootFromBackup(_baseDownloadsDir!);
     return _baseDownloadsDir!;
   }

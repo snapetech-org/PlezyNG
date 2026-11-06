@@ -4,6 +4,35 @@ import XCTest
 
 @testable import Pleazyng
 
+final class DownloadBackupPolicyTests: XCTestCase {
+  func testOnlyBundleScopedRootsAreEligible() {
+    XCTAssertTrue(DownloadBackupPolicy.managedRoots(bundleIdentifier: nil).isEmpty)
+    let roots = DownloadBackupPolicy.managedRoots(bundleIdentifier: "test.pleazyng")
+    XCTAssertEqual(Set(roots.map(\.lastPathComponent)), Set(["downloads", "artwork"]))
+    XCTAssertTrue(roots.allSatisfy { $0.deletingLastPathComponent().lastPathComponent == "test.pleazyng" })
+  }
+
+  func testExclusionSurvivesRecreationWithoutExcludingUserFiles() throws {
+    let manager = FileManager.default
+    let base = manager.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+    let downloads = base.appendingPathComponent("downloads", isDirectory: true)
+    let recordings = base.appendingPathComponent("recordings", isDirectory: true)
+    try manager.createDirectory(at: recordings, withIntermediateDirectories: true)
+    defer { try? manager.removeItem(at: base) }
+    for _ in 0..<2 {
+      try manager.createDirectory(at: downloads, withIntermediateDirectories: true)
+      XCTAssertTrue(try DownloadBackupPolicy.exclude(downloads, allowedRoots: [downloads]))
+      XCTAssertEqual(try downloads.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup, true)
+      XCTAssertFalse(try DownloadBackupPolicy.exclude(recordings, allowedRoots: [downloads]))
+      XCTAssertFalse(try DownloadBackupPolicy.exclude(base, allowedRoots: [downloads]))
+      try manager.removeItem(at: downloads)
+    }
+    try manager.createSymbolicLink(at: downloads, withDestinationURL: recordings)
+    XCTAssertFalse(try DownloadBackupPolicy.exclude(downloads, allowedRoots: [downloads]))
+    XCTAssertNotEqual(try recordings.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup, true)
+  }
+}
+
 final class ControllablePropertyCore: MpvPlayerCoreBase {
   var nextResult: Result<Void, Error>?
   private(set) var propertyCalls: [(String, String)] = []

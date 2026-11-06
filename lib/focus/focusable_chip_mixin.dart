@@ -70,6 +70,7 @@ mixin FocusableChipStateMixin<T extends StatefulWidget> on State<T> {
   void didUpdateWidget(T oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_boundExternalNode != widgetFocusNode) {
+      _selectLongPress.reset();
       _bindFocusNode();
     }
   }
@@ -142,7 +143,7 @@ mixin FocusableChipStateMixin<T extends StatefulWidget> on State<T> {
       if (callbacks.onLongPress != null) {
         return _selectLongPress.handleKeyEvent(
           event,
-          isOwnerActive: () => mounted,
+          isOwnerActive: () => mounted && focusNode.hasFocus && (ModalRoute.of(context)?.isCurrent ?? true),
           onShortPress: () => callbacks.onSelect?.call(),
           onLongPress: callbacks.onLongPress!,
         );
@@ -152,9 +153,11 @@ mixin FocusableChipStateMixin<T extends StatefulWidget> on State<T> {
     }
 
     // Context menu key triggers long press directly
-    if (event.isActionable && key.isContextMenuKey && callbacks.onLongPress != null) {
-      _selectLongPress.reset();
-      callbacks.onLongPress!();
+    if (key.isContextMenuKey && callbacks.onLongPress != null) {
+      if (event is KeyDownEvent) {
+        _selectLongPress.reset();
+        callbacks.onLongPress!();
+      }
       return KeyEventResult.handled;
     }
 

@@ -154,6 +154,9 @@ mixin _JellyfinCollectionMethods on _JellyfinClientInternals {
 
   @override
   Future<bool> deleteMediaItem(MediaItem item) async {
+    // The user may leave the confirmation dialog open while permissions or
+    // item state change. Resolve the live grant again at the mutation boundary.
+    if (await fetchDeletePermission(item) != true) return false;
     final response = await _http.delete('/Items/${_segment(item.id)}');
     throwIfHttpError(response);
     return true;

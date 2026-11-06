@@ -273,6 +273,12 @@ class _FocusableWrapperState extends State<FocusableWrapper> with SingleTickerPr
   @override
   void didUpdateWidget(FocusableWrapper oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode ||
+        !widget.canRequestFocus ||
+        !widget.enableLongPress ||
+        widget.onLongPress == null) {
+      _selectLongPress.reset();
+    }
 
     if (widget.focusNode != oldWidget.focusNode) {
       _bindFocusNode();
@@ -462,7 +468,8 @@ class _FocusableWrapperState extends State<FocusableWrapper> with SingleTickerPr
       if (widget.enableLongPress) {
         final result = _selectLongPress.handleKeyEvent(
           event,
-          isOwnerActive: () => mounted,
+          isOwnerActive: () =>
+              mounted && _focusNode.hasFocus && widget.canRequestFocus && (ModalRoute.of(context)?.isCurrent ?? true),
           onShortPress: () => widget.onSelect?.call(),
           onLongPress: () => widget.onLongPress?.call(),
         );
@@ -474,16 +481,19 @@ class _FocusableWrapperState extends State<FocusableWrapper> with SingleTickerPr
       }
     }
 
+    // Context actions are one-shot, including on remotes that auto-repeat X
+    // or Menu. Consume release/repeat so ancestors cannot open another menu.
+    if (key.isContextMenuKey) {
+      if (event is KeyDownEvent) {
+        _selectLongPress.reset();
+        widget.onLongPress?.call();
+      }
+      return finish(KeyEventResult.handled, 'context-menu');
+    }
+
     // Ignore key up events for other keys
     if (!event.isActionable) {
       return finish(KeyEventResult.ignored, 'non-actionable');
-    }
-
-    // Context menu key
-    if (key.isContextMenuKey) {
-      _selectLongPress.reset();
-      widget.onLongPress?.call();
-      return finish(KeyEventResult.handled, 'context-menu');
     }
 
     // UP arrow - if callback provided, navigate up

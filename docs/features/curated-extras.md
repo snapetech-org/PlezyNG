@@ -89,6 +89,9 @@ permitted transcript passages. It receives no library token, viewing history,
 provider description, or arbitrary URL. Cloud mode requires HTTPS. The settings
 copy explains that queries and supplied excerpts are sent to the selected runtime.
 API tokens are stored through CredentialVault, separately from non-secret settings.
+Each request contains at most twelve permitted entries and twenty passages per
+entry, with conventional query matches selected first so later relevant cues can
+be included. Model quotes must match the exact supplied passage window.
 
 The response can choose only known category enums and exact supplied passage
 IDs, start times and verbatim text. Invented IDs, quotes, timestamps, links and
@@ -148,17 +151,18 @@ QR controls. Existing detail-screen and TV-navigation regression suites also run
 `scripts/test_extras_service.py` connects the credential-free service tests to
 the existing shared CI guard lane.
 
-Validation on 2026-11-06, with current main `dc13cce55054` merged and the pinned
+Validation on 2026-11-06, with current main `91f7d446ce42` merged and the pinned
 Flutter 3.47.1 SDK:
 
-- All 377 affected Flutter regression tests pass.
+- All 380 affected Flutter regression tests pass, including the new main privacy
+  screen tests and the bounded transcript-evidence retrieval regression.
 - All 19 discovery-service tests pass, using local fixtures and loopback HTTP.
 - Focused Dart analysis reports no issues; generated-file freshness, changed-Dart
   formatting, container image pins, changelog range validation and diff checks pass.
 - The repository-wide check script is not green: it reports issues in existing
   formatting, translation cleanup, workflow guards, icons, analyzer/unused code and
   native-format checks. This host also lacks `swift-format`. An isolated checkout
-  of main reproduces the same 221 hardcoded-string and 223 localization findings;
+  of main at `dc13cce55054` reproduces the same 221 hardcoded-string and 223 localization findings;
   this feature adds neither. Generated-file freshness was rerun successfully after
   code generation. No global check or supported platform is disabled by this PR.
 

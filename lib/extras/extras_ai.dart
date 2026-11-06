@@ -45,6 +45,10 @@ class ExtrasAi {
       return fallback;
     }
     final evidence = admitted.where((e) => e.analysisAllowed).take(12).toList();
+    final suppliedPassages = <String, List<ExtraPassage>>{
+      for (final entry in evidence)
+        entry.id: {...searchExtraPassages(entry, query), ...entry.passages}.take(20).toList(),
+    };
     try {
       final response = await extrasJsonRequest(
         _client,
@@ -73,7 +77,7 @@ class ExtrasAi {
                       (e) => {
                         'id': e.id,
                         'kind': e.kind.name,
-                        'passages': e.passages.take(20).map((p) => p.toJson()).toList(),
+                        'passages': suppliedPassages[e.id]!.map((p) => p.toJson()).toList(),
                       },
                     )
                     .toList(),
@@ -97,8 +101,8 @@ class ExtrasAi {
       for (final raw in answer['passages'] is List ? (answer['passages'] as List).take(8) : const []) {
         if (raw is! Map) continue;
         final entry = evidence.where((e) => e.id == raw['id']).firstOrNull;
-        final passage = entry?.passages
-            .where((p) => p.startSeconds == raw['start'] && p.text == raw['quote'])
+        final passage = suppliedPassages[entry?.id]
+            ?.where((p) => p.startSeconds == raw['start'] && p.text == raw['quote'])
             .firstOrNull;
         if (entry != null && passage != null) {
           (result[entry.id] ??= []).add(passage);

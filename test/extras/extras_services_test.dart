@@ -197,6 +197,51 @@ void main() {
     expect(blocked.withPassages(blocked.passages, userSupplied: true).analysisAllowed, true);
   });
 
+  test('inference retrieves later relevant cues and accepts only the supplied window', () async {
+    final passages = List.generate(
+      30,
+      (i) => ExtraPassage(
+        startSeconds: i * 10,
+        endSeconds: i * 10 + 5,
+        text: i == 25 ? 'Applying the prosthetic makeup.' : 'Archived topic $i.',
+      ),
+    );
+    final entry = candidate(permitted: true).withPassages(passages, userSupplied: true);
+    final ai = ExtrasAi(
+      client: MockClient((r) async {
+        final request = jsonDecode(r.body) as Map;
+        final input = jsonDecode((request['messages'] as List).last['content'] as String) as Map;
+        final supplied = ((input['candidates'] as List).single as Map)['passages'] as List;
+        expect(supplied.length, 20);
+        expect(supplied.first['start'], 250);
+        expect(supplied.any((p) => p['start'] == 290), false);
+        return http.Response(
+          jsonEncode({
+            'choices': [
+              {
+                'message': {
+                  'content': jsonEncode({
+                    'passages': [
+                      {'id': entry.id, 'start': 250, 'quote': passages[25].text},
+                      {'id': entry.id, 'start': 290, 'quote': passages[29].text},
+                    ],
+                  }),
+                },
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+    addTearDown(ai.close);
+    final answer = await ai.search('prosthetic', [
+      entry,
+    ], const ExtrasPreferences(aiMode: ExtrasAiMode.server, aiUrl: 'https://model.example/v1', aiModel: 'local'));
+    expect(answer.usedAi, true);
+    expect(answer.passages[entry.id]!.single.startSeconds, 250);
+  });
+
   test('inference failure retains deterministic transcript matches', () async {
     final ai = ExtrasAi(client: MockClient((_) async => http.Response('broken', 200)));
     addTearDown(ai.close);

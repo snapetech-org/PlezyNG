@@ -447,7 +447,7 @@
     "korean_privacy": "https://snape.tech/privacy/pleazyng/ko/",
     "site_source_commit": "c9e8c8e",
     "cloudflare_deployment_run": 42155093736,
-    "state": "Cloudflare Pages deployment succeeded; all four public URLs return HTTP 200 and byte-match rendered source",
+    "state": "Cloudflare Pages deployment succeeded; all four public URLs return HTTP 200, correct document language and matching complete visible source text. Cloudflare adds its own challenge script, so served bytes differ from source.",
     "deployment_url": "https://c83652dc.snape-tech.pages.dev",
     "verified_at": "2026-11-05 21:13 CST"
   },

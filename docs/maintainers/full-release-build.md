@@ -260,3 +260,18 @@ changed pins, missing libraries, corrupted bytes and host-architecture payloads.
 Both new JNI adapters have 16 KiB ELF alignment. Vendor LiteCore objects remain
 unchanged in their runtime asset layout; device/loader compatibility and NPU
 execution use runtime detection, fallback and physical device qualification.
+
+## Linux graphics loader dependencies
+
+The bundle leaves the graphics stack on the host. Keep `libvulkan.so.1` declared
+as `libvulkan1` on Debian/Ubuntu, `vulkan-loader` on RPM distributions and
+`vulkan-icd-loader` on Arch. The PPA, COPR, AUR and Snap recipes must cover the
+same host runtime libraries as `linux/packaging/build-packages.py`; the source
+guard checks that contract, including Snap's time64 package names. Release and
+package-smoke workers install the loader before inspecting the bundle.
+
+An AppImage also needs the host Vulkan loader. Flatpak resolves graphics through
+its pinned runtime and extensions; validate its real installed closure after
+the native rebuild. A loader dependency does not prove a GPU or device path is
+usable: retain the per-architecture bundle `ldd`/package checks and accurate
+runtime diagnostics when qualifying the newly compiled PME Vulkan path.

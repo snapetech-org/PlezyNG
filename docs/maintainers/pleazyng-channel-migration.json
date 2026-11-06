@@ -19,7 +19,7 @@
     "bundle_id_saved": "org.snapetech.pleazyng",
     "app_record_reused": true,
     "sku_retained_internal": "plezyng-2026-10",
-    "app_state": "iOS 2.24.1 and tvOS 1.0 Prepare for Submission",
+    "app_state": "iOS, tvOS and macOS 3.0.1 Prepare for Submission",
     "receipt": "App Information Saved in App Store Connect; unchanged numeric app ID",
     "bundle_registration_id": "5R79UC85QR",
     "extension_registration_id": "Z2HM9468HN",
@@ -79,7 +79,7 @@
       "release_behavior": {
         "iOS": "Automatically release after Apple approval",
         "tvOS": "Automatically release after Apple approval",
-        "macOS": "Not yet verified"
+        "macOS": "Automatically release after Apple approval; verified 2026-11-05 23:03 CST"
       }
     },
     "membership_type": "Individual",
@@ -130,6 +130,14 @@
         "Active paid agreement/tax/bank verification and Apple review"
       ],
       "direct_dmg": "Existing direct Developer ID build remains separate and unlocked; not suitable as paid Store package"
+    },
+    "app_pricing": {
+      "download_price_usd": "0.00",
+      "price_regions": 175,
+      "availability": "All 175 countries or regions; Available on App Release",
+      "confirmed_at": "2026-11-05 23:06 CST",
+      "model": "Free download; seven-day full-feature trial then separate USD 2.99 lifetime unlock IAP",
+      "publication": "Pricing and availability saved only; no app release submitted or approved"
     }
   },
   "automation_before": {

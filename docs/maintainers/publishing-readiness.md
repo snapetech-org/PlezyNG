@@ -7,6 +7,8 @@ records console evidence. A configured credential or upload workflow is not proo
 of an accepted package, active beta, or approved store release. Repository names
 remain unchanged.
 
+Apple’s app-level free download price and all 175-region availability are saved; its separate lifetime unlock remains USD $2.99. iOS, tvOS and macOS drafts are set to release automatically after Apple approval. No version has been submitted.
+
 Pricing is decided: seven days of all features free, then one USD $2.99 lifetime
 unlock on supported paid platforms. Free package channels remain free. Do not
 publish a free/unlocked build to a paid store and describe it as the paid model.

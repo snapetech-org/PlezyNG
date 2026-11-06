@@ -12,6 +12,8 @@ Source4:        pleazyng.png
 Source5:        LICENSE
 BuildRequires:  tar
 Requires:       gtk3
+Requires:       webkit2gtk4.1
+Requires:       libsecret
 Requires:       libepoxy
 Requires:       alsa-lib
 Requires:       libevdev
@@ -22,6 +24,8 @@ Requires:       libwayland-egl
 Requires:       libglvnd
 Requires:       libglvnd-egl
 Requires:       libva
+Requires:       libvdpau
+Requires:       vulkan-loader
 Requires:       libdrm
 Requires:       mesa-libgbm
 Requires:       libX11

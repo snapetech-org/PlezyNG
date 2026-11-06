@@ -9,6 +9,7 @@ machines; the built-bundle check covers plugin links unavailable before `pub get
 from pathlib import Path
 import ast
 import re
+import shlex
 import sys
 
 
@@ -185,9 +186,56 @@ depends = declared_depends()
 
 require(bool(depends), "no distro depends lists were found, so nothing was checked")
 
+# The AUR recipe installs the same release bundle as our pacman package. It
+# needs every one of that bundle's host libraries, including plugin runtimes.
+aur_path = LINUX / "packaging/aur/PKGBUILD"
+aur_match = re.search(r"(?m)^depends=\(([^)]*)\)", read(aur_path))
+require(aur_match is not None, f"{aur_path}: missing literal depends array")
+if aur_match:
+    aur_depends = set(shlex.split(aur_match.group(1)))
+    for dependency in depends.get("pacman", []):
+        require(dependency in aur_depends, f"AUR recipe must depend on '{dependency}' for the shared Linux release bundle")
+
+
+def package_names(text: str) -> set[str]:
+    """Package tokens only; tolerate Debian alternatives and version constraints."""
+    text = re.sub(r"\$\{[^}]+\}", "", text)
+    return {
+        match.group().removesuffix("t64")
+        for part in re.split(r"[,|]", text)
+        if (match := re.match(r"[A-Za-z0-9][A-Za-z0-9.+-]*", part.strip()))
+    }
+
+
+# Every recipe installs the same bundle. Its host-library closure is therefore
+# the canonical DISTROS list, including libmpv/plugin links beyond CMake's walk.
+ppa_path = LINUX / "packaging/ppa/debian/control"
+ppa_match = re.search(r"(?ms)^Depends:\s*(.*?)(?=^\S|\Z)", read(ppa_path))
+require(ppa_match is not None, f"{ppa_path}: missing Depends field")
+copr_path = LINUX / "packaging/copr/pleazyng.spec"
+copr_names = set(re.findall(r"(?m)^Requires:\s+([A-Za-z0-9][A-Za-z0-9.+-]*)", read(copr_path)))
+require(bool(copr_names), f"{copr_path}: missing Requires fields")
+snap_path = LINUX / "packaging/snap/snapcraft.yaml"
+snap_match = re.search(r"(?m)^    stage-packages:\n((?:      - [^\n]+\n)+)", read(snap_path))
+require(snap_match is not None, f"{snap_path}: missing literal stage-packages list")
+recipes = [
+    ("PPA", "deb", package_names(ppa_match.group(1)) if ppa_match else set()),
+    ("COPR", "rpm", copr_names),
+    ("Snap", "deb", {
+        name.removesuffix("t64")
+        for name in re.findall(r"(?m)^      - ([a-z0-9][a-z0-9.+-]*)", snap_match.group(1))
+    } if snap_match else set()),
+]
+for recipe, distro, packages in recipes:
+    for dependency in depends.get(distro, []):
+        require(
+            bool(package_names(dependency) & packages),
+            f"{recipe} recipe must include '{dependency}' for the shared Linux release bundle",
+        )
+
 # These libraries must remain host-provided; bundling them would invalidate this guard.
 bundle = read(BUNDLE_SH)
-for pattern in (r"libEGL\.so", r"libwayland.*\.so"):
+for pattern in (r"libEGL\.so", r"libwayland.*\.so", r"libvulkan\.so"):
     require(
         pattern in bundle,
         f"bundle-libs.sh no longer excludes {pattern}: if those are bundled now, "

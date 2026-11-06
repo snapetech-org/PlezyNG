@@ -33,7 +33,7 @@ class _PlayerMockupState extends State<PlayerMockup> {
     body: Stack(
       fit: StackFit.expand,
       children: [
-        Image.file(File('tools/store-assets/fixtures/caminandes-frame.jpg'), fit: BoxFit.cover),
+        Image.memory(File('tools/store-assets/fixtures/caminandes-frame.jpg').readAsBytesSync(), fit: BoxFit.cover),
         const DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(

@@ -32,7 +32,8 @@ class ExtrasPolicy {
       if (entry.kind == ExtraKind.other || (entry.kind == ExtraKind.analysis && !prefs.includeAnalysis)) {
         return ExtraRejection.unsupported;
       }
-      if (!entry.reviewedAssociation && !(entry.verifiedPublisher && entry.catalogAssociated)) {
+      if (!entry.reviewedAssociation &&
+          !(entry.verifiedPublisher && entry.publisherId.isNotEmpty && entry.catalogAssociated)) {
         return ExtraRejection.unverified;
       }
     }

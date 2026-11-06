@@ -145,6 +145,22 @@ changes, encrypted settings, bounded caches, native download ownership, inferenc
 fabrication, failures, HTTP authentication, quotas and registry validation. Widget
 coverage exercises 320-pixel screens at 200% text size, RTL, desktop previews and TV
 QR controls. Existing detail-screen and TV-navigation regression suites also run.
+`scripts/test_extras_service.py` connects the credential-free service tests to
+the existing shared CI guard lane.
+
+Validation on 2026-11-06, with current main `dc13cce55054` merged and the pinned
+Flutter 3.47.1 SDK:
+
+- All 377 affected Flutter regression tests pass.
+- All 19 discovery-service tests pass, using local fixtures and loopback HTTP.
+- Focused Dart analysis reports no issues; generated-file freshness, changed-Dart
+  formatting, container image pins, changelog range validation and diff checks pass.
+- The repository-wide check script is not green: it reports issues in existing
+  formatting, translation cleanup, workflow guards, icons, analyzer/unused code and
+  native-format checks. This host also lacks `swift-format`. An isolated checkout
+  of main reproduces the same 221 hardcoded-string and 223 localization findings;
+  this feature adds neither. Generated-file freshness was rerun successfully after
+  code generation. No global check or supported platform is disabled by this PR.
 
 These are source and host-side tests. Physical Android/iOS/Windows/macOS/TV playback,
 provider login/age/region behavior, app launch support and vendor-store packages

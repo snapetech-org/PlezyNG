@@ -150,12 +150,12 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
                       controller.addJavaScriptHandler(
                         handlerName: 'extras',
                         callback: (arguments) async {
-                          if (!mounted ||
-                              !widget.session.externalPermitted ||
-                              arguments.length != 2 ||
-                              arguments[1] is! num) {
+                          if (!mounted) return null;
+                          if (!widget.session.externalPermitted) {
+                            setState(() => _embedded = false);
                             return null;
                           }
+                          if (arguments.length != 2 || arguments[1] is! num) return null;
                           final kind = arguments[0], value = (arguments[1] as num).toInt();
                           if (kind == 'error') {
                             setState(() => _failed = true);

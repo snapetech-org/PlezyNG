@@ -33,6 +33,7 @@ ExtrasSubject extrasSubjectForMedia(
 ExtrasSubject extrasSubjectForCatalog(
   CatalogItem item, {
   bool restricted = false,
+  bool watched = false,
   String language = 'en',
   String region = 'US',
 }) {
@@ -52,6 +53,7 @@ ExtrasSubject extrasSubjectForCatalog(
     title: item.title,
     year: item.year,
     restricted: restricted,
+    watched: watched,
     language: language,
     region: region,
   );

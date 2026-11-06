@@ -391,6 +391,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   bool get _canUseDetail => mounted && !_isDeleted;
   List<MediaItem>? _extras;
   ExtrasSession? _curatedExtras;
+  int _extrasLoadGeneration = 0;
   List<MediaItem>? get _extraPreviews => _curatedExtras?.preview.map(extraDisplayItem).toList();
   ExtraEntry? _extraForDisplay(MediaItem item) =>
       _curatedExtras?.entries.where((e) => 'extra:${e.id}' == item.id).firstOrNull;
@@ -402,6 +403,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   }
 
   Future<void> _syncCuratedExtras() async {
+    final generation = ++_extrasLoadGeneration;
+    bool currentGeneration() => _canUseDetail && generation == _extrasLoadGeneration;
     if (!_canUseDetail || (!_metadata.isMovie && !_metadata.isShow)) return;
     final locale = WidgetsBinding.instance.platformDispatcher.locale;
     final subject = extrasSubjectForMedia(
@@ -429,12 +432,12 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         final downloads = context.read<DownloadProvider>();
         final restored = <MediaItem>[];
         for (final ref in await current.store.libraryReferences(subject.key)) {
-          if (!current.active) return;
+          if (!current.active || !currentGeneration()) return;
           final cached = await downloads.lookupOfflineMetadata(ServerId(ref.serverId), ref.id);
           final item = cached?.copyWith(serverId: ref.serverId);
           if (item != null && downloads.isDownloaded(item.globalKey)) restored.add(item);
         }
-        if (!current.active) return;
+        if (!current.active || !currentGeneration()) return;
         current.library = restored;
       } else if (_hasLoadedExtras && _extras != null) {
         await current.store.saveLibraryReferences(subject.key, [
@@ -445,7 +448,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     } catch (_) {
       /* Missing offline metadata leaves an empty native selection. */
     }
-    if (current.active) await current.refresh();
+    if (current.active && currentGeneration()) await current.refresh();
   }
 
   void _browseExtras() {
@@ -785,6 +788,9 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     final base = _metadata;
     if (base.globalKey == sourceGlobalKey) {
       _fullMetadata = _normalizeRefreshedItem(item, base);
+      if (_curatedExtras?.subject.watched != _fullMetadata!.isWatched) {
+        unawaited(_syncCuratedExtras());
+      }
     }
 
     final onDeckEpisode = _onDeckEpisode;
@@ -1891,6 +1897,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         _hasLoadedRelatedHubs = true;
       });
 
+      unawaited(_syncCuratedExtras());
       if (_metadata.isShow) {
         _loadSeasonsFromDownloads();
         // Get offline OnDeck episode

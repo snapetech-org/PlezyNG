@@ -24,6 +24,7 @@ ExtraEntry candidate({String id = '12345678901', bool permitted = false}) => Ext
   kind: ExtraKind.makeup,
   origin: ExtraOrigin.catalog,
   url: Uri.https('www.youtube.com', '/watch', {'v': id}),
+  publisherId: 'studio',
   verifiedPublisher: true,
   catalogAssociated: true,
   analysisAllowed: permitted,
@@ -191,6 +192,7 @@ void main() {
     expect(answer.kinds, isEmpty);
     expect(answer.passages.keys, [permitted.id]);
     expect(answer.passages[permitted.id]!.single.startSeconds, 12);
+    expect(ExtraEntry.parse({...permitted.toJson(), 'scope': 'unknown'}), isNull);
     expect(blocked.withPassages(blocked.passages).analysisAllowed, false);
     expect(blocked.withPassages(blocked.passages, userSupplied: true).analysisAllowed, true);
   });

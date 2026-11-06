@@ -1,3 +1,4 @@
+import '../profiles/active_profile_provider.dart';
 import '../extras/extras_models.dart';
 import '../extras/extras_session.dart';
 import '../extras/extras_widgets.dart';
@@ -91,12 +92,18 @@ class CatalogItemDetailScreen extends StatefulWidget {
 
 class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   ExtrasSession? _extras;
+  late final String? _extrasProfileId;
   void _syncExtras(CatalogItem item, [List<ExtraEntry> candidates = const []]) {
-    if (!mounted || (item.kind != MediaKind.movie && item.kind != MediaKind.show)) return;
+    if (!mounted ||
+        context.read<ActiveProfileProvider?>()?.activeId != _extrasProfileId ||
+        (item.kind != MediaKind.movie && item.kind != MediaKind.show)) {
+      return;
+    }
     final locale = WidgetsBinding.instance.platformDispatcher.locale;
     final subject = extrasSubjectForCatalog(
       item,
       restricted: extrasRestricted(context),
+      watched: _matches?.any((item) => item.isWatched) ?? false,
       language: LocaleSettings.currentLocale.languageCode,
       region: locale.countryCode ?? 'US',
     );
@@ -177,6 +184,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _extrasProfileId = context.read<ActiveProfileProvider?>()?.activeId;
     _copyServers = context.read<MultiServerProvider>()..addListener(_onPlaybackEnvironmentChanged);
     _copyNetwork = context.read<OfflineModeProvider?>();
     _copyNetwork?.addListener(_onPlaybackEnvironmentChanged);
@@ -340,6 +348,10 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
         ),
     ];
     setState(() => _matches = merged);
+    final extras = _extras;
+    if (extras != null && extras.subject.watched != merged.any((item) => item.isWatched)) {
+      _syncExtras(_detailItem ?? widget.item, extras.catalog);
+    }
     // A merge re-sorts, and SettingsGroup shapes its cards by list index, so
     // the tile holding the focused node can be rebuilt from scratch and drop
     // it. Reclaim it rather than dumping a dpad user on another copy.

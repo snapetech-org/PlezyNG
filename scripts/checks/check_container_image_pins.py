@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PRODUCTION_DOCKERFILES = (ROOT / "server" / "Dockerfile",)
+PRODUCTION_DOCKERFILES = (ROOT / "server" / "Dockerfile", ROOT / "tools" / "extras_service" / "Dockerfile")
 PRODUCTION_COMPOSE_FILES = (ROOT / "server" / "docker-compose.yml",)
 SUPPORTED_PLATFORMS = frozenset({"linux/amd64", "linux/arm64"})
 

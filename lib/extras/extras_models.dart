@@ -158,6 +158,7 @@ class ExtraEntry {
         title.length > 500) {
       return null;
     }
+    if (raw['scope'] != null && !ExtraScope.values.any((scope) => scope.name == raw['scope'])) return null;
     final url = canonicalExtraUrl(Uri.tryParse(raw['url'] is String ? raw['url'] as String : ''));
     if (url == null) return null;
     final parents = extraStrings(raw['parents']).where((p) => p.length <= 200).take(12).toSet();

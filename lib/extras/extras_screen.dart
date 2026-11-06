@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/download_provider.dart';
 import '../providers/multi_server_provider.dart';
@@ -22,8 +25,10 @@ import 'extras_policy.dart';
 import 'extras_repository.dart';
 import 'extras_session.dart';
 
-Future<void> openExtras(BuildContext context, ExtrasSession session) =>
-    Navigator.of(context).push<void>(MaterialPageRoute(builder: (_) => ExtrasScreen(session: session)));
+Future<void> openExtras(BuildContext context, ExtrasSession session) async {
+  if (!session.active || !context.mounted) return;
+  await Navigator.of(context).push<void>(MaterialPageRoute(builder: (_) => ExtrasScreen(session: session)));
+}
 
 class ExtrasScreen extends StatefulWidget {
   const ExtrasScreen({super.key, required this.session});
@@ -284,6 +289,7 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
                   const SizedBox(height: 16),
                   TextField(
                     controller: _query,
+                    inputFormatters: [LengthLimitingTextInputFormatter(200)],
                     onChanged: (_) => setState(() {
                       _generation++;
                       _answer = const ExtrasAiResult();
@@ -614,15 +620,24 @@ class _ExtraTranscriptScreenState extends State<ExtraTranscriptScreen> {
       final result = await FilePickerService.instance.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['srt', 'vtt'],
-        withData: true,
+        withData: false,
       );
       final file = result?.files.single;
       if (file == null) return;
-      if (file.size > 512 * 1024 || file.bytes == null) throw const FormatException('Invalid transcript size');
-      final cues = SubtitleRetimer.parseCues(sourceBytes: file.bytes!, extension: '.${file.extension}');
+      if (file.size > 512 * 1024) throw const FormatException('Invalid transcript size');
+      final bytes = BytesBuilder(copy: false);
+      if (file.bytes != null) {
+        bytes.add(file.bytes!);
+      } else if (file.path != null) {
+        await for (final chunk in File(file.path!).openRead(0, 512 * 1024 + 1)) {
+          bytes.add(chunk);
+        }
+      }
+      if (bytes.length == 0 || bytes.length > 512 * 1024) throw const FormatException('Invalid transcript size');
+      final cues = SubtitleRetimer.parseCues(sourceBytes: bytes.takeBytes(), extension: '.${file.extension}');
       final passages = cues
           .take(500)
-          .where((c) => c.endMs > c.startMs && c.text.length <= 2000)
+          .where((c) => c.startMs >= 0 && c.endMs > c.startMs && c.endMs <= 86400000 && c.text.length <= 2000)
           .map((c) => ExtraPassage(startSeconds: c.startMs ~/ 1000, endSeconds: (c.endMs / 1000).ceil(), text: c.text))
           .toList();
       if (passages.isEmpty) throw const FormatException('No transcript cues');
@@ -682,6 +697,7 @@ class _ExtraTranscriptScreenState extends State<ExtraTranscriptScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _query,
+            inputFormatters: [LengthLimitingTextInputFormatter(200)],
             onSubmitted: (_) => unawaited(_search()),
             onChanged: (q) => setState(() {
               _generation++;

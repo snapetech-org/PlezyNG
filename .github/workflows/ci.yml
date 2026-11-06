@@ -141,6 +141,9 @@ jobs:
       - name: Analyze code
         run: dart run scripts/checks/check_analyzer.dart
 
+      - name: Run application regression tests
+        run: flutter test --concurrency 2 --reporter expanded
+
       - name: Check for unused code
         run: |
           echo "🔍 Checking for unused code..."

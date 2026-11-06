@@ -5,6 +5,11 @@ set -uo pipefail
 # version; clear them so hooks and direct invocations behave identically.
 unset GIT_DIR GIT_INDEX_FILE GIT_WORK_TREE GIT_PREFIX
 
+# Validation must not depend on SDK analytics network requests. These flags
+# affect only these tool processes; every diagnostic and check stays enabled.
+export DASH__SUPPRESS_ANALYTICS=true
+export FLUTTER_SUPPRESS_ANALYTICS=true
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT"

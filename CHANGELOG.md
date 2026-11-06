@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep local and CI build validation independent of SDK analytics requests while retaining every diagnostic and check.
+
 - Retain Windows visualization helper debug symbols in the build artifacts directory rather than shipping them in the application bundle.
 
 - Build the Tizen visualization helper with the bundled Khronos EGL headers and include those headers and notices in its corresponding source archive.

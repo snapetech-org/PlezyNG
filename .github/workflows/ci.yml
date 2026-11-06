@@ -31,6 +31,9 @@ on:
         type: boolean
 
 env:
+  # Keep SDK analytics failures separate from build and analysis diagnostics.
+  DASH__SUPPRESS_ANALYTICS: "true"
+  FLUTTER_SUPPRESS_ANALYTICS: "true"
   # Only place this workflow names the SDK; .github/actions/setup-flutter-git pins the same release.
   FLUTTER_VERSION: "3.47.1"
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1

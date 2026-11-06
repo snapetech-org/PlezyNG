@@ -235,12 +235,16 @@ for recipe, distro, packages in recipes:
 
 # These libraries must remain host-provided; bundling them would invalidate this guard.
 bundle = read(BUNDLE_SH)
-for pattern in (r"libEGL\.so", r"libwayland.*\.so", r"libvulkan\.so"):
+for pattern in (r"libEGL\.so", r"libwayland.*\.so"):
     require(
         pattern in bundle,
         f"bundle-libs.sh no longer excludes {pattern}: if those are bundled now, "
         "the depends entries this guard demands may be wrong",
     )
+require(
+    r"libvulkan\.so" in bundle,
+    "bundle-libs.sh no longer excludes the host Vulkan loader: it could replace the pinned bundled copy",
+)
 
 linked = linked_pkgconfig_targets(cmake_text)
 require(

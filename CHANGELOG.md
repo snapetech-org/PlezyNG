@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bundle the pinned native Vulkan loader alongside libmpv and shaderc, preserving its symlink chain and rejecting stale native archives without it.
+
 - Require compiled PME Vulkan evidence in every Linux and Windows native package before promoting application pins.
 
 - Build and bundle the Samsung neural provider automatically in ordinary Android builds, retaining vendor licensing and checksum-bound source receipts.

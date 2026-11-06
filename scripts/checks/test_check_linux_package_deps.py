@@ -56,7 +56,7 @@ class LinuxPackageDepsGuardTest(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("vulkan", result.stderr)
 
-    def test_vulkan_loader_must_remain_host_provided(self) -> None:
+    def test_host_vulkan_loader_must_not_replace_the_pinned_copy(self) -> None:
         bundle = self._mutate("packaging/bundle-libs.sh", r"libvulkan\.so|", "")
         result = self._run(**{"packaging/bundle-libs.sh": bundle})
         self.assertNotEqual(result.returncode, 0)

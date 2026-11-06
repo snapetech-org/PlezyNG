@@ -1359,6 +1359,7 @@ jobs:
           LIBMPV_DIR=$(dirname "$(find libmpv-prefix -name 'libmpv.so' | head -1)")
           cp -a "$LIBMPV_DIR"/libmpv.so* "$BUNDLE_LIB/"
           cp -a libmpv-prefix/lib/libshaderc_shared.so* "$BUNDLE_LIB/"
+          cp -a libmpv-prefix/lib/libvulkan.so* "$BUNDLE_LIB/"
 
       - name: Bundle shared libraries
         run: bash linux/packaging/bundle-libs.sh build/linux/x64/release/bundle

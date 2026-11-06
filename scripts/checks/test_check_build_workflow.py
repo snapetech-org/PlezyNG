@@ -445,6 +445,17 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("fetch_linux_libmpv.py", result.stderr)
 
+    def test_linux_bundle_without_the_pinned_vulkan_loader_is_rejected(self) -> None:
+        workflow = self._workflow().replace(
+            '          cp -a libmpv-prefix/lib/libvulkan.so* "$BUNDLE_LIB/"\n',
+            '',
+            1,
+        )
+        self.assertNotEqual(workflow, self._workflow())
+        result = self._run(workflow)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("pinned Vulkan loader", result.stderr)
+
     def test_draft_release_with_tag_mismatched_to_pubspec_is_rejected(self) -> None:
         workflow = self._workflow().replace(
             'if [[ "$ACTION" == "release" && "$RELEASE_TAG" != "v$PACKAGE_VERSION" ]]; then',

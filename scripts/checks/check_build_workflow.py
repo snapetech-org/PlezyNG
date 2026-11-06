@@ -1120,6 +1120,14 @@ linux_smoke = job_block(ci_text, "linux-packages")
 linux_smoke_sherpa = named_step(
     linux_smoke, "Install and verify locked Sherpa ONNX libraries"
 )
+for linux_job, step_name in (
+    (linux_release, "Copy libmpv into bundle"),
+    (linux_smoke, "Copy libmpv into the bundle"),
+):
+    require(
+        'cp -a libmpv-prefix/lib/libvulkan.so* "$BUNDLE_LIB/"' in named_step(linux_job, step_name),
+        "Linux release and smoke bundles must copy the pinned Vulkan loader from the verified native prefix",
+    )
 require(
     "python3 linux/packaging/install-sherpa-onnx-runtime.py build/linux/x64/release/bundle --arch x64"
     in linux_smoke_sherpa

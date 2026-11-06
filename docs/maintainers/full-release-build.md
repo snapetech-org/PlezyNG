@@ -266,15 +266,20 @@ execution use runtime detection, fallback and physical device qualification.
 
 ## Linux graphics loader dependencies
 
-The bundle leaves the graphics stack on the host. Keep `libvulkan.so.1` declared
-as `libvulkan1` on Debian/Ubuntu, `vulkan-loader` on RPM distributions and
-`vulkan-icd-loader` on Arch. The PPA, COPR, AUR and Snap recipes must cover the
-same host runtime libraries as `linux/packaging/build-packages.py`; the source
-guard checks that contract, including Snap's time64 package names. Release and
-package-smoke workers install the loader before inspecting the bundle.
+The verified native prefix supplies the pinned Vulkan loader needed by the new
+FEL/PME build (at least 1.4.309). Both release and package-smoke workflows copy
+its complete `libvulkan.so*` chain next to shaderc before bundling. A native
+archive without that loader fails the copy; the older Ubuntu system loader is
+not a fallback for this build. Keep the host-Vulkan exclusion in `bundle-libs.sh`
+so dependency harvesting cannot replace the pinned copy with a host library.
 
-An AppImage also needs the host Vulkan loader. Flatpak resolves graphics through
-its pinned runtime and extensions; validate its real installed closure after
-the native rebuild. A loader dependency does not prove a GPU or device path is
-usable: retain the per-architecture bundle `ldd`/package checks and accurate
-runtime diagnostics when qualifying the newly compiled PME Vulkan path.
+GPU ICDs and display-driver libraries stay on the host. The existing loader
+package declarations (`libvulkan1`, `vulkan-loader`, `vulkan-icd-loader`) remain
+for older/developer bundle compatibility, but do not prove the new loader's
+version. PPA, COPR, AUR and Snap recipes continue to cover the canonical runtime
+package lists, including Snap's time64 names. The common resolved bundle,
+including the AppImage input, carries the pinned loader; validate Flatpak's
+installed closure against its pinned runtime and extensions after rebuilding.
+
+A bundled loader does not prove a usable GPU path. Retain per-architecture
+`ldd`/package checks and accurate runtime diagnostics when qualifying PME Vulkan.

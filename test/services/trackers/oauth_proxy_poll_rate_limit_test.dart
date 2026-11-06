@@ -19,6 +19,7 @@ void main() {
       fakeAsync((async) {
         var calls = 0;
         final client = OAuthProxyClient(
+          relayBaseUrl: 'https://relay.example.test',
           httpClient: MockClient((request) async {
             calls++;
             if (calls == 1) {
@@ -51,6 +52,7 @@ void main() {
       fakeAsync((async) {
         var calls = 0;
         final client = OAuthProxyClient(
+          relayBaseUrl: 'https://relay.example.test',
           httpClient: MockClient((request) async {
             calls++;
             if (calls == 1) return http.Response('Rate limited', 429);
@@ -76,6 +78,7 @@ void main() {
       fakeAsync((async) {
         var calls = 0;
         final client = OAuthProxyClient(
+          relayBaseUrl: 'https://relay.example.test',
           httpClient: MockClient((request) async {
             calls++;
             return http.Response('Rate limited', 429);

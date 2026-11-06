@@ -64,6 +64,33 @@ void main() {
   });
 
   group('contextFor', () {
+    test('build-configured services retain system-only trust on their exact hosts', () {
+      const urls = [
+        'https://relay.example.test/api',
+        'https://Store.example.test/',
+        '',
+        'http://insecure.example.test',
+        'https://name:secret@private.example.test',
+        'https://query.example.test/?token=secret',
+        'https://ice.plezy.app',
+      ];
+      for (final host in ['relay.example.test', 'RELAY.EXAMPLE.TEST', 'store.example.test']) {
+        expect(CertificateTrust.isFixedEndpoint(host, serviceUrls: urls), isTrue, reason: host);
+      }
+      for (final host in [
+        'other.relay.example.test',
+        'notrelay.example.test',
+        'insecure.example.test',
+        'private.example.test',
+        'query.example.test',
+        'ice.plezy.app',
+        '192.168.1.3',
+      ]) {
+        expect(CertificateTrust.isFixedEndpoint(host, serviceUrls: urls), isFalse, reason: host);
+      }
+      expect(CertificateTrust.isFixedEndpoint('app.plex.tv', serviceUrls: urls), isTrue);
+    });
+
     test('keeps the SDK default until the user store has been loaded', () {
       expect(CertificateTrust.contextFor('jellyfin.home'), isNull);
     });
@@ -80,7 +107,7 @@ void main() {
         same(userStore),
         reason: 'a parent-domain match must stop at a label boundary',
       );
-      for (final fixed in ['plex.tv', 'app.plex.tv', 'PLEX.TV', 'ice.plezy.app', 'api.github.com', 'image.tmdb.org']) {
+      for (final fixed in ['plex.tv', 'app.plex.tv', 'PLEX.TV', 'api.github.com', 'image.tmdb.org']) {
         expect(CertificateTrust.contextFor(fixed), isNull, reason: fixed);
       }
     });

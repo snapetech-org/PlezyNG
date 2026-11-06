@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewedOn": "2026-11-05",
+  "reviewedOn": "2026-11-06",
   "sourceAudit": {
     "file": "docs/maintainers/remediation-2026-11-05.md",
     "auditedMainCommit": "d130a4e36ba7dfbac1a28bd8b719f472394de89e",
@@ -13,8 +13,8 @@
   },
   "release": {
     "version": "3.0.0",
-    "publicationStatus": "published",
-    "publicLatestAvailable": true,
+    "publicationStatus": "unavailable",
+    "publicLatestAvailable": false,
     "releasesPage": "https://github.com/snapetech-org/PlezyNG/releases",
     "requiredCiJobs": [
       "Code Analysis",
@@ -75,7 +75,9 @@
     "coverageStatus": "incomplete",
     "missingPublicPlatforms": [
       "webos"
-    ]
+    ],
+    "availabilityCheckedOn": "2026-11-06",
+    "availabilityEvidence": "docs/maintainers/releases/availability-2026-11-06.json"
   },
   "localization": {
     "localeChoices": 37,

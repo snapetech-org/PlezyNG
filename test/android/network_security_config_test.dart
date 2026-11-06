@@ -7,7 +7,6 @@ import 'package:xml/xml.dart';
 const _configPath = 'android/app/src/main/res/xml/network_security_config.xml';
 const _expectedDomains = <String>{
   'plex.tv',
-  'plezy.app',
   'trakt.tv',
   'myanimelist.net',
   'anilist.co',

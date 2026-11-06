@@ -92,7 +92,7 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ## Download
 
-Published Pleazyng downloads appear on the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases). Version [3.0.0](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.0) was published on 5 November 2026. Its assets include Android, Linux x64/ARM64, Windows x64/ARM64, macOS, unsigned iOS/tvOS developer packages and a Tizen tester handoff. The public release still lacks a webOS package; a successful candidate build is not a published download. See the [recorded release evidence](docs/maintainers/releases/v3.0.0.json).
+As of 6 November 2026, the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases) has no public stable release available through the API: only the older `2.24.1` draft is listed. The [November 5 evidence](docs/maintainers/releases/v3.0.0.json) records a published `v3.0.0`, but its tag, release ID and latest-release endpoint now return 404. The reason is unknown; see the [current availability observation](docs/maintainers/releases/availability-2026-11-06.json). That earlier release also lacked webOS. A successful candidate build is not a published download.
 
 | Platform | Download |
 | --- | --- |

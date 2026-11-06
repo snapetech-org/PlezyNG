@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Keep configured service endpoints on system certificate trust, validate storefront brokers, repair rebrand-sensitive regression fixtures, and verify native torrent reads beyond 4 GiB.
+- Record current release availability separately from historical publication evidence when the recorded release is no longer returned by GitHub.
+
 - Build the pinned MilkRust runtime with its corrected dependency lock and compiler fixes, keep isolated rustup installs independent, and verify bundled presets through actual GL/GLES rendering.
 - Correct the v2 torrent transfer fixture and update remote playback reporting and P2P storage documentation.
 

@@ -6,11 +6,43 @@ import 'package:http/testing.dart';
 import 'package:plezy/services/comic_commerce_link_client.dart';
 
 void main() {
+  test('unconfigured and invalid brokers do not receive storefront data', () async {
+    for (final endpoint in [
+      '',
+      'http://store-links.example.test',
+      'https://name:secret@store-links.example.test',
+      'https://plezy.app',
+    ]) {
+      var calls = 0;
+      final client = ComicCommerceLinkClient(
+        serviceBaseUrl: endpoint,
+        httpClient: MockClient((_) async {
+          calls++;
+          return http.Response('{}', 200);
+        }),
+      );
+      try {
+        expect(
+          await client.resolve(
+            providerId: 'renta-comics',
+            destination: Uri.parse('https://www.ebookrenta.com/renta/sc/'),
+          ),
+          isNull,
+        );
+        expect(calls, 0);
+      } finally {
+        client.dispose();
+      }
+    }
+  });
+
   test('broker failures and malformed links preserve the direct-storefront fallback', () async {
     var calls = 0;
     final client = ComicCommerceLinkClient(
+      serviceBaseUrl: 'https://store-links.example.test',
       httpClient: MockClient((request) async {
         calls++;
+        expect(request.url.toString(), 'https://store-links.example.test/commerce/comic-link');
         final body = jsonDecode(request.body) as Map<String, dynamic>;
         expect(body['providerId'], 'ebooks-comics');
         expect(body['destinationUrl'], 'https://www.ebooks.com/en-us/searchall?term=9780306406157');
@@ -34,6 +66,7 @@ void main() {
   test('rejects insecure destinations and tracking responses with unsafe URL forms', () async {
     var calls = 0;
     final client = ComicCommerceLinkClient(
+      serviceBaseUrl: 'https://store-links.example.test',
       httpClient: MockClient((_) async {
         calls++;
         return http.Response(jsonEncode({'tracked': true, 'url': 'https://user:secret@track.example/click'}), 200);
@@ -44,6 +77,7 @@ void main() {
         await client.resolve(providerId: 'ebooks-comics', destination: Uri.parse('http://www.ebooks.com/search')),
         isNull,
       );
+      expect(await client.resolve(providerId: 'ebooks-comics', destination: Uri.parse('https:/search')), isNull);
       expect(
         await client.resolve(
           providerId: 'ebooks-comics',
@@ -63,6 +97,7 @@ void main() {
 
   test('accepts a clean HTTPS tracking response for subsequent provider allowlist validation', () async {
     final client = ComicCommerceLinkClient(
+      serviceBaseUrl: 'https://store-links.example.test',
       httpClient: MockClient(
         (_) async =>
             http.Response(jsonEncode({'tracked': true, 'url': 'https://track.flexlinks.com/click?publisher=1'}), 200),

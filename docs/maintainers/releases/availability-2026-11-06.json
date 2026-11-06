@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-11-06",
+  "source": "https://api.github.com/repos/snapetech-org/PlezyNG/releases",
+  "listStatus": 200,
+  "latestStatus": 404,
+  "tag": "v3.0.0",
+  "tagStatus": 404,
+  "recordedReleaseId": 434865030,
+  "recordedReleaseIdStatus": 404,
+  "listedReleases": [
+    {
+      "id": 423821145,
+      "tag": "2.24.1",
+      "draft": true,
+      "prerelease": false,
+      "publishedAt": null,
+      "assetCount": 28
+    }
+  ],
+  "historicalEvidence": "docs/maintainers/releases/v3.0.0.json",
+  "interpretation": "The previously observed v3.0.0 release is not currently returned by its ID, tag or latest endpoint. The list exposes only the older draft. The cause is unknown; this does not establish that v3.0.0 was never published."
+}

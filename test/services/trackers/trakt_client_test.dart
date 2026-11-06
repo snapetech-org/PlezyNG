@@ -7,6 +7,7 @@ import 'package:http/testing.dart';
 import 'package:plezy/services/trackers/tracker_exceptions.dart';
 import 'package:plezy/services/trackers/tracker_session.dart';
 import 'package:plezy/services/trackers/trakt/trakt_client.dart';
+import 'package:plezy/services/trackers/trakt/trakt_constants.dart';
 
 int _now() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
@@ -158,10 +159,7 @@ void main() {
     await client.revoke();
 
     expect(captured?.url.path, '/oauth/revoke');
-    expect(json.decode(captured!.body), {
-      'token': 'access-old',
-      'client_id': '9861e686e95c13409dd321736f903973cb9b8e5c6abd0634bec8962f52ea30f4',
-    });
+    expect(json.decode(captured!.body), {'token': 'access-old', 'client_id': TraktConstants.clientId});
     client.dispose();
   });
 }

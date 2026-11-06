@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'app_logger.dart';
+import '../services/plezy_server.dart';
 
 /// Which certificate authorities a dart:io TLS handshake may trust, per host.
 ///
@@ -37,7 +38,6 @@ abstract final class CertificateTrust {
   /// `test/android/network_security_config_test.dart` pins both to the sources.
   static const Set<String> fixedEndpointDomains = {
     'plex.tv',
-    'plezy.app',
     'trakt.tv',
     'myanimelist.net',
     'anilist.co',
@@ -50,9 +50,19 @@ abstract final class CertificateTrust {
 
   static SecurityContext? _userAuthorities;
 
-  /// Whether [host] is one of [fixedEndpointDomains] or a subdomain of one.
-  static bool isFixedEndpoint(String host) {
+  /// Whether [host] is a fixed provider or an exact build-configured service
+  /// host. Configured services need the same system-only trust even though
+  /// their URLs are not hard-coded in the Android XML resource.
+  static bool isFixedEndpoint(String host, {Iterable<String> serviceUrls = pleazyngConfiguredServiceUrls}) {
     final candidate = host.toLowerCase();
+    for (final value in serviceUrls) {
+      if (value.trim().isEmpty) continue;
+      try {
+        if (Uri.parse(requirePleazyngServiceUrl(value)).host.toLowerCase() == candidate) return true;
+      } on StateError {
+        // An invalid or missing service is disabled by its request owner.
+      }
+    }
     for (final domain in fixedEndpointDomains) {
       if (candidate == domain) return true;
       final parentStart = candidate.length - domain.length;

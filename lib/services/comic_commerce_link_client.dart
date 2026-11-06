@@ -13,20 +13,30 @@ import 'plezy_server.dart';
 /// null so callers can preserve the direct official storefront link.
 class ComicCommerceLinkClient {
   final http.Client _http;
+  final String? _serviceBaseUrl;
 
-  ComicCommerceLinkClient({http.Client? httpClient}) : _http = httpClient ?? platform.createPlatformClient();
+  ComicCommerceLinkClient({http.Client? httpClient, String? serviceBaseUrl})
+    : _http = httpClient ?? platform.createPlatformClient(),
+      _serviceBaseUrl = serviceBaseUrl;
+
+  String get _baseUrl => _serviceBaseUrl == null
+      ? plezyComicCommerceBaseUrl
+      : requirePleazyngServiceUrl(_serviceBaseUrl, service: 'Store links');
 
   void dispose() => _http.close();
 
   Future<Uri?> resolve({required String providerId, required Uri destination, String? isbn}) async {
-    if (destination.scheme != 'https' || destination.userInfo.isNotEmpty || destination.fragment.isNotEmpty) {
+    if (destination.scheme != 'https' ||
+        destination.host.isEmpty ||
+        destination.userInfo.isNotEmpty ||
+        destination.fragment.isNotEmpty) {
       return null;
     }
 
     try {
       final response = await _http
           .post(
-            Uri.parse('$plezyComicCommerceBaseUrl/commerce/comic-link'),
+            Uri.parse('$_baseUrl/commerce/comic-link'),
             headers: const {'Content-Type': 'application/json'},
             body: jsonEncode({
               'providerId': providerId,
@@ -41,7 +51,12 @@ class ComicCommerceLinkClient {
       final value = decoded['url'];
       if (value is! String) return null;
       final uri = Uri.tryParse(value);
-      if (uri == null || uri.scheme != 'https' || uri.userInfo.isNotEmpty || uri.fragment.isNotEmpty) return null;
+      if (uri == null ||
+          uri.scheme != 'https' ||
+          uri.host.isEmpty ||
+          uri.userInfo.isNotEmpty ||
+          uri.fragment.isNotEmpty)
+        return null;
       return uri;
     } on Object {
       return null;

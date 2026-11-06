@@ -18,11 +18,20 @@ platform :android do
 
   desc "Upload the signed Pleazyng Fire TV APK to Amazon Appstore without submitting it for review."
   lane :publish_amazon_appstore do
+    app_id = ENV.fetch("AMAZON_APPSTORE_APP_ID")
+    unless app_id.match?(/\Aamzn1\.devportal\.mobileapp\.[0-9a-f]{32}\z/)
+      raise "AMAZON_APPSTORE_APP_ID must be the Amazon console App ID, not the Android package name."
+    end
     upload_to_amazon_appstore(
-      package_name: "org.snapetech.pleazyng",
+      # Plugin 1.7.0 forwards this misleadingly named option as the API app_id.
+      package_name: app_id,
       apk: ENV.fetch("AMAZON_APK_PATH"),
       client_id: ENV.fetch("AMAZON_CLIENT_ID"),
       client_secret: ENV.fetch("AMAZON_CLIENT_SECRET"),
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
       overwrite_upload: true,
       overwrite_upload_mode: "reuse",
       changes_not_sent_for_review: true

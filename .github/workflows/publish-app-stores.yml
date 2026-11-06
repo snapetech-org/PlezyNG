@@ -221,6 +221,7 @@ jobs:
 
       - name: Upload the APK without submitting it for review
         env:
+          AMAZON_APPSTORE_APP_ID: ${{ vars.AMAZON_APPSTORE_APP_ID }}
           AMAZON_APK_PATH: ${{ runner.temp }}/store-assets/pleazyng-amazon-firetv.apk
           AMAZON_CLIENT_ID: ${{ secrets.AMAZON_APPSTORE_CLIENT_ID }}
           AMAZON_CLIENT_SECRET: ${{ secrets.AMAZON_APPSTORE_CLIENT_SECRET }}

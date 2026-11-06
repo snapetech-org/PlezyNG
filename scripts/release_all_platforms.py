@@ -1183,7 +1183,7 @@ def publish_configured_channels(
             "title": f"action:publish-app-stores:pool:private:tag:{tag}:channel:amazon-appstore",
             "fields": {"action": "publish-app-stores", "runner_pool": "private", "release_tag": tag,
                        "channel": "amazon-appstore", "play_track": "internal", "play_release_status": "draft"},
-            "secrets": {"AMAZON_APPSTORE_CLIENT_ID", "AMAZON_APPSTORE_CLIENT_SECRET"}, "variables": set(),
+            "secrets": {"AMAZON_APPSTORE_CLIENT_ID", "AMAZON_APPSTORE_CLIENT_SECRET"}, "variables": {"AMAZON_APPSTORE_APP_ID"},
             "assets": {"pleazyng-amazon-firetv.apk", "SHA256SUMS.txt"},
         },
         {

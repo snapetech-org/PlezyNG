@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:plezy/extras/extras_models.dart';
 import 'package:plezy/extras/extras_playback.dart';
 import 'package:plezy/extras/extras_screen.dart';
@@ -125,7 +127,126 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(t.bonusExtras.openProvider), findsNothing);
     expect(find.text(t.bonusExtras.sendToPhone), findsNothing);
-    expect(find.text(t.bonusExtras.playbackUnavailable), findsOneWidget);
+    expect(find.text(t.bonusExtras.playbackBlocked), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('an unconfigured title explains setup and does not offer a dead discovery action', (tester) async {
+    final state = session()..entries = [];
+    addTearDown(state.dispose);
+    await host(tester, ExtrasScreen(session: state));
+    expect(find.text(t.bonusExtras.setupHint), findsOneWidget);
+    expect(find.text(t.bonusExtras.findMore), findsNothing);
+    expect(find.text(t.bonusExtras.empty), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final platform in [TargetPlatform.android, TargetPlatform.iOS, TargetPlatform.macOS, TargetPlatform.windows]) {
+    testWidgets('stalled embed on ${platform.name} returns to provider and QR after its deadline', (tester) async {
+      InAppWebViewPlatform.instance = _ExtraWebPlatform();
+      final state = session();
+      addTearDown(state.dispose);
+      await host(tester, ExtraPlaybackScreen(session: state, entry: entry(0)), scale: 1);
+      await tester.tap(find.text(t.bonusExtras.watchHere));
+      await tester.pump();
+      expect(find.byType(InAppWebView), findsOneWidget);
+      await tester.pump(const Duration(seconds: 16));
+      await tester.pumpAndSettle();
+      expect(find.byType(InAppWebView), findsNothing);
+      expect(find.text(t.bonusExtras.playbackUnavailable), findsOneWidget);
+      expect(find.text(t.bonusExtras.openProvider), findsOneWidget);
+      expect(find.byType(QrImageView), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }, variant: TargetPlatformVariant({platform}));
+  }
+
+  testWidgets('ready embed preserves playback and selected-video completion updates the resume handoff', (
+    tester,
+  ) async {
+    final platform = _ExtraWebPlatform();
+    InAppWebViewPlatform.instance = platform;
+    final state = session();
+    addTearDown(state.dispose);
+    await host(tester, ExtraPlaybackScreen(session: state, entry: entry(0), start: 12), scale: 1);
+    await tester.tap(find.text(t.bonusExtras.watchHere));
+    await tester.pump();
+    final surface = platform.latest!;
+    expect(surface.params.initialSettings!.javaScriptHandlersForMainFrameOnly, true);
+    expect(surface.params.initialSettings!.javaScriptBridgeOriginAllowList, {'https://pleazyng.app'});
+    await surface.controller.send('ready', 0);
+    await tester.pump(const Duration(seconds: 16));
+    expect(find.byType(InAppWebView), findsOneWidget);
+    await surface.controller.send('position', double.nan);
+    await surface.controller.send('position', 82);
+    expect((await state.store.progress('0'))['completed'], false);
+    await surface.controller.send('ended', 90);
+    await tester.pumpAndSettle();
+    expect(find.byType(InAppWebView), findsNothing);
+    expect((await state.store.progress('0'))['completed'], true);
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') copied = (call.arguments as Map)['text'] as String;
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    await tester.ensureVisible(find.text(t.bonusExtras.copyLink));
+    await tester.tap(find.text(t.bonusExtras.copyLink));
+    await tester.pump();
+    expect(Uri.parse(copied!).queryParameters['t'], '90s');
+    expect(tester.takeException(), isNull);
+  }, variant: TargetPlatformVariant({TargetPlatform.android}));
+
+  testWidgets('missing native webview implementation falls back without an uncaught build error', (tester) async {
+    InAppWebViewPlatform.instance = _ExtraWebPlatform(unavailable: true);
+    final state = session();
+    addTearDown(state.dispose);
+    await host(tester, ExtraPlaybackScreen(session: state, entry: entry(0)), scale: 1);
+    await tester.tap(find.text(t.bonusExtras.watchHere));
+    await tester.pumpAndSettle();
+    expect(find.text(t.bonusExtras.playbackUnavailable), findsOneWidget);
+    expect(find.byType(QrImageView), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  }, variant: TargetPlatformVariant({TargetPlatform.windows}));
+}
+
+class _ExtraWebPlatform extends InAppWebViewPlatform {
+  _ExtraWebPlatform({this.unavailable = false});
+  final bool unavailable;
+  _ExtraWebSurface? latest;
+  @override
+  PlatformInAppWebViewWidget createPlatformInAppWebViewWidget(PlatformInAppWebViewWidgetCreationParams params) {
+    if (unavailable) throw UnimplementedError('WebView runtime unavailable');
+    return latest = _ExtraWebSurface(params);
+  }
+}
+
+class _ExtraWebSurface extends PlatformInAppWebViewWidget {
+  _ExtraWebSurface(super.params) : super.implementation();
+  final controller = _ExtraWebController();
+  bool created = false;
+  @override
+  Widget build(BuildContext context) {
+    if (!created) {
+      created = true;
+      params.onWebViewCreated?.call(controllerFromPlatform<InAppWebViewController>(controller));
+    }
+    return const SizedBox.expand();
+  }
+
+  @override
+  T controllerFromPlatform<T>(PlatformInAppWebViewController controller) =>
+      InAppWebViewController.fromPlatform(platform: controller) as T;
+  @override
+  void dispose() {}
+}
+
+class _ExtraWebController extends PlatformInAppWebViewController {
+  _ExtraWebController() : super.implementation(const PlatformInAppWebViewControllerCreationParams(id: 'extra-test'));
+  final handlers = <String, Function>{};
+  @override
+  void addJavaScriptHandler({required String handlerName, required Function callback}) =>
+      handlers[handlerName] = callback;
+  Future<void> send(String kind, num value) async => await Function.apply(handlers['extras']!, [
+    [kind, value],
+  ]);
 }

@@ -66,7 +66,7 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
       restricted: !session.profilePermitted,
       offline: session.subject.offline,
     );
-    if (mounted && generation == _generation) {
+    if (mounted && session.active && generation == _generation) {
       setState(() {
         _answer = answer;
         _searching = false;
@@ -258,6 +258,7 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: session,
     builder: (context, _) {
+      final discoveryConfigured = extrasServiceUri(session.preferences.serviceUrl) != null;
       final filtered = session.entries
           .where(
             (entry) =>
@@ -327,11 +328,18 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
                   if (session.loading || _searching) const LinearProgressIndicator(),
                   if (session.unavailable)
                     Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(t.bonusExtras.partial)),
-                  if (session.subject.restricted) Text(t.bonusExtras.restricted),
+                  if (!session.profilePermitted) Text(t.bonusExtras.restricted),
                   if (!session.subject.watched && !session.preferences.showSpoilers)
                     Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(t.bonusExtras.spoilerHint)),
                   if (filtered.isEmpty && !session.loading)
-                    Padding(padding: const EdgeInsets.symmetric(vertical: 24), child: Text(t.bonusExtras.empty)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Text(
+                        session.externalPermitted && !discoveryConfigured
+                            ? t.bonusExtras.setupHint
+                            : t.bonusExtras.empty,
+                      ),
+                    ),
                   for (final entry in filtered)
                     Card(
                       child: Column(
@@ -397,12 +405,13 @@ class _ExtrasScreenState extends State<ExtrasScreen> {
                     spacing: 12,
                     runSpacing: 12,
                     children: [
-                      if (!session.subject.restricted && !session.subject.offline)
+                      if (session.externalPermitted && discoveryConfigured)
                         OutlinedButton(
                           onPressed: session.loading ? null : () => session.refresh(findMore: true, query: _query.text),
                           child: Text(t.bonusExtras.findMore),
                         ),
-                      if (!session.subject.restricted) TextButton(onPressed: _add, child: Text(t.bonusExtras.addLink)),
+                      if (session.profilePermitted && session.preferences.externalEnabled)
+                        TextButton(onPressed: _add, child: Text(t.bonusExtras.addLink)),
                       TextButton(onPressed: _settings, child: Text(t.bonusExtras.settings)),
                     ],
                   ),
@@ -503,7 +512,7 @@ class _ExtrasSettingsScreenState extends State<ExtrasSettingsScreen> {
               SwitchListTile(
                 title: Text(t.bonusExtras.externalEnabled),
                 value: _prefs.externalEnabled,
-                onChanged: widget.session.subject.restricted
+                onChanged: !widget.session.profilePermitted
                     ? null
                     : (v) => setState(() => _prefs = _prefs.copyWith(externalEnabled: v)),
               ),
@@ -540,7 +549,7 @@ class _ExtrasSettingsScreenState extends State<ExtrasSettingsScreen> {
                   for (final mode in ExtrasAiMode.values)
                     DropdownMenuItem(value: mode, child: Text(extrasAiLabel(mode))),
                 ],
-                onChanged: widget.session.subject.restricted
+                onChanged: !widget.session.profilePermitted
                     ? null
                     : (mode) {
                         if (mode != null) setState(() => _prefs = _prefs.copyWith(aiMode: mode));
@@ -677,7 +686,7 @@ class _ExtraTranscriptScreenState extends State<ExtraTranscriptScreen> {
       restricted: !widget.session.profilePermitted,
       offline: widget.session.subject.offline,
     );
-    if (mounted && generation == _generation) {
+    if (mounted && widget.session.active && generation == _generation) {
       setState(() {
         _busy = false;
         _matches = result.passages[_entry.id] ?? searchExtraPassages(_entry, _query.text);

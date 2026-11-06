@@ -5280,7 +5280,7 @@
     "watchHere": "Watch here",
     "sendToPhone": "Open on your phone",
     "copyLink": "Copy link",
-    "playbackUnavailable": "This device cannot open the provider. Scan the code or copy the link.",
+    "playbackUnavailable": "Playback is unavailable here. Try the provider app, scan the code, or copy the link.",
     "providerNotice": "Playback opens the provider’s player and may include its recommendations.",
     "external": "Online",
     "library": "In your library",
@@ -5336,6 +5336,8 @@
       "trailer": "Trailers",
       "analysis": "Filmmaking analysis",
       "other": "Other extras"
-    }
+    },
+    "setupHint": "Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.",
+    "playbackBlocked": "This extra is no longer available with your current settings."
   }
 }

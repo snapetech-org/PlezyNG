@@ -4921,7 +4921,7 @@
   "bonusExtras.watchHere": "2c7b080caad51097",
   "bonusExtras.sendToPhone": "1c24333883fa300b",
   "bonusExtras.copyLink": "675fe83908d1ea47",
-  "bonusExtras.playbackUnavailable": "c5a8de3043099005",
+  "bonusExtras.playbackUnavailable": "7394c236947f1d53",
   "bonusExtras.providerNotice": "905fe34e8a6bab01",
   "bonusExtras.external": "b11148e2002ef092",
   "bonusExtras.library": "1852a788f8ee70c3",
@@ -4975,5 +4975,13 @@
   "bonusExtras.kind.commentary": "c36e84bd5a7e40c2",
   "bonusExtras.kind.trailer": "f7427f5c40689559",
   "bonusExtras.kind.analysis": "c73d2cbb9e5a6851",
-  "bonusExtras.kind.other": "cbd36d523d5ce7a3"
+  "bonusExtras.kind.other": "cbd36d523d5ce7a3",
+  "appAccess.reviewAccess": "8f12e42cd24ef012",
+  "appAccess.reviewAccessActive": "7b724978d43eb400",
+  "appAccess.reviewAccessInstructions": "57c3ff8a5fd54af4",
+  "appAccess.reviewCode": "f47769f169f43eaf",
+  "appAccess.reviewCodeInvalid": "118743d46ab6ba93",
+  "appAccess.activateReviewAccess": "4fd98931fdb87b3c",
+  "bonusExtras.setupHint": "df95eedd0fcea784",
+  "bonusExtras.playbackBlocked": "7562a6f2cad694c1"
 }

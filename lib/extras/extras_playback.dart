@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,8 +20,12 @@ Future<void> playExtra(BuildContext context, ExtrasSession session, ExtraEntry e
   if (!session.allows(entry)) return;
   final native = session.nativeItem(entry);
   if (native != null) {
-    await session.store.recordProgress(entry.id, seconds: seconds);
-    if (!context.mounted || !session.active) return;
+    try {
+      await session.store.recordProgress(entry.id, seconds: seconds);
+    } catch (_) {
+      /* Playback does not require saved progress. */
+    }
+    if (!context.mounted || !session.allows(entry)) return;
     await navigateToVideoPlayer(
       context,
       metadata: native,
@@ -30,12 +33,12 @@ Future<void> playExtra(BuildContext context, ExtrasSession session, ExtraEntry e
       initialPosition: seconds == null ? null : Duration(seconds: seconds),
       skipCinemaExtras: true,
       skipPreroll: true,
-      isLaunchCurrent: () => session.active,
+      isLaunchCurrent: () => session.allows(entry),
     );
     return;
   }
   if (!session.externalPermitted || session.subject.offline || canonicalExtraUrl(entry.url) == null) return;
-  if (!context.mounted || !session.active) return;
+  if (!context.mounted || !session.allows(entry)) return;
   await Navigator.of(context).push<void>(
     MaterialPageRoute(
       builder: (_) => ExtraPlaybackScreen(session: session, entry: entry, start: seconds),
@@ -60,7 +63,12 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
   bool get _canEmbed =>
       !kIsWeb &&
       !PlatformDetector.isTV() &&
-      (Platform.isAndroid || Platform.isIOS || Platform.isMacOS || Platform.isWindows) &&
+      const {
+        TargetPlatform.android,
+        TargetPlatform.iOS,
+        TargetPlatform.macOS,
+        TargetPlatform.windows,
+      }.contains(defaultTargetPlatform) &&
       widget.entry.url?.host == 'www.youtube.com';
   Uri get _watchUrl {
     final uri = canonicalExtraUrl(widget.entry.url)!;
@@ -165,95 +173,105 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
     super.dispose();
   }
 
+  Widget _embeddedPlayer() {
+    try {
+      return InAppWebView(
+        initialData: InAppWebViewInitialData(
+          data: extraYoutubePlayerHtml(widget.entry.url!.queryParameters['v']!, _position),
+          baseUrl: WebUri('https://pleazyng.app/'),
+          historyUrl: WebUri('https://pleazyng.app/'),
+        ),
+        initialSettings: InAppWebViewSettings(
+          javaScriptEnabled: true,
+          allowsInlineMediaPlayback: true,
+          mediaPlaybackRequiresUserGesture: true,
+          javaScriptCanOpenWindowsAutomatically: false,
+          supportMultipleWindows: false,
+          allowFileAccess: false,
+          allowContentAccess: false,
+          useShouldOverrideUrlLoading: true,
+          javaScriptHandlersForMainFrameOnly: true,
+          javaScriptBridgeForMainFrameOnly: true,
+          javaScriptBridgeOriginAllowList: {'https://pleazyng.app'},
+        ),
+        onWebViewCreated: (controller) {
+          _web = controller;
+          controller.addJavaScriptHandler(
+            handlerName: 'extras',
+            callback: (arguments) async {
+              if (!mounted) return null;
+              if (!widget.session.allows(widget.entry)) {
+                _sessionChanged();
+                return null;
+              }
+              if (arguments.length != 2 || arguments[1] is! num) return null;
+              final rawValue = arguments[1] as num;
+              if (!rawValue.isFinite) return null;
+              final kind = arguments[0], value = rawValue.toInt();
+              if (kind == 'ready') {
+                _startupTimer?.cancel();
+                return null;
+              }
+              if (kind == 'error') {
+                _failEmbed();
+                return null;
+              }
+              if (value < 0 || value > 86400 || (kind != 'position' && kind != 'ended')) return null;
+              _position = value;
+              if (kind == 'ended') {
+                _startupTimer?.cancel();
+                _web = null;
+                setState(() => _embedded = false);
+              }
+              if (kind == 'ended' || (_position - _lastSaved).abs() >= 10) {
+                _lastSaved = _position;
+                try {
+                  await widget.session.store.recordProgress(
+                    widget.entry.id,
+                    seconds: _position,
+                    completed: kind == 'ended',
+                  );
+                } catch (_) {
+                  /* Player remains usable without persistence. */
+                }
+              }
+              return null;
+            },
+          );
+        },
+        shouldOverrideUrlLoading: (_, action) async {
+          if (action.isForMainFrame != true) return NavigationActionPolicy.ALLOW;
+          final uri = Uri.tryParse(action.request.url?.toString() ?? '');
+          return uri?.scheme == 'https' && uri?.host == 'pleazyng.app' && uri?.port == 443
+              ? NavigationActionPolicy.ALLOW
+              : NavigationActionPolicy.CANCEL;
+        },
+        onReceivedError: (_, request, _) {
+          if (request.isForMainFrame == true) _failEmbed();
+        },
+        onReceivedHttpError: (_, request, _) {
+          if (request.isForMainFrame == true) _failEmbed();
+        },
+        onPermissionRequest: (_, request) async =>
+            PermissionResponse(resources: request.resources, action: PermissionResponseAction.DENY),
+      );
+    } catch (_) {
+      // Missing native WebView implementations must retain the handoff route.
+      WidgetsBinding.instance.addPostFrameCallback((_) => _failEmbed());
+      return const SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(widget.entry.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
     body: SafeArea(
       child: !widget.session.allows(widget.entry)
-          ? Center(child: Text(t.bonusExtras.playbackUnavailable, textAlign: TextAlign.center))
+          ? Center(child: Text(t.bonusExtras.playbackBlocked, textAlign: TextAlign.center))
           : _embedded && !_failed
           ? Column(
               children: [
-                Expanded(
-                  child: InAppWebView(
-                    initialData: InAppWebViewInitialData(
-                      data: extraYoutubePlayerHtml(widget.entry.url!.queryParameters['v']!, _position),
-                      baseUrl: WebUri('https://pleazyng.app/'),
-                      historyUrl: WebUri('https://pleazyng.app/'),
-                    ),
-                    initialSettings: InAppWebViewSettings(
-                      javaScriptEnabled: true,
-                      allowsInlineMediaPlayback: true,
-                      mediaPlaybackRequiresUserGesture: true,
-                      javaScriptCanOpenWindowsAutomatically: false,
-                      supportMultipleWindows: false,
-                      allowFileAccess: false,
-                      allowContentAccess: false,
-                      useShouldOverrideUrlLoading: true,
-                      javaScriptHandlersForMainFrameOnly: true,
-                      javaScriptBridgeForMainFrameOnly: true,
-                      javaScriptBridgeOriginAllowList: {'https://pleazyng.app'},
-                    ),
-                    onWebViewCreated: (controller) {
-                      _web = controller;
-                      controller.addJavaScriptHandler(
-                        handlerName: 'extras',
-                        callback: (arguments) async {
-                          if (!mounted) return null;
-                          if (!widget.session.allows(widget.entry)) {
-                            _sessionChanged();
-                            return null;
-                          }
-                          if (arguments.length != 2 || arguments[1] is! num) return null;
-                          final kind = arguments[0], value = (arguments[1] as num).toInt();
-                          if (kind == 'ready') {
-                            _startupTimer?.cancel();
-                            return null;
-                          }
-                          if (kind == 'error') {
-                            _failEmbed();
-                            return null;
-                          }
-                          if (value < 0 || value > 86400 || (kind != 'position' && kind != 'ended')) return null;
-                          _position = value;
-                          if (kind == 'ended') {
-                            _startupTimer?.cancel();
-                            _web = null;
-                            setState(() => _embedded = false);
-                          }
-                          if (kind == 'ended' || (_position - _lastSaved).abs() >= 10) {
-                            _lastSaved = _position;
-                            try {
-                              await widget.session.store.recordProgress(
-                                widget.entry.id,
-                                seconds: _position,
-                                completed: kind == 'ended',
-                              );
-                            } catch (_) {
-                              /* Player remains usable without persistence. */
-                            }
-                          }
-                          return null;
-                        },
-                      );
-                    },
-                    shouldOverrideUrlLoading: (_, action) async {
-                      if (action.isForMainFrame != true) return NavigationActionPolicy.ALLOW;
-                      final uri = Uri.tryParse(action.request.url?.toString() ?? '');
-                      return uri?.scheme == 'https' && uri?.host == 'pleazyng.app' && uri?.port == 443
-                          ? NavigationActionPolicy.ALLOW
-                          : NavigationActionPolicy.CANCEL;
-                    },
-                    onReceivedError: (_, request, _) {
-                      if (request.isForMainFrame == true) _failEmbed();
-                    },
-                    onReceivedHttpError: (_, request, _) {
-                      if (request.isForMainFrame == true) _failEmbed();
-                    },
-                    onPermissionRequest: (_, request) async =>
-                        PermissionResponse(resources: request.resources, action: PermissionResponseAction.DENY),
-                  ),
-                ),
+                Expanded(child: _embeddedPlayer()),
                 TextButton(onPressed: _open, child: Text(t.bonusExtras.openProvider)),
               ],
             )
@@ -292,6 +310,7 @@ class _ExtraPlaybackScreenState extends State<ExtraPlaybackScreen> with WidgetsB
                       if (!PlatformDetector.isAppleTV())
                         TextButton(
                           onPressed: () async {
+                            if (!widget.session.allows(widget.entry)) return;
                             await Clipboard.setData(ClipboardData(text: _watchUrl.toString()));
                           },
                           child: Text(t.bonusExtras.copyLink),

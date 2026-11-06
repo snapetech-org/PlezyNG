@@ -13752,8 +13752,8 @@ class Translations$bonusExtras$en {
 	/// en: 'Copy link'
 	String get copyLink => 'Copy link';
 
-	/// en: 'This device cannot open the provider. Scan the code or copy the link.'
-	String get playbackUnavailable => 'This device cannot open the provider. Scan the code or copy the link.';
+	/// en: 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.'
+	String get playbackUnavailable => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.';
 
 	/// en: 'Playback opens the provider’s player and may include its recommendations.'
 	String get providerNotice => 'Playback opens the provider’s player and may include its recommendations.';
@@ -13888,6 +13888,12 @@ class Translations$bonusExtras$en {
 	String get restricted => 'Online extras are unavailable for this profile.';
 
 	late final Translations$bonusExtras$kind$en kind = Translations$bonusExtras$kind$en.internal(_root);
+
+	/// en: 'Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.'
+	String get setupHint => 'Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.';
+
+	/// en: 'This extra is no longer available with your current settings.'
+	String get playbackBlocked => 'This extra is no longer available with your current settings.';
 }
 
 // Path: appIcon.names
@@ -21427,7 +21433,7 @@ extension on Translations {
 			'bonusExtras.watchHere' => 'Watch here',
 			'bonusExtras.sendToPhone' => 'Open on your phone',
 			'bonusExtras.copyLink' => 'Copy link',
-			'bonusExtras.playbackUnavailable' => 'This device cannot open the provider. Scan the code or copy the link.',
+			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',
 			'bonusExtras.providerNotice' => 'Playback opens the provider’s player and may include its recommendations.',
 			'bonusExtras.external' => 'Online',
 			'bonusExtras.library' => 'In your library',
@@ -21482,6 +21488,8 @@ extension on Translations {
 			'bonusExtras.kind.trailer' => 'Trailers',
 			'bonusExtras.kind.analysis' => 'Filmmaking analysis',
 			'bonusExtras.kind.other' => 'Other extras',
+			'bonusExtras.setupHint' => 'Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.',
+			'bonusExtras.playbackBlocked' => 'This extra is no longer available with your current settings.',
 			_ => null,
 		};
 	}

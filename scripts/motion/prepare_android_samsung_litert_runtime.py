@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
-"""Build the pinned Samsung provider for ordinary Android release packaging.
+"""Stage pinned Samsung providers for ordinary Android builds on every host.
 
-SDK inputs and Bazel caches stay private. Only the provider and SDK object code
+SDK archives stay private. Only the provider and SDK object code
 embedded in the app, with original licensing, enter the application bundle.
 """
 import argparse
-import fcntl
 import hashlib
 import json
 import os
 from pathlib import Path
-import platform
-import shutil
-import subprocess
 import tarfile
+import zipfile
 import tempfile
 import time
 import urllib.request
@@ -21,15 +18,16 @@ import urllib.request
 SOURCE_COMMIT = '4352e261d3f1b3cda00345db5dbd75859d3bf0d3'
 SDK_SHA256 = 'a107f154bfa9bfafa0e26789919d89aa4062dd22e24292c66fd4f912d9a3498f'
 SDK_URL = 'https://soc-developer.semiconductor.samsung.com/api/v1/resource/download-file/ai-litecore-ubuntu2404-v1.2.0.tar.gz'
-BAZEL_SHA256 = 'fe7e799cbc9140f986b063e06800a3d4c790525075c877d00a7112669824acbf'
-BAZEL_URL = 'https://github.com/bazelbuild/bazel/releases/download/7.7.0/bazel-7.7.0-linux-x86_64'
+ADAPTER_SHA256 = 'c6cc754e1073eb36a8013823bbbb257c499daa0c2df1f7b4ec88b3b75a9b9662'
+ADAPTER_URL = 'https://github.com/snapetech-org/mpv-build/releases/download/binaries-neural/litert-samsung-android-arm64-c6cc754e1073.zip'
 SOURCE_PATCH = Path(__file__).with_name('android_litert_samsung_flatbuffers.patch')
-PINS = {'litertCommit': SOURCE_COMMIT, 'sdkSha256': SDK_SHA256, 'bazelSha256': BAZEL_SHA256,
+PINS = {'litertCommit': SOURCE_COMMIT, 'sdkSha256': SDK_SHA256,
+        'adapterSha256': ADAPTER_SHA256,
         'sourcePatchSha256': hashlib.sha256(SOURCE_PATCH.read_bytes()).hexdigest(),
-        'packagingSchema': 1}
+        'packagingSchema': 2}
 REQUIRED = ('arm64-v8a/libLiteRtCompilerPlugin_Samsung.so',
             'arm64-v8a/libLiteRtDispatch_Samsung.so',
-            'Exynos_AI_LiteCore_License.pdf') + tuple(
+            'Exynos_AI_LiteCore_License.pdf', 'LiteRT-LICENSE.txt') + tuple(
     'litecore/lib/arm64-v8a/' + name for name in (
         'libcdi_9955.so', 'libcdi_9965.so', 'libcdi_wrapper.so', 'libcommon.so',
         'libcompiler_api_lib.so', 'libgraph_wrapper.so', 'libgraphgen.so', 'libgraphgen_api.so',
@@ -38,8 +36,11 @@ REQUIRED = ('arm64-v8a/libLiteRtCompilerPlugin_Samsung.so',
 
 
 def sha256(path):
+    digest = hashlib.sha256()
     with path.open('rb') as source:
-        return hashlib.file_digest(source, 'sha256').hexdigest()
+        for block in iter(lambda: source.read(1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def cache_valid(output):
@@ -66,83 +67,77 @@ def download(url, destination, expected):
     if destination.is_file() and sha256(destination) == expected:
         return
     destination.parent.mkdir(parents=True, exist_ok=True)
-    partial = destination.with_suffix(destination.suffix + '.partial')
+    partial = None
     try:
-        with urllib.request.urlopen(url, timeout=60) as response, partial.open('wb') as target:
-            shutil.copyfileobj(response, target)
+        with tempfile.NamedTemporaryFile(prefix=destination.name + '.', dir=destination.parent,
+                                         delete=False) as target:
+            partial = Path(target.name)
+            with urllib.request.urlopen(url, timeout=60) as response:
+                while chunk := response.read(1024 * 1024):
+                    target.write(chunk)
         if sha256(partial) != expected:
             raise ValueError(f'Pinned download checksum mismatch: {destination.name}')
         partial.replace(destination)
     finally:
-        partial.unlink(missing_ok=True)
+        if partial is not None:
+            partial.unlink(missing_ok=True)
 
 
 def prepare(output, cache):
     if cache_valid(output):
         return
-    if platform.system() != 'Linux' or platform.machine() not in ('x86_64', 'AMD64'):
-        raise RuntimeError('Build Samsung Android providers on the supported Linux x64 release host')
     cache.mkdir(parents=True, exist_ok=True, mode=0o700)
     sdk_archive = cache / 'samsung-ai-litecore-1.2.0.tar.gz'
+    adapter_archive = cache / 'litert-samsung-android-arm64-c6cc754e1073.zip'
     download(SDK_URL, sdk_archive, SDK_SHA256)
-    sdk = cache / 'samsung-sdk' / 'exynos-ai-litecore-v1.2.0'
-    if not (sdk / 'include/graph_wrapper_api.h').is_file():
-        with tarfile.open(sdk_archive) as archive:
-            archive.extractall(cache / 'samsung-sdk', filter='data')
-
-    source = cache / 'LiteRT'
-    if not source.exists():
-        subprocess.run(['git', 'clone', '--depth', '1', '--branch', 'v2.3.0',
-                        'https://github.com/google-ai-edge/LiteRT.git', str(source)], check=True)
-    actual = subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip()
-    if actual != SOURCE_COMMIT:
-        raise ValueError('LiteRT source does not match the pinned v2.3.0 commit')
-    applied = subprocess.run(['git', '-C', str(source), 'apply', '--reverse', '--check', str(SOURCE_PATCH)],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
-    if not applied:
-        subprocess.run(['git', '-C', str(source), 'apply', str(SOURCE_PATCH)], check=True)
-
-    tools = cache / 'tools'
-    tools.mkdir(exist_ok=True)
-    binary = tools / 'bazel-7.7.0-linux-x86_64'
-    download(BAZEL_URL, binary, BAZEL_SHA256)
-    binary.chmod(0o755)
-    # A private Bazel server and bounded parallelism avoid mutating or shutting
-    # down another build's server. The wrapper uses Python string literals and
-    # execv so paths never pass through shell expansion.
-    wrapper = tools / 'bazel'
-    wrapper.write_text('#!/usr/bin/env python3\nimport os,sys\n'
-        f'args=[{str(binary)!r}, {"--output_user_root=" + str(cache / "bazel")!r}, '
-        '"--host_jvm_args=-XX:ActiveProcessorCount=2", "--host_jvm_args=-Xmx3g"]+sys.argv[1:]\n'
-        'if sys.argv[1:2]==["build"]: args += ["--jobs=2", "--local_ram_resources=4096"]\n'
-        'os.execv(args[0],args)\n')
-    wrapper.chmod(0o755)
-    if output.exists():
-        output.rename(output.with_name(output.name + f'.retained-{time.time_ns()}'))
+    download(ADAPTER_URL, adapter_archive, ADAPTER_SHA256)
     output.parent.mkdir(parents=True, exist_ok=True)
-    environment = dict(os.environ, PATH=str(tools) + os.pathsep + os.environ['PATH'],
-                       PLEZY_LITERT_SOURCE_ROOT=str(source), EXYNOS_AI_LITECORE_ROOT=str(sdk),
-                       PLEZY_LITERT_SAMSUNG_RUNTIME_OUTPUT=str(output))
-    sdk_root = environment.get('ANDROID_HOME') or environment.get('ANDROID_SDK_ROOT')
-    if sdk_root:
-        environment.setdefault('ANDROID_SDK_HOME', sdk_root)
-        ndk = Path(sdk_root) / 'ndk/29.0.14206865'
-        if ndk.is_dir():
-            environment.setdefault('ANDROID_NDK_HOME', str(ndk))
-    builder = Path(__file__).with_name('build_android_samsung_litert_runtime.sh')
-    try:
-        subprocess.run(['bash', str(builder)], env=environment, check=True)
-    finally:
-        subprocess.run([str(wrapper), 'shutdown'], env=environment, cwd=source, check=False)
-    shutil.copy2(sdk / 'Exynos_AI_LiteCore_License.pdf', output)
-    files = {str(path.relative_to(output)): sha256(path)
-             for path in output.rglob('*') if path.is_file()}
-    if any(name not in files for name in REQUIRED):
-        raise ValueError('Samsung runtime is missing required compiled components')
-    (output / 'source.json').write_text(json.dumps(
-        {'inputs': PINS, 'files': files, 'executionQualified': False}, indent=2, sort_keys=True) + '\n')
-    if not cache_valid(output):
-        raise ValueError('Samsung provider output failed architecture/integrity inspection')
+    with tempfile.TemporaryDirectory(prefix='.samsung-runtime-', dir=output.parent) as temporary:
+        staged = Path(temporary) / 'payload'
+        staged.mkdir()
+        with tarfile.open(sdk_archive) as sdk:
+            for name in REQUIRED:
+                if name.startswith('litecore/'):
+                    source = 'exynos-ai-litecore-v1.2.0/' + name.removeprefix('litecore/')
+                elif name == 'Exynos_AI_LiteCore_License.pdf':
+                    source = 'exynos-ai-litecore-v1.2.0/' + name
+                else:
+                    continue
+                info = sdk.getmember(source)
+                if not info.isfile() or not 0 < info.size <= 128 * 1024 * 1024:
+                    raise ValueError('Invalid Samsung runtime member')
+                destination = staged / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                with sdk.extractfile(info) as library:
+                    destination.write_bytes(library.read())
+        with zipfile.ZipFile(adapter_archive) as adapters:
+            metadata = json.loads(adapters.read('source.json'))
+            if metadata['sourceCommit'] != SOURCE_COMMIT or metadata['sdkLibrariesIncluded'] is not False:
+                raise ValueError('Samsung adapter provenance differs from the pinned build')
+            for name in REQUIRED[:2]:
+                data = adapters.read(name)
+                if hashlib.sha256(data).hexdigest() != metadata['files'][name]:
+                    raise ValueError('Samsung adapter binary checksum mismatch')
+                destination = staged / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(data)
+            (staged / 'LiteRT-LICENSE.txt').write_bytes(adapters.read('LICENSE.txt'))
+            (staged / 'adapter-source.json').write_bytes(adapters.read('source.json'))
+        (staged / 'BUILD_INFO.txt').write_text(
+            'LiteRT source tag: v2.3.0\nLiteRT source commit: ' + SOURCE_COMMIT +
+            '\nAdapter archive SHA256: ' + ADAPTER_SHA256 + '\n')
+        hashes = {path.relative_to(staged).as_posix(): sha256(path)
+                  for path in staged.rglob('*') if path.is_file()}
+        (staged / 'SHA256SUMS').write_text(''.join(
+            f'{digest}  ./{name}\n' for name, digest in sorted(hashes.items()) if name.endswith('.so')))
+        hashes['SHA256SUMS'] = sha256(staged / 'SHA256SUMS')
+        (staged / 'source.json').write_text(json.dumps(
+            {'inputs': PINS, 'files': hashes, 'executionQualified': False}, indent=2, sort_keys=True) + '\n')
+        if not cache_valid(staged):
+            raise ValueError('Samsung provider output failed architecture/integrity inspection')
+        if output.exists():
+            output.rename(output.with_name(output.name + f'.retained-{time.time_ns()}'))
+        staged.rename(output)
 
 
 def main():
@@ -154,9 +149,7 @@ def main():
     private = Path(os.environ.get('RUNNER_TEMP', tempfile.gettempdir()))
     cache = (args.cache or private / 'pleazyng-samsung-build').resolve()
     cache.mkdir(parents=True, exist_ok=True, mode=0o700)
-    with (cache / '.build.lock').open('a') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        prepare(args.output.resolve(), cache)
+    prepare(args.output.resolve(), cache)
 
 
 if __name__ == '__main__':

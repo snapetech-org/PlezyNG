@@ -514,7 +514,8 @@ val buildAndroidSamsungLiteRtRuntime = tasks.register<Exec>("buildAndroidSamsung
   outputs.dir(androidLiteRtSamsungRuntimeRoot)
   onlyIf { androidLiteRtSamsungRuntimeOverride == null }
   doFirst { environment("ANDROID_HOME", android.sdkDirectory.absolutePath) }
-  commandLine("python3", bootstrap.absolutePath, "--output", androidLiteRtSamsungRuntimeRoot.absolutePath)
+  val python = if (System.getProperty("os.name").lowercase().contains("windows")) "python" else "python3"
+  commandLine(python, bootstrap.absolutePath, "--output", androidLiteRtSamsungRuntimeRoot.absolutePath)
 }
 val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifacts") {
   dependsOn(downloadAndroidLiteRtArtifacts)
@@ -580,7 +581,7 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
       into("assets/litert/samsung/litecore")
     }
     from(runtimeRoot) {
-      include("BUILD_INFO.txt", "SHA256SUMS", "source.json", "Exynos_AI_LiteCore_License.pdf")
+      include("BUILD_INFO.txt", "SHA256SUMS", "source.json", "adapter-source.json", "Exynos_AI_LiteCore_License.pdf", "LiteRT-LICENSE.txt")
       into("assets/litert/samsung")
     }
   }
@@ -619,7 +620,7 @@ val stageAndroidLiteRtArtifacts = tasks.register<Sync>("stageAndroidLiteRtArtifa
         match.groupValues[2].removePrefix("./") to match.groupValues[1]
       }
       (required + sdkLibraries).forEach { library ->
-        val relativePath = runtimeRoot.toPath().relativize(library.toPath()).toString()
+        val relativePath = runtimeRoot.toPath().relativize(library.toPath()).toString().replace(File.separatorChar, '/')
         val expectedHash = expectedHashes[relativePath]
           ?: throw GradleException("Samsung runtime SHA256SUMS has no entry for $relativePath")
         verifySha256(library, expectedHash, "Samsung runtime $relativePath")

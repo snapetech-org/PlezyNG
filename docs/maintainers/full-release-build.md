@@ -244,17 +244,19 @@ explicit developer runtime/provider variants remain available.
 ### Samsung neural provider packaging
 
 Normal Android builds run `buildAndroidSamsungLiteRtRuntime` before staging
-LiteRT. The bootstrap pins LiteRT v2.3.0, Bazel 7.7.0 and Samsung AI LiteCore
-1.2.0, verifies downloads, and compiles the Android ARM64 compiler/dispatch
-plugins. The source patch supplies the missing FlatBuffers link dependency;
-the build queries the same ARM64 Bazel configuration when finding outputs.
-Developer runtime overrides remain optional.
+LiteRT. The portable bootstrap verifies an immutable archive of the Apache
+LiteRT compiler/dispatch adapters and downloads the original Samsung AI LiteCore
+1.2.0 SDK separately. It stages Android ARM64 object libraries and licensing on
+Linux, macOS and Windows build hosts with Python 3.9 or newer. Native source
+compilation is available through the maintainer builder with LiteRT v2.3.0,
+Bazel 7.7.0 and NDK 29.0.14206865. The FlatBuffers link fix and ARM64 output
+configuration are recorded with the source and artifact receipts.
 
-SDK headers, the downloaded SDK and Bazel intermediates stay in private task
-storage outside public Actions caches. The APK embeds only the original vendor
-object libraries, the compiled provider plugins, licensing, hashes and source
-receipt. Cache validation rejects changed pins, missing libraries, corrupted
-bytes and host-architecture payloads. Both new JNI plugins have 16 KiB ELF
-alignment. Vendor LiteCore objects remain unchanged in their existing runtime
-asset layout; device/loader compatibility and NPU execution remain subject to
-runtime detection, fallback and physical device qualification.
+The downloaded SDK stays in private task storage outside public Actions caches.
+The shared adapter archive contains the two compiled Apache adapters, their
+license and provenance. The APK additionally embeds the original vendor object
+libraries, original licensing, hashes and source receipt. Validation rejects
+changed pins, missing libraries, corrupted bytes and host-architecture payloads.
+Both new JNI adapters have 16 KiB ELF alignment. Vendor LiteCore objects remain
+unchanged in their runtime asset layout; device/loader compatibility and NPU
+execution use runtime detection, fallback and physical device qualification.

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Select Rust compiler tools from the isolated pinned toolchain so Apple visualization builds do not depend on global Rust shims.
+- Keep validated Steam relay ports explicitly typed as 16-bit values in Windows builds.
+- Use Ubuntu's main HTTPS archive for hosted Linux sanitizer dependencies, with download retries and timeouts while preserving private-runner package sources.
+
 - Respect disabled audio in controller-only Steam sessions and keep codec negotiation tests explicit about video and input capabilities.
 - Match Steam worker, timer and queue callback signatures to the APIs that call them.
 - Accept Xcode-created empty visualization output directories while retaining artifact verification.

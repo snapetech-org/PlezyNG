@@ -85,7 +85,8 @@ double real(const Value* args, const char* key) {
 }
 Host hostFrom(const Value* args) {
   Host host{text(args, "address"), uint16_t(number(args, "port", 27036, 1, 65535)), identifier(text(args, "hostId"))};
-  for (int i = 0; i < 6; ++i) host.relayPorts[i] = number(args, ("relayPort" + std::to_string(i)).c_str(), 0, 1, 65535);
+  for (int i = 0; i < 6; ++i)
+    host.relayPorts[i] = uint16_t(number(args, ("relayPort" + std::to_string(i)).c_str(), 0, 1, 65535));
   if (!host.validRelay()) throw std::invalid_argument("Invalid relay route");
   return host;
 }

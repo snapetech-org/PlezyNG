@@ -80,6 +80,36 @@ def build_context(environment=None):
     return run_id, runner, repository
 
 
+
+def configure_rust_tools(env):
+    """Use the installed pinned compiler even when rustup has no PATH shims."""
+    toolchains = (Path(env["RUSTUP_HOME"]) / "toolchains").resolve()
+    tools = {}
+    for name in ("rustc", "rustdoc"):
+        selected = subprocess.check_output(
+            ["rustup", "which", "--toolchain", RUST, name], env=env, text=True).strip()
+        tool = Path(selected)
+        if not tool.is_absolute() or not tool.is_file():
+            raise ValueError(f"Pinned Rust tool is missing: {name}")
+        tool = tool.resolve()
+        try:
+            relative = tool.relative_to(toolchains)
+        except ValueError as error:
+            raise ValueError(f"Pinned Rust tool escapes the isolated toolchain: {name}") from error
+        if (len(relative.parts) != 3 or not relative.parts[0].startswith(RUST + "-")
+                or relative.parts[1] != "bin" or relative.parts[2] not in (name, name + ".exe")):
+            raise ValueError(f"Unexpected pinned Rust tool path: {name}")
+        tools[name] = tool
+    if tools["rustc"].parent != tools["rustdoc"].parent:
+        raise ValueError("Pinned Rust compiler and documentation tool must use the same toolchain")
+    env["RUSTC"] = str(tools["rustc"])
+    env["RUSTDOC"] = str(tools["rustdoc"])
+    env["PATH"] = str(tools["rustc"].parent) + os.pathsep + env.get("PATH", "")
+    for name in ("RUSTC_WRAPPER", "RUSTC_WORKSPACE_WRAPPER", "CARGO_BUILD_RUSTC_WRAPPER",
+                 "CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER"):
+        env.pop(name, None)
+
+
 def build(args):
     run_id, runner_policy, repository = build_context()
     recipe_sha = digest(Path(__file__))
@@ -140,6 +170,7 @@ def build(args):
         # successfully installing the toolchain into this temporary home.
         run("rustup", "toolchain", "install", RUST, "--profile", "minimal",
             "--no-self-update", "--target", ",".join(targets), env=env)
+        configure_rust_tools(env)
         apple_sdk = {"macos": "macosx", "ios": "iphoneos", "ios-simulator": "iphonesimulator",
                      "tvos": "appletvos", "tvos-simulator": "appletvsimulator"}.get(args.platform)
         if apple_sdk:

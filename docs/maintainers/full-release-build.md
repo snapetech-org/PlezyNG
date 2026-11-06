@@ -138,6 +138,12 @@ Hosted Linux sanitizer jobs replace the Azure Ubuntu mirror with the main HTTPS
 archive and use bounded network timeouts and retries. Private runner sources and
 proxy configuration remain unchanged.
 
+Nested Apple DV builds receive a scoped execution, Git and network environment.
+Outer app settings such as `EXECUTABLE_DEBUG_DYLIB_PATH` must not leak into the
+runtime's framework graph. The parent environment remains available for app
+signing and embedding; verify the embedded non-system framework dependency
+closure when changing this build boundary.
+
 Xcode embeds `${EFFECTIVE_PLATFORM_NAME}` in CMake target-file arguments for
 embedded SDKs, as described in the
 [CMake property documentation](https://cmake.org/cmake/help/latest/prop_gbl/XCODE_EMIT_EFFECTIVE_PLATFORM_NAME.html).

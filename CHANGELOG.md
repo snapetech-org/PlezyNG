@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Isolate Apple Dolby Vision runtime subbuilds from the enclosing app's Xcode settings, preserving unique framework outputs, pinned dependencies and the older API deployment floor.
+
 - Select Rust compiler tools from the isolated pinned toolchain so Apple visualization builds do not depend on global Rust shims.
 - Keep validated Steam relay ports explicitly typed as 16-bit values in Windows builds.
 - Use Ubuntu's main HTTPS archive for hosted Linux sanitizer dependencies, with download retries and timeouts while preserving private-runner package sources.

@@ -23,29 +23,131 @@ The [Discord client and PiP feasibility plan](docs/plezyng/discord/README.md) pr
 
 ## Screenshots
 
+Browse the layouts below; select any image for its full-resolution version.
+The TV, phone and tablet images are actual signed-app captures on emulators,
+using a public Jellyfin demo library.
+
+### TV
+
 <p align="center">
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-02-home-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-02-home-1920x1080.png" alt="TV home with featured media and library rows" width="412" loading="lazy">
+  </a>
   <a href="docs/maintainers/store-listing-assets/amazon/tv-03-library-1920x1080.png">
-    <img src="docs/maintainers/store-listing-assets/amazon/tv-03-library-1920x1080.png" alt="Pleazyng TV library with movie posters and remote navigation" width="840">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-03-library-1920x1080.png" alt="TV movie library and remote navigation" width="412" loading="lazy">
   </a>
   <br>
-  <sub>TV · Library</sub>
+  <sub>Home · Library</sub>
 </p>
 
 <p align="center">
-  <a href="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png">
-    <img src="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png" alt="Pleazyng phone media details" width="192">
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-04-details-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-04-details-1920x1080.png" alt="TV movie details and play action" width="412" loading="lazy">
   </a>
-  &nbsp;
-  <a href="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png">
-    <img src="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png" alt="Pleazyng tablet library with sidebar and movie posters" width="544">
+  <a href="docs/maintainers/store-listing-assets/amazon/tv-01-welcome-1920x1080.png">
+    <img src="docs/maintainers/store-listing-assets/amazon/tv-01-welcome-1920x1080.png" alt="TV welcome and source connection choices" width="412" loading="lazy">
   </a>
   <br>
-  <sub>Phone · Media details &nbsp; | &nbsp; Tablet · Library</sub>
+  <sub>Media details · Welcome and connections</sub>
 </p>
 
-Actual app captures on Android TV, phone and tablet emulators using a public demo
-library. Tap an image for full resolution, or [view all nine screenshots and their
-build provenance](docs/maintainers/store-listing-assets/README.md).
+### Phone
+
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/google-play/phone-01-welcome-1080x1920.png">
+    <img src="docs/maintainers/store-listing-assets/google-play/phone-01-welcome-1080x1920.png" alt="Phone welcome and connection choices" width="224" loading="lazy">
+  </a>
+  <a href="docs/maintainers/store-listing-assets/google-play/phone-03-library-browse-1080x1920.png">
+    <img src="docs/maintainers/store-listing-assets/google-play/phone-03-library-browse-1080x1920.png" alt="Phone movie library browsing" width="224" loading="lazy">
+  </a>
+  <a href="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png">
+    <img src="docs/maintainers/store-listing-assets/google-play/phone-04-media-details-1080x1920.png" alt="Phone movie details and play action" width="224" loading="lazy">
+  </a>
+  <br>
+  <sub>Welcome · Library · Media details</sub>
+</p>
+
+### Tablet
+
+<p align="center">
+  <a href="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png">
+    <img src="docs/maintainers/store-listing-assets/google-play/tablet-01-library-2560x1600.png" alt="Tablet movie library with sidebar" width="412" loading="lazy">
+  </a>
+  <a href="docs/maintainers/store-listing-assets/google-play/tablet-02-details-2560x1600.png">
+    <img src="docs/maintainers/store-listing-assets/google-play/tablet-02-details-2560x1600.png" alt="Tablet movie details with poster and metadata" width="412" loading="lazy">
+  </a>
+  <br>
+  <sub>Library · Media details</sub>
+</p>
+
+[Native screenshot provenance and capture-build evidence](docs/maintainers/store-listing-assets/README.md).
+
+### Playback controls
+
+These and the appearance/desktop views below are **labeled interface previews**
+rendered from the app's Flutter widgets with sample data. Player state is
+simulated; they show the controls without starting a native video decoder.
+
+<p align="center">
+  <a href="docs/maintainers/playback-appearance-previews/desktop-player-dark-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-player-dark-preview.png" alt="Desktop playback control preview with seek bar, skip intro, volume and subtitles" width="840" loading="lazy">
+  </a>
+  <br>
+  <sub>Desktop · Timeline, skip intro, play, volume and subtitles</sub>
+</p>
+
+<p align="center">
+  <a href="docs/maintainers/playback-appearance-previews/phone-player-oled-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/phone-player-oled-preview.png" alt="Landscape phone playback controls preview" width="840" loading="lazy">
+  </a>
+  <br>
+  <sub>Landscape phone · OLED appearance</sub>
+</p>
+
+### Subtitle styling
+
+<p align="center">
+  <a href="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-dark-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-dark-preview.png" alt="Dark subtitle styling preview with size, position, colors and border controls" width="412" loading="lazy">
+  </a>
+  <a href="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-light-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-subtitle-style-light-preview.png" alt="Light subtitle styling preview with font and background controls" width="412" loading="lazy">
+  </a>
+  <br>
+  <sub>Dark · Light — font size, position, text color, border and background</sub>
+</p>
+
+### Appearance variants
+
+<p align="center">
+  <a href="docs/maintainers/playback-appearance-previews/desktop-appearance-light-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-appearance-light-preview.png" alt="Light appearance preview" width="270" loading="lazy">
+  </a>
+  <a href="docs/maintainers/playback-appearance-previews/desktop-appearance-dark-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-appearance-dark-preview.png" alt="Dark appearance preview" width="270" loading="lazy">
+  </a>
+  <a href="docs/maintainers/playback-appearance-previews/desktop-appearance-oled-preview.png">
+    <img src="docs/maintainers/playback-appearance-previews/desktop-appearance-oled-preview.png" alt="Oled appearance preview" width="270" loading="lazy">
+  </a>
+  <br>
+  <sub>Light · Dark · OLED</sub>
+</p>
+
+### Desktop layouts
+
+<p align="center">
+  <a href="docs/maintainers/interface-previews/desktop-home-preview.png">
+    <img src="docs/maintainers/interface-previews/desktop-home-preview.png" alt="Desktop home layout preview with sample media" width="412" loading="lazy">
+  </a>
+  <a href="docs/maintainers/interface-previews/desktop-detail-preview.png">
+    <img src="docs/maintainers/interface-previews/desktop-detail-preview.png" alt="Desktop media details layout preview with sample metadata" width="412" loading="lazy">
+  </a>
+  <br>
+  <sub>Home · Media details — sample content</sub>
+</p>
+
+[All playback and appearance variants](docs/maintainers/playback-appearance-previews/contact-sheet.jpg)
+· [More TV, phone, tablet and desktop previews](docs/maintainers/interface-previews/contact-sheet.jpg)
 
 ## Dolby Vision experiments
 

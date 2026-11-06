@@ -9,7 +9,46 @@ from unittest.mock import patch
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from verify_firetv_apk import inspect_apk, verify_receipt
+from verify_firetv_apk import inspect_apk, verify_receipt, has_tv_launcher
+
+
+MANIFEST = """E: manifest (line=1)
+  E: application (line=2)
+    E: activity (line=3)
+      A: android:name(0x01010003)="com.edde746.plezy.PlezyActivity"
+    E: activity-alias (line=4)
+      A: android:name(0x01010003)="com.edde746.plezy.MainActivity"
+      A: android:exported(0x01010010)=(type 0x12)0xffffffff
+      A: android:targetActivity(0x01010202)="com.edde746.plezy.PlezyActivity"
+      E: intent-filter (line=5)
+        E: action (line=6)
+          A: android:name(0x01010003)="android.intent.action.MAIN"
+        E: category (line=7)
+          A: android:name(0x01010003)="android.intent.category.LEANBACK_LAUNCHER"
+"""
+
+
+class CompiledManifestLauncherTest(unittest.TestCase):
+    def test_activity_alias_counts_without_a_badging_summary(self):
+        self.assertTrue(has_tv_launcher(MANIFEST))
+
+    def test_disabled_alias_does_not_count(self):
+        disabled = MANIFEST.replace('      A: android:exported', '      A: android:enabled(0x0101000e)=(type 0x12)0x0\n      A: android:exported')
+        self.assertFalse(has_tv_launcher(disabled))
+
+    def test_unexported_alias_does_not_count(self):
+        self.assertFalse(has_tv_launcher(MANIFEST.replace('0xffffffff', '0x0')))
+
+    def test_main_and_category_must_share_a_filter(self):
+        separate = MANIFEST.replace('        E: category', '      E: intent-filter (line=7)\n        E: category')
+        self.assertFalse(has_tv_launcher(separate))
+
+    def test_disabled_target_activity_does_not_count(self):
+        disabled = MANIFEST.replace('    E: activity-alias', '      A: android:enabled(0x0101000e)=(type 0x12)0x0\n    E: activity-alias')
+        self.assertFalse(has_tv_launcher(disabled))
+
+    def test_phone_launcher_does_not_count(self):
+        self.assertFalse(has_tv_launcher(MANIFEST.replace('LEANBACK_LAUNCHER', 'LAUNCHER')))
 
 
 class FireTVAPKTest(unittest.TestCase):
@@ -25,11 +64,10 @@ class FireTVAPKTest(unittest.TestCase):
             if debug:
                 signature += '\nSigner #1 certificate DN: CN=Android Debug, O=Android, C=US'
             badging = "package: name='org.snapetech.pleazyng' versionName='3.0.0'\n"
-            if tv:
-                badging += "leanback-launchable-activity: name='org.snapetech.pleazyng.Launcher'\n"
             with patch('verify_firetv_apk.subprocess.run', side_effect=[
                 subprocess.CompletedProcess([], 0, signature, ''),
                 subprocess.CompletedProcess([], 0, badging, ''),
+                subprocess.CompletedProcess([], 0, MANIFEST if tv else '', ''),
             ]):
                 return inspect_apk(apk, Path('/fixture/build-tools'))
 

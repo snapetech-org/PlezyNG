@@ -192,6 +192,9 @@ actual="$(/usr/bin/shasum -a 256 "$CACHE_PATH" | /usr/bin/awk '{print $1}')"
 cd "$RUNNER_ROOT"
 /usr/bin/printf '%s\n' "$$" > "$RUNNER_ROOT/launcher.pid"
 printf 'Starting %s for queued job %s. Runner logs will stay attached to this SSH session.\n' "$RUNNER_NAME" "$JOB_ID"
+# Hold an idle-sleep assertion only while this one-job launcher lives. -w
+# follows this PID through exec and releases the assertion when the runner exits.
+/usr/bin/caffeinate -i -w "$$" >/dev/null 2>&1 &
 exec ./run.sh --jitconfig "$JIT_CONFIG"
 REMOTE_LAUNCH
 } | ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \

@@ -9,6 +9,7 @@
 #include <memory>
 #include <new>
 #include <optional>
+#include <stdexcept>
 
 #include "../visualizer/visualizer_session.h"
 #include "plane_render_executor.h"

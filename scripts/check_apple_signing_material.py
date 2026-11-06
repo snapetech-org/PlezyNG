@@ -11,6 +11,7 @@ from pathlib import Path
 import plistlib
 import re
 import secrets
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -75,6 +76,7 @@ def main() -> int:
             password = secrets.token_urlsafe(32)
             keychain = stage / 'signing.keychain-db'
             run(['security', 'create-keychain', '-p', password, str(keychain)])
+            original_search_list = shlex.split(run(['security', 'list-keychains', '-d', 'user']).decode())
             try:
                 run(['security', 'unlock-keychain', '-p', password, str(keychain)])
                 # OpenSSL 3's default PBES2 PKCS12 encoding is not accepted by
@@ -127,6 +129,12 @@ def main() -> int:
                 chain_path.write_bytes(chain)
                 run(['security', 'import', str(chain_path), '-k', str(keychain)])
                 report['wwdr_g3_sha256'] = chain_hash
+                # codesign also uses the user search list for chain/identity
+                # resolution. This runner is ephemeral; restore its original
+                # list in finally and never change the default keychain.
+                run(['security', 'list-keychains', '-d', 'user', '-s', str(keychain), *original_search_list])
+                valid_identities = run(['security', 'find-identity', '-v', '-p', 'codesigning', str(keychain)]).decode()
+                report['valid_codesigning_identity'] = fingerprint in valid_identities
                 run(['security', 'set-key-partition-list', '-S', 'apple-tool:,apple:,codesign:',
                      '-s', '-k', password, str(keychain)])
                 probe = stage / 'signing-probe'
@@ -136,6 +144,7 @@ def main() -> int:
                 run(['codesign', '--verify', '--strict', str(probe)])
                 report['signing_qualified'] = True
             finally:
+                run(['security', 'list-keychains', '-d', 'user', '-s', *original_search_list])
                 run(['security', 'delete-keychain', str(keychain)])
                 keychain = None
             # Decode in memory only: profile payloads can contain private device

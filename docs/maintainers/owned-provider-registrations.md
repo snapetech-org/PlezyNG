@@ -19,7 +19,7 @@ Use the application name **Pleazyng**, publisher **SnapeTech / SNAPE TECHNOLOGIE
 | OneDrive | Native public-client PKCE | Owned Entra registration, `ONEDRIVE_CLIENT_ID`, supported account audience and native callback; Files.Read/offline_access plus optional app-folder writes | Own registration/consent and real-device tests pending |
 | Dropbox | Native public-client PKCE | Owned scoped app, `DROPBOX_CLIENT_ID`; read metadata/content, optional writes, exact native callback | Own registration and production-access status not verified |
 
-The cloud/source callback target is `pleazyng-source://oauth/callback`; desktop Google handling must follow the actual loopback branch in `lib/sources/source_oauth.dart`, rather than registering one custom URI for every platform. Preserve legitimate user-supplied client overrides.
+The cloud/source callback target is `pleazyng-source://oauth/callback`; desktop handling must follow the actual loopback branch in `lib/sources/source_oauth.dart`: Google uses an ephemeral loopback port; OneDrive and Dropbox use `http://127.0.0.1:53682/oauth/callback`. Do not register one custom URI for every platform. Preserve legitimate user-supplied client overrides.
 
 ## Provider conditions checked against current primary documentation
 

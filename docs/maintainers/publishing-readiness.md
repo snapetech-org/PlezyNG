@@ -40,7 +40,7 @@ currently claimed to have published the new release.
 | Apple iOS / tvOS App Store | Existing app reused, new identifiers and USD $2.99 non-consumable configured; upload automation available | Same signing/build gates plus real screenshots, privacy/review metadata, IAP screenshot and purchase/restore validation, paid agreement activation and Apple review |
 | macOS direct DMG / Sparkle | Universal DMG and appcast pipeline | Developer ID certificate and dedicated secrets now configured; qualified native signing/notarization/Gatekeeper and updater signature verification remain |
 | Flatpak direct bundle | Release bundle supported | Qualified Linux artifact; this is sideloading, not Flathub publication |
-| Relay GHCR / Docker Hub | Container publication workflows and optional mirror credentials configured | Verify relay source/image release separately; publishing an image does not deploy a working relay service |
+| Relay GHCR / Docker Hub | Container publication workflows and optional mirror credentials configured; owned service now deployed separately | Source-built service passes public HTTPS/WSS checks. Container image release, provider OAuth registrations and client compile activation remain separate qualification steps |
 
 ## Business, tax, vendor or unsupported-integration gates
 
@@ -148,3 +148,9 @@ and technical validation can continue independently.
 - [Samsung application information and region requirements](https://developer.samsung.com/tv-seller-office/guides/applications/entering-application-information.html)
 - [Samsung Checkout](https://developer.samsung.com/smarttv/develop/guides/samsung-checkout/samsung-checkout.html)
 - [LG billing discontinuation](https://webostv.developer.lge.com/develop/guides/in-app-purchase)
+
+## Owned service verification — 2026-11-06
+
+`https://pleazyng-api.snape.tech/health` returns HTTP 200. A real secure WebSocket protocol 2 session passed create, join, leave and end; the test room was removed. Scanner requests are blocked, the existing Knock boundary refuses a blocked identity, and the backend/origin/metrics listeners remain loopback-only and unreachable from the peer LAN. The dedicated connector is healthy; existing shared ingress services were preserved.
+
+This service was built from immutable source `4eb97fe98dcf1115a98aa4c081c43ad981c12d44`. It does not qualify provider OAuth or enable new client compile settings. Provider credentials remain absent; missing integrations stay disabled. Client activation is staged for a separate release after the current full-platform qualification.

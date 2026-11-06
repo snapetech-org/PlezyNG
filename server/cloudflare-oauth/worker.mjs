@@ -37,7 +37,7 @@ async function verify(env, role, token) {
 }
 function session(env, id) { return env.SESSIONS.get(env.SESSIONS.idFromName(id)); }
 function internal(path, body) {
-  return new Request(`https://session.internal/${path}`, body === undefined ? {} : { method: 'POST', body: JSON.stringify(body) });
+  return new Request(`https://session.internal/${path}`, body === undefined ? { redirect: 'manual' } : { method: 'POST', body: JSON.stringify(body), redirect: 'manual' });
 }
 function page(ok, status = 200) {
   // Static text only; never interpolate provider responses, state or codes.

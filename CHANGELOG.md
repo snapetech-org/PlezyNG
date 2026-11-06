@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep edge-hosted provider authorization redirects in the browser instead of following them inside the relay.
+
 - Host MyAnimeList and AniList sign-in on a bounded Cloudflare OAuth service while preserving existing callback URLs and local Trakt and Steam authentication.
 
 - Pin all native playback platforms to the current verified fork revision and reject stale native dependencies before release builds.

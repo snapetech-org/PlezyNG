@@ -121,6 +121,7 @@ Offline regression checks:
 ```sh
 node --test server/cloudflare-oauth/worker.test.mjs
 node --check server/cloudflare-oauth/worker.mjs
+python3 server/cloudflare-oauth/runtime.test.py --output-dir /task-owned/oauth-runtime-check
 ```
 
 The tests exercise actual request handlers with instrumented storage: PKCE,
@@ -130,7 +131,8 @@ body limits, daily/IP admission and unchanged Trakt/Steam/legacy pass-through.
 
 Use Wrangler 4.158.0 for a local workerd/SQLite smoke test. Use task-owned state
 and output directories, test-only credentials, and a loopback `PUBLIC_ORIGIN`.
-Complete the cancellation callback (`error=access_denied`), retrieve its device
+Verify that the provider authorize request returns a browser-visible 302 (the
+internal Durable Object fetch must use `redirect: manual`). Complete the cancellation callback (`error=access_denied`), retrieve its device
 result once and verify the second retrieval returns 410. This tests lifecycle
 without accessing a real user's account. Stop the dev server before cleaning
 its task-owned SQLite files. Preserve shared package caches.

@@ -25,7 +25,7 @@ function fixture() {
       if (!objects.has(id)) {
         const ctx = context(); const object = new Class(ctx, env); objects.set(id, { ctx, object });
       }
-      return { fetch: async request => { this.calls++; const { ctx, object } = objects.get(id); await ctx.ready; return object.fetch(request); } };
+      return { fetch: async request => { this.calls++; assert.equal(request.redirect, 'manual', 'Durable Object redirects must reach the browser'); const { ctx, object } = objects.get(id); await ctx.ready; return object.fetch(request); } };
     }};
   }
   env.SESSIONS = namespace(OAuthSession, sessions); env.ADMISSION = namespace(OAuthAdmission, admissions);

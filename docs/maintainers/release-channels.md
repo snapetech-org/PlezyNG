@@ -47,9 +47,9 @@ Changing the install IDs means an install signed under upstream's identity canno
 | Microsoft Store | Package prepared, listing identity required | Set the repository variables below to build `plezyng-windows.msixbundle`; submit it through Pleazyng's Partner Center listing. The optional signed Inno Setup installer is also retained for manual EXE/MSI listing workflows. No automated Partner Center submission is configured. |
 | Samsung Smart TV (Tizen) | Experimental ARM tester candidate included in versioned builds; Seller Office package and device qualification remain pending | The hybrid Pleazyng Release builds a development-signed ARM TPK on compatible hosted Ubuntu and retains it as an experimental Actions artifact. The build bootstraps a pinned Linux SDK and requires acceptance of Samsung's SDK and extension licenses. The tester package needs re-signing for a specific Samsung TV and is not Seller Office-ready. Seller Office handoff remains disabled; x64 emulator packages are excluded. |
 | LG Content Store (webOS) | ARM candidate built in versioned runs; public artifact/release inclusion and runtime redistribution remain gated | Pleazyng Release builds and verifies the experimental ARM IPK on the private JIT runner by default. The IPK stays in that ephemeral workspace unless a separate explicit input and exact-candidate gates approve a draft release; vendor submission remains manual. |
-| Google Play | Closed testing - Alpha configured; build 156 is a draft and the track is inactive | Data safety, the default listing, category/contact details, 178 regions, and the five-member `Pleazyng Alpha testers` email list are saved. The dedicated Google Cloud project and Android Publisher API are enabled; service account access is limited to this app's testing tracks, with production publishing disabled. `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` is configured. Build 157 is being prepared in [release run 40272007783](https://github.com/snapetech-org/PlezyNG/actions/runs/40272007783); replace the existing draft with its signed AAB, preview it, and send the closed test for review. The README opt-in URL is inactive until rollout. At least 12 testers must remain opted in continuously for 14 days before production access. |
-| Amazon Appstore / Fire TV | App record and listing metadata prepared; binary and IAP test remain blocked | `pleazyng_lifetime_unlock` is saved at a USD $2.99 base price; Amazon calculates local-market equivalents. The Amazon public key is in the Android assets. A new Amazon security profile is mapped to App Submission API and its credentials are configured in GitHub Actions. The category, 18+ target audience, content rating, privacy URL, description, icons and feature art are complete; genuine TV screenshots remain pending; the privacy questionnaire is saved for review. Amazon still returns a generic error when the IAP is submitted to Test, no Fire TV APK has been uploaded, and the export-compliance certification remains to be completed before submission. |
-| Apple App Store (iOS) | App record and lifetime IAP created; cloud-signing build configured, not yet validated; TestFlight setup incomplete | `plezyng_lifetime_unlock` is a non-consumable with a USD $2.99 base price and a price schedule for 175 regions. English (Canada) copy is present. It remains Prepare for Submission. The previous 2.24.1 workflow failed while importing the manual PKCS#12. Apple has three active Apple Distribution certificates and disables creating another one, so the release workflow uses Xcode cloud signing through the existing App Store Connect API key and managed certificate. The next release build must verify signing before this channel is considered ready. |
+| Google Play | New `org.snapetech.pleazyng` app prepared; Alpha inactive with no releases | Data safety, listing with three phone/two tablet captures, category/contact, 178 regions and the existing five-member `Pleazyng Alpha testers` list are saved. The testing-only service account is authorized for the new app. Final signed Play AAB, App Signing, new lifetime product, purchase/reviewer-access validation and Google review remain. Organization conversion awaits D-U-N-S; recheck Production eligibility after approval. See the [current receipt](pleazyng-channel-migration.json). |
+| Amazon Appstore / Fire TV | Existing app renamed and draft listing prepared; first binary pending | `pleazyng_lifetime_unlock` is saved at USD $2.99. New icons, feature art and four authentic TV screenshots are uploaded/validated. First-version submission must use Developer Console; subsequent binary API updates are wired with the existing app ID/security profile. Company conversion, tax/payment verification, qualified APK, declarations and purchase testing remain. |
+| Apple App Store (iOS) | New identifiers and lifetime IAP configured; signing and review pending | `org.snapetech.pleazyng`, non-consumable `pleazyng_lifetime_unlock` at USD $2.99 across 175 regions. Cloud signing is configured but the latest attempt failed for missing certificate private key/profiles; no certificate revoked. Paid agreement remains Pending User Info, Canadian tax form has a duplicate-ID error, bank update Processing. Company conversion awaits issued D-U-N-S. |
 | Apple App Store (tvOS) | App record created; cloud-signing build configured, not yet validated | The app's iOS and tvOS platforms can share the lifetime IAP. The previous 2.24.1 workflow failed while importing the manual PKCS#12. The updated workflow uses Xcode cloud signing for both the app and Top Shelf extension. The next release build must verify signing before this channel is considered ready. |
 | Mac App Store | Not a Plezy upstream channel | Plezy distributes macOS through a direct DMG and Homebrew. |
 | Snap Store | Pleazyng registered; scoped credential configured; first upload pending | `publish-snap.yml` uploads the matching architecture package to `stable` after a published release. `SNAPCRAFT_STORE_CREDENTIALS` was reissued on 2026-11-05 for `pleazyng` only, with package access/upload/release permissions on all four channels and a 365-day lifetime. The unused old snap is private. Listing edits require the first build. Manual dispatch can publish an existing release to `edge`, `beta`, `candidate`, or `stable`. |
@@ -60,7 +60,18 @@ Changing the install IDs means an install signed under upstream's identity canno
 
 The app-store workflow does not build packages or submit store reviews. Run it from `main`, select a release tag, and choose a channel. It accepts a draft GitHub Release for Google Play internal/closed testing tracks, Amazon binary updates after its first console submission, and iOS/tvOS App Store Connect build uploads. Production Play uploads still require a published stable GitHub Release. The workflow sends binaries only, with no listing metadata or screenshots. Samsung and LG TV handoff bundles use separate build outputs and must be uploaded through Seller Office or Seller Lounge manually; neither workflow claims an automated vendor-store submission. TV screenshots must be captured from the target device.
 
-For Google Play testing, select the `alpha` track (closed testing) and a signed AAB from the draft release; use release status `completed` to make it available to the invited test group after Google's review. The Alpha track has 178 regions and the five-member `Pleazyng Alpha testers` email list selected. Data safety and the default store listing are saved, and the feedback link points to GitHub Issues. Draft build 156 remains in the track; replace it with build 157 from the current release run, preview it, and send it to Google for review. The tester opt-in URL is `https://play.google.com/apps/testing/org.snapetech.plezyng`; it becomes active after rollout and only invited accounts can join. Keep at least 12 testers opted in for 14 continuous days before applying for production access. The README should keep the link marked inactive until rollout is complete.
+For Google Play testing, select `alpha` and release status `completed` only after
+first console bootstrap and signed-artifact purchase/reviewer-access validation.
+The new app is `org.snapetech.pleazyng` (console app `4975934724712317609`), with
+178 regions, the renamed existing five-member tester list and
+`support@snape.tech` feedback saved. It has no uploaded release. Old package
+`org.snapetech.plezyng` and draft build 156 are a separate inactive record; do
+not upload another old-package bundle. The new opt-in URL will be
+`https://play.google.com/apps/testing/org.snapetech.pleazyng` after rollout.
+The account is still Personal and currently shows 12 opted-in testers for 14
+continuous days before Production access. Organization conversion is requested,
+its website is already verified and its D-U-N-S request is processing; recheck
+Production eligibility after Google approves conversion.
 
 Google Play's foreground-service declaration has separate app-use videos: [user-initiated data sync](https://drive.google.com/file/d/1UEftKbXx23gz0tCdySJ8ceySXHX655_M/view?usp=drive_link) and [user-started media playback](https://drive.google.com/file/d/14CIjy5f6Xd528IOdrE30Ln2fmGj-hr3Z/view?usp=drive_link). They are silent recordings of the app on an Android device, with no narration or slides. Google's [foreground-service guidance](https://support.google.com/googleplay/android-developer/answer/13392821?hl=en) asks each video to demonstrate the in-app steps that trigger its declared feature.
 
@@ -124,48 +135,29 @@ gh workflow run discord-release.yml --repo snapetech-org/PlezyNG --ref main \
   -f action=announce-release -f runner_pool=hosted -f release_tag=v3.0.0
 ```
 
-At the 2026-10-26 readiness check, repository secrets are configured for Android signing, Google Play,
-Amazon Appstore, AUR, Apple App Store Connect API, iOS/tvOS App Store signing, Chocolatey, COPR,
-Discord, Docker Hub, Launchpad signing, Snap, Sparkle, and WinGet. The `AUR_PACKAGE_NAME`,
-`COPR_PROJECT`, `LAUNCHPAD_PPA`, and `SPARKLE_PUBLIC_KEY` variables are also configured. Google Play
-uses the `plezyng-play-release` Cloud project and a dedicated app-level service account; its user
-permission allows testing-track releases only. The Android Publisher API is enabled and the
-`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` repository secret is present. No production Play permission was
-granted.
+Current account, credential-presence and console evidence is maintained in
+[the migration receipt](pleazyng-channel-migration.json) and
+[the readiness matrix](publishing-readiness.md), checked 2026-11-05. Historical
+2.24.1/build-156/build-157 release runs are not readiness evidence for the new
+package or current release.
 
-The Alpha track has 178 regions and a five-member tester list but remains inactive with draft build
-156. Release run 40272007783 has passed validation and is building 2.24.1+157 with the refreshed
-branding; after it completes, replace the draft with the signed AAB and submit the closed test for
-review. The README opt-in URL is not live until rollout, and production access still needs 12 testers
-opted in for 14 continuous days.
+The registered downstream identities are `ppa:keefshape/pleazyng`,
+`slskdn/pleazyng`, Snap `pleazyng` and AUR `pleazyng-bin`. Scoped Snap credentials
+were refreshed for the new name; the COPR/PPA targets and Google app permissions
+were updated. First qualified uploads and vendor checks still need to pass.
+Homebrew additionally needs Developer ID/notarization and a tap-scoped token.
+Microsoft company enrollment is submitted and awaits business/employment
+verification before listing/package identity assignment. Company registration
+is complete; D-U-N-S issuance and GST/HST validation remain separate gates.
 
-The old iOS/tvOS build failed during manual PKCS#12 import. The Apple portal disables creation of
-another Apple Distribution certificate because the team has reached its certificate limit; no
-existing certificate or secret was revoked. The current release workflow uses Xcode cloud signing
-through the existing App Store Connect API key. Run 40272007783 will validate access to Apple's
-managed certificate and profiles. `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, and macOS Developer ID
-signing secrets are missing; `APPLE_TEAM_ID` is shared with mobile jobs and is not sufficient for
-macOS notarization. Windows installer-signing secrets and Microsoft
-Store identity variables are also missing. Keep existing credentials intact when adding
-replacements; do not reuse signing keys or store identities from another project.
-
-The `ppa:keefshape/plezyng` archive is active and empty. COPR project `slskdn/plezyng` is active for
-Fedora 43–45 and Rawhide on x86_64 and aarch64, with no builds yet. The `plezyng` Snap name is
-registered; verify that the existing Snap credential has the package and channel scope required
-by the publisher. The Amazon developer account has passed ID verification and a Pleazyng app record
-exists. Its `pleazyng_lifetime_unlock` entitlement is saved at a USD $2.99 base price; the security
-profile is mapped to App Submission API; GitHub secrets `AMAZON_APPSTORE_CLIENT_ID` and
-`AMAZON_APPSTORE_CLIENT_SECRET` are configured. The category, age target, content rating, privacy
-URL, description, and assets are complete. The IAP remains Ready to Submit after a generic
-Test-submission error, the Fire TV APK is not uploaded, and the export-compliance certification is
-pending. Google Play's Alpha track has inactive draft build 156, with five testers and 178 regions
-configured. Data safety and listing setup are complete; the Play API service account and GitHub
-secret are configured with testing-track-only permission. Build 157 with refreshed branding is
-running in release workflow 40272007783. The opt-in URL in the README is not live until rollout, and
-production access needs 12 testers opted in continuously for 14 days. Apple has iOS and tvOS
-records; the USD $2.99 lifetime IAP is configured with a 175-region schedule and remains Prepare for
-Submission. App Store Connect API secrets are configured; release run 40272007783 will test cloud
-signing access to Apple's managed certificate and profiles.
+The three first-store readiness flags remain false:
+`GOOGLE_PLAY_BOOTSTRAP_COMPLETE`, `AMAZON_APPSTORE_BOOTSTRAP_COMPLETE` and
+`APPLE_STORE_UPLOAD_READY`. Keep them false until the corresponding first setup,
+signed upload/processing and actual purchase/reviewer-access checks pass. The
+owner requested a roughly 24-hour hold on GST/HST-dependent submissions while
+CRA accepts the new number. No tax or incorporation number is interchangeable
+with D-U-N-S. Preserve existing credentials and certificate limits; no signing
+key was revoked or reused from another project.
 
 ## Relay containers
 

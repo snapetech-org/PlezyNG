@@ -124,7 +124,7 @@
       "full_description": "Canonical Pleazyng copy",
       "icon": "app-icon-512.png",
       "feature_graphic": "feature-graphic-1024x500.png",
-      "state": "Three authentic phone screenshots uploaded into editor; final listing review/Save still pending",
+      "state": "Saved and ready for review in Publishing overview; console confirmed 2026-11-05 20:34 America/Regina",
       "artwork_ai_labels_selected": [
         "App icon",
         "Feature graphic"
@@ -132,7 +132,7 @@
       "authentic_android_screenshots_pending": false,
       "screenshot_provenance": "Signed Amazon-flavor Android APK source 28486bba2bb42d25bc17d127ca73c5ccc27ba1a3 running on Android emulators; common app UI, not proof of Play billing or final release qualification",
       "phone_screenshots": 3,
-      "tablet_screenshots_uploaded_pending_validation": 2
+      "tablet_screenshots": 2
     },
     "production_access_gate": {
       "closed_test_minimum_testers": 12,
@@ -168,7 +168,23 @@
     "review_access_pending": "Signed Android store-review grant implementation/key configured; private grant and Jellyfin demo instructions saved in new app Sign in details. Source tests pass; actual signed build redemption with expired trial required before review submission.",
     "sign_in_details": "Saved; full-feature review code plus public Jellyfin sample library, no trial/purchase required by grant",
     "target_audience_saved": "18 and over; saved",
-    "data_safety": "Completed and saved in console 2026-11-05 20:29 America/Regina; all eight source-audited optional types, purposes and security answers recorded in google-play-data-safety.md; dashboard 11 of 12 app setup tasks complete"
+    "data_safety": "Completed and saved in console 2026-11-05 20:29 America/Regina; all eight source-audited optional types, purposes and security answers recorded in google-play-data-safety.md; dashboard 11 of 12 app setup tasks complete",
+    "closed_alpha": {
+      "countries_regions": 178,
+      "tester_list": "Pleazyng Alpha testers",
+      "existing_members_preserved": 5,
+      "feedback": "support@snape.tech",
+      "state": "Countries and tester configuration saved; no releases in new app"
+    },
+    "organization_conversion": {
+      "current_account_type": "Personal",
+      "website": "https://snape.tech/",
+      "website_verified": true,
+      "developer_display_name_requested": "Snape Technologies Limited",
+      "developer_display_name_state": "Under review; previous name remains visible until approved",
+      "conversion_state": "Opened supported conversion flow; new organization payments profile creation requires D-U-N-S as first field; not submitted",
+      "next": "Use issued D-U-N-S, verify company document and public/private contact codes; confirm Production eligibility after approved conversion"
+    }
   },
   "copr": {
     "owner": "slskdn",
@@ -299,12 +315,26 @@
     "automation_credentials": "Existing app/security profile preserved; no rotation required by in-place app migration",
     "pending": [
       "First signed org.snapetech.pleazyng Fire TV APK",
-      "At least three real Fire TV screenshots",
       "Package identity and signing validation after upload",
       "Export compliance and review declarations",
-      "IAP test/submission validation"
+      "IAP test/submission validation",
+      "Company account conversion / locked public publisher-name correction; tax/payment verification after owner tax hold"
     ],
-    "state": "draft names, IAP SKU/copy, and artwork migrated in place; binary and submission verification pending"
+    "state": "draft names, IAP SKU/copy, and artwork migrated in place; binary and submission verification pending",
+    "fire_tv_screenshots": 4,
+    "fire_tv_capture_basis": "Signed Amazon-flavor APK on Android TV API36 emulator; 1920x1080 RGB PNGs; actual UI, no physical FireOS/IAP qualification",
+    "fire_tv_listing_state": "All four images uploaded and validated; Appstore details Complete; Review & Submit still blocked by missing APK",
+    "company_profile": {
+      "account_type": "Sole Proprietorship",
+      "account_owner_legal_name": "Keith Snape",
+      "customer_facing_business_name": "PlezyNG",
+      "account_type_editable": false,
+      "customer_facing_business_name_editable": false,
+      "business_description": "Snape Technologies Limited and Pleazyng copy saved",
+      "support_email": "support@snape.tech",
+      "support_website": "https://github.com/snapetech-org/PlezyNG/issues",
+      "conversion": "Requires supported account-name/type change route; no support message sent; tax interview on hold"
+    }
   },
   "microsoft_store": {
     "account_entered": "keith@snape.tech",
@@ -381,5 +411,56 @@
     "duns_request": "Submitted by owner after CAPTCHA on 2026-11-05; Apple page confirms information being processed and D&B confirmation email pending",
     "tax_hold": "Owner directed GST/HST-dependent tax submissions to wait approximately 24 hours for CRA to accept the new number; continue all non-tax work. No new corporate tax identifier recorded or substituted.",
     "tv_store_order": "LG and Samsung explicitly included, to be set up last after other supported channels"
+  },
+  "samsung_tv": {
+    "portal": "https://seller.samsungapps.com/tv",
+    "login": "keith@snape.tech",
+    "state": "TV Seller Office membership active; corporate Public Group and Pleazyng Tizen.NET app created; title/description and service information saved",
+    "seller_membership": "Public Group: SNAPE TECHNOLOGIES LIMITED; initially US-only; other regions require Partner Group approval",
+    "tax_submission": "Not attempted",
+    "app_id": "3202611050784",
+    "package_type": "Tizen.NET Application (TPK), 2021+ Samsung TVs per flutter-tizen publishing guidance",
+    "title_description": "Saved English title Pleazyng, server-client description and Plex/Jellyfin/Emby/media/video tags",
+    "service_information": {
+      "category": "Videos",
+      "rating": "ALL (self-declared; not Samsung certification)",
+      "ui_languages": [
+        "English"
+      ],
+      "privacy_collection": "Yes",
+      "english_privacy_url_saved": "https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.md",
+      "korean_privacy_url_saved": "https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.ko.md",
+      "privacy_guide": "Read and reading-confirmation saved; product compliance must still be qualified"
+    },
+    "gates": [
+      "Production-signed TPK and physical TV qualification",
+      "Authentic Tizen screenshots; Android TV captures are not substituted",
+      "Samsung Checkout integration and DPI configuration for paid unlock",
+      "Partner Group approval for non-US countries",
+      "EAA conformity declaration before applicable EU distribution"
+    ]
+  },
+  "hosted_support": {
+    "english": "https://snape.tech/privacy/pleazyng/support/",
+    "korean": "https://snape.tech/privacy/pleazyng/support/ko/",
+    "english_privacy": "https://snape.tech/privacy/pleazyng/",
+    "korean_privacy": "https://snape.tech/privacy/pleazyng/ko/",
+    "site_source_commit": "c9e8c8e",
+    "cloudflare_deployment_run": 42155093736,
+    "state": "Cloudflare Pages deployment succeeded; all four public URLs return HTTP 200, correct document language and matching complete visible source text. Cloudflare adds its own challenge script, so served bytes differ from source.",
+    "deployment_url": "https://c83652dc.snape-tech.pages.dev",
+    "verified_at": "2026-11-05 21:13 CST"
+  },
+  "lg_webos": {
+    "portal": "https://seller.lgappstv.com",
+    "account": "keith@snape.tech",
+    "state": "Canada/English LG account signup terms on VM; owner asked to accept required terms and create/verify account. Proton Pass found no matching LG login. Corporate Seller enrollment not submitted.",
+    "gates": [
+      "Owner account verification and LG terms acceptance",
+      "Corporate Seller verification using incorporation certificate",
+      "Qualified IPK and authentic webOS captures",
+      "LG QA and content approval",
+      "Supported payment integration; legacy LG Billing discontinued"
+    ]
   }
 }

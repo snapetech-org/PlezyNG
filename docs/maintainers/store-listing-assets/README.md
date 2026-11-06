@@ -46,3 +46,8 @@ and purchase/restore testing remain separate qualification steps.
 are retained separately. They render production Flutter widgets with synthetic
 fixtures and are **not store screenshots**. Their manifest records their own,
 earlier source revision. Do not mix them into store upload slots.
+
+The [playback and appearance pack](../playback-appearance-previews/) adds desktop
+and landscape-phone player controls, subtitle styling, and light/dark/OLED
+variants. These are labeled widget previews with simulated player state; they
+are separate from the native capture receipts above and are not store images.

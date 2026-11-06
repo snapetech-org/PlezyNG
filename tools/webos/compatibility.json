@@ -16,6 +16,11 @@
   },
   "officialMinimum": "webOS TV 26 Re:New",
   "target": "armv7-a softfp NEON",
+  "rustupBootstrap": {
+    "version": "1.29.2",
+    "host": "x86_64-unknown-linux-gnu",
+    "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+  },
   "milkrustBuild": {
     "toolchain": "1.97.0",
     "rustTarget": "armv7-unknown-linux-gnueabi",

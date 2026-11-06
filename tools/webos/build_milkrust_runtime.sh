@@ -113,17 +113,13 @@ TASK_RUSTUP_HOME="$TASK_ROOT_REAL/rustup-home"
 TASK_CARGO_HOME="$TASK_ROOT_REAL/cargo-home"
 TASK_SOURCE="$TASK_ROOT_REAL/milkrust-source"
 TASK_TARGET="$TASK_ROOT_REAL/milkrust-target"
-mkdir -m 700 -- "$TASK_RUSTUP_HOME" "$TASK_CARGO_HOME"
 export RUSTUP_HOME="$TASK_RUSTUP_HOME"
 export CARGO_HOME="$TASK_CARGO_HOME"
 
-if ! command -v rustup >/dev/null 2>&1; then
-  echo "The approved private JIT image must provide rustup." >&2
-  exit 1
-fi
-rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --target "$RUST_TARGET" >&2
-RUSTC_VERSION="$(rustup run "$RUST_TOOLCHAIN" rustc --version)"
-CARGO_VERSION="$(rustup run "$RUST_TOOLCHAIN" cargo --version)"
+RUSTUP_BIN="$("$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/bootstrap_rustup.py" "$TASK_ROOT_REAL")"
+"$RUSTUP_BIN" toolchain install "$RUST_TOOLCHAIN" --profile minimal --target "$RUST_TARGET" --no-self-update >&2
+RUSTC_VERSION="$("$RUSTUP_BIN" run "$RUST_TOOLCHAIN" rustc --version)"
+CARGO_VERSION="$("$RUSTUP_BIN" run "$RUST_TOOLCHAIN" cargo --version)"
 if [[ "$RUSTC_VERSION" != "rustc $RUST_TOOLCHAIN "* || "$CARGO_VERSION" != "cargo $RUST_TOOLCHAIN "* ]]; then
   echo "Rust compiler and Cargo do not match the locked toolchain $RUST_TOOLCHAIN." >&2
   exit 1
@@ -143,7 +139,7 @@ case "$RUST_TARGET" in
 esac
 export CARGO_TARGET_DIR="$TASK_TARGET"
 export "$CARGO_LINKER_ENV"="$LINKER"
-rustup run "$RUST_TOOLCHAIN" cargo build \
+"$RUSTUP_BIN" run "$RUST_TOOLCHAIN" cargo build \
   --locked --release --package "$CRATE" --target "$RUST_TARGET" \
   --manifest-path "$TASK_SOURCE/Cargo.toml" >&2
 

@@ -138,6 +138,41 @@
       "confirmed_at": "2026-11-05 23:06 CST",
       "model": "Free download; seven-day full-feature trial then separate USD 2.99 lifetime unlock IAP",
       "publication": "Pricing and availability saved only; no app release submitted or approved"
+    },
+    "store_signing": {
+      "certificate_id": "N28XV5MTNK",
+      "team": "DM9A59DC85",
+      "sha256": "0277f392c1558a552c6b2aae0fe5bb6c27ab28905895bc40a6a2702ea5f6013b",
+      "sha1": "E885568440D699AB732307754DBE69B7AD5507C9",
+      "expires_utc": "2027-10-26T03:22:44Z",
+      "identity_state": "Existing PKCS12 password, private-key pairing, compatible native import, codesign probe and strict signature verification passed on hosted macOS26. No certificate issued/revoked; no signing secret rotated.",
+      "identity_qualification_run": 42168344221,
+      "profiles": [
+        {
+          "platform": "iOS",
+          "name": "Pleazyng iOS App Store 20261105",
+          "uuid": "4fce21b1-451d-4b19-805c-530c11be00e9",
+          "bundle": "org.snapetech.pleazyng"
+        },
+        {
+          "platform": "tvOS",
+          "name": "Pleazyng tvOS App Store 20261105",
+          "uuid": "031faa8b-72b8-449c-b1fc-58a11ea68e92",
+          "bundle": "org.snapetech.pleazyng"
+        },
+        {
+          "platform": "tvOS Top Shelf",
+          "name": "Pleazyng tvOS Top Shelf App Store 20261105",
+          "uuid": "1c5cc595-16e7-418e-aa6b-c8c9e5afba3e",
+          "bundle": "org.snapetech.pleazyng.TopShelfExtension"
+        }
+      ],
+      "profile_state": "Created through authenticated portal, CMS integrity checked locally, app/platform/team/group/certificate bindings validated; three dedicated Actions profile secrets configured. Old profiles preserved.",
+      "archive_state": "Shared isolated signing context and separate per-target manual archive/export source implemented. Full app archive/export, App Store processing and StoreKit/device qualification remain pending coordinated release.",
+      "certificate_capacity": "Apple Distribution maximum reached; existing usable identity avoids replacement or revocation",
+      "private_material": "Profile backups retained outside repository with private permissions; failed Mac host export produced no identity and its task-owned password/helper were cleaned",
+      "profiles_and_projects_qualification_run": 42169674435,
+      "profiles_and_projects_qualification": "Passed native shared identity context, all three current profiles, correct platform/team/group/certificate bindings, and manual Release settings for actual iOS/tvOS project targets. Full archive/export and Store processing remain unverified."
     }
   },
   "automation_before": {

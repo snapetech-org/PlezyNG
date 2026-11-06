@@ -1,0 +1,61 @@
+{
+  "signing_qualified": true,
+  "app_build_qualified": false,
+  "team": "DM9A59DC85",
+  "certificate_sha256": "0277f392c1558a552c6b2aae0fe5bb6c27ab28905895bc40a6a2702ea5f6013b",
+  "certificate_sha1": "E885568440D699AB732307754DBE69B7AD5507C9",
+  "private_key_present_in_pkcs12": true,
+  "private_key_matches_certificate": true,
+  "compatible_pkcs12_encoding": true,
+  "matching_private_key": true,
+  "wwdr_g3_sha256": "dcf21878c77f4198e4b4614f03d696d89c66c66008d4244e1b99161aac91601f",
+  "valid_codesigning_identity": true,
+  "profiles": {
+    "IOS_PROVISIONING_PROFILE_BASE64": {
+      "configured": true,
+      "uuid": "4fce21b1-451d-4b19-805c-530c11be00e9",
+      "application_identifier": "DM9A59DC85.org.snapetech.pleazyng",
+      "expected_identifier": "DM9A59DC85.org.snapetech.pleazyng",
+      "matches_identifier": true,
+      "matches_certificate": true,
+      "distribution": true,
+      "expires": "2027-10-26T03:22:44",
+      "platforms": [
+        "iOS",
+        "xrOS",
+        "visionOS"
+      ]
+    },
+    "TVOS_PROVISIONING_PROFILE_BASE64": {
+      "configured": true,
+      "uuid": "031faa8b-72b8-449c-b1fc-58a11ea68e92",
+      "application_identifier": "DM9A59DC85.org.snapetech.pleazyng",
+      "expected_identifier": "DM9A59DC85.org.snapetech.pleazyng",
+      "matches_identifier": true,
+      "matches_certificate": true,
+      "distribution": true,
+      "expires": "2027-10-26T03:22:44",
+      "platforms": [
+        "tvOS"
+      ]
+    },
+    "TVOS_TOPSHELF_PROVISIONING_PROFILE_BASE64": {
+      "configured": true,
+      "uuid": "1c5cc595-16e7-418e-aa6b-c8c9e5afba3e",
+      "application_identifier": "DM9A59DC85.org.snapetech.pleazyng.TopShelfExtension",
+      "expected_identifier": "DM9A59DC85.org.snapetech.pleazyng.TopShelfExtension",
+      "matches_identifier": true,
+      "matches_certificate": true,
+      "distribution": true,
+      "expires": "2027-10-26T03:22:44",
+      "platforms": [
+        "tvOS"
+      ]
+    }
+  },
+  "all_profiles_match": true,
+  "both_project_signing_bindings_validated": true,
+  "qualification_run": 42169674435,
+  "source_commit": "f1fdf157b",
+  "run_url": "https://github.com/snapetech-org/PlezyNG/actions/runs/42169674435"
+}

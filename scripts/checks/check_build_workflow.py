@@ -1256,8 +1256,8 @@ for apple_job_name, workspace_label in (
 for apple_job_name in ("build-ios", "build-tvos"):
     apple_release_job = job(apple_job_name)
     require(
-        f'archive_path="$APPLE_LOCAL_BUILD_DIR/{"ios" if apple_job_name == "build-ios" else "tvos"}-store.xcarchive"' in apple_release_job
-        and f'derived_data_path="$APPLE_LOCAL_BUILD_DIR/{"ios" if apple_job_name == "build-ios" else "tvos"}-store-derived-data"' in apple_release_job,
+        f'--archive-path "$APPLE_LOCAL_BUILD_DIR/{"ios" if apple_job_name == "build-ios" else "tvos"}-store.xcarchive"' in apple_release_job
+        and f'--derived-data "$APPLE_LOCAL_BUILD_DIR/{"ios" if apple_job_name == "build-ios" else "tvos"}-store-derived-data"' in apple_release_job,
         f"{apple_job_name} signing archives and DerivedData must stay on local APFS",
     )
 require(

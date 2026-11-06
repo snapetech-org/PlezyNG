@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Drain active jobs after a release platform fails, preserve their artifacts and diagnostics, and stop obsolete queued Apple builds automatically.
+
 - Resolve webOS audio visualization namespaces, retain textures for the legacy SDK lifetime, and compile-check every audio plugin source before building the engine.
 
 - Restore the Tizen visualization helper execute permission after SDK packaging without changing signed file contents, and retain failed package diagnostics.

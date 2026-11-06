@@ -40,7 +40,79 @@ def apple_job(status="queued"):
     }
 
 
+def failed_release():
+    return {"id": 42, "status": "in_progress", "event": "workflow_dispatch",
+            "head_branch": "main", "head_repository": {"full_name": queue.REPOSITORY},
+            "path": ".github/workflows/build.yml", "display_title": "action:release:pool:private:tag:v3.0.3"}
+
+
 class AppleQueueTests(unittest.TestCase):
+    def test_failed_release_waits_for_active_apple_work_then_stops_new_launches(self):
+        failure = {"id": 2, "name": "WebOS", "status": "completed", "conclusion": "failure"}
+        active = apple_job("in_progress")
+        queued = {**apple_job(), "id": 124}
+        with (
+            tempfile.TemporaryDirectory() as scratch,
+            patch.object(queue, "get_run", side_effect=[failed_release(), failed_release()]),
+            patch.object(queue, "get_jobs", side_effect=[
+                [failure, active, queued], [failure, apple_job("completed"), queued]]),
+            patch.object(queue, "launch_job") as launch,
+            patch.object(queue, "save_github_logs") as logs,
+            patch.object(queue.time, "sleep") as sleep,
+        ):
+            self.assertEqual(queue.run_queue("42", Path(scratch)), 0)
+            launch.assert_not_called()
+            self.assertEqual(sleep.call_count, 1)
+            logs.assert_called_once()
+
+    def test_ci_failure_does_not_stop_collection_of_other_test_results(self):
+        run = {**failed_release(), "path": ".github/workflows/ci.yml"}
+        self.assertFalse(queue.is_failed_release_build(run, [{"conclusion": "failure"}]))
+
+    def test_release_wait_cancels_drained_queue_once_without_terminating_active_processes(self):
+        controller = Mock()
+        controller.poll.return_value = 0
+        controller.wait.return_value = 0
+        watcher = Mock()
+        watcher.poll.side_effect = [None, None, 0]
+        watcher.wait.return_value = 1
+        jobs = [apple_job(), {"name": "WebOS", "status": "completed", "conclusion": "failure"}]
+        with (
+            tempfile.TemporaryDirectory() as scratch,
+            patch.object(release, "APPLE_JIT_EVIDENCE_ROOT", Path(scratch)),
+            patch.object(release.subprocess, "Popen", side_effect=[controller, watcher]),
+            patch.object(release, "gh_json", side_effect=[failed_release(), {"jobs": jobs, "total_count": 2}]),
+            patch.object(release, "command") as command,
+            patch.object(release.time, "sleep"),
+        ):
+            with self.assertRaises(release.ReleaseError):
+                release.wait_for_run(release.PLEZY_REPO, {"databaseId": 42}, "Release")
+        command.assert_called_once_with(["gh", "run", "cancel", "42", "--repo", release.PLEZY_REPO])
+        watcher.terminate.assert_not_called()
+        controller.terminate.assert_not_called()
+
+    def test_cancellation_waits_for_public_jobs_and_queued_packages(self):
+        failed = {"name": "WebOS", "status": "completed", "conclusion": "failure"}
+        pending_apple = apple_job()
+        self.assertTrue(release.failed_build_has_drained(failed_release(), [failed, pending_apple]))
+        for status in ("in_progress", "queued"):
+            with self.subTest(status=status):
+                self.assertFalse(release.failed_build_has_drained(
+                    failed_release(), [failed, pending_apple, {"name": "package-windows", "status": status}]))
+
+    def test_cancellation_does_not_touch_release_creation_side_effects(self):
+        jobs = [apple_job(), {"name": "WebOS", "status": "completed", "conclusion": "failure"},
+                {"name": "create-release", "status": "completed", "conclusion": "failure"}]
+        self.assertFalse(release.failed_build_has_drained(failed_release(), jobs))
+
+    def test_success_or_untrusted_run_never_triggers_drain_cancellation(self):
+        self.assertFalse(release.failed_build_has_drained(failed_release(), [apple_job()]))
+        for key, value in (("head_branch", "feature"), ("event", "pull_request"),
+                           ("head_repository", {"full_name": "other/repository"})):
+            with self.subTest(key=key):
+                self.assertFalse(release.failed_build_has_drained(
+                    {**failed_release(), key: value}, [{"status": "completed", "conclusion": "failure"}]))
+
     @unittest.skipUnless(shutil.which('jq'), 'launcher requires jq')
     def test_launcher_resolves_repository_identity_independently_of_product_brand(self):
         with tempfile.TemporaryDirectory(prefix='pleazyng-launcher-identity-') as temporary:

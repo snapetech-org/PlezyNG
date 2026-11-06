@@ -28,6 +28,7 @@ import urllib.parse
 import urllib.request
 import zipfile
 from pathlib import Path
+import launch_queued_apple_jit_jobs as apple_queue
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -148,6 +149,23 @@ def matching_run(
     return matches[0] if matches else None
 
 
+def failed_build_has_drained(run: dict, jobs: list[dict]) -> bool:
+    """Cancel only obsolete queued Apple work, after all other consumers finish."""
+    if not apple_queue.is_failed_release_build(run, jobs):
+        return False
+    if any(job.get("name") == "create-release" and job.get("status") == "completed"
+           and job.get("conclusion") != "skipped" for job in jobs):
+        return False  # Release creation may already have external side effects.
+    return all(
+        job.get("status") == "completed"
+        or (job.get("status") == "queued" and (
+            apple_queue.is_apple_job(job, str(run.get("id")))
+            or job.get("name") == "create-release"
+        ))
+        for job in jobs
+    )
+
+
 def wait_for_run(repo: str, run: dict, purpose: str) -> dict:
     run_id = str(run["databaseId"])
     print(f"\n{purpose}: {run.get('url', f'https://github.com/{repo}/actions/runs/{run_id}')}", flush=True)
@@ -168,6 +186,8 @@ def wait_for_run(repo: str, run: dict, purpose: str) -> dict:
         ["gh", "run", "watch", run_id, "--repo", repo, "--interval", "30", "--exit-status"],
         cwd=ROOT,
     )
+    next_drain_check = 0.0
+    cancellation_requested = False
     while watcher.poll() is None:
         if apple_controller is not None:
             controller_code = apple_controller.poll()
@@ -178,6 +198,21 @@ def wait_for_run(repo: str, run: dict, purpose: str) -> dict:
                     f"Apple JIT queue controller failed with exit code {controller_code}; "
                     "the GitHub workflow was left running and was not canceled."
                 )
+            if controller_code == 0 and not cancellation_requested and time.monotonic() >= next_drain_check:
+                next_drain_check = time.monotonic() + 15
+                try:
+                    overview = gh_json("api", f"repos/{repo}/actions/runs/{run_id}")
+                    if overview.get("status") != "completed":
+                        inventory = gh_json("api", f"repos/{repo}/actions/runs/{run_id}/jobs?per_page=100")
+                        jobs = inventory.get("jobs", [])
+                        complete = (isinstance(jobs, list) and all(isinstance(job, dict) for job in jobs)
+                                    and inventory.get("total_count", len(jobs)) <= len(jobs))
+                        if complete and failed_build_has_drained(overview, jobs):
+                            print("Failed build drained; canceling only its remaining queued Apple jobs.", flush=True)
+                            command(["gh", "run", "cancel", run_id, "--repo", repo])
+                            cancellation_requested = True
+                except ReleaseError:
+                    print("Could not confirm failed-build drainage; preserving the workflow and retrying.", flush=True)
         time.sleep(3)
     watch_code = watcher.wait()
     if apple_controller is not None:

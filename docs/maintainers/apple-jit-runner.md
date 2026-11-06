@@ -20,6 +20,16 @@ scratch directory. The orchestrator stores controller logs and runner evidence
 under `<scratch>/apple-jit-evidence/<run-id>/` and drives the normal GitHub run
 watch concurrently. No manual hold/release/remove/start cycle is needed.
 
+If a platform fails in a trusted main-branch build or release, the queue helper
+finishes any active Apple job and its cleanup, then stops launching further
+Apple jobs for that failed run. The release orchestrator waits for every active
+job and any queued non-Apple packaging job to finish before canceling the
+remaining obsolete Apple queue. It requires a complete job inventory and
+preserves any run where release creation may have produced external side
+effects. CI continues collecting all test results after a test failure.
+Completed Apple job logs are retrieved through the job-log API while the
+workflow is still running; evidence does not wait for the whole run to finish.
+
 For an already-running workflow that is not being watched by the release
 orchestrator, start the same queue controller directly:
 

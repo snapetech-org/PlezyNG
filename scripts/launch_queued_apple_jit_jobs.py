@@ -7,6 +7,7 @@ import argparse
 import fcntl
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -73,6 +74,23 @@ def is_apple_job(job: dict, run_id: str) -> bool:
     return (
         APPLE_LABELS.issubset(labels)
         and any(label.startswith(f"gha-{run_id}-") for label in labels)
+    )
+
+
+def is_failed_release_build(run: dict, jobs: list[dict]) -> bool:
+    repository = run.get("head_repository") or {}
+    path = run.get("path")
+    title = run.get("display_title")
+    return (
+        isinstance(repository, dict)
+        and isinstance(path, str)
+        and isinstance(title, str)
+        and run.get("event") == "workflow_dispatch"
+        and run.get("head_branch") == "main"
+        and repository.get("full_name") == REPOSITORY
+        and path.split("@", 1)[0] == ".github/workflows/build.yml"
+        and re.match(r"^action:(?:build|release):pool:private(?::|$)", title) is not None
+        and any(job.get("conclusion") in {"failure", "timed_out", "cancelled"} for job in jobs)
     )
 
 
@@ -169,8 +187,8 @@ def save_github_logs(run_id: str, jobs: list[dict], evidence_run_dir: Path) -> N
                 os.chmod(log_path, 0o600)
                 result = subprocess.run(
                     [
-                        "gh", "run", "view", run_id, "--repo", REPOSITORY,
-                        "--job", str(job_id), "--log",
+                        "gh", "api", f"repos/{REPOSITORY}/actions/jobs/{job_id}/logs",
+                        "--allow-escape-sequences",
                     ],
                     cwd=ROOT,
                     stdout=log,
@@ -220,7 +238,17 @@ def run_queue(run_id: str, evidence_root: Path) -> int:
             job for job in apple_jobs
             if job.get("status") not in {"queued", "completed"}
         ]
-        if active_jobs or active_run_scoped_apple_runner():
+        if active_jobs:
+            time.sleep(POLL_SECONDS)
+            continue
+        if is_failed_release_build(run, jobs):
+            save_github_logs(run_id, apple_jobs, evidence_run_dir)
+            print(
+                f"Apple JIT queue: run {run_id} has failed; active Apple work and cleanup "
+                "have finished, so no further queued Apple builds will start.", flush=True,
+            )
+            return 0
+        if active_run_scoped_apple_runner():
             time.sleep(POLL_SECONDS)
             continue
 

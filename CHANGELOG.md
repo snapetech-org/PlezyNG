@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Target Amazon API uploads by the console App ID and preserve listing metadata, artwork and review state during binary updates.
+
 - Fix Android Clang compilation of the visualization GPU drain callback while preserving the graphics loader ABI.
 
 - Fix malformed Steam input-only and Granite patch headers that blocked fresh Android/Fire TV builds, and expose native source preparation errors before compilation.

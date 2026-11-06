@@ -88,3 +88,18 @@ dimensions before writing 24-bit RGB PNGs and a provenance manifest; it never
 resizes or crops. Configure a phone emulator to 1080×1920 before launching the
 app, rather than exporting a tall 1080×2400 frame that exceeds Google Play's
 maximum 2:1 aspect ratio. Preserve raw captures alongside upload copies.
+
+## Amazon submission identity and first-version handoff
+
+`AMAZON_APPSTORE_APP_ID` is a non-secret GitHub repository variable containing the
+Amazon console identifier (`amzn1.devportal.mobileapp.…`), separate from Android
+package identity `org.snapetech.pleazyng`. Fastlane plugin 1.7.0 misleadingly calls
+this option `package_name` but forwards it directly into the API's `app_id` URL.
+The lane rejects an Android package name in this setting and explicitly skips
+metadata, changelog, image and screenshot uploads to preserve console edits.
+
+[Amazon requires the first version to be submitted through the Developer Console](https://developer.amazon.com/docs/app-submission-api/overview.html).
+The first draft's APK and screenshot ZIPs are therefore a manual console handoff.
+After that initial submission, the API flow updates subsequent versions using
+the configured Amazon App ID; it leaves review submission to the operator.
+Do not edit the same Amazon draft concurrently through the API and console.

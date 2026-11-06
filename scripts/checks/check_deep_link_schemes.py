@@ -35,6 +35,12 @@ def check() -> None:
     if missing:
         failures.append(f"{path}: native handler rejects registered {', '.join(sorted(missing))} schemes")
 
+    path = "shared/apple/DeepLink/DeepLinkPlugin.swift"
+    accepted = re.search(r'private static let schemes: Set<String> = \[([^\]]+)\]', (ROOT / path).read_text())
+    missing = SCHEMES - set(re.findall(r'"([^"]+)"', accepted[1] if accepted else ""))
+    if missing:
+        failures.append(f"{path}: native handler rejects registered {', '.join(sorted(missing))} schemes")
+
     for path in ROOT.glob("linux/packaging/**/*.desktop"):
         expect(str(path.relative_to(ROOT)), set(re.findall(r"x-scheme-handler/([^;]+);", path.read_text())))
 

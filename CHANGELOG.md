@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Derive tvOS framework deployment metadata from every selected Mach-O slice, correcting read-only build copies while preserving shared caches and genuine higher runtime requirements.
+- Accept canonical and legacy Pleazyng deep links in the shared Apple handler, with native alias tests and registration consistency checks.
 - Harden edge OAuth against oversized-body stalls, cross-site session creation and single-client daily quota exhaustion; apply consistent browser security headers.
 - Preserve successful GitHub releases when later notifications or store/package publication fail, and support targeted channel retries against immutable release artifacts.
 - Keep WinGet and Chocolatey metadata preparation independent of required platform artifacts and checksums.

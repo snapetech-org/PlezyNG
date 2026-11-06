@@ -86,6 +86,17 @@ existing nested entitlements, then run
 and before signing the app. The receipt retains its build-stage digest separately
 from the final embedded digest; later signing must not silently stale it.
 
+The tvOS embed phase derives each framework's `MinimumOSVersion` from the
+maximum of the application floor and every selected-platform Mach-O slice.
+Pinned FFmpeg frameworks can carry stale SDK metadata in read-only plists;
+correct only the build-owned copy, materializing cache symlinks first. Preserve
+genuine higher binary floors, including optional Dolby Vision runtimes, and
+reject missing, unreadable or wrong-platform load commands. Run
+`python3 scripts/checks/test_tvos_framework_metadata.py` on a Mac with Xcode
+to exercise real load commands and source-cache preservation. For Apple
+blockers, retain task-owned incremental DerivedData until the complete app
+build and native test bundle pass before spending another full CI run.
+
 Release actions reuse an existing immutable version tag. If the tag is an
 ancestor of `main`, the workflow permits only release infrastructure, changelog,
 maintainer documentation, and the WebOS compatibility lock to differ from the

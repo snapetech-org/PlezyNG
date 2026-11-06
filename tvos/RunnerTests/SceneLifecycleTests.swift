@@ -42,6 +42,15 @@ final class SceneLifecycleTests: XCTestCase {
     XCTAssertEqual(DeepLinkPlugin.forwardedLink(for: mixedCase), mixedCase.absoluteString)
   }
 
+  func testKnownSchemeAliasesAreForwardedVerbatim() throws {
+    for scheme in ["pleazyng", "plezyng", "plezxyng", "plezy"] {
+      for spelling in [scheme, scheme.uppercased()] {
+        let url = try XCTUnwrap(URL(string: "\(spelling)://play?id=42&profile=Kids%20Room"))
+        XCTAssertEqual(DeepLinkPlugin.forwardedLink(for: url), url.absoluteString)
+      }
+    }
+  }
+
   func testOtherSchemesAreNotForwarded() throws {
     let others = [
       "https://example.com/play?content_id=plezy_server_item",

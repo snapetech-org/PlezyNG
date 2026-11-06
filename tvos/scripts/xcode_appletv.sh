@@ -157,20 +157,34 @@ FrameworkExecutable() {
 
 MachOMinimumOSVersion() {
   local executable="$1"
+  local platform=""
+  case "${PLATFORM_NAME:-}" in
+    appletvos) platform=3 ;;
+    appletvsimulator) platform=8 ;;
+    *) echo " └─ERROR: unknown tvOS build platform: ${PLATFORM_NAME:-}" >&2; return 1 ;;
+  esac
 
-  otool -l "$executable" 2>/dev/null | awk '
-    $1 == "cmd" && ($2 == "LC_BUILD_VERSION" || $2 == "LC_VERSION_MIN_APPLETVOS" || $2 == "LC_VERSION_MIN_IPHONEOS") {
-      in_version_command = 1
+  (
+  set -o pipefail
+  otool -arch all -l "$executable" 2>/dev/null | awk -v platform="$platform" '
+    $1 == "cmd" {
+      in_version_command = ($2 == "LC_BUILD_VERSION" || $2 == "LC_VERSION_MIN_TVOS")
       next
     }
+    in_version_command && $1 == "platform" && $2 != platform { invalid_platform = 1 }
     in_version_command && ($1 == "minos" || $1 == "version") {
-      print $2
-      exit
-    }
-    $1 == "cmd" {
+      split($2, version, ".")
+      numeric = version[1] * 1000000 + version[2] * 1000 + version[3]
+      if (!found || numeric > maximum) {
+        maximum = numeric
+        minimum = $2
+        found = 1
+      }
       in_version_command = 0
     }
+    END { if (invalid_platform) exit 1; if (found) print minimum }
   '
+  )
 }
 
 NormalizeFrameworkMinimumOSVersion() {
@@ -178,6 +192,7 @@ NormalizeFrameworkMinimumOSVersion() {
   local app_minimum_os_version="$2"
   local executable=""
   local macho_minimum_os_version=""
+  local existing_minimum_os_version=""
   local plist_minimum_os_version="$app_minimum_os_version"
 
   executable="$(FrameworkExecutable "$framework")"
@@ -186,12 +201,24 @@ NormalizeFrameworkMinimumOSVersion() {
     return 1
   fi
 
-  macho_minimum_os_version="$(MachOMinimumOSVersion "$executable")"
+  # Derive metadata from the selected binary, not a stale packaging SDK value.
+  # Inspect every architecture and retain real optional-runtime floors above
+  # the app deployment target.
+  existing_minimum_os_version="$(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' "$framework/Info.plist" 2>/dev/null || true)"
+  if ! macho_minimum_os_version="$(MachOMinimumOSVersion "$executable")" || [[ -z "$macho_minimum_os_version" ]]; then
+    echo " └─ERROR: no matching tvOS deployment load command: $executable" >&2
+    return 1
+  fi
   if [[ -n "$macho_minimum_os_version" ]] && VersionLessThan "$plist_minimum_os_version" "$macho_minimum_os_version"; then
     plist_minimum_os_version="$macho_minimum_os_version"
   fi
 
-  SetPlistString "$framework/Info.plist" MinimumOSVersion "$plist_minimum_os_version"
+  if [[ "$existing_minimum_os_version" != "$plist_minimum_os_version" ]]; then
+    # SwiftPM may copy a read-only plist into this build-owned bundle. Change
+    # only that copy's owner-write bit when correcting the derived metadata.
+    chmod u+w "$framework/Info.plist"
+    SetPlistString "$framework/Info.plist" MinimumOSVersion "$plist_minimum_os_version"
+  fi
   ValidateMinimumOSVersion "$framework/Info.plist" "$(basename "$framework")" "$plist_minimum_os_version"
 }
 
@@ -208,6 +235,23 @@ CodeSignFramework() {
   if [[ "${PLATFORM_NAME:-}" != "appletvsimulator" && -n "${EXPANDED_CODE_SIGN_IDENTITY:-}" && "${CODE_SIGNING_ALLOWED:-YES}" != "NO" ]]; then
     codesign --force --verbose --sign "${EXPANDED_CODE_SIGN_IDENTITY}" -- "$framework"
   fi
+}
+
+CopyOwnedFramework() {
+  local source="$1"
+  local destination="$2"
+  local temporary=""
+  temporary="$(mktemp -d "$(dirname "$destination")/.framework-copy.XXXXXX")"
+  # Materialize cache links before editing metadata or signing. Stage before
+  # replacing the destination, including when an embedded link is copied onto
+  # its own path, so no write can reach the source framework.
+  if ! cp -RL "$source" "$temporary/$(basename "$destination")"; then
+    rm -rf "$temporary"
+    return 1
+  fi
+  rm -rf "$destination"
+  mv "$temporary/$(basename "$destination")" "$destination"
+  rmdir "$temporary"
 }
 
 EmbedFlutterFrameworks() {
@@ -239,9 +283,7 @@ EmbedFlutterFrameworks() {
       return 1
     fi
 
-    NormalizeFrameworkMinimumOSVersion "$source" "$minimum_os_version"
-    rm -rf "$destination"
-    cp -R "$source" "$app_frameworks_dir"
+    CopyOwnedFramework "$source" "$destination"
   done
 
   for framework in "$app_frameworks_dir"/*.framework; do
@@ -249,6 +291,9 @@ EmbedFlutterFrameworks() {
       continue
     fi
 
+    if [[ -L "$framework" || -n "$(find "$framework" -type l -print -quit)" ]]; then
+      CopyOwnedFramework "$framework" "$framework"
+    fi
     NormalizeFrameworkMinimumOSVersion "$framework" "$minimum_os_version"
     CodeSignFramework "$framework"
   done

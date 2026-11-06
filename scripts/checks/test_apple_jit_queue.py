@@ -2,7 +2,11 @@
 """Exercise queue transitions without creating runners or workflow runs."""
 
 import importlib.util
+import json
+import os
 import plistlib
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -37,6 +41,30 @@ def apple_job(status="queued"):
 
 
 class AppleQueueTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which('jq'), 'launcher requires jq')
+    def test_launcher_resolves_repository_identity_independently_of_product_brand(self):
+        with tempfile.TemporaryDirectory(prefix='pleazyng-launcher-identity-') as temporary:
+            root = Path(temporary)
+            gh = root / 'gh'
+            run = {'status': 'completed', 'run_attempt': 1, 'event': 'workflow_dispatch',
+                   'head_branch': 'main', 'head_repository': {'full_name': 'snapetech-org/PlezyNG'}}
+            gh.write_text('#!/usr/bin/env python3\nimport json,os,sys\n'
+                          'args=sys.argv[1:]\n'
+                          'if args[:2]==["repo","view"]:\n'
+                          ' assert "GH_REPO" not in os.environ\n'
+                          ' print("snapetech-org/PlezyNG")\n'
+                          'elif args==["api","repos/snapetech-org/PlezyNG/actions/runs/42"]:\n'
+                          f' print({json.dumps(json.dumps(run))})\n'
+                          'else:\n raise SystemExit("Unexpected GitHub request: "+repr(args))\n')
+            gh.chmod(0o755)
+            result = subprocess.run(['bash', str(ROOT / 'scripts/launch_apple_jit_runner.sh'), '42', '123'],
+                                    env={**os.environ, 'PATH': str(root) + os.pathsep + os.environ['PATH'],
+                                         'GH_REPO': 'unrelated/repository'},
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn('Run 42 is completed; refusing to add a runner.', result.stderr)
+            self.assertNotIn('Unexpected GitHub request', result.stderr)
+
     def run_sequence(self, job_lists, launches, *, capacity=None):
         with tempfile.TemporaryDirectory(prefix="pleazyng-apple-queue-test-") as scratch:
             with (

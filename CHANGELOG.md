@@ -12,6 +12,7 @@
 
 - Size Apple Flutter SDK disk preflights from verified archive metadata with a 4 GiB local reserve and 12 GiB runner admission floor; recover NFS mounts through the stable VPN route without depending on a hung app command.
 - Complete privacy translation fallbacks and stabilize local artwork regression checks by waiting for actual asynchronous file resolution.
+- Resolve the Apple runner's GitHub API repository from the checkout independently of product rebranding.
 
 - Target Amazon API uploads by the console App ID and preserve listing metadata, artwork and review state during binary updates.
 

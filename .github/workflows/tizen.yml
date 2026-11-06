@@ -303,7 +303,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: pleazyng-tizen-unverified-diagnostics
-          path: ${{ runner.temp }}/pleazyng-tizen-release/diagnostics/
+          path: build/tizen-release/diagnostics/
           if-no-files-found: ignore
           retention-days: 7
 

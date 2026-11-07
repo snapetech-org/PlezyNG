@@ -1501,7 +1501,10 @@ jobs:
             --connect-timeout 15 --max-time 90 \
             https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer -o "$CHAIN_PATH"
           printf '%s  %s\n' f16cd3c54c7f83cea4bf1a3e6a0819c8aaa8e4a1528fd144715f350643d2df3a "$CHAIN_PATH" | shasum -a 256 --check
-          security import "$CHAIN_PATH" -k "$KEYCHAIN_PATH"
+          chain_fingerprints="$(security find-certificate -a -Z "$KEYCHAIN_PATH")"
+          if [[ "$chain_fingerprints" != *"F16CD3C54C7F83CEA4BF1A3E6A0819C8AAA8E4A1528FD144715F350643D2DF3A"* ]]; then
+            security import "$CHAIN_PATH" -k "$KEYCHAIN_PATH"
+          fi
           python3 - "$KEYCHAIN_PATH" "$RUNNER_TEMP/macos-original-keychains.json" <<'PYCHAIN'
           import json, subprocess, sys
           with open(sys.argv[2]) as source:

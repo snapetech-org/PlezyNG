@@ -10,7 +10,7 @@
 
 - Make copied read-only macOS frameworks writable inside the owned app bundle before re-signing, preserving shared caches and rejecting external bundle symlinks.
 
-- Validate macOS Developer ID signing, timestamp access and notarization credentials before compilation, using a checksum-pinned job-local intermediate and restoring the original keychain search list.
+- Validate macOS Developer ID signing, timestamp access and notarization credentials before compilation, using a checksum-pinned job-local intermediate without duplicate imports and restoring the original keychain search list.
 
 - Drain active jobs after a release platform fails, preserve their artifacts and diagnostics, and stop obsolete queued Apple builds automatically.
 

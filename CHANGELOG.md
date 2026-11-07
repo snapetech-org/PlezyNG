@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Recover a completed same-version Mac compilation for signing-only validation with explicit source, job, tree-hash and compiler-setting evidence; signing, notarization, Gatekeeper and package checks remain mandatory.
+
+- Make copied read-only macOS frameworks writable inside the owned app bundle before re-signing, preserving shared caches and rejecting external bundle symlinks.
+
 - Validate macOS Developer ID signing, timestamp access and notarization credentials before compilation, using a checksum-pinned job-local intermediate and restoring the original keychain search list.
 
 - Drain active jobs after a release platform fails, preserve their artifacts and diagnostics, and stop obsolete queued Apple builds automatically.

@@ -42,6 +42,10 @@ on:
         description: Semantic version for artifact names; releases reuse a tag on main only when later commits contain allowlisted release infrastructure changes
         required: false
         type: string
+      macos_compilation_job_id:
+        description: Recover a verified same-product Mac compilation for signing-only macos-validation
+        required: false
+        type: string
       reuse_android_run_id:
         description: Reuse a separately successful Android release artifact with verified platform recovery
         required: false
@@ -155,6 +159,7 @@ jobs:
           SUBTITLE_GPU_BACKEND_INPUT: ${{ inputs.subtitle_gpu_backend }}
           REUSE_PLATFORMS: ${{ inputs.reuse_platform_run_id }}
           REUSE_ANDROID: ${{ inputs.reuse_android_run_id }}
+          MACOS_COMPILATION_JOB: ${{ inputs.macos_compilation_job_id }}
         run: |
           set -euo pipefail
           if [[ -n "$REUSE_ANDROID" && -z "$REUSE_PLATFORMS" ]]; then
@@ -165,6 +170,10 @@ jobs:
           RUNNER_POOL="$RUNNER_POOL_INPUT"
           EXECUTION_PROFILE="$EXECUTION_PROFILE_INPUT"
           MODE="$MODE_INPUT"
+          if [[ -n "$MACOS_COMPILATION_JOB" ]] && { [[ ! "$MACOS_COMPILATION_JOB" =~ ^[0-9]+$ ]] || [[ "$ACTION" != "build" || "$MODE" != "macos-validation" || "$PREPARE_HOMEBREW_CASK_INPUT" != "true" ]]; }; then
+            echo "Compiled Mac recovery requires a numeric source job and signed macOS-only build validation." >&2
+            exit 1
+          fi
           SUBTITLE_GPU_BACKEND="$SUBTITLE_GPU_BACKEND_INPUT"
           INCLUDE_WEBOS_BUILD="$INCLUDE_WEBOS_BUILD_INPUT"
           INCLUDE_WEBOS_RELEASE="$INCLUDE_WEBOS_RELEASE_INPUT"
@@ -1377,6 +1386,7 @@ jobs:
     needs: validate-trusted-ref
     runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) }}
     permissions:
+      actions: read
       id-token: write
       attestations: write
       contents: read
@@ -1511,6 +1521,13 @@ jobs:
           printf '%s' "$APPLE_API_PRIVATE_KEY" > "$API_KEY_PATH"
           xcrun notarytool history --key "$API_KEY_PATH" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER_ID" --output-format json > /dev/null
 
+      - name: Recover verified native macOS compilation
+        if: inputs.macos_compilation_job_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMPILED_JOB_ID: ${{ inputs.macos_compilation_job_id }}
+        run: python3 scripts/recover_macos_app.py --job-id "$COMPILED_JOB_ID"
+
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
         with:
@@ -1523,6 +1540,7 @@ jobs:
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-pub-v2-${{ hashFiles('pubspec.yaml', 'pubspec.lock') }}
 
       - name: Cache CocoaPods
+        if: inputs.macos_compilation_job_id == ''
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: |
@@ -1532,6 +1550,7 @@ jobs:
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-${{ runner.os }}-macos-pods-${{ hashFiles('**/Podfile.lock') }}
 
       - name: Ensure CMake for the embedded Steam receiver
+        if: inputs.macos_compilation_job_id == ''
         shell: bash
         run: |
           set -euo pipefail
@@ -1542,6 +1561,7 @@ jobs:
           cmake --version
 
       - name: Install CocoaPods
+        if: inputs.macos_compilation_job_id == ''
         shell: bash
         run: |
           set -euo pipefail
@@ -1562,6 +1582,7 @@ jobs:
           pod --version
 
       - name: Prepare NFS source workspace and local APFS macOS build output
+        if: inputs.macos_compilation_job_id == ''
         shell: bash
         run: |
           set -euo pipefail
@@ -1587,10 +1608,12 @@ jobs:
         run: flutter pub get --enforce-lockfile --no-example
 
       - name: Refresh pinned mpv Swift packages
+        if: inputs.macos_compilation_job_id == ''
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: scripts/refresh_apple_spm.sh macos
 
       - name: Configure repository updater trust root
+        if: inputs.macos_compilation_job_id == ''
         shell: bash
         env:
           SPARKLE_PUBLIC_KEY: ${{ vars.SPARKLE_PUBLIC_KEY }}
@@ -1599,9 +1622,11 @@ jobs:
         run: dart run scripts/configure_updater.dart
 
       - name: Remove AppleDouble sidecars before macOS Xcode build
+        if: inputs.macos_compilation_job_id == ''
         run: bash "$GITHUB_WORKSPACE/scripts/clean_appledouble_sidecars.sh" "$PLEZYNG_APPLE_WORKSPACE"
 
       - name: Build macOS
+        if: inputs.macos_compilation_job_id == ''
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         env:
           FLUTTER_XCODE_CODE_SIGNING_ALLOWED: "NO"
@@ -1633,6 +1658,8 @@ jobs:
           echo "Signing with identity: $IDENTITY"
 
           APP_PATH="build/macos/Build/Products/Release/Pleazyng.app"
+
+          python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH"
 
           APP_EXECUTABLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")
           test -x "$APP_PATH/Contents/MacOS/plezy_visualizer_helper"
@@ -1777,12 +1804,20 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: |
           set -euo pipefail
-          cp -f pleazyng-macos.dmg macos-ed-signature.txt macos-dmg-size.txt "$GITHUB_WORKSPACE/"
+          if [[ "$PLEZYNG_APPLE_WORKSPACE" != "$GITHUB_WORKSPACE" ]]; then
+            cp -f pleazyng-macos.dmg macos-ed-signature.txt macos-dmg-size.txt "$GITHUB_WORKSPACE/"
+          fi
 
       - name: Attest macOS DMG
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: pleazyng-macos.dmg
+
+      - name: Attest recovered macOS compilation provenance
+        if: inputs.macos_compilation_job_id != ''
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: macos-compilation-recovery.json
 
       - name: Upload macOS DMG
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -1792,6 +1827,7 @@ jobs:
             pleazyng-macos.dmg
             macos-ed-signature.txt
             macos-dmg-size.txt
+            macos-compilation-recovery.json
 
       - name: Remove short macOS build workspace
         if: always() && env.PLEZYNG_APPLE_TASK_ROOT != ''

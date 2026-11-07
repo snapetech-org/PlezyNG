@@ -105,6 +105,35 @@ archives remain architecture-specific.
 
 ### Check signing before compiling macOS
 
+SwiftPM can copy framework binaries into the application with mode `555`.
+`prepare_macos_app_for_signing.py` adds only the owner's write permission
+inside the owned app before signing. It validates the complete bundle boundary
+first, rejects external symlinks and foreign-owned files, preserves executable
+bits and file contents, and leaves shared dependency caches untouched. This
+fixes the observed `AetherLibdav1d.framework` signing permission failure.
+
+If the app compiled and only packaging failed, retain its APFS copy-on-write
+snapshot with its `retention.json` receipt. A signing-only validation can recover
+that exact compilation rather than repeat the build:
+
+```sh
+gh workflow run build.yml --ref main \
+  -f action=build -f runner_pool=private -f execution_profile=hybrid \
+  -f mode=macos-validation -f build_version=3.0.3 \
+  -f prepare_homebrew_cask=true -f macos_compilation_job_id=128247608189
+```
+
+`recover_macos_app.py` requires a successful native compile step in a completed
+trusted-main release job, an owned retained snapshot, the same bundle version,
+the immutable tag's exact compiled source, complete ancestry evidence and only
+explicitly allowlisted packaging changes. It separately compares the Flutter
+SDK, compiler settings and build command. It checks the complete copied app
+tree and attests its compilation-recovery receipt. The fresh job still imports
+the real signing identity, signs every nested component, notarizes the app,
+verifies Gatekeeper acceptance, builds the DMG and signs its Sparkle update.
+SDK and pub setup remain available for Sparkle; native compilation, CocoaPods
+and NFS workspace preparation are skipped only for this validated recovery.
+
 The macOS workflow validates its Developer ID identity, signs and verifies a
 small native executable with Apple's timestamp service, and checks notary API
 authentication immediately after checkout. These steps precede Flutter setup,

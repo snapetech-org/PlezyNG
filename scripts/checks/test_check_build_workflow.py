@@ -217,6 +217,14 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("signing and notary preflights must precede Flutter", result.stderr)
 
+    def test_readonly_framework_signing_preparation_is_required(self) -> None:
+        workflow = self._workflow()
+        command = '          python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH"\n'
+        self.assertIn(command, workflow)
+        result = self._run(workflow.replace(command, '', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('prepare read-only embedded copies', result.stderr)
+
     def test_macos_signing_preflight_requires_public_chain_and_real_probe(self) -> None:
         for removed in (
             '          security import "$CHAIN_PATH" -k "$KEYCHAIN_PATH"\n',

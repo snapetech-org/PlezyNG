@@ -1231,6 +1231,13 @@ for apple_job_name, workspace_label in (
             apple_release_job, "Check macOS signing configuration"
         )
         macos_import_step = named_step(apple_release_job, "Import Code Signing Certificate")
+        macos_sign_application = named_step(apple_release_job, "Sign Application")
+        require(
+            'python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH"' in macos_sign_application
+            and macos_sign_application.find('prepare_macos_app_for_signing.py')
+            < macos_sign_application.find('codesign --force'),
+            "macOS signing must prepare read-only embedded copies before replacing their signatures",
+        )
         macos_notary_preflight = named_step(
             apple_release_job, "Verify Apple notarization credentials before compilation"
         )

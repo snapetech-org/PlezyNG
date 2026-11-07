@@ -27,9 +27,21 @@ String _entrySearchText(SourceEntry entry) => [
 /// reinterpret the existing server, watched-state or download schemas.
 class SourceDatabase extends GeneratedDatabase {
   SourceDatabase(super.executor);
-  static Future<SourceDatabase> open() async {
+
+  static Future<void> _opening = Future<void>.value();
+
+  static Future<SourceDatabase> open() {
+    // The source controller and remote stream store own separate connections to
+    // this file. Finish opening and migrating one before starting the next:
+    // lazy executors can otherwise both observe a brand-new schema and race.
+    final result = _opening.then((_) => _openAndInitialize());
+    _opening = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return result;
+  }
+
+  static Future<SourceDatabase> _openAndInitialize() async {
     final directory = await getApplicationSupportDirectory();
-    return SourceDatabase(
+    final database = SourceDatabase(
       NativeDatabase.createInBackground(
         File(p.join(directory.path, 'publications.sqlite')),
         setup: (db) {
@@ -38,6 +50,14 @@ class SourceDatabase extends GeneratedDatabase {
         },
       ),
     );
+    try {
+      // NativeDatabase.createInBackground is lazy; await the real schema open.
+      await database.customSelect('SELECT 1').getSingle();
+      return database;
+    } catch (_) {
+      await database.close();
+      rethrow;
+    }
   }
 
   @override

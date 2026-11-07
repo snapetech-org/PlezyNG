@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Finish source database initialization before opening another connection, preventing first-launch SQLite migration races that can interrupt profile teardown and logout.
+
 - Package matching release Flutter engine and Dart artifacts in Android's minified validation build, and boot its activity during instrumentation to catch VM startup failures.
 
 - Keep the library picker visible on phones by placing toolbar actions in an accessible overflow menu and truncating long library titles within the available width.

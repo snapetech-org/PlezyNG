@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix the Steam timer teardown call after adapting queue callback signatures, restoring native builds with strict C pointer checks.
+
 - Document clean rooted-TV deployment of the published webOS IPK, and keep SSH input open while observing native install/remove completion without requiring the ares CLI.
 
 - Skip nonexistent log downloads for skipped Apple jobs during artifact-only release recovery, avoiding misleading warnings and repeated delays after successful assembly.

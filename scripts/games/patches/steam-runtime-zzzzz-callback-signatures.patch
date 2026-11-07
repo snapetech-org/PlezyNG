@@ -43,6 +43,14 @@ diff --git a/src/ihs_timer.c b/src/ihs_timer.c
      IHS_MutexUnlock(state.lock);
      IHS_MutexDestroy(state.lock);
  }
+@@ -104,6 +104,6 @@
+     IHS_Timer *matched = (IHS_Timer *) IHS_QueuePollBy(state.timers, ItemIdentical, timer);
+     assert(matched == timer);
+-    TimerDestroy(matched, NULL);
++    TimerDestroy((IHS_QueueItem *) matched, NULL);
+     IHS_QueueItemFree((IHS_QueueItem *) matched);
+     // All timer are removed
+     if (IHS_QueueIsEmpty(state.timers)) {
 @@ -220,12 +220,13 @@
      return IHS_MonotonicNanos() / 1000000;
  }

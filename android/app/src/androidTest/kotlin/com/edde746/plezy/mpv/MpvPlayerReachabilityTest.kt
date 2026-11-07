@@ -34,7 +34,7 @@ class MpvPlayerReachabilityTest {
     instrumentation.runOnMainSync {
       // Pass every constructor argument: production uses this constructor, not
       // the default-argument bridge that R8 may legitimately remove.
-      core.set(MpvPlayerCore(instrumentation.targetContext, true, true, 1f, "v"))
+      core.set(MpvPlayerCore(instrumentation.targetContext, true, true, 1f, "v", false))
       core.get().delegate = object : PlayerDelegate {
         override fun onPropertyChange(name: String, value: Any?) = Unit
 
@@ -68,7 +68,7 @@ class MpvPlayerReachabilityTest {
       assertCompletes(nativeLogReceived, "native log callback")
     } finally {
       val disposed = CountDownLatch(1)
-      instrumentation.runOnMainSync { core.get().dispose(onComplete = disposed::countDown) }
+      instrumentation.runOnMainSync { core.get().dispose(false, onComplete = disposed::countDown) }
       assertCompletes(disposed, "native teardown")
     }
   }

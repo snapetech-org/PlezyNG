@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep native instrumentation facade APIs and callbacks in the test-only Android variant, and pass complete MPV arguments so release optimization does not remove test entry points.
+
 - Finish source database initialization before opening another connection, preventing first-launch SQLite migration races that can interrupt profile teardown and logout.
 
 - Package matching release Flutter engine and Dart artifacts in Android's minified validation build, and boot its activity during instrumentation to catch VM startup failures.

@@ -19,7 +19,8 @@ ANDROID_15_INSTRUMENTATION_TARGET = "android-15-instrumentation"
 # APIs the app legitimately shrinks. This target guards FFmpeg and MPV's native paths.
 ANDROID_R8_REACHABILITY_CLASSES = (
     "androidx.media3.decoder.ffmpeg.FfmpegDecoderReachabilityTest,"
-    "com.edde746.plezy.mpv.MpvPlayerReachabilityTest"
+    "com.edde746.plezy.mpv.MpvPlayerReachabilityTest,"
+    "com.edde746.plezy.translation.MlKitRegistrarReachabilityTest"
 )
 ANDROID_R8_REACHABILITY_TARGET = "android-r8-reachability"
 

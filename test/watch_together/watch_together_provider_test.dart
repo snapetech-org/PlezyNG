@@ -866,7 +866,7 @@ void main() {
 }
 
 /// The `OWP_RELAY_BIN` relay binary (`go build -o <path> ./cmd/owp-relay` in
-/// the Open Watch Party repository); without it the real-relay test is
+/// the Open Watch Party repository's `relay/` directory); without it the real-relay test is
 /// skipped. Tests never reach the public relays.
 final String? _relayBinary = switch (Platform.environment['OWP_RELAY_BIN']) {
   final path? when path.isNotEmpty => path,

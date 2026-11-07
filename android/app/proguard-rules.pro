@@ -2,6 +2,13 @@
 # releaseBuildType.isMinifyEnabled), and appends this file when it exists. Anything the
 # app reaches only by name — reflection or JNI — therefore needs an explicit keep here.
 
+# ML Kit discovers these classes from manifest metadata and invokes their
+# no-argument constructors. Keeping only their names lets R8 remove constructors,
+# so ML Kit initialization and the translation plugin fail in minified builds.
+-keep class com.google.mlkit.** implements com.google.firebase.components.ComponentRegistrar {
+  public <init>();
+}
+
 # The bundled Media3 FFmpeg audio decoder (ALAC, DTS, DTS-HD, TrueHD, ...).
 #
 # DefaultRenderersFactory instantiates FfmpegAudioRenderer through Class.forName and no

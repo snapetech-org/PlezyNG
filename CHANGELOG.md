@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve ML Kit's manifest-discovered registrar constructors during Android shrinking so on-device translation can initialize, and exercise them in the minified instrumentation suite.
+
 - Point every Maestro end-to-end flow at the current Pleazyng application ID and guard it against Android identity drift.
 
 - Include the safe HTTP helper in the Jellyfin test fixture image, make its seeded configuration writable by the non-root server, and supply translations to the TV games acceptance harness.

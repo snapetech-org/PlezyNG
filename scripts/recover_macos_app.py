@@ -20,6 +20,7 @@ PACKAGING_FILES = frozenset({
     'scripts/apple/prepare_macos_app_for_signing.py',
     'scripts/apple/test_prepare_macos_app_for_signing.py',
     'scripts/recover_macos_app.py', 'scripts/test_recover_macos_app.py',
+    'scripts/checks/test_macos_validation_request.py',
 })
 
 

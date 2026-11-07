@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Allow signed macOS-only validation and compilation recovery with the hybrid runner profile, retaining main-ref and CPU baseline checks.
+
 - Recover a completed same-version Mac compilation for signing-only validation with explicit source, job, tree-hash and compiler-setting evidence; signing, notarization, Gatekeeper and package checks remain mandatory.
 
 - Make copied read-only macOS frameworks writable inside the owned app bundle before re-signing, preserving shared caches and rejecting external bundle symlinks.

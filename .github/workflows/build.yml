@@ -243,8 +243,8 @@ jobs:
             fi
             VERSION="$RELEASE_TAG"
           fi
-          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" || ( "$MODE" != "release" && "$MODE" != "android-validation" ) || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
-            echo "The hybrid execution profile requires a CPU-backend release or Android validation build from refs/heads/main." >&2
+          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" || ( "$MODE" != "release" && "$MODE" != "android-validation" && "$MODE" != "macos-validation" ) || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
+            echo "The hybrid execution profile requires a CPU-backend release, Android or macOS validation build from refs/heads/main." >&2
             exit 1
           fi
           if [[ "$MODE" == "release" && "$EXECUTION_PROFILE" != "hybrid" ]]; then

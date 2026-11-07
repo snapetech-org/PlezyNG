@@ -103,6 +103,29 @@ archives remain architecture-specific.
 
 ## Single-job troubleshooting
 
+### Check signing before compiling macOS
+
+The macOS workflow validates its Developer ID identity, signs and verifies a
+small native executable with Apple's timestamp service, and checks notary API
+authentication immediately after checkout. These steps precede Flutter setup,
+NFS source preparation, CocoaPods and application compilation. A certificate
+or credential failure should take minutes rather than discard a completed
+application build.
+
+The job imports the checksum-pinned Apple Developer ID G2 intermediate into
+its own temporary keychain. It selects the one valid identity for the configured
+team and does not depend on an interactive login keychain or previous GUI use
+of the CI account. Cleanup restores the original keychain search list, preserves
+any later additions, and deletes only this job's keychain and credential files.
+It also runs when signing fails before the NFS workspace exists.
+
+The 3.0.3 attempt at `63f6d4ca4` compiled the application successfully but failed
+at identity validation; the headless account also lacked the Developer ID
+intermediate. Restoring the public intermediate repaired local certificate
+chain verification; a successful full signing and notarization job remains
+the authoritative check. Do not diagnose Flutter's log-forwarding process as
+a stopped native compiler based on CPU use alone.
+
 Use the low-level launcher only for a single-job recovery when no queue
 controller is active for the run and no run-scoped Apple runner is online or
 busy. Inspect queued Apple job IDs first:

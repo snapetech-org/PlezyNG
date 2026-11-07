@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Validate macOS Developer ID signing, timestamp access and notarization credentials before compilation, using a checksum-pinned job-local intermediate and restoring the original keychain search list.
+
 - Drain active jobs after a release platform fails, preserve their artifacts and diagnostics, and stop obsolete queued Apple builds automatically.
 
 - Resolve webOS audio visualization namespaces, retain textures for the legacy SDK lifetime, and compile-check every audio plugin source before building the engine.

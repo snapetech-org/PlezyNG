@@ -1230,6 +1230,29 @@ for apple_job_name, workspace_label in (
         macos_signing_step = named_step(
             apple_release_job, "Check macOS signing configuration"
         )
+        macos_import_step = named_step(apple_release_job, "Import Code Signing Certificate")
+        macos_notary_preflight = named_step(
+            apple_release_job, "Verify Apple notarization credentials before compilation"
+        )
+        flutter_setup = apple_release_job.find("      - name: Setup Flutter\n")
+        require(
+            all(0 <= apple_release_job.find(f"      - name: {name}\n") < flutter_setup
+                for name in ("Check macOS signing configuration",
+                             "Import Code Signing Certificate",
+                             "Verify Apple notarization credentials before compilation")),
+            "macOS signing and notary preflights must precede Flutter and source preparation",
+        )
+        require(
+            "f16cd3c54c7f83cea4bf1a3e6a0819c8aaa8e4a1528fd144715f350643d2df3a" in macos_import_step
+            and "shasum -a 256 --check" in macos_import_step
+            and 'security import "$CHAIN_PATH" -k "$KEYCHAIN_PATH"' in macos_import_step
+            and "macos-original-keychains.json" in macos_import_step
+            and "login.keychain" not in macos_import_step
+            and 'codesign --force --sign "$IDENTITY" --keychain "$KEYCHAIN_PATH" --timestamp' in macos_import_step
+            and "codesign --verify --strict" in macos_import_step
+            and "xcrun notarytool history" in macos_notary_preflight,
+            "macOS signing preflight must qualify its isolated keychain, pinned chain and real signing credentials",
+        )
         require(
             'if [[ "$REQUIRE_HOMEBREW_CASK" != "true" ]]' in macos_signing_step
             and 'echo "codesign=false"' in macos_signing_step

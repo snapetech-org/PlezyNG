@@ -205,6 +205,30 @@ class BuildWorkflowGuardTest(unittest.TestCase):
                     result.stderr,
                 )
 
+    def test_macos_signing_preflight_cannot_move_after_compilation(self) -> None:
+        workflow = self._workflow()
+        start = workflow.index("      - name: Import Code Signing Certificate\n")
+        end = workflow.index("      - name: Verify Apple notarization credentials before compilation\n", start)
+        block = workflow[start:end]
+        changed = workflow[:start] + workflow[end:]
+        insertion = changed.index("      - name: Sign Application\n")
+        changed = changed[:insertion] + block + changed[insertion:]
+        result = self._run(changed)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("signing and notary preflights must precede Flutter", result.stderr)
+
+    def test_macos_signing_preflight_requires_public_chain_and_real_probe(self) -> None:
+        for removed in (
+            '          security import "$CHAIN_PATH" -k "$KEYCHAIN_PATH"\n',
+            '          codesign --verify --strict "$RUNNER_TEMP/macos-signing-probe"\n',
+        ):
+            with self.subTest(removed=removed):
+                workflow = self._workflow()
+                self.assertIn(removed, workflow)
+                result = self._run(workflow.replace(removed, "", 1))
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("preflight must qualify its isolated keychain", result.stderr)
+
     def test_github_only_macos_release_skips_optional_developer_id_signing(self) -> None:
         workflow = self._workflow().replace(
             'if [[ "$REQUIRE_HOMEBREW_CASK" != "true" ]]; then',

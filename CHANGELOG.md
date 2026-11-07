@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Document clean rooted-TV deployment of the published webOS IPK, and keep SSH input open while observing native install/remove completion without requiring the ares CLI.
+
 - Skip nonexistent log downloads for skipped Apple jobs during artifact-only release recovery, avoiding misleading warnings and repeated delays after successful assembly.
 
 - Verify an existing immutable release tag immediately before draft creation, and use the default branch API permission target so release-only recovery works with the normal GitHub token.

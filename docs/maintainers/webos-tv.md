@@ -122,6 +122,51 @@ ares-launch --device privacyshield-c6 org.snapetech.plezyng
 
 Keep the TV's address, SSH identity, and keys in that local profile. Do not copy them into this repository, CI, logs, or Homebrew metadata.
 
+### Rooted-TV installation without the ares CLI
+
+Use the already published IPK and its release checksum; do not rebuild it for
+installation. Confirm the target with `getSystemInfo` and check free space on
+`/media/developer` and `/tmp` before copying. The native transport is available
+through existing SSH authentication:
+
+```sh
+python3 tools/webos/luna_ssh.py root@TV_HOST \
+  luna://com.webos.service.tv.systemproperty/getSystemInfo \
+  '{"keys":["modelName","sdkVersion","firmwareVersion","boardType"]}' --private
+python3 tools/webos/luna_ssh.py root@TV_HOST \
+  luna://com.webos.applicationManager/listApps '{}' --private
+```
+
+For an owner-requested clean installation, identify all prior app IDs whose ID
+or title identifies Plezy, PlezyNG, Pleazyng or the historical Plezxyng spelling.
+Remove each through the installer, rather than deleting application folders.
+This removes their data. Follow the owner's data-handling instruction; do not
+create a backup or restore old data when the owner requests removal without one.
+
+```sh
+python3 tools/webos/luna_ssh.py root@TV_HOST \
+  luna://com.webos.appInstallService/dev/remove \
+  '{"id":"org.snapetech.plezyng","subscribe":true}' --until removed
+# Verify listApps contains no prior variant before installing the replacement.
+scp -O path/to/org.snapetech.pleazyng_VERSION_arm.ipk root@TV_HOST:/tmp/pleazyng-update.ipk
+ssh root@TV_HOST 'sha256sum /tmp/pleazyng-update.ipk'
+python3 tools/webos/luna_ssh.py root@TV_HOST \
+  luna://com.webos.appInstallService/dev/install \
+  '{"id":"org.snapetech.pleazyng","ipkUrl":"/tmp/pleazyng-update.ipk","subscribe":true}' \
+  --until installed --timeout 120
+python3 tools/webos/luna_ssh.py root@TV_HOST \
+  luna://com.webos.applicationManager/launch '{"id":"org.snapetech.pleazyng"}' --private
+```
+
+Verify `getAppInfo`, listApps, the process and the installed package file hashes.
+Remove only the staged IPK after its consumer finishes, preserving diagnostic
+receipts. The helper keeps SSH stdin open: closing it early makes this TV's
+`luna-send` exit zero with an empty response. It accepts the terminal `installed`
+or `removed` event before any later subscription-disconnect notice; that notice
+does not invalidate a completed installation. If observation times out, inspect
+the installed state before retrying the operation. No TV address or credentials
+belong in this runbook or the helper.
+
 ## Black screen after sign-in
 
 The 3.0.0 C6 investigation reproduced a cold-start race in

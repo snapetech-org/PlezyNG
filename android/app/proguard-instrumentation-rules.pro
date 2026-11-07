@@ -7,3 +7,8 @@
 # passing gate. No shipped build includes this file.
 -keep class androidx.test.** { *; }
 -dontwarn androidx.test.**
+
+# AndroidJUnitRunner calls this shared dependency from the test APK. Release
+# optimization can inline its app callers and remove it from the tested APK,
+# while AGP excludes the same dependency from the test APK as already supplied.
+-keep class androidx.tracing.** { *; }

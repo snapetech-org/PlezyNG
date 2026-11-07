@@ -1154,13 +1154,13 @@ android {
     // #1703 shipped that way — DefaultRenderersFactory's Class.forName for the bundled
     // FFmpeg audio renderer failed in release builds only.
     //
-    // Inherits release's minification and keep rules (the Flutter plugin has already
-    // installed them by the time this block runs) but stays debuggable and debug-signed,
-    // so it is an ordinary test artifact and never a publishable one. Debuggable also
-    // makes the Flutter plugin treat it as debug mode, so it uses debug Dart artifacts.
+    // Use release Dart artifacts and engine together, with debug signing for tests.
+    // Flutter registers engine dependencies as soon as the build type is created,
+    // before this block runs. Changing debuggability here selects debug Dart snapshots
+    // later while leaving the release engine dependency installed, which aborts the VM.
     create("minified") {
       initWith(getByName("release"))
-      isDebuggable = true
+      isDebuggable = false
       // Resource shrinking is orthogonal to the reachability this variant guards and
       // would only slow the instrumentation build down.
       isShrinkResources = false

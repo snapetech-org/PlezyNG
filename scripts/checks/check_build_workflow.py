@@ -1575,7 +1575,16 @@ require(
     "release builds must bind the validated release tag",
 )
 require(
-    "target_commitish: ${{ needs.validate-trusted-ref.outputs.release_commit }}" in release,
+    "target_commitish: main" in release,
+    "existing-tag release creation must use the default branch permission target",
+)
+release_tag_check = named_step(release, "Verify existing immutable release tag")
+require(
+    "EXPECTED_RELEASE_COMMIT: ${{ needs.validate-trusted-ref.outputs.release_commit }}" in release_tag_check
+    and "git/ref/tags/{tag}" in release_tag_check
+    and "git/tags/{obj['sha']}" in release_tag_check
+    and "obj['sha'] != expected" in release_tag_check
+    and release.index("Verify existing immutable release tag") < release.index("name: Create Release"),
     "release drafts must remain bound to the validated immutable tag commit",
 )
 require(

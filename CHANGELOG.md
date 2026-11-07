@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Verify an existing immutable release tag immediately before draft creation, and use the default branch API permission target so release-only recovery works with the normal GitHub token.
+
 - Remove validated interrupted-signing temporary files and NFS AppleDouble metadata from the owned macOS signing copy, and canonicalize identical entitlement keys without changing effective permissions before sealing nested bundles.
 
 - Retain a verified APFS compilation snapshot automatically before Mac signing, preserve it after packaging failures, and remove only that snapshot after successful DMG upload.

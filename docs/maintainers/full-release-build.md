@@ -120,6 +120,14 @@ turn publication into a failed core build. WinGet and Chocolatey metadata are
 attached when produced, while installers and all required Linux formats remain
 mandatory. See [channel retries](release-channel-retries.md).
 
+GitHub's release API checks workflow-write authorization against the supplied
+`target_commitish`, even when a historical version tag already exists. The
+release job verifies that the remote tag still resolves to the exact validated
+source (including annotated tags), then uses `target_commitish: main`, which
+GitHub ignores for an existing tag. This retains the immutable compiled source
+and normal `contents: write` permissions without a broader token. Do not change
+the tag or rebuild native platforms to repair this API authorization failure.
+
 Use explicit signing and Homebrew qualification options separately when those
 preparations are requested. They require signed iOS/tvOS archives and a
 notarized macOS Cask candidate, even for GitHub-only publication. They do not

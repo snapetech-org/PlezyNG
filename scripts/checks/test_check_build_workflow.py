@@ -2,10 +2,14 @@
 """Behavior tests for the privileged build-workflow guard."""
 
 from pathlib import Path
+import json
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -642,10 +646,10 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("verified ARM Tizen tester handoff must be attached", result.stderr)
 
-    def test_release_tag_without_exact_target_is_rejected(self) -> None:
+    def test_release_creation_cannot_request_historical_workflow_target(self) -> None:
         workflow = self._workflow().replace(
+            "          target_commitish: main\n",
             "          target_commitish: ${{ needs.validate-trusted-ref.outputs.release_commit }}\n",
-            "",
             1,
         )
         self.assertNotEqual(workflow, self._workflow(), "fixture mutation no longer matches workflow")
@@ -653,7 +657,41 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         result = self._run(workflow)
 
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn("must remain bound to the validated immutable tag commit", result.stderr)
+        self.assertIn("default branch permission target", result.stderr)
+
+    def test_release_tag_preflight_binds_annotated_and_lightweight_tags(self) -> None:
+        workflow = yaml.safe_load(self._workflow())
+        body = next(s['run'] for s in workflow['jobs']['create-release']['steps']
+                    if s.get('name') == 'Verify existing immutable release tag')
+        script = body.split("python3 - <<'PY'\n", 1)[1].rsplit('\nPY', 1)[0]
+        expected = 'a' * 40
+        cases = [
+            ([{'object': {'type': 'commit', 'sha': expected}}], True),
+            ([{'object': {'type': 'tag', 'sha': 'b' * 40}},
+              {'object': {'type': 'commit', 'sha': expected}}], True),
+            ([{'object': {'type': 'commit', 'sha': 'c' * 40}}], False),
+        ]
+        for responses, succeeds in cases:
+            with self.subTest(responses=responses), patch.dict(os.environ, {
+                    'GITHUB_REPOSITORY': 'snapetech-org/PlezyNG', 'RELEASE_TAG': 'v3.0.3',
+                    'EXPECTED_RELEASE_COMMIT': expected}), patch.object(
+                        subprocess, 'check_output', side_effect=[json.dumps(r) for r in responses]) as api:
+                if succeeds:
+                    with patch('builtins.print'):
+                        exec(compile(script, 'release-tag-preflight', 'exec'), {})
+                else:
+                    with self.assertRaisesRegex(ValueError, 'Immutable release tag changed'):
+                        exec(compile(script, 'release-tag-preflight', 'exec'), {})
+                self.assertEqual(api.call_args_list[0].args[0][-1],
+                                 'repos/snapetech-org/PlezyNG/git/ref/tags/v3.0.3')
+                self.assertEqual(api.call_count, len(responses))
+
+    def test_release_tag_preflight_must_compare_the_validated_source(self) -> None:
+        workflow = self._workflow().replace("if obj['sha'] != expected:", "if False:", 1)
+        self.assertNotEqual(workflow, self._workflow())
+        result = self._run(workflow)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('must remain bound to the validated immutable tag commit', result.stderr)
 
 
 

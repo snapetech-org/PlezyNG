@@ -29,6 +29,9 @@ RECOVERY_FILES = frozenset({
     "scripts/checks/test_recover_release_platforms.py", "scripts/checks/check_build_workflow.py",
     "scripts/checks/test_check_build_workflow.py", "scripts/checks/test_release_ci_gate.py",
     "tools/webos/build_ipk.sh", "tools/webos/tests/test_source_ndk_environment.py",
+    "scripts/recover_macos_app.py", "scripts/test_recover_macos_app.py",
+    "scripts/apple/prepare_macos_app_for_signing.py", "scripts/apple/test_prepare_macos_app_for_signing.py",
+    "scripts/checks/test_macos_validation_request.py", "scripts/checks/test_macos_packaging_recovery.py",
 })
 REBUILT_JOBS = frozenset({"build-android", "Build WebOS TV package (ARMv7)"})
 REQUIRED_JOBS = (
@@ -134,6 +137,87 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
             **ci_proof(repository, source_sha)}
 
 
+def verify_macos_packaging_recovery(run_id, macos_run, head_sha, version, repository=REPOSITORY):
+    """Replace only failed Mac packaging; require every original platform build."""
+    import base64
+    from recover_macos_app import build_contract
+    if repository != REPOSITORY or not all(str(v).isdigit() for v in (run_id, macos_run)) or not re.fullmatch(r"[0-9a-f]{40}", head_sha):
+        raise RecoveryError("Mac recovery requires exact trusted run and source identities.")
+    source = api(f"repos/{repository}/actions/runs/{run_id}")
+    native = api(f"repos/{repository}/actions/runs/{macos_run}")
+    for run in (source, native):
+        if (run.get("status") != "completed" or run.get("event") != "workflow_dispatch"
+            or run.get("head_branch") != "main" or run.get("head_repository", {}).get("full_name") != repository
+            or run.get("path", "").split("@")[0] != ".github/workflows/build.yml"):
+            raise RecoveryError("Mac recovery requires completed trusted-main workflow runs.")
+    if source.get("display_title") != f"action:release:pool:private:tag:v{version}" or native.get("conclusion") != "success":
+        raise RecoveryError("Mac packaging recovery must be successful and match the original versioned release.")
+    source_sha = source["head_sha"]
+    for target in dict.fromkeys((head_sha, native["head_sha"])):
+        comparison = api(f"repos/{repository}/compare/{source_sha}...{target}")
+        files = comparison.get("files")
+        if (comparison.get("status") not in {"ahead", "identical"}
+            or comparison.get("merge_base_commit", {}).get("sha") != source_sha
+            or not isinstance(files, list) or len(files) >= 300
+            or any(p not in RECOVERY_FILES for entry in files
+                   for p in (entry.get("filename"), entry.get("previous_filename")) if p)):
+            raise RecoveryError("Mac recovery changed application or native inputs, or comparison evidence is incomplete.")
+    contracts = []
+    for revision in dict.fromkeys((source_sha, native["head_sha"], head_sha)):
+        content = api(f"repos/{repository}/contents/.github/workflows/build.yml?ref={revision}")
+        contracts.append(build_contract(base64.b64decode(content["content"]).decode()))
+    if any(c != contracts[0] for c in contracts):
+        raise RecoveryError("Mac compiler configuration differs from the retained compilation.")
+    jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
+    required = tuple(name for name in REQUIRED_JOBS if name != "build-macos") + ("build-android", "Build WebOS TV package (ARMv7)")
+    for name in required:
+        matches = [j for j in jobs if j.get("name") == name]
+        if len(matches) != 1 or matches[0].get("status") != "completed" or matches[0].get("conclusion") != "success":
+            raise RecoveryError(f"Original platform must be uniquely successful: {name}")
+    macs = [j for j in jobs if j.get("name") == "build-macos"]
+    if len(macs) != 1 or macs[0].get("conclusion") != "failure":
+        raise RecoveryError("Expected exactly one failed Mac packaging job.")
+    mac = api(f"repos/{repository}/actions/jobs/{macs[0]['id']}")
+    if not any(s.get("name") == "Build macOS" and s.get("conclusion") == "success" for s in mac.get("steps", [])):
+        raise RecoveryError("The original native application compilation did not succeed.")
+    if any(j.get("conclusion") in {"failure", "cancelled", "timed_out"} and j.get("name") != "build-macos" for j in jobs):
+        raise RecoveryError("Another original platform failed; do not assemble a partial release.")
+    if any(j.get("name") == "create-release" and j.get("conclusion") != "skipped" for j in jobs):
+        raise RecoveryError("Original run attempted release creation; inspect side effects.")
+    recovered_jobs = collection(f"repos/{repository}/actions/runs/{macos_run}/jobs", "jobs")
+    recovered = [j for j in recovered_jobs if j.get("name") == "build-macos" and j.get("conclusion") == "success"]
+    if len(recovered) != 1:
+        raise RecoveryError("Mac replacement job is missing or ambiguous.")
+    recovered_job = api(f"repos/{repository}/actions/jobs/{recovered[0]['id']}")
+    required_steps = ("Recover verified native macOS compilation", "Import Code Signing Certificate",
+                      "Sign Application", "Verify Signature", "Notarize Application",
+                      "Verify Gatekeeper acceptance for Homebrew Cask", "Sign DMG for Sparkle (EdDSA)",
+                      "Attest macOS DMG", "Attest recovered macOS compilation provenance", "Upload macOS DMG")
+    for name in required_steps:
+        if not any(s.get("name") == name and s.get("conclusion") == "success" for s in recovered_job.get("steps", [])):
+            raise RecoveryError(f"Recovered Mac package lacks successful qualification: {name}")
+    return {"profile": "macos-packaging", "source_run_id": int(run_id), "source_sha": source_sha,
+            "head_sha": head_sha, "version": version, "reused_jobs": list(required),
+            "rebuilt_jobs": [], "recovered_jobs": ["build-macos"], "platforms_complete": True,
+            "pending_jobs": [], "excluded_optional_jobs": [], "compiled_macos_job": mac["id"],
+            "macos_source": {"source_run_id": int(macos_run), "source_sha": native["head_sha"],
+                             "job_id": recovered_job["id"]},
+            "android_source": {"source_run_id": int(run_id), "source_sha": source_sha},
+            **ci_proof(repository, source_sha)}
+
+
+def verify_macos_receipt(receipt, proof):
+    if (receipt.get("compiled_source") != proof["source_sha"]
+        or receipt.get("compiled_run") != proof["source_run_id"]
+        or receipt.get("compiled_job") != proof["compiled_macos_job"]
+        or receipt.get("packaging_workflow_source") != proof["macos_source"]["source_sha"]
+        or receipt.get("version", "").split("+", 1)[0] != proof["version"]
+        or receipt.get("application_inputs_unchanged") is not True
+        or receipt.get("compilation_reused") is not True
+        or not re.fullmatch(r"[0-9a-f]{64}", receipt.get("recovered_app_tree_sha256", ""))):
+        raise RecoveryError("Mac compilation receipt differs from verified GitHub evidence.")
+
+
 def wait_for_source_run(run_id, head_sha, version, seconds):
     deadline = time.monotonic() + seconds
     while True:
@@ -176,6 +260,10 @@ def verify_android_run(run_id, head_sha, version, repository=REPOSITORY):
 
 
 def compose_proof(proof, android_run=None, include_webos_build=True):
+    if proof.get("profile") == "macos-packaging":
+        if not include_webos_build or (android_run and str(android_run) != str(proof["source_run_id"])):
+            raise RecoveryError("Mac packaging recovery requires every original platform without substitution or omission.")
+        return proof
     rebuilt = set(REBUILT_JOBS)
     if android_run:
         proof = {**proof, "android_source": verify_android_run(android_run, proof["head_sha"], proof["version"])}
@@ -221,9 +309,15 @@ def download_platforms(proof, destination, repository=REPOSITORY):
         inventories[android["source_run_id"]] = collection(
             f"repos/{repository}/actions/runs/{android['source_run_id']}/artifacts", "artifacts")
         wanted["android-apk"] = "android-apk"
+    if proof.get("macos_source"):
+        macos = proof["macos_source"]
+        inventories[macos["source_run_id"]] = collection(
+            f"repos/{repository}/actions/runs/{macos['source_run_id']}/artifacts", "artifacts")
+        wanted["webos-ipk"] = "webos"
     records = []
     for name, folder in wanted.items():
-        source = proof["android_source"] if name == "android-apk" else proof
+        source = (proof["android_source"] if name == "android-apk" else
+                  proof["macos_source"] if name == "macos-dmg" and proof.get("macos_source") else proof)
         artifact_run = source["source_run_id"]
         matches = [item for item in inventories[artifact_run] if item.get("name") == name and not item.get("expired")]
         if len(matches) != 1:
@@ -244,6 +338,8 @@ def download_platforms(proof, destination, repository=REPOSITORY):
             if result.returncode or actual_digest != digest[7:]:
                 raise RecoveryError(f"Reusable artifact download/digest verification failed: {name}")
             extract_verified(archive, destination / folder)
+            if name == "macos-dmg" and proof.get("macos_source"):
+                verify_macos_receipt(json.loads((destination / folder / "macos-compilation-recovery.json").read_text()), proof)
         records.append({"name": name, "artifact_id": item["id"], "digest": digest,
                         "source_run_id": artifact_run, "source_sha": source["source_sha"]})
         print(f"Recovered verified {name} from run {artifact_run}.", flush=True)
@@ -258,6 +354,7 @@ def main():
     parser.add_argument("--head-sha", required=True)
     parser.add_argument("--version", required=True)
     parser.add_argument("--download", type=Path)
+    parser.add_argument("--macos-run", help="Reuse a qualified signing-only Mac recovery after every original platform succeeds.")
     parser.add_argument("--android-run", help="Reuse a separately successful Android release build.")
     parser.add_argument("--skip-webos-build", action="store_true", help="Exclude the non-public experimental WebOS candidate.")
     parser.add_argument("--allow-building", action="store_true", help="Preflight only: native jobs may still be running.")
@@ -267,7 +364,9 @@ def main():
         parser.error("--allow-building is only a preflight; downloads require completed successful platform jobs")
     if not 0 <= args.wait_for_source <= 10800:
         parser.error("--wait-for-source must be between 0 and 10800 seconds")
-    proof = (wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source)
+    proof = (verify_macos_packaging_recovery(args.source_run, args.macos_run, args.head_sha, args.version)
+             if args.macos_run else
+             wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source)
              if args.wait_for_source else
              verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building))
     proof = compose_proof(proof, args.android_run, not args.skip_webos_build)

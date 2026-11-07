@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Assemble the complete release from verified original platform artifacts and a fully qualified Mac packaging recovery, preserving exact-source CI, native inputs, all platform requirements and signed provenance.
+
 - Allow signed macOS-only validation and compilation recovery with the hybrid runner profile, retaining main-ref and CPU baseline checks.
 
 - Recover a completed same-version Mac compilation for signing-only validation with explicit source, job, tree-hash and compiler-setting evidence; signing, notarization, Gatekeeper and package checks remain mandatory.

@@ -46,6 +46,10 @@ on:
         description: Recover a verified same-product Mac compilation for signing-only macos-validation
         required: false
         type: string
+      reuse_macos_package_run_id:
+        description: Reuse a qualified Mac signing-only recovery with all other original platform artifacts
+        required: false
+        type: string
       reuse_android_run_id:
         description: Reuse a separately successful Android release artifact with verified platform recovery
         required: false
@@ -160,10 +164,15 @@ jobs:
           REUSE_PLATFORMS: ${{ inputs.reuse_platform_run_id }}
           REUSE_ANDROID: ${{ inputs.reuse_android_run_id }}
           MACOS_COMPILATION_JOB: ${{ inputs.macos_compilation_job_id }}
+          MACOS_PACKAGE_RUN: ${{ inputs.reuse_macos_package_run_id }}
         run: |
           set -euo pipefail
           if [[ -n "$REUSE_ANDROID" && -z "$REUSE_PLATFORMS" ]]; then
             echo "Android reuse requires verified platform recovery." >&2
+            exit 1
+          fi
+          if [[ -n "$MACOS_PACKAGE_RUN" ]] && { [[ ! "$MACOS_PACKAGE_RUN" =~ ^[0-9]+$ ]] || [[ -z "$REUSE_PLATFORMS" || "$REUSE_ANDROID" != "$REUSE_PLATFORMS" ]]; }; then
+            echo "Mac package recovery requires the complete original platform and Android source run." >&2
             exit 1
           fi
           ACTION="$ACTION_INPUT"
@@ -366,7 +375,7 @@ jobs:
           while IFS= read -r changed_file; do
             [[ -z "$changed_file" ]] && continue
             case "$changed_file" in
-              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
+              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
                 ;;
               *)
                 echo "Release tag $RELEASE_TAG differs from main in non-release source '$changed_file'; refusing to build mixed source." >&2
@@ -448,6 +457,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
+          MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
           HEAD_SHA: ${{ github.sha }}
           VERSION: ${{ steps.request.outputs.version }}
           ACTION: ${{ steps.request.outputs.action }}
@@ -461,12 +471,13 @@ jobs:
           TIZEN_BUILD: ${{ steps.request.outputs.include_tizen_build }}
         run: |
           set -euo pipefail
-          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$HOMEBREW" != false || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
+          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || ( "$HOMEBREW" != false && -z "$MACOS_RUN" ) || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
             echo "Artifact recovery requires the complete hybrid CPU GitHub-only release profile." >&2
             exit 1
           fi
           options=()
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
+          if [[ -n "$MACOS_RUN" ]]; then options+=(--macos-run "$MACOS_RUN"); fi
           if [[ "$WEBOS_BUILD" != true ]]; then options+=(--skip-webos-build); fi
           python3 scripts/recover_release_platforms.py "$SOURCE_RUN" --head-sha "$HEAD_SHA" --version "$VERSION" --allow-building "${options[@]}"
 
@@ -766,7 +777,7 @@ jobs:
           if-no-files-found: warn
 
   build-webos:
-    if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'webos-validation' || (needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_build == 'true')) }}
+    if: ${{ inputs.reuse_macos_package_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'webos-validation' || (needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.outputs.include_webos_build == 'true')) }}
     needs: validate-trusted-ref
     name: Build WebOS TV package (ARMv7)
     timeout-minutes: 360
@@ -2732,7 +2743,7 @@ jobs:
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
-    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && needs.build-tvos.result == 'skipped' && needs.build-macos.result == 'skipped' && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && needs.build-linux.result == 'skipped' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && needs.build-tvos.result == 'skipped' && needs.build-macos.result == 'skipped' && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && needs.build-linux.result == 'skipped' && (needs.build-webos.result == 'success' || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-create-release"]}}', github.run_id)) }}
     permissions:
       contents: write
@@ -2747,10 +2758,12 @@ jobs:
             pubspec.yaml
             scripts/generate_release_notes.py
             scripts/create_release_checksums.py
+            scripts/release_coverage.py
             scripts/generate_winget_manifests.py
             scripts/generate_homebrew_cask.py
             scripts/pubspec_version.py
             scripts/recover_release_platforms.py
+            scripts/recover_macos_app.py
             scripts/verify_release_ci.py
             docs/maintainers/capability-manifest.json
             Casks/snapetech-pleazyng.rb.template
@@ -2777,12 +2790,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
+          MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
           HEAD_SHA: ${{ github.sha }}
           VERSION: ${{ needs.validate-trusted-ref.outputs.version }}
           WEBOS_BUILD: ${{ needs.validate-trusted-ref.outputs.include_webos_build }}
         run: |
           options=()
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
+          if [[ -n "$MACOS_RUN" ]]; then options+=(--macos-run "$MACOS_RUN"); fi
           if [[ "$WEBOS_BUILD" != true ]]; then options+=(--skip-webos-build); fi
           python3 scripts/recover_release_platforms.py "$SOURCE_RUN" --head-sha "$HEAD_SHA" --version "$VERSION" --download artifacts --wait-for-source 10800 "${options[@]}"
 
@@ -2794,7 +2809,7 @@ jobs:
           path: artifacts/android-apk
 
       - name: Download WebOS artifact
-        if: ${{ needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
+        if: ${{ inputs.reuse_macos_package_run_id == '' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: webos-ipk
@@ -2981,6 +2996,9 @@ jobs:
       - name: Generate release SHA-256 checksums
         run: |
           python3 scripts/create_release_checksums.py artifacts
+          if [[ -f artifacts/macos-dmg/macos-compilation-recovery.json ]]; then
+            (cd artifacts/macos-dmg && sha256sum macos-compilation-recovery.json) >> artifacts/SHA256SUMS.txt
+          fi
           if [[ -f artifacts/platform-reuse-provenance.json ]]; then
             (cd artifacts && sha256sum platform-reuse-provenance.json >> SHA256SUMS.txt)
           fi
@@ -3141,6 +3159,9 @@ jobs:
             echo 'artifacts/linux-arm64/*'
             echo appcast.xml
             echo artifacts/SHA256SUMS.txt
+            if [[ -f artifacts/macos-dmg/macos-compilation-recovery.json ]]; then
+              echo artifacts/macos-dmg/macos-compilation-recovery.json
+            fi
             if [[ -f artifacts/platform-reuse-provenance.json ]]; then
               echo artifacts/platform-reuse-provenance.json
             fi

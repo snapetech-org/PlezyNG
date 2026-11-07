@@ -134,6 +134,27 @@ verifies Gatekeeper acceptance, builds the DMG and signs its Sparkle update.
 SDK and pub setup remain available for Sparkle; native compilation, CocoaPods
 and NFS workspace preparation are skipped only for this validated recovery.
 
+After the remaining original platforms and the Mac recovery succeed, finish
+through the release controller instead of redispatching the full matrix:
+
+```sh
+python3 scripts/release_all_platforms.py --version 3.0.3 \
+  --execution-profile hybrid --publish-github-only --prepare-homebrew-cask \
+  --reuse-platform-run 42313043006 --reuse-macos-run MAC_RECOVERY_RUN_ID \
+  --scratch /path/to/empty/task-scratch
+```
+
+The controller also reuses Android from that exact original run. The source
+release must have successful iOS, tvOS, Windows x64/ARM64, Linux x64/ARM64,
+Android, webOS and Tizen jobs, plus the complete exact-source CI result. Only
+the original failed Mac packaging job may be replaced. The replacement requires
+successful signature, notary, Gatekeeper, Sparkle and provenance-attestation
+steps. Complete ancestry, pinned/compiler-input equivalence, GitHub artifact
+digests and the recovered compilation receipt are checked again during final
+assembly. The immutable tag stays on the compiled application source; the
+published reuse receipt identifies the later packaging-workflow source.
+Every platform remains required, including the verified original webOS IPK.
+
 The macOS workflow validates its Developer ID identity, signs and verifies a
 small native executable with Apple's timestamp service, and checks notary API
 authentication immediately after checkout. These steps precede Flutter setup,

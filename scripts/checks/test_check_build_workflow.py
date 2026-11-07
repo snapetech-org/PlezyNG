@@ -225,6 +225,14 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('prepare read-only embedded copies', result.stderr)
 
+    def test_release_sparse_checkout_cannot_omit_coverage_validator(self) -> None:
+        workflow = self._workflow()
+        entry = '            scripts/release_coverage.py\n'
+        self.assertIn(entry, workflow)
+        result = self._run(workflow.replace(entry, '', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('sparse checkout must include every executed script', result.stderr)
+
     def test_macos_signing_preflight_requires_public_chain_and_real_probe(self) -> None:
         for removed in (
             '          security import "$CHAIN_PATH" -k "$KEYCHAIN_PATH"\n',

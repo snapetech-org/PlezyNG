@@ -1500,7 +1500,7 @@ require(
     "release requests must reject incomplete platform selections",
 )
 require(
-    "if: ${{ needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}" in webos_download
+    "if: ${{ inputs.reuse_macos_package_run_id == '' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}" in webos_download
     and "name: webos-ipk" in webos_download,
     "the WebOS release artifact must be downloaded only after explicit opt-in",
 )
@@ -1548,6 +1548,13 @@ require(
 
 
 require("draft: true" in release, "build output must remain a draft release")
+release_checkout = release.split("      - name:", 1)[0]
+release_scripts = set(re.findall(r"python3 (scripts/[A-Za-z0-9_./-]+\.py)", release))
+release_scripts.add("scripts/recover_macos_app.py")
+require(
+    all(f"            {script}\n" in release_checkout for script in release_scripts),
+    "release sparse checkout must include every executed script and recovery import",
+)
 require("body_path: release-notes.md" in release, "draft notes must come from the changelog renderer")
 require(
     "tag_name: ${{ needs.validate-trusted-ref.outputs.release_tag }}" in release,
@@ -1570,7 +1577,7 @@ require(
     "scripts/recover_release_platforms.py" in recovery_gate
     and "scripts/recover_release_platforms.py" in recovery_download
     and "--download artifacts" in recovery_download
-    and "needs.validate-trusted-ref.outputs.reuse_source_sha != ''" in release_condition
+    and "inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != ''" in release_condition
     and "platform-reuse-provenance.json" in collect_release_files
     and "needs.validate-trusted-ref.outputs.android_source_sha != ''" in release_condition
     and "--android-run" in recovery_gate

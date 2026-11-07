@@ -21,6 +21,9 @@ PACKAGING_FILES = frozenset({
     'scripts/apple/test_prepare_macos_app_for_signing.py',
     'scripts/recover_macos_app.py', 'scripts/test_recover_macos_app.py',
     'scripts/checks/test_macos_validation_request.py',
+    'scripts/recover_release_platforms.py', 'scripts/release_all_platforms.py',
+    'scripts/checks/test_recover_release_platforms.py', 'scripts/checks/test_macos_packaging_recovery.py',
+    'docs/maintainers/full-release-build.md',
 })
 
 

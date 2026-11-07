@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Skip nonexistent log downloads for skipped Apple jobs during artifact-only release recovery, avoiding misleading warnings and repeated delays after successful assembly.
+
 - Verify an existing immutable release tag immediately before draft creation, and use the default branch API permission target so release-only recovery works with the normal GitHub token.
 
 - Remove validated interrupted-signing temporary files and NFS AppleDouble metadata from the owned macOS signing copy, and canonicalize identical entitlement keys without changing effective permissions before sealing nested bundles.

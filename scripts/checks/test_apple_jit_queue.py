@@ -47,6 +47,19 @@ def failed_release():
 
 
 class AppleQueueTests(unittest.TestCase):
+    def test_skipped_apple_jobs_have_no_logs_to_fetch_or_retry(self):
+        with tempfile.TemporaryDirectory() as scratch, patch.object(queue.subprocess, 'run') as fetch:
+            queue.save_github_logs('42', [{**apple_job('completed'), 'conclusion': 'skipped'}], Path(scratch))
+            fetch.assert_not_called()
+            self.assertEqual(list(Path(scratch).iterdir()), [])
+
+    def test_executed_apple_job_still_retains_its_log(self):
+        with tempfile.TemporaryDirectory() as scratch, patch.object(queue.subprocess, 'run') as fetch:
+            fetch.return_value.returncode = 0
+            queue.save_github_logs('42', [apple_job('completed')], Path(scratch))
+            fetch.assert_called_once()
+            self.assertTrue((Path(scratch) / '123-github-job.log').exists())
+
     def test_failed_release_waits_for_active_apple_work_then_stops_new_launches(self):
         failure = {"id": 2, "name": "WebOS", "status": "completed", "conclusion": "failure"}
         active = apple_job("in_progress")

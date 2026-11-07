@@ -174,7 +174,8 @@ def save_github_logs(run_id: str, jobs: list[dict], evidence_run_dir: Path) -> N
     evidence_run_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     os.chmod(evidence_run_dir, 0o700)
     for job in jobs:
-        if not is_apple_job(job, run_id) or job.get("status") != "completed":
+        if (not is_apple_job(job, run_id) or job.get("status") != "completed"
+                or job.get("conclusion") == "skipped"):
             continue
         job_id = job.get("id")
         if not isinstance(job_id, int):

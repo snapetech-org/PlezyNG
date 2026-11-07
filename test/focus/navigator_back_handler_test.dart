@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/focus/back_press.dart';
+import 'package:plezy/focus/input_mode_tracker.dart';
 import 'package:plezy/focus/navigator_back_handler.dart';
 import 'package:plezy/utils/platform_detector.dart';
 
@@ -18,10 +19,12 @@ class _Harness extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: rootKey,
-      home: home,
-      builder: (_, child) => NavigatorBackHandler(navigatorKey: rootKey, child: child!),
+    return InputModeTracker(
+      child: MaterialApp(
+        navigatorKey: rootKey,
+        home: home,
+        builder: (_, child) => NavigatorBackHandler(navigatorKey: rootKey, child: child!),
+      ),
     );
   }
 }
@@ -323,4 +326,73 @@ void main() {
     await _press(tester, LogicalKeyboardKey.gameButtonB);
     expect(backs, 1);
   });
+
+  testWidgets('Android system Back between owned key down and up pops only one nested route', (tester) async {
+    final rootKey = GlobalKey<NavigatorState>();
+    final nestedKey = GlobalKey<NavigatorState>();
+    var homeBacks = 0;
+    await tester.pumpWidget(
+      _Harness(
+        rootKey: rootKey,
+        home: _Nested(
+          nestedKey: nestedKey,
+          home: _Screen(label: 'home', canPop: false, onBack: () => homeBacks++),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    nestedKey.currentState!.push(MaterialPageRoute<void>(builder: (_) => const _Screen(label: 'settings')));
+    await tester.pumpAndSettle();
+    nestedKey.currentState!.push(MaterialPageRoute<void>(builder: (_) => const _Screen(label: 'appearance')));
+    await tester.pumpAndSettle();
+
+    // Observed on API 36 after using the IME: Android invokes system Back
+    // between an app-owned KeyDown and its KeyUp, despite the handled key.
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.goBack, physicalKey: PhysicalKeyboardKey.escape);
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.goBack, physicalKey: PhysicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    expect(find.text('appearance'), findsNothing);
+    expect(find.text('settings'), findsOneWidget);
+    expect(homeBacks, 0);
+
+    // A separate gesture with no key held still reaches the route's policy.
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('settings'), findsNothing);
+    expect(find.text('home'), findsOneWidget);
+    expect(homeBacks, 0);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+
+  testWidgets('Android unclaimed Back reaches the platform after a lost release', (tester) async {
+    final rootKey = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      _Harness(
+        rootKey: rootKey,
+        home: const _Screen(label: 'home'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    var exits = 0;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'SystemNavigator.pop') exits++;
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    // A previous owner vanished without its KeyUp. This must not claim a new
+    // physical press that the true-root navigator deliberately declines.
+    BackPressGate().handle(
+      const KeyDownEvent(
+        physicalKey: PhysicalKeyboardKey.escape,
+        logicalKey: LogicalKeyboardKey.escape,
+        timeStamp: Duration.zero,
+      ),
+      () {},
+    );
+    expect(await simulateKeyDownEvent(LogicalKeyboardKey.escape), isFalse);
+    await tester.binding.handlePopRoute();
+    expect(exits, 1);
+    expect(await simulateKeyUpEvent(LogicalKeyboardKey.escape), isFalse);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
 }

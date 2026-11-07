@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Consume Android's duplicate system Back callback while the app owns a held Back key, preventing a single press after text input from closing two profile or settings screens while preserving gestures and app exit.
+
 - Give the media-detail overflow button a localized accessible name so phone users can discover actions such as Download after the toolbar compacts.
 
 - Update device acceptance flows for the local HTTP consent dialog, current profile labels and keyboard dismissal, and allow installing test-only Android APKs in the headless runner.

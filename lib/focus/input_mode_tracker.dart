@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../utils/platform_detector.dart';
+import 'back_press.dart';
 import 'dpad_navigator.dart';
 import 'focus_navigation_intent.dart';
 
@@ -76,7 +78,7 @@ class InputModeTracker extends StatefulWidget {
   State<InputModeTracker> createState() => _InputModeTrackerState();
 }
 
-class _InputModeTrackerState extends State<InputModeTracker> {
+class _InputModeTrackerState extends State<InputModeTracker> with WidgetsBindingObserver {
   InputMode _mode = InputModeTracker._defaultMode;
 
   /// Whether the in-flight Back press found a primary focus on KeyDown.
@@ -90,6 +92,9 @@ class _InputModeTrackerState extends State<InputModeTracker> {
     // is identity-guarded — otherwise startup's bootstrap→app swap would leave
     // the live registration cleared.
     InputModeTracker._instance = this;
+    // This widget wraps MaterialApp, so register before WidgetsApp's observer
+    // can forward a duplicate native Back to the root navigator.
+    WidgetsBinding.instance.addObserver(this);
     _updateFocusHighlightStrategy(_mode);
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
   }
@@ -97,11 +102,16 @@ class _InputModeTrackerState extends State<InputModeTracker> {
   @override
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
-    if (identical(InputModeTracker._instance, this)) InputModeTracker._instance = null;
+    WidgetsBinding.instance.removeObserver(this);
+    if (identical(InputModeTracker._instance, this)) {
+      InputModeTracker._instance = null;
+      BackPressGate.clearPlatformClaim();
+    }
     super.dispose();
   }
 
   bool _handleKeyEvent(KeyEvent event) {
+    BackPressGate.observeHardwareEvent(event);
     // Only a key that asks to navigate by focus starts a keyboard session.
     // Activation and dismissal act on what is already focused, so promoting on
     // them would arm focus chrome for a viewer who never asked to navigate.
@@ -109,6 +119,14 @@ class _InputModeTrackerState extends State<InputModeTracker> {
       _setMode(InputMode.keyboard);
     }
     return _consumeBackReleaseWithoutFocus(event);
+  }
+
+  @override
+  Future<bool> didPopRoute() async {
+    // API 36 can deliver native Back between an already-handled KeyDown and
+    // KeyUp after IME use. The key owner will act exactly once on its chosen
+    // phase. Gestures and keys declined at the true root remain platform-owned.
+    return defaultTargetPlatform == TargetPlatform.android && BackPressGate.ownsHeldPlatformBack;
   }
 
   /// A Back KeyDown acted on a focus chain that has since been torn down, so

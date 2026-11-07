@@ -6,14 +6,14 @@ import 'dpad_navigator.dart';
 
 /// Which event of a physical Back press performs the action.
 ///
-/// Verified delivery model (Flutter 3.47.1 engine sources, stage 0 of the focus
-/// consolidation):
+/// Delivery model (Flutter 3.47.1, including API 36 device qualification):
 ///
 /// * Android: `FlutterView.dispatchKeyEvent` claims every key and only
 ///   redispatches it to the Activity — where `onKeyUp(KEYCODE_BACK)` becomes
 ///   `onBackPressed` → `popRoute` — when the framework reports the event
-///   **unhandled**. A Back key the focus system handles therefore never
-///   produces a system pop; key-first ordering is structural, not timing.
+///   **unhandled**. However, after IME use Android can also invoke system Back
+///   between a handled KeyDown and its KeyUp. `InputModeTracker` consumes that
+///   duplicate while the physical press is owned by a [BackPressGate].
 /// * tvOS (custom engine): Menu arrives as an engine-synthesized `escape`
 ///   press. The KeyUp is not delivered reliably, so the action runs on KeyDown.
 /// * Desktop: `escape` / `browserBack` are plain key presses. There is no
@@ -21,10 +21,10 @@ import 'dpad_navigator.dart';
 /// * Handheld gestures (iOS swipe, Android 13+) arrive only as `popRoute` and
 ///   never as key events.
 ///
-/// The one remaining way a single press can act twice is entirely inside the
-/// framework: an action that runs on KeyDown (Apple TV, a TV text field whose
-/// IME would swallow the KeyUp) moves focus or pops a route, and the KeyUp is
-/// then delivered to a *different* focus chain. [BackPressGate] closes that by
+/// A press can also act twice inside the framework: an action that runs on
+/// KeyDown (Apple TV, a TV text field whose IME would swallow the KeyUp) moves
+/// focus or pops a route, and the KeyUp reaches a *different* focus chain.
+/// [BackPressGate] closes that by
 /// only acting on a KeyUp whose KeyDown it saw itself.
 enum BackPhase { keyDown, keyUp }
 
@@ -56,6 +56,26 @@ BackPhase backPhaseFor(KeyEvent event) => PlatformDetector.isAppleTV() ? BackPha
 /// * A KeyDown while still armed (the previous KeyUp was swallowed off-app,
 ///   e.g. by a closing TV IME) is a fresh press and re-arms.
 class BackPressGate {
+  static KeyDownEvent? _claimedPlatformBack;
+
+  /// Observe every hardware Back event, including ones declined by focus.
+  /// The hardware observer may run before or after focus dispatch: preserve a
+  /// claim only when it belongs to this exact KeyDown, never an earlier press
+  /// whose release was lost with an IME or disposed focus chain.
+  static void observeHardwareEvent(KeyEvent event) {
+    if (!event.logicalKey.isBackKey) return;
+    if (event is KeyUpEvent || (event is KeyDownEvent && !identical(_claimedPlatformBack, event))) {
+      _claimedPlatformBack = null;
+    }
+  }
+
+  static bool get ownsHeldPlatformBack {
+    final claimed = _claimedPlatformBack;
+    return claimed != null && HardwareKeyboard.instance.physicalKeysPressed.contains(claimed.physicalKey);
+  }
+
+  static void clearPlatformClaim() => _claimedPlatformBack = null;
+
   bool _armed = false;
   bool _fired = false;
 
@@ -67,6 +87,7 @@ class BackPressGate {
     final effectivePhase = phase ?? backPhaseFor(event);
 
     if (event is KeyDownEvent) {
+      _claimedPlatformBack = event;
       _armed = true;
       _fired = effectivePhase == BackPhase.keyDown;
       if (_fired) onBack();

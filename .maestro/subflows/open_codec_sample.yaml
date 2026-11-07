@@ -1,4 +1,4 @@
-appId: com.edde746.plezy
+appId: org.snapetech.pleazyng
 ---
 - runFlow: ensure_onboarded.yaml
 - tapOn: "(?s)^Search.*"

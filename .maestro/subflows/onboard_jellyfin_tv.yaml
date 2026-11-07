@@ -1,10 +1,10 @@
-appId: com.edde746.plezy
+appId: org.snapetech.pleazyng
 ---
 - retry:
     maxRetries: 1
     commands:
       - launchApp:
-          appId: com.edde746.plezy
+          appId: org.snapetech.pleazyng
           clearState: true
           permissions:
             all: allow

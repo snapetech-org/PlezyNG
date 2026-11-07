@@ -1,4 +1,4 @@
-appId: com.edde746.plezy
+appId: org.snapetech.pleazyng
 ---
 # Reach phone Settings from signed-in Home. The profile menu is an overlay
 # sheet; retry while the previous route settles.

@@ -1,4 +1,4 @@
-appId: com.edde746.plezy
+appId: org.snapetech.pleazyng
 name: Logout returns to authentication
 tags:
   - e2e

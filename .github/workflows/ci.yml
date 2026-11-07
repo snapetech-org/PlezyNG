@@ -212,6 +212,15 @@ jobs:
             echo "No tests found, skipping test execution"
           fi
 
+      - name: Run TV platform acceptance tests
+        run: |
+          flutter test --no-pub -j 2 --dart-define=PLEZY_TIZEN=true \
+            test/utils/tizen_platform_test.dart \
+            test/services/tizen_plex_playback_test.dart \
+            test/games/game_catalog_screen_test.dart
+          flutter test --no-pub -j 2 --dart-define=PLEZY_WEBOS=true \
+            test/games/game_catalog_screen_test.dart
+
       - name: Setup Node for reader browser checks
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:

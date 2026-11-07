@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Point every Maestro end-to-end flow at the current Pleazyng application ID and guard it against Android identity drift.
+
+- Include the safe HTTP helper in the Jellyfin test fixture image, make its seeded configuration writable by the non-root server, and supply translations to the TV games acceptance harness.
+
 - Fix the Steam timer teardown call after adapting queue callback signatures, restoring native builds with strict C pointer checks.
 
 - Document clean rooted-TV deployment of the published webOS IPK, and keep SSH input open while observing native install/remove completion without requiring the ares CLI.

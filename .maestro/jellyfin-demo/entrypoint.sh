@@ -11,7 +11,9 @@ if [ ! -f "/config/${SEED_MARKER}" ]; then
     echo "Start this image with a new or empty /config volume." >&2
     exit 1
   fi
-  cp -a "${SEED_CONFIG}/." /config/
+  # Docker creates the mount root; our unprivileged user cannot preserve its
+  # ownership or timestamps. New files belong to the user running Jellyfin.
+  cp -R "${SEED_CONFIG}/." /config/
 fi
 
 exec /jellyfin/jellyfin "$@"

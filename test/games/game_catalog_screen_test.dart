@@ -95,7 +95,9 @@ void main() {
           ChangeNotifierProvider<SourceController>.value(value: sources),
         ],
         child: InputModeTracker(
-          child: MaterialApp(theme: monoTheme(MonoPalette.dark), home: const GamesScreen()),
+          child: TranslationProvider(
+            child: MaterialApp(theme: monoTheme(MonoPalette.dark), home: const GamesScreen()),
+          ),
         ),
       ),
     );

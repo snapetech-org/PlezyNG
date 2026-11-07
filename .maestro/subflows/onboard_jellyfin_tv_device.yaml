@@ -1,4 +1,4 @@
-appId: com.edde746.plezy
+appId: org.snapetech.pleazyng
 ---
 # Onboard a device that reports itself as a TV; unlike the phone flow, it starts
 # in TV layout and needs no Force TV mode walk.

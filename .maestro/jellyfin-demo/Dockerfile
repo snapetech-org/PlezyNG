@@ -10,7 +10,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/plezy-demo
-COPY scripts/maestro/maestro_fixtures.py scripts/maestro/maestro_real_jellyfin.py scripts/maestro/prepare_maestro_media.py ./
+COPY scripts/maestro/maestro_fixtures.py scripts/maestro/maestro_real_jellyfin.py scripts/maestro/prepare_maestro_media.py scripts/maestro/safe_http.py ./
 COPY .maestro/jellyfin-demo/seed.sh ./seed.sh
 
 ARG PLEZY_DEMO_MEDIA_BASE_URL=https://demo-files.plezy.app/media-samples/
@@ -46,7 +46,8 @@ COPY --from=seed /opt/plezy-demo/seed-config /opt/plezy-demo/seed-config
 COPY .maestro/jellyfin-demo/entrypoint.sh /usr/local/bin/plezy-demo-entrypoint
 
 RUN chmod 0755 /usr/local/bin/plezy-demo-entrypoint \
-    && chmod -R a=rX /media /opt/plezy-demo/seed-config
+    && chmod -R a=rX /media \
+    && chmod -R u=rwX,go=rX /opt/plezy-demo/seed-config
 
 ENV TZ=UTC \
     JELLYFIN_PublishedServerUrl=http://localhost:8096

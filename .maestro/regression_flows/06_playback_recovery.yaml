@@ -1,4 +1,4 @@
-appId: com.edde746.plezy
+appId: org.snapetech.pleazyng
 name: Playback recovers after a transient stream failure
 tags:
   - e2e

@@ -6,8 +6,11 @@ from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import replace
 import io
 from pathlib import Path
+import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -34,6 +37,41 @@ def _registered_regression_flows(
 
 
 class ParseConfigTests(unittest.TestCase):
+    def test_fixture_image_scripts_import_in_their_copied_environment(self) -> None:
+        dockerfile = (ROOT_DIR / '.maestro/jellyfin-demo/Dockerfile').read_text()
+        with tempfile.TemporaryDirectory() as temporary:
+            stage = Path(temporary)
+            for line in dockerfile.splitlines():
+                if line.startswith('COPY scripts/maestro/'):
+                    for source in line.split()[1:-1]:
+                        shutil.copy2(ROOT_DIR / source, stage)
+            for script in ('maestro_real_jellyfin.py', 'prepare_maestro_media.py'):
+                with self.subTest(script=script):
+                    # Isolated Python excludes even the script directory; add
+                    # only the image's copied directory, never this checkout.
+                    result = subprocess.run(
+                        [sys.executable, '-I', '-c',
+                         'import runpy,sys; sys.path.insert(0,sys.argv[1]); '
+                         'sys.argv=[sys.argv[2],"--help"]; runpy.run_path(sys.argv[0],run_name="__main__")',
+                         str(stage), str(stage / script)],
+                        cwd=stage, capture_output=True, text=True,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_flows_launch_the_installed_application(self) -> None:
+        android = (ROOT_DIR / 'android/app/build.gradle.kts').read_text()
+        application_id = re.search(r'applicationId = "([^"]+)"', android).group(1)
+        self.assertEqual(run_maestro.APP_ID, application_id)
+        flows = list((ROOT_DIR / '.maestro').rglob('*.yaml'))
+        self.assertTrue(flows)
+        checked = 0
+        for flow in flows:
+            for app_id in re.findall(r'^\s*appId:\s*(\S+)', flow.read_text(), re.MULTILINE):
+                with self.subTest(flow=flow.relative_to(ROOT_DIR)):
+                    self.assertEqual(app_id, application_id)
+                checked += 1
+        self.assertGreater(checked, 0)
+
     def test_basic_defaults(self) -> None:
         config = run_maestro.parse_config([], {})
 

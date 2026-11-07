@@ -30,4 +30,9 @@ tags:
     timeout: 15000
 - assertVisible: "A deterministic movie used to verify Plezy's end-to-end flows."
 - back
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
 - assertVisible: "(?s)^Maestro Movie.*"

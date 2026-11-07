@@ -414,7 +414,7 @@ class MaestroRunner:
             _run_checked(flutter_build_command(agent_control=self.config.agent_control))
 
         self._prepare_device()
-        _run_checked((*self.adb_prefix, "install", "-r", self.config.apk_path))
+        _run_checked((*self.adb_prefix, "install", "-t", "-r", self.config.apk_path))
         _run_checked(self.maestro_command())
 
     def maestro_command(self) -> list[str]:

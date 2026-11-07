@@ -35,6 +35,13 @@ appId: org.snapetech.pleazyng
 - tapOn: "Password"
 - inputText: "maestro"
 - pressKey: ENTER
+# This suite signs in only to its disposable local HTTP fixture. Keep the
+# application's consent dialog enabled and accept it as part of onboarding.
+- runFlow:
+    when:
+      visible: "Unencrypted connection"
+    commands:
+      - tapOn: "Allow HTTP"
 - retry:
     maxRetries: 1
     commands:
@@ -43,6 +50,11 @@ appId: org.snapetech.pleazyng
             visible: "Sign in"
           commands:
             - tapOn: "Sign in"
+      - runFlow:
+          when:
+            visible: "Unencrypted connection"
+          commands:
+            - tapOn: "Allow HTTP"
       - extendedWaitUntil:
           visible: "Discover"
           timeout: 30000

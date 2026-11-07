@@ -15,7 +15,7 @@ tags:
     visible: "Switch Profile"
     timeout: 10000
 - assertVisible: "(?s).*Maestro.*"
-- tapOn: "Add Plezy profile"
+- tapOn: "Add Pleazyng profile"
 - extendedWaitUntil:
     visible: "New profile"
     timeout: 10000
@@ -47,6 +47,17 @@ tags:
       platform: Android
     commands:
       - back
+# The creation wizard returns to its Home caller; reopen the picker to verify
+# that the new profile persisted rather than depending on a retained sheet.
+- runFlow:
+    when:
+      notVisible: "Switch Profile"
+    commands:
+      - tapOn: "(?s)^M(?:.*Profiles.*)?$"
+      - tapOn:
+          text: "Profiles"
+          above:
+            text: "Settings"
 - assertVisible: "Switch Profile"
 - assertVisible: "(?s).*E2E Guest.*"
 - runFlow:

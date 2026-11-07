@@ -32,6 +32,11 @@ appId: org.snapetech.pleazyng
 - tapOn: "Password"
 - inputText: "maestro"
 - tapOn: "Sign in"
+- runFlow:
+    when:
+      visible: "Unencrypted connection"
+    commands:
+      - tapOn: "Allow HTTP"
 - extendedWaitUntil:
     visible: "Discover"
     timeout: 30000

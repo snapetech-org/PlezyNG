@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Update device acceptance flows for the local HTTP consent dialog, current profile labels and keyboard dismissal, and allow installing test-only Android APKs in the headless runner.
+
 - Keep native instrumentation facade APIs and callbacks in the test-only Android variant, and pass complete MPV arguments so release optimization does not remove test entry points.
 
 - Finish source database initialization before opening another connection, preventing first-launch SQLite migration races that can interrupt profile teardown and logout.

@@ -811,6 +811,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       ],
       child: Builder(
         builder: (buttonContext) => IconButton.filledTonal(
+          tooltip: t.common.options,
           onPressed: () {
             if (!_canUseDetail) return;
             final renderBox = buttonContext.findRenderObject() as RenderBox?;

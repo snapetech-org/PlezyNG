@@ -1682,7 +1682,9 @@ jobs:
 
           APP_PATH="build/macos/Build/Products/Release/Pleazyng.app"
 
-          python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH"
+          python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH" \
+            --entitlements-source macos/Runner/Release.entitlements \
+            --entitlements-output "$RUNNER_TEMP/macos-release-entitlements.plist"
 
           APP_EXECUTABLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")
           test -x "$APP_PATH/Contents/MacOS/plezy_visualizer_helper"
@@ -1713,7 +1715,7 @@ jobs:
 
           # Sign the app bundle itself
           echo "Signing app bundle: $APP_PATH"
-          codesign --force --sign "$IDENTITY" --timestamp --options runtime --entitlements macos/Runner/Release.entitlements "$APP_PATH"
+          codesign --force --sign "$IDENTITY" --timestamp --options runtime --entitlements "$RUNNER_TEMP/macos-release-entitlements.plist" "$APP_PATH"
 
       - name: Verify Signature
         if: steps.macos-signing.outputs.codesign == 'true'
@@ -1773,6 +1775,7 @@ jobs:
           fi
           rm -f "$RUNNER_TEMP/certificate.p12"
           rm -f "$RUNNER_TEMP/pleazyng-macos-notary-api-key.p8"
+          rm -f "$RUNNER_TEMP/macos-release-entitlements.plist"
           rm -f "$RUNNER_TEMP/macos-original-keychains.json" "$RUNNER_TEMP/DeveloperIDG2CA.cer" "$RUNNER_TEMP/macos-signing-probe"
           if [[ -n "${PLEZYNG_APPLE_WORKSPACE:-}" ]]; then
             rm -f "$PLEZYNG_APPLE_WORKSPACE/notarization.zip"

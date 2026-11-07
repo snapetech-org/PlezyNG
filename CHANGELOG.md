@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Remove validated interrupted-signing temporary files and NFS AppleDouble metadata from the owned macOS signing copy, and canonicalize identical entitlement keys without changing effective permissions before sealing nested bundles.
+
 - Retain a verified APFS compilation snapshot automatically before Mac signing, preserve it after packaging failures, and remove only that snapshot after successful DMG upload.
 
 - Assemble the complete release from verified original platform artifacts and a fully qualified Mac packaging recovery, preserving exact-source CI, native inputs, all platform requirements and signed provenance.

@@ -138,6 +138,18 @@ verifies Gatekeeper acceptance, builds the DMG and signs its Sparkle update.
 SDK and pub setup remain available for Sparkle; native compilation, CocoaPods
 and NFS workspace preparation are skipped only for this validated recovery.
 
+Before signing, `prepare_macos_app_for_signing.py` checks the complete owned
+bundle boundary, makes build copies writable, removes recognized AppleDouble
+sidecars left by NFS copies, and removes interrupted `.cstemp` signatures only
+beside real Mach-O executables. Unknown files fail closed for inspection. Keep
+the original retained compilation untouched. The helper writes a job-temporary
+canonical entitlement plist, preserving effective values and rejecting
+conflicting duplicate keys; AMFI rejects even identical duplicate XML keys.
+Rehearse the complete nested-code
+signing sequence and deep strict verification on an APFS clone before another
+credentialed recovery attempt; checking only the first failed framework can
+hide a later malformed nested bundle.
+
 After the remaining original platforms and the Mac recovery succeed, finish
 through the release controller instead of redispatching the full matrix:
 

@@ -219,7 +219,9 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_readonly_framework_signing_preparation_is_required(self) -> None:
         workflow = self._workflow()
-        command = '          python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH"\n'
+        command = ('          python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH" \\\n'
+                   '            --entitlements-source macos/Runner/Release.entitlements \\\n'
+                   '            --entitlements-output "$RUNNER_TEMP/macos-release-entitlements.plist"\n')
         self.assertIn(command, workflow)
         result = self._run(workflow.replace(command, '', 1))
         self.assertNotEqual(result.returncode, 0)

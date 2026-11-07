@@ -43,6 +43,7 @@ DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
 APPLE_JIT_EVIDENCE_ROOT: Path | None = None
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
+    "scripts/retain_macos_app.py", "scripts/test_retain_macos_app.py",
     "scripts/recover_macos_app.py",
     "scripts/test_recover_macos_app.py",
     "scripts/apple/prepare_macos_app_for_signing.py",

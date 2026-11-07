@@ -1232,6 +1232,20 @@ for apple_job_name, workspace_label in (
         )
         macos_import_step = named_step(apple_release_job, "Import Code Signing Certificate")
         macos_sign_application = named_step(apple_release_job, "Sign Application")
+        macos_compilation_cache = named_step(apple_release_job, "Retain native macOS compilation for packaging recovery")
+        macos_cache_cleanup = named_step(apple_release_job, "Remove successful macOS recovery snapshot")
+        require(
+            "scripts/retain_macos_app.py" in macos_compilation_cache
+            and "continue-on-error: true" in macos_compilation_cache
+            and apple_release_job.find("      - name: Verify universal macOS executable")
+            < apple_release_job.find("      - name: Retain native macOS compilation for packaging recovery")
+            < apple_release_job.find("      - name: Sign Application")
+            and "if: success()" in macos_cache_cleanup
+            and "continue-on-error: true" in macos_cache_cleanup
+            and apple_release_job.find("      - name: Upload macOS DMG")
+            < apple_release_job.find("      - name: Remove successful macOS recovery snapshot"),
+            "Mac compilation recovery snapshots must survive packaging failure without gating successful releases",
+        )
         require(
             'python3 scripts/apple/prepare_macos_app_for_signing.py "$APP_PATH"' in macos_sign_application
             and macos_sign_application.find('prepare_macos_app_for_signing.py')

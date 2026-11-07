@@ -375,7 +375,7 @@ jobs:
           while IFS= read -r changed_file; do
             [[ -z "$changed_file" ]] && continue
             case "$changed_file" in
-              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
+              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/retain_macos_app.py|scripts/test_retain_macos_app.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
                 ;;
               *)
                 echo "Release tag $RELEASE_TAG differs from main in non-release source '$changed_file'; refusing to build mixed source." >&2
@@ -1662,6 +1662,15 @@ jobs:
             fi
           done
 
+      - name: Retain native macOS compilation for packaging recovery
+        id: macos-compilation-cache
+        if: inputs.macos_compilation_job_id == ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
+        run: python3 "$GITHUB_WORKSPACE/scripts/retain_macos_app.py" capture build/macos/Build/Products/Release/Pleazyng.app
+
       - name: Sign Application
         if: steps.macos-signing.outputs.codesign == 'true'
         env:
@@ -1842,6 +1851,13 @@ jobs:
             macos-ed-signature.txt
             macos-dmg-size.txt
             macos-compilation-recovery.json
+
+      - name: Remove successful macOS recovery snapshot
+        if: success() && steps.macos-compilation-cache.outputs.path != ''
+        continue-on-error: true
+        env:
+          SNAPSHOT_PATH: ${{ steps.macos-compilation-cache.outputs.path }}
+        run: python3 scripts/retain_macos_app.py discard "$SNAPSHOT_PATH"
 
       - name: Remove short macOS build workspace
         if: always() && env.PLEZYNG_APPLE_TASK_ROOT != ''

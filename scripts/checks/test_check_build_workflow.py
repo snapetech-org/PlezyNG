@@ -233,6 +233,14 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('sparse checkout must include every executed script', result.stderr)
 
+    def test_successful_compilation_must_be_retained_before_signing(self) -> None:
+        workflow = self._workflow()
+        command = 'run: python3 "$GITHUB_WORKSPACE/scripts/retain_macos_app.py" capture'
+        self.assertIn(command, workflow)
+        result = self._run(workflow.replace(command, 'run: echo missing snapshot', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('snapshots must survive packaging failure', result.stderr)
+
     def test_macos_signing_preflight_requires_public_chain_and_real_probe(self) -> None:
         for removed in (
             '          security import "$CHAIN_PATH" -k "$KEYCHAIN_PATH"\n',

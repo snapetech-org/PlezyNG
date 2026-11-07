@@ -20,6 +20,7 @@ PACKAGING_FILES = frozenset({
     'scripts/apple/prepare_macos_app_for_signing.py',
     'scripts/apple/test_prepare_macos_app_for_signing.py',
     'scripts/recover_macos_app.py', 'scripts/test_recover_macos_app.py',
+    'scripts/retain_macos_app.py', 'scripts/test_retain_macos_app.py',
     'scripts/checks/test_macos_validation_request.py',
     'scripts/recover_release_platforms.py', 'scripts/release_all_platforms.py',
     'scripts/checks/test_recover_release_platforms.py', 'scripts/checks/test_macos_packaging_recovery.py',
@@ -124,6 +125,8 @@ def recover(job_id):
         raise ValueError('Do not overwrite existing compilation output')
     destination.parent.mkdir(parents=True, exist_ok=True)
     original = tree_digest(app)
+    if receipt.get('tree_sha256') and receipt['tree_sha256'] != original:
+        raise ValueError('Retained compilation changed after capture')
     subprocess.run(['/bin/cp', '-cR', str(app), str(destination)], check=True)
     if tree_digest(destination) != original:
         raise ValueError('Recovered compilation content differs from retained output')

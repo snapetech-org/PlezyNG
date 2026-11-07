@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "snapetech-org/PlezyNG"
 # Application sources, dependency pins, and native toolchain inputs are excluded.
 RECOVERY_FILES = frozenset({
+    "scripts/retain_macos_app.py", "scripts/test_retain_macos_app.py",
     ".github/workflows/build.yml", ".github/workflows/ci.yml", "CHANGELOG.md",
     "docs/maintainers/full-release-build.md", "docs/maintainers/apple-jit-runner.md",
     "scripts/launch_apple_jit_runner.sh",

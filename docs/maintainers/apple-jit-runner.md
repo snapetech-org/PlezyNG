@@ -112,8 +112,12 @@ first, rejects external symlinks and foreign-owned files, preserves executable
 bits and file contents, and leaves shared dependency caches untouched. This
 fixes the observed `AetherLibdav1d.framework` signing permission failure.
 
-If the app compiled and only packaging failed, retain its APFS copy-on-write
-snapshot with its `retention.json` receipt. A signing-only validation can recover
+After universal compilation validation, the normal workflow automatically
+retains an APFS copy-on-write snapshot and a complete content-hash receipt.
+Successful DMG upload removes only that job's snapshot; packaging failures
+retain it outside the disposable runner. Snapshot maintenance is optional and
+cannot invalidate an otherwise qualified release. If only packaging failed,
+a signing-only validation can recover
 that exact compilation rather than repeat the build:
 
 ```sh

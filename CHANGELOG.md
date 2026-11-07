@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Retain a verified APFS compilation snapshot automatically before Mac signing, preserve it after packaging failures, and remove only that snapshot after successful DMG upload.
+
 - Assemble the complete release from verified original platform artifacts and a fully qualified Mac packaging recovery, preserving exact-source CI, native inputs, all platform requirements and signed provenance.
 
 - Allow signed macOS-only validation and compilation recovery with the hybrid runner profile, retaining main-ref and CPU baseline checks.

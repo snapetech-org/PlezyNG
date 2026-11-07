@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep the library picker visible on phones by placing toolbar actions in an accessible overflow menu and truncating long library titles within the available width.
+
 - Make the compressed-subtitle boundary fixtures use explicit best compression so their original size and compression-ratio assertions remain valid with newer JDK zlib versions.
 
 - Preserve ML Kit's manifest-discovered registrar constructors during Android shrinking so on-device translation can initialize, and exercise them in the minified instrumentation suite.

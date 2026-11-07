@@ -97,6 +97,27 @@ void main() {
 
   tearDown(() => TvDetectionService.debugSetAppleTVOverride(null));
 
+  testWidgets('phone library picker remains usable with all feature actions', (tester) async {
+    final harness = await _Harness.create(_GatedPreferences({'selected_library_key': _libraryA.globalKey}));
+    addTearDown(harness.dispose);
+    await harness.pump(tester, size: const Size(360, 640), platform: TargetPlatform.android);
+
+    expect(find.byTooltip(t.libraries.selectLibrary).hitTestable(), findsOneWidget);
+    expect(find.text(_libraryA.title).hitTestable(), findsOneWidget);
+    await tester.tap(find.byTooltip(t.libraries.selectLibrary));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_libraryB.title).last);
+    await tester.pumpAndSettle();
+    expect(find.text(_libraryB.title).hitTestable(), findsOneWidget);
+
+    await tester.tap(find.byTooltip(t.common.options));
+    await tester.pumpAndSettle();
+    expect(find.text(t.libraries.manageLibraries), findsOneWidget);
+    expect(find.text(t.discover.findNext.open), findsOneWidget);
+    expect(find.text(t.fileSources.title), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('a sidebar selection at first mount survives initialization', (tester) async {
     final preferences = _GatedPreferences({'selected_library_key': _libraryA.globalKey});
     final harness = await _Harness.create(preferences);
@@ -550,10 +571,12 @@ final class _Harness {
     bool settle = true,
     VoidCallback? onFirstPostFrame,
     ValueListenable<bool>? enabled,
+    Size size = const Size(1280, 720),
+    TargetPlatform? platform,
   }) async {
     final downloads = NoSyncRulesDownloadProvider();
     addTearDown(downloads.dispose);
-    tester.view.physicalSize = const Size(1280, 720);
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -574,7 +597,7 @@ final class _Harness {
         ],
         child: InputModeTracker(
           child: MaterialApp(
-            theme: monoTheme(MonoPalette.dark),
+            theme: monoTheme(MonoPalette.dark).copyWith(platform: platform),
             home: OverlaySheetHost(
               child: FocusScope(
                 child: enabled == null

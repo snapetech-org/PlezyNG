@@ -946,23 +946,34 @@ class _LibrariesScreenState extends State<LibrariesScreen>
           children: [
             AppIcon(ContentTypeHelper.getLibraryIcon(selectedLibrary.kind.id), fill: 1, size: 20),
             const SizedBox(width: 8),
-            if (librariesSpanMultipleServers(visibleLibraries) && selectedLibrary.serverName != null)
-              Column(
-                crossAxisAlignment: .start,
-                mainAxisSize: .min,
-                children: [
-                  Text(selectedLibrary.title, style: Theme.of(context).textTheme.titleMedium),
-                  LibraryServerLabel(
-                    library: selectedLibrary,
-                    badgeSize: 10,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+            Flexible(
+              child: librariesSpanMultipleServers(visibleLibraries) && selectedLibrary.serverName != null
+                  ? Column(
+                      crossAxisAlignment: .start,
+                      mainAxisSize: .min,
+                      children: [
+                        Text(
+                          selectedLibrary.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        LibraryServerLabel(
+                          library: selectedLibrary,
+                          badgeSize: 10,
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      selectedLibrary.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                  ),
-                ],
-              )
-            else
-              Text(selectedLibrary.title, style: Theme.of(context).textTheme.titleLarge),
+            ),
             const SizedBox(width: 4),
             const AppIcon(Symbols.arrow_drop_down_rounded, fill: 1, size: 24),
           ],
@@ -1124,6 +1135,34 @@ class _LibrariesScreenState extends State<LibrariesScreen>
         ),
     ];
 
+    Widget buildActions() {
+      final actions = appBarActions();
+      if (!useSideNavigation && MediaQuery.sizeOf(context).width < 600) {
+        return AppMenuButton<int>(
+          icon: const AppIcon(Symbols.more_vert_rounded),
+          tooltip: t.common.options,
+          adaptiveSheet: true,
+          entriesBuilder: (_) => [
+            for (var i = 0; i < actions.length; i++)
+              AppMenuItem(
+                value: i,
+                label: actions[i].tooltip,
+                icon: actions[i].icon,
+                enabled: actions[i].onPressed != null,
+                selected: actions[i].isSelected ?? false,
+              ),
+          ],
+          onSelected: (index) => actions[index].onPressed?.call(),
+        );
+      }
+      return FocusableActionBar(
+        key: _actionBarKey,
+        onNavigateLeft: () => getTabChipFocusNode(_visibleTabs.length - 1).requestFocus(),
+        onNavigateDown: _focusCurrentTab,
+        actions: actions,
+      );
+    }
+
     Widget appBar({required bool floating}) => DesktopSliverAppBar(
       title: _buildAppBarTitle(visibleLibraries, selectedLibrary, groupByServer: groupByServerSetting),
       // When showing the tab content, let the app bar float away with the
@@ -1136,14 +1175,7 @@ class _LibrariesScreenState extends State<LibrariesScreen>
       surfaceTintColor: Colors.transparent,
       shadowColor: Colors.transparent,
       scrolledUnderElevation: 0,
-      actions: [
-        FocusableActionBar(
-          key: _actionBarKey,
-          onNavigateLeft: () => getTabChipFocusNode(_visibleTabs.length - 1).requestFocus(),
-          onNavigateDown: _focusCurrentTab,
-          actions: appBarActions(),
-        ),
-      ],
+      actions: [buildActions()],
     );
 
     Widget buildSimpleScroll({required Widget body}) {
@@ -1167,14 +1199,7 @@ class _LibrariesScreenState extends State<LibrariesScreen>
           elevation: 0,
           scrolledUnderElevation: 0,
           title: _buildAppBarTitle(visibleLibraries, selectedLibrary, groupByServer: groupByServerSetting),
-          actions: [
-            FocusableActionBar(
-              key: _actionBarKey,
-              onNavigateLeft: () => getTabChipFocusNode(_visibleTabs.length - 1).requestFocus(),
-              onNavigateDown: _focusCurrentTab,
-              actions: appBarActions(),
-            ),
-          ],
+          actions: [buildActions()],
         ),
       );
     }

@@ -184,13 +184,20 @@ class ZlibInflatingTrackOutputTest {
   private fun deflateRepeated(size: Int): ByteArray {
     val target = ByteArrayOutputStream()
     val chunk = ByteArray(8192) { (it % 7).toByte() }
-    DeflaterOutputStream(target).use { stream ->
-      var remaining = size
-      while (remaining > 0) {
-        val count = minOf(remaining, chunk.size)
-        stream.write(chunk, 0, count)
-        remaining -= count
+    // Default compression can exceed 64 KiB with newer JDK zlib versions.
+    // Keep this fixture compact while staying below the independent ratio cap.
+    val deflater = Deflater(Deflater.BEST_COMPRESSION)
+    try {
+      DeflaterOutputStream(target, deflater).use { stream ->
+        var remaining = size
+        while (remaining > 0) {
+          val count = minOf(remaining, chunk.size)
+          stream.write(chunk, 0, count)
+          remaining -= count
+        }
       }
+    } finally {
+      deflater.end()
     }
     return target.toByteArray()
   }

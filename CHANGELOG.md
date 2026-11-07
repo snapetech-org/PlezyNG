@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Make the compressed-subtitle boundary fixtures use explicit best compression so their original size and compression-ratio assertions remain valid with newer JDK zlib versions.
+
 - Preserve ML Kit's manifest-discovered registrar constructors during Android shrinking so on-device translation can initialize, and exercise them in the minified instrumentation suite.
 
 - Point every Maestro end-to-end flow at the current Pleazyng application ID and guard it against Android identity drift.

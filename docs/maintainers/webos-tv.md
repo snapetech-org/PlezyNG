@@ -251,6 +251,11 @@ Do not claim broad model support or publish this candidate until LG runtime redi
 
 ## C6 playback diagnostics and availability
 
+See [C6 lossless audio and client-rendered PGS research](webos-lossless-audio-and-pgs.md)
+for the eARC/native-app distinction, the C6's measured firmware fingerprints,
+the experimental rooted-TV route, and the subtitle delivery/rendering work
+needed to avoid PGS burn-in.
+
 Check with the owner before foregrounding or restarting Pleazyng when a movie is playing. The owner explicitly authorized C6 playback-repair testing on 2026-11-07; that authorization does not permit interrupting future movie sessions.
 
 For the 3.0.3 failure, the native player returned `-1` from `NDL_MediaInitWithWindowId` before media loading, with `NDL_MediaGetError()` reporting `Failed to initialize NDL_media : NDL_media was initialized already`. UI audio owns native slot 0; video must acquire slots 1–4. Preserve this shared ownership contract in `shared/webos/ndl_media_slots.h`. A server decision saying direct play is supported does not prove the native player initialized or requested a media file.

@@ -1,6 +1,6 @@
 # webOS TV port status
 
-**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.3](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.3). The release IPK was installed on the rooted LG C6 on 2026-11-07. Login and UI availability do not establish media qualification: both 4K HEVC/HDR and 1080p attempts failed. Native tracing identified `NDL_media was initialized already`: UI audio initialized slot 0 before video attempted to initialize the same slot. The 3.0.4 repair separates native UI-audio/video slots and corrects failure delivery and retry cleanup; exact-device playback validation is in progress. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are retained as historical evidence.**
+**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.4](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.4). The exact released package was installed and its four production binary hashes verified on the rooted LG C6 on 2026-11-08. The owner confirmed audible playback of the 4K HEVC test source. Plex recorded six-channel AAC at 768 kbps after DTS-HD MA compatibility conversion; receiver input channels, final HDR signalling after fallback, and physical 1080p playback remain unverified. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are historical evidence.**
 
 ## Compatibility matrix
 
@@ -260,3 +260,38 @@ The failing Odyssey file is HEVC Main10 HDR10 with DTS/DTS-HD MA tracks. Codec s
 Temporary diagnostics must omit media URLs and credentials, preserve app login, restore the registered executable in a `finally` path, and remove only task-owned launchers/interposers after their consumers exit. Do not enable global vendor data collection. Do not leave callback interposers active during final multi-slot qualification.
 
 The 3.0.4 native-slot candidate from run `42434645742` (app source `9d8d9a196775ae1f844b8d7bfe674b1655e8ac51`, IPK SHA-256 `8e2735b9603714b9df6bf09abbd5697246e8161cea847e1121b1907b2678b6cb`) renders the Odyssey's 3840×2160 HEVC video on C6, with HDR observed. Native tracing confirms slot 1 initializes and loads successfully. Audio remains absent: the native `sourceInfo` reports one video track and zero audio tracks, despite the file and server metadata containing four DTS tracks. Treat an explicit empty native audio list for a known audio-bearing source as path rejection; an unknown list or a genuinely silent source must not trigger conversion. This candidate does not contain the later audio fallback changes and is not final release qualification.
+
+
+### Released 3.0.4 audio inspection
+
+The production IPK with SHA-256
+`35b720596f83bcdc9a4f85fcb3660e811c0a27acf21f6b935d8fedd678f52dcd`
+was installed on 2026-11-08, with the registered executable, `libapp.so`, video
+plugin and UI-audio plugin checked against the release package. The owner
+confirmed that audio worked during the 4K-source playback test.
+
+The recorded Plex session selected DTS-HD MA 5.1 and produced AAC with six
+channels at 768 kbps. This preserves the surround channel count in the stream
+sent to the TV, while changing the lossless source to a lossy compatibility
+codec. A source-oriented `displayTitle` can still say DTS-HD MA after conversion;
+inspect the selected output stream's `codec`, `channels`, `bitrate` and
+`TranscodeSession.audioDecision`. The same session burned PGS subtitles and
+reported video transcoding, so it does not qualify video copying or final HDR
+signalling after the audio retry.
+
+Read-only TV checks confirmed `external_arc`, eARC enabled, digital output
+`auto`, and an unmuted ARC volume route. These settings do not establish the
+receiver's input channel count. The TV returned to HDMI2 before output-side
+inspection, and the Pleazyng media pipeline was no longer active. Current
+HDMI input properties cannot prove the preceding app's channel output. Verify
+the receiver's input-signal channel count while the relevant app stream is
+active, keeping playback, volume, input and passthrough settings unchanged.
+
+Useful read-only calls through `tools/webos/luna_ssh.py` are
+`com.webos.audio/getVolume`,
+`com.webos.settingsservice/getSystemSettings` with category `sound` and keys
+`soundOutput`, `soundOutputDigital`, `eArcSupport`, and
+`com.webos.service.audiooutput/audio/getStatus`. Use the `luna://` prefix and
+`--private` on the rooted target. Existing service methods can be inspected
+with `ls-monitor -i SERVICE`; inspect status methods without changing routing
+or enabling global logging.

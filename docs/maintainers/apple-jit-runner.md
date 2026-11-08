@@ -69,6 +69,60 @@ still exiting after GitHub reports job completion without bypassing the global
 consumer check. Exact runner/workspace ownership and diagnostic retention checks
 still apply.
 
+## Cancelled build process trees
+
+The launcher supervises its one-job runner with
+`scripts/apple_jit_process_tree.py`. Before polling/reaping the runner, it saves
+kernel process identities and ancestry under `_diag/process-tree.json` on local
+APFS. Captured build descendants remain associated with their job after their
+parent exits or they are reparented to PID 1. Executable paths, numeric UID,
+parent/group IDs, and kernel creation time are recorded; arguments, environment
+values, and JIT configuration are never read into process evidence. The Darwin
+identity layout follows [Apple's public process-info header](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/proc_info.h).
+
+An observer failure marks the journal incomplete and leaves the runner and its
+files intact for diagnosis. It does not authorize killing an active job.
+The supervisor and teardown helper share a nonblocking job-specific lock.
+
+After a cancelled job exits and its runner registration disappears, the
+launcher fetches fresh run and job records. Teardown requires both records to
+be completed/cancelled for the exact trusted-main repository, run, job and
+attempt. It refuses incomplete/mismatched process evidence and waits for old
+`Runner.*` control processes to exit naturally. Active jobs in other runner
+roots, runner listeners, post-job cleanup branches, and other UIDs are preserved.
+
+Before any SIGTERM, teardown captures the current tree and persists the full
+set of descendants and cancellation proof. It rechecks each PID's UID and
+microsecond creation time immediately before signalling it, then retains those
+identities across reparenting and retries. Only build branches belonging to
+this job are eligible; no process group, name-wide kill, or SIGKILL is used.
+If consumers remain after the bounded grace period or inspection fails, all
+runner files and process evidence remain available. DerivedData cleanup and
+diagnostic archival run only after this guarded drain succeeds. A nonzero
+cancelled-runner exit cannot skip these checks or turn cancellation into success.
+Workflow scratch cleanup retains cancelled-job output before any copying or
+deletion, using the explicit `APPLE_JIT_JOB_STATUS` passed by every Apple
+cleanup step. Otherwise it uses a read-only observer check while the runner is
+alive, and refuses to remove source or local Xcode output if owned build
+consumers remain. After a cancellation, the launcher archives diagnostics and
+retains the runner and any blocked scratch for owner-reviewed retention and
+exact-path removal. It does not automatically delete failed build evidence.
+
+This path still relies on observed ancestry: a short-lived intermediate that
+creates a new session and exits between samples may leave an unobserved global
+executable. Ordinary same-group orphans are captured before the supervisor
+reaps its direct child; a remembered group number is never used to infer
+ownership after that child has been reaped.
+Do not infer ownership from its name or kill a host-wide compiler to force
+cleanup. The existing global idle check remains a backstop; retain blocked
+output for manual inspection. Changes to this supervisor require a disposable
+Mac cancellation exercise before deployment, including PID-1 reparenting and
+an unrelated active-job preservation check. The 2026-11-07 on-device exercise
+verified Darwin kernel identities, captured an owned orphan, drained it with
+SIGTERM and preserved an unrelated active process. Build a fresh small fixture
+executable with `xcrun clang`; relocating signed `/bin` programs can cause macOS
+to terminate the copied program before the observer can inspect it.
+
 The build-only NFS export on kspld0 is configured in
 `/etc/exports.d/plezyng-mpv-build.exports`. Keep its reproducible scratch data on
 `async` writes; `sync` made metadata-heavy workspace copies, Git checkouts and

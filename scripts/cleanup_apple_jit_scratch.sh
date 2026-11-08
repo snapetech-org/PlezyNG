@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# A cancelled job can leave unobserved/reparented consumers. Retain its exact
+# scratch without copying or deleting while the terminal launcher drains it.
+if [[ "${APPLE_JIT_JOB_STATUS:-}" == cancelled ]]; then
+  echo "Cancelled Apple job: retaining its build scratch and diagnostics."
+  exit 0
+fi
+
 readonly NFS_MOUNT="/Volumes/p"
 readonly NFS_RUNS_ROOT="$NFS_MOUNT/runs"
 
@@ -49,6 +56,17 @@ for expected in \
     exit 1
   fi
 done
+
+if [[ -n "${APPLE_JIT_PROCESS_HELPER:-}" ]]; then
+  if [[ -L "$APPLE_JIT_PROCESS_HELPER" || ! -f "$APPLE_JIT_PROCESS_HELPER" \
+    || "$APPLE_JIT_PROCESS_HELPER" != "${APPLE_JIT_PROCESS_RUNNER_ROOT:-}/.apple-jit-process-tree.py" \
+    || ! "${APPLE_JIT_PROCESS_JOB_ID:-}" =~ ^[0-9]+$ ]]; then
+    echo "Refusing scratch cleanup with an unfamiliar process observer." >&2
+    exit 1
+  fi
+  python3 "$APPLE_JIT_PROCESS_HELPER" assert-idle "$GITHUB_RUN_ID" \
+    "$APPLE_JIT_PROCESS_JOB_ID" "$GITHUB_RUN_ATTEMPT" "$APPLE_JIT_PROCESS_RUNNER_ROOT"
+fi
 
 if /usr/bin/grep -Fqx 'scratch_mode=local-xcode' "$owner_file"; then
   if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then

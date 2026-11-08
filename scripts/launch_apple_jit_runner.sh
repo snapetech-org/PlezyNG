@@ -23,7 +23,7 @@ run_id="$1"
 job_id="$2"
 [[ "$run_id" =~ ^[0-9]+$ && "$job_id" =~ ^[0-9]+$ ]] || usage
 
-for command in gh jq ssh git; do
+for command in gh jq ssh git python3; do
   command -v "$command" >/dev/null || { echo "Required command not found: $command" >&2; exit 1; }
 done
 
@@ -166,7 +166,12 @@ cleanup_offline_registration() {
 }
 trap cleanup_offline_registration EXIT
 
+process_helper_base64="$(python3 -c 'import base64,pathlib,sys; print(base64.b64encode(pathlib.Path(sys.argv[1]).read_bytes()).decode())' "$SCRIPT_DIR/apple_jit_process_tree.py")"
+runner_exit=0
 {
+  printf 'PROCESS_HELPER_BASE64=%q\n' "$process_helper_base64"
+  printf 'RUN_ID=%q\n' "$run_id"
+  printf 'RUN_ATTEMPT=%q\n' "$run_attempt"
   printf 'JIT_CONFIG=%q\n' "$jit_config"
   printf 'RUN_ROOT=%q\n' "$run_root"
   printf 'RUNNER_ROOT=%q\n' "$runner_root"
@@ -195,11 +200,25 @@ printf 'Starting %s for queued job %s. Runner logs will stay attached to this SS
 # Hold an idle-sleep assertion only while this one-job launcher lives. -w
 # follows this PID through exec and releases the assertion when the runner exits.
 /usr/bin/caffeinate -i -w "$$" >/dev/null 2>&1 &
-exec ./run.sh --jitconfig "$JIT_CONFIG"
+[[ ! -L "$RUNNER_ROOT/_diag" ]]
+/bin/mkdir -m 700 -p "$RUNNER_ROOT/_diag"
+/usr/bin/python3 - "$RUNNER_ROOT/.apple-jit-process-tree.py" "$PROCESS_HELPER_BASE64" <<'PY_HELPER'
+import base64, os, sys
+with os.fdopen(os.open(sys.argv[1], os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "wb") as stream:
+    stream.write(base64.b64decode(sys.argv[2], validate=True))
+PY_HELPER
+export JIT_CONFIG
+export APPLE_JIT_PROCESS_HELPER="$RUNNER_ROOT/.apple-jit-process-tree.py"
+export APPLE_JIT_PROCESS_RUNNER_ROOT="$RUNNER_ROOT"
+export APPLE_JIT_PROCESS_JOB_ID="$JOB_ID"
+exec /usr/bin/python3 "$RUNNER_ROOT/.apple-jit-process-tree.py" supervise \
+  "$RUN_ID" "$JOB_ID" "$RUN_ATTEMPT" "$RUNNER_ROOT"
 REMOTE_LAUNCH
 } | ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
-  "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /bin/bash -s"
+  "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /bin/bash -s" || runner_exit=$?
 
+# A cancelled runner can exit nonzero while compilers survive. Inspect the exact
+# terminal GitHub job before deciding whether its retained tree may be drained.
 job_after=""
 for _ in {1..60}; do
   job_after="$(gh api "$RUN_URL/jobs?per_page=100" | jq -ce --argjson id "$job_id" '[.jobs[] | select(.id == $id)] | if length == 1 then .[0] else error("job not found or ambiguous") end')"
@@ -249,6 +268,15 @@ if [[ -n "${APPLE_JIT_EVIDENCE_DIR:-}" ]]; then
     exit 1
   fi
 
+  if [[ "$conclusion" == cancelled ]]; then
+    cancelled_run="$(gh api "$RUN_URL")"
+    cancelled_job="$(gh api "repos/$ORG/$REPO/actions/jobs/$job_id")"
+    cancellation_proof="$(jq -cn --argjson run "$cancelled_run" --argjson job "$cancelled_job" \
+      '{run:($run | {id,run_attempt,status,conclusion,event,head_branch,head_repository:{full_name:.head_repository.full_name}}),job:($job | {id,run_id,run_attempt,status,conclusion}),registrationGone:true}')"
+    printf '%s\n' "$cancellation_proof" | ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
+      "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /usr/bin/python3 '$runner_root/.apple-jit-process-tree.py' teardown '$run_id' '$job_id' '$run_attempt' '$runner_root'"
+  fi
+
   ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
     "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /usr/bin/python3 - '$run_id' '$run_attempt' '$runner_root' '$conclusion'" \
     < "$SCRIPT_DIR/cleanup_apple_jit_derived_data.py"
@@ -261,6 +289,11 @@ if [[ -n "${APPLE_JIT_EVIDENCE_DIR:-}" ]]; then
   /bin/chmod 600 "$diag_archive"
   diag_sha256="$(/usr/bin/sha256sum "$diag_archive" | /usr/bin/awk '{print $1}')"
   printf 'Saved runner diagnostics: %s (sha256 %s)\n' "$diag_archive" "$diag_sha256"
+
+  if [[ "$conclusion" == cancelled ]]; then
+    echo "Cancelled build tree drained; retaining runner and any blocked scratch for owner-reviewed cleanup: $runner_root" >&2
+    exit 1
+  fi
 
   ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \
     "cd / && sudo -H -u $SERVICE_USER env HOME=$SERVICE_HOME PATH=$REMOTE_PATH /bin/bash -s" <<REMOTE_CLEAN
@@ -295,4 +328,4 @@ printf 'Removed completed one-job runner directory: %s\n' "$run_root"
 REMOTE_CLEAN
 fi
 
-[[ "$conclusion" == success ]]
+[[ "$conclusion" == success && "$runner_exit" == 0 ]]

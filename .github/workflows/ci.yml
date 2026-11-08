@@ -1034,6 +1034,7 @@ jobs:
         if: always()
         shell: bash
         env:
+          APPLE_JIT_JOB_STATUS: ${{ job.status }}
           APPLE_SCRATCH_JOB: ${{ matrix.source_packages_directory }}
         run: bash scripts/cleanup_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB"
 

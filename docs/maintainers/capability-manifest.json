@@ -12,7 +12,7 @@
     "gated": "The capability intentionally stays disabled or experimental until its stated external or platform evidence exists."
   },
   "release": {
-    "version": "3.0.4",
+    "version": "3.0.5",
     "publicationStatus": "published",
     "publicLatestAvailable": true,
     "releasesPage": "https://github.com/snapetech-org/PlezyNG/releases",
@@ -56,10 +56,10 @@
         "Server checks"
       ]
     },
-    "tag": "v3.0.4",
-    "publishedAt": "2026-11-08T07:01:04Z",
-    "sourceCommit": "5699d59368838ce4934b071e422747fb1fc67077",
-    "evidence": "docs/maintainers/releases/v3.0.4.json",
+    "tag": "v3.0.5",
+    "publishedAt": "2026-11-08T23:34:10Z",
+    "sourceCommit": "f253feb9a8a0949443d569af901f521df2be6f3c",
+    "evidence": "docs/maintainers/releases/v3.0.5.json",
     "requiredPlatforms": [
       "android",
       "linux-x64",

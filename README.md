@@ -200,13 +200,13 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ## Download
 
-[Pleazyng 3.0.4 is published](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.4) with Android, Fire TV, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS packages. See the [recorded GitHub publication evidence](docs/maintainers/releases/v3.0.4.json) and [all releases](https://github.com/snapetech-org/PlezyNG/releases).
+[Pleazyng 3.0.5 is published](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5) with Android, Fire TV, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS packages. See the [recorded GitHub publication evidence](docs/maintainers/releases/v3.0.5.json) and [all releases](https://github.com/snapetech-org/PlezyNG/releases).
 
 | Platform | Download |
 | --- | --- |
-| Desktop and mobile | [Release files for Android, Fire TV, Linux, Windows, macOS, iOS and tvOS](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.4) |
-| webOS TV | [Experimental ARMv7 IPK](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.4); model/firmware and media playback qualification remain separate from publication. See the [compatibility matrix and port status](docs/maintainers/webos-tv.md). |
-| Samsung Tizen TV | [Experimental ARM tester handoff](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.4); TV qualification and Tizen 10 remain pending. See the [build guide and rollout plan](docs/maintainers/tizen-tv.md). |
+| Desktop and mobile | [Release files for Android, Fire TV, Linux, Windows, macOS, iOS and tvOS](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5) |
+| webOS TV | [Experimental ARMv7 IPK](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5); model/firmware and media playback qualification remain separate from publication. See the [compatibility matrix and port status](docs/maintainers/webos-tv.md). |
+| Samsung Tizen TV | [Experimental ARM tester handoff](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5); TV qualification and Tizen 10 remain pending. See the [build guide and rollout plan](docs/maintainers/tizen-tv.md). |
 
 <details>
 <summary>Install with a package manager</summary>

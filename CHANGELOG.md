@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Stream macOS release build output in verbose mode to bypass Flutter's quadratic filter on long native linker commands.
+
 - Resolve the macOS app to its local APFS path before Gatekeeper assessment, avoiding permission failures through protected NFS source workspaces after successful signing and notarization.
 
 - Keep Apple process observation running when a system process query is delayed under Xcode load; retry the query instead of turning successful native tests into a cleanup failure.

@@ -155,6 +155,21 @@ workspace before its source-preparation consumer starts. Verify the task owner,
 source SHA and recipe; leave an already-started preparation untouched. Compiled
 archives remain architecture-specific.
 
+Flutter 3.47.1 applies a negative-lookahead regular expression to every
+nonverbose macOS build-output line. Nested native builds emit linker commands
+around 40 KB long; the filter scans those lines repeatedly and can leave Xcode
+blocked writing its log while the Flutter tool consumes a core. The 3.0.4
+build confirmed this with process samples, and the matching Dart 3.13.1 probe
+took 6.26 seconds for a 16 KB line and exceeded 25 seconds for a 40 KB line.
+
+Keep `--verbose` on the macOS release build command. In this pinned Flutter
+version it bypasses the output filter and streams the original compiler output;
+the Xcode exit status still determines build success. Verbose mode processed
+the same probe lines in about 25 microseconds. Observe actual child processes
+and output timestamps when diagnosing a quiet build; preserve its artifacts
+and active consumers. This setting changes logging, not release optimization
+or the packaged native features.
+
 ## Single-job troubleshooting
 
 ### Check signing before compiling macOS

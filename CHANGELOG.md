@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Detect LG native playback silently dropping all audio tracks from an audio-bearing source, then perform the bounded audio-only compatibility retry; preserve supported passthrough and genuinely silent videos.
+
 - Remove duplicate webOS evidence JSONs from public downloads while retaining them in the verified submission ZIP; keep macOS recovery reports in CI and preserve package provenance and Discord delivery deduplication.
 
 - Preserve native webOS direct play and receiver passthrough on the first attempt; retry audio conversion only after explicit native audio-format rejection, retaining compatible HEVC/HDR video copying.

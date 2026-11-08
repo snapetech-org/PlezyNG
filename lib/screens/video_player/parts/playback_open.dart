@@ -1450,6 +1450,13 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
         partTimeline: result.mediaInfo?.partTimeline,
       );
       if (!isCurrent()) return false;
+      if (PlatformDetector.isWebOSBuild()) {
+        await currentPlayer.setProperty(
+          'webos-source-has-audio',
+          result.mediaInfo?.audioTracks.isNotEmpty == true ? 'yes' : 'no',
+        );
+        if (!isCurrent()) return false;
+      }
       final openResult = await _openMediaOnPlayer(
         player: currentPlayer,
         settingsService: settingsService,

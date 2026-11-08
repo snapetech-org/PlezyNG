@@ -56,6 +56,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   WebOSSoLoudPlayer? _audioPlayer;
   Duration? _pendingAudioDuration;
   bool _usingSoLoud = false;
+  bool _sourceHasAudio = false;
   bool _visualizerBound = false;
   bool _audioPlaying = false;
   bool _activeIsLive = false;
@@ -217,6 +218,15 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       surfaceRevision.value++;
 
       await controller.initialize();
+      // LG can play the video while silently omitting every unsupported audio
+      // track. A known source with audio and an explicit empty native list is
+      // a real path rejection; null means unknown and must preserve passthrough.
+      if (!audioOnly && _sourceHasAudio && controller.value.audioTracks?.isEmpty == true) {
+        throw PlatformException(
+          code: 'webos-audio-unsupported',
+          message: 'Unsupported audio format: the native player exposes no audio tracks for this source.',
+        );
+      }
       if (disposed || generation != _generation) {
         return;
       }
@@ -886,6 +896,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       return;
     }
     switch (name) {
+      case 'webos-source-has-audio':
+        _sourceHasAudio = value == 'yes';
+        break;
       case 'pause':
         if (value == 'yes') {
           await pause();

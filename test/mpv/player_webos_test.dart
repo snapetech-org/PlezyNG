@@ -58,6 +58,40 @@ void main() {
     await player.dispose();
   });
 
+  for (final scenario in [
+    (expected: true, native: <Map<String, dynamic>>[], rejected: true),
+    (expected: false, native: <Map<String, dynamic>>[], rejected: false),
+    (
+      expected: true,
+      native: <Map<String, dynamic>>[
+        {'language': 'eng', 'trackId': 0},
+      ],
+      rejected: false,
+    ),
+    (expected: true, native: null, rejected: false),
+  ]) {
+    test('known source audio=${scenario.expected}, native=${scenario.native}: reject=${scenario.rejected}', () async {
+      final backend = _LGPlayer()..audioTracks = scenario.native;
+      native.VideoPlayerPlatform.instance = backend;
+      final player = PlayerWebOS();
+      final errors = <PlayerError>[];
+      final subscription = player.streams.error.listen(errors.add);
+      await player.setProperty('webos-source-has-audio', scenario.expected ? 'yes' : 'no');
+      final opening = player.open(Media('/movie.mkv'));
+      if (scenario.rejected) {
+        await expectLater(opening, throwsA(isA<PlatformException>()));
+        await Future<void>.delayed(Duration.zero);
+        expect(errors.single.cause, PlayerError.audioCodecUnsupported);
+      } else {
+        await opening;
+        expect(errors, isEmpty);
+        expect(player.state.playing, isTrue);
+      }
+      await subscription.cancel();
+      await player.dispose();
+    });
+  }
+
   test('only unsupported native audio gets a conversion cause', () async {
     final backend = _LGPlayer()
       ..streamError = PlatformException(code: 'media-error', message: 'Unsupported audio codec DTS');
@@ -101,6 +135,7 @@ void main() {
 class _LGPlayer extends native.VideoPlayerPlatform {
   bool failCreate = false;
   bool nullCreate = false;
+  List<Map<String, dynamic>>? audioTracks;
   Completer<void>? initGate;
   final initializing = Completer<void>();
   PlatformException? streamError;
@@ -134,6 +169,7 @@ class _LGPlayer extends native.VideoPlayerPlatform {
           eventType: native.VideoEventType.initialized,
           duration: const Duration(minutes: 2),
           size: const Size(3840, 2160),
+          audioTracks: audioTracks,
         ),
       );
     };

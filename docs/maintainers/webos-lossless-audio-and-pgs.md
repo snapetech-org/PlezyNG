@@ -2,8 +2,8 @@
 
 Research and read-only device inspection: 2026-11-08. Target:
 `OLED77C6HUP.ACCQLJD`, firmware `43.21.79`, webOS `11.2.0` / webOS 26.
-This records feasibility and missing implementation; it does not qualify a new
-audio route or add a PGS renderer to the released app.
+The initial findings describe released 3.0.4. Implementation progress below
+separates new headless validation from physical receiver qualification.
 
 ## Findings
 
@@ -13,7 +13,7 @@ audio route or add a PGS renderer to the released app.
 | Can the Yamaha RX500A decode them? | Yes; Yamaha lists both formats. | High |
 | Does that make the C6 native app accept them? | No. Receiver and transport support do not supply a missing TV demux/decoder/output route. The observed native DTS path omitted all source audio tracks. | High |
 | Is lossless output categorically impossible on this rooted TV? | Not established. A current homebrew implementation demonstrates experimental HD passthrough on other LG hardware; this C6 has a different, unqualified sink build. | Unknown for this C6 |
-| Must PGS always require video encoding? | No. A client can decode and overlay the subtitle bitmaps while leaving the video unchanged. Our webOS implementation does not yet do that. | High |
+| Must PGS always require video encoding? | No. A client can decode and overlay the subtitle bitmaps while leaving the video unchanged. The new webOS implementation handles local/HTTP SUP; embedded-container delivery is still being implemented. | High |
 
 Primary references:
 
@@ -95,9 +95,8 @@ and record input channels rather than an upmix/sound-program label.
 
 ## PGS without video transcoding
 
-The current webOS `videoSurface()` already layers Flutter text captions over
-LG video. It can also host an image overlay. Today its external-caption reader
-accepts local SRT/WebVTT only. During Plex audio conversion, embedded selected
+The released 3.0.4 webOS `videoSurface()` layers Flutter text captions over
+LG video. Its external-caption reader accepts local SRT/WebVTT only. During Plex audio conversion, embedded selected
 subtitles are requested as `subtitles=burn`; adding a codec name to the server
 profile without a working delivery/renderer path would lose captions.
 
@@ -139,6 +138,33 @@ Consequently a complete implementation needs:
 This avoids subtitle-driven video encoding without OCR or replacing the
 selected track with different text. Audio compatibility may still require a
 separate conversion until the lossless output route works.
+
+### Implementation progress
+
+`lib/media/pgs_subtitles.dart` now parses bounded SUP display sets, reassembles
+fragmented objects, retains palette updates, validates RLE without allocating
+full frames, and rasterizes only the active cue. The webOS player supports
+local and bounded authenticated HTTP SUP delivery, delayed/hidden/off
+subtitles and asynchronous selection cancellation. The Flutter image overlay
+uses premultiplied alpha and scales the authored canvas with letterboxing.
+Embedded Matroska extraction and Plex no-burn negotiation remain separate work;
+do not claim embedded PGS support from the SUP renderer alone.
+
+Headless validation passed 12 parser cases, 14 native-backend cases and a real
+Flutter pixel-rendering case. A private 180-second sample of the selected
+Odyssey PGS stream parsed 86 display sets and rasterized 43 images covering
+1,435,991 pixels. These are parser/rendering results, not a visible C6 test.
+
+An isolated C6 GStreamer process also loaded the pinned upstream DTS decoder
+and produced S32LE, 48 kHz, six-channel PCM without an audio/video output sink.
+The C6 output contained 4,230,456 bytes; after compensating 1,907 samples of TS
+start clipping, every byte matched the desktop FFmpeg reference. Automatic
+decoder selection through the upstream switching bin also succeeded. This
+qualifies software decoding for that sample, not HDMI/eARC receiver output.
+No system-wide plugin/configuration changes were made by these tests.
+
+Implementation evidence is under
+`/mnt/disks/scratch/task-scratch/pleazyng-c6-lossless-pgs-20261108/`.
 
 ## Reproducible evidence
 

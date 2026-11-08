@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data' show BytesBuilder;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player_drm/video_player.dart' as webos_media;
 
 import '../../../media/webos_playback_profile.dart';
+import '../../../media/pgs_subtitles.dart';
 import '../../../models/audio_channel_limit.dart';
 import '../../../utils/app_logger.dart';
 import '../../../utils/log_redaction_manager.dart';
@@ -15,6 +18,7 @@ import '../audio_rendering_mode.dart';
 import '../player_base.dart';
 import 'webos_media_proxy.dart';
 import 'webos_soloud_player.dart';
+import 'webos_pgs_overlay.dart';
 
 /// LG's webOS media pipeline. Video and unsupported audio use LG's player;
 /// bounded supported music files may use Pleazyng's app-owned SoLoud route.
@@ -45,7 +49,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   bool get supportsSecondarySubtitles => false;
 
   @override
-  Set<String> get supportedLocalSubtitleExtensions => audioOnly ? const <String>{} : const {'srt', 'vtt'};
+  Set<String> get supportedLocalSubtitleExtensions => audioOnly ? const <String>{} : const {'srt', 'vtt', 'sup'};
 
   @override
   bool get needsDecoderRefreshAfterDisplaySwitch => false;
@@ -75,6 +79,8 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   String? _subtitleSelection;
   List<SubtitleTrack> _externalSubtitles = const [];
   webos_media.ClosedCaptionFile? _captions;
+  PgsSubtitles? _pgs;
+  final ValueNotifier<PgsCue?> pgsCue = ValueNotifier(null);
   final ValueNotifier<String> caption = ValueNotifier('');
   Duration _subtitleDelay = Duration.zero;
   bool _subtitlesVisible = false;
@@ -108,6 +114,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       fit: StackFit.expand,
       children: [
         webos_media.VideoPlayer(controller),
+        WebOSPgsOverlay(cue: pgsCue),
         IgnorePointer(
           child: Align(
             alignment: Alignment.bottomCenter,
@@ -158,8 +165,10 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     _firstFrameSent = false;
     _errorSent = false;
     _completionQueued = false;
-    _externalSubtitles = const [];
+    _externalSubtitles = List.of(externalSubtitles ?? const []);
     _captions = null;
+    _pgs = null;
+    pgsCue.value = null;
     _subtitleSelection = null;
     _subtitleDelay = Duration.zero;
     _subtitlesVisible = false;
@@ -623,6 +632,8 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     _controller = null;
     _subtitleGeneration++;
     _captions = null;
+    _pgs = null;
+    pgsCue.value = null;
     _subtitlesVisible = false;
     _subtitleSelection = null;
     caption.value = '';
@@ -749,6 +760,8 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         return;
       }
       _captions = null;
+      _pgs = null;
+      pgsCue.value = null;
       _subtitlesVisible = false;
       caption.value = '';
       _subtitleSelection = SubtitleTrack.off.id;
@@ -756,7 +769,10 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       return;
     }
     if (track.uri != null) {
-      final parsed = await _readLocalCaptions(track);
+      final isPgs = _isPgsTrack(track);
+      final bytes = await _readSubtitleBytes(track, maxBytes: isPgs ? PgsSubtitles.maxFileBytes : 2 * 1024 * 1024);
+      final parsedPgs = isPgs ? await compute(PgsSubtitles.parse, bytes) : null;
+      final parsed = isPgs ? null : _parseLocalCaptions(track, bytes);
       if (disposed || generation != _generation || selection != _subtitleGeneration) {
         return;
       }
@@ -765,6 +781,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         return;
       }
       _captions = parsed;
+      _pgs = parsedPgs;
       _subtitlesVisible = true;
       _subtitleSelection = track.id;
       _updateCaption(controller.value.position);
@@ -788,41 +805,101 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       return;
     }
     _captions = null;
+    _pgs = null;
+    pgsCue.value = null;
     _subtitlesVisible = false;
     caption.value = '';
     _subtitleSelection = track.id;
     updateSelectedSubtitleTrack(track.id);
   }
 
-  Future<webos_media.ClosedCaptionFile> _readLocalCaptions(SubtitleTrack track) async {
-    final uri = Uri.parse(track.uri!);
-    final isVtt = track.codec?.toLowerCase() == 'vtt' || uri.path.toLowerCase().endsWith('.vtt');
-    if (uri.scheme != 'file' || (!isVtt && track.codec?.toLowerCase() != 'srt')) {
-      throw UnsupportedError('webOS local subtitles must be SRT or WebVTT files.');
+  bool _isPgsTrack(SubtitleTrack track) =>
+      const {'sup', 'pgs', 'pgssub', 'hdmv_pgs_subtitle'}.contains(track.codec?.toLowerCase()) ||
+      (Uri.tryParse(track.uri ?? '')?.path.toLowerCase().endsWith('.sup') ?? false);
+
+  Future<Uint8List> _readSubtitleBytes(SubtitleTrack track, {required int maxBytes}) async {
+    final uri = Uri.tryParse(track.uri ?? '');
+    if (uri == null) throw const FormatException('Invalid subtitle address.');
+    final media = _currentMedia;
+    final codec = track.codec?.toLowerCase();
+    final isVtt = const {'vtt', 'webvtt'}.contains(codec) || uri.path.toLowerCase().endsWith('.vtt');
+    final isSrt = const {'srt', 'subrip'}.contains(codec) || uri.path.toLowerCase().endsWith('.srt');
+    if (!isVtt && !isSrt && !_isPgsTrack(track)) {
+      throw UnsupportedError('webOS subtitles must be SRT, WebVTT or PGS files.');
     }
-    final file = File.fromUri(uri);
-    final bytes = <int>[];
     try {
-      await for (final chunk in file.openRead(0, 2 * 1024 * 1024 + 1)) {
-        if (bytes.length + chunk.length > 2 * 1024 * 1024) {
-          throw const FormatException('Subtitle file exceeds 2 MiB');
+      if (uri.scheme == 'file') {
+        return await _readBoundedSubtitle(File.fromUri(uri).openRead(0, maxBytes + 1), maxBytes);
+      }
+      if (uri.scheme != 'http' && uri.scheme != 'https') throw const FormatException('Unsupported subtitle transport.');
+      final client = HttpClient()..connectionTimeout = const Duration(seconds: 10);
+      Future<Uint8List> download() async {
+        var target = uri;
+        for (var hop = 0; hop < 4; hop++) {
+          final request = await client.getUrl(target);
+          request.followRedirects = false;
+          // Carry private media headers only to that media's own origin.
+          final mediaUri = media == null ? null : Uri.tryParse(media.uri);
+          if (mediaUri != null &&
+              (mediaUri.scheme == 'http' || mediaUri.scheme == 'https') &&
+              mediaUri.origin == target.origin) {
+            media?.headers?.forEach(request.headers.set);
+          }
+          final response = await request.close();
+          if (response.isRedirect) {
+            final location = response.headers.value(HttpHeaders.locationHeader);
+            if (location == null) throw const FormatException('Invalid subtitle redirect.');
+            final next = target.resolve(location);
+            // Signed URLs and media headers must not be redirected to another origin.
+            if (next.origin != uri.origin) throw const FormatException('Subtitle redirect changed origin.');
+            await response.drain<void>();
+            target = next;
+            continue;
+          }
+          if (response.statusCode != HttpStatus.ok || response.contentLength > maxBytes) {
+            throw const FormatException('Subtitle download was refused or exceeds its size limit.');
+          }
+          return _readBoundedSubtitle(response, maxBytes);
         }
-        bytes.addAll(chunk);
+        throw const FormatException('Too many subtitle redirects.');
+      }
+
+      try {
+        return await download().timeout(const Duration(seconds: 30));
+      } finally {
+        client.close(force: true);
       }
     } on FormatException {
       rethrow;
     } catch (_) {
-      // File-system errors may contain the user's full local path.
+      // File-system and HTTP errors may contain private paths or signed URLs.
       throw const FormatException('Subtitle file could not be read.');
     }
-    if (bytes.isEmpty) {
+  }
+
+  Future<Uint8List> _readBoundedSubtitle(Stream<List<int>> stream, int maxBytes) async {
+    final bytes = BytesBuilder(copy: false);
+    await for (final chunk in stream) {
+      if (bytes.length + chunk.length > maxBytes) throw const FormatException('Subtitle file exceeds its size limit.');
+      bytes.add(chunk);
+    }
+    if (bytes.length == 0) {
       throw const FormatException('Subtitle file is empty.');
     }
+    return bytes.takeBytes();
+  }
+
+  webos_media.ClosedCaptionFile _parseLocalCaptions(SubtitleTrack track, Uint8List bytes) {
+    final uri = Uri.parse(track.uri!);
+    final isVtt =
+        const {'vtt', 'webvtt'}.contains(track.codec?.toLowerCase()) || uri.path.toLowerCase().endsWith('.vtt');
     final content = utf8.decode(bytes).replaceFirst(String.fromCharCode(0xFEFF), '');
     return isVtt ? webos_media.WebVTTCaptionFile(content) : webos_media.SubRipCaptionFile(content);
   }
 
   void _updateCaption(Duration position) {
+    final visiblePgs = _subtitlesVisible ? _pgs?.at(position - _subtitleDelay) : null;
+    if (!identical(pgsCue.value, visiblePgs)) pgsCue.value = visiblePgs;
     var text = '';
     final cues = _captions?.captions;
     if (_subtitlesVisible && cues != null) {
@@ -914,7 +991,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         break;
       case 'sub-visibility':
         final controller = _controller;
-        if (_captions != null) {
+        if (_captions != null || _pgs != null) {
           _subtitlesVisible = value == 'yes';
           _updateCaption(controller?.value.position ?? Duration.zero);
         } else if (controller != null) {
@@ -925,7 +1002,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         final controller = _controller;
         final milliseconds = ((double.tryParse(value) ?? 0) * 1000).round();
         _subtitleDelay = Duration(milliseconds: milliseconds);
-        if (_captions != null) {
+        if (_captions != null || _pgs != null) {
           _updateCaption(controller?.value.position ?? Duration.zero);
         } else if (controller != null) {
           await controller.setSubtitleSync(milliseconds);
@@ -978,7 +1055,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     final fileName = localPath.split(Platform.pathSeparator).last;
     final extension = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : '';
     if (!supportedLocalSubtitleExtensions.contains(extension)) {
-      throw UnsupportedError('webOS supports local SRT and WebVTT subtitles.');
+      throw UnsupportedError('webOS supports local SRT, WebVTT and PGS subtitles.');
     }
 
     final uri = Uri.file(localPath);
@@ -1042,6 +1119,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     await _releaseSource();
     surfaceRevision.dispose();
     caption.dispose();
+    pgsCue.dispose();
     await super.dispose(preserveDisplayMode: preserveDisplayMode);
   }
 }

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Render local and HTTP-delivered Blu-ray PGS subtitle images over native webOS video, preserving authored positioning, transparency and timing without subtitle burn-in.
+
 - Stream macOS release build output in verbose mode to bypass Flutter's quadratic filter on long native linker commands.
 
 - Resolve the macOS app to its local APFS path before Gatekeeper assessment, avoiding permission failures through protected NFS source workspaces after successful signing and notarization.

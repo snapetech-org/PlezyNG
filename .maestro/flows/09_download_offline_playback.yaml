@@ -5,6 +5,7 @@ tags:
   - e2e
   - downloads
   - playback
+  - fault-offline
 ---
 - runFlow: ../subflows/onboard_jellyfin.yaml
 - tapOn: "(?s)^Libraries.*"

@@ -127,8 +127,26 @@ class ParseConfigTests(unittest.TestCase):
         with self.assertRaisesRegex(run_maestro.RunnerError, "MAESTRO_JELLYFIN_BUILD_ATTEMPTS"):
             run_maestro.parse_config([], {"MAESTRO_JELLYFIN_BUILD_ATTEMPTS": "0"})
 
+    def test_offline_flow_requires_its_control_proxy_before_building(self) -> None:
+        with self.assertRaisesRegex(run_maestro.RunnerError, "--fault offline"):
+            run_maestro.parse_config(
+                ["basic", "--flow", ".maestro/flows/09_download_offline_playback.yaml"], {}
+            )
+
 
 class CommandTests(unittest.TestCase):
+    def test_basic_routes_offline_only_flow_to_its_dedicated_ci_recipe(self) -> None:
+        command = run_maestro.MaestroRunner(run_maestro.parse_config(["basic"], {})).maestro_command()
+        self.assertIn("--exclude-tags", command)
+        self.assertEqual(command[command.index("--exclude-tags") + 1], "fault-offline")
+        flow = ROOT_DIR / ".maestro/flows/09_download_offline_playback.yaml"
+        self.assertRegex(flow.read_text(), r"(?m)^  - fault-offline$")
+        recipe = next(
+            arguments for arguments in run_maestro_ci.GROUPS["android-15"]
+            if str(flow.relative_to(ROOT_DIR)) in arguments
+        )
+        self.assertEqual(run_maestro.parse_config(recipe, {}).jellyfin_fault, "offline")
+
     def test_media_command_contains_resolved_preset_and_device_url(self) -> None:
         config = run_maestro.parse_config(["media", "--device", "emulator-5554"], {})
         command = run_maestro.MaestroRunner(config).maestro_command()
@@ -158,6 +176,7 @@ class CommandTests(unittest.TestCase):
 
         self.assertIn("JELLYFIN_URL=http://127.0.0.1:8097", command)
         self.assertIn("JELLYFIN_CONTROL_URL=http://127.0.0.1:8097", command)
+        self.assertNotIn("--exclude-tags", command)
 
     def test_flutter_build_enables_stable_physical_device_controls(self) -> None:
         self.assertEqual(

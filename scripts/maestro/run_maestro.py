@@ -230,6 +230,14 @@ def parse_config(argv: Optional[Sequence[str]] = None, environment: Optional[Map
     if fault is not None and fault not in FAULTS:
         raise RunnerError(f"Unsupported MAESTRO_JELLYFIN_FAULT: {fault}")
 
+    flow_target = _root_path(_option(args.flow_target, env, "MAESTRO_FLOW_TARGET", preset.flow_target))
+    if (
+        args.command != "build-image"
+        and flow_target.name == "09_download_offline_playback.yaml"
+        and fault != "offline"
+    ):
+        raise RunnerError("Offline playback requires --fault offline to provide its server-control proxy")
+
     build_attempts = _int_option(
         args.jellyfin_build_attempts,
         env,
@@ -270,9 +278,7 @@ def parse_config(argv: Optional[Sequence[str]] = None, environment: Optional[Map
                 "build/app/outputs/flutter-apk/app-debug.apk",
             )
         ),
-        flow_target=_root_path(
-            _option(args.flow_target, env, "MAESTRO_FLOW_TARGET", preset.flow_target)
-        ),
+        flow_target=flow_target,
         maestro_config=_root_path(config_value) if config_value else None,
         uninstall_before_install=_bool_option(
             args.uninstall_before_install,
@@ -425,6 +431,10 @@ class MaestroRunner:
         command = ["maestro", "test", "-e", f"JELLYFIN_URL={jellyfin_url}"]
         if self.config.jellyfin_fault == "offline":
             command.extend(("-e", f"JELLYFIN_CONTROL_URL={self.host_jellyfin_url}"))
+        elif self.config.command == "basic" and self.config.flow_target.is_dir():
+            # The CI group runs this scenario separately with its control proxy.
+            # A plain suite has no JELLYFIN_CONTROL_URL and cannot execute it.
+            command.extend(("--exclude-tags", "fault-offline"))
         if self.device_id:
             command.extend(("--device", self.device_id))
         if self.config.maestro_config:

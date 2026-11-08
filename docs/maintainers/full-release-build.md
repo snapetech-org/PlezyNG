@@ -1,4 +1,4 @@
-# One-command Pleazyng 3.0.1 release
+# Complete Pleazyng releases
 
 ## Current native dependency
 
@@ -20,7 +20,7 @@ the live producer again. Published releases retain their original provenance.
 
 ## Release procedure
 
-After exact-main CI and platform canaries pass, run the complete 3.0.1 release
+After exact-main CI and platform canaries pass, run the complete release
 from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
 x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple
 builds and the storage-heavy WebOS candidate use compatible private JIT runners.

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prepare the complete Pleazyng 3.0.4 corrective release with package build 163, including all current-main fixes and every required platform.
+
 - Recover the unfinished Apple runner process observer, retain cancelled-job scratch before cleanup, and drain only captured build descendants after verified cancellation while preserving other jobs.
 
 - Separate webOS video slots from UI audio, propagate native load failures before disposal, release failed controller creation for retries, and preserve HLS/DASH transport hints behind authenticated proxy URLs.
@@ -572,6 +574,14 @@
 - Fix the MPV edition selector so it refreshes when a new file loads, without passing an asynchronous value through Flutter's state update callback.
 - Keep temporary HLS sharing within its startup window for long-GOP sources by forcing keyframes at the segment cadence; verify that playlist and media segments remain token-scoped and the listener closes cleanly.
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
+
+## [3.0.4] - 2026-11-07
+
+- Fix LG native video/UI-audio player-slot collisions and native failures that stranded playback initialization and retries.
+- Preserve authenticated HLS/DASH playback hints and sanitized native error diagnostics on webOS.
+- Include current-main Android navigation, database-startup, shrinking and native playback fixes qualified by the headless acceptance suites.
+- Recover Apple cancellation process tracking and retain cancelled build evidence without disturbing other jobs.
+- Ship Android, Fire TV, Linux x64/arm64, Windows x64/arm64, universal macOS, iOS, tvOS, Tizen and webOS, with implemented runtime experiments included.
 
 ## [3.0.1] - 2026-11-06
 

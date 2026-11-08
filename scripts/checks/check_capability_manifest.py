@@ -233,7 +233,9 @@ def check_published_release(release: dict, metadata: dict) -> None:
     require(metadata.get("prerelease") is False, "latest stable release evidence is a prerelease")
     require(metadata.get("tag_name") == release.get("tag") == f"v{release.get('version')}", "published release tag/version is stale")
     require(metadata.get("published_at") == release.get("publishedAt"), "published release date differs from evidence")
-    require(metadata.get("target_commitish") == release.get("sourceCommit"), "published release source commit differs from evidence")
+    require(metadata.get("target_commitish") == release.get("targetCommitish", release.get("sourceCommit")), "published release source commit differs from evidence")
+    if "targetCommitish" in release:
+        require(metadata.get("tag_commit") == release.get("sourceCommit"), "published release immutable tag commit differs from evidence")
     names = metadata.get("assetNames")
     if names is None:
         names = [asset.get("name") for asset in metadata.get("assets", []) if isinstance(asset, dict)]
@@ -256,9 +258,9 @@ def check_release_availability(release: dict, observation: dict) -> None:
                     for item in releases), "a stable public release is present in the availability observation")
 
 
-def _release_json(repository: str, suffix: str, token: str) -> tuple[int, object]:
+def _github_json(repository: str, path: str, token: str) -> tuple[int, object]:
     request = urllib.request.Request(
-        f"https://api.github.com/repos/{repository}/releases{suffix}",
+        f"https://api.github.com/repos/{repository}/{path}",
         headers={"Authorization": f"Bearer {token}",
                  "Accept": "application/vnd.github+json",
                  "X-GitHub-Api-Version": "2022-11-28"},
@@ -277,6 +279,26 @@ def _release_json(repository: str, suffix: str, token: str) -> tuple[int, object
     return 200, json.loads(payload)
 
 
+def _release_json(repository: str, suffix: str, token: str) -> tuple[int, object]:
+    return _github_json(repository, f"releases{suffix}", token)
+
+
+def _tag_commit(repository: str, tag: str, token: str) -> str:
+    status, data = _github_json(repository, f"git/ref/tags/{urllib.parse.quote(tag, safe='')}", token)
+    obj = data.get('object', {}) if status == 200 and isinstance(data, dict) else {}
+    for _ in range(5):
+        sha = obj.get('sha', '')
+        if not re.fullmatch(r'[0-9a-f]{40}', sha):
+            break
+        if obj.get('type') == 'commit':
+            return sha
+        if obj.get('type') != 'tag':
+            break
+        status, data = _github_json(repository, f"git/tags/{sha}", token)
+        obj = data.get('object', {}) if status == 200 and isinstance(data, dict) else {}
+    raise ValueError('Cannot resolve the published release immutable tag commit.')
+
+
 def check_live_release(release: dict, repository: str, token: str) -> None:
     """Check documented availability without treating authentication failures as absence."""
     if not token or re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is None:
@@ -287,6 +309,8 @@ def check_live_release(release: dict, repository: str, token: str) -> None:
                 "a public latest release exists; update the release availability ledger")
         if not isinstance(latest, dict):
             raise ValueError("GitHub latest release metadata is not an object.")
+        if "targetCommitish" in release:
+            latest = {**latest, "tag_commit": _tag_commit(repository, latest.get("tag_name", ""), token)}
         check_published_release(release, latest)
         return
 

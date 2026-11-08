@@ -12,7 +12,16 @@ class PublishedReleaseMetadataTest(unittest.TestCase):
     def setUp(self):
         check.ERRORS.clear()
         self.release = json.loads((check.ROOT / 'docs/maintainers/capability-manifest.json').read_text())['release']
-        self.metadata = json.loads((check.ROOT / self.release['evidence']).read_text())
+        # Absence fixtures describe the historical observation, independently
+        # of whichever release is currently published in the repository ledger.
+        self.metadata = json.loads((check.ROOT / 'docs/maintainers/releases/v3.0.0.json').read_text())
+        self.release.update(version='3.0.0', tag='v3.0.0', publicationStatus='unavailable',
+                            publicLatestAvailable=False, sourceCommit=self.metadata['target_commitish'],
+                            publishedAt=self.metadata['published_at'], missingPublicPlatforms=['webos'],
+                            evidence='docs/maintainers/releases/v3.0.0.json',
+                            availabilityCheckedOn='2026-11-06',
+                            availabilityEvidence='docs/maintainers/releases/availability-2026-11-06.json')
+        self.release.pop('targetCommitish', None)
 
     def test_published_metadata_matches(self):
         check.check_published_release(self.release, self.metadata)

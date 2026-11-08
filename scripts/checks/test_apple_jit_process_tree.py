@@ -433,7 +433,7 @@ if args[:2]==['repo','view']:
 elif any('generate-jitconfig' in value for value in args):
  print('fixture-not-a-real-credential')
 elif args==['api','repos/snapetech-org/PlezyNG/actions/runs/42']:
- if counts[key]==1:run['status']='in_progress';run['conclusion']=None
+ if counts[key]<=2:run['status']='in_progress';run['conclusion']=None
  print(json.dumps(run))
 elif args==['api','repos/snapetech-org/PlezyNG/actions/runs/42/jobs?per_page=100']:
  if counts[key]==1:job['status']='queued';job['conclusion']=None

@@ -113,7 +113,13 @@ python3 scripts/release_all_platforms.py --version 3.0.1 \
 ```
 
 The core command builds every required platform, verifies its artifacts and
-checksums, then publishes GitHub. It records that success before attempting
+checksums, then publishes GitHub. After delivery checks, it runs
+`scripts/refresh_release_facts.py --tag vVERSION` and pushes only the generated
+README, capability ledger and independently fetched publication snapshot. The
+immutable build tag remains unchanged. A metadata refresh failure is recorded
+as a separate follow-up, preserving the published release; retry the same helper
+rather than rebuilding binaries. The live CI check resolves the actual tag
+commit separately from GitHub's `target_commitish`, which can be `main`. It records that success before attempting
 Discord or configured distribution channels. Delivery failures remain in the
 summary for separate repair/retry against the immutable release; they do not
 turn publication into a failed core build. WinGet and Chocolatey metadata are

@@ -200,13 +200,13 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ## Download
 
-As of 6 November 2026, the [GitHub Releases page](https://github.com/snapetech-org/PlezyNG/releases) has no public stable release available through the API: only the older `2.24.1` draft is listed. The [November 5 evidence](docs/maintainers/releases/v3.0.0.json) records a published `v3.0.0`, but its tag, release ID and latest-release endpoint now return 404. The reason is unknown; see the [current availability observation](docs/maintainers/releases/availability-2026-11-06.json). That earlier release also lacked webOS. A successful candidate build is not a published download.
+[Pleazyng 3.0.3 is published](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.3) with Android, Fire TV, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS packages. See the [recorded GitHub publication evidence](docs/maintainers/releases/v3.0.3.json) and [all releases](https://github.com/snapetech-org/PlezyNG/releases).
 
 | Platform | Download |
 | --- | --- |
-| Desktop and mobile | Download links are added after the corresponding release is published. |
-| webOS TV | Experimental ARMv7 IPK; one LG C6 running webOS 26 has been tested. LG's native Flutter floor is webOS 26 Re:New , and older firmware or other models are not qualified. No webOS package is published yet; see the [compatibility matrix and port status](docs/maintainers/webos-tv.md) |
-| Samsung Tizen TV | Experimental ARM TPK builds for Tizen 6–9, with a prebuilt tester handoff/re-signing path. TV qualification and the 2026/Tizen 10 target remain pending. See the [research, build guide and rollout plan](docs/maintainers/tizen-tv.md). |
+| Desktop and mobile | [Release files for Android, Fire TV, Linux, Windows, macOS, iOS and tvOS](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.3) |
+| webOS TV | [Experimental ARMv7 IPK](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.3); model/firmware and media playback qualification remain separate from publication. See the [compatibility matrix and port status](docs/maintainers/webos-tv.md). |
+| Samsung Tizen TV | [Experimental ARM tester handoff](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.3); TV qualification and Tizen 10 remain pending. See the [build guide and rollout plan](docs/maintainers/tizen-tv.md). |
 
 <details>
 <summary>Install with a package manager</summary>

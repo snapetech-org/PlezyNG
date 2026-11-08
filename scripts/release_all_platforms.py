@@ -961,6 +961,27 @@ def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
     return tag
 
 
+def refresh_published_facts(worktree: Path, tag: str, release_sha: str) -> str:
+    """Update public availability last, after publication and delivery checks."""
+    ensure_remote_main_sha(release_sha, "recording published release facts")
+    command(["python3", "scripts/refresh_release_facts.py", "--tag", tag], cwd=worktree)
+    paths = ["README.md", "docs/maintainers/capability-manifest.json",
+             f"docs/maintainers/releases/{tag}.json"]
+    changed = command(["git", "status", "--porcelain", "--", *paths], cwd=worktree,
+                      capture=True).stdout.strip()
+    if not changed:
+        return release_sha
+    command(["python3", "scripts/checks/check_capability_manifest.py"], cwd=worktree)
+    command(["git", "diff", "--check"], cwd=worktree)
+    command(["git", "add", "--", *paths], cwd=worktree)
+    # Publication facts are generated documentation. Product code was validated
+    # on the immutable tag; the same checker validates these refreshed facts.
+    command(["git", "-c", "core.hooksPath=/dev/null", "commit", "-m",
+             f"docs: record published {tag} platform availability"], cwd=worktree)
+    command(["git", "push", "origin", "HEAD:refs/heads/main"], cwd=worktree)
+    return command(["git", "rev-parse", "HEAD"], cwd=worktree, capture=True).stdout.strip()
+
+
 def ensure_release(
     tag: str,
     commit_sha: str,
@@ -1707,6 +1728,8 @@ def main() -> int:
         skipped_channels: list[dict] = []
         channel_failures: list[str] = []
         notification_failures: list[str] = []
+        publication_facts_commit = None
+        publication_facts_failures: list[str] = []
         release_published = False
         if args.publish or args.publish_github_only:
             ensure_remote_main_sha(pin_sha, f"publishing Pleazyng {tag}")
@@ -1733,6 +1756,13 @@ def main() -> int:
             save_progress()
             if channel_failures or notification_failures:
                 print("GitHub release is published; post-release delivery needs a separate retry.")
+            try:
+                publication_facts_commit = refresh_published_facts(worktree, tag, pin_sha)
+            except Exception as error:
+                # Preserve core publication success; do not rebuild published
+                # binaries merely because documentation needs a separate retry.
+                publication_facts_failures.append(str(error))
+                print("GitHub release is published; publication facts need a separate retry.")
         else:
             metadata = release_metadata(tag)
             release_published = not metadata.get("draft") and bool(metadata.get("published_at"))
@@ -1754,6 +1784,8 @@ def main() -> int:
             "skipped_channels": skipped_channels,
             "channel_failures": channel_failures,
             "notification_failures": notification_failures,
+            "publication_facts_commit": publication_facts_commit,
+            "publication_facts_failures": publication_facts_failures,
             "webos_built": True,
             "webos_attached_to_public_release": args.include_webos_release,
             "tizen_built": True,

@@ -269,8 +269,23 @@ if [[ -n "${APPLE_JIT_EVIDENCE_DIR:-}" ]]; then
   fi
 
   if [[ "$conclusion" == cancelled ]]; then
-    cancelled_run="$(gh api "$RUN_URL")"
-    cancelled_job="$(gh api "repos/$ORG/$REPO/actions/jobs/$job_id")"
+    cancellation_ready=0
+    # A job can finish cancellation before the workflow reaches its terminal
+    # state. Poll fresh records rather than failing on that normal transition.
+    for _ in {1..90}; do
+      cancelled_run="$(gh api "$RUN_URL")"
+      cancelled_job="$(gh api "repos/$ORG/$REPO/actions/jobs/$job_id")"
+      if jq -e '.status == "completed" and .conclusion == "cancelled"' <<<"$cancelled_run" >/dev/null \
+        && jq -e '.status == "completed" and .conclusion == "cancelled"' <<<"$cancelled_job" >/dev/null; then
+        cancellation_ready=1
+        break
+      fi
+      sleep 2
+    done
+    if (( cancellation_ready == 0 )); then
+      echo "Cancellation records are not both terminal; retaining all runner data for retry." >&2
+      exit 1
+    fi
     cancellation_proof="$(jq -cn --argjson run "$cancelled_run" --argjson job "$cancelled_job" \
       '{run:($run | {id,run_attempt,status,conclusion,event,head_branch,head_repository:{full_name:.head_repository.full_name}}),job:($job | {id,run_id,run_attempt,status,conclusion}),registrationGone:true}')"
     printf '%s\n' "$cancellation_proof" | ssh -T -o BatchMode=yes -o ConnectTimeout=8 "$SSH_TARGET" \

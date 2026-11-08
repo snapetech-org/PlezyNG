@@ -585,6 +585,7 @@ jobs:
             mpv_player_lifecycle_test \
             mpv_player_hdr_output_test \
             mpv_property_result_contract_test \
+            webos_media_slots_test \
             hdr_metadata_test \
             plane_geometry_test \
             video_params_test \

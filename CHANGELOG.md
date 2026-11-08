@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Wait for both the Apple job and workflow to finish cancellation before draining their recorded build processes, preserving the terminal-state checks during GitHub's transition.
+
+- Refresh public release availability automatically after publication, distinguish GitHub's branch target from the immutable build tag, and preserve historical absence evidence without blocking CI on stale facts.
+
 - Prepare the complete Pleazyng 3.0.4 corrective release with package build 163, including all current-main fixes and every required platform.
 
 - Recover the unfinished Apple runner process observer, retain cancelled-job scratch before cleanup, and drain only captured build descendants after verified cancellation while preserving other jobs.

@@ -12,9 +12,9 @@
     "gated": "The capability intentionally stays disabled or experimental until its stated external or platform evidence exists."
   },
   "release": {
-    "version": "3.0.0",
-    "publicationStatus": "unavailable",
-    "publicLatestAvailable": false,
+    "version": "3.0.3",
+    "publicationStatus": "published",
+    "publicLatestAvailable": true,
     "releasesPage": "https://github.com/snapetech-org/PlezyNG/releases",
     "requiredCiJobs": [
       "Code Analysis",
@@ -56,10 +56,10 @@
         "Server checks"
       ]
     },
-    "tag": "v3.0.0",
-    "publishedAt": "2026-11-05T06:48:35Z",
-    "sourceCommit": "c1d144941cd53c9d335e4f168667c57da004549b",
-    "evidence": "docs/maintainers/releases/v3.0.0.json",
+    "tag": "v3.0.3",
+    "publishedAt": "2026-11-07T04:39:20Z",
+    "sourceCommit": "63f6d4ca42bf874d412708920257a7c9be1ec8c8",
+    "evidence": "docs/maintainers/releases/v3.0.3.json",
     "requiredPlatforms": [
       "android",
       "linux-x64",
@@ -72,12 +72,9 @@
       "tizen",
       "webos"
     ],
-    "coverageStatus": "incomplete",
-    "missingPublicPlatforms": [
-      "webos"
-    ],
-    "availabilityCheckedOn": "2026-11-06",
-    "availabilityEvidence": "docs/maintainers/releases/availability-2026-11-06.json"
+    "coverageStatus": "complete",
+    "missingPublicPlatforms": [],
+    "targetCommitish": "main"
   },
   "localization": {
     "localeChoices": 37,
@@ -181,7 +178,7 @@
         "lib/sources/source_controller.dart",
         "lib/profiles/active_profile_provider.dart"
       ],
-      "qualification": "Profile data is staged and published as one owner-scoped snapshot; stale loads and adapter callbacks are generation-guarded. Adversarial A→B→A completion-order and credential-refresh acceptance has not been run on this branch."
+      "qualification": "Profile data is staged and published as one owner-scoped snapshot; stale loads and adapter callbacks are generation-guarded. Adversarial A\u2192B\u2192A completion-order and credential-refresh acceptance has not been run on this branch."
     },
     {
       "id": "F02",

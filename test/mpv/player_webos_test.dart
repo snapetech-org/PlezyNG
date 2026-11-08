@@ -58,6 +58,20 @@ void main() {
     await player.dispose();
   });
 
+  test('only unsupported native audio gets a conversion cause', () async {
+    final backend = _LGPlayer()
+      ..streamError = PlatformException(code: 'media-error', message: 'Unsupported audio codec DTS');
+    native.VideoPlayerPlatform.instance = backend;
+    final player = PlayerWebOS();
+    final errors = <PlayerError>[];
+    final subscription = player.streams.error.listen(errors.add);
+    await expectLater(player.open(Media('/movie.mkv')), throwsA(isA<PlatformException>()));
+    await Future<void>.delayed(Duration.zero);
+    expect(errors.single.cause, PlayerError.audioCodecUnsupported);
+    await subscription.cancel();
+    await player.dispose();
+  });
+
   test('native initialization error reaches caller, releases source and permits retry', () async {
     final backend = _LGPlayer()
       ..streamError = PlatformException(

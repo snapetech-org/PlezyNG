@@ -113,6 +113,10 @@ class PlaybackInitializationOptions {
   /// could only fail the same way.
   final bool forceTranscode;
 
+  /// Retry audio conversion only after the active playback path explicitly
+  /// rejects the original audio format. Preserve compatible video copying.
+  final bool forceAudioConversion;
+
   const PlaybackInitializationOptions({
     required this.metadata,
     required this.selectedMediaIndex,
@@ -132,6 +136,7 @@ class PlaybackInitializationOptions {
     this.allowExperimentalDolbyVisionProfile7 = false,
     this.forceServerPlayback = false,
     this.forceTranscode = false,
+    this.forceAudioConversion = false,
   });
 }
 

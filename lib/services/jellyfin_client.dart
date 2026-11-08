@@ -95,6 +95,7 @@ import '../mpv/mpv.dart';
 import '../utils/codec_utils.dart';
 import '../utils/platform_detector.dart';
 import '../media/tizen_playback_profile.dart';
+import '../media/webos_playback_profile.dart';
 
 part 'jellyfin_client/parts/account_preferences.dart';
 part 'jellyfin_client/parts/browse.dart';

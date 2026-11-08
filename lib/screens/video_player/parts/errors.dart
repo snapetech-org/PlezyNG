@@ -25,7 +25,8 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
     if (_hasFatalPlaybackError) return;
     // The local open has failed and its one compatibility retry owns the
     // player now. Ignore duplicate events from that same failed open.
-    if (_dolbyVisionCompatibilityFallbackInFlight) return;
+    if (_dolbyVisionCompatibilityFallbackInFlight || _audioCompatibilityFallbackInFlight) return;
+    if (_tryAutomaticAudioCompatibilityFallback(err)) return;
     if (_tryAutomaticDolbyVisionCompatibilityFallback(err)) return;
 
     // A sidecar subtitle fetch can also log a status, but it never raises the
@@ -91,6 +92,60 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
           return;
         }
         _presentPlaybackFailure(message);
+    }
+  }
+
+  bool _tryAutomaticAudioCompatibilityFallback(PlayerError error) {
+    final session = _playbackSession;
+    final request = _currentOpenRequest;
+    if (!PlatformDetector.isWebOSBuild() ||
+        error.cause != PlayerError.audioCodecUnsupported ||
+        session == null ||
+        request == null ||
+        request.forceAudioConversion ||
+        session.isOffline ||
+        _offlineLibraryMode ||
+        widget.isLive ||
+        session.reportingClient?.capabilities.videoTranscoding != true ||
+        _fatalHttpStatuses.isNotEmpty ||
+        _transitionGate.transition != PlaybackTransition.idle ||
+        _audioFallbackAttemptedFor?.sameSourceAs(request) == true) {
+      return false;
+    }
+    _audioFallbackAttemptedFor = request;
+    _audioCompatibilityFallbackInFlight = true;
+    appLogger.i('Native audio format rejected; retrying audio conversion with compatible video copying');
+    unawaited(_openAudioCompatibilityFallback(request, error));
+    return true;
+  }
+
+  Future<void> _openAudioCompatibilityFallback(_PlaybackOpenRequest request, PlayerError error) async {
+    MediaReloadOutcome outcome;
+    try {
+      outcome = await _reloadMediaInPlace(
+        metadata: request.metadata,
+        selectedMediaIndex: request.mediaIndex,
+        selectedMediaSourceId: request.mediaSourceId,
+        qualityPreset: request.qualityPreset,
+        selectedAudioStreamId: request.audioStreamId,
+        useCurrentAudioStreamSelection: false,
+        resumePosition: player?.state.position ?? request.resumePosition,
+        preferredSubtitleTrackOverride: SubtitlePreference.trackOrNull(
+          _playbackSession?.subtitleSelection.primaryTrack,
+        ),
+        forceServerPlayback: true,
+        forceAudioConversion: true,
+        showErrorUi: false,
+        reason: 'native audio compatibility fallback',
+      );
+    } catch (failure, stackTrace) {
+      appLogger.w('Native audio conversion fallback failed', error: failure, stackTrace: stackTrace);
+      outcome = MediaReloadOutcome.failed;
+    } finally {
+      _audioCompatibilityFallbackInFlight = false;
+    }
+    if (outcome == MediaReloadOutcome.failed || outcome == MediaReloadOutcome.rejected) {
+      _onPlayerError(error);
     }
   }
 
@@ -270,6 +325,7 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
       selectedMediaSourceId: request.mediaSourceId,
       qualityPreset: request.qualityPreset,
       forceTranscode: request.forceTranscode,
+      forceAudioConversion: request.forceAudioConversion,
       selectedAudioStreamId: request.audioStreamId,
       useCurrentAudioStreamSelection: false,
       resumePosition: request.resumePosition,

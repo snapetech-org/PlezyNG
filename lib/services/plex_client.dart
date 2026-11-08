@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import '../media/tizen_playback_profile.dart';
+import '../media/webos_playback_profile.dart';
 import '../utils/platform_detector.dart';
 import '../utils/isolate_helper.dart';
 import '../utils/json_utils.dart';
@@ -3151,6 +3152,7 @@ class PlexClient
     MediaSubtitleTrack? selectedSubtitleTrack,
     int? partId,
     bool sourceCodecRefused = false,
+    bool audioCodecRefused = false,
     bool forceVideoEncode = false,
     bool withholdDirectPlay = false,
   }) async {
@@ -3167,6 +3169,7 @@ class PlexClient
         selectedSubtitleTrack: selectedSubtitleTrack,
         useTsFallbackTarget: useTsFallbackTarget,
         sourceCodecRefused: sourceCodecRefused,
+        audioCodecRefused: audioCodecRefused,
         forceVideoEncode: forceVideoEncode,
         withholdDirectPlay: withholdDirectPlay,
       );
@@ -3367,13 +3370,21 @@ class PlexClient
     MediaSubtitleTrack? selectedSubtitleTrack,
     bool useTsFallbackTarget = false,
     bool sourceCodecRefused = false,
+    bool audioCodecRefused = false,
     bool forceVideoEncode = false,
     bool withholdDirectPlay = false,
   }) {
     final isOriginal = preset.isOriginal;
     final selectedInternalSubtitle = _selectedInternalSubtitleForHls(selectedSubtitleTrack);
+    var videoTarget = useTsFallbackTarget ? _plexHlsVodTsVideoTranscodeTarget : _plexHlsVodVideoTranscodeTarget();
+    if (audioCodecRefused && PlatformDetector.isWebOSBuild()) {
+      videoTarget = videoTarget.replaceFirst(
+        'audioCodec=aac%2Cac3%2Ceac3%2Cmp3',
+        'audioCodec=${webosTranscodeAudioCodecs.replaceAll(',', '%2C')}',
+      );
+    }
     final clientProfileExtra = _buildPlexHlsClientProfileExtra(
-      videoTranscodeTarget: useTsFallbackTarget ? _plexHlsVodTsVideoTranscodeTarget : _plexHlsVodVideoTranscodeTarget(),
+      videoTranscodeTarget: videoTarget,
       maxVideoBitrateKbps: !isOriginal ? preset.videoBitrateKbps : null,
     );
 
@@ -3431,7 +3442,7 @@ class PlexClient
       else if (preset.videoResolution != null)
         'videoResolution': preset.videoResolution!,
       if (preset.videoQuality != null) 'videoQuality': preset.videoQuality!.toString(),
-      'directStreamAudio': PlatformDetector.isTizenBuild() ? '0' : '1',
+      'directStreamAudio': PlatformDetector.isTizenBuild() || audioCodecRefused ? '0' : '1',
       'mediaBufferSize': '102400',
       'session': transcodeSessionId,
       // `subtitles` is the only subtitle knob this endpoint honours. Which
@@ -4059,6 +4070,10 @@ class PlexClient
       final audioPreset = PlatformDetector.isTizenBuild() && requestedAudioPreset.isOriginal
           ? AudioQualityPreset.high
           : requestedAudioPreset;
+      final resolvedAudioId = carriedAudioTrack == null
+          ? _resolveAudioStreamId(options.selectedAudioStreamId, data.mediaInfo)
+          : carriedAudioStreamId;
+      final audioCodecRefused = !isTrack && options.forceAudioConversion;
       final sourceCodecRefused = !isTrack && _sourceCodecRefused(data);
       final forceCompatibleDolbyVisionTranscode = options.requestsCompatibleDolbyVisionRendition(data.mediaInfo);
       if (forceCompatibleDolbyVisionTranscode &&
@@ -4074,13 +4089,16 @@ class PlexClient
       final wantTranscode = isTrack
           ? !audioPreset.isOriginal
           : sourceCodecRefused ||
+                audioCodecRefused ||
                 forceCompatibleDolbyVisionTranscode ||
                 options.forceTranscode ||
                 _presetNeedsTranscode(options.qualityPreset, data);
       if (forceCompatibleDolbyVisionTranscode) {
         appLogger.i('Dolby Vision profile detected; requesting a server-generated compatibility rendition');
       }
-      if ((forceCompatibleDolbyVisionTranscode || (PlatformDetector.isTizenBuild() && wantTranscode)) &&
+      if ((audioCodecRefused ||
+              forceCompatibleDolbyVisionTranscode ||
+              (PlatformDetector.isTizenBuild() && wantTranscode)) &&
           (options.sessionIdentifier == null || options.transcodeSessionId == null)) {
         throw PlaybackException(t.messages.playbackFailed, reason: PlaybackFailureReason.noPlayableSource);
       }
@@ -4112,9 +4130,6 @@ class PlexClient
           return await _transcodeFallbackResult(data, result.outcome, options);
         }
 
-        final resolvedAudioId = carriedAudioTrack == null
-            ? _resolveAudioStreamId(options.selectedAudioStreamId, data.mediaInfo)
-            : carriedAudioStreamId;
         final requestedSubtitleTrack = _resolveTranscodeSubtitleTrack(data.mediaInfo, options.preferredSubtitleTrack);
         final result = await buildTranscodeStartPath(
           ratingKey: options.metadata.id,
@@ -4127,8 +4142,9 @@ class PlexClient
           selectedSubtitleTrack: requestedSubtitleTrack,
           partId: data.mediaInfo?.partId,
           sourceCodecRefused: sourceCodecRefused,
+          audioCodecRefused: audioCodecRefused,
           forceVideoEncode: forceCompatibleDolbyVisionTranscode,
-          withholdDirectPlay: options.forceTranscode,
+          withholdDirectPlay: options.forceTranscode || audioCodecRefused,
         );
 
         // A transcode that cannot carry the requested caption is not the outcome we asked for. The
@@ -4160,7 +4176,13 @@ class PlexClient
         }
 
         if (options.forceTranscode) throw _forcedTranscodeUnavailable(result.outcome);
-        return await _transcodeFallbackResult(data, result.outcome, options, activeAudioStreamId: carriedAudioStreamId);
+        return await _transcodeFallbackResult(
+          data,
+          result.outcome,
+          options,
+          activeAudioStreamId: carriedAudioStreamId,
+          audioCodecRefused: audioCodecRefused,
+        );
       }
       if (options.forceTranscode && !isTrack) throw _forcedTranscodeUnavailable(null);
 
@@ -4279,8 +4301,11 @@ class PlexClient
     TranscodeDecisionOutcome outcome,
     PlaybackInitializationOptions options, {
     int? activeAudioStreamId,
+    bool audioCodecRefused = false,
   }) async {
-    if (PlatformDetector.isTizenBuild() || options.requestsCompatibleDolbyVisionRendition(data.mediaInfo)) {
+    if (audioCodecRefused ||
+        PlatformDetector.isTizenBuild() ||
+        options.requestsCompatibleDolbyVisionRendition(data.mediaInfo)) {
       throw PlaybackException(t.messages.playbackFailed, reason: PlaybackFailureReason.noPlayableSource);
     }
     final fallbackReason = outcome == TranscodeDecisionOutcome.directPlayOnly

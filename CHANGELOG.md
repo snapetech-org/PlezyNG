@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Preserve native webOS direct play and receiver passthrough on the first attempt; retry audio conversion only after explicit native audio-format rejection, retaining compatible HEVC/HDR video copying.
+
+- Stop only the completed Apple build’s recorded orphaned Interface Builder services before scratch cleanup, preserving active compilers and unrelated processes.
+
 - Wait for both the Apple job and workflow to finish cancellation before draining their recorded build processes, preserving the terminal-state checks during GitHub's transition.
 
 - Refresh public release availability automatically after publication, distinguish GitHub's branch target from the immutable build tag, and preserve historical absence evidence without blocking CI on stale facts.

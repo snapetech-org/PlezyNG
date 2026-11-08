@@ -387,6 +387,7 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
     bool forceServerPlayback = false,
     bool showErrorUi = true,
     bool? forceTranscode,
+    bool? forceAudioConversion,
     PlaybackTransitionLease? transitionLease,
     String reason = 'media reload',
   }) async {
@@ -520,6 +521,14 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
           : useCurrentAudioStreamSelection
           ? selectedAudioStreamId ?? _selectedAudioStreamId
           : selectedAudioStreamId;
+      final targetForceAudioConversion =
+          forceAudioConversion ??
+          (!isItemChange &&
+              previousOpenRequest != null &&
+              previousOpenRequest.forceAudioConversion &&
+              previousOpenRequest.audioStreamId == targetAudioStreamId &&
+              previousOpenRequest.mediaIndex == targetMediaIndex &&
+              previousOpenRequest.mediaSourceId == selectedMediaSourceId);
       final targetLaunchIdentity = VideoPlayerLaunchIdentity(
         metadata: metadata,
         mediaIndex: targetMediaIndex,
@@ -536,6 +545,7 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
         audioStreamId: targetAudioStreamId,
         resumePosition: resumePosition,
         forceTranscode: targetForceTranscode,
+        forceAudioConversion: targetForceAudioConversion,
       );
       final preservesRequestedSubtitleSource =
           !isItemChange &&
@@ -623,7 +633,7 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
               transcodeSessionId: _playbackTranscodeSessionId,
               startPosition: openResumePosition,
               requestCompatibleDolbyVisionRendition: true,
-              supportedNativeDolbyVisionProfiles: forceServerPlayback
+              supportedNativeDolbyVisionProfiles: forceServerPlayback && !targetForceAudioConversion
                   ? const {}
                   : VideoDecodeCapabilities.supportedNativeDolbyVisionProfiles,
               allowExperimentalDolbyVisionProfile7:
@@ -633,6 +643,7 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
                   (SettingsService.instanceOrNull?.read(SettingsService.experimentalDolbyVision) ?? false),
               forceServerPlayback: !_offlineLibraryMode && forceServerPlayback,
               forceTranscode: targetForceTranscode,
+              forceAudioConversion: targetForceAudioConversion,
             ),
             offlineLibraryMode: _offlineLibraryMode,
             downloadOutranksQuality: downloadOutranksQuality,

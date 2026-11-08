@@ -219,6 +219,8 @@ jobs:
             test/services/tizen_plex_playback_test.dart \
             test/games/game_catalog_screen_test.dart
           flutter test --no-pub -j 2 --dart-define=PLEZY_WEBOS=true \
+            test/services/webos_plex_playback_test.dart \
+            test/services/webos_jellyfin_playback_test.dart \
             test/games/game_catalog_screen_test.dart
 
       - name: Setup Node for reader browser checks

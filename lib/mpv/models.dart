@@ -77,6 +77,9 @@ sealed class PlayerError with _$PlayerError {
   /// MpvEndFileDiagnostics.CAUSE_AUDIO_OUTPUT_FAILED on Android.
   static const String audioOutputFailed = 'audio-output-failed';
 
+  /// The active media path explicitly rejected the selected audio format.
+  static const String audioCodecUnsupported = 'audio-codec-unsupported';
+
   /// HTTP status [logText] reports, or null when it names none.
   ///
   /// A [PlayerError] carries no status field: mpv only ever tells us the

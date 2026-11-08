@@ -295,6 +295,7 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
     final preset = options.qualityPreset;
     final audioPreset = options.audioQualityPreset ?? AudioQualityPreset.original;
     final wantsOriginal = isTrack ? audioPreset.isOriginal : preset.isOriginal;
+    final forceAudioConversion = !isTrack && options.forceAudioConversion;
     final forceCompatibleDolbyVisionTranscode = !isTrack && options.requestsCompatibleDolbyVisionRendition(mediaInfo);
     if (forceCompatibleDolbyVisionTranscode &&
         !options.hasServerDolbyVisionSdrRoute(
@@ -349,7 +350,9 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
         : (preset.videoBitrateKbps ?? 100_000) * 1000;
     final resumeOffsetMs = metadata.viewOffsetMs;
     final int? transcodeStartTimeTicks =
-        (!wantsOriginal || forceCompatibleDolbyVisionTranscode) && resumeOffsetMs != null && resumeOffsetMs > 0
+        (!wantsOriginal || forceCompatibleDolbyVisionTranscode || forceAudioConversion) &&
+            resumeOffsetMs != null &&
+            resumeOffsetMs > 0
         ? msToJellyfinTicks(resumeOffsetMs)
         : null;
     Map<String, dynamic>? negotiation;
@@ -363,16 +366,21 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
         audioStreamIndex: requestedAudioStreamId,
         subtitleStreamIndex: requestedSubtitleStreamId,
         audioProfile: isTrack,
+        enableDirectPlay: forceAudioConversion ? false : null,
+        enableTranscoding: forceAudioConversion ? true : null,
+        allowAudioStreamCopy: forceAudioConversion ? false : null,
         forceVideoTranscode: forceCompatibleDolbyVisionTranscode,
         // A capped preset is the only way a transcode is asked for, and on one the server
         // burns the selected embedded stream in rather than serving it as a file the client
         // would fetch as well. A selected external *file* keeps `External`, so it is still
         // delivered as a file - the one case where the client genuinely holds it.
-        burnSubtitles: (!wantsOriginal || forceCompatibleDolbyVisionTranscode) && !requestedSubtitleIsExternalFile,
+        burnSubtitles:
+            (!wantsOriginal || forceCompatibleDolbyVisionTranscode || forceAudioConversion) &&
+            !requestedSubtitleIsExternalFile,
       );
       chosenSource = _selectNegotiatedMediaSource(negotiation['MediaSources'], bundle.selectedSourceId);
     } catch (error, stackTrace) {
-      if (forceCompatibleDolbyVisionTranscode || !_canUseJellyfinStaticStreamFallback(error)) {
+      if (forceAudioConversion || forceCompatibleDolbyVisionTranscode || !_canUseJellyfinStaticStreamFallback(error)) {
         Error.throwWithStackTrace(classifyPlaybackFailure(error), stackTrace);
       }
       appLogger.w(
@@ -383,7 +391,7 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
     }
 
     if (chosenSource == null) {
-      if (forceCompatibleDolbyVisionTranscode) {
+      if (forceAudioConversion || forceCompatibleDolbyVisionTranscode) {
         throw PlaybackException(t.messages.playbackFailed, reason: PlaybackFailureReason.noPlayableSource);
       }
       fallbackReason = TranscodeFallbackReason.decisionFailed;
@@ -403,7 +411,7 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
       }
 
       final transcodingUrl = chosenSource['TranscodingUrl'];
-      if ((!wantsOriginal || forceCompatibleDolbyVisionTranscode) &&
+      if ((!wantsOriginal || forceCompatibleDolbyVisionTranscode || forceAudioConversion) &&
           transcodingUrl is String &&
           transcodingUrl.isNotEmpty) {
         // TranscodingUrl is server-relative and already encodes container,
@@ -433,7 +441,7 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
       }
     }
 
-    if (forceCompatibleDolbyVisionTranscode && !isTranscoding) {
+    if ((forceAudioConversion || forceCompatibleDolbyVisionTranscode) && !isTranscoding) {
       throw PlaybackException(t.messages.playbackFailed, reason: PlaybackFailureReason.noPlayableSource);
     }
 
@@ -1066,7 +1074,9 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
                 // the server substitutes the source codec, filters it against
                 // the same fMP4 set, and ships no audio at all for a source it
                 // cannot carry.
-                'AudioCodec': 'aac,mp3,ac3,eac3,flac,opus,dts,truehd',
+                'AudioCodec': PlatformDetector.isWebOSBuild() && allowAudioStreamCopy == false
+                    ? webosTranscodeAudioCodecs
+                    : 'aac,mp3,ac3,eac3,flac,opus,dts,truehd',
               },
             // MPEG-TS is the only Emby Live TV target (#2273); otherwise it
             // stays second as Jellyfin's fallback (#2198). Jellyfin drops every
@@ -1084,7 +1094,9 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
               'Container': 'ts',
               'Protocol': 'hls',
               'VideoCodec': _jellyfinTranscodeVideoCodecsTs(),
-              'AudioCodec': 'aac,mp3,ac3,eac3,opus,dts',
+              'AudioCodec': PlatformDetector.isWebOSBuild() && allowAudioStreamCopy == false
+                  ? webosTranscodeAudioCodecs
+                  : 'aac,mp3,ac3,eac3,opus,dts',
             },
             // Track playback transcode target: stereo mp3 over plain http.
             // Appended after the video profile so the first-entry-wins
@@ -1104,7 +1116,9 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
               'Type': 'Video',
               'Container': 'mp4,mkv,m4v,webm,mov,ts,mpegts',
               'VideoCodec': _jellyfinDirectPlayVideoCodecs(),
-              // No `AudioCodec`: an omitted list means "any codec" to
+              if (PlatformDetector.isWebOSBuild() && allowAudioStreamCopy == false)
+                'AudioCodec': webosTranscodeAudioCodecs,
+              // On MPV targets, no `AudioCodec` means "any codec" to
               // Jellyfin. mpv decodes every audio codec these containers can
               // carry and an audio decode is cheap everywhere, so an audio
               // stream must never be the reason a file cannot direct-play.
@@ -1140,21 +1154,30 @@ mixin _JellyfinPlaybackMethods on _JellyfinClientInternals {
           // profile and falls through to `Encode`, which is also why image
           // formats never appear here: a bitmap handed over as a separate
           // stream alongside a transcode is not something the client can render.
-          'SubtitleProfiles': <Map<String, Object?>>[
-            const {'Format': 'srt', 'Method': 'Embed'},
-            const {'Format': 'ass', 'Method': 'Embed'},
-            const {'Format': 'ssa', 'Method': 'Embed'},
-            const {'Format': 'vtt', 'Method': 'Embed'},
-            const {'Format': 'pgssub', 'Method': 'Embed'},
-            const {'Format': 'dvdsub', 'Method': 'Embed'},
-            const {'Format': 'dvbsub', 'Method': 'Embed'},
-            if (!burnSubtitles) ...const [
-              {'Format': 'srt', 'Method': 'External'},
-              {'Format': 'ass', 'Method': 'External'},
-              {'Format': 'ssa', 'Method': 'External'},
-              {'Format': 'vtt', 'Method': 'External'},
-            ],
-          ],
+          'SubtitleProfiles': PlatformDetector.isWebOSBuild()
+              ? <Map<String, Object?>>[
+                  const {'Format': 'srt', 'Method': 'Embed'},
+                  const {'Format': 'vtt', 'Method': 'Embed'},
+                  if (!burnSubtitles) ...const [
+                    {'Format': 'srt', 'Method': 'External'},
+                    {'Format': 'vtt', 'Method': 'External'},
+                  ],
+                ]
+              : <Map<String, Object?>>[
+                  const {'Format': 'srt', 'Method': 'Embed'},
+                  const {'Format': 'ass', 'Method': 'Embed'},
+                  const {'Format': 'ssa', 'Method': 'Embed'},
+                  const {'Format': 'vtt', 'Method': 'Embed'},
+                  const {'Format': 'pgssub', 'Method': 'Embed'},
+                  const {'Format': 'dvdsub', 'Method': 'Embed'},
+                  const {'Format': 'dvbsub', 'Method': 'Embed'},
+                  if (!burnSubtitles) ...const [
+                    {'Format': 'srt', 'Method': 'External'},
+                    {'Format': 'ass', 'Method': 'External'},
+                    {'Format': 'ssa', 'Method': 'External'},
+                    {'Format': 'vtt', 'Method': 'External'},
+                  ],
+                ],
           if (PlatformDetector.isTizenBuild())
             ...tizenPlaybackProfile(audio: audioProfile, burnSubtitles: burnSubtitles),
         },

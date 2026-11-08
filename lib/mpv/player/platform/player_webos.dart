@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:video_player_drm/video_player.dart' as webos_media;
 
+import '../../../media/webos_playback_profile.dart';
 import '../../../models/audio_channel_limit.dart';
 import '../../../utils/app_logger.dart';
 import '../../../utils/log_redaction_manager.dart';
@@ -583,6 +584,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     handlePlayerEvent('end-file', {
       'sourceId': sourceId,
       'reason': 'error',
+      if (webosMediaErrorRejectsAudio(error)) 'cause': PlayerError.audioCodecUnsupported,
       // Native error text can include a media URI. Never surface it to logs.
       'message': 'The webOS media player could not load this stream.',
     });

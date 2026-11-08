@@ -1,6 +1,6 @@
 # webOS TV port status
 
-**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.3](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.3). The release IPK was installed on the rooted LG C6 on 2026-11-07. Login and UI availability do not establish media qualification: its first reported 4K HEVC/HDR attempt failed. The 3.0.4 repair separates native UI-audio/video slots and corrects failure delivery and retry cleanup; exact-device playback validation is in progress. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are retained as historical evidence.**
+**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.3](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.3). The release IPK was installed on the rooted LG C6 on 2026-11-07. Login and UI availability do not establish media qualification: both 4K HEVC/HDR and 1080p attempts failed. Native tracing identified `NDL_media was initialized already`: UI audio initialized slot 0 before video attempted to initialize the same slot. The 3.0.4 repair separates native UI-audio/video slots and corrects failure delivery and retry cleanup; exact-device playback validation is in progress. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are retained as historical evidence.**
 
 ## Compatibility matrix
 
@@ -248,3 +248,13 @@ make a build appear device-qualified.
 
 
 Do not claim broad model support or publish this candidate until LG runtime redistribution terms are reviewed, this exact package passes captured visible-frame and media smoke tests on the C6 through a reproducible install path, and additional supported model/firmware combinations are exercised.
+
+## C6 playback diagnostics and availability
+
+Check with the owner before foregrounding or restarting Pleazyng when a movie is playing. The owner explicitly authorized C6 playback-repair testing on 2026-11-07; that authorization does not permit interrupting future movie sessions.
+
+For the 3.0.3 failure, the native player returned `-1` from `NDL_MediaInitWithWindowId` before media loading, with `NDL_MediaGetError()` reporting `Failed to initialize NDL_media : NDL_media was initialized already`. UI audio owns native slot 0; video must acquire slots 1–4. Preserve this shared ownership contract in `shared/webos/ndl_media_slots.h`. A server decision saying direct play is supported does not prove the native player initialized or requested a media file.
+
+The failing Odyssey file is HEVC Main10 HDR10 with DTS/DTS-HD MA tracks. Codec support varies by TV and output path. Preserve original DTS/TrueHD and receiver passthrough on initial playback; convert audio only after explicit native audio-format rejection. Receiver capability alone does not establish the TV app's demux/passthrough support. This is independent of the slot collision. Test both compatible-audio direct playback and DTS conversion, plus dispose/retry, on the exact candidate. Headless tests alone do not qualify physical HDR output.
+
+Temporary diagnostics must omit media URLs and credentials, preserve app login, restore the registered executable in a `finally` path, and remove only task-owned launchers/interposers after their consumers exit. Do not enable global vendor data collection. Do not leave callback interposers active during final multi-slot qualification.

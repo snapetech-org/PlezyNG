@@ -1456,9 +1456,11 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
           result.mediaInfo?.audioTracks.isNotEmpty == true ? 'yes' : 'no',
         );
         if (!isCurrent()) return false;
+      }
+      if (PlatformDetector.usesNativeTvMedia()) {
         await currentPlayer.setProperty(
-          'webos-source-audio-metadata',
-          jsonEncode(webosDirectAudioMetadata(result.mediaInfo, isTranscoding: result.isTranscoding)),
+          'native-tv-source-audio-metadata',
+          jsonEncode(nativeTvDirectAudioMetadata(result.mediaInfo, isTranscoding: result.isTranscoding)),
         );
         if (!isCurrent()) return false;
       }

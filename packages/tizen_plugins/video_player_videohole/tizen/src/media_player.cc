@@ -798,6 +798,9 @@ flutter::EncodableList MediaPlayer::GetTrackInfo(std::string track_type) {
       trackSelection.insert_or_assign(
           flutter::EncodableValue("bitrate"),
           flutter::EncodableValue(audio_track_info->bit_rate));
+      trackSelection.insert_or_assign(
+          flutter::EncodableValue("sampleRate"),
+          flutter::EncodableValue(static_cast<int>(audio_track_info->sample_rate)));
 
       trackSelections.push_back(flutter::EncodableValue(trackSelection));
     }

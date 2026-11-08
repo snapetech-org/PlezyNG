@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Apply source-aware audio diagnostics to Samsung Tizen, retain native channel/rate/bitrate data, and reject contradictory source hints. Refresh spotlight and queue artwork on server changes across layouts, and cancel unfinished redirect bodies in the shared native TV proxy.
+
 - Keep live-program and audio-format header subscriptions independently keyed, and avoid resolving an artwork URL when an item has no picture.
 
 - Fill LG's unknown direct-play audio labels from matched original-source metadata with explicit diagnostic provenance, and stop unsupported desktop media-control calls on native TVs.
@@ -608,6 +610,8 @@
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
 ## [3.0.5] - 2026-11-08
+
+- Extend audio diagnostics to Samsung Tizen, preserve native channel/rate/bitrate values, refresh remaining hero/spotlight/queue artwork after server changes, and cancel unfinished native-TV media redirects.
 
 - Keep live-program and audio-format header subscriptions independently keyed, and skip artwork URL resolution for missing pictures.
 

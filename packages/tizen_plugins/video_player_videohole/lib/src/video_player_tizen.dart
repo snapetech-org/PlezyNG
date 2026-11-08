@@ -319,6 +319,7 @@ class VideoPlayerTizen extends VideoPlayerPlatform {
           language: language,
           channel: channel,
           bitrate: bitrate,
+          sampleRate: (trackMap['sampleRate'] as int?) ?? 0,
         ),
       );
     }

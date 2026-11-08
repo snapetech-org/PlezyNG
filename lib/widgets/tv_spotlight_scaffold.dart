@@ -12,6 +12,8 @@ import '../media/media_item.dart';
 import '../media/media_item_types.dart';
 import '../media/media_role.dart';
 import '../media/media_server_client.dart';
+import '../media/ids.dart';
+import '../providers/multi_server_provider.dart';
 import '../models/catalog/catalog_item.dart';
 import '../navigation/main_screen_scope.dart';
 import '../navigation/profile_navigation_scope.dart';
@@ -20,6 +22,7 @@ import '../services/playback_coordinator.dart';
 import '../services/settings_service.dart';
 import '../services/theme_song_controller.dart';
 import '../utils/debouncer.dart';
+import '../utils/provider_extensions.dart';
 import '../utils/layout_constants.dart';
 import 'package:provider/provider.dart';
 import '../utils/formatters.dart';
@@ -417,9 +420,12 @@ class _CatalogSpotlightBackgroundState extends State<_CatalogSpotlightBackground
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final accentColor = _accentColor;
+    final servers = context.watch<MultiServerProvider?>();
+    final owner = serverIdOrNull(widget.item?.serverId);
+    final client = servers != null && owner != null ? context.watchArtworkClient(owner) : widget.client;
     final background = TvSpotlightBackground(
       item: _renderItem,
-      client: widget.client,
+      client: client,
       hideSpoilers: widget.hideSpoilers,
       contentTop: widget.contentTop,
       contentBottom: widget.contentBottom,
@@ -452,7 +458,7 @@ class _CatalogSpotlightBackgroundState extends State<_CatalogSpotlightBackground
             start: widget.contentLeft,
             end: 0,
             top: widget.castTop,
-            child: _HeroCastRow(item: widget.item!, client: widget.client),
+            child: _HeroCastRow(item: widget.item!, client: client),
           ),
         if (widget.hasPrevious) _buildChevron(context, alignment: AlignmentDirectional.centerStart),
         if (widget.hasNext) _buildChevron(context, alignment: AlignmentDirectional.centerEnd),

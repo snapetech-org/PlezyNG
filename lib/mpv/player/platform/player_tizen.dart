@@ -8,11 +8,14 @@ import 'package:video_player_videohole/video_player.dart' as samsung;
 
 import '../../../models/audio_channel_limit.dart';
 import '../../../utils/serial_future_queue.dart';
+import '../../../utils/app_logger.dart';
+import '../../../utils/codec_utils.dart';
 import '../../models.dart';
 import '../audio_rendering_mode.dart';
 import '../player_base.dart';
 import '../subtitle_pcm_capture_source.dart';
 import 'webos_media_proxy.dart';
+import 'native_tv_playback_metadata.dart';
 
 /// Samsung's native media plane. The existing app supplies browsing, focus,
 /// transport controls and watch progress; no browser-hosted UI is involved.
@@ -46,6 +49,11 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   bool _failed = false;
   bool _completed = false;
   bool _subtitlesVisible = false;
+  List<Map<String, dynamic>> _pendingSourceAudioMetadata = const [];
+  List<Map<String, dynamic>> _sourceAudioMetadata = const [];
+  final Map<String, String> _audioMetadataOrigins = {};
+  final Map<String, ({int channels, int sampleRate, int bitrate})> _nativeAudioMetadata = {};
+  String? _lastLoggedAudioMetadata;
   Duration _subtitleDelay = Duration.zero;
 
   @override
@@ -132,6 +140,8 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   }) {
     if (disposed || _closing) return Future.value();
     final generation = ++_generation;
+    final audioMetadata = _pendingSourceAudioMetadata;
+    _pendingSourceAudioMetadata = const [];
     _isLivePlayback = isLive;
     _nextMedia = null;
     return _sources.run(() async {
@@ -139,6 +149,7 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
       await _releaseSource();
       if (!_current(generation)) return;
       _media = media;
+      _sourceAudioMetadata = audioMetadata;
       _externalSubtitles = externalSubtitles ?? const [];
       final start = media.start ?? timelineOffset;
       configureTimeline(duration: timelineDuration, offset: timelineOffset);
@@ -250,9 +261,37 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
     final audio = await controller.audioTracks ?? [];
     final text = await controller.textTracks ?? [];
     if (!_current(generation)) return;
+    final hints = audio.length == _sourceAudioMetadata.length ? _sourceAudioMetadata : const <Map<String, dynamic>>[];
+    final descriptors = [
+      for (var index = 0; index < audio.length; index++)
+        nativeTvAudioDescriptor(
+          AudioTrack(
+            id: '${audio[index].trackId}',
+            language: audio[index].language,
+            channels: audio[index].channel > 0 ? audio[index].channel : null,
+            sampleRate: audio[index].sampleRate > 0 ? audio[index].sampleRate : null,
+            bitrate: audio[index].bitrate > 0 ? audio[index].bitrate : null,
+          ),
+          hints.isEmpty ? null : hints[index],
+        ),
+    ];
+    _audioMetadataOrigins
+      ..clear()
+      ..addEntries(descriptors.map((descriptor) => MapEntry(descriptor.track.id, descriptor.origin)));
+    _nativeAudioMetadata
+      ..clear()
+      ..addEntries(
+        audio.map(
+          (track) => MapEntry('${track.trackId}', (
+            channels: track.channel,
+            sampleRate: track.sampleRate,
+            bitrate: track.bitrate,
+          )),
+        ),
+      );
     updateTracks(
       Tracks(
-        audio: [for (final track in audio) AudioTrack(id: '${track.trackId}', language: track.language)],
+        audio: [for (final descriptor in descriptors) descriptor.track],
         subtitle: [
           SubtitleTrack.off,
           for (final track in text) SubtitleTrack(id: '${track.trackId}', language: track.language, isContainer: true),
@@ -265,6 +304,24 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
       updateSelectedAudioTrack('${track.trackId}');
     }
     updateSelectedSubtitleTrack(SubtitleTrack.off.id);
+    _logAudioMetadata();
+  }
+
+  void _logAudioMetadata() {
+    final selected = state.track.audio;
+    if (selected != null) {
+      final message =
+          'Tizen source audio metadata: track=${selected.id}, origin=${_audioMetadataOrigins[selected.id]}, '
+          'codec=${selected.codec}, profile=${selected.codecProfile}, channels=${selected.channels}, '
+          'sampleRate=${selected.sampleRate}, bitrate=${selected.bitrate}; '
+          'nativeChannels=${_nativeAudioMetadata[selected.id]?.channels}, '
+          'nativeSampleRate=${_nativeAudioMetadata[selected.id]?.sampleRate}, '
+          'nativeBitrate=${_nativeAudioMetadata[selected.id]?.bitrate}; receiver output unreported';
+      if (_lastLoggedAudioMetadata != message) {
+        _lastLoggedAudioMetadata = message;
+        appLogger.i(message);
+      }
+    }
   }
 
   void _fail(int sourceId) {
@@ -283,6 +340,10 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
     _controller = null;
     _visualizerBound = false;
     _proxy = null;
+    _sourceAudioMetadata = const [];
+    _audioMetadataOrigins.clear();
+    _nativeAudioMetadata.clear();
+    _lastLoggedAudioMetadata = null;
     _subtitleGeneration++;
     _captions = null;
     _subtitlesVisible = false;
@@ -368,7 +429,10 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
     if (!await controller.setTrackSelection(samsung.Track(trackId: id, trackType: samsung.TrackType.audio))) {
       throw PlatformException(code: 'tizen-audio-track', message: 'This audio track could not be selected.');
     }
-    if (_current(generation)) updateSelectedAudioTrack(track.id);
+    if (_current(generation)) {
+      updateSelectedAudioTrack(track.id);
+      _logAudioMetadata();
+    }
   }
 
   @override
@@ -487,6 +551,8 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
   Future<void> setProperty(String name, String value) async {
     if (disposed || _closing) return;
     switch (name) {
+      case 'native-tv-source-audio-metadata':
+        _pendingSourceAudioMetadata = decodeNativeTvAudioMetadata(value);
       case 'pause':
         await (value == 'yes' ? pause() : play());
       case 'volume':
@@ -513,6 +579,18 @@ class PlayerTizen extends PlayerBase implements SubtitlePcmCaptureSource, Native
     'seekable' => state.seekable ? 'yes' : 'no',
     'width' || 'dwidth' => _controller?.value.size.width.toInt().toString(),
     'height' || 'dheight' => _controller?.value.size.height.toInt().toString(),
+    'current-vo' => 'tizen-native',
+    'audio-codec-name' =>
+      state.track.audio?.codec == null
+          ? null
+          : CodecUtils.formatAudioCodec(state.track.audio!.codec!, profile: state.track.audio?.codecProfile),
+    'audio-params/channel-count' || 'audio-params/channels' => state.track.audio?.channels?.toString(),
+    'audio-params/samplerate' => state.track.audio?.sampleRate?.toString(),
+    'audio-bitrate' => state.track.audio?.bitrate?.toString(),
+    'tizen-audio-metadata-origin' => _audioMetadataOrigins[state.track.audio?.id],
+    'tizen-native-audio-channel-count' => _nativeAudioMetadata[state.track.audio?.id]?.channels.toString(),
+    'tizen-native-audio-samplerate' => _nativeAudioMetadata[state.track.audio?.id]?.sampleRate.toString(),
+    'tizen-native-audio-bitrate' => _nativeAudioMetadata[state.track.audio?.id]?.bitrate.toString(),
     _ => null,
   };
 

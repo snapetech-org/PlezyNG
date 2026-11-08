@@ -18,7 +18,14 @@ void main() {
       proxy = await WebOSMediaProxy.bind();
       origin.listen((request) async {
         requests.add(request);
-        if (request.uri.path == '/playlist.m3u8') {
+        if (request.uri.path == '/stalled-redirect') {
+          request.response.statusCode = HttpStatus.found;
+          request.response.headers.set(HttpHeaders.locationHeader, '/segment.ts');
+          request.response.write('this irrelevant body never finishes');
+          request.response.done.ignore();
+          await request.response.flush();
+          return;
+        } else if (request.uri.path == '/playlist.m3u8') {
           request.response.headers.contentType = ContentType('application', 'vnd.apple.mpegurl');
           request.response.write(
             '#EXTM3U\n'
@@ -96,6 +103,17 @@ void main() {
             .every((request) => request.headers.value('X-Plex-Token') == 'query-secret' && request.uri.query.isEmpty),
         isTrue,
       );
+    });
+
+    test('redirects complete without draining an unfinished response body', () async {
+      final local = proxy.register(Uri.parse('http://127.0.0.1:${origin.port}/stalled-redirect'));
+      final response = await client
+          .getUrl(local)
+          .then((request) => request.close())
+          .timeout(const Duration(seconds: 2));
+      expect(response.statusCode, HttpStatus.ok);
+      expect(await response.fold<List<int>>([], (bytes, chunk) => bytes..addAll(chunk)), [0x10, 0x20, 0x30, 0x40]);
+      expect(requests.map((request) => request.uri.path), ['/stalled-redirect', '/segment.ts']);
     });
 
     test('rejects methods and playlist children outside the media origin', () async {

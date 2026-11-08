@@ -1601,7 +1601,7 @@ class _DiscoverScreenState extends State<DiscoverScreen>
         mediaKey: heroItem.globalKey,
         imagePaths: heroItem.heroRotationPaths(containerAspectRatio: heroAspectRatio),
         fallbackImagePaths: heroArtPaths,
-        client: _getMediaClientForItem(heroItem),
+        client: context.watchArtworkClient(serverIdOrNull(heroItem.serverId)),
         active: active && _isTabVisible,
         width: artSize.width,
         height: artSize.height,
@@ -1611,7 +1611,7 @@ class _DiscoverScreenState extends State<DiscoverScreen>
   }
 
   Widget _buildHeroItem(MediaItem heroItem, double heroHeight) {
-    final heroClient = _getMediaClientForItem(heroItem);
+    final heroClient = context.watchArtworkClient(serverIdOrNull(heroItem.serverId));
     final isEpisode = heroItem.isEpisode;
     final showName = heroItem.grandparentTitle ?? heroItem.displayTitle;
     final screenWidth = MediaQuery.sizeOf(context).width;

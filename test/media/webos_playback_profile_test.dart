@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/webos_playback_profile.dart';
 import 'package:plezy/media/media_source_info.dart';
+import 'package:plezy/mpv/player/platform/native_tv_playback_metadata.dart';
 
 void main() {
   test('source audio hints describe only an unchanged original rendition', () {
@@ -14,12 +15,12 @@ void main() {
       selected: true,
     );
     final source = MediaSourceInfo(videoUrl: '/file.mkv', audioTracks: [audio], subtitleTracks: [], chapters: []);
-    final hints = webosDirectAudioMetadata(source, isTranscoding: false);
+    final hints = nativeTvDirectAudioMetadata(source, isTranscoding: false);
     expect(hints.single, containsPair('codecProfile', 'ma'));
     expect(hints.single, containsPair('sampleRate', 48000));
     expect(hints.single, containsPair('bitRate', 4000000));
-    expect(webosDirectAudioMetadata(source, isTranscoding: true), isEmpty);
-    expect(webosDirectAudioMetadata(null, isTranscoding: false), isEmpty);
+    expect(nativeTvDirectAudioMetadata(source, isTranscoding: true), isEmpty);
+    expect(nativeTvDirectAudioMetadata(null, isTranscoding: false), isEmpty);
     final carried = audio.withSelected(false);
     expect(carried.codecProfile, 'ma');
     expect(carried.sampleRate, 48000);

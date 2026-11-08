@@ -18,6 +18,7 @@ import '../../models.dart';
 import '../audio_rendering_mode.dart';
 import '../player_base.dart';
 import 'webos_media_proxy.dart';
+import 'native_tv_playback_metadata.dart';
 import 'webos_soloud_player.dart';
 import 'webos_pgs_overlay.dart';
 
@@ -614,31 +615,19 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     int index,
     Map<String, dynamic>? hint,
   ) {
-    final nativeCodec = _audioCodec(row);
-    final useHint = nativeCodec == null && hint != null && _audioCodec(hint) != null;
-    final metadata = useHint ? hint : row;
-    return (
-      track: AudioTrack(
+    return nativeTvAudioDescriptor(
+      AudioTrack(
         id: '$index',
         title: _trackLabel(row, index),
         language: _stringField(row, 'language'),
-        codec: _audioCodec(metadata),
-        codecProfile: _stringField(metadata, 'codecProfile'),
-        channels: _positiveIntField(metadata, 'channels'),
-        sampleRate: _positiveIntField(metadata, 'sampleRate'),
-        bitrate: _positiveIntField(metadata, 'bitRate'),
+        codec: _stringField(row, 'codec'),
+        codecProfile: _stringField(row, 'codecProfile'),
+        channels: _positiveIntField(row, 'channels'),
+        sampleRate: _positiveIntField(row, 'sampleRate'),
+        bitrate: _positiveIntField(row, 'bitRate'),
       ),
-      origin: useHint
-          ? 'server-source'
-          : nativeCodec == null
-          ? 'unreported'
-          : 'native-source',
+      hint,
     );
-  }
-
-  String? _audioCodec(Map<String, dynamic> row) {
-    final codec = _stringField(row, 'codec');
-    return codec == null || const {'unknown', 'none', 'n/a', 'undefined'}.contains(codec.toLowerCase()) ? null : codec;
   }
 
   String _trackLabel(Map<String, dynamic> row, int index) {
@@ -1040,16 +1029,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       case 'webos-source-has-audio':
         _sourceHasAudio = value == 'yes';
         break;
+      case 'native-tv-source-audio-metadata':
       case 'webos-source-audio-metadata':
-        _pendingSourceAudioMetadata = const [];
-        try {
-          final decoded = value.length <= 65536 ? jsonDecode(value) : null;
-          if (decoded is List && decoded.length <= 128 && decoded.every((row) => row is Map)) {
-            _pendingSourceAudioMetadata = [for (final row in decoded) Map<String, dynamic>.from(row as Map)];
-          }
-        } on FormatException {
-          appLogger.d('Ignoring malformed webOS source audio metadata');
-        }
+        _pendingSourceAudioMetadata = decodeNativeTvAudioMetadata(value);
         break;
       case 'pause':
         if (value == 'yes') {

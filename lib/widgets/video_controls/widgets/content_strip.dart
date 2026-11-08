@@ -266,7 +266,7 @@ class ContentStripState extends State<ContentStrip> {
   }
 
   MediaServerClient? _tryGetClient(BuildContext context, ServerId? serverId) {
-    return context.tryGetMediaClientForServer(serverId);
+    return serverId == null ? null : context.watchArtworkClient(serverId);
   }
 
   double _itemWidth(bool isTablet) => isTablet ? 212.0 : 132.0; // thumb + 12 padding
@@ -525,9 +525,7 @@ class ContentStripState extends State<ContentStrip> {
             itemBuilder: (context, index, itemKey) {
               final item = items[index];
 
-              final client = item.serverId != null
-                  ? context.tryGetMediaClientForServer(serverIdOrNull(item.serverId))
-                  : null;
+              final client = item.serverId != null ? context.watchArtworkClient(serverIdOrNull(item.serverId)) : null;
 
               void onTap() => widget.onQueueItemSelected?.call(item);
 

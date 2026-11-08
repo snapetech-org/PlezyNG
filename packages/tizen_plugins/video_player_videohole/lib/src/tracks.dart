@@ -78,6 +78,7 @@ class AudioTrack extends Track {
     required this.language,
     required this.channel,
     required this.bitrate,
+    this.sampleRate = 0,
   });
 
   /// The language of audio track.
@@ -88,6 +89,9 @@ class AudioTrack extends Track {
 
   /// The bitrate of audio track.
   final int bitrate;
+
+  /// Source sample rate in Hz; zero when an older backend does not report it.
+  final int sampleRate;
 }
 
 /// A representation of a text track.

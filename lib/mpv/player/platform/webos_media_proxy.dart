@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-/// A loopback-only, per-player bridge for LG's webOS media pipeline.
+/// A loopback-only, per-player bridge for LG and Samsung native media.
 ///
-/// LG's native video plugin does not forward HTTP headers. This proxy keeps
+/// The native plugins have limited HTTP-header support. This proxy keeps
 /// server credentials in the Dart process, forwards byte ranges, and rewrites
 /// HLS children through short-lived opaque local URLs. Only the exact source
 /// origin is reachable through a proxy resource, so playlist contents cannot
@@ -48,7 +48,7 @@ class WebOSMediaProxy {
     final response = await request.close();
     final length = response.contentLength >= 0 ? response.contentLength : null;
     final contentType = response.headers.contentType?.mimeType.toLowerCase();
-    await response.drain<void>();
+    await response.listen(null).cancel();
     return (length: length, contentType: contentType);
   }
 
@@ -145,13 +145,14 @@ class WebOSMediaProxy {
       upstream = await upstreamRequest.close();
       final location = upstream.headers.value(HttpHeaders.locationHeader);
       if (upstream.statusCode < 300 || upstream.statusCode >= 400 || location == null) break;
+      // Redirect bodies are irrelevant and can be unbounded or never finish.
+      await upstream.listen(null).cancel();
       if (redirect == _maxRedirects) throw const HttpException('Media redirect limit exceeded');
       final next = current.resolve(location);
       if (!_isHttp(next) || next.origin != resource.origin) {
         throw const FormatException('Media redirect left the authenticated source origin');
       }
       current = next;
-      await upstream.drain<void>();
     }
 
     if (upstream == null) throw const HttpException('Media request did not complete');
@@ -179,7 +180,7 @@ class WebOSMediaProxy {
     response.statusCode = upstream.statusCode;
     _copyResponseHeaders(upstream, response);
     if (method == 'HEAD') {
-      await upstream.drain<void>();
+      await upstream.listen(null).cancel();
       await response.close();
       return;
     }

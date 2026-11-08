@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -94,6 +95,74 @@ void main() {
     expect(player.state.playing, isTrue);
     expect(player.state.tracks.audio.single.id, '4');
     expect(player.state.track.subtitle?.id, 'no');
+  });
+
+  test('native audio channel, rate and bitrate reach performance properties', () async {
+    await player.open(Media('/movie.mp4'));
+    expect(await player.getProperty('audio-params/channel-count'), isNull);
+    await player.selectAudioTrack(player.state.tracks.audio.single);
+    expect(await player.getProperty('audio-params/channel-count'), '2');
+    expect(await player.getProperty('audio-params/samplerate'), '44100');
+    expect(await player.getProperty('audio-bitrate'), '128000');
+    expect(await player.getProperty('current-vo'), 'tizen-native');
+    expect(await player.getProperty('audio-out-params/channel-count'), isNull);
+  });
+
+  test('matched original source format is labelled and consumed by one open', () async {
+    backend.audioChannels = 6;
+    backend.audioRate = 48000;
+    await player.setProperty(
+      'native-tv-source-audio-metadata',
+      jsonEncode([
+        {'codec': 'dca', 'codecProfile': 'ma', 'channels': 6, 'sampleRate': 48000, 'bitRate': 4000000},
+      ]),
+    );
+    await player.open(Media('/original.mkv'));
+    await player.selectAudioTrack(player.state.tracks.audio.single);
+    expect(await player.getProperty('audio-codec-name'), 'DTS-HD MA');
+    expect(await player.getProperty('audio-params/channel-count'), '6');
+    expect(await player.getProperty('audio-params/samplerate'), '48000');
+    expect(await player.getProperty('tizen-audio-metadata-origin'), 'server-source');
+    expect(await player.getProperty('tizen-native-audio-bitrate'), '128000');
+    expect(await player.getProperty('audio-bitrate'), '4000000');
+    backend.audioChannels = 2;
+    backend.audioRate = 44100;
+    await player.open(Media('/converted.mp4'));
+    await player.selectAudioTrack(player.state.tracks.audio.single);
+    expect(await player.getProperty('audio-codec-name'), isNull);
+    expect(await player.getProperty('audio-params/channel-count'), '2');
+    expect(await player.getProperty('tizen-audio-metadata-origin'), 'unreported');
+  });
+
+  test('partial and malformed catalogs cannot lend a different track format', () async {
+    await player.setProperty(
+      'native-tv-source-audio-metadata',
+      jsonEncode([
+        {'codec': 'dca', 'channels': 6},
+        {'codec': 'aac', 'channels': 2},
+      ]),
+    );
+    await player.open(Media('/partial.mkv'));
+    await player.selectAudioTrack(player.state.tracks.audio.single);
+    expect(await player.getProperty('audio-codec-name'), isNull);
+    expect(await player.getProperty('audio-params/channel-count'), '2');
+    await player.setProperty('native-tv-source-audio-metadata', '{broken');
+    await player.open(Media('/next.mp4'));
+    expect(await player.getProperty('audio-codec-name'), isNull);
+  });
+
+  test('contradictory source metadata cannot hide reported native channels', () async {
+    await player.setProperty(
+      'native-tv-source-audio-metadata',
+      jsonEncode([
+        {'codec': 'dca', 'channels': 6, 'sampleRate': 48000},
+      ]),
+    );
+    await player.open(Media('/native-stereo.mp4'));
+    await player.selectAudioTrack(player.state.tracks.audio.single);
+    expect(await player.getProperty('audio-codec-name'), isNull);
+    expect(await player.getProperty('audio-params/channel-count'), '2');
+    expect(await player.getProperty('audio-params/samplerate'), '44100');
   });
 
   test('timeline offsets and seeking at non-unit speed preserve item time', () async {
@@ -228,6 +297,8 @@ class FakeSamsung extends native.VideoPlayerPlatform {
   final preparing = Completer<void>();
   Completer<void>? prepareGate;
   bool failCreate = false;
+  int audioChannels = 2;
+  int audioRate = 44100;
   bool acceptTrack = true;
   Duration position = Duration.zero;
 
@@ -286,7 +357,7 @@ class FakeSamsung extends native.VideoPlayerPlatform {
       native.DurationRange(Duration.zero, const Duration(minutes: 2));
   @override
   Future<List<samsung.AudioTrack>> getAudioTracks(int playerId) async => [
-    samsung.AudioTrack(trackId: 4, language: 'en', channel: 2, bitrate: 128000),
+    samsung.AudioTrack(trackId: 4, language: 'en', channel: audioChannels, bitrate: 128000, sampleRate: audioRate),
   ];
   @override
   Future<List<samsung.TextTrack>> getTextTracks(int playerId) async => [samsung.TextTrack(trackId: 7, language: 'en')];

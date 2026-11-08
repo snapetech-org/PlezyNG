@@ -159,6 +159,16 @@ archives remain architecture-specific.
 
 ### Check signing before compiling macOS
 
+Gatekeeper assessment must receive the app's canonical local APFS path. The
+normal source workspace is private NFS, and its `build` symlink points to local
+Xcode output. Passing the NFS path to `spctl` fails with `Permission denied`
+even when the caller can read it. A native Mac reproduction with Apple's
+signed Calculator app passed at its direct APFS path, failed through a mode-700
+NFS directory, and passed after `Path.resolve(strict=True)`. The workflow
+resolves the app path before assessment; keep the NFS ownership, permissions
+and root-squash policy intact. A failure at this stage after successful native
+compilation uses the retained compilation and signing-only recovery below.
+
 SwiftPM can copy framework binaries into the application with mode `555`.
 `prepare_macos_app_for_signing.py` adds only the owner's write permission
 inside the owned app before signing. It validates the complete bundle boundary

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Resolve the macOS app to its local APFS path before Gatekeeper assessment, avoiding permission failures through protected NFS source workspaces after successful signing and notarization.
+
 - Keep Apple process observation running when a system process query is delayed under Xcode load; retry the query instead of turning successful native tests into a cleanup failure.
 
 - Detect LG native playback silently dropping all audio tracks from an audio-bearing source, then perform the bounded audio-only compatibility retry; preserve supported passthrough and genuinely silent videos.

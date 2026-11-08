@@ -1792,7 +1792,12 @@ jobs:
       - name: Verify Gatekeeper acceptance for Homebrew Cask
         if: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask == 'true' }}
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
-        run: spctl --assess --type execute --verbose=4 build/macos/Build/Products/Release/Pleazyng.app
+        run: |
+          set -euo pipefail
+          # The assessment service cannot traverse the private NFS source path.
+          # Assess the actual local APFS app behind the build-directory symlink.
+          app_path="$(python3 -c 'from pathlib import Path; print(Path("build/macos/Build/Products/Release/Pleazyng.app").resolve(strict=True))')"
+          spctl --assess --type execute --verbose=4 "$app_path"
 
       - name: Create DMG
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}

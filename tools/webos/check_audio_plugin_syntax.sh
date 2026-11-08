@@ -52,15 +52,16 @@ plugin="$ROOT/packages/webos_plugins/audioplayers_soloud/webos"
 includes=(-I "$scratch_dir/include" -iquote "$plugin" -I "$plugin/include"
           -I "$plugin/../src" -I "$plugin/../src/soloud/include" -I "$plugin/../src/soloud/src")
 failures=0
-for unit in "$plugin"/*.cc; do
+video_plugin="$ROOT/packages/webos_plugins/video_player_drm/webos"
+for unit in "$plugin"/*.cc "$video_plugin"/*.cc; do
   printf 'Checking webOS ARM source: %s\n' "${unit##*/}"
   if ! "${compiler[@]}" -std=c++17 -fsyntax-only -DFLUTTER_PLUGIN_IMPL \
-      "${flags[@]}" "${includes[@]}" "$unit"; then
+      "${flags[@]}" "${includes[@]}" -I "$video_plugin/include" "$unit"; then
     failures=$((failures + 1))
   fi
 done
 if (( failures != 0 )); then
-  printf 'WebOS audio plugin has %s incompatible native translation units.\n' "$failures" >&2
+  printf 'WebOS media plugins have %s incompatible native translation units.\n' "$failures" >&2
   exit 1
 fi
-echo 'All webOS audio plugin translation units match the pinned ARM SDK.'
+echo 'All webOS audio/video plugin translation units match the pinned ARM SDK.'

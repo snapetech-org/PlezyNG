@@ -1,6 +1,6 @@
 # webOS native API preflight
 
-Every webOS build checks all audio/visualization plugin C++ translation units
+Every webOS build checks all audio, visualization and video plugin C++ translation units
 against the pinned LG ARM NDK and checksum-verified common-runtime headers before
 fetching and building the Flutter engine. This catches missing namespace imports
 and unsupported SDK API overloads without waiting for the engine build.
@@ -28,3 +28,10 @@ callback. The visualizer keeps one texture registration per plugin/view lifetime
 reuses it across session leases, stops its worker and clears its current frame on
 dispose, and unregisters during host teardown. Outstanding pixel leases keep their
 own frame references alive.
+
+The audio plugin owns NDL slot 0 for its process lifetime. Video uses slots
+1–4 through `shared/webos/ndl_media_slots.h`; its host allocation regression
+runs in Linux native CI. `test/mpv/player_webos_test.dart` covers failed creation,
+initialization ordering, native errors, retry cleanup and opaque HLS URLs. Errors
+must reach the Dart event sink before controller disposal; disposing the native
+player first clears the sink and strands initialization.

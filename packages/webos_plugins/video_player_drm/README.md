@@ -47,11 +47,9 @@ See the [API Reference](API_REFERENCE.md) for detailed documentation of all clas
 
 ## Limitations
 
-- Up to **5 video players** can run concurrently in a single application.
-  When the limit is reached, the next `VideoPlayerController` creation
-  automatically evicts the least-recently-created player; that player
-  receives an `error` event with code `-1` ("num of pipelines") so the
-  Dart side can detect the eviction.
+- Up to **4 video players** can run concurrently in a single application.
+  Native slot 0 is reserved for the separate UI/music audio plugin. Further
+  creates report a native error; dispose an existing controller before retrying.
 - `VideoPlayerController.setVolume` is not supported on webOS in this
   release. Calling it surfaces a Dart exception with error code
   `unsupported`. Apps that need per-stream volume control should rely

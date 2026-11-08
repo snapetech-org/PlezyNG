@@ -4,6 +4,7 @@
 #include "webos_player.h"
 
 #include <NDL/NDL_media.h>
+#include "../../../../shared/webos/ndl_media_slots.h"
 #include <pbnjson.hpp>
 
 #include <algorithm>
@@ -19,7 +20,7 @@
 namespace {
 
 // Slot 0 is the only one this plugin uses.
-constexpr int kSlot = 0;
+constexpr int kSlot = pleazyng::webos::kAudioSlot;
 
 class JsonWriter {
  public:

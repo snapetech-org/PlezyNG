@@ -48,11 +48,13 @@ VideoPlayer::VideoPlayer(VideoPlayerPlugin* plugin,
       LogInfo(TAG) << "no drm info";
     }
     SetNetworkBuffering();
-    player_.load(app_id_, window_id_, uri_,
+    if (!player_.load(app_id_, window_id_, uri_,
                  drm_type_ != 0 ? drm_manager_->getLicenseUrl() : "",
                  drm_type_ != 0 ? drm_manager_->getDrmType() : "",
                  use_license_callback_,
-                 hint_);
+                 hint_)) {
+      OnError(ERROR_PLUGIN, "Native webOS media load request rejected");
+    }
   } else {
     OnError(ERROR_WINID, "invalid windowId");
   }
@@ -106,11 +108,13 @@ void VideoPlayer::Reload(const std::string& window_id) {
       LogInfo(TAG) << "no drm info";
     }
     SetNetworkBuffering();
-    player_.load(app_id_, window_id_, uri_,
+    if (!player_.load(app_id_, window_id_, uri_,
                  drm_type_ != 0 ? drm_manager_->getLicenseUrl() : "",
                  drm_type_ != 0 ? drm_manager_->getDrmType() : "",
                  use_license_callback_,
-                 hint_, seek_position_);
+                 hint_, seek_position_)) {
+      OnError(ERROR_PLUGIN, "Native webOS media reload request rejected");
+    }
   } else {
     OnError(ERROR_WINID, "invalid windowId");
   }
@@ -441,11 +445,11 @@ void VideoPlayer::OnTrackSelected(const std::string& type, int index) {
 void VideoPlayer::OnError(int64_t errorCode,const std::string& errorText) {
   LogError(TAG) << "OnError(" << texture_id_
       << "," << errorCode
-      << "," << errorText << ")";
+      << ", native error text omitted)";
 
-  // To release this
-  plugin_->OnVideoPlayerError(texture_id_);
-
+  // Dart owns controller disposal. Disposing here clears event_sink_ before
+  // the error can reach initialize(), leaving the caller waiting forever.
+  // Keep early errors until the Dart event listener attaches.
   if (event_sink_ == nullptr) {
     pending_error_code_ = errorCode;
     pending_error_text_ = errorText;
@@ -453,19 +457,6 @@ void VideoPlayer::OnError(int64_t errorCode,const std::string& errorText) {
   }
   pending_error_code_ = 0;
   pending_error_text_.clear();
-
-  // for Dart videoController.Dispose()
-  if (!is_initialized_) {
-    is_initialized_ = true;
-    flutter::EncodableMap result = {
-        {flutter::EncodableValue("event"),
-         flutter::EncodableValue("initialized")},
-        {flutter::EncodableValue("duration"),
-         flutter::EncodableValue(0)},
-        {flutter::EncodableValue("width"), flutter::EncodableValue(0)},
-        {flutter::EncodableValue("height"), flutter::EncodableValue(0)}};
-    event_sink_->Success(flutter::EncodableValue(result));
-  }
 
   // To release resouces.
   flutter::EncodableMap result = {

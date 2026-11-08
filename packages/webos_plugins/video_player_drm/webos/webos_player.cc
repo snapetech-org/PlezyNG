@@ -3,6 +3,7 @@
 
 #include <pbnjson.hpp>
 #include <NDL/NDL_media.h>
+#include "../../../../shared/webos/ndl_media_slots.h"
 
 #include "webos_player.h"
 #include "plugin_player_delegate.h"
@@ -87,13 +88,7 @@ std::string WebOSPlayer::s_slot_window_id_[WebOSPlayer::kMaxSlots];
 
 int WebOSPlayer::allocateSlot(WebOSPlayer* self) {
   std::lock_guard<std::mutex> lock(s_slots_mutex_);
-  for (int i = 0; i < kMaxSlots; ++i) {
-    if (s_slots_[i] == nullptr) {
-      s_slots_[i] = self;
-      return i;
-    }
-  }
-  return -1;
+  return pleazyng::webos::AcquireVideoSlot(s_slots_, self);
 }
 
 void WebOSPlayer::releaseSlot(int slot) {

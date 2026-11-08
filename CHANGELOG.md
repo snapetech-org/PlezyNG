@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Separate webOS video slots from UI audio, propagate native load failures before disposal, release failed controller creation for retries, and preserve HLS/DASH transport hints behind authenticated proxy URLs.
+
 - Update device acceptance for search submission, single-Back playback exit, compact download menus and scrolling service pages; retain all Maestro artifacts in the requested directory and document the full headless qualification procedure.
 
 - Route offline playback acceptance through its dedicated CI control proxy, and reject direct attempts without that proxy before building or installing.

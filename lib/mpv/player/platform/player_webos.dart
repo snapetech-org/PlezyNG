@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 import 'package:video_player_drm/video_player.dart' as webos_media;
 
 import '../../../models/audio_channel_limit.dart';
+import '../../../utils/app_logger.dart';
+import '../../../utils/log_redaction_manager.dart';
 import '../../models.dart';
 import '../audio_rendering_mode.dart';
 import '../player_base.dart';
@@ -198,7 +200,17 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
       controller = playerUri.scheme == 'file'
           ? webos_media.VideoPlayerController.file(File.fromUri(playerUri))
-          : webos_media.VideoPlayerController.network(playerUri, httpHeaders: const {});
+          : webos_media.VideoPlayerController.network(
+              playerUri,
+              // The opaque proxy URL intentionally hides the source path.
+              // NDL otherwise loses its HLS/DASH transport detection hint.
+              formatHint: switch (sourceUri.path.toLowerCase()) {
+                final path when path.endsWith('.m3u8') => webos_media.VideoFormat.hls,
+                final path when path.endsWith('.mpd') => webos_media.VideoFormat.dash,
+                _ => null,
+              },
+              httpHeaders: const {},
+            );
       _controller = controller;
       controller.addListener(() => _onControllerValue(controller!, sourceId, generation, isLive: isLive));
       surfaceRevision.value++;
@@ -221,15 +233,26 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       }
     } catch (error) {
       if (generation == _generation && !disposed) {
-        _emitFailure(sourceId);
+        _emitFailure(sourceId, error: error);
         await _releaseSource();
       } else {
         await controller?.dispose();
         await proxy?.close();
       }
-      rethrow;
+      // A native exception can contain the original authenticated media URL.
+      throw PlatformException(
+        code: error is PlatformException && RegExp(r'^[\w.-]{1,80}$').hasMatch(error.code)
+            ? error.code
+            : 'webos-media-open',
+        message: 'The webOS media player could not load this stream.',
+        details: _safeFailureDescription(error),
+      );
     }
   }
+
+  static String _safeFailureDescription(Object error) => LogRedactionManager.redact(
+    error.toString().replaceAll(RegExp(r'(?:https?|file)://[^\s"<>]+', caseSensitive: false), '[media URL]'),
+  );
 
   Future<bool> _canUseSoLoud(Uri source, Uri playerUri, WebOSMediaProxy? proxy) async {
     if (!audioOnly) {
@@ -447,7 +470,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       return;
     }
     if (controller.value.errorDescription != null) {
-      _emitFailure(sourceId);
+      _emitFailure(sourceId, error: controller.value.errorDescription);
       return;
     }
     _adoptControllerValue(controller, sourceId, generation, isLive: isLive);
@@ -549,11 +572,14 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     return value is String && value.trim().isNotEmpty ? value.trim() : null;
   }
 
-  void _emitFailure(int sourceId) {
+  void _emitFailure(int sourceId, {Object? error}) {
     if (_errorSent || disposed) {
       return;
     }
     _errorSent = true;
+    if (error != null) {
+      appLogger.e('webOS media could not open the stream', error: _safeFailureDescription(error));
+    }
     handlePlayerEvent('end-file', {
       'sourceId': sourceId,
       'reason': 'error',

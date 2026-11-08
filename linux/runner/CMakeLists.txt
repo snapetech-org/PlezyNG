@@ -254,6 +254,14 @@ endfunction()
 
 if(PLEZY_BUILD_MPV_PROPERTY_CONTRACT_TESTS OR PLEZY_BUILD_MPV_RELIABILITY_TESTS)
   find_package(Threads REQUIRED)
+  # webOS audio and video share NDL's process-wide player slots. Exercise
+  # their allocation contract on every Linux native CI run, without a TV SDK.
+  add_executable(webos_media_slots_test "../../test/native/webos_media_slots_test.cc")
+  apply_standard_settings(webos_media_slots_test)
+  target_compile_features(webos_media_slots_test PRIVATE cxx_std_17)
+  apply_mpv_reliability_sanitizer(webos_media_slots_test)
+  add_test(NAME webos_media_slots_test COMMAND webos_media_slots_test)
+
   add_executable(mpv_property_result_contract_test
     "../../shared/mpv/mpv_player_common_test.cpp"
   )

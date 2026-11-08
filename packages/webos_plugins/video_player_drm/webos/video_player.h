@@ -89,7 +89,7 @@ private:
   std::string app_id_;
   std::string uri_;
   int drm_type_;
-  const std::string &license_server_url_;
+  std::string license_server_url_;
   bool use_license_callback_ ;
   std::string hint_;
 

@@ -273,7 +273,7 @@ ErrorOr<TextureMessage> VideoPlayerPlugin::Create(
   std::string payload;
   int32_t drm_type = 0;
   std::string license_server_url;
-  bool use_license_callback;
+  bool use_license_callback = false;
   if (msg.asset() && !msg.asset()->empty()) {
     std::string content = *msg.asset();
     std::string assets_path = ::getenv("FLUTTER_ASSETS_PATH");

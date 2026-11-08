@@ -26,13 +26,14 @@ export 'src/closed_caption_file.dart';
 export 'src/drm_configs.dart';
 
 VideoPlayerPlatform? _lastVideoPlayerPlatform;
+Future<void> _platformInitialization = Future<void>.value();
 
 VideoPlayerPlatform get _videoPlayerPlatform {
   final VideoPlayerPlatform currentInstance = VideoPlayerPlatform.instance;
   if (_lastVideoPlayerPlatform != currentInstance) {
     // This will clear all open videos on the platform when a full restart is
     // performed.
-    currentInstance.init();
+    _platformInitialization = currentInstance.init();
     _lastVideoPlayerPlatform = currentInstance;
   }
   return currentInstance;
@@ -444,14 +445,24 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         );
     }
 
-    if (videoPlayerOptions?.mixWithOthers != null) {
-      await _videoPlayerPlatform
-          .setMixWithOthers(videoPlayerOptions!.mixWithOthers);
+    try {
+      final platform = _videoPlayerPlatform;
+      await _platformInitialization;
+      if (videoPlayerOptions?.mixWithOthers != null) {
+        await platform.setMixWithOthers(videoPlayerOptions!.mixWithOthers);
+      }
+      _textureId = (await platform.create(dataSourceDescription)) ??
+          kUninitializedTextureId;
+      if (_textureId == kUninitializedTextureId) {
+        throw PlatformException(
+          code: 'player-create',
+          message: 'Native webOS player creation failed',
+        );
+      }
+    } finally {
+      // Disposal must be released even if window/native creation throws.
+      _creatingCompleter!.complete(null);
     }
-
-    _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ??
-        kUninitializedTextureId;
-    _creatingCompleter!.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
     // Apply the web-specific options
@@ -575,7 +586,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         _isDisposed = true;
         _timer?.cancel();
         await _eventSubscription?.cancel();
-        await _videoPlayerPlatform.dispose(_textureId);
+        if (_textureId != kUninitializedTextureId) {
+          await _videoPlayerPlatform.dispose(_textureId);
+        }
       }
       _lifeCycleObserver?.dispose();
     }

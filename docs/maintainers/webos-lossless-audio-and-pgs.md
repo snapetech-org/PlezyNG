@@ -348,11 +348,13 @@ curl --noproxy '*' --fail --silent --show-error --max-time 3 --max-filesize 6553
 With the receiver on the PC's HDMI 1 input, the input node reported `hdmi1`
 and the network player reported `stopped`. Neither observation tests eARC.
 The first passive capture missed the short app window because it required the
-receiver input node to change first. Trigger captures from actual Pleazyng
-visibility, using `com.webos.surfacemanager/getForegroundAppInfo`, and retain
-the raw receiver input alongside them. Correlate source, route and sample
-times; do not treat a streaming-player state as an HDMI/eARC format unless
-an active TV-input sample establishes that relationship.
+receiver input node to change first. Trigger captures from a new app-owned
+`webOS active audio metadata` diagnostic event; seed the previous event before
+waiting so an old paused stream cannot trigger a new qualification. Retain
+`com.webos.surfacemanager/getForegroundAppInfo` and the raw receiver input
+alongside each sample. Correlate source, route and sample times; do not treat
+a streaming-player state as an HDMI/eARC format unless an active TV-input
+sample establishes that relationship.
 
 Read-only LG evidence includes `com.webos.service.arccontroller/getARCState`,
 `com.webos.service.audio/tv/getAudioInputProperty`,

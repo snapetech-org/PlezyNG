@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Show the active audio format and channel layout in playback controls, and supply native webOS codec, sample-rate, channel and bitrate diagnostics to the performance overlay.
+
+- Keep client-only subtitle selections from burning an unrelated server-selected track, and bound redirected webOS subtitle downloads without consuming redirect bodies.
+
 - Render local and HTTP-delivered Blu-ray PGS subtitle images over native webOS video, preserving authored positioning, transparency and timing without subtitle burn-in.
 
 - Stream macOS release build output in verbose mode to bypass Flutter's quadratic filter on long native linker commands.

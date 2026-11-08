@@ -6,6 +6,7 @@ import '../../../media/media_item.dart';
 import '../../../media/live_tv_timeline.dart';
 import '../../../mpv/mpv.dart';
 import '../../../i18n/strings.g.dart';
+import '../../../utils/codec_utils.dart';
 import '../../../watch_together/widgets/watch_together_overlay.dart';
 import '../../../watch_together/providers/watch_together_provider.dart';
 import '../../app_bar_back_button.dart';
@@ -18,6 +19,14 @@ enum VideoHeaderStyle {
 
   /// Single-line: All info combined with separators (for macOS)
   singleLine,
+}
+
+/// Describes the active player track, not an unobserved receiver input.
+String? activeAudioFormatLabel(AudioTrack? track) {
+  final codec = track?.codec;
+  if (codec == null || codec.isEmpty) return null;
+  final channels = CodecUtils.formatAudioChannels(track?.channels);
+  return [CodecUtils.formatAudioCodec(codec, profile: track?.codecProfile), ?channels].join(' · ');
 }
 
 /// Shared header widget for video controls with back button and title.
@@ -66,7 +75,30 @@ class VideoControlsHeader extends StatelessWidget {
       children: [
         AppBarBackButton(style: BackButtonStyle.video, onPressed: onBack ?? () => Navigator.of(context).pop(true)),
         const SizedBox(width: 16),
-        Expanded(child: _buildTitle(itemTitle)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTitle(itemTitle),
+              if (player case final activePlayer?)
+                StreamBuilder<TrackSelection>(
+                  key: ObjectKey(activePlayer),
+                  stream: activePlayer.streams.track,
+                  initialData: activePlayer.state.track,
+                  builder: (context, snapshot) {
+                    final label = activeAudioFormatLabel(snapshot.data?.audio);
+                    if (label == null) return const SizedBox.shrink();
+                    return Text(
+                      '${t.fileInfo.audio}: $label',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
         Selector<WatchTogetherProvider, bool>(
           selector: (_, p) => p.isInSession,
           builder: (context, inSession, child) {

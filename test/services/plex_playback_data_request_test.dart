@@ -1790,6 +1790,28 @@ void main() {
     expect(params.containsKey('subtitleStreamID'), isFalse);
   });
 
+  test('a client-only sidecar does not burn the server-selected embedded PGS', () {
+    final client = makeClient((_) async => http.Response('not used', 500));
+    addTearDown(client.close);
+    final info = mediaInfoWithSubtitles([
+      MediaSubtitleTrack(id: 401, index: 3, codec: 'pgs', languageCode: 'eng', selected: true, forced: false),
+    ]);
+    final selected = client.resolveTranscodeSubtitleTrackForTesting(
+      info,
+      SubtitlePreference.track(SubtitleTrack.uri('file:///captions.sup', codec: 'pgs', language: 'eng')),
+    );
+    expect(selected, isNull);
+    final params = client.buildTranscodeParamsForTesting(
+      ratingKey: '42',
+      mediaIndex: 0,
+      preset: TranscodeQualityPreset.p720_3mbps,
+      sessionIdentifier: 'session-id',
+      transcodeSessionId: 'transcode-id',
+      selectedSubtitleTrack: selected,
+    );
+    expect(params['subtitles'], 'none');
+  });
+
   group('playback metadata failure contract', () {
     Map<String, dynamic> playableBody() => {
       'MediaContainer': {

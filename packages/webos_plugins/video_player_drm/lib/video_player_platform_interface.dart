@@ -248,6 +248,7 @@ class VideoEvent {
     this.buffered,
     this.isPlaying,
     this.audioTracks,
+    this.videoInfo,
     this.subtitleTracks,
     this.trackSelectedType,
     this.trackSelectedIndex,
@@ -283,6 +284,9 @@ class VideoEvent {
 
   /// Audio track information list.
   final List<Map<String, dynamic>>? audioTracks;
+
+  /// Native source metadata; does not describe the physical display output.
+  final Map<String, dynamic>? videoInfo;
 
   /// Subtitle track information list.
   final List<Map<String, dynamic>>? subtitleTracks;

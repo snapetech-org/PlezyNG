@@ -558,6 +558,10 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
           id: '$index',
           title: _trackLabel(audioRows[index], index),
           language: _stringField(audioRows[index], 'language'),
+          codec: _stringField(audioRows[index], 'codec'),
+          channels: _positiveIntField(audioRows[index], 'channels'),
+          sampleRate: _positiveIntField(audioRows[index], 'sampleRate'),
+          bitrate: _positiveIntField(audioRows[index], 'bitRate'),
         ),
     ];
     final subtitles = <SubtitleTrack>[
@@ -852,7 +856,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
             final next = target.resolve(location);
             // Signed URLs and media headers must not be redirected to another origin.
             if (next.origin != uri.origin) throw const FormatException('Subtitle redirect changed origin.');
-            await response.drain<void>();
+            // A redirect body is untrusted and can be arbitrarily large or
+            // never finish. Discard its transport instead of downloading it.
+            await response.listen((_) {}).cancel();
             target = next;
             continue;
           }
@@ -1020,6 +1026,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     final value = controller?.value;
     final audioPosition = _audioPlayer == null ? null : await _audioPlayer!.getCurrentPosition();
     final audioDuration = _audioPlayer == null ? null : await _audioPlayer!.getDuration();
+    final selectedAudio = state.track.audio;
+    final videoInfo = value?.videoInfo;
+    final audioCodec = selectedAudio?.codec;
     return switch (name) {
       'pause' => state.playing ? 'no' : 'yes',
       'volume' => state.volume.toString(),
@@ -1031,10 +1040,26 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
         (((audioDuration ?? value?.duration ?? Duration.zero).inMilliseconds) / Duration.millisecondsPerSecond)
             .toString(),
       'seekable' => state.seekable ? 'yes' : 'no',
-      'width' || 'dwidth' => value?.size.width.toInt().toString(),
-      'height' || 'dheight' => value?.size.height.toInt().toString(),
+      'width' || 'dwidth' || 'video-params/w' => value?.size.width.toInt().toString(),
+      'height' || 'dheight' || 'video-params/h' => value?.size.height.toInt().toString(),
+      'video-codec' => videoInfo == null ? null : _stringField(videoInfo, 'codec'),
+      'container-fps' => (videoInfo?['frameRate'] as num?)?.toString(),
+      'video-bitrate' => videoInfo == null ? null : _positiveIntField(videoInfo, 'bitRate')?.toString(),
+      'audio-codec-name' => audioCodec,
+      'audio-params/samplerate' || 'current-tracks/audio/demux-samplerate' => selectedAudio?.sampleRate?.toString(),
+      'audio-params/hr-channels' || 'current-tracks/audio/demux-channel-count' => selectedAudio?.channels?.toString(),
+      'audio-bitrate' => selectedAudio?.bitrate?.toString(),
+      'current-vo' => hasVideoSurface ? 'webos-native' : null,
+      // Do not synthesize audio-out-params or a passthrough flag from source
+      // metadata: LG's decoder input does not establish the eARC wire format.
       _ => null,
     };
+  }
+
+  int? _positiveIntField(Map<String, dynamic> row, String name) {
+    final number = row[name];
+    final value = number is num ? number.toInt() : int.tryParse(number?.toString() ?? '');
+    return value != null && value > 0 ? value : null;
   }
 
   @override

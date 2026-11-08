@@ -28,7 +28,17 @@ public:
   typedef struct {
     std::string language;
     int trackId;
+    std::string codec;
+    int channels = 0;
+    int sample_rate = 0;
+    int bit_rate = 0;
   } AudioTrackInfoCb;
+
+  struct VideoInfoCb {
+    std::string codec;
+    double frame_rate = 0;
+    int64_t bit_rate = 0;
+  };
 
   typedef struct {
     std::string language;
@@ -89,6 +99,7 @@ public:
   int getVideoHeight() { return videoH_; }
   const std::vector<AudioTrackInfoCb>& getAudioTracks() { return audio_tracks_; }
   const std::vector<SubtitleTrackInfoCb>& getSubtitleTracks() { return subtitle_tracks_; }
+  const VideoInfoCb& getVideoInfo() { return video_info_; }
   std::string stateToString(int state);
 
   typedef int (*GMainLoopCallback)(void*);
@@ -172,6 +183,7 @@ private:
     int video_height;
     std::vector<AudioTrackInfoCb> audio_tracks;
     std::vector<SubtitleTrackInfoCb> subtitle_tracks;
+    VideoInfoCb video_info;
   } SourceInfoCb;
 
   typedef struct {
@@ -245,6 +257,7 @@ private:
   int videoW_;
   int videoH_;
   std::vector<AudioTrackInfoCb> audio_tracks_;
+  VideoInfoCb video_info_;
   std::vector<SubtitleTrackInfoCb> subtitle_tracks_;
   bool buffering_;
   int64_t buffering_start_;

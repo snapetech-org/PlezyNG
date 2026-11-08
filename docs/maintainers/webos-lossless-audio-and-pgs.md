@@ -166,6 +166,69 @@ No system-wide plugin/configuration changes were made by these tests.
 Implementation evidence is under
 `/mnt/disks/scratch/task-scratch/pleazyng-c6-lossless-pgs-20261108/`.
 
+### Controlled C6 native-decoder trial
+
+The owner subsequently authorized physical playback testing. The pinned DTS
+decoder and switching bin were staged without running the upstream installer.
+The live Plex session then direct-played the original HEVC and DTS-HD MA
+six-channel streams, with no server conversion. LG reported active raw audio
+from the media pipeline, and the owner reported hearing sound. The receiver's
+input format and channel count remain unverified. This trial does not establish
+DTS-HD bitstream passthrough: it currently uses the software decoder.
+
+The trial changes are persistent and currently active:
+
+- Owned directory: `/var/lib/webosbrew/dts25`, marked by `pleazyng-owned` with
+  the exact value `pleazyng-c6-test-20261108`.
+- Files: `libgstdtsdec.so`, `libgstadecswitch.so`, `lgroute-control`, and the
+  original registry backup `original-registry.bin` (mode 0600).
+- Source: DTS Restore Plus commit `2cbf121509fdf93159b0f9ca756235eec39ccaba`;
+  source archive SHA-256
+  `259622906e6b7f45ec34e661a1f5f011a00ff158112c9ed2cfabf0a8ad2d9228`.
+- Decoder SHA-256:
+  `fc9319aa80153aef1a324487a71964f9a5ad3c7db95bc1320ba5bdd8fa0903bb`.
+- Live registry: `/mnt/flash/data/gst_1_0_registry.arm.bin`, SHA-256
+  `97535f49bce49f42e93c295dbe6fb698b69a1609ac7776cfcbeba5ded28cba55`.
+- Original registry SHA-256:
+  `ab0d3959eb6f53831d5ed28125c979bba2d79e46a4f4c0e3199810c85c2529fd`.
+
+The replacement registry was scanned into task scratch with the stock plugin
+directories plus the owned directory, then activated after verifying the
+switching bin selected the staged decoder. No stock library was replaced, no
+boot hook or config bind was installed, no passthrough marker/watch process was
+enabled, and no gain/DRC or sound-output setting was changed. Digital output
+remains `auto`, with external ARC and eARC enabled. No global media service was
+restarted. Do not run the upstream installer over this trial: its defaults and
+service restarts are different.
+
+Preserve these files while the live registry or a pipeline uses them. To undo
+the trial, first verify ownership, the original backup hash and that the live
+hash still matches this receipt. Restore the backup's contents to the live
+registry; if another writer changed it, investigate instead of overwriting it.
+Wait for consuming media pipelines to exit before removing only owned files.
+Never kill all `starfish-media-pipeline` processes: other apps and inputs share
+them. The installation remains a controlled trial, separate from the immutable
+3.0.4 app package and the forthcoming managed runtime/settings integration.
+
+Private receipts: `c6-controlled-trial-state.json`,
+`plex-playing-trial-private.json`, `c6-active-decoded-audio-burst-private.json`
+and `c6-active-pcm-graph-private.txt` in the implementation evidence directory.
+
+### Playback diagnostics
+
+The native adapter now forwards source audio codec, channels, bitrate and sample
+rate, plus source video codec, frame rate and bitrate. LG's audio sample-rate
+field is in kHz and is normalized to Hz. Native `audioInfo.track` events identify
+the active track, including the initial selection. The performance overlay can
+therefore display these fields, and the playback header shows the active audio
+format/channel layout. Native source summaries also go to the existing
+`video_player_drm` system-log context without media URLs or credentials.
+
+These are source/decoder diagnostics, not receiver telemetry. The adapter
+deliberately leaves output channels and passthrough status unknown when LG does
+not report them; never infer them from the source or the ARC carrier's channel
+count. The HDR badge emitted by the TV is independent of the app's controls.
+
 ## Reproducible evidence
 
 Private task evidence is retained under

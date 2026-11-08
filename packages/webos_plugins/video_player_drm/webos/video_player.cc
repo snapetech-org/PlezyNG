@@ -342,6 +342,10 @@ void VideoPlayer::OnInitialized() {
       flutter::EncodableMap t = {
         {flutter::EncodableValue("language"), flutter::EncodableValue(track.language)},
         {flutter::EncodableValue("trackId"),  flutter::EncodableValue(track.trackId)},
+        {flutter::EncodableValue("codec"), flutter::EncodableValue(track.codec)},
+        {flutter::EncodableValue("channels"), flutter::EncodableValue(track.channels)},
+        {flutter::EncodableValue("sampleRate"), flutter::EncodableValue(track.sample_rate)},
+        {flutter::EncodableValue("bitRate"), flutter::EncodableValue(track.bit_rate)},
       };
       audio_tracks.push_back(flutter::EncodableValue(t));
     }
@@ -364,6 +368,10 @@ void VideoPlayer::OnInitialized() {
         {flutter::EncodableValue("height"), flutter::EncodableValue(height)},
         {flutter::EncodableValue("audioTracks"),
          flutter::EncodableValue(audio_tracks)},
+        {flutter::EncodableValue("videoInfo"), flutter::EncodableValue(flutter::EncodableMap{
+          {flutter::EncodableValue("codec"), flutter::EncodableValue(player_.getVideoInfo().codec)},
+          {flutter::EncodableValue("frameRate"), flutter::EncodableValue(player_.getVideoInfo().frame_rate)},
+          {flutter::EncodableValue("bitRate"), flutter::EncodableValue(player_.getVideoInfo().bit_rate)}})},
         {flutter::EncodableValue("subtitleTracks"),
          flutter::EncodableValue(subtitle_tracks)}};
     PushEvent(flutter::EncodableValue(result));

@@ -4437,6 +4437,10 @@ class PlexClient
           }
         }
         matched ??= findPlexTrackForMpvSubtitle(track, info.subtitleTracks);
+        // A local/downloaded sidecar is absent from the server's stream list.
+        // Falling back to its selected embedded track burns unrelated captions
+        // into the video while the client renders the requested sidecar too.
+        if (matched == null && track.isExternal && !track.isContainer) return null;
         return matched ?? _selectedSubtitleTrack(info);
     }
   }

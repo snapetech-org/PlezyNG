@@ -167,13 +167,15 @@ class CodecUtils {
       'eac3' || 'ec3' || 'ec-3' => 'E-AC3',
       'truehd' || 'mlpa' => 'TrueHD',
       'dts' || 'dca' || 'dtsc' || 'dtse' => 'DTS',
+      'dca-ma' => 'DTS-HD MA',
+      'dca-hra' => 'DTS-HD HRA',
       'dtshd' || 'dts-hd' || 'dtsh' || 'dtsl' => 'DTS-HD',
       'dtsx' => 'DTS:X',
       'flac' => 'FLAC',
       'mp3' || 'mp3float' => 'MP3',
       'opus' => 'Opus',
       'vorbis' => 'Vorbis',
-      'pcm_s16le' || 'pcm_s24le' || 'pcm' => 'PCM',
+      'pcm_s16le' || 'pcm_s24le' || 'pcm' || 'raw' => 'PCM',
       _ => codec.toUpperCase(),
     };
   }

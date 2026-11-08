@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/mpv/models.dart';
 import 'package:plezy/mpv/player/platform/player_webos.dart';
 import 'package:video_player_drm/video_player_platform_interface.dart' as native;
+import 'package:plezy/widgets/video_controls/widgets/performance_overlay/performance_stats_service.dart';
+import 'package:plezy/widgets/video_controls/widgets/video_controls_header.dart';
 
 import '../fixtures/pgs_fixture.dart';
 
@@ -14,6 +16,49 @@ void main() {
   final inheritedHttpOverrides = HttpOverrides.current;
   setUpAll(() => HttpOverrides.global = null);
   tearDownAll(() => HttpOverrides.global = inheritedHttpOverrides);
+
+  test('native codec metadata reaches tracks, the audio label and performance stats', () async {
+    final backend = _LGPlayer()
+      ..audioTracks = [
+        {'trackId': 0, 'codec': 'dca-ma', 'channels': 6, 'sampleRate': 48000, 'bitRate': 4000000},
+        {'trackId': 1, 'codec': 'aac', 'channels': 2, 'sampleRate': 48000},
+      ]
+      ..videoInfo = {'codec': 'hevc', 'frameRate': 23.976, 'bitRate': 45000000};
+    native.VideoPlayerPlatform.instance = backend;
+    final player = PlayerWebOS();
+    addTearDown(player.dispose);
+    await player.open(Media('/movie.mkv'));
+    backend.events[1]!.add(
+      native.VideoEvent(
+        eventType: native.VideoEventType.trackSelected,
+        trackSelectedType: 'audio',
+        trackSelectedIndex: 0,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(player.state.track.audio?.channels, 6);
+    expect(activeAudioFormatLabel(player.state.track.audio), 'DTS-HD MA · 5.1');
+    final service = PerformanceStatsService(player);
+    addTearDown(service.dispose);
+    final result = service.statsStream.first;
+    service.startPolling();
+    final stats = await result;
+    expect(stats.videoCodec, 'HEVC');
+    expect(stats.audioCodec, 'DTS-HD MA');
+    expect(stats.audioChannels, '6');
+    expect(stats.audioSamplerate, 48000);
+    expect(stats.audioPassthrough, isFalse);
+    expect(await player.getProperty('audio-out-params/channel-count'), isNull);
+    backend.events[1]!.add(
+      native.VideoEvent(
+        eventType: native.VideoEventType.trackSelected,
+        trackSelectedType: 'audio',
+        trackSelectedIndex: 1,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(activeAudioFormatLabel(player.state.track.audio), 'AAC · Stereo');
+  });
 
   test('failed native creation releases disposal and permits the next open', () async {
     final backend = _LGPlayer()..failCreate = true;
@@ -189,6 +234,35 @@ void main() {
     expect(backend.sources, hasLength(1));
   });
 
+  test('a same-origin redirect cannot stall subtitles with an unfinished response body', () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    final requested = <String>[];
+    server.listen((request) async {
+      requested.add(request.uri.path);
+      if (request.uri.path == '/redirect') {
+        request.response.statusCode = HttpStatus.found;
+        request.response.headers.set(HttpHeaders.locationHeader, '/caption.sup');
+        request.response.write('unused redirect body');
+        await request.response.flush();
+        // Intentionally leave it unfinished. The client must cancel it.
+      } else {
+        request.response.add(syntheticPgsFixture());
+        await request.response.close();
+      }
+    });
+    native.VideoPlayerPlatform.instance = _LGPlayer();
+    final player = PlayerWebOS();
+    addTearDown(() async {
+      await player.dispose();
+      await server.close(force: true);
+    });
+    await player.open(Media('/movie.mkv'));
+    await player
+        .selectSubtitleTrack(SubtitleTrack.uri('http://127.0.0.1:${server.port}/redirect', codec: 'pgs'))
+        .timeout(const Duration(seconds: 3));
+    expect(requested, ['/redirect', '/caption.sup']);
+  });
+
   test('refuses subtitle redirects to a different origin without exposing the signed URL', () async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     server.listen((request) async {
@@ -253,6 +327,7 @@ class _LGPlayer extends native.VideoPlayerPlatform {
   bool failCreate = false;
   bool nullCreate = false;
   List<Map<String, dynamic>>? audioTracks;
+  Map<String, dynamic>? videoInfo;
   Completer<void>? initGate;
   final initializing = Completer<void>();
   PlatformException? streamError;
@@ -289,6 +364,7 @@ class _LGPlayer extends native.VideoPlayerPlatform {
           duration: const Duration(minutes: 2),
           size: const Size(3840, 2160),
           audioTracks: audioTracks,
+          videoInfo: videoInfo,
         ),
       );
     };

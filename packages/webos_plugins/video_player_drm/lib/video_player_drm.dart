@@ -439,6 +439,9 @@ class VideoPlayerWebOs extends VideoPlayerPlatform {
             size: size,
             rotationCorrection: map['rotationCorrection'] as int? ?? 0,
             audioTracks: audioTracks,
+            videoInfo: map['videoInfo'] is Map
+                ? Map<String, dynamic>.from(map['videoInfo'] as Map)
+                : null,
             subtitleTracks: subtitleTracks,
           );
         case 'completed':

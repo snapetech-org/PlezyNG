@@ -689,6 +689,18 @@ void WebOSPlayer::handleEvent(const std::string& event_json) {
         pbnjson::JValue t = audio_tracks[i];
         AudioTrackInfoCb track = { "", 0 };
         if (t["language"].isString()) track.language = t["language"].asString();
+        if (t["codec"].isString()) track.codec = t["codec"].asString();
+        int64_t channels = 0, bit_rate = 0;
+        double sample_rate = 0;
+        if (t["channels"].isNumber()) t["channels"].asNumber(channels);
+        if (t["bitRate"].isNumber()) t["bitRate"].asNumber(bit_rate);
+        if (t["sampleRate"].isNumber()) t["sampleRate"].asNumber(sample_rate);
+        if (channels > 0 && channels <= 32) track.channels = static_cast<int>(channels);
+        if (bit_rate > 0 && bit_rate <= 100000000) track.bit_rate = static_cast<int>(bit_rate);
+        // SMP reports kHz (for example 44.0999985), unlike the app's Hz API.
+        if (sample_rate > 0 && sample_rate <= 768) {
+          track.sample_rate = static_cast<int>(sample_rate * 1000 + 0.5);
+        }
         int64_t id = 0;
         if (t["trackId"].isNumber()) {
           t["trackId"].asNumber(id);
@@ -696,6 +708,13 @@ void WebOSPlayer::handleEvent(const std::string& event_json) {
         }
         cb.audio_tracks.push_back(track);
       }
+    }
+    const auto video_tracks = p0["videoTrackInfo"];
+    if (video_tracks.isArray() && video_tracks.arraySize() > 0) {
+      const auto video = video_tracks[0];
+      if (video["codec"].isString()) cb.video_info.codec = video["codec"].asString();
+      if (video["frameRate"].isNumber()) video["frameRate"].asNumber(cb.video_info.frame_rate);
+      if (video["bitRate"].isNumber()) video["bitRate"].asNumber(cb.video_info.bit_rate);
     }
     pbnjson::JValue sub_tracks = p0["subtitleTrackInfo"];
     if (sub_tracks.isArray()) {
@@ -712,6 +731,13 @@ void WebOSPlayer::handleEvent(const std::string& event_json) {
       }
     }
     pushCallback(cb);
+  } else if (!obj["audioInfo"].isNull()) {
+    const auto audio = obj["audioInfo"];
+    int64_t track = -1;
+    if (audio["track"].isNumber()) audio["track"].asNumber(track);
+    if (track >= 0 && track <= 255) {
+      pushCallback(TrackSelectedCb{"audio", static_cast<int>(track)});
+    }
   } else if (!obj["videoInfo"].isNull()) {
     pbnjson::JValue vi = obj["videoInfo"];
     int w = 0, h = 0;
@@ -731,7 +757,7 @@ void WebOSPlayer::handleEvent(const std::string& event_json) {
       // will pick up the new dims through cb.video_width = videoW_.
       if (duration_ > 0 || has_video_ || has_audio_) {
         SourceInfoCb cb = { seekable_, duration_, has_video_, has_audio_, w, h,
-                            audio_tracks_, subtitle_tracks_ };
+                            audio_tracks_, subtitle_tracks_, video_info_ };
         pushCallback(cb);
       }
     }
@@ -902,7 +928,15 @@ void WebOSPlayer::execSourceInfo(const SourceInfoCb& info) {
   videoW_ =  info.video_width;
   videoH_ = info.video_height;
   audio_tracks_ = info.audio_tracks;
+  video_info_ = info.video_info;
   subtitle_tracks_ = info.subtitle_tracks;
+
+  for (const auto& audio : audio_tracks_) {
+    LogInfo(TAG) << "Native source audio: codec=" << audio.codec
+                << ", channels=" << audio.channels
+                << ", sampleRate=" << audio.sample_rate
+                << ", bitrate=" << audio.bit_rate;
+  }
 
   LogInfo(TAG) << "WH[" << videoW_ << "," << videoH_ << "],duration: "
     << duration_/1000 << ",seekable:" << seekable_

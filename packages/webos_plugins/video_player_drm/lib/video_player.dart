@@ -62,6 +62,7 @@ class VideoPlayerValue {
     this.errorDescription,
     this.isCompleted = false,
     this.audioTracks,
+    this.videoInfo,
     this.subtitleTracks,
     this.currentAudioTrack,
   });
@@ -132,6 +133,9 @@ class VideoPlayerValue {
   /// Audio track information list.
   final List<Map<String, dynamic>>? audioTracks;
 
+  /// Codec, frame rate and bitrate reported by the active native source.
+  final Map<String, dynamic>? videoInfo;
+
   /// Subtitle track information list.
   final List<Map<String, dynamic>>? subtitleTracks;
 
@@ -187,6 +191,7 @@ class VideoPlayerValue {
     String? errorDescription = _defaultErrorDescription,
     bool? isCompleted,
     List<Map<String, dynamic>>? audioTracks,
+    Map<String, dynamic>? videoInfo,
     List<Map<String, dynamic>>? subtitleTracks,
     int? currentAudioTrack,
   }) {
@@ -209,6 +214,7 @@ class VideoPlayerValue {
           : this.errorDescription,
       isCompleted: isCompleted ?? this.isCompleted,
       audioTracks: audioTracks ?? this.audioTracks,
+      videoInfo: videoInfo ?? this.videoInfo,
       subtitleTracks: subtitleTracks ?? this.subtitleTracks,
       currentAudioTrack: currentAudioTrack ?? this.currentAudioTrack,
     );
@@ -253,7 +259,9 @@ class VideoPlayerValue {
           rotationCorrection == other.rotationCorrection &&
           isInitialized == other.isInitialized &&
           isCompleted == other.isCompleted &&
-          currentAudioTrack == other.currentAudioTrack;
+          currentAudioTrack == other.currentAudioTrack &&
+          listEquals(audioTracks, other.audioTracks) &&
+          mapEquals(videoInfo, other.videoInfo);
 
   @override
   int get hashCode => Object.hash(
@@ -488,6 +496,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             errorDescription: null,
             isCompleted: false,
             audioTracks: event.audioTracks,
+            videoInfo: event.videoInfo,
             subtitleTracks: event.subtitleTracks,
           );
           assert(

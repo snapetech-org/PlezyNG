@@ -382,6 +382,18 @@ class CancellationTests(unittest.TestCase):
 
 
 class DarwinAdapterTests(unittest.TestCase):
+    def test_slow_process_query_retries_without_abandoning_observation(self):
+        backend = processes.DarwinProcesses.__new__(processes.DarwinProcesses)
+        backend.uid = 501
+        backend.read = Mock(return_value={"pid": 300, "uid": 501})
+        with patch.object(processes.subprocess, 'check_output', side_effect=[
+                subprocess.TimeoutExpired(['/bin/ps'], 30), '300\n']) as query, \
+             patch.object(processes.time, 'sleep'):
+            self.assertEqual(backend.snapshot(), {300: {"pid": 300, "uid": 501}})
+        self.assertEqual(query.call_count, 2)
+        backend.read.assert_called_once_with(300)
+
+
     def info(self, microseconds=123, status=2):
         value = processes.BsdInfo()
         value.prefix[1], value.prefix[3], value.prefix[4], value.prefix[5] = status, 300, 200, 501

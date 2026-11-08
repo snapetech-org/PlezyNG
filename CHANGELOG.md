@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep Apple process observation running when a system process query is delayed under Xcode load; retry the query instead of turning successful native tests into a cleanup failure.
+
 - Detect LG native playback silently dropping all audio tracks from an audio-bearing source, then perform the bounded audio-only compatibility retry; preserve supported passthrough and genuinely silent videos.
 
 - Remove duplicate webOS evidence JSONs from public downloads while retaining them in the verified submission ZIP; keep macOS recovery reports in CI and preserve package provenance and Discord delivery deduplication.

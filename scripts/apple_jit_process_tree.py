@@ -94,8 +94,17 @@ class DarwinProcesses:
                 "executable": os.fsdecode(path.value)}
 
     def snapshot(self):
-        pids = subprocess.check_output(["/bin/ps", "-U", str(self.uid), "-o", "pid="],
-                                       text=True, timeout=5)
+        while True:
+            try:
+                pids = subprocess.check_output(["/bin/ps", "-U", str(self.uid), "-o", "pid="],
+                                               text=True, timeout=30)
+                break
+            except subprocess.TimeoutExpired:
+                # Xcode/simulator pressure can delay a read-only process query.
+                # Keep the build running and retry observation; a slow ps is not
+                # a build failure and must not permanently disable its observer.
+                print("Process query delayed; retrying observation without stopping the build.", flush=True)
+                time.sleep(1)
         result = {}
         for value in pids.split():
             process = self.read(int(value))

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fill LG's unknown direct-play audio labels from matched original-source metadata with explicit diagnostic provenance, and stop unsupported desktop media-control calls on native TVs.
+
 - Keep bounded redacted diagnostics in native TV app storage, including active webOS audio format changes, so playback and artwork failures can be inspected without switching the TV input.
 
 - Recover home artwork after server reconnects and endpoint changes, keep image requests on their owning server, and use available fallback pictures for wide preview cards without remembering transient failures indefinitely.
@@ -604,6 +606,8 @@
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
 ## [3.0.5] - 2026-11-08
+
+- Identify original-file audio when LG reports an unknown codec without mislabeling converted streams, retain metadata provenance, and stop unsupported desktop media-control calls on native TVs.
 
 - Retain bounded, redacted native TV diagnostics in app-private storage and check webOS native sources with the same strict Clang frontend used by release builds.
 

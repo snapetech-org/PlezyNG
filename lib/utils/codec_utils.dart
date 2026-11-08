@@ -133,13 +133,21 @@ class CodecUtils {
   /// It names the DTS variant, which the codec cannot: mpv calls every DTS
   /// stream `dts`, DTS-HD MA or not. Other profiles leave the name alone.
   static String formatAudioCodec(String codec, {String? profile}) {
+    final lower = codec.toLowerCase();
+    if (lower.startsWith('dca') || lower.startsWith('dts')) {
+      final plexProfile = switch (profile?.toLowerCase()) {
+        'ma' => 'DTS-HD MA',
+        'hra' => 'DTS-HD HRA',
+        _ => null,
+      };
+      if (plexProfile != null) return plexProfile;
+    }
     final dtsVariant = switch (profile) {
       'DTS-ES' || 'DTS 96/24' || 'DTS-HD HRA' || 'DTS-HD MA' || 'DTS Express' => profile,
       'DTS-HD MA + DTS:X' || 'DTS-HD MA + DTS:X IMAX' => 'DTS:X',
       _ => null,
     };
     if (dtsVariant != null) return dtsVariant;
-    final lower = codec.toLowerCase();
     if (lower.startsWith('audio/')) {
       return switch (lower.substring('audio/'.length)) {
         'mp4a-latm' => 'AAC',

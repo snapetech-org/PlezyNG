@@ -12,6 +12,7 @@ import '../../../media/webos_playback_profile.dart';
 import '../../../media/pgs_subtitles.dart';
 import '../../../models/audio_channel_limit.dart';
 import '../../../utils/app_logger.dart';
+import '../../../utils/codec_utils.dart';
 import '../../../utils/log_redaction_manager.dart';
 import '../../models.dart';
 import '../audio_rendering_mode.dart';
@@ -78,6 +79,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   bool _recoveringSoLoud = false;
   String? _subtitleSelection;
   String? _loggedAudioFormat;
+  List<Map<String, dynamic>> _pendingSourceAudioMetadata = const [];
+  List<Map<String, dynamic>> _sourceAudioMetadata = const [];
+  String _audioMetadataOrigin = 'unreported';
   List<SubtitleTrack> _externalSubtitles = const [];
   webos_media.ClosedCaptionFile? _captions;
   PgsSubtitles? _pgs;
@@ -148,10 +152,14 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     final generation = ++_generation;
     _activeIsLive = isLive;
     _currentMedia = media;
+    final audioMetadata = _pendingSourceAudioMetadata;
+    _pendingSourceAudioMetadata = const [];
     await _releaseSource();
     if (disposed || generation != _generation) {
       return;
     }
+
+    _sourceAudioMetadata = audioMetadata;
 
     final startPosition = media.start ?? timelineOffset;
     configureTimeline(duration: timelineDuration, offset: timelineOffset);
@@ -553,18 +561,16 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   void _adoptTracks(webos_media.VideoPlayerValue value) {
     final audioRows = value.audioTracks ?? const <Map<String, dynamic>>[];
     final subtitleRows = value.subtitleTracks ?? const <Map<String, dynamic>>[];
-    final audio = <AudioTrack>[
+    // Match complete container catalogs by order. A partial LG catalog cannot
+    // safely borrow another track's source format, so leave it unreported.
+    final hints = audioRows.length == _sourceAudioMetadata.length
+        ? _sourceAudioMetadata
+        : const <Map<String, dynamic>>[];
+    final descriptors = [
       for (var index = 0; index < audioRows.length; index++)
-        AudioTrack(
-          id: '$index',
-          title: _trackLabel(audioRows[index], index),
-          language: _stringField(audioRows[index], 'language'),
-          codec: _stringField(audioRows[index], 'codec'),
-          channels: _positiveIntField(audioRows[index], 'channels'),
-          sampleRate: _positiveIntField(audioRows[index], 'sampleRate'),
-          bitrate: _positiveIntField(audioRows[index], 'bitRate'),
-        ),
+        _audioDescriptor(audioRows[index], index, hints.isEmpty ? null : hints[index]),
     ];
+    final audio = <AudioTrack>[for (final descriptor in descriptors) descriptor.track];
     final subtitles = <SubtitleTrack>[
       SubtitleTrack.off,
       for (var index = 0; index < subtitleRows.length; index++)
@@ -581,12 +587,19 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     if (currentAudio != null && currentAudio >= 0 && currentAudio < audio.length) {
       updateSelectedAudioTrack('$currentAudio');
       final track = audio[currentAudio];
-      final format = '${track.id}/${track.codec}/${track.channels}/${track.sampleRate}/${track.bitrate}';
-      if (track.codec != null && format != _loggedAudioFormat) {
+      _audioMetadataOrigin = descriptors[currentAudio].origin;
+      final nativeCodec = _stringField(audioRows[currentAudio], 'codec');
+      final nativeChannels = _positiveIntField(audioRows[currentAudio], 'channels');
+      final format =
+          '${track.id}/${track.codec}/${track.channels}/${track.sampleRate}/${track.bitrate}/$_audioMetadataOrigin/$nativeCodec/$nativeChannels';
+      if (format != _loggedAudioFormat) {
         _loggedAudioFormat = format;
         appLogger.i(
-          'webOS active native audio: codec=${track.codec}, channels=${track.channels}, '
-          'sampleRate=${track.sampleRate}, bitrate=${track.bitrate}; receiver output unreported',
+          'webOS active audio metadata: origin=$_audioMetadataOrigin, source=$_sourceId, '
+          'codec=${track.codec}, profile=${track.codecProfile}, channels=${track.channels}, '
+          'sampleRate=${track.sampleRate}, bitrate=${track.bitrate}; '
+          'nativeTracks=${audioRows.length}, sourceTracks=${_sourceAudioMetadata.length}, '
+          'nativeCodec=$nativeCodec, nativeChannels=$nativeChannels; receiver output unreported',
         );
       }
     }
@@ -594,6 +607,38 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     if (subtitleSelection != null) {
       updateSelectedSubtitleTrack(subtitleSelection);
     }
+  }
+
+  ({AudioTrack track, String origin}) _audioDescriptor(
+    Map<String, dynamic> row,
+    int index,
+    Map<String, dynamic>? hint,
+  ) {
+    final nativeCodec = _audioCodec(row);
+    final useHint = nativeCodec == null && hint != null && _audioCodec(hint) != null;
+    final metadata = useHint ? hint : row;
+    return (
+      track: AudioTrack(
+        id: '$index',
+        title: _trackLabel(row, index),
+        language: _stringField(row, 'language'),
+        codec: _audioCodec(metadata),
+        codecProfile: _stringField(metadata, 'codecProfile'),
+        channels: _positiveIntField(metadata, 'channels'),
+        sampleRate: _positiveIntField(metadata, 'sampleRate'),
+        bitrate: _positiveIntField(metadata, 'bitRate'),
+      ),
+      origin: useHint
+          ? 'server-source'
+          : nativeCodec == null
+          ? 'unreported'
+          : 'native-source',
+    );
+  }
+
+  String? _audioCodec(Map<String, dynamic> row) {
+    final codec = _stringField(row, 'codec');
+    return codec == null || const {'unknown', 'none', 'n/a', 'undefined'}.contains(codec.toLowerCase()) ? null : codec;
   }
 
   String _trackLabel(Map<String, dynamic> row, int index) {
@@ -642,6 +687,8 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
 
   Future<void> _releaseSource() async {
     _loggedAudioFormat = null;
+    _sourceAudioMetadata = const [];
+    _audioMetadataOrigin = 'unreported';
     final controller = _controller;
     final sourceId = _sourceId;
     _controller = null;
@@ -993,6 +1040,17 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       case 'webos-source-has-audio':
         _sourceHasAudio = value == 'yes';
         break;
+      case 'webos-source-audio-metadata':
+        _pendingSourceAudioMetadata = const [];
+        try {
+          final decoded = value.length <= 65536 ? jsonDecode(value) : null;
+          if (decoded is List && decoded.length <= 128 && decoded.every((row) => row is Map)) {
+            _pendingSourceAudioMetadata = [for (final row in decoded) Map<String, dynamic>.from(row as Map)];
+          }
+        } on FormatException {
+          appLogger.d('Ignoring malformed webOS source audio metadata');
+        }
+        break;
       case 'pause':
         if (value == 'yes') {
           await pause();
@@ -1056,7 +1114,9 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
       'video-codec' => videoInfo == null ? null : _stringField(videoInfo, 'codec'),
       'container-fps' => (videoInfo?['frameRate'] as num?)?.toString(),
       'video-bitrate' => videoInfo == null ? null : _positiveIntField(videoInfo, 'bitRate')?.toString(),
-      'audio-codec-name' => audioCodec,
+      'audio-codec-name' =>
+        audioCodec == null ? null : CodecUtils.formatAudioCodec(audioCodec, profile: selectedAudio?.codecProfile),
+      'webos-audio-metadata-origin' => _audioMetadataOrigin,
       'audio-params/samplerate' || 'current-tracks/audio/demux-samplerate' => selectedAudio?.sampleRate?.toString(),
       'audio-params/hr-channels' || 'current-tracks/audio/demux-channel-count' => selectedAudio?.channels?.toString(),
       'audio-bitrate' => selectedAudio?.bitrate?.toString(),

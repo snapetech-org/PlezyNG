@@ -11,6 +11,7 @@ import '../media/media_item.dart';
 import '../media/media_item_types.dart';
 import '../media/media_kind.dart';
 import '../utils/app_logger.dart';
+import '../utils/platform_detector.dart';
 import 'image_cache_service.dart';
 
 /// Manages OS media controls integration for video playback.
@@ -21,7 +22,8 @@ import 'image_cache_service.dart';
 /// - Control event streaming (play, pause, next, previous, seek)
 /// - Position update throttling to prevent excessive API calls
 class MediaControlsManager {
-  Stream<MediaControlEvent> get controlEvents => OsMediaControls.controlEvents;
+  Stream<MediaControlEvent> get controlEvents =>
+      _platformSupported ? OsMediaControls.controlEvents : const Stream<MediaControlEvent>.empty();
 
   /// Throttled playback state update (1 second interval, leading + trailing)
   late final Throttle _throttledUpdate;
@@ -42,9 +44,15 @@ class MediaControlsManager {
   int _metadataGeneration = 0;
 
   final Future<Uint8List?> Function(String url) _artworkBytesLoader;
+  final bool _platformSupported;
 
-  MediaControlsManager({@visibleForTesting Future<Uint8List?> Function(String url)? artworkBytesLoader})
-    : _artworkBytesLoader = artworkBytesLoader ?? _loadArtworkFromCache {
+  MediaControlsManager({
+    @visibleForTesting Future<Uint8List?> Function(String url)? artworkBytesLoader,
+    @visibleForTesting bool? platformSupported,
+  }) : _artworkBytesLoader = artworkBytesLoader ?? _loadArtworkFromCache,
+       // The desktop/mobile plugin has no native webOS or Tizen backend.
+       // TV media keys remain handled by the native player and app inputs.
+       _platformSupported = platformSupported ?? !PlatformDetector.usesNativeTvMedia() {
     _throttledUpdate = throttle(
       _doUpdatePlaybackState,
       const Duration(seconds: 1),
@@ -61,7 +69,7 @@ class MediaControlsManager {
     Duration? duration,
     Uint8List? artwork,
   }) async {
-    if (_updatesSuspended) return;
+    if (!_platformSupported || _updatesSuspended) return;
     ++_metadataGeneration;
     await OsMediaControls.setMetadata(
       MediaMetadata(title: title, artist: author, album: album, duration: duration, artwork: artwork),
@@ -75,7 +83,7 @@ class MediaControlsManager {
   /// shape (Plex's `/photo/:/transcode` proxy vs. Jellyfin's
   /// self-authenticated image URL).
   Future<void> updateMetadata({required MediaItem metadata, MediaServerClient? client, Duration? duration}) async {
-    if (_updatesSuspended) return;
+    if (!_platformSupported || _updatesSuspended) return;
     final generation = ++_metadataGeneration;
 
     try {
@@ -143,7 +151,7 @@ class MediaControlsManager {
     required double speed,
     bool force = false,
   }) async {
-    if (_updatesSuspended) return;
+    if (!_platformSupported || _updatesSuspended) return;
 
     final params = _PlaybackStateParams(isPlaying: isPlaying, position: position, speed: speed);
 
@@ -157,6 +165,7 @@ class MediaControlsManager {
   }
 
   Future<void> _doUpdatePlaybackState(_PlaybackStateParams params) async {
+    if (!_platformSupported) return;
     try {
       await OsMediaControls.setPlaybackState(
         MediaPlaybackState(
@@ -201,7 +210,7 @@ class MediaControlsManager {
     bool preferSkipOverTrackButtons = false,
     Duration? skipInterval,
   }) async {
-    if (_updatesSuspended) return;
+    if (!_platformSupported || _updatesSuspended) return;
 
     final isDarwin = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS;
     final effectiveCanSkip = canSkip && (!isDarwin || preferSkipOverTrackButtons);
@@ -275,6 +284,7 @@ class MediaControlsManager {
   /// keeps audio alive with a `mediaPlayback` foreground service and shows a
   /// MediaStyle notification for the session. No-op on other platforms.
   Future<void> setBackgroundMode(bool enabled) async {
+    if (!_platformSupported) return;
     try {
       await OsMediaControls.setBackgroundMode(enabled);
       appLogger.d('Media controls background mode: $enabled');
@@ -288,18 +298,19 @@ class MediaControlsManager {
   /// Should be called when playback stops or screen is disposed.
   Future<void> clear() async {
     _metadataGeneration++;
+    _throttledUpdate.cancel();
+    _lastCanPlayPause = null;
+    _lastCanGoNext = null;
+    _lastCanGoPrevious = null;
+    _lastCanSeek = null;
+    _lastCanStop = null;
+    _lastCanSkip = null;
+    _lastSkipInterval = null;
+    _lastCanSetSpeed = null;
+    if (!_platformSupported) return;
     try {
       await OsMediaControls.setBackgroundMode(false);
       await OsMediaControls.clear();
-      _throttledUpdate.cancel();
-      _lastCanPlayPause = null;
-      _lastCanGoNext = null;
-      _lastCanGoPrevious = null;
-      _lastCanSeek = null;
-      _lastCanStop = null;
-      _lastCanSkip = null;
-      _lastSkipInterval = null;
-      _lastCanSetSpeed = null;
       appLogger.d('Media controls cleared');
     } catch (e) {
       appLogger.w('Failed to clear media controls', error: e);

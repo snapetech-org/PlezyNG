@@ -239,6 +239,34 @@ deliberately leaves output channels and passthrough status unknown when LG does
 not report them; never infer them from the source or the ARC carrier's channel
 count. The HDR badge emitted by the TV is independent of the app's controls.
 
+### 3.0.5 controlled test and remaining reporting gaps
+
+Candidate `b674649391da0055dfddb8da75a44dcfe1b3d269`, IPK SHA-256
+`90be03d9877e7e10541d62c590047050fb74139670d77925f2bbe76acae7c21d`,
+installed successfully; all five checked installed binary hashes matched the
+package. The owner confirmed home artwork/previews returned and sound was good.
+The captured Plex session identified Pleazyng 3.0.5 with original HEVC and
+DTS-HD MA six-channel audio and no transcode session. No image-load failure was
+captured. The owner returned to HDMI 2 after that single authorized window;
+do not foreground the TV again without another window.
+
+The new private log also exposed LG returning codec `unknown` with no channel,
+sample-rate or bitrate values for the working DTS path. Forwarding fields
+cannot supply information absent from the driver. The app now retains backend
+audio profile/rate/bitrate metadata and offers it as a source-track fallback
+only for an unchanged original rendition and a complete matching track catalog.
+Native known formats win. Converted renditions, incomplete catalogs and later
+opens without new hints never inherit original-file labels. Logs explicitly
+identify `origin=server-source` versus `native-source`, retain the raw native
+values/catalog counts and keep receiver output unreported. This identifies the
+source being played; it does not qualify decoding depth or eARC transport.
+
+The same capture contained repeated `os_media_controls` MissingPlugin warnings.
+That desktop/mobile plugin has no webOS/Tizen backend. Its integration now
+avoids plugin calls, artwork fetches, event subscriptions and update timers on
+those native TV platforms; native-player and app input handling remain active.
+The controlled capture is in `test-window-305/` under implementation evidence.
+
 ### Home artwork recovery
 
 The owner clarified that the missing previews are home/library pictures. The

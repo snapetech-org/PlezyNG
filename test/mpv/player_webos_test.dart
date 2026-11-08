@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -16,6 +17,68 @@ void main() {
   final inheritedHttpOverrides = HttpOverrides.current;
   setUpAll(() => HttpOverrides.global = null);
   tearDownAll(() => HttpOverrides.global = inheritedHttpOverrides);
+
+  test('LG unknown audio uses explicit original-source metadata without claiming receiver output', () async {
+    final backend = _LGPlayer()
+      ..audioTracks = [
+        {'trackId': 0, 'codec': 'unknown', 'channels': 0, 'sampleRate': 0},
+      ];
+    native.VideoPlayerPlatform.instance = backend;
+    final player = PlayerWebOS();
+    addTearDown(player.dispose);
+    await player.setProperty(
+      'webos-source-audio-metadata',
+      jsonEncode([
+        {'codec': 'dca', 'codecProfile': 'ma', 'channels': 6, 'sampleRate': 48000, 'bitRate': 4000000},
+      ]),
+    );
+    await player.open(Media('/original.mkv'));
+    backend.events[1]!.add(
+      native.VideoEvent(
+        eventType: native.VideoEventType.trackSelected,
+        trackSelectedType: 'audio',
+        trackSelectedIndex: 0,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(activeAudioFormatLabel(player.state.track.audio), 'DTS-HD MA · 5.1');
+    expect(await player.getProperty('audio-codec-name'), 'DTS-HD MA');
+    expect(await player.getProperty('webos-audio-metadata-origin'), 'server-source');
+    expect(await player.getProperty('audio-out-params/channel-count'), isNull);
+    // Opening another source without hints cannot inherit that format.
+    await player.open(Media('/another.mkv'));
+    backend.events[2]!.add(
+      native.VideoEvent(
+        eventType: native.VideoEventType.trackSelected,
+        trackSelectedType: 'audio',
+        trackSelectedIndex: 0,
+      ),
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(player.state.track.audio?.codec, isNull);
+    expect(await player.getProperty('webos-audio-metadata-origin'), 'unreported');
+  });
+
+  test('native format wins and a partial catalog never borrows another stream format', () async {
+    final backend = _LGPlayer()
+      ..audioTracks = [
+        {'trackId': 0, 'codec': 'aac', 'channels': 2},
+        {'trackId': 1, 'codec': 'unknown'},
+      ];
+    native.VideoPlayerPlatform.instance = backend;
+    final player = PlayerWebOS();
+    addTearDown(player.dispose);
+    await player.setProperty(
+      'webos-source-audio-metadata',
+      jsonEncode([
+        {'codec': 'dca', 'channels': 6},
+      ]),
+    );
+    await player.open(Media('/original.mkv'));
+    expect(player.state.tracks.audio.first.codec, 'aac');
+    expect(player.state.tracks.audio.first.channels, 2);
+    expect(player.state.tracks.audio.last.codec, isNull);
+  });
 
   test('native codec metadata reaches tracks, the audio label and performance stats', () async {
     final backend = _LGPlayer()

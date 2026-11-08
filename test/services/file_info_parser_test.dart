@@ -8,6 +8,28 @@ import 'package:plezy/services/file_info_parser.dart';
 ///      tracked, raw video stream retained once).
 ///   2. Each reader's mapping from raw JSON to the neutral track classes.
 void main() {
+  test('source readers preserve audio profiles and normalize bitrate units', () {
+    final plex = const PlexFileInfoStreamReader().toAudioTrack({
+      'id': 1,
+      'codec': 'dca',
+      'profile': 'ma',
+      'samplingRate': 48000,
+      'bitrate': 4000,
+    }, 0);
+    expect(plex.codecProfile, 'ma');
+    expect(plex.sampleRate, 48000);
+    expect(plex.bitrate, 4000000);
+    final jellyfin = const JellyfinFileInfoStreamReader().toAudioTrack({
+      'Index': 1,
+      'Codec': 'dts',
+      'Profile': 'DTS-HD MA',
+      'SampleRate': 48000,
+      'BitRate': 4000000,
+    }, 0);
+    expect(jellyfin.codecProfile, 'DTS-HD MA');
+    expect(jellyfin.sampleRate, 48000);
+    expect(jellyfin.bitrate, 4000000);
+  });
   group('walkStreams (Plex reader)', () {
     const reader = PlexFileInfoStreamReader();
 

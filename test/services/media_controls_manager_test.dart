@@ -33,6 +33,26 @@ void main() {
     debugDefaultTargetPlatformOverride = previousPlatformOverride;
   });
 
+  test('unsupported native TV integration makes no OS plugin calls or event subscriptions', () async {
+    final manager = MediaControlsManager(platformSupported: false);
+    addTearDown(manager.dispose);
+    await manager.updateFileMetadata(title: 'File');
+    await manager.updateMetadata(metadata: testMediaItem());
+    for (var i = 0; i < 10; i++) {
+      await manager.updatePlaybackState(
+        isPlaying: true,
+        position: Duration(seconds: i),
+        speed: 1,
+        force: i.isEven,
+      );
+    }
+    await manager.setControlsEnabled(canPlayPause: true, canSeek: true, canStop: true);
+    await manager.setBackgroundMode(true);
+    await manager.clear();
+    expect(await manager.controlEvents.toList(), isEmpty);
+    expect(calls, isEmpty);
+  });
+
   test('guest, anyone, and host capability snapshots advertise exact authority', () async {
     final manager = MediaControlsManager();
     addTearDown(manager.dispose);

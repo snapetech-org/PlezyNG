@@ -118,6 +118,11 @@ class MediaAudioTrack with _TrackLabelMixin {
   @override
   final int? index;
   final String? codec;
+  final String? codecProfile;
+  final int? sampleRate;
+
+  /// Bits per second, normalized from the backend's wire units.
+  final int? bitrate;
   final String? language;
   final String? languageCode;
   final String? title;
@@ -133,6 +138,9 @@ class MediaAudioTrack with _TrackLabelMixin {
     required this.id,
     this.index,
     this.codec,
+    this.codecProfile,
+    this.sampleRate,
+    this.bitrate,
     this.language,
     this.languageCode,
     this.title,
@@ -151,6 +159,9 @@ class MediaAudioTrack with _TrackLabelMixin {
       id: id,
       index: index,
       codec: codec,
+      codecProfile: codecProfile,
+      sampleRate: sampleRate,
+      bitrate: bitrate,
       language: language,
       languageCode: languageCode,
       title: title,
@@ -168,6 +179,7 @@ class MediaAudioTrack with _TrackLabelMixin {
       language: language,
       languageCode: languageCode,
       codec: codec,
+      codecProfile: codecProfile,
       channels: channels,
       displayTitle: displayTitle,
       index: _fallbackLabelIndex,

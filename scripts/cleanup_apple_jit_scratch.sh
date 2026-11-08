@@ -64,7 +64,7 @@ if [[ -n "${APPLE_JIT_PROCESS_HELPER:-}" ]]; then
     echo "Refusing scratch cleanup with an unfamiliar process observer." >&2
     exit 1
   fi
-  python3 "$APPLE_JIT_PROCESS_HELPER" assert-idle "$GITHUB_RUN_ID" \
+  python3 "$APPLE_JIT_PROCESS_HELPER" settle-idle "$GITHUB_RUN_ID" \
     "$APPLE_JIT_PROCESS_JOB_ID" "$GITHUB_RUN_ATTEMPT" "$APPLE_JIT_PROCESS_RUNNER_ROOT"
 fi
 

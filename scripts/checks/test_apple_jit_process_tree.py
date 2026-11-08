@@ -305,6 +305,33 @@ class CancellationTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "no longer live"):
             processes.assert_idle(self.root, self.scope, kernel)
 
+    def test_completed_build_drains_only_owned_orphan_ibtoold(self):
+        kernel = self.fixture()
+        kernel.values[100] = self.item(100, 1, self.root / "bin/Runner.Listener")
+        kernel.values.pop(200)
+        owned = self.item(350, 300, "/Applications/Xcode.app/Contents/Developer/usr/bin/ibtoold")
+        kernel.values[350] = owned
+        data = json.loads((self.root / "_diag/process-tree.json").read_text())
+        tree = processes.Tree(self.root, self.uid, data['records'], data['launcherIdentity'])
+        tree.capture(kernel.snapshot(), launcher=100)
+        processes.journal(self.root, tree, self.scope)
+        kernel.values.pop(300)
+        kernel.values[350]['ppid'] = 1
+        other = self.item(500, 1, owned['executable'])
+        other['pgid'] = 500
+        kernel.values[500] = other
+        processes.settle_idle(self.root, self.scope, kernel, kernel.terminate)
+        self.assertEqual(kernel.signals, [350])
+        self.assertIn(500, kernel.values)
+        self.assertIn(100, kernel.values)
+
+    def test_completed_build_never_stops_a_still_active_compiler(self):
+        kernel = self.fixture()
+        kernel.values[100] = self.item(100, 1, self.root / "bin/Runner.Listener")
+        with self.assertRaisesRegex(RuntimeError, "build consumers remain"):
+            processes.settle_idle(self.root, self.scope, kernel, kernel.terminate, timeout=2)
+        self.assertEqual(kernel.signals, [])
+
     def test_workflow_scratch_guard_runs_before_any_owned_deletion(self):
         nfs = self.root.parent / "fixture-nfs"
         (nfs / "runs").mkdir(parents=True)

@@ -266,6 +266,54 @@ def assert_idle(root, scope, backend):
         raise RuntimeError("Owned build consumers remain active; preserving scratch.")
 
 
+def settle_idle(root, scope, backend, signal_process=os.kill, timeout=15):
+    """Stop only this completed build's orphaned Interface Builder daemons.
+
+    Xcode intentionally leaves ibtoold alive after xcodebuild exits. GitHub's
+    post-job cleanup would terminate these, but workflow scratch cleanup runs
+    earlier. Never stop a compiler, a non-orphan, or an unfamiliar process.
+    """
+    path = root / "_diag/process-tree.json"
+    deadline = time.monotonic() + timeout
+    signalled = set()
+    while True:
+        try:
+            assert_idle(root, scope, backend)
+            return
+        except RuntimeError as error:
+            if str(error) != "Owned build consumers remain active; preserving scratch.":
+                raise
+        data = json.loads(path.read_text())
+        snapshot = backend.snapshot()
+        launcher_identity = data["launcherIdentity"]
+        launcher = snapshot.get(launcher_identity[0])
+        if launcher is None or list(identity(launcher)) != launcher_identity:
+            raise RuntimeError("Runner identity changed; preserving scratch.")
+        tree = Tree(root, os.geteuid(), data["records"], launcher_identity)
+        targets = tree.capture(snapshot, launcher=launcher["pid"])
+        # A still-active build may own ibtoold as well. Only drain when all
+        # remaining build consumers are the known orphaned idle service.
+        if targets and all(item["ppid"] == 1 and item["executable"] ==
+                "/Applications/Xcode.app/Contents/Developer/usr/bin/ibtoold" for item in targets):
+            for target in targets:
+                key = identity(target)
+                if key in signalled:
+                    continue
+                current = backend.read(target["pid"])
+                if (current is None or identity(current) != key or current["ppid"] != 1
+                        or current["executable"] != target["executable"]):
+                    continue
+                print(f"Stopping completed-job Interface Builder service PID {current['pid']}", flush=True)
+                try:
+                    signal_process(current["pid"], signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+                signalled.add(key)
+        if time.monotonic() >= deadline:
+            raise RuntimeError("Owned build consumers remain active; preserving scratch.")
+        time.sleep(min(1, max(0, deadline - time.monotonic())))
+
+
 def teardown(root, scope, proof, backend, signal_process=os.kill, timeout=15):
     cancelled_proof(proof, scope)
     evidence = root / "_diag/process-tree.json"
@@ -319,7 +367,7 @@ def teardown(root, scope, proof, backend, signal_process=os.kill, timeout=15):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("supervise", "teardown", "assert-idle"))
+    parser.add_argument("mode", choices=("supervise", "teardown", "assert-idle", "settle-idle"))
     parser.add_argument("run")
     parser.add_argument("job")
     parser.add_argument("attempt")
@@ -330,8 +378,8 @@ def main():
     validate_root(args.root, args.run, args.job, args.attempt)
     scope = {name: getattr(args, name) for name in ("run", "job", "attempt")}
     backend = DarwinProcesses(os.geteuid())
-    if args.mode == "assert-idle":
-        assert_idle(args.root, scope, backend)
+    if args.mode in {"assert-idle", "settle-idle"}:
+        (settle_idle if args.mode == "settle-idle" else assert_idle)(args.root, scope, backend)
         return
     with observer_lock(args.root):
         if args.mode == "teardown":

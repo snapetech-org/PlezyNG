@@ -3,6 +3,27 @@ import 'dart:collection';
 import 'package:logger/logger.dart';
 
 import 'log_redaction_manager.dart';
+import 'persistent_diagnostic_log.dart';
+
+PersistentDiagnosticLog? _persistentLog;
+
+/// Attach an app-owned writer after native TV storage resolves. Returns its
+/// predecessor so callers can close it without losing queued records.
+PersistentDiagnosticLog? setPersistentDiagnosticLog(PersistentDiagnosticLog? writer) {
+  final previous = _persistentLog;
+  _persistentLog = writer;
+  if (writer != null) {
+    for (final entry in MemoryLogOutput.getLogs().reversed) {
+      writer.add(_diagnosticRecord(entry));
+    }
+  }
+  return previous;
+}
+
+String _diagnosticRecord(LogEntry entry) =>
+    '${entry.timestamp.toIso8601String()} [${entry.level.name}] ${entry.message}'
+    '${entry.error == null ? '' : '\n${entry.error}'}'
+    '${entry.stackTrace == null ? '' : '\n${entry.stackTrace}'}';
 
 /// Represents a single log entry stored in memory
 class LogEntry {
@@ -71,9 +92,15 @@ class MemoryAwareLogPrinter extends LogPrinter {
         ? StackTrace.fromString(LogRedactionManager.redact(event.stackTrace.toString()))
         : null;
 
-    MemoryLogOutput.add(
-      LogEntry(timestamp: DateTime.now(), level: event.level, message: message, error: error, stackTrace: stackTrace),
+    final entry = LogEntry(
+      timestamp: event.time,
+      level: event.level,
+      message: message,
+      error: error,
+      stackTrace: stackTrace,
     );
+    MemoryLogOutput.add(entry);
+    _persistentLog?.add(_diagnosticRecord(entry));
 
     return _wrappedPrinter.log(LogEvent(event.level, message, time: event.time, error: error, stackTrace: stackTrace));
   }

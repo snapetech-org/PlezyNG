@@ -25,14 +25,14 @@ public:
 
   static constexpr int kMaxSlots = 5;
 
-  typedef struct {
+  struct AudioTrackInfoCb {
     std::string language;
     int trackId;
     std::string codec;
     int channels = 0;
     int sample_rate = 0;
     int bit_rate = 0;
-  } AudioTrackInfoCb;
+  };
 
   struct VideoInfoCb {
     std::string codec;

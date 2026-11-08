@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep bounded redacted diagnostics in native TV app storage, including active webOS audio format changes, so playback and artwork failures can be inspected without switching the TV input.
+
 - Recover home artwork after server reconnects and endpoint changes, keep image requests on their owning server, and use available fallback pictures for wide preview cards without remembering transient failures indefinitely.
 
 - Show the active audio format and channel layout in playback controls, and supply native webOS codec, sample-rate, channel and bitrate diagnostics to the performance overlay.
@@ -602,6 +604,8 @@
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
 ## [3.0.5] - 2026-11-08
+
+- Retain bounded, redacted native TV diagnostics in app-private storage and check webOS native sources with the same strict Clang frontend used by release builds.
 
 - Recover home-screen cards and hero artwork after server reconnects, endpoint and profile changes; use available fallback images for missing episode screenshots and wide previews.
 - Show the active audio codec and channel layout in playback controls, and forward native webOS audio/video metadata to the performance overlay and sanitized native logs.

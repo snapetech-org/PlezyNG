@@ -46,7 +46,16 @@ PY
 source "$ROOT/tools/webos/source_ndk_environment.sh"
 pleazyng_source_ndk_environment "$scratch_dir/ndk.env"
 
-read -r -a compiler <<< "$CXX"
+# Flutter-webOS's release CMake route uses the NDK Clang frontend, even though
+# the SDK environment's CXX names GCC. GCC-only preflight misses Clang's strict
+# diagnostics (including anonymous C++ typedefs with default initializers).
+clang="$OECORE_NATIVE_SYSROOT/usr/bin/clang++"
+if [[ ! -x "$clang" ]]; then
+  echo 'The pinned webOS release Clang compiler is missing.' >&2
+  exit 1
+fi
+compiler=("$clang" --target=arm-webosmllib32-linux-gnueabi "--sysroot=$SDKTARGETSYSROOT"
+          -mfpu=neon -mfloat-abi=softfp)
 read -r -a flags <<< "$(pkg-config --cflags PmLogLib pbnjson_cpp glib-2.0 ndlmedia alsa ogg opus libcurl)"
 plugin="$ROOT/packages/webos_plugins/audioplayers_soloud/webos"
 includes=(-I "$scratch_dir/include" -iquote "$plugin" -I "$plugin/include"
@@ -55,7 +64,8 @@ failures=0
 video_plugin="$ROOT/packages/webos_plugins/video_player_drm/webos"
 for unit in "$plugin"/*.cc "$video_plugin"/*.cc; do
   printf 'Checking webOS ARM source: %s\n' "${unit##*/}"
-  if ! "${compiler[@]}" -std=c++17 -fsyntax-only -DFLUTTER_PLUGIN_IMPL \
+  if ! "${compiler[@]}" -std=c++17 -fsyntax-only -Wall -Werror \
+      -Wno-unused-command-line-argument -DFLUTTER_PLUGIN_IMPL \
       "${flags[@]}" "${includes[@]}" -I "$video_plugin/include" "$unit"; then
     failures=$((failures + 1))
   fi

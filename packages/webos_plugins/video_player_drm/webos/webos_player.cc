@@ -687,7 +687,7 @@ void WebOSPlayer::handleEvent(const std::string& event_json) {
     if (audio_tracks.isArray()) {
       for (ssize_t i = 0; i < audio_tracks.arraySize(); ++i) {
         pbnjson::JValue t = audio_tracks[i];
-        AudioTrackInfoCb track = { "", 0 };
+        AudioTrackInfoCb track{};
         if (t["language"].isString()) track.language = t["language"].asString();
         if (t["codec"].isString()) track.codec = t["codec"].asString();
         int64_t channels = 0, bit_rate = 0;

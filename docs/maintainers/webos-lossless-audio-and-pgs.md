@@ -224,6 +224,16 @@ therefore display these fields, and the playback header shows the active audio
 format/channel layout. Native source summaries also go to the existing
 `video_player_drm` system-log context without media URLs or credentials.
 
+Native TV startup additionally attaches `pleazyng-diagnostics.log` in the
+app's application-support directory. On the current C6 this is under
+`appdata/.data/org.snapetech.pleazyng/`. Its records pass through the same
+redaction as the in-app log, including error and stack fields. Active native
+audio changes are logged once per format/track change. Each log is capped at
+2 MiB with one previous file; pending writes are capped at 64 KiB. Disk refusal
+disables that writer without blocking startup or playback. Inspect it over SSH
+without launching or foregrounding the app. Do not enable global vendor debug
+collection to compensate for missing application diagnostics.
+
 These are source/decoder diagnostics, not receiver telemetry. The adapter
 deliberately leaves output channels and passthrough status unknown when LG does
 not report them; never infer them from the source or the ARC carrier's channel
@@ -246,6 +256,15 @@ keyed by resolved URL and expires after two minutes instead of poisoning the
 same relative path across servers for the process lifetime. Regression checks
 cover client arrival, in-place endpoint changes, fallback selection and expiry.
 Physical verification of this package remains a separate controlled test.
+
+### Match the release compiler during preflight
+
+`tools/webos/check_audio_plugin_syntax.sh` now uses the pinned NDK Clang ARM
+frontend, sysroot and strict release warning policy. The SDK environment's
+`CXX` names GCC, while Flutter-webOS's CMake builder selects Clang explicitly.
+GCC accepted an anonymous typedef containing default member initializers that
+Clang rejects under `-Werror`; use a named C++ struct for that metadata type.
+All audio/video plugin translation units pass the corrected Clang preflight.
 
 ## Reproducible evidence
 

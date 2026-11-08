@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Directory, Platform, ProcessInfo, stderr;
+import 'dart:io' show Directory, File, Platform, ProcessInfo, stderr;
 import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/foundation.dart';
@@ -59,6 +59,7 @@ import 'services/apple_tv_remote_touch_service.dart';
 import 'services/discord_rpc_service.dart';
 
 import 'package:path_provider/path_provider.dart';
+import 'utils/persistent_diagnostic_log.dart';
 import 'package:path/path.dart' as p;
 
 import 'services/image_cache_service.dart';
@@ -326,9 +327,23 @@ Future<void> _optionalGatePhase(
   }
 }
 
+Future<void> _startNativeTvDiagnostics() async {
+  try {
+    final directory = await getApplicationSupportDirectory();
+    final previous = setPersistentDiagnosticLog(
+      PersistentDiagnosticLog(File('${directory.path}/pleazyng-diagnostics.log')),
+    );
+    await previous?.close();
+    appLogger.i('App-private native TV diagnostics enabled');
+  } catch (_) {
+    appLogger.w('App-private diagnostic logging is unavailable');
+  }
+}
+
 Future<_StartupDependencies> _initializeApplication() async {
   final settings = await _gatePhase(StartupPhase.preferences, SettingsService.getInstance);
   setLoggerLevel(settings.read(SettingsService.enableDebugLogging));
+  if (PlatformDetector.usesNativeTvMedia()) unawaited(_startNativeTvDiagnostics());
 
   if (_enableSentry && _sentryDsn.isNotEmpty) {
     // Crash reporting is observability: it must never veto the launch it

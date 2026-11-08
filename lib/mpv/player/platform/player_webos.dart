@@ -77,6 +77,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   final Set<String> _soLoudDeclinedUris = <String>{};
   bool _recoveringSoLoud = false;
   String? _subtitleSelection;
+  String? _loggedAudioFormat;
   List<SubtitleTrack> _externalSubtitles = const [];
   webos_media.ClosedCaptionFile? _captions;
   PgsSubtitles? _pgs;
@@ -579,6 +580,15 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
     final currentAudio = value.currentAudioTrack;
     if (currentAudio != null && currentAudio >= 0 && currentAudio < audio.length) {
       updateSelectedAudioTrack('$currentAudio');
+      final track = audio[currentAudio];
+      final format = '${track.id}/${track.codec}/${track.channels}/${track.sampleRate}/${track.bitrate}';
+      if (track.codec != null && format != _loggedAudioFormat) {
+        _loggedAudioFormat = format;
+        appLogger.i(
+          'webOS active native audio: codec=${track.codec}, channels=${track.channels}, '
+          'sampleRate=${track.sampleRate}, bitrate=${track.bitrate}; receiver output unreported',
+        );
+      }
     }
     final subtitleSelection = _subtitleSelection;
     if (subtitleSelection != null) {
@@ -631,6 +641,7 @@ class PlayerWebOS extends PlayerBase implements NativeVisualizationAudioSource {
   }
 
   Future<void> _releaseSource() async {
+    _loggedAudioFormat = null;
     final controller = _controller;
     final sourceId = _sourceId;
     _controller = null;

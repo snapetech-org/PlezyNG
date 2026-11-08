@@ -430,3 +430,7 @@ installed closure against its pinned runtime and extensions after rebuilding.
 
 A bundled loader does not prove a usable GPU path. Retain per-architecture
 `ldd`/package checks and accurate runtime diagnostics when qualifying PME Vulkan.
+
+### Public downloads and build evidence
+
+Public downloads contain installable packages, update feeds, checksums and provenance needed by consumers. WebOS app/engine provenance and compatibility JSONs are retained inside `pleazyng-lg-webos-submission.zip` and producer CI artifacts instead of duplicated as individual release assets. Extract the handoff ZIP to inspect its evidence. macOS compilation-recovery reports stay in CI artifacts and attestations. Fire TV provenance remains a separate verifiable companion to its APK; reuse provenance is published only when release assembly actually reuses verified platform builds. The Discord delivery receipt remains durable release state used to prevent duplicate or uncertain message delivery; do not remove it as cosmetic cleanup.

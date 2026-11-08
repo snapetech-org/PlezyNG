@@ -3032,9 +3032,6 @@ jobs:
       - name: Generate release SHA-256 checksums
         run: |
           python3 scripts/create_release_checksums.py artifacts
-          if [[ -f artifacts/macos-dmg/macos-compilation-recovery.json ]]; then
-            (cd artifacts/macos-dmg && sha256sum macos-compilation-recovery.json) >> artifacts/SHA256SUMS.txt
-          fi
           if [[ -f artifacts/platform-reuse-provenance.json ]]; then
             (cd artifacts && sha256sum platform-reuse-provenance.json >> SHA256SUMS.txt)
           fi
@@ -3156,9 +3153,6 @@ jobs:
             echo artifacts/android-apk/pleazyng-android-x86_64.tar.gz
             if [[ "$INCLUDE_WEBOS_RELEASE" == "true" ]]; then
               echo artifacts/webos/*.ipk
-              echo artifacts/webos/webos-app-provenance.json
-              echo artifacts/webos/webos-engine-provenance.json
-              echo artifacts/webos/webos-compatibility.json
               echo artifacts/webos/webos-SHA256SUMS.txt
               echo artifacts/webos/pleazyng-lg-webos-submission.zip
             fi
@@ -3195,9 +3189,6 @@ jobs:
             echo 'artifacts/linux-arm64/*'
             echo appcast.xml
             echo artifacts/SHA256SUMS.txt
-            if [[ -f artifacts/macos-dmg/macos-compilation-recovery.json ]]; then
-              echo artifacts/macos-dmg/macos-compilation-recovery.json
-            fi
             if [[ -f artifacts/platform-reuse-provenance.json ]]; then
               echo artifacts/platform-reuse-provenance.json
             fi

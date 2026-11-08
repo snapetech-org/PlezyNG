@@ -48,6 +48,14 @@ class CorePublicationTests(unittest.TestCase):
                 self.assertEqual("winget-manifests" in files, metadata)
                 self.assertIn("artifacts/windows-installer/pleazyng-windows-installer.exe", files)
                 self.assertIn("artifacts/webos/*.ipk", files)
+                self.assertIn("artifacts/webos/pleazyng-lg-webos-submission.zip", files)
+                for evidence in ("webos-app-provenance.json", "webos-engine-provenance.json", "webos-compatibility.json", "macos-compilation-recovery.json"):
+                    self.assertNotIn(evidence, files)
+        webos_steps = {step.get("name"): step for step in jobs['build-webos']['steps']}
+        handoff = webos_steps['Prepare LG Seller Lounge handoff bundle']['run']
+        for evidence in ("webos-app-provenance.json", "webos-engine-provenance.json", "webos-compatibility.json"):
+            self.assertIn('--evidence "$OUTPUT_DIR/' + evidence + '"', handoff)
+
 
     def test_notification_and_channel_failures_are_separate_results(self):
         for fail in (False, True):

@@ -21,7 +21,7 @@ REQUIRED = {
     "iOS": ("pleazyng-ios-unsigned.ipa",),
     "tvOS": ("pleazyng-tvos-unsigned.ipa",),
     "Tizen": ("pleazyng-tizen-arm-tester-handoff.zip",),
-    "webOS": ("*.ipk", "webos-app-provenance.json", "webos-engine-provenance.json", "webos-compatibility.json", "webos-SHA256SUMS.txt", "pleazyng-lg-webos-submission.zip"),
+    "webOS": ("*.ipk", "webos-SHA256SUMS.txt", "pleazyng-lg-webos-submission.zip"),
 }
 
 

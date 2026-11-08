@@ -1200,7 +1200,6 @@ def validate_release_outputs(
     }
     if include_webos_release:
         required.update({
-            "webos-engine-provenance.json", "webos-app-provenance.json", "webos-compatibility.json",
             "webos-SHA256SUMS.txt", "pleazyng-lg-webos-submission.zip",
         })
         if not any(name.endswith(".ipk") for name in assets if isinstance(name, str)):

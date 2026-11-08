@@ -27,6 +27,12 @@ class PlatformCoverageTest(unittest.TestCase):
         self.names.add('webos-candidate-build-success.json')
         self.assertIn('webOS: *.ipk', missing_assets(self.names))
 
+    def test_webos_evidence_bundle_remains_required_without_duplicate_json_assets(self):
+        self.assertEqual(missing_assets(self.names), [])
+        self.names.remove('pleazyng-lg-webos-submission.zip')
+        self.names.update({'webos-app-provenance.json', 'webos-engine-provenance.json', 'webos-compatibility.json'})
+        self.assertIn('webOS: pleazyng-lg-webos-submission.zip', missing_assets(self.names))
+
     def test_windows_arm64_is_required_independently_of_runner_profile(self):
         self.names.remove('pleazyng-windows-arm64-portable.zip')
         self.assertEqual(missing_assets(self.names), ['Windows ARM64: pleazyng-windows-arm64-portable.zip'])

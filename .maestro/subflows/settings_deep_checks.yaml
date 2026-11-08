@@ -12,26 +12,26 @@ appId: org.snapetech.pleazyng
     visible: "(?s)^Player.*"
     timeout: 10000
 - repeat:
-    times: 4
+    times: 12
     while:
-      notVisible: "(?s)^Subtitles & Configuration.*Subtitle Styling.*"
+      notVisible: "(?s)^Subtitle Styling.*"
     commands:
       - swipe:
           start: 50%, 80%
-          end: 50%, 65%
-          duration: 800
+          end: 50%, 40%
+          duration: 400
       - waitForAnimationToEnd:
           timeout: 1500
-- assertVisible: "(?s)^Subtitles & Configuration.*Subtitle Styling.*"
+- assertVisible: "(?s)^Subtitle Styling.*"
 - repeat:
-    times: 4
+    times: 12
     while:
       notVisible: "(?s)^Seek & Timing.*"
     commands:
       - swipe:
           start: 50%, 80%
-          end: 50%, 65%
-          duration: 800
+          end: 50%, 40%
+          duration: 400
       - waitForAnimationToEnd:
           timeout: 1500
 - assertVisible: "(?s)^Seek & Timing.*"
@@ -51,10 +51,39 @@ appId: org.snapetech.pleazyng
 - extendedWaitUntil:
     visible: "Services"
     timeout: 10000
+- assertVisible: "(?s)^Files and books.*"
+- assertVisible: "(?s)^Podcasts.*"
+- scrollUntilVisible:
+    element: "(?s)^Trakt.*"
+    direction: DOWN
 - assertVisible: "(?s)^Trakt.*"
+- scrollUntilVisible:
+    element: "(?s)^MyAnimeList.*"
+    direction: DOWN
 - assertVisible: "(?s)^MyAnimeList.*"
+- scrollUntilVisible:
+    element: "(?s)^AniList.*"
+    direction: DOWN
 - assertVisible: "(?s)^AniList.*"
+- scrollUntilVisible:
+    element: "(?s)^Simkl.*"
+    direction: DOWN
 - assertVisible: "(?s)^Simkl.*"
+- scrollUntilVisible:
+    element: "(?s)^MDBList.*"
+    direction: DOWN
+- assertVisible: "(?s)^MDBList.*"
+- scrollUntilVisible:
+    element: "(?s)^Seerr.*"
+    direction: DOWN
 - assertVisible: "(?s)^Seerr.*"
+- scrollUntilVisible:
+    element: "(?s)^Cloud & add-on streaming.*"
+    direction: DOWN
+- assertVisible: "(?s)^Cloud & add-on streaming.*"
+- scrollUntilVisible:
+    element: "(?s)^Hardcover.*"
+    direction: DOWN
+- assertVisible: "(?s)^Hardcover.*"
 - back
 - assertVisible: "(?s)^Services.*"

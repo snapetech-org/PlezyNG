@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Update device acceptance for search submission, single-Back playback exit, compact download menus and scrolling service pages; retain all Maestro artifacts in the requested directory and document the full headless qualification procedure.
+
 - Route offline playback acceptance through its dedicated CI control proxy, and reject direct attempts without that proxy before building or installing.
 
 - Consume Android's duplicate system Back callback while the app owns a held Back key, preventing a single press after text input from closing two profile or settings screens while preserving gestures and app exit.

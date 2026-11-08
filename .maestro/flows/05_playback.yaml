@@ -51,7 +51,6 @@ tags:
       - extendedWaitUntil:
           notVisible: "Pause"
           timeout: 10000
-      - back
       - extendedWaitUntil:
           visible: "Overview"
           timeout: 10000

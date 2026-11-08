@@ -20,7 +20,7 @@ tags:
     when:
       platform: Android
     commands:
-      - hideKeyboard
+      - pressKey: ENTER
 - extendedWaitUntil:
     visible: "(?s).*Maestro Movie.*"
     timeout: 15000
@@ -33,6 +33,7 @@ tags:
 - runFlow:
     when:
       platform: Android
+      visible: "(?i)^Space$"
     commands:
-      - hideKeyboard
+      - pressKey: ENTER
 - assertVisible: "(?s)^Maestro Movie.*"

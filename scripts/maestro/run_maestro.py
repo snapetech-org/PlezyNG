@@ -439,6 +439,7 @@ class MaestroRunner:
             command.extend(("--device", self.device_id))
         if self.config.maestro_config:
             command.extend(("--config", str(self.config.maestro_config)))
+        command.extend(("--test-output-dir", str(self.config.diagnostics_dir)))
         command.append(str(self.config.flow_target))
         return command
 

@@ -23,8 +23,8 @@ import org.junit.runner.RunWith
  *
  * Run this against the `minified` build type (`-Pplezy.testBuildType=minified`); on an
  * unminified variant it can only ever pass. Deliberately touches no ExoPlayer builder
- * API. The minified harness preserves only the fluent renderer-mode entry point
- * it calls; the FFmpeg reflection and JNI rules remain production rules under test.
+ * API. The minified harness preserves the separately invoked factory facade and
+ * callback interfaces; the FFmpeg reflection and JNI rules remain production rules under test.
  *
  * Emptying `proguard-rules.pro` was verified to fail
  * [nativeLibraryLoadsAndReportsTheCodecsOnlyItCanDecode]; the renderer-list assertion

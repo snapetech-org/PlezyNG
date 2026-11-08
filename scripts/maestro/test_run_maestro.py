@@ -162,6 +162,8 @@ class CommandTests(unittest.TestCase):
                 "emulator-5554",
                 "--config",
                 str(run_maestro.ROOT_DIR / ".maestro/media-config.yaml"),
+                "--test-output-dir",
+                str(config.diagnostics_dir),
                 str(run_maestro.ROOT_DIR / ".maestro/media_flows"),
             ],
         )

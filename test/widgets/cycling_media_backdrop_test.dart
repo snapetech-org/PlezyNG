@@ -4,6 +4,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:drift/native.dart';
+import 'package:plezy/database/app_database.dart';
+import 'package:plezy/services/plex_api_cache.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/services/device_performance.dart';
@@ -13,12 +16,42 @@ import 'package:plezy/widgets/cycling_media_backdrop.dart';
 import 'package:plezy/widgets/tv_spotlight_background.dart';
 
 import '../test_helpers/prefs.dart';
+import '../test_helpers/backend_client_fixtures.dart';
 
 const _png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 const _rotationInterval = Duration(seconds: 1);
 const _fadeDuration = Duration(milliseconds: 20);
 
 void main() {
+  testWidgets('a failed hero backdrop retries after its client endpoint changes', (tester) async {
+    final database = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(database.close);
+    PlexApiCache.initialize(database);
+    final client = testPlexClient();
+    var provideImage = false;
+    Widget build() => MaterialApp(
+      home: CyclingMediaBackdrop(
+        mediaKey: 'same-movie',
+        imagePaths: const ['/relative-art'],
+        client: client,
+        allowNetwork: true,
+        active: false,
+        width: 320,
+        height: 180,
+        fallbackColor: Colors.black,
+        imageProviderResolver: (_) => provideImage ? MemoryImage(base64Decode(_png)) : null,
+      ),
+    );
+    await tester.pumpWidget(build());
+    await tester.pump();
+    expect(find.byType(Image), findsNothing);
+    // Endpoint switches mutate a client in place; object identity is unchanged.
+    client.config = client.config.copyWith(baseUrl: 'https://reconnected.example');
+    provideImage = true;
+    await tester.pumpWidget(build());
+    await tester.pump();
+    expect(find.byType(Image), findsOneWidget);
+  });
   late Directory directory;
   late File first;
   late File second;

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Recover home artwork after server reconnects and endpoint changes, keep image requests on their owning server, and use available fallback pictures for wide preview cards without remembering transient failures indefinitely.
+
 - Show the active audio format and channel layout in playback controls, and supply native webOS codec, sample-rate, channel and bitrate diagnostics to the performance overlay.
 
 - Keep client-only subtitle selections from burning an unrelated server-selected track, and bound redirected webOS subtitle downloads without consuming redirect bodies.
@@ -598,6 +600,14 @@
 - Fix the MPV edition selector so it refreshes when a new file loads, without passing an asynchronous value through Flutter's state update callback.
 - Keep temporary HLS sharing within its startup window for long-GOP sources by forcing keyframes at the segment cadence; verify that playlist and media segments remain token-scoped and the listener closes cleanly.
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
+
+## [3.0.5] - 2026-11-08
+
+- Recover home-screen cards and hero artwork after server reconnects, endpoint and profile changes; use available fallback images for missing episode screenshots and wide previews.
+- Show the active audio codec and channel layout in playback controls, and forward native webOS audio/video metadata to the performance overlay and sanitized native logs.
+- Render standalone local and authenticated HTTP PGS subtitle images over native webOS video with authored timing, positioning and transparency.
+- Keep client-only subtitle selections independent from Plex subtitle burn-in and bound redirected subtitle downloads.
+- Retain all current-main branding, native components and runtime experiments across the complete platform matrix.
 
 ## [3.0.4] - 2026-11-07
 

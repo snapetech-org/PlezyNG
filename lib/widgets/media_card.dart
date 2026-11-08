@@ -2,6 +2,7 @@ import '../i18n/presentation_formats.dart';
 import 'package:plezy/i18n/locale_preferences.dart';
 import 'dart:async';
 import 'dart:ui';
+import '../utils/artwork_failure_cache.dart';
 import '../media/ids.dart';
 
 import 'package:flutter/material.dart';
@@ -41,19 +42,7 @@ import 'media_card_list_layout.dart';
 import 'backend_badge.dart';
 import 'optimized_media_image.dart';
 
-const _failedPosterUrlCacheLimit = 512;
-final _failedPosterUrls = <String>{};
-
-bool _hasFailedPosterUrl(String? url) => url != null && _failedPosterUrls.contains(url);
-
-void _rememberFailedPosterUrl(String? url) {
-  if (url == null || url.isEmpty) return;
-  _failedPosterUrls.remove(url);
-  _failedPosterUrls.add(url);
-  if (_failedPosterUrls.length > _failedPosterUrlCacheLimit) {
-    _failedPosterUrls.remove(_failedPosterUrls.first);
-  }
-}
+final _failedPosterUrls = ArtworkFailureCache();
 
 const int _catalogBadgeLimit = 3;
 String? _compactNumberLocale;
@@ -1129,7 +1118,7 @@ Widget _buildPosterImage(
 }) {
   if (item is MediaPlaylist) {
     return OptimizedMediaImage(
-      client: isOffline ? null : context.tryGetMediaClientWithFallback(serverIdOrNull(item.serverId)),
+      client: isOffline ? null : context.watchArtworkClient(serverIdOrNull(item.serverId)),
       imagePath: item.displayImagePath,
       width: knownWidth ?? double.infinity,
       height: knownHeight ?? double.infinity,
@@ -1153,7 +1142,7 @@ Widget _buildPosterImage(
     // addresses outright.
     final mediaClient = isOffline || catalogItem != null
         ? null
-        : context.tryGetMediaClientWithFallback(serverIdOrNull(item.serverId));
+        : context.watchArtworkClient(serverIdOrNull(item.serverId));
     final fallbackIcon = _mediaPosterFallbackIcon(item);
     final imageType = switch (cardShapeOverride) {
       CardShape.square => ImageType.square,
@@ -1175,7 +1164,8 @@ Widget _buildPosterImage(
     final posterFallbackUrl = catalogArtworkUrl != null && catalogArtworkUrl != defaultPosterUrl
         ? defaultPosterUrl ?? defaultFallbackUrl
         : defaultFallbackUrl;
-    final useRememberedFallback = posterFallbackUrl != null && _hasFailedPosterUrl(primaryPosterUrl);
+    final failureKey = mediaClient?.thumbnailUrl(primaryPosterUrl) ?? primaryPosterUrl;
+    final useRememberedFallback = posterFallbackUrl != null && _failedPosterUrls.contains(failureKey);
     final posterUrl = useRememberedFallback ? posterFallbackUrl : primaryPosterUrl;
 
     OptimizedMediaImage buildImage(
@@ -1204,18 +1194,12 @@ Widget _buildPosterImage(
         // An unresolvable URL just means there is no client right now (offline,
         // profile switch, reconnect); memoizing it would pin this item to
         // fallback artwork for the process lifetime.
-        if (error is! UnresolvedImageUrl) _rememberFailedPosterUrl(primaryPosterUrl);
+        if (error is! UnresolvedImageUrl) _failedPosterUrls.remember(failureKey);
         return buildImage(posterFallbackUrl);
       };
     }
 
-    // 16:9 thumbs have never retried with the fallback URL; only poster and
-    // square artwork do.
-    final image = buildImage(
-      posterUrl,
-      localFilePath: localPosterPath,
-      errorWidget: imageType == ImageType.thumb ? null : retryWithFallback(),
-    );
+    final image = buildImage(posterUrl, localFilePath: localPosterPath, errorWidget: retryWithFallback());
 
     if (shouldBlur) {
       return ClipRect(

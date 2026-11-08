@@ -425,9 +425,7 @@ class HeroHubSectionState extends State<HeroHubSection> {
   }
 
   MediaServerClient? _clientFor(MediaItem item) {
-    final serverId = item.serverId;
-    if (serverId == null) return context.tryGetMediaClientForServer(null);
-    return context.tryGetMediaClientForServer(ServerId(serverId));
+    return context.watchArtworkClient(serverIdOrNull(item.serverId));
   }
 
   @override

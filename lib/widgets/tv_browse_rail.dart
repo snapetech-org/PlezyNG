@@ -2093,7 +2093,7 @@ class TvBrowseRailState extends State<TvBrowseRail> with TickerProviderStateMixi
               fit: StackFit.expand,
               children: [
                 OptimizedMediaImage(
-                  client: context.tryGetMediaClientWithFallback(serverIdOrNull(item.serverId)),
+                  client: context.watchArtworkClient(serverIdOrNull(item.serverId)),
                   imagePath: item.thumbPath,
                   width: cardWidth,
                   height: imageSize,
@@ -2161,7 +2161,7 @@ class TvBrowseRailState extends State<TvBrowseRail> with TickerProviderStateMixi
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(tokens(context).radiusSm),
                 child: OptimizedMediaImage(
-                  client: context.tryGetMediaClientWithFallback(serverIdOrNull(item.serverId)),
+                  client: context.watchArtworkClient(serverIdOrNull(item.serverId)),
                   imagePath: item.thumbPath,
                   width: imageSize,
                   height: imageSize,

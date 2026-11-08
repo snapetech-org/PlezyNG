@@ -46,6 +46,24 @@ MediaItem _movie({
 );
 
 void main() {
+  group('artwork fallback', () {
+    test('wide home movie cards can fall back from backdrop to poster', () {
+      final item = testMediaItem(thumbPath: '/poster', artPath: '/backdrop');
+      expect(item.posterThumb(mode: EpisodePosterMode.episodeThumbnail, mixedHubContext: true), '/backdrop');
+      expect(item.posterThumbFallback(mode: EpisodePosterMode.episodeThumbnail, mixedHubContext: true), '/poster');
+    });
+
+    test('an episode screenshot can fall back to its series backdrop', () {
+      final item = testMediaItem(kind: MediaKind.episode, thumbPath: '/screenshot', grandparentArtPath: '/show-art');
+      expect(item.posterThumbFallback(mode: EpisodePosterMode.episodeThumbnail), '/show-art');
+    });
+
+    test('empty and duplicate paths do not prevent a usable fallback', () {
+      final item = testMediaItem(thumbPath: '', artPath: '/backdrop');
+      expect(item.posterThumbFallback(), '/backdrop');
+      expect(testMediaItem(thumbPath: '/same', artPath: '/same').posterThumbFallback(), isNull);
+    });
+  });
   group('MediaItem.isWatched', () {
     test('movie with viewCount > 0 is watched', () {
       expect(_movie(viewCount: 1).isWatched, isTrue);

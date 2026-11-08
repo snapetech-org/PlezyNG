@@ -75,6 +75,20 @@ extension ProviderExtensions on BuildContext {
     return provider?.getClientForServer(serverId);
   }
 
+  /// Artwork belongs to its source server. A relative image path must never
+  /// fall through to another server's unrelated numeric metadata IDs. Listen
+  /// during build so reconnects, endpoint changes and profile changes rebuild
+  /// cards that initially had no usable client.
+  MediaServerClient? watchArtworkClient(ServerId? serverId) {
+    final provider = watch<MultiServerProvider?>();
+    if (provider == null) return null;
+    if (serverId != null) {
+      if (!provider.serverIds.contains(serverId)) return null;
+      return provider.getClientForServer(serverId);
+    }
+    return _resolvePrioritized(null, provider.onlineServerIds, provider.getClientForServer);
+  }
+
   /// Get a [MediaServerClient] for the given serverId. Throws when the
   /// server isn't registered or is offline. Mirrors the throwing variant of
   /// the Plex-typed [getPlexClientForServer] helpers.

@@ -69,6 +69,7 @@ class _CyclingMediaBackdropState extends State<CyclingMediaBackdrop> with Widget
   late List<String> _fallbackPaths;
   final Set<String> _failedPaths = <String>{};
   final Set<String> _pendingProviderFailures = <String>{};
+  String? _clientFingerprint;
   int _rotationIndex = 0;
   bool _lifecycleResumed = true;
   bool _tickerEnabled = true;
@@ -77,6 +78,7 @@ class _CyclingMediaBackdropState extends State<CyclingMediaBackdrop> with Widget
   @override
   void initState() {
     super.initState();
+    _clientFingerprint = _sourceFingerprint();
     WidgetsBinding.instance.addObserver(this);
     _lifecycleResumed = switch (WidgetsBinding.instance.lifecycleState) {
       null || AppLifecycleState.resumed => true,
@@ -103,10 +105,19 @@ class _CyclingMediaBackdropState extends State<CyclingMediaBackdrop> with Widget
         widget.mediaKey != oldWidget.mediaKey ||
         !listEquals(widget.imagePaths, oldWidget.imagePaths) ||
         !listEquals(widget.fallbackImagePaths, oldWidget.fallbackImagePaths);
-    if (pathsChanged) {
+    final nextFingerprint = _sourceFingerprint();
+    final clientChanged =
+        widget.client != oldWidget.client ||
+        nextFingerprint != _clientFingerprint ||
+        widget.allowNetwork != oldWidget.allowNetwork;
+    _clientFingerprint = nextFingerprint;
+    if (pathsChanged || clientChanged) {
       _replacePaths();
     }
-    if (pathsChanged || widget.active != oldWidget.active || widget.rotationInterval != oldWidget.rotationInterval) {
+    if (pathsChanged ||
+        clientChanged ||
+        widget.active != oldWidget.active ||
+        widget.rotationInterval != oldWidget.rotationInterval) {
       _restartRotationTimer();
     }
   }
@@ -136,6 +147,11 @@ class _CyclingMediaBackdropState extends State<CyclingMediaBackdrop> with Widget
     _failedPaths.clear();
     _pendingProviderFailures.clear();
     _rotationIndex = 0;
+  }
+
+  String? _sourceFingerprint() {
+    final path = widget.imagePaths.firstOrNull ?? widget.fallbackImagePaths.firstOrNull;
+    return path == null ? null : widget.client?.thumbnailUrl(path, width: 1, height: 1);
   }
 
   static List<String> _uniquePaths(List<String> paths) {
@@ -249,6 +265,9 @@ class _CyclingMediaBackdropState extends State<CyclingMediaBackdrop> with Widget
   }
 
   void _reportMissingProvider(String path) {
+    // No connected client is a temporary resolution failure, not evidence
+    // that this server-owned image is missing. Retry it after reconnect.
+    if (widget.allowNetwork && widget.client == null && Uri.tryParse(path)?.hasScheme == false) return;
     if (!_pendingProviderFailures.add(path)) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _handleImageError(path);

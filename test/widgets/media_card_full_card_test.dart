@@ -51,6 +51,36 @@ void main() {
     TvDetectionService.debugSetAppleTVOverride(null);
   });
 
+  testWidgets('wide episode cards wire the available artwork fallback', (tester) async {
+    final item = testMediaItem(
+      kind: MediaKind.episode,
+      thumbPath: '/episode-screenshot',
+      grandparentArtPath: '/series-backdrop',
+    );
+    await tester.pumpWidget(
+      _TestApp(
+        child: SizedBox(
+          width: 320,
+          height: 180,
+          child: MediaCard(
+            item: item,
+            isOffline: true,
+            cardShapeOverride: CardShape.wide,
+            episodePosterModeOverride: EpisodePosterMode.episodeThumbnail,
+          ),
+        ),
+      ),
+    );
+    final image = tester.widget<OptimizedMediaImage>(find.byType(OptimizedMediaImage).first);
+    expect(image.errorWidget, isNotNull);
+    final fallback = image.errorWidget!(
+      tester.element(find.byType(OptimizedMediaImage).first),
+      '',
+      Exception('missing'),
+    );
+    expect((fallback as OptimizedMediaImage).imagePath, '/series-backdrop');
+  });
+
   testWidgets('full bleed grid delegates use scaled gutters', (tester) async {
     TvDetectionService.debugSetAppleTVOverride(true);
     tester.view.devicePixelRatio = 1.0;

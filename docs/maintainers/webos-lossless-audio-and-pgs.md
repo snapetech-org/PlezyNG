@@ -229,6 +229,24 @@ deliberately leaves output channels and passthrough status unknown when LG does
 not report them; never infer them from the source or the ARC carrier's channel
 count. The HDR badge emitted by the TV is independent of the app's controls.
 
+### Home artwork recovery
+
+The owner clarified that the missing previews are home/library pictures. The
+Odyssey's absent BIF index (HTTP 404) is a separate seek-preview limitation.
+Read-only probes returned valid JPEG artwork for the home titles inspected;
+that alone does not establish which requests failed on the device.
+
+The app had independently reproducible recovery defects: cards read their
+server client without subscribing to reconnects, a missing owner could resolve
+relative image IDs against an unrelated server, wide cards disabled fallback
+images, and failed hero paths survived an endpoint change. Cards and heroes
+now observe their own source client, hero failure state resets when the source
+URL changes, and wide cards try available alternate artwork. Failure memory is
+keyed by resolved URL and expires after two minutes instead of poisoning the
+same relative path across servers for the process lifetime. Regression checks
+cover client arrival, in-place endpoint changes, fallback selection and expiry.
+Physical verification of this package remains a separate controlled test.
+
 ## Reproducible evidence
 
 Private task evidence is retained under

@@ -35,6 +35,31 @@ void main() {
 
   tearDown(() => db.close());
 
+  testWidgets('artwork waits for its owner and rebuilds when that client arrives', (tester) async {
+    final other = testPlexClient(serverId: ServerId('server-b'));
+    final servers = testMultiServer(clients: [other]);
+    Object? selected;
+    await tester.pumpWidget(
+      ChangeNotifierProvider<MultiServerProvider>.value(
+        value: servers.provider,
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) {
+              selected = context.watchArtworkClient(ServerId('server-a'));
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
+    );
+    expect(selected, isNull, reason: 'numeric image IDs cannot be fetched from another server');
+    final owner = testPlexClient(serverId: ServerId('server-a'));
+    servers.manager.debugRegisterClientForTesting(owner);
+    servers.manager.debugEmitStatusForTesting();
+    await tester.pump();
+    expect(selected, same(owner));
+  });
+
   testWidgets('optional media-client lookups return null without MultiServerProvider', (tester) async {
     late BuildContext capturedContext;
 

@@ -565,15 +565,14 @@ sealed class MediaItem with _$MediaItem {
   /// Secondary poster path to try when [posterThumb] returns an image URL that
   /// exists syntactically but the server cannot serve it.
   String? posterThumbFallback({EpisodePosterMode mode = EpisodePosterMode.seriesPoster, bool mixedHubContext = false}) {
-    final String? fallback;
-    if (kind == MediaKind.track) {
-      fallback = parentThumbPath;
-    } else if (kind == MediaKind.episode && mode == EpisodePosterMode.seasonPoster) {
-      fallback = grandparentThumbPath ?? thumbPath;
-    } else {
-      return null;
-    }
-    return fallback != null && fallback != posterThumb(mode: mode, mixedHubContext: mixedHubContext) ? fallback : null;
+    final primary = posterThumb(mode: mode, mixedHubContext: mixedHubContext);
+    final candidates = switch (kind) {
+      MediaKind.track => [parentThumbPath, artPath],
+      MediaKind.episode when mode == EpisodePosterMode.seasonPoster => [grandparentThumbPath, thumbPath, artPath],
+      MediaKind.episode => [artPath, grandparentArtPath, thumbPath, grandparentThumbPath, parentThumbPath],
+      _ => [thumbPath, artPath, grandparentArtPath],
+    };
+    return candidates.whereType<String>().where((path) => path.isNotEmpty && path != primary).firstOrNull;
   }
 
   /// True when the item should render in 16:9.

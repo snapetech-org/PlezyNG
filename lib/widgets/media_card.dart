@@ -1164,7 +1164,9 @@ Widget _buildPosterImage(
     final posterFallbackUrl = catalogArtworkUrl != null && catalogArtworkUrl != defaultPosterUrl
         ? defaultPosterUrl ?? defaultFallbackUrl
         : defaultFallbackUrl;
-    final failureKey = mediaClient?.thumbnailUrl(primaryPosterUrl) ?? primaryPosterUrl;
+    final failureKey = primaryPosterUrl == null || primaryPosterUrl.isEmpty
+        ? null
+        : mediaClient?.thumbnailUrl(primaryPosterUrl) ?? primaryPosterUrl;
     final useRememberedFallback = posterFallbackUrl != null && _failedPosterUrls.contains(failureKey);
     final posterUrl = useRememberedFallback ? posterFallbackUrl : primaryPosterUrl;
 

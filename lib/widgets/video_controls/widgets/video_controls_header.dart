@@ -82,7 +82,7 @@ class VideoControlsHeader extends StatelessWidget {
               _buildTitle(itemTitle),
               if (player case final activePlayer?)
                 StreamBuilder<TrackSelection>(
-                  key: ObjectKey(activePlayer),
+                  key: ValueKey(('audio-format', activePlayer)),
                   stream: activePlayer.streams.track,
                   initialData: activePlayer.state.track,
                   builder: (context, snapshot) {

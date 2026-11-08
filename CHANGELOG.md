@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep live-program and audio-format header subscriptions independently keyed, and avoid resolving an artwork URL when an item has no picture.
+
 - Fill LG's unknown direct-play audio labels from matched original-source metadata with explicit diagnostic provenance, and stop unsupported desktop media-control calls on native TVs.
 
 - Keep bounded redacted diagnostics in native TV app storage, including active webOS audio format changes, so playback and artwork failures can be inspected without switching the TV input.
@@ -606,6 +608,8 @@
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
 ## [3.0.5] - 2026-11-08
+
+- Keep live-program and audio-format header subscriptions independently keyed, and skip artwork URL resolution for missing pictures.
 
 - Identify original-file audio when LG reports an unknown codec without mislabeling converted streams, retain metadata provenance, and stop unsupported desktop media-control calls on native TVs.
 

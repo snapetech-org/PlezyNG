@@ -10,6 +10,7 @@ import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/media/live_tv_timeline.dart';
 import 'package:plezy/models/livetv_program.dart';
 import 'package:plezy/models/livetv_channel.dart';
+import 'package:plezy/mpv/models.dart';
 import 'package:plezy/mpv/player/player_streams.dart';
 import 'package:plezy/screens/video_player/live_tv_session_state.dart';
 import 'package:plezy/services/live_tv_program_guide.dart';
@@ -636,11 +637,14 @@ Future<void> _pump(
   );
 }
 
-// Only position is read by the header and timeline in this test.
+// Position drives the timeline; the header also listens for audio selection.
 class _PositionStreams implements PlayerStreams {
   @override
   final Stream<Duration> position;
   _PositionStreams(this.position);
+
+  @override
+  Stream<TrackSelection> get track => const Stream.empty();
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

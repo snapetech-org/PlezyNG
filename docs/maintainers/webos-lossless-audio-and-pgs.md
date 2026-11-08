@@ -318,3 +318,55 @@ in [the TV runbook](webos-tv.md#released-304-audio-inspection). Do not restart
 or foreground the app while the owner is watching another source. Firmware
 hash equality, a decoded multichannel buffer, or a server copy decision alone
 does not qualify the physical receiver output.
+
+## RX500A receiver diagnostics without a TV OSD
+
+The owner-tested 3.0.5 candidate at `fcb2541de` reports original-source
+DTS-HD MA, six channels, 48 kHz and 3,876,000 bps in its persistent log,
+explicitly marked `origin=server-source`. The owner confirmed that the
+performance overlay displayed the video/audio codecs and six audio channels.
+These fields describe the file; they do not measure the Yamaha's input.
+
+The RX500A uses Yamaha's [Audio Connect](https://usa.yamaha.com/products/audio_visual/apps/audio-connect/index.html),
+with a StreamSDK node API. The older `YamahaExtendedControl` and
+`YamahaRemoteControl/ctrl` endpoints returned HTTP 404 on the inspected receiver.
+After finding its current LAN address, these bounded requests read identity,
+the reported input and player data without changing volume, inputs or settings:
+
+```sh
+curl --noproxy '*' --fail --silent --show-error --max-time 3 --max-filesize 65536 \
+  --get "http://$RECEIVER_HOST/api/getData" \
+  --data-urlencode 'path=settings:/deviceName' --data-urlencode 'roles=value'
+curl --noproxy '*' --fail --silent --show-error --max-time 3 --max-filesize 65536 \
+  --get "http://$RECEIVER_HOST/api/getData" \
+  --data-urlencode 'path=settings:/yamaha/audioInput_rx500a' --data-urlencode 'roles=value'
+curl --noproxy '*' --fail --silent --show-error --max-time 3 --max-filesize 65536 \
+  --get "http://$RECEIVER_HOST/api/getData" \
+  --data-urlencode 'path=player:player/data' --data-urlencode 'roles=value'
+```
+
+With the receiver on the PC's HDMI 1 input, the input node reported `hdmi1`
+and the network player reported `stopped`. Neither observation tests eARC.
+The first passive capture missed the short app window because it required the
+receiver input node to change first. Trigger captures from actual Pleazyng
+visibility, using `com.webos.surfacemanager/getForegroundAppInfo`, and retain
+the raw receiver input alongside them. Correlate source, route and sample
+times; do not treat a streaming-player state as an HDMI/eARC format unless
+an active TV-input sample establishes that relationship.
+
+Read-only LG evidence includes `com.webos.service.arccontroller/getARCState`,
+`com.webos.service.audio/tv/getAudioInputProperty`,
+`com.webos.service.audio/getStreamStatus`,
+`com.webos.service.audio/UMI/getStatus`, and
+`com.webos.service.audiooutput/audio/getStatus`. On this C6, `getARCState`
+reports an eARC connection and advertised maxima of eight PCM, DTS-HD MA and
+TrueHD channels, plus six DTS channels. These are receiver capabilities.
+They are not the current program's received format or channel count.
+
+For a rooted-TV output snapshot, enumerate the current instance directories
+below `/proc/aaudio/processors/dsp1/{output_arc,enc_mat,encoderbin,outctrlbin}`
+and read only their `status` and `prop` files. Do not hardcode instance IDs,
+write driver controls or restart services. In particular, `output_arc`'s
+two carrier slots are not evidence of stereo decoded audio. Preserve the
+separation between source metadata, decoder/output diagnostics and measured
+receiver input. An actual RX500A eARC codec/channel readout remains unverified.

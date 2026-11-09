@@ -14,16 +14,16 @@ import 'package:plezy/services/seerr/seerr_client.dart';
 import 'package:plezy/services/seerr/seerr_constants.dart';
 import 'package:plezy/widgets/seerr_title_action.dart';
 
-SeerrClient _client(MockClient mock) {
+SeerrClient _client(MockClient mock, {int permissions = SeerrPermission.request}) {
   final client = SeerrClient(
-    const SeerrSession(
+    SeerrSession(
       baseUrl: 'https://seerr.example.com',
       method: SeerrAuthMethod.local,
       identifier: 'alice',
       secret: 'pw',
       cookie: 'session',
       userId: 7,
-      permissions: SeerrPermission.request,
+      permissions: permissions,
       displayName: 'Alice',
       instanceLabel: 'Seerr',
       createdAt: 0,
@@ -76,13 +76,86 @@ void main() {
   });
 
   test('a playable show can offer its independent 4K variant', () {
-    final client = _client(MockClient((_) async => _answer([])));
+    final client = _client(MockClient((_) async => _answer([])), permissions: SeerrPermission.request4kTv);
     final json = _state('tv', 42)..['canRequest4k'] = true;
     final state = SeerrRequestIntent.fromJson(json);
     expect(
       librarySeerrTitleAction(SeerrCatalogSource(client), MediaKind.show, state)?.kind,
       SeerrTitleActionKind.request4k,
     );
+  });
+
+  test('a 4K-only viewer gets the 4K request sheet on vanilla Seerr', () {
+    final client = _client(MockClient((_) async => _answer([])), permissions: SeerrPermission.request4kMovie);
+    final action = seerrTitleAction(SeerrCatalogSource(client), MediaKind.movie, null);
+    expect(action?.kind, SeerrTitleActionKind.request4k);
+    expect(seerrTitleActions(SeerrCatalogSource(client), MediaKind.movie, null), hasLength(1));
+  });
+
+  test('requesting missing seasons does not hide an existing alert switch', () {
+    final client = _client(MockClient((_) async => _answer([])));
+    final json = _state('tv', 42)
+      ..['subscribed'] = true
+      ..['subscriptionScope'] = {'is4k': false, 'seasonNumber': null}
+      ..['seasons'] = [
+        {
+          'seasonNumber': 2,
+          'status': 1,
+          'standard': {'own': null, 'other': null},
+        },
+      ];
+    final state = SeerrRequestIntent.fromJson(json);
+    expect(seerrTitleActions(SeerrCatalogSource(client), MediaKind.show, state).map((action) => action.kind), [
+      SeerrTitleActionKind.requestSeasons,
+      SeerrTitleActionKind.notificationsOn,
+    ]);
+    expect(librarySeerrTitleActions(SeerrCatalogSource(client), MediaKind.show, state).map((action) => action.kind), [
+      SeerrTitleActionKind.requestSeasons,
+      SeerrTitleActionKind.notificationsOn,
+    ]);
+  });
+
+  test('a subscribed 4K viewer can still request the standard copy', () {
+    final client = _client(MockClient((_) async => _answer([])));
+    final json = _state('movie', 42)
+      ..['status4k'] = 5
+      ..['subscribed'] = true
+      ..['subscriptionScope'] = {'is4k': true, 'seasonNumber': null};
+    final state = SeerrRequestIntent.fromJson(json);
+    expect(seerrTitleActions(SeerrCatalogSource(client), MediaKind.movie, state).map((action) => action.kind), [
+      SeerrTitleActionKind.request,
+      SeerrTitleActionKind.notificationsOn,
+    ]);
+  });
+
+  test('a standard request does not prevent requesting the independent 4K copy', () {
+    final client = _client(
+      MockClient((_) async => _answer([])),
+      permissions: SeerrPermission.request | SeerrPermission.request4kMovie,
+    );
+    final json = _state('movie', 42, own: 'pending')..['canRequest4k'] = true;
+    final state = SeerrRequestIntent.fromJson(json);
+    expect(seerrTitleAction(SeerrCatalogSource(client), MediaKind.movie, state)?.kind, SeerrTitleActionKind.request4k);
+  });
+
+  test('a library alert is not silently replaced by a different 4K alert', () {
+    final client = _client(MockClient((_) async => _answer([])));
+    final json = _state('movie', 42)
+      ..['subscribed'] = true
+      ..['subscriptionScope'] = {'is4k': false, 'seasonNumber': null}
+      ..['fourK'] = {'own': null, 'other': 'approved'}
+      ..['canSubscribe4k'] = true;
+    final state = SeerrRequestIntent.fromJson(json);
+    expect(librarySeerrTitleActions(SeerrCatalogSource(client), MediaKind.movie, state).map((action) => action.kind), [
+      SeerrTitleActionKind.notificationsOn,
+    ]);
+  });
+
+  test('a viewer without request rights can follow another request', () {
+    final client = _client(MockClient((_) async => _answer([])), permissions: 0);
+    final state = SeerrRequestIntent.fromJson(_state('movie', 42, other: 'approved', canSubscribe: true));
+    expect(seerrTitleAction(SeerrCatalogSource(client), MediaKind.movie, state)?.kind, SeerrTitleActionKind.notify);
+    expect(seerrTitleAction(SeerrCatalogSource(client), MediaKind.movie, null), isNull);
   });
 
   testWidgets('a simple movie request takes one action and carries a stable replay key', (tester) async {

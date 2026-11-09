@@ -25,6 +25,7 @@ import '../models/seerr/seerr_request_intent.dart';
 import '../providers/catalog_sources_provider.dart';
 import '../services/seerr/seerr_request_intent_store.dart';
 import '../services/catalog/seerr_catalog_source.dart';
+import 'seerr_title_action.dart';
 import '../providers/download_provider.dart';
 import '../providers/watch_state_store.dart';
 import '../services/download_storage_service.dart';
@@ -360,7 +361,8 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
 
   void _warmIntent() {
     final item = _catalogItem;
-    if (item?.ids.tmdb case final id? when _intentStore != null && _intentSource?.canRequest(item!.kind) == true) {
+    if (item?.ids.tmdb case final id?
+        when !widget.isOffline && _intentStore != null && _intentSource?.supportsTitleActions(item!.kind) == true) {
       unawaited(_intentStore!.load(item!.kind, id));
     }
   }
@@ -507,7 +509,28 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
     final item = _effectiveItem(context);
     final viewMode = widget.viewModeOverride ?? SettingsService.instance.read(SettingsService.viewMode);
 
-    final semanticLabel = _semanticLabel(item);
+    final catalogItem = _catalogItem;
+    final tmdbId = catalogItem?.ids.tmdb;
+    final intent = tmdbId == null ? null : _intentStore?.peek(catalogItem!.kind, tmdbId);
+    final seerrStatus = intent == null
+        ? null
+        : <String>[
+            if (intent.own4k != null)
+              t.explore.badge.requested4k
+            else if (intent.own != null)
+              t.seerr.statusRequested
+            else if (intent.hasOtherRequest)
+              t.seerr.requestInProgress,
+            if (intent.subscribed) t.seerr.notificationsOn,
+          ].join(', ');
+    final semanticLabel = seerrStatus == null || seerrStatus.isEmpty
+        ? _semanticLabel(item)
+        : '${_semanticLabel(item)}, $seerrStatus';
+    final hasSeerrMenuAction =
+        !widget.isOffline &&
+        _intentSource != null &&
+        tmdbId != null &&
+        seerrTitleActions(_intentSource!, catalogItem!.kind, intent).isNotEmpty;
     final accessibleNavigation = MediaQuery.accessibleNavigationOf(context);
     final enableDetailLinks = widget.onTap == null;
     final preservePointerDetailSemantics = !PlatformDetector.isTV() || accessibleNavigation;
@@ -562,6 +585,7 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
       container: preserveDetailSemantics,
       explicitChildNodes: preserveDetailSemantics,
       label: semanticLabel,
+      hint: hasSeerrMenuAction ? t.seerr.cardActionHint : null,
       value: widget.semanticValue,
       button: widget.selected == null,
       checked: widget.selected,
@@ -1459,8 +1483,10 @@ List<String> _buildCatalogBadgeLabels(CatalogItem? item, DateTime? now, {SeerrRe
   add(
     intent?.own4k != null
         ? t.explore.badge.requested4k
-        : intent?.own != null || intent?.other != null || intent?.other4k != null
+        : intent?.own != null
         ? t.seerr.statusRequested
+        : intent?.hasOtherRequest == true
+        ? t.seerr.requestInProgress
         : _catalogRequestBadge(item.serverState),
   );
   final recommendationCount = item.recommendationCount;

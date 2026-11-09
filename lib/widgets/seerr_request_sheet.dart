@@ -172,6 +172,13 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
         ]);
   }
 
+  bool get _canRequestSelectedVariant => _is4k ? _can4k : widget.source.canRequest(widget.kind);
+
+  bool get _hasRequestAuthority =>
+      widget.source.canRequest(widget.kind) ||
+      ((_loading || _loadFailed) && widget.prefer4k && widget.source.canRequest4k(widget.kind)) ||
+      (_is4k && _can4k);
+
   bool get _partialSeasons => _settings?.partialRequestsEnabled ?? true;
 
   List<SeerrServiceInstance> get _serversForVariant => [..._allServers.where((s) => s.is4k == _is4k)];
@@ -223,7 +230,7 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
       if (_is4k && !_can4k) _toggle4k(false);
       if (restoreFocus) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted || !_connected || !widget.source.canRequest(widget.kind)) return;
+          if (!mounted || !_connected || !_hasRequestAuthority) return;
           if (_canSubmit) {
             _focusRequestButton();
           } else {
@@ -232,7 +239,7 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
         });
       }
     }
-    if (!_submitting && !widget.source.canRequest(widget.kind)) _scheduleAuthorityClose();
+    if (!_submitting && !_hasRequestAuthority) _scheduleAuthorityClose();
   }
 
   void _scheduleAuthorityClose() {
@@ -243,7 +250,7 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
       if (!mounted) return;
       if (!_connected) {
         OverlaySheetController.closeAdaptive(context);
-      } else if (!_submitting && !widget.source.canRequest(widget.kind)) {
+      } else if (!_submitting && !_hasRequestAuthority) {
         OverlaySheetController.closeAdaptive(context, SeerrRequestSheetClose.permissionRevoked);
       }
     });
@@ -326,6 +333,7 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
         _loading = false;
       });
       _selectDefaultServer();
+      if (!_hasRequestAuthority) _scheduleAuthorityClose();
       if (_advancedAllowed &&
           (authorityGeneration != _authorityGeneration || serverListGeneration != _serverListGeneration)) {
         unawaited(_loadServers());
@@ -509,7 +517,9 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
   bool get _nothingToRequest => _isMovie ? _movieBlockedLabel != null : _requestableSeasons.isEmpty;
 
   bool get _canSubmit {
-    if (!_connected || _submitting || _loading || _loadFailed || _nothingToRequest) return false;
+    if (!_connected || _submitting || _loading || _loadFailed || _nothingToRequest || !_canRequestSelectedVariant) {
+      return false;
+    }
     if (!_isMovie && _partialSeasons && _selectedSeasons.isEmpty) return false;
     return true;
   }
@@ -521,7 +531,7 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
     // The gates were derived when the sheet was built; the mask may have
     // moved since (a refresh landing between build and press). Seerr would
     // refuse anyway — fail locally, localized, without the round-trip.
-    if (!_connected || !widget.source.canRequest(widget.kind) || (_is4k && !_can4k)) {
+    if (!_connected || !_canRequestSelectedVariant) {
       setState(() => _errorText = t.seerr.permissionRevoked);
       _reconcileAuthority();
       return;
@@ -626,6 +636,11 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
+          const SizedBox(height: 4),
+          Text(
+            t.seerr.requestSheetHint,
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
           const SizedBox(height: 12),
           if (_loading)
             const Padding(
@@ -643,11 +658,13 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
                 FocusableSwitchListTile(
                   focusNode: _variantFocusNode,
                   value: _is4k,
-                  onChanged: _submitting ? null : _toggle4k,
+                  onChanged: _submitting || !widget.source.canRequest(widget.kind) ? null : _toggle4k,
                   title: Text(t.seerr.request4k),
                   secondary: const AppIcon(Symbols.four_k_rounded, fill: 1),
                   contentPadding: EdgeInsets.zero,
                 ),
+              if (_is4k && !widget.source.canRequest(widget.kind))
+                Text(t.seerr.only4kAvailable, style: theme.textTheme.bodySmall),
               if (_advancedAllowed && _serversForVariant.isNotEmpty)
                 Focus(
                   focusNode: _advancedFocusNode,

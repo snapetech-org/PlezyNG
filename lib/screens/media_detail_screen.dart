@@ -399,7 +399,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
       _seerrSeasonsKey = null;
       _seerrHasNewSeason = false;
     }
-    if (next == null || widget.isOffline || !source!.canRequest(_metadata.kind)) return;
+    if (next == null || widget.isOffline || !source!.supportsTitleActions(_metadata.kind)) return;
     final item = _metadata;
     final exactId = _externalIdsForAvailability(item).tmdb;
     final key = '${item.serverId}/${item.id}/${exactId ?? ''}';

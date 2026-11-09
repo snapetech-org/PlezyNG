@@ -34,8 +34,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: f241167288a285322faa6d3e8a9c29c5bdb725ef
   os_media_controls: 10677b8012bf315d313649822324cc0bd03f3bb8
-  plezy_romm_tvos: 70038452a219b0146d5f2cacb300faa602f3cd1e
-  plezy_torrent_tvos: 38d4e98ce1600611be45abe4935648f399032f24
+  plezy_romm_tvos: e99a9dc9716bccb717254438a5f5f5305abe6ff6
+  plezy_torrent_tvos: 4806c174cbb984555450bb72eeb9795b529a21ed
   universal_gamepad: 7c0cc0c2e3909dfb803d325387e42963b3ed842c
   wakelock_plus: 5aaa6a7ccaf4749a96a7d8ff0721d68061ad62cf
 

@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Rename the GitHub repository and local checkout to pleazyng, update canonical links and runner routing, and preserve historical release verification through the original repository identity.
+- Rename the GitHub repository and local checkout to pleazyng, update canonical links and runner routing, and preserve historical release verification through the original repository identity. Refresh Apple podspec metadata checksums, check them before native compilation, and recognize renamed workspaces during scoped build cleanup.
 
 - Apply source-aware audio diagnostics to Samsung Tizen, retain native channel/rate/bitrate data, and reject contradictory source hints. Refresh spotlight and queue artwork on server changes across layouts, and cancel unfinished redirect bodies in the shared native TV proxy.
 

@@ -1139,6 +1139,14 @@ require(
 
 apple_native = job_block(ci_text, "apple-native-test")
 require(
+    "ruby scripts/check_podspec_locks.rb"
+    in named_step(apple_native, "Check local CocoaPods lock checksums")
+    and 0 <= apple_native.find("      - name: Install CocoaPods")
+    < apple_native.find("      - name: Check local CocoaPods lock checksums")
+    < apple_native.find("      - name: Build and verify iOS native torrent framework"),
+    "Apple CI must verify local podspec metadata checksums before native compilation",
+)
+require(
     "LANG: en_US.UTF-8" in apple_native,
     "Apple CI must use a UTF-8 locale for CocoaPods and Ruby",
 )

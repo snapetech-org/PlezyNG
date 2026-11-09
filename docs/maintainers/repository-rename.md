@@ -49,6 +49,16 @@ Windows native dependency caches include the repository name in their key
 because cached CMake configuration can embed the checkout's absolute path.
 Other SDK, pub, Gradle and native download caches remain available.
 
+Changing a local podspec homepage changes its CocoaPods checksum. After editing
+local podspec metadata, run `ruby scripts/check_podspec_locks.rb --update` with
+the pinned CocoaPods core version (1.17.0), then run the command without
+`--update`. This refreshes only the seven local spec checksums across the iOS,
+macOS and tvOS lockfiles. Apple CI checks them before native compilation;
+dependency versions and deployment-mode validation remain pinned. The DerivedData
+cleanup helper recognizes the canonical and historical checkout names inside
+the exact owned runner root, preserves diagnostics, and rejects other
+repositories' build data.
+
 ## Published artifacts and signatures
 
 The immutable 3.0.5 tag remains at

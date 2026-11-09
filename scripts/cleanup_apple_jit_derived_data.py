@@ -17,12 +17,15 @@ def owned_workspace(workspace, runner_root, run_id, attempt):
     workspace = PurePosixPath(workspace)
     if ".." in workspace.parts:
         return False
-    try:
-        local = workspace.relative_to(PurePosixPath(runner_root) / "_work/PlezyNG/PlezyNG")
-        if local.parts and local.parts[0] in {"ios", "tvos", "macos"}:
-            return True
-    except ValueError:
-        pass
+    for repository in ("pleazyng", "PlezyNG", "plezyng"):
+        try:
+            local = workspace.relative_to(
+                PurePosixPath(runner_root) / "_work" / repository / repository
+            )
+            if local.parts and local.parts[0] in {"ios", "tvos", "macos"}:
+                return True
+        except ValueError:
+            pass
     for mount in ("/Volumes/p", "/Volumes/plezyng-native-build-kspld0"):
         try:
             relative = workspace.relative_to(PurePosixPath(mount) / "runs")

@@ -364,9 +364,9 @@ SPEC CHECKSUMS:
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   pdfium_flutter: f29beeb612293cc42df95beee223a4925ce2458e
   permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
-  plezy_preparation: 1c43d4abad0d8f0c7fff0696c8c6ed20cbad09b4
-  plezy_romm_ios: 4a8169c78c098e09ec9ad8a318a20d67b682258d
-  plezy_torrent: 646206c5854630107b208144991df32c209feddd
+  plezy_preparation: 2c388d39a9dc34a207980f5f25b1ace3c1e0df09
+  plezy_romm_ios: 42995b287a66488a95971bf15a58b3e50cc93dbb
+  plezy_torrent: a25cda38e3cf8fae9862ee60451eaaac5506cf01
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   Protobuf: 2520aae1505ff88eabfd6a0687ad3feace61640f

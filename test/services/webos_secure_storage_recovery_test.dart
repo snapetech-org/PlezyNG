@@ -169,6 +169,37 @@ void main() {
     expect(await read(), 'SECRET');
   });
 
+  test('wrapped-key and authentication failures expose the same error', () async {
+    await write('SECRET');
+    final saved = Map<String, String?>.of(backend.row);
+    final parts = backend.row['keys']!.split(':');
+    Future<List<String?>> failure() async {
+      try {
+        await read();
+        fail('The modified credential must be rejected');
+      } on PlatformException catch (error) {
+        return [error.code, error.message];
+      }
+    }
+    backend.unavailableKey = parts[1];
+    final unavailableError = await failure();
+    backend.unavailableKey = null;
+    for (final field in ['wrapped', 'tag']) {
+      final payload = jsonDecode(utf8.decode(base64Decode(parts[2]))) as Map<String, dynamic>;
+      if (field == 'wrapped') {
+        payload[field] = '${payload[field]}!';
+      } else {
+        final tag = base64Decode(payload[field] as String);
+        tag[0] ^= 1;
+        payload[field] = base64Encode(tag);
+      }
+      backend.row['keys'] = '${parts[0]}:${parts[1]}:${base64Encode(utf8.encode(jsonEncode(payload)))}';
+      expect(await failure(), unavailableError);
+    }
+    backend.row = saved;
+    expect(await read(), 'SECRET');
+  });
+
   test('authenticated credentials cannot be moved to another logical key', () async {
     await write('FIRST', 'vault');
     await write('SECOND', 'other');

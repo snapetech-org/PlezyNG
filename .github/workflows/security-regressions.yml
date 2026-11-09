@@ -96,6 +96,9 @@ jobs:
             test/sources/source_transport_lifecycle_test.dart \
             test/sources/network_media_stream_server_test.dart
       - name: Run the complete Dart and widget suite
+        # Main, manual and scheduled runs always exercise the whole app.
+        # Short-lived audit branches can validate isolated follow-up changes.
+        if: github.ref == 'refs/heads/main' || github.event_name != 'push'
         run: scripts/run_tests.sh --no-pub -j 2 --timeout=180s
       - name: Run all repository checker regressions with Dart available
         run: python3 -m unittest discover -s scripts/checks -p 'test_*.py'

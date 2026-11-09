@@ -100,10 +100,12 @@ class SecureStorageClient {
       final box = SecretBox(base64Decode(payload['ciphertext'] as String), nonce: nonce, mac: Mac(tag));
       final plain = await AesGcm.with256bits().decrypt(box, secretKey: SecretKey(keyBytes), aad: _aad(legacyKey, key));
       return utf8.decode(plain);
-    } on PlatformException {
-      rethrow;
     } catch (_) {
-      throw _corrupt();
+      // Do not expose whether CBC key unwrapping, decoding, or the GCM tag
+      // failed. Distinct errors would give a tampering caller a padding oracle.
+      // A transient key-service failure must also remain non-destructive.
+      throw PlatformException(
+          code: 'secure_storage_unavailable', message: 'The credential could not be verified. Retry the operation.');
     }
   }
 

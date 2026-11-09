@@ -165,7 +165,7 @@ jobs:
           docker run --rm --network none --user "$(id -u):$(id -g)" \
             --mount "type=bind,src=$aur_repo,dst=/work,readonly" -w /work \
             archlinux@sha256:2de80105abb49f813a85393c6758a4334deb6bcec4a2411bd2f059c0bee6ee4c \
-            bash -lc 'makepkg --printsrcinfo' > "$aur_repo/.SRCINFO"
+            bash -lc 'cp /work/PKGBUILD /tmp/PKGBUILD; cd /tmp; makepkg --printsrcinfo' > "$aur_repo/.SRCINFO"
           (
             cd "$aur_repo"
             git config user.name "Pleazyng Release Bot"

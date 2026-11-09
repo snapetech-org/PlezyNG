@@ -45,7 +45,7 @@ jobs:
           mkdir -p build
           revision=$(gh api repos/snapetech-org/pleazyng/commits/main --jq .sha)
           gh api --method GET repos/snapetech-org/pleazyng/contents/content/visualizer-catalog.json \
-            -f "ref=$revision" --jq .content | base64 --decode > "$PLEZY_CATALOG_FIXTURE"
+            -f "ref=$revision" --jq .content | python3 -c 'import base64, sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.read()))' > "$PLEZY_CATALOG_FIXTURE"
           test -s "$PLEZY_CATALOG_FIXTURE"
           shasum -a 256 "$PLEZY_CATALOG_FIXTURE"
       - name: Analyze the verifier

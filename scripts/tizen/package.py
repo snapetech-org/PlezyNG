@@ -51,7 +51,7 @@ def visualizer_metadata(raw, arch):
             or data.get('target') != f'tizen-{arch}'
             or not re.fullmatch(r'[0-9a-f]{40}', str(data.get('sourceRevision', '')))
             or data.get('runnerPolicy') not in {'private-ephemeral-jit', 'self-hosted', 'github-hosted'}
-            or not re.fullmatch(r'https://github\.com/snapetech-org/(MilkRust|PlezyNG)/actions/runs/[1-9][0-9]*', str(data.get('buildRun', '')))):
+            or not re.fullmatch(r'https://github\.com/snapetech-org/(MilkRust|PlezyNG|pleazyng)/actions/runs/[1-9][0-9]*', str(data.get('buildRun', '')))):
         raise ValueError('MilkRust artifact identity, ABI or build provenance is invalid')
     for key, _ in VISUALIZER_FILES.values():
         if not re.fullmatch(r'[0-9a-f]{64}', str(data.get(key, ''))):

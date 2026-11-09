@@ -43,6 +43,17 @@ DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
 APPLE_JIT_EVIDENCE_ROOT: Path | None = None
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
+    "scripts/checks/check_codegen.py", "scripts/checks/test_check_codegen.py",
+    "scripts/checks/check_capability_manifest.py",
+    "tools/webos/package_ipk.py",
+    "tools/webos/verify_package.py",
+    "tools/webos/tests/test_package_ipk.py",
+    "scripts/tizen/package.py",
+    "scripts/tizen/test_package.py",
+    "scripts/ci_guard_checks.sh",
+    "scripts/prepare_native_downloads.py",
+    "scripts/test_prepare_native_downloads.py",
+
     "scripts/retain_macos_app.py", "scripts/test_retain_macos_app.py",
     "scripts/recover_macos_app.py",
     "scripts/test_recover_macos_app.py",
@@ -949,6 +960,14 @@ def validate_immutable_release_tag(
         )
 
 
+def release_ci_source(worktree: Path, tag: str, main_commit: str, tag_commit: str | None) -> str:
+    """Reuse exact-source CI only after proving the immutable app source unchanged."""
+    if tag_commit is None:
+        return main_commit
+    validate_immutable_release_tag(worktree, tag, tag_commit, main_commit)
+    return tag_commit
+
+
 def ensure_tag(worktree: Path, version: str, commit_sha: str) -> str:
     tag = f"v{version}"
     existing_commit = existing_release_tag_commit(worktree, tag)
@@ -1625,9 +1644,7 @@ def main() -> int:
         ffmpeg_sha256 = None
 
         if tag_reused:
-            validate_immutable_release_tag(
-                worktree, tag, existing_tag_commit, main_commit
-            )
+            ci_source = release_ci_source(worktree, tag, main_commit, existing_tag_commit)
             pin_sha = main_commit
             progress["tag_commit"] = existing_tag_commit
             progress["immutable_tag_reused"] = True
@@ -1664,6 +1681,8 @@ def main() -> int:
         # Include immutable-tag reuse: that path otherwise skips native refresh.
         # Stale tagged native inputs require the next version, never a moved tag.
         command(["python3", "scripts/sync_native_revision.py", "--check"], cwd=worktree)
+        ci_source = ci_source if tag_reused else pin_sha
+        progress["ci_source_commit"] = ci_source
         progress["plezyng_commit"] = pin_sha
         stage = "Pleazyng CI"
         progress["stage"] = stage
@@ -1679,7 +1698,7 @@ def main() -> int:
             progress["platform_recovery"] = proof
             print(f"Verified unchanged product inputs and exact-source CI from run {proof['ci_run_id']}.")
         else:
-            ci = ensure_ci(pin_sha, execution_profile=args.execution_profile)
+            ci = ensure_ci(ci_source, execution_profile=args.execution_profile)
         progress["ci_run"] = ci["databaseId"]
         # Store variants are explicit preparation, never implied by publishing.
         include_apple_store_build = args.include_apple_store_build

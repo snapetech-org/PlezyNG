@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Accept canonical pleazyng build provenance in TV packages and prefetch checksum-pinned SQLite, libdovi and AppImage runtime assets with verified retries. Reuse immutable application CI only after checking that subsequent changes are confined to release infrastructure.
+
 - Set Flutter and webOS versions together, and validate package metadata in commit/CI guards and before the release driver starts CI or creates a tag.
 
 - Preserve pointer entry and text-field focus while giving submenu Back handlers their own focus scope; retain staged filter edits until their parent editor closes.

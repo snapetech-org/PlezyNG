@@ -167,7 +167,7 @@ def check_manifest(data: dict) -> None:
     require("workflow_dispatch:" in ci_text, "CI must remain explicitly dispatchable")
     require("python3 scripts/verify_release_ci.py" in build_text, "release workflow must call the exact-SHA CI verifier")
     require("GH_TOKEN: ${{ github.token }}" in build_text, "release gate needs an Actions read token")
-    require("COMMIT_SHA: ${{ github.sha }}" in build_text, "release gate must use the immutable workflow SHA")
+    require("COMMIT_SHA: ${{ steps.release-tag.outputs.commit }}" in build_text, "release CI gate must use the validated immutable application tag SHA")
     validate_job = job_block(build_text, "validate-trusted-ref")
     require("actions: read" in validate_job, "release validation job needs Actions read permission")
 

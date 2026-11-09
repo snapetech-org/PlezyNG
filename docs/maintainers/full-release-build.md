@@ -108,7 +108,24 @@ ancestor of `main`, the workflow permits only release infrastructure, changelog,
 maintainer documentation, and the WebOS compatibility lock to differ from the
 tagged commit; application-source changes still require a new matching tag.
 Both the workflow and the local release driver enforce this allowlist, and the
-draft release remains tied to the existing tag.
+draft release remains tied to the existing tag. Only after that ancestry and exact
+changed-path check passes, the driver and workflow reuse the 13-job CI proof on
+the immutable tag's application source. Record `ci_source_commit` separately
+from the current build/workflow source. Any application code, native pin or
+version metadata change requires a new version and fresh exact-source CI.
+
+Native dependency downloads are staged by `scripts/prepare_native_downloads.py`
+after locked Pub resolution and before Dart hooks run. SQLite assets retain the
+hashes from the resolved locked package; libdovi retains the four Gradle pins.
+The helper requires matching GitHub asset metadata, verifies downloaded size and
+SHA-256, retries fresh API redirects, and atomically caches only verified bytes.
+It populates SQLite's existing shared hook cache; the unmodified hook verifies
+those bytes again. Android's task-local curl wrapper serves only the four exact
+pinned libdovi download commands and delegates every other invocation. AppImage
+uses an independently checksum-pinned runtime via `--runtime-file` instead of an
+implicit unverified rolling download. Never weaken hashes to accept an HTTP
+error body. The commit/CI guards also run all webOS packaging tests, including
+canonical and historical repository provenance URLs.
 
 ```sh
 python3 scripts/release_all_platforms.py --version 3.0.1 \

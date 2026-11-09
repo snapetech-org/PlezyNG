@@ -23,6 +23,18 @@ def elf(arch='arm'):
 
 
 class PackageTest(unittest.TestCase):
+    def test_visualizer_provenance_accepts_canonical_and_historical_repositories_only(self):
+        metadata, _, _, _ = self.visualizer_fixture()
+        for repository in ('pleazyng', 'PlezyNG', 'MilkRust'):
+            metadata['buildRun'] = f'https://github.com/snapetech-org/{repository}/actions/runs/123'
+            self.assertEqual(package.visualizer_metadata(json.dumps(metadata).encode(), 'arm')['buildRun'], metadata['buildRun'])
+        for url in ('https://github.com/another-org/pleazyng/actions/runs/123',
+                    'https://github.com/snapetech-org/unreviewed/actions/runs/123',
+                    'https://github.com/snapetech-org/pleazyng/actions/runs/123/extra'):
+            metadata['buildRun'] = url
+            with self.subTest(url=url), self.assertRaises(ValueError):
+                package.visualizer_metadata(json.dumps(metadata).encode(), 'arm')
+
     def test_visualizer_provenance_records_compatible_hosted_and_private_workers(self):
         metadata, _, _, _ = self.visualizer_fixture()
         for policy in ('github-hosted', 'self-hosted', 'private-ephemeral-jit'):

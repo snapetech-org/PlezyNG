@@ -375,7 +375,7 @@ jobs:
           while IFS= read -r changed_file; do
             [[ -z "$changed_file" ]] && continue
             case "$changed_file" in
-              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/apple_jit_process_tree.py|scripts/cleanup_apple_jit_scratch.sh|scripts/checks/test_apple_jit_process_tree.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/retain_macos_app.py|scripts/test_retain_macos_app.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
+              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/apple_jit_process_tree.py|scripts/cleanup_apple_jit_scratch.sh|scripts/checks/test_apple_jit_process_tree.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/retain_macos_app.py|scripts/test_retain_macos_app.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/package_ipk.py|tools/webos/verify_package.py|tools/webos/tests/test_package_ipk.py|scripts/tizen/package.py|scripts/tizen/test_package.py|scripts/ci_guard_checks.sh|scripts/prepare_native_downloads.py|scripts/test_prepare_native_downloads.py|scripts/checks/check_capability_manifest.py|scripts/checks/check_codegen.py|scripts/checks/test_check_codegen.py|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
                 ;;
               *)
                 echo "Release tag $RELEASE_TAG differs from main in non-release source '$changed_file'; refusing to build mixed source." >&2
@@ -486,7 +486,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_SHA: ${{ steps.release-tag.outputs.commit }}
           REPOSITORY: ${{ github.repository }}
         run: python3 scripts/verify_release_ci.py
 
@@ -614,6 +614,11 @@ jobs:
       - name: Install dependencies
         if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Prefetch checksum-pinned Android native downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform android --libdovi --curl-wrapper-dir "$RUNNER_TEMP/pleazyng-native-tools"
 
       - name: Prepare pinned Steam sources with visible diagnostics
         run: python3 scripts/games/prepare_steam.py
@@ -1066,6 +1071,12 @@ jobs:
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: flutter pub get --enforce-lockfile --no-example
 
+      - name: Prefetch checksum-pinned ios native downloads
+        working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 "$GITHUB_WORKSPACE/scripts/prepare_native_downloads.py" --sqlite-platform ios
+
       - name: Refresh pinned mpv Swift packages
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: scripts/refresh_apple_spm.sh ios
@@ -1269,6 +1280,11 @@ jobs:
 
       - name: Install tvOS dependencies with the unsupported SMB native asset stub
         run: tvos/scripts/pub_get.sh
+
+      - name: Prefetch checksum-pinned tvOS native downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform tvos
 
       - name: Fetch the checksum-pinned tvOS Flutter engine
         run: tvos/scripts/fetch_engine.sh
@@ -1628,6 +1644,12 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Prefetch checksum-pinned macos native downloads
+        working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 "$GITHUB_WORKSPACE/scripts/prepare_native_downloads.py" --sqlite-platform macos
 
       - name: Refresh pinned mpv Swift packages
         if: inputs.macos_compilation_job_id == ''
@@ -2018,6 +2040,12 @@ jobs:
       - name: Install dependencies
         shell: pwsh
         run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Prefetch checksum-pinned Windows native downloads
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/prepare_native_downloads.py --sqlite-platform windows --arch '${{ matrix.arch }}'
 
       - name: Build the pinned Whisper ARM64 backend with Clang
         if: needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && matrix.arch == 'arm64'
@@ -2559,6 +2587,12 @@ jobs:
         shell: bash
         run: flutter pub get --enforce-lockfile --no-example
 
+      - name: Prefetch checksum-pinned Linux native downloads
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform linux --arch '${{ matrix.arch }}'
+
       - name: Cache locked offline HDR10 and SDR tools
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
@@ -2711,8 +2745,10 @@ jobs:
         shell: bash
         env:
           RELEASE_TAG: ${{ needs.validate-trusted-ref.outputs.version }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          python3 scripts/prepare_native_downloads.py --appimage-runtime "$RUNNER_TEMP/appimage-runtime-x86_64"
           app_dir="$RUNNER_TEMP/pleazyng.AppDir"
           appimagetool="$RUNNER_TEMP/appimagetool-x86_64.AppImage"
           rm -rf "$app_dir"
@@ -2729,7 +2765,7 @@ jobs:
           echo 'ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0  '"$appimagetool" | sha256sum --check --status
           chmod +x "$appimagetool"
           APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 VERSION="$RELEASE_TAG" \
-            "$appimagetool" "$app_dir" "$GITHUB_WORKSPACE/pleazyng-linux-x86_64.AppImage"
+            "$appimagetool" --runtime-file "$RUNNER_TEMP/appimage-runtime-x86_64" "$app_dir" "$GITHUB_WORKSPACE/pleazyng-linux-x86_64.AppImage"
 
       - name: Attest x64 AppImage
         if: matrix.arch == 'x64'

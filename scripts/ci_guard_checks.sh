@@ -10,6 +10,13 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 python3 tools/webos/verify_package.py --project-metadata
+webos_test_tmp="$(mktemp -d "${TMPDIR:-/tmp}/pleazyng-webos-package-tests.XXXXXXXX")"
+if PLEZY_WEBOS_TEST_TMP="$webos_test_tmp" python3 -m unittest discover -s tools/webos/tests; then
+  rmdir "$webos_test_tmp" || echo "Retained WebOS test scratch: $webos_test_tmp"
+else
+  echo "Retained WebOS test scratch after failure: $webos_test_tmp" >&2
+  exit 1
+fi
 
 for checker in \
   scripts/checks/check_rebrand.py \

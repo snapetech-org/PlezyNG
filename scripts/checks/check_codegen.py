@@ -88,6 +88,23 @@ def _copy_dependency_state(source_root: Path, target_root: Path) -> None:
             shutil.copy2(source_path, target / relative)
 
 
+    # Isolated code generation invokes Dart native hooks too. Reuse only pinned,
+    # hash-verified SQLite outputs; leave resolution and hook checks unchanged.
+    cache = source / "hooks_runner/shared/sqlite3/build"
+    if cache.is_dir():
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from prepare_native_downloads import sha256, sqlite_inputs
+        _, hashes = sqlite_inputs(source_root)
+        for expected in set(hashes.values()):
+            folder = cache / f"download-{expected[:8]}"
+            for filename in ("libsqlite3.so", "libsqlite3.dylib", "sqlite3.dll"):
+                candidate = folder / filename
+                if candidate.is_file() and not candidate.is_symlink() and sha256(candidate) == expected:
+                    destination = target / candidate.relative_to(source)
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(candidate, destination)
+
+
 def _create_isolated_checkout(root: Path, destination: Path) -> None:
     _run(root, "git", "worktree", "add", "--detach", "--quiet", str(destination), "HEAD")
     changed = _nul_paths(

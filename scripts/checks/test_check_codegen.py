@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -26,6 +27,24 @@ def executable(path: Path, contents: str) -> None:
 
 
 class CodegenCheckTest(unittest.TestCase):
+    def test_isolation_copies_only_hash_verified_sqlite_hook_cache(self):
+        import check_codegen
+        sys.path.insert(0, str(SCRIPT_DIR.parent))
+        import prepare_native_downloads
+        with tempfile.TemporaryDirectory() as temporary:
+            source, destination = Path(temporary) / "source", Path(temporary) / "destination"
+            content = b"verified native dependency"
+            digest = hashlib.sha256(content).hexdigest()
+            folder = source / ".dart_tool/hooks_runner/shared/sqlite3/build" / f"download-{digest[:8]}"
+            folder.mkdir(parents=True)
+            (folder / "libsqlite3.so").write_bytes(content)
+            (folder / "sqlite3.dll").write_bytes(b"corrupt response")
+            with patch.object(prepare_native_downloads, "sqlite_inputs", return_value=("sqlite3-3.5.0", {"asset": digest})):
+                check_codegen._copy_dependency_state(source, destination)
+            copied = destination / folder.relative_to(source)
+            self.assertEqual((copied / "libsqlite3.so").read_bytes(), content)
+            self.assertFalse((copied / "sqlite3.dll").exists())
+
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         temporary_root = Path(self.temp.name)

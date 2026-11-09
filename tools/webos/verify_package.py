@@ -268,7 +268,7 @@ def inspect_visualizer(entries: dict[str, bytes]) -> dict[str, object]:
         or not re.fullmatch(r"[0-9a-f]{40}", str(manifest.get("sourceRevision", "")))
         or manifest.get("runnerPolicy") != "private-ephemeral-jit"
         or not re.fullmatch(
-            r"https://github\.com/snapetech-org/(MilkRust|PlezyNG)/actions/runs/[1-9][0-9]*",
+            r"https://github\.com/snapetech-org/(MilkRust|PlezyNG|pleazyng)/actions/runs/[1-9][0-9]*",
             str(manifest.get("buildRun", "")),
         )
     ):

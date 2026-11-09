@@ -22,6 +22,7 @@ from release_all_platforms import (  # noqa: E402
     ensure_candidate_build,
     ensure_ci,
     ensure_tag,
+    release_ci_source,
     run_has_successful_step,
 )
 
@@ -254,6 +255,23 @@ class ImmutableReleaseTagTests(unittest.TestCase):
 
         self.assertEqual(ensure_tag(self.checkout, "3.0.0", main_commit), "v3.0.0")
         self.assertEqual(self.git("rev-parse", "refs/tags/v3.0.0^{commit}"), self.tag_commit)
+
+    def test_infrastructure_reuses_only_the_validated_tag_ci_source(self) -> None:
+        main_commit = self.commit_file("scripts/prepare_native_downloads.py", "# verified downloads\n")
+        self.assertEqual(release_ci_source(self.checkout, "v3.0.0", main_commit, self.tag_commit), self.tag_commit)
+        self.assertEqual(release_ci_source(self.checkout, "v3.0.1", main_commit, None), main_commit)
+        changed = self.commit_file("lib/main.dart", "void main() { print('changed'); }\n")
+        with self.assertRaisesRegex(ReleaseError, "non-release source files"):
+            release_ci_source(self.checkout, "v3.0.0", changed, self.tag_commit)
+
+    def test_workflow_ci_uses_the_validated_immutable_tag(self) -> None:
+        import yaml
+        workflow = yaml.safe_load((ROOT / ".github/workflows/build.yml").read_text())
+        steps = workflow["jobs"]["validate-trusted-ref"]["steps"]
+        gate = next(step for step in steps if step.get("name") == "Require successful CI for this commit")
+        self.assertEqual(gate["env"]["COMMIT_SHA"], "${{ steps.release-tag.outputs.commit }}")
+        tag = next(i for i, step in enumerate(steps) if step.get("id") == "release-tag")
+        self.assertLess(tag, steps.index(gate))
 
     def test_rejects_application_changes_without_moving_the_tag(self) -> None:
         self.commit_file("CHANGELOG.md", "## [Unreleased]\n\n- Release infrastructure update.\n")

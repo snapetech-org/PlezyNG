@@ -69,7 +69,15 @@ class PackageIpkTests(unittest.TestCase):
             "helperSha256": "3" * 64,
             "hostSourceArchiveSha256": "4" * 64,
         }
-        package_ipk._validate_visualizer_manifest(json.dumps(manifest).encode("utf-8"))
+        for repository in ("pleazyng", "PlezyNG", "MilkRust"):
+            manifest["buildRun"] = f"https://github.com/snapetech-org/{repository}/actions/runs/123"
+            package_ipk._validate_visualizer_manifest(json.dumps(manifest).encode("utf-8"))
+        for url in ("https://github.com/another-org/pleazyng/actions/runs/123",
+                    "https://github.com/snapetech-org/unreviewed/actions/runs/123",
+                    "https://github.com/snapetech-org/pleazyng/actions/runs/123/extra"):
+            manifest["buildRun"] = url
+            with self.subTest(url=url), self.assertRaises(package_ipk.PackageError):
+                package_ipk._validate_visualizer_manifest(json.dumps(manifest).encode("utf-8"))
 
     def test_helper_bundle_is_verified_and_staged_executable(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.environ["PLEZY_WEBOS_TEST_TMP"]) as temporary:

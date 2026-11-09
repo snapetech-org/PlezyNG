@@ -82,3 +82,18 @@ passed on Ubuntu 24.04 at revision `aa17d7fea` (npm install/audit, typecheck,
 production build, JS/bridge tests and packaging).
 Existing full security/native runs were preserved. The concurrent Apple resolver
 change on main also passed its three focused Python tests.
+
+## Local branch cleanup
+
+The owner's follow-up explicitly included local branch names. All three remaining
+local task branches were verified on main and removed after detaching their
+worktrees at the same commits. The packaging branch's active push was allowed to
+finish first. Working files, caches, existing detached worktrees and evidence
+were preserved; no published history was rewritten. The canonical checkout now
+has only the local branch `main`, matching the fork's sole GitHub branch.
+
+Eleven cached feature-branch refs belonging to the separate upstream repository
+were removed locally. Its fetch refspec now tracks only upstream main. Upstream
+branches were not modified or automatically merged; the six commits outside the
+two main histories were retained in a verified local Git bundle. See the
+[local cleanup receipt](local-branch-consolidation-2026-11-09.json).

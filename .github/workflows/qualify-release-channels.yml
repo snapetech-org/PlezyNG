@@ -106,7 +106,8 @@ jobs:
           app=$(python3 -c 'from pathlib import Path; import sys; apps=list(Path(sys.argv[1]).glob("*.app")); assert len(apps)==1; print(apps[0])' "$work/mounted")
           codesign --display --verbose=4 "$app" 2>&1 | tee codesign-identity.txt
           codesign --verify --deep --strict --verbose=2 \
-            --test-requirement='anchor apple generic and certificate leaf[subject.OU] = "DM9A59DC85"' "$app" 2>&1 | tee codesign-verification.txt
+            --test-requirement='=identifier "org.snapetech.pleazyng" and anchor apple generic and certificate leaf[subject.OU] = "DM9A59DC85"' "$app" 2>&1 | tee codesign-verification.txt
+          xcrun stapler validate "$app" 2>&1 | tee notarization-ticket.txt
           spctl --assess --type execute --verbose=4 "$app" 2>&1 | tee gatekeeper.txt
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
@@ -115,4 +116,5 @@ jobs:
           path: |
             ${{ runner.temp }}/channel-qualification/codesign-identity.txt
             ${{ runner.temp }}/channel-qualification/codesign-verification.txt
+            ${{ runner.temp }}/channel-qualification/notarization-ticket.txt
             ${{ runner.temp }}/channel-qualification/gatekeeper.txt

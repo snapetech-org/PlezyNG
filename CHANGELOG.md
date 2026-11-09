@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Verify the signed, ticket-stapled app inside the existing macOS disk image before publishing Homebrew, rather than requiring a second ticket on the outer image. Add a locked downstream Nix flake for the existing v3.0.7 Linux release.
+
 - Repair existing-release Linux channel packaging: preserve binary payloads and root ownership in AUR packages, normalize bundled ELF search paths and GTK caches in COPR repacks, and add native x64/ARM64 Nix and macOS signature qualification without rebuilding application artifacts.
 
 - Remove aerynOS from supported release channels and packaging at the owner's request.

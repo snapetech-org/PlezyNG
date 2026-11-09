@@ -1,6 +1,10 @@
 # Release-bundle candidate; native build and playback qualification required.
 # Independent Pleazyng packaging, not a replacement for nixpkgs.plezy.
-{ pkgs ? import <nixpkgs> { } }:
+{
+  pkgs ? import <nixpkgs> { },
+  desktopFile ? ./org.snapetech.pleazyng.desktop,
+  relocateCaches ? ./relocate-caches.py,
+}:
 let
   version = "@@VERSION@@";
   sources = {
@@ -27,7 +31,7 @@ let
       test -x $out/lib/pleazyng/pleazyng
       test -f $out/lib/pleazyng/pleazyng.sh
       chmod +x $out/lib/pleazyng/pleazyng.sh
-      python3 ${./relocate-caches.py} $out/lib/pleazyng
+      python3 ${relocateCaches} $out/lib/pleazyng
       runHook postInstall
     '';
   };
@@ -43,7 +47,7 @@ pkgs.buildFHSEnv {
   ];
   runScript = "${bundle}/lib/pleazyng/pleazyng.sh";
   extraInstallCommands = ''
-    install -Dm644 ${./org.snapetech.pleazyng.desktop} \
+    install -Dm644 ${desktopFile} \
       $out/share/applications/org.snapetech.pleazyng.desktop
     install -Dm644 ${bundle}/lib/pleazyng/pleazyng.png \
       $out/share/icons/hicolor/512x512/apps/pleazyng.png

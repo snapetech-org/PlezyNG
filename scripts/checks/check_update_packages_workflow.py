@@ -49,6 +49,14 @@ require(
 
 homebrew = job("update-homebrew")
 require(
+    'hdiutil attach -readonly -nobrowse -mountpoint "$mountpoint" pleazyng-macos.dmg' in homebrew
+    and 'codesign --verify --deep --strict' in homebrew
+    and 'identifier "org.snapetech.pleazyng"' in homebrew
+    and 'xcrun stapler validate "$app"' in homebrew
+    and 'spctl --assess --type execute --verbose "$app"' in homebrew,
+    "Homebrew must verify the mounted app signature, stapled ticket and Gatekeeper acceptance",
+)
+require(
     'verify_release_attestation.py" snapetech-pleazyng.rb' in homebrew
     and 'verify_release_attestation.py" SHA256SUMS.txt' in homebrew
     and '--repository-output "$RUNNER_TEMP/cask-publisher-repository.txt"' in homebrew

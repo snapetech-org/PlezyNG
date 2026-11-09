@@ -47,6 +47,10 @@ def prepare(tag: str, checksums: Path, output: Path) -> None:
         "@@ARM64_SHA256@@": hashes[ASSETS["arm64"]],
     }
     files = {}
+    files['nix/release.json'] = (json.dumps({
+        'version': tag[1:], 'tag': tag, 'repository': 'snapetech-org/pleazyng',
+        'sha256': {arch: hashes[name] for arch, name in ASSETS.items()},
+    }, indent=2) + '\n').encode()
     for channel, name in (("nix", "pleazyng.nix"),):
         template = ROOT / "linux/packaging" / channel / f"{name}.template"
         content = template.read_text(encoding="utf-8")

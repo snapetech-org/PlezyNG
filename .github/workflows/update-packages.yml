@@ -153,8 +153,18 @@ jobs:
           EXPECTED_SHA=$(awk '$2 == "pleazyng-macos.dmg" {print $1}' SHA256SUMS.txt)
           ACTUAL_SHA=$(shasum -a 256 pleazyng-macos.dmg | cut -d' ' -f1)
           test "$ACTUAL_SHA" = "$EXPECTED_SHA"
-          xcrun stapler validate pleazyng-macos.dmg
-          spctl --assess --type open --context context:primary-signature --verbose pleazyng-macos.dmg
+          # The released app carries its notarization ticket; the outer DMG
+          # does not need a second ticket. Verify the exact immutable payload.
+          mountpoint="$RUNNER_TEMP/pleazyng-homebrew/mounted"
+          mkdir -p "$mountpoint"
+          trap 'hdiutil detach "$mountpoint" || true' EXIT
+          hdiutil attach -readonly -nobrowse -mountpoint "$mountpoint" pleazyng-macos.dmg
+          app="$mountpoint/Pleazyng.app"
+          test -d "$app"
+          codesign --verify --deep --strict --verbose=2 \
+            --test-requirement='=identifier "org.snapetech.pleazyng" and anchor apple generic and certificate leaf[subject.OU] = "DM9A59DC85"' "$app"
+          xcrun stapler validate "$app"
+          spctl --assess --type execute --verbose "$app"
 
       - name: Check out publisher tap
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

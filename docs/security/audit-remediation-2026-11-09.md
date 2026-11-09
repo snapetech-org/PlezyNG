@@ -21,7 +21,7 @@ Audit baseline: `da2909290f6a2ad8dcb3378be9395c97bd0914a2`. This ledger distingu
 | PLY-13 | Implemented; Dart/FFmpeg CI pending | Renew the one-hour idle lease on authorized requests, with an explicit 24-hour absolute cap and fixed EOF grace. |
 | PLY-14 | Implemented; Dart CI pending | Random 128-bit salts and PBKDF2-HMAC-SHA256, 210,000 iterations; constant-time comparison; durable attempt throttling; legacy upgrade during successful activation. Four digits remain a local parental control, not strong account authentication. |
 | PLY-15 | Implemented; Dart CI pending | Add MDBList to Android and Dart system-authority-only API domains. |
-| PLY-16 | Implemented for new writes; legacy migration remains | AES-256-GCM authenticated envelopes bind logical key and OS key identity; random data key is wrapped by webOS keymanager. Existing CBC rows remain readable and upgrade on write. Real webOS key-service qualification and migration of untouched legacy rows remain. |
+| PLY-16 | Implemented for new writes; legacy migration remains | AES-256-GCM authenticated envelopes bind logical key and OS key identity, authenticate the complete stored value list, and use a distinct OS-key namespace to reject CBC downgrade; random data key is wrapped by webOS keymanager. Existing CBC rows remain readable and upgrade on write. Real webOS key-service qualification and migration of untouched legacy rows remain. |
 | PLY-17 | Partially mitigated; architectural work remains | Native shutdown no longer traps the exit UI; files and native lease remain owned until real acknowledgment. Native cores still run in-process: process isolation, sandbox policy and platform-specific recovery are not implemented. |
 | PLY-18 | Implemented; Dart CI pending | Bounded recursive redaction of serialized Sentry events, nested maps/lists/keys; drop event on serialization/redaction failure. |
 | PLY-19 | Partially implemented; administrator action remains | Automatic main-branch hosted security checks added. Required checks and branch protection still need repository administration; public PRs must use the owner-mandated isolated restricted-egress sandbox. |
@@ -60,10 +60,10 @@ These acceptance items require the specified devices, test accounts, provider ap
 ## Executed validation
 
 - Go server and healthcheck: `go test -race ./...` passed; upstream coalescing, cancellation, failure cache and refill regressions included.
-- Cloudflare Worker: 13 tests passed.
+- Cloudflare Worker: 14 tests passed.
 - Lending gateway: 10 tests passed, including slow headers and exhausted workers.
 - Karaoke companion TLS regression passed; optional analysis dependencies remain uninstalled locally.
-- Workflow security/action-pin checks and locale structural/source checks passed.
-- Dart/Flutter execution is pending clean hosted CI. The local SDK bootstrap was rejected by automatic approval review; it was not retried or bypassed.
+- Workflow security/action-pin checks and locale structural/source checks passed. The broader Python checker suite ran 572 tests: 557 passed, 13 skipped and two failed solely because local Dart was unavailable. Hosted Go vulnerability scanning also passed.
+- Clean hosted Flutter 3.47.1 resolved the enforced lockfile and completed analysis; its initial two lint diagnostics were corrected. Runtime regression execution is pending the updated hosted run. The local SDK bootstrap was rejected by automatic approval review; it was not retried or bypassed.
 
 Deployment changes are not live merely because source is committed. Apply the Worker and gateway/server changes through their existing deployment runbooks, preserving sessions, provider secrets, route bindings and rollback artifacts.

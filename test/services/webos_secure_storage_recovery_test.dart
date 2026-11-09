@@ -124,30 +124,50 @@ void main() {
     messenger.setMockMethodCallHandler(const MethodChannel('webos_plugin'), null);
   });
 
-  for (final field in ['ciphertext', 'tag', 'nonce', 'wrapped']) {
-    test('authenticated envelope rejects changed $field without rewriting storage', () async {
-      await write('SECRET');
-      final saved = Map<String, String?>.of(backend.row);
-      final values = (jsonDecode(backend.row['datas']!) as List).cast<String>();
-      final parts = values.single.split(':');
-      final payload = jsonDecode(utf8.decode(base64Decode(parts[2]))) as Map<String, dynamic>;
-      if (field == 'wrapped') {
-        // Changing the OS-wrapped key must never expose unauthenticated data.
-        payload[field] = '${payload[field]}!';
-      } else {
-        final bytes = base64Decode(payload[field] as String);
-        bytes[0] ^= 1;
-        payload[field] = base64Encode(bytes);
-      }
-      values[0] = '${parts[0]}:${parts[1]}:${base64Encode(utf8.encode(jsonEncode(payload)))}';
-      backend.row['datas'] = jsonEncode(values);
-      final stores = backend.stores;
-      await expectLater(read(), throwsA(isA<PlatformException>()));
-      expect(backend.stores, stores);
-      backend.row = saved;
-      expect(await read(), 'SECRET');
-    });
+  for (final location in ['keys', 'datas']) {
+    for (final field in ['ciphertext', 'tag', 'nonce', 'wrapped']) {
+      test('authenticated $location envelope rejects changed $field without rewriting storage', () async {
+        await write('SECRET');
+        final saved = Map<String, String?>.of(backend.row);
+        final values = (jsonDecode(backend.row['datas']!) as List).cast<String>();
+        final parts = (location == 'keys' ? backend.row['keys']! : values.single).split(':');
+        final payload = jsonDecode(utf8.decode(base64Decode(parts[2]))) as Map<String, dynamic>;
+        if (field == 'wrapped') {
+          // Changing the OS-wrapped key must never expose unauthenticated data.
+          payload[field] = '${payload[field]}!';
+        } else {
+          final bytes = base64Decode(payload[field] as String);
+          bytes[0] ^= 1;
+          payload[field] = base64Encode(bytes);
+        }
+        final changed = '${parts[0]}:${parts[1]}:${base64Encode(utf8.encode(jsonEncode(payload)))}';
+        if (location == 'keys') {
+          backend.row['keys'] = changed;
+        } else {
+          values[0] = changed;
+          backend.row['datas'] = jsonEncode(values);
+        }
+        final stores = backend.stores;
+        await expectLater(read(), throwsA(isA<PlatformException>()));
+        expect(backend.stores, stores);
+        backend.row = saved;
+        expect(await read(), 'SECRET');
+      });
+    }
   }
+
+  test('AEAD keys cannot be reinterpreted as legacy CBC keys', () async {
+    await write('SECRET');
+    final saved = Map<String, String?>.of(backend.row);
+    final parts = backend.row['keys']!.split(':');
+    final payload = jsonDecode(utf8.decode(base64Decode(parts[2]))) as Map<String, dynamic>;
+    // An attacker must not be able to bypass the GCM tag by selecting v2
+    // decryption for the random data key's CBC wrapping envelope.
+    backend.row['keys'] = 'v2:${parts[1]}:${payload['wrapped']}';
+    await expectLater(read(), throwsA(isA<PlatformException>()));
+    backend.row = saved;
+    expect(await read(), 'SECRET');
+  });
 
   test('authenticated credentials cannot be moved to another logical key', () async {
     await write('FIRST', 'vault');
@@ -159,6 +179,18 @@ void main() {
     backend.row = saved;
     expect(await read(), 'FIRST');
     expect(await read('other'), 'SECOND');
+  });
+
+  test('version-two envelopes remain readable and upgrade on the next write', () async {
+    const key = 'fss_01234567890123456789012345678901';
+    backend.keys.add(key);
+    backend.row['datas'] = jsonEncode(['v2:$key:${backend.encrypted(key, 'LEGACY_TWO')}']);
+    expect(await read(), 'LEGACY_TWO');
+    expect(backend.stores, 0);
+    await write('AUTHENTICATED');
+    expect(backend.row['keys'], startsWith('v3:fss3_'));
+    expect(backend.keys, isNot(contains(key)));
+    expect(await read(), 'AUTHENTICATED');
   });
 
   test('legacy reads and missing-key checks perform no writes or key rotation', () async {
@@ -232,7 +264,7 @@ void main() {
 
   test('overwrite upgrades legacy envelopes atomically and survives restart', () async {
     await write('REPLACEMENT');
-    expect(backend.row['keys'], startsWith('v3:fss_'));
+    expect(backend.row['keys'], startsWith('v3:fss3_'));
     expect(backend.removed, containsAll([_index, 'vault']));
     storage = FlutterSecureStorageWebos();
     expect(await read(), 'REPLACEMENT');

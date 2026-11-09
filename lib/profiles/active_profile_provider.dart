@@ -370,56 +370,56 @@ class ActiveProfileProvider extends ChangeNotifier with DisposableChangeNotifier
   Future<bool> activate(Profile profile, {String? pin}) async {
     final requestGeneration = beginIdentityMutationRequest();
     try {
-    if (profile.isLocal && profile.isPinProtected) {
-      final hash = profile.pinHash;
-      if (pin == null || hash == null || !await verifyLocalProfilePin(profile, pin)) {
-        return false;
+      if (profile.isLocal && profile.isPinProtected) {
+        final hash = profile.pinHash;
+        if (pin == null || hash == null || !await verifyLocalProfilePin(profile, pin)) {
+          return false;
+        }
       }
-    }
-    if (requestGeneration != _identityMutationGeneration) return false;
-    final storage = _storage;
-    if (storage == null) return false;
-    if (pin != null && profile.isLocal && isLegacyPinHash(profile.pinHash ?? '')) {
-      final upgraded = await computePinHash(pin);
       if (requestGeneration != _identityMutationGeneration) return false;
-      await _registry.updatePinHash(profile.id, profile.pinHash!, upgraded);
-      if (requestGeneration != _identityMutationGeneration) return false;
-      profile = (profile as LocalProfile).copyWith(pinHash: upgraded);
-    }
-    return await _queueIdentityMutation<bool>(requestGeneration, (generation) async {
-      if (generation != _identityMutationGeneration) return false;
-      final now = DateTime.now();
-      await storage.markProfileUsed(profile.id, now);
-      if (generation != _identityMutationGeneration) return false;
-      final previousActiveProfileId = storage.getActiveProfileId();
-      try {
-        await _writeActiveProfileId(storage, profile.id);
-      } catch (_) {
-        await _restoreActiveProfileId(storage, previousActiveProfileId);
-        rethrow;
+      final storage = _storage;
+      if (storage == null) return false;
+      if (pin != null && profile.isLocal && isLegacyPinHash(profile.pinHash ?? '')) {
+        final upgraded = await computePinHash(pin);
+        if (requestGeneration != _identityMutationGeneration) return false;
+        await _registry.updatePinHash(profile.id, profile.pinHash!, upgraded);
+        if (requestGeneration != _identityMutationGeneration) return false;
+        profile = (profile as LocalProfile).copyWith(pinHash: upgraded);
       }
-      if (generation != _identityMutationGeneration) {
-        await _restoreActiveProfileId(storage, previousActiveProfileId);
-        return false;
-      }
+      return await _queueIdentityMutation<bool>(requestGeneration, (generation) async {
+        if (generation != _identityMutationGeneration) return false;
+        final now = DateTime.now();
+        await storage.markProfileUsed(profile.id, now);
+        if (generation != _identityMutationGeneration) return false;
+        final previousActiveProfileId = storage.getActiveProfileId();
+        try {
+          await _writeActiveProfileId(storage, profile.id);
+        } catch (_) {
+          await _restoreActiveProfileId(storage, previousActiveProfileId);
+          rethrow;
+        }
+        if (generation != _identityMutationGeneration) {
+          await _restoreActiveProfileId(storage, previousActiveProfileId);
+          return false;
+        }
 
-      final activated = profile.copyWith(lastUsedAt: now);
-      _active = activated;
-      _committedIdentityGeneration = generation;
-      _profiles = sortProfilesByLastUsed([for (final p in _profiles) p.id == profile.id ? activated : p]);
-      safeNotifyListeners();
-      appLogger.i('ActiveProfileProvider: activated ${profile.displayName} (${profile.id})');
-      if (profile.isLocal) {
-        // Local rows also bump the DB's lastUsedAt so the in-DB sortable column
-        // stays accurate — the in-memory mark above keeps the picker snappy.
-        unawaited(
-          _registry.markUsed(profile.id, now).catchError((Object e, StackTrace s) {
-            appLogger.w('markUsed failed for ${profile.id}', error: e, stackTrace: s);
-          }),
-        );
-      }
-      return true;
-    });
+        final activated = profile.copyWith(lastUsedAt: now);
+        _active = activated;
+        _committedIdentityGeneration = generation;
+        _profiles = sortProfilesByLastUsed([for (final p in _profiles) p.id == profile.id ? activated : p]);
+        safeNotifyListeners();
+        appLogger.i('ActiveProfileProvider: activated ${profile.displayName} (${profile.id})');
+        if (profile.isLocal) {
+          // Local rows also bump the DB's lastUsedAt so the in-DB sortable column
+          // stays accurate — the in-memory mark above keeps the picker snappy.
+          unawaited(
+            _registry.markUsed(profile.id, now).catchError((Object e, StackTrace s) {
+              appLogger.w('markUsed failed for ${profile.id}', error: e, stackTrace: s);
+            }),
+          );
+        }
+        return true;
+      });
     } finally {
       finishIdentityMutationRequest(requestGeneration);
     }

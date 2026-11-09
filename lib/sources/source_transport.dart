@@ -118,15 +118,17 @@ class SourceTransport {
           );
           unclaimed = Timer(requestTimeout, cancel);
           unawaited(
-            owned.future.then((_) async {
-              if (finished) return;
-              controller.addError(const SourceException(SourceFailure.cancelled));
-              try {
-                await release();
-              } finally {
-                unawaited(controller.close());
-              }
-            }).catchError((Object _) {}),
+            owned.future
+                .then((_) async {
+                  if (finished) return;
+                  controller.addError(const SourceException(SourceFailure.cancelled));
+                  try {
+                    await release();
+                  } finally {
+                    unawaited(controller.close());
+                  }
+                })
+                .catchError((Object _) {}),
           );
           return http.StreamedResponse(
             controller.stream,

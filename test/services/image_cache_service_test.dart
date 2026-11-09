@@ -131,17 +131,19 @@ void main() {
   test('error response keeps its permit until cancellation finishes', () async {
     final cancellationStarted = Completer<void>();
     final allowCancellation = Completer<void>();
-    final body = StreamController<List<int>>(onCancel: () {
-      cancellationStarted.complete();
-      return allowCancellation.future;
-    });
+    final body = StreamController<List<int>>(
+      onCancel: () {
+        cancellationStarted.complete();
+        return allowCancellation.future;
+      },
+    );
     var requests = 0;
     final client = createArtworkHttpClientForTest(
       MockClient.streaming((_, _) async {
         requests++;
-        return requests == 1 ? http.StreamedResponse(body.stream, 503)
-          : http.StreamedResponse(Stream.value([1]), 200);
-      }), maxConcurrent: 1,
+        return requests == 1 ? http.StreamedResponse(body.stream, 503) : http.StreamedResponse(Stream.value([1]), 200);
+      }),
+      maxConcurrent: 1,
     );
     final failed = client.send(get('/missing'));
     await cancellationStarted.future;

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:cryptography/cryptography.dart';
 
 import '_secure_storage_client.dart';
 
@@ -35,7 +36,22 @@ class SecureStorageChannel {
       return;
     }
     if (keys is! String || datas is! String) throw _corrupt();
-    final names = _decodeArray(await _client.readSecret(dbRowKey, keys));
+    final index = await _client.readSecret(dbRowKey, keys);
+    final List<String> names;
+    if (keys.startsWith('v3:')) {
+      try {
+        final document = jsonDecode(index) as Map<String, dynamic>;
+        final digest = base64Encode((await Sha256().hash(utf8.encode(datas))).bytes);
+        if (document['version'] != 3 || document['valuesDigest'] != digest) throw _corrupt();
+        names = _decodeArray(jsonEncode(document['keys']));
+      } on PlatformException {
+        rethrow;
+      } catch (_) {
+        throw _corrupt();
+      }
+    } else {
+      names = _decodeArray(index);
+    }
     final values = _decodeArray(datas);
     if (names.length != values.length || names.toSet().length != names.length || names.any((s) => s.isEmpty)) {
       throw _corrupt();
@@ -54,12 +70,15 @@ class SecureStorageChannel {
 
   Future<void> _flush(Map<String, String> next) async {
     final String staged;
+    final datas = jsonEncode(next.values.toList(growable: false));
     try {
-      staged = await _client.createSecret(jsonEncode(next.keys.toList(growable: false)), context: dbRowKey);
+      final digest = base64Encode((await Sha256().hash(utf8.encode(datas))).bytes);
+      staged = await _client.createSecret(jsonEncode({
+        'version': 3, 'keys': next.keys.toList(growable: false), 'valuesDigest': digest,
+      }), context: dbRowKey);
     } catch (error) {
       throw StorageWriteException(error, mayHaveCommitted: false);
     }
-    final datas = jsonEncode(next.values.toList(growable: false));
     // Native SQLite compare-and-store is one transaction, including first-use
     // insertion. A different isolate cannot silently overwrite a newer row.
     // If the acknowledgement is lost, retain staging keys: the commit may have

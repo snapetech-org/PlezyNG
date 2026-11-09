@@ -17,7 +17,8 @@ import 'storage_service.dart';
 /// The destination contains only the portable settings export: credentials,
 /// server connections, download paths, and history stay local to the device.
 class CloudSettingsBackupService {
-  CloudSettingsBackupService({http.Client? httpClient, this.requestTimeout = const Duration(seconds: 30)}) : _http = httpClient ?? http.Client();
+  CloudSettingsBackupService({http.Client? httpClient, this.requestTimeout = const Duration(seconds: 30)})
+    : _http = httpClient ?? http.Client();
 
   static const _urlKey = 'cloud_settings_backup_url';
   static const _usernameKey = 'cloud_settings_backup_username';

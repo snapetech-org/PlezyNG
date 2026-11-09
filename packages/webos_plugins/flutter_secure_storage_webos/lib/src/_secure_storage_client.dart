@@ -59,7 +59,7 @@ class SecureStorageClient {
 
   /// Stage an independent key/envelope. Never replace a key backing a saved row.
   Future<String> createSecret(String value, {required String context}) async {
-    final key = 'fss_${List.generate(16, (_) => _random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
+    final key = 'fss3_${List.generate(16, (_) => _random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
     final generated = await _channel.invokeMethod<bool>('keymanager/generateKey', _header(key, ['encrypt', 'decrypt']));
     if (generated != true) throw _unavailable();
     try {
@@ -112,7 +112,7 @@ class SecureStorageClient {
     final parts = envelope.split(':');
     if (parts.length != 3 ||
         !const {'v2', 'v3'}.contains(parts[0]) ||
-        !RegExp(r'^fss_[0-9a-f]{32}$').hasMatch(parts[1]) ||
+        !RegExp(parts[0] == 'v3' ? r'^fss3_[0-9a-f]{32}$' : r'^fss_[0-9a-f]{32}$').hasMatch(parts[1]) ||
         parts[2].isEmpty) {
       throw _corrupt();
     }

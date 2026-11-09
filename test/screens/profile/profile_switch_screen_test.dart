@@ -455,7 +455,7 @@ void main() {
 
     // A wrong PIN re-prompts with the retry error and never navigates.
     await tester.enterText(find.byType(TextField), '9999');
-    await _pumpBounded(tester);
+    await _pumpUntilVisible(tester, find.text(t.profiles.incorrectPinTryAgain));
 
     expect(find.byType(PinEntryDialog), findsOneWidget);
     expect(find.text(t.profiles.incorrectPinTryAgain), findsOneWidget);
@@ -475,7 +475,7 @@ void main() {
     await tester.tap(find.text(t.profiles.manage));
     await _pumpBounded(tester);
     await tester.enterText(find.byType(TextField), '1234');
-    await _pumpBounded(tester);
+    await _pumpUntilVisible(tester, find.byType(ProfileDetailScreen));
 
     expect(find.byType(ProfileDetailScreen), findsOneWidget);
 
@@ -528,7 +528,7 @@ void main() {
     await tester.tap(find.text(t.profiles.delete));
     await _pumpBounded(tester);
     await tester.enterText(find.byType(TextField), '1234');
-    await _pumpBounded(tester);
+    await _pumpUntilVisible(tester, find.text(t.profiles.deleteThisProfileTitle));
 
     expect(find.text(t.profiles.deleteThisProfileTitle), findsOneWidget);
 
@@ -574,6 +574,19 @@ Future<void> _pumpBounded(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 400));
   await tester.pump(const Duration(milliseconds: 400));
+}
+
+/// PIN verification now persists its attempt before checking the verifier.
+/// Let preference futures created by setUp's real async zone complete while
+/// advancing route animations in fake time. Wait for the actual result rather
+/// than assuming a fixed number of frames can finish an asynchronous check.
+Future<void> _pumpUntilVisible(WidgetTester tester, Finder finder) async {
+  for (var i = 0; i < 500 && finder.evaluate().isEmpty; i++) {
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 1)));
+    await tester.pump(const Duration(milliseconds: 20));
+  }
+  expect(finder, findsOneWidget, reason: 'The PIN verification result must become visible');
+  await _pumpBounded(tester);
 }
 
 /// Boots the picker over a fixed profile/connection set. [homeUsers] seeds the

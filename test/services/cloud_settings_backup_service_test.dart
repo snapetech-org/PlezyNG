@@ -47,8 +47,10 @@ void main() {
     final service = CloudSettingsBackupService(httpClient: client, requestTimeout: const Duration(milliseconds: 20));
     addTearDown(service.dispose);
     await configure(service, 'https://backup.test/settings.json');
-    await expectLater(service.restore(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
-      throwsA(isA<CloudSettingsBackupException>()));
+    await expectLater(
+      service.restore(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
+      throwsA(isA<CloudSettingsBackupException>()),
+    );
     await client.aborted;
     var cancelled = false;
     final body = StreamController<List<int>>(onCancel: () => cancelled = true);
@@ -62,14 +64,18 @@ void main() {
   test('PUT refuses an oversized response before buffering its body', () async {
     var cancelled = false;
     final body = StreamController<List<int>>(onCancel: () => cancelled = true);
-    final service = CloudSettingsBackupService(httpClient: MockClient.streaming((request, _) async {
-      expect(request.method, 'PUT');
-      return http.StreamedResponse(body.stream, 200, contentLength: 1 << 30);
-    }));
+    final service = CloudSettingsBackupService(
+      httpClient: MockClient.streaming((request, _) async {
+        expect(request.method, 'PUT');
+        return http.StreamedResponse(body.stream, 200, contentLength: 1 << 30);
+      }),
+    );
     addTearDown(service.dispose);
     await configure(service, 'https://backup.test/settings.json');
-    await expectLater(service.backUp(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
-      throwsA(isA<CloudSettingsBackupException>()));
+    await expectLater(
+      service.backUp(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
+      throwsA(isA<CloudSettingsBackupException>()),
+    );
     expect(cancelled, isTrue);
     await body.close();
   });

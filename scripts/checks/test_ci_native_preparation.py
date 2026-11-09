@@ -87,6 +87,12 @@ class NativePreparationOrderTests(unittest.TestCase):
                 for match in re.finditer(rf'flutter build {slug}\b', body):
                     self.assertLess(body.index(refresh), match.start())
 
+    def test_apple_native_job_installs_required_runtime_generators(self):
+        body = job(WORKFLOW.read_text(), 'apple-native-test')
+        tools = step(body, 'Ensure CMake for the embedded Steam receiver')
+        self.assertIn('command -v xcodegen >/dev/null || brew install xcodegen', tools)
+        self.assertIn('command -v git-lfs >/dev/null || brew install git-lfs', tools)
+
     def test_unit_job_is_the_only_full_application_suite(self):
         workflow = WORKFLOW.read_text()
         analysis = job(workflow, 'analyze')

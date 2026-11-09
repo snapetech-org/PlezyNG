@@ -1,4 +1,4 @@
-<a href="https://plezyng.app/">
+<a href="https://pleazyng.app/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/branding/pleazyng-artwork-dark.webp">
     <img src="assets/branding/pleazyng-artwork-light.webp" alt="Pleazyng — coral folded-ribbon identity" width="840">
@@ -6,7 +6,7 @@
 </a>
 
 <p>
-  <a href="https://plezyng.app/"><strong>plezyng.app</strong></a> · <a href="https://plezyng.app/features.html">Feature comparison</a>
+  <a href="https://pleazyng.app/"><strong>plezyng.app</strong></a> · <a href="https://pleazyng.app/features.html">Feature comparison</a>
 </p>
 
 A cross-platform media client for Plex, Jellyfin, Emby, standalone files, books, music, and podcasts, maintained as a fork of [Plezy](https://github.com/edde746/plezy).
@@ -187,7 +187,7 @@ Pleazyng builds on upstream Plezy with a broad set of features for Plex, Jellyfi
 This table is a snapshot of downstream work and its current limits. The linked upstream requests provide context for the gap Pleazyng addresses; equivalent upstream implementations can replace the corresponding downstream code when their behavior and server coverage match.
 
 <p>
-  <a href="https://plezyng.app/">Website</a> ·
+  <a href="https://pleazyng.app/">Website</a> ·
   <a href="https://github.com/edde746/plezy">Upstream Plezy</a> ·
   <a href="https://github.com/snapetech-org/pleazyng/issues">Pleazyng issues</a> ·
   <a href="#download">Download</a> ·
@@ -515,7 +515,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 
 ## Feature comparison
 
-[Read the full-width feature comparison on the website](https://plezyng.app/features.html).
+[Read the full-width feature comparison on the website](https://pleazyng.app/features.html).
 
 Pleazyng inherits Plezy's feature baseline. The tables focus on what differs:
 what the official Plex ecosystem offers that these clients do not replace,

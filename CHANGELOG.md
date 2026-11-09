@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Install XcodeGen and Git LFS in Apple native CI before exercising generated Dolby Vision projects, matching the release jobs on both Intel and Apple-Silicon hosted Macs.
+
 - Correct Pleazyng's Flatpak app-data path, sandbox wording, package filenames and Play test identity. Replace upstream installation directions with Pleazyng Pacman/RPM downloads and explicit pending channel status; add checksum-pinned Nix/aerynOS recipe preparation and a release qualification guide without claiming unpublished packages are available.
 
 - Include Book and AudioBook items in Jellyfin/Emby All browsing and library searches, fixing ebook libraries that appeared empty until switching to Folders ([#266](https://github.com/snapetech-org/pleazyng/issues/266)).

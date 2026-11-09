@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Disable duplicate Gradle file-system watches in ephemeral Android CI, retain dependency caches, and provide verbose build progress with bounded JVM diagnostics without stopping builds for system load.
+
 - Include all transitive Python helpers in the release assembly checkout, check imports in isolation, and reuse verified webOS packages during an assembly-only retry.
 
 - Link the webOS navigation channel to the existing pinned Flutter common runtime, verify that ARM link before SDK builds, and retain verified Linux/Mac repair artifacts across a webOS-only retry.

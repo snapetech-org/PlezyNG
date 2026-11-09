@@ -165,6 +165,18 @@ turn publication into a failed core build. WinGet and Chocolatey metadata are
 attached when produced, while installers and all required Linux formats remain
 mandatory. See [channel retries](release-channel-retries.md).
 
+The Android CI bootstrap disables Gradle file-system watching in the job's
+Gradle user home, preserving other properties and all dependency caches. A
+release build stopped producing output after `Already watching path` for
+Flutter's included Gradle build; it reached the six-hour limit with ample
+available memory. Use Gradle's supported `org.gradle.vfs.watch=false` setting
+rather than changing SDK pins or treating that evidence as an OOM. The release
+commands use verbose Flutter/Gradle output and `scripts/run_android_build.py`:
+it emits minute heartbeats and bounded JVM thread diagnostics every ten minutes,
+preserves the build's exit status, and forwards cancellation only to its own
+process group. It never stops a build based on CPU or I/O pressure. See
+[Gradle file-system watching](https://docs.gradle.org/current/userguide/file_system_watching.html).
+
 GitHub's release API checks workflow-write authorization against the supplied
 `target_commitish`, even when a historical version tag already exists. The
 release job verifies that the remote tag still resolves to the exact validated
@@ -178,8 +190,11 @@ preparations are requested. They require signed iOS/tvOS archives and a
 notarized macOS Cask candidate, even for GitHub-only publication. They do not
 enable store uploads or tap publication. Successful-run reuse checks the requested
 signing, notarization and Cask steps; asset validation requires both signed IPAs
-and `snapetech-pleazyng.rb`. These options default off and require a full build;
-they cannot be combined with platform-artifact recovery.
+and `snapetech-pleazyng.rb`. These options default off. Store qualification
+requires a full store build and cannot use platform-artifact recovery. Cask
+qualification may reuse a repaired Mac build only after its full compilation,
+notarization and Gatekeeper steps succeed, or qualify a fresh Mac rebuild;
+recovery never infers those checks from a DMG's presence alone.
 
 The command validates CI on the exact current `main` SHA, then runs the complete
 release build. When a version tag already exists, it reuses that immutable tag

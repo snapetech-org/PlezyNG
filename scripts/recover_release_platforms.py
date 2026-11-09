@@ -33,7 +33,7 @@ RECOVERY_FILES = frozenset({
     "docs/maintainers/full-release-build.md", "docs/maintainers/apple-jit-runner.md",
     "scripts/launch_apple_jit_runner.sh",
     "scripts/release_all_platforms.py",
-    "scripts/prepare_gradle_repositories.py", "scripts/gradle/plezyng-maven-mirror.init.gradle",
+    "scripts/prepare_gradle_repositories.py", "scripts/run_android_build.py", "scripts/gradle/plezyng-maven-mirror.init.gradle",
     "scripts/checks/test_prepare_gradle_repositories.py", "scripts/recover_release_platforms.py",
     "scripts/checks/test_recover_release_platforms.py", "scripts/checks/check_build_workflow.py",
     "scripts/checks/test_check_build_workflow.py", "scripts/checks/test_release_ci_gate.py",

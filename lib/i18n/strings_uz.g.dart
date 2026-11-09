@@ -2738,6 +2738,13 @@ class _Translations$seerr$uz extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.';
 	@override String get request => 'Soʻrov yuborish';
 	@override String get request4k => '4K soʻrov yuborish';
+	@override String get requestSeasons => 'Yetishmayotgan mavsumlarni so‘rash';
+	@override String get notifyMe => 'Mavjud bo‘lganda menga xabar berish';
+	@override String get notifyMe4k => '4K mavjud bo‘lganda menga xabar berish';
+	@override String get notificationsOn => 'Mavjudlik bildirishnomasi yoqilgan';
+	@override String get notificationsEnabled => 'Mavjud bo‘lganda sizga xabar beramiz';
+	@override String get notificationsDisabled => 'Mavjudlik bildirishnomasi o‘chirildi';
+	@override String get notificationFailed => 'Mavjudlik bildirishnomasini yangilab bo‘lmadi';
 	@override String get seasons => 'Mavsumlar';
 	@override String get allSeasons => 'Barcha mavsumlar';
 	@override String get advancedOptions => 'Kengaytirilgan';
@@ -5003,6 +5010,8 @@ class _Translations$explore$detail$uz extends Translations$explore$detail$en {
 	@override String get watchOn => 'Tomosha qilish';
 	@override String get watchTrailer => 'Treylerni koʻrish';
 	@override String openOn({required Object site}) => '${site} da ochish';
+	@override String get trailerUnavailable => 'Bu qurilmada treylerni ochib boʻlmadi';
+	@override String get linkUnavailable => 'Bu qurilmada havolani ochib boʻlmadi';
 	@override String get crew => 'Jamoa';
 	@override String get ratings => 'Baholar';
 	@override String get schedule => 'Jadval';
@@ -7211,6 +7220,8 @@ extension on TranslationsUz {
 			'explore.detail.watchOn' => 'Tomosha qilish',
 			'explore.detail.watchTrailer' => 'Treylerni koʻrish',
 			'explore.detail.openOn' => ({required Object site}) => '${site} da ochish',
+			'explore.detail.trailerUnavailable' => 'Bu qurilmada treylerni ochib boʻlmadi',
+			'explore.detail.linkUnavailable' => 'Bu qurilmada havolani ochib boʻlmadi',
 			'explore.detail.crew' => 'Jamoa',
 			'explore.detail.ratings' => 'Baholar',
 			'explore.detail.schedule' => 'Jadval',
@@ -7428,10 +7439,10 @@ extension on TranslationsUz {
 			'watchTogether.copyCode' => 'Kodni nusxalash',
 			'watchTogether.codeCopied' => 'Xona kodi nusxalandi',
 			'watchTogether.shareInvite' => 'Taklifni ulashish',
-			'watchTogether.inviteCopied' => 'Taklif nusxalandi. Uni xabarga joylashtiring.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Taklif nusxalandi. Uni xabarga joylashtiring.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.',
 			'watchTogether.openSessionControls' => 'Boshqaruv elementlarini ochish',
 			'watchTogether.reconnecting' => 'Qayta ulanmoqda...',
 			'watchTogether.reconnectingDescription' => 'Ulanish uzildi. Xonaga avtomatik ravishda qayta qoʻshilasiz.',
@@ -7942,10 +7953,10 @@ extension on TranslationsUz {
 			'metadataEdit.imageUrl' => 'Rasm URL-manzili',
 			'metadataEdit.metadataUpdated' => 'Metamaʼlumotlar yangilandi',
 			'metadataEdit.metadataUpdateFailed' => 'Metamaʼlumotlarni yangilab boʻlmadi',
-			'metadataEdit.artworkUpdated' => 'Rasmlar yangilandi',
-			'metadataEdit.artworkUpdateFailed' => 'Rasmlarni yangilab boʻlmadi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Rasmlar yangilandi',
+			'metadataEdit.artworkUpdateFailed' => 'Rasmlarni yangilab boʻlmadi',
 			'metadataEdit.noArtworkAvailable' => 'Rasm mavjud emas',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Rasm opsiyasi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Rasm opsiyasi ${index}, tanlandi',
@@ -8033,6 +8044,13 @@ extension on TranslationsUz {
 			'seerr.disconnectConfirmBody' => 'Pleazyng ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.',
 			'seerr.request' => 'Soʻrov yuborish',
 			'seerr.request4k' => '4K soʻrov yuborish',
+			'seerr.requestSeasons' => 'Yetishmayotgan mavsumlarni so‘rash',
+			'seerr.notifyMe' => 'Mavjud bo‘lganda menga xabar berish',
+			'seerr.notifyMe4k' => '4K mavjud bo‘lganda menga xabar berish',
+			'seerr.notificationsOn' => 'Mavjudlik bildirishnomasi yoqilgan',
+			'seerr.notificationsEnabled' => 'Mavjud bo‘lganda sizga xabar beramiz',
+			'seerr.notificationsDisabled' => 'Mavjudlik bildirishnomasi o‘chirildi',
+			'seerr.notificationFailed' => 'Mavjudlik bildirishnomasini yangilab bo‘lmadi',
 			'seerr.seasons' => 'Mavsumlar',
 			'seerr.allSeasons' => 'Barcha mavsumlar',
 			'seerr.advancedOptions' => 'Kengaytirilgan',
@@ -8449,6 +8467,8 @@ extension on TranslationsUz {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${count}\'dan kaygan oʻshayni oʻsayni playlist entry.', other: '${count}\'dan kaygan oʻshaydi oʻsayan playlist entradi.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresi',
 			'universalMedia.playlistAddressHelp' => 'M3U, m3U8 ya PLS playlist o‘z web adresi. Direct stream link ko‘z bu playlist.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Playlist fildi seçin',
 			'universalMedia.openPlaylist' => 'Open Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Bir playlist 1000\'dan fazla o‘yadi, 2 MB. HLS-i qaytarlar olarak açılır, bu yüzden oyungan bir kalite seçib.',
@@ -8458,8 +8478,6 @@ extension on TranslationsUz {
 			'universalMedia.queuePlaylistFolderRequired' => 'Saqlash joyini navbatdagi fayllar bilan bir xil jilddan tanlang.',
 			'universalMedia.noFavorites' => 'U\'yadi bu profili yo‘zilgan.Favoritlar bu profilda qalib.',
 			'universalMedia.removeFavorite' => 'Riyadh preferni qaytadi.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Audio, video, o ISO fillar bir temporary quue. Fillar və URL\'ler library istoriyaya qo‘zilmaydi.',
 			'universalMedia.chooseFiles' => 'Filmi seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
@@ -8963,6 +8981,8 @@ extension on TranslationsUz {
 			'sourceSetup.optionalUsername' => 'Hisob foydalanuvchi nomi (ixtiyoriy)',
 			'sourceSetup.optionalPassword' => 'Hisob paroli (ixtiyoriy)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytidan API kalitini oling. Qidiruv video nomi va mavjud IMDb/TMDB ID-larini yuboradi, video faylini esa hech qachon yubormaydi. Kalit va ixtiyoriy hisobga kirish ma’lumotlari ushbu manba bilan birga shifrlanadi.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metama’lumotlari',
 			'sourceSetup.metadataPrivacy' => 'Faqat fayl nomidagi nom/yil va qism raqamlari yoki NFO ID-sini yuboradi; media fayllari yoki kirish ma’lumotlarini hech qachon yubormaydi. NFO maydonlari ustuvor bo‘lib qoladi.',
 			'sourceSetup.nfsEncryptionFailure' => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. Pleazyng bu ulanishni shifrlashsiz qayta sinamaydi.',
@@ -8972,8 +8992,6 @@ extension on TranslationsUz {
 			'sourceSetup.metadataMatchHelp' => 'Tanlashdan oldin nomi va yilini tekshiring. Trakt qidirilayotgan nomni oladi; video o‘z manbasida qoladi.',
 			'sourceSetup.metadataNoMatches' => 'Onlayn mos nom topilmadi. Boshqa nomni sinab ko‘ring.',
 			'sourceSetup.metadataSearch' => 'Onlayn metama’lumotlarni qidirish',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Onlayn film va serial tafsilotlari qidirilmoqda…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt xizmatidan onlayn metama’lumotlar',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nomga avtomatik moslik topilmadi. Mos natijani tanlash uchun nomni qidiring.',

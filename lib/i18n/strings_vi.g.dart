@@ -2719,6 +2719,13 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.';
 	@override String get request => 'yêu cầu';
 	@override String get request4k => 'yêu cầu 4K';
+	@override String get requestSeasons => 'Yêu cầu các mùa còn thiếu';
+	@override String get notifyMe => 'Thông báo cho tôi khi có';
+	@override String get notifyMe4k => 'Thông báo cho tôi khi có bản 4K';
+	@override String get notificationsOn => 'Đã bật thông báo về tình trạng sẵn có';
+	@override String get notificationsEnabled => 'Chúng tôi sẽ thông báo khi có';
+	@override String get notificationsDisabled => 'Đã tắt thông báo về tình trạng sẵn có';
+	@override String get notificationFailed => 'Không thể cập nhật thông báo về tình trạng sẵn có';
 	@override String get seasons => 'Phần';
 	@override String get allSeasons => 'Tất cả mùa';
 	@override String get advancedOptions => 'Nâng cao';
@@ -4979,6 +4986,8 @@ class _Translations$explore$detail$vi extends Translations$explore$detail$en {
 	@override String get watchOn => 'Xem tại';
 	@override String get watchTrailer => 'Xem trailer';
 	@override String openOn({required Object site}) => 'Khởi mở tại ${site}';
+	@override String get trailerUnavailable => 'Không thể mở đoạn giới thiệu trên thiết bị này';
+	@override String get linkUnavailable => 'Không thể mở liên kết này trên thiết bị này';
 	@override String get crew => 'phi hành đoàn';
 	@override String get ratings => 'Đánh giá';
 	@override String get schedule => 'Lên lịch';
@@ -7186,6 +7195,8 @@ extension on TranslationsVi {
 			'explore.detail.watchOn' => 'Xem tại',
 			'explore.detail.watchTrailer' => 'Xem trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Khởi mở tại ${site}',
+			'explore.detail.trailerUnavailable' => 'Không thể mở đoạn giới thiệu trên thiết bị này',
+			'explore.detail.linkUnavailable' => 'Không thể mở liên kết này trên thiết bị này',
 			'explore.detail.crew' => 'phi hành đoàn',
 			'explore.detail.ratings' => 'Đánh giá',
 			'explore.detail.schedule' => 'Lên lịch',
@@ -7403,10 +7414,10 @@ extension on TranslationsVi {
 			'watchTogether.copyCode' => 'Copy mã',
 			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
-			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
 			'watchTogether.reconnecting' => 'Kết nối lại...',
 			'watchTogether.reconnectingDescription' => 'Kết nối bị hỏng. bạn sẽ tự động vào phòng.',
@@ -7917,10 +7928,10 @@ extension on TranslationsVi {
 			'metadataEdit.imageUrl' => 'Ảnh URL',
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
-			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
-			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
+			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
 			'metadataEdit.noArtworkAvailable' => 'Không có tác phẩm nghệ thuật',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Tùy chọn nghệ thuật ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Tùy chọn Artwork ${index}, được chọn',
@@ -8008,6 +8019,13 @@ extension on TranslationsVi {
 			'seerr.disconnectConfirmBody' => 'Pleazyng sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.',
 			'seerr.request' => 'yêu cầu',
 			'seerr.request4k' => 'yêu cầu 4K',
+			'seerr.requestSeasons' => 'Yêu cầu các mùa còn thiếu',
+			'seerr.notifyMe' => 'Thông báo cho tôi khi có',
+			'seerr.notifyMe4k' => 'Thông báo cho tôi khi có bản 4K',
+			'seerr.notificationsOn' => 'Đã bật thông báo về tình trạng sẵn có',
+			'seerr.notificationsEnabled' => 'Chúng tôi sẽ thông báo khi có',
+			'seerr.notificationsDisabled' => 'Đã tắt thông báo về tình trạng sẵn có',
+			'seerr.notificationFailed' => 'Không thể cập nhật thông báo về tình trạng sẵn có',
 			'seerr.seasons' => 'Phần',
 			'seerr.allSeasons' => 'Tất cả mùa',
 			'seerr.advancedOptions' => 'Nâng cao',
@@ -8424,6 +8442,8 @@ extension on TranslationsVi {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tắt ${count} không được hỗ trợ hoặc không an toàn danh sách đăng nhập.', ), 
 			'universalMedia.playlistAddress' => 'Địa chỉ Playlist',
 			'universalMedia.playlistAddressHelp' => 'Mở một danh sách chơi M3U, M3u8, hoặc PLS từ địa chỉ web. liên kết trực tiếp không lưu danh sách playlist.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Chọn playlist file',
 			'universalMedia.openPlaylist' => 'playlist mở',
 			'universalMedia.playlistFormatsHelp' => 'Một danh sách phát có thể chứa tối đa 1.000 mục và 2 MB. HLS hiển thị mở như dòng để người chơi có thể chọn một chất lượng.',
@@ -8433,8 +8453,6 @@ extension on TranslationsVi {
 			'universalMedia.queuePlaylistFolderRequired' => 'Chọn vị trí lưu trong cùng thư mục với các tệp trong hàng đợi.',
 			'universalMedia.noFavorites' => 'Không được lưu stream yêu thích cho đến nay. Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Xóa stream yêu thích',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
 			'universalMedia.chooseFiles' => 'Chọn file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
@@ -8938,6 +8956,8 @@ extension on TranslationsVi {
 			'sourceSetup.optionalUsername' => 'Tên người dùng của tài khoản (không bắt buộc)',
 			'sourceSetup.optionalPassword' => 'Mật khẩu tài khoản (không bắt buộc)',
 			'sourceSetup.subtitlePrivacy' => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Siêu dữ liệu video trực tuyến tự động',
 			'sourceSetup.metadataPrivacy' => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.',
 			'sourceSetup.nfsEncryptionFailure' => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. Pleazyng sẽ không thử lại kết nối này khi không mã hóa.',
@@ -8947,8 +8967,6 @@ extension on TranslationsVi {
 			'sourceSetup.metadataMatchHelp' => 'Kiểm tra tiêu đề và năm trước khi chọn. Trakt nhận tiêu đề tìm kiếm; video vẫn ở nguồn của nó.',
 			'sourceSetup.metadataNoMatches' => 'Không tìm thấy tiêu đề trực tuyến phù hợp. Hãy thử tiêu đề khác.',
 			'sourceSetup.metadataSearch' => 'Tìm siêu dữ liệu trực tuyến',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
 			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',

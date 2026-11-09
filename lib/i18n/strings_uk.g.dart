@@ -2772,6 +2772,13 @@ class _Translations$seerr$uk extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng забуде цей приклад Seerr. Зв\'яжіться в будь-який час.';
 	@override String get request => 'Запрошення';
 	@override String get request4k => 'Заявка в 4K';
+	@override String get requestSeasons => 'Запросити відсутні сезони';
+	@override String get notifyMe => 'Повідомити про доступність';
+	@override String get notifyMe4k => 'Повідомити про доступність у 4K';
+	@override String get notificationsOn => 'Сповіщення про доступність увімкнено';
+	@override String get notificationsEnabled => 'Ми повідомимо вас, коли це стане доступним';
+	@override String get notificationsDisabled => 'Сповіщення про доступність вимкнено';
+	@override String get notificationFailed => 'Не вдалося оновити сповіщення про доступність';
 	@override String get seasons => 'Сезони';
 	@override String get allSeasons => 'Всі сезони';
 	@override String get advancedOptions => 'Розширені';
@@ -5047,6 +5054,8 @@ class _Translations$explore$detail$uk extends Translations$explore$detail$en {
 	@override String get watchOn => 'Дивіться на';
 	@override String get watchTrailer => 'Дивитись трейлер';
 	@override String openOn({required Object site}) => 'Відкритий на ${site}';
+	@override String get trailerUnavailable => 'Не вдалося відкрити трейлер на цьому пристрої';
+	@override String get linkUnavailable => 'Не вдалося відкрити це посилання на цьому пристрої';
 	@override String get crew => 'Екіпаж';
 	@override String get ratings => 'Рейтинг';
 	@override String get schedule => 'Розклад';
@@ -7255,6 +7264,8 @@ extension on TranslationsUk {
 			'explore.detail.watchOn' => 'Дивіться на',
 			'explore.detail.watchTrailer' => 'Дивитись трейлер',
 			'explore.detail.openOn' => ({required Object site}) => 'Відкритий на ${site}',
+			'explore.detail.trailerUnavailable' => 'Не вдалося відкрити трейлер на цьому пристрої',
+			'explore.detail.linkUnavailable' => 'Не вдалося відкрити це посилання на цьому пристрої',
 			'explore.detail.crew' => 'Екіпаж',
 			'explore.detail.ratings' => 'Рейтинг',
 			'explore.detail.schedule' => 'Розклад',
@@ -7472,10 +7483,10 @@ extension on TranslationsUk {
 			'watchTogether.copyCode' => 'Копіювати код',
 			'watchTogether.codeCopied' => 'Код кімнати копіюється',
 			'watchTogether.shareInvite' => 'Поділимо запрошення',
-			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
 			'watchTogether.reconnecting' => 'Відновлення...',
 			'watchTogether.reconnectingDescription' => 'З\'єднання припинено. Ви приєднуєтеся до кімнати автоматично.',
@@ -7986,10 +7997,10 @@ extension on TranslationsUk {
 			'metadataEdit.imageUrl' => 'Зображення URL',
 			'metadataEdit.metadataUpdated' => 'Актуальні метастази',
 			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
-			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
-			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
+			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вибір художнього твору ${index}, вибраний',
@@ -8077,6 +8088,13 @@ extension on TranslationsUk {
 			'seerr.disconnectConfirmBody' => 'Pleazyng забуде цей приклад Seerr. Зв\'яжіться в будь-який час.',
 			'seerr.request' => 'Запрошення',
 			'seerr.request4k' => 'Заявка в 4K',
+			'seerr.requestSeasons' => 'Запросити відсутні сезони',
+			'seerr.notifyMe' => 'Повідомити про доступність',
+			'seerr.notifyMe4k' => 'Повідомити про доступність у 4K',
+			'seerr.notificationsOn' => 'Сповіщення про доступність увімкнено',
+			'seerr.notificationsEnabled' => 'Ми повідомимо вас, коли це стане доступним',
+			'seerr.notificationsDisabled' => 'Сповіщення про доступність вимкнено',
+			'seerr.notificationFailed' => 'Не вдалося оновити сповіщення про доступність',
 			'seerr.seasons' => 'Сезони',
 			'seerr.allSeasons' => 'Всі сезони',
 			'seerr.advancedOptions' => 'Розширені',
@@ -8493,6 +8511,8 @@ extension on TranslationsUk {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Завантажити ${count} непідтримлений або небезпечний вхід списку переглядів.', few: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', many: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', other: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', ), 
 			'universalMedia.playlistAddress' => 'Адреса Playlist',
 			'universalMedia.playlistAddressHelp' => 'Відкрийте перелік M3U, M3u8 або PLS з веб-адреси. прямий потік посилань не зберігає перелік.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Вибір файлу Playlist',
 			'universalMedia.openPlaylist' => 'Відкритий playlist',
 			'universalMedia.playlistFormatsHelp' => 'Список перегляду може містити до 1000 елементів і 2 Мб. HLS відкривається як потоки, так що гравець може вибрати якість.',
@@ -8502,8 +8522,6 @@ extension on TranslationsUk {
 			'universalMedia.queuePlaylistFolderRequired' => 'Виберіть місце збереження в тій самій папці, що й файли в черзі.',
 			'universalMedia.noFavorites' => 'Попередня статтяКто чего не любить?Фаворити залишаються в цьому профілі.',
 			'universalMedia.removeFavorite' => 'Зняти потік улюблений',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Виберіть аудіо, відео або файли ISO для тимчасового перегляду. Файли та URL-адреси не додаються до історії бібліотеки.',
 			'universalMedia.chooseFiles' => 'Вибір файлів',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
@@ -9007,6 +9025,8 @@ extension on TranslationsUk {
 			'sourceSetup.optionalUsername' => 'Ім’я користувача облікового запису (необов’язково)',
 			'sourceSetup.optionalPassword' => 'Пароль облікового запису (необов’язково)',
 			'sourceSetup.subtitlePrivacy' => 'Отримайте ключ API на opensubtitles.com. Пошук надсилає назву відео й доступні ID IMDb/TMDB, але ніколи не надсилає відеофайл. Ключ і необов’язкові облікові дані шифруються разом із цим джерелом.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Автоматичні метадані відео з інтернету',
 			'sourceSetup.metadataPrivacy' => 'Надсилає лише назву/рік з імені файлу та номери епізодів або ID NFO, але ніколи не надсилає медіафайли чи облікові дані. Поля NFO зберігають пріоритет.',
 			'sourceSetup.nfsEncryptionFailure' => 'Для зашифрованого NFS перевірте підтримку RFC 9289 і TLS 1.3 обома службами NAS, ім’я в сертифікаті та UID/GID експорту. Pleazyng не повторюватиме це з’єднання без шифрування.',
@@ -9016,8 +9036,6 @@ extension on TranslationsUk {
 			'sourceSetup.metadataMatchHelp' => 'Перед вибором перевірте назву й рік. Trakt отримує пошукову назву; відео залишається у своєму джерелі.',
 			'sourceSetup.metadataNoMatches' => 'Відповідних назв в інтернеті не знайдено. Спробуйте іншу назву.',
 			'sourceSetup.metadataSearch' => 'Пошук метаданих в інтернеті',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Пошук відомостей про фільми й серіали в інтернеті…',
 			'sourceSetup.metadataFromTrakt' => 'Метадані з Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматичного збігу назви не знайдено. Знайдіть назву, щоб вибрати збіг.',

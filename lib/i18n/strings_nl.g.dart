@@ -2738,6 +2738,13 @@ class _Translations$seerr$nl extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng vergeet deze Seerr-instantie. Je kunt altijd opnieuw verbinden.';
 	@override String get request => 'Aanvragen';
 	@override String get request4k => 'Aanvragen in 4K';
+	@override String get requestSeasons => 'Ontbrekende seizoenen aanvragen';
+	@override String get notifyMe => 'Meld het als het beschikbaar is';
+	@override String get notifyMe4k => 'Meld het als het in 4K beschikbaar is';
+	@override String get notificationsOn => 'Beschikbaarheidsmelding aan';
+	@override String get notificationsEnabled => 'We laten het weten zodra het beschikbaar is';
+	@override String get notificationsDisabled => 'Beschikbaarheidsmelding uitgeschakeld';
+	@override String get notificationFailed => 'Kon de beschikbaarheidsmelding niet bijwerken';
 	@override String get seasons => 'Seizoenen';
 	@override String get allSeasons => 'Alle seizoenen';
 	@override String get advancedOptions => 'Geavanceerd';
@@ -5003,6 +5010,8 @@ class _Translations$explore$detail$nl extends Translations$explore$detail$en {
 	@override String get watchOn => 'Bekijk op';
 	@override String get watchTrailer => 'Trailer bekijken';
 	@override String openOn({required Object site}) => 'Openen op ${site}';
+	@override String get trailerUnavailable => 'Kan de trailer niet openen op dit apparaat';
+	@override String get linkUnavailable => 'Kan de link niet openen op dit apparaat';
 	@override String get crew => 'Crew';
 	@override String get ratings => 'Beoordelingen';
 	@override String get schedule => 'Uitzendschema';
@@ -7211,6 +7220,8 @@ extension on TranslationsNl {
 			'explore.detail.watchOn' => 'Bekijk op',
 			'explore.detail.watchTrailer' => 'Trailer bekijken',
 			'explore.detail.openOn' => ({required Object site}) => 'Openen op ${site}',
+			'explore.detail.trailerUnavailable' => 'Kan de trailer niet openen op dit apparaat',
+			'explore.detail.linkUnavailable' => 'Kan de link niet openen op dit apparaat',
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Beoordelingen',
 			'explore.detail.schedule' => 'Uitzendschema',
@@ -7428,10 +7439,10 @@ extension on TranslationsNl {
 			'watchTogether.copyCode' => 'Code kopiëren',
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
-			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
 			'watchTogether.reconnecting' => 'Opnieuw verbinden...',
 			'watchTogether.reconnectingDescription' => 'De verbinding is verbroken. Je neemt automatisch weer deel aan de kamer.',
@@ -7942,10 +7953,10 @@ extension on TranslationsNl {
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
-			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
-			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
+			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Illustratie ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Illustratie ${index}, geselecteerd',
@@ -8033,6 +8044,13 @@ extension on TranslationsNl {
 			'seerr.disconnectConfirmBody' => 'Pleazyng vergeet deze Seerr-instantie. Je kunt altijd opnieuw verbinden.',
 			'seerr.request' => 'Aanvragen',
 			'seerr.request4k' => 'Aanvragen in 4K',
+			'seerr.requestSeasons' => 'Ontbrekende seizoenen aanvragen',
+			'seerr.notifyMe' => 'Meld het als het beschikbaar is',
+			'seerr.notifyMe4k' => 'Meld het als het in 4K beschikbaar is',
+			'seerr.notificationsOn' => 'Beschikbaarheidsmelding aan',
+			'seerr.notificationsEnabled' => 'We laten het weten zodra het beschikbaar is',
+			'seerr.notificationsDisabled' => 'Beschikbaarheidsmelding uitgeschakeld',
+			'seerr.notificationFailed' => 'Kon de beschikbaarheidsmelding niet bijwerken',
 			'seerr.seasons' => 'Seizoenen',
 			'seerr.allSeasons' => 'Alle seizoenen',
 			'seerr.advancedOptions' => 'Geavanceerd',
@@ -8449,6 +8467,8 @@ extension on TranslationsNl {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: 'Skipped ${count} niet ondersteund of onveilig playlist ingang.', other: 'Skipped ${count} niet ondersteunde of onveilige playlist-inputs.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adres',
 			'universalMedia.playlistAddressHelp' => 'Open een M3U, M3u8 of PLS playlist vanuit een webadres. Direct stream links slaan de playlist niet op.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Kies een playlist bestand',
 			'universalMedia.openPlaylist' => 'Open playlist',
 			'universalMedia.playlistFormatsHelp' => 'Een playlist kan maximaal 1.000 items en 2 MB bevatten.HLS manifesteert open als stromen zodat de speler een kwaliteit kan kiezen.',
@@ -8458,8 +8478,6 @@ extension on TranslationsNl {
 			'universalMedia.queuePlaylistFolderRequired' => 'Kies een opslaglocatie in dezelfde map als de bestanden in de wachtrij.',
 			'universalMedia.noFavorites' => 'Er zijn nog geen favorieten opgeslagen.Favorites blijven in dit profiel.',
 			'universalMedia.removeFavorite' => 'Verwijder de favoriete stream',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
 			'universalMedia.chooseFiles' => 'Kies bestanden',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
@@ -8963,6 +8981,8 @@ extension on TranslationsNl {
 			'sourceSetup.optionalUsername' => 'Gebruikersnaam van het account (optioneel)',
 			'sourceSetup.optionalPassword' => 'Wachtwoord van het account (optioneel)',
 			'sourceSetup.subtitlePrivacy' => 'Vraag een API-sleutel aan op opensubtitles.com. Zoeken verstuurt de videotitel en beschikbare IMDb/TMDB-ID’s, nooit het videobestand. De sleutel en optionele accountgegevens worden samen met deze bron versleuteld.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatische online videometadata',
 			'sourceSetup.metadataPrivacy' => 'Verstuurt alleen titel/jaar uit de bestandsnaam en afleveringsnummers, of een NFO-ID; nooit media of toegangsgegevens. NFO-velden blijven leidend.',
 			'sourceSetup.nfsEncryptionFailure' => 'Controleer voor versleutelde NFS de ondersteuning van RFC 9289 en TLS 1.3 bij beide NAS-services, de certificaatnaam en de UID/GID van de share. Pleazyng probeert deze verbinding niet opnieuw zonder versleuteling.',
@@ -8972,8 +8992,6 @@ extension on TranslationsNl {
 			'sourceSetup.metadataMatchHelp' => 'Controleer titel en jaar voordat je kiest. Trakt ontvangt de gezochte titel; de video blijft op de bron.',
 			'sourceSetup.metadataNoMatches' => 'Geen overeenkomende titels online gevonden. Probeer een andere titel.',
 			'sourceSetup.metadataSearch' => 'Online metadata zoeken',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',

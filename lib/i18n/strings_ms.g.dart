@@ -2719,6 +2719,13 @@ class _Translations$seerr$ms extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.';
 	@override String get request => 'Permintaan';
 	@override String get request4k => 'Permintaan dalam 4K';
+	@override String get requestSeasons => 'Minta musim yang belum tersedia';
+	@override String get notifyMe => 'Maklumkan saya apabila tersedia';
+	@override String get notifyMe4k => 'Maklumkan saya apabila tersedia dalam 4K';
+	@override String get notificationsOn => 'Makluman ketersediaan dihidupkan';
+	@override String get notificationsEnabled => 'Kami akan memaklumkan anda apabila tersedia';
+	@override String get notificationsDisabled => 'Makluman ketersediaan dimatikan';
+	@override String get notificationFailed => 'Makluman ketersediaan tidak dapat dikemas kini';
 	@override String get seasons => 'Musim';
 	@override String get allSeasons => 'Semua musim';
 	@override String get advancedOptions => 'Kemajuan';
@@ -4979,6 +4986,8 @@ class _Translations$explore$detail$ms extends Translations$explore$detail$en {
 	@override String get watchOn => 'Lihatlah';
 	@override String get watchTrailer => 'Lihat trailer';
 	@override String openOn({required Object site}) => 'Terbuka pada ${site}';
+	@override String get trailerUnavailable => 'Treler tidak dapat dibuka pada peranti ini';
+	@override String get linkUnavailable => 'Pautan ini tidak dapat dibuka pada peranti ini';
 	@override String get crew => 'Pasukan';
 	@override String get ratings => 'Penilaian';
 	@override String get schedule => 'Jadual';
@@ -7186,6 +7195,8 @@ extension on TranslationsMs {
 			'explore.detail.watchOn' => 'Lihatlah',
 			'explore.detail.watchTrailer' => 'Lihat trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Terbuka pada ${site}',
+			'explore.detail.trailerUnavailable' => 'Treler tidak dapat dibuka pada peranti ini',
+			'explore.detail.linkUnavailable' => 'Pautan ini tidak dapat dibuka pada peranti ini',
 			'explore.detail.crew' => 'Pasukan',
 			'explore.detail.ratings' => 'Penilaian',
 			'explore.detail.schedule' => 'Jadual',
@@ -7403,10 +7414,10 @@ extension on TranslationsMs {
 			'watchTogether.copyCode' => 'Kode salinan',
 			'watchTogether.codeCopied' => 'Kod bilik disalin',
 			'watchTogether.shareInvite' => 'Memberi jemputan',
-			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kawalan sesi',
 			'watchTogether.reconnecting' => 'Menghubungkan semula...',
 			'watchTogether.reconnectingDescription' => 'sambungan hilang. anda menyertai bilik secara automatik.',
@@ -7917,10 +7928,10 @@ extension on TranslationsMs {
 			'metadataEdit.imageUrl' => 'imej URL',
 			'metadataEdit.metadataUpdated' => 'Metadata dikemaskini',
 			'metadataEdit.metadataUpdateFailed' => 'Kegagalan Mengemas kini Metadata',
-			'metadataEdit.artworkUpdated' => 'Seni yang dikemaskini',
-			'metadataEdit.artworkUpdateFailed' => 'Kegagalan untuk mengemas kini karya seni',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Seni yang dikemaskini',
+			'metadataEdit.artworkUpdateFailed' => 'Kegagalan untuk mengemas kini karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tiada karya seni yang tersedia',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Pilihan seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Pilihan seni ${index}, dipilih',
@@ -8008,6 +8019,13 @@ extension on TranslationsMs {
 			'seerr.disconnectConfirmBody' => 'Pleazyng akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.',
 			'seerr.request' => 'Permintaan',
 			'seerr.request4k' => 'Permintaan dalam 4K',
+			'seerr.requestSeasons' => 'Minta musim yang belum tersedia',
+			'seerr.notifyMe' => 'Maklumkan saya apabila tersedia',
+			'seerr.notifyMe4k' => 'Maklumkan saya apabila tersedia dalam 4K',
+			'seerr.notificationsOn' => 'Makluman ketersediaan dihidupkan',
+			'seerr.notificationsEnabled' => 'Kami akan memaklumkan anda apabila tersedia',
+			'seerr.notificationsDisabled' => 'Makluman ketersediaan dimatikan',
+			'seerr.notificationFailed' => 'Makluman ketersediaan tidak dapat dikemas kini',
 			'seerr.seasons' => 'Musim',
 			'seerr.allSeasons' => 'Semua musim',
 			'seerr.advancedOptions' => 'Kemajuan',
@@ -8424,6 +8442,8 @@ extension on TranslationsMs {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} masuk senarai main yang tidak disokong atau tidak selamat.', ), 
 			'universalMedia.playlistAddress' => 'Alamat Playlist',
 			'universalMedia.playlistAddressHelp' => 'Buka senarai m3U, M3U8, atau PLS daripada alamat web. pautan siaran langsung tidak menyimpan senarai main.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Pilih fail playlist',
 			'universalMedia.openPlaylist' => 'Senarai Permainan Terbuka',
 			'universalMedia.playlistFormatsHelp' => 'Senarai main boleh mengandungi sehingga 1,000 item dan 2 MB. HLS terbuka sebagai aliran supaya pemain boleh memilih kualiti.',
@@ -8433,8 +8453,6 @@ extension on TranslationsMs {
 			'universalMedia.queuePlaylistFolderRequired' => 'Pilih lokasi simpanan dalam folder yang sama dengan fail dalam baris gilir.',
 			'universalMedia.noFavorites' => 'Tiada rangkaian kegemaran disimpan sehingga kini. kekal dalam profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapuskan stream kegemaran',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
 			'universalMedia.chooseFiles' => 'Pilih fail',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
@@ -8938,6 +8956,8 @@ extension on TranslationsMs {
 			'sourceSetup.optionalUsername' => 'Nama pengguna akaun (pilihan)',
 			'sourceSetup.optionalPassword' => 'Kata laluan akaun (pilihan)',
 			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API daripada opensubtitles.com. Carian menghantar tajuk video dan ID IMDb/TMDB yang tersedia, bukan fail video sama sekali. Kunci dan bukti kelayakan akaun pilihan disulitkan bersama sumber ini.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Metadata video dalam talian automatik',
 			'sourceSetup.metadataPrivacy' => 'Hanya menghantar tajuk/tahun daripada nama fail dan nombor episod atau ID NFO; tidak sekali-kali menghantar media atau bukti kelayakan. Medan NFO kekal sebagai rujukan utama.',
 			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. Pleazyng tidak akan mencuba semula sambungan ini tanpa penyulitan.',
@@ -8947,8 +8967,6 @@ extension on TranslationsMs {
 			'sourceSetup.metadataMatchHelp' => 'Semak tajuk dan tahun sebelum memilih. Trakt menerima tajuk carian; video kekal pada sumbernya.',
 			'sourceSetup.metadataNoMatches' => 'Tiada padanan tajuk dalam talian ditemukan. Cuba tajuk lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata dalam talian',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',

@@ -12,8 +12,8 @@
 #include <bcrypt.h>
 #else
 #include <spawn.h>
-#include <sys/wait.h>
 #include <sys/resource.h>
+#include <sys/wait.h>
 
 #include <csignal>
 #if defined(__APPLE__)
@@ -319,7 +319,10 @@ inline std::unique_ptr<BytePipe> Spawn(
   const int inherited = child.Get();
   const auto owner = getpid();
   control->pid = fork();
-  if (control->pid < 0) { control->pid = 0; throw std::runtime_error("Cannot launch emulator worker."); }
+  if (control->pid < 0) {
+    control->pid = 0;
+    throw std::runtime_error("Cannot launch emulator worker.");
+  }
   if (!control->pid) {
     if (prctl(PR_SET_PDEATHSIG, SIGKILL) || getppid() != owner) _exit(126);
     if (dup2(inherited, 3) < 0) _exit(126);

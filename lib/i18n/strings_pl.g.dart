@@ -2776,6 +2776,13 @@ class _Translations$seerr$pl extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng zapomni tę instancję Seerr. Połącz ponownie w dowolnym momencie.';
 	@override String get request => 'Zamów';
 	@override String get request4k => 'Zamów w 4K';
+	@override String get requestSeasons => 'Poproś o brakujące sezony';
+	@override String get notifyMe => 'Powiadom mnie o dostępności';
+	@override String get notifyMe4k => 'Powiadom mnie o dostępności w 4K';
+	@override String get notificationsOn => 'Powiadomienie o dostępności włączone';
+	@override String get notificationsEnabled => 'Powiadomimy Cię, gdy będzie dostępne';
+	@override String get notificationsDisabled => 'Powiadomienie o dostępności wyłączone';
+	@override String get notificationFailed => 'Nie udało się zaktualizować powiadomienia o dostępności';
 	@override String get seasons => 'Sezony';
 	@override String get allSeasons => 'Wszystkie sezony';
 	@override String get advancedOptions => 'Zaawansowane';
@@ -5051,6 +5058,8 @@ class _Translations$explore$detail$pl extends Translations$explore$detail$en {
 	@override String get watchOn => 'Oglądaj na';
 	@override String get watchTrailer => 'Obejrzyj zwiastun';
 	@override String openOn({required Object site}) => 'Otwórz na ${site}';
+	@override String get trailerUnavailable => 'Nie udało się otworzyć zwiastuna na tym urządzeniu';
+	@override String get linkUnavailable => 'Nie udało się otworzyć linku na tym urządzeniu';
 	@override String get crew => 'Obsada i ekipa';
 	@override String get ratings => 'Oceny';
 	@override String get schedule => 'Harmonogram';
@@ -7261,6 +7270,8 @@ extension on TranslationsPl {
 			'explore.detail.watchOn' => 'Oglądaj na',
 			'explore.detail.watchTrailer' => 'Obejrzyj zwiastun',
 			'explore.detail.openOn' => ({required Object site}) => 'Otwórz na ${site}',
+			'explore.detail.trailerUnavailable' => 'Nie udało się otworzyć zwiastuna na tym urządzeniu',
+			'explore.detail.linkUnavailable' => 'Nie udało się otworzyć linku na tym urządzeniu',
 			'explore.detail.crew' => 'Obsada i ekipa',
 			'explore.detail.ratings' => 'Oceny',
 			'explore.detail.schedule' => 'Harmonogram',
@@ -7478,10 +7489,10 @@ extension on TranslationsPl {
 			'watchTogether.copyCode' => 'Kopiuj kod',
 			'watchTogether.codeCopied' => 'Skopiowano kod pokoju',
 			'watchTogether.shareInvite' => 'Udostępnij zaproszenie',
-			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w Pleazyng: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w Pleazyng: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			'watchTogether.openSessionControls' => 'Otwórz sterowanie sesją „Oglądaj razem”',
 			'watchTogether.reconnecting' => 'Ponowne łączenie...',
 			'watchTogether.reconnectingDescription' => 'Połączenie zostało przerwane. Ponowne dołączenie do pokoju nastąpi automatycznie.',
@@ -7992,10 +8003,10 @@ extension on TranslationsPl {
 			'metadataEdit.imageUrl' => 'URL obrazu',
 			'metadataEdit.metadataUpdated' => 'Metadane zaktualizowane',
 			'metadataEdit.metadataUpdateFailed' => 'Nie udało się zaktualizować metadanych',
-			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
-			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
+			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			'metadataEdit.noArtworkAvailable' => 'Brak dostępnej grafiki',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opcja grafiki ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opcja grafiki ${index}, wybrana',
@@ -8083,6 +8094,13 @@ extension on TranslationsPl {
 			'seerr.disconnectConfirmBody' => 'Pleazyng zapomni tę instancję Seerr. Połącz ponownie w dowolnym momencie.',
 			'seerr.request' => 'Zamów',
 			'seerr.request4k' => 'Zamów w 4K',
+			'seerr.requestSeasons' => 'Poproś o brakujące sezony',
+			'seerr.notifyMe' => 'Powiadom mnie o dostępności',
+			'seerr.notifyMe4k' => 'Powiadom mnie o dostępności w 4K',
+			'seerr.notificationsOn' => 'Powiadomienie o dostępności włączone',
+			'seerr.notificationsEnabled' => 'Powiadomimy Cię, gdy będzie dostępne',
+			'seerr.notificationsDisabled' => 'Powiadomienie o dostępności wyłączone',
+			'seerr.notificationFailed' => 'Nie udało się zaktualizować powiadomienia o dostępności',
 			'seerr.seasons' => 'Sezony',
 			'seerr.allSeasons' => 'Wszystkie sezony',
 			'seerr.advancedOptions' => 'Zaawansowane',
@@ -8499,6 +8517,8 @@ extension on TranslationsPl {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: 'Skryty ${count} niepotrzebny lub niebezpieczny wpis listy odtwarzania.', few: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', many: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', other: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', ), 
 			'universalMedia.playlistAddress' => 'Adres Playlist',
 			'universalMedia.playlistAddressHelp' => 'Otwórz listę odtwarzania M3U, M3u8 lub PLS z adresu internetowego. linki strumieniowe bezpośrednio nie przechowują listy odtwarzania.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Wybierz plik playlist',
 			'universalMedia.openPlaylist' => 'Otwarta playlist',
 			'universalMedia.playlistFormatsHelp' => 'Lista odtwarzania może zawierać maksymalnie 1000 elementów i 2 MB. HLS otwiera się jako strumienia, dzięki czemu gracz może wybrać jakość.',
@@ -8508,8 +8528,6 @@ extension on TranslationsPl {
 			'universalMedia.queuePlaylistFolderRequired' => 'Wybierz miejsce zapisu w tym samym folderze co pliki z kolejki.',
 			'universalMedia.noFavorites' => 'Nie przechowywano jeszcze ulubionych strumieni. ulubione pozostają w tym profilu.',
 			'universalMedia.removeFavorite' => 'Usuń ulubiony strumień',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Wybierz pliki audio, wideo lub ISO dla tymczasowego odcinka. pliki i adresy URL nie są dodawane do historii biblioteki.',
 			'universalMedia.chooseFiles' => 'Wybierz pliki',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: '1 wybrane pliki', few: '${count} wybrane pliki', many: '${count} wybrane pliki', other: '${count} wybrane pliki', ), 
@@ -9013,6 +9031,8 @@ extension on TranslationsPl {
 			'sourceSetup.optionalUsername' => 'Nazwa użytkownika konta (opcjonalnie)',
 			'sourceSetup.optionalPassword' => 'Hasło konta (opcjonalnie)',
 			'sourceSetup.subtitlePrivacy' => 'Uzyskaj klucz API na opensubtitles.com. Wyszukiwanie wysyła tytuł wideo i dostępne ID IMDb/TMDB, nigdy plik wideo. Klucz i opcjonalne dane logowania do konta są szyfrowane wraz z tym źródłem.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatyczne metadane wideo z internetu',
 			'sourceSetup.metadataPrivacy' => 'Wysyła tylko tytuł/rok z nazwy pliku i numery odcinków lub ID NFO, nigdy multimedia ani dane uwierzytelniające. Pola NFO zachowują pierwszeństwo.',
 			'sourceSetup.nfsEncryptionFailure' => 'Dla szyfrowanego NFS sprawdź obsługę RFC 9289 i TLS 1.3 przez obie usługi NAS, nazwę w certyfikacie i UID/GID eksportu. Pleazyng nie ponowi tego połączenia bez szyfrowania.',
@@ -9022,8 +9042,6 @@ extension on TranslationsPl {
 			'sourceSetup.metadataMatchHelp' => 'Przed wyborem sprawdź tytuł i rok. Trakt otrzymuje wyszukiwany tytuł; wideo pozostaje w swoim źródle.',
 			'sourceSetup.metadataNoMatches' => 'Nie znaleziono pasujących tytułów w internecie. Spróbuj innego tytułu.',
 			'sourceSetup.metadataSearch' => 'Szukaj metadanych w internecie',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Wyszukiwanie informacji o filmach i serialach w internecie…',
 			'sourceSetup.metadataFromTrakt' => 'Metadane z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nie znaleziono automatycznego dopasowania tytułu. Wyszukaj tytuł, aby wybrać dopasowanie.',

@@ -16405,6 +16405,12 @@ class Translations$explore$detail$en {
 	/// en: 'Open on ${site}'
 	String openOn({required Object site}) => 'Open on ${site}';
 
+	/// en: 'Couldn't open the trailer on this device'
+	String get trailerUnavailable => 'Couldn\'t open the trailer on this device';
+
+	/// en: 'Couldn't open this link on this device'
+	String get linkUnavailable => 'Couldn\'t open this link on this device';
+
 	/// en: 'Crew'
 	String get crew => 'Crew';
 
@@ -19299,6 +19305,8 @@ extension on Translations {
 			'explore.detail.watchOn' => 'Watch on',
 			'explore.detail.watchTrailer' => 'Watch trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Open on ${site}',
+			'explore.detail.trailerUnavailable' => 'Couldn\'t open the trailer on this device',
+			'explore.detail.linkUnavailable' => 'Couldn\'t open this link on this device',
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Ratings',
 			'explore.detail.schedule' => 'Schedule',
@@ -19778,10 +19786,10 @@ extension on Translations {
 			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
 			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
 			'downloads.errorFileNotFound' => 'File not found (404)',
-			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
-			'downloads.errorDownloadFailed' => 'Download failed',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
+			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			'downloads.convertingOnServer' => 'Converting on server…',
 			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
@@ -20292,10 +20300,10 @@ extension on Translations {
 			'services.integrations' => 'Integrations',
 			'services.hardcover' => 'Hardcover',
 			'services.linkedCatalogTitles' => 'Linked catalog titles',
-			'services.planNote' => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.',
-			'services.planLabel' => 'Plan label',
 			_ => null,
 		} ?? switch (path) {
+			'services.planNote' => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.',
+			'services.planLabel' => 'Plan label',
 			'services.setPlanLabel' => 'Set plan label',
 			'services.commissionDisclosure' => 'Pleazyng may earn a commission from some links.',
 			'services.notConnected' => 'Not connected',
@@ -20806,10 +20814,10 @@ extension on Translations {
 			'universalMedia.captureExtensionMismatch' => 'Choose a filename ending in .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg or the H.264 video encoder is unavailable. Install a supported FFmpeg build, then try again.',
 			'universalMedia.captureFailed' => 'The recording could not be saved. Check device permission, available storage, and FFmpeg support.',
-			'universalMedia.captureSaved' => 'Screen recording saved.',
-			'universalMedia.captureElapsedLabel' => 'Recording time',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.captureSaved' => 'Screen recording saved.',
+			'universalMedia.captureElapsedLabel' => 'Recording time',
 			'universalMedia.captureStart' => 'Start recording',
 			'universalMedia.capturePreview' => 'Preview in player',
 			'universalMedia.capturePreviewHelp' => 'Preview the selected source in the standard player. It is session-only and does not save a recording. Device support and permissions depend on MPV and the operating system. The preview uses video only; optional audio is included in saved recordings.',
@@ -21320,10 +21328,10 @@ extension on Translations {
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
-			'games.gameName' => 'Game name',
-			'games.gameId' => 'Host application ID',
 			_ => null,
 		} ?? switch (path) {
+			'games.gameName' => 'Game name',
+			'games.gameId' => 'Host application ID',
 			'games.invalidGame' => 'Enter a game name and a positive numeric host application ID.',
 			'games.wake' => 'Wake computer',
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
@@ -21834,10 +21842,10 @@ extension on Translations {
 			'subtitleAiUi.syncAcrossSubtitleLanguages' => 'Sync across subtitle languages',
 			'subtitleAiUi.translateTargetTextLocallyForMatchin_8e05d8e7' => 'Translate target text locally for matching; keep its original text',
 			'subtitleAiUi.repairCutsAcrossSubtitleLanguages' => 'Repair cuts across subtitle languages',
-			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
-			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
+			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
 			'subtitleAiUi.applyPiecewiseOffsetsWhereDialogueAn_cfd3013c' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
 			'subtitleAiUi.localSubtitleTranslation' => 'Local subtitle translation',
 			'subtitleAiUi.useASeriesSpecificGlossary' => 'Use a series-specific glossary',
@@ -22348,10 +22356,10 @@ extension on Translations {
 			'bonusExtras.remove' => 'Remove personal link',
 			'bonusExtras.openProvider' => 'Open in provider app or browser',
 			'bonusExtras.watchHere' => 'Watch here',
-			'bonusExtras.sendToPhone' => 'Open on your phone',
-			'bonusExtras.copyLink' => 'Copy link',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.sendToPhone' => 'Open on your phone',
+			'bonusExtras.copyLink' => 'Copy link',
 			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',
 			'bonusExtras.providerNotice' => 'Playback opens the provider’s player and may include its recommendations.',
 			'bonusExtras.external' => 'Online',

@@ -2772,6 +2772,13 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bude zapomenout na tento příklad Seerr.';
 	@override String get request => 'Žádost';
 	@override String get request4k => 'Vyžádání v 4K';
+	@override String get requestSeasons => 'Požádat o chybějící řady';
+	@override String get notifyMe => 'Upozornit mě na dostupnost';
+	@override String get notifyMe4k => 'Upozornit mě na dostupnost ve 4K';
+	@override String get notificationsOn => 'Upozornění na dostupnost je zapnuté';
+	@override String get notificationsEnabled => 'Upozorníme vás, až bude k dispozici';
+	@override String get notificationsDisabled => 'Upozornění na dostupnost bylo vypnuto';
+	@override String get notificationFailed => 'Upozornění na dostupnost se nepodařilo aktualizovat';
 	@override String get seasons => 'Série';
 	@override String get allSeasons => 'Všechny sezóny';
 	@override String get advancedOptions => 'Pokročilé';
@@ -5047,6 +5054,8 @@ class _Translations$explore$detail$cs extends Translations$explore$detail$en {
 	@override String get watchOn => 'Podívejte se';
 	@override String get watchTrailer => 'Podívejte se trailer';
 	@override String openOn({required Object site}) => 'Otevřeno na ${site}';
+	@override String get trailerUnavailable => 'Na tomto zařízení se nepodařilo otevřít upoutávku';
+	@override String get linkUnavailable => 'Na tomto zařízení se nepodařilo otevřít tento odkaz';
 	@override String get crew => 'Posádka';
 	@override String get ratings => 'Hodnocení';
 	@override String get schedule => 'Plánované nahrávání';
@@ -7255,6 +7264,8 @@ extension on TranslationsCs {
 			'explore.detail.watchOn' => 'Podívejte se',
 			'explore.detail.watchTrailer' => 'Podívejte se trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Otevřeno na ${site}',
+			'explore.detail.trailerUnavailable' => 'Na tomto zařízení se nepodařilo otevřít upoutávku',
+			'explore.detail.linkUnavailable' => 'Na tomto zařízení se nepodařilo otevřít tento odkaz',
 			'explore.detail.crew' => 'Posádka',
 			'explore.detail.ratings' => 'Hodnocení',
 			'explore.detail.schedule' => 'Plánované nahrávání',
@@ -7472,10 +7483,10 @@ extension on TranslationsCs {
 			'watchTogether.copyCode' => 'Kopírování kódu',
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
-			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
 			'watchTogether.reconnecting' => 'Připojení...',
 			'watchTogether.reconnectingDescription' => 'Připojení je zrušené. automaticky se připojíte k místnosti.',
@@ -7986,10 +7997,10 @@ extension on TranslationsCs {
 			'metadataEdit.imageUrl' => 'obrázek URL',
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
-			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
-			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
+			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
 			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Umělecká volba ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Možnost umělecké práce ${index}, vybraná',
@@ -8077,6 +8088,13 @@ extension on TranslationsCs {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bude zapomenout na tento příklad Seerr.',
 			'seerr.request' => 'Žádost',
 			'seerr.request4k' => 'Vyžádání v 4K',
+			'seerr.requestSeasons' => 'Požádat o chybějící řady',
+			'seerr.notifyMe' => 'Upozornit mě na dostupnost',
+			'seerr.notifyMe4k' => 'Upozornit mě na dostupnost ve 4K',
+			'seerr.notificationsOn' => 'Upozornění na dostupnost je zapnuté',
+			'seerr.notificationsEnabled' => 'Upozorníme vás, až bude k dispozici',
+			'seerr.notificationsDisabled' => 'Upozornění na dostupnost bylo vypnuto',
+			'seerr.notificationFailed' => 'Upozornění na dostupnost se nepodařilo aktualizovat',
 			'seerr.seasons' => 'Série',
 			'seerr.allSeasons' => 'Všechny sezóny',
 			'seerr.advancedOptions' => 'Pokročilé',
@@ -8493,6 +8511,8 @@ extension on TranslationsCs {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Přepadl ${count} nepodporovaný nebo nebezpečný playlist vstup.', few: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', many: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', other: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', ), 
 			'universalMedia.playlistAddress' => 'Playlistová adresa',
 			'universalMedia.playlistAddressHelp' => 'Otevřete playlist M3U, M3u8 nebo PLS z webové adresy. Přímé streamovací odkazy nezachovávají playlist.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Vyberte soubor playlist',
 			'universalMedia.openPlaylist' => 'Otevřená playlist',
 			'universalMedia.playlistFormatsHelp' => 'Přehrávač může obsahovat až 1000 položek a 2 MB. HLS se otevírají jako toky, takže hráč si může vybrat kvalitu.',
@@ -8502,8 +8522,6 @@ extension on TranslationsCs {
 			'universalMedia.queuePlaylistFolderRequired' => 'Vyberte umístění ve stejné složce, ve které jsou soubory ve frontě.',
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
@@ -9007,6 +9025,8 @@ extension on TranslationsCs {
 			'sourceSetup.optionalUsername' => 'Uživatelské jméno účtu (nepovinné)',
 			'sourceSetup.optionalPassword' => 'Heslo účtu (nepovinné)',
 			'sourceSetup.subtitlePrivacy' => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Automatická online metadata videa',
 			'sourceSetup.metadataPrivacy' => 'Odesílá pouze název/rok z názvu souboru a čísla epizod nebo ID NFO, nikdy média ani přihlašovací údaje. Pole NFO mají nadále přednost.',
 			'sourceSetup.nfsEncryptionFailure' => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. Pleazyng se nepokusí toto spojení zopakovat bez šifrování.',
@@ -9016,8 +9036,6 @@ extension on TranslationsCs {
 			'sourceSetup.metadataMatchHelp' => 'Před výběrem zkontrolujte název a rok. Trakt obdrží hledaný název; video zůstává ve svém zdroji.',
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',

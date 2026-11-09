@@ -2738,6 +2738,13 @@ class _Translations$seerr$fa extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng این مثال را فراموش خواهد کرد.در هر زمان دوباره اتصال.';
 	@override String get request => 'درخواست';
 	@override String get request4k => 'درخواست در 4K';
+	@override String get requestSeasons => 'درخواست فصل‌های موجودنشده';
+	@override String get notifyMe => 'وقتی در دسترس بود به من اطلاع بده';
+	@override String get notifyMe4k => 'وقتی نسخهٔ 4K در دسترس بود به من اطلاع بده';
+	@override String get notificationsOn => 'اعلان دسترسی روشن است';
+	@override String get notificationsEnabled => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم';
+	@override String get notificationsDisabled => 'اعلان دسترسی خاموش شد';
+	@override String get notificationFailed => 'به‌روزرسانی اعلان دسترسی ممکن نشد';
 	@override String get seasons => 'فصل ها';
 	@override String get allSeasons => 'همه فصل ها';
 	@override String get advancedOptions => 'پیشرفته';
@@ -5003,6 +5010,8 @@ class _Translations$explore$detail$fa extends Translations$explore$detail$en {
 	@override String get watchOn => 'نگاهی به';
 	@override String get watchTrailer => 'تماشای تریلر';
 	@override String openOn({required Object site}) => 'باز شده در ${site}';
+	@override String get trailerUnavailable => 'باز کردن پیش‌نمایش در این دستگاه ممکن نشد';
+	@override String get linkUnavailable => 'باز کردن این پیوند در این دستگاه ممکن نشد';
 	@override String get crew => 'خدمه';
 	@override String get ratings => 'رتبه بندی';
 	@override String get schedule => 'برنامه زمانی';
@@ -7211,6 +7220,8 @@ extension on TranslationsFa {
 			'explore.detail.watchOn' => 'نگاهی به',
 			'explore.detail.watchTrailer' => 'تماشای تریلر',
 			'explore.detail.openOn' => ({required Object site}) => 'باز شده در ${site}',
+			'explore.detail.trailerUnavailable' => 'باز کردن پیش‌نمایش در این دستگاه ممکن نشد',
+			'explore.detail.linkUnavailable' => 'باز کردن این پیوند در این دستگاه ممکن نشد',
 			'explore.detail.crew' => 'خدمه',
 			'explore.detail.ratings' => 'رتبه بندی',
 			'explore.detail.schedule' => 'برنامه زمانی',
@@ -7428,10 +7439,10 @@ extension on TranslationsFa {
 			'watchTogether.copyCode' => 'کپی کد',
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
-			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
 			'watchTogether.openSessionControls' => 'Open Watch با هم کنترل جلسه',
 			'watchTogether.reconnecting' => 'دوباره اتصال...',
 			'watchTogether.reconnectingDescription' => 'اتصال قطع شده است شما به طور خودکار به اتاق می روید.',
@@ -7942,10 +7953,10 @@ extension on TranslationsFa {
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
-			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
-			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
+			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
 			'metadataEdit.noArtworkAvailable' => 'هیچ هنری در دسترس نیست',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'گزینه هنری ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'گزینه هنری ${index} انتخاب شده',
@@ -8033,6 +8044,13 @@ extension on TranslationsFa {
 			'seerr.disconnectConfirmBody' => 'Pleazyng این مثال را فراموش خواهد کرد.در هر زمان دوباره اتصال.',
 			'seerr.request' => 'درخواست',
 			'seerr.request4k' => 'درخواست در 4K',
+			'seerr.requestSeasons' => 'درخواست فصل‌های موجودنشده',
+			'seerr.notifyMe' => 'وقتی در دسترس بود به من اطلاع بده',
+			'seerr.notifyMe4k' => 'وقتی نسخهٔ 4K در دسترس بود به من اطلاع بده',
+			'seerr.notificationsOn' => 'اعلان دسترسی روشن است',
+			'seerr.notificationsEnabled' => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم',
+			'seerr.notificationsDisabled' => 'اعلان دسترسی خاموش شد',
+			'seerr.notificationFailed' => 'به‌روزرسانی اعلان دسترسی ممکن نشد',
 			'seerr.seasons' => 'فصل ها',
 			'seerr.allSeasons' => 'همه فصل ها',
 			'seerr.advancedOptions' => 'پیشرفته',
@@ -8449,6 +8467,8 @@ extension on TranslationsFa {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} بدون پشتیبانی یا ورود نامناسب به لیست پخش.', other: '${count} بدون پشتیبانی و یا ورود نامناسب به لیست پخش.', ), 
 			'universalMedia.playlistAddress' => 'آدرس Playlist',
 			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
 			'universalMedia.openPlaylist' => 'باز کردن playlist',
 			'universalMedia.playlistFormatsHelp' => 'یک لیست پخش می تواند حاوی حداکثر 1000 آیتم و 2 مگابایت باشد.HLS به عنوان جریان ها باز می شود تا بازیکن بتواند کیفیت را انتخاب کند.',
@@ -8458,8 +8478,6 @@ extension on TranslationsFa {
 			'universalMedia.queuePlaylistFolderRequired' => 'محلی برای ذخیره در همان پوشهٔ فایل‌های صف انتخاب کنید.',
 			'universalMedia.noFavorites' => 'در حال حاضر هیچ مورد علاقه ذخیره نشده است.Favorites در این پروفایل باقی بماند.',
 			'universalMedia.removeFavorite' => 'حذف جریان مورد علاقه',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
 			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
@@ -8963,6 +8981,8 @@ extension on TranslationsFa {
 			'sourceSetup.optionalUsername' => 'نام کاربری حساب (اختیاری)',
 			'sourceSetup.optionalPassword' => 'گذرواژهٔ حساب (اختیاری)',
 			'sourceSetup.subtitlePrivacy' => 'کلید API را از opensubtitles.com بگیرید. جست‌وجو، عنوان ویدیو و شناسه‌های موجود IMDb/TMDB را ارسال می‌کند، اما هرگز فایل ویدیو را نمی‌فرستد. کلید و اطلاعات ورود اختیاری حساب، همراه این منبع به‌صورت رمزگذاری‌شده ذخیره می‌شوند.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'دریافت خودکار فرادادهٔ آنلاین ویدیو',
 			'sourceSetup.metadataPrivacy' => 'فقط عنوان، سال و شمارهٔ قسمت از نام فایل یا شناسهٔ NFO ارسال می‌شود؛ رسانه و اطلاعات ورود هرگز ارسال نمی‌شوند. فیلدهای NFO همیشه اولویت دارند.',
 			'sourceSetup.nfsEncryptionFailure' => 'برای NFS رمزگذاری‌شده، پشتیبانی هر دو سرویس NAS از RFC 9289 و TLS 1.3، نام گواهی و UID/GID اشتراک را بررسی کنید. Pleazyng این اتصال را بدون رمزگذاری دوباره امتحان نمی‌کند.',
@@ -8972,8 +8992,6 @@ extension on TranslationsFa {
 			'sourceSetup.metadataMatchHelp' => 'پیش از انتخاب، عنوان و سال را بررسی کنید. Trakt عنوان جست‌وجو را دریافت می‌کند؛ ویدیو در منبع خود باقی می‌ماند.',
 			'sourceSetup.metadataNoMatches' => 'عنوان مطابقی در اینترنت پیدا نشد. عنوان دیگری را امتحان کنید.',
 			'sourceSetup.metadataSearch' => 'جست‌وجوی فرادادهٔ آنلاین',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
 			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',

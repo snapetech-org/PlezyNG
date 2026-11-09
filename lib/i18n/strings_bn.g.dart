@@ -2738,6 +2738,13 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.';
 	@override String get request => 'অনুরোধ';
 	@override String get request4k => '4K অনুসন্ধান';
+	@override String get requestSeasons => 'অনুপস্থিত সিজনগুলির অনুরোধ করুন';
+	@override String get notifyMe => 'পাওয়া গেলে আমাকে জানান';
+	@override String get notifyMe4k => '4K-তে পাওয়া গেলে আমাকে জানান';
+	@override String get notificationsOn => 'উপলব্ধতার বিজ্ঞপ্তি চালু';
+	@override String get notificationsEnabled => 'পাওয়া গেলে আমরা আপনাকে জানাব';
+	@override String get notificationsDisabled => 'উপলব্ধতার বিজ্ঞপ্তি বন্ধ করা হয়েছে';
+	@override String get notificationFailed => 'উপলব্ধতার বিজ্ঞপ্তি আপডেট করা যায়নি';
 	@override String get seasons => 'সপ্তাহ';
 	@override String get allSeasons => 'সব সপ্তাহ';
 	@override String get advancedOptions => 'উন্নত';
@@ -5003,6 +5010,8 @@ class _Translations$explore$detail$bn extends Translations$explore$detail$en {
 	@override String get watchOn => 'দেখুন';
 	@override String get watchTrailer => 'ট্র্যালার দেখুন';
 	@override String openOn({required Object site}) => 'খোলা ${site}';
+	@override String get trailerUnavailable => 'এই ডিভাইসে ট্রেলার খোলা যায়নি';
+	@override String get linkUnavailable => 'এই ডিভাইসে এই লিঙ্ক খোলা যায়নি';
 	@override String get crew => 'ক্লাব';
 	@override String get ratings => 'রেটিং';
 	@override String get schedule => 'পরিকল্পনা';
@@ -7211,6 +7220,8 @@ extension on TranslationsBn {
 			'explore.detail.watchOn' => 'দেখুন',
 			'explore.detail.watchTrailer' => 'ট্র্যালার দেখুন',
 			'explore.detail.openOn' => ({required Object site}) => 'খোলা ${site}',
+			'explore.detail.trailerUnavailable' => 'এই ডিভাইসে ট্রেলার খোলা যায়নি',
+			'explore.detail.linkUnavailable' => 'এই ডিভাইসে এই লিঙ্ক খোলা যায়নি',
 			'explore.detail.crew' => 'ক্লাব',
 			'explore.detail.ratings' => 'রেটিং',
 			'explore.detail.schedule' => 'পরিকল্পনা',
@@ -7428,10 +7439,10 @@ extension on TranslationsBn {
 			'watchTogether.copyCode' => 'কপি কোড',
 			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
-			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
 			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			'watchTogether.reconnectingDescription' => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।',
@@ -7942,10 +7953,10 @@ extension on TranslationsBn {
 			'metadataEdit.imageUrl' => 'ইমেজ URL',
 			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
-			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
-			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
+			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ছবির বিকল্প ${index}, নির্বাচিত',
@@ -8033,6 +8044,13 @@ extension on TranslationsBn {
 			'seerr.disconnectConfirmBody' => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.',
 			'seerr.request' => 'অনুরোধ',
 			'seerr.request4k' => '4K অনুসন্ধান',
+			'seerr.requestSeasons' => 'অনুপস্থিত সিজনগুলির অনুরোধ করুন',
+			'seerr.notifyMe' => 'পাওয়া গেলে আমাকে জানান',
+			'seerr.notifyMe4k' => '4K-তে পাওয়া গেলে আমাকে জানান',
+			'seerr.notificationsOn' => 'উপলব্ধতার বিজ্ঞপ্তি চালু',
+			'seerr.notificationsEnabled' => 'পাওয়া গেলে আমরা আপনাকে জানাব',
+			'seerr.notificationsDisabled' => 'উপলব্ধতার বিজ্ঞপ্তি বন্ধ করা হয়েছে',
+			'seerr.notificationFailed' => 'উপলব্ধতার বিজ্ঞপ্তি আপডেট করা যায়নি',
 			'seerr.seasons' => 'সপ্তাহ',
 			'seerr.allSeasons' => 'সব সপ্তাহ',
 			'seerr.advancedOptions' => 'উন্নত',
@@ -8449,6 +8467,8 @@ extension on TranslationsBn {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} অসহায় বা নিরাপদ Playlist প্রবেশ।', other: '${count} সমর্থিত বা নিরাপদ Playlist অন্তর্ভুক্ত।', ), 
 			'universalMedia.playlistAddress' => 'Playlist ঠিকানা',
 			'universalMedia.playlistAddressHelp' => 'একটি ওয়েব ঠিকানা থেকে একটি M3U, M3u8, বা PLS প্লেলিস্ট খোঁজ করুন. সরাসরি প্রদর্শন লিঙ্কগুলি প্লেলেস্ট সংরক্ষণ করে না।',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
 			'universalMedia.openPlaylist' => 'খোলা Playlist',
 			'universalMedia.playlistFormatsHelp' => 'একটি খেলা লিস্টে সর্বাধিক 1,000 পণ্য এবং 2 মিবি রয়েছে. HLS স্ট্রিম হিসাবে খোলা হয়, তাই খেলোয়াড় একটি মান নির্বাচন করতে পারেন।',
@@ -8458,8 +8478,6 @@ extension on TranslationsBn {
 			'universalMedia.queuePlaylistFolderRequired' => 'কিউতে থাকা ফাইলগুলোর একই ফোল্ডারে সংরক্ষণের স্থান বেছে নিন।',
 			'universalMedia.noFavorites' => 'এখনো কোন প্রেমের পছন্দ সংরক্ষণ করা হয় না. পছন্দের এই प्रोফাইলে থাকুন।',
 			'universalMedia.removeFavorite' => 'প্রিয় স্ট্রিম মুছে ফেলুন',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
@@ -8963,6 +8981,8 @@ extension on TranslationsBn {
 			'sourceSetup.optionalUsername' => 'অ্যাকাউন্টের ব্যবহারকারীর নাম (ঐচ্ছিক)',
 			'sourceSetup.optionalPassword' => 'অ্যাকাউন্টের পাসওয়ার্ড (ঐচ্ছিক)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
 			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
 			'sourceSetup.nfsEncryptionFailure' => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। Pleazyng এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।',
@@ -8972,8 +8992,6 @@ extension on TranslationsBn {
 			'sourceSetup.metadataMatchHelp' => 'বেছে নেওয়ার আগে শিরোনাম ও বছর পরীক্ষা করুন। Trakt অনুসন্ধানের শিরোনাম পায়; ভিডিও তার উৎসেই থাকে।',
 			'sourceSetup.metadataNoMatches' => 'অনলাইনে মিলে যায় এমন কোনো শিরোনাম পাওয়া যায়নি। অন্য শিরোনাম দিয়ে চেষ্টা করুন।',
 			'sourceSetup.metadataSearch' => 'অনলাইন মেটাডেটা খুঁজুন',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',

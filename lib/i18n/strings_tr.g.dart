@@ -2738,6 +2738,13 @@ class _Translations$seerr$tr extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bu Seerr örneğini unutacak. İstediğiniz zaman yeniden bağlanabilirsiniz.';
 	@override String get request => 'İstek Gönder';
 	@override String get request4k => '4K İstek Gönder';
+	@override String get requestSeasons => 'Eksik sezonları iste';
+	@override String get notifyMe => 'Kullanılabilir olduğunda bana bildir';
+	@override String get notifyMe4k => '4K olarak kullanılabilir olduğunda bana bildir';
+	@override String get notificationsOn => 'Kullanılabilirlik bildirimi açık';
+	@override String get notificationsEnabled => 'Kullanılabilir olduğunda size bildireceğiz';
+	@override String get notificationsDisabled => 'Kullanılabilirlik bildirimi kapatıldı';
+	@override String get notificationFailed => 'Kullanılabilirlik bildirimi güncellenemedi';
 	@override String get seasons => 'Sezonlar';
 	@override String get allSeasons => 'Tüm sezonlar';
 	@override String get advancedOptions => 'Gelişmiş';
@@ -5003,6 +5010,8 @@ class _Translations$explore$detail$tr extends Translations$explore$detail$en {
 	@override String get watchOn => 'İzle';
 	@override String get watchTrailer => 'Fragmanı izle';
 	@override String openOn({required Object site}) => '${site}\'de aç';
+	@override String get trailerUnavailable => 'Bu cihazda fragman açılamadı';
+	@override String get linkUnavailable => 'Bu cihazda bağlantı açılamadı';
 	@override String get crew => 'Ekip';
 	@override String get ratings => 'Puanlar';
 	@override String get schedule => 'Yayın takvimi';
@@ -7211,6 +7220,8 @@ extension on TranslationsTr {
 			'explore.detail.watchOn' => 'İzle',
 			'explore.detail.watchTrailer' => 'Fragmanı izle',
 			'explore.detail.openOn' => ({required Object site}) => '${site}\'de aç',
+			'explore.detail.trailerUnavailable' => 'Bu cihazda fragman açılamadı',
+			'explore.detail.linkUnavailable' => 'Bu cihazda bağlantı açılamadı',
 			'explore.detail.crew' => 'Ekip',
 			'explore.detail.ratings' => 'Puanlar',
 			'explore.detail.schedule' => 'Yayın takvimi',
@@ -7428,10 +7439,10 @@ extension on TranslationsTr {
 			'watchTogether.copyCode' => 'Kodu Kopyala',
 			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
-			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
 			'watchTogether.openSessionControls' => 'Birlikte İzle oturum kontrollerini aç',
 			'watchTogether.reconnecting' => 'Yeniden bağlanılıyor...',
 			'watchTogether.reconnectingDescription' => 'Bağlantı koptu. Odaya otomatik olarak yeniden katılacaksınız.',
@@ -7942,10 +7953,10 @@ extension on TranslationsTr {
 			'metadataEdit.imageUrl' => 'Görsel URL\'si',
 			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
-			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
-			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
+			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
 			'metadataEdit.noArtworkAvailable' => 'Görsel bulunmuyor',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}, seçildi',
@@ -8033,6 +8044,13 @@ extension on TranslationsTr {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bu Seerr örneğini unutacak. İstediğiniz zaman yeniden bağlanabilirsiniz.',
 			'seerr.request' => 'İstek Gönder',
 			'seerr.request4k' => '4K İstek Gönder',
+			'seerr.requestSeasons' => 'Eksik sezonları iste',
+			'seerr.notifyMe' => 'Kullanılabilir olduğunda bana bildir',
+			'seerr.notifyMe4k' => '4K olarak kullanılabilir olduğunda bana bildir',
+			'seerr.notificationsOn' => 'Kullanılabilirlik bildirimi açık',
+			'seerr.notificationsEnabled' => 'Kullanılabilir olduğunda size bildireceğiz',
+			'seerr.notificationsDisabled' => 'Kullanılabilirlik bildirimi kapatıldı',
+			'seerr.notificationFailed' => 'Kullanılabilirlik bildirimi güncellenemedi',
 			'seerr.seasons' => 'Sezonlar',
 			'seerr.allSeasons' => 'Tüm sezonlar',
 			'seerr.advancedOptions' => 'Gelişmiş',
@@ -8449,6 +8467,8 @@ extension on TranslationsTr {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişini kaydırdı.', other: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişleri kayboldu.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresi',
 			'universalMedia.playlistAddressHelp' => 'Bir web adresinden bir M3U, M3u8 veya PLS oynatma listesi açın.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'Playlist dosyasını seçin',
 			'universalMedia.openPlaylist' => 'Açık Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Bir oynatma listesi en fazla 1000 öğe ve 2 MB içerebilir. HLS akışlar olarak açıktır, böylece oyuncu bir kaliteyi seçebilir.',
@@ -8458,8 +8478,6 @@ extension on TranslationsTr {
 			'universalMedia.queuePlaylistFolderRequired' => 'Sıradaki dosyalarla aynı klasörde bir kayıt konumu seçin.',
 			'universalMedia.noFavorites' => 'Hiç kaydedilmemiş akış favori henüz. Favoriler bu profilde kalır.',
 			'universalMedia.removeFavorite' => 'En sevdiğiniz akışları kaldırın',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
 			'universalMedia.chooseFiles' => 'Dosyaları seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
@@ -8963,6 +8981,8 @@ extension on TranslationsTr {
 			'sourceSetup.optionalUsername' => 'Hesap kullanıcı adı (isteğe bağlı)',
 			'sourceSetup.optionalPassword' => 'Hesap parolası (isteğe bağlı)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com adresinden API anahtarı alın. Arama, video başlığını ve mevcut IMDb/TMDB kimliklerini gönderir; video dosyasını asla göndermez. Anahtar ve isteğe bağlı hesap kimlik bilgileri bu kaynakla birlikte şifrelenir.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'Otomatik çevrimiçi video meta verileri',
 			'sourceSetup.metadataPrivacy' => 'Yalnızca dosya adındaki başlık/yıl ve bölüm numaralarını veya bir NFO kimliğini gönderir; medyayı ya da kimlik bilgilerini asla göndermez. NFO alanları önceliğini korur.',
 			'sourceSetup.nfsEncryptionFailure' => 'Şifreli NFS için her iki NAS hizmetinde RFC 9289 ve TLS 1.3 desteğini, sertifika adını ve paylaşımın UID/GID değerlerini kontrol edin. Pleazyng bu bağlantıyı şifreleme olmadan yeniden denemeyecek.',
@@ -8972,8 +8992,6 @@ extension on TranslationsTr {
 			'sourceSetup.metadataMatchHelp' => 'Seçmeden önce başlığı ve yılı kontrol edin. Trakt aranan başlığı alır; video kendi kaynağında kalır.',
 			'sourceSetup.metadataNoMatches' => 'Çevrimiçi eşleşen başlık bulunamadı. Başka bir başlık deneyin.',
 			'sourceSetup.metadataSearch' => 'Çevrimiçi meta veri ara',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',

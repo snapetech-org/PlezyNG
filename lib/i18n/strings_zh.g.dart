@@ -2734,6 +2734,13 @@ class Translations$seerr$zh extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng 将忘记此 Seerr 实例。可随时重新连接。';
 	@override String get request => '请求';
 	@override String get request4k => '请求 4K';
+	@override String get requestSeasons => '请求缺少的季';
+	@override String get notifyMe => '可用时通知我';
+	@override String get notifyMe4k => '4K 版本可用时通知我';
+	@override String get notificationsOn => '可用提醒已开启';
+	@override String get notificationsEnabled => '可用时我们会通知你';
+	@override String get notificationsDisabled => '可用提醒已关闭';
+	@override String get notificationFailed => '无法更新可用提醒';
 	@override String get seasons => '季';
 	@override String get allSeasons => '全部季';
 	@override String get advancedOptions => '高级';
@@ -4998,6 +5005,8 @@ class Translations$explore$detail$zh extends Translations$explore$detail$en {
 	@override String get watchOn => '观看平台';
 	@override String get watchTrailer => '观看预告片';
 	@override String openOn({required Object site}) => '在 ${site} 打开';
+	@override String get trailerUnavailable => '无法在此设备上打开预告片';
+	@override String get linkUnavailable => '无法在此设备上打开链接';
 	@override String get crew => '演职人员';
 	@override String get ratings => '评分';
 	@override String get schedule => '播出时间';
@@ -7206,6 +7215,8 @@ extension on TranslationsZh {
 			'explore.detail.watchOn' => '观看平台',
 			'explore.detail.watchTrailer' => '观看预告片',
 			'explore.detail.openOn' => ({required Object site}) => '在 ${site} 打开',
+			'explore.detail.trailerUnavailable' => '无法在此设备上打开预告片',
+			'explore.detail.linkUnavailable' => '无法在此设备上打开链接',
 			'explore.detail.crew' => '演职人员',
 			'explore.detail.ratings' => '评分',
 			'explore.detail.schedule' => '播出时间',
@@ -7423,10 +7434,10 @@ extension on TranslationsZh {
 			'watchTogether.copyCode' => '复制代码',
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
-			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
-			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
+			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
 			'watchTogether.reconnecting' => '正在重新连接…',
 			'watchTogether.reconnectingDescription' => '连接已中断。你将自动重新加入房间。',
@@ -7937,10 +7948,10 @@ extension on TranslationsZh {
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
-			'metadataEdit.artworkUpdated' => '封面图片已更新',
-			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => '封面图片已更新',
+			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
 			'metadataEdit.noArtworkAvailable' => '没有可用的封面图片',
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面图片选项 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面图片选项 ${index}，已选择',
@@ -8028,6 +8039,13 @@ extension on TranslationsZh {
 			'seerr.disconnectConfirmBody' => 'Pleazyng 将忘记此 Seerr 实例。可随时重新连接。',
 			'seerr.request' => '请求',
 			'seerr.request4k' => '请求 4K',
+			'seerr.requestSeasons' => '请求缺少的季',
+			'seerr.notifyMe' => '可用时通知我',
+			'seerr.notifyMe4k' => '4K 版本可用时通知我',
+			'seerr.notificationsOn' => '可用提醒已开启',
+			'seerr.notificationsEnabled' => '可用时我们会通知你',
+			'seerr.notificationsDisabled' => '可用提醒已关闭',
+			'seerr.notificationFailed' => '无法更新可用提醒',
 			'seerr.seasons' => '季',
 			'seerr.allSeasons' => '全部季',
 			'seerr.advancedOptions' => '高级',
@@ -8444,6 +8462,8 @@ extension on TranslationsZh {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
 			'universalMedia.openPlaylist' => '开放播放列表',
 			'universalMedia.playlistFormatsHelp' => '一张播放列表可以包含最多1000个项目和2MB的HLS显示为流,所以玩家可以选择质量。',
@@ -8453,8 +8473,6 @@ extension on TranslationsZh {
 			'universalMedia.queuePlaylistFolderRequired' => '请选择与队列文件相同文件夹中的保存位置。',
 			'universalMedia.noFavorites' => '尚未存储流喜爱. 喜爱留在此个人资料中。',
 			'universalMedia.removeFavorite' => '删除流喜爱',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => '选择音频、视频或ISO文件,以便进行临时记录. 文件和URL不添加到图书馆历史。',
 			'universalMedia.chooseFiles' => '选择文件',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ), 
@@ -8958,6 +8976,8 @@ extension on TranslationsZh {
 			'sourceSetup.optionalUsername' => '账户用户名（可选）',
 			'sourceSetup.optionalPassword' => '账户密码（可选）',
 			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
 			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
 			'sourceSetup.nfsEncryptionFailure' => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。Pleazyng 不会在不加密的情况下重试此连接。',
@@ -8967,8 +8987,6 @@ extension on TranslationsZh {
 			'sourceSetup.metadataMatchHelp' => '选择前请核对标题和年份。Trakt 会收到搜索标题；视频文件会保留在原来源中。',
 			'sourceSetup.metadataNoMatches' => '未找到在线标题匹配结果。请尝试其他标题。',
 			'sourceSetup.metadataSearch' => '搜索在线元数据',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => '正在查询在线电影和剧集信息…',
 			'sourceSetup.metadataFromTrakt' => '来自 Trakt 的在线元数据',
 			'sourceSetup.metadataNoAutomaticMatch' => '未找到自动匹配的标题。请搜索标题并选择匹配结果。',

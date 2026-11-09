@@ -327,6 +327,10 @@ final class MpvPlayerContractTests: XCTestCase {
   // ao_avfoundation queues seconds of audio filtered at the old speed. A Watch
   // Together room pauses, changes its rate and plays; playback must run at the
   // new rate from the paused position, not drift off while that queue drains.
+  // Check the immediate clock jump separately from the steady rate after
+  // output restarts; wall time across a restart made this regression flaky.
+  private let speedWriteJumpTolerance: TimeInterval = 1
+
   func testSpeedWrittenWhilePausedTakesEffectOnPlay() throws {
     #if os(iOS) && targetEnvironment(simulator)
       throw XCTSkip(
@@ -340,13 +344,10 @@ final class MpvPlayerContractTests: XCTestCase {
     pump(0.5)
     let pausedAt = try timePos(core)
     XCTAssertSuccess(awaitProperty(core, name: "speed", value: "2"))
+    XCTAssertEqual(try timePos(core), pausedAt, accuracy: speedWriteJumpTolerance)
     pump(0.5)
     XCTAssertSuccess(awaitProperty(core, name: "pause", value: "no"))
-    let playedAt = Date()
-    pump(3)
-
-    let expected = pausedAt + 2 * Date().timeIntervalSince(playedAt)
-    XCTAssertEqual(try timePos(core), expected, accuracy: 0.5)
+    try assertPlaysAtDoubleSpeed(core)
   }
 
   func testSpeedWrittenWhilePlayingTakesEffectAtOnce() throws {
@@ -359,12 +360,9 @@ final class MpvPlayerContractTests: XCTestCase {
     defer { stopSilentPlayback(core, file: file) }
 
     let changedFrom = try timePos(core)
-    let changedAt = Date()
     XCTAssertSuccess(awaitProperty(core, name: "speed", value: "2"))
-    pump(3)
-
-    let expected = changedFrom + 2 * Date().timeIntervalSince(changedAt)
-    XCTAssertEqual(try timePos(core), expected, accuracy: 0.5)
+    XCTAssertEqual(try timePos(core), changedFrom, accuracy: speedWriteJumpTolerance)
+    try assertPlaysAtDoubleSpeed(core)
   }
 
   func testAvfoundationSpeedChangeFlushesAtThePreChangePosition() {
@@ -935,6 +933,23 @@ final class MpvPlayerContractTests: XCTestCase {
     core.dispose()
     core.queue.sync {}
     try? FileManager.default.removeItem(at: file)
+  }
+
+  /// Measures from a second after the caller's write or resume, once output
+  /// has restarted, over three seconds: time-pos advances in steps of up to a
+  /// second at 2x, so a shorter span reads well off the rate. Playback left at
+  /// 1x reads about 1.
+  private func assertPlaysAtDoubleSpeed(
+    _ core: MpvPlayerCoreBase,
+    file: StaticString = #filePath,
+    line: UInt = #line
+  ) throws {
+    pump(1)
+    let startPosition = try timePos(core)
+    let startedAt = Date()
+    pump(3)
+    let rate = (try timePos(core) - startPosition) / Date().timeIntervalSince(startedAt)
+    XCTAssertEqual(rate, 2, accuracy: 0.5, "Playback rate after the speed write", file: file, line: line)
   }
 
   /// 48 kHz stereo 16-bit PCM silence.

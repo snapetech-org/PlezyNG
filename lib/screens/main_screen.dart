@@ -29,6 +29,8 @@ import '../utils/app_logger.dart';
 import '../widgets/auth_error_banner.dart';
 import '../widgets/app_icon.dart';
 import '../widgets/focusable_list_tile.dart';
+import '../utils/iphone_duo.dart';
+import '../widgets/vertical_bar_shell.dart';
 import '../utils/platform_detector.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/update_dialog.dart';
@@ -2539,11 +2541,15 @@ class _MainScreenState extends State<MainScreen>
   /// inset controller after this frame: the bottom bar's height in portrait,
   /// the leading rail's width in landscape (the bar mixes NavigationBar,
   /// optional offline banner, and label modes — measuring beats re-deriving).
-  void _scheduleNavBarMeasure({required bool rail}) {
+  void _scheduleNavBarMeasure({required bool rail, bool reportsInset = true}) {
     final controller = _miniPlayerInsets;
     if (controller == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      if (!reportsInset) {
+        controller.setNavInsets(bottom: 0, start: 0);
+        return;
+      }
       final box = _navBarKey.currentContext?.findRenderObject() as RenderBox?;
       if (box == null || !box.hasSize) return;
       controller.setNavInsets(bottom: rail ? 0 : box.size.height, start: rail ? box.size.width : 0);
@@ -2730,9 +2736,44 @@ class _MainScreenState extends State<MainScreen>
       onBack: _handleMainBack,
       child: ScaffoldMessenger(
         key: ProfileNavigationScope.of(context).mainScaffoldMessengerKey,
-        child: PlatformDetector.shouldUseLandscapeNavigationRail(context)
-            ? _buildLandscapeShell(context)
-            : _buildPortraitShell(context),
+        child: switch (IphoneDuo.verticalBarEdgeOf(context)) {
+          final VerticalBarEdge edge => _buildVerticalBarShell(context, edge),
+          null when PlatformDetector.shouldUseLandscapeNavigationRail(context) => _buildLandscapeShell(context),
+          null => _buildPortraitShell(context),
+        },
+      ),
+    );
+  }
+
+  /// iPhone Duo with the system vertical bar: the tabs live in the bar.
+  Widget _buildVerticalBarShell(BuildContext context, VerticalBarEdge edge) {
+    return Scaffold(
+      body: VerticalBarShell(
+        edge: edge,
+        railBuilder: (context, barWidth) => SettingValueBuilder<bool>(
+          pref: SettingsService.showNavBarLabels,
+          builder: (context, showNavBarLabels, _) {
+            // The mini player already clears the bar through the safe area on
+            // that side, so report no extra nav inset.
+            _scheduleNavBarMeasure(rail: true, reportsInset: false);
+            return MobileNavigationRail(
+              key: _navBarKey,
+              tabs: _getBottomNavigationTabs(context),
+              selectedTab: _currentTab,
+              showLabels: showNavBarLabels,
+              onDestinationSelected: _selectTab,
+              onLibrariesLongPress: () => _showLibraryQuickPicker(context),
+              isOffline: _isOffline,
+              isReconnecting: _isReconnecting,
+              onReconnect: _triggerReconnect,
+              minWidth: barWidth,
+              // Bottom of the bar, within reach of the thumb.
+              groupAlignment: 1,
+              backgroundColor: Colors.transparent,
+            );
+          },
+        ),
+        child: _buildTickerAwareStack(),
       ),
     );
   }

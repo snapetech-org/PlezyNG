@@ -2742,6 +2742,13 @@ class _Translations$seerr$he extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng תשכח את התגובה הזאת של Seerr.';
 	@override String get request => 'בקשה';
 	@override String get request4k => 'בקשה 4K';
+	@override String get requestSeasons => 'בקשת העונות החסרות';
+	@override String get notifyMe => 'הודעה כשיהיה זמין';
+	@override String get notifyMe4k => 'הודעה כשיהיה זמין ב־4K';
+	@override String get notificationsOn => 'התראת זמינות מופעלת';
+	@override String get notificationsEnabled => 'נודיע לך כשהתוכן יהיה זמין';
+	@override String get notificationsDisabled => 'התראת הזמינות כובתה';
+	@override String get notificationFailed => 'לא ניתן לעדכן את התראת הזמינות';
 	@override String get seasons => 'עונות';
 	@override String get allSeasons => 'כל העונות';
 	@override String get advancedOptions => 'מתקדם';
@@ -5011,6 +5018,8 @@ class _Translations$explore$detail$he extends Translations$explore$detail$en {
 	@override String get watchOn => 'צפו ב';
 	@override String get watchTrailer => 'צפו בטריילר';
 	@override String openOn({required Object site}) => 'פתוח ב ${site}';
+	@override String get trailerUnavailable => 'לא ניתן לפתוח את הקדימון במכשיר הזה';
+	@override String get linkUnavailable => 'לא ניתן לפתוח את הקישור הזה במכשיר הזה';
 	@override String get crew => 'צוות';
 	@override String get ratings => 'דירוג';
 	@override String get schedule => 'לו״ז';
@@ -7219,6 +7228,8 @@ extension on TranslationsHe {
 			'explore.detail.watchOn' => 'צפו ב',
 			'explore.detail.watchTrailer' => 'צפו בטריילר',
 			'explore.detail.openOn' => ({required Object site}) => 'פתוח ב ${site}',
+			'explore.detail.trailerUnavailable' => 'לא ניתן לפתוח את הקדימון במכשיר הזה',
+			'explore.detail.linkUnavailable' => 'לא ניתן לפתוח את הקישור הזה במכשיר הזה',
 			'explore.detail.crew' => 'צוות',
 			'explore.detail.ratings' => 'דירוג',
 			'explore.detail.schedule' => 'לו״ז',
@@ -7436,10 +7447,10 @@ extension on TranslationsHe {
 			'watchTogether.copyCode' => 'עותק קוד',
 			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
-			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- Pleazyng: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- Pleazyng: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch יחד בדיקת ישיבה',
 			'watchTogether.reconnecting' => 'חיבור מחדש...',
 			'watchTogether.reconnectingDescription' => 'הקשר נעלם, אתה נכנס לחדר באופן אוטומטי.',
@@ -7950,10 +7961,10 @@ extension on TranslationsHe {
 			'metadataEdit.imageUrl' => 'תמונה URL',
 			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
 			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
-			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
-			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
+			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
 			'metadataEdit.noArtworkAvailable' => 'אין יצירות אמנות זמינות',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}, נבחר',
@@ -8041,6 +8052,13 @@ extension on TranslationsHe {
 			'seerr.disconnectConfirmBody' => 'Pleazyng תשכח את התגובה הזאת של Seerr.',
 			'seerr.request' => 'בקשה',
 			'seerr.request4k' => 'בקשה 4K',
+			'seerr.requestSeasons' => 'בקשת העונות החסרות',
+			'seerr.notifyMe' => 'הודעה כשיהיה זמין',
+			'seerr.notifyMe4k' => 'הודעה כשיהיה זמין ב־4K',
+			'seerr.notificationsOn' => 'התראת זמינות מופעלת',
+			'seerr.notificationsEnabled' => 'נודיע לך כשהתוכן יהיה זמין',
+			'seerr.notificationsDisabled' => 'התראת הזמינות כובתה',
+			'seerr.notificationFailed' => 'לא ניתן לעדכן את התראת הזמינות',
 			'seerr.seasons' => 'עונות',
 			'seerr.allSeasons' => 'כל העונות',
 			'seerr.advancedOptions' => 'מתקדם',
@@ -8457,6 +8475,8 @@ extension on TranslationsHe {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'כניסה לא תומכת או לא בטוחה של רשימת המשחקים של ${count}.', two: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', other: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', ), 
 			'universalMedia.playlistAddress' => 'כתובת Playlist',
 			'universalMedia.playlistAddressHelp' => 'פתח רשימת משחקים M3U, M3u8 או PLS מכתובת אינטרנט.קישורים זרימה ישירה אינם מאוחסנים את רשימת המשחקים.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.choosePlaylist' => 'בחר קובץ playlist',
 			'universalMedia.openPlaylist' => 'פתיחת Playlist',
 			'universalMedia.playlistFormatsHelp' => 'רשימת משחקים יכולה להכיל עד 1,000 פריטים ו 2 MB. HLS מופיע פתוח כמו זרמים כך שהשחקן יכול לבחור איכות.',
@@ -8466,8 +8486,6 @@ extension on TranslationsHe {
 			'universalMedia.queuePlaylistFolderRequired' => 'יש לבחור מיקום שמירה באותה תיקייה שבה נמצאים הקבצים שבתור.',
 			'universalMedia.noFavorites' => 'עדיין לא נשמר זרימת הפופולרים.Favorites להישאר בפרופיל זה.',
 			'universalMedia.removeFavorite' => 'להסיר זרם אהוב',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
 			'universalMedia.chooseFiles' => 'בחירת קבצים',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
@@ -8971,6 +8989,8 @@ extension on TranslationsHe {
 			'sourceSetup.optionalUsername' => 'שם המשתמש בחשבון (רשות)',
 			'sourceSetup.optionalPassword' => 'סיסמת החשבון (רשות)',
 			'sourceSetup.subtitlePrivacy' => 'אפשר לקבל מפתח API מ־opensubtitles.com. החיפוש שולח את שם הווידאו ואת מזהי IMDb/TMDB הזמינים, ולעולם לא את קובץ הווידאו. המפתח ופרטי החשבון האופציונליים נשמרים בהצפנה עם המקור הזה.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.automaticMetadata' => 'אחזור אוטומטי של מטא־נתוני וידאו מקוונים',
 			'sourceSetup.metadataPrivacy' => 'נשלחים רק שם היצירה, השנה ומספרי הפרקים מתוך שם הקובץ, או מזהה NFO. מדיה ופרטי גישה לעולם אינם נשלחים. לשדות NFO נשמרת עדיפות.',
 			'sourceSetup.nfsEncryptionFailure' => 'עבור NFS מוצפן, יש לבדוק תמיכה ב־RFC 9289 וב־TLS 1.3 בשני שירותי ה־NAS, את שם האישור ואת מזהי UID/GID של הייצוא. Pleazyng לא ינסה שוב את החיבור הזה ללא הצפנה.',
@@ -8980,8 +9000,6 @@ extension on TranslationsHe {
 			'sourceSetup.metadataMatchHelp' => 'לפני הבחירה, יש לבדוק את השם והשנה. Trakt מקבל את שם החיפוש; הווידאו נשאר במקור שלו.',
 			'sourceSetup.metadataNoMatches' => 'לא נמצאו שמות תואמים בחיפוש המקוון. כדאי לנסות שם אחר.',
 			'sourceSetup.metadataSearch' => 'חיפוש מטא־נתונים מקוונים',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
 			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',

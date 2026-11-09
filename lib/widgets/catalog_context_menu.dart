@@ -21,12 +21,12 @@ enum _CatalogMenuActionType { viewDetails, toggleWatchlist, request, openTrailer
 class _CatalogMenuAction {
   final _CatalogMenuActionType type;
   final Uri? uri;
+  final SeerrTitleAction? seerrAction;
 
-  const _CatalogMenuAction(this.type, {this.uri});
+  const _CatalogMenuAction(this.type, {this.uri, this.seerrAction});
 
   static const viewDetails = _CatalogMenuAction(_CatalogMenuActionType.viewDetails);
   static const toggleWatchlist = _CatalogMenuAction(_CatalogMenuActionType.toggleWatchlist);
-  static const request = _CatalogMenuAction(_CatalogMenuActionType.request);
 }
 
 /// Context menu for catalog stand-in cards (Explore tab). Replaces
@@ -38,17 +38,17 @@ Future<void> showCatalogItemMenu(BuildContext context, CatalogItem item, {Offset
   // Same gate as the detail screen's Request action.
   final seerr = sources?.seerrSource;
   final tmdbId = item.ids.tmdb;
-  final canRequest = seerr != null && tmdbId != null && seerr.canRequest(item.kind);
-  if (canRequest) await seerr.client.intents.load(item.kind, tmdbId);
-  if (!context.mounted || (canRequest && !identical(sources?.seerrSource, seerr))) return;
-  final requestAction = canRequest
-      ? seerrTitleAction(
+  final supportsActions = seerr != null && tmdbId != null && seerr.supportsTitleActions(item.kind);
+  if (supportsActions) await seerr.client.intents.load(item.kind, tmdbId);
+  if (!context.mounted || (supportsActions && !identical(sources?.seerrSource, seerr))) return;
+  final requestActions = supportsActions
+      ? seerrTitleActions(
           seerr,
           item.kind,
           seerr.client.intents.peek(item.kind, tmdbId),
           seasonNumber: item.season?.agreedSeason,
         )
-      : null;
+      : const <SeerrTitleAction>[];
   final onWatchlist = source?.isOnWatchlist(item.kind, item.ids);
   if (source != null && onWatchlist == null) {
     // Load in the background so the row is actionable next open.
@@ -95,8 +95,12 @@ Future<void> showCatalogItemMenu(BuildContext context, CatalogItem item, {Offset
           label: onWatchlist ? t.explore.removeFromWatchlist : t.explore.addToWatchlist,
           icon: onWatchlist ? Symbols.bookmark_remove_rounded : Symbols.bookmark_add_rounded,
         ),
-      if (requestAction != null && requestAction.interactive)
-        AppMenuItem(value: _CatalogMenuAction.request, label: requestAction.label, icon: requestAction.icon),
+      for (final seerrAction in requestActions)
+        AppMenuItem(
+          value: _CatalogMenuAction(_CatalogMenuActionType.request, seerrAction: seerrAction),
+          label: seerrAction.label,
+          icon: seerrAction.icon,
+        ),
     ],
   );
   if (action == null || !context.mounted) return;
@@ -117,13 +121,15 @@ Future<void> showCatalogItemMenu(BuildContext context, CatalogItem item, {Offset
       }
     case _CatalogMenuActionType.request:
       if (!identical(sources?.seerrSource, seerr)) return;
+      final selectedAction = action.seerrAction;
+      if (selectedAction == null) return;
       await performSeerrTitleAction(
         context,
         source: seerr!,
         kind: item.kind,
         tmdbId: tmdbId!,
         title: item.title,
-        action: requestAction!,
+        action: selectedAction,
         seasonNumber: item.season?.agreedSeason,
       );
     case _CatalogMenuActionType.openTrailer || _CatalogMenuActionType.openLink:

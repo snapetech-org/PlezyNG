@@ -584,7 +584,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   /// tracks grants and revocations.
   SeerrCatalogSource? get _requestSource {
     final seerr = context.read<CatalogSourcesProvider>().seerrSource;
-    return seerr != null && seerr.canRequest(widget.item.kind) ? seerr : null;
+    return seerr != null && seerr.supportsTitleActions(_item.kind) ? seerr : null;
   }
 
   /// Whether the Request action can actually render: the tmdb id may only
@@ -593,11 +593,11 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   /// Fribb mapping at row time, but Plex Discover's hub/search/related
   /// endpoints ignore includeGuids, so a Plex item's tmdb id only arrives
   /// with the detail fetch (issue #1959).
-  SeerrTitleAction? get _requestAction {
+  List<SeerrTitleAction> get _requestActions {
     final source = _requestSource;
     final id = _item.ids.tmdb;
-    if (source == null || id == null) return null;
-    return seerrTitleAction(
+    if (source == null || id == null) return const [];
+    return seerrTitleActions(
       source,
       _item.kind,
       _intentStore?.peek(_item.kind, id),
@@ -605,7 +605,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     );
   }
 
-  bool get _canRequest => _requestAction != null;
+  bool get _canRequest => _requestActions.isNotEmpty;
 
   String? _streamLookupId(CatalogItem item) =>
       item.ids.imdb ??
@@ -1379,9 +1379,10 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     final locale = LocalePreferences.formattingLocaleName;
     final compact = NumberFormat.compact(locale: locale);
     final chips = <Widget>[];
+    final labels = <String>{};
     void add(String? label, {IconData? icon, Color? iconColor}) {
-      if (label?.trim().isNotEmpty ?? false) {
-        chips.add(StatChip(icon: icon, iconColor: iconColor, label: label!));
+      if (label != null && label.trim().isNotEmpty && labels.add(label)) {
+        chips.add(StatChip(icon: icon, iconColor: iconColor, label: label));
       }
     }
 
@@ -1445,6 +1446,20 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
       if (server.request4k case final request?) add(requestStateLabel(request, is4k: true));
       if (server.availableSeasons case final available? when server.totalSeasons != null) {
         add(t.explore.badge.seasonsAvailable(available: available, total: server.totalSeasons!));
+      }
+    }
+
+    if (item.ids.tmdb case final tmdbId?) {
+      final intent = _intentStore?.peek(item.kind, tmdbId);
+      if (intent != null) {
+        if (intent.own4k != null) {
+          add(t.explore.badge.requested4k, icon: Symbols.schedule_rounded);
+        } else if (intent.own != null) {
+          add(t.seerr.statusRequested, icon: Symbols.schedule_rounded);
+        } else if (intent.hasOtherRequest) {
+          add(t.seerr.requestInProgress, icon: Symbols.schedule_rounded);
+        }
+        if (intent.subscribed) add(t.seerr.notificationsOn, icon: Symbols.notifications_active_rounded);
       }
     }
 
@@ -2182,26 +2197,30 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
                                                   ),
                                                 ),
                                               ),
-                                            if (_requestSource case final SeerrCatalogSource seerr
-                                                when tmdbId != null && _requestAction != null)
-                                              FocusableAction(
-                                                debugLabel: 'catalog_request',
-                                                icon: _requestAction!.icon,
-                                                tooltip: _requestAction!.label,
-                                                onPressed: !_requestAction!.interactive
-                                                    ? null
-                                                    : () => unawaited(
-                                                        performSeerrTitleAction(
-                                                          hostContext,
-                                                          source: seerr,
-                                                          kind: item.kind,
-                                                          tmdbId: tmdbId,
-                                                          title: item.title,
-                                                          action: _requestAction!,
-                                                          seasonNumber: item.season?.agreedSeason,
-                                                        ),
-                                                      ),
-                                              ),
+                                            if (_requestSource case final SeerrCatalogSource seerr when tmdbId != null)
+                                              for (final action in _requestActions)
+                                                FocusableAction(
+                                                  debugLabel: action.kind == SeerrTitleActionKind.notificationsOn
+                                                      ? 'catalog_availability_alert'
+                                                      : 'catalog_request',
+                                                  icon: action.icon,
+                                                  tooltip: action.tooltip(
+                                                    quickRequest:
+                                                        item.kind == MediaKind.movie &&
+                                                        _intentStore?.peek(item.kind, tmdbId)?.quickRequest == true,
+                                                  ),
+                                                  onPressed: () => unawaited(
+                                                    performSeerrTitleAction(
+                                                      hostContext,
+                                                      source: seerr,
+                                                      kind: item.kind,
+                                                      tmdbId: tmdbId,
+                                                      title: item.title,
+                                                      action: action,
+                                                      seasonNumber: item.season?.agreedSeason,
+                                                    ),
+                                                  ),
+                                                ),
                                             if (_canWatchWithServices)
                                               FocusableAction(
                                                 debugLabel: 'catalog_watch_with_services',

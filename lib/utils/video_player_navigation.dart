@@ -342,6 +342,7 @@ Future<bool?> navigateToVideoPlayer(
   bool strictMediaSelection = false,
   bool explicitStartPolicy = false,
   PlaybackLaunchObserver? launchObserver,
+  VoidCallback? onLaunched,
   bool skipCinemaExtras = false,
   bool skipPreroll = false,
   bool isPreroll = false,
@@ -606,6 +607,7 @@ Future<bool?> navigateToVideoPlayer(
 
     pushFuture = route.push(navigator, replaceCurrent: usePushReplacement);
     launchObserver?.mark('opening');
+    onLaunched?.call();
   } finally {
     if (markedInFlight) _inFlightLaunches.remove(launchIdentity);
   }

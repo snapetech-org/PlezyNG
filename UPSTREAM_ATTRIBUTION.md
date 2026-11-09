@@ -216,3 +216,8 @@ endorsement of this fork.
 - [Actionable tvOS trailers and external links](https://github.com/edde746/plezy/commit/16d5b404cb14163a776b701265e55b6f66cdfc34), contributed upstream by [@moust4ki](https://github.com/moust4ki): Pleazyng independently adapted play library trailers internally, offer YouTube handoff only when its app is installed, hide unsupported browser links and report failed handoffs; preserve Seerr actions and block unsafe provider URI schemes.
 
 - [More reliable iOS speed-change qualification](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage.
+
+
+## Flutter security engine build (2026-11-09)
+
+The security-engine builder uses [edde746/flutter-plezy](https://github.com/edde746/flutter-plezy/tree/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2)'s existing Windows DirectComposition and resize patch series and build driver at immutable revision `06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2`. It applies those patches to Flutter 3.47.8 (`737ba8f885dc774b53b442759999a312c9461e4e`) with the upstream fixed Dart dependency for [GHSA-frr6-h895-5pxp](https://github.com/dart-lang/sdk/security/advisories/GHSA-frr6-h895-5pxp). The patch-source license and source revision receipt accompany the resulting archives. The orchestration script is original Pleazyng code. Built artifacts must pass verification before replacing the existing Windows engine pin.

@@ -209,7 +209,7 @@ Future<SeerrAccountProvider> _seerrAccount(int Function() permissions) async {
 /// A real [SeerrCatalogSource]: the Request gate reads the session's
 /// permission bitmask through [SeerrCatalogSource.canRequest]. None of these
 /// tests open the request sheet, so no Seerr HTTP is expected.
-SeerrCatalogSource _seerrSource({int permissions = SeerrPermission.request}) {
+SeerrCatalogSource _seerrSource({int permissions = SeerrPermission.request, Map<String, Object?>? intent}) {
   final client = SeerrClient(
     SeerrSession(
       baseUrl: 'https://seerr.example.com',
@@ -224,7 +224,18 @@ SeerrCatalogSource _seerrSource({int permissions = SeerrPermission.request}) {
       createdAt: 0,
     ),
     onSessionInvalidated: () {},
-    httpClient: MockClient((request) async => http.Response('unexpected Seerr request', 500)),
+    httpClient: MockClient((request) async {
+      if (request.url.path == '/api/v1/request/intent/state' && intent != null) {
+        return http.Response(
+          jsonEncode({
+            'items': [intent],
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      return http.Response('Not found', 404);
+    }),
   );
   final source = SeerrCatalogSource(client);
   addTearDown(() {
@@ -529,12 +540,12 @@ void main() {
       final source = _FakeCatalogSource(detailCompleter: detailCompleter);
 
       await _pumpDetail(tester, source, item: _bareRow, seerr: _seerrSource());
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
 
       detailCompleter.complete(const CatalogDetail(item: _enrichedRow));
       await tester.pumpAndSettle();
 
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
     });
 
     testWidgets('appears immediately when the row item already carries a tmdb id', (tester) async {
@@ -542,7 +553,38 @@ void main() {
 
       await _pumpDetail(tester, source, seerr: _seerrSource());
 
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
+    });
+
+    testWidgets('vanilla Seerr offers a 4K request when that is the only account grant', (tester) async {
+      await _pumpDetail(tester, _FakeCatalogSource(), seerr: _seerrSource(permissions: SeerrPermission.request4kMovie));
+
+      expect(find.byTooltip(t.seerr.request4kHint), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
+    });
+
+    testWidgets('request and existing alert have separate, descriptive controls', (tester) async {
+      final intent = <String, Object?>{
+        'mediaType': 'movie',
+        'tmdbId': 1,
+        'status': 2,
+        'status4k': 5,
+        'standard': {'own': null, 'other': null},
+        'fourK': {'own': null, 'other': null},
+        'subscribed': true,
+        'subscriptionScope': {'is4k': true, 'seasonNumber': null},
+        'canRequest': true,
+        'canRequest4k': false,
+        'quickRequest': false,
+        'seasons': <Object>[],
+      };
+      await _pumpDetail(tester, _FakeCatalogSource(), seerr: _seerrSource(intent: intent));
+
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
+      expect(find.byTooltip(t.seerr.turnOffAlert), findsOneWidget);
+      expect(find.text(t.seerr.notificationsOn), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 50));
     });
 
     testWidgets('stays hidden without the request permission', (tester) async {
@@ -550,7 +592,7 @@ void main() {
 
       await _pumpDetail(tester, source, seerr: _seerrSource(permissions: 0));
 
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
     });
 
     testWidgets('follows a permission grant and revocation the account adopts while open', (tester) async {
@@ -562,29 +604,29 @@ void main() {
       final account = (await tester.runAsync(() => _seerrAccount(() => permissions)))!;
 
       await _pumpDetail(tester, _FakeCatalogSource(), account: account);
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
 
       permissions = SeerrPermission.request;
       await tester.runAsync(account.refreshUser);
       await tester.pumpAndSettle();
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
 
       permissions = 0;
       await tester.runAsync(account.refreshUser);
       await tester.pumpAndSettle();
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
     });
 
     testWidgets('disappears when the account disconnects while open', (tester) async {
       final account = (await tester.runAsync(() => _seerrAccount(() => SeerrPermission.request)))!;
 
       await _pumpDetail(tester, _FakeCatalogSource(), account: account);
-      expect(find.byTooltip(t.seerr.request), findsOneWidget);
+      expect(find.byTooltip(t.seerr.requestHint), findsOneWidget);
 
       await tester.runAsync(account.disconnect);
       await tester.pump();
 
-      expect(find.byTooltip(t.seerr.request), findsNothing);
+      expect(find.byTooltip(t.seerr.requestHint), findsNothing);
     });
   });
 

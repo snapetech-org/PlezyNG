@@ -86,7 +86,12 @@ $curlArguments = @(
 if (-not [string]::IsNullOrWhiteSpace($proxy)) {
     $curlArguments = @('--proxy', $proxy) + $curlArguments
 }
-& $curlPath @curlArguments
+if ($env:GH_TOKEN) {
+    $downloadHelper = Join-Path $PSScriptRoot '..\..\scripts\prepare_native_downloads.py'
+    python $downloadHelper --github-url ([string]$url) --expected-sha $expectedHash --output $archive
+} else {
+    & $curlPath @curlArguments
+}
 if ($LASTEXITCODE -ne 0) {
     throw "Pinned Windows MPV download failed with curl exit code $LASTEXITCODE."
 }

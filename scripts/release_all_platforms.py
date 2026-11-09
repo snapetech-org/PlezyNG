@@ -43,6 +43,15 @@ DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
 APPLE_JIT_EVIDENCE_ROOT: Path | None = None
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
+    "tools/webos/build_release_candidate.sh",
+    "windows/tool/download-pinned-mpv.ps1",
+    "windows/tool/download-pinned-simdutf.ps1",
+    "windows/tool/download-pinned-winsparkle.ps1",
+    "windows/tool/download-pinned-sdl3.ps1",
+    "windows/tool/download-pinned-torrent-dependencies.ps1",
+    "windows/tool/prepare-build-toolchain.ps1",
+
+    "windows/tool/install-patched-engine.ps1",
     "scripts/checks/check_codegen.py", "scripts/checks/test_check_codegen.py",
     "scripts/checks/check_capability_manifest.py",
     "tools/webos/package_ipk.py",

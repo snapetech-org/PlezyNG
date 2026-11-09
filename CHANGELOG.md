@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Stage pinned PDFium, Gradle, CMake sources, Windows tools and webOS toolchains through verified GitHub API downloads when release-page transport fails, preserving source pins and isolated native ABI outputs.
+
 - Accept canonical pleazyng build provenance in TV packages and prefetch checksum-pinned SQLite, libdovi and AppImage runtime assets with verified retries. Reuse immutable application CI only after checking that subsequent changes are confined to release infrastructure.
 
 - Set Flutter and webOS versions together, and validate package metadata in commit/CI guards and before the release driver starts CI or creates a tag.

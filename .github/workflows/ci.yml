@@ -115,6 +115,11 @@ jobs:
           sudo apt-get install -y --no-install-recommends clang build-essential cmake
           flutter pub get
 
+      - name: Prefetch checksum-pinned host native libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform linux --arch x64
+
       - name: Install wakelock_plus development dependencies
         working-directory: packages/wakelock_plus
         run: flutter pub get --enforce-lockfile --no-example
@@ -202,6 +207,11 @@ jobs:
         run: |
           flutter clean
           flutter pub get
+
+      - name: Prefetch checksum-pinned host native libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform linux --arch x64
 
       - name: Run tests
         run: |

@@ -1,5 +1,7 @@
 import hashlib
 import json
+import io
+import tarfile
 from pathlib import Path
 import subprocess
 import tempfile
@@ -63,6 +65,68 @@ class NativeDownloadsTests(unittest.TestCase):
             downloads.prepare_sqlite(self.root, "windows", "arm64", self.root / "cache")
         expected = self.root / ".dart_tool/hooks_runner/shared/sqlite3/build" / f"download-{self.digest[:8]}" / "sqlite3.dll"
         self.assertEqual(expected.read_bytes(), self.content)
+
+    def test_legacy_release_without_github_digest_still_requires_the_full_independent_hash(self):
+        self.metadata["assets"][0]["digest"] = None
+        with patch.object(downloads, "download_asset", side_effect=lambda repo, asset, path: path.write_bytes(self.content)):
+            self.assertEqual(self.get_asset().read_bytes(), self.content)
+
+    def test_gradle_staging_is_consumed_by_the_unchanged_wrapper_url(self):
+        wrapper = self.root / "android/gradle/wrapper"
+        wrapper.mkdir(parents=True)
+        (wrapper / "gradle-wrapper.properties").write_text("distributionUrl=https\\://services.gradle.org/distributions/gradle-9.6.1-all.zip\ndistributionSha256Sum=" + self.digest + "\n")
+        archive = self.root / "gradle.zip"
+        archive.write_bytes(self.content)
+        home = self.root / "gradle-home"
+        with patch.dict(downloads.os.environ, {"GRADLE_USER_HOME": str(home)}), patch.object(downloads, "pinned_asset", return_value=archive):
+            downloads.prepare_gradle(self.root, self.root / "cache")
+        staged = home / "wrapper/dists/gradle-9.6.1-all/4xnwe4ed5w7qqynisxnnvegss/gradle-9.6.1-all.zip"
+        self.assertEqual(staged.read_bytes(), self.content)
+        self.assertFalse(staged.with_suffix(".zip.ok").exists(), "Only the original Wrapper may acknowledge verification/extraction")
+
+    def test_pdfium_stages_only_the_regular_pinned_library(self):
+        package = self.root / "pdfium-package"
+        (package / "hook").mkdir(parents=True)
+        (package / "hook/build.dart").write_text("const _pdfiumRelease = 'chromium%2F7811';")
+        (self.root / ".dart_tool").mkdir()
+        (self.root / ".dart_tool/package_config.json").write_text(json.dumps({"packages": [{"name": "pdfium_dart", "rootUri": package.as_uri()}]}))
+        archive = self.root / "pdfium.tgz"
+        for unsafe in (False, True):
+            with self.subTest(unsafe=unsafe):
+                with tarfile.open(archive, "w:gz") as bundle:
+                    entry = tarfile.TarInfo("lib/libpdfium.so")
+                    if unsafe:
+                        entry.type = tarfile.SYMTYPE
+                        entry.linkname = "../../../outside"
+                        bundle.addfile(entry)
+                    else:
+                        entry.size = len(self.content)
+                        bundle.addfile(entry, io.BytesIO(self.content))
+                with patch.object(downloads, "pinned_asset", return_value=archive):
+                    if unsafe:
+                        with self.assertRaises(ValueError):
+                            downloads.prepare_pdfium(self.root, "linux", "x64", self.root / "cache")
+                    else:
+                        downloads.prepare_pdfium(self.root, "linux", "x64", self.root / "cache")
+                        output = self.root / ".dart_tool/hooks_runner/shared/pdfium_dart/build/chromium_7811/linux-x64/libpdfium.so"
+                        self.assertEqual(output.read_bytes(), self.content)
+
+    def test_android_cmake_shares_verified_sources_and_keeps_binary_outputs_per_abi(self):
+        cmake = self.root / "packages/plezy_torrent/src"
+        cmake.mkdir(parents=True)
+        (cmake / "CMakeLists.txt").write_text('FetchContent_Declare(libtorrent\n URL https://github.com/arvidn/libtorrent/releases/download/v2.0.11/source.tar.gz\n URL_HASH SHA256=' + self.digest + ')')
+        def stage(url, digest, destination, cache):
+            with tarfile.open(destination, "w:gz") as bundle:
+                entry = tarfile.TarInfo("libtorrent-source/CMakeLists.txt")
+                entry.size = len(self.content)
+                bundle.addfile(entry, io.BytesIO(self.content))
+        environment = self.root / "github-env"
+        with patch.dict(downloads.os.environ, {"RUNNER_TEMP": str(self.root), "GITHUB_ENV": str(environment)}), patch.object(downloads, "prepare_github_url", side_effect=stage):
+            downloads.prepare_cmake_downloads(self.root, "android", None, self.root / "cache")
+        self.assertIn("PLEZYNG_CMAKE_SOURCE_LIBTORRENT=", environment.read_text())
+        self.assertNotIn("FETCHCONTENT_BASE_DIR", environment.read_text())
+        source = self.root / "pleazyng-cmake-sources/libtorrent-source/CMakeLists.txt"
+        self.assertEqual(source.read_bytes(), self.content)
 
     def test_libdovi_cache_wrapper_preserves_verified_archives_and_other_curl_calls(self):
         android = self.root / "android/app"

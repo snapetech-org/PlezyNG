@@ -127,6 +127,10 @@ jobs:
       - name: Verify host validation compiler
         run: command -v clang
       - run: flutter pub get --enforce-lockfile
+      - name: Prefetch checksum-pinned host native test libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform linux --arch x64
       - run: python3 -m unittest discover -s scripts/tizen -p 'test_*.py' -v
       - run: flutter test test/mpv/player_tizen_test.dart test/mpv/webos_media_proxy_test.dart test/media/tizen_playback_profile_test.dart
       - run: flutter test --dart-define=PLEZY_TIZEN=true test/utils/tizen_platform_test.dart test/services/tizen_plex_playback_test.dart

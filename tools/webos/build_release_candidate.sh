@@ -191,8 +191,8 @@ download_locked() {
     echo "Refusing to overwrite a downloaded toolchain input: $destination" >&2
     return 1
   fi
-  curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error \
-    --retry 3 --retry-all-errors --output "$destination" "$url"
+  python3 "$ROOT/scripts/prepare_native_downloads.py" --github-url "$url" \
+    --expected-sha "$expected_sha256" --output "$destination" >&2
   printf '%s  %s\n' "$expected_sha256" "$destination" | sha256sum --check --status
   printf 'Verified download: %s\n' "$name" >&2
   printf '%s\n' "$destination"

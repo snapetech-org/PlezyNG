@@ -115,7 +115,12 @@ foreach ($spec in $archives) {
     if (-not [string]::IsNullOrWhiteSpace($proxy)) {
         $curlArguments = @('--proxy', $proxy) + $curlArguments
     }
-    & $curlPath @curlArguments
+    if ($env:GH_TOKEN) {
+        $downloadHelper = Join-Path $PSScriptRoot '..\..\scripts\prepare_native_downloads.py'
+        python $downloadHelper --github-url ([string]$pin.url) --expected-sha ([string]$pin.sha256) --output $archive
+    } else {
+        & $curlPath @curlArguments
+    }
     if ($LASTEXITCODE -ne 0) {
         Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
         throw "Pinned $($spec.key) download failed with curl exit code $LASTEXITCODE."

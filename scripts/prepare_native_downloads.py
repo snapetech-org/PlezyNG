@@ -10,12 +10,13 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tarfile
 import time
 import urllib.parse
 import urllib.request
 import uuid
 
-PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime"}
+PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime", "bblanchon/pdfium-binaries", "gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "arvidn/libtorrent", "simdutf/simdutf", "ninja-build/ninja", "snapetech-org/mpv-build", "vslavik/winsparkle", "libsdl-org/SDL", "jrsoftware/issrc", "AppImage/appimagetool", "lg-flutter-webos/ndk", "lg-flutter-webos/artifacts"}
 
 
 def sha256(path):
@@ -38,14 +39,14 @@ def download_asset(repository, asset_id, destination):
                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
     with destination.open("wb") as output:
         subprocess.run(["gh", "api", *(["--allow-escape-sequences"] if supports_raw else []), "-H", "Accept: application/octet-stream", endpoint],
-                       stdout=output, check=True, timeout=120)
+                       stdout=output, check=True, timeout=600)
 
 
 def pinned_asset(repository, tag, name, expected, cache, release=None):
     if repository not in PRODUCERS or not re.fullmatch(r"[0-9a-f]{64}", expected):
         raise ValueError("Unreviewed native producer or digest")
     for part in (tag, name):
-        if part in {".", ".."} or not re.fullmatch(r"[A-Za-z0-9_.+-]+", part):
+        if part in {".", ".."} or not re.fullmatch(r"[A-Za-z0-9_.+%\-]+", part):
             raise ValueError("Unsafe native asset name")
     folder = cache / repository.replace("/", "_") / tag
     folder.mkdir(parents=True, exist_ok=True)
@@ -59,7 +60,7 @@ def pinned_asset(repository, tag, name, expected, cache, release=None):
     if len(matches) != 1:
         raise ValueError(f"Native asset is not unique: {repository}/{tag}/{name}")
     asset = matches[0]
-    if asset.get("digest") != f"sha256:{expected}" or not 0 < asset.get("size", 0) <= 64 * 1024**2:
+    if asset.get("digest") not in (None, f"sha256:{expected}") or not 0 < asset.get("size", 0) <= (512 if repository in {"gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "snapetech-org/mpv-build", "lg-flutter-webos/ndk"} else 64) * 1024**2:
         raise ValueError(f"Upstream native asset does not match its independent pin: {name}")
     failure = None
     for attempt in range(3):
@@ -178,20 +179,162 @@ os.execv(config["curl"], [config["curl"], *args])
     print(f"Pinned libdovi curl cache: {wrapper_dir}", flush=True)
 
 
+
+# Same PDFium release selected by locked pdfium_dart 0.4.0. These are independent
+# archive digests, rather than trusting an HTTP response or an existing output.
+PDFIUM_PINS = {
+    "android-arm": "bb9250eefb33343f56f27f7e60c81ab3236d932c40e21557bf02ca4c276eb832",
+    "android-arm64": "f51539cadeb5135534305b8bdf8685ce2fbe9991dbbc5b35f553108411b9ed14",
+    "android-x64": "23faaf6f993a39524d9dc7fafbb760e295f8bd5e9ffa46139bad2299fb5c80f3",
+    "linux-arm64": "1682079aae24d73fcfb4f1ae115dd7b661780ad31ad43c8804da2d518dc546e8",
+    "linux-x64": "e76e0a37aefb843d56f04657475ce612157021b1ebc53d801f2fbfcc537ccf64",
+    "mac-arm64": "f9bbf1ebdc459e5f5ff25b2d457cc21db55ebfc0cf3d89fc1b90ce5445dac394",
+    "mac-x64": "b31565aacda1f84393cd98438b06b49f21124888785e7dd1ddf015fa4406bd80",
+    "win-arm64": "fa52ad62562a7bbe258c19fbf12adb794af2c204daba52a088ac1315a9968211",
+    "win-x64": "2e7af12674ac3716cb0e20369bb9fb269ceadfa2f0b0597097a520e6834175a0",
+}
+
+
+def prepare_pdfium(root, platform, arch, cache):
+    config_path = root / ".dart_tool/package_config.json"
+    config = json.loads(config_path.read_text())
+    entry = next(item for item in config["packages"] if item["name"] == "pdfium_dart")
+    uri = urllib.parse.urlparse(urllib.parse.urljoin(config_path.as_uri(), entry["rootUri"]))
+    if uri.scheme != "file" or uri.netloc:
+        raise ValueError("PDFium must resolve to the locked local pub cache")
+    package = Path(urllib.request.url2pathname(uri.path))
+    hook = (package / "hook/build.dart").read_text()
+    if "const _pdfiumRelease = 'chromium%2F7811';" not in hook:
+        raise ValueError("PDFium release changed; review its archive pins")
+    if platform in {"ios", "tvos"}:
+        targets = ["mac-arm64"]
+    elif platform == "macos":
+        targets = ["mac-arm64", "mac-x64"]
+    elif platform == "android":
+        targets = ["android-arm", "android-arm64", "android-x64", "linux-x64"]
+    else:
+        targets = [f"{'win' if platform == 'windows' else 'linux'}-{arch}"]
+    for target in targets:
+        archive = pinned_asset("bblanchon/pdfium-binaries", "chromium%2F7811",
+                               f"pdfium-{target}.tgz", PDFIUM_PINS[target], cache)
+        filename = "pdfium.dll" if target.startswith("win-") else "libpdfium.dylib" if target.startswith("mac-") else "libpdfium.so"
+        member_path = f"{'bin' if target.startswith('win-') else 'lib'}/{filename}"
+        destination = root / ".dart_tool/hooks_runner/shared/pdfium_dart/build/chromium_7811" / target / filename
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if destination.is_symlink():
+            raise ValueError("Refusing linked PDFium output")
+        with tarfile.open(archive, "r:gz") as bundle:
+            matches = [item for item in bundle.getmembers() if item.name == member_path]
+            if len(matches) != 1 or not matches[0].isfile() or not 0 < matches[0].size < 256 * 1024**2:
+                raise ValueError("Pinned PDFium archive has no unique regular library")
+            with bundle.extractfile(matches[0]) as source, destination.open("wb") as output:
+                shutil.copyfileobj(source, output)
+
+
+def base36(value):
+    result = ""
+    while value:
+        value, remainder = divmod(value, 36)
+        result = "0123456789abcdefghijklmnopqrstuvwxyz"[remainder] + result
+    return result or "0"
+
+
+def prepare_gradle(root, cache):
+    properties = (root / "android/gradle/wrapper/gradle-wrapper.properties").read_text()
+    url = re.search(r"(?m)^distributionUrl=(.+)$", properties)[1].replace("\\:", ":")
+    digest = re.search(r"(?m)^distributionSha256Sum=([a-f0-9]{64})$", properties)[1]
+    match = re.fullmatch(r"https://services\.gradle\.org/distributions/gradle-([0-9.]+)-all\.zip", url)
+    if not match:
+        raise ValueError("Unreviewed Gradle distribution URL")
+    version = match[1]
+    # Gradle Wrapper uses the base-36 MD5 of its unchanged distribution URL.
+    url_hash = base36(int.from_bytes(hashlib.md5(url.encode()).digest(), "big"))
+    home = Path(os.environ.get("GRADLE_USER_HOME", str(Path.home() / ".gradle")))
+    folder = home / "wrapper/dists" / f"gradle-{version}-all" / url_hash
+    target = folder / f"gradle-{version}-all.zip"
+    if target.with_suffix(".zip.ok").is_file() and (folder / f"gradle-{version}/bin/gradle").is_file():
+        return  # Preserve a distribution already installed by the original Wrapper.
+    archive = pinned_asset("gradle/gradle-distributions", f"v{version}", target.name, digest, cache)
+    folder.mkdir(parents=True, exist_ok=True)
+    if target.is_symlink():
+        raise ValueError("Refusing linked Gradle archive")
+    shutil.copyfile(archive, target)  # Original Wrapper still verifies and extracts it.
+
+
+def prepare_github_url(url, expected, destination, cache):
+    match = re.fullmatch(r"https://github\.com/([^/]+/[^/]+)/releases/download/([^/]+)/([^/]+)", url)
+    if not match:
+        raise ValueError("Expected a pinned GitHub release asset")
+    repository, tag, name = match.groups()
+    source = pinned_asset(repository, tag, name, expected, cache)
+    if destination.is_symlink():
+        raise ValueError("Refusing linked pinned download output")
+    shutil.copyfile(source, destination)
+
+
+def prepare_cmake_downloads(root, platform, arch, cache):
+    if platform == "linux":
+        deps = root / "build/linux" / arch / "release/_deps"
+        files = [root / "packages/plezy_torrent/src/CMakeLists.txt", root / "linux/CMakeLists.txt"]
+    elif platform == "android":
+        deps = Path(os.environ["RUNNER_TEMP"]) / "pleazyng-cmake-sources"
+        files = [root / "packages/plezy_torrent/src/CMakeLists.txt"]
+    else:
+        raise ValueError("CMake archive preparation supports Linux and Android")
+    for source in files:
+        declarations = re.findall(r"FetchContent_Declare\(\s*(\w+)\s+URL\s+(https://github\.com/\S+)\s+URL_HASH SHA256=([a-f0-9]{64})", source.read_text())
+        if not declarations:
+            raise ValueError(f"No pinned FetchContent inputs in {source}")
+        for name, url, digest in declarations:
+            basename = url.rsplit("/", 1)[1]
+            folder = deps / f"{name}-subbuild/{name}-populate-prefix/src"
+            folder.mkdir(parents=True, exist_ok=True)
+            archive = folder / basename
+            prepare_github_url(url, digest, archive, cache)
+            if platform == "android":
+                target = deps / f"{name}-source"
+                if target.exists():
+                    raise ValueError(f"Refusing to replace existing native sources: {target}")
+                with tempfile.TemporaryDirectory(prefix=f"{name}-extract-", dir=deps) as temporary:
+                    with tarfile.open(archive) as bundle:
+                        bundle.extractall(temporary, filter="data")
+                    roots = list(Path(temporary).iterdir())
+                    if len(roots) != 1 or not roots[0].is_dir() or roots[0].is_symlink():
+                        raise ValueError("Native archive needs a single source directory")
+                    roots[0].rename(target)
+                with open(os.environ["GITHUB_ENV"], "a") as stream:
+                    stream.write(f"PLEZYNG_CMAKE_SOURCE_{name.upper()}={target.resolve()}\n")
+
+
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, default=Path.cwd())
-    parser.add_argument("--cache-dir", type=Path, default=Path.home() / ".cache/pleazyng-native-downloads")
+    parser.add_argument("--cache-dir", type=Path, default=Path(os.environ.get("PLEAZYNG_NATIVE_DOWNLOAD_CACHE", str(Path.home() / ".cache/pleazyng-native-downloads"))))
     parser.add_argument("--sqlite-platform", choices=("android", "ios", "tvos", "macos", "windows", "linux"))
     parser.add_argument("--appimage-runtime", type=Path)
+    parser.add_argument("--github-url")
+    parser.add_argument("--expected-sha")
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--arch", choices=("x64", "arm64"))
     parser.add_argument("--libdovi", action="store_true")
+    parser.add_argument("--cmake-deps", action="store_true")
     parser.add_argument("--curl-wrapper-dir", type=Path)
     args = parser.parse_args()
-    if not args.sqlite_platform and not args.appimage_runtime:
+    if not args.sqlite_platform and not args.appimage_runtime and not args.github_url:
         parser.error("Specify --sqlite-platform or --appimage-runtime")
     if args.sqlite_platform:
         prepare_sqlite(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
+        prepare_pdfium(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
+        if args.sqlite_platform == "android":
+            prepare_gradle(args.project_root.resolve(), args.cache_dir.resolve())
+    if args.cmake_deps:
+        prepare_cmake_downloads(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
+    if args.github_url:
+        if not args.expected_sha or not args.output:
+            parser.error("Pinned GitHub downloads require --expected-sha and --output")
+        prepare_github_url(args.github_url, args.expected_sha, args.output, args.cache_dir.resolve())
     if args.appimage_runtime:
         # Pin the runtime independently; never let appimagetool fetch a rolling binary.
         source = pinned_asset("AppImage/type2-runtime", "continuous", "runtime-x86_64",

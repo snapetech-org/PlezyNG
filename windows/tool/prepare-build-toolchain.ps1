@@ -58,7 +58,14 @@ function Get-PinnedDownload($Pin) {
         New-Item -ItemType Directory -Path $downloadRoot -Force | Out-Null
         $temporary = "$destination.partial-$([guid]::NewGuid().ToString('N')).exe"
         try {
-            Invoke-WebRequest -Uri $Pin.url -OutFile $temporary -MaximumRedirection 5 -TimeoutSec 180 -MaximumRetryCount 3 -RetryIntervalSec 2
+            try {
+                Invoke-WebRequest -Uri $Pin.url -OutFile $temporary -MaximumRedirection 5 -TimeoutSec 180 -MaximumRetryCount 3 -RetryIntervalSec 2
+            } catch {
+                if (-not $env:GH_TOKEN -or ([uri]$Pin.url).Host -ne 'github.com') { throw }
+                $downloadHelper = Join-Path $PSScriptRoot '..\..\scripts\prepare_native_downloads.py'
+                python $downloadHelper --github-url $Pin.url --expected-sha $Pin.sha256 --output $temporary
+                if ($LASTEXITCODE -ne 0) { throw 'Verified Windows tool download failed' }
+            }
             Assert-PinnedFile $temporary $Pin
             Move-Item -LiteralPath $temporary -Destination $destination
         } catch {

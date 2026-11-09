@@ -18,3 +18,19 @@ gradle.beforeProject { project ->
         maven { name = 'PleazyngCentralMirror'; url = uri(centralMirror) }
     }
 }
+
+// Only share verified source trees. Keep CMake binary directories private to
+// each ABI; sharing FETCHCONTENT_BASE_DIR would mix architecture outputs.
+gradle.beforeProject { project ->
+    project.plugins.withId('com.android.library') {
+        if (project.name == 'plezy_torrent') {
+            ['PLEZY_BOOST', 'LIBTORRENT'].each { dependency ->
+                def source = System.getenv("PLEZYNG_CMAKE_SOURCE_${dependency}")
+                if (source) {
+                    project.extensions.getByName('android').defaultConfig.externalNativeBuild.cmake.arguments(
+                        "-DFETCHCONTENT_SOURCE_DIR_${dependency}=${source}")
+                }
+            }
+        }
+    }
+}

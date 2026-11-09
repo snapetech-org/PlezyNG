@@ -124,7 +124,23 @@ those bytes again. Android's task-local curl wrapper serves only the four exact
 pinned libdovi download commands and delegates every other invocation. AppImage
 uses an independently checksum-pinned runtime via `--runtime-file` instead of an
 implicit unverified rolling download. Never weaken hashes to accept an HTTP
-error body. The commit/CI guards also run all webOS packaging tests, including
+error body. Older GitHub assets may lack an API digest: their independent source
+pin and downloaded full SHA-256 remain mandatory; a conflicting API digest is
+always rejected. PDFium retains the locked package's chromium/7811 release and
+uses independently pinned archive hashes before extracting the one regular
+library. Gradle keeps its original URL, version and SHA; prefetch stages its ZIP
+in the Wrapper's normal URL-keyed cache, then the original Wrapper verifies and
+extracts it. Never fabricate the Wrapper's completion marker.
+
+Linux's pinned CMake archives are staged in their normal download directories;
+CMake retains URL_HASH verification/extraction. Android shares verified source
+trees through FETCHCONTENT_SOURCE_DIR overrides in the task's Gradle init policy.
+Its native binary directories remain private to each ABI; do not share
+FETCHCONTENT_BASE_DIR across Android architectures. Windows's existing pinned
+source downloaders retain Schannel and full hash verification, with API fallback
+on transport failure; executable tools still require Authenticode. The pinned
+patched engine and webOS toolchains use the same API verifier without changing
+versions or signatures. The commit/CI guards also run all webOS packaging tests, including
 canonical and historical repository provenance URLs.
 
 ```sh

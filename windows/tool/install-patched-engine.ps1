@@ -60,7 +60,9 @@ $zip = Join-Path ([System.IO.Path]::GetTempPath()) 'flutter-plezy-windows.zip'
 # makes large downloads crawl; silence it.
 $ProgressPreference = 'SilentlyContinue'
 Write-Output "Downloading patched engine from $Url ..."
-Invoke-WebRequest -Uri $Url -OutFile $zip
+$downloadHelper = Join-Path $PSScriptRoot '..\..\scripts\prepare_native_downloads.py'
+python $downloadHelper --github-url $Url --expected-sha $Sha256 --output $zip
+if ($LASTEXITCODE -ne 0) { throw 'Verified patched engine download failed' }
 
 $actual = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
 if ($actual -ne $Sha256.ToLower()) {

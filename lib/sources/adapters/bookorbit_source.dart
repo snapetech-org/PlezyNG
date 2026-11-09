@@ -80,8 +80,10 @@ class BookOrbitSourceAdapter extends SourceAdapter {
   SourceCapabilities get capabilities => const SourceCapabilities(search: true, audioProgress: true);
 
   static const _audio = {'m4b', 'mp3', 'm4a', 'opus', 'ogg', 'flac'};
-  static const _comic = {'cbz', 'cbr', 'cb7', 'cbx'};
-  static const _ebook = {'epub', 'kepub', 'pdf', 'djvu', 'mobi', 'azw', 'azw3', 'fb2'};
+  // These are the formats the Pleazyng reader can open. BookOrbit can retain
+  // additional formats in its library without showing an unusable Play/Read action.
+  static const _comic = {'cbz'};
+  static const _ebook = {'epub', 'kepub', 'pdf'};
 
   PublicationFile? _file(Map<String, dynamic> row, int bookId, {String? assetId, int? durationMs}) {
     final id = sourceInt(row['id']);
@@ -126,6 +128,7 @@ class BookOrbitSourceAdapter extends SourceAdapter {
   SourceEntry _entry(
     Map<String, dynamic> row, {
     Map<int, Map<String, dynamic>> assets = const {},
+    List<BookChapter> chapters = const [],
     SourceEntry? fallback,
   }) {
     final id = sourceInt(row['id']);
@@ -144,8 +147,22 @@ class BookOrbitSourceAdapter extends SourceAdapter {
         )
         .whereType<PublicationFile>()
         .toList();
-    final hasAudio = files.any((file) => _audio.contains(file.name.split('.').last.toLowerCase()));
-    final hasComic = files.any((file) => _comic.contains(file.name.split('.').last.toLowerCase()));
+    // BookDetail.files is not guaranteed to use the audiobook track order.
+    // The manifest sequence is also the order used by BookOrbit progress.
+    if (assets.isNotEmpty) {
+      files.sort((a, b) {
+        final aId = sourceInt(sourceMap(jsonDecode(a.id))['file']);
+        final bId = sourceInt(sourceMap(jsonDecode(b.id))['file']);
+        final aSequence = sourceInt(assets[aId]?['sequence']);
+        final bSequence = sourceInt(assets[bId]?['sequence']);
+        if (aSequence == null && bSequence == null) return 0;
+        if (aSequence == null) return -1;
+        if (bSequence == null) return 1;
+        return aSequence.compareTo(bSequence);
+      });
+    }
+    final hasAudio = files.any((file) => file.kind == SourceItemKind.audiobook || file.kind == SourceItemKind.music);
+    final hasComic = files.any((file) => file.kind == SourceItemKind.comic);
     final providerIds = sourceMap(row['providerIds']);
     final seriesIndex = row['seriesIndex'];
     final coverPresent = row.containsKey('coverSource')
@@ -174,6 +191,7 @@ class BookOrbitSourceAdapter extends SourceAdapter {
       language: row['language'] as String? ?? fallback?.language ?? '',
       coverId: coverPresent ? '$id' : null,
       files: files,
+      chapters: chapters.isNotEmpty ? chapters : fallback?.chapters ?? const [],
       releaseYear: sourceInt(row['publishedYear']) ?? fallback?.releaseYear,
       genres: row.containsKey('genres')
           ? sourceList(row['genres']).whereType<String>().toList()
@@ -233,7 +251,20 @@ class BookOrbitSourceAdapter extends SourceAdapter {
       for (final value in sourceList(manifest['assets']))
         if (sourceInt(sourceMap(value)['fileId']) != null) sourceInt(sourceMap(value)['fileId'])!: sourceMap(value),
     };
-    return _entry(book, assets: assets, fallback: entry);
+    final chapters =
+        sourceList(manifest['chapters'])
+            .map(sourceMap)
+            .map((chapter) {
+              final start = sourceInt(chapter['startMs']);
+              final end = sourceInt(chapter['endMs']);
+              final title = chapter['title'];
+              if (start == null || end == null || end <= start || title is! String || title.trim().isEmpty) return null;
+              return BookChapter(title: title, startMs: start, endMs: end);
+            })
+            .whereType<BookChapter>()
+            .toList()
+          ..sort((a, b) => a.startMs.compareTo(b.startMs));
+    return _entry(book, assets: assets, chapters: chapters, fallback: entry);
   }
 
   @override
@@ -244,6 +275,39 @@ class BookOrbitSourceAdapter extends SourceAdapter {
       throw const SourceException(SourceFailure.invalidData);
     }
     return ContentLease(url('api/v1/books/$id/cover'), headers: {'Authorization': 'Bearer ${await _accessToken()}'});
+  }
+
+  @override
+  Future<List<int>?> coverBytes(SourceEntry entry) async {
+    if (entry.coverId == null) return null;
+    Future<List<int>> fetch() async {
+      final lease = (await cover(entry))!;
+      final response = await transport.send('GET', lease.uri, headers: lease.headers);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        await response.stream.listen(null).cancel();
+        SourceTransport.check(response.statusCode);
+      }
+      if ((response.contentLength ?? 0) > 8 * 1024 * 1024) {
+        await response.stream.listen(null).cancel();
+        throw const SourceException(SourceFailure.invalidData);
+      }
+      final bytes = <int>[];
+      await for (final chunk in response.stream) {
+        if (bytes.length + chunk.length > 8 * 1024 * 1024) {
+          throw const SourceException(SourceFailure.invalidData);
+        }
+        bytes.addAll(chunk);
+      }
+      return bytes;
+    }
+
+    try {
+      return await fetch();
+    } on SourceException catch (error) {
+      if (error.status != 401) rethrow;
+      await refreshAuthorization();
+      return fetch();
+    }
   }
 
   @override
@@ -283,14 +347,22 @@ class BookOrbitSourceAdapter extends SourceAdapter {
     final response = await _text('GET', 'api/v1/books/$id/audio-progress');
     if (response == 'null') return null;
     final row = sourceMap(jsonDecode(response));
+    final fileId = sourceInt(row['currentFileId']);
+    final index = entry.audio.indexWhere((file) => sourceInt(sourceMap(jsonDecode(file.id))['file']) == fileId);
+    if (index < 0) return null; // A removed track cannot safely map onto another one.
     final seconds = (row['positionSeconds'] as num?)?.toDouble() ?? 0;
+    if (!seconds.isFinite || seconds < 0) throw const SourceException(SourceFailure.invalidData);
+    final filePositionMs = (seconds * 1000).round();
+    final elapsedBefore = entry.audio.take(index).fold<int>(0, (elapsed, file) => elapsed + (file.durationMs ?? 0));
+    final percentage = ((row['percentage'] as num?)?.toDouble() ?? 0).clamp(0.0, 100.0);
+    final capturedAt = DateTime.tryParse('${row['capturedAt'] ?? ''}');
     return local.copyWith(
-      positionMs: (seconds * 1000).round(),
-      filePositionMs: (seconds * 1000).round(),
-      fileIndex: entry.audio
-          .indexWhere((file) => sourceInt(sourceMap(jsonDecode(file.id))['file']) == sourceInt(row['currentFileId']))
-          .clamp(0, entry.audio.length - 1),
-      fraction: ((row['percentage'] as num?)?.toDouble() ?? 0) / 100,
+      positionMs: elapsedBefore + filePositionMs,
+      filePositionMs: filePositionMs,
+      fileIndex: index,
+      fraction: percentage / 100,
+      finished: percentage >= 100,
+      updatedAt: capturedAt?.millisecondsSinceEpoch,
       session: 'bookorbit',
     );
   }

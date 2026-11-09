@@ -535,6 +535,13 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
     }
   }
 
+  Uri? _bookOrbitPage(FileSource? source) {
+    if (source?.kind != FileSourceKind.bookorbit || int.tryParse(_entry.id) == null) return null;
+    final base = Uri.tryParse(source!.endpoint);
+    if (base == null || !{'http', 'https'}.contains(base.scheme) || base.host.isEmpty) return null;
+    return (source.endpoint.endsWith('/') ? base : Uri.parse('${source.endpoint}/')).resolve('book/${_entry.id}');
+  }
+
   Future<void> _play(List<PublicationFile> files) async {
     if (files.isEmpty) {
       return;
@@ -761,6 +768,7 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
         .toList(growable: false);
     final hasTrakt = context.watch<TrackersProvider>().traktCatalogClient != null;
     final source = context.watch<SourceController>().sources.where((item) => item.id == _entry.sourceId).firstOrNull;
+    final bookOrbitPage = _bookOrbitPage(source);
     final automaticMetadataEnabled = source?.options['onlineMetadata'] == 'true';
     return FocusedScrollScaffold(
       title: Text(_entry.displayTitle),
@@ -920,6 +928,19 @@ class _SourceDetailScreenState extends State<SourceDetailScreen> {
                                     onPressed: () => sourceAction(context, () => _play(audio)),
                                     icon: const AppIcon(Symbols.headphones_rounded),
                                     label: Text(t.fileSources.listen),
+                                  ),
+                                if (bookOrbitPage != null)
+                                  Tooltip(
+                                    message: t.sourceSetup.bookorbitDetailHelp,
+                                    child: OutlinedButton.icon(
+                                      onPressed: () => sourceAction(context, () async {
+                                        if (!await launchUrl(bookOrbitPage, mode: LaunchMode.externalApplication)) {
+                                          throw const SourceException(SourceFailure.unavailable);
+                                        }
+                                      }),
+                                      icon: const AppIcon(Symbols.open_in_new_rounded),
+                                      label: Text(t.sourceSetup.bookorbitOpen),
+                                    ),
                                   ),
                                 if (_entry.kind == SourceItemKind.video && _entry.files.any((file) => !file.sampleOnly))
                                   FilledButton.icon(

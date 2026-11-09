@@ -2,6 +2,7 @@
 #pragma once
 #include <cstdio>
 #include <filesystem>
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@
 #elif defined(__linux__)
 #include <fcntl.h>
 #include <linux/audit.h>
+#include <linux/capability.h>
 #include <linux/filter.h>
 #include <linux/landlock.h>
 #include <linux/seccomp.h>
@@ -33,6 +35,12 @@ namespace plezy::retro {
 #if defined(__linux__) && !defined(__ANDROID__)
 // Kept independently testable: this complements, never replaces, Landlock.
 inline void RestrictLinuxSyscalls() {
+  // An app started with inherited or ambient capabilities must not pass those
+  // privileges to untrusted core code. NO_NEW_PRIVS alone does not remove them.
+  __user_cap_header_struct capabilityHeader{_LINUX_CAPABILITY_VERSION_3, 0};
+  __user_cap_data_struct capabilities[2]{};
+  if (prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_CLEAR_ALL, 0, 0, 0) || syscall(SYS_capset, &capabilityHeader, capabilities))
+    throw std::runtime_error("Could not remove emulator capabilities");
   // Landlock does not cover every metadata syscall. Deny metadata mutations,
   // networking, process introspection, and new executable code.
   std::vector<sock_filter> filter;
@@ -81,6 +89,14 @@ inline void RestrictLinuxSyscalls() {
         SYS_add_key,
         SYS_request_key,
         SYS_userfaultfd,
+        SYS_ioctl,
+        SYS_flock,
+        SYS_capset,
+        SYS_inotify_init1,
+        SYS_inotify_add_watch,
+        SYS_inotify_rm_watch,
+        SYS_fanotify_init,
+        SYS_fanotify_mark,
         SYS_fchmod,
         SYS_fchmodat,
         SYS_fchown,
@@ -172,6 +188,9 @@ inline void RestrictLinuxSyscalls() {
 #ifdef SYS_fork
   deny(SYS_fork);
 #endif
+#ifdef SYS_inotify_init
+  deny(SYS_inotify_init);
+#endif
 #ifdef SYS_vfork
   deny(SYS_vfork);
 #endif
@@ -188,6 +207,17 @@ inline void RestrictLinuxSyscalls() {
   // boundary only after reviewing a new call's arguments and sandbox effects.
   filter.push_back(BPF_JUMP(BPF_JMP | BPF_JGT | BPF_K, SYS_rseq, 0, 1));
   stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | ENOSYS);
+  // F_SETOWN/F_SETOWN_EX and F_SETSIG can target another same-UID process with
+  // SIGIO without a signal syscall. Leases and locks can also affect the app.
+  // Permit only descriptor duplication and ordinary descriptor/status flags.
+  constexpr uint32_t descriptorCommands[]{F_DUPFD, F_DUPFD_CLOEXEC, F_GETFD, F_SETFD, F_GETFL, F_SETFL};
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_fcntl, 0, 2 + 2 * std::size(descriptorCommands)));
+  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, args[1]));
+  for (const auto command : descriptorCommands) {
+    filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, command, 0, 1));
+    stmt(BPF_RET | BPF_K, SECCOMP_RET_ALLOW);
+  }
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | EPERM);
   // glibc uses prlimit64 for this process's resource limits. The same-UID
   // parent must never be addressable through that API, even for a query.
   filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_prlimit64, 0, 5));

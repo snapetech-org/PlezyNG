@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Close Linux emulator sandbox gaps in shared IPC and newer metadata syscalls, including when compiled with older kernel headers. Preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
+- Close Linux emulator sandbox gaps in shared IPC, descriptor signal ownership and newer metadata syscalls, including when compiled with older kernel headers. Remove inherited capabilities, preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
 
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.
 

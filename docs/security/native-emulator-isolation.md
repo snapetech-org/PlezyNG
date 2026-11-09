@@ -29,7 +29,12 @@ rest of the app.
 
 The Linux syscall filter also denies shared System V semaphore operations,
 POSIX message queues, extended-attribute reads and cross-process scheduling or
-memory controls. Syscalls beyond the reviewed legacy range (through `rseq` on
+memory controls. The worker removes effective, permitted, inheritable and
+ambient capabilities before loading a core. Device controls, filesystem watches,
+locks and descriptor ownership commands are denied; `fcntl` permits only
+descriptor duplication and ordinary descriptor/status flags. This prevents
+asynchronous descriptor notifications from targeting the parent through a path
+other than a signal syscall. Syscalls beyond the reviewed legacy range (through `rseq` on
 x86_64 and arm64) return `ENOSYS` unless explicitly rejected earlier. This keeps
 new metadata APIs, including `fchmodat2` and the `*xattrat` family, from bypassing
 restrictions when the app was compiled against older kernel headers. Library

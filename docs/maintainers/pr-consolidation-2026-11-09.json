@@ -851,5 +851,189 @@
     "tag": "appcast",
     "commit": "e0ba39dba7aa387c7a8341fb384d5178975f3986",
     "mutable": false
+  },
+  "additional_android_application_verification": {
+    "source_commit": "74e8d63d2",
+    "version": "3.0.19",
+    "variant": "debug",
+    "kotlin_compilation": "passed",
+    "assemble": "passed",
+    "package_verification": {
+      "schema": 1,
+      "status": "passed",
+      "package": "app-debug.apk",
+      "sha256": "57a1351734e1ad392370f6a91f46d551663326569ea9eda591c3ceaa1df8171a",
+      "embeddedEnabled": true,
+      "expectedAbis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86_64"
+      ],
+      "artifacts": [
+        {
+          "abi": "arm64-v8a",
+          "file": "lib/arm64-v8a/libplezy_steam.so",
+          "sha256": "8ceb635fe57f2922c6c631491ee6005140888cfafffdc65d6b7ca2934a4754e9",
+          "bytes": 5610920,
+          "jniExportsChecked": 43,
+          "needed": [
+            "libandroid.so",
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "liblog.so",
+            "libm.so"
+          ]
+        },
+        {
+          "abi": "armeabi-v7a",
+          "file": "lib/armeabi-v7a/libplezy_steam.so",
+          "sha256": "c9cdb350c8ba1803d640fccd160856a9c0b5d8858f6dacacfbaea09b86b653d6",
+          "bytes": 3455840,
+          "jniExportsChecked": 43,
+          "needed": [
+            "libandroid.so",
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "liblog.so",
+            "libm.so"
+          ]
+        },
+        {
+          "abi": "x86_64",
+          "file": "lib/x86_64/libplezy_steam.so",
+          "sha256": "cb8ae2a4693b5e25a08eb798608211d7dc40bc4497bd5c996f6e4fd0aaee83e8",
+          "bytes": 5439640,
+          "jniExportsChecked": 43,
+          "needed": [
+            "libandroid.so",
+            "libc++_shared.so",
+            "libc.so",
+            "libdl.so",
+            "liblog.so",
+            "libm.so"
+          ]
+        }
+      ],
+      "rommArtifacts": [
+        {
+          "file": "lib/arm64-v8a/libfceumm_libretro.so",
+          "abi": "arm64-v8a",
+          "sha256": "c1797897dedd3d0aecb1a5d215fafe1651ce1ea1933c5c082768279f4e151273",
+          "exportsChecked": 20,
+          "bytes": 4871592
+        },
+        {
+          "file": "lib/arm64-v8a/libgambatte_libretro.so",
+          "abi": "arm64-v8a",
+          "sha256": "e8b0eed8ea22d347ffb3007e15812d781204ca285a79302c60a16f65f6d57546",
+          "exportsChecked": 20,
+          "bytes": 3537064
+        },
+        {
+          "file": "lib/arm64-v8a/libmgba_libretro.so",
+          "abi": "arm64-v8a",
+          "sha256": "f5d1c3656e25e36e20300ffe57b57010ea645779fd52d3e149a4808eacd36366",
+          "exportsChecked": 20,
+          "bytes": 3282128
+        },
+        {
+          "file": "lib/arm64-v8a/libplezy_retro.so",
+          "abi": "arm64-v8a",
+          "sha256": "477ddf09e14ea05c7d8eb8cf69541bcba2ee7fccd90f23d9f32d1f670abe2d16",
+          "exportsChecked": 22,
+          "bytes": 2078040
+        },
+        {
+          "file": "lib/arm64-v8a/libplezy_retro_worker.so",
+          "abi": "arm64-v8a",
+          "sha256": "0723970ead9a4851d3dd1a1b16e036313c3c0e2b91f22b88ae8dee0b6d81a65d",
+          "exportsChecked": 1,
+          "bytes": 1011736
+        },
+        {
+          "file": "lib/armeabi-v7a/libfceumm_libretro.so",
+          "abi": "armeabi-v7a",
+          "sha256": "5e5cb1731fdc6c8b2143551ec91710bc43be5fd56a6417ad7e398e00bd85e852",
+          "exportsChecked": 20,
+          "bytes": 2600432
+        },
+        {
+          "file": "lib/armeabi-v7a/libgambatte_libretro.so",
+          "abi": "armeabi-v7a",
+          "sha256": "c93bec6283c5a1528141646e6d49db379e1ae50c4cd834992e56092b1cf3f825",
+          "exportsChecked": 20,
+          "bytes": 1816452
+        },
+        {
+          "file": "lib/armeabi-v7a/libmgba_libretro.so",
+          "abi": "armeabi-v7a",
+          "sha256": "33d2bd4f60093606222ae8ad73c2bfedc87bf7a9900b3b601011618453b5471a",
+          "exportsChecked": 20,
+          "bytes": 1789348
+        },
+        {
+          "file": "lib/armeabi-v7a/libplezy_retro.so",
+          "abi": "armeabi-v7a",
+          "sha256": "dbb24b9f4c534ea8bd0e7fb1c5f7895944c15d9939429840a2ff62442ab150e2",
+          "exportsChecked": 22,
+          "bytes": 1330544
+        },
+        {
+          "file": "lib/armeabi-v7a/libplezy_retro_worker.so",
+          "abi": "armeabi-v7a",
+          "sha256": "d75a2a245ec587b93870d211f5e51ed98ca176d483b0dcd8a20b7bf97afecef0",
+          "exportsChecked": 1,
+          "bytes": 618132
+        },
+        {
+          "file": "lib/x86_64/libfceumm_libretro.so",
+          "abi": "x86_64",
+          "sha256": "d3ad81e73be624de9d15e54bc5a09fb9fee10b8be73e32c8a508d5eabbf88912",
+          "exportsChecked": 20,
+          "bytes": 4730960
+        },
+        {
+          "file": "lib/x86_64/libgambatte_libretro.so",
+          "abi": "x86_64",
+          "sha256": "8d34d9fe961c70a43f196640fbed7ec4687307e7cd590f0cc2df3ac88a1c9eb6",
+          "exportsChecked": 20,
+          "bytes": 3500112
+        },
+        {
+          "file": "lib/x86_64/libmgba_libretro.so",
+          "abi": "x86_64",
+          "sha256": "b2371f50b7875d6481766b580cff1308073d91a6d162296e78ddf9552f47d893",
+          "exportsChecked": 20,
+          "bytes": 3301896
+        },
+        {
+          "file": "lib/x86_64/libplezy_retro.so",
+          "abi": "x86_64",
+          "sha256": "53a0a85064a06a2b276df7d86925ba109465e2a531f267d5feb2b1b3a1e346c3",
+          "exportsChecked": 22,
+          "bytes": 2083032
+        },
+        {
+          "file": "lib/x86_64/libplezy_retro_worker.so",
+          "abi": "x86_64",
+          "sha256": "e5d16d8eda3cbe5c2ca8cf9081c861a08a1dffc68b663123b22cfde81641e49c",
+          "exportsChecked": 1,
+          "bytes": 982600
+        }
+      ],
+      "apkAlignmentChecked": true,
+      "deviceTested": false,
+      "signatureVerified": false,
+      "bundleGeneratedApksChecked": false
+    },
+    "device_qualified": false
+  },
+  "hosted_decky_validation": {
+    "url": "https://github.com/snapetech-org/pleazyng/actions/runs/42705515200",
+    "revision": "aa17d7fea800655896a864fa483974aefe395280",
+    "runner_class": "ubuntu-24.04",
+    "status_at_receipt": "queued"
   }
 }

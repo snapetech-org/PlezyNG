@@ -133,10 +133,14 @@ or direct contribution to Pleazyng. See [UPSTREAM_ATTRIBUTION.md](../../../UPSTR
 
 ## Main integration verification, 2026-11-09
 
-Rebased by merge onto the current application/security tree, retained the Android
+Integrated by merge with the current application/security tree, retained the Android
 isolated-core broker alongside engine reuse, and regenerated canonical outputs.
 The merged tree passes all 285 selected database/music/profile/About regressions,
 full Flutter analysis, maintained-source formatting, localization/translation
-checks and isolated generation freshness. A new full Android Kotlin attempt
-reached Gradle but stopped at a pre-existing stale shared Moonlight source cache.
-That cache was preserved; this is not native-car build qualification.
+checks and isolated generation freshness. The first canonical Android attempt stopped at a pre-existing stale shared
+Moonlight source cache, which was preserved. A fresh isolated checkout then
+passed the full application Kotlin compile and assembled the current-main
+3.0.19 debug APK (source `74e8d63d2`). Package checks pass for the actual Flutter
+ABIs arm64-v8a, armeabi-v7a and x86_64, including receiver/worker exports, source
+receipts and 16 KiB alignment. These compile/package results do not establish
+Android Auto host behavior or native-car device qualification.

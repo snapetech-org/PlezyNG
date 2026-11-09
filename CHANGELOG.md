@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Preserve compressed RomM source archives and their receipt hashes inside Android packages by using asset-safe filenames; retire only prior archives verified by their own receipts.
+
+- Package the embedded Android Moonlight and Steam receiver modules in ordinary app builds, including their native libraries and activity/stream implementations. Previously Gradle configured the modules without linking them into the application.
+
+- Scroll Settings QA assertions into view on smaller phones before checking them, then restore the top of the list for deeper navigation checks.
+
 - Prevent Android API 36 Back from navigating twice after keyboard use. While Flutter’s system Back callback is registered, let it own navigation instead of also forwarding synthesized raw Back keys; preserve predictive gestures, IME dismissal, and legacy/root Back handling.
 
 - Retry Apple SwiftPM resolution once from a fresh run-scoped checkout after Xcode 26's internal package-graph insertion crash, while continuing to fail ordinary dependency errors without retrying.

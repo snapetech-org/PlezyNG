@@ -68,10 +68,6 @@ repositories {
     }
     filter { includeModule("edde746", "mpv-android") }
   }
-  exclusiveContent {
-    forRepository { maven { url = uri("https://jitpack.io") } }
-    filter { includeGroup("com.github.cgutman") }
-  }
 }
 // A locally built FEL AAR is selected only by an explicit Gradle property and
 // a matching SHA-256. The Android app and Media3 share FFmpeg from this same
@@ -1322,7 +1318,7 @@ tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.con
 }
 
 dependencies {
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
   // mpv-build's mpv-android library: libmpv, FFmpeg and the JNI glue with
   // its Kotlin API (com.edde746.mpv).
@@ -1355,6 +1351,13 @@ dependencies {
   // Keeping libass in-project lets its static core share the app's native
   // packaging rules.
   implementation(project(":libass"))
+
+  // Settings includes both receivers in ordinary builds. Including a Gradle
+  // project alone does not package its classes, activities, or native libraries.
+  if (rootProject.findProject(":moonlight") != null) {
+    implementation(project(":moonlight"))
+    implementation(project(":steam"))
+  }
 
   testImplementation("junit:junit:4.13.2")
   // Real android.util.* implementations for tests exercising media3 classes

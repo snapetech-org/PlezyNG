@@ -2,12 +2,11 @@
 #pragma once
 #include <algorithm>
 #include <chrono>
-#include <memory>
-#include <thread>
-
 #include <cstdint>
-#include <vector>
+#include <memory>
 #include <stdexcept>
+#include <thread>
+#include <vector>
 #if defined(_WIN32)
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -194,8 +193,7 @@ class BytePipe {
 #endif
   }
   void Write(const std::vector<uint8_t>& bytes, Deadline deadline) {
-    if (bytes.size() > maximum_ + 20)
-      throw std::runtime_error("Visualization message is too large.");
+    if (bytes.size() > maximum_ + 20) throw std::runtime_error("Visualization message is too large.");
 #if defined(_WIN32)
     Transfer(bytes.data(), bytes.size(), deadline);
 #else

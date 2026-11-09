@@ -41,5 +41,6 @@ jobs:
       - name: Compile production host and worker
         shell: bash
         run: |
-          cmake -S native/games/romm -B "$RUNNER_TEMP/romm-native" -DPLEZY_ROMM_BUILD_CORES=OFF -DPLEZY_ROMM_ISOLATED=ON
+          cmake -S native/games/romm -B "$RUNNER_TEMP/romm-native" -DPLEZY_ROMM_BUILD_CORES=OFF -DPLEZY_ROMM_ISOLATED=ON -DPLEZY_ROMM_NATIVE_TESTS=ON
           cmake --build "$RUNNER_TEMP/romm-native" --config Release --parallel 2
+          ctest --test-dir "$RUNNER_TEMP/romm-native" -C Release --output-on-failure

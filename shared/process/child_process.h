@@ -2,12 +2,12 @@
 #pragma once
 #include <array>
 #include <atomic>
-#include <mutex>
-
-#include "byte_pipe.h"
 #include <filesystem>
 #include <functional>
+#include <mutex>
 #include <string>
+
+#include "byte_pipe.h"
 #if defined(_WIN32)
 #include <bcrypt.h>
 #else
@@ -17,8 +17,8 @@
 #include <csignal>
 #if defined(__APPLE__)
 #include <crt_externs.h>
-#include <mach-o/dyld.h>
 #include <libproc.h>
+#include <mach-o/dyld.h>
 #else
 #include <sys/syscall.h>
 extern char** environ;
@@ -184,8 +184,7 @@ inline std::filesystem::path ExecutablePath() {
   _NSGetExecutablePath(nullptr, &size);
   if (!size || size > 32768) throw std::runtime_error("Could not locate the worker helper.");
   std::vector<char> buffer(size);
-  if (_NSGetExecutablePath(buffer.data(), &size) != 0)
-    throw std::runtime_error("Could not locate the worker helper.");
+  if (_NSGetExecutablePath(buffer.data(), &size) != 0) throw std::runtime_error("Could not locate the worker helper.");
   const auto executable = std::filesystem::canonical(buffer.data());
 #else
   std::vector<char> buffer(32768);
@@ -196,9 +195,11 @@ inline std::filesystem::path ExecutablePath() {
 #endif
   return executable;
 }
-inline std::unique_ptr<BytePipe> Spawn(const std::filesystem::path& path, const std::shared_ptr<Control>& control
+inline std::unique_ptr<BytePipe> Spawn(
+    const std::filesystem::path& path, const std::shared_ptr<Control>& control
 #if defined(_WIN32)
-, PSID appContainer = nullptr
+    ,
+    PSID appContainer = nullptr
 #endif
 ) {
   Admit();
@@ -239,13 +240,15 @@ inline std::unique_ptr<BytePipe> Spawn(const std::filesystem::path& path, const 
     throw std::runtime_error("Could not restrict worker handle inheritance.");
   SECURITY_CAPABILITIES capabilities{};
   capabilities.AppContainerSid = appContainer;
-  if (appContainer && !UpdateProcThreadAttribute(attributes, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
-      &capabilities, sizeof(capabilities), nullptr, nullptr))
+  if (appContainer && !UpdateProcThreadAttribute(
+                          attributes, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, &capabilities,
+                          sizeof(capabilities), nullptr, nullptr))
     throw std::runtime_error("Could not restrict worker capabilities");
   control->job = CreateJobObjectW(nullptr, nullptr);
   if (!control->job) throw std::runtime_error("Could not isolate the worker process.");
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
-  limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_PROCESS_MEMORY;
+  limits.BasicLimitInformation.LimitFlags =
+      JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_PROCESS_MEMORY;
   limits.ProcessMemoryLimit = 768 * 1024 * 1024;
   limits.BasicLimitInformation.ActiveProcessLimit = 1;
   if (!SetInformationJobObject(control->job, JobObjectExtendedLimitInformation, &limits, sizeof(limits)))
@@ -262,9 +265,10 @@ inline std::unique_ptr<BytePipe> Spawn(const std::filesystem::path& path, const 
   std::wstring environment = L"SystemRoot=" + std::wstring(windows) + L'\0' + L"WINDIR=" + windows + L'\0' + L'\0';
   if (!CreateProcessW(
           path.c_str(), command.data(), nullptr, nullptr, TRUE,
-          EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED | CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT, environment.data(), path.parent_path().c_str(),
-          &startup.StartupInfo, &process))
-    throw std::runtime_error("Could not launch the worker helper.");
+          EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED | CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT,
+          environment.data(), path.parent_path().c_str(), &startup.StartupInfo, &process))
+    throw std::runtime_error(
+        "Could not launch the worker helper (Windows error " + std::to_string(GetLastError()) + ").");
   control->process = process.hProcess;
   OwnedHandle thread(process.hThread);
   if (!AssignProcessToJobObject(control->job, control->process)) {
@@ -275,8 +279,7 @@ inline std::unique_ptr<BytePipe> Spawn(const std::filesystem::path& path, const 
   return pipe;
 #else
   int descriptors[2];
-  if (socketpair(AF_UNIX, SOCK_STREAM, 0, descriptors) != 0)
-    throw std::runtime_error("Could not create worker IPC.");
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, descriptors) != 0) throw std::runtime_error("Could not create worker IPC.");
   OwnedFd parent(descriptors[0]), original_child(descriptors[1]);
   if (fcntl(parent.Get(), F_SETFD, FD_CLOEXEC) < 0 || fcntl(original_child.Get(), F_SETFD, FD_CLOEXEC) < 0)
     throw std::runtime_error("Could not restrict worker descriptors.");

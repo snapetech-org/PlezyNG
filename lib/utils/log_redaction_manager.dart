@@ -11,18 +11,24 @@ class LogRedactionManager {
   static Object? redactStructured(Object? value) {
     final ancestors = Set<Object>.identity();
     var remaining = 10000;
+    var remainingCharacters = 1024 * 1024;
     Object? visit(Object? item, int depth) {
       if (--remaining < 0 || depth > 20) return '[TRUNCATED]';
       if (item == null || item is num || item is bool) return item;
-      if (item is String) return item.length > 65536 ? '[TRUNCATED]' : redact(item);
+      if (item is String) {
+        remainingCharacters -= item.length;
+        return item.length > 65536 || remainingCharacters < 0 ? '[TRUNCATED]' : redact(item);
+      }
       if (!ancestors.add(item)) return '[CYCLE]';
       try {
         if (item is Map) {
           final result = <String, dynamic>{};
           for (final entry in item.entries.take(1000)) {
+            if (remaining <= 0 || remainingCharacters <= 0) break;
             final key = entry.key;
             if (key is! String) continue;
-            final safeKey = key.length > 1024 ? '[TRUNCATED]' : redact(key);
+            remainingCharacters -= key.length;
+            final safeKey = key.length > 1024 || remainingCharacters < 0 ? '[TRUNCATED]' : redact(key);
             result[safeKey] = _sensitiveKey.hasMatch(key) ? '[REDACTED]' : visit(entry.value, depth + 1);
           }
           return result;
@@ -33,6 +39,7 @@ class LogRedactionManager {
         ancestors.remove(item);
       }
     }
+
     return visit(value, 0);
   }
 

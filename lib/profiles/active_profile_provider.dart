@@ -368,7 +368,8 @@ class ActiveProfileProvider extends ChangeNotifier with DisposableChangeNotifier
   /// PIN; for Plex Home profiles the binder enforces the PIN via
   /// `/home/users/{uuid}/switch` after activation.
   Future<bool> activate(Profile profile, {String? pin}) async {
-    final requestGeneration = _identityMutationGeneration;
+    final requestGeneration = beginIdentityMutationRequest();
+    try {
     if (profile.isLocal && profile.isPinProtected) {
       final hash = profile.pinHash;
       if (pin == null || hash == null || !await verifyLocalProfilePin(profile, pin)) {
@@ -381,11 +382,11 @@ class ActiveProfileProvider extends ChangeNotifier with DisposableChangeNotifier
     if (pin != null && profile.isLocal && isLegacyPinHash(profile.pinHash ?? '')) {
       final upgraded = await computePinHash(pin);
       if (requestGeneration != _identityMutationGeneration) return false;
-      await _registry.upgradePinHash(profile.id, profile.pinHash!, upgraded);
+      await _registry.updatePinHash(profile.id, profile.pinHash!, upgraded);
       if (requestGeneration != _identityMutationGeneration) return false;
       profile = (profile as LocalProfile).copyWith(pinHash: upgraded);
     }
-    return _serializeIdentityMutation<bool>((generation) async {
+    return await _queueIdentityMutation<bool>(requestGeneration, (generation) async {
       if (generation != _identityMutationGeneration) return false;
       final now = DateTime.now();
       await storage.markProfileUsed(profile.id, now);
@@ -419,6 +420,9 @@ class ActiveProfileProvider extends ChangeNotifier with DisposableChangeNotifier
       }
       return true;
     });
+    } finally {
+      finishIdentityMutationRequest(requestGeneration);
+    }
   }
 
   /// Restore the profile that owned the current authenticated session when a

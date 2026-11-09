@@ -9,7 +9,8 @@ import 'comic_document.dart';
 bool sameSourceOrigin(Uri a, Uri b) => a.scheme == b.scheme && a.host == b.host && a.port == b.port;
 
 class SourceTransport {
-  SourceTransport({http.Client? client, this.allowHttp = false, this.requestTimeout = const Duration(seconds: 30)}) : _client = client ?? http.Client();
+  SourceTransport({http.Client? client, this.allowHttp = false, this.requestTimeout = const Duration(seconds: 30)})
+    : _client = client ?? http.Client();
   final http.Client _client;
   final bool allowHttp;
   final Duration requestTimeout;
@@ -44,6 +45,7 @@ class SourceTransport {
       if (!owned.isCompleted) owned.complete();
       _active.remove(owned);
     }
+
     if (abort != null) unawaited(abort.then((_) => cancel(), onError: (Object _) => cancel()));
     var target = uri;
     var requestHeaders = <String, String>{'Accept-Encoding': 'identity', ...headers};
@@ -57,13 +59,18 @@ class SourceTransport {
         if (body is Map<String, String>) request.bodyFields = body;
         final pending = _client.send(request);
         // Dispose a late response even when an injected transport cannot abort.
-        unawaited(pending.then<void>((late) {
-          if (owned.isCompleted) unawaited(late.stream.listen(null).cancel());
-        }, onError: (Object _) {}));
-        final response = await pending.timeout(requestTimeout, onTimeout: () {
-          cancel();
-          throw TimeoutException('Source response headers timed out');
-        });
+        unawaited(
+          pending.then<void>((late) {
+            if (owned.isCompleted) unawaited(late.stream.listen(null).cancel().catchError((Object _) {}));
+          }, onError: (Object _) {}),
+        );
+        final response = await pending.timeout(
+          requestTimeout,
+          onTimeout: () {
+            cancel();
+            throw TimeoutException('Source response headers timed out');
+          },
+        );
         if (owned.isCompleted) throw const SourceException(SourceFailure.cancelled);
         if (!redirects || !const {301, 302, 303, 307, 308}.contains(response.statusCode)) {
           late final StreamController<List<int>> controller;
@@ -82,41 +89,55 @@ class SourceTransport {
               await response.stream.listen(null).cancel();
             }
           }
+
           controller = StreamController<List<int>>(
             onListen: () {
               if (finished || owned.isCompleted) return;
               listened = true;
               unclaimed?.cancel();
-              subscription = response.stream.timeout(requestTimeout).listen(
-                controller.add,
-                onError: (Object error, StackTrace stack) {
-                  controller.addError(error, stack);
-                  unawaited(release());
-                  unawaited(controller.close());
-                },
-                onDone: () {
-                  finished = true;
-                  cancel();
-                  unawaited(controller.close());
-                },
-                cancelOnError: true,
-              );
+              subscription = response.stream
+                  .timeout(requestTimeout)
+                  .listen(
+                    controller.add,
+                    onError: (Object error, StackTrace stack) {
+                      controller.addError(error, stack);
+                      unawaited(release());
+                      unawaited(controller.close());
+                    },
+                    onDone: () {
+                      finished = true;
+                      cancel();
+                      unawaited(controller.close());
+                    },
+                    cancelOnError: true,
+                  );
             },
             onPause: () => subscription?.pause(),
             onResume: () => subscription?.resume(),
             onCancel: release,
           );
           unclaimed = Timer(requestTimeout, cancel);
-          unawaited(owned.future.then((_) async {
-            if (finished) return;
-            controller.addError(const SourceException(SourceFailure.cancelled));
-            await release();
-            unawaited(controller.close());
-          }));
-          return http.StreamedResponse(controller.stream, response.statusCode,
-            contentLength: response.contentLength, request: response.request,
-            headers: response.headers, persistentConnection: response.persistentConnection,
-            isRedirect: response.isRedirect, reasonPhrase: response.reasonPhrase);
+          unawaited(
+            owned.future.then((_) async {
+              if (finished) return;
+              controller.addError(const SourceException(SourceFailure.cancelled));
+              try {
+                await release();
+              } finally {
+                unawaited(controller.close());
+              }
+            }).catchError((Object _) {}),
+          );
+          return http.StreamedResponse(
+            controller.stream,
+            response.statusCode,
+            contentLength: response.contentLength,
+            request: response.request,
+            headers: response.headers,
+            persistentConnection: response.persistentConnection,
+            isRedirect: response.isRedirect,
+            reasonPhrase: response.reasonPhrase,
+          );
         }
         final location = response.headers['location'];
         await response.stream.listen(null).cancel().timeout(const Duration(seconds: 10));
@@ -126,8 +147,11 @@ class SourceTransport {
         if (target.scheme == 'https' && next.scheme != 'https') throw const SourceException(SourceFailure.permission);
         if (!sameSourceOrigin(target, next)) {
           if (method != 'GET' && method != 'HEAD') throw const SourceException(SourceFailure.permission);
-          requestHeaders = Map.fromEntries(requestHeaders.entries.where(
-            (e) => const {'range', 'accept', 'accept-encoding', 'if-range'}.contains(e.key.toLowerCase())));
+          requestHeaders = Map.fromEntries(
+            requestHeaders.entries.where(
+              (e) => const {'range', 'accept', 'accept-encoding', 'if-range'}.contains(e.key.toLowerCase()),
+            ),
+          );
         }
         target = next;
       }

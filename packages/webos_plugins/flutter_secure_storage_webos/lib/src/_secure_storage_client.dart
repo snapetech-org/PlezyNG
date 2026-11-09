@@ -68,10 +68,13 @@ class SecureStorageClient {
       final box = await algorithm.encrypt(utf8.encode(value), secretKey: dataKey, aad: _aad(context, key));
       // webOS keymanager exposes CBC. Use it only to wrap a random data key;
       // plaintext is released only after the independent GCM tag verifies.
-      final wrapped = await encrypt(key, jsonEncode({'context': context, 'key': base64Encode(await dataKey.extractBytes())}));
+      final wrapped =
+          await encrypt(key, jsonEncode({'context': context, 'key': base64Encode(await dataKey.extractBytes())}));
       final payload = base64Encode(utf8.encode(jsonEncode({
-        'wrapped': wrapped, 'nonce': base64Encode(box.nonce),
-        'ciphertext': base64Encode(box.cipherText), 'tag': base64Encode(box.mac.bytes),
+        'wrapped': wrapped,
+        'nonce': base64Encode(box.nonce),
+        'ciphertext': base64Encode(box.cipherText),
+        'tag': base64Encode(box.mac.bytes),
       })));
       return 'v3:$key:$payload';
     } catch (_) {
@@ -107,8 +110,10 @@ class SecureStorageClient {
   String secretKey(String legacyKey, String envelope) {
     if (!envelope.contains(':')) return legacyKey;
     final parts = envelope.split(':');
-    if (parts.length != 3 || !const {'v2', 'v3'}.contains(parts[0]) ||
-        !RegExp(r'^fss_[0-9a-f]{32}$').hasMatch(parts[1]) || parts[2].isEmpty) {
+    if (parts.length != 3 ||
+        !const {'v2', 'v3'}.contains(parts[0]) ||
+        !RegExp(r'^fss_[0-9a-f]{32}$').hasMatch(parts[1]) ||
+        parts[2].isEmpty) {
       throw _corrupt();
     }
     return parts[1];

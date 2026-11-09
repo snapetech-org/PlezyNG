@@ -367,6 +367,7 @@ void main() {
       createdAt: harness.target.createdAt,
     );
 
+    await ProfileRegistry(harness.database).upsert(protectedTarget);
     final pendingProtectedSwitch = switchProfileFromUi(harness.context, protectedTarget);
     await tester.pumpAndSettle();
     expect(find.text('Protected Target'), findsOneWidget);
@@ -384,8 +385,12 @@ void main() {
         await tester.tap(find.text(digit));
       }
     }
-    await tester.pump();
-    await binder.targetBindingStarted.future;
+    // The upgraded PIN KDF yields between work batches. Drive fake timers
+    // while preserving the original held-binding race under test.
+    for (var i = 0; i < 500 && !binder.targetBindingStarted.isCompleted; i++) {
+      await tester.pump(const Duration(milliseconds: 1));
+    }
+    expect(binder.targetBindingStarted.isCompleted, isTrue);
     binder.targetBindingRelease!.complete();
     await binder.rebindStarted.future;
     final restoredProfileId = harness.active.activeId;

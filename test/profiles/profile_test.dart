@@ -119,7 +119,10 @@ void main() {
     test('malformed parameters cannot request unbounded KDF work', () async {
       expect(await verifyPin('1234', 'pbkdf2-sha256:999999999:x:y'), isFalse);
       expect(await verifyPin('1234', 'pbkdf2-sha256:210000:!:!'), isFalse);
-      expect(await verifyPin('unbounded input', 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe'), isFalse);
+      expect(
+        await verifyPin('unbounded input', 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe'),
+        isFalse,
+      );
     });
   });
 }

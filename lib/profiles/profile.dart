@@ -206,7 +206,9 @@ Future<String> computePinHash(String rawPin) async {
   final random = Random.secure();
   final salt = List<int>.generate(16, (_) => random.nextInt(256));
   final key = await cryptography.Pbkdf2(
-    macAlgorithm: cryptography.Hmac.sha256(), iterations: _pinIterations, bits: 256,
+    macAlgorithm: cryptography.Hmac.sha256(),
+    iterations: _pinIterations,
+    bits: 256,
   ).deriveKeyFromPassword(password: rawPin, nonce: salt);
   return '$_pinPrefix:$_pinIterations:${base64Encode(salt)}:${base64Encode(await key.extractBytes())}';
 }
@@ -214,12 +216,14 @@ Future<String> computePinHash(String rawPin) async {
 bool _samePinBytes(List<int> a, List<int> b) {
   if (a.length != b.length) return false;
   var difference = 0;
-  for (var i = 0; i < a.length; i++) { difference |= a[i] ^ b[i]; }
+  for (var i = 0; i < a.length; i++) {
+    difference |= a[i] ^ b[i];
+  }
   return difference == 0;
 }
 
 Future<bool> verifyPin(String rawPin, String hash) async {
-  if (!RegExp(r'^\d{4}$').hasMatch(rawPin)) return false;
+  if (hash.length > 256 || !RegExp(r'^\d{4}$').hasMatch(rawPin)) return false;
   if (isLegacyPinHash(hash)) {
     final digest = sha256.convert(utf8.encode('plezy-app-profile-pin-v1:$rawPin')).toString();
     return _samePinBytes(utf8.encode(digest), utf8.encode(hash));
@@ -231,7 +235,9 @@ Future<bool> verifyPin(String rawPin, String hash) async {
     final expected = base64Decode(parts[3]);
     if (salt.length != 16 || expected.length != 32) return false;
     final key = await cryptography.Pbkdf2(
-      macAlgorithm: cryptography.Hmac.sha256(), iterations: _pinIterations, bits: 256,
+      macAlgorithm: cryptography.Hmac.sha256(),
+      iterations: _pinIterations,
+      bits: 256,
     ).deriveKeyFromPassword(password: rawPin, nonce: salt);
     return _samePinBytes(await key.extractBytes(), expected);
   } on FormatException {

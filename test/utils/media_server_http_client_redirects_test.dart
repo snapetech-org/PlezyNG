@@ -40,12 +40,21 @@ void main() {
     'X-Custom-Secret': 'dummy-private',
   };
 
-  for (final target in ['https://foreign.test/file', 'https://media.test:9443/file', 'http://media.test/file', 'https://user:pass@media.test/file']) {
+  for (final target in [
+    'https://foreign.test/file',
+    'https://media.test:9443/file',
+    'http://media.test/file',
+    'https://user:pass@media.test/file',
+  ]) {
     test('absolute metadata URL cannot carry server credentials to $target', () async {
       var calls = 0;
       final client = MediaServerHttpClient(
-        baseUrl: 'https://media.test', defaultHeaders: secrets,
-        client: MockClient((_) async { calls++; return http.Response('ok', 200); }),
+        baseUrl: 'https://media.test',
+        defaultHeaders: secrets,
+        client: MockClient((_) async {
+          calls++;
+          return http.Response('ok', 200);
+        }),
       );
       addTearDown(client.close);
       await expectLater(client.get(target), throwsA(isA<MediaServerHttpException>()));

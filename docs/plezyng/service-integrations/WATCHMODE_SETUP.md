@@ -38,3 +38,17 @@ The detail action obtains a typed TMDB ID from Plex `Guid`, Plex legacy `guid`, 
 Rows may describe subscription, rental, purchase, free, or TV-provider availability. App and TV deep links are platform-specific and can be absent. The UI only opens HTTPS hosts already present in the app's curated official destination directory; an unknown host is never launched. A provider link may open an app or website, but the provider still controls sign-in, regional eligibility, price, playback, and checkout.
 
 No purchase or playback telemetry is sent by this integration. The exact offer may change after the response is fetched, and an offer row is not verified against a user's account.
+
+
+## Provider budget and concurrent requests
+
+The relay coalesces simultaneous requests for the same title/region into one
+upstream lookup and caches upstream failures for 30 seconds. At most four
+distinct lookups run at once. A process-wide bucket admits ten initial lookups
+and replenishes one per minute; cache hits and joined requests do not spend it.
+Budget exhaustion returns HTTP 429 with Retry-After. A cancelled caller does not
+cancel another caller's shared fetch; that work has its own five-second deadline.
+
+This is a per-process bound, not a billing-account quota guarantee. Replicas and
+restarts multiply the allowance. Match deployment concurrency and provider-side
+hard quotas/alerts to the approved commercial plan before enabling the service.

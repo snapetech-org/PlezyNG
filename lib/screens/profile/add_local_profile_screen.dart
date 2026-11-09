@@ -37,6 +37,8 @@ class _AddLocalProfileScreenState extends State<AddLocalProfileScreen> with Cont
   final _cancelFocus = FocusNode(debugLabel: 'AddLocalProfile:Cancel');
   String? _pinHash;
   bool _saving = false;
+  bool _hashingPin = false;
+  int _pinGeneration = 0;
 
   @override
   void dispose() {
@@ -48,20 +50,29 @@ class _AddLocalProfileScreenState extends State<AddLocalProfileScreen> with Cont
   }
 
   Future<void> _setPin() async {
+    final generation = ++_pinGeneration;
     final pin = await captureAndConfirmPin(
       context,
       onMismatch: (ctx) => showErrorSnackBar(ctx, t.profiles.pinsDontMatch),
     );
-    if (pin == null || !mounted) return;
-    final hash = await computePinHash(pin);
-    if (!mounted) return;
-    setState(() => _pinHash = hash);
+    if (pin == null || !mounted || generation != _pinGeneration) return;
+    setState(() => _hashingPin = true);
+    try {
+      final hash = await computePinHash(pin);
+      if (mounted && generation == _pinGeneration) setState(() => _pinHash = hash);
+    } finally {
+      if (mounted && generation == _pinGeneration) setState(() => _hashingPin = false);
+    }
   }
 
-  void _clearPin() => setState(() => _pinHash = null);
+  void _clearPin() => setState(() {
+    _pinGeneration++;
+    _hashingPin = false;
+    _pinHash = null;
+  });
 
   Future<void> _saveAndContinue() async {
-    if (_saving) return;
+    if (_saving || _hashingPin) return;
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
     setState(() => _saving = true);
@@ -136,10 +147,10 @@ class _AddLocalProfileScreenState extends State<AddLocalProfileScreen> with Cont
               FocusableButton(
                 focusNode: _continueFocus,
                 useBackgroundFocus: true,
-                onPressed: _saving || _nameController.text.trim().isEmpty ? null : _saveAndContinue,
+                onPressed: _saving || _hashingPin || _nameController.text.trim().isEmpty ? null : _saveAndContinue,
                 onNavigateUp: () => (_pinHash == null ? _setPinFocus : _nameFocus).requestFocus(),
                 child: FilledButton(
-                  onPressed: _saving || _nameController.text.trim().isEmpty ? null : _saveAndContinue,
+                  onPressed: _saving || _hashingPin || _nameController.text.trim().isEmpty ? null : _saveAndContinue,
                   child: Text(t.profiles.continueButton),
                 ),
               ),

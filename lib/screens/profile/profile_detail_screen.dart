@@ -64,6 +64,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with Controll
   final _addConnectionFocusNode = FocusNode(debugLabel: 'ProfileDetail:AddConnection');
   final _deleteProfileFocusNode = FocusNode(debugLabel: 'ProfileDetail:DeleteProfile');
   late Profile _profile;
+  int _pinGeneration = 0;
   StreamSubscription<List<Profile>>? _profileSub;
 
   @override
@@ -116,18 +117,20 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with Controll
   }
 
   Future<void> _setPin() async {
+    final generation = ++_pinGeneration;
     final pin = await captureAndConfirmPin(
       context,
       onMismatch: (ctx) => showErrorSnackBar(ctx, t.profiles.pinsDontMatch),
     );
-    if (pin == null || !mounted) return;
+    if (pin == null || !mounted || generation != _pinGeneration) return;
     final profile = _profile;
     if (profile is! LocalProfile) return;
     final hadPin = profile.pinHash != null;
+    final registry = context.read<ProfileRegistry>();
     final hash = await computePinHash(pin);
-    if (!mounted) return;
-    final updated = profile.copyWith(pinHash: hash);
-    await context.read<ProfileRegistry>().upsert(updated);
+    if (!mounted || generation != _pinGeneration) return;
+    await registry.updatePinHash(profile.id, profile.pinHash, hash);
+    final updated = (_profile as LocalProfile).copyWith(pinHash: hash);
     if (!mounted) return;
     setState(() => _profile = updated);
     if (!hadPin) {
@@ -140,10 +143,11 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with Controll
   }
 
   Future<void> _clearPin() async {
+    _pinGeneration++;
     final profile = _profile;
     if (profile is! LocalProfile) return;
     final updated = profile.copyWith(pinHash: null);
-    await context.read<ProfileRegistry>().upsert(updated);
+    await context.read<ProfileRegistry>().updatePinHash(profile.id, profile.pinHash, null);
     if (!mounted) return;
     setState(() => _profile = updated);
     // Reverse swap of _setPin: the row (and the focused Remove button)

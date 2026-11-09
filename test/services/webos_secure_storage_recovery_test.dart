@@ -88,7 +88,8 @@ class _Backend {
         if (!keys.contains(handle.key)) return {'returnValue': false};
         if (handle.encrypting) {
           final plain = utf8.decode(base64Decode(args['data'] as String));
-          final isIndex = plain.startsWith('[') || (plain.startsWith('{') && (jsonDecode(plain) as Map)['context'] == _index);
+          final isIndex =
+              plain.startsWith('[') || (plain.startsWith('{') && (jsonDecode(plain) as Map)['context'] == _index);
           if ((isIndex && indexEncryptionFails) || (!isIndex && valueEncryptionFails)) return {'returnValue': false};
           return {'returnValue': true, 'output': encrypted(handle.key, plain).substring(24)};
         }

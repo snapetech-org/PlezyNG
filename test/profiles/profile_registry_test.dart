@@ -18,6 +18,17 @@ void main() {
   });
 
   group('ProfileRegistry', () {
+    test('PIN update preserves renamed fields and rejects a stale verifier', () async {
+      await registry.upsert(Profile.local(id: 'pin-owner', displayName: 'Original', pinHash: 'old', createdAt: DateTime(2026)));
+      await registry.rename('pin-owner', 'Renamed');
+      await registry.updatePinHash('pin-owner', 'old', 'new');
+      final updated = (await registry.list()).single;
+      expect(updated.displayName, 'Renamed');
+      expect(updated.pinHash, 'new');
+      await expectLater(registry.updatePinHash('pin-owner', 'old', null), throwsStateError);
+      expect((await registry.list()).single.pinHash, 'new');
+    });
+
     test('list is empty initially', () async {
       expect(await registry.list(), isEmpty);
     });

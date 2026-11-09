@@ -87,7 +87,12 @@ class NetworkMediaStreamServer {
     if (server == null || token == null) return const [];
     return [
       for (final address in _addresses)
-        Uri(scheme: isSecure ? 'https' : 'http', host: address, port: server.port, pathSegments: [token, 'index.m3u8']).toString(),
+        Uri(
+          scheme: isSecure ? 'https' : 'http',
+          host: address,
+          port: server.port,
+          pathSegments: [token, 'index.m3u8'],
+        ).toString(),
     ];
   }
 
@@ -128,9 +133,13 @@ class NetworkMediaStreamServer {
       _token = token;
       _server = server;
       server.listen((request) {
-        unawaited(_handle(request).catchError((Object _) async {
-          try { await request.response.close(); } catch (_) {}
-        }));
+        unawaited(
+          _handle(request).catchError((Object _) async {
+            try {
+              await request.response.close();
+            } catch (_) {}
+          }),
+        );
       }, onError: (_) {});
       _hardExpiresAt = DateTime.now().add(maximumLifetime);
       _renewLease();

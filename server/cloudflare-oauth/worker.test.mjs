@@ -224,3 +224,22 @@ test('edge responses carry no-store, referrer, MIME and frame protections', asyn
     assert.match(response.headers.get('Cache-Control'), /no-store/);
   }
 });
+
+
+test('legacy daily admission alarms erase old records without resetting rolling budgets', async () => {
+  const oldStorage = new MemoryStorage();
+  await oldStorage.put('budget', { count: 100, clients: {} });
+  const oldContext = context(oldStorage);
+  const oldObject = new OAuthAdmission(oldContext);
+  await oldContext.ready;
+  await oldObject.alarm();
+  assert.equal(oldStorage.values.size, 0);
+  const rollingStorage = new MemoryStorage();
+  const budget = { tokens: 0, updated: Date.now(), clients: {} };
+  await rollingStorage.put('budget', budget);
+  const rollingContext = context(rollingStorage);
+  const rollingObject = new OAuthAdmission(rollingContext);
+  await rollingContext.ready;
+  await rollingObject.alarm();
+  assert.deepEqual(await rollingStorage.get('budget'), budget);
+});

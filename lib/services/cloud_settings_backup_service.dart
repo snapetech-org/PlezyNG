@@ -17,12 +17,12 @@ import 'storage_service.dart';
 /// The destination contains only the portable settings export: credentials,
 /// server connections, download paths, and history stay local to the device.
 class CloudSettingsBackupService {
-  CloudSettingsBackupService({http.Client? httpClient}) : _http = httpClient ?? http.Client();
+  CloudSettingsBackupService({http.Client? httpClient, this.requestTimeout = const Duration(seconds: 30)}) : _http = httpClient ?? http.Client();
 
   static const _urlKey = 'cloud_settings_backup_url';
   static const _usernameKey = 'cloud_settings_backup_username';
   static const _passwordKey = 'cloud_settings_backup_password';
-  static const _timeout = Duration(seconds: 30);
+  final Duration requestTimeout;
   static const _maxBackupBytes = 4 * 1024 * 1024;
 
   final http.Client _http;
@@ -76,10 +76,15 @@ class CloudSettingsBackupService {
       currentUserUuid: expectedOwner,
       appVersion: appVersion,
     );
-    final response = await _request(() => _boundedRequest(
-      'PUT', uri, {..._headers(configuration), 'Content-Type': 'application/json; charset=utf-8'},
-      body: jsonEncode(data), maxBytes: 64 * 1024,
-    ));
+    final response = await _request(
+      () => _boundedRequest(
+        'PUT',
+        uri,
+        {..._headers(configuration), 'Content-Type': 'application/json; charset=utf-8'},
+        body: jsonEncode(data),
+        maxBytes: 64 * 1024,
+      ),
+    );
     if (!_sameOwner(storage, expectedProfileId, expectedOwner, isCurrentSession: isCurrentSession)) {
       throw const CloudSettingsBackupException('The active profile changed while the backup was being sent.');
     }
@@ -146,26 +151,38 @@ class CloudSettingsBackupService {
       storage.activeUserScope() == owner;
 
   Future<http.Response> _boundedRequest(
-    String method, Uri uri, Map<String, String> headers, {String? body, required int maxBytes, bool Function()? isCurrent}
-  ) async {
+    String method,
+    Uri uri,
+    Map<String, String> headers, {
+    String? body,
+    required int maxBytes,
+    bool Function()? isCurrent,
+  }) async {
     final abort = Completer<void>();
     _active.add(abort);
-    void cancel() { if (!abort.isCompleted) abort.complete(); }
+    void cancel() {
+      if (!abort.isCompleted) abort.complete();
+    }
+
     final request = http.AbortableRequest(method, uri, abortTrigger: abort.future)..headers.addAll(headers);
     if (body != null) request.body = body;
     try {
       final pending = sendWithSafeRedirects(_http, request, allowCrossOrigin: false);
-      return await pending.then((response) async {
-        if (abort.isCompleted) {
-          await response.stream.listen(null).cancel();
-          throw http.RequestAbortedException(uri);
-        }
-        return readBoundedHttpResponse(response, maxBytes: maxBytes, isCurrent: isCurrent);
-      })
-          .timeout(_timeout, onTimeout: () {
-            cancel();
-            throw TimeoutException('Settings backup timed out');
-          });
+      return await pending
+          .then((response) async {
+            if (abort.isCompleted) {
+              await response.stream.listen(null).cancel();
+              throw http.RequestAbortedException(uri);
+            }
+            return readBoundedHttpResponse(response, maxBytes: maxBytes, isCurrent: isCurrent);
+          })
+          .timeout(
+            requestTimeout,
+            onTimeout: () {
+              cancel();
+              throw TimeoutException('Settings backup timed out');
+            },
+          );
     } finally {
       cancel();
       _active.remove(abort);
@@ -207,7 +224,9 @@ class CloudSettingsBackupService {
   }
 
   void dispose() {
-    for (final abort in _active) { if (!abort.isCompleted) abort.complete(); }
+    for (final abort in _active) {
+      if (!abort.isCompleted) abort.complete();
+    }
     _active.clear();
     _http.close();
   }

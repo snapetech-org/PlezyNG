@@ -806,7 +806,8 @@ class _MediaToolsScreenState extends State<MediaToolsScreen> with WidgetsBinding
           const SizedBox(height: 8),
           Text(t.universalMedia.shareQrHelp, textAlign: TextAlign.center),
           const SizedBox(height: 8),
-          if (_streamServer?.isSecure != true) Text(t.universalMedia.shareHttpHint, style: Theme.of(context).textTheme.bodySmall),
+          if (_streamServer?.isSecure != true)
+            Text(t.universalMedia.shareHttpHint, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 12),
           Text(t.universalMedia.shareOpenUrl, style: Theme.of(context).textTheme.titleMedium),
           for (final url in urls)

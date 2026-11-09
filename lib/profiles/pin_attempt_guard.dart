@@ -9,7 +9,8 @@ import 'profile.dart';
 /// are rejected before the KDF, and storage failures fail closed.
 class PinAttemptGuard {
   PinAttemptGuard({DateTime Function()? now, Future<bool> Function(String, String)? verifier})
-    : _now = now ?? DateTime.now, _verifier = verifier ?? verifyPin;
+    : _now = now ?? DateTime.now,
+      _verifier = verifier ?? verifyPin;
 
   static final instance = PinAttemptGuard();
   final DateTime Function() _now;

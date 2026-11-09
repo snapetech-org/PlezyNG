@@ -20,10 +20,17 @@ void main() {
     for (final declared in [null, 1]) {
       var produced = 0;
       Iterable<List<int>> chunks() sync* {
-        for (var i = 0; i < 100; i++) { produced++; yield [1, 2, 3]; }
+        for (var i = 0; i < 100; i++) {
+          produced++;
+          yield [1, 2, 3];
+        }
       }
+
       await expectLater(
-        readBoundedHttpResponse(http.StreamedResponse(Stream.fromIterable(chunks()), 200, contentLength: declared), maxBytes: 5),
+        readBoundedHttpResponse(
+          http.StreamedResponse(Stream.fromIterable(chunks()), 200, contentLength: declared),
+          maxBytes: 5,
+        ),
         throwsA(isA<HttpResponseTooLarge>()),
       );
       expect(produced, 2);
@@ -32,7 +39,8 @@ void main() {
 
   test('preserves exact-limit bytes and metadata', () async {
     final response = await readBoundedHttpResponse(
-      http.StreamedResponse(Stream.value([1, 2, 3]), 206, headers: {'x-test': 'value'}), maxBytes: 3,
+      http.StreamedResponse(Stream.value([1, 2, 3]), 206, headers: {'x-test': 'value'}),
+      maxBytes: 3,
     );
     expect(response.bodyBytes, [1, 2, 3]);
     expect(response.statusCode, 206);

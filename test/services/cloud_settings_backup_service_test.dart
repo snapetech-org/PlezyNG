@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,18 @@ import 'package:plezy/services/storage_service.dart';
 
 import '../test_helpers/local_tls.dart';
 import '../test_helpers/prefs.dart';
+
+class _LateBackupClient extends http.BaseClient {
+  final response = Completer<http.StreamedResponse>();
+  final started = Completer<void>();
+  Future<void>? aborted;
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    aborted = (request as http.AbortableRequest).abortTrigger;
+    started.complete();
+    return response.future;
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +41,38 @@ void main() {
   Future<void> configure(CloudSettingsBackupService service, String url) =>
       service.saveConfiguration(url: url, username: 'dummy-user', password: 'dummy-password');
   Future<double?> volume() async => (await SettingsService.getInstance()).prefs.getDouble('volume');
+
+  test('header timeout aborts and cancels an injected late response', () async {
+    final client = _LateBackupClient();
+    final service = CloudSettingsBackupService(httpClient: client, requestTimeout: const Duration(milliseconds: 20));
+    addTearDown(service.dispose);
+    await configure(service, 'https://backup.test/settings.json');
+    await expectLater(service.restore(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
+      throwsA(isA<CloudSettingsBackupException>()));
+    await client.aborted;
+    var cancelled = false;
+    final body = StreamController<List<int>>(onCancel: () => cancelled = true);
+    client.response.complete(http.StreamedResponse(body.stream, 200));
+    await Future<void>.delayed(Duration.zero);
+    expect(cancelled, isTrue);
+    expect(await volume(), 31.0);
+    await body.close();
+  });
+
+  test('PUT refuses an oversized response before buffering its body', () async {
+    var cancelled = false;
+    final body = StreamController<List<int>>(onCancel: () => cancelled = true);
+    final service = CloudSettingsBackupService(httpClient: MockClient.streaming((request, _) async {
+      expect(request.method, 'PUT');
+      return http.StreamedResponse(body.stream, 200, contentLength: 1 << 30);
+    }));
+    addTearDown(service.dispose);
+    await configure(service, 'https://backup.test/settings.json');
+    await expectLater(service.backUp(expectedProfileId: 'audit-local', expectedOwner: 'audit-local'),
+      throwsA(isA<CloudSettingsBackupException>()));
+    expect(cancelled, isTrue);
+    await body.close();
+  });
 
   test('same-origin HTTPS redirect restores settings and retains authentication', () async {
     var calls = 0;

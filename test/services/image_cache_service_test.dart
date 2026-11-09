@@ -114,7 +114,7 @@ void main() {
     await body.close();
   });
 
-  test('error bodies are drained so the transport can reclaim the connection', () async {
+  test('error bodies are cancelled so the transport can reclaim the connection', () async {
     final listened = Completer<void>();
     final body = StreamController<List<int>>(onListen: () => listened.complete());
     unawaited(body.close());
@@ -126,6 +126,33 @@ void main() {
     final response = await client.send(get('/missing')).timeout(timeout);
     expect(response.statusCode, 404);
     await listened.future.timeout(timeout);
+  });
+
+  test('error response keeps its permit until cancellation finishes', () async {
+    final cancellationStarted = Completer<void>();
+    final allowCancellation = Completer<void>();
+    final body = StreamController<List<int>>(onCancel: () {
+      cancellationStarted.complete();
+      return allowCancellation.future;
+    });
+    var requests = 0;
+    final client = createArtworkHttpClientForTest(
+      MockClient.streaming((_, _) async {
+        requests++;
+        return requests == 1 ? http.StreamedResponse(body.stream, 503)
+          : http.StreamedResponse(Stream.value([1]), 200);
+      }), maxConcurrent: 1,
+    );
+    final failed = client.send(get('/missing'));
+    await cancellationStarted.future;
+    final next = client.send(get('/poster'));
+    await Future<void>.delayed(Duration.zero);
+    expect(requests, 1);
+    allowCancellation.complete();
+    expect((await failed).statusCode, 503);
+    await (await next).stream.drain<void>();
+    expect(requests, 2);
+    await body.close();
   });
 
   test('a throwing send releases its slot', () async {

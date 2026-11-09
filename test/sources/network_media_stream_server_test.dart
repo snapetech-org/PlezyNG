@@ -42,7 +42,7 @@ void main() {
       '-i',
       'sine=frequency=440:sample_rate=44100',
       '-t',
-      '30',
+      '8',
       '-c:v',
       'libx264',
       '-preset',
@@ -61,7 +61,7 @@ void main() {
       markTestSkipped('FFmpeg does not include the H.264/AAC encoders');
     }
 
-    final server = NetworkMediaStreamServer(allowInsecureHttp: true, lifetime: const Duration(minutes: 1));
+    final server = NetworkMediaStreamServer(allowInsecureHttp: true, lifetime: const Duration(seconds: 6), completionGrace: const Duration(seconds: 8));
     final client = HttpClient();
     addTearDown(() async {
       client.close(force: true);
@@ -114,6 +114,20 @@ void main() {
     expect(post.headers.value(HttpHeaders.allowHeader), 'GET, HEAD');
     await post.drain<void>();
 
+    // Advance past the initial idle lease through authorized requests. After
+    // FFmpeg exits, the final playlist and media must still be readable.
+    var finalBody = playlistBody;
+    final deadline = DateTime.now().add(const Duration(seconds: 15));
+    while (!finalBody.contains('#EXT-X-ENDLIST') && DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+      finalBody = await utf8.decoder.bind(await request('GET', advertised.path)).join();
+    }
+    expect(finalBody, contains('#EXT-X-ENDLIST'));
+    expect(server.isRunning, isTrue);
+    final tailName = RegExp(r'^segment\d+\.ts$', multiLine: true).allMatches(finalBody).last.group(0)!;
+    final tail = await request('GET', '${advertised.path.substring(0, advertised.path.lastIndexOf('/') + 1)}$tailName');
+    expect(tail.statusCode, HttpStatus.ok);
+    expect(await tail.fold<int>(0, (n, chunk) => n + chunk.length), greaterThan(0));
     final expiredPort = advertised.port;
     await server.stop();
     expect(server.isRunning, isFalse);

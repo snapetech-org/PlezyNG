@@ -7,7 +7,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../i18n/strings.g.dart' as l10n;
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

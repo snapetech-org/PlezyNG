@@ -9,9 +9,15 @@ void main() {
 
   test('redacts nested headers, arrays, keys and registered values', () {
     LogRedactionManager.registerToken('secret-canary-123');
-    final tree = {'extra': [{'headers': {'Authorization': 'Bearer unknown-canary', 'Cookie': 'session=unregistered'}},
-      {'secret-canary-123': 'value', 'detail': 'https://user:pass@example.test/?access_token=unknown-token'}],
-      'token_count': 7};
+    final tree = {
+      'extra': [
+        {
+          'headers': {'Authorization': 'Bearer unknown-canary', 'Cookie': 'session=unregistered'},
+        },
+        {'secret-canary-123': 'value', 'detail': 'https://user:pass@example.test/?access_token=unknown-token'},
+      ],
+      'token_count': 7,
+    };
     final safe = LogRedactionManager.redactStructured(tree);
     final encoded = jsonEncode(safe);
     for (final secret in ['secret-canary-123', 'unknown-canary', 'unregistered', 'user:pass', 'unknown-token']) {
@@ -29,7 +35,12 @@ void main() {
   });
 
   test('scrubbed Sentry JSON retains event structure', () {
-    final event = SentryEvent(extra: {'nested': {'password': 'canary'}});
+    final event = SentryEvent.fromJson({
+      ...SentryEvent().toJson(),
+      'extra': {
+        'nested': {'password': 'canary'},
+      },
+    });
     final safe = SentryEvent.fromJson(LogRedactionManager.redactStructured(event.toJson()) as Map<String, dynamic>);
     expect(jsonEncode(safe.toJson()), isNot(contains('canary')));
     expect(safe.eventId, event.eventId);

@@ -112,6 +112,7 @@ on:
         type: boolean
         default: false
 env:
+  GH_TOKEN: ${{ github.token }}
   # Keep SDK analytics failures separate from build and analysis diagnostics.
   DASH__SUPPRESS_ANALYTICS: "true"
   FLUTTER_SUPPRESS_ANALYTICS: "true"

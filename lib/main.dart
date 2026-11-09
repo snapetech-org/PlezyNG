@@ -83,6 +83,7 @@ import 'services/multi_server_manager.dart';
 import 'services/library_events/library_event_service.dart';
 import 'services/offline_watch_sync_service.dart';
 import 'services/data_aggregation_service.dart';
+import 'services/credential_key_store.dart';
 import 'services/credential_vault.dart';
 import 'services/remote_streams/remote_streaming_provider.dart';
 import 'services/server_registry.dart';
@@ -1095,7 +1096,11 @@ Future<_StartupDependencies> _initializeStartup(SettingsService settings) async 
       await _optionalGatePhase(StartupPhase.certificateTrust, () => userAuthorities);
     }
 
-    final storage = await _gatePhase(StartupPhase.storage, StorageService.getInstance);
+    final storage = await _gatePhase(StartupPhase.storage, () async {
+      final storage = await StorageService.getInstance();
+      await CredentialKeyStore.migrateLegacy();
+      return storage;
+    });
     markStartupPhase('platform-services');
 
     AndroidExitDiagnostics.markStartupPhase(AndroidStartupPhase.databaseOpenStarted);

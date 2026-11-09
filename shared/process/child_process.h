@@ -18,6 +18,7 @@
 #if defined(__APPLE__)
 #include <crt_externs.h>
 #include <mach-o/dyld.h>
+#include <libproc.h>
 #else
 #include <sys/syscall.h>
 extern char** environ;
@@ -101,6 +102,18 @@ class Control {
     return false;
 #endif
   }
+#if defined(__APPLE__)
+  void CheckMemory() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!pid || stopped_) return;
+    proc_taskinfo usage{};
+    const auto size = proc_pidinfo(pid, PROC_PIDTASKINFO, 0, &usage, sizeof(usage));
+    if (size != sizeof(usage) || usage.pti_resident_size > 768ull * 1024 * 1024) {
+      kill(pid, SIGKILL);
+      stopped_ = true;
+    }
+  }
+#endif
   void Abort() {
     std::lock_guard<std::mutex> lock(mutex_);
     if (stopped_) return;
@@ -305,6 +318,14 @@ inline std::unique_ptr<BytePipe> Spawn(const std::filesystem::path& path, const 
 #if defined(__linux__)
   control->pidfd = static_cast<int>(syscall(SYS_pidfd_open, control->pid, 0));
   if (control->pidfd < 0) throw std::runtime_error("This kernel lacks worker process handles.");
+#endif
+#if defined(__APPLE__)
+  std::thread([control] {
+    while (!control->Reaped()) {
+      control->CheckMemory();
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+  }).detach();
 #endif
   return std::make_unique<BytePipe>(parent.Release());
 #endif

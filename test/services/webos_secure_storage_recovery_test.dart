@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage_webos/flutter_secure_storage_webos.dart';
+import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/services/credential_key_store.dart';
 
 const _options = <String, String>{};
 const _index = 'flutter_secure_storage';
@@ -251,6 +253,78 @@ void main() {
     expect(backend.stores, 0);
     expect(backend.generations, 0);
     expect(backend.removed, isEmpty);
+  });
+
+  test('startup migration upgrades every legacy credential in one commit', () async {
+    backend.seed({'vault': 'ORIGINAL_DUMMY_KEY', 'other': 'OTHER'});
+    final previous = FlutterSecureStoragePlatform.instance;
+    FlutterSecureStoragePlatform.instance = storage;
+    try {
+      await CredentialKeyStore.migrateLegacy();
+    } finally {
+      FlutterSecureStoragePlatform.instance = previous;
+    }
+    expect(backend.stores, 1);
+    expect(backend.row['keys'], startsWith('v3:fss3_'));
+    expect((jsonDecode(backend.row['datas']!) as List).cast<String>(), everyElement(startsWith('v3:fss3_')));
+    expect(backend.removed, containsAll([_index, 'vault', 'other']));
+    storage = FlutterSecureStorageWebos();
+    expect(await storage.readAll(options: _options), {'vault': 'ORIGINAL_DUMMY_KEY', 'other': 'OTHER'});
+    final generations = backend.generations;
+    expect(await storage.migrateLegacy(), 0);
+    expect(backend.generations, generations);
+    expect(backend.stores, 1);
+  });
+
+  test('migration of an empty new store creates no keys or rows', () async {
+    backend.row = {};
+    backend.keys.clear();
+    expect(await storage.migrateLegacy(), 0);
+    expect(backend.stores, 0);
+    expect(backend.generations, 0);
+  });
+
+  test('migration preserves existing authenticated values without rotating them', () async {
+    backend.seed({'vault': 'ORIGINAL_DUMMY_KEY', 'other': 'OTHER'});
+    await write('NEW');
+    final authenticated = (jsonDecode(backend.row['datas']!) as List).first;
+    expect(await storage.migrateLegacy(), 1);
+    expect((jsonDecode(backend.row['datas']!) as List).first, authenticated);
+    expect(await storage.readAll(options: _options), {'vault': 'NEW', 'other': 'OTHER'});
+  });
+
+  for (final failure in ['entry', 'index']) {
+    test('$failure failure during migration preserves every old entry and cleans staging', () async {
+      backend.seed({'vault': 'ORIGINAL_DUMMY_KEY', 'other': 'OTHER'});
+      final before = Map<String, String?>.of(backend.row);
+      final keys = Set<String>.of(backend.keys);
+      backend.unavailableKey = failure == 'entry' ? 'other' : null;
+      backend.indexEncryptionFails = failure == 'index';
+      await expectLater(storage.migrateLegacy(), throwsA(isA<PlatformException>()));
+      expect(backend.row, before);
+      expect(backend.keys, keys);
+      expect(backend.stores, 0);
+      backend.unavailableKey = null;
+      backend.indexEncryptionFails = false;
+      expect(await storage.migrateLegacy(), 2);
+    });
+  }
+
+  test('migration reloads a competing commit and retains its added credential', () async {
+    backend.conflictOnce = true;
+    expect(await storage.migrateLegacy(), 2);
+    expect(backend.stores, 2);
+    expect(await storage.readAll(options: _options), {'vault': 'ORIGINAL_DUMMY_KEY', 'other-isolate': 'OTHER_DUMMY_KEY'});
+  });
+
+  test('lost migration acknowledgement preserves keys used by the durable row', () async {
+    backend.seed({'vault': 'ORIGINAL_DUMMY_KEY', 'other': 'OTHER'});
+    backend.loseAcknowledgement = true;
+    await expectLater(storage.migrateLegacy(), throwsA(isA<PlatformException>()));
+    backend.loseAcknowledgement = false;
+    storage = FlutterSecureStorageWebos();
+    expect(await storage.migrateLegacy(), 0);
+    expect(await storage.readAll(options: _options), {'vault': 'ORIGINAL_DUMMY_KEY', 'other': 'OTHER'});
   });
 
   for (final key in ['vault', _index]) {

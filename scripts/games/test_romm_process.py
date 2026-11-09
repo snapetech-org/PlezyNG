@@ -38,10 +38,10 @@ def main():
         test = build('romm_process_test', ['native/games/romm/retro_proxy.cpp', 'test/native/romm_process_test.cpp'], audio=True)
         environment = dict(os.environ, PLEZY_TEST_SECRET='DUMMY_ENVIRONMENT_CREDENTIAL')
         if not args.protocol_only:
-            subprocess.run([test, work / 'fixtures', 'core'], env=environment, check=True, timeout=90)
+            subprocess.run([test, work / 'fixtures with spaces', 'core'], env=environment, check=True, timeout=90)
         malicious = build('fault_worker', ['test/native/romm_fault_worker.cpp'])
         shutil.copy2(malicious, worker)
-        subprocess.run([test, work / 'fixtures', 'faults'], env=environment, check=True, timeout=90)
+        subprocess.run([test, work / 'fixtures with spaces', 'faults'], env=environment, check=True, timeout=90)
 
 if __name__ == '__main__':
     main()

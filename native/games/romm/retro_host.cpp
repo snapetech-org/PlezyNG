@@ -184,6 +184,7 @@ void cleanup() {
 }
 API void* plezy_retro_alloc(int size) { return size>0 && size<=134217728 ? std::malloc(static_cast<size_t>(size)):nullptr; }
 API void plezy_retro_free(void* data) { std::free(data); }
+API int plezy_retro_isolation_version() { return 0; }
 API int plezy_retro_has_core(const char* path) {
   if(claimed.load()) return 0;
   auto module=module_open(path);if(!module) return 0;

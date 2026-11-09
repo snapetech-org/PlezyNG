@@ -15,6 +15,7 @@ namespace plezy::retro {
 class WindowsSandbox {
   PSID sid_ = nullptr;
   PSECURITY_DESCRIPTOR security_ = nullptr;
+  HANDLE lease_ = INVALID_HANDLE_VALUE;
   std::filesystem::path root_;
   static void Require(bool value) { if (!value) throw std::runtime_error("Could not prepare emulator AppContainer"); }
   static void Remove(const std::filesystem::path& path) noexcept {
@@ -35,6 +36,33 @@ class WindowsSandbox {
       RemoveDirectoryW(path.c_str());
     } else { SetFileAttributesW(path.c_str(), FILE_ATTRIBUTE_NORMAL); DeleteFileW(path.c_str()); }
   }
+  static void CleanupStale(const std::filesystem::path& temporary) noexcept {
+    try {
+      const std::string marker = "PLEAZYNG_ROMM_STAGE_V1\n";
+      for (const auto& entry : std::filesystem::directory_iterator(temporary)) {
+        const auto name = entry.path().filename().wstring();
+        const std::wstring prefix = L"pleazyng-romm-";
+        if (name.size() != prefix.size() + 32 || name.rfind(prefix, 0) != 0 ||
+            name.find_first_not_of(L"0123456789abcdef", prefix.size()) != std::wstring::npos) continue;
+        const auto flags = GetFileAttributesW(entry.path().c_str());
+        if (flags == INVALID_FILE_ATTRIBUTES || !(flags & FILE_ATTRIBUTE_DIRECTORY) || (flags & FILE_ATTRIBUTE_REPARSE_POINT)) continue;
+        const auto lock = entry.path() / L"session.lease";
+        HANDLE file = CreateFileW(lock.c_str(), GENERIC_READ | DELETE, 0, nullptr, OPEN_EXISTING,
+          FILE_FLAG_OPEN_REPARSE_POINT, nullptr);
+        // A live parent holds a non-delete-sharing lease. Never touch its stage.
+        if (file == INVALID_HANDLE_VALUE) continue;
+        BY_HANDLE_FILE_INFORMATION info{}; char bytes[64]{}; DWORD read = 0;
+        const bool owned = GetFileInformationByHandle(file, &info) &&
+          !(info.dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT)) &&
+          !info.nFileSizeHigh && info.nFileSizeLow == marker.size() &&
+          ReadFile(file, bytes, sizeof(bytes), &read, nullptr) &&
+          read == marker.size() && std::string(bytes, read) == marker;
+        if (owned) Remove(entry.path());  // The open lease deliberately survives this traversal.
+        CloseHandle(file);
+        if (owned) { DeleteFileW(lock.c_str()); RemoveDirectoryW(entry.path().c_str()); }
+      }
+    } catch (...) { /* A cleanup failure never authorizes broader deletion. */ }
+  }
   void Copy(const std::filesystem::path& source, const std::filesystem::path& target, uintmax_t maximum) {
     Require(std::filesystem::is_regular_file(source) && !std::filesystem::is_symlink(source));
     Require(std::filesystem::file_size(source) <= maximum);
@@ -54,6 +82,7 @@ class WindowsSandbox {
       Require(SUCCEEDED(result) && sid_);
       wchar_t temporary[32768]; const auto count = GetTempPathW(32768, temporary);
       Require(count && count < 32768);
+      CleanupStale(temporary);
       uint8_t random[16]; Require(BCryptGenRandom(nullptr, random, sizeof(random), BCRYPT_USE_SYSTEM_PREFERRED_RNG) >= 0);
       std::wstring name = L"pleazyng-romm-";
       for (auto byte : random) { name += L"0123456789abcdef"[byte >> 4]; name += L"0123456789abcdef"[byte & 15]; }
@@ -67,12 +96,17 @@ class WindowsSandbox {
       Require(ConvertSidToStringSidW(reinterpret_cast<TOKEN_USER*>(info.data())->User.Sid, &userText) != 0);
       if (!ConvertSidToStringSidW(sid_, &appText)) { LocalFree(userText); Require(false); }
       const std::wstring sddl = L"D:P(A;OICI;FA;;;SY)(A;OICI;FA;;;" + std::wstring(userText) +
-        L")(A;OICI;0x1301bf;;;" + std::wstring(appText) + L")S:(ML;OICI;NW;;;LW)";
+        L")(A;OICI;0x1200a9;;;" + std::wstring(appText) + L")S:(ML;OICI;NW;;;LW)";
       LocalFree(userText); LocalFree(appText);
       Require(ConvertStringSecurityDescriptorToSecurityDescriptorW(sddl.c_str(), SDDL_REVISION_1, &security_, nullptr) != 0);
       SECURITY_ATTRIBUTES attributes{sizeof(attributes), security_, FALSE};
       const bool created = CreateDirectoryW(root_.c_str(), &attributes) != 0;
       Require(created);
+      lease_ = CreateFileW((root_ / L"session.lease").c_str(), GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+      Require(lease_ != INVALID_HANDLE_VALUE);
+      const std::string marker = "PLEAZYNG_ROMM_STAGE_V1\n"; DWORD written = 0;
+      Require(WriteFile(lease_, marker.data(), DWORD(marker.size()), &written, nullptr) && written == marker.size());
       helper = root_ / L"plezy_retro_worker.exe"; core = root_ / coreSource.filename();
       Copy(helperSource, helper, 64 * 1024 * 1024); Copy(coreSource, core, 256 * 1024 * 1024);
       // App-local CRT files are the only additional executables staged. System
@@ -101,9 +135,13 @@ class WindowsSandbox {
           }
         }
       }
-    } catch (...) { Remove(root_); if (sid_) FreeSid(sid_); if (security_) LocalFree(security_); sid_ = nullptr; security_ = nullptr; throw; }
+    } catch (...) {
+      if (lease_ != INVALID_HANDLE_VALUE) CloseHandle(lease_);
+      lease_ = INVALID_HANDLE_VALUE;
+      Remove(root_); if (sid_) FreeSid(sid_); if (security_) LocalFree(security_); sid_ = nullptr; security_ = nullptr; throw;
+    }
   }
-  ~WindowsSandbox() { Remove(root_); if (sid_) FreeSid(sid_); if (security_) LocalFree(security_); }
+  ~WindowsSandbox() { if (lease_ != INVALID_HANDLE_VALUE) CloseHandle(lease_); Remove(root_); if (sid_) FreeSid(sid_); if (security_) LocalFree(security_); }
   PSID Sid() const { return sid_; }
 };
 }  // namespace plezy::retro

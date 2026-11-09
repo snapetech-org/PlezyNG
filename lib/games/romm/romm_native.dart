@@ -37,8 +37,13 @@ class _RetroBindings {
             : Platform.isLinux
             ? '${p.dirname(Platform.resolvedExecutable)}/lib/libplezy_retro.so'
             : 'libplezy_retro.so',
-      );
+      ) {
+    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && isolationVersion() != 1) {
+      throw const RommFailure('romm.nativeUnavailable');
+    }
+  }
   final DynamicLibrary library;
+  late final isolationVersion = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_isolation_version');
   late final alloc = library.lookupFunction<Pointer<Uint8> Function(Int32), Pointer<Uint8> Function(int)>(
     'plezy_retro_alloc',
   );
@@ -55,7 +60,9 @@ class _RetroBindings {
       >('plezy_retro_open');
   late final close = library.lookupFunction<Void Function(), void Function()>('plezy_retro_close');
   late final healthy = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_healthy');
-  late final shutdownComplete = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_shutdown_complete');
+  late final shutdownComplete = library.lookupFunction<Int32 Function(), int Function()>(
+    'plezy_retro_shutdown_complete',
+  );
   late final run = library.lookupFunction<Void Function(), void Function()>('plezy_retro_run');
   late final fps = library.lookupFunction<Double Function(), double Function()>('plezy_retro_fps');
   late final aspect = library.lookupFunction<Double Function(), double Function()>('plezy_retro_aspect');
@@ -361,15 +368,17 @@ void _retroWorker(Map<String, Object?> args) {
     void acknowledge() {
       // A timed-out process may still be exiting in the kernel. Retain files
       // and the session lease until the native process handle confirms exit.
-      if (api != null && api!.shutdownComplete() != 1) return;
+      if (api != null && api.shutdownComplete() != 1) return;
       retirement?.cancel();
       out.send({'id': id, if (failed) 'error': true, 'closed': true});
       input.close();
       Isolate.exit();
     }
+
     retirement = Timer.periodic(const Duration(milliseconds: 50), (_) => acknowledge());
     acknowledge();
   }
+
   try {
     final binding = api = _RetroBindings();
     final strings = <Pointer<Uint8>>[];
@@ -467,6 +476,7 @@ void _retroWorker(Map<String, Object?> args) {
           case 'close':
             closeWorker(id: id);
         }
+        if (!closing && binding.healthy() != 1) throw const RommFailure('romm.nativeError');
         if (id != null) {
           out.send({'id': id, 'data': result});
         }
@@ -474,6 +484,7 @@ void _retroWorker(Map<String, Object?> args) {
         if (id != null) {
           out.send({'id': id, 'error': true});
         }
+        if (binding.healthy() != 1) closeWorker(failed: true);
       }
     });
   } catch (_) {

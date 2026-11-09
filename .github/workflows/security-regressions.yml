@@ -91,6 +91,9 @@ jobs:
             test/services/cloud_settings_backup_service_test.dart \
             test/services/plex*_test.dart \
             test/services/webos_secure_storage_recovery_test.dart \
+            test/services/credential_vault_test.dart \
+            test/startup_bootstrap_test.dart \
+            test/games/romm_boundaries_test.dart \
             test/profiles \
             test/screens/profile/profile_switch_screen_test.dart \
             test/android/network_security_config_test.dart \

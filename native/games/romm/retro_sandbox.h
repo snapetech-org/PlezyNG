@@ -54,9 +54,9 @@ inline void RestrictCore(const std::string& core, const std::string& rom,
     for (const auto* path : {"/usr/lib", "/usr/lib64", "/lib", "/lib64", "/etc/ld.so.cache"})
       allow(path, read, false);
     allow(core, read, true); allow(rom, read, true); allow(system, read, true);
-    allow(saves, read | LANDLOCK_ACCESS_FS_WRITE_FILE | LANDLOCK_ACCESS_FS_TRUNCATE |
-      LANDLOCK_ACCESS_FS_MAKE_REG | LANDLOCK_ACCESS_FS_MAKE_DIR | LANDLOCK_ACCESS_FS_REMOVE_FILE |
-      LANDLOCK_ACCESS_FS_REMOVE_DIR | LANDLOCK_ACCESS_FS_REFER, true);
+    // SRAM, RTC and states leave through bounded IPC. A core never needs to
+    // write the app's files directly, even inside the selected game directory.
+    allow(saves, read, true);
     if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) || syscall(SYS_landlock_restrict_self, rules, 0))
       throw std::runtime_error("Could not enter emulator filesystem sandbox");
     close(rules);
@@ -150,7 +150,6 @@ inline void RestrictCore(const std::string& core, const std::string& rom,
   if (!system.empty()) policy += "(subpath " + quote(system) + ")";
   if (!saves.empty()) policy += "(subpath " + quote(saves) + ")";
   policy += ")";
-  if (!saves.empty()) policy += "(allow file-write* (subpath " + quote(saves) + "))";
   char* error = nullptr;
   if (sandbox_init(policy.c_str(), 0, &error)) {
     if (error) sandbox_free_error(error);

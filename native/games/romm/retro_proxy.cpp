@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // The application loads only this proxy. dlopen of a core happens in a packaged
 // worker, after entering its sandbox; all replies are bounded and validated.
+#define PLEZY_RETRO_PROXY_BUILD
 #include "retro_api.h"
 #include "retro_protocol.h"
 #include "../../../shared/process/child_process.h"
@@ -92,6 +93,7 @@ void Stop() noexcept {
 }
 API void* plezy_retro_alloc(int size) { return size > 0 && size_t(size) <= kMaximumState ? std::malloc(size) : nullptr; }
 API void plezy_retro_free(void* data) { std::free(data); }
+API int plezy_retro_isolation_version() { return 1; }
 API int plezy_retro_has_core(const char* path) {
   std::lock_guard<std::recursive_mutex> lock(mutex);
   if (session || !Reaped()) return 0;

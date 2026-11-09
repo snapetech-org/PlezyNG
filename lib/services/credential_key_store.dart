@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_webos/flutter_secure_storage_webos.dart';
 
 /// The OS credential store. Never fall back to a plaintext preferences/file
 /// store when a keychain is locked or unavailable, and never reset it on error.
@@ -21,6 +22,10 @@ abstract final class CredentialKeyStore {
   static bool useFederatedStoreForTesting = false;
 
   static bool get _usesNativeStore => !useFederatedStoreForTesting && (_isTvOS || Platform.isWindows);
+
+  /// Called by the storage startup gate before connections can load secrets.
+  /// Failures remain retryable and never reset the existing credential store.
+  static Future<void> migrateLegacy() => FlutterSecureStorageWebos.migrateRegisteredLegacy();
 
   static Future<String?> read(String key) =>
       _usesNativeStore ? _tvChannel.invokeMethod<String>('read', {'key': key}) : _storage.read(key: key);

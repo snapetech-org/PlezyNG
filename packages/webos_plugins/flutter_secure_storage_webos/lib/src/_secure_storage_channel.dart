@@ -64,6 +64,9 @@ class SecureStorageChannel {
   bool containsKey(String key) => _kvs.containsKey(key);
   String? rawValue(String key) => _kvs[key];
   Map<String, String> entries() => Map.unmodifiable(_kvs);
+  bool get needsMigration => _keys != null &&
+      (!_keys!.startsWith('v3:') || _kvs.values.any((value) => !value.startsWith('v3:')));
+  Future<void> replaceRaw(Map<String, String> values) => _flush(Map.of(values));
   Future<void> setRaw(String key, String value) => _flush({..._kvs, key: value});
   Future<void> removeRaw(String key) => _flush({..._kvs}..remove(key));
   Future<void> clear() => _flush({});

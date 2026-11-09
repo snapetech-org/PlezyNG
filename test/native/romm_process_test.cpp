@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     const auto secret = (root / "private-credential-fixture").u8string();
     std::ofstream(core) << "fixture"; std::ofstream(secret) << "DUMMY-CREDENTIAL";
     auto open = [&](char mode) {
-      std::ofstream(rom) << mode << " " << secret;
+      std::ofstream(rom) << mode << "\n" << secret << "\n";
       Require(plezy_retro_open(core.c_str(), rom.c_str(), system.c_str(), saves.c_str()) == 1, "Isolated open failed");
     };
     if (std::string(argv[2]) == "faults") {

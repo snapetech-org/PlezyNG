@@ -2,6 +2,7 @@
 // Deliberately faulty core adapter. Linked only by the containment tests.
 #include "../../native/games/romm/retro_api.h"
 #include <fstream>
+#include <filesystem>
 #include <string>
 #include <vector>
 #include <chrono>
@@ -25,12 +26,12 @@ void* plezy_retro_alloc(int size) { return std::malloc(size); }
 void plezy_retro_free(void* value) { std::free(value); }
 int plezy_retro_has_core(const char*) { return 1; }
 int plezy_retro_open(const char*, const char* rom, const char*, const char* saves) {
-  std::ifstream source(rom); std::string secret; source >> mode >> secret;
+  std::ifstream source(std::filesystem::u8path(rom)); std::string secret; source.get(mode); source.get(); std::getline(source, secret);
   if (!source) return 0;
   if (mode == 'P') {
-    std::ifstream denied(secret); if (denied.good() || std::getenv("PLEZY_TEST_SECRET")) return 0;
-    std::ofstream alsoDenied(secret, std::ios::app); if (alsoDenied.good()) return 0;
-    std::ofstream allowed(std::string(saves) + "/fixture-save"); if (!allowed.good()) return 0;
+    std::ifstream denied(std::filesystem::u8path(secret)); if (denied.good() || std::getenv("PLEZY_TEST_SECRET")) return 0;
+    std::ofstream alsoDenied(std::filesystem::u8path(secret), std::ios::app); if (alsoDenied.good()) return 0;
+    std::ofstream blocked(std::filesystem::u8path(saves) / "fixture-save"); if (blocked.good()) return 0;
 #ifdef _WIN32
     HANDLE token = nullptr; DWORD isolated = 0, size = 0;
     if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token)) return 0;

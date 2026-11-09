@@ -59,13 +59,19 @@ class SecureStorageClient {
 
   /// Stage an independent key/envelope. Never replace a key backing a saved row.
   Future<String> createSecret(String value, {required String context}) async {
+    // Leave room for both base64 layers and the wrapped key under the reader's
+    // 8 MiB envelope cap. Reject before creating any OS key or committing data.
+    const maximumValueBytes = 4 * 1024 * 1024;
+    if (value.length > maximumValueBytes || context.length > 1024) throw _tooLarge();
+    final plain = utf8.encode(value);
+    if (plain.length > maximumValueBytes || utf8.encode(context).length > 1024) throw _tooLarge();
     final key = 'fss3_${List.generate(16, (_) => _random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
     final generated = await _channel.invokeMethod<bool>('keymanager/generateKey', _header(key, ['encrypt', 'decrypt']));
     if (generated != true) throw _unavailable();
     try {
       final algorithm = AesGcm.with256bits();
       final dataKey = await algorithm.newSecretKey();
-      final box = await algorithm.encrypt(utf8.encode(value), secretKey: dataKey, aad: _aad(context, key));
+      final box = await algorithm.encrypt(plain, secretKey: dataKey, aad: _aad(context, key));
       // webOS keymanager exposes CBC. Use it only to wrap a random data key;
       // plaintext is released only after the independent GCM tag verifies.
       final wrapped =
@@ -152,6 +158,8 @@ class SecureStorageClient {
 
   PlatformException _unavailable() => PlatformException(
       code: 'secure_storage_unavailable', message: 'The key service is unavailable. Retry the operation.');
+  PlatformException _tooLarge() =>
+      PlatformException(code: 'secure_storage_invalid_value', message: 'The credential exceeds the storage size limit.');
   PlatformException _corrupt() =>
       PlatformException(code: 'secure_storage_corrupt', message: 'The saved credential could not be decoded.');
 }

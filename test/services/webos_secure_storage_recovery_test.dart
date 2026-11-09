@@ -181,6 +181,7 @@ void main() {
         return [error.code, error.message];
       }
     }
+
     backend.unavailableKey = parts[1];
     final unavailableError = await failure();
     backend.unavailableKey = null;
@@ -198,6 +199,28 @@ void main() {
     }
     backend.row = saved;
     expect(await read(), 'SECRET');
+  });
+
+  for (final fixture in {
+    'ASCII': 'x' * (4 * 1024 * 1024 + 1),
+    'UTF-8': 'é' * (2 * 1024 * 1024 + 1),
+  }.entries) {
+    test('oversized ${fixture.key} credential preserves saved storage', () async {
+      final saved = Map<String, String?>.of(backend.row);
+      await expectLater(write(fixture.value), throwsA(isA<PlatformException>()));
+      expect(backend.generations, 0);
+      expect(backend.stores, 0);
+      expect(backend.row, saved);
+      expect(await read(), 'ORIGINAL_DUMMY_KEY');
+    });
+  }
+
+  test('oversized logical key is rejected before key allocation or storage mutation', () async {
+    final saved = Map<String, String?>.of(backend.row);
+    await expectLater(write('SECRET', 'é' * 513), throwsA(isA<PlatformException>()));
+    expect(backend.generations, 0);
+    expect(backend.stores, 0);
+    expect(backend.row, saved);
   });
 
   test('authenticated credentials cannot be moved to another logical key', () async {

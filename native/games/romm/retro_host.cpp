@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Software-rendered libretro host. Every core call runs on one Dart worker
-// isolate. The audio device is the only native callback thread.
+// Software-rendered libretro host. Desktop builds link this only into the
+// isolated helper; mobile platforms with no helper retain the isolate host.
 #include <algorithm>
 #include <atomic>
 #include <cmath>
@@ -14,8 +14,10 @@
 #include <string>
 #include <vector>
 #include "libretro.h"
+#ifndef PLEZY_RETRO_REMOTE_AUDIO
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
+#endif
 #ifdef _WIN32
 #include <windows.h>
 #define API extern "C" __declspec(dllexport)
@@ -62,7 +64,10 @@ struct Host {
   double fps=60,aspect=0;
   bool initialized=false, loaded=false, audio_started=false;
   bool audio_paused=true;
+#ifndef PLEZY_RETRO_REMOTE_AUDIO
   ma_device device{};
+#endif
+  int sample_rate=0;
   std::mutex audio_mutex;
   std::vector<int16_t> audio=std::vector<int16_t>(32768);
   size_t read=0,write=0;
@@ -150,6 +155,7 @@ size_t audio_batch(const int16_t* data,size_t frames) {
   return frames;
 }
 void audio_sample(int16_t l,int16_t r) { const int16_t data[]={l,r};audio_batch(data,1); }
+#ifndef PLEZY_RETRO_REMOTE_AUDIO
 void audio_callback(ma_device* device,void* out,const void*,ma_uint32 frames) {
   auto* h=static_cast<Host*>(device->pUserData);auto* dst=static_cast<int16_t*>(out);
   std::lock_guard<std::mutex> lock(h->audio_mutex);
@@ -158,6 +164,7 @@ void audio_callback(ma_device* device,void* out,const void*,ma_uint32 frames) {
     if(h->read!=h->write) h->read=(h->read+1)%h->audio.size();
   }
 }
+#endif
 void poll() {}
 int16_t input(unsigned port,unsigned device,unsigned,unsigned id) {
   if(!host || port>=4 || (device&RETRO_DEVICE_MASK)!=RETRO_DEVICE_JOYPAD) return 0;
@@ -166,7 +173,9 @@ int16_t input(unsigned port,unsigned device,unsigned,unsigned id) {
 }
 void cleanup() {
   if(!host) return;
+#ifndef PLEZY_RETRO_REMOTE_AUDIO
   if(host->audio_started) { ma_device_uninit(&host->device);host->audio_started=false; }
+#endif
   if(host->loaded) host->unload_game();
   if(host->initialized) host->deinit();
   if(host->module) module_close(host->module);
@@ -182,6 +191,7 @@ API int plezy_retro_has_core(const char* path) {
   module_close(module);return valid?1:0;
 }
 API void plezy_retro_close() { cleanup(); }
+API int plezy_retro_shutdown_complete() { return host?0:1; }
 API int plezy_retro_open(const char* core,const char* rom,const char* system,const char* saves) {
   bool expected=false;if(!claimed.compare_exchange_strong(expected,true)) return 0;
   host=new Host();host->path=rom;host->system_dir=system;host->save_dir=saves;host->module=module_open(core);
@@ -211,13 +221,28 @@ API int plezy_retro_open(const char* core,const char* rom,const char* system,con
   host->aspect=std::isfinite(av.geometry.aspect_ratio)&&av.geometry.aspect_ratio>0&&av.geometry.aspect_ratio<=8?av.geometry.aspect_ratio:0;
   host->fps=std::isfinite(av.timing.fps)?std::clamp(av.timing.fps,15.0,120.0):60.0;
   if(!std::isfinite(av.timing.sample_rate)||av.timing.sample_rate<8000||av.timing.sample_rate>192000){cleanup();return 0;}
+  host->sample_rate=static_cast<int>(av.timing.sample_rate);
+#ifndef PLEZY_RETRO_REMOTE_AUDIO
   auto config=ma_device_config_init(ma_device_type_playback);config.playback.format=ma_format_s16;config.playback.channels=2;
   config.sampleRate=static_cast<ma_uint32>(av.timing.sample_rate);config.dataCallback=audio_callback;config.pUserData=host;
   if(ma_device_init(nullptr,&config,&host->device)!=MA_SUCCESS){cleanup();return 0;}
   host->audio_started=true;if(ma_device_start(&host->device)!=MA_SUCCESS){cleanup();return 0;}
+#endif
   return 1;
 }
 API void plezy_retro_run() { if(host&&host->loaded) host->run(); }
+API int plezy_retro_healthy() { return host&&host->loaded?1:0; }
+API int plezy_retro_sample_rate() { return host?host->sample_rate:0; }
+API int plezy_retro_read_audio(int16_t* output,int maximum) {
+  if(!host||!output||maximum<0||maximum>32768)return 0;
+  std::lock_guard<std::mutex> lock(host->audio_mutex);
+  int count=0;
+  while(count+1<maximum&&host->read!=host->write) {
+    output[count++]=host->audio[host->read];host->read=(host->read+1)%host->audio.size();
+    output[count++]=host->audio[host->read];host->read=(host->read+1)%host->audio.size();
+  }
+  return count;
+}
 API double plezy_retro_fps() {return host?host->fps:60;}
 API double plezy_retro_aspect() {return host?host->aspect:0;}
 API const char* plezy_retro_identity() { return host?host->identity.c_str():""; }

@@ -41,12 +41,14 @@ def tree_digest(directory):
     return checksum.hexdigest()
 
 
-def cache_valid(destination, fingerprint):
+def cache_valid(destination, fingerprint, platform=None):
     try:
         receipt = json.loads((destination / 'build-receipt.json').read_text())
         if receipt['sourceSha256'] != fingerprint:
             return False
         expected = {name + '.xcframework' for name in FRAMEWORKS} | {'notices'}
+        if platform == 'macos':
+            expected.add('helpers')
         if receipt['artifacts'].keys() != expected:
             return False
         return all((destination / name).is_dir()
@@ -60,6 +62,8 @@ def source_fingerprint(platform):
     inputs = [Path(__file__), ROOT / 'scripts/games/package_romm_cores.py',
               PACKAGE / 'cores/CMakeLists.txt']
     inputs.extend(path for path in sorted(PACKAGE.glob('*')) if path.is_file())
+    inputs.extend(sorted((ROOT / 'shared/process').glob('*.h')))
+    inputs.append(ROOT / 'scripts/games/install_macos_worker.sh')
     checksum = hashlib.sha256(platform.encode())
     for path in inputs:
         checksum.update(path.relative_to(ROOT).as_posix().encode() + b'\0')
@@ -84,7 +88,7 @@ def build(platform):
     specs = SPECS[platform]
     destination = PACKAGE / 'apple/Frameworks' / platform
     fingerprint = source_fingerprint(platform)
-    if cache_valid(destination, fingerprint):
+    if cache_valid(destination, fingerprint, platform):
         return
     work = ROOT / 'build/romm' / platform
     frameworks = {name: [] for name in FRAMEWORKS}
@@ -119,6 +123,13 @@ def build(platform):
             for framework in slices:
                 args += ['-framework', framework]
             run(*args, '-output', prepared / (name + '.xcframework'))
+        if platform == 'macos':
+            helpers = [path for path in work.rglob('plezy_retro_worker')
+                       if path.is_file() and path.parent.name == 'Release']
+            if len(helpers) != 1:
+                raise RuntimeError('Expected one universal macOS emulator worker')
+            (prepared / 'helpers').mkdir()
+            shutil.copy2(helpers[0], prepared / 'helpers/plezy_retro_worker')
         for sdk, source in notices.items():
             shutil.copytree(source, prepared / 'notices' / sdk)
         receipt = {'sourceSha256': fingerprint, 'qualified': False,

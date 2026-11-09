@@ -54,6 +54,8 @@ class _RetroBindings {
         int Function(Pointer<Uint8>, Pointer<Uint8>, Pointer<Uint8>, Pointer<Uint8>)
       >('plezy_retro_open');
   late final close = library.lookupFunction<Void Function(), void Function()>('plezy_retro_close');
+  late final healthy = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_healthy');
+  late final shutdownComplete = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_shutdown_complete');
   late final run = library.lookupFunction<Void Function(), void Function()>('plezy_retro_run');
   late final fps = library.lookupFunction<Double Function(), double Function()>('plezy_retro_fps');
   late final aspect = library.lookupFunction<Double Function(), double Function()>('plezy_retro_aspect');
@@ -118,8 +120,9 @@ String _corePath(String core) {
   return '$root/${Platform.isWindows ? '' : 'lib/'}${core}_libretro.${Platform.isWindows ? 'dll' : 'so'}';
 }
 
-/// Emulation and serialization run on one worker isolate; no core callbacks
-/// enter Flutter. Frame delivery is acknowledged to bound the render queue.
+/// An isolate owns the native connection. Desktop cores execute in a sandboxed
+/// process; mobile runtimes retain their platform-specific in-process host.
+/// Frame delivery is acknowledged to bound the render queue.
 class RommNative extends ChangeNotifier {
   SendPort? _commands;
   Isolate? _worker;
@@ -137,7 +140,8 @@ class RommNative extends ChangeNotifier {
   final _closedSignal = Completer<void>();
   Future<void> get whenClosed => _closedSignal.future;
   static bool _leased = false;
-  static Future<Set<String>> available() async {
+  static Future<Set<String>> available() => Isolate.run(_available);
+  static Future<Set<String>> _available() async {
     try {
       final api = _RetroBindings(), result = <String>{};
       for (final core in rommNativeCorePlatforms.keys) {
@@ -148,6 +152,10 @@ class RommNative extends ChangeNotifier {
           }
         } finally {
           api.free(path);
+        }
+        final deadline = DateTime.now().add(const Duration(seconds: 2));
+        while (api.shutdownComplete() != 1 && DateTime.now().isBefore(deadline)) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
         }
       }
       return result;
@@ -341,9 +349,27 @@ void _retroWorker(Map<String, Object?> args) {
   final out = args['port'] as SendPort, input = ReceivePort();
   out.send({'port': input.sendPort});
   _RetroBindings? api;
-  bool opened = false;
   Timer? clock;
+  Timer? retirement;
+  bool closing = false;
   bool framePending = false, paused = true;
+  void closeWorker({Object? id, bool failed = false}) {
+    if (closing) return;
+    closing = true;
+    clock?.cancel();
+    api?.close();
+    void acknowledge() {
+      // A timed-out process may still be exiting in the kernel. Retain files
+      // and the session lease until the native process handle confirms exit.
+      if (api != null && api!.shutdownComplete() != 1) return;
+      retirement?.cancel();
+      out.send({'id': id, if (failed) 'error': true, 'closed': true});
+      input.close();
+      Isolate.exit();
+    }
+    retirement = Timer.periodic(const Duration(milliseconds: 50), (_) => acknowledge());
+    acknowledge();
+  }
   try {
     final binding = api = _RetroBindings();
     final strings = <Pointer<Uint8>>[];
@@ -361,7 +387,6 @@ void _retroWorker(Map<String, Object?> args) {
     if (result != 1) {
       throw const RommFailure('romm.nativeError');
     }
-    opened = true;
     out.send({'port': input.sendPort, 'ready': true, 'identity': binding.coreIdentity});
     final interval = Duration(microseconds: (1000000 / binding.fps().clamp(15, 120)).round());
     clock = Timer.periodic(interval, (_) {
@@ -370,7 +395,9 @@ void _retroWorker(Map<String, Object?> args) {
       }
       try {
         binding.run();
+        if (binding.healthy() != 1) throw const RommFailure('romm.nativeError');
         final w = binding.width(), h = binding.height(), ptr = binding.frame();
+        if (w < 0 || h < 0 || w > 2048 || h > 2048) throw const RommFailure('romm.nativeError');
         if (!framePending && ptr != nullptr && w > 0 && h > 0) {
           framePending = true;
           out.send({
@@ -381,15 +408,12 @@ void _retroWorker(Map<String, Object?> args) {
           });
         }
       } catch (_) {
-        clock?.cancel();
-        binding.close();
-        opened = false;
-        out.send({'error': true, 'closed': true});
-        input.close();
+        closeWorker(failed: true);
       }
     });
     input.listen((event) {
       final row = rommMap(event), id = row['id'];
+      if (closing) return;
       try {
         Object? result;
         switch (row['action']) {
@@ -441,11 +465,7 @@ void _retroWorker(Map<String, Object?> args) {
               binding.free(data);
             }
           case 'close':
-            clock?.cancel();
-            binding.close();
-            out.send({'id': id, 'closed': true});
-            input.close();
-            Isolate.exit();
+            closeWorker(id: id);
         }
         if (id != null) {
           out.send({'id': id, 'data': result});
@@ -457,11 +477,6 @@ void _retroWorker(Map<String, Object?> args) {
       }
     });
   } catch (_) {
-    clock?.cancel();
-    if (opened) {
-      api?.close();
-    }
-    out.send({'error': true, 'closed': true});
-    input.close();
+    closeWorker(failed: true);
   }
 }

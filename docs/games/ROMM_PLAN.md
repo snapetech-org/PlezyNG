@@ -50,7 +50,7 @@ not installed in this workspace, so their suites have not executed here.
   PlezyNG-native. Redirects and upstream resource destinations are constrained.
 - Save states are engine/core/version-specific; a ROM filename or a shared
   game title is never sufficient evidence of compatibility.
-- Native recipes pin dependencies and require approved private build agents.
+- Native recipes pin dependencies and follow the repository runner policy.
   Platform adapters must report absent runtimes honestly until packaged.
 
 ## Delivery notes
@@ -59,8 +59,9 @@ Implementation and platform handoff are documented in [ROMM_INTEGRATION.md](ROMM
 The native host is wired into platform build recipes; core binary staging and
 Apple signing remain explicit release inputs. The default core recipe excludes
 Snes9x and Genesis Plus GX pending distribution-license review. This is a
-source delivery, not a claim of tested device playback. TV platforms without an
-embedded browser expose only installed native routes. Browser netplay remains
+source delivery, not a claim of tested device playback. Every native route requires an OS-isolated worker. iOS/tvOS/webOS/Tizen
+native play is unavailable until containment is implemented, including on TVs
+without an embedded browser. See [the current policy](../security/native-emulator-isolation.md). Browser netplay remains
 unadvertised because device tokens do not establish its session cookie.
 
 ## Acceptance handoff

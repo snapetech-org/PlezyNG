@@ -7,6 +7,8 @@ Pod::Spec.new do |s|
   s.author = { 'PlezyNG' => 'https://github.com/snapetech-org' }
   s.source = { :path => '.' }
   s.platform = :osx, '14.0'
-  s.vendored_frameworks = 'Frameworks/macos/*.xcframework'
+  s.vendored_frameworks = 'Frameworks/macos/PlezyRetro.xcframework'
+  # Cores are copied and signed for the worker, never linked into the app.
+  s.preserve_paths = 'Frameworks/macos/*_libretro.xcframework', 'Frameworks/macos/helpers/*'
   s.resource_bundles = { 'PleazyngRommNotices' => ['Frameworks/macos/notices/**/*'] }
 end

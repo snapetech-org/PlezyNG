@@ -8,7 +8,7 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../packages/plezy_torrent/src" "${
 install(TARGETS plezy_torrent LIBRARY DESTINATION lib)
 
 # webOS reports Linux, but does not package or support the desktop worker.
-set(PLEZY_ROMM_ISOLATED OFF CACHE BOOL "Use the explicit webOS in-process core backend" FORCE)
+set(PLEZY_ROMM_ISOLATED OFF CACHE BOOL "No webOS isolated worker: native emulation unavailable" FORCE)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native/games/romm" "${CMAKE_CURRENT_BINARY_DIR}/romm_native")
 install(TARGETS plezy_retro LIBRARY DESTINATION lib)
 if(PLEZY_ROMM_BUILD_CORES)

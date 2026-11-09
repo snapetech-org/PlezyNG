@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Software-rendered libretro host. Desktop builds link this only into the
-// isolated helper; mobile platforms with no helper retain the isolate host.
+// Software-rendered libretro adapter, linked only into an isolated worker.
+#ifndef PLEZY_RETRO_REMOTE_AUDIO
+#error Libretro cores must run in an isolated worker with parent-owned audio
+#endif
 #include <algorithm>
 #include <atomic>
 #include <cmath>
@@ -14,6 +16,9 @@
 #include <string>
 #include <vector>
 #include "libretro.h"
+#ifdef PLEZY_RETRO_DESCRIPTOR_INPUTS
+#include "retro_input_files.h"
+#endif
 #ifndef PLEZY_RETRO_REMOTE_AUDIO
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
@@ -77,6 +82,13 @@ std::atomic<bool> claimed{false};
 bool environment(unsigned command, void* data) {
   if (!host) return false;
   switch(command) {
+#ifdef PLEZY_RETRO_DESCRIPTOR_INPUTS
+    case RETRO_ENVIRONMENT_GET_VFS_INTERFACE: {
+      auto* info=static_cast<retro_vfs_interface_info*>(data);
+      if(!info || info->required_interface_version>3 || !plezy::retro::inputs::configured) return false;
+      info->required_interface_version=3;info->iface=&plezy::retro::inputs::interface;return true;
+    }
+#endif
     case RETRO_ENVIRONMENT_GET_CAN_DUPE: *static_cast<bool*>(data)=true; return true;
     case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT: {
       const auto format=*static_cast<unsigned*>(data);
@@ -115,7 +127,7 @@ bool environment(unsigned command, void* data) {
       return true;
     }
     case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE: *static_cast<int*>(data)=3; return true;
-    default: return false; // In particular: no HW context, executable or VFS access.
+    default: return false; // No HW context or executable interface.
   }
 }
 void video(const void* data,unsigned width,unsigned height,size_t pitch) {
@@ -210,11 +222,16 @@ API int plezy_retro_open(const char* core,const char* rom,const char* system,con
   host->identity=std::string(info.library_name?info.library_name:"")+"/"+(info.library_version?info.library_version:"");
   retro_game_info game{};game.path=host->path.c_str();
   if(!info.need_fullpath) {
+#ifdef PLEZY_RETRO_DESCRIPTOR_INPUTS
+    if(!plezy::retro::inputs::Load(host->path,host->rom)) {cleanup();return 0;}
+    game.data=host->rom.data();game.size=host->rom.size();
+#else
     std::ifstream input(std::filesystem::u8path(host->path),std::ios::binary|std::ios::ate);
     const auto size=input.tellg();
     if(!input || size<=0 || size>134217728) {cleanup();return 0;}
     host->rom.resize(static_cast<size_t>(size));input.seekg(0);input.read(reinterpret_cast<char*>(host->rom.data()),size);
     if(!input){cleanup();return 0;}game.data=host->rom.data();game.size=host->rom.size();
+#endif
   }
   if(!host->load_game(&game)) {cleanup();return 0;}host->loaded=true;
   for(unsigned p=0;p<4;p++) host->set_controller_port_device(p,RETRO_DEVICE_JOYPAD);

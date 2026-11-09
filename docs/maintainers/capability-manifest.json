@@ -120,7 +120,7 @@
         "docs/games/ARCHITECTURE.md",
         "docs/games/VALIDATION.md"
       ],
-      "open": "Steam receiver/cloud/family/internet/controller/capture sources and RomM exact-copy/browser/stream/native/save workflows are integrated. SDK helper checks pass; native SDK app builds, deployed optional services and real account/network/device acceptance remain open."
+      "open": "Steam receiver/cloud/family/internet/controller/capture sources and RomM exact-copy/browser/stream/native/save workflows are integrated. Native RomM play requires an OS-isolated worker: desktop and Android have adapters, while iOS/tvOS/webOS/Tizen report native play unavailable pending containment. SDK helper checks pass; native SDK app builds, deployed optional services and real account/network/device acceptance remain open."
     },
     {
       "area": "Multiview",

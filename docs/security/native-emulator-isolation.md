@@ -3,8 +3,8 @@
 Desktop builds load a small `plezy_retro` proxy into the app. Bundled libretro
 cores, including their library constructors, execute only in the packaged
 `plezy_retro_worker`. The Dart host checks isolation ABI 1 before probing or
-opening a desktop core. A missing worker, mismatched host or unavailable sandbox
-fails closed; it never falls back to loading a core into the desktop app.
+opening a core on any platform. A missing worker, mismatched host or unavailable sandbox
+fails closed; it never falls back to loading a core into the app.
 
 The parent owns audio output and the durable save workflow. The worker receives
 only the selected game, firmware and core paths. Frames, PCM, SRAM, RTC and save
@@ -18,8 +18,9 @@ environment, and unrelated handles/descriptors are not inherited.
 | --- | --- |
 | Linux x64/arm64 | Landlock ABI 3 or later, enabled by the running kernel, is required. Only selected resources and system libraries are readable. No file writes are granted. A seccomp filter rejects networking, process inspection/signalling, new processes, executable replacement, mount operations and filesystem metadata mutations outside Landlock's coverage. Address space is limited to 768 MiB and core dumps are disabled. |
 | Windows | An AppContainer with no network capabilities receives a private read-only stage containing the worker, selected core, ROM, firmware and any app-local CRT dependencies. A job allows one process, limits memory to 768 MiB and kills the worker when its owner closes. Native code verifies that its token is an AppContainer. A non-delete-sharing lease protects live stages; later starts remove abandoned, marked stages without following reparse points. |
-| macOS | The separately signed helper enters a deny-by-default Seatbelt policy before loading a core. Only selected inputs and system libraries are readable; networking and file writes are not allowed. A parent-side resident-memory watchdog terminates workers exceeding 768 MiB. The worker receives no JIT or unsigned-executable-memory entitlement. |
-| Android, iOS/tvOS and TV backends built without this desktop helper | The existing in-process backend remains explicit. It does **not** provide the desktop security boundary. Process/service conversion and physical-device qualification remain open; a Dart isolate is not an OS sandbox. |
+| macOS | The separately signed helper enters a deny-by-default Seatbelt policy before loading a core. Only selected inputs and system libraries are readable; networking and file writes are not allowed. A parent-side resident-memory watchdog terminates workers exceeding 768 MiB. Core frameworks are copied and signed for the worker without linking them into the app; the build checks the app's dynamic dependencies. The worker receives no JIT or unsigned-executable-memory entitlement. |
+| Android and Android TV | A private `isolatedProcess` service runs under an Android isolated UID, without app permissions or private-storage access. Only bundled core names are accepted. The parent passes read-only descriptors for the selected ROM (128 MiB) and up to 64 firmware files (256 MiB total); a read-only libretro VFS supplies those inputs. Audio and durable saves remain in the app. Unbinding requests termination; the lease is held until Android reports process death. Further data mappings are capped at 512 MiB above the runtime's existing mappings; this is not a resident-memory cgroup limit. Runtime qualification is recorded in the audit ledger. |
+| iOS, tvOS, webOS and Tizen | Native emulation is unavailable until a supported OS-isolated worker is implemented. Builds without a worker link an unavailable ABI that never loads a core, even during probing. The Dart layer independently requires isolation ABI 1 on every platform. Existing browser and streaming routes retain their capability checks. A Dart isolate is not an OS sandbox. |
 
 Some Linux systems disable Landlock or ship an older ABI. On those systems native
 desktop cores are unavailable; existing alternative game routes remain subject
@@ -58,9 +59,21 @@ the production host and worker on hosted Linux, Windows and macOS runners.
 An additional CMake/CTest target loads a fixture shared library through the
 production worker and libretro adapter; it verifies constructors, frame
 conversion, private-file denial and save restore without using real game files.
+A constructor-trap fixture verifies that the unavailable host cannot load a core even during capability probing.
 Actual bundled-core, signed-package, audio-device and game compatibility checks
 remain part of platform release qualification.
+
+The Android workflow builds all four application ABIs and runs the actual
+isolated service on an Android emulator. The fixture checks private-file and
+network denial, descriptor-backed firmware, frames, save round trips, crashes,
+hangs, oversized state, stuck teardown, complete process suspension and restart.
+The test APK includes the production broker, service, proxy and worker; its
+fixture core is never included in the application. The portable VFS regression
+also checks writable-descriptor rejection, path traversal, read/seek limits and
+continued access after the parent's input pathname is removed.
 
 The OS contracts used here are documented in the
 [Linux Landlock API](https://docs.kernel.org/userspace-api/landlock.html) and
 [Windows AppContainer launch guidance](https://learn.microsoft.com/en-us/windows/win32/secauthz/implementing-an-appcontainer).
+Android's process boundary is defined by the
+[`isolatedProcess` service contract](https://developer.android.com/guide/topics/manifest/service-element#isolated).

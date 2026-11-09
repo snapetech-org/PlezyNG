@@ -16,7 +16,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
-PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime", "bblanchon/pdfium-binaries", "gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "arvidn/libtorrent", "simdutf/simdutf", "ninja-build/ninja", "snapetech-org/mpv-build", "vslavik/winsparkle", "libsdl-org/SDL", "jrsoftware/issrc", "AppImage/appimagetool", "lg-flutter-webos/ndk", "lg-flutter-webos/artifacts", "ales-drnz/dart_smb2"}
+PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime", "bblanchon/pdfium-binaries", "gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "arvidn/libtorrent", "simdutf/simdutf", "ninja-build/ninja", "snapetech-org/mpv-build", "vslavik/winsparkle", "libsdl-org/SDL", "jrsoftware/issrc", "AppImage/appimagetool", "lg-flutter-webos/ndk", "lg-flutter-webos/artifacts", "ales-drnz/dart_smb2", "actions/python-versions"}
 
 
 def sha256(path):
@@ -60,7 +60,7 @@ def pinned_asset(repository, tag, name, expected, cache, release=None):
     if len(matches) != 1:
         raise ValueError(f"Native asset is not unique: {repository}/{tag}/{name}")
     asset = matches[0]
-    if asset.get("digest") not in (None, f"sha256:{expected}") or not 0 < asset.get("size", 0) <= (512 if repository in {"gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "snapetech-org/mpv-build", "lg-flutter-webos/ndk"} else 64) * 1024**2:
+    if asset.get("digest") not in (None, f"sha256:{expected}") or not 0 < asset.get("size", 0) <= (512 if repository in {"gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "snapetech-org/mpv-build", "lg-flutter-webos/ndk", "actions/python-versions"} else 64) * 1024**2:
         raise ValueError(f"Upstream native asset does not match its independent pin: {name}")
     failure = None
     for attempt in range(3):
@@ -346,6 +346,42 @@ def prepare_cmake_downloads(root, platform, arch, cache):
 
 
 
+def prepare_webos_python(cache):
+    if os.name != "posix" or os.uname().machine != "x86_64" or 'VERSION_ID="24.04"' not in Path("/etc/os-release").read_text():
+        raise ValueError("Pinned webOS Python requires Ubuntu 24.04 x86_64")
+    toolcache = Path(os.environ["RUNNER_TOOL_CACHE"])
+    destination = toolcache / "Python/3.14.8/x64"
+    marker = destination.with_name("x64.complete")
+    if destination.is_symlink() or marker.is_symlink():
+        raise ValueError("Refusing linked Python cache")
+    if destination.exists() or marker.exists():
+        if not destination.is_dir() or not marker.is_file():
+            raise ValueError("Existing incomplete Python cache retained; refusing to replace it")
+        result = subprocess.check_output([str(destination / "bin/python3.14"), "--version"], text=True).strip()
+        if result != "Python 3.14.8":
+            raise ValueError("Existing Python cache has the wrong version")
+        return
+    archive = pinned_asset("actions/python-versions", "3.14.8-36806082737",
+                           "python-3.14.8-linux-24.04-x64.tar.gz",
+                           "fa74abc70a55c10f6631967784878704eef81bbde9b8ec27469534f6ba997cb3", cache)
+    stage = Path(tempfile.mkdtemp(prefix="pleazyng-python-install-", dir=os.environ["RUNNER_TEMP"]))
+    print(f"Pinned Python installer scratch: {stage}", flush=True)
+    try:
+        with tarfile.open(archive) as bundle:
+            bundle.extractall(stage, filter="data")
+        # The pinned upstream installer creates the completion marker only after
+        # successful installation. Its replace-existing branch is excluded above.
+        environment = {**os.environ, "AGENT_TOOLSDIRECTORY": str(toolcache)}
+        subprocess.run(["bash", "setup.sh"], cwd=stage, env=environment, check=True)
+        if not marker.is_file() or subprocess.check_output([str(destination / "bin/python3.14"), "--version"], text=True).strip() != "Python 3.14.8":
+            raise ValueError("Upstream Python installer did not produce its expected cache")
+    except Exception:
+        print(f"Retained Python installer diagnostics: {stage}", file=sys.stderr)
+        raise
+    else:
+        shutil.rmtree(stage)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, default=Path.cwd())
@@ -353,6 +389,7 @@ def main():
     parser.add_argument("--sqlite-platform", choices=("android", "ios", "tvos", "macos", "windows", "linux"))
     parser.add_argument("--appimage-runtime", type=Path)
     parser.add_argument("--github-url")
+    parser.add_argument("--webos-python", action="store_true")
     parser.add_argument("--expected-sha")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--arch", choices=("x64", "arm64"))
@@ -360,8 +397,10 @@ def main():
     parser.add_argument("--cmake-deps", action="store_true")
     parser.add_argument("--curl-wrapper-dir", type=Path)
     args = parser.parse_args()
-    if not args.sqlite_platform and not args.appimage_runtime and not args.github_url:
+    if not args.sqlite_platform and not args.appimage_runtime and not args.github_url and not args.webos_python:
         parser.error("Specify --sqlite-platform or --appimage-runtime")
+    if args.webos_python:
+        prepare_webos_python(args.cache_dir.resolve())
     if args.sqlite_platform:
         prepare_sqlite(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
         prepare_pdfium(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())

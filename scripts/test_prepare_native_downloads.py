@@ -2,6 +2,7 @@ import hashlib
 import json
 import io
 import tarfile
+from types import SimpleNamespace
 from pathlib import Path
 import subprocess
 import tempfile
@@ -150,6 +151,27 @@ class NativeDownloadsTests(unittest.TestCase):
             downloads.prepare_cmake_downloads(self.root, "ios", None, self.root / "cache")
         output = stage.call_args.args[2]
         self.assertEqual(output, self.root / "build/p2p/dependencies/libtorrent-subbuild/libtorrent-populate-prefix/src/source.tar.gz")
+
+    def test_python_bootstrap_preserves_existing_partial_and_complete_caches(self):
+        toolcache = self.root / "toolcache"
+        destination = toolcache / "Python/3.14.8/x64"
+        destination.mkdir(parents=True)
+        evidence = destination / "existing-build-evidence"
+        evidence.write_text("preserve")
+        original_read = Path.read_text
+        def read(path, *args, **kwargs):
+            return 'VERSION_ID="24.04"' if str(path) == "/etc/os-release" else original_read(path, *args, **kwargs)
+        with patch.dict(downloads.os.environ, {"RUNNER_TOOL_CACHE": str(toolcache)}), \
+                patch.object(downloads.os, "uname", return_value=SimpleNamespace(machine="x86_64")), \
+                patch.object(Path, "read_text", read), patch.object(downloads, "pinned_asset") as fetch:
+            with self.assertRaisesRegex(ValueError, "incomplete Python cache retained"):
+                downloads.prepare_webos_python(self.root / "cache")
+            self.assertEqual(evidence.read_text(), "preserve")
+            destination.with_name("x64.complete").touch()
+            with patch.object(downloads.subprocess, "check_output", return_value="Python 3.14.8\n"):
+                downloads.prepare_webos_python(self.root / "cache")
+            self.assertEqual(evidence.read_text(), "preserve")
+            fetch.assert_not_called()
 
     def test_libdovi_cache_wrapper_preserves_verified_archives_and_other_curl_calls(self):
         android = self.root / "android/app"

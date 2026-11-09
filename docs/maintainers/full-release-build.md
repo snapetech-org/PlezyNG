@@ -482,3 +482,10 @@ XCFramework archives); tvOS retains its existing AMSMB2 stub. Apple torrent
 archives go into `build/p2p/dependencies` before CocoaPods invokes the unchanged
 native builder. Linux libmpv and offline HDR/SDR runtime fetchers use the same
 verified API path, with the existing pin and extracted-runtime checks retained.
+
+The private webOS job prefetches the exact actions/python-versions Python 3.14.8
+Ubuntu 24.04 x64 archive before setup-python. It checks the archive's pinned
+SHA, uses the upstream installer to populate the runner's normal tool cache,
+and checks its version and completion marker. Complete matching caches are
+reused; partial or mismatched caches are retained and rejected, never replaced.
+The later setup-python action remains and verifies/discovers the same version.

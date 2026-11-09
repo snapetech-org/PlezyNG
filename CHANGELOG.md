@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prefetch and install the exact webOS Python 3.14.8 archive before setup-python, retaining existing tool caches and the upstream installer completion checks.
+
 - Prefetch the pinned SMB hook, Apple torrent CMake sources and Linux native archives through the same verified API path, preserving their original shared-cache layouts and native hashes.
 
 - Stage pinned PDFium, Gradle, CMake sources, Windows tools and webOS toolchains through verified GitHub API downloads when release-page transport fails, preserving source pins and isolated native ABI outputs.

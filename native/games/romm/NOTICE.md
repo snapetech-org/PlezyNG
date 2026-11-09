@@ -1,4 +1,7 @@
 Pleazyng's RomM adapter and software libretro host are GPL-3.0-or-later.
+The desktop isolation transport adapts Pleazyng's existing visualization
+process/pipe implementation and retains AGPL-3.0-only notices in those files.
+The desktop proxy/worker sources and both license texts accompany the package.
 RomM itself remains a separately installed AGPL-3.0 service; no RomM frontend
 source is copied into Pleazyng. Its player is served by the user's server.
 

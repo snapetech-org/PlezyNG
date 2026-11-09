@@ -113,11 +113,19 @@ def stage_host_sources(values, output):
             raise ValueError('Host dependency differs from its immutable source pin')
     copies = {ROOT / path: 'build-recipe/' + path for path in (
         'native/games/romm/CMakeLists.txt', 'native/games/romm/cores/CMakeLists.txt',
-        'native/games/romm/core-sources.json', 'native/games/romm/retro_host.cpp',
-        'native/games/romm/NOTICE.md', 'scripts/games/package_romm_cores.py')}
+        'native/games/romm/core-sources.json',
+        'native/games/romm/NOTICE.md', 'scripts/games/package_romm_cores.py',
+        'scripts/games/build_romm_apple.py', 'scripts/games/install_macos_worker.sh')}
+    # Corresponding source must include the desktop proxy/worker and transport,
+    # not only the former in-process host translation unit.
+    for source in (*recipe.glob('retro_*.cpp'), *recipe.glob('retro_*.h'),
+                   *(ROOT / 'shared/process').glob('*.h')):
+        copies[source] = 'build-recipe/' + source.relative_to(ROOT).as_posix()
     copies.update({roots['libretro_common'] / 'include/libretro.h': 'host/include/libretro.h',
                    roots['miniaudio'] / 'miniaudio.h': 'host/include/miniaudio.h',
-                   roots['miniaudio'] / 'LICENSE': 'host/miniaudio-LICENSE'})
+                   roots['miniaudio'] / 'LICENSE': 'host/miniaudio-LICENSE',
+                   ROOT / 'LICENSE': 'host/GPL-3.0.txt',
+                   ROOT / 'native/visualizer/notices/MilkRust-AGPL-3.0.txt': 'host/AGPL-3.0.txt'})
     for source, relative in copies.items():
         destination = output / relative
         destination.parent.mkdir(parents=True, exist_ok=True)

@@ -82,9 +82,9 @@
     "directory": "lib/i18n",
     "filePattern": "*.i18n.json",
     "qualityStatus": "Structural locale coverage is present; native-speaker fluency review is not established by key counts or generated-file checks.",
-    "messagesPerLocale": 5168,
-    "englishFallbackKeys": 1244,
-    "englishFallbackEntries": 44784,
+    "messagesPerLocale": 5166,
+    "englishFallbackKeys": 1242,
+    "englishFallbackEntries": 44712,
     "coverageReport": "docs/localization/coverage.json",
     "coverageReviewedOn": "2026-11-09"
   },
@@ -184,7 +184,7 @@
         "lib/sources/source_controller.dart",
         "lib/profiles/active_profile_provider.dart"
       ],
-      "qualification": "Profile data is staged and published as one owner-scoped snapshot; stale loads and adapter callbacks are generation-guarded. Adversarial A→B→A completion-order and credential-refresh acceptance has not been run on this branch."
+      "qualification": "Profile data is staged and published as one owner-scoped snapshot; stale loads and adapter callbacks are generation-guarded. Adversarial A\u2192B\u2192A completion-order and credential-refresh acceptance has not been run on this branch."
     },
     {
       "id": "F02",

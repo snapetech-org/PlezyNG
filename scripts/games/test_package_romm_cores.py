@@ -168,6 +168,60 @@ class AppleCacheTests(unittest.TestCase):
             self.assertEqual(package.parse_inputs([f'{core}={path}' for core, path in libraries.items()]),
                              libraries)
 
+    def test_macos_cache_requires_the_exact_executable_worker(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for name in (*[name + '.xcframework' for name in apple.FRAMEWORKS], 'notices'):
+                folder = root / name
+                folder.mkdir()
+                (folder / 'content').write_bytes(b'fixture')
+
+            def record():
+                receipt = {'sourceSha256': 'recipe', 'artifacts': {
+                    path.name: apple.tree_digest(path) for path in root.iterdir() if path.is_dir()}}
+                (root / 'build-receipt.json').write_text(json.dumps(receipt))
+
+            record()
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
+            (root / 'helpers').mkdir()
+            helper = root / 'helpers/plezy_retro_worker'
+            helper.write_bytes(b'worker fixture')
+            helper.chmod(0o755)
+            record()
+            self.assertTrue(apple.cache_valid(root, 'recipe', 'macos'))
+            helper.write_bytes(b'changed worker')
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
+            helper.write_bytes(b'worker fixture')
+            helper.chmod(0o644)
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
+            helper.unlink()
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
+
+    def test_corresponding_source_contains_the_desktop_worker_and_transport(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            common, audio, output = root / 'common', root / 'audio', root / 'output'
+            (common / 'include').mkdir(parents=True)
+            audio.mkdir()
+            (common / 'include/libretro.h').write_text('fixture API')
+            (audio / 'miniaudio.h').write_text('fixture audio')
+            (audio / 'LICENSE').write_text('fixture notice')
+            def clean_revision(source, *args):
+                return b'' if args[0] == 'diff' else b'0' * 40
+            with patch.object(package, 'git', side_effect=clean_revision):
+                package.stage_host_sources([f'libretro_common={common}', f'miniaudio={audio}'], output)
+            for relative in (
+                'native/games/romm/retro_host.cpp', 'native/games/romm/retro_proxy.cpp',
+                'native/games/romm/retro_worker.cpp', 'native/games/romm/retro_protocol.h',
+                'native/games/romm/retro_sandbox.h', 'native/games/romm/retro_windows_sandbox.h',
+                'shared/process/byte_pipe.h', 'shared/process/child_process.h',
+                'scripts/games/build_romm_apple.py', 'scripts/games/install_macos_worker.sh',
+            ):
+                self.assertEqual((output / 'build-recipe' / relative).read_bytes(),
+                                 (package.ROOT / relative).read_bytes())
+            self.assertTrue((output / 'host/GPL-3.0.txt').is_file())
+            self.assertTrue((output / 'host/AGPL-3.0.txt').is_file())
+
     def test_cache_verifies_every_framework_and_corresponding_source(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

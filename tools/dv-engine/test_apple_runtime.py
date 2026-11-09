@@ -1,8 +1,6 @@
 import json
 import os
 from pathlib import Path
-import signal
-import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -11,28 +9,6 @@ import build_apple_runtime as runtime
 
 
 class AppleRuntimeEnvironmentTest(unittest.TestCase):
-    def test_package_graph_abort_retries_once_from_clean_task_state(self):
-        with tempfile.TemporaryDirectory() as directory:
-            work = Path(directory)
-            for name in ('SourcePackages', 'DerivedData'):
-                target = work / name
-                target.mkdir()
-                (target / 'partial').write_text('stale')
-            failure = subprocess.CalledProcessError(-signal.SIGABRT, ['xcodebuild'])
-            with patch('build_apple_runtime.run', side_effect=(failure, None)) as mocked:
-                runtime.resolve_packages(['xcodebuild'], work, {'PATH': '/tools'})
-            self.assertEqual(mocked.call_count, 2)
-            self.assertFalse((work / 'SourcePackages').exists())
-            self.assertFalse((work / 'DerivedData').exists())
-
-    def test_ordinary_package_resolution_failure_is_not_retried(self):
-        with tempfile.TemporaryDirectory() as directory:
-            failure = subprocess.CalledProcessError(65, ['xcodebuild'])
-            with patch('build_apple_runtime.run', side_effect=failure) as mocked:
-                with self.assertRaises(subprocess.CalledProcessError):
-                    runtime.resolve_packages(['xcodebuild'], Path(directory), {})
-            mocked.assert_called_once()
-
     def test_discards_outer_app_settings_but_keeps_execution_and_fetch_settings(self):
         keep = {
             'HOME': '/Users/builder', 'PATH': '/opt/homebrew/bin:/usr/bin',
@@ -91,13 +67,14 @@ class AppleRuntimeEnvironmentTest(unittest.TestCase):
             with patch.dict(os.environ, parent, clear=True), patch('build_apple_runtime.run', side_effect=run) as mocked:
                 self.assertEqual(runtime.build(work, 'iphonesimulator', 'Debug', ['arm64']), products)
                 self.assertEqual(dict(os.environ), parent)
-            self.assertEqual(mocked.call_count, 3)
+            self.assertEqual(mocked.call_count, 2)
             for call in mocked.call_args_list:
                 self.assertNotIn('EXECUTABLE_DEBUG_DYLIB_PATH', call.kwargs['env'])
                 self.assertNotIn('EXPANDED_CODE_SIGN_IDENTITY', call.kwargs['env'])
                 self.assertEqual(call.kwargs['env']['HOME'], '/builder')
                 self.assertEqual(call.kwargs['env']['GIT_CONFIG_COUNT'], '4')
             command = mocked.call_args_list[-1].args[0]
+            self.assertNotIn('-resolvePackageDependencies', command)
             self.assertIn('ARCHS=arm64', command)
             self.assertIn('CODE_SIGNING_ALLOWED=NO', command)
             self.assertIn('-onlyUsePackageVersionsFromResolvedFile', command)

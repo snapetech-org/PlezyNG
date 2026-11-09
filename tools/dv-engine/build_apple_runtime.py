@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 import platform
 import shutil
-import signal
 import subprocess
 
 from build_adapters import verify_swift_pins
@@ -24,20 +23,6 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def run(args, *, cwd=None, env=None):
     subprocess.run(list(map(str, args)), cwd=cwd, env=env, check=True)
-
-
-def resolve_packages(common, work: Path, env):
-    command = common + ["-resolvePackageDependencies"]
-    try:
-        run(command, cwd=work, env=env)
-    except subprocess.CalledProcessError as error:
-        # Xcode 26 can abort inside its package-graph model after completing a
-        # fetch. Retry only that internal crash, once, from task-owned state.
-        if error.returncode not in (-signal.SIGABRT, 128 + signal.SIGABRT):
-            raise
-        for directory in (work / "SourcePackages", work / "DerivedData"):
-            shutil.rmtree(directory, ignore_errors=True)
-        run(command, cwd=work, env=env)
 
 
 def build_environment(base=None):
@@ -125,8 +110,9 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
         "-scmProvider", "system", "-disableAutomaticPackageResolution",
         "-onlyUsePackageVersionsFromResolvedFile", "-jobs", "2",
     ]
-    resolve_packages(common, work, env)
-    verify_swift_pins(resolved, pins, required=aether["swift_required_pins"] + ["aetherengine"])
+    # The build loads the checked-in Package.resolved under
+    # -onlyUsePackageVersionsFromResolvedFile. A separate nested resolve action
+    # reliably aborts inside Xcode 26's package-graph model and is redundant.
     run(common + ["ARCHS=" + " ".join(architectures), "ONLY_ACTIVE_ARCH=NO", "CODE_SIGNING_ALLOWED=NO", "build"], cwd=work, env=env)
     verify_swift_pins(resolved, pins, required=aether["swift_required_pins"] + ["aetherengine"])
     products = work / "DerivedData/Build/Products"

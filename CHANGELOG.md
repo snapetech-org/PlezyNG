@@ -4,6 +4,8 @@
 
 - Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.
 
+- Build the nested Dolby Vision package graph directly from its verified `Package.resolved` pins, removing a redundant Xcode 26 resolve-only action that aborted consistently on hosted Apple Silicon.
+
 - Retire the mutable updater-feed branch in favor of published release assets, preserve an immutable legacy updater bridge, and continuously audit/test the Decky build dependency graph.
 
 - Verify the signed, ticket-stapled app inside the existing macOS disk image before publishing Homebrew, rather than requiring a second ticket on the outer image. Add a locked downstream Nix flake for the existing v3.0.7 Linux release.

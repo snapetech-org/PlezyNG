@@ -1,0 +1,41 @@
+name: Decky security and build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'integrations/steam-cloud-decky/**'
+      - '.github/workflows/decky-security.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '41 6 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: decky-security-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+
+  decky:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Audit and verify the Decky build and host loader contract
+        working-directory: integrations/steam-cloud-decky
+        run: |
+          npm ci --ignore-scripts
+          npm audit --audit-level=low
+          npm run typecheck
+          npm run build
+          npm test
+          python3 -m unittest test_bridge.py
+          python3 package.py --output "$RUNNER_TEMP/pleazyng-steam-cloud.zip"

@@ -54,10 +54,12 @@ def main():
         raise RuntimeError('Fresh emulator required; existing app data will not be replaced')
     root = args.artifacts
     receipt = json.loads((root / 'play-qualification.json').read_text())
-    apk = receipt['apks'][0]
-    if not apk.get('signing_certificate_verified'):
+    apks = receipt.get('emulator_test_apks', [])
+    if not apks:
+        raise RuntimeError('Google-provided native emulator QA split set is required')
+    if not all(apk.get('signing_certificate_verified') for apk in apks):
         raise RuntimeError('Verify the Google signing certificate before executing the APK')
-    adb('install', str((root / apk['file']).resolve()), timeout=180)
+    adb('install-multiple', *(str((root / apk['file']).resolve()) for apk in apks), timeout=180)
     adb('root')
     adb('wait-for-device')
     info = adb('shell', 'cmd', 'package', 'list', 'packages', '-U', PACKAGE)
@@ -89,12 +91,13 @@ def main():
         adb('shell', 'am', 'start', '-n', component)
 
     def ui():
-        path = '/data/local/tmp/pleazyng-review-ui.xml'
-        adb('shell', 'uiautomator', 'dump', path)
-        data = adb('shell', 'cat', path)
-        adb('shell', 'rm', path)
+        # /dev/stdout streams directly through adb; no populated grant XML is
+        # written to device storage, even if parsing or a command fails.
+        data = adb('exec-out', 'uiautomator', 'dump', '/dev/stdout')
         try:
-            return ET.fromstring(data[data.index('<?xml'):])
+            start = data.index('<?xml')
+            end = data.index('</hierarchy>', start) + len('</hierarchy>')
+            return ET.fromstring(data[start:end])
         except (ValueError, ET.ParseError):
             raise RuntimeError('Could not parse native accessibility tree') from None
 
@@ -134,7 +137,6 @@ def main():
     # No screenshots, XML files, command echo or raw logs are retained from here
     # until the dialog has closed. The existing grant stays in the CI secret.
     adb('shell', 'input', 'text', token)
-    tree = ui()
     click(tree, 'Activate')
     unlocked = lambda values: (not any(EXPIRED in value or 'Review code' in value for value in values)
                               and any('Sign in with Plex' in value or 'Connect to Jellyfin' in value for value in values))
@@ -145,7 +147,10 @@ def main():
     wait_for(unlocked)
     (root / 'review-grant-after-restart.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
     receipt.update(reviewer_grant_device_qualified=True, reviewer_test={
-        'target': 'fresh native x86_64 Android emulator; actual Google-signed APK',
+        'target': 'fresh native x86_64 Android emulator; Google-signed official unprotected QA split set',
+        'automatic_protection_in_emulator': False,
+        'installation': 'Google-provided unprotected native splits sideloaded with adb install-multiple',
+        'protected_store_installation': 'requires separate real Play installation on the physical phone',
         'trial_fixture': 'started eight days before test, injected before first launch',
         'expired_gate_observed': True, 'restore_control_present_on_expired_gate': True,
         'grant_redeemed_through_disclosed_ui': True,

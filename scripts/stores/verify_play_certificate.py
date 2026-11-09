@@ -21,7 +21,7 @@ def main():
     args = parser.parse_args()
     path = args.directory / 'play-qualification.json'
     receipt = json.loads(path.read_text())
-    for apk in receipt['apks']:
+    for apk in receipt['apks'] + receipt.get('emulator_test_apks', []):
         binary = args.directory / apk['file']
         with binary.open('rb') as stream:
             if hashlib.file_digest(stream, 'sha256').hexdigest() != apk['sha256']:

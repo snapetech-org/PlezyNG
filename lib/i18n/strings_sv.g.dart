@@ -114,6 +114,7 @@ class TranslationsSv extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$sv issueReport = _Translations$issueReport$sv._(_root);
 	@override late final _Translations$romm$sv romm = _Translations$romm$sv._(_root);
 	@override late final _Translations$subtitleCapture$sv subtitleCapture = _Translations$subtitleCapture$sv._(_root);
+	@override late final _Translations$musicExperience$sv musicExperience = _Translations$musicExperience$sv._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$sv extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Bearbetar ljud lokalt…';
 	@override String processingAudioProgress({required Object percent}) => 'Bearbetar ljud lokalt (${percent}%)…';
 	@override String get cpuFallback => 'Talbearbetning på GPU misslyckades. Försöker igen med CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$sv extends Translations$musicExperience$en {
+	_Translations$musicExperience$sv._(TranslationsSv root) : this._root = root, super.internal(root);
+
+	final TranslationsSv _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Upptäck musik';
+	@override String get mix => 'Skapa mix';
+	@override String get adventure => 'Ljudäventyr';
+	@override String get related => 'Liknande ljud';
+	@override String get seeds => 'Utgångspunkter och stopp';
+	@override String get search => 'Sök artist, album eller låt';
+	@override String get generate => 'Förhandsgranskning';
+	@override String get saveRecipe => 'Spara recept';
+	@override String get saved => 'Sparade recept';
+	@override String get savePlaylist => 'Spara spellista';
+	@override String get name => 'Namn';
+	@override String get trackLimit => 'Maximalt antal låtar';
+	@override String get empty => 'Ingen matchande musik. Ljudfunktioner kräver analys på servern.';
+	@override String get unsupported => 'Den här servern erbjuder inte ljudanalys.';
+	@override String get continuation => 'Fortsätt med liknande musik';
+	@override String get shuffleAlbums => 'Blanda album';
+	@override String get nextAlbum => 'Nästa album';
+	@override String get driving => 'Körvy';
+	@override String get exitDriving => 'Lämna körvy';
+	@override String get signalPath => 'Ljudsignalens väg';
+	@override String get source => 'Källa';
+	@override String get local => 'Hämtat ljud';
+	@override String get network => 'Serverljud';
+	@override String get engine => 'Uppspelningsmotor';
+	@override String get codec => 'Källkodek';
+	@override String get channels => 'Källkanaler';
+	@override String get processing => 'Bearbetas';
+	@override String get normalization => 'Normalisering';
+	@override String get equalizer => 'Equalizer';
+	@override String get fades => 'Volymtoningar';
+	@override String get outputUnknown => 'Hårdvarans utdataformat har inte mätts.';
+	@override String get download => 'Hämta urvalet';
+	@override String get ready => 'Redo';
+	@override String get remove => 'Ta bort';
+	@override String get play => 'Spela urvalet';
+	@override String get next => 'Spela härnäst';
+	@override String get error => 'Musikförfrågan misslyckades';
+	@override String get on => 'på';
+	@override String get off => 'Av';
+	@override String get unknown => 'Okänd';
+	@override String get routeLost => 'Ljudutgången kopplades från. Uppspelningen pausades.';
+	@override String get autoDriving => 'Öppna körvyn vid anslutning till en bil';
+	@override String get routeHint => 'Bilens system avgör om appen kan visas automatiskt.';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsSv {
 			'subtitleCapture.processingAudio' => 'Bearbetar ljud lokalt…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Bearbetar ljud lokalt (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Talbearbetning på GPU misslyckades. Försöker igen med CPU…',
+			'musicExperience.title' => 'Upptäck musik',
+			'musicExperience.mix' => 'Skapa mix',
+			'musicExperience.adventure' => 'Ljudäventyr',
+			'musicExperience.related' => 'Liknande ljud',
+			'musicExperience.seeds' => 'Utgångspunkter och stopp',
+			'musicExperience.search' => 'Sök artist, album eller låt',
+			'musicExperience.generate' => 'Förhandsgranskning',
+			'musicExperience.saveRecipe' => 'Spara recept',
+			'musicExperience.saved' => 'Sparade recept',
+			'musicExperience.savePlaylist' => 'Spara spellista',
+			'musicExperience.name' => 'Namn',
+			'musicExperience.trackLimit' => 'Maximalt antal låtar',
+			'musicExperience.empty' => 'Ingen matchande musik. Ljudfunktioner kräver analys på servern.',
+			'musicExperience.unsupported' => 'Den här servern erbjuder inte ljudanalys.',
+			'musicExperience.continuation' => 'Fortsätt med liknande musik',
+			'musicExperience.shuffleAlbums' => 'Blanda album',
+			'musicExperience.nextAlbum' => 'Nästa album',
+			'musicExperience.driving' => 'Körvy',
+			'musicExperience.exitDriving' => 'Lämna körvy',
+			'musicExperience.signalPath' => 'Ljudsignalens väg',
+			'musicExperience.source' => 'Källa',
+			'musicExperience.local' => 'Hämtat ljud',
+			'musicExperience.network' => 'Serverljud',
+			'musicExperience.engine' => 'Uppspelningsmotor',
+			'musicExperience.codec' => 'Källkodek',
+			'musicExperience.channels' => 'Källkanaler',
+			'musicExperience.processing' => 'Bearbetas',
+			'musicExperience.normalization' => 'Normalisering',
+			'musicExperience.equalizer' => 'Equalizer',
+			'musicExperience.fades' => 'Volymtoningar',
+			'musicExperience.outputUnknown' => 'Hårdvarans utdataformat har inte mätts.',
+			'musicExperience.download' => 'Hämta urvalet',
+			'musicExperience.ready' => 'Redo',
+			'musicExperience.remove' => 'Ta bort',
+			'musicExperience.play' => 'Spela urvalet',
+			'musicExperience.next' => 'Spela härnäst',
+			'musicExperience.error' => 'Musikförfrågan misslyckades',
+			'musicExperience.on' => 'på',
+			'musicExperience.off' => 'Av',
+			'musicExperience.unknown' => 'Okänd',
+			'musicExperience.routeLost' => 'Ljudutgången kopplades från. Uppspelningen pausades.',
+			'musicExperience.autoDriving' => 'Öppna körvyn vid anslutning till en bil',
+			'musicExperience.routeHint' => 'Bilens system avgör om appen kan visas automatiskt.',
 			_ => null,
 		};
 	}

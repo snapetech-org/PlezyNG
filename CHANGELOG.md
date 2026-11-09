@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Integrate multi-seed music mixes, saved recipes, Plex sonic similarity and waypoint paths into artist, album and Now Playing screens; reuse playlist saving and downloads. Preserve full large queues in paged storage, add guarded radio continuation, album shuffle/skip, analysis seek prints, applied music EQ/normalization, signal-path information and a large-control driving view.
+- Add native Android music browsing and CarPlay templates over the profile-owned music session. Native signing/device qualification and remaining Plexamp parity are tracked explicitly in `docs/plezyng/music/STATUS.md`. The existing [media-controls dependency](https://github.com/edde746/media_controls/tree/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), is vendored at its existing pin to extend its single Android media session; see [source attribution](UPSTREAM_ATTRIBUTION.md#music-media-session-integration).
+
+- Preserve compressed RomM source archives and their receipt hashes inside Android packages by using asset-safe filenames; retire only prior archives verified by their own receipts.
+
+- Package the embedded Android Moonlight and Steam receiver modules in ordinary app builds, including their native libraries and activity/stream implementations. Previously Gradle configured the modules without linking them into the application.
+
+- Scroll Settings QA assertions into view on smaller phones before checking them, then restore the top of the list for deeper navigation checks.
+
+- Prevent Android API 36 Back from navigating twice after keyboard use. While Flutter’s system Back callback is registered, let it own navigation instead of also forwarding synthesized raw Back keys; preserve predictive gestures, IME dismissal, and legacy/root Back handling.
+
+- Retry Apple SwiftPM resolution once from a fresh run-scoped checkout after Xcode 26's internal package-graph insertion crash, while continuing to fail ordinary dependency errors without retrying.
+
+- Make the fresh-install authentication QA flow use the setup screen’s Back control, avoiding a second navigation pop when Maestro hides an already absent keyboard.
+
 - Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.
 
 - Use the verified `macos-26-intel` hosted image for Apple CI, signing preflight, and release builds after generic `macos-26` jobs were cancelled before receiving a public runner. Prepare the checksum-verified pinned Flutter SDK for either x64 hosted Macs or ARM64 private JIT, retaining the latter only for explicitly constrained execution.

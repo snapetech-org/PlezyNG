@@ -114,6 +114,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$id issueReport = _Translations$issueReport$id._(_root);
 	@override late final _Translations$romm$id romm = _Translations$romm$id._(_root);
 	@override late final _Translations$subtitleCapture$id subtitleCapture = _Translations$subtitleCapture$id._(_root);
+	@override late final _Translations$musicExperience$id musicExperience = _Translations$musicExperience$id._(_root);
 }
 
 // Path: app
@@ -4181,6 +4182,58 @@ class _Translations$subtitleCapture$id extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Memproses audio secara lokal…';
 	@override String processingAudioProgress({required Object percent}) => 'Memproses audio secara lokal (${percent}%)…';
 	@override String get cpuFallback => 'Pemrosesan ucapan dengan GPU gagal. Mencoba lagi dengan CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$id extends Translations$musicExperience$en {
+	_Translations$musicExperience$id._(TranslationsId root) : this._root = root, super.internal(root);
+
+	final TranslationsId _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Jelajahi musik';
+	@override String get mix => 'Pembuat mix';
+	@override String get adventure => 'Petualangan suara';
+	@override String get related => 'Suara serupa';
+	@override String get seeds => 'Sumber dan titik singgah';
+	@override String get search => 'Cari artis, album, atau lagu';
+	@override String get generate => 'Pratinjau';
+	@override String get saveRecipe => 'Simpan resep';
+	@override String get saved => 'Resep tersimpan';
+	@override String get savePlaylist => 'Simpan daftar putar';
+	@override String get name => 'Nama';
+	@override String get trackLimit => 'Batas jumlah lagu';
+	@override String get empty => 'Tidak ada musik yang cocok. Fitur suara memerlukan analisis di server.';
+	@override String get unsupported => 'Server ini tidak menyediakan analisis suara.';
+	@override String get continuation => 'Lanjutkan dengan musik serupa';
+	@override String get shuffleAlbums => 'Acak album';
+	@override String get nextAlbum => 'Album berikutnya';
+	@override String get driving => 'Tampilan berkendara';
+	@override String get exitDriving => 'Keluar dari tampilan berkendara';
+	@override String get signalPath => 'Jalur sinyal audio';
+	@override String get source => 'Sumber';
+	@override String get local => 'Audio yang diunduh';
+	@override String get network => 'Audio dari server';
+	@override String get engine => 'Mesin pemutaran';
+	@override String get codec => 'Codec sumber';
+	@override String get channels => 'Kanal sumber';
+	@override String get processing => 'Pemrosesan';
+	@override String get normalization => 'Normalisasi';
+	@override String get equalizer => 'Ekualiser';
+	@override String get fades => 'Peralihan volume';
+	@override String get outputUnknown => 'Format keluaran perangkat keras belum diukur.';
+	@override String get download => 'Unduh pilihan';
+	@override String get ready => 'Bersedia';
+	@override String get remove => 'Hapus';
+	@override String get play => 'Putar pilihan';
+	@override String get next => 'Mainkan selanjutnya';
+	@override String get error => 'Permintaan musik gagal';
+	@override String get on => 'pada';
+	@override String get off => 'Nonaktif';
+	@override String get unknown => 'Tidak Dikenal';
+	@override String get routeLost => 'Keluaran audio terputus. Pemutaran dijeda.';
+	@override String get autoDriving => 'Buka tampilan berkendara saat terhubung ke mobil';
+	@override String get routeHint => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.';
 }
 
 // Path: appIcon.names
@@ -9232,6 +9285,49 @@ extension on TranslationsId {
 			'subtitleCapture.processingAudio' => 'Memproses audio secara lokal…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Memproses audio secara lokal (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Pemrosesan ucapan dengan GPU gagal. Mencoba lagi dengan CPU…',
+			'musicExperience.title' => 'Jelajahi musik',
+			'musicExperience.mix' => 'Pembuat mix',
+			'musicExperience.adventure' => 'Petualangan suara',
+			'musicExperience.related' => 'Suara serupa',
+			'musicExperience.seeds' => 'Sumber dan titik singgah',
+			'musicExperience.search' => 'Cari artis, album, atau lagu',
+			'musicExperience.generate' => 'Pratinjau',
+			'musicExperience.saveRecipe' => 'Simpan resep',
+			'musicExperience.saved' => 'Resep tersimpan',
+			'musicExperience.savePlaylist' => 'Simpan daftar putar',
+			'musicExperience.name' => 'Nama',
+			'musicExperience.trackLimit' => 'Batas jumlah lagu',
+			'musicExperience.empty' => 'Tidak ada musik yang cocok. Fitur suara memerlukan analisis di server.',
+			'musicExperience.unsupported' => 'Server ini tidak menyediakan analisis suara.',
+			'musicExperience.continuation' => 'Lanjutkan dengan musik serupa',
+			'musicExperience.shuffleAlbums' => 'Acak album',
+			'musicExperience.nextAlbum' => 'Album berikutnya',
+			'musicExperience.driving' => 'Tampilan berkendara',
+			'musicExperience.exitDriving' => 'Keluar dari tampilan berkendara',
+			'musicExperience.signalPath' => 'Jalur sinyal audio',
+			'musicExperience.source' => 'Sumber',
+			'musicExperience.local' => 'Audio yang diunduh',
+			'musicExperience.network' => 'Audio dari server',
+			'musicExperience.engine' => 'Mesin pemutaran',
+			'musicExperience.codec' => 'Codec sumber',
+			'musicExperience.channels' => 'Kanal sumber',
+			'musicExperience.processing' => 'Pemrosesan',
+			'musicExperience.normalization' => 'Normalisasi',
+			'musicExperience.equalizer' => 'Ekualiser',
+			'musicExperience.fades' => 'Peralihan volume',
+			'musicExperience.outputUnknown' => 'Format keluaran perangkat keras belum diukur.',
+			'musicExperience.download' => 'Unduh pilihan',
+			'musicExperience.ready' => 'Bersedia',
+			'musicExperience.remove' => 'Hapus',
+			'musicExperience.play' => 'Putar pilihan',
+			'musicExperience.next' => 'Mainkan selanjutnya',
+			'musicExperience.error' => 'Permintaan musik gagal',
+			'musicExperience.on' => 'pada',
+			'musicExperience.off' => 'Nonaktif',
+			'musicExperience.unknown' => 'Tidak Dikenal',
+			'musicExperience.routeLost' => 'Keluaran audio terputus. Pemutaran dijeda.',
+			'musicExperience.autoDriving' => 'Buka tampilan berkendara saat terhubung ke mobil',
+			'musicExperience.routeHint' => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.',
 			_ => null,
 		};
 	}

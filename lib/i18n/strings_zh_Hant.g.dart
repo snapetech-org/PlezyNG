@@ -115,6 +115,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$issueReport$zh_Hant issueReport = _Translations$issueReport$zh_Hant._(_root);
 	@override late final _Translations$romm$zh_Hant romm = _Translations$romm$zh_Hant._(_root);
 	@override late final _Translations$subtitleCapture$zh_Hant subtitleCapture = _Translations$subtitleCapture$zh_Hant._(_root);
+	@override late final _Translations$musicExperience$zh_Hant musicExperience = _Translations$musicExperience$zh_Hant._(_root);
 }
 
 // Path: app
@@ -4200,6 +4201,58 @@ class _Translations$subtitleCapture$zh_Hant extends Translations$subtitleCapture
 	@override String get processingAudio => '正在本機處理音訊…';
 	@override String processingAudioProgress({required Object percent}) => '正在本機處理音訊（${percent}%）…';
 	@override String get cpuFallback => 'GPU 語音處理失敗。正在透過 CPU 重試…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$zh_Hant extends Translations$musicExperience$zh {
+	_Translations$musicExperience$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => '探索音樂';
+	@override String get mix => '建立混音';
+	@override String get adventure => '聲音之旅';
+	@override String get related => '相似音色';
+	@override String get seeds => '起點與途經曲目';
+	@override String get search => '尋找藝人、專輯或歌曲';
+	@override String get generate => '預覽';
+	@override String get saveRecipe => '儲存配方';
+	@override String get saved => '已儲存的配方';
+	@override String get savePlaylist => '儲存播放清單';
+	@override String get name => '名稱';
+	@override String get trackLimit => '曲目數量上限';
+	@override String get empty => '沒有相符的音樂。聲音功能需要伺服器端分析。';
+	@override String get unsupported => '此伺服器不提供聲音分析。';
+	@override String get continuation => '繼續播放相似音樂';
+	@override String get shuffleAlbums => '隨機播放專輯';
+	@override String get nextAlbum => '下一張專輯';
+	@override String get driving => '駕駛畫面';
+	@override String get exitDriving => '離開駕駛畫面';
+	@override String get signalPath => '音訊訊號路徑';
+	@override String get source => '源';
+	@override String get local => '已下載的音訊';
+	@override String get network => '伺服器音訊';
+	@override String get engine => '播放引擎';
+	@override String get codec => '來源編碼格式';
+	@override String get channels => '來源聲道';
+	@override String get processing => '處理中';
+	@override String get normalization => '音量標準化';
+	@override String get equalizer => '等化器';
+	@override String get fades => '音量淡入淡出';
+	@override String get outputUnknown => '尚未測量硬體輸出格式。';
+	@override String get download => '下載選曲';
+	@override String get ready => '就緒';
+	@override String get remove => '移除';
+	@override String get play => '播放選曲';
+	@override String get next => '下一首播放';
+	@override String get error => '音樂請求失敗';
+	@override String get on => '到';
+	@override String get off => '關閉';
+	@override String get unknown => '未知';
+	@override String get routeLost => '音訊輸出已中斷。播放已暫停。';
+	@override String get autoDriving => '連接汽車時開啟駕駛畫面';
+	@override String get routeHint => '是否允許自動顯示應用程式由汽車系統決定。';
 }
 
 // Path: appIcon.names
@@ -9253,6 +9306,49 @@ extension on TranslationsZhHant {
 			'subtitleCapture.processingAudio' => '正在本機處理音訊…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '正在本機處理音訊（${percent}%）…',
 			'subtitleCapture.cpuFallback' => 'GPU 語音處理失敗。正在透過 CPU 重試…',
+			'musicExperience.title' => '探索音樂',
+			'musicExperience.mix' => '建立混音',
+			'musicExperience.adventure' => '聲音之旅',
+			'musicExperience.related' => '相似音色',
+			'musicExperience.seeds' => '起點與途經曲目',
+			'musicExperience.search' => '尋找藝人、專輯或歌曲',
+			'musicExperience.generate' => '預覽',
+			'musicExperience.saveRecipe' => '儲存配方',
+			'musicExperience.saved' => '已儲存的配方',
+			'musicExperience.savePlaylist' => '儲存播放清單',
+			'musicExperience.name' => '名稱',
+			'musicExperience.trackLimit' => '曲目數量上限',
+			'musicExperience.empty' => '沒有相符的音樂。聲音功能需要伺服器端分析。',
+			'musicExperience.unsupported' => '此伺服器不提供聲音分析。',
+			'musicExperience.continuation' => '繼續播放相似音樂',
+			'musicExperience.shuffleAlbums' => '隨機播放專輯',
+			'musicExperience.nextAlbum' => '下一張專輯',
+			'musicExperience.driving' => '駕駛畫面',
+			'musicExperience.exitDriving' => '離開駕駛畫面',
+			'musicExperience.signalPath' => '音訊訊號路徑',
+			'musicExperience.source' => '源',
+			'musicExperience.local' => '已下載的音訊',
+			'musicExperience.network' => '伺服器音訊',
+			'musicExperience.engine' => '播放引擎',
+			'musicExperience.codec' => '來源編碼格式',
+			'musicExperience.channels' => '來源聲道',
+			'musicExperience.processing' => '處理中',
+			'musicExperience.normalization' => '音量標準化',
+			'musicExperience.equalizer' => '等化器',
+			'musicExperience.fades' => '音量淡入淡出',
+			'musicExperience.outputUnknown' => '尚未測量硬體輸出格式。',
+			'musicExperience.download' => '下載選曲',
+			'musicExperience.ready' => '就緒',
+			'musicExperience.remove' => '移除',
+			'musicExperience.play' => '播放選曲',
+			'musicExperience.next' => '下一首播放',
+			'musicExperience.error' => '音樂請求失敗',
+			'musicExperience.on' => '到',
+			'musicExperience.off' => '關閉',
+			'musicExperience.unknown' => '未知',
+			'musicExperience.routeLost' => '音訊輸出已中斷。播放已暫停。',
+			'musicExperience.autoDriving' => '連接汽車時開啟駕駛畫面',
+			'musicExperience.routeHint' => '是否允許自動顯示應用程式由汽車系統決定。',
 			_ => null,
 		};
 	}

@@ -114,6 +114,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$hi issueReport = _Translations$issueReport$hi._(_root);
 	@override late final _Translations$romm$hi romm = _Translations$romm$hi._(_root);
 	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
+	@override late final _Translations$musicExperience$hi musicExperience = _Translations$musicExperience$hi._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$hi extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है…';
 	@override String processingAudioProgress({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है (${percent}%)…';
 	@override String get cpuFallback => 'GPU पर वाक् प्रसंस्करण विफल हुआ। CPU पर फिर कोशिश हो रही है…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$hi extends Translations$musicExperience$en {
+	_Translations$musicExperience$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'संगीत खोजें';
+	@override String get mix => 'मिक्स बनाएँ';
+	@override String get adventure => 'ध्वनि यात्रा';
+	@override String get related => 'मिलती-जुलती ध्वनि';
+	@override String get seeds => 'स्रोत और पड़ाव';
+	@override String get search => 'कलाकार, एल्बम या गाना खोजें';
+	@override String get generate => 'पूर्वावलोकन';
+	@override String get saveRecipe => 'रेसिपी सहेजें';
+	@override String get saved => 'सहेजी गई रेसिपी';
+	@override String get savePlaylist => 'प्लेलिस्ट सहेजें';
+	@override String get name => 'नाम';
+	@override String get trackLimit => 'गानों की सीमा';
+	@override String get empty => 'कोई मेल खाता संगीत नहीं मिला। ध्वनि सुविधाओं के लिए सर्वर पर विश्लेषण ज़रूरी है।';
+	@override String get unsupported => 'यह सर्वर ध्वनि विश्लेषण नहीं देता।';
+	@override String get continuation => 'मिलता-जुलता संगीत चलाते रहें';
+	@override String get shuffleAlbums => 'एल्बम शफ़ल करें';
+	@override String get nextAlbum => 'अगला एल्बम';
+	@override String get driving => 'ड्राइविंग दृश्य';
+	@override String get exitDriving => 'ड्राइविंग दृश्य बंद करें';
+	@override String get signalPath => 'ऑडियो सिग्नल का पथ';
+	@override String get source => 'स्रोत';
+	@override String get local => 'डाउनलोड किया ऑडियो';
+	@override String get network => 'सर्वर का ऑडियो';
+	@override String get engine => 'प्लेबैक इंजन';
+	@override String get codec => 'स्रोत कोडेक';
+	@override String get channels => 'स्रोत चैनल';
+	@override String get processing => 'प्रसंस्करण';
+	@override String get normalization => 'ध्वनि सामान्यीकरण';
+	@override String get equalizer => 'इक्वलाइज़र';
+	@override String get fades => 'आवाज़ का फ़ेड';
+	@override String get outputUnknown => 'हार्डवेयर आउटपुट का प्रारूप मापा नहीं गया है।';
+	@override String get download => 'चयन डाउनलोड करें';
+	@override String get ready => 'तैयार';
+	@override String get remove => 'हटाना';
+	@override String get play => 'चयन चलाएँ';
+	@override String get next => 'अगला खेल';
+	@override String get error => 'संगीत अनुरोध विफल रहा';
+	@override String get on => 'पर';
+	@override String get off => 'बंद करें';
+	@override String get unknown => 'अज्ञात';
+	@override String get routeLost => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।';
+	@override String get autoDriving => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें';
+	@override String get routeHint => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsHi {
 			'subtitleCapture.processingAudio' => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'ऑडियो का स्थानीय रूप से प्रसंस्करण हो रहा है (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU पर वाक् प्रसंस्करण विफल हुआ। CPU पर फिर कोशिश हो रही है…',
+			'musicExperience.title' => 'संगीत खोजें',
+			'musicExperience.mix' => 'मिक्स बनाएँ',
+			'musicExperience.adventure' => 'ध्वनि यात्रा',
+			'musicExperience.related' => 'मिलती-जुलती ध्वनि',
+			'musicExperience.seeds' => 'स्रोत और पड़ाव',
+			'musicExperience.search' => 'कलाकार, एल्बम या गाना खोजें',
+			'musicExperience.generate' => 'पूर्वावलोकन',
+			'musicExperience.saveRecipe' => 'रेसिपी सहेजें',
+			'musicExperience.saved' => 'सहेजी गई रेसिपी',
+			'musicExperience.savePlaylist' => 'प्लेलिस्ट सहेजें',
+			'musicExperience.name' => 'नाम',
+			'musicExperience.trackLimit' => 'गानों की सीमा',
+			'musicExperience.empty' => 'कोई मेल खाता संगीत नहीं मिला। ध्वनि सुविधाओं के लिए सर्वर पर विश्लेषण ज़रूरी है।',
+			'musicExperience.unsupported' => 'यह सर्वर ध्वनि विश्लेषण नहीं देता।',
+			'musicExperience.continuation' => 'मिलता-जुलता संगीत चलाते रहें',
+			'musicExperience.shuffleAlbums' => 'एल्बम शफ़ल करें',
+			'musicExperience.nextAlbum' => 'अगला एल्बम',
+			'musicExperience.driving' => 'ड्राइविंग दृश्य',
+			'musicExperience.exitDriving' => 'ड्राइविंग दृश्य बंद करें',
+			'musicExperience.signalPath' => 'ऑडियो सिग्नल का पथ',
+			'musicExperience.source' => 'स्रोत',
+			'musicExperience.local' => 'डाउनलोड किया ऑडियो',
+			'musicExperience.network' => 'सर्वर का ऑडियो',
+			'musicExperience.engine' => 'प्लेबैक इंजन',
+			'musicExperience.codec' => 'स्रोत कोडेक',
+			'musicExperience.channels' => 'स्रोत चैनल',
+			'musicExperience.processing' => 'प्रसंस्करण',
+			'musicExperience.normalization' => 'ध्वनि सामान्यीकरण',
+			'musicExperience.equalizer' => 'इक्वलाइज़र',
+			'musicExperience.fades' => 'आवाज़ का फ़ेड',
+			'musicExperience.outputUnknown' => 'हार्डवेयर आउटपुट का प्रारूप मापा नहीं गया है।',
+			'musicExperience.download' => 'चयन डाउनलोड करें',
+			'musicExperience.ready' => 'तैयार',
+			'musicExperience.remove' => 'हटाना',
+			'musicExperience.play' => 'चयन चलाएँ',
+			'musicExperience.next' => 'अगला खेल',
+			'musicExperience.error' => 'संगीत अनुरोध विफल रहा',
+			'musicExperience.on' => 'पर',
+			'musicExperience.off' => 'बंद करें',
+			'musicExperience.unknown' => 'अज्ञात',
+			'musicExperience.routeLost' => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।',
+			'musicExperience.autoDriving' => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें',
+			'musicExperience.routeHint' => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।',
 			_ => null,
 		};
 	}

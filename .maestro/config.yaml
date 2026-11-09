@@ -13,3 +13,4 @@ executionOrder:
     - Manage profiles and open settings
     - Logout returns to authentication
     - Download and play a movie from Downloads
+    - Android Back preserves route and root ownership

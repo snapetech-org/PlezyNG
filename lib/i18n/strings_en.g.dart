@@ -124,6 +124,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$subtitleCapture$en subtitleCapture = Translations$subtitleCapture$en.internal(_root);
 	late final Translations$karaokeUi$en karaokeUi = Translations$karaokeUi$en.internal(_root);
 	late final Translations$bonusExtras$en bonusExtras = Translations$bonusExtras$en.internal(_root);
+	late final Translations$musicExperience$en musicExperience = Translations$musicExperience$en.internal(_root);
 }
 
 // Path: app
@@ -14449,6 +14450,144 @@ class Translations$bonusExtras$en {
 	String get playbackBlocked => 'This extra is no longer available with your current settings.';
 }
 
+// Path: musicExperience
+class Translations$musicExperience$en {
+	Translations$musicExperience$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Music discovery'
+	String get title => 'Music discovery';
+
+	/// en: 'Mix builder'
+	String get mix => 'Mix builder';
+
+	/// en: 'Sonic Adventure'
+	String get adventure => 'Sonic Adventure';
+
+	/// en: 'Sonically similar'
+	String get related => 'Sonically similar';
+
+	/// en: 'Seeds and waypoints'
+	String get seeds => 'Seeds and waypoints';
+
+	/// en: 'Find an artist, album or track'
+	String get search => 'Find an artist, album or track';
+
+	/// en: 'Preview'
+	String get generate => 'Preview';
+
+	/// en: 'Save recipe'
+	String get saveRecipe => 'Save recipe';
+
+	/// en: 'Saved recipes'
+	String get saved => 'Saved recipes';
+
+	/// en: 'Save playlist'
+	String get savePlaylist => 'Save playlist';
+
+	/// en: 'Name'
+	String get name => 'Name';
+
+	/// en: 'Track budget'
+	String get trackLimit => 'Track budget';
+
+	/// en: 'No matching music was returned. Sonic features require analysis on your server.'
+	String get empty => 'No matching music was returned. Sonic features require analysis on your server.';
+
+	/// en: 'Sonic analysis is not available from this server.'
+	String get unsupported => 'Sonic analysis is not available from this server.';
+
+	/// en: 'Keep playing similar music'
+	String get continuation => 'Keep playing similar music';
+
+	/// en: 'Shuffle albums'
+	String get shuffleAlbums => 'Shuffle albums';
+
+	/// en: 'Next album'
+	String get nextAlbum => 'Next album';
+
+	/// en: 'Driving view'
+	String get driving => 'Driving view';
+
+	/// en: 'Exit driving view'
+	String get exitDriving => 'Exit driving view';
+
+	/// en: 'Audio signal path'
+	String get signalPath => 'Audio signal path';
+
+	/// en: 'Source'
+	String get source => 'Source';
+
+	/// en: 'Downloaded audio'
+	String get local => 'Downloaded audio';
+
+	/// en: 'Server audio'
+	String get network => 'Server audio';
+
+	/// en: 'Playback engine'
+	String get engine => 'Playback engine';
+
+	/// en: 'Source codec'
+	String get codec => 'Source codec';
+
+	/// en: 'Source channels'
+	String get channels => 'Source channels';
+
+	/// en: 'Processing'
+	String get processing => 'Processing';
+
+	/// en: 'Normalization'
+	String get normalization => 'Normalization';
+
+	/// en: 'Equalizer'
+	String get equalizer => 'Equalizer';
+
+	/// en: 'Volume fades'
+	String get fades => 'Volume fades';
+
+	/// en: 'Hardware output format has not been measured.'
+	String get outputUnknown => 'Hardware output format has not been measured.';
+
+	/// en: 'Download preview'
+	String get download => 'Download preview';
+
+	/// en: 'Ready'
+	String get ready => 'Ready';
+
+	/// en: 'Remove'
+	String get remove => 'Remove';
+
+	/// en: 'Play preview'
+	String get play => 'Play preview';
+
+	/// en: 'Play next'
+	String get next => 'Play next';
+
+	/// en: 'Music request failed'
+	String get error => 'Music request failed';
+
+	/// en: 'On'
+	String get on => 'On';
+
+	/// en: 'Off'
+	String get off => 'Off';
+
+	/// en: 'Unknown'
+	String get unknown => 'Unknown';
+
+	/// en: 'Audio output disconnected. Playback paused.'
+	String get routeLost => 'Audio output disconnected. Playback paused.';
+
+	/// en: 'Open driving view when connected to a car'
+	String get autoDriving => 'Open driving view when connected to a car';
+
+	/// en: 'The car system controls whether the app can appear automatically.'
+	String get routeHint => 'The car system controls whether the app can appear automatically.';
+}
+
 // Path: appIcon.names
 class Translations$appIcon$names$en {
 	Translations$appIcon$names$en.internal(this._root);
@@ -22226,6 +22365,49 @@ extension on Translations {
 			'bonusExtras.kind.other' => 'Other extras',
 			'bonusExtras.setupHint' => 'Connect a discovery server in Extras settings to find verified online extras. Library extras work without one.',
 			'bonusExtras.playbackBlocked' => 'This extra is no longer available with your current settings.',
+			'musicExperience.title' => 'Music discovery',
+			'musicExperience.mix' => 'Mix builder',
+			'musicExperience.adventure' => 'Sonic Adventure',
+			'musicExperience.related' => 'Sonically similar',
+			'musicExperience.seeds' => 'Seeds and waypoints',
+			'musicExperience.search' => 'Find an artist, album or track',
+			'musicExperience.generate' => 'Preview',
+			'musicExperience.saveRecipe' => 'Save recipe',
+			'musicExperience.saved' => 'Saved recipes',
+			'musicExperience.savePlaylist' => 'Save playlist',
+			'musicExperience.name' => 'Name',
+			'musicExperience.trackLimit' => 'Track budget',
+			'musicExperience.empty' => 'No matching music was returned. Sonic features require analysis on your server.',
+			'musicExperience.unsupported' => 'Sonic analysis is not available from this server.',
+			'musicExperience.continuation' => 'Keep playing similar music',
+			'musicExperience.shuffleAlbums' => 'Shuffle albums',
+			'musicExperience.nextAlbum' => 'Next album',
+			'musicExperience.driving' => 'Driving view',
+			'musicExperience.exitDriving' => 'Exit driving view',
+			'musicExperience.signalPath' => 'Audio signal path',
+			'musicExperience.source' => 'Source',
+			'musicExperience.local' => 'Downloaded audio',
+			'musicExperience.network' => 'Server audio',
+			'musicExperience.engine' => 'Playback engine',
+			'musicExperience.codec' => 'Source codec',
+			'musicExperience.channels' => 'Source channels',
+			'musicExperience.processing' => 'Processing',
+			'musicExperience.normalization' => 'Normalization',
+			'musicExperience.equalizer' => 'Equalizer',
+			'musicExperience.fades' => 'Volume fades',
+			'musicExperience.outputUnknown' => 'Hardware output format has not been measured.',
+			'musicExperience.download' => 'Download preview',
+			'musicExperience.ready' => 'Ready',
+			'musicExperience.remove' => 'Remove',
+			'musicExperience.play' => 'Play preview',
+			'musicExperience.next' => 'Play next',
+			'musicExperience.error' => 'Music request failed',
+			'musicExperience.on' => 'On',
+			'musicExperience.off' => 'Off',
+			'musicExperience.unknown' => 'Unknown',
+			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
+			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
+			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
 			_ => null,
 		};
 	}

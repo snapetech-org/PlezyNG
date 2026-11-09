@@ -114,6 +114,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$tr issueReport = _Translations$issueReport$tr._(_root);
 	@override late final _Translations$romm$tr romm = _Translations$romm$tr._(_root);
 	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
+	@override late final _Translations$musicExperience$tr musicExperience = _Translations$musicExperience$tr._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$tr extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Ses yerel olarak işleniyor…';
 	@override String processingAudioProgress({required Object percent}) => 'Ses yerel olarak işleniyor (${percent}%)…';
 	@override String get cpuFallback => 'GPU ile konuşma işleme başarısız oldu. CPU ile yeniden deneniyor…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$tr extends Translations$musicExperience$en {
+	_Translations$musicExperience$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Müzik keşfi';
+	@override String get mix => 'Miks oluşturucu';
+	@override String get adventure => 'Ses yolculuğu';
+	@override String get related => 'Benzer sesler';
+	@override String get seeds => 'Kaynaklar ve duraklar';
+	@override String get search => 'Sanatçı, albüm veya şarkı ara';
+	@override String get generate => 'Önizleme';
+	@override String get saveRecipe => 'Tarifi kaydet';
+	@override String get saved => 'Kaydedilen tarifler';
+	@override String get savePlaylist => 'Çalma listesini kaydet';
+	@override String get name => 'Adı :';
+	@override String get trackLimit => 'Parça sınırı';
+	@override String get empty => 'Eşleşen müzik yok. Ses özellikleri sunucuda analiz gerektirir.';
+	@override String get unsupported => 'Bu sunucu ses analizi sunmuyor.';
+	@override String get continuation => 'Benzer müzikle devam et';
+	@override String get shuffleAlbums => 'Albümleri karıştır';
+	@override String get nextAlbum => 'Sonraki albüm';
+	@override String get driving => 'Sürüş görünümü';
+	@override String get exitDriving => 'Sürüş görünümünden çık';
+	@override String get signalPath => 'Ses sinyal yolu';
+	@override String get source => 'Kaynak';
+	@override String get local => 'İndirilen ses';
+	@override String get network => 'Sunucu sesi';
+	@override String get engine => 'Oynatma motoru';
+	@override String get codec => 'Kaynak kodek';
+	@override String get channels => 'Kaynak kanalları';
+	@override String get processing => 'İşleniyor';
+	@override String get normalization => 'Normalleştirme';
+	@override String get equalizer => 'Ekolayzır';
+	@override String get fades => 'Ses seviyesi geçişleri';
+	@override String get outputUnknown => 'Donanım çıkış biçimi ölçülmedi.';
+	@override String get download => 'Seçimi indir';
+	@override String get ready => 'Hazır';
+	@override String get remove => 'Kaldır';
+	@override String get play => 'Seçimi oynat';
+	@override String get next => 'Sonrakini oynat';
+	@override String get error => 'Müzik isteği başarısız oldu';
+	@override String get on => 'Açık';
+	@override String get off => 'Kapalı';
+	@override String get unknown => 'Bilinmiyor';
+	@override String get routeLost => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.';
+	@override String get autoDriving => 'Arabaya bağlanınca sürüş görünümünü aç';
+	@override String get routeHint => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsTr {
 			'subtitleCapture.processingAudio' => 'Ses yerel olarak işleniyor…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Ses yerel olarak işleniyor (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU ile konuşma işleme başarısız oldu. CPU ile yeniden deneniyor…',
+			'musicExperience.title' => 'Müzik keşfi',
+			'musicExperience.mix' => 'Miks oluşturucu',
+			'musicExperience.adventure' => 'Ses yolculuğu',
+			'musicExperience.related' => 'Benzer sesler',
+			'musicExperience.seeds' => 'Kaynaklar ve duraklar',
+			'musicExperience.search' => 'Sanatçı, albüm veya şarkı ara',
+			'musicExperience.generate' => 'Önizleme',
+			'musicExperience.saveRecipe' => 'Tarifi kaydet',
+			'musicExperience.saved' => 'Kaydedilen tarifler',
+			'musicExperience.savePlaylist' => 'Çalma listesini kaydet',
+			'musicExperience.name' => 'Adı :',
+			'musicExperience.trackLimit' => 'Parça sınırı',
+			'musicExperience.empty' => 'Eşleşen müzik yok. Ses özellikleri sunucuda analiz gerektirir.',
+			'musicExperience.unsupported' => 'Bu sunucu ses analizi sunmuyor.',
+			'musicExperience.continuation' => 'Benzer müzikle devam et',
+			'musicExperience.shuffleAlbums' => 'Albümleri karıştır',
+			'musicExperience.nextAlbum' => 'Sonraki albüm',
+			'musicExperience.driving' => 'Sürüş görünümü',
+			'musicExperience.exitDriving' => 'Sürüş görünümünden çık',
+			'musicExperience.signalPath' => 'Ses sinyal yolu',
+			'musicExperience.source' => 'Kaynak',
+			'musicExperience.local' => 'İndirilen ses',
+			'musicExperience.network' => 'Sunucu sesi',
+			'musicExperience.engine' => 'Oynatma motoru',
+			'musicExperience.codec' => 'Kaynak kodek',
+			'musicExperience.channels' => 'Kaynak kanalları',
+			'musicExperience.processing' => 'İşleniyor',
+			'musicExperience.normalization' => 'Normalleştirme',
+			'musicExperience.equalizer' => 'Ekolayzır',
+			'musicExperience.fades' => 'Ses seviyesi geçişleri',
+			'musicExperience.outputUnknown' => 'Donanım çıkış biçimi ölçülmedi.',
+			'musicExperience.download' => 'Seçimi indir',
+			'musicExperience.ready' => 'Hazır',
+			'musicExperience.remove' => 'Kaldır',
+			'musicExperience.play' => 'Seçimi oynat',
+			'musicExperience.next' => 'Sonrakini oynat',
+			'musicExperience.error' => 'Müzik isteği başarısız oldu',
+			'musicExperience.on' => 'Açık',
+			'musicExperience.off' => 'Kapalı',
+			'musicExperience.unknown' => 'Bilinmiyor',
+			'musicExperience.routeLost' => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.',
+			'musicExperience.autoDriving' => 'Arabaya bağlanınca sürüş görünümünü aç',
+			'musicExperience.routeHint' => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.',
 			_ => null,
 		};
 	}

@@ -1032,6 +1032,49 @@ class _AppDatabaseTestSuite {
           db = AppDatabase.forTesting(NativeDatabase.memory());
         }
       });
+      test('v36 music catalog migration preserves existing session data', () async {
+        await db.close();
+        final tempDir = await Directory.systemTemp.createTemp('pleazyng_db_v36_');
+        final file = File('${tempDir.path}/music.db');
+        AppDatabase? seeded;
+        AppDatabase? reopened;
+        try {
+          seeded = AppDatabase.forTesting(NativeDatabase(file));
+          await seeded.upsertMusicSession(
+            MusicSessionRow(
+              profileId: 'p1',
+              queueJson: '[{}]',
+              orderJson: '[0]',
+              cursor: 0,
+              shuffled: false,
+              repeatMode: 'off',
+              contextTitle: 'Preserved',
+              contextKind: 'tracks',
+              positionMs: 1234,
+              updatedAt: 1,
+            ),
+          );
+          await seeded.customStatement('DROP TABLE music_queue_entries');
+          await seeded.customStatement('DROP TABLE music_recipes');
+          await seeded.customStatement('PRAGMA user_version = 35');
+          await seeded.close();
+          seeded = null;
+          reopened = AppDatabase.forTesting(NativeDatabase(file));
+          expect((await reopened.getMusicSession('p1'))?.positionMs, 1234);
+          await reopened.customStatement('INSERT INTO music_queue_entries VALUES (?, ?, ?, ?)', ['p1', 0, 0, '{}']);
+          await reopened.customStatement('INSERT INTO music_recipes VALUES (?, ?, ?, ?)', ['p1', 'recipe', '{}', 1]);
+          await reopened.deleteMusicSessionForProfile('p1');
+          expect((await reopened.customSelect('SELECT * FROM music_queue_entries').get()), isEmpty);
+          expect((await reopened.customSelect('SELECT * FROM music_recipes').get()), hasLength(1));
+          await reopened.deleteMusicRecipesForProfile('p1');
+          expect((await reopened.customSelect('SELECT * FROM music_recipes').get()), isEmpty);
+        } finally {
+          await reopened?.close();
+          await seeded?.close();
+          await tempDir.delete(recursive: true);
+          db = AppDatabase.forTesting(NativeDatabase.memory());
+        }
+      });
       test('v23 migration adds library identity columns and leaves existing rows unstamped', () async {
         await db.close();
         final tempDir = await Directory.systemTemp.createTemp('plezy_db_v23_migration_test_');

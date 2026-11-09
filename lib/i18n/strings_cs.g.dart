@@ -114,6 +114,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$cs issueReport = _Translations$issueReport$cs._(_root);
 	@override late final _Translations$romm$cs romm = _Translations$romm$cs._(_root);
 	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
+	@override late final _Translations$musicExperience$cs musicExperience = _Translations$musicExperience$cs._(_root);
 }
 
 // Path: app
@@ -4246,6 +4247,58 @@ class _Translations$subtitleCapture$cs extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Místní zpracování zvuku…';
 	@override String processingAudioProgress({required Object percent}) => 'Místní zpracování zvuku (${percent}%)…';
 	@override String get cpuFallback => 'Zpracování řeči na GPU selhalo. Nový pokus na CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$cs extends Translations$musicExperience$en {
+	_Translations$musicExperience$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Objevování hudby';
+	@override String get mix => 'Tvorba mixu';
+	@override String get adventure => 'Zvukové dobrodružství';
+	@override String get related => 'Podobný zvuk';
+	@override String get seeds => 'Zdroje a zastávky';
+	@override String get search => 'Najít interpreta, album nebo skladbu';
+	@override String get generate => 'Náhled';
+	@override String get saveRecipe => 'Uložit recept';
+	@override String get saved => 'Uložené recepty';
+	@override String get savePlaylist => 'Uložit seznam';
+	@override String get name => 'Jméno';
+	@override String get trackLimit => 'Limit skladeb';
+	@override String get empty => 'Žádná odpovídající hudba. Zvukové funkce vyžadují analýzu na serveru.';
+	@override String get unsupported => 'Tento server nenabízí zvukovou analýzu.';
+	@override String get continuation => 'Pokračovat podobnou hudbou';
+	@override String get shuffleAlbums => 'Zamíchat alba';
+	@override String get nextAlbum => 'Další album';
+	@override String get driving => 'Režim řízení';
+	@override String get exitDriving => 'Ukončit režim řízení';
+	@override String get signalPath => 'Cesta zvukového signálu';
+	@override String get source => 'Zdroj';
+	@override String get local => 'Stažený zvuk';
+	@override String get network => 'Zvuk ze serveru';
+	@override String get engine => 'Přehrávací jádro';
+	@override String get codec => 'Zdrojový kodek';
+	@override String get channels => 'Zdrojové kanály';
+	@override String get processing => 'zpracování';
+	@override String get normalization => 'Normalizace';
+	@override String get equalizer => 'Ekvalizér';
+	@override String get fades => 'Změny hlasitosti';
+	@override String get outputUnknown => 'Formát hardwarového výstupu nebyl změřen.';
+	@override String get download => 'Stáhnout výběr';
+	@override String get ready => 'připravený';
+	@override String get remove => 'Odstranit';
+	@override String get play => 'Přehrát výběr';
+	@override String get next => 'Přehrát jako další';
+	@override String get error => 'Požadavek na hudbu selhal';
+	@override String get on => 'Na';
+	@override String get off => 'Vypnuto';
+	@override String get unknown => 'Neznámý';
+	@override String get routeLost => 'Zvukový výstup odpojen. Přehrávání pozastaveno.';
+	@override String get autoDriving => 'Otevřít režim řízení při připojení k autu';
+	@override String get routeHint => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.';
 }
 
 // Path: appIcon.names
@@ -9301,6 +9354,49 @@ extension on TranslationsCs {
 			'subtitleCapture.processingAudio' => 'Místní zpracování zvuku…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Místní zpracování zvuku (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Zpracování řeči na GPU selhalo. Nový pokus na CPU…',
+			'musicExperience.title' => 'Objevování hudby',
+			'musicExperience.mix' => 'Tvorba mixu',
+			'musicExperience.adventure' => 'Zvukové dobrodružství',
+			'musicExperience.related' => 'Podobný zvuk',
+			'musicExperience.seeds' => 'Zdroje a zastávky',
+			'musicExperience.search' => 'Najít interpreta, album nebo skladbu',
+			'musicExperience.generate' => 'Náhled',
+			'musicExperience.saveRecipe' => 'Uložit recept',
+			'musicExperience.saved' => 'Uložené recepty',
+			'musicExperience.savePlaylist' => 'Uložit seznam',
+			'musicExperience.name' => 'Jméno',
+			'musicExperience.trackLimit' => 'Limit skladeb',
+			'musicExperience.empty' => 'Žádná odpovídající hudba. Zvukové funkce vyžadují analýzu na serveru.',
+			'musicExperience.unsupported' => 'Tento server nenabízí zvukovou analýzu.',
+			'musicExperience.continuation' => 'Pokračovat podobnou hudbou',
+			'musicExperience.shuffleAlbums' => 'Zamíchat alba',
+			'musicExperience.nextAlbum' => 'Další album',
+			'musicExperience.driving' => 'Režim řízení',
+			'musicExperience.exitDriving' => 'Ukončit režim řízení',
+			'musicExperience.signalPath' => 'Cesta zvukového signálu',
+			'musicExperience.source' => 'Zdroj',
+			'musicExperience.local' => 'Stažený zvuk',
+			'musicExperience.network' => 'Zvuk ze serveru',
+			'musicExperience.engine' => 'Přehrávací jádro',
+			'musicExperience.codec' => 'Zdrojový kodek',
+			'musicExperience.channels' => 'Zdrojové kanály',
+			'musicExperience.processing' => 'zpracování',
+			'musicExperience.normalization' => 'Normalizace',
+			'musicExperience.equalizer' => 'Ekvalizér',
+			'musicExperience.fades' => 'Změny hlasitosti',
+			'musicExperience.outputUnknown' => 'Formát hardwarového výstupu nebyl změřen.',
+			'musicExperience.download' => 'Stáhnout výběr',
+			'musicExperience.ready' => 'připravený',
+			'musicExperience.remove' => 'Odstranit',
+			'musicExperience.play' => 'Přehrát výběr',
+			'musicExperience.next' => 'Přehrát jako další',
+			'musicExperience.error' => 'Požadavek na hudbu selhal',
+			'musicExperience.on' => 'Na',
+			'musicExperience.off' => 'Vypnuto',
+			'musicExperience.unknown' => 'Neznámý',
+			'musicExperience.routeLost' => 'Zvukový výstup odpojen. Přehrávání pozastaveno.',
+			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
+			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
 			_ => null,
 		};
 	}

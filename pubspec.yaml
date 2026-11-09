@@ -1,7 +1,7 @@
 name: plezy
 description: "A cross-platform Pleazyng client for Plex, Jellyfin, and Emby"
 publish_to: "none"
-version: 3.0.9+168
+version: 3.0.12+171
 
 environment:
   # Dart floor stays 3.12: freezed 3.x emits `final` constructor parameters,
@@ -51,9 +51,7 @@ dependencies:
       ref: bf04cdf66598dc3fca274b8b1db2b92b0bf6b73e
       path: packages/connectivity_plus/connectivity_plus
   os_media_controls:
-    git:
-      url: https://github.com/edde746/media_controls
-      ref: a27208e641790029ac54d825b97508575caee1a7
+    path: packages/os_media_controls
   rate_limiter: ^1.0.0
   wakelock_plus:
     path: packages/wakelock_plus

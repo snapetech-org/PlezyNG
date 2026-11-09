@@ -358,6 +358,8 @@ def build_jellyfin_image(config: RunnerConfig) -> None:
     command = (
         "docker",
         "build",
+        "--build-arg",
+        "SECURITY_PACKAGE_REFRESH=" + time.strftime("%Y-%m-%d", time.gmtime()),
         "--file",
         ROOT_DIR / ".maestro/jellyfin-demo/Dockerfile",
         "--tag",

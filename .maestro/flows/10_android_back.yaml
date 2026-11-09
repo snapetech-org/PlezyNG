@@ -1,0 +1,30 @@
+appId: org.snapetech.pleazyng
+name: Android Back preserves route and root ownership
+tags:
+  - e2e
+  - navigation
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - launchApp:
+          clearState: true
+          permissions:
+            all: allow
+      - extendedWaitUntil:
+          visible: "Sign in with Plex"
+          timeout: 30000
+      - tapOn: "Connect to Jellyfin"
+      - tapOn: "(?s)Server URLs.*"
+      - inputText: "http://127.0.0.1"
+      - hideKeyboard
+      - assertVisible: "Add Jellyfin server"
+      - back
+      - extendedWaitUntil:
+          visible: "Sign in with Plex"
+          timeout: 15000
+      - back
+      - extendedWaitUntil:
+          notVisible: "Sign in with Plex"
+          timeout: 15000

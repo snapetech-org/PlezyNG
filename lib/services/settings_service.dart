@@ -1194,6 +1194,8 @@ class SettingsService extends BaseSharedPreferencesService {
   static const musicVolume = DoublePref('music_volume', defaultValue: 100.0);
 
   /// Restore the last music session parked-paused on launch (#2148).
+  static const musicAutoDriving = BoolPref('music_auto_driving');
+
   static const resumeMusicOnLaunch = BoolPref('resume_music_on_launch', defaultValue: true);
   static const autoPlayNextEpisode = BoolPref('auto_play_next_episode', defaultValue: true);
 
@@ -2258,6 +2260,7 @@ class SettingsService extends BaseSharedPreferencesService {
     hdrSdrConversion,
     musicVolume,
     resumeMusicOnLaunch,
+    musicAutoDriving,
     autoPlayNextEpisode,
     playNextCountdown,
     shuffleStartsFromBeginning,

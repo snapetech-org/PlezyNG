@@ -114,6 +114,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$hu issueReport = _Translations$issueReport$hu._(_root);
 	@override late final _Translations$romm$hu romm = _Translations$romm$hu._(_root);
 	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
+	@override late final _Translations$musicExperience$hu musicExperience = _Translations$musicExperience$hu._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$hu extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'A hang helyi feldolgozása…';
 	@override String processingAudioProgress({required Object percent}) => 'A hang helyi feldolgozása (${percent}%)…';
 	@override String get cpuFallback => 'A GPU-s beszédfeldolgozás sikertelen. Újrapróbálkozás CPU-val…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$hu extends Translations$musicExperience$en {
+	_Translations$musicExperience$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Zene felfedezése';
+	@override String get mix => 'Mixkészítő';
+	@override String get adventure => 'Hangzáskaland';
+	@override String get related => 'Hasonló hangzás';
+	@override String get seeds => 'Kiindulópontok és állomások';
+	@override String get search => 'Előadó, album vagy szám keresése';
+	@override String get generate => 'Előnézet';
+	@override String get saveRecipe => 'Recept mentése';
+	@override String get saved => 'Mentett receptek';
+	@override String get savePlaylist => 'Lejátszási lista mentése';
+	@override String get name => 'nevét';
+	@override String get trackLimit => 'Számok felső határa';
+	@override String get empty => 'Nincs megfelelő zene. A hangzásfunkciókhoz szerveroldali elemzés kell.';
+	@override String get unsupported => 'Ez a szerver nem kínál hangzáselemzést.';
+	@override String get continuation => 'Folytatás hasonló zenével';
+	@override String get shuffleAlbums => 'Albumok keverése';
+	@override String get nextAlbum => 'Következő album';
+	@override String get driving => 'Vezetési nézet';
+	@override String get exitDriving => 'Kilépés a vezetési nézetből';
+	@override String get signalPath => 'Hangjel útvonala';
+	@override String get source => 'forrás';
+	@override String get local => 'Letöltött hang';
+	@override String get network => 'Hang a szerverről';
+	@override String get engine => 'Lejátszómotor';
+	@override String get codec => 'Forráskodek';
+	@override String get channels => 'Forráscsatornák';
+	@override String get processing => 'Feldolgozás alatt';
+	@override String get normalization => 'Normalizálás';
+	@override String get equalizer => 'Hangszínszabályzó';
+	@override String get fades => 'Hangerőátmenetek';
+	@override String get outputUnknown => 'A hardveres kimenet formátuma nincs megmérve.';
+	@override String get download => 'Válogatás letöltése';
+	@override String get ready => 'Kész';
+	@override String get remove => 'Eltávolítás';
+	@override String get play => 'Válogatás lejátszása';
+	@override String get next => 'Következő lejátszása';
+	@override String get error => 'A zenekérés sikertelen';
+	@override String get on => 'A';
+	@override String get off => 'Ki';
+	@override String get unknown => 'Ismeretlen';
+	@override String get routeLost => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.';
+	@override String get autoDriving => 'Vezetési nézet megnyitása autóhoz csatlakozáskor';
+	@override String get routeHint => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsHu {
 			'subtitleCapture.processingAudio' => 'A hang helyi feldolgozása…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'A hang helyi feldolgozása (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'A GPU-s beszédfeldolgozás sikertelen. Újrapróbálkozás CPU-val…',
+			'musicExperience.title' => 'Zene felfedezése',
+			'musicExperience.mix' => 'Mixkészítő',
+			'musicExperience.adventure' => 'Hangzáskaland',
+			'musicExperience.related' => 'Hasonló hangzás',
+			'musicExperience.seeds' => 'Kiindulópontok és állomások',
+			'musicExperience.search' => 'Előadó, album vagy szám keresése',
+			'musicExperience.generate' => 'Előnézet',
+			'musicExperience.saveRecipe' => 'Recept mentése',
+			'musicExperience.saved' => 'Mentett receptek',
+			'musicExperience.savePlaylist' => 'Lejátszási lista mentése',
+			'musicExperience.name' => 'nevét',
+			'musicExperience.trackLimit' => 'Számok felső határa',
+			'musicExperience.empty' => 'Nincs megfelelő zene. A hangzásfunkciókhoz szerveroldali elemzés kell.',
+			'musicExperience.unsupported' => 'Ez a szerver nem kínál hangzáselemzést.',
+			'musicExperience.continuation' => 'Folytatás hasonló zenével',
+			'musicExperience.shuffleAlbums' => 'Albumok keverése',
+			'musicExperience.nextAlbum' => 'Következő album',
+			'musicExperience.driving' => 'Vezetési nézet',
+			'musicExperience.exitDriving' => 'Kilépés a vezetési nézetből',
+			'musicExperience.signalPath' => 'Hangjel útvonala',
+			'musicExperience.source' => 'forrás',
+			'musicExperience.local' => 'Letöltött hang',
+			'musicExperience.network' => 'Hang a szerverről',
+			'musicExperience.engine' => 'Lejátszómotor',
+			'musicExperience.codec' => 'Forráskodek',
+			'musicExperience.channels' => 'Forráscsatornák',
+			'musicExperience.processing' => 'Feldolgozás alatt',
+			'musicExperience.normalization' => 'Normalizálás',
+			'musicExperience.equalizer' => 'Hangszínszabályzó',
+			'musicExperience.fades' => 'Hangerőátmenetek',
+			'musicExperience.outputUnknown' => 'A hardveres kimenet formátuma nincs megmérve.',
+			'musicExperience.download' => 'Válogatás letöltése',
+			'musicExperience.ready' => 'Kész',
+			'musicExperience.remove' => 'Eltávolítás',
+			'musicExperience.play' => 'Válogatás lejátszása',
+			'musicExperience.next' => 'Következő lejátszása',
+			'musicExperience.error' => 'A zenekérés sikertelen',
+			'musicExperience.on' => 'A',
+			'musicExperience.off' => 'Ki',
+			'musicExperience.unknown' => 'Ismeretlen',
+			'musicExperience.routeLost' => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.',
+			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
+			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
 			_ => null,
 		};
 	}

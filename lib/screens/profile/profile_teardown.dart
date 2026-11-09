@@ -209,6 +209,7 @@ Future<void> deleteProfile(BuildContext context, Profile profile) async {
     await scope.database.deleteDownloadCollectionsForProfile(profile.id);
     await scope.database.deleteWatchActionsForProfile(profile.id);
     await scope.database.deleteMusicSessionForProfile(profile.id);
+    await scope.database.deleteMusicRecipesForProfile(profile.id);
     await IptvSourceRepository(scope.database).deleteProfile(profile.id);
     await scope.sources?.forgetProfile(profile.id);
     await scope.cleanup.removeAllProfileConnections(profile.id);
@@ -321,6 +322,7 @@ Future<bool> confirmAndSignOutPlexAccount(BuildContext context, {required String
         await scope.database.deleteDownloadCollectionsForProfile(profileId);
         await scope.database.deleteWatchActionsForProfile(profileId);
         await scope.database.deleteMusicSessionForProfile(profileId);
+        await scope.database.deleteMusicRecipesForProfile(profileId);
         await scope.sources?.forgetProfile(profileId);
       }
 

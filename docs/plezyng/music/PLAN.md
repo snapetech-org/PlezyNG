@@ -82,7 +82,7 @@ release or a timetable.
 | R04 | Headless Raspberry Pi endpoint | Package a managed Linux ARM endpoint using shared contracts, audio engine, persistent state, pairing, updates and diagnostics. |
 | R05 | Cross-client interoperability / grouping | Inventory reference endpoint/group controls; verify authorized Plex protocols separately. If synchronization is required, test clock drift/latency, not just multiple play commands. |
 | C01 | Apple CarPlay | Add approved audio entitlement, scene templates, browsing/Now Playing, cold launch and one shared session. |
-| C02 | Android Auto | Add MediaLibraryService/Session, browser tree, search, voice and queue actions; bridge existing MPV rather than introduce a competing player. |
+| C02 | Android Auto | Add native media browsing/session transport, browser tree, search, voice and queue actions; bridge existing MPV rather than introduce a competing player. |
 | C03 | Android Automotive OS | Provide a compliant media distribution target; separate music allowance from parked-only video/game UI, with independent setup and vehicle qualification. |
 | C04 | Phone driving view | Add manual and supported automatic entry, large controls, favorites/offline shortcuts and route-aware exit; OS background-launch limits still apply. |
 | C05 | Siri and Android assistant commands | Resolve spoken artist/album/playlist/station names and next/later requests through the same catalog/session; handle ambiguity, lock state and account switching. |

@@ -114,6 +114,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$kk issueReport = _Translations$issueReport$kk._(_root);
 	@override late final _Translations$romm$kk romm = _Translations$romm$kk._(_root);
 	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
+	@override late final _Translations$musicExperience$kk musicExperience = _Translations$musicExperience$kk._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$kk extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Дыбыс жергілікті түрде өңделуде…';
 	@override String processingAudioProgress({required Object percent}) => 'Дыбыс жергілікті түрде өңделуде (${percent}%)…';
 	@override String get cpuFallback => 'GPU арқылы сөйлеуді өңдеу сәтсіз аяқталды. CPU арқылы қайта әрекет жасалуда…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$kk extends Translations$musicExperience$en {
+	_Translations$musicExperience$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Музыка іздеу';
+	@override String get mix => 'Микс жасау';
+	@override String get adventure => 'Дыбыстық саяхат';
+	@override String get related => 'Ұқсас дыбыстар';
+	@override String get seeds => 'Бастапқы элементтер мен аялдамалар';
+	@override String get search => 'Орындаушы, альбом немесе ән іздеу';
+	@override String get generate => 'Алдын ала қарау';
+	@override String get saveRecipe => 'Рецептті сақтау';
+	@override String get saved => 'Сақталған рецепттер';
+	@override String get savePlaylist => 'Ойнату тізімін сақтау';
+	@override String get name => 'Әйтсе де';
+	@override String get trackLimit => 'Ән санының шегі';
+	@override String get empty => 'Сәйкес музыка жоқ. Дыбыс мүмкіндіктері серверде талдауды қажет етеді.';
+	@override String get unsupported => 'Бұл сервер дыбыстық талдауды ұсынбайды.';
+	@override String get continuation => 'Ұқсас музыкамен жалғастыру';
+	@override String get shuffleAlbums => 'Альбомдарды араластыру';
+	@override String get nextAlbum => 'Келесі альбом';
+	@override String get driving => 'Көлік жүргізу көрінісі';
+	@override String get exitDriving => 'Көлік жүргізу көрінісінен шығу';
+	@override String get signalPath => 'Аудио сигнал жолы';
+	@override String get source => 'Қайтаны';
+	@override String get local => 'Жүктеп алынған аудио';
+	@override String get network => 'Сервер аудиосы';
+	@override String get engine => 'Ойнату қозғалтқышы';
+	@override String get codec => 'Бастапқы кодек';
+	@override String get channels => 'Бастапқы арналар';
+	@override String get processing => 'Өңделуде';
+	@override String get normalization => 'Дыбыс деңгейін қалыпқа келтіру';
+	@override String get equalizer => 'Эквалайзер';
+	@override String get fades => 'Дыбыс деңгейінің біртіндеп өзгеруі';
+	@override String get outputUnknown => 'Аппараттық шығыс пішімі өлшенбеген.';
+	@override String get download => 'Таңдалғанды жүктеп алу';
+	@override String get ready => 'Дайын';
+	@override String get remove => 'Өшіру';
+	@override String get play => 'Таңдалғанды ойнату';
+	@override String get next => 'Келесіні ойнату';
+	@override String get error => 'Музыка сұрауы орындалмады';
+	@override String get on => 'Қазір';
+	@override String get off => 'Өшірулі';
+	@override String get unknown => 'Белгісіз';
+	@override String get routeLost => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.';
+	@override String get autoDriving => 'Көлікке қосылғанда жүргізу көрінісін ашу';
+	@override String get routeHint => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsKk {
 			'subtitleCapture.processingAudio' => 'Дыбыс жергілікті түрде өңделуде…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Дыбыс жергілікті түрде өңделуде (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU арқылы сөйлеуді өңдеу сәтсіз аяқталды. CPU арқылы қайта әрекет жасалуда…',
+			'musicExperience.title' => 'Музыка іздеу',
+			'musicExperience.mix' => 'Микс жасау',
+			'musicExperience.adventure' => 'Дыбыстық саяхат',
+			'musicExperience.related' => 'Ұқсас дыбыстар',
+			'musicExperience.seeds' => 'Бастапқы элементтер мен аялдамалар',
+			'musicExperience.search' => 'Орындаушы, альбом немесе ән іздеу',
+			'musicExperience.generate' => 'Алдын ала қарау',
+			'musicExperience.saveRecipe' => 'Рецептті сақтау',
+			'musicExperience.saved' => 'Сақталған рецепттер',
+			'musicExperience.savePlaylist' => 'Ойнату тізімін сақтау',
+			'musicExperience.name' => 'Әйтсе де',
+			'musicExperience.trackLimit' => 'Ән санының шегі',
+			'musicExperience.empty' => 'Сәйкес музыка жоқ. Дыбыс мүмкіндіктері серверде талдауды қажет етеді.',
+			'musicExperience.unsupported' => 'Бұл сервер дыбыстық талдауды ұсынбайды.',
+			'musicExperience.continuation' => 'Ұқсас музыкамен жалғастыру',
+			'musicExperience.shuffleAlbums' => 'Альбомдарды араластыру',
+			'musicExperience.nextAlbum' => 'Келесі альбом',
+			'musicExperience.driving' => 'Көлік жүргізу көрінісі',
+			'musicExperience.exitDriving' => 'Көлік жүргізу көрінісінен шығу',
+			'musicExperience.signalPath' => 'Аудио сигнал жолы',
+			'musicExperience.source' => 'Қайтаны',
+			'musicExperience.local' => 'Жүктеп алынған аудио',
+			'musicExperience.network' => 'Сервер аудиосы',
+			'musicExperience.engine' => 'Ойнату қозғалтқышы',
+			'musicExperience.codec' => 'Бастапқы кодек',
+			'musicExperience.channels' => 'Бастапқы арналар',
+			'musicExperience.processing' => 'Өңделуде',
+			'musicExperience.normalization' => 'Дыбыс деңгейін қалыпқа келтіру',
+			'musicExperience.equalizer' => 'Эквалайзер',
+			'musicExperience.fades' => 'Дыбыс деңгейінің біртіндеп өзгеруі',
+			'musicExperience.outputUnknown' => 'Аппараттық шығыс пішімі өлшенбеген.',
+			'musicExperience.download' => 'Таңдалғанды жүктеп алу',
+			'musicExperience.ready' => 'Дайын',
+			'musicExperience.remove' => 'Өшіру',
+			'musicExperience.play' => 'Таңдалғанды ойнату',
+			'musicExperience.next' => 'Келесіні ойнату',
+			'musicExperience.error' => 'Музыка сұрауы орындалмады',
+			'musicExperience.on' => 'Қазір',
+			'musicExperience.off' => 'Өшірулі',
+			'musicExperience.unknown' => 'Белгісіз',
+			'musicExperience.routeLost' => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.',
+			'musicExperience.autoDriving' => 'Көлікке қосылғанда жүргізу көрінісін ашу',
+			'musicExperience.routeHint' => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.',
 			_ => null,
 		};
 	}

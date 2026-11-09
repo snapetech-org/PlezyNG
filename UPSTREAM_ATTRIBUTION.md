@@ -164,3 +164,7 @@ made to Plezy; Pleazyng adaptation remains independent. A related feature
 request is context, not proof that its entire scope is implemented.
 
 _Attribution ledger refreshed 2026-11-09; 89 source records._
+
+## Music media-session integration
+
+The music/car integration vendors the already pinned [edde746/media_controls commit a27208e](https://github.com/edde746/media_controls/commit/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), retaining its license and existing platform implementations. Pleazyng independently adds the music browser bridge. The sonic request contract was checked against [Python-PlexAPI](https://github.com/pkkid/python-plexapi)'s published `nearest` and `computePath` client implementation; no Python source was copied. Native qualification and full parity remain tracked in `docs/plezyng/music/STATUS.md`.

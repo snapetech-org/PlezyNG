@@ -143,6 +143,24 @@ for platform in "${PLATFORMS[@]}"; do
     # Only the lines that say what moved; the rest is a list of local plugin packages.
     grep -E '^(Fetching|Updating|Cloning|Creating working copy|Checking out) ' "$log" | sed 's/^/             /' || true
   else
+    # Xcode 26 can abort while inserting concurrently fetched package references
+    # into its in-memory project graph. The downloads are already in SwiftPM's
+    # verified cache, so retry once from a fresh run-scoped checkout directory.
+    # Do not retry ordinary resolver failures or a caller-requested reset.
+    if [ "$RESET" -eq 0 ] \
+      && grep -Eq 'INTERNAL ERROR: Uncaught exception|NSMutableArray insertObjects:atIndexes:' "$log"; then
+      echo "retry      $platform after Xcode package-graph crash" >&2
+      rm -rf "$cloned_dir"
+      : >"$log"
+      if (cd "$platform" && xcodebuild -project Runner.xcodeproj -resolvePackageDependencies \
+        "${derived_data_args[@]}" \
+        -clonedSourcePackagesDirPath "$cloned_dir" >"$log" 2>&1); then
+        echo "resolved   $platform (fresh checkout retry)"
+        grep -E '^(Fetching|Updating|Cloning|Creating working copy|Checking out) ' "$log" | sed 's/^/             /' || true
+        rm -f "$log"
+        continue
+      fi
+    fi
     echo "FAILED     $platform" >&2
     cat "$log" >&2
     if [ "$RESET" -eq 0 ]; then

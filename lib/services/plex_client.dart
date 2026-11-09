@@ -1,3 +1,4 @@
+import 'music/music_discovery.dart';
 import 'dart:async';
 import 'dart:convert';
 import '../media/tizen_playback_profile.dart';
@@ -461,7 +462,8 @@ class PlexClient
         GracefullyCloseable,
         ConvertedDownloadClient,
         MediaDeletionPermissionClient,
-        PlexLoudnessProfileClient {
+        PlexLoudnessProfileClient,
+        SonicMusicClient {
   @override
   PlexConfig config;
 
@@ -4004,6 +4006,29 @@ class PlexClient
     final queue = await createPlayQueue(uri: stationUri, type: 'audio');
     final tracks = queue.items ?? const <MediaItem>[];
     return tracks.length > limit ? tracks.sublist(0, limit) : tracks;
+  }
+
+  @override
+  Future<List<MediaItem>> sonicallySimilar(String itemId, {int limit = 50, double maxDistance = .25}) async {
+    if (limit < 1 || limit > 500 || !maxDistance.isFinite || maxDistance < 0 || maxDistance > 1) {
+      throw ArgumentError('Invalid sonic search bounds');
+    }
+    final response = await _getWithFailover(
+      '/library/metadata/${Uri.encodeComponent(itemId)}/nearest',
+      queryParameters: {'limit': limit, 'maxDistance': maxDistance},
+    );
+    throwIfHttpError(response);
+    return _extractMetadataList(response).map(PlexMappers.mediaItem).take(limit).toList();
+  }
+
+  @override
+  Future<List<MediaItem>> sonicPath({required String libraryId, required String startId, required String endId}) async {
+    final response = await _getWithFailover(
+      '/library/sections/${Uri.encodeComponent(libraryId)}/computePath',
+      queryParameters: {'startID': startId, 'endID': endId},
+    );
+    throwIfHttpError(response);
+    return _extractMetadataList(response).map(PlexMappers.mediaItem).toList();
   }
 
   /// Plex lyrics: sidecar `.lrc`/`.txt` files surface as track Part streams

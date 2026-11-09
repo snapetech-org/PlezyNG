@@ -114,6 +114,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$he issueReport = _Translations$issueReport$he._(_root);
 	@override late final _Translations$romm$he romm = _Translations$romm$he._(_root);
 	@override late final _Translations$subtitleCapture$he subtitleCapture = _Translations$subtitleCapture$he._(_root);
+	@override late final _Translations$musicExperience$he musicExperience = _Translations$musicExperience$he._(_root);
 }
 
 // Path: app
@@ -4212,6 +4213,58 @@ class _Translations$subtitleCapture$he extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'מעבד שמע באופן מקומי…';
 	@override String processingAudioProgress({required Object percent}) => 'מעבד שמע באופן מקומי (${percent}%)…';
 	@override String get cpuFallback => 'עיבוד הדיבור באמצעות GPU נכשל. מנסה שוב באמצעות CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$he extends Translations$musicExperience$en {
+	_Translations$musicExperience$he._(TranslationsHe root) : this._root = root, super.internal(root);
+
+	final TranslationsHe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'גילוי מוזיקה';
+	@override String get mix => 'יצירת מיקס';
+	@override String get adventure => 'מסע קולי';
+	@override String get related => 'צלילים דומים';
+	@override String get seeds => 'מקורות ותחנות';
+	@override String get search => 'חיפוש אמן, אלבום או שיר';
+	@override String get generate => 'תצוגה מקדימה';
+	@override String get saveRecipe => 'שמירת מתכון';
+	@override String get saved => 'מתכונים שמורים';
+	@override String get savePlaylist => 'שמירת רשימת השמעה';
+	@override String get name => 'שם';
+	@override String get trackLimit => 'מספר שירים מרבי';
+	@override String get empty => 'לא נמצאה מוזיקה מתאימה. תכונות הצליל דורשות ניתוח בשרת.';
+	@override String get unsupported => 'השרת הזה אינו מספק ניתוח צליל.';
+	@override String get continuation => 'המשך עם מוזיקה דומה';
+	@override String get shuffleAlbums => 'ערבוב אלבומים';
+	@override String get nextAlbum => 'האלבום הבא';
+	@override String get driving => 'תצוגת נהיגה';
+	@override String get exitDriving => 'יציאה מתצוגת הנהיגה';
+	@override String get signalPath => 'מסלול אות השמע';
+	@override String get source => 'מקור';
+	@override String get local => 'שמע שהורד';
+	@override String get network => 'שמע מהשרת';
+	@override String get engine => 'מנוע ניגון';
+	@override String get codec => 'מקודד המקור';
+	@override String get channels => 'ערוצי המקור';
+	@override String get processing => 'עיבוד';
+	@override String get normalization => 'נרמול עוצמה';
+	@override String get equalizer => 'אקולייזר';
+	@override String get fades => 'דעיכת עוצמה';
+	@override String get outputUnknown => 'פורמט פלט החומרה לא נמדד.';
+	@override String get download => 'הורדת הבחירה';
+	@override String get ready => 'מוכנים';
+	@override String get remove => 'הסר';
+	@override String get play => 'ניגון הבחירה';
+	@override String get next => 'נגן את הבא';
+	@override String get error => 'בקשת המוזיקה נכשלה';
+	@override String get on => 'על';
+	@override String get off => 'כבוי';
+	@override String get unknown => 'לא ידוע';
+	@override String get routeLost => 'פלט השמע נותק. הניגון הושהה.';
+	@override String get autoDriving => 'פתיחת תצוגת נהיגה בחיבור לרכב';
+	@override String get routeHint => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.';
 }
 
 // Path: appIcon.names
@@ -9265,6 +9318,49 @@ extension on TranslationsHe {
 			'subtitleCapture.processingAudio' => 'מעבד שמע באופן מקומי…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'מעבד שמע באופן מקומי (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'עיבוד הדיבור באמצעות GPU נכשל. מנסה שוב באמצעות CPU…',
+			'musicExperience.title' => 'גילוי מוזיקה',
+			'musicExperience.mix' => 'יצירת מיקס',
+			'musicExperience.adventure' => 'מסע קולי',
+			'musicExperience.related' => 'צלילים דומים',
+			'musicExperience.seeds' => 'מקורות ותחנות',
+			'musicExperience.search' => 'חיפוש אמן, אלבום או שיר',
+			'musicExperience.generate' => 'תצוגה מקדימה',
+			'musicExperience.saveRecipe' => 'שמירת מתכון',
+			'musicExperience.saved' => 'מתכונים שמורים',
+			'musicExperience.savePlaylist' => 'שמירת רשימת השמעה',
+			'musicExperience.name' => 'שם',
+			'musicExperience.trackLimit' => 'מספר שירים מרבי',
+			'musicExperience.empty' => 'לא נמצאה מוזיקה מתאימה. תכונות הצליל דורשות ניתוח בשרת.',
+			'musicExperience.unsupported' => 'השרת הזה אינו מספק ניתוח צליל.',
+			'musicExperience.continuation' => 'המשך עם מוזיקה דומה',
+			'musicExperience.shuffleAlbums' => 'ערבוב אלבומים',
+			'musicExperience.nextAlbum' => 'האלבום הבא',
+			'musicExperience.driving' => 'תצוגת נהיגה',
+			'musicExperience.exitDriving' => 'יציאה מתצוגת הנהיגה',
+			'musicExperience.signalPath' => 'מסלול אות השמע',
+			'musicExperience.source' => 'מקור',
+			'musicExperience.local' => 'שמע שהורד',
+			'musicExperience.network' => 'שמע מהשרת',
+			'musicExperience.engine' => 'מנוע ניגון',
+			'musicExperience.codec' => 'מקודד המקור',
+			'musicExperience.channels' => 'ערוצי המקור',
+			'musicExperience.processing' => 'עיבוד',
+			'musicExperience.normalization' => 'נרמול עוצמה',
+			'musicExperience.equalizer' => 'אקולייזר',
+			'musicExperience.fades' => 'דעיכת עוצמה',
+			'musicExperience.outputUnknown' => 'פורמט פלט החומרה לא נמדד.',
+			'musicExperience.download' => 'הורדת הבחירה',
+			'musicExperience.ready' => 'מוכנים',
+			'musicExperience.remove' => 'הסר',
+			'musicExperience.play' => 'ניגון הבחירה',
+			'musicExperience.next' => 'נגן את הבא',
+			'musicExperience.error' => 'בקשת המוזיקה נכשלה',
+			'musicExperience.on' => 'על',
+			'musicExperience.off' => 'כבוי',
+			'musicExperience.unknown' => 'לא ידוע',
+			'musicExperience.routeLost' => 'פלט השמע נותק. הניגון הושהה.',
+			'musicExperience.autoDriving' => 'פתיחת תצוגת נהיגה בחיבור לרכב',
+			'musicExperience.routeHint' => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.',
 			_ => null,
 		};
 	}

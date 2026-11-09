@@ -54,6 +54,21 @@ class CorrespondingSourceTests(unittest.TestCase):
                 self.assertTrue(any(name.endswith('/LICENSE') for name in names))
             self.assertTrue(all((self.output / license).is_file() for license in entry['licenses']))
 
+    def test_android_assets_keep_compressed_bytes_and_matching_receipts(self):
+        old = self.stage()
+        unrelated = self.output / 'retained-evidence.gz'
+        unrelated.write_bytes(b'evidence')
+        result = package.package(self.sources, self.libraries, self.output, 'Android', 'x86_64')
+        for entry in result['cores']:
+            archive = self.output / entry['sourceArchive']
+            self.assertFalse(archive.name.endswith('.gz'))
+            self.assertEqual(archive.read_bytes()[:2], b'\x1f\x8b')
+            self.assertEqual(package.digest(archive), entry['sourceSha256'])
+            with tarfile.open(archive) as source:
+                self.assertTrue(any(name.endswith('/core.c') for name in source.getnames()))
+        self.assertTrue(all(not (self.output / entry['sourceArchive']).exists() for entry in old['cores']))
+        self.assertEqual(unrelated.read_bytes(), b'evidence')
+
     def test_tampered_archive_is_regenerated(self):
         entry = self.stage()['cores'][0]
         archive = self.output / entry['sourceArchive']

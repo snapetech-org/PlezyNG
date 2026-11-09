@@ -114,6 +114,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$uz issueReport = _Translations$issueReport$uz._(_root);
 	@override late final _Translations$romm$uz romm = _Translations$romm$uz._(_root);
 	@override late final _Translations$subtitleCapture$uz subtitleCapture = _Translations$subtitleCapture$uz._(_root);
+	@override late final _Translations$musicExperience$uz musicExperience = _Translations$musicExperience$uz._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$uz extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Audio qurilmada qayta ishlanmoqda…';
 	@override String processingAudioProgress({required Object percent}) => 'Audio qurilmada qayta ishlanmoqda (${percent}%)…';
 	@override String get cpuFallback => 'GPU yordamida nutqni qayta ishlash bajarilmadi. CPU yordamida qayta urinilmoqda…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$uz extends Translations$musicExperience$en {
+	_Translations$musicExperience$uz._(TranslationsUz root) : this._root = root, super.internal(root);
+
+	final TranslationsUz _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Musiqa kashf etish';
+	@override String get mix => 'Miks yaratish';
+	@override String get adventure => 'Ovozli sayohat';
+	@override String get related => 'O‘xshash tovushlar';
+	@override String get seeds => 'Manbalar va bekatlar';
+	@override String get search => 'Ijrochi, albom yoki qo‘shiq qidirish';
+	@override String get generate => 'Oldindan koʻrish';
+	@override String get saveRecipe => 'Retseptni saqlash';
+	@override String get saved => 'Saqlangan retseptlar';
+	@override String get savePlaylist => 'Pleylistni saqlash';
+	@override String get name => 'Namo';
+	@override String get trackLimit => 'Qo‘shiqlar soni chegarasi';
+	@override String get empty => 'Mos musiqa topilmadi. Ovoz funksiyalari serverda tahlilni talab qiladi.';
+	@override String get unsupported => 'Bu server ovoz tahlilini taqdim etmaydi.';
+	@override String get continuation => 'O‘xshash musiqa bilan davom etish';
+	@override String get shuffleAlbums => 'Albomlarni aralashtirish';
+	@override String get nextAlbum => 'Keyingi albom';
+	@override String get driving => 'Haydash ko‘rinishi';
+	@override String get exitDriving => 'Haydash ko‘rinishidan chiqish';
+	@override String get signalPath => 'Audio signal yo‘li';
+	@override String get source => 'Kaynak';
+	@override String get local => 'Yuklab olingan audio';
+	@override String get network => 'Server audiosi';
+	@override String get engine => 'Ijro mexanizmi';
+	@override String get codec => 'Manba kodeki';
+	@override String get channels => 'Manba kanallari';
+	@override String get processing => 'Ishlanmoqda';
+	@override String get normalization => 'Ovoz balandligini me’yorlash';
+	@override String get equalizer => 'Ekvalayzer';
+	@override String get fades => 'Ovozning asta o‘zgarishi';
+	@override String get outputUnknown => 'Qurilma chiqish formati o‘lchanmagan.';
+	@override String get download => 'Tanlanganlarni yuklab olish';
+	@override String get ready => 'Tayyor';
+	@override String get remove => 'Oʻchirish';
+	@override String get play => 'Tanlanganlarni ijro etish';
+	@override String get next => 'Keyingisini ijro etish';
+	@override String get error => 'Musiqa so‘rovi bajarilmadi';
+	@override String get on => 'Yoqilgan';
+	@override String get off => 'Oʻchirilgan';
+	@override String get unknown => 'Nomaʼlum';
+	@override String get routeLost => 'Audio chiqishi uzildi. Ijro to‘xtatildi.';
+	@override String get autoDriving => 'Avtomobilga ulanganda haydash ko‘rinishini ochish';
+	@override String get routeHint => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsUz {
 			'subtitleCapture.processingAudio' => 'Audio qurilmada qayta ishlanmoqda…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Audio qurilmada qayta ishlanmoqda (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU yordamida nutqni qayta ishlash bajarilmadi. CPU yordamida qayta urinilmoqda…',
+			'musicExperience.title' => 'Musiqa kashf etish',
+			'musicExperience.mix' => 'Miks yaratish',
+			'musicExperience.adventure' => 'Ovozli sayohat',
+			'musicExperience.related' => 'O‘xshash tovushlar',
+			'musicExperience.seeds' => 'Manbalar va bekatlar',
+			'musicExperience.search' => 'Ijrochi, albom yoki qo‘shiq qidirish',
+			'musicExperience.generate' => 'Oldindan koʻrish',
+			'musicExperience.saveRecipe' => 'Retseptni saqlash',
+			'musicExperience.saved' => 'Saqlangan retseptlar',
+			'musicExperience.savePlaylist' => 'Pleylistni saqlash',
+			'musicExperience.name' => 'Namo',
+			'musicExperience.trackLimit' => 'Qo‘shiqlar soni chegarasi',
+			'musicExperience.empty' => 'Mos musiqa topilmadi. Ovoz funksiyalari serverda tahlilni talab qiladi.',
+			'musicExperience.unsupported' => 'Bu server ovoz tahlilini taqdim etmaydi.',
+			'musicExperience.continuation' => 'O‘xshash musiqa bilan davom etish',
+			'musicExperience.shuffleAlbums' => 'Albomlarni aralashtirish',
+			'musicExperience.nextAlbum' => 'Keyingi albom',
+			'musicExperience.driving' => 'Haydash ko‘rinishi',
+			'musicExperience.exitDriving' => 'Haydash ko‘rinishidan chiqish',
+			'musicExperience.signalPath' => 'Audio signal yo‘li',
+			'musicExperience.source' => 'Kaynak',
+			'musicExperience.local' => 'Yuklab olingan audio',
+			'musicExperience.network' => 'Server audiosi',
+			'musicExperience.engine' => 'Ijro mexanizmi',
+			'musicExperience.codec' => 'Manba kodeki',
+			'musicExperience.channels' => 'Manba kanallari',
+			'musicExperience.processing' => 'Ishlanmoqda',
+			'musicExperience.normalization' => 'Ovoz balandligini me’yorlash',
+			'musicExperience.equalizer' => 'Ekvalayzer',
+			'musicExperience.fades' => 'Ovozning asta o‘zgarishi',
+			'musicExperience.outputUnknown' => 'Qurilma chiqish formati o‘lchanmagan.',
+			'musicExperience.download' => 'Tanlanganlarni yuklab olish',
+			'musicExperience.ready' => 'Tayyor',
+			'musicExperience.remove' => 'Oʻchirish',
+			'musicExperience.play' => 'Tanlanganlarni ijro etish',
+			'musicExperience.next' => 'Keyingisini ijro etish',
+			'musicExperience.error' => 'Musiqa so‘rovi bajarilmadi',
+			'musicExperience.on' => 'Yoqilgan',
+			'musicExperience.off' => 'Oʻchirilgan',
+			'musicExperience.unknown' => 'Nomaʼlum',
+			'musicExperience.routeLost' => 'Audio chiqishi uzildi. Ijro to‘xtatildi.',
+			'musicExperience.autoDriving' => 'Avtomobilga ulanganda haydash ko‘rinishini ochish',
+			'musicExperience.routeHint' => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.',
 			_ => null,
 		};
 	}

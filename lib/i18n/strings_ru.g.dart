@@ -114,6 +114,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$ru issueReport = _Translations$issueReport$ru._(_root);
 	@override late final _Translations$romm$ru romm = _Translations$romm$ru._(_root);
 	@override late final _Translations$subtitleCapture$ru subtitleCapture = _Translations$subtitleCapture$ru._(_root);
+	@override late final _Translations$musicExperience$ru musicExperience = _Translations$musicExperience$ru._(_root);
 }
 
 // Path: app
@@ -4250,6 +4251,58 @@ class _Translations$subtitleCapture$ru extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Локальная обработка аудио…';
 	@override String processingAudioProgress({required Object percent}) => 'Локальная обработка аудио (${percent}%)…';
 	@override String get cpuFallback => 'Обработка речи на GPU не удалась. Повторная попытка на CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$ru extends Translations$musicExperience$en {
+	_Translations$musicExperience$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Открывайте музыку';
+	@override String get mix => 'Создание микса';
+	@override String get adventure => 'Звуковое путешествие';
+	@override String get related => 'Похожее звучание';
+	@override String get seeds => 'Источники и точки маршрута';
+	@override String get search => 'Найти исполнителя, альбом или трек';
+	@override String get generate => 'Предпросмотр';
+	@override String get saveRecipe => 'Сохранить рецепт';
+	@override String get saved => 'Сохранённые рецепты';
+	@override String get savePlaylist => 'Сохранить плейлист';
+	@override String get name => 'Имя';
+	@override String get trackLimit => 'Лимит треков';
+	@override String get empty => 'Подходящая музыка не найдена. Звуковые функции требуют анализа на сервере.';
+	@override String get unsupported => 'Этот сервер не поддерживает звуковой анализ.';
+	@override String get continuation => 'Продолжить похожей музыкой';
+	@override String get shuffleAlbums => 'Перемешать альбомы';
+	@override String get nextAlbum => 'Следующий альбом';
+	@override String get driving => 'Режим вождения';
+	@override String get exitDriving => 'Выйти из режима вождения';
+	@override String get signalPath => 'Путь аудиосигнала';
+	@override String get source => 'Источник';
+	@override String get local => 'Скачанное аудио';
+	@override String get network => 'Аудио с сервера';
+	@override String get engine => 'Движок воспроизведения';
+	@override String get codec => 'Кодек источника';
+	@override String get channels => 'Каналы источника';
+	@override String get processing => 'В обработке';
+	@override String get normalization => 'Нормализация';
+	@override String get equalizer => 'Эквалайзер';
+	@override String get fades => 'Плавные изменения громкости';
+	@override String get outputUnknown => 'Формат аппаратного выхода не измерен.';
+	@override String get download => 'Скачать подборку';
+	@override String get ready => 'Готов';
+	@override String get remove => 'Удалить';
+	@override String get play => 'Воспроизвести подборку';
+	@override String get next => 'Воспроизвести следующим';
+	@override String get error => 'Запрос музыки не удался';
+	@override String get on => 'На';
+	@override String get off => 'Выкл.';
+	@override String get unknown => 'Неизвестно';
+	@override String get routeLost => 'Аудиовыход отключён. Воспроизведение приостановлено.';
+	@override String get autoDriving => 'Открывать режим вождения при подключении к машине';
+	@override String get routeHint => 'Система автомобиля определяет, может ли приложение появляться автоматически.';
 }
 
 // Path: appIcon.names
@@ -9307,6 +9360,49 @@ extension on TranslationsRu {
 			'subtitleCapture.processingAudio' => 'Локальная обработка аудио…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Локальная обработка аудио (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Обработка речи на GPU не удалась. Повторная попытка на CPU…',
+			'musicExperience.title' => 'Открывайте музыку',
+			'musicExperience.mix' => 'Создание микса',
+			'musicExperience.adventure' => 'Звуковое путешествие',
+			'musicExperience.related' => 'Похожее звучание',
+			'musicExperience.seeds' => 'Источники и точки маршрута',
+			'musicExperience.search' => 'Найти исполнителя, альбом или трек',
+			'musicExperience.generate' => 'Предпросмотр',
+			'musicExperience.saveRecipe' => 'Сохранить рецепт',
+			'musicExperience.saved' => 'Сохранённые рецепты',
+			'musicExperience.savePlaylist' => 'Сохранить плейлист',
+			'musicExperience.name' => 'Имя',
+			'musicExperience.trackLimit' => 'Лимит треков',
+			'musicExperience.empty' => 'Подходящая музыка не найдена. Звуковые функции требуют анализа на сервере.',
+			'musicExperience.unsupported' => 'Этот сервер не поддерживает звуковой анализ.',
+			'musicExperience.continuation' => 'Продолжить похожей музыкой',
+			'musicExperience.shuffleAlbums' => 'Перемешать альбомы',
+			'musicExperience.nextAlbum' => 'Следующий альбом',
+			'musicExperience.driving' => 'Режим вождения',
+			'musicExperience.exitDriving' => 'Выйти из режима вождения',
+			'musicExperience.signalPath' => 'Путь аудиосигнала',
+			'musicExperience.source' => 'Источник',
+			'musicExperience.local' => 'Скачанное аудио',
+			'musicExperience.network' => 'Аудио с сервера',
+			'musicExperience.engine' => 'Движок воспроизведения',
+			'musicExperience.codec' => 'Кодек источника',
+			'musicExperience.channels' => 'Каналы источника',
+			'musicExperience.processing' => 'В обработке',
+			'musicExperience.normalization' => 'Нормализация',
+			'musicExperience.equalizer' => 'Эквалайзер',
+			'musicExperience.fades' => 'Плавные изменения громкости',
+			'musicExperience.outputUnknown' => 'Формат аппаратного выхода не измерен.',
+			'musicExperience.download' => 'Скачать подборку',
+			'musicExperience.ready' => 'Готов',
+			'musicExperience.remove' => 'Удалить',
+			'musicExperience.play' => 'Воспроизвести подборку',
+			'musicExperience.next' => 'Воспроизвести следующим',
+			'musicExperience.error' => 'Запрос музыки не удался',
+			'musicExperience.on' => 'На',
+			'musicExperience.off' => 'Выкл.',
+			'musicExperience.unknown' => 'Неизвестно',
+			'musicExperience.routeLost' => 'Аудиовыход отключён. Воспроизведение приостановлено.',
+			'musicExperience.autoDriving' => 'Открывать режим вождения при подключении к машине',
+			'musicExperience.routeHint' => 'Система автомобиля определяет, может ли приложение появляться автоматически.',
 			_ => null,
 		};
 	}

@@ -43,6 +43,9 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterTextureView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.android.TransparencyMode
+import io.flutter.embedding.engine.FlutterEngineCache
+import com.edde746.plezy.car.MusicBrowserService
+import com.edde746.os_media_controls.MusicCarApi
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.MethodChannel
@@ -548,7 +551,16 @@ class PlezyActivity : FlutterActivity() {
     // non-modifier keys (see withoutModifierScanCode).
     val content = findViewById<ViewGroup>(android.R.id.content)
     val wrapper = object : FrameLayout(this) {
-      override fun dispatchKeyEvent(event: KeyEvent): Boolean = super.dispatchKeyEvent(event.withoutModifierScanCode())
+      override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // With a registered system callback, API 36 can also synthesize raw
+        // Back keys after IME use. Its cancelled key-up becomes an ordinary
+        // Flutter KeyUp and pops once before the real system callback pops again.
+        // Let that callback own navigation; legacy/root keys still reach Flutter.
+        if (Build.VERSION.SDK_INT >= 33 && frameworkHandlesSystemBack && event.keyCode == KeyEvent.KEYCODE_BACK) {
+          return true
+        }
+        return super.dispatchKeyEvent(event.withoutModifierScanCode())
+      }
 
       override fun dispatchKeyEventPreIme(event: KeyEvent): Boolean {
         if (isDpadKeyCode(event.keyCode)) {
@@ -618,6 +630,13 @@ class PlezyActivity : FlutterActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     handleDeepLinkIntent(intent)
+  }
+
+  private var frameworkHandlesSystemBack = false
+
+  override fun setFrameworkHandlesBack(frameworkHandlesBack: Boolean) {
+    frameworkHandlesSystemBack = frameworkHandlesBack
+    super.setFrameworkHandlesBack(frameworkHandlesBack)
   }
 
   override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -904,13 +923,26 @@ class PlezyActivity : FlutterActivity() {
     textureView.resume()
   }
 
+  override fun provideFlutterEngine(context: Context): FlutterEngine? =
+    FlutterEngineCache.getInstance().get(MusicBrowserService.ENGINE_ID)
+
+  override fun shouldDestroyEngineWithHost(): Boolean = !MusicCarApi.hasCarHost
+
+  override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+    if (!MusicCarApi.hasCarHost) {
+      FlutterEngineCache.getInstance().remove(MusicBrowserService.ENGINE_ID)
+    }
+    super.cleanUpFlutterEngine(flutterEngine)
+  }
+
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
-    flutterEngine.plugins.add(MpvPlayerPlugin())
-    flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
-    flutterEngine.plugins.add(ExoPlayerPlugin())
-    flutterEngine.plugins.add(ExoWorkspacePlayerPlugin())
-    flutterEngine.plugins.add(MpvAudioPlayerPlugin())
+    FlutterEngineCache.getInstance().put(MusicBrowserService.ENGINE_ID, flutterEngine)
+    if (!flutterEngine.plugins.has(MpvPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvPlayerPlugin())
+    if (!flutterEngine.plugins.has(MpvWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
+    if (!flutterEngine.plugins.has(ExoPlayerPlugin::class.java)) flutterEngine.plugins.add(ExoPlayerPlugin())
+    if (!flutterEngine.plugins.has(ExoWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(ExoWorkspacePlayerPlugin())
+    if (!flutterEngine.plugins.has(MpvAudioPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvAudioPlayerPlugin())
     if (runCatching {
         Class.forName("org.snapetech.plezyng.games.steam.SteamStreamView", false, classLoader)
       }.isSuccess

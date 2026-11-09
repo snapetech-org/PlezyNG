@@ -114,6 +114,7 @@ class TranslationsDe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$de issueReport = _Translations$issueReport$de._(_root);
 	@override late final _Translations$romm$de romm = _Translations$romm$de._(_root);
 	@override late final _Translations$subtitleCapture$de subtitleCapture = _Translations$subtitleCapture$de._(_root);
+	@override late final _Translations$musicExperience$de musicExperience = _Translations$musicExperience$de._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$de extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Audio wird lokal verarbeitet …';
 	@override String processingAudioProgress({required Object percent}) => 'Audio wird lokal verarbeitet (${percent} %) …';
 	@override String get cpuFallback => 'Sprachverarbeitung auf der GPU ist fehlgeschlagen. Neuer Versuch auf der CPU …';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$de extends Translations$musicExperience$en {
+	_Translations$musicExperience$de._(TranslationsDe root) : this._root = root, super.internal(root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Musik entdecken';
+	@override String get mix => 'Mix erstellen';
+	@override String get adventure => 'Klangreise';
+	@override String get related => 'Ähnlicher Klang';
+	@override String get seeds => 'Ausgangspunkte und Etappen';
+	@override String get search => 'Künstler, Album oder Titel suchen';
+	@override String get generate => 'Vorschau';
+	@override String get saveRecipe => 'Rezept speichern';
+	@override String get saved => 'Gespeicherte Rezepte';
+	@override String get savePlaylist => 'Wiedergabeliste speichern';
+	@override String get name => 'Name';
+	@override String get trackLimit => 'Maximale Titelanzahl';
+	@override String get empty => 'Keine passende Musik. Klangfunktionen benötigen eine Analyse auf dem Server.';
+	@override String get unsupported => 'Dieser Server bietet keine Klanganalyse.';
+	@override String get continuation => 'Ähnliche Musik weiter abspielen';
+	@override String get shuffleAlbums => 'Alben mischen';
+	@override String get nextAlbum => 'Nächstes Album';
+	@override String get driving => 'Fahransicht';
+	@override String get exitDriving => 'Fahransicht verlassen';
+	@override String get signalPath => 'Audiosignalweg';
+	@override String get source => 'Quelle';
+	@override String get local => 'Heruntergeladenes Audio';
+	@override String get network => 'Server-Audio';
+	@override String get engine => 'Wiedergabe-Engine';
+	@override String get codec => 'Quellcodec';
+	@override String get channels => 'Quellkanäle';
+	@override String get processing => 'Wird verarbeitet';
+	@override String get normalization => 'Normalisierung';
+	@override String get equalizer => 'Equalizer';
+	@override String get fades => 'Lautstärkeüberblendungen';
+	@override String get outputUnknown => 'Das Hardware-Ausgabeformat wurde nicht gemessen.';
+	@override String get download => 'Auswahl herunterladen';
+	@override String get ready => 'Bereit';
+	@override String get remove => 'Entfernen';
+	@override String get play => 'Auswahl abspielen';
+	@override String get next => 'Als Nächstes abspielen';
+	@override String get error => 'Musikanfrage fehlgeschlagen';
+	@override String get on => 'auf';
+	@override String get off => 'Aus';
+	@override String get unknown => 'Unbekannt';
+	@override String get routeLost => 'Audioausgabe getrennt. Wiedergabe pausiert.';
+	@override String get autoDriving => 'Fahransicht bei Verbindung mit einem Auto öffnen';
+	@override String get routeHint => 'Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsDe {
 			'subtitleCapture.processingAudio' => 'Audio wird lokal verarbeitet …',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Audio wird lokal verarbeitet (${percent} %) …',
 			'subtitleCapture.cpuFallback' => 'Sprachverarbeitung auf der GPU ist fehlgeschlagen. Neuer Versuch auf der CPU …',
+			'musicExperience.title' => 'Musik entdecken',
+			'musicExperience.mix' => 'Mix erstellen',
+			'musicExperience.adventure' => 'Klangreise',
+			'musicExperience.related' => 'Ähnlicher Klang',
+			'musicExperience.seeds' => 'Ausgangspunkte und Etappen',
+			'musicExperience.search' => 'Künstler, Album oder Titel suchen',
+			'musicExperience.generate' => 'Vorschau',
+			'musicExperience.saveRecipe' => 'Rezept speichern',
+			'musicExperience.saved' => 'Gespeicherte Rezepte',
+			'musicExperience.savePlaylist' => 'Wiedergabeliste speichern',
+			'musicExperience.name' => 'Name',
+			'musicExperience.trackLimit' => 'Maximale Titelanzahl',
+			'musicExperience.empty' => 'Keine passende Musik. Klangfunktionen benötigen eine Analyse auf dem Server.',
+			'musicExperience.unsupported' => 'Dieser Server bietet keine Klanganalyse.',
+			'musicExperience.continuation' => 'Ähnliche Musik weiter abspielen',
+			'musicExperience.shuffleAlbums' => 'Alben mischen',
+			'musicExperience.nextAlbum' => 'Nächstes Album',
+			'musicExperience.driving' => 'Fahransicht',
+			'musicExperience.exitDriving' => 'Fahransicht verlassen',
+			'musicExperience.signalPath' => 'Audiosignalweg',
+			'musicExperience.source' => 'Quelle',
+			'musicExperience.local' => 'Heruntergeladenes Audio',
+			'musicExperience.network' => 'Server-Audio',
+			'musicExperience.engine' => 'Wiedergabe-Engine',
+			'musicExperience.codec' => 'Quellcodec',
+			'musicExperience.channels' => 'Quellkanäle',
+			'musicExperience.processing' => 'Wird verarbeitet',
+			'musicExperience.normalization' => 'Normalisierung',
+			'musicExperience.equalizer' => 'Equalizer',
+			'musicExperience.fades' => 'Lautstärkeüberblendungen',
+			'musicExperience.outputUnknown' => 'Das Hardware-Ausgabeformat wurde nicht gemessen.',
+			'musicExperience.download' => 'Auswahl herunterladen',
+			'musicExperience.ready' => 'Bereit',
+			'musicExperience.remove' => 'Entfernen',
+			'musicExperience.play' => 'Auswahl abspielen',
+			'musicExperience.next' => 'Als Nächstes abspielen',
+			'musicExperience.error' => 'Musikanfrage fehlgeschlagen',
+			'musicExperience.on' => 'auf',
+			'musicExperience.off' => 'Aus',
+			'musicExperience.unknown' => 'Unbekannt',
+			'musicExperience.routeLost' => 'Audioausgabe getrennt. Wiedergabe pausiert.',
+			'musicExperience.autoDriving' => 'Fahransicht bei Verbindung mit einem Auto öffnen',
+			'musicExperience.routeHint' => 'Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.',
 			_ => null,
 		};
 	}

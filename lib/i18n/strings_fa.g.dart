@@ -114,6 +114,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$fa issueReport = _Translations$issueReport$fa._(_root);
 	@override late final _Translations$romm$fa romm = _Translations$romm$fa._(_root);
 	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
+	@override late final _Translations$musicExperience$fa musicExperience = _Translations$musicExperience$fa._(_root);
 }
 
 // Path: app
@@ -4204,6 +4205,58 @@ class _Translations$subtitleCapture$fa extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'در حال پردازش صدا به‌صورت محلی…';
 	@override String processingAudioProgress({required Object percent}) => 'در حال پردازش صدا به‌صورت محلی (${percent}%)…';
 	@override String get cpuFallback => 'پردازش گفتار با GPU ناموفق بود. تلاش دوباره با CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$fa extends Translations$musicExperience$en {
+	_Translations$musicExperience$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'کشف موسیقی';
+	@override String get mix => 'ساخت میکس';
+	@override String get adventure => 'ماجراجویی صوتی';
+	@override String get related => 'صداهای مشابه';
+	@override String get seeds => 'منابع و ایستگاه‌ها';
+	@override String get search => 'جستجوی هنرمند، آلبوم یا آهنگ';
+	@override String get generate => 'پیش نمایش';
+	@override String get saveRecipe => 'ذخیره دستور';
+	@override String get saved => 'دستورهای ذخیره‌شده';
+	@override String get savePlaylist => 'ذخیره فهرست پخش';
+	@override String get name => 'نام';
+	@override String get trackLimit => 'حداکثر تعداد آهنگ';
+	@override String get empty => 'موسیقی مطابقی یافت نشد. قابلیت‌های صوتی به تحلیل روی سرور نیاز دارند.';
+	@override String get unsupported => 'این سرور تحلیل صوتی ارائه نمی‌دهد.';
+	@override String get continuation => 'ادامه با موسیقی مشابه';
+	@override String get shuffleAlbums => 'پخش تصادفی آلبوم‌ها';
+	@override String get nextAlbum => 'آلبوم بعدی';
+	@override String get driving => 'نمای رانندگی';
+	@override String get exitDriving => 'خروج از نمای رانندگی';
+	@override String get signalPath => 'مسیر سیگنال صوتی';
+	@override String get source => 'منبع';
+	@override String get local => 'صدای دانلودشده';
+	@override String get network => 'صدای سرور';
+	@override String get engine => 'موتور پخش';
+	@override String get codec => 'کدک منبع';
+	@override String get channels => 'کانال‌های منبع';
+	@override String get processing => 'پردازش';
+	@override String get normalization => 'یکنواخت‌سازی بلندی صدا';
+	@override String get equalizer => 'اکولایزر';
+	@override String get fades => 'محو شدن حجم صدا';
+	@override String get outputUnknown => 'قالب خروجی سخت‌افزار اندازه‌گیری نشده است.';
+	@override String get download => 'دانلود انتخاب‌ها';
+	@override String get ready => 'آماده';
+	@override String get remove => 'حذف';
+	@override String get play => 'پخش انتخاب‌ها';
+	@override String get next => 'بعدی را اجرا کن';
+	@override String get error => 'درخواست موسیقی ناموفق بود';
+	@override String get on => 'در';
+	@override String get off => 'خاموش';
+	@override String get unknown => 'ناشناخته';
+	@override String get routeLost => 'خروجی صدا قطع شد. پخش مکث شد.';
+	@override String get autoDriving => 'باز کردن نمای رانندگی هنگام اتصال به خودرو';
+	@override String get routeHint => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.';
 }
 
 // Path: appIcon.names
@@ -9257,6 +9310,49 @@ extension on TranslationsFa {
 			'subtitleCapture.processingAudio' => 'در حال پردازش صدا به‌صورت محلی…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'در حال پردازش صدا به‌صورت محلی (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'پردازش گفتار با GPU ناموفق بود. تلاش دوباره با CPU…',
+			'musicExperience.title' => 'کشف موسیقی',
+			'musicExperience.mix' => 'ساخت میکس',
+			'musicExperience.adventure' => 'ماجراجویی صوتی',
+			'musicExperience.related' => 'صداهای مشابه',
+			'musicExperience.seeds' => 'منابع و ایستگاه‌ها',
+			'musicExperience.search' => 'جستجوی هنرمند، آلبوم یا آهنگ',
+			'musicExperience.generate' => 'پیش نمایش',
+			'musicExperience.saveRecipe' => 'ذخیره دستور',
+			'musicExperience.saved' => 'دستورهای ذخیره‌شده',
+			'musicExperience.savePlaylist' => 'ذخیره فهرست پخش',
+			'musicExperience.name' => 'نام',
+			'musicExperience.trackLimit' => 'حداکثر تعداد آهنگ',
+			'musicExperience.empty' => 'موسیقی مطابقی یافت نشد. قابلیت‌های صوتی به تحلیل روی سرور نیاز دارند.',
+			'musicExperience.unsupported' => 'این سرور تحلیل صوتی ارائه نمی‌دهد.',
+			'musicExperience.continuation' => 'ادامه با موسیقی مشابه',
+			'musicExperience.shuffleAlbums' => 'پخش تصادفی آلبوم‌ها',
+			'musicExperience.nextAlbum' => 'آلبوم بعدی',
+			'musicExperience.driving' => 'نمای رانندگی',
+			'musicExperience.exitDriving' => 'خروج از نمای رانندگی',
+			'musicExperience.signalPath' => 'مسیر سیگنال صوتی',
+			'musicExperience.source' => 'منبع',
+			'musicExperience.local' => 'صدای دانلودشده',
+			'musicExperience.network' => 'صدای سرور',
+			'musicExperience.engine' => 'موتور پخش',
+			'musicExperience.codec' => 'کدک منبع',
+			'musicExperience.channels' => 'کانال‌های منبع',
+			'musicExperience.processing' => 'پردازش',
+			'musicExperience.normalization' => 'یکنواخت‌سازی بلندی صدا',
+			'musicExperience.equalizer' => 'اکولایزر',
+			'musicExperience.fades' => 'محو شدن حجم صدا',
+			'musicExperience.outputUnknown' => 'قالب خروجی سخت‌افزار اندازه‌گیری نشده است.',
+			'musicExperience.download' => 'دانلود انتخاب‌ها',
+			'musicExperience.ready' => 'آماده',
+			'musicExperience.remove' => 'حذف',
+			'musicExperience.play' => 'پخش انتخاب‌ها',
+			'musicExperience.next' => 'بعدی را اجرا کن',
+			'musicExperience.error' => 'درخواست موسیقی ناموفق بود',
+			'musicExperience.on' => 'در',
+			'musicExperience.off' => 'خاموش',
+			'musicExperience.unknown' => 'ناشناخته',
+			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
+			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
+			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
 			_ => null,
 		};
 	}

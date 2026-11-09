@@ -1734,6 +1734,7 @@ class _Translations$about$ko extends Translations$about$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => '기능 비교';
 	@override String get title => '소개';
 	@override String get openSourceLicenses => '오픈소스 라이선스';
 	@override String versionLabel({required Object version}) => '버전 ${version}';
@@ -6938,6 +6939,7 @@ extension on TranslationsKo {
 			'libraries.selection.confirmCount' => ({required Object count}) => '선택된 항목: ${count}',
 			'libraries.selection.completed' => ({required Object count}) => '업데이트된 항목: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => '업데이트 ${succeeded}; 실패 ${failed}. 실패 항목은 여전히 선택됩니다.',
+			'about.featureComparison' => '기능 비교',
 			'about.title' => '소개',
 			'about.openSourceLicenses' => '오픈소스 라이선스',
 			'about.versionLabel' => ({required Object version}) => '버전 ${version}',
@@ -7367,9 +7369,9 @@ extension on TranslationsKo {
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
 			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
-			'watchTogether.reconnecting' => '재연결 중...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => '재연결 중...',
 			'watchTogether.reconnectingDescription' => '연결이 끊어졌습니다. 자동으로 방에 다시 참여합니다.',
 			'watchTogether.connected' => '연결됨',
 			'watchTogether.disconnected' => '연결 끊김',
@@ -7881,9 +7883,9 @@ extension on TranslationsKo {
 			'metadataEdit.artworkUpdated' => '아트워크가 업데이트되었습니다',
 			'metadataEdit.artworkUpdateFailed' => '아트워크 업데이트 실패',
 			'metadataEdit.noArtworkAvailable' => '사용 가능한 아트워크 없음',
-			'metadataEdit.artworkOption' => ({required Object index}) => '아트워크 옵션 ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => '아트워크 옵션 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '아트워크 옵션 ${index}, 선택됨',
 			'metadataEdit.notSet' => '설정되지 않음',
 			'metadataEdit.libraryDefault' => '라이브러리 기본값',
@@ -8395,9 +8397,9 @@ extension on TranslationsKo {
 			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
 			'universalMedia.chooseFiles' => '파일 선택',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
-			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
 			'universalMedia.wifiTransferHelp' => '동일한 신뢰할 수 있는 네트워크에서 브라우저에서 지원된 파일을 전송합니다.',
 			'universalMedia.wifiTransferIntro' => '다른 장치에서 브라우저에서 이 주소를 열어 파일을 선택하여 이 장치의 파일 및 책 라이브러리에 추가합니다.',
 			'universalMedia.wifiTransferPrivacy' => '이 장치는 현지 네트워크를 통해 파일을 수신합니다.이 주소를 아는 사람은 전송을 중단하거나 15 분 후에 주소가 만료 될 때까지 파일을 보낼 수 있습니다.',
@@ -8909,9 +8911,9 @@ extension on TranslationsKo {
 			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
 			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',
-			'sourceSetup.metadataFailed' => '온라인 메타데이터를 불러오지 못했습니다. 재생과 로컬 정보는 계속 사용할 수 있습니다.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => '온라인 메타데이터를 불러오지 못했습니다. 재생과 로컬 정보는 계속 사용할 수 있습니다.',
 			'sourceSetup.videoDetailsLoading' => '동영상 정보 불러오는 중',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API 키 필요',
 			'sourceSetup.subtitleKeyHelp' => '이 파일 소스를 편집하여 선택적 자막 설정에 OpenSubtitles API 키를 추가하세요.',

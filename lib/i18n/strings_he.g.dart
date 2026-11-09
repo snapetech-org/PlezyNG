@@ -1738,6 +1738,7 @@ class _Translations$about$he extends Translations$about$en {
 	final TranslationsHe _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'השוואת תכונות';
 	@override String get title => 'אודות';
 	@override String get openSourceLicenses => 'רישיונות קוד פתוח';
 	@override String versionLabel({required Object version}) => 'גרסה ${version}';
@@ -6951,6 +6952,7 @@ extension on TranslationsHe {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'סכום הנבחרים: ${count}',
 			'libraries.selection.completed' => ({required Object count}) => 'פריטים מעודכנים: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'עדכון ${succeeded}; נכשל ${failed}. פריטים נכשלו נשארים נבחרים.',
+			'about.featureComparison' => 'השוואת תכונות',
 			'about.title' => 'אודות',
 			'about.openSourceLicenses' => 'רישיונות קוד פתוח',
 			'about.versionLabel' => ({required Object version}) => 'גרסה ${version}',
@@ -7380,9 +7382,9 @@ extension on TranslationsHe {
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- Pleazyng: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch יחד בדיקת ישיבה',
-			'watchTogether.reconnecting' => 'חיבור מחדש...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'חיבור מחדש...',
 			'watchTogether.reconnectingDescription' => 'הקשר נעלם, אתה נכנס לחדר באופן אוטומטי.',
 			'watchTogether.connected' => 'מחוברים',
 			'watchTogether.disconnected' => 'נפרד',
@@ -7894,9 +7896,9 @@ extension on TranslationsHe {
 			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
 			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
 			'metadataEdit.noArtworkAvailable' => 'אין יצירות אמנות זמינות',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}, נבחר',
 			'metadataEdit.notSet' => 'לא קבע',
 			'metadataEdit.libraryDefault' => 'ספרייה פגום',
@@ -8408,9 +8410,9 @@ extension on TranslationsHe {
 			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
 			'universalMedia.chooseFiles' => 'בחירת קבצים',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
-			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'העברת קבצים תומכים מתוך דפדפן באותו רשת מאובטחת.',
 			'universalMedia.wifiTransferIntro' => 'פתח את כתובת זו בדפדפן במכשיר אחר. בחר קבצים כדי להוסיף אותם לספריה של קבצי מכשיר זה וספרים.',
 			'universalMedia.wifiTransferPrivacy' => 'מכשיר זה מקבל קבצים ברשת המקומית שלך.כל מי שיודע את הכתובת הזו יכול לשלוח קבצי עד שתפסיק להעביר או שהכתובת תסתיים לאחר 15 דקות.',
@@ -8922,9 +8924,9 @@ extension on TranslationsHe {
 			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
 			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',
-			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',
 			'sourceSetup.videoDetailsLoading' => 'פרטי הווידאו נטענים',
 			'sourceSetup.subtitleKeyRequired' => 'נדרש מפתח API של OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'יש לערוך את מקור הקבצים הזה ולהוסיף מפתח API של OpenSubtitles בהגדרות הכתוביות האופציונליות שלו.',

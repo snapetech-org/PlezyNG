@@ -1736,6 +1736,7 @@ class _Translations$about$da extends Translations$about$en {
 	final TranslationsDa _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Sammenligning af funktioner';
 	@override String get title => 'Om';
 	@override String get openSourceLicenses => 'Open source-licenser';
 	@override String versionLabel({required Object version}) => 'Version ${version}';
@@ -6943,6 +6944,7 @@ extension on TranslationsDa {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Vælgede elementer: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Aktualiseret produkt: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Opdateret ${succeeded}; mislykkede ${failed}. mislykkedes elementer forbliver valgt.',
+			'about.featureComparison' => 'Sammenligning af funktioner',
 			'about.title' => 'Om',
 			'about.openSourceLicenses' => 'Open source-licenser',
 			'about.versionLabel' => ({required Object version}) => 'Version ${version}',
@@ -7372,9 +7374,9 @@ extension on TranslationsDa {
 			'watchTogether.inviteCopied' => 'Invitation kopieret. Indsæt den i en besked.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Deltag i mit Se sammen-rum i Pleazyng: Åbn "Se sammen", vælg "Deltag i rum", og indtast ${code}.',
 			'watchTogether.openSessionControls' => 'Åbn sessionsstyring for Se sammen',
-			'watchTogether.reconnecting' => 'Genopretter forbindelse...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Genopretter forbindelse...',
 			'watchTogether.reconnectingDescription' => 'Forbindelsen blev afbrudt. Du kommer automatisk ind i rummet igen.',
 			'watchTogether.connected' => 'Forbundet',
 			'watchTogether.disconnected' => 'Afbrudt',
@@ -7886,9 +7888,9 @@ extension on TranslationsDa {
 			'metadataEdit.artworkUpdated' => 'Grafik opdateret',
 			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke opdatere grafik',
 			'metadataEdit.noArtworkAvailable' => 'Ingen grafik tilgængelig',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikvalg ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikvalg ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Grafikvalg ${index}, valgt',
 			'metadataEdit.notSet' => 'Ikke indstillet',
 			'metadataEdit.libraryDefault' => 'Biblioteksstandard',
@@ -8400,9 +8402,9 @@ extension on TranslationsDa {
 			'universalMedia.filesHelp' => 'Vælg lyd, video eller ISO-filer for en midlertidig kue. filer og URL\'er tilføjes ikke til bibliotekets historie.',
 			'universalMedia.chooseFiles' => 'Vælg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: '1 udvalgte filer', other: '${count} udvalgte filer', ), 
-			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Overfør støttet filer fra en browser til det samme pålidelige netværk.',
 			'universalMedia.wifiTransferIntro' => 'Åbn denne adresse i en browser på en anden enhed.Vælg filer for at tilføje dem til denne enheds Filer og bøger bibliotek.',
 			'universalMedia.wifiTransferPrivacy' => 'Denne enhed modtager filer over dit lokale netværk. Enhver, der kender denne adresse kan sende filer indtil du stopper overførslen eller adressen udløber efter 15 minutter. Maksimum: 100 filer, 4 GiB pr. fil, 10 GiB totalt.',
@@ -8914,9 +8916,9 @@ extension on TranslationsDa {
 			'sourceSetup.metadataLoading' => 'Henter film- og serieoplysninger online…',
 			'sourceSetup.metadataFromTrakt' => 'Onlinemetadata fra Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Der blev ikke fundet et automatisk titelmatch. Søg efter titlen for at vælge et match.',
-			'sourceSetup.metadataFailed' => 'Onlinemetadata kunne ikke indlæses. Afspilning og lokale oplysninger er stadig tilgængelige.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Onlinemetadata kunne ikke indlæses. Afspilning og lokale oplysninger er stadig tilgængelige.',
 			'sourceSetup.videoDetailsLoading' => 'Indlæser videooplysninger',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-nøgle påkrævet',
 			'sourceSetup.subtitleKeyHelp' => 'Rediger denne filkilde, og tilføj en OpenSubtitles-API-nøgle i dens valgfrie undertekstindstillinger.',

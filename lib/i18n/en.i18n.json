@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Feature comparison",
     "title": "About",
     "openSourceLicenses": "Open Source Licenses",
     "versionLabel": "Version ${version}",

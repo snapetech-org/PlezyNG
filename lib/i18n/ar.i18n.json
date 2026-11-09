@@ -2028,6 +2028,7 @@
     }
   },
   "about": {
+    "featureComparison": "مقارنة الميزات",
     "title": "حول",
     "openSourceLicenses": "ترخيص المصدر المفتوح",
     "versionLabel": "النسخة ${version}",

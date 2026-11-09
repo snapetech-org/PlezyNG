@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Funkciók összehasonlítása",
     "title": "Névjegy",
     "openSourceLicenses": "Nyílt forráskódú licencek",
     "versionLabel": "Verzió: ${version}",

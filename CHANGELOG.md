@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Publish a responsive website feature comparison and link it from About and the repository. Use neutral capability names, concise comparison cells and linked evidence; preserve the current logo.
+
 - Run arm64-only tvOS simulator qualification on the documented Apple Silicon hosted runner, preserving Intel hosted lanes for compatible iOS/macOS checks. An Intel simulator host cannot execute the required tvOS arm64 destination.
 
 - Include copyright metadata and a commit-pinned Pleazyng app icon in future Chocolatey packages.

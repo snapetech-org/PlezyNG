@@ -1988,6 +1988,7 @@
     }
   },
   "about": {
+    "featureComparison": "Perbandingan fitur",
     "title": "Tentang",
     "openSourceLicenses": "Lisensi sumber terbuka",
     "versionLabel": "Versi ${version}",

@@ -1728,6 +1728,7 @@ class _Translations$about$th extends Translations$about$en {
 	final TranslationsTh _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'เปรียบเทียบคุณสมบัติ';
 	@override String get title => 'เกี่ยวกับ';
 	@override String get openSourceLicenses => 'ใบอนุญาต Open Source';
 	@override String versionLabel({required Object version}) => 'รุ่น ${version}';
@@ -6918,6 +6919,7 @@ extension on TranslationsTh {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'รายการที่เลือก: ${count}',
 			'libraries.selection.completed' => ({required Object count}) => 'รายการที่ปรับปรุง: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'ปรับปรุง ${succeeded}; ไม่ได้สําเร็จ ${failed}. รายการที่ไม่สําเร็จจะยังคงเลือก',
+			'about.featureComparison' => 'เปรียบเทียบคุณสมบัติ',
 			'about.title' => 'เกี่ยวกับ',
 			'about.openSourceLicenses' => 'ใบอนุญาต Open Source',
 			'about.versionLabel' => ({required Object version}) => 'รุ่น ${version}',
@@ -7347,9 +7349,9 @@ extension on TranslationsTh {
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ Pleazyng: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch ร่วมกันเซสชันควบคุม',
-			'watchTogether.reconnecting' => 'การเชื่อมต่อ...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'การเชื่อมต่อ...',
 			'watchTogether.reconnectingDescription' => 'การเชื่อมต่อถูกปิดแล้ว คุณจะเข้าสู่ห้องโดยอัตโนมัติ',
 			'watchTogether.connected' => 'เชื่อมต่อ',
 			'watchTogether.disconnected' => 'ปิดเชื่อมต่อ',
@@ -7861,9 +7863,9 @@ extension on TranslationsTh {
 			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
 			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
 			'metadataEdit.noArtworkAvailable' => 'ไม่มีงานศิลปะ',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}, เลือก',
 			'metadataEdit.notSet' => 'ไม่ตั้งค่า',
 			'metadataEdit.libraryDefault' => 'บีบอิสระ',
@@ -8375,9 +8377,9 @@ extension on TranslationsTh {
 			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
 			'universalMedia.chooseFiles' => 'เลือกไฟล์',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
-			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'การถ่ายโอนไฟล์ที่สนับสนุนจากเบราว์เซอร์บนเครือข่ายที่เชื่อถือได้เดียวกัน',
 			'universalMedia.wifiTransferIntro' => 'เปิดที่อยู่นี้ในเบราว์เซอร์บนอุปกรณ์อื่น เลือกไฟล์เพื่อเพิ่มไปยังห้องสมุดไฟล์และหนังสือของอุปกรณ์นี้',
 			'universalMedia.wifiTransferPrivacy' => 'อุปกรณ์นี้จะรับไฟล์ผ่านเครือข่ายท้องถิ่นของคุณ ทุกคนที่รู้ที่อยู่นี้สามารถส่งไฟล์จนกว่าคุณหยุดการถ่ายโอนหรือที่อยู่อาศัยหมดอายุหลังจาก 15 นาที สูงสุด: 100 ไฟล์, 4 GiB ต่อไฟล์, 10 GiB ทั้งหมด',
@@ -8889,9 +8891,9 @@ extension on TranslationsTh {
 			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
 			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',
-			'sourceSetup.metadataFailed' => 'โหลดข้อมูลกำกับออนไลน์ไม่ได้ แต่ยังเล่นวิดีโอและดูข้อมูลในเครื่องได้',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'โหลดข้อมูลกำกับออนไลน์ไม่ได้ แต่ยังเล่นวิดีโอและดูข้อมูลในเครื่องได้',
 			'sourceSetup.videoDetailsLoading' => 'กำลังโหลดรายละเอียดวิดีโอ',
 			'sourceSetup.subtitleKeyRequired' => 'ต้องมีคีย์ API ของ OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'แก้ไขแหล่งไฟล์นี้และเพิ่มคีย์ API ของ OpenSubtitles ในการตั้งค่าคำบรรยายเสริม',

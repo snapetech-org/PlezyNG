@@ -1736,6 +1736,7 @@ class _Translations$about$az extends Translations$about$en {
 	final TranslationsAz _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Funksiyaların müqayisəsi';
 	@override String get title => 'Haqqında';
 	@override String get openSourceLicenses => 'Açıq mənbə lisenziyaları';
 	@override String versionLabel({required Object version}) => 'Versiya ${version}';
@@ -6943,6 +6944,7 @@ extension on TranslationsAz {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Seçilmiş elementlər: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Güncellenmiş elementlər: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Xatırılmış ${succeeded}; başarısız ${failed}. başarısız elementlər seçilmişdir.',
+			'about.featureComparison' => 'Funksiyaların müqayisəsi',
 			'about.title' => 'Haqqında',
 			'about.openSourceLicenses' => 'Açıq mənbə lisenziyaları',
 			'about.versionLabel' => ({required Object version}) => 'Versiya ${version}',
@@ -7372,9 +7374,9 @@ extension on TranslationsAz {
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
 			'watchTogether.openSessionControls' => 'Birlikdə İzlə seans idarəetmələrini aç',
-			'watchTogether.reconnecting' => 'Yenidən qoşulunur...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Yenidən qoşulunur...',
 			'watchTogether.reconnectingDescription' => 'Əlaqə kəsildi. Otağa avtomatik olaraq yenidən qoşulacaqsınız.',
 			'watchTogether.connected' => 'Qoşulub',
 			'watchTogether.disconnected' => 'Əlaqə kəsilib',
@@ -7886,9 +7888,9 @@ extension on TranslationsAz {
 			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
 			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
 			'metadataEdit.noArtworkAvailable' => 'Şəkil əlçatan deyil',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}, seçildi',
 			'metadataEdit.notSet' => 'Təyin edilməyib',
 			'metadataEdit.libraryDefault' => 'Kitabxana defoltu',
@@ -8400,9 +8402,9 @@ extension on TranslationsAz {
 			'universalMedia.filesHelp' => 'Video, audio və ISO filləri seçin. Fillər və URL-lər kütüphane tarihinə daxil olmaz.',
 			'universalMedia.chooseFiles' => 'Fillər seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '1 seçilmiş fil', other: '${count} seçilmiş dosyalar', ), 
-			'universalMedia.wifiTransfer' => 'Fillər Wi-Fi yoluyla göndərilir',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Fillər Wi-Fi yoluyla göndərilir',
 			'universalMedia.wifiTransferHelp' => 'Desteklə olan dosyaları bir browserdan aynı güvenilir ağda göndərir.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başqa cihazda bir browserda açın.Bu cihazın Fillər və kitab kütüphanasına ekləmək üçün dosyaları seçin.',
 			'universalMedia.wifiTransferPrivacy' => 'Bu cihaz yerel ağınızdan dosyaları alınır.Bu adresi bilən kimsə, transferin durdurulana qədər və ya adres 15 min sonra sona erdirilmə qədər dosyalarını göndərir. Maksimum: 100 dosya, 4 GiB fil başına, 10 GiB toplam.',
@@ -8914,9 +8916,9 @@ extension on TranslationsAz {
 			'sourceSetup.metadataLoading' => 'Onlayn film və serial məlumatları axtarılır…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt-dan onlayn metadata',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Avtomatik ad uyğunluğu tapılmadı. Uyğun nəticəni seçmək üçün adı axtarın.',
-			'sourceSetup.metadataFailed' => 'Onlayn metadata yüklənmədi. Oynatma və yerli məlumatlar hələ də əlçatandır.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Onlayn metadata yüklənmədi. Oynatma və yerli məlumatlar hələ də əlçatandır.',
 			'sourceSetup.videoDetailsLoading' => 'Video məlumatları yüklənir',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API açarı tələb olunur',
 			'sourceSetup.subtitleKeyHelp' => 'Bu fayl mənbəyini redaktə edin və istəyə bağlı altyazı ayarlarına OpenSubtitles API açarı əlavə edin.',

@@ -1994,6 +1994,7 @@
     }
   },
   "about": {
+    "featureComparison": "功能对比",
     "title": "关于",
     "openSourceLicenses": "开源许可证",
     "versionLabel": "版本 ${version}",

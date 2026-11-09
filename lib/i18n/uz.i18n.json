@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Imkoniyatlarni taqqoslash",
     "title": "Dastur haqida",
     "openSourceLicenses": "Ochiq kodli litsenziyalar",
     "versionLabel": "Versiya ${version}",

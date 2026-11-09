@@ -1738,6 +1738,7 @@ class Translations$about$fr extends Translations$about$en {
 	final TranslationsFr _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Comparaison des fonctionnalités';
 	@override String get title => 'À propos';
 	@override String get openSourceLicenses => 'Licences libres';
 	@override String versionLabel({required Object version}) => 'Version ${version}';
@@ -6950,6 +6951,7 @@ extension on TranslationsFr {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Les articles sélectionnés : ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Les articles mis à jour : ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Mise à jour ${succeeded}; échoué ${failed}. les articles échoués restent sélectionnés.',
+			'about.featureComparison' => 'Comparaison des fonctionnalités',
 			'about.title' => 'À propos',
 			'about.openSourceLicenses' => 'Licences libres',
 			'about.versionLabel' => ({required Object version}) => 'Version ${version}',
@@ -7379,9 +7381,9 @@ extension on TranslationsFr {
 			'watchTogether.inviteCopied' => 'Invitation copiée. Collez-la dans un message.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Rejoignez mon salon Regarder ensemble dans Pleazyng : ouvrez « Regarder ensemble », choisissez « Rejoindre un salon » et saisissez ${code}.',
 			'watchTogether.openSessionControls' => 'Ouvrir les commandes de la session Regarder ensemble',
-			'watchTogether.reconnecting' => 'Reconnexion...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Reconnexion...',
 			'watchTogether.reconnectingDescription' => 'La connexion a été interrompue. Vous rejoindrez le salon automatiquement.',
 			'watchTogether.connected' => 'Connecté',
 			'watchTogether.disconnected' => 'Déconnecté',
@@ -7893,9 +7895,9 @@ extension on TranslationsFr {
 			'metadataEdit.artworkUpdated' => 'Illustrations mises à jour',
 			'metadataEdit.artworkUpdateFailed' => 'Échec de la mise à jour des illustrations',
 			'metadataEdit.noArtworkAvailable' => 'Aucune illustration disponible',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Option d\'illustration ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Option d\'illustration ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Option d\'illustration ${index}, sélectionnée',
 			'metadataEdit.notSet' => 'Non défini',
 			'metadataEdit.libraryDefault' => 'Par défaut de la bibliothèque',
@@ -8407,9 +8409,9 @@ extension on TranslationsFr {
 			'universalMedia.filesHelp' => 'Choisissez des fichiers audio, vidéo ou ISO pour une couverture temporaire.Fichiers et URL ne sont pas ajoutés à l\'histoire de la bibliothèque.',
 			'universalMedia.chooseFiles' => 'Choisir des fichiers',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: '1 fichier sélectionné', many: '${count} fichiers sélectionnés', other: '${count} fichiers sélectionnés', ), 
-			'universalMedia.wifiTransfer' => 'Envoyer des fichiers via Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Envoyer des fichiers via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transfert des fichiers soutenus d\'un navigateur sur le même réseau fiable.',
 			'universalMedia.wifiTransferIntro' => 'Ouvrez cette adresse dans un navigateur sur un autre appareil. Sélectionnez les fichiers pour les ajouter à la bibliothèque des Fichiers et livres de cet appareil .',
 			'universalMedia.wifiTransferPrivacy' => 'Ce dispositif reçoit des fichiers sur votre réseau local.Celui qui connaît cette adresse peut envoyer des ficher jusqu\'à ce que vous arrêtez le transfert ou l\'adresse expire après 15 minutes.Maximum: 100 fichières, 4 GiB par fichier, 10 GiB total.',
@@ -8921,9 +8923,9 @@ extension on TranslationsFr {
 			'sourceSetup.metadataLoading' => 'Recherche en ligne d’informations sur les films et séries…',
 			'sourceSetup.metadataFromTrakt' => 'Métadonnées en ligne de Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Aucune correspondance automatique trouvée pour le titre. Recherchez le titre pour choisir une correspondance.',
-			'sourceSetup.metadataFailed' => 'Impossible de charger les métadonnées en ligne. La lecture et les informations locales restent disponibles.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Impossible de charger les métadonnées en ligne. La lecture et les informations locales restent disponibles.',
 			'sourceSetup.videoDetailsLoading' => 'Chargement des détails de la vidéo',
 			'sourceSetup.subtitleKeyRequired' => 'Clé API OpenSubtitles requise',
 			'sourceSetup.subtitleKeyHelp' => 'Modifiez cette source de fichiers et ajoutez une clé API OpenSubtitles dans ses réglages facultatifs de sous-titres.',

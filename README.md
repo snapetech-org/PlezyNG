@@ -6,7 +6,7 @@
 </a>
 
 <p>
-  <a href="https://plezyng.app/"><strong>plezyng.app</strong></a>
+  <a href="https://plezyng.app/"><strong>plezyng.app</strong></a> · <a href="https://plezyng.app/features.html">Feature comparison</a>
 </p>
 
 A cross-platform media client for Plex, Jellyfin, Emby, standalone files, books, music, and podcasts, maintained as a fork of [Plezy](https://github.com/edde746/plezy).
@@ -510,6 +510,8 @@ This list covers the current Pleazyng codebase, including additions since the fo
 
 ## Feature comparison
 
+[Read the full-width feature comparison on the website](https://plezyng.app/features.html).
+
 Pleazyng inherits Plezy's feature baseline. The tables focus on what differs:
 what the official Plex ecosystem offers that these clients do not replace,
 what both forks offer beyond Plex, and what Pleazyng adds to Plezy.
@@ -522,22 +524,22 @@ with remaining qualification or functionality limits. Plex includes its
 official apps, Plex Media Server, Plexamp and Plex Photos where named.
 See the [comparison notes, sources and remaining gaps](docs/FEATURE_COMPARISON.md).
 
-### Plex capabilities the clients do not replace
+### Capabilities outside these clients
 
 | Feature | Plex | Plezy | Pleazyng |
 | --- | --- | --- | --- |
-| [Full browser player and server-management UI](docs/FEATURE_COMPARISON.md#browser-client) | Yes — Plex Web | — | —; browser-based book reading is a separate feature |
+| [Full browser player and server-management UI](docs/FEATURE_COMPARISON.md#browser-client) | Yes | — | —; browser-based book reading is a separate feature |
 | [Roku, PlayStation and Xbox apps](docs/FEATURE_COMPARISON.md#device-coverage) | Yes | — | — |
-| [Plex-hosted free movies/shows and FAST channels](docs/FEATURE_COMPARISON.md#plex-hosted-content) | Yes — official streaming service | — | —; personal-server TV and independent IPTV are different sources |
-| [Plex movie rental/purchase playback](docs/FEATURE_COMPARISON.md#rentals-and-purchases) | Yes — supported regions/apps | — | Storefront links only; no Plex rental library playback |
-| [Plex photo libraries, albums and slideshows](docs/FEATURE_COMPARISON.md#photo-libraries) | Yes — Plex Photos / Web | — | —; artwork screensavers and comic images are not photo-library support |
-| [Plex social profiles and shareable Discover Lists](docs/FEATURE_COMPARISON.md#social-and-lists) | Yes — supported apps | Watchlist/catalog integration only | Watchlist/catalog integration and local shortlists; no equivalent social network |
-| [Plexamp Sonic Adventure, Guest DJ and Sonic Sage interfaces](docs/FEATURE_COMPARISON.md#plexamp-specialized-features) | Yes — Plexamp; premium features require Plex Pass | —; ordinary Instant Mix is available | —; ordinary Instant Mix is available |
-| [CarPlay / Android Auto projection, Siri music integration](docs/FEATURE_COMPARISON.md#car-and-voice-integrations) | Yes — Plexamp | — | —; Android Automotive layout detection is not a projection integration |
-| [Headless Raspberry Pi music endpoint](docs/FEATURE_COMPARISON.md#headless-music) | Yes — Plexamp with Plex Pass | — | — |
-| [Plex Companion protocol / Alexa / Sonos ecosystem](docs/FEATURE_COMPARISON.md#companion-protocol) | Supported apps/devices; new mobile-app limits apply | Own Plezy Remote protocol | Own remote and automation links; not a Plex Companion receiver |
-| [Server-assisted external-SRT Auto-Sync](docs/FEATURE_COMPARISON.md#server-subtitle-auto-sync) | Yes — Plex Pass/server requirements | — | Local subtitle tools instead; no equivalent Plex Auto-Sync request workflow |
-| [Server hosting, analysis, sharing administration and Plex Dash](docs/FEATURE_COMPARISON.md#server-owned-capabilities) | Yes — Media Server / Web / Dash; some features require Plex Pass | Uses an existing server | Uses an existing server; does not replace its administration or analysis |
+| [Free movies/shows and FAST channels](docs/FEATURE_COMPARISON.md#plex-hosted-content) | Yes | — | —; personal-server TV and independent IPTV are different sources |
+| [Movie rentals and purchases](docs/FEATURE_COMPARISON.md#rentals-and-purchases) | Yes | — | Storefront links only; no rental-library playback |
+| [Photo libraries, albums and slideshows](docs/FEATURE_COMPARISON.md#photo-libraries) | Yes | — | —; artwork screensavers and comic images are not photo-library support |
+| [Social profiles and shareable lists](docs/FEATURE_COMPARISON.md#social-and-lists) | Yes | Watchlist/catalog integration only | Watchlist/catalog integration and local shortlists; no equivalent social network |
+| [Interactive music journeys and AI DJ controls](docs/FEATURE_COMPARISON.md#plexamp-specialized-features) | Yes | —; ordinary Instant Mix is available | —; ordinary Instant Mix is available |
+| [CarPlay / Android Auto projection, Siri music integration](docs/FEATURE_COMPARISON.md#car-and-voice-integrations) | Yes | — | —; Android Automotive layout detection is not a projection integration |
+| [Headless Raspberry Pi music endpoint](docs/FEATURE_COMPARISON.md#headless-music) | Yes | — | — |
+| [Companion remote protocol / Alexa / Sonos integrations](docs/FEATURE_COMPARISON.md#companion-protocol) | Limited; platform restrictions apply | Own Plezy Remote protocol | Own remote and automation links; different protocol |
+| [Server-assisted external-SRT Auto-Sync](docs/FEATURE_COMPARISON.md#server-subtitle-auto-sync) | Yes | — | Local subtitle tools; no equivalent server auto-sync request workflow |
+| [Server hosting, analysis and sharing administration](docs/FEATURE_COMPARISON.md#server-owned-capabilities) | Yes | Uses an existing server | Uses an existing server; does not replace its administration or analysis |
 
 ### Plezy features inherited by Pleazyng that differ from Plex
 

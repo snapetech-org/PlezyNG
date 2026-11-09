@@ -1736,6 +1736,7 @@ class _Translations$about$bg extends Translations$about$en {
 	final TranslationsBg _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Сравнение на функциите';
 	@override String get title => 'Относно';
 	@override String get openSourceLicenses => 'Лицензи с отворен код';
 	@override String versionLabel({required Object version}) => 'Версия ${version}';
@@ -6943,6 +6944,7 @@ extension on TranslationsBg {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Избрани елементи: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Обновени елементи: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Актуализиран ${succeeded}; не успешен ${failed}. не успешни елементи остават избрани.',
+			'about.featureComparison' => 'Сравнение на функциите',
 			'about.title' => 'Относно',
 			'about.openSourceLicenses' => 'Лицензи с отворен код',
 			'about.versionLabel' => ({required Object version}) => 'Версия ${version}',
@@ -7372,9 +7374,9 @@ extension on TranslationsBg {
 			'watchTogether.inviteCopied' => 'Поканата е копирана. Поставете я в съобщение.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присъедини се към моята стая в Pleazyng: отвори „Гледане заедно“, избери „Присъедини се към стая“ и въведи ${code}.',
 			'watchTogether.openSessionControls' => 'Отвори контролите за сесията „Гледане заедно“',
-			'watchTogether.reconnecting' => 'Повторно свързване...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Повторно свързване...',
 			'watchTogether.reconnectingDescription' => 'Връзката прекъсна. Ще се присъедините отново към стаята автоматично.',
 			'watchTogether.connected' => 'Свързано',
 			'watchTogether.disconnected' => 'Връзката е прекъсната',
@@ -7886,9 +7888,9 @@ extension on TranslationsBg {
 			'metadataEdit.artworkUpdated' => 'Обложката е обновена',
 			'metadataEdit.artworkUpdateFailed' => 'Неуспешно обновяване на обложката',
 			'metadataEdit.noArtworkAvailable' => 'Няма налична обложка',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант за обложка ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант за обложка ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант за обложка ${index}, избран',
 			'metadataEdit.notSet' => 'Не е зададено',
 			'metadataEdit.libraryDefault' => 'По подразбиране за библиотеката',
@@ -8400,9 +8402,9 @@ extension on TranslationsBg {
 			'universalMedia.filesHelp' => 'Изберете аудио, видео или ISO файлове за временна лента.Файлове и URL адреси не се добавят към историята на библиотеката.',
 			'universalMedia.chooseFiles' => 'Изберете файлове',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
-			'universalMedia.wifiTransfer' => 'Изпращане на файлове чрез Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Изпращане на файлове чрез Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Прехвърляне на поддържани файлове от браузър в една и съща надеждна мрежа.',
 			'universalMedia.wifiTransferIntro' => 'Отворете този адрес в браузър на друго устройство. Изберете файлове, за да ги добавите към библиотеката с файлове и книги на това устройство.',
 			'universalMedia.wifiTransferPrivacy' => 'Този уред получава файлове през локалната ви мрежа. Всеки, който знае тази адреса може да изпрати файлове, докато спрете прехвърлянето или адресът изтича след 15 минути. Максимално: 100 файла, 4 GiB на файл, 10 GiB общо.',
@@ -8914,9 +8916,9 @@ extension on TranslationsBg {
 			'sourceSetup.metadataLoading' => 'Търсене на онлайн информация за филми и сериали…',
 			'sourceSetup.metadataFromTrakt' => 'Онлайн метаданни от Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Не е намерено автоматично съвпадение на заглавието. Потърсете заглавието, за да изберете съвпадение.',
-			'sourceSetup.metadataFailed' => 'Онлайн метаданните не можаха да се заредят. Възпроизвеждането и локалната информация остават достъпни.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Онлайн метаданните не можаха да се заредят. Възпроизвеждането и локалната информация остават достъпни.',
 			'sourceSetup.videoDetailsLoading' => 'Зареждане на информация за видеото',
 			'sourceSetup.subtitleKeyRequired' => 'Необходим е API ключ за OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Редактирайте този файлов източник и добавете API ключ за OpenSubtitles в незадължителните настройки за субтитри.',

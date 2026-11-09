@@ -1998,6 +1998,7 @@
     }
   },
   "about": {
+    "featureComparison": "Confronto delle funzionalità",
     "title": "Informazioni",
     "openSourceLicenses": "Licenze open source",
     "versionLabel": "Versione ${version}",

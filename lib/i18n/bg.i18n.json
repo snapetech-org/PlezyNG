@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Сравнение на функциите",
     "title": "Относно",
     "openSourceLicenses": "Лицензи с отворен код",
     "versionLabel": "Версия ${version}",

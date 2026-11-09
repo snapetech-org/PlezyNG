@@ -1736,6 +1736,7 @@ class _Translations$about$nl extends Translations$about$en {
 	final TranslationsNl _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Functievergelijking';
 	@override String get title => 'Over';
 	@override String get openSourceLicenses => 'Opensourcelicenties';
 	@override String versionLabel({required Object version}) => 'Versie ${version}';
@@ -6943,6 +6944,7 @@ extension on TranslationsNl {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'De geselecteerde items: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Geplaatst in: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Updated ${succeeded}; failliet ${failed}. failliet items blijven geselecteerd.',
+			'about.featureComparison' => 'Functievergelijking',
 			'about.title' => 'Over',
 			'about.openSourceLicenses' => 'Opensourcelicenties',
 			'about.versionLabel' => ({required Object version}) => 'Versie ${version}',
@@ -7372,9 +7374,9 @@ extension on TranslationsNl {
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
-			'watchTogether.reconnecting' => 'Opnieuw verbinden...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Opnieuw verbinden...',
 			'watchTogether.reconnectingDescription' => 'De verbinding is verbroken. Je neemt automatisch weer deel aan de kamer.',
 			'watchTogether.connected' => 'Verbonden',
 			'watchTogether.disconnected' => 'Verbinding verbroken',
@@ -7886,9 +7888,9 @@ extension on TranslationsNl {
 			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
 			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Illustratie ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Illustratie ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Illustratie ${index}, geselecteerd',
 			'metadataEdit.notSet' => 'Niet ingesteld',
 			'metadataEdit.libraryDefault' => 'Standaard van de bibliotheek',
@@ -8400,9 +8402,9 @@ extension on TranslationsNl {
 			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
 			'universalMedia.chooseFiles' => 'Kies bestanden',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
-			'universalMedia.wifiTransfer' => 'Bestanden verzenden via Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Bestanden verzenden via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Overdracht van ondersteunde bestanden uit een browser op hetzelfde vertrouwde netwerk.',
 			'universalMedia.wifiTransferIntro' => 'Open deze adres in een browser op een ander apparaat.Kies bestanden om ze toe te voegen aan de bibliotheek Bestanden en boeken van dit apparaat',
 			'universalMedia.wifiTransferPrivacy' => 'Dit apparaat ontvangt bestanden via uw lokale netwerk.Iedereen die deze adres kent kan bestanden verzenden totdat u de overdracht stopt of het adres na 15 minuten expireert.Maximum: 100 bestanden, 4 GiB per bestand, 10 GiB in totaal.',
@@ -8914,9 +8916,9 @@ extension on TranslationsNl {
 			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',
-			'sourceSetup.metadataFailed' => 'Online metadata konden niet worden geladen. Afspelen en lokale informatie blijven beschikbaar.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Online metadata konden niet worden geladen. Afspelen en lokale informatie blijven beschikbaar.',
 			'sourceSetup.videoDetailsLoading' => 'Videogegevens laden',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-sleutel vereist',
 			'sourceSetup.subtitleKeyHelp' => 'Bewerk deze bestandsbron en voeg een OpenSubtitles-API-sleutel toe bij de optionele ondertitelinstellingen.',

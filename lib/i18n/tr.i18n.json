@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Özellik karşılaştırması",
     "title": "Hakkında",
     "openSourceLicenses": "Açık Kaynak Lisansları",
     "versionLabel": "Sürüm ${version}",

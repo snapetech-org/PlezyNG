@@ -1988,6 +1988,7 @@
     }
   },
   "about": {
+    "featureComparison": "Perbandingan ciri",
     "title": "Mengenai",
     "openSourceLicenses": "Lesen sumber terbuka",
     "versionLabel": "Perbincangan:Bahasa Inggeris ${version}",

@@ -5,6 +5,10 @@
 - Run desktop RomM cores in a separate sandboxed helper with bounded IPC, crash/hang recovery, parent-owned audio/saves, and OS-confirmed teardown. Package and sign the macOS helper, restrict Windows cores with AppContainer, and require Landlock/seccomp on Linux. Add real worker-fault validation across desktop operating systems; mobile and TV containment remains tracked separately.
 - Automatically migrate untouched legacy webOS credentials to authenticated storage during startup, preserving concurrent changes and recoverability after interrupted writes.
 
+- Run arm64-only tvOS simulator qualification on the documented Apple Silicon hosted runner, preserving Intel hosted lanes for compatible iOS/macOS checks. An Intel simulator host cannot execute the required tvOS arm64 destination.
+
+- Include copyright metadata and a commit-pinned Pleazyng app icon in future Chocolatey packages.
+
 - Preserve compressed RomM source archives and their receipt hashes inside Android packages by using asset-safe filenames; retire only prior archives verified by their own receipts.
 
 - Package the embedded Android Moonlight and Steam receiver modules in ordinary app builds, including their native libraries and activity/stream implementations. Previously Gradle configured the modules without linking them into the application.

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
+import '../../utils/platform_detector.dart';
 import 'romm_capabilities.dart';
 import 'romm_models.dart';
 
@@ -38,7 +39,7 @@ class _RetroBindings {
             ? '${p.dirname(Platform.resolvedExecutable)}/lib/libplezy_retro.so'
             : 'libplezy_retro.so',
       ) {
-    if ((Platform.isWindows || Platform.isMacOS || Platform.isLinux) && isolationVersion() != 1) {
+    if (PlatformDetector.isDesktopOS() && isolationVersion() != 1) {
       throw const RommFailure('romm.nativeUnavailable');
     }
   }

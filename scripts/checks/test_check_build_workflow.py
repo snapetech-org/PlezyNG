@@ -2,6 +2,9 @@
 """Behavior tests for the privileged build-workflow guard."""
 
 from pathlib import Path
+from contextlib import redirect_stderr
+import io
+import runpy
 import json
 import os
 import subprocess
@@ -134,6 +137,24 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         changed = signing.replace(old, new, 1)
         self.assertNotEqual(changed, signing, "signer mutation must match")
         return prefix + "      - name: Sign installer for WinSparkle (EdDSA)\n" + changed
+
+    def test_tvos_arm64_simulator_rejects_an_intel_host(self):
+        ci_path = ROOT / '.github/workflows/ci.yml'
+        original = Path.read_text
+        ci = original(ci_path, encoding='utf-8')
+        selection = "(matrix.platform == 'tvOS' && 'macos-26' || 'macos-26-intel')"
+        self.assertIn(selection, ci)
+        invalid = ci.replace(selection, "'macos-26-intel'", 1)
+
+        def read(path, *args, **kwargs):
+            return invalid if path == ci_path else original(path, *args, **kwargs)
+
+        errors = io.StringIO()
+        with patch.object(Path, 'read_text', read), patch.object(sys, 'argv', [str(CHECKER)]):
+            with redirect_stderr(errors), self.assertRaises(SystemExit) as result:
+                runpy.run_path(str(CHECKER), run_name='__main__')
+        self.assertEqual(result.exception.code, 1)
+        self.assertIn('tvOS arm64 simulator qualification', errors.getvalue())
 
     def test_locked_root_signer_passes(self) -> None:
         result = self._run(self._workflow())

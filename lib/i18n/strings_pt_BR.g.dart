@@ -706,6 +706,13 @@ class Translations$seerr$pt_BR extends Translations$seerr$pt {
 	@override String get advancedOptions => 'Avançado';
 	@override String get tags => 'Etiquetas';
 	@override String get statusAvailable => 'Disponível';
+	@override String get requestSeasons => 'Solicitar temporadas em falta';
+	@override String get notifyMe => 'Avisar quando estiver disponível';
+	@override String get notifyMe4k => 'Avisar quando estiver disponível em 4K';
+	@override String get notificationsOn => 'Alerta de disponibilidade ativado';
+	@override String get notificationsEnabled => 'Avisaremos quando estiver disponível';
+	@override String get notificationsDisabled => 'Alerta de disponibilidade desativado';
+	@override String get notificationFailed => 'Não foi possível atualizar o alerta de disponibilidade';
 }
 
 // Path: services
@@ -1681,6 +1688,13 @@ extension on TranslationsPtBr {
 			'seerr.advancedOptions' => 'Avançado',
 			'seerr.tags' => 'Etiquetas',
 			'seerr.statusAvailable' => 'Disponível',
+			'seerr.requestSeasons' => 'Solicitar temporadas em falta',
+			'seerr.notifyMe' => 'Avisar quando estiver disponível',
+			'seerr.notifyMe4k' => 'Avisar quando estiver disponível em 4K',
+			'seerr.notificationsOn' => 'Alerta de disponibilidade ativado',
+			'seerr.notificationsEnabled' => 'Avisaremos quando estiver disponível',
+			'seerr.notificationsDisabled' => 'Alerta de disponibilidade desativado',
+			'seerr.notificationFailed' => 'Não foi possível atualizar o alerta de disponibilidade',
 			'services.libraryFilter.modeBlacklist' => 'Lista negra',
 			'services.libraryFilter.modeWhitelist' => 'Lista branca',
 			'services.libraryFilter.libraries' => 'Bibliotecas',
@@ -1836,6 +1850,8 @@ extension on TranslationsPtBr {
 			'romm.pendingSaves' => 'Saves waiting to sync',
 			'romm.sync' => 'Sync saves',
 			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
+			_ => null,
+		} ?? switch (path) {
 			'romm.pause' => 'Pause',
 			'romm.kContinue' => 'Continue',
 			'romm.saveState' => 'Save state',
@@ -1843,8 +1859,6 @@ extension on TranslationsPtBr {
 			'romm.saveAndExit' => 'Save and exit',
 			'romm.exitWithoutSaving' => 'Exit without saving',
 			'romm.exitConfirm' => 'Finish this game session?',
-			_ => null,
-		} ?? switch (path) {
 			'romm.saveExitHelp' => 'Save your progress before leaving. Keep this screen open until saving finishes.',
 			'romm.starting' => 'Starting game…',
 			'romm.connecting' => 'Connecting…',

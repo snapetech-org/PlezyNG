@@ -2253,6 +2253,8 @@
       "watchOn": "Ver en",
       "watchTrailer": "Ver tráiler",
       "openOn": "Abrir en ${site}",
+      "trailerUnavailable": "No se pudo abrir el tráiler en este dispositivo",
+      "linkUnavailable": "No se pudo abrir el enlace en este dispositivo",
       "crew": "Equipo",
       "ratings": "Valoraciones",
       "schedule": "Programación",

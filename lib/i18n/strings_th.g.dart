@@ -4986,6 +4986,8 @@ class _Translations$explore$detail$th extends Translations$explore$detail$en {
 	@override String get watchOn => 'ดูเพิ่มเติม';
 	@override String get watchTrailer => 'ดู trailer';
 	@override String openOn({required Object site}) => 'เปิดที่ ${site}';
+	@override String get trailerUnavailable => 'ไม่สามารถเปิดตัวอย่างบนอุปกรณ์นี้ได้';
+	@override String get linkUnavailable => 'ไม่สามารถเปิดลิงก์นี้บนอุปกรณ์นี้ได้';
 	@override String get crew => 'พันธมิตร';
 	@override String get ratings => 'คะแนน';
 	@override String get schedule => 'ตั้งเวลา';
@@ -7193,6 +7195,8 @@ extension on TranslationsTh {
 			'explore.detail.watchOn' => 'ดูเพิ่มเติม',
 			'explore.detail.watchTrailer' => 'ดู trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'เปิดที่ ${site}',
+			'explore.detail.trailerUnavailable' => 'ไม่สามารถเปิดตัวอย่างบนอุปกรณ์นี้ได้',
+			'explore.detail.linkUnavailable' => 'ไม่สามารถเปิดลิงก์นี้บนอุปกรณ์นี้ได้',
 			'explore.detail.crew' => 'พันธมิตร',
 			'explore.detail.ratings' => 'คะแนน',
 			'explore.detail.schedule' => 'ตั้งเวลา',
@@ -7410,10 +7414,10 @@ extension on TranslationsTh {
 			'watchTogether.copyCode' => 'รหัสคัดลอก',
 			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
-			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ Pleazyng: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ Pleazyng: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch ร่วมกันเซสชันควบคุม',
 			'watchTogether.reconnecting' => 'การเชื่อมต่อ...',
 			'watchTogether.reconnectingDescription' => 'การเชื่อมต่อถูกปิดแล้ว คุณจะเข้าสู่ห้องโดยอัตโนมัติ',
@@ -7924,10 +7928,10 @@ extension on TranslationsTh {
 			'metadataEdit.imageUrl' => 'ภาพ URL',
 			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
-			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
-			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
+			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
 			'metadataEdit.noArtworkAvailable' => 'ไม่มีงานศิลปะ',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}, เลือก',
@@ -8438,10 +8442,10 @@ extension on TranslationsTh {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} เข้าสู่ระบบรายการเล่นที่ไม่ได้สนับสนุนหรือไม่ปลอดภัย', ), 
 			'universalMedia.playlistAddress' => 'ที่อยู่ Playlist',
 			'universalMedia.playlistAddressHelp' => 'เปิดรายการเล่น M3U, M3u8 หรือ PLS จากที่อยู่อาศัยเว็บ เชื่อมโยง Stream Direct ไม่บันทึกรายการเล่น',
-			'universalMedia.choosePlaylist' => 'เลือกไฟล์ Playlist',
-			'universalMedia.openPlaylist' => 'รายการเล่นเปิด',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'เลือกไฟล์ Playlist',
+			'universalMedia.openPlaylist' => 'รายการเล่นเปิด',
 			'universalMedia.playlistFormatsHelp' => 'รายการการเล่นสามารถมีรายการสูงสุด 1,000 และ 2 MB HLS จะเปิดเป็น Streams เพื่อให้ผู้เล่นสามารถเลือกคุณภาพ',
 			'universalMedia.saveQueuePlaylist' => 'บันทึกคิวเป็นเพลย์ลิสต์',
 			'universalMedia.queuePlaylistSaved' => 'บันทึกเพลย์ลิสต์ไว้ข้างไฟล์สื่อแล้ว',
@@ -8952,10 +8956,10 @@ extension on TranslationsTh {
 			'sourceSetup.optionalUsername' => 'ชื่อผู้ใช้ของบัญชี (ไม่บังคับ)',
 			'sourceSetup.optionalPassword' => 'รหัสผ่านบัญชี (ไม่บังคับ)',
 			'sourceSetup.subtitlePrivacy' => 'รับคีย์ API จาก opensubtitles.com การค้นหาจะส่งชื่อวิดีโอและ ID ของ IMDb/TMDB ที่มี แต่จะไม่ส่งไฟล์วิดีโอ คีย์และข้อมูลรับรองบัญชีที่ระบุเพิ่มเติมจะเข้ารหัสพร้อมกับแหล่งข้อมูลนี้',
-			'sourceSetup.automaticMetadata' => 'ข้อมูลกำกับวิดีโอออนไลน์อัตโนมัติ',
-			'sourceSetup.metadataPrivacy' => 'ส่งเฉพาะชื่อเรื่อง/ปีจากชื่อไฟล์และหมายเลขตอน หรือ ID ของ NFO โดยไม่ส่งสื่อหรือข้อมูลรับรอง ช่องข้อมูล NFO ยังคงมีลำดับความสำคัญสูงสุด',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'ข้อมูลกำกับวิดีโอออนไลน์อัตโนมัติ',
+			'sourceSetup.metadataPrivacy' => 'ส่งเฉพาะชื่อเรื่อง/ปีจากชื่อไฟล์และหมายเลขตอน หรือ ID ของ NFO โดยไม่ส่งสื่อหรือข้อมูลรับรอง ช่องข้อมูล NFO ยังคงมีลำดับความสำคัญสูงสุด',
 			'sourceSetup.nfsEncryptionFailure' => 'สำหรับ NFS ที่เข้ารหัส ให้ตรวจสอบว่าบริการทั้งสองของ NAS รองรับ RFC 9289 และ TLS 1.3 ตรวจสอบชื่อในใบรับรองและ UID/GID ของส่วนแบ่งปัน Pleazyng จะไม่ลองเชื่อมต่อใหม่โดยไม่มีการเข้ารหัส',
 			'sourceSetup.sourceConnecting' => 'กำลังเชื่อมต่อแหล่งข้อมูล',
 			'sourceSetup.metadataSearchPrivacy' => 'การค้นหาชื่อเรื่องนี้ส่งไปยัง Trakt โดยส่งชื่อที่คุณป้อน ไม่ใช่วิดีโอหรือข้อมูลรับรองของแหล่งข้อมูล',

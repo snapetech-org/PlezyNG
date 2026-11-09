@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$az extends Translations$explore$detail$en {
 	@override String get watchOn => 'İzlə';
 	@override String get watchTrailer => 'Treyleri izlə';
 	@override String openOn({required Object site}) => '${site} saytında aç';
+	@override String get trailerUnavailable => 'Bu cihazda treyler açıla bilmədi';
+	@override String get linkUnavailable => 'Bu cihazda bu keçid açıla bilmədi';
 	@override String get crew => 'Heyət';
 	@override String get ratings => 'Reytinq';
 	@override String get schedule => 'Cədvəl';
@@ -7218,6 +7220,8 @@ extension on TranslationsAz {
 			'explore.detail.watchOn' => 'İzlə',
 			'explore.detail.watchTrailer' => 'Treyleri izlə',
 			'explore.detail.openOn' => ({required Object site}) => '${site} saytında aç',
+			'explore.detail.trailerUnavailable' => 'Bu cihazda treyler açıla bilmədi',
+			'explore.detail.linkUnavailable' => 'Bu cihazda bu keçid açıla bilmədi',
 			'explore.detail.crew' => 'Heyət',
 			'explore.detail.ratings' => 'Reytinq',
 			'explore.detail.schedule' => 'Cədvəl',
@@ -7435,10 +7439,10 @@ extension on TranslationsAz {
 			'watchTogether.copyCode' => 'Kodu kopyala',
 			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Dəvəti paylaş',
-			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
 			'watchTogether.openSessionControls' => 'Birlikdə İzlə seans idarəetmələrini aç',
 			'watchTogether.reconnecting' => 'Yenidən qoşulunur...',
 			'watchTogether.reconnectingDescription' => 'Əlaqə kəsildi. Otağa avtomatik olaraq yenidən qoşulacaqsınız.',
@@ -7949,10 +7953,10 @@ extension on TranslationsAz {
 			'metadataEdit.imageUrl' => 'Şəkil URL-i',
 			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
-			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
-			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
+			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
 			'metadataEdit.noArtworkAvailable' => 'Şəkil əlçatan deyil',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}, seçildi',
@@ -8463,10 +8467,10 @@ extension on TranslationsAz {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '${count}-in düzgün və ya güvenli olmayan oynay listə girişini atıb.', other: '${count}-in kömək etmədik və ya güvenli olmayan oynatma listəsi girişləri atıldı.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresləri',
 			'universalMedia.playlistAddressHelp' => 'M3U, M3u8 və ya PLS oynatma listasını bir web adresindən açın.',
-			'universalMedia.choosePlaylist' => 'Playlist filləri seçin',
-			'universalMedia.openPlaylist' => 'Açıklandı Playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Playlist filləri seçin',
+			'universalMedia.openPlaylist' => 'Açıklandı Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Bir oyun listəsi 1000-dən çox element və 2 MB içerir. HLS akışlar kimi açılır, bu yüzden oyuncu bir kalitə seçebilir.',
 			'universalMedia.saveQueuePlaylist' => 'Növbəni pleylist kimi saxla',
 			'universalMedia.queuePlaylistSaved' => 'Pleylist media fayllarının yanında saxlanıldı.',
@@ -8977,10 +8981,10 @@ extension on TranslationsAz {
 			'sourceSetup.optionalUsername' => 'Hesabın istifadəçi adı (istəyə bağlı)',
 			'sourceSetup.optionalPassword' => 'Hesabın şifrəsi (istəyə bağlı)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytından API açarı alın. Axtarış videonun adını və mövcud IMDb/TMDB ID-lərini göndərir, video faylını isə heç vaxt göndərmir. Açar və istəyə bağlı hesab giriş məlumatları bu mənbə ilə birlikdə şifrələnir.',
-			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metadatası',
-			'sourceSetup.metadataPrivacy' => 'Yalnız fayl adındakı adı/ili və epizod nömrələrini və ya NFO ID-sini göndərir; media və giriş məlumatlarını heç vaxt göndərmir. NFO sahələri üstünlüyünü saxlayır.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metadatası',
+			'sourceSetup.metadataPrivacy' => 'Yalnız fayl adındakı adı/ili və epizod nömrələrini və ya NFO ID-sini göndərir; media və giriş məlumatlarını heç vaxt göndərmir. NFO sahələri üstünlüyünü saxlayır.',
 			'sourceSetup.nfsEncryptionFailure' => 'Şifrələnmiş NFS üçün hər iki NAS xidmətində RFC 9289 və TLS 1.3 dəstəyini, sertifikat adını və paylaşımın UID/GID dəyərlərini yoxlayın. Pleazyng bu bağlantını şifrələmə olmadan yenidən sınamayacaq.',
 			'sourceSetup.sourceConnecting' => 'Mənbəyə qoşulur',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu ad axtarışı Trakt-a göndərilir. Daxil etdiyiniz ad göndərilir, video və ya mənbənin giriş məlumatları deyil.',

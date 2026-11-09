@@ -5006,6 +5006,8 @@ class _Translations$explore$detail$zh_Hant extends Translations$explore$detail$z
 	@override String get watchOn => '觀看平台';
 	@override String get watchTrailer => '觀看預告片';
 	@override String openOn({required Object site}) => '在 ${site} 開啟';
+	@override String get trailerUnavailable => '無法在這部裝置上開啟預告片';
+	@override String get linkUnavailable => '無法在這部裝置上開啟連結';
 	@override String get crew => '幕後團隊';
 	@override String get ratings => '評分';
 	@override String get schedule => '播出時間';
@@ -7214,6 +7216,8 @@ extension on TranslationsZhHant {
 			'explore.detail.watchOn' => '觀看平台',
 			'explore.detail.watchTrailer' => '觀看預告片',
 			'explore.detail.openOn' => ({required Object site}) => '在 ${site} 開啟',
+			'explore.detail.trailerUnavailable' => '無法在這部裝置上開啟預告片',
+			'explore.detail.linkUnavailable' => '無法在這部裝置上開啟連結',
 			'explore.detail.crew' => '幕後團隊',
 			'explore.detail.ratings' => '評分',
 			'explore.detail.schedule' => '播出時間',
@@ -7431,10 +7435,10 @@ extension on TranslationsZhHant {
 			'watchTogether.copyCode' => '複製代碼',
 			'watchTogether.codeCopied' => '房間代碼已複製',
 			'watchTogether.shareInvite' => '分享邀請',
-			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
-			'watchTogether.inviteMessage' => ({required Object code}) => '來 Pleazyng 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
+			'watchTogether.inviteMessage' => ({required Object code}) => '來 Pleazyng 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。',
 			'watchTogether.openSessionControls' => '開啟「一起看」工作階段控制面板',
 			'watchTogether.reconnecting' => '正在重新連線…',
 			'watchTogether.reconnectingDescription' => '連線已中斷。您將自動重新加入房間。',
@@ -7945,10 +7949,10 @@ extension on TranslationsZhHant {
 			'metadataEdit.imageUrl' => '圖片 URL',
 			'metadataEdit.metadataUpdated' => '中繼資料已更新',
 			'metadataEdit.metadataUpdateFailed' => '中繼資料更新失敗',
-			'metadataEdit.artworkUpdated' => '封面圖片已更新',
-			'metadataEdit.artworkUpdateFailed' => '封面圖片更新失敗',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => '封面圖片已更新',
+			'metadataEdit.artworkUpdateFailed' => '封面圖片更新失敗',
 			'metadataEdit.noArtworkAvailable' => '沒有可用的封面圖片',
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面圖片選項 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面圖片選項 ${index}，已選擇',
@@ -8459,10 +8463,10 @@ extension on TranslationsZhHant {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支援或不安全的播放列表輸入。', other: '${count} 不受支援或不安全的播放列表輸入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會儲存播放名單。',
-			'universalMedia.choosePlaylist' => '選擇 Playlist 檔案',
-			'universalMedia.openPlaylist' => '開放播放列表',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => '選擇 Playlist 檔案',
+			'universalMedia.openPlaylist' => '開放播放列表',
 			'universalMedia.playlistFormatsHelp' => '一張播放列表可以包含最多1000個專案和2MB的HLS顯示為流,所以玩家可以選擇質量。',
 			'universalMedia.saveQueuePlaylist' => '將佇列另存為播放清單',
 			'universalMedia.queuePlaylistSaved' => '播放清單已儲存於媒體檔案旁。',
@@ -8973,10 +8977,10 @@ extension on TranslationsZhHant {
 			'sourceSetup.optionalUsername' => '帳戶使用者名稱（選填）',
 			'sourceSetup.optionalPassword' => '帳戶密碼（選填）',
 			'sourceSetup.subtitlePrivacy' => '請從 opensubtitles.com 取得 API 金鑰。搜尋會傳送影片標題和可用的 IMDb/TMDB ID，絕不傳送影片檔案。金鑰和選填的帳戶認證資料會與此來源一同加密儲存。',
-			'sourceSetup.automaticMetadata' => '自動取得線上影片中繼資料',
-			'sourceSetup.metadataPrivacy' => '只傳送檔名中的標題、年份和集數，或 NFO ID，絕不傳送媒體或認證資料。NFO 欄位始終優先。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => '自動取得線上影片中繼資料',
+			'sourceSetup.metadataPrivacy' => '只傳送檔名中的標題、年份和集數，或 NFO ID，絕不傳送媒體或認證資料。NFO 欄位始終優先。',
 			'sourceSetup.nfsEncryptionFailure' => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。Pleazyng 不會在未加密的情況下重試此連線。',
 			'sourceSetup.sourceConnecting' => '正在連線至來源',
 			'sourceSetup.metadataSearchPrivacy' => '此標題搜尋由 Trakt 處理。只會傳送您輸入的標題，不會傳送影片或來源認證資料。',

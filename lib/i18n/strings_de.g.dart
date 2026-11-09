@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$de extends Translations$explore$detail$en {
 	@override String get watchOn => 'Ansehen auf';
 	@override String get watchTrailer => 'Trailer ansehen';
 	@override String openOn({required Object site}) => 'Auf ${site} öffnen';
+	@override String get trailerUnavailable => 'Der Trailer konnte auf diesem Gerät nicht geöffnet werden';
+	@override String get linkUnavailable => 'Der Link konnte auf diesem Gerät nicht geöffnet werden';
 	@override String get crew => 'Crew';
 	@override String get ratings => 'Bewertungen';
 	@override String get schedule => 'Sendetermine';
@@ -7218,6 +7220,8 @@ extension on TranslationsDe {
 			'explore.detail.watchOn' => 'Ansehen auf',
 			'explore.detail.watchTrailer' => 'Trailer ansehen',
 			'explore.detail.openOn' => ({required Object site}) => 'Auf ${site} öffnen',
+			'explore.detail.trailerUnavailable' => 'Der Trailer konnte auf diesem Gerät nicht geöffnet werden',
+			'explore.detail.linkUnavailable' => 'Der Link konnte auf diesem Gerät nicht geöffnet werden',
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Bewertungen',
 			'explore.detail.schedule' => 'Sendetermine',
@@ -7435,10 +7439,10 @@ extension on TranslationsDe {
 			'watchTogether.copyCode' => 'Code kopieren',
 			'watchTogether.codeCopied' => 'Raumcode kopiert',
 			'watchTogether.shareInvite' => 'Einladung teilen',
-			'watchTogether.inviteCopied' => 'Einladung kopiert. Füge sie in eine Nachricht ein.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Komm in meinen Raum für Gemeinsam Schauen in Pleazyng: Öffne „Gemeinsam Schauen“, wähle „Raum beitreten“ und gib ${code} ein.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Einladung kopiert. Füge sie in eine Nachricht ein.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Komm in meinen Raum für Gemeinsam Schauen in Pleazyng: Öffne „Gemeinsam Schauen“, wähle „Raum beitreten“ und gib ${code} ein.',
 			'watchTogether.openSessionControls' => 'Sitzungssteuerung für Gemeinsam Schauen öffnen',
 			'watchTogether.reconnecting' => 'Verbindung wird wiederhergestellt …',
 			'watchTogether.reconnectingDescription' => 'Die Verbindung wurde unterbrochen. Du trittst dem Raum automatisch wieder bei.',
@@ -7949,10 +7953,10 @@ extension on TranslationsDe {
 			'metadataEdit.imageUrl' => 'Bild-URL',
 			'metadataEdit.metadataUpdated' => 'Metadaten aktualisiert',
 			'metadataEdit.metadataUpdateFailed' => 'Metadaten konnten nicht aktualisiert werden',
-			'metadataEdit.artworkUpdated' => 'Grafiken aktualisiert',
-			'metadataEdit.artworkUpdateFailed' => 'Grafiken konnten nicht aktualisiert werden',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Grafiken aktualisiert',
+			'metadataEdit.artworkUpdateFailed' => 'Grafiken konnten nicht aktualisiert werden',
 			'metadataEdit.noArtworkAvailable' => 'Keine Grafiken verfügbar',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikoption ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Grafikoption ${index}, ausgewählt',
@@ -8463,10 +8467,10 @@ extension on TranslationsDe {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('de'))(n, one: 'Skipped ${count} ununterstützte oder sichere Playlist-Einträge.', other: 'Skipped ${count} nicht unterstützte oder unsichere Playlist-Einträge.', ), 
 			'universalMedia.playlistAddress' => 'Playlist Adresse',
 			'universalMedia.playlistAddressHelp' => 'Öffnen Sie eine M3U, M3u8 oder PLS-Playliste von einer Webadresse. Direct Stream Links speichern die Playlist nicht.',
-			'universalMedia.choosePlaylist' => 'Wählen Sie Playlist-Datei',
-			'universalMedia.openPlaylist' => 'Öffnen der Playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Wählen Sie Playlist-Datei',
+			'universalMedia.openPlaylist' => 'Öffnen der Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Eine Playlist kann bis zu 1.000 Elemente und 2 MB enthalten. HLS manifestiert sich als Streams öffnet, so dass der Spieler eine Qualität wählen kann.',
 			'universalMedia.saveQueuePlaylist' => 'Warteschlange als Wiedergabeliste speichern',
 			'universalMedia.queuePlaylistSaved' => 'Die Wiedergabeliste wurde neben den Mediendateien gespeichert.',
@@ -8977,10 +8981,10 @@ extension on TranslationsDe {
 			'sourceSetup.optionalUsername' => 'Benutzername des Kontos (optional)',
 			'sourceSetup.optionalPassword' => 'Passwort des Kontos (optional)',
 			'sourceSetup.subtitlePrivacy' => 'Hole dir einen API-Schlüssel von opensubtitles.com. Die Suche sendet den Videotitel und verfügbare IMDb/TMDB-IDs, niemals die Videodatei. Der Schlüssel und optionale Kontozugangsdaten werden zusammen mit dieser Quelle verschlüsselt.',
-			'sourceSetup.automaticMetadata' => 'Automatische Online-Videometadaten',
-			'sourceSetup.metadataPrivacy' => 'Sendet nur Titel/Jahr aus dem Dateinamen und Episodennummern oder eine NFO-ID, niemals Medien oder Zugangsdaten. NFO-Felder behalten Vorrang.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Automatische Online-Videometadaten',
+			'sourceSetup.metadataPrivacy' => 'Sendet nur Titel/Jahr aus dem Dateinamen und Episodennummern oder eine NFO-ID, niemals Medien oder Zugangsdaten. NFO-Felder behalten Vorrang.',
 			'sourceSetup.nfsEncryptionFailure' => 'Prüfe für verschlüsseltes NFS die Unterstützung von RFC 9289 und TLS 1.3 bei beiden NAS-Diensten, den Zertifikatsnamen und die UID/GID der Freigabe. Pleazyng wird diese Verbindung nicht ohne Verschlüsselung erneut versuchen.',
 			'sourceSetup.sourceConnecting' => 'Verbindung zur Quelle wird hergestellt',
 			'sourceSetup.metadataSearchPrivacy' => 'Diese Titelsuche wird an Trakt gesendet. Übermittelt wird der eingegebene Titel, nicht das Video oder die Zugangsdaten der Quelle.',

@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$nl extends Translations$explore$detail$en {
 	@override String get watchOn => 'Bekijk op';
 	@override String get watchTrailer => 'Trailer bekijken';
 	@override String openOn({required Object site}) => 'Openen op ${site}';
+	@override String get trailerUnavailable => 'Kan de trailer niet openen op dit apparaat';
+	@override String get linkUnavailable => 'Kan de link niet openen op dit apparaat';
 	@override String get crew => 'Crew';
 	@override String get ratings => 'Beoordelingen';
 	@override String get schedule => 'Uitzendschema';
@@ -7218,6 +7220,8 @@ extension on TranslationsNl {
 			'explore.detail.watchOn' => 'Bekijk op',
 			'explore.detail.watchTrailer' => 'Trailer bekijken',
 			'explore.detail.openOn' => ({required Object site}) => 'Openen op ${site}',
+			'explore.detail.trailerUnavailable' => 'Kan de trailer niet openen op dit apparaat',
+			'explore.detail.linkUnavailable' => 'Kan de link niet openen op dit apparaat',
 			'explore.detail.crew' => 'Crew',
 			'explore.detail.ratings' => 'Beoordelingen',
 			'explore.detail.schedule' => 'Uitzendschema',
@@ -7435,10 +7439,10 @@ extension on TranslationsNl {
 			'watchTogether.copyCode' => 'Code kopiëren',
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
-			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
 			'watchTogether.reconnecting' => 'Opnieuw verbinden...',
 			'watchTogether.reconnectingDescription' => 'De verbinding is verbroken. Je neemt automatisch weer deel aan de kamer.',
@@ -7949,10 +7953,10 @@ extension on TranslationsNl {
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
-			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
-			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
+			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Illustratie ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Illustratie ${index}, geselecteerd',
@@ -8463,10 +8467,10 @@ extension on TranslationsNl {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: 'Skipped ${count} niet ondersteund of onveilig playlist ingang.', other: 'Skipped ${count} niet ondersteunde of onveilige playlist-inputs.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adres',
 			'universalMedia.playlistAddressHelp' => 'Open een M3U, M3u8 of PLS playlist vanuit een webadres. Direct stream links slaan de playlist niet op.',
-			'universalMedia.choosePlaylist' => 'Kies een playlist bestand',
-			'universalMedia.openPlaylist' => 'Open playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Kies een playlist bestand',
+			'universalMedia.openPlaylist' => 'Open playlist',
 			'universalMedia.playlistFormatsHelp' => 'Een playlist kan maximaal 1.000 items en 2 MB bevatten.HLS manifesteert open als stromen zodat de speler een kwaliteit kan kiezen.',
 			'universalMedia.saveQueuePlaylist' => 'Wachtrij opslaan als afspeellijst',
 			'universalMedia.queuePlaylistSaved' => 'De afspeellijst is naast de mediabestanden opgeslagen.',
@@ -8977,10 +8981,10 @@ extension on TranslationsNl {
 			'sourceSetup.optionalUsername' => 'Gebruikersnaam van het account (optioneel)',
 			'sourceSetup.optionalPassword' => 'Wachtwoord van het account (optioneel)',
 			'sourceSetup.subtitlePrivacy' => 'Vraag een API-sleutel aan op opensubtitles.com. Zoeken verstuurt de videotitel en beschikbare IMDb/TMDB-ID’s, nooit het videobestand. De sleutel en optionele accountgegevens worden samen met deze bron versleuteld.',
-			'sourceSetup.automaticMetadata' => 'Automatische online videometadata',
-			'sourceSetup.metadataPrivacy' => 'Verstuurt alleen titel/jaar uit de bestandsnaam en afleveringsnummers, of een NFO-ID; nooit media of toegangsgegevens. NFO-velden blijven leidend.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Automatische online videometadata',
+			'sourceSetup.metadataPrivacy' => 'Verstuurt alleen titel/jaar uit de bestandsnaam en afleveringsnummers, of een NFO-ID; nooit media of toegangsgegevens. NFO-velden blijven leidend.',
 			'sourceSetup.nfsEncryptionFailure' => 'Controleer voor versleutelde NFS de ondersteuning van RFC 9289 en TLS 1.3 bij beide NAS-services, de certificaatnaam en de UID/GID van de share. Pleazyng probeert deze verbinding niet opnieuw zonder versleuteling.',
 			'sourceSetup.sourceConnecting' => 'Verbinden met bron',
 			'sourceSetup.metadataSearchPrivacy' => 'Deze titelzoekopdracht gaat naar Trakt. De ingevoerde titel wordt verstuurd, niet de video of de toegangsgegevens van de bron.',

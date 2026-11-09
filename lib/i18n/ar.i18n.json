@@ -2295,6 +2295,8 @@
       "watchOn": "انظر إلى",
       "watchTrailer": "مشاهدة trailer",
       "openOn": "مفتوحة على ${site}",
+      "trailerUnavailable": "تعذر فتح المقطع الدعائي على هذا الجهاز",
+      "linkUnavailable": "تعذر فتح هذا الرابط على هذا الجهاز",
       "crew": "الطاقم",
       "ratings": "تصنيف",
       "schedule": "جدولة",

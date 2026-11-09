@@ -2269,6 +2269,8 @@
       "watchOn": "Podívejte se",
       "watchTrailer": "Podívejte se trailer",
       "openOn": "Otevřeno na ${site}",
+      "trailerUnavailable": "Na tomto zařízení se nepodařilo otevřít upoutávku",
+      "linkUnavailable": "Na tomto zařízení se nepodařilo otevřít tento odkaz",
       "crew": "Posádka",
       "ratings": "Hodnocení",
       "schedule": "Plánované nahrávání",

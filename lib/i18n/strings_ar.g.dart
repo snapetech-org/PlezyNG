@@ -5106,6 +5106,8 @@ class _Translations$explore$detail$ar extends Translations$explore$detail$en {
 	@override String get watchOn => 'انظر إلى';
 	@override String get watchTrailer => 'مشاهدة trailer';
 	@override String openOn({required Object site}) => 'مفتوحة على ${site}';
+	@override String get trailerUnavailable => 'تعذر فتح المقطع الدعائي على هذا الجهاز';
+	@override String get linkUnavailable => 'تعذر فتح هذا الرابط على هذا الجهاز';
 	@override String get crew => 'الطاقم';
 	@override String get ratings => 'تصنيف';
 	@override String get schedule => 'جدولة';
@@ -7318,6 +7320,8 @@ extension on TranslationsAr {
 			'explore.detail.watchOn' => 'انظر إلى',
 			'explore.detail.watchTrailer' => 'مشاهدة trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'مفتوحة على ${site}',
+			'explore.detail.trailerUnavailable' => 'تعذر فتح المقطع الدعائي على هذا الجهاز',
+			'explore.detail.linkUnavailable' => 'تعذر فتح هذا الرابط على هذا الجهاز',
 			'explore.detail.crew' => 'الطاقم',
 			'explore.detail.ratings' => 'تصنيف',
 			'explore.detail.schedule' => 'جدولة',
@@ -7535,10 +7539,10 @@ extension on TranslationsAr {
 			'watchTogether.copyCode' => 'نسخ الرمز',
 			'watchTogether.codeCopied' => 'رمز الغرفة نسخة',
 			'watchTogether.shareInvite' => 'مشاركة دعوة',
-			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'انضم إلى غرفة Watch Together في Pleazyng: افتح غرفة Watch Together واختر انضم إلى غرفة وانضم إلى ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'انضم إلى غرفة Watch Together في Pleazyng: افتح غرفة Watch Together واختر انضم إلى غرفة وانضم إلى ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch معا مراقبة الجلسة',
 			'watchTogether.reconnecting' => 'إعادة الاتصال...',
 			'watchTogether.reconnectingDescription' => 'انقطع الاتصال.تصل إلى الغرفة تلقائيًا.',
@@ -8049,10 +8053,10 @@ extension on TranslationsAr {
 			'metadataEdit.imageUrl' => 'صورة URL',
 			'metadataEdit.metadataUpdated' => 'متاجدات تحديثات',
 			'metadataEdit.metadataUpdateFailed' => 'فشل في تحديث البيانات الميتا',
-			'metadataEdit.artworkUpdated' => 'الفنون المحدثة',
-			'metadataEdit.artworkUpdateFailed' => 'فشل في تحديث أعمال الفن',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'الفنون المحدثة',
+			'metadataEdit.artworkUpdateFailed' => 'فشل في تحديث أعمال الفن',
 			'metadataEdit.noArtworkAvailable' => 'لا توجد أعمال فنية متاحة',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'الخيارات الفنية ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'الخيار الفن ${index}، اختياري',
@@ -8563,10 +8567,10 @@ extension on TranslationsAr {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', one: 'إدخال ${count} غير مدعوم أو غير آمن.', two: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', few: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', many: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', other: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', ), 
 			'universalMedia.playlistAddress' => 'العنوان Playlist',
 			'universalMedia.playlistAddressHelp' => 'افتح قائمة تشغيل M3U أو M3 U8 أو PLS من عنوان ويب. لنقرات البث المباشر لا تخزن قائمة التشغيل.',
-			'universalMedia.choosePlaylist' => 'اختيار ملف Playlist',
-			'universalMedia.openPlaylist' => 'قائمة ألعاب مفتوحة',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'اختيار ملف Playlist',
+			'universalMedia.openPlaylist' => 'قائمة ألعاب مفتوحة',
 			'universalMedia.playlistFormatsHelp' => 'يمكن أن يحتوي قائمة التشغيل على ما يصل إلى 1000 عنصر و 2 ميغابايت.HLS يظهر مفتوحا مثل التدفقات بحيث يمكن للاعب اختيار نوعية.',
 			'universalMedia.saveQueuePlaylist' => 'حفظ قائمة الانتظار كقائمة تشغيل',
 			'universalMedia.queuePlaylistSaved' => 'تم حفظ قائمة التشغيل بجوار ملفات الوسائط.',
@@ -9077,10 +9081,10 @@ extension on TranslationsAr {
 			'sourceSetup.optionalUsername' => 'اسم مستخدم الحساب (اختياري)',
 			'sourceSetup.optionalPassword' => 'كلمة مرور الحساب (اختيارية)',
 			'sourceSetup.subtitlePrivacy' => 'احصل على مفتاح API من opensubtitles.com. يرسل البحث عنوان الفيديو ومعرّفات IMDb/TMDB المتاحة، ولا يرسل ملف الفيديو مطلقًا. يُحفظ المفتاح وبيانات الحساب الاختيارية بشكل مشفّر مع هذا المصدر.',
-			'sourceSetup.automaticMetadata' => 'جلب بيانات الفيديو الوصفية من الإنترنت تلقائيًا',
-			'sourceSetup.metadataPrivacy' => 'يُرسل فقط العنوان والسنة وأرقام الحلقات المستخرجة من اسم الملف، أو معرّف NFO، ولا يرسل الوسائط أو بيانات الاعتماد مطلقًا. تظل الأولوية لحقول NFO.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'جلب بيانات الفيديو الوصفية من الإنترنت تلقائيًا',
+			'sourceSetup.metadataPrivacy' => 'يُرسل فقط العنوان والسنة وأرقام الحلقات المستخرجة من اسم الملف، أو معرّف NFO، ولا يرسل الوسائط أو بيانات الاعتماد مطلقًا. تظل الأولوية لحقول NFO.',
 			'sourceSetup.nfsEncryptionFailure' => 'لاتصال NFS المشفّر، تحقّق من دعم RFC 9289 وTLS 1.3 في خدمتي NAS، ومن اسم الشهادة ومعرّفات UID/GID للتصدير. لن يعيد Pleazyng محاولة هذا الاتصال دون تشفير.',
 			'sourceSetup.sourceConnecting' => 'جارٍ الاتصال بالمصدر',
 			'sourceSetup.metadataSearchPrivacy' => 'يُرسل هذا البحث عن العنوان إلى Trakt. يُرسل العنوان الذي تدخله فقط، ولا يُرسل الفيديو أو بيانات اعتماد المصدر.',

@@ -49,7 +49,7 @@ jobs:
         run: python3 -m unittest discover -s scripts/games -p 'test_*romm*.py'
       - name: Exercise descriptor-only television worker
         if: runner.os == 'Linux'
-        run: python3 scripts/games/test_romm_descriptor_worker.py --libretro-include "$RUNNER_TEMP/romm-native/_deps/romm_libretro_common-src/include"
+        run: python3 scripts/games/verify_romm_descriptor_worker.py --libretro-include "$RUNNER_TEMP/romm-native/_deps/romm_libretro_common-src/include"
       - name: Verify Apple pod metadata locks
         if: runner.os == 'Linux'
         run: |

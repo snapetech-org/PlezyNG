@@ -5005,6 +5005,8 @@ class _Translations$explore$detail$ja extends Translations$explore$detail$en {
 	@override String get watchOn => '視聴先';
 	@override String get watchTrailer => '予告編を見る';
 	@override String openOn({required Object site}) => '${site}で開く';
+	@override String get trailerUnavailable => 'この端末では予告編を開けませんでした';
+	@override String get linkUnavailable => 'この端末ではリンクを開けませんでした';
 	@override String get crew => 'スタッフ';
 	@override String get ratings => '評価';
 	@override String get schedule => '放送予定';
@@ -7213,6 +7215,8 @@ extension on TranslationsJa {
 			'explore.detail.watchOn' => '視聴先',
 			'explore.detail.watchTrailer' => '予告編を見る',
 			'explore.detail.openOn' => ({required Object site}) => '${site}で開く',
+			'explore.detail.trailerUnavailable' => 'この端末では予告編を開けませんでした',
+			'explore.detail.linkUnavailable' => 'この端末ではリンクを開けませんでした',
 			'explore.detail.crew' => 'スタッフ',
 			'explore.detail.ratings' => '評価',
 			'explore.detail.schedule' => '放送予定',
@@ -7430,10 +7434,10 @@ extension on TranslationsJa {
 			'watchTogether.copyCode' => 'コードをコピー',
 			'watchTogether.codeCopied' => 'ルームコードをコピーしました',
 			'watchTogether.shareInvite' => '招待を共有',
-			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
 			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
 			'watchTogether.reconnecting' => '再接続中…',
 			'watchTogether.reconnectingDescription' => '接続が切断されました。自動的にルームに再参加します。',
@@ -7944,10 +7948,10 @@ extension on TranslationsJa {
 			'metadataEdit.imageUrl' => '画像URL',
 			'metadataEdit.metadataUpdated' => 'メタデータを更新しました',
 			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
-			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
-			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
+			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
 			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}、選択済み',
@@ -8458,10 +8462,10 @@ extension on TranslationsJa {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '${count} 未サポートまたは不安全なプレイリストの入力。', other: '${count} 未サポートまたは不安全なプレイリストのエントリーを削除しました。', ), 
 			'universalMedia.playlistAddress' => 'Playlist アドレス',
 			'universalMedia.playlistAddressHelp' => 'ウェブアドレスから M3U、M3U8 または PLS プレーリストを開きます。',
-			'universalMedia.choosePlaylist' => 'プレイリストファイルを選択',
-			'universalMedia.openPlaylist' => 'オープンプレイリスト',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'プレイリストファイルを選択',
+			'universalMedia.openPlaylist' => 'オープンプレイリスト',
 			'universalMedia.playlistFormatsHelp' => 'プレイリストには最大1000項目と2MBが含まれます HLSはストリームとして開きますので、プレイヤーは品質を選択できます。',
 			'universalMedia.saveQueuePlaylist' => 'キューをプレイリストとして保存',
 			'universalMedia.queuePlaylistSaved' => 'プレイリストをメディアファイルと同じ場所に保存しました。',
@@ -8972,10 +8976,10 @@ extension on TranslationsJa {
 			'sourceSetup.optionalUsername' => 'アカウントのユーザー名（任意）',
 			'sourceSetup.optionalPassword' => 'アカウントのパスワード（任意）',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com から API キーを取得してください。検索では動画のタイトルと利用可能な IMDb/TMDB ID を送信しますが、動画ファイルは一切送信しません。キーと任意のアカウント認証情報は、このソースとともに暗号化して保存されます。',
-			'sourceSetup.automaticMetadata' => '動画のオンラインメタデータを自動取得',
-			'sourceSetup.metadataPrivacy' => '送信するのはファイル名のタイトル・年・エピソード番号、または NFO ID のみです。メディアや認証情報は一切送信しません。NFO の項目が常に優先されます。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => '動画のオンラインメタデータを自動取得',
+			'sourceSetup.metadataPrivacy' => '送信するのはファイル名のタイトル・年・エピソード番号、または NFO ID のみです。メディアや認証情報は一切送信しません。NFO の項目が常に優先されます。',
 			'sourceSetup.nfsEncryptionFailure' => '暗号化された NFS では、NAS の両サービスが RFC 9289 と TLS 1.3 に対応しているか、証明書の名前とエクスポートの UID/GID が正しいかを確認してください。Pleazyng が暗号化なしでこの接続を再試行することはありません。',
 			'sourceSetup.sourceConnecting' => 'ソースに接続中',
 			'sourceSetup.metadataSearchPrivacy' => 'このタイトル検索は Trakt に送信されます。入力したタイトルのみを送信し、動画やソースの認証情報は送信しません。',

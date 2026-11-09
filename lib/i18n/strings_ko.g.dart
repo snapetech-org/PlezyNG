@@ -5005,6 +5005,8 @@ class _Translations$explore$detail$ko extends Translations$explore$detail$en {
 	@override String get watchOn => '시청처';
 	@override String get watchTrailer => '예고편 보기';
 	@override String openOn({required Object site}) => '${site}에서 열기';
+	@override String get trailerUnavailable => '이 기기에서 예고편을 열 수 없습니다';
+	@override String get linkUnavailable => '이 기기에서 링크를 열 수 없습니다';
 	@override String get crew => '제작진';
 	@override String get ratings => '평점';
 	@override String get schedule => '방영 일정';
@@ -7213,6 +7215,8 @@ extension on TranslationsKo {
 			'explore.detail.watchOn' => '시청처',
 			'explore.detail.watchTrailer' => '예고편 보기',
 			'explore.detail.openOn' => ({required Object site}) => '${site}에서 열기',
+			'explore.detail.trailerUnavailable' => '이 기기에서 예고편을 열 수 없습니다',
+			'explore.detail.linkUnavailable' => '이 기기에서 링크를 열 수 없습니다',
 			'explore.detail.crew' => '제작진',
 			'explore.detail.ratings' => '평점',
 			'explore.detail.schedule' => '방영 일정',
@@ -7430,10 +7434,10 @@ extension on TranslationsKo {
 			'watchTogether.copyCode' => '코드 복사',
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
 			'watchTogether.shareInvite' => '초대 공유',
-			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
 			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
 			'watchTogether.reconnecting' => '재연결 중...',
 			'watchTogether.reconnectingDescription' => '연결이 끊어졌습니다. 자동으로 방에 다시 참여합니다.',
@@ -7944,10 +7948,10 @@ extension on TranslationsKo {
 			'metadataEdit.imageUrl' => '이미지 URL',
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
 			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
-			'metadataEdit.artworkUpdated' => '아트워크가 업데이트되었습니다',
-			'metadataEdit.artworkUpdateFailed' => '아트워크 업데이트 실패',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => '아트워크가 업데이트되었습니다',
+			'metadataEdit.artworkUpdateFailed' => '아트워크 업데이트 실패',
 			'metadataEdit.noArtworkAvailable' => '사용 가능한 아트워크 없음',
 			'metadataEdit.artworkOption' => ({required Object index}) => '아트워크 옵션 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '아트워크 옵션 ${index}, 선택됨',
@@ -8458,10 +8462,10 @@ extension on TranslationsKo {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '스키피드 ${count} 지원되지 않거나 불안정한 플레이리스트 입력.', other: '${count} 지원되지 않거나 불안정한 플레이리스트 입력을 벗어났습니다.', ), 
 			'universalMedia.playlistAddress' => '플레이리스트 주소',
 			'universalMedia.playlistAddressHelp' => '웹 주소에서 M3U, M3u8 또는 PLS 플레이리스트를 열 수 있습니다.Direct stream 링크는 플레이 리스트를 저장하지 않습니다.',
-			'universalMedia.choosePlaylist' => '플레이리스트 파일 선택',
-			'universalMedia.openPlaylist' => '오픈 플레이리스트',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => '플레이리스트 파일 선택',
+			'universalMedia.openPlaylist' => '오픈 플레이리스트',
 			'universalMedia.playlistFormatsHelp' => '플레이리스트는 최대 1,000 개의 항목과 2 MB를 포함할 수 있습니다.HLS는 스트림으로 열려 있으므로 플레이어가 품질을 선택할 수 있도록합니다.',
 			'universalMedia.saveQueuePlaylist' => '대기열을 재생목록으로 저장',
 			'universalMedia.queuePlaylistSaved' => '재생목록을 미디어 파일 옆에 저장했습니다.',
@@ -8972,10 +8976,10 @@ extension on TranslationsKo {
 			'sourceSetup.optionalUsername' => '계정 사용자 이름(선택 사항)',
 			'sourceSetup.optionalPassword' => '계정 비밀번호(선택 사항)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.',
-			'sourceSetup.automaticMetadata' => '온라인 동영상 메타데이터 자동 조회',
-			'sourceSetup.metadataPrivacy' => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => '온라인 동영상 메타데이터 자동 조회',
+			'sourceSetup.metadataPrivacy' => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.',
 			'sourceSetup.nfsEncryptionFailure' => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. Pleazyng는 암호화 없이 이 연결을 다시 시도하지 않습니다.',
 			'sourceSetup.sourceConnecting' => '소스에 연결 중',
 			'sourceSetup.metadataSearchPrivacy' => '이 제목 검색은 Trakt로 전송됩니다. 입력한 제목만 전송하며, 동영상이나 소스 자격 증명은 전송하지 않습니다.',

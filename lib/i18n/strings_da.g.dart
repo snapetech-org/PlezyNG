@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$da extends Translations$explore$detail$en {
 	@override String get watchOn => 'Se på';
 	@override String get watchTrailer => 'Se trailer';
 	@override String openOn({required Object site}) => 'Åbn på ${site}';
+	@override String get trailerUnavailable => 'Kunne ikke åbne traileren på denne enhed';
+	@override String get linkUnavailable => 'Kunne ikke åbne linket på denne enhed';
 	@override String get crew => 'Stab';
 	@override String get ratings => 'Bedømmelser';
 	@override String get schedule => 'Program';
@@ -7218,6 +7220,8 @@ extension on TranslationsDa {
 			'explore.detail.watchOn' => 'Se på',
 			'explore.detail.watchTrailer' => 'Se trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Åbn på ${site}',
+			'explore.detail.trailerUnavailable' => 'Kunne ikke åbne traileren på denne enhed',
+			'explore.detail.linkUnavailable' => 'Kunne ikke åbne linket på denne enhed',
 			'explore.detail.crew' => 'Stab',
 			'explore.detail.ratings' => 'Bedømmelser',
 			'explore.detail.schedule' => 'Program',
@@ -7435,10 +7439,10 @@ extension on TranslationsDa {
 			'watchTogether.copyCode' => 'Kopiér kode',
 			'watchTogether.codeCopied' => 'Rumkode kopieret',
 			'watchTogether.shareInvite' => 'Del invitation',
-			'watchTogether.inviteCopied' => 'Invitation kopieret. Indsæt den i en besked.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Deltag i mit Se sammen-rum i Pleazyng: Åbn "Se sammen", vælg "Deltag i rum", og indtast ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Invitation kopieret. Indsæt den i en besked.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Deltag i mit Se sammen-rum i Pleazyng: Åbn "Se sammen", vælg "Deltag i rum", og indtast ${code}.',
 			'watchTogether.openSessionControls' => 'Åbn sessionsstyring for Se sammen',
 			'watchTogether.reconnecting' => 'Genopretter forbindelse...',
 			'watchTogether.reconnectingDescription' => 'Forbindelsen blev afbrudt. Du kommer automatisk ind i rummet igen.',
@@ -7949,10 +7953,10 @@ extension on TranslationsDa {
 			'metadataEdit.imageUrl' => 'Billed-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata opdateret',
 			'metadataEdit.metadataUpdateFailed' => 'Kunne ikke opdatere metadata',
-			'metadataEdit.artworkUpdated' => 'Grafik opdateret',
-			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke opdatere grafik',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Grafik opdateret',
+			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke opdatere grafik',
 			'metadataEdit.noArtworkAvailable' => 'Ingen grafik tilgængelig',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikvalg ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Grafikvalg ${index}, valgt',
@@ -8463,10 +8467,10 @@ extension on TranslationsDa {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: 'Skiftede ${count} ustøttet eller usikre playlist indgang.', other: 'Skiftede ${count} uafhængige eller usikre playlist-indtægter.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
 			'universalMedia.playlistAddressHelp' => 'Åbn en M3U, M3u8 eller PLS playlist fra en webadresse. direkte streaming links gemmer ikke playlisten.',
-			'universalMedia.choosePlaylist' => 'Vælg Playlist fil',
-			'universalMedia.openPlaylist' => 'Åbent playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Vælg Playlist fil',
+			'universalMedia.openPlaylist' => 'Åbent playlist',
 			'universalMedia.playlistFormatsHelp' => 'En playlist kan indeholde op til 1.000 elementer og 2 MB. HLS manifesterer sig åbent som strømme, så spilleren kan vælge en kvalitet.',
 			'universalMedia.saveQueuePlaylist' => 'Gem kø som afspilningsliste',
 			'universalMedia.queuePlaylistSaved' => 'Afspilningslisten blev gemt ved siden af mediefilerne.',
@@ -8977,10 +8981,10 @@ extension on TranslationsDa {
 			'sourceSetup.optionalUsername' => 'Kontoens brugernavn (valgfrit)',
 			'sourceSetup.optionalPassword' => 'Kontoens adgangskode (valgfri)',
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøgle på opensubtitles.com. Søgning sender videotitlen og tilgængelige IMDb/TMDB-ID’er, aldrig videofilen. Nøglen og valgfrie kontooplysninger krypteres sammen med denne kilde.',
-			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
-			'sourceSetup.metadataPrivacy' => 'Sender kun titel/år fra filnavnet og afsnitsnumre eller et NFO-ID, aldrig medier eller legitimationsoplysninger. NFO-felter har fortsat forrang.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
+			'sourceSetup.metadataPrivacy' => 'Sender kun titel/år fra filnavnet og afsnitsnumre eller et NFO-ID, aldrig medier eller legitimationsoplysninger. NFO-felter har fortsat forrang.',
 			'sourceSetup.nfsEncryptionFailure' => 'Ved krypteret NFS skal du kontrollere understøttelse af RFC 9289 og TLS 1.3 på begge NAS-tjenester, certifikatnavnet og delingens UID/GID. Pleazyng forsøger ikke denne forbindelse igen uden kryptering.',
 			'sourceSetup.sourceConnecting' => 'Opretter forbindelse til kilden',
 			'sourceSetup.metadataSearchPrivacy' => 'Denne titelsøgning sendes til Trakt. Den sender den titel, du angiver, ikke videoen eller kildens legitimationsoplysninger.',

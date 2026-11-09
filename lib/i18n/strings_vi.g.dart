@@ -4986,6 +4986,8 @@ class _Translations$explore$detail$vi extends Translations$explore$detail$en {
 	@override String get watchOn => 'Xem tại';
 	@override String get watchTrailer => 'Xem trailer';
 	@override String openOn({required Object site}) => 'Khởi mở tại ${site}';
+	@override String get trailerUnavailable => 'Không thể mở đoạn giới thiệu trên thiết bị này';
+	@override String get linkUnavailable => 'Không thể mở liên kết này trên thiết bị này';
 	@override String get crew => 'phi hành đoàn';
 	@override String get ratings => 'Đánh giá';
 	@override String get schedule => 'Lên lịch';
@@ -7193,6 +7195,8 @@ extension on TranslationsVi {
 			'explore.detail.watchOn' => 'Xem tại',
 			'explore.detail.watchTrailer' => 'Xem trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Khởi mở tại ${site}',
+			'explore.detail.trailerUnavailable' => 'Không thể mở đoạn giới thiệu trên thiết bị này',
+			'explore.detail.linkUnavailable' => 'Không thể mở liên kết này trên thiết bị này',
 			'explore.detail.crew' => 'phi hành đoàn',
 			'explore.detail.ratings' => 'Đánh giá',
 			'explore.detail.schedule' => 'Lên lịch',
@@ -7410,10 +7414,10 @@ extension on TranslationsVi {
 			'watchTogether.copyCode' => 'Copy mã',
 			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
-			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
 			'watchTogether.reconnecting' => 'Kết nối lại...',
 			'watchTogether.reconnectingDescription' => 'Kết nối bị hỏng. bạn sẽ tự động vào phòng.',
@@ -7924,10 +7928,10 @@ extension on TranslationsVi {
 			'metadataEdit.imageUrl' => 'Ảnh URL',
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
-			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
-			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
+			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
 			'metadataEdit.noArtworkAvailable' => 'Không có tác phẩm nghệ thuật',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Tùy chọn nghệ thuật ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Tùy chọn Artwork ${index}, được chọn',
@@ -8438,10 +8442,10 @@ extension on TranslationsVi {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tắt ${count} không được hỗ trợ hoặc không an toàn danh sách đăng nhập.', ), 
 			'universalMedia.playlistAddress' => 'Địa chỉ Playlist',
 			'universalMedia.playlistAddressHelp' => 'Mở một danh sách chơi M3U, M3u8, hoặc PLS từ địa chỉ web. liên kết trực tiếp không lưu danh sách playlist.',
-			'universalMedia.choosePlaylist' => 'Chọn playlist file',
-			'universalMedia.openPlaylist' => 'playlist mở',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Chọn playlist file',
+			'universalMedia.openPlaylist' => 'playlist mở',
 			'universalMedia.playlistFormatsHelp' => 'Một danh sách phát có thể chứa tối đa 1.000 mục và 2 MB. HLS hiển thị mở như dòng để người chơi có thể chọn một chất lượng.',
 			'universalMedia.saveQueuePlaylist' => 'Lưu hàng đợi thành danh sách phát',
 			'universalMedia.queuePlaylistSaved' => 'Danh sách phát đã được lưu cạnh các tệp phương tiện.',
@@ -8952,10 +8956,10 @@ extension on TranslationsVi {
 			'sourceSetup.optionalUsername' => 'Tên người dùng của tài khoản (không bắt buộc)',
 			'sourceSetup.optionalPassword' => 'Mật khẩu tài khoản (không bắt buộc)',
 			'sourceSetup.subtitlePrivacy' => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.',
-			'sourceSetup.automaticMetadata' => 'Siêu dữ liệu video trực tuyến tự động',
-			'sourceSetup.metadataPrivacy' => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Siêu dữ liệu video trực tuyến tự động',
+			'sourceSetup.metadataPrivacy' => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.',
 			'sourceSetup.nfsEncryptionFailure' => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. Pleazyng sẽ không thử lại kết nối này khi không mã hóa.',
 			'sourceSetup.sourceConnecting' => 'Đang kết nối đến nguồn',
 			'sourceSetup.metadataSearchPrivacy' => 'Lượt tìm tiêu đề này được gửi đến Trakt. Chỉ tiêu đề bạn nhập được gửi đi, không phải video hay thông tin xác thực của nguồn.',

@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$sv extends Translations$explore$detail$en {
 	@override String get watchOn => 'Titta på';
 	@override String get watchTrailer => 'Titta på trailer';
 	@override String openOn({required Object site}) => 'Öppna på ${site}';
+	@override String get trailerUnavailable => 'Det gick inte att öppna trailern på den här enheten';
+	@override String get linkUnavailable => 'Det gick inte att öppna länken på den här enheten';
 	@override String get crew => 'Besättning';
 	@override String get ratings => 'Betyg';
 	@override String get schedule => 'Schema';
@@ -7218,6 +7220,8 @@ extension on TranslationsSv {
 			'explore.detail.watchOn' => 'Titta på',
 			'explore.detail.watchTrailer' => 'Titta på trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Öppna på ${site}',
+			'explore.detail.trailerUnavailable' => 'Det gick inte att öppna trailern på den här enheten',
+			'explore.detail.linkUnavailable' => 'Det gick inte att öppna länken på den här enheten',
 			'explore.detail.crew' => 'Besättning',
 			'explore.detail.ratings' => 'Betyg',
 			'explore.detail.schedule' => 'Schema',
@@ -7435,10 +7439,10 @@ extension on TranslationsSv {
 			'watchTogether.copyCode' => 'Kopiera kod',
 			'watchTogether.codeCopied' => 'Rumskod kopierad',
 			'watchTogether.shareInvite' => 'Dela inbjudan',
-			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i Pleazyng: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i Pleazyng: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
 			'watchTogether.openSessionControls' => 'Öppna sessionskontroller för Titta tillsammans',
 			'watchTogether.reconnecting' => 'Återansluter...',
 			'watchTogether.reconnectingDescription' => 'Anslutningen bröts. Du går automatiskt med i rummet igen.',
@@ -7949,10 +7953,10 @@ extension on TranslationsSv {
 			'metadataEdit.imageUrl' => 'Bild-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
 			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
-			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
-			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
+			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
 			'metadataEdit.noArtworkAvailable' => 'Inget bildmaterial är tillgängligt',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Bildalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Bildalternativ ${index}, valt',
@@ -8463,10 +8467,10 @@ extension on TranslationsSv {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: 'Skipped ${count} understödda eller osäkra spellistan ingång.', other: 'Skipped ${count} ounderstödda eller osäkra spellistor entréer.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
 			'universalMedia.playlistAddressHelp' => 'Öppna en M3U, M3u8 eller PLS-spellista från en webbadress. Direct stream länkar sparar inte spellistan.',
-			'universalMedia.choosePlaylist' => 'Välj Playlist fil',
-			'universalMedia.openPlaylist' => 'Öppna Playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Välj Playlist fil',
+			'universalMedia.openPlaylist' => 'Öppna Playlist',
 			'universalMedia.playlistFormatsHelp' => 'En spellista kan innehålla upp till 1000 objekt och 2 MB. HLS manifesterar sig öppen som strömmar så att spelaren kan välja en kvalitet.',
 			'universalMedia.saveQueuePlaylist' => 'Spara kön som spellista',
 			'universalMedia.queuePlaylistSaved' => 'Spellistan sparades bredvid mediefilerna.',
@@ -8977,10 +8981,10 @@ extension on TranslationsSv {
 			'sourceSetup.optionalUsername' => 'Kontots användarnamn (valfritt)',
 			'sourceSetup.optionalPassword' => 'Kontots lösenord (valfritt)',
 			'sourceSetup.subtitlePrivacy' => 'Hämta en API-nyckel från opensubtitles.com. Sökningen skickar videons titel och tillgängliga IMDb/TMDB-ID:n, aldrig videofilen. Nyckeln och valfria kontouppgifter krypteras tillsammans med den här källan.',
-			'sourceSetup.automaticMetadata' => 'Automatiska videometadata från nätet',
-			'sourceSetup.metadataPrivacy' => 'Skickar endast titel/år från filnamnet och avsnittsnummer eller ett NFO-ID, aldrig medier eller inloggningsuppgifter. NFO-fälten behåller företräde.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Automatiska videometadata från nätet',
+			'sourceSetup.metadataPrivacy' => 'Skickar endast titel/år från filnamnet och avsnittsnummer eller ett NFO-ID, aldrig medier eller inloggningsuppgifter. NFO-fälten behåller företräde.',
 			'sourceSetup.nfsEncryptionFailure' => 'För krypterad NFS: kontrollera stöd för RFC 9289 och TLS 1.3 i båda NAS-tjänsterna, certifikatnamnet och delningens UID/GID. Pleazyng försöker inte ansluta igen utan kryptering.',
 			'sourceSetup.sourceConnecting' => 'Ansluter till källa',
 			'sourceSetup.metadataSearchPrivacy' => 'Den här titelsökningen skickas till Trakt. Den skickar titeln du anger, inte videon eller källans inloggningsuppgifter.',

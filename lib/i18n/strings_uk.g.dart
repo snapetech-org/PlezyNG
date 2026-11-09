@@ -5054,6 +5054,8 @@ class _Translations$explore$detail$uk extends Translations$explore$detail$en {
 	@override String get watchOn => 'Дивіться на';
 	@override String get watchTrailer => 'Дивитись трейлер';
 	@override String openOn({required Object site}) => 'Відкритий на ${site}';
+	@override String get trailerUnavailable => 'Не вдалося відкрити трейлер на цьому пристрої';
+	@override String get linkUnavailable => 'Не вдалося відкрити це посилання на цьому пристрої';
 	@override String get crew => 'Екіпаж';
 	@override String get ratings => 'Рейтинг';
 	@override String get schedule => 'Розклад';
@@ -7262,6 +7264,8 @@ extension on TranslationsUk {
 			'explore.detail.watchOn' => 'Дивіться на',
 			'explore.detail.watchTrailer' => 'Дивитись трейлер',
 			'explore.detail.openOn' => ({required Object site}) => 'Відкритий на ${site}',
+			'explore.detail.trailerUnavailable' => 'Не вдалося відкрити трейлер на цьому пристрої',
+			'explore.detail.linkUnavailable' => 'Не вдалося відкрити це посилання на цьому пристрої',
 			'explore.detail.crew' => 'Екіпаж',
 			'explore.detail.ratings' => 'Рейтинг',
 			'explore.detail.schedule' => 'Розклад',
@@ -7479,10 +7483,10 @@ extension on TranslationsUk {
 			'watchTogether.copyCode' => 'Копіювати код',
 			'watchTogether.codeCopied' => 'Код кімнати копіюється',
 			'watchTogether.shareInvite' => 'Поділимо запрошення',
-			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
 			'watchTogether.reconnecting' => 'Відновлення...',
 			'watchTogether.reconnectingDescription' => 'З\'єднання припинено. Ви приєднуєтеся до кімнати автоматично.',
@@ -7993,10 +7997,10 @@ extension on TranslationsUk {
 			'metadataEdit.imageUrl' => 'Зображення URL',
 			'metadataEdit.metadataUpdated' => 'Актуальні метастази',
 			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
-			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
-			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
+			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вибір художнього твору ${index}, вибраний',
@@ -8507,10 +8511,10 @@ extension on TranslationsUk {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Завантажити ${count} непідтримлений або небезпечний вхід списку переглядів.', few: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', many: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', other: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', ), 
 			'universalMedia.playlistAddress' => 'Адреса Playlist',
 			'universalMedia.playlistAddressHelp' => 'Відкрийте перелік M3U, M3u8 або PLS з веб-адреси. прямий потік посилань не зберігає перелік.',
-			'universalMedia.choosePlaylist' => 'Вибір файлу Playlist',
-			'universalMedia.openPlaylist' => 'Відкритий playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Вибір файлу Playlist',
+			'universalMedia.openPlaylist' => 'Відкритий playlist',
 			'universalMedia.playlistFormatsHelp' => 'Список перегляду може містити до 1000 елементів і 2 Мб. HLS відкривається як потоки, так що гравець може вибрати якість.',
 			'universalMedia.saveQueuePlaylist' => 'Зберегти чергу як список відтворення',
 			'universalMedia.queuePlaylistSaved' => 'Список відтворення збережено поруч із медіафайлами.',
@@ -9021,10 +9025,10 @@ extension on TranslationsUk {
 			'sourceSetup.optionalUsername' => 'Ім’я користувача облікового запису (необов’язково)',
 			'sourceSetup.optionalPassword' => 'Пароль облікового запису (необов’язково)',
 			'sourceSetup.subtitlePrivacy' => 'Отримайте ключ API на opensubtitles.com. Пошук надсилає назву відео й доступні ID IMDb/TMDB, але ніколи не надсилає відеофайл. Ключ і необов’язкові облікові дані шифруються разом із цим джерелом.',
-			'sourceSetup.automaticMetadata' => 'Автоматичні метадані відео з інтернету',
-			'sourceSetup.metadataPrivacy' => 'Надсилає лише назву/рік з імені файлу та номери епізодів або ID NFO, але ніколи не надсилає медіафайли чи облікові дані. Поля NFO зберігають пріоритет.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Автоматичні метадані відео з інтернету',
+			'sourceSetup.metadataPrivacy' => 'Надсилає лише назву/рік з імені файлу та номери епізодів або ID NFO, але ніколи не надсилає медіафайли чи облікові дані. Поля NFO зберігають пріоритет.',
 			'sourceSetup.nfsEncryptionFailure' => 'Для зашифрованого NFS перевірте підтримку RFC 9289 і TLS 1.3 обома службами NAS, ім’я в сертифікаті та UID/GID експорту. Pleazyng не повторюватиме це з’єднання без шифрування.',
 			'sourceSetup.sourceConnecting' => 'Підключення до джерела',
 			'sourceSetup.metadataSearchPrivacy' => 'Цей пошук назви надсилається до Trakt. Передається введена назва, а не відео чи облікові дані джерела.',

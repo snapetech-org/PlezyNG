@@ -712,6 +712,13 @@ class Translations$seerr$pt_PT extends Translations$seerr$pt {
 	@override String get advancedOptions => 'Definições avançadas';
 	@override String get tags => 'Etiquetas';
 	@override String get statusAvailable => 'Disponível';
+	@override String get requestSeasons => 'Solicitar temporadas em falta';
+	@override String get notifyMe => 'Avisar quando estiver disponível';
+	@override String get notifyMe4k => 'Avisar quando estiver disponível em 4K';
+	@override String get notificationsOn => 'Alerta de disponibilidade ativado';
+	@override String get notificationsEnabled => 'Avisaremos quando estiver disponível';
+	@override String get notificationsDisabled => 'Alerta de disponibilidade desativado';
+	@override String get notificationFailed => 'Não foi possível atualizar o alerta de disponibilidade';
 }
 
 // Path: services
@@ -1700,6 +1707,13 @@ extension on TranslationsPtPt {
 			'seerr.advancedOptions' => 'Definições avançadas',
 			'seerr.tags' => 'Etiquetas',
 			'seerr.statusAvailable' => 'Disponível',
+			'seerr.requestSeasons' => 'Solicitar temporadas em falta',
+			'seerr.notifyMe' => 'Avisar quando estiver disponível',
+			'seerr.notifyMe4k' => 'Avisar quando estiver disponível em 4K',
+			'seerr.notificationsOn' => 'Alerta de disponibilidade ativado',
+			'seerr.notificationsEnabled' => 'Avisaremos quando estiver disponível',
+			'seerr.notificationsDisabled' => 'Alerta de disponibilidade desativado',
+			'seerr.notificationFailed' => 'Não foi possível atualizar o alerta de disponibilidade',
 			'services.libraryFilter.modeBlacklist' => 'Lista de bloqueios',
 			'services.libraryFilter.modeWhitelist' => 'Lista de permissões',
 			'services.libraryFilter.libraries' => 'Bibliotecas',
@@ -1851,6 +1865,8 @@ extension on TranslationsPtPt {
 			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
 			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
 			'romm.keepBoth' => 'Keep both',
+			_ => null,
+		} ?? switch (path) {
 			'romm.useServer' => 'Use server copy',
 			'romm.replaceServer' => 'Replace server copy',
 			'romm.pendingSaves' => 'Saves waiting to sync',
@@ -1858,8 +1874,6 @@ extension on TranslationsPtPt {
 			'romm.savedLocally' => 'Progress kept on this device; upload is pending.',
 			'romm.pause' => 'Pause',
 			'romm.kContinue' => 'Continue',
-			_ => null,
-		} ?? switch (path) {
 			'romm.saveState' => 'Save state',
 			'romm.loadState' => 'Load state',
 			'romm.saveAndExit' => 'Save and exit',

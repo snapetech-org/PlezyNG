@@ -5005,6 +5005,8 @@ class Translations$explore$detail$zh extends Translations$explore$detail$en {
 	@override String get watchOn => '观看平台';
 	@override String get watchTrailer => '观看预告片';
 	@override String openOn({required Object site}) => '在 ${site} 打开';
+	@override String get trailerUnavailable => '无法在此设备上打开预告片';
+	@override String get linkUnavailable => '无法在此设备上打开链接';
 	@override String get crew => '演职人员';
 	@override String get ratings => '评分';
 	@override String get schedule => '播出时间';
@@ -7213,6 +7215,8 @@ extension on TranslationsZh {
 			'explore.detail.watchOn' => '观看平台',
 			'explore.detail.watchTrailer' => '观看预告片',
 			'explore.detail.openOn' => ({required Object site}) => '在 ${site} 打开',
+			'explore.detail.trailerUnavailable' => '无法在此设备上打开预告片',
+			'explore.detail.linkUnavailable' => '无法在此设备上打开链接',
 			'explore.detail.crew' => '演职人员',
 			'explore.detail.ratings' => '评分',
 			'explore.detail.schedule' => '播出时间',
@@ -7430,10 +7434,10 @@ extension on TranslationsZh {
 			'watchTogether.copyCode' => '复制代码',
 			'watchTogether.codeCopied' => '房间代码已复制',
 			'watchTogether.shareInvite' => '分享邀请',
-			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
-			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
+			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
 			'watchTogether.reconnecting' => '正在重新连接…',
 			'watchTogether.reconnectingDescription' => '连接已中断。你将自动重新加入房间。',
@@ -7944,10 +7948,10 @@ extension on TranslationsZh {
 			'metadataEdit.imageUrl' => '图片 URL',
 			'metadataEdit.metadataUpdated' => '元数据已更新',
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
-			'metadataEdit.artworkUpdated' => '封面图片已更新',
-			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => '封面图片已更新',
+			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
 			'metadataEdit.noArtworkAvailable' => '没有可用的封面图片',
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面图片选项 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面图片选项 ${index}，已选择',
@@ -8458,10 +8462,10 @@ extension on TranslationsZh {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '${count} 不受支持或不安全的播放列表输入。', other: '${count} 不受支持或不安全的播放列表输入。', ), 
 			'universalMedia.playlistAddress' => 'Playlist 地址',
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會保存播放名單。',
-			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
-			'universalMedia.openPlaylist' => '开放播放列表',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => '选择 Playlist 文件',
+			'universalMedia.openPlaylist' => '开放播放列表',
 			'universalMedia.playlistFormatsHelp' => '一张播放列表可以包含最多1000个项目和2MB的HLS显示为流,所以玩家可以选择质量。',
 			'universalMedia.saveQueuePlaylist' => '将队列另存为播放列表',
 			'universalMedia.queuePlaylistSaved' => '播放列表已保存在媒体文件旁边。',
@@ -8972,10 +8976,10 @@ extension on TranslationsZh {
 			'sourceSetup.optionalUsername' => '账户用户名（可选）',
 			'sourceSetup.optionalPassword' => '账户密码（可选）',
 			'sourceSetup.subtitlePrivacy' => '请从 opensubtitles.com 获取 API 密钥。搜索会发送视频标题和可用的 IMDb/TMDB ID，绝不会发送视频文件。密钥和可选的账户凭据会随此来源加密保存。',
-			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
-			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => '自动获取在线视频元数据',
+			'sourceSetup.metadataPrivacy' => '仅发送文件名中的标题、年份和集数，或 NFO ID，绝不发送媒体文件或凭据。NFO 字段始终优先。',
 			'sourceSetup.nfsEncryptionFailure' => '对于加密 NFS，请检查 NAS 的两项服务是否支持 RFC 9289 和 TLS 1.3，并核对证书名称以及导出 UID/GID。Pleazyng 不会在不加密的情况下重试此连接。',
 			'sourceSetup.sourceConnecting' => '正在连接来源',
 			'sourceSetup.metadataSearchPrivacy' => '此标题搜索由 Trakt 处理。只会发送您输入的标题，不会发送视频或来源凭据。',

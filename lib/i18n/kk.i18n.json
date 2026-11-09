@@ -2251,6 +2251,8 @@
       "watchOn": "Мына жерде қарау:",
       "watchTrailer": "Трейлерді қарау",
       "openOn": "${site} сайтында ашу",
+      "trailerUnavailable": "Бұл құрылғыда трейлер ашылмады",
+      "linkUnavailable": "Бұл құрылғыда сілтеме ашылмады",
       "crew": "Ұжым",
       "ratings": "Бағалаулар",
       "schedule": "Кесте",

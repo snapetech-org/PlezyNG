@@ -2251,6 +2251,8 @@
       "watchOn": "দেখুন",
       "watchTrailer": "ট্র্যালার দেখুন",
       "openOn": "খোলা ${site}",
+      "trailerUnavailable": "এই ডিভাইসে ট্রেলার খোলা যায়নি",
+      "linkUnavailable": "এই ডিভাইসে এই লিঙ্ক খোলা যায়নি",
       "crew": "ক্লাব",
       "ratings": "রেটিং",
       "schedule": "পরিকল্পনা",

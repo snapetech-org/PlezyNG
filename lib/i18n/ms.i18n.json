@@ -2240,6 +2240,8 @@
       "watchOn": "Lihatlah",
       "watchTrailer": "Lihat trailer",
       "openOn": "Terbuka pada ${site}",
+      "trailerUnavailable": "Treler tidak dapat dibuka pada peranti ini",
+      "linkUnavailable": "Pautan ini tidak dapat dibuka pada peranti ini",
       "crew": "Pasukan",
       "ratings": "Penilaian",
       "schedule": "Jadual",

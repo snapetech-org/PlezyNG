@@ -2251,6 +2251,8 @@
       "watchOn": "İzle",
       "watchTrailer": "Fragmanı izle",
       "openOn": "${site}'de aç",
+      "trailerUnavailable": "Bu cihazda fragman açılamadı",
+      "linkUnavailable": "Bu cihazda bağlantı açılamadı",
       "crew": "Ekip",
       "ratings": "Puanlar",
       "schedule": "Yayın takvimi",

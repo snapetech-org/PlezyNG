@@ -4986,6 +4986,8 @@ class _Translations$explore$detail$id extends Translations$explore$detail$en {
 	@override String get watchOn => 'Lihatlah';
 	@override String get watchTrailer => 'Lihat Trailer';
 	@override String openOn({required Object site}) => 'Terbuka pada ${site}';
+	@override String get trailerUnavailable => 'Cuplikan tidak dapat dibuka di perangkat ini';
+	@override String get linkUnavailable => 'Tautan ini tidak dapat dibuka di perangkat ini';
 	@override String get crew => 'Kapal';
 	@override String get ratings => 'Peringkat';
 	@override String get schedule => 'Jadwal';
@@ -7193,6 +7195,8 @@ extension on TranslationsId {
 			'explore.detail.watchOn' => 'Lihatlah',
 			'explore.detail.watchTrailer' => 'Lihat Trailer',
 			'explore.detail.openOn' => ({required Object site}) => 'Terbuka pada ${site}',
+			'explore.detail.trailerUnavailable' => 'Cuplikan tidak dapat dibuka di perangkat ini',
+			'explore.detail.linkUnavailable' => 'Tautan ini tidak dapat dibuka di perangkat ini',
 			'explore.detail.crew' => 'Kapal',
 			'explore.detail.ratings' => 'Peringkat',
 			'explore.detail.schedule' => 'Jadwal',
@@ -7410,10 +7414,10 @@ extension on TranslationsId {
 			'watchTogether.copyCode' => 'Kopi kode',
 			'watchTogether.codeCopied' => 'Kode kamar disalin',
 			'watchTogether.shareInvite' => 'Membagi Jemputan',
-			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Watch bersama saya di Pleazyng: buka Watch bersama, pilih Join Room dan masukkan ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Tuliskan pesan, masukkan ke dalam pesan.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Watch bersama saya di Pleazyng: buka Watch bersama, pilih Join Room dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kontrol sesi',
 			'watchTogether.reconnecting' => 'Menghubungkan kembali...',
 			'watchTogether.reconnectingDescription' => 'Koneksi terputus.Anda masuk ke ruangan secara otomatis.',
@@ -7924,10 +7928,10 @@ extension on TranslationsId {
 			'metadataEdit.imageUrl' => 'Gambar URL',
 			'metadataEdit.metadataUpdated' => 'Metadata yang diperbarui',
 			'metadataEdit.metadataUpdateFailed' => 'Tidak dapat mengemas kini metadata',
-			'metadataEdit.artworkUpdated' => 'Artwork dikemas kini',
-			'metadataEdit.artworkUpdateFailed' => 'gagal memperbarui karya seni',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Artwork dikemas kini',
+			'metadataEdit.artworkUpdateFailed' => 'gagal memperbarui karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tidak ada seni yang tersedia',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opsi seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opsi seni ${index}, dipilih',
@@ -8438,10 +8442,10 @@ extension on TranslationsId {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} masuk daftar main yang tidak didukung atau tidak aman.', ), 
 			'universalMedia.playlistAddress' => 'Alamat Playlist',
 			'universalMedia.playlistAddressHelp' => 'Buka daftar main M3U, M3u8, atau PLS dari alamat web. link streaming langsung tidak menyimpan daftar main.',
-			'universalMedia.choosePlaylist' => 'Pilih file playlist',
-			'universalMedia.openPlaylist' => 'Pembukaan playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Pilih file playlist',
+			'universalMedia.openPlaylist' => 'Pembukaan playlist',
 			'universalMedia.playlistFormatsHelp' => 'Daftar main dapat berisi lebih dari 1.000 item dan 2 MB. HLS terbuka sebagai arus sehingga pemain dapat memilih kualitas.',
 			'universalMedia.saveQueuePlaylist' => 'Simpan antrean sebagai daftar putar',
 			'universalMedia.queuePlaylistSaved' => 'Daftar putar disimpan di samping file media.',
@@ -8952,10 +8956,10 @@ extension on TranslationsId {
 			'sourceSetup.optionalUsername' => 'Nama pengguna akun (opsional)',
 			'sourceSetup.optionalPassword' => 'Kata sandi akun (opsional)',
 			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API dari opensubtitles.com. Pencarian mengirim judul video dan ID IMDb/TMDB yang tersedia, tidak pernah mengirim file video. Kunci dan kredensial akun opsional dienkripsi bersama sumber ini.',
-			'sourceSetup.automaticMetadata' => 'Metadata video daring otomatis',
-			'sourceSetup.metadataPrivacy' => 'Hanya mengirim judul/tahun dari nama file dan nomor episode atau ID NFO, tidak pernah mengirim media atau kredensial. Kolom NFO tetap menjadi acuan utama.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Metadata video daring otomatis',
+			'sourceSetup.metadataPrivacy' => 'Hanya mengirim judul/tahun dari nama file dan nomor episode atau ID NFO, tidak pernah mengirim media atau kredensial. Kolom NFO tetap menjadi acuan utama.',
 			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS terenkripsi, periksa dukungan RFC 9289 dan TLS 1.3 pada kedua layanan NAS, nama sertifikat, serta UID/GID ekspor. Pleazyng tidak akan mencoba ulang koneksi ini tanpa enkripsi.',
 			'sourceSetup.sourceConnecting' => 'Menghubungkan ke sumber',
 			'sourceSetup.metadataSearchPrivacy' => 'Pencarian judul ini dikirim ke Trakt. Yang dikirim adalah judul yang Anda masukkan, bukan video atau kredensial sumber.',

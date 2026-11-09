@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$bn extends Translations$explore$detail$en {
 	@override String get watchOn => 'দেখুন';
 	@override String get watchTrailer => 'ট্র্যালার দেখুন';
 	@override String openOn({required Object site}) => 'খোলা ${site}';
+	@override String get trailerUnavailable => 'এই ডিভাইসে ট্রেলার খোলা যায়নি';
+	@override String get linkUnavailable => 'এই ডিভাইসে এই লিঙ্ক খোলা যায়নি';
 	@override String get crew => 'ক্লাব';
 	@override String get ratings => 'রেটিং';
 	@override String get schedule => 'পরিকল্পনা';
@@ -7218,6 +7220,8 @@ extension on TranslationsBn {
 			'explore.detail.watchOn' => 'দেখুন',
 			'explore.detail.watchTrailer' => 'ট্র্যালার দেখুন',
 			'explore.detail.openOn' => ({required Object site}) => 'খোলা ${site}',
+			'explore.detail.trailerUnavailable' => 'এই ডিভাইসে ট্রেলার খোলা যায়নি',
+			'explore.detail.linkUnavailable' => 'এই ডিভাইসে এই লিঙ্ক খোলা যায়নি',
 			'explore.detail.crew' => 'ক্লাব',
 			'explore.detail.ratings' => 'রেটিং',
 			'explore.detail.schedule' => 'পরিকল্পনা',
@@ -7435,10 +7439,10 @@ extension on TranslationsBn {
 			'watchTogether.copyCode' => 'কপি কোড',
 			'watchTogether.codeCopied' => 'রুম কোড কপি',
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
-			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
 			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			'watchTogether.reconnectingDescription' => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।',
@@ -7949,10 +7953,10 @@ extension on TranslationsBn {
 			'metadataEdit.imageUrl' => 'ইমেজ URL',
 			'metadataEdit.metadataUpdated' => 'মেটাদাডেট আপডেট',
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
-			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
-			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
+			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ছবির বিকল্প ${index}, নির্বাচিত',
@@ -8463,10 +8467,10 @@ extension on TranslationsBn {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '${count} অসহায় বা নিরাপদ Playlist প্রবেশ।', other: '${count} সমর্থিত বা নিরাপদ Playlist অন্তর্ভুক্ত।', ), 
 			'universalMedia.playlistAddress' => 'Playlist ঠিকানা',
 			'universalMedia.playlistAddressHelp' => 'একটি ওয়েব ঠিকানা থেকে একটি M3U, M3u8, বা PLS প্লেলিস্ট খোঁজ করুন. সরাসরি প্রদর্শন লিঙ্কগুলি প্লেলেস্ট সংরক্ষণ করে না।',
-			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
-			'universalMedia.openPlaylist' => 'খোলা Playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
+			'universalMedia.openPlaylist' => 'খোলা Playlist',
 			'universalMedia.playlistFormatsHelp' => 'একটি খেলা লিস্টে সর্বাধিক 1,000 পণ্য এবং 2 মিবি রয়েছে. HLS স্ট্রিম হিসাবে খোলা হয়, তাই খেলোয়াড় একটি মান নির্বাচন করতে পারেন।',
 			'universalMedia.saveQueuePlaylist' => 'কিউ প্লেলিস্ট হিসেবে সংরক্ষণ করুন',
 			'universalMedia.queuePlaylistSaved' => 'মিডিয়া ফাইলগুলোর পাশে প্লেলিস্ট সংরক্ষিত হয়েছে।',
@@ -8977,10 +8981,10 @@ extension on TranslationsBn {
 			'sourceSetup.optionalUsername' => 'অ্যাকাউন্টের ব্যবহারকারীর নাম (ঐচ্ছিক)',
 			'sourceSetup.optionalPassword' => 'অ্যাকাউন্টের পাসওয়ার্ড (ঐচ্ছিক)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।',
-			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
-			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
+			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
 			'sourceSetup.nfsEncryptionFailure' => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। Pleazyng এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।',
 			'sourceSetup.sourceConnecting' => 'উৎসের সঙ্গে সংযোগ করা হচ্ছে',
 			'sourceSetup.metadataSearchPrivacy' => 'এই শিরোনাম অনুসন্ধান Trakt-এ পাঠানো হয়। শুধু আপনার লেখা শিরোনাম পাঠানো হয়, ভিডিও বা উৎসের প্রবেশতথ্য নয়।',

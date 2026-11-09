@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$tr extends Translations$explore$detail$en {
 	@override String get watchOn => 'İzle';
 	@override String get watchTrailer => 'Fragmanı izle';
 	@override String openOn({required Object site}) => '${site}\'de aç';
+	@override String get trailerUnavailable => 'Bu cihazda fragman açılamadı';
+	@override String get linkUnavailable => 'Bu cihazda bağlantı açılamadı';
 	@override String get crew => 'Ekip';
 	@override String get ratings => 'Puanlar';
 	@override String get schedule => 'Yayın takvimi';
@@ -7218,6 +7220,8 @@ extension on TranslationsTr {
 			'explore.detail.watchOn' => 'İzle',
 			'explore.detail.watchTrailer' => 'Fragmanı izle',
 			'explore.detail.openOn' => ({required Object site}) => '${site}\'de aç',
+			'explore.detail.trailerUnavailable' => 'Bu cihazda fragman açılamadı',
+			'explore.detail.linkUnavailable' => 'Bu cihazda bağlantı açılamadı',
 			'explore.detail.crew' => 'Ekip',
 			'explore.detail.ratings' => 'Puanlar',
 			'explore.detail.schedule' => 'Yayın takvimi',
@@ -7435,10 +7439,10 @@ extension on TranslationsTr {
 			'watchTogether.copyCode' => 'Kodu Kopyala',
 			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
-			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
 			'watchTogether.openSessionControls' => 'Birlikte İzle oturum kontrollerini aç',
 			'watchTogether.reconnecting' => 'Yeniden bağlanılıyor...',
 			'watchTogether.reconnectingDescription' => 'Bağlantı koptu. Odaya otomatik olarak yeniden katılacaksınız.',
@@ -7949,10 +7953,10 @@ extension on TranslationsTr {
 			'metadataEdit.imageUrl' => 'Görsel URL\'si',
 			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
-			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
-			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
+			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
 			'metadataEdit.noArtworkAvailable' => 'Görsel bulunmuyor',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}, seçildi',
@@ -8463,10 +8467,10 @@ extension on TranslationsTr {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişini kaydırdı.', other: '${count} desteklenmemiş veya güvenli olmayan oynatma listesi girişleri kayboldu.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresi',
 			'universalMedia.playlistAddressHelp' => 'Bir web adresinden bir M3U, M3u8 veya PLS oynatma listesi açın.',
-			'universalMedia.choosePlaylist' => 'Playlist dosyasını seçin',
-			'universalMedia.openPlaylist' => 'Açık Playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Playlist dosyasını seçin',
+			'universalMedia.openPlaylist' => 'Açık Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Bir oynatma listesi en fazla 1000 öğe ve 2 MB içerebilir. HLS akışlar olarak açıktır, böylece oyuncu bir kaliteyi seçebilir.',
 			'universalMedia.saveQueuePlaylist' => 'Sırayı çalma listesi olarak kaydet',
 			'universalMedia.queuePlaylistSaved' => 'Çalma listesi medya dosyalarının yanına kaydedildi.',
@@ -8977,10 +8981,10 @@ extension on TranslationsTr {
 			'sourceSetup.optionalUsername' => 'Hesap kullanıcı adı (isteğe bağlı)',
 			'sourceSetup.optionalPassword' => 'Hesap parolası (isteğe bağlı)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com adresinden API anahtarı alın. Arama, video başlığını ve mevcut IMDb/TMDB kimliklerini gönderir; video dosyasını asla göndermez. Anahtar ve isteğe bağlı hesap kimlik bilgileri bu kaynakla birlikte şifrelenir.',
-			'sourceSetup.automaticMetadata' => 'Otomatik çevrimiçi video meta verileri',
-			'sourceSetup.metadataPrivacy' => 'Yalnızca dosya adındaki başlık/yıl ve bölüm numaralarını veya bir NFO kimliğini gönderir; medyayı ya da kimlik bilgilerini asla göndermez. NFO alanları önceliğini korur.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Otomatik çevrimiçi video meta verileri',
+			'sourceSetup.metadataPrivacy' => 'Yalnızca dosya adındaki başlık/yıl ve bölüm numaralarını veya bir NFO kimliğini gönderir; medyayı ya da kimlik bilgilerini asla göndermez. NFO alanları önceliğini korur.',
 			'sourceSetup.nfsEncryptionFailure' => 'Şifreli NFS için her iki NAS hizmetinde RFC 9289 ve TLS 1.3 desteğini, sertifika adını ve paylaşımın UID/GID değerlerini kontrol edin. Pleazyng bu bağlantıyı şifreleme olmadan yeniden denemeyecek.',
 			'sourceSetup.sourceConnecting' => 'Kaynağa bağlanılıyor',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu başlık araması Trakt’a gönderilir. Girdiğiniz başlığı gönderir; videoyu veya kaynak kimlik bilgilerini göndermez.',

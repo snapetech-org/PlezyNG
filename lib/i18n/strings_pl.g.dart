@@ -5058,6 +5058,8 @@ class _Translations$explore$detail$pl extends Translations$explore$detail$en {
 	@override String get watchOn => 'Oglądaj na';
 	@override String get watchTrailer => 'Obejrzyj zwiastun';
 	@override String openOn({required Object site}) => 'Otwórz na ${site}';
+	@override String get trailerUnavailable => 'Nie udało się otworzyć zwiastuna na tym urządzeniu';
+	@override String get linkUnavailable => 'Nie udało się otworzyć linku na tym urządzeniu';
 	@override String get crew => 'Obsada i ekipa';
 	@override String get ratings => 'Oceny';
 	@override String get schedule => 'Harmonogram';
@@ -7268,6 +7270,8 @@ extension on TranslationsPl {
 			'explore.detail.watchOn' => 'Oglądaj na',
 			'explore.detail.watchTrailer' => 'Obejrzyj zwiastun',
 			'explore.detail.openOn' => ({required Object site}) => 'Otwórz na ${site}',
+			'explore.detail.trailerUnavailable' => 'Nie udało się otworzyć zwiastuna na tym urządzeniu',
+			'explore.detail.linkUnavailable' => 'Nie udało się otworzyć linku na tym urządzeniu',
 			'explore.detail.crew' => 'Obsada i ekipa',
 			'explore.detail.ratings' => 'Oceny',
 			'explore.detail.schedule' => 'Harmonogram',
@@ -7485,10 +7489,10 @@ extension on TranslationsPl {
 			'watchTogether.copyCode' => 'Kopiuj kod',
 			'watchTogether.codeCopied' => 'Skopiowano kod pokoju',
 			'watchTogether.shareInvite' => 'Udostępnij zaproszenie',
-			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w Pleazyng: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w Pleazyng: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			'watchTogether.openSessionControls' => 'Otwórz sterowanie sesją „Oglądaj razem”',
 			'watchTogether.reconnecting' => 'Ponowne łączenie...',
 			'watchTogether.reconnectingDescription' => 'Połączenie zostało przerwane. Ponowne dołączenie do pokoju nastąpi automatycznie.',
@@ -7999,10 +8003,10 @@ extension on TranslationsPl {
 			'metadataEdit.imageUrl' => 'URL obrazu',
 			'metadataEdit.metadataUpdated' => 'Metadane zaktualizowane',
 			'metadataEdit.metadataUpdateFailed' => 'Nie udało się zaktualizować metadanych',
-			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
-			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
+			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			'metadataEdit.noArtworkAvailable' => 'Brak dostępnej grafiki',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opcja grafiki ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opcja grafiki ${index}, wybrana',
@@ -8513,10 +8517,10 @@ extension on TranslationsPl {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: 'Skryty ${count} niepotrzebny lub niebezpieczny wpis listy odtwarzania.', few: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', many: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', other: 'Wpisy z listy odtwarzania ${count} nie są obsługiwane lub niebezpieczne.', ), 
 			'universalMedia.playlistAddress' => 'Adres Playlist',
 			'universalMedia.playlistAddressHelp' => 'Otwórz listę odtwarzania M3U, M3u8 lub PLS z adresu internetowego. linki strumieniowe bezpośrednio nie przechowują listy odtwarzania.',
-			'universalMedia.choosePlaylist' => 'Wybierz plik playlist',
-			'universalMedia.openPlaylist' => 'Otwarta playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Wybierz plik playlist',
+			'universalMedia.openPlaylist' => 'Otwarta playlist',
 			'universalMedia.playlistFormatsHelp' => 'Lista odtwarzania może zawierać maksymalnie 1000 elementów i 2 MB. HLS otwiera się jako strumienia, dzięki czemu gracz może wybrać jakość.',
 			'universalMedia.saveQueuePlaylist' => 'Zapisz kolejkę jako playlistę',
 			'universalMedia.queuePlaylistSaved' => 'Playlista została zapisana obok plików multimedialnych.',
@@ -9027,10 +9031,10 @@ extension on TranslationsPl {
 			'sourceSetup.optionalUsername' => 'Nazwa użytkownika konta (opcjonalnie)',
 			'sourceSetup.optionalPassword' => 'Hasło konta (opcjonalnie)',
 			'sourceSetup.subtitlePrivacy' => 'Uzyskaj klucz API na opensubtitles.com. Wyszukiwanie wysyła tytuł wideo i dostępne ID IMDb/TMDB, nigdy plik wideo. Klucz i opcjonalne dane logowania do konta są szyfrowane wraz z tym źródłem.',
-			'sourceSetup.automaticMetadata' => 'Automatyczne metadane wideo z internetu',
-			'sourceSetup.metadataPrivacy' => 'Wysyła tylko tytuł/rok z nazwy pliku i numery odcinków lub ID NFO, nigdy multimedia ani dane uwierzytelniające. Pola NFO zachowują pierwszeństwo.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Automatyczne metadane wideo z internetu',
+			'sourceSetup.metadataPrivacy' => 'Wysyła tylko tytuł/rok z nazwy pliku i numery odcinków lub ID NFO, nigdy multimedia ani dane uwierzytelniające. Pola NFO zachowują pierwszeństwo.',
 			'sourceSetup.nfsEncryptionFailure' => 'Dla szyfrowanego NFS sprawdź obsługę RFC 9289 i TLS 1.3 przez obie usługi NAS, nazwę w certyfikacie i UID/GID eksportu. Pleazyng nie ponowi tego połączenia bez szyfrowania.',
 			'sourceSetup.sourceConnecting' => 'Łączenie ze źródłem',
 			'sourceSetup.metadataSearchPrivacy' => 'To wyszukiwanie tytułu trafia do Trakt. Wysyłany jest wpisany tytuł, a nie wideo ani dane uwierzytelniające źródła.',

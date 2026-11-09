@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$fa extends Translations$explore$detail$en {
 	@override String get watchOn => 'نگاهی به';
 	@override String get watchTrailer => 'تماشای تریلر';
 	@override String openOn({required Object site}) => 'باز شده در ${site}';
+	@override String get trailerUnavailable => 'باز کردن پیش‌نمایش در این دستگاه ممکن نشد';
+	@override String get linkUnavailable => 'باز کردن این پیوند در این دستگاه ممکن نشد';
 	@override String get crew => 'خدمه';
 	@override String get ratings => 'رتبه بندی';
 	@override String get schedule => 'برنامه زمانی';
@@ -7218,6 +7220,8 @@ extension on TranslationsFa {
 			'explore.detail.watchOn' => 'نگاهی به',
 			'explore.detail.watchTrailer' => 'تماشای تریلر',
 			'explore.detail.openOn' => ({required Object site}) => 'باز شده در ${site}',
+			'explore.detail.trailerUnavailable' => 'باز کردن پیش‌نمایش در این دستگاه ممکن نشد',
+			'explore.detail.linkUnavailable' => 'باز کردن این پیوند در این دستگاه ممکن نشد',
 			'explore.detail.crew' => 'خدمه',
 			'explore.detail.ratings' => 'رتبه بندی',
 			'explore.detail.schedule' => 'برنامه زمانی',
@@ -7435,10 +7439,10 @@ extension on TranslationsFa {
 			'watchTogether.copyCode' => 'کپی کد',
 			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
-			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
 			'watchTogether.openSessionControls' => 'Open Watch با هم کنترل جلسه',
 			'watchTogether.reconnecting' => 'دوباره اتصال...',
 			'watchTogether.reconnectingDescription' => 'اتصال قطع شده است شما به طور خودکار به اتاق می روید.',
@@ -7949,10 +7953,10 @@ extension on TranslationsFa {
 			'metadataEdit.imageUrl' => 'تصویر URL',
 			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
-			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
-			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
+			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
 			'metadataEdit.noArtworkAvailable' => 'هیچ هنری در دسترس نیست',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'گزینه هنری ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'گزینه هنری ${index} انتخاب شده',
@@ -8463,10 +8467,10 @@ extension on TranslationsFa {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '${count} بدون پشتیبانی یا ورود نامناسب به لیست پخش.', other: '${count} بدون پشتیبانی و یا ورود نامناسب به لیست پخش.', ), 
 			'universalMedia.playlistAddress' => 'آدرس Playlist',
 			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
-			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
-			'universalMedia.openPlaylist' => 'باز کردن playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
+			'universalMedia.openPlaylist' => 'باز کردن playlist',
 			'universalMedia.playlistFormatsHelp' => 'یک لیست پخش می تواند حاوی حداکثر 1000 آیتم و 2 مگابایت باشد.HLS به عنوان جریان ها باز می شود تا بازیکن بتواند کیفیت را انتخاب کند.',
 			'universalMedia.saveQueuePlaylist' => 'ذخیره صف به‌صورت فهرست پخش',
 			'universalMedia.queuePlaylistSaved' => 'فهرست پخش کنار فایل‌های رسانه ذخیره شد.',
@@ -8977,10 +8981,10 @@ extension on TranslationsFa {
 			'sourceSetup.optionalUsername' => 'نام کاربری حساب (اختیاری)',
 			'sourceSetup.optionalPassword' => 'گذرواژهٔ حساب (اختیاری)',
 			'sourceSetup.subtitlePrivacy' => 'کلید API را از opensubtitles.com بگیرید. جست‌وجو، عنوان ویدیو و شناسه‌های موجود IMDb/TMDB را ارسال می‌کند، اما هرگز فایل ویدیو را نمی‌فرستد. کلید و اطلاعات ورود اختیاری حساب، همراه این منبع به‌صورت رمزگذاری‌شده ذخیره می‌شوند.',
-			'sourceSetup.automaticMetadata' => 'دریافت خودکار فرادادهٔ آنلاین ویدیو',
-			'sourceSetup.metadataPrivacy' => 'فقط عنوان، سال و شمارهٔ قسمت از نام فایل یا شناسهٔ NFO ارسال می‌شود؛ رسانه و اطلاعات ورود هرگز ارسال نمی‌شوند. فیلدهای NFO همیشه اولویت دارند.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'دریافت خودکار فرادادهٔ آنلاین ویدیو',
+			'sourceSetup.metadataPrivacy' => 'فقط عنوان، سال و شمارهٔ قسمت از نام فایل یا شناسهٔ NFO ارسال می‌شود؛ رسانه و اطلاعات ورود هرگز ارسال نمی‌شوند. فیلدهای NFO همیشه اولویت دارند.',
 			'sourceSetup.nfsEncryptionFailure' => 'برای NFS رمزگذاری‌شده، پشتیبانی هر دو سرویس NAS از RFC 9289 و TLS 1.3، نام گواهی و UID/GID اشتراک را بررسی کنید. Pleazyng این اتصال را بدون رمزگذاری دوباره امتحان نمی‌کند.',
 			'sourceSetup.sourceConnecting' => 'در حال اتصال به منبع',
 			'sourceSetup.metadataSearchPrivacy' => 'این جست‌وجوی عنوان به Trakt فرستاده می‌شود. فقط عنوانی که وارد می‌کنید ارسال می‌شود، نه ویدیو یا اطلاعات ورود منبع.',

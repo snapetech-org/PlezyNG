@@ -121,6 +121,7 @@ import '../providers/shader_provider.dart';
 import '../providers/account_preferences_controller.dart';
 import '../utils/app_logger.dart';
 import '../utils/dialogs.dart';
+import '../utils/iphone_duo.dart';
 import '../utils/log_redaction_manager.dart';
 import '../utils/immersive_mode_guard.dart';
 import '../utils/live_tv_player_navigation.dart';
@@ -1138,6 +1139,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   VideoFilterManager? _videoFilterManager;
   bool _pipInitialized = false;
   String? _workspaceSessionId;
+  MultiviewWorkspaceController? _recoveryWorkspace;
   VideoPlayerSlot? _videoPlayerSlot;
   VideoPlayerLease? _videoPlayerLease;
   MultiviewWorkspaceController? _workspaceController;
@@ -1711,6 +1713,13 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // Fullscreen entered from here on is the player's to drop; whatever was
     // already fullscreen belongs to the app window (#1624).
     FullscreenStateManager().beginScope();
+
+    // iPhone Duo: horizontal status bar while playing, so the video and its
+    // controls get the full width instead of sharing it with the vertical bar.
+    // Claimed here rather than after startup: a replacement player (next
+    // episode) mounts before the one it replaces is disposed, so the two
+    // claims overlap and the bar never comes back in between.
+    IphoneDuo.instance.disableVerticalBarFor(this);
 
     _playerNavigationCoordinator = PlayerNavigationCoordinator(
       chromeController: _chromeController,
@@ -3010,6 +3019,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // Before the overlays are shown below: the re-show callback that follows
     // must find no owner, or it would hide them again.
     ImmersiveModeGuard.release(this);
+    IphoneDuo.instance.restoreVerticalBarFor(this);
     final existing = _systemUiRestoreOperation;
     if (existing != null) {
       return existing;
@@ -3042,6 +3052,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void dispose() {
+    _recoveryWorkspace?.unwatchRecovery(this);
+    _recoveryWorkspace = null;
     final retiringExternalSource = _activeExternalPlaybackSource;
     _activeExternalPlaybackSource = null;
     _pendingExternalPlaybackSource = null;
@@ -3215,6 +3227,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     // out; until then nobody owns it, and a stale owner would keep hiding
     // the bars on whatever screen comes next.
     ImmersiveModeGuard.release(this);
+    IphoneDuo.instance.restoreVerticalBarFor(this);
     if (!isReplacingWithVideo) {
       unawaited(_restoreSystemUiAndOrientation());
     }

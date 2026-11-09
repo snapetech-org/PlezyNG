@@ -2251,6 +2251,8 @@
       "watchOn": "نگاهی به",
       "watchTrailer": "تماشای تریلر",
       "openOn": "باز شده در ${site}",
+      "trailerUnavailable": "باز کردن پیش‌نمایش در این دستگاه ممکن نشد",
+      "linkUnavailable": "باز کردن این پیوند در این دستگاه ممکن نشد",
       "crew": "خدمه",
       "ratings": "رتبه بندی",
       "schedule": "برنامه زمانی",

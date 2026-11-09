@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$kk extends Translations$explore$detail$en {
 	@override String get watchOn => 'Мына жерде қарау:';
 	@override String get watchTrailer => 'Трейлерді қарау';
 	@override String openOn({required Object site}) => '${site} сайтында ашу';
+	@override String get trailerUnavailable => 'Бұл құрылғыда трейлер ашылмады';
+	@override String get linkUnavailable => 'Бұл құрылғыда сілтеме ашылмады';
 	@override String get crew => 'Ұжым';
 	@override String get ratings => 'Бағалаулар';
 	@override String get schedule => 'Кесте';
@@ -7218,6 +7220,8 @@ extension on TranslationsKk {
 			'explore.detail.watchOn' => 'Мына жерде қарау:',
 			'explore.detail.watchTrailer' => 'Трейлерді қарау',
 			'explore.detail.openOn' => ({required Object site}) => '${site} сайтында ашу',
+			'explore.detail.trailerUnavailable' => 'Бұл құрылғыда трейлер ашылмады',
+			'explore.detail.linkUnavailable' => 'Бұл құрылғыда сілтеме ашылмады',
 			'explore.detail.crew' => 'Ұжым',
 			'explore.detail.ratings' => 'Бағалаулар',
 			'explore.detail.schedule' => 'Кесте',
@@ -7435,10 +7439,10 @@ extension on TranslationsKk {
 			'watchTogether.copyCode' => 'Кодты көшіру',
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
-			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
 			'watchTogether.openSessionControls' => 'Басқару элементтерін ашу',
 			'watchTogether.reconnecting' => 'Қайта қосылуда...',
 			'watchTogether.reconnectingDescription' => 'Байланыс үзілді. Бөлмеге автоматты түрде қайта қосыласыз.',
@@ -7949,10 +7953,10 @@ extension on TranslationsKk {
 			'metadataEdit.imageUrl' => 'Сурет URL-і',
 			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
 			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
-			'metadataEdit.artworkUpdated' => 'Суреттер жаңартылды',
-			'metadataEdit.artworkUpdateFailed' => 'Суреттерді жаңарту мүмкін болмады',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Суреттер жаңартылды',
+			'metadataEdit.artworkUpdateFailed' => 'Суреттерді жаңарту мүмкін болмады',
 			'metadataEdit.noArtworkAvailable' => 'Сурет қолжетімсіз',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Сурет опциясы ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Сурет опциясы ${index}, таңдалды',
@@ -8463,10 +8467,10 @@ extension on TranslationsKk {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
 			'universalMedia.playlistAddress' => 'Жабдықтау адресы',
 			'universalMedia.playlistAddressHelp' => 'Қаланың тұрақты тұрғындарының саны 3 адамды құрайды, 1 адамды қағидасы, 2 адамды жабдықтар, 4 адамды салыстырды.',
-			'universalMedia.choosePlaylist' => 'Серіктің қағидалары',
-			'universalMedia.openPlaylist' => 'Ауыз Playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Серіктің қағидалары',
+			'universalMedia.openPlaylist' => 'Ауыз Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Өмірінің соңына дейін 1 тыс. нәрсе бар және 2 Мб. HLS-дер көшірмеген, оның ішінде жүктеуге ұсынады.',
 			'universalMedia.saveQueuePlaylist' => 'Кезекті ойнату тізімі ретінде сақтау',
 			'universalMedia.queuePlaylistSaved' => 'Ойнату тізімі медиа файлдарының жанына сақталды.',
@@ -8977,10 +8981,10 @@ extension on TranslationsKk {
 			'sourceSetup.optionalUsername' => 'Тіркелгінің пайдаланушы аты (міндетті емес)',
 			'sourceSetup.optionalPassword' => 'Тіркелгі құпиясөзі (міндетті емес)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com сайтынан API кілтін алыңыз. Іздеу бейне атауын және қолжетімді IMDb/TMDB ID мәндерін жібереді, бірақ бейнефайлды ешқашан жібермейді. Кілт пен қосымша тіркелгі деректері осы дереккөзбен бірге шифрланады.',
-			'sourceSetup.automaticMetadata' => 'Бейненің автоматты онлайн метадеректері',
-			'sourceSetup.metadataPrivacy' => 'Тек файл атауындағы атауды/жылды және эпизод нөмірлерін немесе NFO ID мәнін жібереді; медиа файлдар мен кіру деректерін ешқашан жібермейді. NFO өрістері басымдығын сақтайды.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Бейненің автоматты онлайн метадеректері',
+			'sourceSetup.metadataPrivacy' => 'Тек файл атауындағы атауды/жылды және эпизод нөмірлерін немесе NFO ID мәнін жібереді; медиа файлдар мен кіру деректерін ешқашан жібермейді. NFO өрістері басымдығын сақтайды.',
 			'sourceSetup.nfsEncryptionFailure' => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. Pleazyng бұл қосылымды шифрлаусыз қайта жасамайды.',
 			'sourceSetup.sourceConnecting' => 'Дереккөзге қосылуда',
 			'sourceSetup.metadataSearchPrivacy' => 'Бұл атау іздеуі Trakt қызметіне жіберіледі. Енгізген атауыңыз жіберіледі, бейне не дереккөздің кіру деректері жіберілмейді.',

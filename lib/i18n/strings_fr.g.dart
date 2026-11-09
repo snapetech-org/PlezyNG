@@ -5017,6 +5017,8 @@ class Translations$explore$detail$fr extends Translations$explore$detail$en {
 	@override String get watchOn => 'Regarder sur';
 	@override String get watchTrailer => 'Regarder la bande-annonce';
 	@override String openOn({required Object site}) => 'Ouvrir sur ${site}';
+	@override String get trailerUnavailable => 'Impossible d’ouvrir la bande-annonce sur cet appareil';
+	@override String get linkUnavailable => 'Impossible d’ouvrir ce lien sur cet appareil';
 	@override String get crew => 'Équipe';
 	@override String get ratings => 'Notes';
 	@override String get schedule => 'Programme';
@@ -7225,6 +7227,8 @@ extension on TranslationsFr {
 			'explore.detail.watchOn' => 'Regarder sur',
 			'explore.detail.watchTrailer' => 'Regarder la bande-annonce',
 			'explore.detail.openOn' => ({required Object site}) => 'Ouvrir sur ${site}',
+			'explore.detail.trailerUnavailable' => 'Impossible d’ouvrir la bande-annonce sur cet appareil',
+			'explore.detail.linkUnavailable' => 'Impossible d’ouvrir ce lien sur cet appareil',
 			'explore.detail.crew' => 'Équipe',
 			'explore.detail.ratings' => 'Notes',
 			'explore.detail.schedule' => 'Programme',
@@ -7442,10 +7446,10 @@ extension on TranslationsFr {
 			'watchTogether.copyCode' => 'Copier le code',
 			'watchTogether.codeCopied' => 'Code du salon copié',
 			'watchTogether.shareInvite' => 'Partager l’invitation',
-			'watchTogether.inviteCopied' => 'Invitation copiée. Collez-la dans un message.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Rejoignez mon salon Regarder ensemble dans Pleazyng : ouvrez « Regarder ensemble », choisissez « Rejoindre un salon » et saisissez ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Invitation copiée. Collez-la dans un message.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Rejoignez mon salon Regarder ensemble dans Pleazyng : ouvrez « Regarder ensemble », choisissez « Rejoindre un salon » et saisissez ${code}.',
 			'watchTogether.openSessionControls' => 'Ouvrir les commandes de la session Regarder ensemble',
 			'watchTogether.reconnecting' => 'Reconnexion...',
 			'watchTogether.reconnectingDescription' => 'La connexion a été interrompue. Vous rejoindrez le salon automatiquement.',
@@ -7956,10 +7960,10 @@ extension on TranslationsFr {
 			'metadataEdit.imageUrl' => 'URL de l\'image',
 			'metadataEdit.metadataUpdated' => 'Métadonnées mises à jour',
 			'metadataEdit.metadataUpdateFailed' => 'Échec de la mise à jour des métadonnées',
-			'metadataEdit.artworkUpdated' => 'Illustrations mises à jour',
-			'metadataEdit.artworkUpdateFailed' => 'Échec de la mise à jour des illustrations',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Illustrations mises à jour',
+			'metadataEdit.artworkUpdateFailed' => 'Échec de la mise à jour des illustrations',
 			'metadataEdit.noArtworkAvailable' => 'Aucune illustration disponible',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Option d\'illustration ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Option d\'illustration ${index}, sélectionnée',
@@ -8470,10 +8474,10 @@ extension on TranslationsFr {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', many: 'Skipped ${count} unsupported or unsafe playlist entries.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
 			'universalMedia.playlistAddress' => 'L’adresse de la playlist',
 			'universalMedia.playlistAddressHelp' => 'Ouvrez une liste de lecture M3U, M3u8 ou PLS à partir d\'une adresse Web. Les liens en streaming directs ne sauvent pas la liste de jeu.',
-			'universalMedia.choosePlaylist' => 'Choisissez le fichier playlist',
-			'universalMedia.openPlaylist' => 'Ouverture playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Choisissez le fichier playlist',
+			'universalMedia.openPlaylist' => 'Ouverture playlist',
 			'universalMedia.playlistFormatsHelp' => 'Une liste de lecture peut contenir jusqu\'à 1000 articles et 2 MB. HLS se manifeste comme des courants afin que le joueur puisse choisir une qualité.',
 			'universalMedia.saveQueuePlaylist' => 'Enregistrer la file d’attente comme liste de lecture',
 			'universalMedia.queuePlaylistSaved' => 'La liste de lecture a été enregistrée à côté des fichiers multimédias.',
@@ -8984,10 +8988,10 @@ extension on TranslationsFr {
 			'sourceSetup.optionalUsername' => 'Nom d’utilisateur du compte (facultatif)',
 			'sourceSetup.optionalPassword' => 'Mot de passe du compte (facultatif)',
 			'sourceSetup.subtitlePrivacy' => 'Obtenez une clé API sur opensubtitles.com. La recherche envoie le titre de la vidéo et les identifiants IMDb/TMDB disponibles, jamais le fichier vidéo. La clé et les identifiants facultatifs du compte sont chiffrés avec cette source.',
-			'sourceSetup.automaticMetadata' => 'Métadonnées vidéo automatiques en ligne',
-			'sourceSetup.metadataPrivacy' => 'Envoie uniquement le titre/l’année du nom de fichier et les numéros d’épisode, ou un identifiant NFO ; jamais les médias ni les identifiants de connexion. Les champs NFO restent prioritaires.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Métadonnées vidéo automatiques en ligne',
+			'sourceSetup.metadataPrivacy' => 'Envoie uniquement le titre/l’année du nom de fichier et les numéros d’épisode, ou un identifiant NFO ; jamais les médias ni les identifiants de connexion. Les champs NFO restent prioritaires.',
 			'sourceSetup.nfsEncryptionFailure' => 'Pour NFS chiffré, vérifiez la prise en charge de RFC 9289 et TLS 1.3 par les deux services du NAS, le nom du certificat et les UID/GID du partage. Pleazyng ne réessaiera pas cette connexion sans chiffrement.',
 			'sourceSetup.sourceConnecting' => 'Connexion à la source',
 			'sourceSetup.metadataSearchPrivacy' => 'Cette recherche de titre est envoyée à Trakt. Seul le titre saisi est transmis, pas la vidéo ni les identifiants de connexion de la source.',

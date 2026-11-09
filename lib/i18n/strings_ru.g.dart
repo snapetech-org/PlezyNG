@@ -5058,6 +5058,8 @@ class _Translations$explore$detail$ru extends Translations$explore$detail$en {
 	@override String get watchOn => 'Смотреть на';
 	@override String get watchTrailer => 'Смотреть трейлер';
 	@override String openOn({required Object site}) => 'Открыть на ${site}';
+	@override String get trailerUnavailable => 'Не удалось открыть трейлер на этом устройстве';
+	@override String get linkUnavailable => 'Не удалось открыть ссылку на этом устройстве';
 	@override String get crew => 'Съёмочная группа';
 	@override String get ratings => 'Рейтинги';
 	@override String get schedule => 'Расписание';
@@ -7268,6 +7270,8 @@ extension on TranslationsRu {
 			'explore.detail.watchOn' => 'Смотреть на',
 			'explore.detail.watchTrailer' => 'Смотреть трейлер',
 			'explore.detail.openOn' => ({required Object site}) => 'Открыть на ${site}',
+			'explore.detail.trailerUnavailable' => 'Не удалось открыть трейлер на этом устройстве',
+			'explore.detail.linkUnavailable' => 'Не удалось открыть ссылку на этом устройстве',
 			'explore.detail.crew' => 'Съёмочная группа',
 			'explore.detail.ratings' => 'Рейтинги',
 			'explore.detail.schedule' => 'Расписание',
@@ -7485,10 +7489,10 @@ extension on TranslationsRu {
 			'watchTogether.copyCode' => 'Скопировать код',
 			'watchTogether.codeCopied' => 'Код комнаты скопирован',
 			'watchTogether.shareInvite' => 'Поделиться приглашением',
-			'watchTogether.inviteCopied' => 'Приглашение скопировано. Вставьте его в сообщение.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Присоединяйтесь к совместному просмотру в Pleazyng: откройте «Смотреть вместе», выберите «Войти в комнату» и введите ${code}.',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'Приглашение скопировано. Вставьте его в сообщение.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Присоединяйтесь к совместному просмотру в Pleazyng: откройте «Смотреть вместе», выберите «Войти в комнату» и введите ${code}.',
 			'watchTogether.openSessionControls' => 'Открыть управление сессией «Смотреть вместе»',
 			'watchTogether.reconnecting' => 'Переподключение...',
 			'watchTogether.reconnectingDescription' => 'Соединение прервалось. Вы автоматически вернётесь в комнату.',
@@ -7999,10 +8003,10 @@ extension on TranslationsRu {
 			'metadataEdit.imageUrl' => 'URL изображения',
 			'metadataEdit.metadataUpdated' => 'Метаданные обновлены',
 			'metadataEdit.metadataUpdateFailed' => 'Не удалось обновить метаданные',
-			'metadataEdit.artworkUpdated' => 'Обложка обновлена',
-			'metadataEdit.artworkUpdateFailed' => 'Не удалось обновить обложку',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Обложка обновлена',
+			'metadataEdit.artworkUpdateFailed' => 'Не удалось обновить обложку',
 			'metadataEdit.noArtworkAvailable' => 'Обложки недоступны',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант обложки ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант обложки ${index}, выбран',
@@ -8513,10 +8517,10 @@ extension on TranslationsRu {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: 'Скинутый ${count} не поддерживаемый или безопасный вход списка игр.', few: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', many: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', other: 'Скачать ${count} не поддерживаемые или безопасные входы в списке игр.', ), 
 			'universalMedia.playlistAddress' => 'Адрес Playlist',
 			'universalMedia.playlistAddressHelp' => 'Откройте перечень M3U, М3U8 или PLS с веб-адреса. прямые ссылки потока не сохраняют перечень просмотров.',
-			'universalMedia.choosePlaylist' => 'Выберите файл playlist',
-			'universalMedia.openPlaylist' => 'Открытый playlist',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Выберите файл playlist',
+			'universalMedia.openPlaylist' => 'Открытый playlist',
 			'universalMedia.playlistFormatsHelp' => 'Список игр может содержать не более 1000 элементов и 2 Мб. HLS открывается как потоки, чтобы игрок мог выбрать качество.',
 			'universalMedia.saveQueuePlaylist' => 'Сохранить очередь как плейлист',
 			'universalMedia.queuePlaylistSaved' => 'Плейлист сохранён рядом с медиафайлами.',
@@ -9027,10 +9031,10 @@ extension on TranslationsRu {
 			'sourceSetup.optionalUsername' => 'Имя пользователя аккаунта (необязательно)',
 			'sourceSetup.optionalPassword' => 'Пароль аккаунта (необязательно)',
 			'sourceSetup.subtitlePrivacy' => 'Получите ключ API на opensubtitles.com. Поиск отправляет название видео и доступные ID IMDb/TMDB, но никогда не отправляет видеофайл. Ключ и необязательные учётные данные аккаунта шифруются вместе с этим источником.',
-			'sourceSetup.automaticMetadata' => 'Автоматические метаданные видео из интернета',
-			'sourceSetup.metadataPrivacy' => 'Отправляет только название/год из имени файла и номера эпизодов либо ID NFO, но никогда не отправляет медиафайлы или учётные данные. Поля NFO сохраняют приоритет.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'Автоматические метаданные видео из интернета',
+			'sourceSetup.metadataPrivacy' => 'Отправляет только название/год из имени файла и номера эпизодов либо ID NFO, но никогда не отправляет медиафайлы или учётные данные. Поля NFO сохраняют приоритет.',
 			'sourceSetup.nfsEncryptionFailure' => 'Для зашифрованного NFS проверьте поддержку RFC 9289 и TLS 1.3 обеими службами NAS, имя в сертификате и UID/GID экспорта. Pleazyng не будет повторять это подключение без шифрования.',
 			'sourceSetup.sourceConnecting' => 'Подключение к источнику',
 			'sourceSetup.metadataSearchPrivacy' => 'Этот поиск названия отправляется в Trakt. Передаётся введённое название, а не видео или учётные данные источника.',

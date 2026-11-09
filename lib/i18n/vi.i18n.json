@@ -2240,6 +2240,8 @@
       "watchOn": "Xem tại",
       "watchTrailer": "Xem trailer",
       "openOn": "Khởi mở tại ${site}",
+      "trailerUnavailable": "Không thể mở đoạn giới thiệu trên thiết bị này",
+      "linkUnavailable": "Không thể mở liên kết này trên thiết bị này",
       "crew": "phi hành đoàn",
       "ratings": "Đánh giá",
       "schedule": "Lên lịch",

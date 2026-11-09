@@ -5010,6 +5010,8 @@ class _Translations$explore$detail$hi extends Translations$explore$detail$en {
 	@override String get watchOn => 'देखें';
 	@override String get watchTrailer => 'ट्रेलर देखें';
 	@override String openOn({required Object site}) => 'पर खोला गया ${site}';
+	@override String get trailerUnavailable => 'इस डिवाइस पर ट्रेलर नहीं खुल सका';
+	@override String get linkUnavailable => 'इस डिवाइस पर यह लिंक नहीं खुल सका';
 	@override String get crew => 'चालक दल';
 	@override String get ratings => 'रेटिंग';
 	@override String get schedule => 'कार्यक्रम';
@@ -7218,6 +7220,8 @@ extension on TranslationsHi {
 			'explore.detail.watchOn' => 'देखें',
 			'explore.detail.watchTrailer' => 'ट्रेलर देखें',
 			'explore.detail.openOn' => ({required Object site}) => 'पर खोला गया ${site}',
+			'explore.detail.trailerUnavailable' => 'इस डिवाइस पर ट्रेलर नहीं खुल सका',
+			'explore.detail.linkUnavailable' => 'इस डिवाइस पर यह लिंक नहीं खुल सका',
 			'explore.detail.crew' => 'चालक दल',
 			'explore.detail.ratings' => 'रेटिंग',
 			'explore.detail.schedule' => 'कार्यक्रम',
@@ -7435,10 +7439,10 @@ extension on TranslationsHi {
 			'watchTogether.copyCode' => 'कॉपी कोड',
 			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
-			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
-			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng में मेरे घड़ी एक साथ कमरे में शामिल हों: घड़ी एक साथ खोलें, शामिल कमरे का चयन करें और ${code} में प्रवेश करें।',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
+			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng में मेरे घड़ी एक साथ कमरे में शामिल हों: घड़ी एक साथ खोलें, शामिल कमरे का चयन करें और ${code} में प्रवेश करें।',
 			'watchTogether.openSessionControls' => 'Open Watch एक साथ सत्र नियंत्रण',
 			'watchTogether.reconnecting' => 'फिर से कनेक्ट...',
 			'watchTogether.reconnectingDescription' => 'कनेक्शन बंद हो गया. आप स्वचालित रूप से कमरे में प्रवेश करते हैं.',
@@ -7949,10 +7953,10 @@ extension on TranslationsHi {
 			'metadataEdit.imageUrl' => 'इमेज URL',
 			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			'metadataEdit.metadataUpdateFailed' => 'मेटाडेटा अपडेट करने में असफल',
-			'metadataEdit.artworkUpdated' => 'Artwork अद्यतन',
-			'metadataEdit.artworkUpdateFailed' => 'कला के काम को अपडेट करने में विफलता',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkUpdated' => 'Artwork अद्यतन',
+			'metadataEdit.artworkUpdateFailed' => 'कला के काम को अपडेट करने में विफलता',
 			'metadataEdit.noArtworkAvailable' => 'कोई कला उपलब्ध नहीं है',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}, चुना गया',
@@ -8463,10 +8467,10 @@ extension on TranslationsHi {
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '${count} अपरिवर्तित या असुरक्षित प्लेलिस्ट इनपुट से बाहर निकल गया।', other: '${count} अपरिवर्तित या असुरक्षित प्लेलिस्ट इनपुट को छोड़ दिया।', ), 
 			'universalMedia.playlistAddress' => 'प्लेलिस्ट पता',
 			'universalMedia.playlistAddressHelp' => 'एक वेब पते से M3U, M3u8, या PLS प्लेलिस्ट खोलें. सीधे स्ट्रीम लिंक प्ले लिस्ट को नहीं बचाते हैं.',
-			'universalMedia.choosePlaylist' => 'Playlist फ़ाइल का चयन करें',
-			'universalMedia.openPlaylist' => 'खुली प्लेलिस्ट',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.choosePlaylist' => 'Playlist फ़ाइल का चयन करें',
+			'universalMedia.openPlaylist' => 'खुली प्लेलिस्ट',
 			'universalMedia.playlistFormatsHelp' => 'एक प्लेलिस्ट में अधिकतम 1,000 आइटम और 2 एमबी शामिल हो सकते हैं. एचएलएस प्रवाह के रूप में खुलता है ताकि खिलाड़ी गुणवत्ता का चयन कर सके.',
 			'universalMedia.saveQueuePlaylist' => 'कतार को प्लेलिस्ट के रूप में सहेजें',
 			'universalMedia.queuePlaylistSaved' => 'प्लेलिस्ट मीडिया फ़ाइलों के पास सहेजी गई।',
@@ -8977,10 +8981,10 @@ extension on TranslationsHi {
 			'sourceSetup.optionalUsername' => 'खाते का उपयोगकर्ता नाम (वैकल्पिक)',
 			'sourceSetup.optionalPassword' => 'खाते का पासवर्ड (वैकल्पिक)',
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com से API कुंजी लें। खोज में वीडियो का शीर्षक और उपलब्ध IMDb/TMDB ID भेजे जाते हैं, वीडियो फ़ाइल कभी नहीं भेजी जाती। कुंजी और वैकल्पिक खाते के क्रेडेंशियल इस स्रोत के साथ एन्क्रिप्ट करके सहेजे जाते हैं।',
-			'sourceSetup.automaticMetadata' => 'ऑनलाइन वीडियो मेटाडेटा अपने-आप पाएँ',
-			'sourceSetup.metadataPrivacy' => 'केवल फ़ाइलनाम से शीर्षक, वर्ष और एपिसोड नंबर या NFO ID भेजा जाता है; मीडिया या क्रेडेंशियल कभी नहीं भेजे जाते। NFO फ़ील्ड को हमेशा प्राथमिकता मिलती है।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.automaticMetadata' => 'ऑनलाइन वीडियो मेटाडेटा अपने-आप पाएँ',
+			'sourceSetup.metadataPrivacy' => 'केवल फ़ाइलनाम से शीर्षक, वर्ष और एपिसोड नंबर या NFO ID भेजा जाता है; मीडिया या क्रेडेंशियल कभी नहीं भेजे जाते। NFO फ़ील्ड को हमेशा प्राथमिकता मिलती है।',
 			'sourceSetup.nfsEncryptionFailure' => 'एन्क्रिप्टेड NFS के लिए NAS की दोनों सेवाओं में RFC 9289 और TLS 1.3 का समर्थन, प्रमाणपत्र का नाम तथा एक्सपोर्ट UID/GID जाँचें। Pleazyng बिना एन्क्रिप्शन के इस कनेक्शन की फिर कोशिश नहीं करेगा।',
 			'sourceSetup.sourceConnecting' => 'स्रोत से कनेक्ट हो रहा है',
 			'sourceSetup.metadataSearchPrivacy' => 'यह शीर्षक खोज Trakt को भेजी जाती है। इसमें केवल आपके दर्ज किए शीर्षक को भेजा जाता है, वीडियो या स्रोत के क्रेडेंशियल को नहीं।',

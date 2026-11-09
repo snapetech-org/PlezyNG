@@ -2251,6 +2251,8 @@
       "watchOn": "देखें",
       "watchTrailer": "ट्रेलर देखें",
       "openOn": "पर खोला गया ${site}",
+      "trailerUnavailable": "इस डिवाइस पर ट्रेलर नहीं खुल सका",
+      "linkUnavailable": "इस डिवाइस पर यह लिंक नहीं खुल सका",
       "crew": "चालक दल",
       "ratings": "रेटिंग",
       "schedule": "कार्यक्रम",

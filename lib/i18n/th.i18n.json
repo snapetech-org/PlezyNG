@@ -2240,6 +2240,8 @@
       "watchOn": "ดูเพิ่มเติม",
       "watchTrailer": "ดู trailer",
       "openOn": "เปิดที่ ${site}",
+      "trailerUnavailable": "ไม่สามารถเปิดตัวอย่างบนอุปกรณ์นี้ได้",
+      "linkUnavailable": "ไม่สามารถเปิดลิงก์นี้บนอุปกรณ์นี้ได้",
       "crew": "พันธมิตร",
       "ratings": "คะแนน",
       "schedule": "ตั้งเวลา",

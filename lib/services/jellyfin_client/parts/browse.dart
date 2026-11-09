@@ -124,7 +124,7 @@ String _searchItemTypesFor(MediaKind libraryKind) => switch (libraryKind) {
   MediaKind.show => 'Series,Episode',
   // Home video and music video libraries.
   MediaKind.clip => 'Video,MusicVideo',
-  _ => 'Movie,Series,Episode,MusicAlbum,Audio',
+  _ => 'Movie,Series,Episode,MusicAlbum,Audio,Book,AudioBook',
 };
 
 /// Title types a person's filmography lists. People search checks each

@@ -3440,6 +3440,32 @@ void main() {
       expect(auth, contains('Device="Apple%20TV"'));
     });
 
+    for (final emby in [false, true]) {
+      test('${emby ? 'Emby' : 'Jellyfin'} ebook library All browse includes server books', () async {
+        final client = JellyfinClient.forTesting(
+          connection: emby ? testEmbyConnection() : _conn(),
+          httpClient: MockClient((request) async {
+            final types = request.url.queryParameters['IncludeItemTypes']?.split(',') ?? [];
+            final visible = types.contains('Book');
+            return jsonResponse({
+              'Items': [
+                if (visible) {'Id': 'book-1', 'Type': 'Book', 'Name': 'An ebook'},
+              ],
+              'TotalRecordCount': visible ? 1 : 0,
+            });
+          }),
+        );
+        addTearDown(client.close);
+        final page = await client.fetchLibraryPagedContent(
+          'ebooks',
+          query: const LibraryQuery(),
+          libraryKind: MediaKind.unknown,
+        );
+        expect(page.items.map((item) => item.id), ['book-1']);
+        expect(page.totalCount, 1);
+      });
+    }
+
     test('fetchLibraryPagedContent sends a bounded paged Items request', () async {
       Uri? captured;
       final scoped = JellyfinClient.forTesting(

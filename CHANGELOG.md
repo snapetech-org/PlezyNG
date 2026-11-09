@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Include Book and AudioBook items in Jellyfin/Emby All browsing and library searches, fixing ebook libraries that appeared empty until switching to Folders ([#266](https://github.com/snapetech-org/pleazyng/issues/266)).
+
 - Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.
 
 - Publish a responsive website feature comparison and link it from About and the repository. Use neutral capability names, concise comparison cells and linked evidence; preserve the current logo.

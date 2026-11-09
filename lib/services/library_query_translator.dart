@@ -279,7 +279,9 @@ class JellyfinLibraryQueryTranslator implements LibraryQueryTranslator {
       MediaKind.playlist => 'Playlist',
       MediaKind.clip => 'Video,MusicVideo',
       MediaKind.photo => 'Photo',
-      _ => 'Movie,Series,Episode,Audio',
+      // Book libraries have no dedicated neutral MediaKind yet. Do not
+      // filter their leaf DTOs out of All browsing (#266).
+      _ => 'Movie,Series,Episode,Audio,Book,AudioBook',
     };
   }
 

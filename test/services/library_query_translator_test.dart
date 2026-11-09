@@ -190,7 +190,7 @@ void main() {
 
     test('null kind falls back to multi-type include', () {
       final params = translator.toQueryParameters(const LibraryQuery());
-      expect(params['IncludeItemTypes'], 'Movie,Series,Episode,Audio');
+      expect(params['IncludeItemTypes'], 'Movie,Series,Episode,Audio,Book,AudioBook');
     });
 
     test('genre clause values join with the pipe separator Jellyfin ORs', () {

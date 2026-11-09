@@ -1,0 +1,26 @@
+name: Localization candidate review data
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/collect_localization_review.py', '.github/workflows/localization-review.yml']
+  workflow_run:
+    workflows: [Localization completion candidates]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  collect:
+    if: github.repository == 'snapetech-org/pleazyng'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Verify source and expose completed candidate data for review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/collect_localization_review.py

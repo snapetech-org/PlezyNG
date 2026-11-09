@@ -37,6 +37,15 @@ RUN ./seed.sh
 
 FROM ${JELLYFIN_IMAGE}
 
+# Refresh the runtime packages without regenerating the deterministic media seed.
+# The runner changes this cache key daily; manual builds can supply it explicitly.
+ARG SECURITY_PACKAGE_REFRESH=manual
+USER root
+RUN test -n "${SECURITY_PACKAGE_REFRESH}" \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes \
+    && rm -rf /var/lib/apt/lists/*
+
 LABEL org.opencontainers.image.title="Plezy Jellyfin demo server" \
       org.opencontainers.image.description="Ready-to-run Jellyfin server with Plezy's deterministic codec demo catalog" \
       org.opencontainers.image.source="https://github.com/edde746/plezy"

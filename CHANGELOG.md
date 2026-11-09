@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Restore interrupted source audio, books and readers from the media-session tray using current profile authorization and the exact saved edition. Keep source URLs out of workspace snapshots, preserve background audio checkpoints, and prevent delayed resume requests from replacing a newer player.
+- Repair the TV containment workflow after its integration script was renamed.
+- Prepare the Flutter 3.47.8 security engine while retaining the Windows presentation fixes independently adapted from [@edde746's upstream patch series](https://github.com/edde746/flutter-plezy/commit/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2). Build validation and release SDK migration are pending; see [source credit](UPSTREAM_ATTRIBUTION.md).
+
 - Remove aerynOS release-channel recipes, generator output and installation documentation under the owner’s channel decision.
 
 - More reliable iOS speed-change qualification: test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage. Independently adapted from [upstream 48926474](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).

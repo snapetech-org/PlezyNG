@@ -63,7 +63,19 @@ def main():
                       GIT_CONFIG_VALUE_0='Pleazyng engine builder',
                       GIT_CONFIG_KEY_1='user.email',
                       GIT_CONFIG_VALUE_1='engine-build@users.noreply.github.com')
-    os.environ['PATH'] = str(depot) + os.pathsep + os.environ['PATH']
+    # Pinned depot_tools is deliberately not self-updated. Its Windows Git
+    # cache invokes git.bat, which the hosted runner's Git installation does
+    # not provide. Supply a workspace-local shim to that verified executable.
+    system_git = shutil.which('git.exe')
+    if not system_git:
+        raise RuntimeError('Windows Git executable is unavailable')
+    shim = root / 'windows-tools'
+    shim.mkdir()
+    (shim / 'git.bat').write_text(
+        '@echo off\n"' + system_git + '" %*\nexit /b %errorlevel%\n',
+        encoding='utf-8')
+    os.environ['PATH'] = os.pathsep.join([str(depot), str(shim), os.environ['PATH']])
+    run('cmd.exe', '/d', '/c', str(shim / 'git.bat'), '--version')
     destination = source / 'versions' / VERSION
     shutil.copytree(source / 'versions' / '3.47.1', destination)
     # Only Windows patches are applied. The upstream Apple port remains intact.

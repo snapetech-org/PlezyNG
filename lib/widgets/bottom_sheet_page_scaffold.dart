@@ -76,7 +76,7 @@ class BottomSheetPageScaffold extends StatelessWidget {
     // the whole sheet via the overlay host.
     final back = onBack;
     if (back != null) {
-      content = BackKeyOwner(onBack: back, child: content);
+      content = BackKeyOwner(onBack: back, autofocus: true, child: content);
     }
 
     return content;

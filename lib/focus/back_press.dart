@@ -162,21 +162,26 @@ class SystemBackHandler extends StatelessWidget {
   );
 }
 
-/// A non-focusable [Focus] that consumes Back for its subtree with its own
+/// A Back owner that stays out of traversal and consumes Back with its own
 /// [BackPressGate], for owners that are not already a `State` holding a gate:
 /// a sheet sub-page returning to its parent, a screen region whose Back moves
-/// focus rather than popping the route.
+/// focus rather than popping the route. [autofocus] gives sheet subpages a
+/// local scope; other owners remain non-focusable.
 ///
 /// A route's own back policy does not belong here — put it in `PopScope`, where
 /// [NavigatorBackHandler] delivers key back and the platform delivers system
 /// back.
 class BackKeyOwner extends StatefulWidget {
-  const BackKeyOwner({super.key, required this.onBack, this.phase, required this.child});
+  const BackKeyOwner({super.key, required this.onBack, this.phase, this.autofocus = false, required this.child});
 
   final VoidCallback onBack;
 
   /// Overrides [backPhaseFor] for this owner.
   final BackPhase? phase;
+
+  /// Sheet subpages can focus the owner itself on pointer entry, keeping Back
+  /// inside the page without focusing an editable field or actionable row.
+  final bool autofocus;
 
   final Widget child;
 
@@ -195,14 +200,23 @@ class _BackKeyOwnerState extends State<BackKeyOwner> {
   Widget build(BuildContext context) {
     return SystemBackHandler(
       onBack: widget.onBack,
-      child: Focus(
-        canRequestFocus: false,
-        skipTraversal: true,
-        includeSemantics: false,
-        debugLabel: 'BackKeyOwner',
-        onKeyEvent: _handleKeyEvent,
-        child: widget.child,
-      ),
+      child: widget.autofocus
+          ? FocusScope(
+              autofocus: true,
+              skipTraversal: true,
+              includeSemantics: false,
+              debugLabel: 'BackKeyOwner',
+              onKeyEvent: _handleKeyEvent,
+              child: widget.child,
+            )
+          : Focus(
+              canRequestFocus: false,
+              skipTraversal: true,
+              includeSemantics: false,
+              debugLabel: 'BackKeyOwner',
+              onKeyEvent: _handleKeyEvent,
+              child: widget.child,
+            ),
     );
   }
 }

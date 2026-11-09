@@ -548,6 +548,11 @@ void main() {
       await tester.pump();
       await tester.binding.handlePopRoute();
       await step(tester);
+      // Back returns from the value picker to the parent editor. A separate
+      // press dismisses that editor and commits its staged filter selection.
+      expect(findDisplayText(t.libraries.filters), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await step(tester);
     }
 
     String describe(List<LibraryFilter> filters) =>

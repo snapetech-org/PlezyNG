@@ -14,6 +14,12 @@ independent nested `PopScope` handlers for sheet subpages: Flutter can notify
 every vetoing scope on one Back. The sheet host handles pushed pages and closes
 only after the internal page owner declines. Focus must land inside even
 pointer-opened pages so neither key nor native Back skips the inner owner.
+Use an autofocus Back-owner **scope**, leaving controls unfocused until the
+viewer navigates or taps. Do not focus the first descendant on pointer entry:
+it can open text inputs, mutate a resizing sheet during layout, and override
+the filter editor's intended entry row. A scope also lets that row acquire
+autofocus when the viewer starts a D-pad session. Filter selections stay staged
+when Back returns to the parent editor and commit when the editor is dismissed.
 Covered routes cannot consume Back through stale focus.
 
 The native webOS runner claims `_WEBOS_ACCESS_POLICY_KEYS_BACK` before Dart
@@ -27,7 +33,8 @@ serialized so a delayed home acknowledgement cannot enable exit over playback.
 
 Regression coverage lives in `back_press_test.dart`,
 `navigator_back_handler_test.dart`, `video_settings_sheet_test.dart`,
-`video_controls_test.dart`, `main_screen_layout_test.dart`, and the two TV
+`video_controls_test.dart`, `main_screen_layout_test.dart`, the component
+geometry/library-filter/hub-detail tests, and the two TV
 navigation-service tests. The settings tests exercise both native Back and
 remote key presses against the actual sheet. The release's
 `tools/webos/check_audio_plugin_syntax.sh` also compiles the runner against the

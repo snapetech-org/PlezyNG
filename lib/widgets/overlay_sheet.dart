@@ -498,13 +498,14 @@ class _OverlaySheetHostState extends State<OverlaySheetHost> with SingleTickerPr
   }
 
   void _autoFocus({bool clearSelectSuppression = true}) {
+    final focusDescendant = InputModeTracker.isKeyboardMode(context, listen: false);
     // First post-frame: the FocusScope is now built and the node is attached.
-    // Then focus inside the page even when a pointer opened it: focusing only
-    // the outer scope bypasses the submenu's Back owner. InputModeTracker
-    // still suppresses the focus ring for pointer users.
+    // Pointer entry keeps focus off controls/text fields. Subpages can focus
+    // their Back owner without opening an IME or activating a filter editor.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_isOpen) return;
       _sheetFocusScopeNode.requestFocus();
+      if (!focusDescendant) return;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_isOpen) return;
         // If the current top entry has an initialFocusNode that is attached,

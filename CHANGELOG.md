@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve pointer entry and text-field focus while giving submenu Back handlers their own focus scope; retain staged filter edits until their parent editor closes.
+
 - Keep native TV exit disabled while a dialog or another focus scope covers the home sidebar, including dialogs above the profile navigator.
 
 - Unwind remote and system Back through playback submenus, options and paused controls before leaving the player; reserve native TV exit for the home landing page.

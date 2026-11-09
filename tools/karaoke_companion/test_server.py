@@ -3,10 +3,13 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+import socket
+import ssl
+import threading
 import unittest
 from unittest.mock import patch
 
-from server import Jobs
+from server import Handler, Jobs, Server
 
 
 class JobsTest(unittest.TestCase):
@@ -78,6 +81,29 @@ class JobsTest(unittest.TestCase):
         self.assertEqual("canceled", self.jobs.states["request_0001"]["status"])
         self.jobs.remove("request_0001")
         self.assertFalse((self.jobs.assets / self.asset).exists())
+
+
+class TransportTest(unittest.TestCase):
+    def test_idle_tls_peer_does_not_block_accept_and_times_out(self):
+        fixtures = Path(__file__).resolve().parents[2] / "test/fixtures/steam_relay"
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(fixtures / "cert.pem", fixtures / "key.pem")
+        server = Server(("127.0.0.1", 0), Handler, tls_context=context, handshake_timeout=0.5)
+        server.token = "fixture-only-token-with-at-least-32-bytes"
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        idle = socket.create_connection(server.server_address, timeout=2)
+        try:
+            client = ssl.create_default_context(cafile=str(fixtures / "cert.pem"))
+            with client.wrap_socket(socket.create_connection(server.server_address, timeout=2), server_hostname="localhost") as active:
+                active.sendall(b"GET /v1/capabilities HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+                self.assertIn(b"401", active.recv(1024))
+            self.assertEqual(b"", idle.recv(1))
+        finally:
+            idle.close()
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
 
 
 if __name__ == "__main__":

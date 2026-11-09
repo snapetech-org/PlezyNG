@@ -3,11 +3,11 @@ import 'package:plezy/profiles/profile.dart';
 
 void main() {
   group('Profile', () {
-    test('local PIN hash is round-tripped via configJson', () {
+    test('local PIN hash is round-tripped via configJson', () async {
       final p = Profile.local(
         id: 'local-1',
         displayName: 'Kids',
-        pinHash: computePinHash('1234'),
+        pinHash: await computePinHash('1234'),
         createdAt: DateTime(2026, 1, 1),
       );
       final json = p.toConfigJson();
@@ -102,18 +102,24 @@ void main() {
   });
 
   group('PIN hashing', () {
-    test('computePinHash is deterministic for the same input', () {
-      expect(computePinHash('1234'), computePinHash('1234'));
+    test('independent salts protect identical PINs and both verify', () async {
+      final first = await computePinHash('1234');
+      final second = await computePinHash('1234');
+      expect(first, isNot(second));
+      expect(await verifyPin('1234', first), isTrue);
+      expect(await verifyPin('1234', second), isTrue);
+      expect(await verifyPin('1111', first), isFalse);
     });
 
-    test('computePinHash differs for different inputs', () {
-      expect(computePinHash('1234'), isNot(computePinHash('5678')));
+    test('legacy hash remains readable for migration', () async {
+      expect(await verifyPin('1234', 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe'), isTrue);
+      expect(await verifyPin('1111', 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe'), isFalse);
     });
 
-    test('verifyPin matches its hash', () {
-      final h = computePinHash('4242');
-      expect(verifyPin('4242', h), isTrue);
-      expect(verifyPin('1111', h), isFalse);
+    test('malformed parameters cannot request unbounded KDF work', () async {
+      expect(await verifyPin('1234', 'pbkdf2-sha256:999999999:x:y'), isFalse);
+      expect(await verifyPin('1234', 'pbkdf2-sha256:210000:!:!'), isFalse);
+      expect(await verifyPin('unbounded input', 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe'), isFalse);
     });
   });
 }

@@ -54,10 +54,18 @@ class SigningOptionsTests(unittest.TestCase):
                         self.assertEqual(fields["include_apple_store_build"], "true")
                         self.assertEqual(fields["prepare_homebrew_cask"], "true")
 
-    def test_recovery_rejects_fresh_homebrew_qualification(self):
-        with self.assertRaises(release.ReleaseError):
-            release.ensure_release("v3.0.1", "a" * 40, include_webos_release=True,
-                                   reuse_platform_run_id=42, prepare_homebrew_cask=True)
+    def test_recovery_requires_existing_homebrew_qualification(self):
+        # Recovery may reuse an already qualified cask, but must request that
+        # proof. Do not accidentally pass because an unrelated gh call fails.
+        with patch.object(release, "verify_platform_recovery", side_effect=release.ReleaseError("missing cask proof")) as verify, \
+                patch.object(release, "matching_run") as matching, \
+                patch.object(release, "dispatch") as dispatch:
+            with self.assertRaisesRegex(release.ReleaseError, "missing cask proof"):
+                release.ensure_release("v3.0.1", "a" * 40, include_webos_release=True,
+                                       reuse_platform_run_id=42, prepare_homebrew_cask=True)
+            verify.assert_called_once_with(42, "a" * 40, "3.0.1", require_homebrew_cask=True)
+            matching.assert_not_called()
+            dispatch.assert_not_called()
 
     def test_requested_assets_required_without_legacy_apple_secrets(self):
         # Platform matrix is checked separately. Capture the required-set error

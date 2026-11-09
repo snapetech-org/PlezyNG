@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:cryptography/cryptography.dart' as cryptography;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/plex/plex_home_user.dart';
@@ -192,18 +194,49 @@ enum ProfileKind {
   };
 }
 
-/// Salted SHA-256 of the PIN. The salt is fixed (per-app) — this is a
-/// social-barrier hash, not real authentication. The threat model is
-/// "kid bypassing parent's profile", not "adversary with device access".
-const _pinSalt = 'plezy-app-profile-pin-v1';
+/// Versioned, per-PIN salted verifier. A short PIN remains a local parental
+/// control, not a substitute for device encryption or an account password.
+const _pinIterations = 210000;
+const _pinPrefix = 'pbkdf2-sha256';
 
-String computePinHash(String rawPin) {
-  final digest = sha256.convert(utf8.encode('$_pinSalt:$rawPin'));
-  return digest.toString();
+bool isLegacyPinHash(String hash) => RegExp(r'^[0-9a-f]{64}$').hasMatch(hash);
+
+Future<String> computePinHash(String rawPin) async {
+  if (!RegExp(r'^\d{4}$').hasMatch(rawPin)) throw ArgumentError('PIN must contain four digits');
+  final random = Random.secure();
+  final salt = List<int>.generate(16, (_) => random.nextInt(256));
+  final key = await cryptography.Pbkdf2(
+    macAlgorithm: cryptography.Hmac.sha256(), iterations: _pinIterations, bits: 256,
+  ).deriveKeyFromPassword(password: rawPin, nonce: salt);
+  return '$_pinPrefix:$_pinIterations:${base64Encode(salt)}:${base64Encode(await key.extractBytes())}';
 }
 
-bool verifyPin(String rawPin, String hash) {
-  return computePinHash(rawPin) == hash;
+bool _samePinBytes(List<int> a, List<int> b) {
+  if (a.length != b.length) return false;
+  var difference = 0;
+  for (var i = 0; i < a.length; i++) { difference |= a[i] ^ b[i]; }
+  return difference == 0;
+}
+
+Future<bool> verifyPin(String rawPin, String hash) async {
+  if (!RegExp(r'^\d{4}$').hasMatch(rawPin)) return false;
+  if (isLegacyPinHash(hash)) {
+    final digest = sha256.convert(utf8.encode('plezy-app-profile-pin-v1:$rawPin')).toString();
+    return _samePinBytes(utf8.encode(digest), utf8.encode(hash));
+  }
+  try {
+    final parts = hash.split(':');
+    if (parts.length != 4 || parts[0] != _pinPrefix || parts[1] != '$_pinIterations') return false;
+    final salt = base64Decode(parts[2]);
+    final expected = base64Decode(parts[3]);
+    if (salt.length != 16 || expected.length != 32) return false;
+    final key = await cryptography.Pbkdf2(
+      macAlgorithm: cryptography.Hmac.sha256(), iterations: _pinIterations, bits: 256,
+    ).deriveKeyFromPassword(password: rawPin, nonce: salt);
+    return _samePinBytes(await key.extractBytes(), expected);
+  } on FormatException {
+    return false;
+  }
 }
 
 /// Deterministic id for a Plex Home profile so re-discovery is idempotent.

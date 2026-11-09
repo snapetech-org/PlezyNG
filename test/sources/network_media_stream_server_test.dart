@@ -61,7 +61,7 @@ void main() {
       markTestSkipped('FFmpeg does not include the H.264/AAC encoders');
     }
 
-    final server = NetworkMediaStreamServer(lifetime: const Duration(minutes: 1));
+    final server = NetworkMediaStreamServer(allowInsecureHttp: true, lifetime: const Duration(minutes: 1));
     final client = HttpClient();
     addTearDown(() async {
       client.close(force: true);

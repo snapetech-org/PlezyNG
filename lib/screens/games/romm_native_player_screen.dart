@@ -169,7 +169,7 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       }
       await _runtime.start(widget.core, copy.path, firmware.path, directory.path);
       if (!mounted || !live || _closing) {
-        await _runtime.shutdown();
+        await _runtime.shutdown().timeout(const Duration(seconds: 20));
         return;
       }
       if (widget.resume && (widget.stateId != null || widget.saveId != null)) {
@@ -755,8 +755,14 @@ class _RommNativePlayerScreenState extends State<RommNativePlayerScreen> with Wi
       if (save && _ready) {
         await _save(state: true, allowSramFallback: true);
       }
-      await _runtime.shutdown().timeout(const Duration(seconds: 20));
-      await _removeSession();
+      try {
+        await _runtime.shutdown().timeout(const Duration(seconds: 20));
+        await _removeSession();
+      } on TimeoutException {
+        // Native FFI cannot be interrupted safely by killing a Dart isolate.
+        // Leave the lease/files owned until acknowledgement; dispose attaches
+        // cleanup to actual shutdown. The user can still leave this screen.
+      }
       unawaited(_recordPlay());
       if (mounted && live) {
         setState(() => _canPop = true);

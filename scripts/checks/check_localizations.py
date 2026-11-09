@@ -196,6 +196,12 @@ def check(directory=I18N):
         f'english_fallbacks.json: {key} is no longer using the English fallback'
         for key in sorted(fallback_keys - fallback_usage.keys())
     )
+    budget_path = directory / 'english_fallback_budget.json'
+    if budget_path.exists():
+        budget = json.loads(budget_path.read_text())
+        total = sum(locale.get('englishFallbacks', 0) for locale in report.values())
+        if len(fallback_keys) > budget['maximumKeys'] or total > budget['maximumEntries']:
+            errors.append('English fallback debt exceeds the reviewed budget; translate messages before adding fallbacks')
     return errors, base, report
 
 

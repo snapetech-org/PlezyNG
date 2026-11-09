@@ -214,7 +214,7 @@ void main() {
     final protected = Profile.local(
       id: 'protected',
       displayName: 'Protected',
-      pinHash: computePinHash('1234'),
+      pinHash: 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe',
       createdAt: DateTime(2026, 1, 3),
     );
     final attempt = switchProfileFromUi(harness.context, protected);
@@ -363,7 +363,7 @@ void main() {
     final protectedTarget = Profile.local(
       id: harness.target.id,
       displayName: 'Protected Target',
-      pinHash: computePinHash('1234'),
+      pinHash: 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe',
       createdAt: harness.target.createdAt,
     );
 
@@ -541,7 +541,7 @@ void main() {
     final protectedNewer = Profile.local(
       id: 'protected-newer',
       displayName: 'Protected Newer',
-      pinHash: computePinHash('1234'),
+      pinHash: 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe',
       createdAt: DateTime(2026, 1, 4),
     );
 

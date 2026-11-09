@@ -59,7 +59,8 @@ class KaraokeRoomServer extends ChangeNotifier {
             (p[0] == 169 && p[1] == 254));
   }
 
-  Future<void> start(String address, {SecurityContext? security}) async {
+  Future<void> start(String address, {SecurityContext? security, bool allowInsecureHttp = false}) async {
+    if (security == null && !allowInsecureHttp) throw StateError('HTTP room hosting requires explicit consent');
     await session.ready;
     if (!{...await addresses(), '127.0.0.1'}.contains(address)) {
       throw ArgumentError('Choose a local IPv4 address');

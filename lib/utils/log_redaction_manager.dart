@@ -1,6 +1,41 @@
 import 'url_utils.dart';
 
 class LogRedactionManager {
+  static final RegExp _sensitiveKey = RegExp(
+    r'^(authorization|proxy-authorization|cookie|set-cookie|x-auth-token|x-plex-token|x-emby-token|x-api-key|api[-_]?key|auth[-_]?token|access[-_]?token|refresh[-_]?token|id[-_]?token|client[-_]?secret|password|passwd|secret|pin|token)$',
+    caseSensitive: false,
+  );
+
+  /// Copy a diagnostic JSON tree without leaving nested credentials behind.
+  /// Bound traversal and reject unknown objects rather than invoking toString.
+  static Object? redactStructured(Object? value) {
+    final ancestors = Set<Object>.identity();
+    var remaining = 10000;
+    Object? visit(Object? item, int depth) {
+      if (--remaining < 0 || depth > 20) return '[TRUNCATED]';
+      if (item == null || item is num || item is bool) return item;
+      if (item is String) return item.length > 65536 ? '[TRUNCATED]' : redact(item);
+      if (!ancestors.add(item)) return '[CYCLE]';
+      try {
+        if (item is Map) {
+          final result = <String, dynamic>{};
+          for (final entry in item.entries.take(1000)) {
+            final key = entry.key;
+            if (key is! String) continue;
+            final safeKey = key.length > 1024 ? '[TRUNCATED]' : redact(key);
+            result[safeKey] = _sensitiveKey.hasMatch(key) ? '[REDACTED]' : visit(entry.value, depth + 1);
+          }
+          return result;
+        }
+        if (item is Iterable) return item.take(1000).map((child) => visit(child, depth + 1)).toList();
+        return '[REDACTED_OBJECT]';
+      } finally {
+        ancestors.remove(item);
+      }
+    }
+    return visit(value, 0);
+  }
+
   // Size limits for bounded sets (FIFO eviction when exceeded)
   static const int _maxTokens = 50;
   // Each server registers up to 8 literals (slash/origin/mpv-escaped

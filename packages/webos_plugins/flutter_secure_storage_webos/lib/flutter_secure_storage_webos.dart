@@ -45,7 +45,7 @@ class FlutterSecureStorageWebos extends FlutterSecureStoragePlatform {
     if (value.isEmpty) throw PlatformException(code: 'Invalid argument', message: 'No value provided.');
     await _run(() async {
       final old = _store.rawValue(key);
-      final staged = await _client.createSecret(value);
+      final staged = await _client.createSecret(value, context: key);
       try {
         await _store.setRaw(key, staged);
       } on StorageWriteException catch (error) {

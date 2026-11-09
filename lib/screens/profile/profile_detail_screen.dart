@@ -124,7 +124,9 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with Controll
     final profile = _profile;
     if (profile is! LocalProfile) return;
     final hadPin = profile.pinHash != null;
-    final updated = profile.copyWith(pinHash: computePinHash(pin));
+    final hash = await computePinHash(pin);
+    if (!mounted) return;
+    final updated = profile.copyWith(pinHash: hash);
     await context.read<ProfileRegistry>().upsert(updated);
     if (!mounted) return;
     setState(() => _profile = updated);

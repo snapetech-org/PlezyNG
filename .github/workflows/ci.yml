@@ -114,7 +114,7 @@ jobs:
           sudo python3 scripts/configure_hosted_apt.py '${{ runner.environment }}'
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang build-essential cmake
-          flutter pub get
+          flutter pub get --enforce-lockfile
 
       - name: Prefetch checksum-pinned host native libraries
         env:
@@ -207,7 +207,7 @@ jobs:
       - name: Install dependencies
         run: |
           flutter clean
-          flutter pub get
+          flutter pub get --enforce-lockfile
 
       - name: Prefetch checksum-pinned host native libraries
         env:
@@ -390,7 +390,7 @@ jobs:
         run: python3 scripts/prepare_gradle_repositories.py
 
       - name: Install dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Configure Android local properties
         run: printf 'flutter.sdk=%s\nsdk.dir=%s\n' "$FLUTTER_ROOT" "$ANDROID_HOME" > android/local.properties
@@ -1241,7 +1241,7 @@ jobs:
       - name: Verify dependencies
         run: |
           flutter clean
-          flutter pub get
+          flutter pub get --enforce-lockfile
           flutter pub outdated
 
   server:

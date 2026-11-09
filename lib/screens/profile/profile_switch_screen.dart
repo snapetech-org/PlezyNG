@@ -286,7 +286,7 @@ class _ProfileSwitchScreenState extends State<ProfileSwitchScreen> with MountedS
       if (!mounted) return false;
       final pin = await showPinEntryDialog(context, profile.displayName, errorMessage: errorMessage);
       if (!mounted || pin == null) return false;
-      if (verifyProfilePin(profile, pin)) return true;
+      if (await verifyProfilePin(profile, pin)) return mounted;
       errorMessage = t.profiles.incorrectPinTryAgain;
     }
   }

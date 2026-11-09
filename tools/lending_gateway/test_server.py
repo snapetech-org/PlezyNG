@@ -1,6 +1,8 @@
 import unittest
+import socket
+import threading
 from urllib.parse import parse_qs, urlsplit
-from server import Gateway, InvalidRequest, pkce
+from server import Gateway, InvalidRequest, pkce, Server, handler
 
 
 class GatewayTest(unittest.TestCase):
@@ -23,6 +25,38 @@ class GatewayTest(unittest.TestCase):
         query = parse_qs(urlsplit(result['authorizeUrl']).query)
         callback = urlsplit(query['redirect_url'][0]).path.split('/')
         return result['id'], callback[-1], query
+
+    def test_slow_headers_time_out_before_routing(self):
+        server = Server(('127.0.0.1', 0), handler(self.gateway))
+        server.header_timeout = 0.1
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            with socket.create_connection(server.server_address, timeout=2) as peer:
+                peer.sendall(b'GET /v1/libraries HTTP/1.1\r\n')
+                self.assertEqual(peer.recv(1), b'')
+            # The timed-out worker releases its slot for the next caller.
+            self.assertTrue(server.slots.acquire(timeout=1))
+            server.slots.release()
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
+
+    def test_worker_slots_reject_excess_connections(self):
+        server = Server(('127.0.0.1', 0), handler(self.gateway))
+        for _ in range(16):
+            self.assertTrue(server.slots.acquire(blocking=False))
+        class Peer:
+            closed = False
+            def close(self): self.closed = True
+        peer = Peer()
+        try:
+            server.process_request(peer, ('127.0.0.1', 1))
+            self.assertTrue(peer.closed)
+        finally:
+            for _ in range(16): server.slots.release()
+            server.server_close()
 
     def test_hosted_login_never_exposes_developer_secret(self):
         identifier, secret, query = self.start()

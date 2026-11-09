@@ -53,7 +53,9 @@ class _AddLocalProfileScreenState extends State<AddLocalProfileScreen> with Cont
       onMismatch: (ctx) => showErrorSnackBar(ctx, t.profiles.pinsDontMatch),
     );
     if (pin == null || !mounted) return;
-    setState(() => _pinHash = computePinHash(pin));
+    final hash = await computePinHash(pin);
+    if (!mounted) return;
+    setState(() => _pinHash = hash);
   }
 
   void _clearPin() => setState(() => _pinHash = null);

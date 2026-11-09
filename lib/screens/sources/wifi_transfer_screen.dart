@@ -15,6 +15,7 @@ import '../../i18n/strings.g.dart';
 import '../../sources/source_controller.dart';
 import '../../sources/source_models.dart';
 import '../../utils/formatters.dart';
+import '../../utils/local_server_security.dart';
 import '../../utils/platform_detector.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
@@ -37,6 +38,7 @@ class _WifiTransferScreenState extends State<WifiTransferScreen> with WidgetsBin
   static const _maxSessionBytes = 10 * 1024 * 1024 * 1024;
   static const _maxFiles = 100;
   HttpServer? _server;
+  LocalServerSecurity? _transport;
   Directory? _temporaryDirectory;
   Timer? _expiryTimer;
   Timer? _ticker;
@@ -122,6 +124,10 @@ class _WifiTransferScreenState extends State<WifiTransferScreen> with WidgetsBin
             if (_isPrivateClient(address)) address.address,
       }.toList()..sort();
       if (addresses.isEmpty) throw const SourceException(SourceFailure.unavailable);
+      if (!mounted) return;
+      final transport = await chooseLocalServerSecurity(context, host: addresses.first);
+      if (transport == null || !mounted || !_sameSession(sources)) return;
+      _transport = transport;
 
       final secureRandom = Random.secure();
       final tokenBytes = List<int>.generate(32, (_) => secureRandom.nextInt(256));
@@ -129,7 +135,9 @@ class _WifiTransferScreenState extends State<WifiTransferScreen> with WidgetsBin
       final temp = await Directory.systemTemp.createTemp('plezy-wifi-');
       final HttpServer server;
       try {
-        server = await HttpServer.bind(InternetAddress.anyIPv4, 0, shared: false);
+        server = transport.context == null
+            ? await HttpServer.bind(InternetAddress.anyIPv4, 0, shared: false)
+            : await HttpServer.bindSecure(InternetAddress.anyIPv4, 0, transport.context!, shared: false);
       } on Object {
         await temp.delete(recursive: true);
         rethrow;
@@ -256,7 +264,7 @@ class _WifiTransferScreenState extends State<WifiTransferScreen> with WidgetsBin
     final originText = request.headers.value('origin');
     final host = request.headers.value(HttpHeaders.hostHeader);
     final origin = Uri.tryParse(originText ?? '');
-    if (origin == null || host == null || origin.origin != 'http://$host') {
+    if (origin == null || host == null || origin.origin != '${_transport?.scheme}://$host') {
       response.statusCode = HttpStatus.forbidden;
       await response.close();
       return;
@@ -446,7 +454,7 @@ class _WifiTransferScreenState extends State<WifiTransferScreen> with WidgetsBin
   );
 
   String _transferAddress(String address) =>
-      Uri(scheme: 'http', host: address, port: _server!.port, pathSegments: [_token!]).toString();
+      Uri(scheme: _transport!.scheme, host: address, port: _server!.port, pathSegments: [_token!]).toString();
 
   Future<String> _renderUploadPage() async {
     String escapeHtml(String value) => value

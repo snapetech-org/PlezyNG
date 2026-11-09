@@ -53,6 +53,20 @@ class ProfileRegistry {
     appLogger.d('ProfileRegistry: upserted ${profile.kind.id}/${profile.id}');
   }
 
+  /// Upgrade a verified legacy PIN without overwriting concurrent profile edits.
+  Future<void> upgradePinHash(String id, String expected, String replacement) async {
+    await _db.runIdentityMutation(() async {
+      final row = await (_db.select(_db.profiles)..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (row == null || row.kind != ProfileKind.local.id) throw StateError('Profile is unavailable');
+      final config = jsonDecode(row.configJson) as Map<String, dynamic>;
+      if (config['pinHash'] != expected) throw StateError('Profile PIN changed during verification');
+      config['pinHash'] = replacement;
+      final changed = await (_db.update(_db.profiles)..where((t) => t.id.equals(id) & t.configJson.equals(row.configJson)))
+          .write(ProfilesCompanion(configJson: Value(jsonEncode(config))));
+      if (changed != 1) throw StateError('Profile changed during PIN upgrade');
+    });
+  }
+
   /// Rename only the editable field; preserve concurrently changed PIN/config.
   Future<void> rename(String id, String displayName, {void Function()? checkCurrent}) async {
     final name = displayName.trim();

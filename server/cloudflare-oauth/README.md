@@ -36,13 +36,14 @@ update or new callback registration is required for this infrastructure split.
 
 There is **no D1 binding, no D1 query, no KV namespace, no per-request database
 logging, and no storage write for a pending poll**. The SQLite-backed Durable
-Objects store one session record and one small daily admission record. These
+Objects store one session record and one small rolling admission record. These
 are separately metered Durable Objects storage/compute, not an unlimited service.
 
 The defaults deliberately bound admission:
 
-- 100 newly admitted edge sign-in sessions per UTC day, shared by both providers.
-- Ten admitted sessions per hashed client IP/UTC day, including cancelled/failed
+- A shared burst of ten new sign-ins, replenishing one slot every 15 minutes.
+  Exhaustion recovers continuously instead of blocking all users until midnight.
+- Ten admitted sessions per hashed client IP/rolling hour, including cancelled/failed
   attempts. Shared NAT users share this limit; rejected starts do not write state.
 - A Workers rate-limit binding permits three start attempts per client/minute
   per Cloudflare location; the admission object also enforces three successful
@@ -58,13 +59,13 @@ The defaults deliberately bound admission:
   the bounded write points. Expect a handful of state operations per login,
   rather than writes for every HTTP request. Alarm operations are also metered.
 
-At 100 sessions occupying their entire ten-minute lifetime, session execution
-alone is approximately 7,680 GB-s at the documented 128 MiB object allocation.
+At the maximum 106 sessions in a 24-hour interval, each occupying their entire ten-minute lifetime, session execution
+alone is approximately 8,140.8 GB-s at the documented 128 MiB object allocation.
 This is an estimate, not an account-wide guarantee: admission object execution,
 retries, attacks, other Workers and Durable Objects share account allowances.
 Review aggregate requests, duration, rows written and storage in Cloudflare.
 The free plan fails when its limits are exceeded; this deployment does not
-upgrade the account or enable paid overages. Raising the daily cap requires a
+upgrade the account or enable paid overages. Raising the rolling allowance requires a
 new reviewed source change and a fresh cost estimate.
 
 [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/)
@@ -133,7 +134,7 @@ python3 server/cloudflare-oauth/runtime.test.py --output-dir /task-owned/oauth-r
 The tests exercise actual request handlers with instrumented storage: PKCE,
 read-only pending polls, a single outstanding poll, single-use delivery,
 callback replay/concurrency and cold reload, denial/failure sanitization, expiry,
-body limits, daily/IP admission and unchanged Trakt/Steam/legacy pass-through.
+body limits, rolling/IP admission and unchanged Trakt/Steam/legacy pass-through.
 
 Use Wrangler 4.158.0 for a local workerd/SQLite smoke test. Use task-owned state
 and output directories, test-only credentials, and a loopback `PUBLIC_ORIGIN`.

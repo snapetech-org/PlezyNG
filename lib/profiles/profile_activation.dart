@@ -14,6 +14,7 @@ import 'active_profile_binder.dart';
 import 'active_profile_provider.dart';
 import 'plex_home_switch.dart';
 import 'profile.dart';
+import 'pin_attempt_guard.dart';
 import 'profile_connection_registry.dart';
 
 /// How a UI-driven activation attempt ended. `cancelled` (user backed out
@@ -75,7 +76,8 @@ Future<_ProfileActivationResult> _activateProfileWithPin(BuildContext context, P
       return const _ProfileActivationResult(ProfileActivationOutcome.cancelled);
     }
     final hash = profile.pinHash;
-    if (hash != null && verifyPin(pin, hash)) {
+    if (hash != null && await verifyProfilePin(profile, pin)) {
+      if (!context.mounted) return const _ProfileActivationResult(ProfileActivationOutcome.cancelled);
       return _activateVerifiedProfile(context, profile, pin: pin);
     }
     errorMessage = t.profiles.incorrectPinTryAgain;
@@ -303,12 +305,7 @@ Future<PlexHomeSwitchStatus> _preVerifyPlexHomePin(BuildContext context, Profile
 /// Plex Home profiles can't be verified locally — their PIN lives on Plex's
 /// servers. Callers should fall through to a real `/home/users/.../switch`
 /// call instead.
-bool verifyProfilePin(Profile profile, String pin) {
-  if (!profile.isLocal) return false;
-  final hash = profile.pinHash;
-  if (hash == null || hash.isEmpty) return true;
-  return verifyPin(pin, hash);
-}
+Future<bool> verifyProfilePin(Profile profile, String pin) => verifyLocalProfilePin(profile, pin);
 
 /// Re-check the active local profile's PIN before exposing sensitive actions
 /// such as Settings or deleting offline media. Plex Home PINs remain owned by
@@ -322,7 +319,9 @@ Future<bool> requestActiveProfileActionPin(BuildContext context) async {
     final pin = await showPinEntryDialog(context, active.displayName, errorMessage: errorMessage);
     if (!context.mounted || pin == null) return false;
     if (context.read<ActiveProfileProvider>().activeId != active.id) return false;
-    if (verifyProfilePin(active, pin)) return true;
+    final valid = await verifyProfilePin(active, pin);
+    if (!context.mounted || context.read<ActiveProfileProvider>().activeId != active.id) return false;
+    if (valid) return true;
     errorMessage = t.profiles.incorrectPinTryAgain;
   }
   return false;

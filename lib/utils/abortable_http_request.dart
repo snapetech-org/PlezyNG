@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'bounded_http_response.dart';
+
 Future<http.Response> sendAbortableHttpRequest(
   http.Client client,
   String method,
@@ -14,6 +16,7 @@ Future<http.Response> sendAbortableHttpRequest(
   Future<void>? abortTrigger,
   String? operation,
   bool followRedirects = true,
+  int maxResponseBytes = defaultHttpResponseLimit,
 }) {
   // Deliberately not `AbortController`: that type lives with the media-server
   // client and throws `MediaServerHttpException`, which the tracker/Seerr
@@ -24,7 +27,7 @@ Future<http.Response> sendAbortableHttpRequest(
   }
 
   if (abortTrigger != null) {
-    unawaited(abortTrigger.whenComplete(abortRequest));
+    unawaited(abortTrigger.then((_) => abortRequest(), onError: (Object _) => abortRequest()));
   }
 
   final request = http.AbortableRequest(method, uri, abortTrigger: abort.future)..followRedirects = followRedirects;
@@ -32,7 +35,13 @@ Future<http.Response> sendAbortableHttpRequest(
   if (encoding != null) request.encoding = encoding;
   if (body != null) _setBody(request, body);
 
-  final future = client.send(request).then(http.Response.fromStream);
+  final future = client.send(request).then((response) async {
+    if (abort.isCompleted) {
+      await response.stream.listen(null).cancel();
+      throw http.RequestAbortedException(uri);
+    }
+    return readBoundedHttpResponse(response, maxBytes: maxResponseBytes);
+  });
   if (timeout == null) return future.whenComplete(abortRequest);
 
   return future

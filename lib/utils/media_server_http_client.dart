@@ -187,7 +187,7 @@ class MediaServerHttpClient {
       timeout: timeout,
       abort: abort,
       consume: (streamed, scope) async {
-        final bytes = await scope.receive(_readBody(streamed, scope.uri, maxBytes: maxBytes));
+        final bytes = await scope.receive(_readBody(streamed, scope.uri, maxBytes: maxBytes ?? 16 * 1024 * 1024));
         scope.logResponse(streamed.statusCode);
         return bytes;
       },
@@ -200,9 +200,10 @@ class MediaServerHttpClient {
   /// force back-to-back old-generation GCs on low-end TV boxes. A declared
   /// length is filled in place; without one (a body decompressed on the fly),
   /// or once the body outgrows it, the chunks are copied once at the end.
-  static Future<Uint8List> _readBody(http.StreamedResponse response, Uri uri, {int? maxBytes}) async {
+  static Future<Uint8List> _readBody(http.StreamedResponse response, Uri uri, {int maxBytes = 16 * 1024 * 1024}) async {
+    if (maxBytes < 0) throw RangeError.value(maxBytes, 'maxBytes');
     final declared = response.contentLength;
-    if (maxBytes != null && declared != null && declared > maxBytes) {
+    if (declared != null && declared > maxBytes) {
       // Cancelling the unread body closes its connection; an unread body would
       // instead hold the socket (and the managed client's drain) open.
       await response.stream.listen(null).cancel();
@@ -215,7 +216,7 @@ class MediaServerHttpClient {
     await for (final chunk in response.stream) {
       received += chunk.length;
       // Leaving the loop cancels the body, which closes the connection.
-      if (maxBytes != null && received > maxBytes) throw _bodyTooLarge(response.statusCode, uri, maxBytes);
+      if (received > maxBytes) throw _bodyTooLarge(response.statusCode, uri, maxBytes);
       if (sized != null) {
         if (length + chunk.length <= sized.length) {
           sized.setRange(length, length + chunk.length, chunk);
@@ -268,7 +269,7 @@ class MediaServerHttpClient {
       },
       consume: (streamed, scope) async {
         if (streamed.statusCode < 200 || streamed.statusCode >= 300) {
-          await streamed.stream.drain<void>();
+          await scope.receive(streamed.stream.listen(null).cancel());
           throw MediaServerHttpException(
             type: MediaServerHttpErrorType.unknown,
             statusCode: streamed.statusCode,
@@ -331,7 +332,7 @@ class MediaServerHttpClient {
           _ => scope.uri,
         };
 
-        final bytes = await scope.receive(streamed.stream.toBytes());
+        final bytes = await scope.receive(_readBody(streamed, scope.uri));
         scope.logResponse(streamed.statusCode);
 
         dynamic data;
@@ -379,7 +380,12 @@ class MediaServerHttpClient {
       throw MediaServerHttpException(type: MediaServerHttpErrorType.cancelled, message: 'HTTP client is closing');
     }
 
-    final uri = _resolveUri(url, queryParameters);
+    final Uri uri;
+    try {
+      uri = _resolveUri(url, queryParameters);
+    } on UnsafeRedirectException catch (error) {
+      throw MediaServerHttpException.from(error);
+    }
     final operation = label ?? method;
 
     final requestAbort = AbortController();
@@ -470,8 +476,18 @@ class MediaServerHttpClient {
 
   /// Resolve a request target: absolute URLs keep their own host and query,
   /// relative paths go through [baseUrl].
-  Uri _resolveUri(String url, Map<String, dynamic>? queryParameters) =>
-      _isAbsoluteUrl(url) ? _appendQuery(Uri.parse(url), queryParameters) : _buildUri(url, queryParameters);
+  Uri _resolveUri(String url, Map<String, dynamic>? queryParameters) {
+    if (!_isAbsoluteUrl(url)) return _buildUri(url, queryParameters);
+    final target = Uri.parse(url);
+    if (target.userInfo.isNotEmpty) throw const UnsafeRedirectException('URL credentials rejected');
+    if (baseUrl.isNotEmpty && defaultHeaders.isNotEmpty) {
+      final owner = Uri.parse(baseUrl);
+      if (target.scheme != owner.scheme || target.host != owner.host || target.port != owner.port) {
+        throw const UnsafeRedirectException('Authenticated request outside the server origin rejected');
+      }
+    }
+    return _appendQuery(target, queryParameters);
+  }
 
   Uri _appendQuery(Uri uri, Map<String, dynamic>? queryParameters) {
     if (queryParameters == null || queryParameters.isEmpty) return uri;

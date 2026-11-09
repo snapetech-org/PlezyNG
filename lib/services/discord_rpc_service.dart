@@ -391,6 +391,7 @@ class DiscordRPCService {
         imageUrl,
         headers: client.streamHeaders,
         timeout: const Duration(seconds: 10),
+        maxBytes: _maxPosterUploadBytes,
       );
       if (imageBytes.isEmpty) {
         return null;

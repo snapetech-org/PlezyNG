@@ -40,6 +40,21 @@ void main() {
     'X-Custom-Secret': 'dummy-private',
   };
 
+  for (final target in ['https://foreign.test/file', 'https://media.test:9443/file', 'http://media.test/file', 'https://user:pass@media.test/file']) {
+    test('absolute metadata URL cannot carry server credentials to $target', () async {
+      var calls = 0;
+      final client = MediaServerHttpClient(
+        baseUrl: 'https://media.test', defaultHeaders: secrets,
+        client: MockClient((_) async { calls++; return http.Response('ok', 200); }),
+      );
+      addTearDown(client.close);
+      await expectLater(client.get(target), throwsA(isA<MediaServerHttpException>()));
+      expect(calls, 0);
+      await client.get('https://media.test/allowed');
+      expect(calls, 1);
+    });
+  }
+
   for (final status in [301, 302, 303, 307, 308]) {
     test('$status preserves authentication on a same-origin GET and records final URI', () async {
       var calls = 0;

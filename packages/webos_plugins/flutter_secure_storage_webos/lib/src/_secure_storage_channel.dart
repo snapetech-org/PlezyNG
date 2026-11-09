@@ -55,7 +55,7 @@ class SecureStorageChannel {
   Future<void> _flush(Map<String, String> next) async {
     final String staged;
     try {
-      staged = await _client.createSecret(jsonEncode(next.keys.toList(growable: false)));
+      staged = await _client.createSecret(jsonEncode(next.keys.toList(growable: false)), context: dbRowKey);
     } catch (error) {
       throw StorageWriteException(error, mayHaveCommitted: false);
     }

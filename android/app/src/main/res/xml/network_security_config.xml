@@ -43,6 +43,7 @@
         <domain includeSubdomains="true">simkl.com</domain>
         <!-- data.simkl.in (lib/services/trackers/simkl/simkl_constants.dart:22). -->
         <domain includeSubdomains="true">simkl.in</domain>
+        <domain includeSubdomains="true">mdblist.com</domain>
         <!-- cdn.jsdelivr.net: anime-list mappings (anime_lists_mapping_store.dart:37,
              fribb_mapping_store.dart:49). -->
         <domain includeSubdomains="true">jsdelivr.net</domain>

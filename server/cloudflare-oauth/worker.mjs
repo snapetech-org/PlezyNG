@@ -1,7 +1,12 @@
 // OAuth sessions only. No D1/KV namespace and no request/token logging.
 const TTL_MS = 600_000;
-const DAILY_SESSIONS = 100;
-const DAILY_CLIENT_SESSIONS = 10;
+// Bound paid state creation without a UTC-day availability cliff. A fully
+// exhausted bucket admits again in at most 15 minutes, not the next day.
+// At most 106 starts in any 24-hour interval: 10 burst + 96 replenishments.
+const ADMISSION_BURST = 10;
+const ADMISSION_REFILL_MS = 900_000;
+const CLIENT_WINDOW_MS = 3_600_000;
+const CLIENT_SESSIONS = 10;
 const POLL_MS = 50_000;
 const EDGE = new Set(['mal', 'anilist']);
 const encoder = new TextEncoder();
@@ -82,7 +87,7 @@ export default {
     if (url.origin !== base(env)) return empty(404);
     try {
       if (url.pathname === '/auth/edge-health') return request.method === 'GET'
-        ? json({ ok: true, runtime: 'cloudflare', d1: false, providers: { mal: configured(env, 'mal'), anilist: configured(env, 'anilist') }, dailySessionLimit: DAILY_SESSIONS }) : empty(405);
+        ? json({ ok: true, runtime: 'cloudflare', d1: false, providers: { mal: configured(env, 'mal'), anilist: configured(env, 'anilist') }, admissionBurst: ADMISSION_BURST, admissionRefillSeconds: ADMISSION_REFILL_MS / 1000 }) : empty(405);
       if (url.pathname === '/auth/start' && request.method === 'POST') {
         let body;
         try { body = JSON.parse(await limitedText(request.clone(), 512)); } catch (error) {
@@ -105,7 +110,7 @@ export default {
         if (!env.START_LIMIT || !(await env.START_LIMIT.limit({ key: client })).success) {
           return json({ error: 'login_rate_limited' }, 429, { 'Retry-After': '60' });
         }
-        const admission = await env.ADMISSION.get(env.ADMISSION.idFromName(day)).fetch(internal('admit', { client }));
+        const admission = await env.ADMISSION.get(env.ADMISSION.idFromName('rolling-v2')).fetch(internal('admit', { client }));
         if (!admission.ok) return admission;
         const id = random(); const expires = Date.now() + TTL_MS;
         const browser = await capability(env, 'browser', id, expires);
@@ -146,21 +151,33 @@ export default {
 export class OAuthAdmission {
   constructor(ctx) {
     this.ctx = ctx;
-    ctx.blockConcurrencyWhile(async () => { this.data = await ctx.storage.get('budget') || { count: 0, clients: {} }; });
+    ctx.blockConcurrencyWhile(async () => { this.data = await ctx.storage.get('budget') || { tokens: ADMISSION_BURST, updated: Date.now(), clients: {} }; });
   }
   async fetch(request) {
     const { client } = await request.json(); const now = Date.now();
-    const previous = this.data.clients[client] || { since: now, count: 0, total: 0 };
-    const total = previous.total || 0;
-    const entry = now - previous.since >= 60_000 ? { since: now, count: 0, total } : previous;
-    if (this.data.count >= DAILY_SESSIONS || total >= DAILY_CLIENT_SESSIONS || entry.count >= 3) return json({ error: 'login_rate_limited' }, 429, { 'Retry-After': this.data.count >= DAILY_SESSIONS || total >= DAILY_CLIENT_SESSIONS ? '3600' : '60' });
-    this.data.count++; entry.count++; entry.total = total + 1; this.data.clients[client] = entry;
+    if (typeof client !== 'string' || client.length > 128 || !client) return empty(400);
+    const tokens = Math.min(ADMISSION_BURST, this.data.tokens + Math.max(0, now - this.data.updated) / ADMISSION_REFILL_MS);
+    const previous = this.data.clients[client] || [];
+    const active = previous.filter(time => time > now - CLIENT_WINDOW_MS);
+    const recent = active.filter(time => time > now - 60_000);
+    const wait = Math.max(tokens < 1 ? (1 - tokens) * ADMISSION_REFILL_MS : 0,
+      recent.length >= 3 ? recent[0] + 60_000 - now : 0,
+      active.length >= CLIENT_SESSIONS ? active[0] + CLIENT_WINDOW_MS - now : 0);
+    if (wait > 0) return json({ error: 'login_rate_limited' }, 429, { 'Retry-After': String(Math.max(1, Math.ceil(wait / 1000))) });
+    this.data.tokens = tokens - 1; this.data.updated = Math.max(now, this.data.updated);
+    this.data.clients = Object.fromEntries(Object.entries(this.data.clients).filter(([, times]) => times.at(-1) > now - CLIENT_WINDOW_MS));
+    this.data.clients[client] = [...active, now];
     await this.ctx.storage.put('budget', this.data);
-    // One cleanup alarm per day-object, not per request or poll.
-    if (this.data.count === 1) await this.ctx.storage.setAlarm(now + 2 * 86_400_000);
+    // No deletion alarm: deleting a rolling budget would reset its allowance.
+    // Client history is pruned at admission and bounded by the global budget.
     return empty(204);
   }
-  async alarm() { await this.ctx.storage.deleteAll(); }
+  async alarm() {
+    // Legacy day-named objects still have expiry alarms after an upgrade.
+    // Only the new rolling object must retain its budget across idle periods.
+    if (!Number.isFinite(this.data.tokens)) await this.ctx.storage.deleteAll();
+    await this.ctx.storage.deleteAlarm();
+  }
 }
 
 export class OAuthSession {

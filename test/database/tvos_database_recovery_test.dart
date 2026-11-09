@@ -39,7 +39,7 @@ JellyfinConnection _connection(String id) => JellyfinConnection(
 Profile _profile(String id) => Profile.local(
   id: id,
   displayName: 'Profile $id',
-  pinHash: computePinHash('1234'),
+  pinHash: 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe',
   createdAt: DateTime.fromMillisecondsSinceEpoch(2000),
 );
 

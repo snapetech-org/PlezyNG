@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import '../../utils/local_server_security.dart';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -403,8 +405,13 @@ class _MediaToolsScreenState extends State<MediaToolsScreen> with WidgetsBinding
         _failure = null;
         _success = null;
       });
+      final transport = await chooseLocalServerSecurity(context);
+      if (transport == null || !mounted || !_appInForeground) return;
+      _requireSession(generation: generation, profile: profile);
       late final NetworkMediaStreamServer server;
       server = NetworkMediaStreamServer(
+        security: transport.context,
+        allowInsecureHttp: transport.context == null,
         onProgress: (_) {},
         onFailure: (_) {
           if (mounted) {
@@ -799,7 +806,7 @@ class _MediaToolsScreenState extends State<MediaToolsScreen> with WidgetsBinding
           const SizedBox(height: 8),
           Text(t.universalMedia.shareQrHelp, textAlign: TextAlign.center),
           const SizedBox(height: 8),
-          Text(t.universalMedia.shareHttpHint, style: Theme.of(context).textTheme.bodySmall),
+          if (_streamServer?.isSecure != true) Text(t.universalMedia.shareHttpHint, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 12),
           Text(t.universalMedia.shareOpenUrl, style: Theme.of(context).textTheme.titleMedium),
           for (final url in urls)

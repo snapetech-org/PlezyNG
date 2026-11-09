@@ -46,12 +46,21 @@ class NetworkMediaStreamPolicy {
 class NetworkMediaStreamServer {
   NetworkMediaStreamServer({
     this.lifetime = const Duration(minutes: 60),
+    this.maximumLifetime = const Duration(hours: 24),
+    this.completionGrace = const Duration(minutes: 5),
+    this.security,
+    this.allowInsecureHttp = false,
     this.onProgress,
     this.onFailure,
     this.onEnded,
   });
 
+  final SecurityContext? security;
+  final bool allowInsecureHttp;
+  bool get isSecure => security != null;
   final Duration lifetime;
+  final Duration maximumLifetime;
+  final Duration completionGrace;
   final MediaStreamValueChanged<String>? onProgress;
   final MediaStreamValueChanged<int>? onFailure;
   final void Function()? onEnded;
@@ -61,6 +70,8 @@ class NetworkMediaStreamServer {
   Directory? _directory;
   Timer? _expiryTimer;
   DateTime? _expiresAt;
+  DateTime? _hardExpiresAt;
+  bool _encodingFinished = false;
   String? _token;
   List<String> _addresses = const [];
   bool _stopping = false;
@@ -76,11 +87,12 @@ class NetworkMediaStreamServer {
     if (server == null || token == null) return const [];
     return [
       for (final address in _addresses)
-        Uri(scheme: 'http', host: address, port: server.port, pathSegments: [token, 'index.m3u8']).toString(),
+        Uri(scheme: isSecure ? 'https' : 'http', host: address, port: server.port, pathSegments: [token, 'index.m3u8']).toString(),
     ];
   }
 
   Future<void> start(File input) async {
+    if (security == null && !allowInsecureHttp) throw StateError('HTTP sharing requires explicit consent');
     if (isRunning || _starting) throw StateError('A network stream is already active');
     _starting = true;
     final generation = ++_generation;
@@ -88,6 +100,7 @@ class NetworkMediaStreamServer {
     HttpServer? server;
     Process? process;
     _stopping = false;
+    _encodingFinished = false;
     try {
       if (!await input.exists() || await input.length() == 0) {
         throw const FileSystemException('Input file unavailable');
@@ -106,15 +119,21 @@ class NetworkMediaStreamServer {
       _ensureCurrent(generation);
       final secureRandom = Random.secure();
       final token = base64Url.encode(List<int>.generate(32, (_) => secureRandom.nextInt(256))).replaceAll('=', '');
-      server = await HttpServer.bind(InternetAddress.anyIPv4, 0, shared: false);
+      server = security == null
+          ? await HttpServer.bind(InternetAddress.anyIPv4, 0, shared: false)
+          : await HttpServer.bindSecure(InternetAddress.anyIPv4, 0, security!, shared: false);
       _ensureCurrent(generation);
       _addresses = addresses;
       _directory = directory;
       _token = token;
       _server = server;
-      server.listen(_handle, onError: (_) {});
-      _expiresAt = DateTime.now().add(lifetime);
-      _expiryTimer = Timer(lifetime, () => unawaited(stop()));
+      server.listen((request) {
+        unawaited(_handle(request).catchError((Object _) async {
+          try { await request.response.close(); } catch (_) {}
+        }));
+      }, onError: (_) {});
+      _hardExpiresAt = DateTime.now().add(maximumLifetime);
+      _renewLease();
 
       final segmentTemplate = p.join(directory.path, 'segment%05d.ts');
       final playlist = p.join(directory.path, 'index.m3u8');
@@ -181,10 +200,14 @@ class NetworkMediaStreamServer {
       unawaited(
         process.exitCode.then((code) async {
           if (!_isCurrent(generation)) return;
-          await stop();
           if (code == 0) {
-            onEnded?.call();
+            // FFmpeg has written ENDLIST, but receivers can still be several
+            // segments behind. Retain the final playlist/media for a bounded
+            // grace period; encoder completion is not receiver completion.
+            _encodingFinished = true;
+            _expireAfter(completionGrace);
           } else {
+            await stop();
             onFailure?.call(code);
           }
         }),
@@ -200,6 +223,7 @@ class NetworkMediaStreamServer {
       if (identical(_server, server)) _server = null;
       _token = null;
       _expiresAt = null;
+      _hardExpiresAt = null;
       if (identical(_directory, directory)) _directory = null;
       _addresses = const [];
       await _removeDirectoryWhenSafe(directory, currentProcess, processStopped: processStopped);
@@ -210,6 +234,25 @@ class NetworkMediaStreamServer {
   }
 
   bool _isCurrent(int generation) => generation == _generation && !_stopping;
+
+  void _renewLease() {
+    if (!_encodingFinished) _expireAfter(lifetime);
+  }
+
+  void _expireAfter(Duration duration) {
+    final hard = _hardExpiresAt;
+    if (hard == null) return;
+    final now = DateTime.now();
+    final proposed = now.add(duration);
+    _expiresAt = proposed.isBefore(hard) ? proposed : hard;
+    _expiryTimer?.cancel();
+    final generation = _generation;
+    _expiryTimer = Timer(_expiresAt!.difference(now), () async {
+      if (!_isCurrent(generation)) return;
+      await stop();
+      onEnded?.call();
+    });
+  }
 
   void _ensureCurrent(int generation) {
     if (!_isCurrent(generation)) throw StateError('The network stream start was cancelled');
@@ -239,6 +282,7 @@ class NetworkMediaStreamServer {
       await response.close();
       return;
     }
+    _renewLease();
 
     final isPlaylist = fileName == 'index.m3u8';
     final directory = _directory;
@@ -312,6 +356,7 @@ class NetworkMediaStreamServer {
       _token = null;
       _addresses = const [];
       _expiresAt = null;
+      _hardExpiresAt = null;
       await _removeDirectoryWhenSafe(directory, process, processStopped: processStopped);
     } finally {
       _stopping = false;

@@ -296,15 +296,26 @@ class Handler(BaseHTTPRequestHandler):
 class Server(ThreadingHTTPServer):
     daemon_threads = True
     request_queue_size = 16
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, tls_context=None, handshake_timeout=5, **kwargs):
         self.slots = threading.BoundedSemaphore(8)
+        self.tls_context = tls_context
+        self.handshake_timeout = handshake_timeout
         super().__init__(*args, **kwargs)
     def process_request(self, request, client_address):
         if not self.slots.acquire(blocking=False): request.close(); return
         try: super().process_request(request, client_address)
         except Exception: self.slots.release(); raise
     def process_request_thread(self, request, client_address):
-        try: super().process_request_thread(request, client_address)
+        try:
+            # Accept stays non-blocking with respect to TLS. Handshakes share
+            # the same bounded worker budget as HTTP, before authentication.
+            request.settimeout(self.handshake_timeout)
+            if self.tls_context is not None:
+                request = self.tls_context.wrap_socket(request, server_side=True, do_handshake_on_connect=False)
+                request.do_handshake()
+            super().process_request_thread(request, client_address)
+        except (OSError, ssl.SSLError):
+            self.shutdown_request(request)
         finally: self.slots.release()
 
 
@@ -332,7 +343,7 @@ def main():
                        args.soundfont.resolve() if args.soundfont else None, args.timeout)
     if args.cert and args.key:
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER); context.minimum_version = ssl.TLSVersion.TLSv1_2
-        context.load_cert_chain(args.cert, args.key); server.socket = context.wrap_socket(server.socket, server_side=True)
+        context.load_cert_chain(args.cert, args.key); server.tls_context = context
     try: server.serve_forever()
     finally:
         for process in list(server.jobs.processes.values()): server.jobs.kill(process)

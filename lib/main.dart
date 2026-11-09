@@ -1243,7 +1243,7 @@ Breadcrumb? _beforeBreadcrumb(Breadcrumb? breadcrumb, Hint _) {
     breadcrumb.message = LogRedactionManager.redact(message);
   }
   if (data != null) {
-    breadcrumb.data = data.map((k, v) => MapEntry(k, v is String ? LogRedactionManager.redact(v) : v));
+    breadcrumb.data = LogRedactionManager.redactStructured(data) as Map<String, dynamic>;
   }
   return breadcrumb;
 }
@@ -1343,12 +1343,18 @@ FutureOr<SentryEvent?> _beforeSend(SentryEvent event, Hint _) {
         b.message = LogRedactionManager.redact(message);
       }
       if (data != null) {
-        b.data = data.map((k, v) => MapEntry(k, v is String ? LogRedactionManager.redact(v) : v));
+        b.data = LogRedactionManager.redactStructured(data) as Map<String, dynamic>;
       }
     }
   }
 
-  return event;
+  // Scrub the serialized event, including request headers/body, extras, tags,
+  // contexts and stack-frame variables. A failed scrub must never send raw data.
+  try {
+    return SentryEvent.fromJson(LogRedactionManager.redactStructured(event.toJson()) as Map<String, dynamic>);
+  } catch (_) {
+    return null;
+  }
 }
 
 /// Registers notices for code Plezy ships outside its pub packages.

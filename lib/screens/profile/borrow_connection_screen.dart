@@ -289,7 +289,7 @@ class _BorrowConnectionScreenState extends State<BorrowConnectionScreen> {
     if (cand.source.isLocal) {
       final pin = await showPinEntryDialog(context, cand.source.displayName);
       if (pin == null) return false;
-      if (!verifyProfilePin(cand.source, pin)) {
+      if (!await verifyProfilePin(cand.source, pin)) {
         if (!mounted) return false;
         showErrorSnackBar(context, t.profiles.incorrectPin);
         return false;

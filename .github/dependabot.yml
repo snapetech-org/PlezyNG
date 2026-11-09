@@ -1,8 +1,53 @@
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - /
     schedule:
-      interval: monthly
-    cooldown:
-      default-days: 7
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: pub
+    directories:
+      - /
+      - /packages/background_downloader
+      - /packages/dart_smb2_tvos_stub
+      - /packages/flutter_inappwebview
+      - /packages/flutter_secure_storage_linux
+      - /packages/permission_handler_windows
+      - /packages/plezy_preparation
+      - /packages/plezy_torrent
+      - /packages/saf_util
+      - /packages/shared_preferences_linux
+      - /packages/shared_preferences_windows
+      - /packages/tizen_plugins/video_player_videohole
+      - /packages/tizen_plugins/wakelock_plus_tizen
+      - /packages/universal_gamepad
+      - /packages/wakelock_plus
+      - /packages/webos_plugins/audioplayers_soloud
+      - /packages/webos_plugins/flutter_secure_storage_webos
+      - /packages/webos_plugins/package_info_plus_webos
+      - /packages/webos_plugins/video_player_drm
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: gomod
+    directories:
+      - /server
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directories:
+      - /tools/reader-tests
+      - /integrations/steam-cloud-decky
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: pip
+    directories:
+      - /tools/karaoke_companion
+      - /scripts/codegen
+      - /scripts/motion
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

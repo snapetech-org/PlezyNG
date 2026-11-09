@@ -519,7 +519,7 @@ void main() {
 
     test('activate rejects wrong PIN for a protected local profile', () async {
       await registry.upsert(
-        Profile.local(id: 'p1', displayName: 'Kids', pinHash: computePinHash('1234'), createdAt: DateTime(2026, 1, 1)),
+        Profile.local(id: 'p1', displayName: 'Kids', pinHash: 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe', createdAt: DateTime(2026, 1, 1)),
       );
       await provider.initialize();
       final p1 = provider.profiles.first;

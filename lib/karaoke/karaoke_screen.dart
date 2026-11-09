@@ -1,4 +1,5 @@
 import '../services/file_picker_service.dart';
+import '../utils/local_server_security.dart';
 import '../widgets/app_icon.dart';
 
 import 'package:material_symbols_icons/symbols.dart';
@@ -335,42 +336,10 @@ class _KaraokeScreenState extends State<KaraokeScreen> {
       if (address == null) {
         return;
       }
-      SecurityContext? security;
-      if (!mounted) {
-        return;
-      }
-      final secure = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.t.karaokeUi.roomConnection),
-          content: Text(l10n.t.karaokeUi.useHTTPSToEnablePhonePitchAndPrivateVocal),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.t.karaokeUi.lanSongbookOnly)),
-            FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.t.karaokeUi.configureHTTPS)),
-          ],
-        ),
-      );
-      if (secure == null) {
-        return;
-      }
-      if (secure) {
-        final cert = await FilePickerService.instance.pickFiles(
-          dialogTitle: l10n.t.karaokeUi.selectTrustedPEMCertificate,
-        );
-        final certPath = cert?.files.single.path;
-        if (certPath == null) {
-          return;
-        }
-        final key = await FilePickerService.instance.pickFiles(dialogTitle: l10n.t.karaokeUi.selectPrivatePEMKey);
-        final keyPath = key?.files.single.path;
-        if (keyPath == null) {
-          return;
-        }
-        security = SecurityContext()
-          ..useCertificateChain(certPath)
-          ..usePrivateKey(keyPath);
-      }
-      await _room.start(address, security: security);
+      if (!mounted) return;
+      final transport = await chooseLocalServerSecurity(context, host: address);
+      if (transport == null || !mounted) return;
+      await _room.start(address, security: transport.context, allowInsecureHttp: transport.context == null);
     }
     var link = _room.invitation(KaraokeRoomRole.singer);
     if (!mounted) {

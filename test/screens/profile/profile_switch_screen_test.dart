@@ -436,7 +436,7 @@ void main() {
         Profile.local(
           id: 'local-kids',
           displayName: 'Kids',
-          pinHash: computePinHash('1234'),
+          pinHash: 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe',
           createdAt: DateTime(2026, 1, 2),
         ),
       ],
@@ -500,7 +500,7 @@ void main() {
         Profile.local(
           id: 'local-kids',
           displayName: 'Kids',
-          pinHash: computePinHash('1234'),
+          pinHash: 'a2779ae69839fea3247e7f508276ea5a588d45734004bced89590b08549d37fe',
           createdAt: DateTime(2026, 1, 2),
         ),
       ],

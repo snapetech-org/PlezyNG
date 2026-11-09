@@ -17,85 +17,102 @@ import (
 
 const (
 	watchmodeAvailabilityPath = "/commerce/watchmode-availability"
-	watchmodeMaxBodyBytes = 256 * 1024
-	watchmodeMaxRows = 50
-	watchmodeCacheTTL = 6 * time.Hour
-	watchmodeCacheCapacity = 256
-	watchmodeRateLimit = 30
-	watchmodeRateWindow = time.Minute
+	watchmodeMaxBodyBytes     = 256 * 1024
+	watchmodeMaxRows          = 50
+	watchmodeCacheTTL         = 6 * time.Hour
+	watchmodeCacheCapacity    = 256
+	watchmodeRateLimit        = 30
+	watchmodeRateWindow       = time.Minute
+	watchmodeFailureTTL       = 30 * time.Second
+	watchmodeMaxInFlight      = 4
+	watchmodeUpstreamBurst    = 10
+	watchmodeUpstreamRefill   = time.Minute
 )
 
 type watchmodeRawSource struct {
-	SourceID int `json:"source_id"`
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Region string `json:"region"`
-	Format string `json:"format"`
-	Price json.RawMessage `json:"price"`
-	WebURL string `json:"web_url"`
-	IOSURL string `json:"ios_url"`
-	AndroidURL string `json:"android_url"`
-	TVOSURL string `json:"tvos_url"`
-	AndroidTV string `json:"android_tv_url"`
+	SourceID   int             `json:"source_id"`
+	Name       string          `json:"name"`
+	Type       string          `json:"type"`
+	Region     string          `json:"region"`
+	Format     string          `json:"format"`
+	Price      json.RawMessage `json:"price"`
+	WebURL     string          `json:"web_url"`
+	IOSURL     string          `json:"ios_url"`
+	AndroidURL string          `json:"android_url"`
+	TVOSURL    string          `json:"tvos_url"`
+	AndroidTV  string          `json:"android_tv_url"`
 }
 
 type watchmodeAvailabilitySource struct {
-	SourceID int `json:"sourceId"`
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Region string `json:"region"`
-	Format string `json:"format,omitempty"`
-	Price string `json:"price,omitempty"`
-	WebURL string `json:"webUrl,omitempty"`
-	IOSURL string `json:"iosUrl,omitempty"`
+	SourceID   int    `json:"sourceId"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Region     string `json:"region"`
+	Format     string `json:"format,omitempty"`
+	Price      string `json:"price,omitempty"`
+	WebURL     string `json:"webUrl,omitempty"`
+	IOSURL     string `json:"iosUrl,omitempty"`
 	AndroidURL string `json:"androidUrl,omitempty"`
-	TVOSURL string `json:"tvosUrl,omitempty"`
-	AndroidTV string `json:"androidTvUrl,omitempty"`
+	TVOSURL    string `json:"tvosUrl,omitempty"`
+	AndroidTV  string `json:"androidTvUrl,omitempty"`
 }
 
 type watchmodeAvailabilityResponse struct {
-	TMDBType string `json:"tmdbType"`
-	TMDBID int64 `json:"tmdbId"`
-	Region string `json:"region"`
-	Fetched time.Time `json:"fetchedAt"`
-	Expires time.Time `json:"expiresAt"`
-	Sources []watchmodeAvailabilitySource `json:"sources"`
+	TMDBType string                        `json:"tmdbType"`
+	TMDBID   int64                         `json:"tmdbId"`
+	Region   string                        `json:"region"`
+	Fetched  time.Time                     `json:"fetchedAt"`
+	Expires  time.Time                     `json:"expiresAt"`
+	Sources  []watchmodeAvailabilitySource `json:"sources"`
 }
 
 type watchmodeCacheEntry struct {
 	fetchedAt time.Time
-	sources []watchmodeAvailabilitySource
+	sources   []watchmodeAvailabilitySource
+	err       error
 }
 
-type watchmodeAvailabilityHandler struct {
-	clientIPs clientIPResolver
-	allowedOrigins map[string]struct{}
-	client *http.Client
-	apiKey string
-	apiBase string
-	commercialApproved bool
-	now func() time.Time
+type watchmodeFlight struct {
+	done  chan struct{}
+	entry watchmodeCacheEntry
+}
 
-	cacheMu sync.Mutex
-	cache map[string]watchmodeCacheEntry
-	hitsMu sync.Mutex
-	hits map[string][]time.Time
+var errWatchmodeBudget = errors.New("watchmode upstream budget exhausted")
+
+type watchmodeAvailabilityHandler struct {
+	clientIPs          clientIPResolver
+	allowedOrigins     map[string]struct{}
+	client             *http.Client
+	apiKey             string
+	apiBase            string
+	commercialApproved bool
+	now                func() time.Time
+
+	cacheMu         sync.Mutex
+	cache           map[string]watchmodeCacheEntry
+	flights         map[string]*watchmodeFlight
+	upstreamTokens  float64
+	upstreamUpdated time.Time
+	hitsMu          sync.Mutex
+	hits            map[string][]time.Time
 }
 
 func newWatchmodeAvailabilityHandler(clientIPs clientIPResolver) *watchmodeAvailabilityHandler {
 	return &watchmodeAvailabilityHandler{
-		clientIPs: clientIPs,
+		clientIPs:      clientIPs,
 		allowedOrigins: parseComicCommerceOrigins(os.Getenv("COMIC_COMMERCE_ALLOWED_ORIGINS")),
 		client: &http.Client{
-			Timeout: 5 * time.Second,
+			Timeout:       5 * time.Second,
 			CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
 		},
-		apiKey: strings.TrimSpace(os.Getenv("WATCHMODE_API_KEY")),
-		apiBase: "https://api.watchmode.com",
+		apiKey:             strings.TrimSpace(os.Getenv("WATCHMODE_API_KEY")),
+		apiBase:            "https://api.watchmode.com",
 		commercialApproved: envEnabled("WATCHMODE_COMMERCIAL_APPROVED"),
-		now: time.Now,
-		cache: make(map[string]watchmodeCacheEntry),
-		hits: make(map[string][]time.Time),
+		now:                time.Now,
+		cache:              make(map[string]watchmodeCacheEntry),
+		flights:            make(map[string]*watchmodeFlight),
+		upstreamTokens:     watchmodeUpstreamBurst,
+		hits:               make(map[string][]time.Time),
 	}
 }
 
@@ -158,18 +175,71 @@ func (h *watchmodeAvailabilityHandler) serveHTTP(w http.ResponseWriter, r *http.
 
 	now := h.now()
 	key := tmdbType + ":" + strconv.FormatInt(tmdbID, 10) + ":" + region
-	if cached, ok := h.cached(key, now); ok {
-		writeWatchmodeResponse(w, tmdbType, tmdbID, region, cached.fetchedAt, cached.sources)
-		return
-	}
-	sources, err := h.fetch(r.Context(), tmdbType, tmdbID, region)
+	entry, err := h.load(r.Context(), key, tmdbType, tmdbID, region, now)
 	if err != nil {
+		if errors.Is(err, errWatchmodeBudget) {
+			w.Header().Set("Retry-After", "60")
+			http.Error(w, "Availability provider budget exhausted", http.StatusTooManyRequests)
+			return
+		}
 		http.Error(w, "Availability provider is unavailable", http.StatusBadGateway)
 		return
 	}
-	fetchedAt := h.now()
-	h.store(key, watchmodeCacheEntry{fetchedAt: fetchedAt, sources: sources})
-	writeWatchmodeResponse(w, tmdbType, tmdbID, region, fetchedAt, sources)
+	writeWatchmodeResponse(w, tmdbType, tmdbID, region, entry.fetchedAt, entry.sources)
+}
+
+// Join same-key work before spending the provider-wide budget. The detached
+// fetch has a bounded lifetime, so one disconnected caller cannot cancel a
+// request that other callers are awaiting. All cache/flight/budget state shares
+// one lock: there is no check-then-fetch cache race.
+func (h *watchmodeAvailabilityHandler) load(ctx context.Context, key, kind string, id int64, region string, now time.Time) (watchmodeCacheEntry, error) {
+	h.cacheMu.Lock()
+	if entry, ok := h.cache[key]; ok {
+		ttl := watchmodeCacheTTL
+		if entry.err != nil {
+			ttl = watchmodeFailureTTL
+		}
+		if now.Sub(entry.fetchedAt) < ttl {
+			h.cacheMu.Unlock()
+			return entry, entry.err
+		}
+		delete(h.cache, key)
+	}
+	flight := h.flights[key]
+	if flight == nil {
+		if !h.upstreamUpdated.IsZero() && now.After(h.upstreamUpdated) {
+			h.upstreamTokens = min(float64(watchmodeUpstreamBurst), h.upstreamTokens+now.Sub(h.upstreamUpdated).Seconds()/watchmodeUpstreamRefill.Seconds())
+		}
+		if now.After(h.upstreamUpdated) {
+			h.upstreamUpdated = now
+		}
+		if len(h.flights) >= watchmodeMaxInFlight || h.upstreamTokens < 1 {
+			h.cacheMu.Unlock()
+			return watchmodeCacheEntry{}, errWatchmodeBudget
+		}
+		h.upstreamTokens--
+		flight = &watchmodeFlight{done: make(chan struct{})}
+		h.flights[key] = flight
+		go func() {
+			fetchCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			sources, err := h.fetch(fetchCtx, kind, id, region)
+			entry := watchmodeCacheEntry{fetchedAt: h.now(), sources: sources, err: err}
+			h.store(key, entry)
+			h.cacheMu.Lock()
+			flight.entry = entry
+			delete(h.flights, key)
+			close(flight.done)
+			h.cacheMu.Unlock()
+		}()
+	}
+	h.cacheMu.Unlock()
+	select {
+	case <-ctx.Done():
+		return watchmodeCacheEntry{}, ctx.Err()
+	case <-flight.done:
+		return flight.entry, flight.entry.err
+	}
 }
 
 func (h *watchmodeAvailabilityHandler) allowOrigin(value string) bool {

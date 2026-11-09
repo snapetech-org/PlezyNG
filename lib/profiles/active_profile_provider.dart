@@ -10,6 +10,7 @@ import '../services/storage_service.dart';
 import '../utils/app_logger.dart';
 import 'plex_home_service.dart';
 import 'profile.dart';
+import 'pin_attempt_guard.dart';
 import 'profile_avatar_source.dart';
 import 'profile_connection.dart';
 import 'profile_connection_registry.dart';
@@ -367,14 +368,23 @@ class ActiveProfileProvider extends ChangeNotifier with DisposableChangeNotifier
   /// PIN; for Plex Home profiles the binder enforces the PIN via
   /// `/home/users/{uuid}/switch` after activation.
   Future<bool> activate(Profile profile, {String? pin}) async {
+    final requestGeneration = _identityMutationGeneration;
     if (profile.isLocal && profile.isPinProtected) {
       final hash = profile.pinHash;
-      if (pin == null || hash == null || !verifyPin(pin, hash)) {
+      if (pin == null || hash == null || !await verifyLocalProfilePin(profile, pin)) {
         return false;
       }
     }
+    if (requestGeneration != _identityMutationGeneration) return false;
     final storage = _storage;
     if (storage == null) return false;
+    if (pin != null && profile.isLocal && isLegacyPinHash(profile.pinHash ?? '')) {
+      final upgraded = await computePinHash(pin);
+      if (requestGeneration != _identityMutationGeneration) return false;
+      await _registry.upgradePinHash(profile.id, profile.pinHash!, upgraded);
+      if (requestGeneration != _identityMutationGeneration) return false;
+      profile = (profile as LocalProfile).copyWith(pinHash: upgraded);
+    }
     return _serializeIdentityMutation<bool>((generation) async {
       if (generation != _identityMutationGeneration) return false;
       final now = DateTime.now();

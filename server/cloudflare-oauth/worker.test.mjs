@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const source = await readFile(new URL('./worker.mjs', import.meta.url), 'utf8');
-const module = await import('data:text/javascript;base64,' + Buffer.from(source + '\nexport { DAILY_SESSIONS, verify, TTL_MS };').toString('base64'));
-const { default: worker, OAuthSession, OAuthAdmission, DAILY_SESSIONS, verify, TTL_MS } = module;
+const module = await import('data:text/javascript;base64,' + Buffer.from(source + '\nexport { ADMISSION_BURST, verify, TTL_MS };').toString('base64'));
+const { default: worker, OAuthSession, OAuthAdmission, ADMISSION_BURST, verify, TTL_MS } = module;
 
 const origin = 'https://pleazyng-api.snape.tech';
 class MemoryStorage {
@@ -118,16 +118,22 @@ test('provider denial and failed exchange return sanitized device errors', async
   assert.deepEqual(await (await f.call(`/auth/result?session=${s2.session}`)).json(), { error: 'exchange_failed' });
 });
 
-test('global admission cap persists; rejected attempts do not write; per-IP burst bounded', async () => {
+test('rolling admission persists, rejections do not write, and capacity replenishes', async t => {
+  let now = Date.now(); t.mock.method(Date, 'now', () => now);
   const ctx = context(); const admission = new OAuthAdmission(ctx); await ctx.ready;
   const req = client => new Request('https://quota.internal/admit', { method: 'POST', body: JSON.stringify({ client }) });
   for (let i = 0; i < 3; i++) assert.equal((await admission.fetch(req('same'))).status, 204);
   let writes = ctx.storage.writes;
   assert.equal((await admission.fetch(req('same'))).status, 429); assert.equal(ctx.storage.writes, writes);
-  for (let i = 3; i < DAILY_SESSIONS; i++) assert.equal((await admission.fetch(req(`client-${i}`))).status, 204);
+  for (let i = 3; i < ADMISSION_BURST; i++) assert.equal((await admission.fetch(req(`client-${i}`))).status, 204);
   const reloadedCtx = context(ctx.storage); const reloaded = new OAuthAdmission(reloadedCtx); await reloadedCtx.ready;
   writes = ctx.storage.writes;
-  assert.equal((await reloaded.fetch(req('another'))).status, 429); assert.equal(ctx.storage.writes, writes);
+  const rejected = await reloaded.fetch(req('another'));
+  assert.equal(rejected.status, 429); assert.equal(rejected.headers.get('Retry-After'), '900');
+  assert.equal(ctx.storage.writes, writes);
+  now += 900_000;
+  assert.equal((await reloaded.fetch(req('new-legitimate-client'))).status, 204);
+  assert.equal((await reloaded.fetch(req('another-new-client'))).status, 429);
 });
 
 test('Trakt browser PKCE, Steam, legacy sessions, and unknown paths pass through unchanged', async t => {
@@ -193,7 +199,7 @@ test('browser-simple and cross-site starts cannot spend login quota', async () =
   assert.equal((await f.call('/auth/start', { method: 'POST', body: { service: 'mal' }, headers: { Origin: origin } })).status, 200);
 });
 
-test('one client cannot consume the global daily admission budget by waiting out burst limits', async t => {
+test('client hourly quota survives reload while the global bucket replenishes', async t => {
   let now = Date.now(); t.mock.method(Date, 'now', () => now);
   const ctx = context(); const admission = new OAuthAdmission(ctx); await ctx.ready;
   const req = client => new Request('https://quota.internal/admit', { method: 'POST', body: JSON.stringify({ client }) });
@@ -204,6 +210,7 @@ test('one client cannot consume the global daily admission budget by waiting out
   const reloadedCtx = context(ctx.storage); const reloaded = new OAuthAdmission(reloadedCtx); await reloadedCtx.ready;
   assert.equal((await reloaded.fetch(req('same-client'))).status, 429);
   assert.equal(ctx.storage.writes, writes);
+  now += 300_000;
   assert.equal((await reloaded.fetch(req('other-client'))).status, 204);
 });
 

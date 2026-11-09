@@ -167,6 +167,10 @@ class Gateway:
 
 def handler(gateway):
     class Handler(BaseHTTPRequestHandler):
+        def setup(self):
+            self.request.settimeout(self.server.header_timeout)
+            super().setup()
+
         def log_message(self, *_args):
             pass  # Authorization codes and tokens must not enter access logs.
 
@@ -188,7 +192,10 @@ def handler(gateway):
                 # The reverse proxy must preserve Host and limit connections.
                 if self.headers.get('Host') != urlsplit(gateway.origin).netloc or self.headers.get('Origin'):
                     raise InvalidRequest(403)
-                address = self.headers.get('X-Real-IP', self.client_address[0])
+                # Only the loopback proxy may supply the normalized peer IP.
+                # The deployment must overwrite, never append, this header.
+                peer = ipaddress.ip_address(self.client_address[0])
+                address = self.headers.get('X-Real-IP', str(peer)) if peer.is_loopback else str(peer)
                 try:
                     address = str(ipaddress.ip_address(address))
                 except ValueError:
@@ -230,7 +237,33 @@ def handler(gateway):
     return Handler
 
 
+class Server(ThreadingHTTPServer):
+    daemon_threads = True
+    request_queue_size = 16
+    header_timeout = 10
+
+    def __init__(self, *args, **kwargs):
+        self.slots = threading.BoundedSemaphore(16)
+        super().__init__(*args, **kwargs)
+
+    def process_request(self, request, client_address):
+        if not self.slots.acquire(blocking=False):
+            request.close()
+            return
+        try:
+            super().process_request(request, client_address)
+        except Exception:
+            self.slots.release()
+            raise
+
+    def process_request_thread(self, request, client_address):
+        try:
+            super().process_request_thread(request, client_address)
+        finally:
+            self.slots.release()
+
+
 if __name__ == '__main__':
     with open(os.environ['PLEZY_LENDING_CONFIG'], encoding='utf-8') as stream:
         config = json.load(stream)
-    ThreadingHTTPServer(('127.0.0.1', int(os.environ.get('PORT', '8788'))), handler(Gateway(config))).serve_forever()
+    Server(('127.0.0.1', int(os.environ.get('PORT', '8788'))), handler(Gateway(config))).serve_forever()

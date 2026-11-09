@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func TestWatchmodeAvailabilityRequiresCommercialApprovalAndKey(t *testing.T) {
@@ -110,7 +115,7 @@ func TestWatchmodeAvailabilityRejectsInvalidQueryAndOrigin(t *testing.T) {
 
 	for _, test := range []struct {
 		name, query string
-		want int
+		want        int
 	}{
 		{name: "wrong type", query: "tmdbType=episode&tmdbId=1&region=CA", want: http.StatusBadRequest},
 		{name: "bad id", query: "tmdbType=movie&tmdbId=-1&region=CA", want: http.StatusBadRequest},
@@ -150,5 +155,82 @@ func TestWatchmodeURLRejectsUnsafeTargets(t *testing.T) {
 	}
 	if got := watchmodeURL("https://www.crave.ca/watch/title"); got != "https://www.crave.ca/watch/title" {
 		t.Fatalf("safe URL changed: %q", got)
+	}
+}
+
+func TestWatchmodeCoalescesWorkAndKeepsOtherWaitersAlive(t *testing.T) {
+	var calls atomic.Int32
+	started := make(chan struct{})
+	release := make(chan struct{})
+	upstream := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if calls.Add(1) == 1 {
+			close(started)
+		}
+		<-release
+		_, _ = w.Write([]byte(`[]`))
+	}))
+	defer upstream.Close()
+	h := newWatchmodeAvailabilityHandler(clientIPResolver{})
+	h.apiBase, h.client = upstream.URL, upstream.Client()
+	now := time.Now()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancelled := make(chan error, 1)
+	go func() { _, err := h.load(ctx, "same", "movie", 1, "CA", now); cancelled <- err }()
+	<-started
+	cancel()
+	if err := <-cancelled; !errors.Is(err, context.Canceled) {
+		t.Fatalf("cancel: %v", err)
+	}
+	var wg sync.WaitGroup
+	for range 40 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if _, err := h.load(context.Background(), "same", "movie", 1, "CA", now); err != nil {
+				t.Error(err)
+			}
+		}()
+	}
+	close(release)
+	wg.Wait()
+	if got := calls.Load(); got != 1 {
+		t.Fatalf("provider calls = %d, want one", got)
+	}
+	if h.upstreamTokens != watchmodeUpstreamBurst-1 {
+		t.Fatal("joined work spent additional budget")
+	}
+}
+
+func TestWatchmodeBoundsUniqueWorkAndCachesFailures(t *testing.T) {
+	var calls atomic.Int32
+	upstream := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		http.Error(w, "upstream unavailable", 503)
+	}))
+	defer upstream.Close()
+	h := newWatchmodeAvailabilityHandler(clientIPResolver{})
+	h.apiBase, h.client = upstream.URL, upstream.Client()
+	now := time.Now()
+	h.now = func() time.Time { return now }
+	for i := range watchmodeUpstreamBurst {
+		if _, err := h.load(context.Background(), fmt.Sprint(i), "movie", int64(i+1), "CA", now); err == nil {
+			t.Fatal("expected failure")
+		}
+	}
+	if _, err := h.load(context.Background(), "overflow", "movie", 99, "CA", now); !errors.Is(err, errWatchmodeBudget) {
+		t.Fatalf("budget: %v", err)
+	}
+	if _, err := h.load(context.Background(), "0", "movie", 1, "CA", now); errors.Is(err, errWatchmodeBudget) || err == nil {
+		t.Fatalf("cached failure: %v", err)
+	}
+	if calls.Load() != watchmodeUpstreamBurst {
+		t.Fatal("error retries spent provider budget")
+	}
+	now = now.Add(watchmodeUpstreamRefill)
+	if _, err := h.load(context.Background(), "overflow", "movie", 99, "CA", now); errors.Is(err, errWatchmodeBudget) {
+		t.Fatal("budget did not refill")
+	}
+	if calls.Load() != watchmodeUpstreamBurst+1 {
+		t.Fatal("missing refilled request")
 	}
 }

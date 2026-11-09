@@ -171,13 +171,14 @@ class _SharedHttpClient extends http.BaseClient {
       // CE's cache manager throws for any status other than 200/202 without
       // listening to the body, so _releaseWhenDone would never fire and the
       // permit would leak; six stale-thumb 404s then wedge all artwork loading
-      // until restart (#1473). Release now, drain the (tiny) error body in the
-      // background so the platform client reclaims the connection, and hand CE
-      // an empty body it never reads anyway. Status set mirrors CE 4.6.4
+      // until restart (#1473). Cancel instead of assuming an untrusted error
+      // body is small or finite. Keep the permit until cancellation completes.
+      // Hand CE an empty body it never reads. Status set mirrors CE 4.6.4
       // _downloadFile; recheck if the pinned dep is ever bumped.
       if (response.statusCode != 200 && response.statusCode != 202) {
+        abortTransport();
+        await response.stream.listen(null).cancel().timeout(_stallTimeout);
         release();
-        unawaited(response.stream.drain<void>().catchError((_) {}));
         return http.StreamedResponse(
           const Stream<List<int>>.empty(),
           response.statusCode,

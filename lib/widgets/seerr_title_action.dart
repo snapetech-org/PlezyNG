@@ -11,6 +11,7 @@ import '../models/seerr/seerr_details.dart';
 import '../services/catalog/seerr_catalog_source.dart';
 import '../services/seerr/seerr_exceptions.dart';
 import '../utils/app_logger.dart';
+import '../utils/error_message_utils.dart';
 import '../utils/snackbar_helper.dart';
 import 'seerr_request_sheet.dart';
 
@@ -201,7 +202,9 @@ Future<void> performSeerrTitleAction(
       unawaited(source.client.intents.refresh(kind, tmdbId));
     } catch (e) {
       appLogger.w('Seerr: quick request failed', error: e);
-      if (context.mounted) showErrorSnackBar(context, t.seerr.requestFailed(error: '$e'));
+      if (context.mounted) {
+        showErrorSnackBar(context, t.seerr.requestFailed(error: localizedErrorReason(e)));
+      }
     } finally {
       _quickRequestsInFlight.remove(key);
     }

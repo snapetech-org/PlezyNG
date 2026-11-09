@@ -43,6 +43,7 @@ class FileSourceMark extends StatelessWidget {
     FileSourceKind.opds => AppIcon(Symbols.auto_stories_rounded, size: size),
     FileSourceKind.komga => ProviderMark('selfhst_komga.svg', size: size, label: 'Komga'),
     FileSourceKind.audiobookshelf => ProviderMark('selfhst_audiobookshelf.svg', size: size, label: 'Audiobookshelf'),
+    FileSourceKind.bookorbit => AppIcon(Symbols.auto_stories_rounded, size: size),
     FileSourceKind.openSubsonic => AppIcon(Symbols.library_music_rounded, size: size),
     FileSourceKind.podcastRss => AppIcon(Symbols.podcasts_rounded, size: size),
     FileSourceKind.webdav || FileSourceKind.s3 => AppIcon(Symbols.cloud_queue_rounded, size: size),

@@ -4245,6 +4245,7 @@
     "recoveryImported": "Recovery data merged."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.",
     "savedCertificate": "Saved server certificate",
     "projectGutenberg": "Project Gutenberg",
     "nfsEndpointInvalid": "Enter an NFS URL such as nfs://nas:2049/export.",

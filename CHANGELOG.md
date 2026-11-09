@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Hold playback beneath the resume profile picker: pause the covered player and refuse native, media-session, Watch Together and Play Next resume intents until profile selection finishes, preserving Automotive restrictions and active PiP. Independently adapted from [upstream 9fe138ab](https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
 - Add optional title, library and global persistence for custom video zoom, retaining session-only defaults and bounded values. Independently adapted from [upstream e90973fb](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 - Repair AUR, COPR and Nix repacks of v3.0.7 with byte-matched WebKit helper processes, required sandbox tools and regenerated GTK image-loader caches. Qualify Nix WebView rendering and JavaScript with the WebKit process sandbox enabled. Existing GitHub release assets remain immutable.
 

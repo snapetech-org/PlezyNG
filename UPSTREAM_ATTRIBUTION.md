@@ -198,3 +198,5 @@ endorsement of this fork.
 - [Transparent status-bar styling](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
 
 - [Scoped custom video zoom](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted zoom persistence and finite bounds, retaining profile-keyed resets and agent validation. Zoom remains session-only by default.
+
+- [Hold playback beneath the resume profile picker](https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted pause the covered player and refuse native, media-session, Watch Together and Play Next resume intents until profile selection finishes, preserving Automotive restrictions and active PiP.

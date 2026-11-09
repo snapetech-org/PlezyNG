@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Start independent recovery builds while source Android is still running; require its completed successful job and verified artifact before final release assembly.
+
 - Verify the original PDFium CocoaPods XCFramework download through the asset API and allow a fresh qualified Mac build during artifact recovery without repeating successful platform builds.
 
 - Keep download diagnostics out of CMake path output and support explicitly rebuilding Linux during verified artifact recovery, retaining required Mac notarization and Gatekeeper qualification.

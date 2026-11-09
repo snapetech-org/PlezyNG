@@ -195,7 +195,10 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
     if failures:
         raise RecoveryError("Other source jobs failed: " + ", ".join(failures))
     android = [job for job in jobs if job.get("name") == "build-android"]
-    if len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") not in {"failure", "success"}:
+    android_pending = len(android) == 1 and pending and android[0].get("status") in {"queued", "in_progress", "waiting", "pending", "requested"} and not android[0].get("conclusion")
+    if android_pending:
+        pending_jobs.append("build-android")
+    elif len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") not in {"failure", "success"}:
         raise RecoveryError("Recovery requires exactly one completed Android build.")
     if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped"
            and not (pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion"))
@@ -331,12 +334,14 @@ def verify_android_run(run_id, head_sha, version, repository=REPOSITORY, *, allo
     verify_webos_transport_patch(repository, source_sha, head_sha, files)
     jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
     android = [job for job in jobs if job.get("name") == "build-android"]
-    if len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") != "success":
+    android_pending = len(android) == 1 and pending and android[0].get("status") in {"queued", "in_progress", "waiting", "pending", "requested"} and not android[0].get("conclusion")
+    if not android_pending and (len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") != "success"):
         raise RecoveryError("The reused Android job must be uniquely successful.")
     if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped"
            and not (pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion")) for job in jobs):
         raise RecoveryError("Android source already attempted publication; inspect its side effects.")
-    return {"source_run_id": int(run_id), "source_sha": source_sha, "job_id": android[0]["id"]}
+    return {"source_run_id": int(run_id), "source_sha": source_sha, "job_id": android[0]["id"],
+            **({"pending": True} if android_pending else {})}
 
 
 def compose_proof(proof, android_run=None, include_webos_build=True):
@@ -344,6 +349,8 @@ def compose_proof(proof, android_run=None, include_webos_build=True):
         if not include_webos_build or (android_run and str(android_run) != str(proof["source_run_id"])):
             raise RecoveryError("Mac packaging recovery requires every original platform without substitution or omission.")
         return proof
+    if "build-android" in proof.get("pending_jobs", []) and not android_run:
+        raise RecoveryError("A pending Android source requires explicit reuse; do not launch a duplicate build")
     rebuilt = set(proof.get("rebuilt_jobs", REBUILT_JOBS))
     if android_run:
         proof = {**proof, "android_source": verify_android_run(android_run, proof["head_sha"], proof["version"], allow_pending=not proof.get("platforms_complete", True))}

@@ -536,3 +536,9 @@ fetches that same XCFramework ZIP through the GitHub asset API, and installs a
 job-local curl wrapper for only that exact CocoaPods command. CocoaPods retains
 its own ZIP verification and extraction. Other curl invocations are delegated,
 and neither the dependency source nor its version/checksum is edited.
+
+Recovery preflight may identify a still-running Android source job, so independent
+Linux, webOS and Mac repairs can start in parallel. This is deferred evidence,
+not permission to reuse unfinished outputs: final assembly waits for source
+completion and requires Android success, a matching artifact and its full
+digest before downloading or publishing it.

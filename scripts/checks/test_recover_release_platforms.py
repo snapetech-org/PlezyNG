@@ -98,6 +98,18 @@ class SourceProofTests(unittest.TestCase):
         with self.assertRaises(recovery.RecoveryError):
             self.prove(allow_pending=True)
 
+    def test_android_may_remain_pending_only_during_preflight(self):
+        self.source["status"] = "in_progress"
+        next(job for job in self.jobs if job["name"] == "build-android").update(status="in_progress", conclusion=None)
+        proof = self.prove(allow_pending=True)
+        self.assertIn("build-android", proof["pending_jobs"])
+        self.assertFalse(proof["platforms_complete"])
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+        self.source["status"] = "completed"
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove(allow_pending=True)
+
     def test_assembly_waits_for_completion_and_has_a_deadline(self):
         with patch.object(recovery, "verify_source_run", side_effect=[
             {"platforms_complete": False, "pending_jobs": ["build-ios"]},
@@ -301,10 +313,22 @@ class AndroidSourceTests(unittest.TestCase):
         self.jobs = [{"id": 71, "name": "build-android", "status": "completed", "conclusion": "success"},
                      {"name": "create-release", "conclusion": "skipped"}]
 
-    def prove(self):
+    def prove(self, **options):
         with patch.object(recovery, "api", side_effect=[self.source, self.compare]), \
              patch.object(recovery, "collection", return_value=self.jobs):
-            return recovery.verify_android_run(84, "b" * 40, "3.0.0")
+            return recovery.verify_android_run(84, "b" * 40, "3.0.0", **options)
+
+    def test_pending_android_is_deferred_preflight_evidence_and_never_a_final_success(self):
+        self.source["status"] = "in_progress"
+        self.jobs[0].update(status="in_progress", conclusion=None)
+        self.assertTrue(self.prove(allow_pending=True)["pending"])
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+        self.jobs[0].update(status="completed", conclusion="failure")
+        with self.assertRaisesRegex(recovery.RecoveryError, "uniquely successful"):
+            self.prove(allow_pending=True)
+        self.jobs[0]["conclusion"] = "success"
+        self.assertNotIn("pending", self.prove(allow_pending=True))
 
     def test_reuses_only_successful_android_from_equivalent_product_inputs(self):
         self.assertEqual(self.prove()["job_id"], 71)
@@ -326,6 +350,10 @@ class AndroidSourceTests(unittest.TestCase):
         self.assertEqual(proof["rebuilt_jobs"], [])
         self.assertEqual(proof["android_source"]["source_run_id"], 84)
         self.assertEqual(proof["excluded_optional_jobs"], ["Build WebOS TV package (ARMv7)"])
+
+    def test_pending_source_android_cannot_trigger_a_duplicate_fresh_android_build(self):
+        with self.assertRaisesRegex(recovery.RecoveryError, "duplicate build"):
+            recovery.compose_proof({"pending_jobs": ["build-android"]})
 
 
 if __name__ == "__main__":

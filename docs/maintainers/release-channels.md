@@ -184,3 +184,14 @@ docker.io/snapetech/plezyng-relay:latest      # when Docker Hub credentials are 
 6. Publish the draft. Discord runs automatically; `--publish` additionally dispatches configured downstream package channels.
 7. To update a mobile store, run **Publish Pleazyng store builds** manually from `main` after the stable GitHub Release is published, then finish review/promotion in the store console.
 8. Submit a configured MSIX bundle manually through Partner Center. Confirm GHCR has both architectures; check Docker Hub, Chocolatey, and WinGet only when their credentials are configured, and track Microsoft's WinGet pull request separately.
+
+## Updater feed without a publication branch
+
+Current clients (including published v3.0.7) read
+`https://github.com/snapetech-org/pleazyng/releases/latest/download/appcast.xml`.
+The core release uploads that asset. `Update Packages` no longer recreates or
+writes an `appcast` branch. The immutable annotated `appcast` tag preserves the
+old feed tree at `e0ba39dba7aa387c7a8341fb384d5178975f3986`, pointing legacy clients
+to v3.0.7; those clients then use release assets. Do not move that compatibility
+tag or restore a branch writer. New releases continue publishing their signed
+feed and artifacts through the existing core release lane.

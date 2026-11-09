@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Retire the mutable updater-feed branch in favor of published release assets, preserve an immutable legacy updater bridge, and continuously audit/test the Decky build dependency graph.
+
 - Verify the signed, ticket-stapled app inside the existing macOS disk image before publishing Homebrew, rather than requiring a second ticket on the outer image. Add a locked downstream Nix flake for the existing v3.0.7 Linux release.
 
 - Remove the vulnerable deepmerge build dependency from the Steam Cloud Decky extension, preserve its host React/UI and ESM entry contract with an esbuild runtime regression, and integrate the reviewed UI, TypeScript, React types and tslib dependency updates.

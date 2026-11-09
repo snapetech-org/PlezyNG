@@ -1,0 +1,59 @@
+# Release-bundle candidate; native build and playback qualification required.
+# Independent Pleazyng packaging, not a replacement for nixpkgs.plezy.
+{ pkgs ? import <nixpkgs> { } }:
+let
+  version = "@@VERSION@@";
+  sources = {
+    x86_64-linux = { arch = "x64"; sha256 = "@@X64_SHA256@@"; };
+    aarch64-linux = { arch = "arm64"; sha256 = "@@ARM64_SHA256@@"; };
+  };
+  source = sources.${pkgs.stdenv.hostPlatform.system} or
+    (throw "Pleazyng release bundles support x86_64-linux and aarch64-linux");
+  bundle = pkgs.stdenvNoCC.mkDerivation {
+    pname = "pleazyng-bundle";
+    inherit version;
+    src = pkgs.fetchurl {
+      url = "https://github.com/snapetech-org/pleazyng/releases/download/@@TAG@@/pleazyng-linux-${source.arch}.tar.gz";
+      inherit (source) sha256;
+    };
+    # Preserve native engines, models and providers exactly as released.
+    dontUnpack = true;
+    dontFixup = true;
+    nativeBuildInputs = [ pkgs.python3 ];
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/lib/pleazyng
+      tar -xzf $src -C $out/lib/pleazyng
+      test -x $out/lib/pleazyng/pleazyng
+      test -f $out/lib/pleazyng/pleazyng.sh
+      chmod +x $out/lib/pleazyng/pleazyng.sh
+      python3 ${./relocate-caches.py} $out/lib/pleazyng
+      runHook postInstall
+    '';
+  };
+in
+pkgs.buildFHSEnv {
+  name = "pleazyng";
+  # The FHS environment keeps the published bundle and launcher together.
+  # It is a compatibility environment, not a security sandbox.
+  targetPkgs = p: with p; [
+    bash coreutils gtk3 webkitgtk_4_1 libsecret libepoxy alsa-lib libevdev
+    glib wayland libglvnd libva libvdpau vulkan-loader libdrm mesa
+    libx11 libxcb libxext libgbm fontconfig xdg-utils cacert
+  ];
+  runScript = "${bundle}/lib/pleazyng/pleazyng.sh";
+  extraInstallCommands = ''
+    install -Dm644 ${./org.snapetech.pleazyng.desktop} \
+      $out/share/applications/org.snapetech.pleazyng.desktop
+    install -Dm644 ${bundle}/lib/pleazyng/pleazyng.png \
+      $out/share/icons/hicolor/512x512/apps/pleazyng.png
+  '';
+  meta = {
+    description = "Pleazyng media client for Plex, Jellyfin and Emby";
+    homepage = "https://github.com/snapetech-org/pleazyng";
+    license = pkgs.lib.licenses.gpl3Only;
+    mainProgram = "pleazyng";
+    platforms = builtins.attrNames sources;
+    sourceProvenance = [ pkgs.lib.sourceTypes.binaryNativeCode ];
+  };
+}

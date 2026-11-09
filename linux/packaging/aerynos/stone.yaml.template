@@ -1,0 +1,34 @@
+# Release-bundle candidate; Boulder build and device qualification required.
+# Repository acceptance of binary repackaging must be confirmed separately.
+name        : pleazyng
+version     : "@@VERSION@@"
+release     : 1
+homepage    : https://github.com/snapetech-org/pleazyng
+upstreams   :
+    - https://github.com/snapetech-org/pleazyng/releases/download/@@TAG@@/pleazyng-linux-x64.tar.gz:
+        hash: @@X64_SHA256@@
+        unpackdir: pleazyng
+summary     : Media client for Plex, Jellyfin and Emby
+description : |
+    Pleazyng brings connected media libraries, offline downloads and
+    experimental playback tools to compatible devices.
+license     : GPL-3.0-only
+builddeps   :
+    - binary(python3)
+install     : |
+    # Preserve the complete qualified release bundle, including native engines,
+    # providers and models. Do not substitute the distribution's mpv engine.
+    install -d %(installroot)%(libdir)/pleazyng
+    cp -a ./. %(installroot)%(libdir)/pleazyng/
+    chmod 0755 %(installroot)%(libdir)/pleazyng/pleazyng
+    chmod 0755 %(installroot)%(libdir)/pleazyng/pleazyng.sh
+    python3 %(pkgdir)/relocate-caches.py %(installroot)%(libdir)/pleazyng --runtime-prefix %(libdir)/pleazyng
+    install -d %(installroot)%(bindir)
+    cat > %(installroot)%(bindir)/pleazyng <<'EOF'
+    #!/bin/sh
+    exec %(libdir)/pleazyng/pleazyng.sh "$@"
+    EOF
+    chmod 0755 %(installroot)%(bindir)/pleazyng
+    %install_file %(pkgdir)/org.snapetech.pleazyng.desktop -t %(installroot)%(datadir)/applications/
+    install -Dm644 pleazyng.png %(installroot)%(datadir)/icons/hicolor/512x512/apps/pleazyng.png
+    install -Dm644 %(pkgdir)/LICENSE %(installroot)%(datadir)/licenses/pleazyng/LICENSE

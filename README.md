@@ -214,12 +214,12 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ### macOS — Homebrew
 
-The `snapetech-plezyng` Cask is being prepared. It will be installable after a signed and notarized macOS release is published and the generated Cask is added to this repository.
+The `snapetech-pleazyng` Cask is being prepared in the [Pleazyng Homebrew tap](https://github.com/snapetech-org/homebrew-pleazyng). Publication requires a signed, notarized release and a verified tap update. Until then, use the DMG above.
 
 ```bash
 # After the Cask is published in this tap
-brew tap snapetech-org/pleazyng https://github.com/snapetech-org/pleazyng
-brew install --cask snapetech-plezyng
+brew tap snapetech-org/pleazyng https://github.com/snapetech-org/homebrew-pleazyng
+brew install --cask snapetech-pleazyng
 ```
 
 ### Linux — Flatpak
@@ -229,53 +229,57 @@ Install Flatpak with your distribution's package manager, download the bundle fo
 ```bash
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install --user flathub org.freedesktop.Platform//25.08
-flatpak install --user ./plezy-linux-x64.flatpak
-flatpak run org.snapetech.plezyng
+flatpak install --user ./pleazyng-linux-x64.flatpak
+flatpak run org.snapetech.pleazyng
 ```
 
-On arm64, install `plezy-linux-arm64.flatpak`.
+On arm64, install `pleazyng-linux-arm64.flatpak`.
 
 <details>
 <summary>Sandbox, playback, and folder access</summary>
 
 - Not on Flathub — the remote supplies the Freedesktop runtime only.
 - Video playback needs a Wayland session; a pure X11 session shows the interface but cannot create the video plane.
-- No host or home filesystem access; app data lives in `~/.var/app/com.edde746.plezy/`. Add host folders through the desktop file chooser portal, and keep download folders writable.
+- No broad access to your home or host filesystem by default; app data lives in `~/.var/app/org.snapetech.pleazyng/`. Specific runtime paths are available for media artwork and Discord integration. Grant access to additional folders through the desktop file chooser portal, and choose a writable download folder. User overrides can grant additional access.
 - Network, display, audio, and device access are enabled. `--device=all` (Flatpak 1.14 compatibility) exposes more than GPUs and controllers; session-bus access stays filtered.
 
 </details>
 
-The following distribution packages are for upstream **Plezy**, not this Pleazyng fork. Use the Pleazyng release bundles above for the features documented here.
+### Arch Linux — Pacman / AUR
 
-### Arch Linux — Pacman (upstream Plezy)
-
-[Distribution package](https://archlinux.org/packages/extra/x86_64/plezy/).
+Download the Pleazyng `.pkg.tar.zst` for your architecture from the release above, then install it locally:
 
 ```bash
-sudo pacman -S plezy
+sudo pacman -U ./pleazyng-linux-x64.pkg.tar.zst
 ```
 
-### Fedora / Red Hat — DNF
+On ARM64, use `pleazyng-linux-arm64.pkg.tar.zst`. The `pleazyng-bin` AUR publisher is configured, but its first package publication is pending; use the release package until the AUR entry is verified.
 
-[Installation instructions](https://github.com/aldobarr/plezy-rpm) · Community repository by [@aldobarr](https://github.com/aldobarr).
+### Fedora — DNF / COPR
+
+Download the Pleazyng RPM for your architecture from the release above, then install it locally:
+
+```bash
+sudo dnf install ./pleazyng-linux-x64.rpm
+```
+
+On ARM64, use `pleazyng-linux-arm64.rpm`. The [Pleazyng COPR project](https://copr.fedorainfracloud.org/coprs/slskdn/pleazyng/) is configured for Fedora, but its first successful package builds are pending. RHEL-compatible distributions need separate dependency qualification; the Flatpak bundle above is an alternative where Flatpak is supported.
 
 ### Nix
 
-[Community package](https://search.nixos.org/packages?channel=unstable&query=plezy) maintained by [@mio-19](https://github.com/mio-19) and [@MiniHarinn](https://github.com/MiniHarinn).
+Pleazyng's Nix recipe preparation is tracked in the [Linux channel release guide](docs/maintainers/linux-distribution-channels.md). Native Nix builds and playback qualification are pending; no Pleazyng nixpkgs entry or binary cache is claimed. Use the Pleazyng Flatpak bundle above on systems configured for Flatpak.
 
 ### aerynOS — Moss
 
-[Distribution package](https://github.com/aerynOS/recipes/tree/main/p/plezy).
+Pleazyng's aerynOS recipe preparation is tracked in the [Linux channel release guide](docs/maintainers/linux-distribution-channels.md). A native Boulder build, runtime qualification and repository acceptance are pending, so there is no verified `moss install pleazyng` command yet. Use the Pleazyng Flatpak bundle above on systems configured for Flatpak.
 
-```bash
-sudo moss pad plezy
-```
+Package publication and store acceptance are separate from the complete GitHub release. See the [channel readiness and qualification steps](docs/maintainers/linux-distribution-channels.md).
 
 </details>
 
 ## Android closed beta
 
-Pleazyng's Google Play closed test is being prepared. Once the test release is published, invited testers can opt in at [the Pleazyng Google Play test page](https://play.google.com/apps/testing/org.snapetech.plezyng). The link is inactive until then, and only accounts added to the test can join. Google Play requires at least 12 testers to stay opted in continuously for 14 days before production access.
+Pleazyng's Google Play closed test is being prepared for `org.snapetech.pleazyng`. Once the test release is activated, invited testers can opt in at [the Pleazyng Google Play test page](https://play.google.com/apps/testing/org.snapetech.pleazyng). The link is inactive until then, and only accounts added to the test can join. For personal developer accounts subject to Google's [production-access testing requirements](https://support.google.com/googleplay/android-developer/answer/14151465), at least 12 testers must stay opted in continuously for 14 days before applying for production access. See the [publishing readiness checklist](docs/maintainers/publishing-readiness.md) for signing, billing, review and activation gates.
 
 ## Features
 
@@ -313,6 +317,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 - Search any connected catalog source
 - Catalog titles matched back to your own libraries by external ID
 - Seerr — request movies and shows with per-season, 4K, and advanced destination options, and see request status inline
+- [Minimal Requests](docs/SEERRNG_REQUESTS.md) — a native user-only Requests destination for movies, TV seasons, ebooks and audiobooks; SeerrNG provides book discovery/request APIs, with administration kept in its web interface
 - Watchlist sync — add and remove titles on Plex, Trakt, MyAnimeList, AniList, and Simkl from anywhere in the app
 - Custom MDBList Explore lists and a searchable, region-aware directory of official provider/storefront destinations
 
@@ -727,7 +732,7 @@ BUNDLE_DIR=build/linux/x64/release/bundle
 python3 linux/packaging/build-flatpak.py --bundle "$BUNDLE_DIR" --arch x64 --output "$PWD"
 ```
 
-That writes `plezy-linux-x64.flatpak`, installable with the Flatpak commands above; on arm64, use the prepared arm64 bundle directory and `--arch arm64`. Package from the checkout matching the bundle, since the version comes from `pubspec.yaml`.
+That writes `pleazyng-linux-x64.flatpak`, installable with the Flatpak commands above; on arm64, use the prepared arm64 bundle directory and `--arch arm64`. Package from the checkout matching the bundle, since the version comes from `pubspec.yaml`.
 
 Cross-architecture packaging needs native Flatpak tools, a registered binfmt interpreter, and the target SDK/runtime installed with `flatpak install --user --arch=x86_64` (or `aarch64`) — never run Flatpak's namespace tools under emulation. Pass `--arch x64` or `--arch arm64` to the checker and the matching Flatpak architecture to `flatpak run --arch=...`.
 
@@ -737,7 +742,7 @@ Check the installed package against the runtime (not just the SDK), then launch 
 python3 linux/packaging/check-flatpak.py
 ```
 
-The check fails on a non-executable entry point or an unresolved bundled ELF dependency. A container without a GPU can use `flatpak run --env=GALLIUM_DRIVER=softpipe org.snapetech.plezyng` for software-rendered verification; this is not a hardware-decoding or HDR test.
+The check fails on a non-executable entry point or an unresolved bundled ELF dependency. A container without a GPU can use `flatpak run --env=GALLIUM_DRIVER=softpipe org.snapetech.pleazyng` for software-rendered verification; this is not a hardware-decoding or HDR test.
 
 </details>
 

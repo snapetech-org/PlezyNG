@@ -1,6 +1,6 @@
 pkgname=pleazyng-bin
 pkgver=2.24.1
-pkgrel=1
+pkgrel=2
 pkgdesc='Plex client with Jellyfin and Emby support, offline downloads, and HDR'
 arch=('x86_64' 'aarch64')
 url='https://github.com/snapetech-org/pleazyng'

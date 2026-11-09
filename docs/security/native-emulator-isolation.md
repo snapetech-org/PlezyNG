@@ -106,3 +106,10 @@ stuck close, whole-process suspension and restart. All four Android ABIs compile
 and Android lint passed. Linux production CMake/CTest and real worker/protocol
 fault suites also passed. These are emulator/Linux results; signed packages,
 physical devices, Windows and macOS remain independently qualified lanes.
+
+Subsequently, [hosted run 42708996100](https://github.com/snapetech-org/pleazyng/actions/runs/42708996100)
+passed Linux, Windows and macOS containment/production builds and Android API-35
+service instrumentation, all four test ABI builds and lint. The final Linux
+syscall/descriptor/capability policy passed [job 129477197269](https://github.com/snapetech-org/pleazyng/actions/runs/42710141311/job/129477197269),
+including all four production CTest cases and packaging checks. These hosted
+results do not replace actual-core, signed-release or physical-device acceptance.

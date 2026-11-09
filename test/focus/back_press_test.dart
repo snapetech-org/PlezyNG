@@ -89,6 +89,38 @@ void main() {
   });
 
   group('BackKeyOwner', () {
+    testWidgets('root dialogs cover a current nested profile route', (tester) async {
+      final root = GlobalKey<NavigatorState>();
+      late BuildContext profileContext;
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: root,
+          home: Navigator(
+            onGenerateRoute: (_) => MaterialPageRoute<void>(
+              builder: (context) {
+                profileContext = context;
+                return const Scaffold(body: Text('Home'));
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(isCurrentRouteChain(profileContext), isTrue);
+      unawaited(
+        showDialog<void>(
+          context: profileContext,
+          builder: (_) => const AlertDialog(title: Text('Dialog')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(ModalRoute.of(profileContext)!.isCurrent, isTrue);
+      expect(isCurrentRouteChain(profileContext), isFalse);
+      root.currentState!.pop();
+      await tester.pumpAndSettle();
+      expect(isCurrentRouteChain(profileContext), isTrue);
+    });
+
     testWidgets('system Back chooses only the innermost owner and falls through on a covered route', (tester) async {
       final navigator = GlobalKey<NavigatorState>();
       final focus = FocusNode();

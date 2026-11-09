@@ -600,6 +600,7 @@ class _MainScreenState extends State<MainScreen>
     WidgetsBinding.instance.addObserver(this);
     HardwareKeyboard.instance.addHandler(_handleScreensaverHardwareKey);
     _contentFocusScope.addListener(_syncSidebarFocusWithContent);
+    _sidebarFocusScope.addListener(_updateTvBackPassthrough);
 
     if (PlatformDetector.isDesktopOS()) {
       windowManager.addListener(this);
@@ -1207,6 +1208,7 @@ class _MainScreenState extends State<MainScreen>
     _serverStatusSub?.cancel();
     _startupSettleTimeout?.cancel();
     _startupSettleTimeout = null;
+    _sidebarFocusScope.removeListener(_updateTvBackPassthrough);
     _sidebarFocusScope.dispose();
     _contentFocusScope.removeListener(_syncSidebarFocusWithContent);
     _contentFocusScope.dispose();
@@ -1861,8 +1863,8 @@ class _MainScreenState extends State<MainScreen>
       supportsSystemBackPassthrough: PlatformDetector.isAppleTV() || PlatformDetector.isWebOSBuild(),
       isShowingProfileSelection: _isShowingProfileSelection,
       isOverlaySheetOpen: _isOverlaySheetOpen,
-      isRouteCurrent: ModalRoute.of(context)?.isCurrent == true,
-      isSidebarFocused: _isSidebarFocused,
+      isRouteCurrent: isCurrentRouteChain(context),
+      isSidebarFocused: _isSidebarFocused && _sidebarFocusScope.hasFocus,
       hasVisibleTabs: tabs.isNotEmpty,
       isCurrentTabRoot: tabs.isNotEmpty && _currentTab == tabs.first.id,
     );

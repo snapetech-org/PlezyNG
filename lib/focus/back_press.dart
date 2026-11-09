@@ -124,17 +124,22 @@ class SystemBackIntent extends Intent {
   static bool dispatch() {
     final context = FocusManager.instance.primaryFocus?.context;
     if (context == null) return false;
-    // Focus may still belong to the covered route during a push. Never let
-    // that route act underneath the one that now owns the screen.
-    var route = ModalRoute.of(context);
-    while (route != null) {
-      if (!route.isCurrent) return false;
-      final navigatorContext = route.navigator?.context;
-      if (navigatorContext == null) break;
-      route = ModalRoute.of(navigatorContext);
-    }
+    if (!isCurrentRouteChain(context)) return false;
     return Actions.maybeInvoke(context, const SystemBackIntent()) == true;
   }
+}
+
+/// Include enclosing navigators: a root dialog can cover the active page of
+/// the profile navigator without changing that nested page's isCurrent flag.
+bool isCurrentRouteChain(BuildContext context) {
+  var route = ModalRoute.of(context);
+  while (route != null) {
+    if (!route.isCurrent) return false;
+    final navigatorContext = route.navigator?.context;
+    if (navigatorContext == null) break;
+    route = ModalRoute.of(navigatorContext);
+  }
+  return true;
 }
 
 class SystemBackHandler extends StatelessWidget {

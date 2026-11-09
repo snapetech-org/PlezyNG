@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep native TV exit disabled while a dialog or another focus scope covers the home sidebar, including dialogs above the profile navigator.
+
 - Unwind remote and system Back through playback submenus, options and paused controls before leaving the player; reserve native TV exit for the home landing page.
 
 - Keep the canonical GitHub update feed on system certificate authorities in Android and Dart.

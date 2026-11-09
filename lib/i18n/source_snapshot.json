@@ -4996,8 +4996,6 @@
   "karaokeUi.part": "3c6088903696243a",
   "karaokeUi.queueAssignedSingers": "df6d5f64cbcf9ea0",
   "karaokeUi.roomConnection": "2603b7bf00b060d7",
-  "karaokeUi.useHTTPSToEnablePhonePitchAndPrivateVocal": "d849ae74116b5ffa",
-  "karaokeUi.lanSongbookOnly": "f5b14d135062d6b3",
   "karaokeUi.configureHTTPS": "46a7332dc340741f",
   "karaokeUi.selectTrustedPEMCertificate": "077a2a0bed04bc85",
   "karaokeUi.selectPrivatePEMKey": "df639514d3f9ce15",

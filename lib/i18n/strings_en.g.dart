@@ -13960,12 +13960,6 @@ class Translations$karaokeUi$en {
 	/// en: 'Room connection'
 	String get roomConnection => 'Room connection';
 
-	/// en: 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.'
-	String get useHTTPSToEnablePhonePitchAndPrivateVocal => 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.';
-
-	/// en: 'LAN songbook only'
-	String get lanSongbookOnly => 'LAN songbook only';
-
 	/// en: 'Configure HTTPS'
 	String get configureHTTPS => 'Configure HTTPS';
 
@@ -22061,8 +22055,6 @@ extension on Translations {
 			'karaokeUi.part' => ({required Object value1}) => 'Part ${value1}',
 			'karaokeUi.queueAssignedSingers' => 'Queue assigned singers',
 			'karaokeUi.roomConnection' => 'Room connection',
-			'karaokeUi.useHTTPSToEnablePhonePitchAndPrivateVocal' => 'Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.',
-			'karaokeUi.lanSongbookOnly' => 'LAN songbook only',
 			'karaokeUi.configureHTTPS' => 'Configure HTTPS',
 			'karaokeUi.selectTrustedPEMCertificate' => 'Select trusted PEM certificate',
 			'karaokeUi.selectPrivatePEMKey' => 'Select private PEM key',
@@ -22184,10 +22176,10 @@ extension on Translations {
 			'bonusExtras.spoilers' => 'Show extras that may contain spoilers',
 			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
 			'bonusExtras.externalEnabled' => 'Discover verified online extras',
-			_ => null,
-		} ?? switch (path) {
 			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			'bonusExtras.serviceUrl' => 'Discovery server address',
+			_ => null,
+		} ?? switch (path) {
 			'bonusExtras.serviceToken' => 'Discovery access token',
 			'bonusExtras.aiMode' => 'AI assistance',
 			'bonusExtras.aiOff' => 'Off',

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.
+
 - Fix native video being hidden behind media-detail artwork on Windows and other retained desktop surfaces. Clear only the video aperture after its first frame, preserving controls, surrounding workspace content, and the black startup cover ([#292](https://github.com/snapetech-org/pleazyng/issues/292)).
 
 - Give hosted Apple validation and release jobs short, task-owned local scratch paths with bounded free-space checks and exact cleanup, while preserving the private NFS path for explicitly constrained Apple JIT runs.

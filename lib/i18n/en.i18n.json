@@ -5349,8 +5349,6 @@
     "part": "Part ${value1}",
     "queueAssignedSingers": "Queue assigned singers",
     "roomConnection": "Room connection",
-    "useHTTPSToEnablePhonePitchAndPrivateVocal": "Use HTTPS to enable phone pitch and private vocal recording. Select a PEM certificate and key for this address that your phones trust.",
-    "lanSongbookOnly": "LAN songbook only",
     "configureHTTPS": "Configure HTTPS",
     "selectTrustedPEMCertificate": "Select trusted PEM certificate",
     "selectPrivatePEMKey": "Select private PEM key",

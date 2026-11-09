@@ -5343,8 +5343,6 @@
     "part": "",
     "queueAssignedSingers": "",
     "roomConnection": "",
-    "useHTTPSToEnablePhonePitchAndPrivateVocal": "",
-    "lanSongbookOnly": "",
     "configureHTTPS": "",
     "selectTrustedPEMCertificate": "",
     "selectPrivatePEMKey": "",

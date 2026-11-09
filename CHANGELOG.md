@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Publish and natively qualify Pleazyng v3.0.7 channel repacks on AUR, Fedora COPR and the maintained Nix flake; submit the Nixpkgs package for review. Publish and install the signed Homebrew Cask, and activate the Google Play lifetime product while retaining the remaining store-review qualification gates. Replace pending installation text with the verified Pleazyng channel commands.
+
 - Register reviewed English fallbacks for the new Seerr availability-alert copy until translations land, and keep unexpected quick-request failures localized instead of exposing raw exception text.
 
 - System certificate authorities for GitHub asset redirects: retain system-only certificate trust through githubusercontent.com redirects on Android and dart:io, without enabling the upstream anime-feed migration. Independently adapted from [upstream cbd9205f](https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).

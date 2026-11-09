@@ -61,8 +61,8 @@ inline void RestrictCore(const std::string& core, const std::string& rom,
       throw std::runtime_error("Could not enter emulator filesystem sandbox");
     close(rules);
   } catch (...) { close(rules); throw; }
-  // Landlock does not cover every metadata syscall. Deny mutations outside the
-  // save-file API, networking, process introspection, and new executable code.
+  // Landlock does not cover every metadata syscall. Deny metadata mutations,
+  // networking, process introspection, and new executable code.
   std::vector<sock_filter> filter;
   auto stmt = [&](uint16_t code, uint32_t value) { filter.push_back(BPF_STMT(code, value)); };
   auto deny = [&](uint32_t call, uint32_t error = EPERM) {
@@ -92,6 +92,7 @@ inline void RestrictCore(const std::string& core, const std::string& rom,
        SYS_fchmod, SYS_fchmodat, SYS_fchown, SYS_fchownat,
        SYS_setxattr, SYS_lsetxattr, SYS_fsetxattr, SYS_removexattr, SYS_lremovexattr,
        SYS_fremovexattr, SYS_utimensat, SYS_kill, SYS_tkill, SYS_tgkill,
+       SYS_rt_sigqueueinfo, SYS_rt_tgsigqueueinfo,
        SYS_shmget, SYS_shmat, SYS_shmctl, SYS_semget, SYS_semctl, SYS_msgget, SYS_msgsnd,
        SYS_msgrcv, SYS_msgctl, SYS_prctl, SYS_setpriority, SYS_sched_setaffinity,
        SYS_sched_setscheduler, SYS_sched_setparam}) deny(call);
@@ -113,6 +114,21 @@ inline void RestrictCore(const std::string& core, const std::string& rom,
 #ifdef SYS_chown
   deny(SYS_chown);
 #endif
+#ifdef SYS_lchown
+  deny(SYS_lchown);
+#endif
+#ifdef SYS_utime
+  deny(SYS_utime);
+#endif
+#ifdef SYS_utimes
+  deny(SYS_utimes);
+#endif
+#ifdef SYS_futimesat
+  deny(SYS_futimesat);
+#endif
+#ifdef SYS_fchmodat2
+  deny(SYS_fchmodat2);
+#endif
 #ifdef SYS_fork
   deny(SYS_fork);
 #endif
@@ -125,6 +141,14 @@ inline void RestrictCore(const std::string& core, const std::string& rom,
 #ifdef SYS_clone3
   deny(SYS_clone3, ENOSYS);  // Let libc use the inspectable legacy clone ABI.
 #endif
+  // glibc uses prlimit64 for this process's resource limits. The same-UID
+  // parent must never be addressable through that API, even for a query.
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_prlimit64, 0, 5));
+  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, args[0]));
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, 0, 1, 0));
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, uint32_t(getpid()), 0, 1));
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ALLOW);
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | EPERM);
   // Software cores may create threads, but never another process.
   filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_clone, 0, 3));
   stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, args[0]));

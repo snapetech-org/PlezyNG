@@ -14,6 +14,11 @@
 #else
 #include <sys/socket.h>
 #include <unistd.h>
+#ifdef __linux__
+#include <sys/syscall.h>
+#include <sys/resource.h>
+#include <signal.h>
+#endif
 #endif
 namespace {
 char mode = 'O'; bool loaded = false;
@@ -40,6 +45,12 @@ int plezy_retro_open(const char*, const char* rom, const char*, const char* save
 #elif defined(__linux__)
     const int connection = socket(AF_INET, SOCK_STREAM, 0);
     if (connection >= 0) { close(connection); return 0; }
+    // Signal 0 only checks permission. Never send an actual signal to the
+    // test parent, even if a future sandbox regression allows this syscall.
+    siginfo_t signal{};
+    if (syscall(SYS_rt_sigqueueinfo, getppid(), 0, &signal) != -1 || errno != EPERM) return 0;
+    rlimit limit{};
+    if (syscall(SYS_prlimit64, getppid(), RLIMIT_NOFILE, nullptr, &limit) != -1 || errno != EPERM) return 0;
 #endif
   }
   loaded = true; return 1;

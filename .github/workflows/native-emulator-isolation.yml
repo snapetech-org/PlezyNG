@@ -8,12 +8,13 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: native-emulator-isolation-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
   containment:
+    # Queue each platform independently. An unavailable runner must not hold
+    # up validation on every other operating system, including revised routes.
+    concurrency:
+      group: native-emulator-isolation-${{ github.ref }}-${{ matrix.os }}
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix:

@@ -13,6 +13,8 @@ import '../i18n/strings.g.dart';
 import '../theme/mono_motion.dart';
 import '../theme/mono_tokens.dart';
 import '../widgets/focusable_list_tile.dart';
+import '../utils/snackbar_helper.dart';
+import 'workspace_recovery.dart';
 import 'workspace_controller.dart';
 import 'workspace_models.dart';
 
@@ -798,6 +800,27 @@ class _WorkspaceSessionTray extends StatelessWidget {
               ),
             ),
             Divider(height: tk.groupGap, color: tk.outline),
+            for (final descriptor in controller.recoverableSessions)
+              FocusableListTile(
+                leading: const AppIcon(Symbols.history_rounded),
+                title: Text(isolateDisplayText(descriptor.title), maxLines: 2, overflow: TextOverflow.ellipsis),
+                subtitle: Text(controller.recoveryPending(descriptor.id) ? t.common.loading : t.common.resume),
+                onTap: controller.recoveryPending(descriptor.id) ? null : () async {
+                  final opened = await controller.recover(descriptor.id, (value, current) =>
+                    resumeWorkspaceSession(context, controller, value, current));
+                  if (!context.mounted || !controller.active) return;
+                  if (opened) {
+                    controller.setSessionTrayVisible(false);
+                  } else {
+                    showErrorSnackBar(context, t.errors.unableToLoad(context: descriptor.title));
+                  }
+                },
+                trailing: _workspaceIconButton(
+                  tooltip: t.common.close,
+                  icon: Symbols.close_rounded,
+                  onPressed: () => controller.dismissRecovery(descriptor.id),
+                ),
+              ),
             for (final registration in sessions)
               Builder(
                 builder: (context) {

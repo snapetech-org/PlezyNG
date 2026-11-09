@@ -210,3 +210,111 @@ The visualizer runtime was extracted from the SHA-256-verified published Linux
 AppImage. Linux packaging strips ELF libraries after installation, so its build
 receipt records producer bytes before that transformation; retain the final
 packaged library digest separately rather than comparing it to the pre-strip hash.
+
+
+## Qualification record: 2026-11-09
+
+The isolated full Flutter baseline was
+`06908c891ba25de05e14e8e2b99a3173aa2ce665`. The final Android QA APK is
+3.0.12+171, debug/x86_64 with `PLEZY_MAESTRO_E2E=true`; its application,
+Android build and source-packaging inputs match `0f9377c84`. It was built in the
+isolated worktree before those changes were committed. The retained APK digest
+and source equivalence check identify the exact tested bytes. This is a QA APK,
+not qualification of a minified production APK or every Android ABI.
+
+| Check | Result |
+| --- | --- |
+| Full Flutter suite | 9,897 passed, 22 skipped; 880 suites |
+| Native-video pixel and player navigation regression | 19 passed; the old renderer failed the pixel assertion |
+| Tizen / webOS build-flag acceptance | 4 / 1 passed |
+| Real Chromium reader | 3 passed |
+| Real local Watch Together relay | 1 passed |
+| Server Go race checks | Both packages passed |
+| Workflow/script guards | Passed again after packaging fixes |
+| Dolby Vision tools / webOS tooling | 109 / 57 passed |
+| Visualizer C++17 / C++20 | Five checks passed in each standard |
+| Android host-native contracts | 2 passed |
+| Linux HDR/render-worker and webOS slot contracts | 6 passed under ASan/UBSan |
+| Vendored plugin VM / browser wakelock | 68 / 21 passed |
+| Karaoke / lending / extras / OAuth worker | 10 / 12 / 20 / 14 passed |
+| Final Android JVM, including Steam | 735 passed across 71 suites |
+| Final Android package inspection | Steam/RomM exports, dependencies, source receipts and 16 KB APK alignment passed; Moonlight/Steam classes and activities present |
+| Final Android baseline at 320 logical pixels | 9/9 flows passed in 6m12s |
+| Final controlled offline download/playback | Passed after the fixture proxy denied server access |
+| RomM source staging regressions | 11 passed |
+
+An intermediate wider-phone run completed all eight original flows; final
+acceptance above uses the receiver-complete APK. Responsive widget
+coverage includes folded/small/landscape phones, iPhone, tablets, automotive,
+Linux/Windows/macOS desktops, ultrawides and 720p/4K TV layouts, with large text
+and RTL. Platform simulation does not qualify OS APIs, decoder hardware,
+HDR/FEL output, NPU performance, controller hardware or authenticated services.
+
+Repairs made during this pass:
+
+- Native video did not erase retained artwork beneath the transparent player
+  route. The Video widget now clears only its native aperture after the first
+  frame, preserving the startup black cover, controls and neighboring tiles.
+  The downstream report was [#292](https://github.com/snapetech-org/pleazyng/issues/292)
+  by [@Tatsu941](https://github.com/Tatsu941). Pixel assertions cover the actual
+  Navigator route and fail against the previous renderer.
+- API 36 delivered synthesized Back keys and then a system callback after IME
+  use, causing two route pops. While Flutter's system callback is registered,
+  the native view now leaves Back ownership to that callback. Legacy/root key
+  delivery remains available. The final implementation keeps predictive Back
+  enabled; the intermediate manifest-only compatibility candidate was reverted.
+  The maintained ninth Maestro flow covers IME dismissal, one-route return and
+  root exit; deep Settings checks reproduce the original after-IME failure.
+- Android configured Moonlight/Steam projects without depending on them from
+  the app. Both receivers are now packaged by default. Removed the duplicate
+  exclusive JitPack declaration and aligned desugaring with Moonlight's 2.1.5.
+  Actual streaming against paired hosts remains unqualified.
+- AAPT expanded `.gz` assets and removed their suffix, invalidating RomM source
+  receipts. Android staging now uses `.tar.gzip`, preserves the compressed bytes
+  and retires only legacy archives identified by their own prior receipts.
+- Removed two obsolete karaoke locale entries, regenerated canonical outputs,
+  and passed strict localization checks for all 37 locales. Authentication QA
+  uses the setup Back control rather than an extra keyboard/navigation Back;
+  small-phone Settings QA scrolls rows into view before asserting them.
+
+The native CI receipt is
+[run 42674160455](https://github.com/snapetech-org/pleazyng/actions/runs/42674160455),
+whose source is `c8049e308` (before the later Android-native/package fixes).
+Windows x64/arm64, Linux ASan/TSan, Android JVM/native, unit tests, analysis and
+server checks passed. iOS and macOS failed inside Xcode 26.6 SwiftPM resolution
+with `NSMutableArray insertObjects:atIndexes:` / array-count mismatch; iOS also
+failed after a job retry. tvOS completed dependency installation but failed because the Intel hosted
+runner could not execute the required arm64 simulator destination. The tvOS
+qualification matrix now selects the documented Apple Silicon `macos-26`
+runner; compatible iOS/macOS lanes retain Intel. These Apple results are not a
+native acceptance pass.
+Later source includes the separately integrated fresh-checkout Xcode retry
+and corrected tvOS simulator architecture;
+this older run cannot validate that newer revision. Preserve active jobs and
+check live status before retrying. The corrected workflow revision is being
+validated in [run 42689278258](https://github.com/snapetech-org/pleazyng/actions/runs/42689278258)
+at `93369fbe8`; it was queued when this receipt was written. The 45 workflow-guard
+tests pass, including rejection of an Intel host for the arm64 tvOS simulator.
+Linux arm64 app execution, native Apple app runtime, Windows GPU playback and
+physical TV/hardware checks remain open.
+
+Receipts, machine-readable summaries, successful and failed flow logs,
+screenshots, the final QA APK and cleanup inventory are retained on kspld0 at
+`/home/keith/Documents/qa/pleazyng-20261109-headless/`. Earlier APK candidates
+are superseded and are removed during cleanup. Shared dependency caches remain
+intact; the task CLI/source caches are retained separately. The task-owned AVD
+and isolated worktree were removed after their consumers exited. Final retained
+QA evidence occupies about 902 MiB, including `qa-complete.apk` (SHA-256
+`06cf1784f82af06d61ac84efd907cf012301d6ae2ae7fa2fa73046a7fb74acc6`).
+Reusable task tools and prepared source caches occupy about 962 MiB at
+`/home/keith/.cache/pleazyng-qa-20261109/`; shared caches and other devices remain
+untouched. `cleanup.json` records the exact removed and retained paths.
+
+For future Android qualification, run `scripts/games/check_android_package.py`
+against the final APK, with the NDK `llvm-readelf`, matching `--abi` values and
+build-tools `zipalign`. Merely configuring or separately compiling a receiver
+module does not establish that the application contains it. Run Gradle builds
+sequentially in a checkout: concurrent builds can race on native dependency
+extraction. Select the emulator ABI explicitly for local JVM/APK validation to
+avoid compiling unused ABIs. An initial collision in this pass was repaired by
+serializing the runs; it was not an application test failure.

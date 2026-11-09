@@ -73,7 +73,7 @@ def named_step(block: str, name: str) -> str:
 def validate_windows_jni_jdk(block: str, context: str) -> None:
     setup_java = named_step(block, "Setup Java")
     require(
-        "uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5"
+        "uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0"
         in setup_java
         and 'distribution: "temurin"' in setup_java
         and 'java-version: "21"' in setup_java

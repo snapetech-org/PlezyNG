@@ -171,7 +171,7 @@ jobs:
           command -v pkg-config
           pkg-config --exists openssl yaml-0.1 libffi zlib
 
-      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.3"
           bundler-cache: true
@@ -228,7 +228,7 @@ jobs:
           command -v pkg-config
           pkg-config --exists openssl yaml-0.1 libffi zlib
 
-      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.3"
           bundler-cache: true
@@ -294,7 +294,7 @@ jobs:
           PYHASH
           python3 "$GITHUB_WORKSPACE/scripts/verify_release_attestation.py" "$IPA_ASSET" --repo "$GITHUB_REPOSITORY"
 
-      - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.3"
           bundler-cache: true

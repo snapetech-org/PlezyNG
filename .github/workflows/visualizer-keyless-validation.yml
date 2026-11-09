@@ -22,7 +22,7 @@ jobs:
       (github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == 'snapetech-org/pleazyng'))
-    runs-on: ubuntu-24.04
+    runs-on: macos-26-intel
     timeout-minutes: 30
     env:
       PLEZY_CATALOG_FIXTURE: build/authenticated-catalog.json
@@ -47,7 +47,7 @@ jobs:
           gh api --method GET repos/snapetech-org/pleazyng/contents/content/visualizer-catalog.json \
             -f "ref=$revision" --jq .content | base64 --decode > "$PLEZY_CATALOG_FIXTURE"
           test -s "$PLEZY_CATALOG_FIXTURE"
-          sha256sum "$PLEZY_CATALOG_FIXTURE"
+          shasum -a 256 "$PLEZY_CATALOG_FIXTURE"
       - name: Analyze the verifier
         run: flutter analyze --no-pub lib/services/visualization test/services/visualization
       - name: Verify authentic signatures and adversarial mutations

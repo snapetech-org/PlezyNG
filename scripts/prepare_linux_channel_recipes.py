@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare Nix/aerynOS candidates from an authenticated release checksum list.
+"""Prepare Nix candidates from an authenticated release checksum list.
 
 This offline renderer neither authenticates input nor publishes packages. Verify
 the checksum manifest's GitHub attestation before invoking it; see the runbook.
@@ -47,7 +47,7 @@ def prepare(tag: str, checksums: Path, output: Path) -> None:
         "@@ARM64_SHA256@@": hashes[ASSETS["arm64"]],
     }
     files = {}
-    for channel, name in (("nix", "pleazyng.nix"), ("aerynos", "stone.yaml")):
+    for channel, name in (("nix", "pleazyng.nix"),):
         template = ROOT / "linux/packaging" / channel / f"{name}.template"
         content = template.read_text(encoding="utf-8")
         for token, value in replacements.items():

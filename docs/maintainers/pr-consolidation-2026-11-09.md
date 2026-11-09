@@ -64,3 +64,20 @@ security ledger.
 Hosted security and native-platform validation remain queued/running independently;
 no active build was cancelled to consolidate branches. Physical automotive,
 Apple signing and other device acceptance retain their explicit open status.
+
+## Additional full Android application build
+
+A fresh task-owned checkout bypassed the stale canonical shared Moonlight cache
+without modifying it. Full app Kotlin compilation passed; after fast-forwarding
+the checkout to current main `74e8d63d2`, the complete 3.0.19 debug APK assembled.
+Its actual Flutter application ABI set is arm64-v8a, armeabi-v7a and x86_64
+(the separate containment test target also compiles x86). Final package checks
+verify Steam JNI exports, parent/worker/core libraries and exports, corresponding
+source receipts, dependency packaging and 16 KiB ZIP alignment. The verified
+APK and machine-readable checker report are retained with the local QA evidence.
+This is a debug build/package result, not a signed release or physical-car claim.
+
+The independent hosted [Decky validation](https://github.com/snapetech-org/pleazyng/actions/runs/42705515200)
+uses Ubuntu 24.04 and remains queued awaiting runner assignment at this receipt.
+Existing full security/native runs were preserved. The concurrent Apple resolver
+change on main also passed its three focused Python tests.

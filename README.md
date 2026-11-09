@@ -187,7 +187,7 @@ Pleazyng builds on upstream Plezy with a broad set of features for Plex, Jellyfi
 This table is a snapshot of downstream work and its current limits. The linked upstream requests provide context for the gap Pleazyng addresses; equivalent upstream implementations can replace the corresponding downstream code when their behavior and server coverage match.
 
 <p>
-  <a href="https://plezyng.app/">Website</a> ·
+  <a href="https://pleazyng.app/">Website</a> ·
   <a href="https://github.com/edde746/plezy">Upstream Plezy</a> ·
   <a href="https://github.com/snapetech-org/pleazyng/issues">Pleazyng issues</a> ·
   <a href="#download">Download</a> ·
@@ -214,12 +214,12 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ### macOS — Homebrew
 
-The `snapetech-plezyng` Cask is being prepared. It will be installable after a signed and notarized macOS release is published and the generated Cask is added to this repository.
+The `snapetech-pleazyng` Cask is being prepared. It will be installable after a signed and notarized macOS release is published and the generated Cask is added to this repository.
 
 ```bash
 # After the Cask is published in this tap
 brew tap snapetech-org/pleazyng https://github.com/snapetech-org/pleazyng
-brew install --cask snapetech-plezyng
+brew install --cask snapetech-pleazyng
 ```
 
 ### Linux — Flatpak
@@ -229,25 +229,25 @@ Install Flatpak with your distribution's package manager, download the bundle fo
 ```bash
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install --user flathub org.freedesktop.Platform//25.08
-flatpak install --user ./plezy-linux-x64.flatpak
-flatpak run org.snapetech.plezyng
+flatpak install --user ./pleazy-linux-x64.flatpak
+flatpak run org.snapetech.pleazyng
 ```
 
-On arm64, install `plezy-linux-arm64.flatpak`.
+On arm64, install `pleazy-linux-arm64.flatpak`.
 
 <details>
 <summary>Sandbox, playback, and folder access</summary>
 
 - Not on Flathub — the remote supplies the Freedesktop runtime only.
 - Video playback needs a Wayland session; a pure X11 session shows the interface but cannot create the video plane.
-- No host or home filesystem access; app data lives in `~/.var/app/com.edde746.plezy/`. Add host folders through the desktop file chooser portal, and keep download folders writable.
+- No host or home filesystem access; app data lives in `~/.var/app/com.snapetech.pleazy/`. Add host folders through the desktop file chooser portal, and keep download folders writable.
 - Network, display, audio, and device access are enabled. `--device=all` (Flatpak 1.14 compatibility) exposes more than GPUs and controllers; session-bus access stays filtered.
 
 </details>
 
 The following distribution packages are for upstream **Plezy**, not this Pleazyng fork. Use the Pleazyng release bundles above for the features documented here.
 
-### Arch Linux — Pacman (upstream Plezy)
+### Arch Linux — Pacman (upstream Pleay)
 
 [Distribution package](https://archlinux.org/packages/extra/x86_64/plezy/).
 

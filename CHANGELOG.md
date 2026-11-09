@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Set Flutter and webOS versions together, and validate package metadata in commit/CI guards and before the release driver starts CI or creates a tag.
+
 - Preserve pointer entry and text-field focus while giving submenu Back handlers their own focus scope; retain staged filter edits until their parent editor closes.
 
 - Keep native TV exit disabled while a dialog or another focus scope covers the home sidebar, including dialogs above the profile navigator.
@@ -619,12 +621,13 @@
 - Keep temporary HLS sharing within its startup window for long-GOP sources by forcing keyframes at the segment cadence; verify that playlist and media segments remain token-scoped and the listener closes cleanly.
 - Translate the added video-track, playlist, edition, and capture-preview cues across supported locales, and use the converter's concise help on the existing Open media tile.
 
-## [3.0.6] - 2026-11-09
+## [3.0.7] - 2026-11-09
 
 - Fix remote and system Back in Audio Output and other playback options: return to the parent menu, then close options, hide paused controls, and leave the player on subsequent presses.
 - Claim the webOS Back key while inside the app and allow the TV's native exit handling only at the home landing page. Preserve tvOS root Menu behavior and Android duplicate-Back protection.
 - Keep pointer-opened submenus in the Back focus chain and let explicit Back dismiss paused controls without waiting for auto-hide holds or the fade animation.
 - Include all current-main changes, canonical Pleazyng repository/update links, and every supported release platform.
+- Synchronize webOS package metadata with Flutter version 3.0.7+166 and catch mismatches before CI and tagging.
 
 ## [3.0.5] - 2026-11-08
 

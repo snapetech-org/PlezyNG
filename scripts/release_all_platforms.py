@@ -1567,6 +1567,9 @@ def main() -> int:
     ).stdout.strip().split("+", 1)[0]
     if package_version != args.version:
         raise ReleaseError(f"Requested {args.version}, but pubspec.yaml declares {package_version}.")
+    # Catch duplicated package metadata before spending CI minutes or creating
+    # an immutable tag. This is also a shared pre-commit/CI guard.
+    command(["python3", "tools/webos/verify_package.py", "--project-metadata"], cwd=ROOT)
     if args.execution_profile != "hybrid":
         raise ReleaseError("Complete releases require the hybrid profile, including native Windows ARM64 CI.")
     if args.reuse_platform_run and (

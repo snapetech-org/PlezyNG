@@ -20,6 +20,12 @@ the live producer again. Published releases retain their original provenance.
 
 ## Release procedure
 
+Set a new version with `python3 scripts/set_release_version.py 3.0.7+166`.
+This updates both `pubspec.yaml` and `webos/meta/appinfo.json`, preserving the
+native app identity, permissions, and other metadata. Use the next unused
+version and build number; never move an existing tag. The shared commit/CI
+guards and release driver check this metadata before expensive work or tagging.
+
 After exact-main CI and platform canaries pass, run the complete release
 from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
 x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple

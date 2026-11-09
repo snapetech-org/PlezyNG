@@ -9,6 +9,8 @@ shopt -s nullglob
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+python3 tools/webos/verify_package.py --project-metadata
+
 for checker in \
   scripts/checks/check_rebrand.py \
   scripts/checks/check_deep_link_schemes.py \

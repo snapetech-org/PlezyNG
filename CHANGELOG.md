@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Preserve the owner-directed aerynOS channel exclusion after concurrent integration restored its recipe; remove the restored generator output and installation documentation, and record the exclusion in project instructions.
+- Remove aerynOS release-channel recipes, generator output and installation documentation under the owner’s channel decision.
 
 - More reliable iOS speed-change qualification: test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage. Independently adapted from [upstream 48926474](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
@@ -66,7 +66,6 @@
 
 - Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
-- Restore aerynOS release-bundle packaging for downstream review, with checksum-pinned WebKit helpers, corrected Boulder archive extraction and support-file layout, and private ELF search paths for the app and embedded Dolby Vision tool runtime. Native aerynOS build, installation and Jellyfin sign-in pass; the published v3.0.7 bundle still fails video playback QA because it predates the native-aperture repair.
 
 - Retry the nested Dolby Vision Swift package resolution once from clean task-owned state when Xcode 26 aborts inside its package-graph model; ordinary resolver failures still fail immediately.
 

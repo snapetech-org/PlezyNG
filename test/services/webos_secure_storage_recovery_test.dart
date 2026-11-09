@@ -314,7 +314,10 @@ void main() {
     backend.conflictOnce = true;
     expect(await storage.migrateLegacy(), 2);
     expect(backend.stores, 2);
-    expect(await storage.readAll(options: _options), {'vault': 'ORIGINAL_DUMMY_KEY', 'other-isolate': 'OTHER_DUMMY_KEY'});
+    expect(await storage.readAll(options: _options), {
+      'vault': 'ORIGINAL_DUMMY_KEY',
+      'other-isolate': 'OTHER_DUMMY_KEY',
+    });
   });
 
   test('lost migration acknowledgement preserves keys used by the durable row', () async {

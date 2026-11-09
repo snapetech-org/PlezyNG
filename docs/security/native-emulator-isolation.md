@@ -55,6 +55,9 @@ mis-sequenced, drip-fed and malformed protocol replies.
 cannot expose the platform sandbox. It is not sandbox qualification. The trusted
 `Native emulator isolation` workflow requires the full tests and compilation of
 the production host and worker on hosted Linux, Windows and macOS runners.
+An additional CMake/CTest target loads a fixture shared library through the
+production worker and libretro adapter; it verifies constructors, frame
+conversion, private-file denial and save restore without using real game files.
 Actual bundled-core, signed-package, audio-device and game compatibility checks
 remain part of platform release qualification.
 

@@ -136,13 +136,23 @@ def package(sources, libraries, output, platform, architecture):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     records = []
+    obsolete_archives = []
     for core in sorted(DEFAULT_CORES):
         revision = revisions[core]
-        archive_name = f"{core}-{revision}.tar.gz"
+        # AAPT expands .gz assets and strips that suffix, invalidating the
+        # packaged name and digest in our source receipt. Keep gzip bytes under
+        # an Android-safe suffix while preserving other platforms' filenames.
+        suffix = "tar.gzip" if platform == "Android" else "tar.gz"
+        archive_name = f"{core}-{revision}.{suffix}"
         archive_path = output / archive_name
         # Only reuse an archive with its matching, digest-verified receipt.
         receipt = output / f"{core}-source.json"
         previous = json.loads(receipt.read_text()) if receipt.is_file() else {}
+        legacy_archive = output / f"{core}-{revision}.tar.gz"
+        if (platform == "Android" and legacy_archive.is_file()
+                and previous.get("commit") == revision
+                and previous.get("sha256") == digest(legacy_archive)):
+            obsolete_archives.append(legacy_archive)
         recipe = digest(Path(__file__))
         reusable = (archive_path.is_file() and previous.get("recipeSha256") == recipe
                     and previous.get("sha256") == digest(archive_path)
@@ -187,6 +197,10 @@ def package(sources, libraries, output, platform, architecture):
         json.dump(manifest, temporary, indent=2)
         temporary.write("\n")
     Path(temporary.name).replace(output / "romm-cores.json")
+    # Retire only archives identified by their previous receipt, after the new
+    # archive and manifest are safely in place. Unrelated outputs stay intact.
+    for archive in obsolete_archives:
+        archive.unlink()
     return manifest
 
 

@@ -262,7 +262,17 @@ inline std::unique_ptr<BytePipe> Spawn(
   wchar_t windows[32768];
   const auto windowsSize = GetWindowsDirectoryW(windows, 32768);
   if (!windowsSize || windowsSize >= 32768) throw std::runtime_error("Could not locate Windows runtime");
-  std::wstring environment = L"SystemRoot=" + std::wstring(windows) + L'\0' + L"WINDIR=" + windows + L'\0' + L'\0';
+  std::wstring environment;
+  if (appContainer) {
+    // Windows resolves the AppContainer profile using this entry and then
+    // rewrites it for the child. An otherwise valid minimal environment fails
+    // CreateProcess with ERROR_ENVVAR_NOT_FOUND if it is omitted.
+    wchar_t localData[32768];
+    const auto size = GetEnvironmentVariableW(L"LOCALAPPDATA", localData, 32768);
+    if (!size || size >= 32768) throw std::runtime_error("Could not locate the AppContainer profile root");
+    environment = L"LOCALAPPDATA=" + std::wstring(localData, size) + L'\0';
+  }
+  environment += L"SystemRoot=" + std::wstring(windows) + L'\0' + L"WINDIR=" + windows + L'\0' + L'\0';
   if (!CreateProcessW(
           path.c_str(), command.data(), nullptr, nullptr, TRUE,
           EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED | CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT,

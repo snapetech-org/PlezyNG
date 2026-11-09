@@ -5,6 +5,16 @@
 - Run desktop RomM cores in a separate sandboxed helper with bounded IPC, crash/hang recovery, parent-owned audio/saves, and OS-confirmed teardown. Package and sign the macOS helper, restrict Windows cores with AppContainer, and require Landlock/seccomp on Linux. Add real worker-fault validation across desktop operating systems; mobile and TV containment remains tracked separately.
 - Automatically migrate untouched legacy webOS credentials to authenticated storage during startup, preserving concurrent changes and recoverability after interrupted writes.
 
+- Preserve compressed RomM source archives and their receipt hashes inside Android packages by using asset-safe filenames; retire only prior archives verified by their own receipts.
+
+- Package the embedded Android Moonlight and Steam receiver modules in ordinary app builds, including their native libraries and activity/stream implementations. Previously Gradle configured the modules without linking them into the application.
+
+- Scroll Settings QA assertions into view on smaller phones before checking them, then restore the top of the list for deeper navigation checks.
+
+- Prevent Android API 36 Back from navigating twice after keyboard use. While Flutter’s system Back callback is registered, let it own navigation instead of also forwarding synthesized raw Back keys; preserve predictive gestures, IME dismissal, and legacy/root Back handling.
+
+- Retry Apple SwiftPM resolution once from a fresh run-scoped checkout after Xcode 26's internal package-graph insertion crash, while continuing to fail ordinary dependency errors without retrying.
+
 - Make the fresh-install authentication QA flow use the setup screen’s Back control, avoiding a second navigation pop when Maestro hides an already absent keyboard.
 
 - Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.

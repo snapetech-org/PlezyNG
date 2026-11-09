@@ -54,6 +54,21 @@ class CorrespondingSourceTests(unittest.TestCase):
                 self.assertTrue(any(name.endswith('/LICENSE') for name in names))
             self.assertTrue(all((self.output / license).is_file() for license in entry['licenses']))
 
+    def test_android_assets_keep_compressed_bytes_and_matching_receipts(self):
+        old = self.stage()
+        unrelated = self.output / 'retained-evidence.gz'
+        unrelated.write_bytes(b'evidence')
+        result = package.package(self.sources, self.libraries, self.output, 'Android', 'x86_64')
+        for entry in result['cores']:
+            archive = self.output / entry['sourceArchive']
+            self.assertFalse(archive.name.endswith('.gz'))
+            self.assertEqual(archive.read_bytes()[:2], b'\x1f\x8b')
+            self.assertEqual(package.digest(archive), entry['sourceSha256'])
+            with tarfile.open(archive) as source:
+                self.assertTrue(any(name.endswith('/core.c') for name in source.getnames()))
+        self.assertTrue(all(not (self.output / entry['sourceArchive']).exists() for entry in old['cores']))
+        self.assertEqual(unrelated.read_bytes(), b'evidence')
+
     def test_tampered_archive_is_regenerated(self):
         entry = self.stage()['cores'][0]
         archive = self.output / entry['sourceArchive']
@@ -152,6 +167,35 @@ class AppleCacheTests(unittest.TestCase):
                 libraries[core] = library.resolve()
             self.assertEqual(package.parse_inputs([f'{core}={path}' for core, path in libraries.items()]),
                              libraries)
+
+    def test_macos_cache_requires_the_exact_executable_worker(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for name in (*[name + '.xcframework' for name in apple.FRAMEWORKS], 'notices'):
+                folder = root / name
+                folder.mkdir()
+                (folder / 'content').write_bytes(b'fixture')
+
+            def record():
+                receipt = {'sourceSha256': 'recipe', 'artifacts': {
+                    path.name: apple.tree_digest(path) for path in root.iterdir() if path.is_dir()}}
+                (root / 'build-receipt.json').write_text(json.dumps(receipt))
+
+            record()
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
+            (root / 'helpers').mkdir()
+            helper = root / 'helpers/plezy_retro_worker'
+            helper.write_bytes(b'worker fixture')
+            helper.chmod(0o755)
+            record()
+            self.assertTrue(apple.cache_valid(root, 'recipe', 'macos'))
+            helper.write_bytes(b'changed worker')
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
+            helper.write_bytes(b'worker fixture')
+            helper.chmod(0o644)
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
+            helper.unlink()
+            self.assertFalse(apple.cache_valid(root, 'recipe', 'macos'))
 
     def test_cache_verifies_every_framework_and_corresponding_source(self):
         with tempfile.TemporaryDirectory() as temporary:

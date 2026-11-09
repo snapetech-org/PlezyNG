@@ -43,7 +43,9 @@ class _RetroBindings {
     }
   }
   final DynamicLibrary library;
-  late final isolationVersion = library.lookupFunction<Int32 Function(), int Function()>('plezy_retro_isolation_version');
+  late final isolationVersion = library.lookupFunction<Int32 Function(), int Function()>(
+    'plezy_retro_isolation_version',
+  );
   late final alloc = library.lookupFunction<Pointer<Uint8> Function(Int32), Pointer<Uint8> Function(int)>(
     'plezy_retro_alloc',
   );

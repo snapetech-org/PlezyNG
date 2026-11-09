@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve the owner-directed aerynOS channel exclusion after concurrent integration restored its recipe; remove the restored generator output and installation documentation, and record the exclusion in project instructions.
+
 - More reliable iOS speed-change qualification: test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage. Independently adapted from [upstream 48926474](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Keep the descriptor-worker integration check in its dedicated native isolation lane, using its required verified headers, instead of accidentally invoking it as an argument-free Python unit test.

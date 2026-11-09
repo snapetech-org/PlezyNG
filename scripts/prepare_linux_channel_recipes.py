@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare Nix/aerynOS candidates from an authenticated release checksum list.
+"""Prepare Nix candidates from an authenticated release checksum list.
 
 This offline renderer neither authenticates input nor publishes packages. Verify
 the checksum manifest's GitHub attestation before invoking it; see the runbook.
@@ -46,17 +46,12 @@ def prepare(tag: str, checksums: Path, output: Path) -> None:
         "@@X64_SHA256@@": hashes[ASSETS["x64"]],
         "@@ARM64_SHA256@@": hashes[ASSETS["arm64"]],
     }
-    webkit = json.loads((ROOT / "linux/packaging/webkit-runtime.json").read_text())["x64"]
-    replacements.update({
-        "@@WEBKIT_URL@@": webkit["url"],
-        "@@WEBKIT_SHA256@@": webkit["sha256"],
-    })
     files = {}
     files['nix/release.json'] = (json.dumps({
         'version': tag[1:], 'tag': tag, 'repository': 'snapetech-org/pleazyng',
         'sha256': {arch: hashes[name] for arch, name in ASSETS.items()},
     }, indent=2) + '\n').encode()
-    for channel, name in (("nix", "pleazyng.nix"), ("aerynos", "stone.yaml")):
+    for channel, name in (("nix", "pleazyng.nix"),):
         template = ROOT / "linux/packaging" / channel / f"{name}.template"
         content = template.read_text(encoding="utf-8")
         for token, value in replacements.items():
@@ -64,20 +59,15 @@ def prepare(tag: str, checksums: Path, output: Path) -> None:
         if "@@" in content:
             raise ValueError(f"Unresolved placeholder in {template}")
         files[f"{channel}/{name}"] = content.encode()
-        support = f"{channel}/pkg" if channel == "aerynos" else channel
-        files[f"{support}/org.snapetech.pleazyng.desktop"] = (
+        files[f"{channel}/org.snapetech.pleazyng.desktop"] = (
             ROOT / "linux/packaging/org.snapetech.pleazyng.desktop"
         ).read_bytes()
-        files[f"{support}/LICENSE"] = (ROOT / "LICENSE").read_bytes()
-        files[f"{support}/relocate-caches.py"] = (
+        files[f"{channel}/LICENSE"] = (ROOT / "LICENSE").read_bytes()
+        files[f"{channel}/relocate-caches.py"] = (
             ROOT / "linux/packaging/flatpak/relocate-caches.py"
         ).read_bytes()
         for name in ('webkit-runtime.json', 'install-webkit-helpers.py', 'rebuild-pixbuf-cache.py'):
-            files[f'{support}/{name}'] = (ROOT / 'linux/packaging' / name).read_bytes()
-        if channel == "aerynos":
-            files[f"{support}/normalize-bundle-rpaths.py"] = (
-                ROOT / "linux/packaging/normalize-bundle-rpaths.py"
-            ).read_bytes()
+            files[f'{channel}/{name}'] = (ROOT / 'linux/packaging' / name).read_bytes()
     receipt = {
         "release_tag": tag,
         "repository": "snapetech-org/pleazyng",

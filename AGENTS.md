@@ -112,3 +112,11 @@ Do not remove worktrees or unique work merely to reduce a branch count.
 The `upstream` remote is the separate Plezy project. Track its `main` only;
 its feature branches are not Pleazyng work to merge or delete automatically.
 Keep upstream attribution requirements when actually adapting upstream work.
+
+## Distribution exclusion — owner directive, 2026-11-09
+
+aerynOS is excluded from Pleazyng release channels and maintained packaging.
+Do not restore its recipe, generator output, installation section, qualification
+plan or publisher lane without a new explicit owner instruction reversing this
+decision. Preserve historical QA evidence outside the active release-channel
+documentation; do not stop unrelated running work as part of this removal.

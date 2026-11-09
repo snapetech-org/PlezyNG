@@ -41,15 +41,11 @@ class RecipePreparationTests(unittest.TestCase):
             nix = (output / 'nix/pleazyng.nix').read_text()
             self.assertIn('aarch64-linux', nix)
             self.assertIn('"' + 'b' * 64 + '"', nix)
-            for relative in ('nix/pleazyng.nix', 'aerynos/stone.yaml'):
+            for relative in ('nix/pleazyng.nix',):
                 text = (output / relative).read_text()
                 self.assertIn('/releases/download/v3.0.7/', text)
                 self.assertNotIn('@@', text)
                 self.assertNotIn('edde746', text)
-            for name in ('LICENSE', 'org.snapetech.pleazyng.desktop', 'relocate-caches.py',
-                         'install-webkit-helpers.py', 'webkit-runtime.json', 'rebuild-pixbuf-cache.py',
-                         'normalize-bundle-rpaths.py'):
-                self.assertTrue((output / 'aerynos/pkg' / name).is_file())
             with self.assertRaises(FileExistsError):
                 recipes.prepare('v3.0.7', checksums, output)
 

@@ -517,3 +517,8 @@ successful Android job while other platform jobs in the same trusted source run
 finish. All reused jobs, archive hashes and source identities are rechecked at
 assembly. Download progress belongs on stderr: `fetch_dv_tools.py` stdout is
 consumed as exactly one filesystem path by CMake.
+
+Source recovery polls at most once a minute while Apple jobs finish. Each full
+proof rechecks GitHub source, job and CI evidence; the interval leaves API
+capacity for final artifact verification and publication. Active builders keep
+running throughout this status wait.

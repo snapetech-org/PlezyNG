@@ -292,7 +292,7 @@ def wait_for_source_run(run_id, head_sha, version, seconds, **options):
         if time.monotonic() >= deadline:
             raise RecoveryError("Timed out waiting for successful source platform builds; no artifacts reused.")
         print(f"Source run {run_id} is still building: {', '.join(proof['pending_jobs'])}.", flush=True)
-        time.sleep(min(30, max(0, deadline - time.monotonic())))
+        time.sleep(min(60, max(0, deadline - time.monotonic())))
 
 
 def verify_android_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False):

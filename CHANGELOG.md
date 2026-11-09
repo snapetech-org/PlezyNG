@@ -4,6 +4,8 @@
 
 - Prevent Android API 36 Back from navigating twice after keyboard use. While Flutter’s system Back callback is registered, let it own navigation instead of also forwarding synthesized raw Back keys; preserve predictive gestures, IME dismissal, and legacy/root Back handling.
 
+- Retry Apple SwiftPM resolution once from a fresh run-scoped checkout after Xcode 26's internal package-graph insertion crash, while continuing to fail ordinary dependency errors without retrying.
+
 - Make the fresh-install authentication QA flow use the setup screen’s Back control, avoiding a second navigation pop when Maestro hides an already absent keyboard.
 
 - Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.

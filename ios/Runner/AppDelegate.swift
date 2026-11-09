@@ -386,7 +386,6 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
   }
 }
 
-
 /// Native CarPlay templates backed by the same profile-scoped Dart catalog.
 /// MPNowPlaying/remote commands remain owned by os_media_controls.
 final class MusicCarBridge {
@@ -443,16 +442,20 @@ final class MusicCarBridge {
 final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
   private var controller: CPInterfaceController?
 
-  func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
-                                didConnect interfaceController: CPInterfaceController) {
+  func templateApplicationScene(
+    _ templateApplicationScene: CPTemplateApplicationScene,
+    didConnect interfaceController: CPInterfaceController
+  ) {
     controller = interfaceController
     MusicCarBridge.shared.scene = self
     MusicCarBridge.shared.connection(true)
     refresh()
   }
 
-  func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
-                                didDisconnect interfaceController: CPInterfaceController) {
+  func templateApplicationScene(
+    _ templateApplicationScene: CPTemplateApplicationScene,
+    didDisconnect interfaceController: CPInterfaceController
+  ) {
     MusicCarBridge.shared.connection(false)
     MusicCarBridge.shared.scene = nil
     controller = nil
@@ -461,9 +464,12 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   func refresh() {
     guard let controller else { return }
     if !MusicCarBridge.shared.ready {
-      let item = CPListItem(text: NSLocalizedString("Open Pleazyng to unlock your music", comment: "CarPlay locked profile"), detailText: nil)
+      let item = CPListItem(
+        text: NSLocalizedString("Open Pleazyng to unlock your music", comment: "CarPlay locked profile"),
+        detailText: nil)
       item.isEnabled = false
-      controller.setRootTemplate(CPListTemplate(title: "Pleazyng", sections: [CPListSection(items: [item])]), animated: false, completion: nil)
+      controller.setRootTemplate(
+        CPListTemplate(title: "Pleazyng", sections: [CPListSection(items: [item])]), animated: false, completion: nil)
       return
     }
     show(id: "root", title: "Pleazyng", root: true)
@@ -493,8 +499,11 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
       }
       let template = CPListTemplate(title: title, sections: [CPListSection(items: items)])
       template.emptyViewTitleVariants = [NSLocalizedString("No music available", comment: "CarPlay empty list")]
-      if root { controller.setRootTemplate(template, animated: false, completion: nil) }
-      else { controller.pushTemplate(template, animated: true, completion: nil) }
+      if root {
+        controller.setRootTemplate(template, animated: false, completion: nil)
+      } else {
+        controller.pushTemplate(template, animated: true, completion: nil)
+      }
     }
   }
 }

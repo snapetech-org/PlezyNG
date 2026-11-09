@@ -27,7 +27,9 @@ import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
+import com.edde746.os_media_controls.MusicCarApi
 import com.edde746.plezy.car.CarRestrictionsMonitor
+import com.edde746.plezy.car.MusicBrowserService
 import com.edde746.plezy.deeplink.DeepLinkPlugin
 import com.edde746.plezy.exoplayer.ExoPlayerPlugin
 import com.edde746.plezy.exoplayer.ExoWorkspacePlayerPlugin
@@ -43,10 +45,8 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterTextureView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.android.TransparencyMode
-import io.flutter.embedding.engine.FlutterEngineCache
-import com.edde746.plezy.car.MusicBrowserService
-import com.edde746.os_media_controls.MusicCarApi
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.Executors
@@ -923,8 +923,7 @@ class PlezyActivity : FlutterActivity() {
     textureView.resume()
   }
 
-  override fun provideFlutterEngine(context: Context): FlutterEngine? =
-    FlutterEngineCache.getInstance().get(MusicBrowserService.ENGINE_ID)
+  override fun provideFlutterEngine(context: Context): FlutterEngine? = FlutterEngineCache.getInstance().get(MusicBrowserService.ENGINE_ID)
 
   override fun shouldDestroyEngineWithHost(): Boolean = !MusicCarApi.hasCarHost
 

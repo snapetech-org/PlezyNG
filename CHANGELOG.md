@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.
+
 - Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.
 
 - Build the nested Dolby Vision package graph directly from its verified `Package.resolved` pins, removing a redundant Xcode 26 resolve-only action that aborted consistently on hosted Apple Silicon.

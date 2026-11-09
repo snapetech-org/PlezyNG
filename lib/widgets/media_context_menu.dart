@@ -528,7 +528,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     // cold cache can never turn a press into a surprise removal. Opening
     // the menu warms both caches for the tap and the next open.
     final catalogSources = Provider.of<CatalogSourcesProvider?>(context, listen: false);
-    final isOffline = context.read<OfflineModeProvider>().isOffline;
+    final isOffline = Provider.of<OfflineModeProvider?>(context, listen: false)?.isOffline ?? false;
     final seerrSource = catalogSources?.seerrSource;
     int? seerrTmdbId;
     var seerrActions = const <SeerrTitleAction>[];

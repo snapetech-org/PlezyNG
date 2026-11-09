@@ -164,6 +164,7 @@ Future<void> _pumpSheet(
   bool minimal = false,
   int? seasonNumber,
   bool prefer4k = false,
+  VoidCallback? onSubmitted,
 }) async {
   final app = MaterialApp(
     theme: ThemeData(extensions: const [testMonoTokens]),
@@ -188,6 +189,7 @@ Future<void> _pumpSheet(
                             minimal: minimal,
                             seasonNumber: seasonNumber,
                             prefer4k: prefer4k,
+                            onSubmitted: onSubmitted,
                           ),
                           child: const Text('request'),
                         ),
@@ -308,6 +310,7 @@ void main() {
 
   testWidgets('TV: disables unavailable seasons, drops specials, posts selected seasons', (tester) async {
     Map<String, dynamic>? postedBody;
+    var submitted = 0;
     final mock = MockClient((request) async {
       switch (request.url.path) {
         case '/api/v1/settings/public':
@@ -338,7 +341,14 @@ void main() {
     });
     final source = _source(mock);
 
-    await _pumpSheet(tester, source: source, kind: MediaKind.show, tmdbId: 1396, title: 'Breaking Bad');
+    await _pumpSheet(
+      tester,
+      source: source,
+      kind: MediaKind.show,
+      tmdbId: 1396,
+      title: 'Breaking Bad',
+      onSubmitted: () => submitted++,
+    );
 
     expect(find.text('Specials'), findsNothing);
     expect(find.text('Season 1'), findsOneWidget);
@@ -386,6 +396,7 @@ void main() {
     expect(find.text('Season 2'), findsNothing);
     expect(find.text('request'), findsOneWidget);
     expect(find.text('Request submitted'), findsOneWidget);
+    expect(submitted, 1);
   });
 
   testWidgets('minimal request mode hides advanced and 4K controls even for an admin', (tester) async {
@@ -417,6 +428,40 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Request'));
     await tester.pumpAndSettle();
     expect(posted, {'mediaType': 'movie', 'mediaId': 603, 'is4k': false});
+  });
+
+  testWidgets('a 4K-only vanilla Seerr account can submit in its permitted quality', (tester) async {
+    Map<String, dynamic>? posted;
+    final source = _source(
+      MockClient((request) async {
+        switch (request.url.path) {
+          case '/api/v1/settings/public':
+            return _json({..._publicSettings(), 'movie4kEnabled': true});
+          case '/api/v1/movie/603':
+            return _json({
+              'id': 603,
+              'title': 'The Matrix',
+              'mediaInfo': {'status': 1, 'status4k': 1},
+            });
+          case '/api/v1/request':
+            posted = jsonDecode(request.body) as Map<String, dynamic>;
+            return _json({'id': 2, 'status': 1});
+          default:
+            fail('Unexpected endpoint for vanilla Seerr: ${request.url.path}');
+        }
+      }),
+      permissions: SeerrPermission.request4kMovie,
+    );
+
+    await _pumpSheet(tester, source: source, kind: MediaKind.movie, tmdbId: 603, title: 'The Matrix', prefer4k: true);
+
+    expect(find.text(t.seerr.only4kAvailable), findsOneWidget);
+    expect(find.text(t.seerr.permissionRevoked), findsNothing);
+    final submit = find.widgetWithText(FilledButton, t.seerr.request);
+    expect(tester.widget<FilledButton>(submit).onPressed, isNotNull);
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
+    expect(posted, {'mediaType': 'movie', 'mediaId': 603, 'is4k': true});
   });
 
   testWidgets('movie that is already available offers nothing to request', (tester) async {

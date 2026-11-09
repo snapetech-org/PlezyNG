@@ -5,7 +5,7 @@ on:
     paths:
       - native/games/romm/**
       - shared/process/**
-      - scripts/games/test_romm_descriptor_worker.py
+      - scripts/games/verify_romm_descriptor_worker.py
       - test/native/romm_libretro_fixture.cpp
       - test/native/romm_process_test.cpp
       - webos/CMakeLists.txt
@@ -55,7 +55,7 @@ jobs:
         run: |
           args=()
           if [ -n "$COMPILE_ONLY" ]; then args+=(--compile-only); fi
-          python3 scripts/games/test_romm_descriptor_worker.py \
+          python3 scripts/games/verify_romm_descriptor_worker.py \
             --libretro-include "$RUNNER_TEMP/romm-tv/_deps/romm_libretro_common-src/include" \
             "${args[@]}"
       - name: Verify packaging contracts

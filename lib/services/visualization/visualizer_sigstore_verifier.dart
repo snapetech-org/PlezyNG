@@ -57,18 +57,17 @@ class VisualizerSigstoreVerifier {
     final bodySignature = _map(spec['signature']);
     _require(_same(_bytes(bodySignature['content'], 128), signed));
     final pem = utf8.decode(_bytes(_map(bodySignature['publicKey'])['content'], 32768));
-    final match = RegExp(r'^-----BEGIN CERTIFICATE-----\s+([A-Za-z0-9+/=\s]+)-----END CERTIFICATE-----\s*$').firstMatch(pem);
+    final match = RegExp(
+      r'^-----BEGIN CERTIFICATE-----\s+([A-Za-z0-9+/=\s]+)-----END CERTIFICATE-----\s*$',
+    ).firstMatch(pem);
     _require(match != null);
     _require(_same(base64Decode(match!.group(1)!.replaceAll(RegExp(r'\s'), '')), certificate));
     final logHex = base64Decode(catalogRekorLogId).map((b) => b.toRadixString(16).padLeft(2, '0')).join();
     // Rekor SET signs RFC 8785 canonical JSON. These four bounded fields contain
     // only integers, base64 and hex, so sorted insertion has exactly that form.
-    final promise = utf8.encode(jsonEncode({
-      'body': base64Encode(bodyBytes),
-      'integratedTime': integrated,
-      'logID': logHex,
-      'logIndex': index,
-    }));
+    final promise = utf8.encode(
+      jsonEncode({'body': base64Encode(bodyBytes), 'integratedTime': integrated, 'logID': logHex, 'logIndex': index}),
+    );
     _signature(
       _Der.one(base64Decode(catalogRekorPublicKey)),
       Uint8List.fromList(promise),
@@ -78,7 +77,9 @@ class VisualizerSigstoreVerifier {
     _require(_same(leaf.issuer.raw, authority.subject.raw));
     _require(!time.isBefore(authority.notBefore) && !time.isAfter(authority.notAfter));
     _require(!time.isBefore(leaf.notBefore) && !time.isAfter(leaf.notAfter));
-    _require(leaf.notAfter.isAfter(leaf.notBefore) && leaf.notAfter.difference(leaf.notBefore) <= const Duration(hours: 1));
+    _require(
+      leaf.notAfter.isAfter(leaf.notBefore) && leaf.notAfter.difference(leaf.notBefore) <= const Duration(hours: 1),
+    );
     _signature(authority.publicKey, leaf.tbs.raw, leaf.signature, leaf.signatureAlgorithm);
     leaf.requirePublisher();
     _require(leaf.publicKey.children.first.children[1].oid == '1.2.840.10045.3.1.7');
@@ -149,7 +150,11 @@ class _Der {
       _require(length >= 128);
     }
     _require(length <= 65536 && cursor + length <= bytes.length);
-    return _Der(Uint8List.sublistView(bytes, start, cursor + length), tag, Uint8List.sublistView(bytes, cursor, cursor + length));
+    return _Der(
+      Uint8List.sublistView(bytes, start, cursor + length),
+      tag,
+      Uint8List.sublistView(bytes, cursor, cursor + length),
+    );
   }
 
   List<_Der> get children {
@@ -288,7 +293,9 @@ class _Certificate {
     final usage = _Der.one(extensions['2.5.29.15']!);
     _require(usage.tag == 3 && _same(usage.value, [7, 128]));
     final extended = _Der.one(extensions['2.5.29.37']!);
-    _require(extended.tag == 48 && extended.children.length == 1 && extended.children.single.oid == '1.3.6.1.5.5.7.3.3');
+    _require(
+      extended.tag == 48 && extended.children.length == 1 && extended.children.single.oid == '1.3.6.1.5.5.7.3.3',
+    );
     final constraint = extensions['2.5.29.19'];
     if (constraint != null) {
       final basic = _Der.one(constraint);
@@ -304,10 +311,22 @@ class _Certificate {
     var offset = utc ? 2 : 4;
     var year = int.parse(text.substring(0, offset));
     if (utc) year += year < 50 ? 2000 : 1900;
-    int next() { final n = int.parse(text.substring(offset, offset + 2)); offset += 2; return n; }
+    int next() {
+      final n = int.parse(text.substring(offset, offset + 2));
+      offset += 2;
+      return n;
+    }
+
     final month = next(), day = next(), hour = next(), minute = next(), second = next();
     final date = DateTime.utc(year, month, day, hour, minute, second);
-    _require(date.year == year && date.month == month && date.day == day && date.hour == hour && date.minute == minute && date.second == second);
+    _require(
+      date.year == year &&
+          date.month == month &&
+          date.day == day &&
+          date.hour == hour &&
+          date.minute == minute &&
+          date.second == second,
+    );
     return date;
   }
 }

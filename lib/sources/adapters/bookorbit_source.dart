@@ -117,7 +117,17 @@ class BookOrbitSourceAdapter extends SourceAdapter {
     );
   }
 
-  SourceEntry _entry(Map<String, dynamic> row, {Map<int, Map<String, dynamic>> assets = const {}}) {
+  String _names(Object? values) => sourceList(values)
+      .map((value) => value is String ? value : sourceMap(value)['name'] as String?)
+      .whereType<String>()
+      .where((name) => name.trim().isNotEmpty)
+      .join(', ');
+
+  SourceEntry _entry(
+    Map<String, dynamic> row, {
+    Map<int, Map<String, dynamic>> assets = const {},
+    SourceEntry? fallback,
+  }) {
     final id = sourceInt(row['id']);
     if (id == null || id < 1) {
       throw const SourceException(SourceFailure.invalidData);
@@ -136,7 +146,11 @@ class BookOrbitSourceAdapter extends SourceAdapter {
         .toList();
     final hasAudio = files.any((file) => _audio.contains(file.name.split('.').last.toLowerCase()));
     final hasComic = files.any((file) => _comic.contains(file.name.split('.').last.toLowerCase()));
-    final authors = sourceList(row['authors']).whereType<String>().join(', ');
+    final providerIds = sourceMap(row['providerIds']);
+    final seriesIndex = row['seriesIndex'];
+    final coverPresent = row.containsKey('coverSource')
+        ? row['coverSource'] != null
+        : row['hasCover'] == true || fallback?.coverId != null;
     return SourceEntry(
       sourceId: source.id,
       id: '$id',
@@ -146,20 +160,34 @@ class BookOrbitSourceAdapter extends SourceAdapter {
           : hasComic
           ? SourceItemKind.comic
           : SourceItemKind.ebook,
-      author: authors,
-      narrator: sourceList(row['narrators']).whereType<String>().join(', '),
-      series: row['seriesName'] as String? ?? '',
-      seriesOrder: (row['seriesIndex'] as num?)?.toDouble(),
-      language: row['language'] as String? ?? '',
-      coverId: row['hasCover'] == true ? '$id' : null,
+      author: row.containsKey('authors') ? _names(row['authors']) : fallback?.author ?? '',
+      narrator: row.containsKey('narrators')
+          ? _names(row['narrators'])
+          : sourceMap(row['audioMetadata']).containsKey('narrators')
+          ? _names(sourceMap(row['audioMetadata'])['narrators'])
+          : fallback?.narrator ?? '',
+      series: row['seriesName'] as String? ?? fallback?.series ?? '',
+      seriesOrder: seriesIndex is num
+          ? seriesIndex.toDouble()
+          : double.tryParse('$seriesIndex') ?? fallback?.seriesOrder,
+      description: row['description'] as String? ?? fallback?.description ?? '',
+      language: row['language'] as String? ?? fallback?.language ?? '',
+      coverId: coverPresent ? '$id' : null,
       files: files,
-      releaseYear: sourceInt(row['publishedYear']),
-      genres: sourceList(row['genres']).whereType<String>().toList(),
+      releaseYear: sourceInt(row['publishedYear']) ?? fallback?.releaseYear,
+      genres: row.containsKey('genres')
+          ? sourceList(row['genres']).whereType<String>().toList()
+          : fallback?.genres ?? const [],
       identifiers: {
+        ...?fallback?.identifiers,
         'bookorbit': '$id',
         if (row['isbn13'] is String && (row['isbn13'] as String).isNotEmpty) 'isbn13': row['isbn13'] as String,
         if (row['hardcoverId'] is String && (row['hardcoverId'] as String).isNotEmpty)
           'hardcover': row['hardcoverId'] as String,
+        if (providerIds['hardcover'] is String && (providerIds['hardcover'] as String).isNotEmpty)
+          'hardcover': providerIds['hardcover'] as String,
+        if (providerIds['openlibrary'] is String && (providerIds['openlibrary'] as String).isNotEmpty)
+          'openlibrary': providerIds['openlibrary'] as String,
       },
     );
   }
@@ -205,7 +233,7 @@ class BookOrbitSourceAdapter extends SourceAdapter {
       for (final value in sourceList(manifest['assets']))
         if (sourceInt(sourceMap(value)['fileId']) != null) sourceInt(sourceMap(value)['fileId'])!: sourceMap(value),
     };
-    return _entry(book, assets: assets);
+    return _entry(book, assets: assets, fallback: entry);
   }
 
   @override

@@ -7844,6 +7844,27 @@ class Translations$seerr$en {
 	/// en: 'Request missing seasons'
 	String get requestSeasons => 'Request missing seasons';
 
+	/// en: 'Choose request options in Seerr'
+	String get requestHint => 'Choose request options in Seerr';
+
+	/// en: 'Request in Seerr now using default settings'
+	String get quickRequestHint => 'Request in Seerr now using default settings';
+
+	/// en: 'Choose seasons to request in Seerr'
+	String get chooseSeasonsHint => 'Choose seasons to request in Seerr';
+
+	/// en: 'Choose a 4K request in Seerr'
+	String get request4kHint => 'Choose a 4K request in Seerr';
+
+	/// en: 'This account can request the 4K version only.'
+	String get only4kAvailable => 'This account can request the 4K version only.';
+
+	/// en: 'Open the card menu for Seerr request options'
+	String get cardActionHint => 'Open the card menu for Seerr request options';
+
+	/// en: 'Request in progress'
+	String get requestInProgress => 'Request in progress';
+
 	/// en: 'Notify me when available'
 	String get notifyMe => 'Notify me when available';
 
@@ -7853,8 +7874,17 @@ class Translations$seerr$en {
 	/// en: 'Availability alert on'
 	String get notificationsOn => 'Availability alert on';
 
+	/// en: 'Turn off availability alert'
+	String get turnOffAlert => 'Turn off availability alert';
+
 	/// en: 'We'll notify you when it's available'
 	String get notificationsEnabled => 'We\'ll notify you when it\'s available';
+
+	/// en: 'We'll notify you when the 4K version is available'
+	String get notificationsEnabled4k => 'We\'ll notify you when the 4K version is available';
+
+	/// en: 'We'll notify you when season ${season} is available'
+	String notificationsEnabledSeason({required Object season}) => 'We\'ll notify you when season ${season} is available';
 
 	/// en: 'Availability alert turned off'
 	String get notificationsDisabled => 'Availability alert turned off';
@@ -7864,6 +7894,9 @@ class Translations$seerr$en {
 
 	/// en: 'Seasons'
 	String get seasons => 'Seasons';
+
+	/// en: 'Seerr handles approval and tracks your request.'
+	String get requestSheetHint => 'Seerr handles approval and tracks your request.';
 
 	/// en: 'All seasons'
 	String get allSeasons => 'All seasons';
@@ -20257,13 +20290,24 @@ extension on Translations {
 			'seerr.request' => 'Request',
 			'seerr.request4k' => 'Request in 4K',
 			'seerr.requestSeasons' => 'Request missing seasons',
+			'seerr.requestHint' => 'Choose request options in Seerr',
+			'seerr.quickRequestHint' => 'Request in Seerr now using default settings',
+			'seerr.chooseSeasonsHint' => 'Choose seasons to request in Seerr',
+			'seerr.request4kHint' => 'Choose a 4K request in Seerr',
+			'seerr.only4kAvailable' => 'This account can request the 4K version only.',
+			'seerr.cardActionHint' => 'Open the card menu for Seerr request options',
+			'seerr.requestInProgress' => 'Request in progress',
 			'seerr.notifyMe' => 'Notify me when available',
 			'seerr.notifyMe4k' => 'Notify me when 4K is available',
 			'seerr.notificationsOn' => 'Availability alert on',
+			'seerr.turnOffAlert' => 'Turn off availability alert',
 			'seerr.notificationsEnabled' => 'We\'ll notify you when it\'s available',
+			'seerr.notificationsEnabled4k' => 'We\'ll notify you when the 4K version is available',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'We\'ll notify you when season ${season} is available',
 			'seerr.notificationsDisabled' => 'Availability alert turned off',
 			'seerr.notificationFailed' => 'Couldn\'t update the availability alert',
 			'seerr.seasons' => 'Seasons',
+			'seerr.requestSheetHint' => 'Seerr handles approval and tracks your request.',
 			'seerr.allSeasons' => 'All seasons',
 			'seerr.advancedOptions' => 'Advanced',
 			'seerr.destinationServer' => 'Destination server',
@@ -20292,6 +20336,8 @@ extension on Translations {
 			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
 			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
 			'seerr.signInRejected' => 'Sign-in was rejected',
+			_ => null,
+		} ?? switch (path) {
 			'seerr.noSessionCookie' => 'Seerr did not issue a session cookie',
 			'seerr.freshCookieRejected' => 'Seerr rejected the new session cookie',
 			'seerr.noUserInformation' => 'Seerr did not return user information',
@@ -20303,8 +20349,6 @@ extension on Translations {
 			'services.integrations' => 'Integrations',
 			'services.hardcover' => 'Hardcover',
 			'services.linkedCatalogTitles' => 'Linked catalog titles',
-			_ => null,
-		} ?? switch (path) {
 			'services.planNote' => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.',
 			'services.planLabel' => 'Plan label',
 			'services.setPlanLabel' => 'Set plan label',
@@ -20806,6 +20850,8 @@ extension on Translations {
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			'universalMedia.captureSource' => 'Screen or camera',
 			'universalMedia.captureScreen' => 'Screen',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.captureAudioSource' => 'Audio input (optional)',
 			'universalMedia.captureAudioHelp' => 'Add audio from a microphone or available input. Device choices depend on FFmpeg and system permissions.',
 			'universalMedia.captureAudioNone' => 'No audio',
@@ -20817,8 +20863,6 @@ extension on Translations {
 			'universalMedia.captureExtensionMismatch' => 'Choose a filename ending in .mp4.',
 			'universalMedia.captureFfmpegMissing' => 'FFmpeg or the H.264 video encoder is unavailable. Install a supported FFmpeg build, then try again.',
 			'universalMedia.captureFailed' => 'The recording could not be saved. Check device permission, available storage, and FFmpeg support.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.captureSaved' => 'Screen recording saved.',
 			'universalMedia.captureElapsedLabel' => 'Recording time',
 			'universalMedia.captureStart' => 'Start recording',
@@ -21320,6 +21364,8 @@ extension on Translations {
 			'games.noMatches' => 'No games match this search.',
 			'games.favorite' => 'Save favorite',
 			'games.unfavorite' => 'Remove favorite',
+			_ => null,
+		} ?? switch (path) {
 			'games.forget' => 'Forget computer',
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
@@ -21331,8 +21377,6 @@ extension on Translations {
 			'games.touchResizeHint' => 'Enlarge this game window or use full screen to show the controller.',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
-			_ => null,
-		} ?? switch (path) {
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
 			'games.gameId' => 'Host application ID',
@@ -21834,6 +21878,8 @@ extension on Translations {
 			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
 			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
 			'subtitleAiUi.repairCutsFromCapturedPlayback' => 'Repair cuts from captured playback',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.preservesCueTimingOutsideSpeechMatchedEvidence' => 'Preserves cue timing outside speech-matched evidence',
 			'subtitleAiUi.translateDetectedSpeechToEnglish' => 'Translate detected speech to English',
 			'subtitleAiUi.usedOnlyForGenerationSyncAlwaysTrans_5a1e6651' => 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.',
@@ -21845,8 +21891,6 @@ extension on Translations {
 			'subtitleAiUi.useASameLanguageSRTVTTASSOrSSASubtit_4f603312' => 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference',
 			'subtitleAiUi.syncAcrossSubtitleLanguages' => 'Sync across subtitle languages',
 			'subtitleAiUi.translateTargetTextLocallyForMatchin_8e05d8e7' => 'Translate target text locally for matching; keep its original text',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.repairCutsAcrossSubtitleLanguages' => 'Repair cuts across subtitle languages',
 			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
 			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
@@ -22348,6 +22392,8 @@ extension on Translations {
 			'karaokeUi.searchSongs' => 'Search songs',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'See all extras',
+			_ => null,
+		} ?? switch (path) {
 			'bonusExtras.findMore' => 'Find more',
 			'bonusExtras.empty' => 'No verified extras found for this title.',
 			'bonusExtras.search' => 'Search extras or a topic',
@@ -22359,8 +22405,6 @@ extension on Translations {
 			'bonusExtras.hidePublisher' => 'Hide publisher',
 			'bonusExtras.remove' => 'Remove personal link',
 			'bonusExtras.openProvider' => 'Open in provider app or browser',
-			_ => null,
-		} ?? switch (path) {
 			'bonusExtras.watchHere' => 'Watch here',
 			'bonusExtras.sendToPhone' => 'Open on your phone',
 			'bonusExtras.copyLink' => 'Copy link',

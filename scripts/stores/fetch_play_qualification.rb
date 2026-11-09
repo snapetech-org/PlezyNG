@@ -47,7 +47,7 @@ receipt = {
   'package' => package, 'version_code' => version.to_i,
   'source' => 'Google Play generatedapks API for the existing uploaded bundle',
   'store_state_mutated' => false, 'purchase_restore_qualified' => false,
-  'reviewer_grant_device_qualified' => false, 'apks' => []
+  'reviewer_grant_device_qualified' => false, 'apks' => [], 'emulator_test_apks' => []
 }
 catalog.fetch('generatedApks').each_with_index do |group, index|
   universal = group['generatedUniversalApk']
@@ -59,6 +59,32 @@ catalog.fetch('generatedApks').each_with_index do |group, index|
     'file' => filename, 'sha256' => Digest::SHA256.file(File.join(output, filename)).hexdigest,
     'expected_signing_certificate_sha256' => group.fetch('certificateSha256Hash')
   }
+end
+if ENV['PLAY_FETCH_EMULATOR_SPLITS'] == 'true'
+  group = catalog.fetch('generatedApks').first
+  variants = group.fetch('targetingInfo').fetch('variant').filter_map do |variant|
+    minimum = variant.fetch('targeting').fetch('sdkVersionTargeting').fetch('value').map { |value| value.fetch('min') }.max
+    [minimum, variant.fetch('variantNumber')] if minimum <= 36
+  end
+  abort 'No Android 36 native test variant in Google targeting metadata' if variants.empty?
+  minimum, variant_id = variants.max_by(&:first)
+  required = ['', 'config.x86_64', 'config.xxhdpi', 'config.en']
+  splits = group.fetch('unprotectedGeneratedSplitApks').select do |split|
+    split.fetch('variantId') == variant_id && split.fetch('moduleName') == 'base' && required.include?(split.fetch('splitId', ''))
+  end
+  abort 'Incomplete or duplicate native test split set' unless splits.map { |split| split.fetch('splitId', '') }.sort == required.sort
+  splits.each do |split|
+    identifier = split.fetch('splitId', 'base')
+    filename = "emulator-test-#{identifier}.apk"
+    download_id = URI.encode_www_form_component(split.fetch('downloadId'))
+    request.call("/generatedApks/#{version}/downloads/#{download_id}:download?alt=media", File.join(output, filename))
+    receipt['emulator_test_apks'] << {
+      'file' => filename, 'sha256' => Digest::SHA256.file(File.join(output, filename)).hexdigest,
+      'expected_signing_certificate_sha256' => group.fetch('certificateSha256Hash'),
+      'variant' => variant_id, 'minimum_sdk' => minimum,
+      'source' => 'Google-provided unprotectedGeneratedSplitApks for isolated emulator QA only'
+    }
+  end
 end
 File.write(File.join(output, 'play-qualification.json'), JSON.pretty_generate(receipt) + "\n")
 abort 'No universal APK generated; inspect targeting metadata before selecting native splits' if receipt['apks'].empty?

@@ -31,6 +31,8 @@ void main() {
                   'title': 'The Orbit',
                   'authors': ['Writer'],
                   'hasCover': true,
+                  'seriesName': 'Orbit Trilogy',
+                  'seriesIndex': '2.5',
                   'isbn13': '9781234567897',
                   'files': [
                     {'id': 10, 'role': 'content', 'format': 'epub', 'sizeBytes': 100},
@@ -44,7 +46,19 @@ void main() {
             return jsonResponse({
               'id': 5,
               'title': 'The Orbit',
-              'authors': ['Writer'],
+              'authors': [
+                {'id': 2, 'name': 'Writer', 'sortName': 'Writer'},
+              ],
+              'audioMetadata': {
+                'narrators': [
+                  {'id': 3, 'name': 'Narrator'},
+                ],
+              },
+              'description': 'A journey across the shelves.',
+              'coverSource': 'extracted',
+              'seriesName': 'Orbit Trilogy',
+              'seriesIndex': '2.5',
+              'providerIds': {'hardcover': '12345', 'openlibrary': 'OL82563W'},
               'files': [
                 {'id': 10, 'role': 'content', 'format': 'epub', 'sizeBytes': 100},
                 {'id': 11, 'role': 'content', 'format': 'm4b', 'sizeBytes': 200},
@@ -86,6 +100,16 @@ void main() {
       expect(entry.audio.length, 1);
       expect(entry.identifiers['isbn13'], '9781234567897');
       final hydrated = await adapter.hydrate(entry);
+      expect(hydrated.author, 'Writer');
+      expect(hydrated.narrator, 'Narrator');
+      expect(hydrated.description, 'A journey across the shelves.');
+      expect(hydrated.series, 'Orbit Trilogy');
+      expect(hydrated.seriesOrder, 2.5);
+      expect(hydrated.coverId, '5');
+      expect(hydrated.identifiers['isbn13'], '9781234567897');
+      expect(hydrated.identifiers['hardcover'], '12345');
+      expect(hydrated.identifiers['openlibrary'], 'OL82563W');
+      expect((await adapter.cover(hydrated))?.uri.path, '/books/api/v1/books/5/cover');
       final ebook = await adapter.resolve(hydrated.ebooks.single);
       final audio = await adapter.resolve(hydrated.audio.single);
       expect(ebook.uri.path, '/books/api/v1/books/files/10/serve');

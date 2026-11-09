@@ -24,6 +24,9 @@ class SharedPreferencesWorkspaceSnapshotPersistence implements WorkspaceSnapshot
     final key = 'user_${storage.userScopeForProfileId(profileId)}_$_keySuffix';
     final serialized = storage.prefs.getString(key);
     if (serialized == null || serialized.isEmpty) return null;
+    if (serialized.length > WorkspaceSnapshot.maxSerializedBytes) {
+      throw const FormatException('Stored Multiview snapshot exceeds its limit');
+    }
     final decoded = jsonDecode(serialized);
     if (decoded is! Map) throw const FormatException('Invalid stored Multiview snapshot');
     return WorkspaceSnapshot.fromJson(Map<String, Object?>.from(decoded));
@@ -33,6 +36,10 @@ class SharedPreferencesWorkspaceSnapshotPersistence implements WorkspaceSnapshot
   Future<void> write(String profileId, WorkspaceSnapshot snapshot) async {
     final storage = await StorageService.getInstance();
     final key = 'user_${storage.userScopeForProfileId(profileId)}_$_keySuffix';
-    await storage.prefs.setString(key, jsonEncode(snapshot.toJson()));
+    final serialized = jsonEncode(snapshot.toJson());
+    if (serialized.length > WorkspaceSnapshot.maxSerializedBytes) {
+      throw const FormatException('Multiview snapshot exceeds its limit');
+    }
+    await storage.prefs.setString(key, serialized);
   }
 }

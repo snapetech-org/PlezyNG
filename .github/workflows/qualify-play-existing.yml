@@ -56,6 +56,7 @@ jobs:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           PLAY_VERSION_CODE: ${{ inputs.version_code }}
           PLAY_QUALIFICATION_OUTPUT: ${{ runner.temp }}/play-qualification
+          PLAY_FETCH_EMULATOR_SPLITS: ${{ inputs.review_grant_test }}
         run: bundle exec ruby scripts/stores/fetch_play_qualification.rb
       - name: Verify APK identity and signing certificate
         env:
@@ -71,18 +72,7 @@ jobs:
             test "$("$apkanalyzer" manifest version-code "$apk")" = "$PLAY_VERSION_CODE"
             "$apksigner" verify --verbose --print-certs "$apk" > "$apk.signing.txt"
           done
-          python3 - "$RUNNER_TEMP/play-qualification" <<'PY'
-          import json,re,sys
-          from pathlib import Path
-          root=Path(sys.argv[1]); path=root/'play-qualification.json'; receipt=json.loads(path.read_text())
-          for apk in receipt['apks']:
-              text=(root/(apk['file']+'.signing.txt')).read_text()
-              actual=re.findall(r'^Signer #[0-9]+ certificate SHA-256 digest: ([0-9a-fA-F:]+)$', text, re.M)
-              norm=lambda value:value.lower().replace(':','')
-              assert norm(apk['expected_signing_certificate_sha256']) in [norm(value) for value in actual], 'Play signing certificate mismatch'
-              apk['signing_certificate_verified']=True
-          path.write_text(json.dumps(receipt,indent=2)+'\n')
-          PY
+          python3 scripts/stores/verify_play_certificate.py "$RUNNER_TEMP/play-qualification"
       - name: Qualify reviewer access on a fresh native Android emulator
         if: inputs.review_grant_test
         env:
@@ -90,6 +80,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$STORE_REVIEW_ACCESS_CODE"
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
           test -c /dev/kvm
           sudo chmod a+rw /dev/kvm
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install 'platform-tools' 'emulator' 'system-images;android-36;google_apis;x86_64'

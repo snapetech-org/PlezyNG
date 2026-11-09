@@ -277,9 +277,6 @@ nix run 'github:snapetech-org/pleazyng?dir=linux/packaging#pleazyng'
 
 The flake pins nixpkgs and the published Pleazyng release. Native builds pass on both architectures; hardware playback qualification remains separate. The [nixpkgs contribution](https://github.com/NixOS/nixpkgs/pull/585758) is awaiting upstream review.
 
-### aerynOS — Moss
-
-An x86_64 recipe for packaging Pleazyng's Linux release bundle is available through the [Linux channel guide](docs/maintainers/linux-distribution-channels.md#aerynos). Native build and installation pass, but video playback in the v3.0.7 bundle fails [aerynOS qualification](docs/maintainers/aerynos-qualification.md). There is no official aerynOS repository entry for Pleazyng.
 
 Package publication and store acceptance are separate from the complete GitHub release. See the [channel readiness and qualification steps](docs/maintainers/linux-distribution-channels.md).
 

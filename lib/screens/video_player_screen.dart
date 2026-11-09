@@ -1139,6 +1139,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   VideoFilterManager? _videoFilterManager;
   bool _pipInitialized = false;
   String? _workspaceSessionId;
+  MultiviewWorkspaceController? _recoveryWorkspace;
   VideoPlayerSlot? _videoPlayerSlot;
   VideoPlayerLease? _videoPlayerLease;
   MultiviewWorkspaceController? _workspaceController;
@@ -3051,6 +3052,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   @override
   void dispose() {
+    _recoveryWorkspace?.unwatchRecovery(this);
+    _recoveryWorkspace = null;
     final retiringExternalSource = _activeExternalPlaybackSource;
     _activeExternalPlaybackSource = null;
     _pendingExternalPlaybackSource = null;

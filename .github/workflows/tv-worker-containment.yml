@@ -1,0 +1,66 @@
+name: Television worker containment
+on:
+  push:
+    branches: [main]
+    paths:
+      - native/games/romm/**
+      - shared/process/**
+      - scripts/games/test_romm_descriptor_worker.py
+      - test/native/romm_libretro_fixture.cpp
+      - test/native/romm_process_test.cpp
+      - webos/CMakeLists.txt
+      - scripts/tizen/package.py
+      - .github/workflows/tv-worker-containment.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  television:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            os: ubuntu-24.04
+            cxx: g++
+            compile_only: ''
+          - arch: arm64
+            os: ubuntu-24.04-arm
+            cxx: g++
+            compile_only: ''
+          - arch: armv7
+            os: ubuntu-24.04
+            cxx: arm-linux-gnueabihf-g++
+            compile_only: --compile-only
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      CXX: ${{ matrix.cxx }}
+      COMPILE_ONLY: ${{ matrix.compile_only }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install ARMv7 cross compiler
+        if: matrix.arch == 'armv7'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends g++-arm-linux-gnueabihf
+      - name: Compile the production TV worker
+        run: |
+          cmake -S native/games/romm -B "$RUNNER_TEMP/romm-tv" \
+            -DPLEZY_ROMM_DESCRIPTOR_SANDBOX=ON -DPLEZY_ROMM_BUILD_CORES=OFF
+          cmake --build "$RUNNER_TEMP/romm-tv" --parallel 2
+      - name: Exercise the production transport and core adapter
+        run: |
+          args=()
+          if [ -n "$COMPILE_ONLY" ]; then args+=(--compile-only); fi
+          python3 scripts/games/test_romm_descriptor_worker.py \
+            --libretro-include "$RUNNER_TEMP/romm-tv/_deps/romm_libretro_common-src/include" \
+            "${args[@]}"
+      - name: Verify packaging contracts
+        run: |
+          python3 -m unittest discover -s scripts/games -p 'test_*romm*.py'
+          python3 -m unittest discover -s scripts/tizen -p 'test_*.py'
+          python3 scripts/checks/check_workflow_security.py
+          python3 scripts/checks/check_workflow_action_pins.py

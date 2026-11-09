@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "milkrust-sample-pack",
+      "name": "MilkRust Sample Pack",
+      "version": "0.1.0",
+      "license": "CC0-1.0",
+      "description": "Two MilkRust-authored sample presets. No third-party assets.",
+      "contentNotice": "MilkRust-authored sample content dedicated under CC0-1.0. No third-party presets or textures are included.",
+      "archiveUrl": "https://raw.githubusercontent.com/snapetech-org/MilkRust/de41e50c9d04c0b7c2de03f472c71720e1e9fda0/content/downloads/milkrust-sample-pack-0.1.0.rmpack",
+      "sha256": "175a042deb4edb224055a6334f67a1c492f32e447dc3c90a54f22849c43a27df",
+      "archiveBytes": 2927,
+      "expandedBytes": 5467,
+      "presetCount": 2,
+      "sourceUrl": "https://github.com/snapetech-org/MilkRust/tree/de41e50c9d04c0b7c2de03f472c71720e1e9fda0/examples/sample-pack",
+      "searchText": "Warm Scope Blue Shape scope geometry shape fixture",
+      "distributionStatus": "redistributable",
+      "qualification": {
+        "status": "sample-fixture-only"
+      }
+    }
+  ],
+  "revoked": []
+}

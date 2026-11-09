@@ -90,7 +90,11 @@ class Control {
   bool Reaped() {
     std::lock_guard<std::mutex> lock(mutex_);
 #if defined(_WIN32)
-    return !process || WaitForSingleObject(process, 0) == WAIT_OBJECT_0;
+    const bool finished = !process || WaitForSingleObject(process, 0) == WAIT_OBJECT_0;
+    // The retirement queue may retain this process handle until the next
+    // launch. Release staged game files as soon as exit is confirmed instead.
+    if (finished) resources.reset();
+    return finished;
 #else
     if (!pid) return true;
     int status = 0;

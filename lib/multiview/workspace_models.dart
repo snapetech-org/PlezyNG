@@ -121,12 +121,16 @@ class WorkspaceResumeTarget {
   factory WorkspaceResumeTarget.fromJson(Map<String, Object?> json) {
     String identity(String field) {
       final value = json[field];
-      if (value is! String || value.isEmpty || value.length > 2048 ||
-          value.contains('://') || RegExp(r'[\x00-\x1f\x7f]').hasMatch(value)) {
+      if (value is! String ||
+          value.isEmpty ||
+          value.length > 2048 ||
+          value.contains('://') ||
+          RegExp(r'[\x00-\x1f\x7f]').hasMatch(value)) {
         throw FormatException('Invalid workspace recovery identity: $field');
       }
       return value;
     }
+
     final kind = WorkspaceResumeKind.values.where((value) => value.name == json['kind']);
     final position = json['positionMs'];
     if (kind.isEmpty || position is! int || position < 0 || position > 315360000000) {
@@ -261,7 +265,9 @@ class WorkspaceSessionDescriptor {
       subtitle: optionalString('subtitle'),
       mediaKey: optionalString('mediaKey'),
       progressOwner: optionalString('progressOwner'),
-      resume: json['resume'] == null ? null : WorkspaceResumeTarget.fromJson(Map<String, Object?>.from(json['resume'] as Map)),
+      resume: json['resume'] == null
+          ? null
+          : WorkspaceResumeTarget.fromJson(Map<String, Object?>.from(json['resume'] as Map)),
       hasAudio: optionalBool('hasAudio'),
       hasVideo: optionalBool('hasVideo'),
       acceptsInput: optionalBool('acceptsInput'),
@@ -319,7 +325,8 @@ class WorkspaceSnapshot {
     }
 
     final rawSessions = json['sessions'];
-    if (rawSessions is! List || rawSessions.length > maxSessions) throw const FormatException('Invalid workspace sessions');
+    if (rawSessions is! List || rawSessions.length > maxSessions)
+      throw const FormatException('Invalid workspace sessions');
     final sessions = rawSessions
         .map((value) {
           if (value is! Map) throw const FormatException('Invalid workspace session');
@@ -331,7 +338,8 @@ class WorkspaceSnapshot {
     if (ids.length != sessions.length) throw const FormatException('Duplicate workspace session id');
 
     final rawPlacements = json['placements'];
-    if (rawPlacements is! Map || rawPlacements.length > maxSessions) throw const FormatException('Invalid workspace placements');
+    if (rawPlacements is! Map || rawPlacements.length > maxSessions)
+      throw const FormatException('Invalid workspace placements');
     final placements = <String, WorkspacePlacement>{};
     for (final entry in rawPlacements.entries) {
       if (entry.key is! String || (entry.key as String).length > 4096 || entry.value is! Map) {

@@ -64,7 +64,7 @@
 
 - Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
-- Remove aerynOS from supported release channels and packaging at the owner's request.
+- Restore aerynOS release-bundle packaging for downstream review, with checksum-pinned WebKit helpers, corrected Boulder archive extraction and support-file layout, and private ELF search paths for the app and embedded Dolby Vision tool runtime. Native aerynOS build, installation and Jellyfin sign-in pass; the published v3.0.7 bundle still fails video playback QA because it predates the native-aperture repair.
 
 - Retry the nested Dolby Vision Swift package resolution once from clean task-owned state when Xcode 26 aborts inside its package-graph model; ordinary resolver failures still fail immediately.
 

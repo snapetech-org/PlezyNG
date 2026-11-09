@@ -38,7 +38,7 @@ class SeerrTitleAction {
     SeerrTitleActionKind.request4k => t.seerr.request4k,
     SeerrTitleActionKind.notify => t.seerr.notifyMe,
     SeerrTitleActionKind.notify4k => t.seerr.notifyMe4k,
-    SeerrTitleActionKind.notificationsOn => t.seerr.notificationsOn,
+    SeerrTitleActionKind.notificationsOn => t.seerr.turnOffAlert,
     SeerrTitleActionKind.requested => t.seerr.statusRequested,
     SeerrTitleActionKind.available => t.seerr.statusAvailable,
   };
@@ -53,6 +53,13 @@ class SeerrTitleAction {
   };
 
   bool get interactive => kind != SeerrTitleActionKind.requested && kind != SeerrTitleActionKind.available;
+
+  String tooltip({bool quickRequest = false}) => switch (kind) {
+    SeerrTitleActionKind.request => quickRequest ? t.seerr.quickRequestHint : t.seerr.requestHint,
+    SeerrTitleActionKind.requestSeasons => t.seerr.chooseSeasonsHint,
+    SeerrTitleActionKind.request4k => t.seerr.request4kHint,
+    _ => label,
+  };
 }
 
 /// The next action for this viewer. SeerrNG's projection is authoritative for
@@ -64,38 +71,52 @@ SeerrTitleAction? seerrTitleAction(
   SeerrRequestIntent? state, {
   int? seasonNumber,
 }) {
-  if (!source.canRequest(kind)) return null;
-  if (state == null) return const SeerrTitleAction(SeerrTitleActionKind.request);
+  if (!source.supportsTitleActions(kind)) return null;
+  if (state == null) {
+    if (source.canRequest(kind)) return const SeerrTitleAction(SeerrTitleActionKind.request);
+    return source.canRequest4k(kind) ? const SeerrTitleAction(SeerrTitleActionKind.request4k) : null;
+  }
+  final canRequest = source.canRequest(kind) && state.canRequest;
+  final canRequest4k = source.canRequest4k(kind) && state.canRequest4k;
+  if (state.status == 6) return null; // SeerrNG has blocklisted the title.
   final season = seasonNumber == null ? null : state.seasons.where((entry) => entry.number == seasonNumber).firstOrNull;
   if (season != null) {
     if (state.subscribed && state.subscriptionSeasonNumber == seasonNumber) {
       return const SeerrTitleAction(SeerrTitleActionKind.notificationsOn);
     }
     if (season.status == 5) return const SeerrTitleAction(SeerrTitleActionKind.available);
+    if (season.status == 6) return null;
     if (season.standardOwn != null) return const SeerrTitleAction(SeerrTitleActionKind.requested);
     if (season.standardOther != null && season.canSubscribe) return const SeerrTitleAction(SeerrTitleActionKind.notify);
-    if (state.canRequest) return const SeerrTitleAction(SeerrTitleActionKind.requestSeasons);
+    if (canRequest) return const SeerrTitleAction(SeerrTitleActionKind.requestSeasons);
   }
-  if (seasonNumber != null && state.canRequest) return const SeerrTitleAction(SeerrTitleActionKind.requestSeasons);
-  if (kind == MediaKind.show && state.canRequest && state.hasMissingSeasons) {
+  if (seasonNumber != null && canRequest) return const SeerrTitleAction(SeerrTitleActionKind.requestSeasons);
+  if (kind == MediaKind.show && canRequest && state.hasMissingSeasons) {
     return const SeerrTitleAction(SeerrTitleActionKind.requestSeasons);
   }
   if (state.subscribed && state.subscriptionSeasonNumber == null) {
-    if (state.subscriptionIs4k == true &&
-        !state.available &&
-        state.canRequest &&
-        state.own == null &&
-        state.other == null) {
+    if (state.subscriptionIs4k == true && state.status != 5 && canRequest && state.own == null && state.other == null) {
       return const SeerrTitleAction(SeerrTitleActionKind.request);
     }
     return const SeerrTitleAction(SeerrTitleActionKind.notificationsOn);
   }
-  if (state.available) {
+  if (state.status == 5) {
     if (state.other4k != null && state.canSubscribe4k) return const SeerrTitleAction(SeerrTitleActionKind.notify4k);
-    if (state.canRequest4k && state.status4k != 5 && state.own4k == null && state.other4k == null) {
+    if (canRequest4k && state.status4k != 5 && state.status4k != 6 && state.own4k == null && state.other4k == null) {
       return const SeerrTitleAction(SeerrTitleActionKind.request4k);
     }
     return const SeerrTitleAction(SeerrTitleActionKind.available);
+  }
+  if (canRequest && state.own == null && state.other == null && state.own4k != null) {
+    return const SeerrTitleAction(SeerrTitleActionKind.request);
+  }
+  if (canRequest4k &&
+      state.own != null &&
+      state.own4k == null &&
+      state.other4k == null &&
+      state.status4k != 5 &&
+      state.status4k != 6) {
+    return const SeerrTitleAction(SeerrTitleActionKind.request4k);
   }
   if (state.hasOwnRequest) return const SeerrTitleAction(SeerrTitleActionKind.requested);
   if (state.hasOtherRequest) {
@@ -107,8 +128,27 @@ SeerrTitleAction? seerrTitleAction(
           : SeerrTitleActionKind.requested,
     );
   }
-  if (!state.canRequest || state.status == 6) return null;
-  return const SeerrTitleAction(SeerrTitleActionKind.request);
+  if (canRequest) return const SeerrTitleAction(SeerrTitleActionKind.request);
+  if (canRequest4k && state.status4k != 5 && state.status4k != 6) {
+    return const SeerrTitleAction(SeerrTitleActionKind.request4k);
+  }
+  return null;
+}
+
+/// One existing action slot stays primary; a separate alert toggle remains
+/// reachable when a season or quality request is also useful.
+List<SeerrTitleAction> seerrTitleActions(
+  SeerrCatalogSource source,
+  MediaKind kind,
+  SeerrRequestIntent? state, {
+  int? seasonNumber,
+}) {
+  final primary = seerrTitleAction(source, kind, state, seasonNumber: seasonNumber);
+  final actions = <SeerrTitleAction>[if (primary != null && primary.interactive) primary];
+  if (state?.subscribed == true && primary?.kind != SeerrTitleActionKind.notificationsOn) {
+    actions.add(const SeerrTitleAction(SeerrTitleActionKind.notificationsOn));
+  }
+  return actions;
 }
 
 /// Library titles already have Play; only missing seasons and an independent
@@ -130,21 +170,42 @@ SeerrTitleAction? librarySeerrTitleAction(
   SeerrRequestIntent? state, {
   bool hasNewSeason = false,
 }) {
-  if (state == null || !source.canRequest(kind)) return null;
-  if (kind == MediaKind.show && state.canRequest && (state.hasMissingSeasons || hasNewSeason || state.status == 4)) {
+  if (state == null || !source.supportsTitleActions(kind)) return null;
+  if (state.status == 6) return null;
+  if (kind == MediaKind.show &&
+      source.canRequest(kind) &&
+      state.canRequest &&
+      state.status != 6 &&
+      (state.hasMissingSeasons || hasNewSeason || state.status == 4)) {
     return const SeerrTitleAction(SeerrTitleActionKind.requestSeasons);
   }
-  if (state.other4k != null && state.canSubscribe4k) {
-    return SeerrTitleAction(
-      state.subscribed && state.subscriptionIs4k == true
-          ? SeerrTitleActionKind.notificationsOn
-          : SeerrTitleActionKind.notify4k,
-    );
+  if (state.other4k != null && state.canSubscribe4k && !state.subscribed) {
+    return const SeerrTitleAction(SeerrTitleActionKind.notify4k);
   }
-  if (state.canRequest4k && state.status4k != 5 && state.own4k == null && state.other4k == null) {
+  if (source.canRequest4k(kind) &&
+      state.canRequest4k &&
+      state.status4k != 5 &&
+      state.status4k != 6 &&
+      state.own4k == null &&
+      state.other4k == null) {
     return const SeerrTitleAction(SeerrTitleActionKind.request4k);
   }
+  if (state.subscribed) return const SeerrTitleAction(SeerrTitleActionKind.notificationsOn);
   return null;
+}
+
+List<SeerrTitleAction> librarySeerrTitleActions(
+  SeerrCatalogSource source,
+  MediaKind kind,
+  SeerrRequestIntent? state, {
+  bool hasNewSeason = false,
+}) {
+  final primary = librarySeerrTitleAction(source, kind, state, hasNewSeason: hasNewSeason);
+  final actions = <SeerrTitleAction>[if (primary != null && primary.interactive) primary];
+  if (state?.subscribed == true && primary?.kind != SeerrTitleActionKind.notificationsOn) {
+    actions.add(const SeerrTitleAction(SeerrTitleActionKind.notificationsOn));
+  }
+  return actions;
 }
 
 Future<void> performSeerrTitleAction(
@@ -173,12 +234,14 @@ Future<void> performSeerrTitleAction(
       }
       if (!context.mounted) return;
       unawaited(source.client.intents.load(kind, tmdbId));
-      showSuccessSnackBar(
-        context,
-        action.kind != SeerrTitleActionKind.notificationsOn
-            ? t.seerr.notificationsEnabled
-            : t.seerr.notificationsDisabled,
-      );
+      final message = action.kind == SeerrTitleActionKind.notificationsOn
+          ? t.seerr.notificationsDisabled
+          : seasonNumber != null
+          ? t.seerr.notificationsEnabledSeason(season: seasonNumber)
+          : action.kind == SeerrTitleActionKind.notify4k
+          ? t.seerr.notificationsEnabled4k
+          : t.seerr.notificationsEnabled;
+      showSuccessSnackBar(context, message);
     } on SeerrApiException catch (e) {
       if (context.mounted) showErrorSnackBar(context, e.message);
     } catch (e) {

@@ -14,6 +14,8 @@ for sdk in ('iphoneos', 'appletvos'):
             if source.name.endswith('.private.swiftinterface'):
                 continue
             (output / (sdk + '-' + framework + '-' + source.name)).write_bytes(source.read_bytes())
+            print('PUBLIC FRAMEWORK CONTRACT: ' + sdk + '-' + framework + '-' + source.name)
+            print(source.read_text()[:100000])
     for source in (root / 'usr/lib/swift/XPC.swiftmodule').glob('*.swiftinterface'):
         if not source.name.endswith('.private.swiftinterface'):
             (output / (sdk + '-XPC-' + source.name)).write_bytes(source.read_bytes())
@@ -42,4 +44,6 @@ for name, url in {
 }.items():
     with urllib.request.urlopen(url, timeout=30) as response:
         (output / name).write_bytes(response.read(1024 * 1024))
+    print('APPLE IMPLEMENTATION GUIDANCE: ' + name)
+    print((output / name).read_text()[:60000])
 print('Captured public SDK interfaces and Apple extension implementation guidance')

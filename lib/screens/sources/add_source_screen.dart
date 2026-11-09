@@ -479,11 +479,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
       controller.requireSession(epoch);
       if (!mounted) return;
       if (_kind == FileSourceKind.bookorbit) {
-        final probe = BookOrbitSourceAdapter(
-          source,
-          SourceTransport(allowHttp: _allowHttp),
-          () async => credentials,
-        );
+        final probe = BookOrbitSourceAdapter(source, SourceTransport(allowHttp: _allowHttp), () async => credentials);
         try {
           await probe.browse();
         } finally {
@@ -677,7 +673,9 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                         input(
                           'username',
                           t.fileSources.username,
-                          required: const {FileSourceKind.sftp, FileSourceKind.bookorbit}.contains(_kind) && widget.existing == null,
+                          required:
+                              const {FileSourceKind.sftp, FileSourceKind.bookorbit}.contains(_kind) &&
+                              widget.existing == null,
                         ),
                         input(
                           'password',
@@ -873,10 +871,7 @@ class _AddSourceScreenState extends State<AddSourceScreen> {
                     if (_kind == FileSourceKind.bookorbit)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          t.sourceSetup.bookorbitHelp,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
+                        child: Text(t.sourceSetup.bookorbitHelp, style: Theme.of(context).textTheme.bodySmall),
                       ),
                     if (_kind == FileSourceKind.openSubsonic) ...[
                       input('apiKey', t.sourceSetup.apiKey, secret: true, validator: _validateOpenSubsonicCredentials),

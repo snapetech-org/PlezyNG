@@ -38,6 +38,7 @@ import 'seerr_title_action.dart';
 import '../profiles/active_profile_provider.dart';
 import '../profiles/profile.dart';
 import '../utils/provider_extensions.dart';
+import '../utils/external_ids.dart';
 import '../utils/app_logger.dart';
 import '../utils/library_refresh_notifier.dart';
 import '../utils/media_navigation_helper.dart';
@@ -88,7 +89,7 @@ class _MenuContext {
   final CatalogSourcesProvider? catalogSources;
   final SeerrCatalogSource? seerrSource;
   final int? seerrTmdbId;
-  final SeerrTitleAction? seerrAction;
+  final List<SeerrTitleAction> seerrActions;
   final bool isAdmin;
   final bool canTranscode;
   final bool itemServerOnline;
@@ -108,7 +109,7 @@ class _MenuContext {
     required this.catalogSources,
     required this.seerrSource,
     required this.seerrTmdbId,
-    required this.seerrAction,
+    required this.seerrActions,
     required this.isAdmin,
     required this.canTranscode,
     required this.itemServerOnline,
@@ -127,7 +128,7 @@ class _MenuContext {
       catalogSources = null,
       seerrSource = null,
       seerrTmdbId = null,
-      seerrAction = null,
+      seerrActions = const [],
       isAdmin = false,
       canTranscode = false,
       itemServerOnline = false,
@@ -530,18 +531,19 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     final isOffline = context.read<OfflineModeProvider>().isOffline;
     final seerrSource = catalogSources?.seerrSource;
     int? seerrTmdbId;
-    SeerrTitleAction? seerrAction;
+    var seerrActions = const <SeerrTitleAction>[];
     if (mediaItem != null &&
-        mediaClient != null &&
         seerrSource != null &&
-        seerrSource.canRequest(mediaItem.kind) &&
-        itemServerOnline &&
+        seerrSource.supportsTitleActions(mediaItem.kind) &&
         !widget.isOffline &&
         !isOffline) {
       try {
         // Server-provided external ids are exact; never match library rows
         // to Seerr by title/year or infer a TV id from an episode id.
-        seerrTmdbId = (await mediaClient.fetchExternalIds(mediaItem.id)).tmdb;
+        seerrTmdbId = ExternalIds.fromMediaMetadata(mediaItem.raw, mediaItem.guid).tmdb;
+        if (seerrTmdbId == null && itemServerOnline && mediaClient != null) {
+          seerrTmdbId = (await mediaClient.fetchExternalIds(mediaItem.id)).tmdb;
+        }
         if (seerrTmdbId != null) {
           await seerrSource.client.intents.load(mediaItem.kind, seerrTmdbId);
           final state = seerrSource.client.intents.peek(mediaItem.kind, seerrTmdbId);
@@ -549,7 +551,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
           if (mediaItem.kind == MediaKind.show && state != null && state.canRequest && !state.hasMissingSeasons) {
             hasNewSeason = hasNewSeerrSeason(state, await seerrSource.client.getTv(seerrTmdbId));
           }
-          seerrAction = librarySeerrTitleAction(seerrSource, mediaItem.kind, state, hasNewSeason: hasNewSeason);
+          seerrActions = librarySeerrTitleActions(seerrSource, mediaItem.kind, state, hasNewSeason: hasNewSeason);
         }
       } catch (e) {
         appLogger.d('Seerr: context menu id resolution failed', error: e);
@@ -608,7 +610,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       catalogSources: catalogSources,
       seerrSource: seerrSource,
       seerrTmdbId: seerrTmdbId,
-      seerrAction: seerrAction,
+      seerrActions: seerrActions,
       isAdmin: isAdmin,
       canTranscode: canTranscode,
       itemServerOnline: itemServerOnline,
@@ -678,8 +680,12 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
     return [
       if (mediaKind.isMusic) ..._musicMenuActions(context, menu, mediaItem),
-      if (menu.seerrAction case final action?)
-        _MenuAction(value: 'seerr_request', icon: action.icon, label: action.label),
+      for (var index = 0; index < menu.seerrActions.length; index++)
+        _MenuAction(
+          value: index == 0 ? 'seerr_request' : 'seerr_availability_alert',
+          icon: menu.seerrActions[index].icon,
+          label: menu.seerrActions[index].label,
+        ),
       if (hasActiveProgress)
         _MenuAction(value: 'play_from_beginning', icon: Symbols.replay_rounded, label: t.mediaMenu.playFromBeginning),
       // Trailer playback. The detail row may hide its trailer button on small
@@ -945,10 +951,11 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         outcome.didNavigate = true;
         widget.onPlayTrailer?.call();
         break;
-      case 'seerr_request':
+      case 'seerr_request' || 'seerr_availability_alert':
         final source = menu.seerrSource;
         final id = menu.seerrTmdbId;
-        final action = menu.seerrAction;
+        final index = selected == 'seerr_request' ? 0 : 1;
+        final action = menu.seerrActions.length > index ? menu.seerrActions[index] : null;
         if (source != null &&
             id != null &&
             action != null &&

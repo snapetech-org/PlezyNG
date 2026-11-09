@@ -5,8 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/visualization/visualizer_sigstore_verifier.dart';
 
 void main() {
-  final path = Platform.environment['PLEZY_CATALOG_FIXTURE'] ??
-      'test/fixtures/visualizer/authenticated-catalog.json';
+  final path = Platform.environment['PLEZY_CATALOG_FIXTURE'] ?? 'test/fixtures/visualizer/authenticated-catalog.json';
   final file = File(path);
   Map<String, dynamic> fixture() => jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
   Map<String, dynamic> bundle() => fixture()['sigstoreBundle'] as Map<String, dynamic>;
@@ -17,7 +16,15 @@ void main() {
   }
 
   test('rejects malformed and public-key-only envelopes', () {
-    for (final value in [null, [], {}, {'mediaType': 'application/vnd.dev.sigstore.bundle.v0.3+json', 'verificationMaterial': {'publicKey': {}}}]) {
+    for (final value in [
+      null,
+      [],
+      {},
+      {
+        'mediaType': 'application/vnd.dev.sigstore.bundle.v0.3+json',
+        'verificationMaterial': {'publicKey': {}},
+      },
+    ]) {
       expect(() => VisualizerSigstoreVerifier.verify(value, [1], DateTime.now()), throwsFormatException);
     }
   });
@@ -56,7 +63,9 @@ void main() {
           case 'promise':
             entry.remove('inclusionPromise');
           case 'certificate':
-            material['certificate'] = {'rawBytes': base64Encode([48, 0])};
+            material['certificate'] = {
+              'rawBytes': base64Encode([48, 0]),
+            };
           case 'log':
             entry['logId']['keyId'] = base64Encode(List<int>.filled(32, 0));
           case 'signature':

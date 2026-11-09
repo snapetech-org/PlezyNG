@@ -56,6 +56,17 @@ class SeerrCatalogSource implements CatalogSource {
         kind == MediaKind.movie ? SeerrPermission.requestMovie : SeerrPermission.requestTv,
       ]);
 
+  bool canRequest4k(MediaKind kind) =>
+      (kind == MediaKind.movie || kind == MediaKind.show) &&
+      seerrHasPermission(client.session.permissions, [
+        SeerrPermission.request4k,
+        kind == MediaKind.movie ? SeerrPermission.request4kMovie : SeerrPermission.request4kTv,
+      ]);
+
+  /// Viewing another person's request or following its availability does not
+  /// require permission to create a request of your own.
+  bool supportsTitleActions(MediaKind kind) => kind == MediaKind.movie || kind == MediaKind.show;
+
   @override
   Listenable get watchlistChanges => _watchlistChanges;
 

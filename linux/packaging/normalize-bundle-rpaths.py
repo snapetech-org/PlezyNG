@@ -43,6 +43,12 @@ def normalize(bundle):
             continue
         old = subprocess.check_output(['patchelf', '--print-rpath', str(path)], text=True).strip()
         paths = ['$ORIGIN']
+        tool = bundle / 'tools/dv'
+        runtime = tool / 'lib/runtime'
+        if runtime.is_dir() and path.is_relative_to(tool):
+            relative_runtime = os.path.relpath(runtime, path.parent)
+            if relative_runtime != '.':
+                paths.append(f'$ORIGIN/{relative_runtime}')
         relative = os.path.relpath(library, path.parent)
         if relative != '.':
             paths.append(f'$ORIGIN/{relative}')

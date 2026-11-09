@@ -18,16 +18,22 @@ Future<bool> resumeWorkspaceSession(
   bool Function() operationCurrent,
 ) async {
   final target = descriptor.resume;
-  if (target == null || target.kind != WorkspaceResumeKind.library ||
-      descriptor.kind != MultiviewMediaKind.video) return false;
+  if (target == null || target.kind != WorkspaceResumeKind.library || descriptor.kind != MultiviewMediaKind.video) {
+    return false;
+  }
   final provider = context.read<MultiServerProvider>();
   final client = provider.getClientForServer(ServerId(target.providerId));
   if (client == null) return false;
   final item = await client.fetchItem(target.itemId).timeout(const Duration(seconds: 20));
-  if (!context.mounted || !workspace.active || !operationCurrent() ||
+  if (!context.mounted ||
+      !workspace.active ||
+      !operationCurrent() ||
       provider.getClientForServer(ServerId(target.providerId)) != client ||
-      item == null || item.id != target.itemId ||
-      (item.serverId != null && item.serverId != target.providerId)) return false;
+      item == null ||
+      item.id != target.itemId ||
+      (item.serverId != null && item.serverId != target.providerId)) {
+    return false;
+  }
   final opened = Completer<bool>();
   var handedOff = false;
   var expired = false;
@@ -38,25 +44,30 @@ Future<bool> resumeWorkspaceSession(
     expired = true;
     if (!opened.isCompleted) opened.complete(false);
   });
-  unawaited(navigateToVideoPlayer(
-    context,
-    metadata: item.copyWith(serverId: target.providerId),
-    initialPosition: Duration(milliseconds: target.positionMs),
-    explicitStartPolicy: true,
-    resolveWatchState: false,
-    skipCinemaExtras: true,
-    skipPreroll: true,
-    isLaunchCurrent: current,
-    onLaunched: () {
-      if (!current()) return;
-      handedOff = true;
-      if (!opened.isCompleted) opened.complete(true);
-    },
-  ).then<void>((_) {
-    if (!opened.isCompleted) opened.complete(false);
-  }, onError: (Object _, StackTrace __) {
-    if (!opened.isCompleted) opened.complete(false);
-  }));
+  unawaited(
+    navigateToVideoPlayer(
+      context,
+      metadata: item.copyWith(serverId: target.providerId),
+      initialPosition: Duration(milliseconds: target.positionMs),
+      explicitStartPolicy: true,
+      resolveWatchState: false,
+      skipCinemaExtras: true,
+      skipPreroll: true,
+      isLaunchCurrent: current,
+      onLaunched: () {
+        if (!current()) return;
+        handedOff = true;
+        if (!opened.isCompleted) opened.complete(true);
+      },
+    ).then<void>(
+      (_) {
+        if (!opened.isCompleted) opened.complete(false);
+      },
+      onError: (Object _, StackTrace _) {
+        if (!opened.isCompleted) opened.complete(false);
+      },
+    ),
+  );
   try {
     return await opened.future;
   } finally {

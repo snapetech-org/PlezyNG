@@ -4,6 +4,9 @@
   pkgs ? import <nixpkgs> { },
   desktopFile ? ./org.snapetech.pleazyng.desktop,
   relocateCaches ? ./relocate-caches.py,
+  webkitMetadata ? ./webkit-runtime.json,
+  webkitInstaller ? ./install-webkit-helpers.py,
+  rebuildPixbuf ? ./rebuild-pixbuf-cache.py,
 }:
 let
   version = "@@VERSION@@";
@@ -23,7 +26,7 @@ let
     # Preserve native engines, models and providers exactly as released.
     dontUnpack = true;
     dontFixup = true;
-    nativeBuildInputs = [ pkgs.python3 ];
+    nativeBuildInputs = [ pkgs.python3 pkgs.gdk-pixbuf.dev ];
     installPhase = ''
       runHook preInstall
       mkdir -p $out/lib/pleazyng
@@ -31,20 +34,58 @@ let
       test -x $out/lib/pleazyng/pleazyng
       test -f $out/lib/pleazyng/pleazyng.sh
       chmod +x $out/lib/pleazyng/pleazyng.sh
+      LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath [ pkgs.libx11 pkgs.libxext pkgs.libxrender pkgs.libxcb pkgs.fontconfig ]} \
+      python3 ${rebuildPixbuf} $out/lib/pleazyng \
+        --query-tool ${pkgs.gdk-pixbuf.dev}/bin/gdk-pixbuf-query-loaders
       python3 ${relocateCaches} $out/lib/pleazyng
       runHook postInstall
     '';
   };
+  webkitSource = (builtins.fromJSON (builtins.readFile webkitMetadata)).${source.arch};
+  webkitHelpers = pkgs.stdenvNoCC.mkDerivation {
+    pname = "pleazyng-webkit-helpers";
+    version = webkitSource.version;
+    src = pkgs.fetchurl { inherit (webkitSource) url sha256; };
+    dontUnpack = true;
+    dontFixup = true;
+    nativeBuildInputs = [ pkgs.python3 pkgs.binutils pkgs.gnutar pkgs.zstd ];
+    installPhase = ''
+      python3 ${webkitInstaller} --bundle ${bundle}/lib/pleazyng --deb $src \
+        --arch ${source.arch} --root $out --metadata ${webkitMetadata}
+      # FHS merges package /lib into /usr/lib, including the exact Ubuntu
+      # multiarch path compiled into this production WebKit library.
+      mv $out/usr/lib $out/lib
+      mv $out/usr/share $out/share
+      rmdir $out/usr
+    '';
+  };
 in
 pkgs.buildFHSEnv {
-  name = "pleazyng";
+  pname = "pleazyng";
+  inherit version;
+  passthru = { inherit bundle webkitHelpers; };
   # The FHS environment keeps the published bundle and launcher together.
   # It is a compatibility environment, not a security sandbox.
-  targetPkgs = p: with p; [
-    bash coreutils gtk3 webkitgtk_4_1 libsecret libepoxy alsa-lib libevdev
-    glib wayland libglvnd libva libvdpau vulkan-loader libdrm mesa
-    libx11 libxcb libxext libgbm fontconfig xdg-utils cacert
-  ];
+  targetPkgs = p:
+    let
+      runtime = with p; [
+        bash coreutils gtk3 libsecret libepoxy alsa-lib libevdev
+        glib wayland libglvnd libva libvdpau vulkan-loader libdrm mesa
+        libx11 libxcb libxext libgbm fontconfig dejavu_fonts shared-mime-info xdg-utils cacert xdg-dbus-proxy
+        webkitHelpers
+      ];
+      closure = p.closureInfo { rootPaths = runtime ++ [ bundle p.bubblewrap ]; };
+      sandboxBubblewrap = p.writeShellScriptBin "bwrap" ''
+        # The Ubuntu WebKit sandbox does not know about Nix store symlinks.
+        # Expose only its immutable runtime closure, read-only, while retaining
+        # WebKit's namespace, seccomp and broker restrictions.
+        args=(--dir /nix --dir /nix/store)
+        while IFS= read -r path; do
+          args+=(--ro-bind "$path" "$path")
+        done < ${closure}/store-paths
+        exec ${p.bubblewrap}/bin/bwrap "''${args[@]}" "$@"
+      '';
+    in runtime ++ [ sandboxBubblewrap ];
   runScript = "${bundle}/lib/pleazyng/pleazyng.sh";
   extraInstallCommands = ''
     install -Dm644 ${desktopFile} \

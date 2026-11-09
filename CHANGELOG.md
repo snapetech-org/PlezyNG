@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Repair AUR, COPR and Nix repacks of v3.0.7 with byte-matched WebKit helper processes, required sandbox tools and regenerated GTK image-loader caches. Qualify Nix WebView rendering and JavaScript with the WebKit process sandbox enabled. Existing GitHub release assets remain immutable.
+
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.
 
 - Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.

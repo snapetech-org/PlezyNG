@@ -11,4 +11,7 @@ import (builtins.toFile "pleazyng-release.nix" rendered) {
   inherit pkgs;
   desktopFile = ../org.snapetech.pleazyng.desktop;
   relocateCaches = ../flatpak/relocate-caches.py;
+  webkitMetadata = ../webkit-runtime.json;
+  webkitInstaller = ../install-webkit-helpers.py;
+  rebuildPixbuf = ../rebuild-pixbuf-cache.py;
 }

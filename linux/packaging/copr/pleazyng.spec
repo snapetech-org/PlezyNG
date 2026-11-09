@@ -5,7 +5,7 @@
 
 Name:           pleazyng
 Version:        2.24.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Plex client with Jellyfin and Emby support, offline downloads, and HDR
 License:        GPL-3.0-only
 URL:            https://github.com/snapetech-org/pleazyng
@@ -17,9 +17,21 @@ Source4:        pleazyng.png
 Source5:        LICENSE
 Source6:        normalize-bundle-rpaths.py
 Source7:        relocate-caches.py
+Source8:        install-webkit-helpers.py
+Source9:        webkit-runtime.json
+Source10:       webkit-x64.deb
+Source11:       webkit-arm64.deb
+Source12:       rebuild-pixbuf-cache.py
 BuildRequires:  tar
 BuildRequires:  patchelf
 BuildRequires:  python3
+BuildRequires:  binutils
+BuildRequires:  zstd
+BuildRequires:  gdk-pixbuf2-devel
+BuildRequires:  gtk3
+BuildRequires:  pkgconf-pkg-config
+Requires:       bubblewrap
+Requires:       xdg-dbus-proxy
 Requires:       gtk3
 Requires:       webkit2gtk4.1
 Requires:       libsecret
@@ -70,7 +82,13 @@ tar -xzf %{SOURCE1} -C .
 %install
 install -d %{buildroot}/opt/pleazyng
 cp -a . %{buildroot}/opt/pleazyng/
+%ifarch x86_64
+python3 %{SOURCE8} --bundle %{buildroot}/opt/pleazyng --deb %{SOURCE10} --root %{buildroot} --arch x64 --metadata %{SOURCE9}
+%else
+python3 %{SOURCE8} --bundle %{buildroot}/opt/pleazyng --deb %{SOURCE11} --root %{buildroot} --arch arm64 --metadata %{SOURCE9}
+%endif
 python3 %{SOURCE6} %{buildroot}/opt/pleazyng
+python3 %{SOURCE12} %{buildroot}/opt/pleazyng --runtime-prefix /opt/pleazyng
 python3 %{SOURCE7} %{buildroot}/opt/pleazyng --runtime-prefix /opt/pleazyng
 install -Dm755 %{SOURCE2} %{buildroot}/usr/bin/pleazyng
 install -Dm644 %{SOURCE3} %{buildroot}/usr/share/applications/org.snapetech.pleazyng.desktop
@@ -86,4 +104,8 @@ chmod 0755 %{buildroot}/opt/pleazyng/pleazyng %{buildroot}/opt/pleazyng/lib/cras
 /usr/bin/pleazyng
 /usr/share/applications/org.snapetech.pleazyng.desktop
 /usr/share/icons/hicolor/512x512/apps/pleazyng.png
+%dir /usr/lib/*-linux-gnu
+/usr/lib/*-linux-gnu/webkit2gtk-4.1
+/usr/share/pleazyng/webkit-runtime.json
+/usr/share/licenses/pleazyng/webkit-copyright
 %license /usr/share/licenses/%{name}/LICENSE

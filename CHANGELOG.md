@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep download diagnostics out of CMake path output and support explicitly rebuilding Linux during verified artifact recovery, retaining required Mac notarization and Gatekeeper qualification.
+
 - Supply the pinned Python installer loader path and support completing Apple builds for verified recovery after another platform fails; preserve immutable application CI and reject changed native download pins.
 
 - Prefetch and install the exact webOS Python 3.14.8 archive before setup-python, retaining existing tool caches and the upstream installer completion checks.

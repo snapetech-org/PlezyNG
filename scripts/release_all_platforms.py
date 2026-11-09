@@ -1025,6 +1025,7 @@ def ensure_release(
     reuse_android_run_id: int | None = None,
     reuse_macos_run_id: int | None = None,
     include_webos_build: bool = True,
+    rebuild_linux: bool = False,
 ) -> dict:
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
@@ -1032,9 +1033,13 @@ def ensure_release(
         raise ReleaseError("Every versioned release requires its successful webOS build and public artifact.")
     run_title = f"action:release:pool:private:tag:{tag}"
     if reuse_platform_run_id:
-        if execution_profile != "hybrid" or include_apple_store_build or (prepare_homebrew_cask and not reuse_macos_run_id):
+        if execution_profile != "hybrid" or include_apple_store_build:
             raise ReleaseError("Platform recovery requires the hybrid GitHub-only release profile without fresh Apple or Homebrew qualification.")
         options = {}
+        if rebuild_linux:
+            options["rebuild_linux"] = True
+        if prepare_homebrew_cask and not reuse_macos_run_id:
+            options["require_homebrew_cask"] = True
         if reuse_macos_run_id:
             options["macos_run"] = reuse_macos_run_id
         if reuse_android_run_id:
@@ -1074,7 +1079,7 @@ def ensure_release(
             complete = complete and all(
                 run_has_successful_step(PLEZY_REPO, existing, job_name, step_name)
                 for job_name, step_name in (
-                    *(("build-macos", name) for name in ("Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask") if not reuse_macos_run_id),
+                    *(("build-macos", name) for name in ("Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask") if not (reuse_macos_run_id or reuse_platform_run_id)),
                     ("create-release", "Generate Homebrew Cask candidate"),
                     ("create-release", "Attest Homebrew Cask candidate"),
                 )
@@ -1099,6 +1104,8 @@ def ensure_release(
         "include_apple_store_build": "true" if include_apple_store_build else "false",
         "prepare_homebrew_cask": "true" if prepare_homebrew_cask else "false",
     }
+    if rebuild_linux:
+        fields["rebuild_linux"] = "true"
     if reuse_platform_run_id:
         fields["reuse_platform_run_id"] = str(reuse_platform_run_id)
     if reuse_android_run_id:
@@ -1117,13 +1124,19 @@ def ensure_release(
 
 
 def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
-                             android_run=None, macos_run=None, include_webos_build=True, wait_complete=False) -> dict:
+                             android_run=None, macos_run=None, include_webos_build=True, wait_complete=False,
+                             rebuild_linux=False, require_homebrew_cask=False) -> dict:
     from recover_release_platforms import RecoveryError, compose_proof, verify_source_run, wait_for_source_run, verify_macos_packaging_recovery
 
+    options = {}
+    if rebuild_linux:
+        options["rebuild_linux"] = True
+    if require_homebrew_cask:
+        options["require_homebrew_cask"] = True
     try:
         source = (verify_macos_packaging_recovery(run_id, macos_run, commit_sha, version) if macos_run else
-                  wait_for_source_run(run_id, commit_sha, version, 10800) if wait_complete else
-                  verify_source_run(run_id, commit_sha, version, allow_pending=True))
+                  wait_for_source_run(run_id, commit_sha, version, 10800, **options) if wait_complete else
+                  verify_source_run(run_id, commit_sha, version, allow_pending=True, **options))
         return compose_proof(source, android_run, include_webos_build)
     except (RecoveryError, RuntimeError) as error:
         raise ReleaseError(f"Platform artifact recovery rejected: {error}") from error
@@ -1536,6 +1549,7 @@ def parse_args() -> argparse.Namespace:
         help="Rebuild Android/WebOS and reuse other verified platform outputs after infrastructure-only fixes.",
     )
     parser.add_argument("--reuse-macos-run", type=int, help="Use a qualified signing-only Mac recovery with every original platform artifact.")
+    parser.add_argument("--rebuild-linux", action="store_true", help="Rebuild Linux during verified platform recovery")
     parser.add_argument("--reuse-android-run", type=int, help="Reuse a separately successful Android release artifact.")
     parser.add_argument("--skip-webos-build", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument(
@@ -1605,10 +1619,12 @@ def main() -> int:
         raise ReleaseError("Complete releases require the hybrid profile, including native Windows ARM64 CI.")
     if args.reuse_platform_run and (
         args.reuse_platform_run < 1 or args.publish
-        or args.include_apple_store_build or (args.prepare_homebrew_cask and not args.reuse_macos_run)
+        or args.include_apple_store_build
         or args.execution_profile != "hybrid"
     ):
         raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication without fresh Apple or Homebrew qualification.")
+    if args.rebuild_linux and (not args.reuse_platform_run or args.reuse_macos_run):
+        raise ReleaseError("Linux rebuilding requires ordinary verified platform recovery")
     if args.reuse_macos_run:
         if args.reuse_macos_run < 1 or not args.reuse_platform_run:
             raise ReleaseError("Mac recovery requires its complete original platform source run.")
@@ -1703,6 +1719,8 @@ def main() -> int:
             proof = verify_platform_recovery(
                 args.reuse_platform_run, pin_sha, args.version,
                 android_run=args.reuse_android_run, include_webos_build=not args.skip_webos_build,
+                **({"rebuild_linux": True} if args.rebuild_linux else {}),
+                **({"require_homebrew_cask": True} if args.prepare_homebrew_cask and not args.reuse_macos_run else {}),
                 **({"macos_run": args.reuse_macos_run} if args.reuse_macos_run else {}),
                 wait_complete=bool(args.reuse_android_run and args.skip_webos_build),
             )
@@ -1737,6 +1755,7 @@ def main() -> int:
             execution_profile=args.execution_profile,
             include_apple_store_build=include_apple_store_build,
             prepare_homebrew_cask=args.prepare_homebrew_cask,
+            **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"reuse_platform_run_id": args.reuse_platform_run} if args.reuse_platform_run else {}),
             **({"reuse_android_run_id": args.reuse_android_run} if args.reuse_android_run else {}),
             **({"reuse_macos_run_id": args.reuse_macos_run} if args.reuse_macos_run else {}),

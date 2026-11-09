@@ -61,6 +61,22 @@ class SourceProofTests(unittest.TestCase):
                     with self.assertRaises(recovery.RecoveryError):
                         recovery.immutable_ci_source(recovery.REPOSITORY, "a" * 40, "3.0.0")
 
+    def test_failed_linux_must_be_rebuilt_and_cannot_be_reused(self):
+        next(job for job in self.jobs if job["name"] == "Build Linux (x64)")["conclusion"] = "failure"
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+        proof = self.prove(rebuild_linux=True)
+        self.assertNotIn("Build Linux (x64)", proof["reused_jobs"])
+        self.assertIn("Build Linux (x64)", proof["rebuilt_jobs"])
+        self.assertIn("Build Linux (arm64)", proof["rebuilt_jobs"])
+
+    def test_cask_recovery_requires_the_reused_mac_qualification(self):
+        with self.assertRaisesRegex(recovery.RecoveryError, "qualification"):
+            self.prove(require_homebrew_cask=True)
+        mac = next(job for job in self.jobs if job["name"] == "build-macos")
+        mac["steps"] = [{"name": name, "status": "completed", "conclusion": "success"} for name in ("Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask")]
+        self.assertTrue(self.prove(require_homebrew_cask=True)["macos_cask_qualified"])
+
     def test_preflight_allows_running_native_jobs_but_never_a_failure(self):
         self.source["status"] = "queued"
         self.jobs[0].update(status="in_progress", conclusion=None)
@@ -128,8 +144,8 @@ class SourceProofTests(unittest.TestCase):
             self.prove()
 
     def test_transport_recovery_cannot_change_native_pins_outside_python_bootstrap(self):
-        original = "PDFIUM_PINS = {'asset': 'pinned'}\ndef prepare_webos_python(cache):\n return 1\n"
-        loader_fix = original.replace("return 1", "return 2")
+        original = "import sys\nprint('verified')\nPDFIUM_PINS = {'asset': 'pinned'}\ndef prepare_webos_python(cache):\n return 1\n"
+        loader_fix = original.replace("return 1", "return 2").replace("print('verified')", "print('verified', file=sys.stderr)")
         native_change = loader_fix.replace("'pinned'", "'different'")
         def encoded(code):
             return {"encoding": "base64", "content": base64.b64encode(code.encode()).decode()}

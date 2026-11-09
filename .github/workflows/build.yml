@@ -54,6 +54,11 @@ on:
         description: Reuse a separately successful Android release artifact with verified platform recovery
         required: false
         type: string
+      rebuild_linux:
+        description: Rebuild both Linux architectures during verified platform recovery
+        type: boolean
+        required: false
+        default: false
       reuse_platform_run_id:
         description: Recover verified passing platform artifacts from the same product source; rebuild Android and WebOS
         required: false
@@ -455,6 +460,7 @@ jobs:
         if: ${{ inputs.reuse_platform_run_id != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
+          REBUILD_LINUX: ${{ inputs.rebuild_linux }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
@@ -471,11 +477,13 @@ jobs:
           TIZEN_BUILD: ${{ steps.request.outputs.include_tizen_build }}
         run: |
           set -euo pipefail
-          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || ( "$HOMEBREW" != false && -z "$MACOS_RUN" ) || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
+          if [[ "$ACTION" != release || "$PROFILE" != hybrid || "$MODE" != release || "$BACKEND" != cpu || "$APPLE_STORE" != false || "$WEBOS_RELEASE" != true || "$WEBOS_BUILD" != true || "$TIZEN_BUILD" != true ]]; then
             echo "Artifact recovery requires the complete hybrid CPU GitHub-only release profile." >&2
             exit 1
           fi
           options=()
+          if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
+          if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
           if [[ -n "$MACOS_RUN" ]]; then options+=(--macos-run "$MACOS_RUN"); fi
           if [[ "$WEBOS_BUILD" != true ]]; then options+=(--skip-webos-build); fi
@@ -2455,7 +2463,7 @@ jobs:
           path: release-packages/pleazyng.*.nupkg
 
   build-linux:
-    if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_linux) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Linux (${{ matrix.arch }})
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') || (matrix.arch == 'x64' && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index))) || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","arm64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index)) }}
@@ -2839,7 +2847,7 @@ jobs:
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
-    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && needs.build-tvos.result == 'skipped' && needs.build-macos.result == 'skipped' && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && needs.build-linux.result == 'skipped' && (needs.build-webos.result == 'success' || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && needs.build-tvos.result == 'skipped' && needs.build-macos.result == 'skipped' && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && ((inputs.rebuild_linux && needs.build-linux.result == 'success') || (!inputs.rebuild_linux && needs.build-linux.result == 'skipped')) && (needs.build-webos.result == 'success' || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-create-release"]}}', github.run_id)) }}
     permissions:
       contents: write
@@ -2884,14 +2892,18 @@ jobs:
         if: ${{ inputs.reuse_platform_run_id != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
+          REBUILD_LINUX: ${{ inputs.rebuild_linux }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
           HEAD_SHA: ${{ github.sha }}
           VERSION: ${{ needs.validate-trusted-ref.outputs.version }}
+          HOMEBREW: ${{ needs.validate-trusted-ref.outputs.prepare_homebrew_cask }}
           WEBOS_BUILD: ${{ needs.validate-trusted-ref.outputs.include_webos_build }}
         run: |
           options=()
+          if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
+          if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
           if [[ -n "$MACOS_RUN" ]]; then options+=(--macos-run "$MACOS_RUN"); fi
           if [[ "$WEBOS_BUILD" != true ]]; then options+=(--skip-webos-build); fi
@@ -3052,21 +3064,21 @@ jobs:
           path: artifacts/windows-chocolatey
 
       - name: Download Linux x64 artifacts
-        if: ${{ inputs.reuse_platform_run_id == '' }}
+        if: ${{ inputs.reuse_platform_run_id == '' || inputs.rebuild_linux }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: linux-x64
           path: artifacts/linux-x64
 
       - name: Download Linux arm64 artifacts
-        if: ${{ inputs.reuse_platform_run_id == '' }}
+        if: ${{ inputs.reuse_platform_run_id == '' || inputs.rebuild_linux }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: linux-arm64
           path: artifacts/linux-arm64
 
       - name: Download x64 AppImage artifact
-        if: ${{ inputs.reuse_platform_run_id == '' }}
+        if: ${{ inputs.reuse_platform_run_id == '' || inputs.rebuild_linux }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: linux-x64-appimage

@@ -506,3 +506,14 @@ transport/compiler input rejects recovery. The pinned Python installer and
 cache checks use the destination's `lib` directory in `LD_LIBRARY_PATH`, as
 setup-python normally does. Fresh installation and completed-cache reuse were
 both verified in an isolated Ubuntu 24.04 container.
+
+Add `--rebuild-linux` to the recovery driver when a Linux job failed: both native
+Linux matrix entries build again, their old artifacts are excluded, and every
+Linux format remains required before publication. Keep `--prepare-homebrew-cask`
+when the source Mac job performed notarization and Gatekeeper qualification;
+preflight may wait for that job, but final artifact recovery rejects missing or
+skipped qualification steps. `--reuse-android-run RUN` can reuse a completed
+successful Android job while other platform jobs in the same trusted source run
+finish. All reused jobs, archive hashes and source identities are rechecked at
+assembly. Download progress belongs on stderr: `fetch_dv_tools.py` stdout is
+consumed as exactly one filesystem path by CMake.

@@ -1,4 +1,5 @@
 import hashlib
+from contextlib import redirect_stdout, redirect_stderr
 import json
 import io
 import tarfile
@@ -172,6 +173,13 @@ class NativeDownloadsTests(unittest.TestCase):
                 downloads.prepare_webos_python(self.root / "cache")
             self.assertEqual(evidence.read_text(), "preserve")
             fetch.assert_not_called()
+
+    def test_download_diagnostics_do_not_pollute_paths_consumed_by_cmake(self):
+        output, diagnostics = io.StringIO(), io.StringIO()
+        with redirect_stdout(output), redirect_stderr(diagnostics), patch.object(downloads, "download_asset", side_effect=lambda repo, asset, path: path.write_bytes(self.content)):
+            self.get_asset()
+        self.assertEqual(output.getvalue(), "")
+        self.assertIn("Verified native download:", diagnostics.getvalue())
 
     def test_libdovi_cache_wrapper_preserves_verified_archives_and_other_curl_calls(self):
         android = self.root / "android/app"

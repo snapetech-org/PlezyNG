@@ -72,7 +72,7 @@ def pinned_asset(repository, tag, name, expected, cache, release=None):
             if temporary.stat().st_size != asset["size"] or sha256(temporary) != expected:
                 raise ValueError(f"Downloaded native asset failed its pinned size/hash: {name}")
             temporary.replace(target)
-            print(f"Verified native download: {name} {expected}", flush=True)
+            print(f"Verified native download: {name} {expected}", file=sys.stderr, flush=True)
             return target
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             failure = error

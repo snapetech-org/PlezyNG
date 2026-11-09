@@ -109,6 +109,16 @@ jobs:
             --test-requirement='=identifier "org.snapetech.pleazyng" and anchor apple generic and certificate leaf[subject.OU] = "DM9A59DC85"' "$app" 2>&1 | tee codesign-verification.txt
           xcrun stapler validate "$app" 2>&1 | tee notarization-ticket.txt
           spctl --assess --type execute --verbose=4 "$app" 2>&1 | tee gatekeeper.txt
+      - name: Install the published Homebrew Cask
+        run: |
+          set -euo pipefail
+          brew tap snapetech-org/pleazyng https://github.com/snapetech-org/homebrew-pleazyng
+          brew install --cask snapetech-pleazyng 2>&1 | tee "$RUNNER_TEMP/channel-qualification/homebrew-install.txt"
+          app="/Applications/Pleazyng.app"
+          test -d "$app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist")" = org.snapetech.pleazyng
+          codesign --verify --deep --strict "$app"
+          spctl --assess --type execute --verbose=4 "$app" 2>&1 | tee "$RUNNER_TEMP/channel-qualification/homebrew-gatekeeper.txt"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:
@@ -118,3 +128,5 @@ jobs:
             ${{ runner.temp }}/channel-qualification/codesign-verification.txt
             ${{ runner.temp }}/channel-qualification/notarization-ticket.txt
             ${{ runner.temp }}/channel-qualification/gatekeeper.txt
+            ${{ runner.temp }}/channel-qualification/homebrew-install.txt
+            ${{ runner.temp }}/channel-qualification/homebrew-gatekeeper.txt

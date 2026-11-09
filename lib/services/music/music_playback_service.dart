@@ -58,6 +58,40 @@ class MusicPlayContext {
   const MusicPlayContext({required this.title, required this.kind});
 }
 
+/// Session-owned discovery and album transport, shared by every surface.
+abstract interface class MusicDiscoveryControls {
+  bool get continuationEnabled;
+  bool get continuationLoading;
+  void setContinuationEnabled(bool enabled);
+  void shuffleAlbums();
+  Future<void> nextAlbum();
+}
+
+class MusicSignalPath {
+  final bool offline;
+  final String method;
+  final String engine;
+  final String? codec;
+  final int? channels;
+  final bool normalization;
+  final bool equalizer;
+  final bool fades;
+  const MusicSignalPath({
+    required this.offline,
+    required this.method,
+    required this.engine,
+    this.codec,
+    this.channels,
+    required this.normalization,
+    required this.equalizer,
+    required this.fades,
+  });
+}
+
+abstract interface class MusicSignalPathService {
+  MusicSignalPath? get signalPath;
+}
+
 /// Backend-neutral music playback session: owns the audio `Player`, the
 /// queue (shuffle/repeat), OS media-session feed, and progress reporting.
 ///

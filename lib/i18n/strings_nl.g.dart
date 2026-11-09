@@ -114,6 +114,7 @@ class TranslationsNl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$nl issueReport = _Translations$issueReport$nl._(_root);
 	@override late final _Translations$romm$nl romm = _Translations$romm$nl._(_root);
 	@override late final _Translations$subtitleCapture$nl subtitleCapture = _Translations$subtitleCapture$nl._(_root);
+	@override late final _Translations$musicExperience$nl musicExperience = _Translations$musicExperience$nl._(_root);
 }
 
 // Path: app
@@ -4207,6 +4208,58 @@ class _Translations$subtitleCapture$nl extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Audio lokaal verwerken…';
 	@override String processingAudioProgress({required Object percent}) => 'Audio lokaal verwerken (${percent}%)…';
 	@override String get cpuFallback => 'Spraakverwerking op de GPU is mislukt. Opnieuw proberen via de CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$nl extends Translations$musicExperience$en {
+	_Translations$musicExperience$nl._(TranslationsNl root) : this._root = root, super.internal(root);
+
+	final TranslationsNl _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Muziek ontdekken';
+	@override String get mix => 'Mix maken';
+	@override String get adventure => 'Klankavontuur';
+	@override String get related => 'Vergelijkbare klank';
+	@override String get seeds => 'Bronnen en tussenpunten';
+	@override String get search => 'Artiest, album of nummer zoeken';
+	@override String get generate => 'Voorbeeld';
+	@override String get saveRecipe => 'Recept opslaan';
+	@override String get saved => 'Opgeslagen recepten';
+	@override String get savePlaylist => 'Afspeellijst opslaan';
+	@override String get name => 'naam';
+	@override String get trackLimit => 'Maximumaantal nummers';
+	@override String get empty => 'Geen passende muziek. Klankfuncties vereisen analyse op de server.';
+	@override String get unsupported => 'Deze server biedt geen klankanalyse.';
+	@override String get continuation => 'Vergelijkbare muziek blijven afspelen';
+	@override String get shuffleAlbums => 'Albums schudden';
+	@override String get nextAlbum => 'Volgend album';
+	@override String get driving => 'Rijweergave';
+	@override String get exitDriving => 'Rijweergave sluiten';
+	@override String get signalPath => 'Audiosignaalpad';
+	@override String get source => 'Bron';
+	@override String get local => 'Gedownloade audio';
+	@override String get network => 'Serveraudio';
+	@override String get engine => 'Afspeelengine';
+	@override String get codec => 'Broncodec';
+	@override String get channels => 'Bronkanalen';
+	@override String get processing => 'Wordt verwerkt';
+	@override String get normalization => 'Normalisatie';
+	@override String get equalizer => 'Equalizer';
+	@override String get fades => 'Volumeovergangen';
+	@override String get outputUnknown => 'Het hardware-uitvoerformaat is niet gemeten.';
+	@override String get download => 'Selectie downloaden';
+	@override String get ready => 'Klaar';
+	@override String get remove => 'Verwijderen';
+	@override String get play => 'Selectie afspelen';
+	@override String get next => 'Hierna afspelen';
+	@override String get error => 'Muziekaanvraag mislukt';
+	@override String get on => 'op';
+	@override String get off => 'Uit';
+	@override String get unknown => 'Onbekend';
+	@override String get routeLost => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.';
+	@override String get autoDriving => 'Rijweergave openen bij verbinding met een auto';
+	@override String get routeHint => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.';
 }
 
 // Path: appIcon.names
@@ -9263,6 +9316,49 @@ extension on TranslationsNl {
 			'subtitleCapture.processingAudio' => 'Audio lokaal verwerken…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Audio lokaal verwerken (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Spraakverwerking op de GPU is mislukt. Opnieuw proberen via de CPU…',
+			'musicExperience.title' => 'Muziek ontdekken',
+			'musicExperience.mix' => 'Mix maken',
+			'musicExperience.adventure' => 'Klankavontuur',
+			'musicExperience.related' => 'Vergelijkbare klank',
+			'musicExperience.seeds' => 'Bronnen en tussenpunten',
+			'musicExperience.search' => 'Artiest, album of nummer zoeken',
+			'musicExperience.generate' => 'Voorbeeld',
+			'musicExperience.saveRecipe' => 'Recept opslaan',
+			'musicExperience.saved' => 'Opgeslagen recepten',
+			'musicExperience.savePlaylist' => 'Afspeellijst opslaan',
+			'musicExperience.name' => 'naam',
+			'musicExperience.trackLimit' => 'Maximumaantal nummers',
+			'musicExperience.empty' => 'Geen passende muziek. Klankfuncties vereisen analyse op de server.',
+			'musicExperience.unsupported' => 'Deze server biedt geen klankanalyse.',
+			'musicExperience.continuation' => 'Vergelijkbare muziek blijven afspelen',
+			'musicExperience.shuffleAlbums' => 'Albums schudden',
+			'musicExperience.nextAlbum' => 'Volgend album',
+			'musicExperience.driving' => 'Rijweergave',
+			'musicExperience.exitDriving' => 'Rijweergave sluiten',
+			'musicExperience.signalPath' => 'Audiosignaalpad',
+			'musicExperience.source' => 'Bron',
+			'musicExperience.local' => 'Gedownloade audio',
+			'musicExperience.network' => 'Serveraudio',
+			'musicExperience.engine' => 'Afspeelengine',
+			'musicExperience.codec' => 'Broncodec',
+			'musicExperience.channels' => 'Bronkanalen',
+			'musicExperience.processing' => 'Wordt verwerkt',
+			'musicExperience.normalization' => 'Normalisatie',
+			'musicExperience.equalizer' => 'Equalizer',
+			'musicExperience.fades' => 'Volumeovergangen',
+			'musicExperience.outputUnknown' => 'Het hardware-uitvoerformaat is niet gemeten.',
+			'musicExperience.download' => 'Selectie downloaden',
+			'musicExperience.ready' => 'Klaar',
+			'musicExperience.remove' => 'Verwijderen',
+			'musicExperience.play' => 'Selectie afspelen',
+			'musicExperience.next' => 'Hierna afspelen',
+			'musicExperience.error' => 'Muziekaanvraag mislukt',
+			'musicExperience.on' => 'op',
+			'musicExperience.off' => 'Uit',
+			'musicExperience.unknown' => 'Onbekend',
+			'musicExperience.routeLost' => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.',
+			'musicExperience.autoDriving' => 'Rijweergave openen bij verbinding met een auto',
+			'musicExperience.routeHint' => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.',
 			_ => null,
 		};
 	}

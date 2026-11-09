@@ -1343,6 +1343,7 @@ dependencies {
   implementation("androidx.media3:media3-effect:$media3Version")
   implementation("androidx.media3:media3-ui:$media3Version")
   implementation("androidx.media3:media3-common:$media3Version")
+  implementation("androidx.media:media:1.6.0")
 
   // Cronet for HTTP/2 multiplexing + better connection management
   implementation("androidx.media3:media3-datasource-cronet:$media3Version")

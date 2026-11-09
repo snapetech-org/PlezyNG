@@ -4,10 +4,15 @@
 
 - Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.
 
+- Retire the mutable updater-feed branch in favor of published release assets, preserve an immutable legacy updater bridge, and continuously audit/test the Decky build dependency graph.
+
 - Verify the signed, ticket-stapled app inside the existing macOS disk image before publishing Homebrew, rather than requiring a second ticket on the outer image. Add a locked downstream Nix flake for the existing v3.0.7 Linux release.
 
 - Remove the vulnerable deepmerge build dependency from the Steam Cloud Decky extension, preserve its host React/UI and ESM entry contract with an esbuild runtime regression, and integrate the reviewed UI, TypeScript, React types and tslib dependency updates.
 - Repair existing-release Linux channel packaging: preserve binary payloads and root ownership in AUR packages, normalize bundled ELF search paths and GTK caches in COPR repacks, and add native x64/ARM64 Nix and macOS signature qualification without rebuilding application artifacts.
+- Require OS containment for native RomM emulation on every platform. iOS, tvOS, webOS and Tizen builds without a supported isolated helper now report native play unavailable; core probing cannot load a library into the app. Existing downloads, saves and capability-checked browser/streaming routes are preserved. Android package validation now requires the isolated worker and the required JNI entry points.
+
+- Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
 - Remove aerynOS from supported release channels and packaging at the owner's request.
 
@@ -32,6 +37,9 @@
 - Run arm64-only tvOS simulator qualification on the documented Apple Silicon hosted runner, preserving Intel hosted lanes for compatible iOS/macOS checks. An Intel simulator host cannot execute the required tvOS arm64 destination.
 
 - Include copyright metadata and a commit-pinned Pleazyng app icon in future Chocolatey packages.
+
+- Integrate multi-seed music mixes, saved recipes, Plex sonic similarity and waypoint paths into artist, album and Now Playing screens; reuse playlist saving and downloads. Preserve full large queues in paged storage, add guarded radio continuation, album shuffle/skip, analysis seek prints, applied music EQ/normalization, signal-path information and a large-control driving view.
+- Add native Android music browsing and CarPlay templates over the profile-owned music session. Native signing/device qualification and remaining Plexamp parity are tracked explicitly in `docs/plezyng/music/STATUS.md`. The existing [media-controls dependency](https://github.com/edde746/media_controls/tree/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), is vendored at its existing pin to extend its single Android media session; see [source attribution](UPSTREAM_ATTRIBUTION.md#music-media-session-integration).
 
 - Preserve compressed RomM source archives and their receipt hashes inside Android packages by using asset-safe filenames; retire only prior archives verified by their own receipts.
 

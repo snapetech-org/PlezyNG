@@ -4,7 +4,13 @@
 #define PLEZY_RETRO_PROXY_BUILD
 #include <mutex>
 
+#if defined(__ANDROID__)
+#include <filesystem>
+
+#include "retro_android_process.h"
+#else
 #include "../../../shared/process/child_process.h"
+#endif
 #include "retro_api.h"
 #include "retro_audio.h"
 #include "retro_protocol.h"
@@ -20,7 +26,11 @@
 #endif
 using namespace plezy::retro;
 using plezy::process::BytePipe;
+#if defined(__ANDROID__)
+namespace child = plezy::retro::android_process;
+#else
 namespace child = plezy::process::child_detail;
+#endif
 namespace {
 void Diagnostic(const std::exception& error) {
 #ifdef PLEZY_RETRO_TEST_NO_AUDIO
@@ -34,6 +44,7 @@ void Diagnostic(const std::exception& error) {
 }
 std::recursive_mutex mutex;
 std::shared_ptr<child::Control> retiring;
+#if !defined(__ANDROID__)
 std::filesystem::path Helper() {
 #if defined(_WIN32)
   HMODULE library = nullptr;
@@ -55,6 +66,7 @@ std::filesystem::path Helper() {
   Check(std::filesystem::is_regular_file(path) && !std::filesystem::is_symlink(path));
   return path;
 }
+#endif
 class Session {
  public:
   std::shared_ptr<child::Control> control = std::make_shared<child::Control>();
@@ -67,12 +79,21 @@ class Session {
   bool healthy = false;
   Session(const char* corePath, const char* romPath = "", const char* systemPath = "", const char* savesPath = "") {
     Check(corePath && romPath && systemPath && savesPath);
+#if defined(__ANDROID__)
+    core = corePath;  // Android's linker resolves only the allowlisted APK libraries.
+#else
     core = std::filesystem::canonical(std::filesystem::u8path(corePath)).u8string();
+#endif
     if (*romPath) rom = std::filesystem::canonical(std::filesystem::u8path(romPath)).u8string();
     if (*systemPath) system = std::filesystem::canonical(std::filesystem::u8path(systemPath)).u8string();
     if (*savesPath) saves = std::filesystem::canonical(std::filesystem::u8path(savesPath)).u8string();
     try {
-#ifdef _WIN32
+#if defined(__ANDROID__)
+      pipe = child::Spawn(core, rom, system, control);
+      if (!rom.empty()) rom = "/rom/" + std::filesystem::u8path(rom).filename().u8string();
+      system = "/system";
+      saves = "/saves";
+#elif defined(_WIN32)
       auto sandbox = std::make_shared<WindowsSandbox>(Helper(), std::filesystem::u8path(core), rom, system);
       control->resources = sandbox;
       core = sandbox->core.u8string();

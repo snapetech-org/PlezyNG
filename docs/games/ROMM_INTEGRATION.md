@@ -33,7 +33,7 @@ Downloads, interrupted transfers and pending saves remain reachable even when
 they are absent from the server's current first page.
 
 A playable route requires current server capability evidence or an installed
-native core. Browser routes cover EmulatorJS, Ruffle, js-dos, PICO-8 and EasyRPG
+native core with an available OS-isolated worker. Browser routes cover EmulatorJS, Ruffle, js-dos, PICO-8 and EasyRPG
 where RomM enables them. They use RomM's player inside PlezyNG. Browser netplay
 is not advertised: device-token authentication does not establish the session
 cookie needed by RomM's general Socket.IO namespace.
@@ -87,7 +87,7 @@ only that transfer's HTTP client.
 
 The software libretro host handles video, audio, keyboard, up to four gamepads,
 touch controls, pause, SRAM, cartridge RTC memory and states. Core calls and
-serialization run on one worker isolate. It stays paused until restoration
+serialization run in an OS-isolated worker behind bounded IPC. A Dart isolate owns that connection. It stays paused until restoration
 completes and clears buffered audio on pause. SRAM, state and exported RTC memory
 are captured together and atomically committed as one local snapshot. Native
 states include the indexed ROM identity, the
@@ -134,18 +134,21 @@ source pin set. No emulator executable is downloaded at runtime.
 
 | Platform | Native delivery |
 | --- | --- |
-| Android / Android TV | Host and three core libraries built for each APK/AAB ABI; matching source/notices packaged as variant-specific assets |
-| iOS / macOS / tvOS | Four XCFrameworks built per platform SDK by the local pod hook, embedded and signed with the app; source/notices in the pod resource bundle |
+| Android / Android TV | Proxy, isolated-service worker and three core libraries built for each APK/AAB ABI; matching source/notices packaged as variant-specific assets |
+| macOS | Proxy and three core XCFrameworks plus a separately signed sandboxed helper; source/notices in the pod resource bundle |
+| iOS / tvOS | Native emulation unavailable pending an OS-isolated helper; bundled libraries do not enable a route |
 | Windows | Host and three matching core DLLs beside the executable; source/notices under `data/romm-notices` |
 | Linux | Host and three matching core shared libraries under `lib/`; source/notices under `data/romm-notices` |
-| Tizen / webOS | Cross-built host and three core libraries under `lib/`, with matching source/notices |
+| Tizen / webOS | Native emulation unavailable pending an OS-isolated helper; the host never loads a core |
 
 Apple builds stage the entire host/core/source set before replacing the previous
 set, and verify the cache's file contents, permissions and framework symlinks.
-Android release inspection checks all four libraries per ABI, their exported
-interfaces, alignment and dependencies, and the matching source receipts.
+Android release inspection requires the proxy, worker and all three cores per ABI, their exported
+interfaces, alignment and dependencies, and the matching source receipts. The proxy cannot link a worker/core as a startup dependency. Apple pods link only the proxy; macOS copies and signs core frameworks separately for the helper.
 The desktop install steps run after Flutter's bundle cleanup so the cleanup
 cannot delete the just-installed host.
+
+Native availability is fail-closed on every platform; see [containment policy](../security/native-emulator-isolation.md). Downloads and existing saves remain intact when native play is unavailable.
 
 Each package retains the exact default-core source archives, tracked license
 files, host implementation/header notices and the application build recipe.
@@ -188,7 +191,7 @@ Source implementation and packaging recipes are integrated into main. The
 regressions, which have not run without Flutter. Historical authoring notes
 describe their original source-only checkpoints. Runtime compatibility,
 performance, Apple signing, WebView2 availability, TV SDK/core combinations and
-packaged third-party licenses still require validation on private build agents.
+packaged third-party licenses still require platform qualification under the repository runner policy.
 These checks remain release qualification work; no device result is implied.
 
 All 168 new messages have stable catalog keys and explicit English-fallback

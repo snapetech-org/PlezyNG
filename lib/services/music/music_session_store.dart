@@ -1,7 +1,12 @@
 import 'dart:convert';
 
+import 'package:drift/drift.dart' show Variable;
+
+import '../../utils/serial_future_queue.dart';
+
 import '../../database/app_database.dart';
 import '../../media/media_item.dart';
+import '../../media/media_kind.dart';
 import '../../utils/app_logger.dart';
 import 'music_playback_service.dart';
 import 'music_queue_controller.dart';
@@ -13,8 +18,16 @@ class MusicSessionSnapshot {
   final MusicQueueState queue;
   final MusicPlayContext? playContext;
   final Duration position;
+  final MediaItem? continuationSeed;
+  final Set<String> continuationExcluded;
 
-  const MusicSessionSnapshot({required this.queue, required this.playContext, required this.position});
+  const MusicSessionSnapshot({
+    required this.queue,
+    required this.playContext,
+    required this.position,
+    this.continuationSeed,
+    this.continuationExcluded = const {},
+  });
 }
 
 /// Per-profile persistence for the last music session (#2148).
@@ -31,131 +44,160 @@ class MusicSessionStore {
   final AppDatabase _database;
   final String _profileId;
 
-  /// Upper bound on persisted queue length. Oversized queues are windowed
-  /// around the cursor in playback order (the permutation is materialized, so
-  /// un-shuffling a restored oversized queue keeps the current order rather
-  /// than recovering the original one) to bound row size and JSON work.
-  static const int maxPersistedTracks = 1000;
+  // Serialize saves, progress and clear; an old save must never resurrect a
+  // session after stop or overwrite a newer cursor.
+  final SerialFutureQueue _writes = SerialFutureQueue();
+  static const int pageSize = 256;
 
-  /// How much of an oversized queue's window sits *before* the cursor; the
-  /// rest is upcoming tracks, which matter more to a resumed session.
-  static const int _historyWindow = maxPersistedTracks ~/ 4;
-
-  /// The last [save]d snapshot (unwindowed) and where its persisted window
-  /// starts in playback order. An oversized queue persists a window-relative
-  /// cursor, so [updateProgress] maps the live cursor through these instead
-  /// of writing it raw.
-  MusicSessionSnapshot? _lastSaved;
-  int _windowStart = 0;
-
-  Future<void> save(MusicSessionSnapshot snapshot) async {
-    final start = _windowStartFor(snapshot.queue);
-    _lastSaved = snapshot;
-    _windowStart = start;
-    final queue = _windowed(snapshot.queue, start);
-    await _database.upsertMusicSession(
-      MusicSessionRow(
-        profileId: _profileId,
-        queueJson: jsonEncode([for (final track in queue.items) track.toJson()]),
-        orderJson: jsonEncode(queue.order),
-        cursor: queue.cursor,
-        shuffled: queue.shuffled,
-        repeatMode: _repeatModeId(queue.repeatMode),
-        contextTitle: snapshot.playContext?.title,
-        contextKind: snapshot.playContext != null ? _contextKindId(snapshot.playContext!.kind) : null,
-        positionMs: snapshot.position.inMilliseconds.clamp(0, 1 << 62),
-        updatedAt: DateTime.now().millisecondsSinceEpoch,
-      ),
-    );
-  }
-
-  Future<void> updateProgress({required int cursor, required Duration position}) {
-    final saved = _lastSaved;
-    if (saved != null && saved.queue.items.length > maxPersistedTracks) {
-      final windowed = cursor - _windowStart;
-      if (windowed < 0 || windowed >= maxPersistedTracks) {
-        // The cursor left the persisted window: re-window around it. Only the
-        // cursor moved since the last save — shape changes save in full.
-        final queue = saved.queue;
-        return save(
-          MusicSessionSnapshot(
-            queue: MusicQueueState(
-              items: queue.items,
-              order: queue.order,
-              cursor: cursor,
-              shuffled: queue.shuffled,
-              repeatMode: queue.repeatMode,
-            ),
-            playContext: saved.playContext,
-            position: position,
-          ),
-        );
-      }
-      cursor = windowed;
+  Future<void> save(MusicSessionSnapshot snapshot) => _writes.run(() async {
+    final queue = snapshot.queue;
+    if (!MusicQueueController().restoreState(queue)) {
+      throw ArgumentError('Invalid music queue snapshot');
     }
-    return _database.updateMusicSessionProgress(
+    await _database.transaction(() async {
+      await _database.upsertMusicSession(
+        MusicSessionRow(
+          profileId: _profileId,
+          queueJson: jsonEncode({
+            'version': 2,
+            'length': queue.items.length,
+            if (snapshot.continuationSeed case final seed?)
+              'continuation': {
+                // Persist identities, never a stream URL or authentication data.
+                'seed': MediaItem(
+                  id: seed.id,
+                  backend: seed.backend,
+                  kind: seed.kind,
+                  title: seed.title,
+                  serverId: seed.serverId,
+                  libraryId: seed.libraryId,
+                ).toJson(),
+                'excluded': snapshot.continuationExcluded.toList(),
+              },
+          }),
+          orderJson: '[]',
+          cursor: queue.cursor,
+          shuffled: queue.shuffled,
+          repeatMode: _repeatModeId(queue.repeatMode),
+          contextTitle: snapshot.playContext?.title,
+          contextKind: snapshot.playContext != null ? _contextKindId(snapshot.playContext!.kind) : null,
+          positionMs: snapshot.position.inMilliseconds.clamp(0, 1 << 62),
+          updatedAt: DateTime.now().millisecondsSinceEpoch,
+        ),
+      );
+      await _database.customStatement('DELETE FROM music_queue_entries WHERE profile_id = ?', [_profileId]);
+      final playbackPositions = List<int>.filled(queue.items.length, 0);
+      for (var i = 0; i < queue.order.length; i++) {
+        playbackPositions[queue.order[i]] = i;
+      }
+      // Bounded encoding batches; never build a multi-megabyte JSON array.
+      for (var start = 0; start < queue.items.length; start += pageSize) {
+        final end = (start + pageSize).clamp(0, queue.items.length);
+        await _database.batch((batch) {
+          for (var i = start; i < end; i++) {
+            batch.customStatement(
+              'INSERT INTO music_queue_entries (profile_id, canonical_index, playback_index, metadata) VALUES (?, ?, ?, ?)',
+              [_profileId, i, playbackPositions[i], jsonEncode(queue.items[i].toJson())],
+            );
+          }
+        });
+      }
+    });
+  });
+
+  Future<void> updateProgress({required int cursor, required Duration position}) => _writes.run(
+    () => _database.updateMusicSessionProgress(
       profileId: _profileId,
       cursor: cursor,
       positionMs: position.inMilliseconds.clamp(0, 1 << 62),
       updatedAt: DateTime.now().millisecondsSinceEpoch,
-    );
-  }
+    ),
+  );
 
   Future<MusicSessionSnapshot?> load() async {
-    final row = await _database.getMusicSession(_profileId);
-    if (row == null) return null;
-    try {
-      final itemsJson = jsonDecode(row.queueJson) as List<dynamic>;
-      final items = [for (final json in itemsJson) MediaItem.fromJson(json as Map<String, dynamic>)];
-      final order = [for (final index in jsonDecode(row.orderJson) as List<dynamic>) index as int];
-      final repeatMode = _repeatModeFromId(row.repeatMode);
-      if (repeatMode == null) return null;
-      final contextKind = row.contextKind != null ? _contextKindFromId(row.contextKind!) : null;
-      return MusicSessionSnapshot(
-        queue: MusicQueueState(
+    await _writes.settled;
+    return _database.transaction(() async {
+      final row = await _database.getMusicSession(_profileId);
+      if (row == null) return null;
+      try {
+        final payload = jsonDecode(row.queueJson);
+        final items = <MediaItem>[];
+        final order = <int>[];
+        MediaItem? continuationSeed;
+        var continuationExcluded = <String>{};
+        if (payload is List) {
+          // Read v1 rows until their next save; upgrading never loses the old session.
+          items.addAll(payload.map((json) => MediaItem.fromJson(json as Map<String, dynamic>)));
+          order.addAll((jsonDecode(row.orderJson) as List).cast<int>());
+        } else if (payload is Map && payload['version'] == 2) {
+          if (payload['continuation'] case final Map continuation) {
+            final seed = MediaItem.fromJson(Map<String, dynamic>.from(continuation['seed'] as Map));
+            if (seed.serverId != null &&
+                const [MediaKind.track, MediaKind.album, MediaKind.artist].contains(seed.kind)) {
+              continuationSeed = seed;
+              continuationExcluded = (continuation['excluded'] as List).cast<String>().toSet();
+            }
+          }
+          final length = payload['length'] as int;
+          if (length <= 0) return null;
+          final count = await _database
+              .customSelect(
+                'SELECT COUNT(*) AS n FROM music_queue_entries WHERE profile_id = ?',
+                variables: [Variable<String>(_profileId)],
+              )
+              .getSingle();
+          if (count.read<int>('n') != length) return null;
+          order.addAll(List<int>.filled(length, -1));
+          for (var start = 0; start < length; start += pageSize) {
+            final rows = await _database
+                .customSelect(
+                  'SELECT canonical_index, playback_index, metadata FROM music_queue_entries '
+                  'WHERE profile_id = ? AND canonical_index >= ? ORDER BY canonical_index LIMIT ?',
+                  variables: [Variable<String>(_profileId), Variable<int>(start), Variable<int>(pageSize)],
+                )
+                .get();
+            for (final entry in rows) {
+              final canonical = entry.read<int>('canonical_index');
+              final playback = entry.read<int>('playback_index');
+              if (canonical != items.length || playback < 0 || playback >= length || order[playback] != -1) {
+                return null;
+              }
+              items.add(MediaItem.fromJson(jsonDecode(entry.read<String>('metadata')) as Map<String, dynamic>));
+              order[playback] = canonical;
+            }
+          }
+          if (items.length != length) return null;
+        } else {
+          return null;
+        }
+        final repeatMode = _repeatModeFromId(row.repeatMode);
+        if (repeatMode == null) return null;
+        final contextKind = row.contextKind != null ? _contextKindFromId(row.contextKind!) : null;
+        final queue = MusicQueueState(
           items: items,
           order: order,
           cursor: row.cursor,
           shuffled: row.shuffled,
           repeatMode: repeatMode,
-        ),
-        playContext: row.contextTitle != null && contextKind != null
-            ? MusicPlayContext(title: row.contextTitle!, kind: contextKind)
-            : null,
-        position: Duration(milliseconds: row.positionMs < 0 ? 0 : row.positionMs),
-      );
-    } catch (e, st) {
-      appLogger.w('Discarding malformed persisted music session', error: e, stackTrace: st);
-      return null;
-    }
+        );
+        if (!MusicQueueController().restoreState(queue)) return null;
+        return MusicSessionSnapshot(
+          queue: queue,
+          continuationSeed: continuationSeed,
+          continuationExcluded: Set.unmodifiable(continuationExcluded),
+          playContext: row.contextTitle != null && contextKind != null
+              ? MusicPlayContext(title: row.contextTitle!, kind: contextKind)
+              : null,
+          position: Duration(milliseconds: row.positionMs < 0 ? 0 : row.positionMs),
+        );
+      } catch (e, st) {
+        appLogger.w('Discarding malformed persisted music session', error: e, stackTrace: st);
+        return null;
+      }
+    });
   }
 
-  Future<void> clear() {
-    _lastSaved = null;
-    _windowStart = 0;
-    return _database.deleteMusicSessionForProfile(_profileId);
-  }
-
-  /// Playback-order index where an oversized queue's persisted window starts
-  /// (0 when the whole queue fits).
-  static int _windowStartFor(MusicQueueState state) {
-    if (state.items.length <= maxPersistedTracks) return 0;
-    return (state.cursor - _historyWindow).clamp(0, state.items.length - maxPersistedTracks);
-  }
-
-  /// Materialize an oversized queue down to the [maxPersistedTracks]-long
-  /// window of the playback order starting at [start] (identity permutation).
-  MusicQueueState _windowed(MusicQueueState state, int start) {
-    if (state.items.length <= maxPersistedTracks) return state;
-    final queue = [for (final index in state.order) state.items[index]];
-    return MusicQueueState(
-      items: queue.sublist(start, start + maxPersistedTracks),
-      order: [for (var i = 0; i < maxPersistedTracks; i++) i],
-      cursor: state.cursor - start,
-      shuffled: state.shuffled,
-      repeatMode: state.repeatMode,
-    );
-  }
+  Future<void> clear() => _writes.run(() => _database.deleteMusicSessionForProfile(_profileId));
 
   /// Stable persisted ids — never the enum `.name`, which a rename would
   /// corrupt (same policy as [OfflineActionType.id]).

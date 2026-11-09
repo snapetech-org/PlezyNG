@@ -114,6 +114,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$issueReport$zh issueReport = Translations$issueReport$zh.internal(_root);
 	@override late final Translations$romm$zh romm = Translations$romm$zh.internal(_root);
 	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
+	@override late final Translations$musicExperience$zh musicExperience = Translations$musicExperience$zh.internal(_root);
 }
 
 // Path: app
@@ -4202,6 +4203,58 @@ class Translations$subtitleCapture$zh extends Translations$subtitleCapture$en {
 	@override String get processingAudio => '正在本地处理音频…';
 	@override String processingAudioProgress({required Object percent}) => '正在本地处理音频（${percent}%）…';
 	@override String get cpuFallback => 'GPU 语音处理失败。正在通过 CPU 重试…';
+}
+
+// Path: musicExperience
+class Translations$musicExperience$zh extends Translations$musicExperience$en {
+	Translations$musicExperience$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => '发现音乐';
+	@override String get mix => '创建混音';
+	@override String get adventure => '声音之旅';
+	@override String get related => '相似音色';
+	@override String get seeds => '起点与途经曲目';
+	@override String get search => '查找艺人、专辑或歌曲';
+	@override String get generate => '预览';
+	@override String get saveRecipe => '保存配方';
+	@override String get saved => '已保存的配方';
+	@override String get savePlaylist => '保存播放列表';
+	@override String get name => '名称';
+	@override String get trackLimit => '曲目数量上限';
+	@override String get empty => '没有匹配的音乐。声音功能需要服务器端分析。';
+	@override String get unsupported => '此服务器不提供声音分析。';
+	@override String get continuation => '继续播放相似音乐';
+	@override String get shuffleAlbums => '随机播放专辑';
+	@override String get nextAlbum => '下一张专辑';
+	@override String get driving => '驾驶界面';
+	@override String get exitDriving => '退出驾驶界面';
+	@override String get signalPath => '音频信号路径';
+	@override String get source => '源';
+	@override String get local => '已下载的音频';
+	@override String get network => '服务器音频';
+	@override String get engine => '播放引擎';
+	@override String get codec => '源编码格式';
+	@override String get channels => '源声道';
+	@override String get processing => '处理中';
+	@override String get normalization => '音量标准化';
+	@override String get equalizer => '均衡器';
+	@override String get fades => '音量淡入淡出';
+	@override String get outputUnknown => '尚未测量硬件输出格式。';
+	@override String get download => '下载选曲';
+	@override String get ready => '就绪';
+	@override String get remove => '移除';
+	@override String get play => '播放选曲';
+	@override String get next => '下一首播放';
+	@override String get error => '音乐请求失败';
+	@override String get on => '到';
+	@override String get off => '关闭';
+	@override String get unknown => '未知';
+	@override String get routeLost => '音频输出已断开。播放已暂停。';
+	@override String get autoDriving => '连接汽车时打开驾驶界面';
+	@override String get routeHint => '是否允许自动显示应用由汽车系统决定。';
 }
 
 // Path: appIcon.names
@@ -9258,6 +9311,49 @@ extension on TranslationsZh {
 			'subtitleCapture.processingAudio' => '正在本地处理音频…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '正在本地处理音频（${percent}%）…',
 			'subtitleCapture.cpuFallback' => 'GPU 语音处理失败。正在通过 CPU 重试…',
+			'musicExperience.title' => '发现音乐',
+			'musicExperience.mix' => '创建混音',
+			'musicExperience.adventure' => '声音之旅',
+			'musicExperience.related' => '相似音色',
+			'musicExperience.seeds' => '起点与途经曲目',
+			'musicExperience.search' => '查找艺人、专辑或歌曲',
+			'musicExperience.generate' => '预览',
+			'musicExperience.saveRecipe' => '保存配方',
+			'musicExperience.saved' => '已保存的配方',
+			'musicExperience.savePlaylist' => '保存播放列表',
+			'musicExperience.name' => '名称',
+			'musicExperience.trackLimit' => '曲目数量上限',
+			'musicExperience.empty' => '没有匹配的音乐。声音功能需要服务器端分析。',
+			'musicExperience.unsupported' => '此服务器不提供声音分析。',
+			'musicExperience.continuation' => '继续播放相似音乐',
+			'musicExperience.shuffleAlbums' => '随机播放专辑',
+			'musicExperience.nextAlbum' => '下一张专辑',
+			'musicExperience.driving' => '驾驶界面',
+			'musicExperience.exitDriving' => '退出驾驶界面',
+			'musicExperience.signalPath' => '音频信号路径',
+			'musicExperience.source' => '源',
+			'musicExperience.local' => '已下载的音频',
+			'musicExperience.network' => '服务器音频',
+			'musicExperience.engine' => '播放引擎',
+			'musicExperience.codec' => '源编码格式',
+			'musicExperience.channels' => '源声道',
+			'musicExperience.processing' => '处理中',
+			'musicExperience.normalization' => '音量标准化',
+			'musicExperience.equalizer' => '均衡器',
+			'musicExperience.fades' => '音量淡入淡出',
+			'musicExperience.outputUnknown' => '尚未测量硬件输出格式。',
+			'musicExperience.download' => '下载选曲',
+			'musicExperience.ready' => '就绪',
+			'musicExperience.remove' => '移除',
+			'musicExperience.play' => '播放选曲',
+			'musicExperience.next' => '下一首播放',
+			'musicExperience.error' => '音乐请求失败',
+			'musicExperience.on' => '到',
+			'musicExperience.off' => '关闭',
+			'musicExperience.unknown' => '未知',
+			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
+			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
+			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
 			_ => null,
 		};
 	}

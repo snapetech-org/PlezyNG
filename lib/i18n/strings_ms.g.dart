@@ -114,6 +114,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$ms issueReport = _Translations$issueReport$ms._(_root);
 	@override late final _Translations$romm$ms romm = _Translations$romm$ms._(_root);
 	@override late final _Translations$subtitleCapture$ms subtitleCapture = _Translations$subtitleCapture$ms._(_root);
+	@override late final _Translations$musicExperience$ms musicExperience = _Translations$musicExperience$ms._(_root);
 }
 
 // Path: app
@@ -4184,6 +4185,58 @@ class _Translations$subtitleCapture$ms extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Memproses audio secara setempat…';
 	@override String processingAudioProgress({required Object percent}) => 'Memproses audio secara setempat (${percent}%)…';
 	@override String get cpuFallback => 'Pemprosesan pertuturan pada GPU gagal. Mencuba semula pada CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$ms extends Translations$musicExperience$en {
+	_Translations$musicExperience$ms._(TranslationsMs root) : this._root = root, super.internal(root);
+
+	final TranslationsMs _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Terokai muzik';
+	@override String get mix => 'Pembina campuran';
+	@override String get adventure => 'Pengembaraan bunyi';
+	@override String get related => 'Bunyi serupa';
+	@override String get seeds => 'Sumber dan hentian';
+	@override String get search => 'Cari artis, album atau lagu';
+	@override String get generate => 'Persiapan';
+	@override String get saveRecipe => 'Simpan resipi';
+	@override String get saved => 'Resipi tersimpan';
+	@override String get savePlaylist => 'Simpan senarai main';
+	@override String get name => 'Nama';
+	@override String get trackLimit => 'Had bilangan lagu';
+	@override String get empty => 'Tiada muzik sepadan. Ciri bunyi memerlukan analisis pada pelayan.';
+	@override String get unsupported => 'Pelayan ini tidak menyediakan analisis bunyi.';
+	@override String get continuation => 'Teruskan dengan muzik serupa';
+	@override String get shuffleAlbums => 'Rawakkan album';
+	@override String get nextAlbum => 'Album seterusnya';
+	@override String get driving => 'Paparan pemanduan';
+	@override String get exitDriving => 'Keluar daripada paparan pemanduan';
+	@override String get signalPath => 'Laluan isyarat audio';
+	@override String get source => 'Sumber';
+	@override String get local => 'Audio dimuat turun';
+	@override String get network => 'Audio pelayan';
+	@override String get engine => 'Enjin main balik';
+	@override String get codec => 'Codec sumber';
+	@override String get channels => 'Saluran sumber';
+	@override String get processing => 'Pemprosesan';
+	@override String get normalization => 'Penormalan';
+	@override String get equalizer => 'Penyama';
+	@override String get fades => 'Peralihan kelantangan';
+	@override String get outputUnknown => 'Format output perkakasan belum diukur.';
+	@override String get download => 'Muat turun pilihan';
+	@override String get ready => 'Bersedia';
+	@override String get remove => 'Keluarkan';
+	@override String get play => 'Mainkan pilihan';
+	@override String get next => 'Bermain selanjutnya';
+	@override String get error => 'Permintaan muzik gagal';
+	@override String get on => 'Pada';
+	@override String get off => 'Dimatikan';
+	@override String get unknown => 'yang tidak diketahui';
+	@override String get routeLost => 'Output audio terputus. Main balik dijeda.';
+	@override String get autoDriving => 'Buka paparan pemanduan apabila disambungkan ke kereta';
+	@override String get routeHint => 'Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.';
 }
 
 // Path: appIcon.names
@@ -9238,6 +9291,49 @@ extension on TranslationsMs {
 			'subtitleCapture.processingAudio' => 'Memproses audio secara setempat…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Memproses audio secara setempat (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Pemprosesan pertuturan pada GPU gagal. Mencuba semula pada CPU…',
+			'musicExperience.title' => 'Terokai muzik',
+			'musicExperience.mix' => 'Pembina campuran',
+			'musicExperience.adventure' => 'Pengembaraan bunyi',
+			'musicExperience.related' => 'Bunyi serupa',
+			'musicExperience.seeds' => 'Sumber dan hentian',
+			'musicExperience.search' => 'Cari artis, album atau lagu',
+			'musicExperience.generate' => 'Persiapan',
+			'musicExperience.saveRecipe' => 'Simpan resipi',
+			'musicExperience.saved' => 'Resipi tersimpan',
+			'musicExperience.savePlaylist' => 'Simpan senarai main',
+			'musicExperience.name' => 'Nama',
+			'musicExperience.trackLimit' => 'Had bilangan lagu',
+			'musicExperience.empty' => 'Tiada muzik sepadan. Ciri bunyi memerlukan analisis pada pelayan.',
+			'musicExperience.unsupported' => 'Pelayan ini tidak menyediakan analisis bunyi.',
+			'musicExperience.continuation' => 'Teruskan dengan muzik serupa',
+			'musicExperience.shuffleAlbums' => 'Rawakkan album',
+			'musicExperience.nextAlbum' => 'Album seterusnya',
+			'musicExperience.driving' => 'Paparan pemanduan',
+			'musicExperience.exitDriving' => 'Keluar daripada paparan pemanduan',
+			'musicExperience.signalPath' => 'Laluan isyarat audio',
+			'musicExperience.source' => 'Sumber',
+			'musicExperience.local' => 'Audio dimuat turun',
+			'musicExperience.network' => 'Audio pelayan',
+			'musicExperience.engine' => 'Enjin main balik',
+			'musicExperience.codec' => 'Codec sumber',
+			'musicExperience.channels' => 'Saluran sumber',
+			'musicExperience.processing' => 'Pemprosesan',
+			'musicExperience.normalization' => 'Penormalan',
+			'musicExperience.equalizer' => 'Penyama',
+			'musicExperience.fades' => 'Peralihan kelantangan',
+			'musicExperience.outputUnknown' => 'Format output perkakasan belum diukur.',
+			'musicExperience.download' => 'Muat turun pilihan',
+			'musicExperience.ready' => 'Bersedia',
+			'musicExperience.remove' => 'Keluarkan',
+			'musicExperience.play' => 'Mainkan pilihan',
+			'musicExperience.next' => 'Bermain selanjutnya',
+			'musicExperience.error' => 'Permintaan muzik gagal',
+			'musicExperience.on' => 'Pada',
+			'musicExperience.off' => 'Dimatikan',
+			'musicExperience.unknown' => 'yang tidak diketahui',
+			'musicExperience.routeLost' => 'Output audio terputus. Main balik dijeda.',
+			'musicExperience.autoDriving' => 'Buka paparan pemanduan apabila disambungkan ke kereta',
+			'musicExperience.routeHint' => 'Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.',
 			_ => null,
 		};
 	}

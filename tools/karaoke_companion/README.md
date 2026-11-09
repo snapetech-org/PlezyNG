@@ -1,6 +1,6 @@
 # Karaoke companion runtime
 
-The separation profile uses patched PyTorch 2.15.0 with TorchAudio 2.11.1,
+The separation profile uses Demucs 4.1.0 with patched PyTorch 2.15.0 with TorchAudio 2.11.1,
 TorchCodec 0.17.0 and Setuptools 84.2.1. TorchAudio and TorchCodec support the
 newer Torch ABI; this combination is qualified on Linux CPU with Python 3.12
 and FFmpeg 9 shared libraries. The worker selects CPU execution explicitly.
@@ -41,3 +41,10 @@ qualified separation environment or treat its dependencies as patched.
 CPU wheel versions include a `+cpu` build tag that the PyPI advisory service
 may skip. Audit the installed dependency inventory together with the pinned
 upstream release versions; skipped package records are not clean results.
+
+Analysis uses Librosa 1.0 on Python 3.12+ and retains 0.11 on Python 3.11.
+The 1.0 worker path was checked with synthetic waveform, tempo/chord analysis
+and isolated-vocal pitch extraction. Demucs 4.1 passed synthetic CPU separation
+and checkpoint rejection checks against the patched Torch profile. This
+qualification is Linux CPU only; Demucs 4.1 requires older Torch on Intel macOS
+and must not be installed there with this Linux profile.

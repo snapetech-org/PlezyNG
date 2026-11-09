@@ -114,6 +114,7 @@ class TranslationsAz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$az issueReport = _Translations$issueReport$az._(_root);
 	@override late final _Translations$romm$az romm = _Translations$romm$az._(_root);
 	@override late final _Translations$subtitleCapture$az subtitleCapture = _Translations$subtitleCapture$az._(_root);
+	@override late final _Translations$musicExperience$az musicExperience = _Translations$musicExperience$az._(_root);
 }
 
 // Path: app
@@ -4207,6 +4208,58 @@ class _Translations$subtitleCapture$az extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Səs yerli olaraq emal olunur…';
 	@override String processingAudioProgress({required Object percent}) => 'Səs yerli olaraq emal olunur (${percent}%)…';
 	@override String get cpuFallback => 'GPU ilə nitq emalı alınmadı. CPU ilə yenidən cəhd edilir…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$az extends Translations$musicExperience$en {
+	_Translations$musicExperience$az._(TranslationsAz root) : this._root = root, super.internal(root);
+
+	final TranslationsAz _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Musiqi kəşfi';
+	@override String get mix => 'Miks yarat';
+	@override String get adventure => 'Səs səyahəti';
+	@override String get related => 'Oxşar səslər';
+	@override String get seeds => 'Mənbələr və dayanacaqlar';
+	@override String get search => 'İfaçı, albom və ya mahnı axtar';
+	@override String get generate => 'Önizləmə';
+	@override String get saveRecipe => 'Resepti saxla';
+	@override String get saved => 'Saxlanmış reseptlər';
+	@override String get savePlaylist => 'Pleylisti saxla';
+	@override String get name => 'İsim';
+	@override String get trackLimit => 'Mahnı limiti';
+	@override String get empty => 'Uyğun musiqi yoxdur. Səs funksiyaları serverdə təhlil tələb edir.';
+	@override String get unsupported => 'Bu server səs təhlili təqdim etmir.';
+	@override String get continuation => 'Oxşar musiqi ilə davam et';
+	@override String get shuffleAlbums => 'Albomları qarışdır';
+	@override String get nextAlbum => 'Növbəti albom';
+	@override String get driving => 'Sürücülük görünüşü';
+	@override String get exitDriving => 'Sürücülük görünüşündən çıx';
+	@override String get signalPath => 'Səs siqnalının yolu';
+	@override String get source => 'Kaynak';
+	@override String get local => 'Endirilmiş səs';
+	@override String get network => 'Server səsi';
+	@override String get engine => 'Oynatma mühərriki';
+	@override String get codec => 'Mənbə kodeki';
+	@override String get channels => 'Mənbə kanalları';
+	@override String get processing => 'Emal edilir';
+	@override String get normalization => 'Normallaşdırma';
+	@override String get equalizer => 'Ekvalayzer';
+	@override String get fades => 'Səsin tədricən dəyişməsi';
+	@override String get outputUnknown => 'Avadanlığın çıxış formatı ölçülməyib.';
+	@override String get download => 'Seçilənləri endir';
+	@override String get ready => 'Hazırdır';
+	@override String get remove => 'Sil';
+	@override String get play => 'Seçilənləri oynat';
+	@override String get next => 'Növbətini oynat';
+	@override String get error => 'Musiqi sorğusu uğursuz oldu';
+	@override String get on => 'Onda';
+	@override String get off => 'Söndürülüb';
+	@override String get unknown => 'Məlum deyil';
+	@override String get routeLost => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.';
+	@override String get autoDriving => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç';
+	@override String get routeHint => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.';
 }
 
 // Path: appIcon.names
@@ -9263,6 +9316,49 @@ extension on TranslationsAz {
 			'subtitleCapture.processingAudio' => 'Səs yerli olaraq emal olunur…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Səs yerli olaraq emal olunur (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU ilə nitq emalı alınmadı. CPU ilə yenidən cəhd edilir…',
+			'musicExperience.title' => 'Musiqi kəşfi',
+			'musicExperience.mix' => 'Miks yarat',
+			'musicExperience.adventure' => 'Səs səyahəti',
+			'musicExperience.related' => 'Oxşar səslər',
+			'musicExperience.seeds' => 'Mənbələr və dayanacaqlar',
+			'musicExperience.search' => 'İfaçı, albom və ya mahnı axtar',
+			'musicExperience.generate' => 'Önizləmə',
+			'musicExperience.saveRecipe' => 'Resepti saxla',
+			'musicExperience.saved' => 'Saxlanmış reseptlər',
+			'musicExperience.savePlaylist' => 'Pleylisti saxla',
+			'musicExperience.name' => 'İsim',
+			'musicExperience.trackLimit' => 'Mahnı limiti',
+			'musicExperience.empty' => 'Uyğun musiqi yoxdur. Səs funksiyaları serverdə təhlil tələb edir.',
+			'musicExperience.unsupported' => 'Bu server səs təhlili təqdim etmir.',
+			'musicExperience.continuation' => 'Oxşar musiqi ilə davam et',
+			'musicExperience.shuffleAlbums' => 'Albomları qarışdır',
+			'musicExperience.nextAlbum' => 'Növbəti albom',
+			'musicExperience.driving' => 'Sürücülük görünüşü',
+			'musicExperience.exitDriving' => 'Sürücülük görünüşündən çıx',
+			'musicExperience.signalPath' => 'Səs siqnalının yolu',
+			'musicExperience.source' => 'Kaynak',
+			'musicExperience.local' => 'Endirilmiş səs',
+			'musicExperience.network' => 'Server səsi',
+			'musicExperience.engine' => 'Oynatma mühərriki',
+			'musicExperience.codec' => 'Mənbə kodeki',
+			'musicExperience.channels' => 'Mənbə kanalları',
+			'musicExperience.processing' => 'Emal edilir',
+			'musicExperience.normalization' => 'Normallaşdırma',
+			'musicExperience.equalizer' => 'Ekvalayzer',
+			'musicExperience.fades' => 'Səsin tədricən dəyişməsi',
+			'musicExperience.outputUnknown' => 'Avadanlığın çıxış formatı ölçülməyib.',
+			'musicExperience.download' => 'Seçilənləri endir',
+			'musicExperience.ready' => 'Hazırdır',
+			'musicExperience.remove' => 'Sil',
+			'musicExperience.play' => 'Seçilənləri oynat',
+			'musicExperience.next' => 'Növbətini oynat',
+			'musicExperience.error' => 'Musiqi sorğusu uğursuz oldu',
+			'musicExperience.on' => 'Onda',
+			'musicExperience.off' => 'Söndürülüb',
+			'musicExperience.unknown' => 'Məlum deyil',
+			'musicExperience.routeLost' => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.',
+			'musicExperience.autoDriving' => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç',
+			'musicExperience.routeHint' => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.',
 			_ => null,
 		};
 	}

@@ -114,6 +114,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$th issueReport = _Translations$issueReport$th._(_root);
 	@override late final _Translations$romm$th romm = _Translations$romm$th._(_root);
 	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
+	@override late final _Translations$musicExperience$th musicExperience = _Translations$musicExperience$th._(_root);
 }
 
 // Path: app
@@ -4184,6 +4185,58 @@ class _Translations$subtitleCapture$th extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'กำลังประมวลผลเสียงภายในเครื่อง…';
 	@override String processingAudioProgress({required Object percent}) => 'กำลังประมวลผลเสียงภายในเครื่อง (${percent}%)…';
 	@override String get cpuFallback => 'การประมวลผลเสียงพูดด้วย GPU ล้มเหลว กำลังลองอีกครั้งด้วย CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$th extends Translations$musicExperience$en {
+	_Translations$musicExperience$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'ค้นพบเพลง';
+	@override String get mix => 'สร้างมิกซ์';
+	@override String get adventure => 'การเดินทางแห่งเสียง';
+	@override String get related => 'เสียงที่คล้ายกัน';
+	@override String get seeds => 'แหล่งเพลงและจุดแวะ';
+	@override String get search => 'ค้นหาศิลปิน อัลบั้ม หรือเพลง';
+	@override String get generate => 'มุมมอง';
+	@override String get saveRecipe => 'บันทึกสูตร';
+	@override String get saved => 'สูตรที่บันทึกไว้';
+	@override String get savePlaylist => 'บันทึกเพลย์ลิสต์';
+	@override String get name => 'ชื่อ';
+	@override String get trackLimit => 'จำนวนเพลงสูงสุด';
+	@override String get empty => 'ไม่พบเพลงที่ตรงกัน คุณสมบัติด้านเสียงต้องใช้การวิเคราะห์บนเซิร์ฟเวอร์';
+	@override String get unsupported => 'เซิร์ฟเวอร์นี้ไม่มีการวิเคราะห์เสียง';
+	@override String get continuation => 'เล่นเพลงที่คล้ายกันต่อ';
+	@override String get shuffleAlbums => 'สุ่มอัลบั้ม';
+	@override String get nextAlbum => 'อัลบั้มถัดไป';
+	@override String get driving => 'มุมมองขับรถ';
+	@override String get exitDriving => 'ออกจากมุมมองขับรถ';
+	@override String get signalPath => 'เส้นทางสัญญาณเสียง';
+	@override String get source => 'หลักสูตร';
+	@override String get local => 'เสียงที่ดาวน์โหลดไว้';
+	@override String get network => 'เสียงจากเซิร์ฟเวอร์';
+	@override String get engine => 'กลไกการเล่น';
+	@override String get codec => 'ตัวแปลงสัญญาณต้นทาง';
+	@override String get channels => 'ช่องเสียงต้นทาง';
+	@override String get processing => 'การประมวลผล';
+	@override String get normalization => 'ปรับระดับเสียง';
+	@override String get equalizer => 'อีควอไลเซอร์';
+	@override String get fades => 'การค่อย ๆ เปลี่ยนระดับเสียง';
+	@override String get outputUnknown => 'ยังไม่ได้วัดรูปแบบเอาต์พุตของฮาร์ดแวร์';
+	@override String get download => 'ดาวน์โหลดรายการที่เลือก';
+	@override String get ready => 'เตรียม';
+	@override String get remove => 'นำออก';
+	@override String get play => 'เล่นรายการที่เลือก';
+	@override String get next => 'เล่นต่อไป';
+	@override String get error => 'คำขอเพลงล้มเหลว';
+	@override String get on => 'ใน';
+	@override String get off => 'ปิด';
+	@override String get unknown => 'ที่เก็บข้อมูลไม่รู้จัก';
+	@override String get routeLost => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว';
+	@override String get autoDriving => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ';
+	@override String get routeHint => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่';
 }
 
 // Path: appIcon.names
@@ -9238,6 +9291,49 @@ extension on TranslationsTh {
 			'subtitleCapture.processingAudio' => 'กำลังประมวลผลเสียงภายในเครื่อง…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'กำลังประมวลผลเสียงภายในเครื่อง (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'การประมวลผลเสียงพูดด้วย GPU ล้มเหลว กำลังลองอีกครั้งด้วย CPU…',
+			'musicExperience.title' => 'ค้นพบเพลง',
+			'musicExperience.mix' => 'สร้างมิกซ์',
+			'musicExperience.adventure' => 'การเดินทางแห่งเสียง',
+			'musicExperience.related' => 'เสียงที่คล้ายกัน',
+			'musicExperience.seeds' => 'แหล่งเพลงและจุดแวะ',
+			'musicExperience.search' => 'ค้นหาศิลปิน อัลบั้ม หรือเพลง',
+			'musicExperience.generate' => 'มุมมอง',
+			'musicExperience.saveRecipe' => 'บันทึกสูตร',
+			'musicExperience.saved' => 'สูตรที่บันทึกไว้',
+			'musicExperience.savePlaylist' => 'บันทึกเพลย์ลิสต์',
+			'musicExperience.name' => 'ชื่อ',
+			'musicExperience.trackLimit' => 'จำนวนเพลงสูงสุด',
+			'musicExperience.empty' => 'ไม่พบเพลงที่ตรงกัน คุณสมบัติด้านเสียงต้องใช้การวิเคราะห์บนเซิร์ฟเวอร์',
+			'musicExperience.unsupported' => 'เซิร์ฟเวอร์นี้ไม่มีการวิเคราะห์เสียง',
+			'musicExperience.continuation' => 'เล่นเพลงที่คล้ายกันต่อ',
+			'musicExperience.shuffleAlbums' => 'สุ่มอัลบั้ม',
+			'musicExperience.nextAlbum' => 'อัลบั้มถัดไป',
+			'musicExperience.driving' => 'มุมมองขับรถ',
+			'musicExperience.exitDriving' => 'ออกจากมุมมองขับรถ',
+			'musicExperience.signalPath' => 'เส้นทางสัญญาณเสียง',
+			'musicExperience.source' => 'หลักสูตร',
+			'musicExperience.local' => 'เสียงที่ดาวน์โหลดไว้',
+			'musicExperience.network' => 'เสียงจากเซิร์ฟเวอร์',
+			'musicExperience.engine' => 'กลไกการเล่น',
+			'musicExperience.codec' => 'ตัวแปลงสัญญาณต้นทาง',
+			'musicExperience.channels' => 'ช่องเสียงต้นทาง',
+			'musicExperience.processing' => 'การประมวลผล',
+			'musicExperience.normalization' => 'ปรับระดับเสียง',
+			'musicExperience.equalizer' => 'อีควอไลเซอร์',
+			'musicExperience.fades' => 'การค่อย ๆ เปลี่ยนระดับเสียง',
+			'musicExperience.outputUnknown' => 'ยังไม่ได้วัดรูปแบบเอาต์พุตของฮาร์ดแวร์',
+			'musicExperience.download' => 'ดาวน์โหลดรายการที่เลือก',
+			'musicExperience.ready' => 'เตรียม',
+			'musicExperience.remove' => 'นำออก',
+			'musicExperience.play' => 'เล่นรายการที่เลือก',
+			'musicExperience.next' => 'เล่นต่อไป',
+			'musicExperience.error' => 'คำขอเพลงล้มเหลว',
+			'musicExperience.on' => 'ใน',
+			'musicExperience.off' => 'ปิด',
+			'musicExperience.unknown' => 'ที่เก็บข้อมูลไม่รู้จัก',
+			'musicExperience.routeLost' => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว',
+			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
+			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
 			_ => null,
 		};
 	}

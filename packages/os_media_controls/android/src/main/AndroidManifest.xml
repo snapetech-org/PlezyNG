@@ -1,0 +1,17 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.edde746.os_media_controls">
+
+  <!-- Artwork URL downloads. -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <!-- Background playback service (merged into consuming apps). -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+  <application>
+    <!-- Only started when the app opts in via OsMediaControls.setBackgroundMode(true). -->
+    <service
+      android:name="com.edde746.os_media_controls.MediaPlaybackService"
+      android:exported="false"
+      android:foregroundServiceType="mediaPlayback" />
+  </application>
+</manifest>

@@ -32,6 +32,11 @@ class UpdatePackagesWorkflowTest(unittest.TestCase):
         result = self.run_guard(WORKFLOW.read_text())
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_legacy_appcast_writer_cannot_be_restored(self) -> None:
+        result = self.run_guard(WORKFLOW.read_text() + "\n  update-appcast-branch:\n    runs-on: ubuntu-24.04\n")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("branch publishing must stay retired", result.stderr)
+
     def test_homebrew_requires_notarized_payload_even_without_outer_dmg_ticket(self) -> None:
         workflow = WORKFLOW.read_text()
         result = self.run_guard(workflow.replace('xcrun stapler validate "$app"', 'true', 1))

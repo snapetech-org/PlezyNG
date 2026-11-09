@@ -1,0 +1,855 @@
+{
+  "repository": "snapetech-org/pleazyng",
+  "recorded_at": "2026-11-09T21:44:20.404658+00:00",
+  "main_integration_commit": "8da8ad3fe3742b0ee16eab6bc4918e3c7cacc167",
+  "pull_requests": [
+    {
+      "number": 293,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/293",
+      "author": "snapetech",
+      "state": "MERGED",
+      "reviewed_head": "5e4c375d46632de3a8bd36b74690855d37327481",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 291,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/291",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "78d4ceeb0812a73aa3f48acdc9e269c81e37469d",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 290,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/290",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "5dcb037ffdd4ee3df04def3f5e6069a702b96b1e",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 289,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/289",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "e07d076cf9e763596b0effe1a420eda99b7264d3",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 288,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/288",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "42708532c4c6c2377b1df12aa834191f4063db7f",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 287,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/287",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "bb76fda019cd467a4f4e437a31df8d657eab5d00",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 286,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/286",
+      "author": "app/dependabot",
+      "state": "CLOSED",
+      "reviewed_head": "70d7f157f419d01314e892aa9bb74e368d012ee4",
+      "disposition": "Standalone Dart interface bump omits the atomic native Pigeon/provenance refresh."
+    },
+    {
+      "number": 285,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/285",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "19f363dd6d2b82c8ded311ee41b9292e4f856061",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 284,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/284",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "71cc294104e5be53de41027c8b27e620edbd9e11",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 283,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/283",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "8d72a4cec2c6b784fb342751474e88f770525ebe",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 282,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/282",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "9cd39db88061170f9900f44179aa8ecc47b6e7b6",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 281,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/281",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "d7b88e480d8c9bd95a0afd71477ffa4e83d1a207",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 280,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/280",
+      "author": "app/dependabot",
+      "state": "CLOSED",
+      "reviewed_head": "134b0d1cb65fe11d69ab01167fd2e235122eee9b",
+      "disposition": "Rollup was removed with its vulnerable legacy build chain; replaced with tested esbuild host-loader integration."
+    },
+    {
+      "number": 279,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/279",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "f3c405061d82fe111850233ae9b59adf2e6f0fab",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 278,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/278",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "9752b19f4c22c791cedc1dff7cf1b265e871816f",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 277,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/277",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "ecec048dfc0a7e2bd152e2486854ac0f2f382ff4",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 276,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/276",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "3a106b01047260c7f3244b34d58d96b6f5c69d11",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 275,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/275",
+      "author": "app/dependabot",
+      "state": "CLOSED",
+      "reviewed_head": "fd8f77cc399ac8ed0db21ec57e27cc2ffc1f763a",
+      "disposition": "AOT compiler 2.4 cannot replace only one component of the pinned LiteRT 2.3 cohort without coordinated model/runtime qualification."
+    },
+    {
+      "number": 274,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/274",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "778ee5d563fca98f40fe5488cda757df946db06f",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 273,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/273",
+      "author": "app/dependabot",
+      "state": "CLOSED",
+      "reviewed_head": "047afed06b50dbcb9c1ac41df08694c625b42377",
+      "disposition": "NumPy 2.5 needs Python 3.12; exporter pins a cp311 CPU Torch wheel."
+    },
+    {
+      "number": 272,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/272",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "1ed5adcb0a0c1b6880909c4d927113aa3dc131c2",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 271,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/271",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "8283bfa2f6bd0396e94687126a71bbf3062e8521",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 270,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/270",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "6cd639949828ace03b8e89d5c0baa4b7966cecb9",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 269,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/269",
+      "author": "app/dependabot",
+      "state": "MERGED",
+      "reviewed_head": "019f6481b654d4ce5bcb903432665d2132ffc85e",
+      "disposition": "Merged; reviewed PR head preserved in main history."
+    },
+    {
+      "number": 268,
+      "url": "https://github.com/snapetech-org/pleazyng/pull/268",
+      "author": "app/dependabot",
+      "state": "CLOSED",
+      "reviewed_head": "54323fad5255e563783121ef53ee164069ad8139",
+      "disposition": "Already on main at the identical checkout action SHA."
+    }
+  ],
+  "initial_branches": [
+    {
+      "name": "appcast",
+      "commit": {
+        "sha": "e0ba39dba7aa387c7a8341fb384d5178975f3986",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/e0ba39dba7aa387c7a8341fb384d5178975f3986"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/appcast/protection"
+    },
+    {
+      "name": "audit-remediation/2026-11-09-containment",
+      "commit": {
+        "sha": "5b253de76aba6963d85329c1363d02645127bab3",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/5b253de76aba6963d85329c1363d02645127bab3"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/audit-remediation/2026-11-09-containment/protection"
+    },
+    {
+      "name": "audit-remediation/2026-11-09-final",
+      "commit": {
+        "sha": "d5223619444d3d2f735056917a8869c23d0adfc2",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/d5223619444d3d2f735056917a8869c23d0adfc2"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/audit-remediation/2026-11-09-final/protection"
+    },
+    {
+      "name": "audit-remediation/2026-11-09",
+      "commit": {
+        "sha": "4190c6da769fb7f7f2ad50e3132ecfd95b4a9a1b",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/4190c6da769fb7f7f2ad50e3132ecfd95b4a9a1b"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/audit-remediation/2026-11-09/protection"
+    },
+    {
+      "name": "codex/plexamp-integration-20261109",
+      "commit": {
+        "sha": "5e4c375d46632de3a8bd36b74690855d37327481",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/5e4c375d46632de3a8bd36b74690855d37327481"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/codex/plexamp-integration-20261109/protection"
+    },
+    {
+      "name": "dependabot/github_actions/actions/checkout-7.0.1",
+      "commit": {
+        "sha": "54323fad5255e563783121ef53ee164069ad8139",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/54323fad5255e563783121ef53ee164069ad8139"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/github_actions/actions/checkout-7.0.1/protection"
+    },
+    {
+      "name": "dependabot/github_actions/actions/setup-java-6.2.0",
+      "commit": {
+        "sha": "8283bfa2f6bd0396e94687126a71bbf3062e8521",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/8283bfa2f6bd0396e94687126a71bbf3062e8521"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/github_actions/actions/setup-java-6.2.0/protection"
+    },
+    {
+      "name": "dependabot/github_actions/docker/login-action-4.8.0",
+      "commit": {
+        "sha": "1ed5adcb0a0c1b6880909c4d927113aa3dc131c2",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/1ed5adcb0a0c1b6880909c4d927113aa3dc131c2"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/github_actions/docker/login-action-4.8.0/protection"
+    },
+    {
+      "name": "dependabot/github_actions/ruby/setup-ruby-1.338.0",
+      "commit": {
+        "sha": "019f6481b654d4ce5bcb903432665d2132ffc85e",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/019f6481b654d4ce5bcb903432665d2132ffc85e"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/github_actions/ruby/setup-ruby-1.338.0/protection"
+    },
+    {
+      "name": "dependabot/github_actions/softprops/action-gh-release-3.0.4",
+      "commit": {
+        "sha": "6cd639949828ace03b8e89d5c0baa4b7966cecb9",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/6cd639949828ace03b8e89d5c0baa4b7966cecb9"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/github_actions/softprops/action-gh-release-3.0.4/protection"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/integrations/steam-cloud-decky/decky/ui-4.16.5",
+      "commit": {
+        "sha": "9752b19f4c22c791cedc1dff7cf1b265e871816f",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/9752b19f4c22c791cedc1dff7cf1b265e871816f"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/npm_and_yarn/integrations/steam-cloud-decky/decky/ui-4.16.5/protection"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/integrations/steam-cloud-decky/rollup-4.68.0",
+      "commit": {
+        "sha": "134b0d1cb65fe11d69ab01167fd2e235122eee9b",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/134b0d1cb65fe11d69ab01167fd2e235122eee9b"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/npm_and_yarn/integrations/steam-cloud-decky/rollup-4.68.0/protection"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/integrations/steam-cloud-decky/tslib-2.9.1",
+      "commit": {
+        "sha": "9cd39db88061170f9900f44179aa8ecc47b6e7b6",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/9cd39db88061170f9900f44179aa8ecc47b6e7b6"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/npm_and_yarn/integrations/steam-cloud-decky/tslib-2.9.1/protection"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/integrations/steam-cloud-decky/types/react-19.3.0",
+      "commit": {
+        "sha": "d7b88e480d8c9bd95a0afd71477ffa4e83d1a207",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/d7b88e480d8c9bd95a0afd71477ffa4e83d1a207"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/npm_and_yarn/integrations/steam-cloud-decky/types/react-19.3.0/protection"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/integrations/steam-cloud-decky/typescript-7.0.2",
+      "commit": {
+        "sha": "f3c405061d82fe111850233ae9b59adf2e6f0fab",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/f3c405061d82fe111850233ae9b59adf2e6f0fab"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/npm_and_yarn/integrations/steam-cloud-decky/typescript-7.0.2/protection"
+    },
+    {
+      "name": "dependabot/pip/scripts/motion/ai-edge-litert-sdk-google-tensor-nightly-2.4.0.dev20261105",
+      "commit": {
+        "sha": "fd8f77cc399ac8ed0db21ec57e27cc2ffc1f763a",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/fd8f77cc399ac8ed0db21ec57e27cc2ffc1f763a"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pip/scripts/motion/ai-edge-litert-sdk-google-tensor-nightly-2.4.0.dev20261105/protection"
+    },
+    {
+      "name": "dependabot/pip/scripts/motion/ai-edge-quantizer-0.10.1",
+      "commit": {
+        "sha": "778ee5d563fca98f40fe5488cda757df946db06f",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/778ee5d563fca98f40fe5488cda757df946db06f"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pip/scripts/motion/ai-edge-quantizer-0.10.1/protection"
+    },
+    {
+      "name": "dependabot/pip/scripts/motion/numpy-gte-2.5.4-and-lt-3.0",
+      "commit": {
+        "sha": "047afed06b50dbcb9c1ac41df08694c625b42377",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/047afed06b50dbcb9c1ac41df08694c625b42377"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pip/scripts/motion/numpy-gte-2.5.4-and-lt-3.0/protection"
+    },
+    {
+      "name": "dependabot/pip/tools/karaoke_companion/demucs-4.1.0",
+      "commit": {
+        "sha": "3a106b01047260c7f3244b34d58d96b6f5c69d11",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/3a106b01047260c7f3244b34d58d96b6f5c69d11"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pip/tools/karaoke_companion/demucs-4.1.0/protection"
+    },
+    {
+      "name": "dependabot/pip/tools/karaoke_companion/librosa-1.0.0",
+      "commit": {
+        "sha": "ecec048dfc0a7e2bd152e2486854ac0f2f382ff4",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/ecec048dfc0a7e2bd152e2486854ac0f2f382ff4"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pip/tools/karaoke_companion/librosa-1.0.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/saf_util/mgenware_dart_lints-8.2.0",
+      "commit": {
+        "sha": "8d72a4cec2c6b784fb342751474e88f770525ebe",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/8d72a4cec2c6b784fb342751474e88f770525ebe"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/saf_util/mgenware_dart_lints-8.2.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/tizen_plugins/wakelock_plus_tizen/flutter_lints-6.0.0",
+      "commit": {
+        "sha": "71cc294104e5be53de41027c8b27e620edbd9e11",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/71cc294104e5be53de41027c8b27e620edbd9e11"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/tizen_plugins/wakelock_plus_tizen/flutter_lints-6.0.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/wakelock_plus/dbus-0.8.0",
+      "commit": {
+        "sha": "19f363dd6d2b82c8ded311ee41b9292e4f856061",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/19f363dd6d2b82c8ded311ee41b9292e4f856061"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/wakelock_plus/dbus-0.8.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/wakelock_plus/multi-c1fed8c1df",
+      "commit": {
+        "sha": "bb76fda019cd467a4f4e437a31df8d657eab5d00",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/bb76fda019cd467a4f4e437a31df8d657eab5d00"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/wakelock_plus/multi-c1fed8c1df/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/wakelock_plus/wakelock_plus_platform_interface-1.7.0",
+      "commit": {
+        "sha": "70d7f157f419d01314e892aa9bb74e368d012ee4",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/70d7f157f419d01314e892aa9bb74e368d012ee4"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/wakelock_plus/wakelock_plus_platform_interface-1.7.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/webos_plugins/audioplayers_soloud/flutter_lints-6.0.0",
+      "commit": {
+        "sha": "42708532c4c6c2377b1df12aa834191f4063db7f",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/42708532c4c6c2377b1df12aa834191f4063db7f"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/webos_plugins/audioplayers_soloud/flutter_lints-6.0.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/webos_plugins/flutter_secure_storage_webos/flutter_lints-6.0.0",
+      "commit": {
+        "sha": "e07d076cf9e763596b0effe1a420eda99b7264d3",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/e07d076cf9e763596b0effe1a420eda99b7264d3"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/webos_plugins/flutter_secure_storage_webos/flutter_lints-6.0.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/webos_plugins/package_info_plus_webos/flutter_lints-6.0.0",
+      "commit": {
+        "sha": "5dcb037ffdd4ee3df04def3f5e6069a702b96b1e",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/5dcb037ffdd4ee3df04def3f5e6069a702b96b1e"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/webos_plugins/package_info_plus_webos/flutter_lints-6.0.0/protection"
+    },
+    {
+      "name": "dependabot/pub/packages/webos_plugins/video_player_drm/flutter_lints-6.0.0",
+      "commit": {
+        "sha": "78d4ceeb0812a73aa3f48acdc9e269c81e37469d",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/78d4ceeb0812a73aa3f48acdc9e269c81e37469d"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pub/packages/webos_plugins/video_player_drm/flutter_lints-6.0.0/protection"
+    },
+    {
+      "name": "main",
+      "commit": {
+        "sha": "948f1ad3157819a1441ef54a821aea9321a57b5b",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/948f1ad3157819a1441ef54a821aea9321a57b5b"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/main/protection"
+    }
+  ],
+  "last_reviewed_deleted_heads": [
+    {
+      "name": "appcast",
+      "commit": {
+        "sha": "e0ba39dba7aa387c7a8341fb384d5178975f3986",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/e0ba39dba7aa387c7a8341fb384d5178975f3986"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/appcast/protection"
+    },
+    {
+      "name": "audit-remediation/2026-11-09-containment",
+      "commit": {
+        "sha": "e0c08e674b1b25248be2ebc3f275e162d80c56a2",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/e0c08e674b1b25248be2ebc3f275e162d80c56a2"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/audit-remediation/2026-11-09-containment/protection"
+    },
+    {
+      "name": "audit-remediation/2026-11-09-final",
+      "commit": {
+        "sha": "d5223619444d3d2f735056917a8869c23d0adfc2",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/d5223619444d3d2f735056917a8869c23d0adfc2"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/audit-remediation/2026-11-09-final/protection"
+    },
+    {
+      "name": "audit-remediation/2026-11-09",
+      "commit": {
+        "sha": "4190c6da769fb7f7f2ad50e3132ecfd95b4a9a1b",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/4190c6da769fb7f7f2ad50e3132ecfd95b4a9a1b"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/audit-remediation/2026-11-09/protection"
+    },
+    {
+      "name": "dependabot/pip/scripts/motion/ai-edge-litert-sdk-google-tensor-nightly-2.4.0.dev20261105",
+      "commit": {
+        "sha": "fd8f77cc399ac8ed0db21ec57e27cc2ffc1f763a",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/fd8f77cc399ac8ed0db21ec57e27cc2ffc1f763a"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pip/scripts/motion/ai-edge-litert-sdk-google-tensor-nightly-2.4.0.dev20261105/protection"
+    },
+    {
+      "name": "dependabot/pip/scripts/motion/numpy-gte-2.5.4-and-lt-3.0",
+      "commit": {
+        "sha": "047afed06b50dbcb9c1ac41df08694c625b42377",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/047afed06b50dbcb9c1ac41df08694c625b42377"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/dependabot/pip/scripts/motion/numpy-gte-2.5.4-and-lt-3.0/protection"
+    },
+    {
+      "name": "main",
+      "commit": {
+        "sha": "8da8ad3fe3742b0ee16eab6bc4918e3c7cacc167",
+        "url": "https://api.github.com/repos/snapetech-org/pleazyng/commits/8da8ad3fe3742b0ee16eab6bc4918e3c7cacc167"
+      },
+      "protected": false,
+      "protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "protection_url": "https://api.github.com/repos/snapetech-org/pleazyng/branches/main/protection"
+    }
+  ],
+  "remaining_remote_branches": [
+    "main"
+  ],
+  "security_alerts": {
+    "open_dependabot": 0,
+    "open_code_scanning": 0,
+    "open_secret_scanning": 0,
+    "resolved_dependabot_alert": 57,
+    "codeql_execution": "disabled per owner directive"
+  },
+  "legacy_feed_tag": {
+    "tag": "appcast",
+    "commit": "e0ba39dba7aa387c7a8341fb384d5178975f3986",
+    "mutable": false
+  }
+}

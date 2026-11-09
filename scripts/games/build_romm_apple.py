@@ -63,7 +63,9 @@ def source_fingerprint(platform):
               PACKAGE / 'cores/CMakeLists.txt']
     inputs.extend(path for path in sorted(PACKAGE.glob('*')) if path.is_file())
     inputs.extend(sorted((ROOT / 'shared/process').glob('*.h')))
-    inputs.append(ROOT / 'scripts/games/install_macos_worker.sh')
+    inputs.extend(ROOT / 'scripts/games' / name for name in
+                  ('install_macos_worker.sh', 'install_macos_romm_cores.py'))
+    inputs.extend(sorted((PACKAGE / 'apple').glob('*.podspec')))
     checksum = hashlib.sha256(platform.encode())
     for path in inputs:
         checksum.update(path.relative_to(ROOT).as_posix().encode() + b'\0')

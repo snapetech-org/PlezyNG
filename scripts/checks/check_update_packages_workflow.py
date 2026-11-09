@@ -67,7 +67,8 @@ require(
     "repository: snapetech-org/homebrew-pleazyng" in homebrew,
     "Homebrew publisher must target the dedicated Pleazyng tap",
 )
-appcast = job("update-appcast-branch")
+require("update-appcast-branch:" not in text, "legacy appcast branch publishing must stay retired")
+require("refs/heads/appcast" not in text, "updater feeds must not recreate a mutable branch")
 require(
     "update-winget:" not in text,
     "the inherited upstream WinGet publisher must stay removed",
@@ -79,7 +80,6 @@ for stale_upstream in ("WINGET_TOKEN", "edde746.Plezy", "winget-releaser"):
     )
 for name, block in (
     ("update-homebrew", homebrew),
-    ("update-appcast-branch", appcast),
 ):
     require("needs: resolve-release" in block, f"{name} must depend on the resolver")
 require(
@@ -91,7 +91,6 @@ require(
 for name, block in (
     ("resolve-release", resolver),
     ("update-homebrew", homebrew),
-    ("update-appcast-branch", appcast),
 ):
     require(
         re.search(r"(?m)^    permissions:", block) is not None,
@@ -99,7 +98,6 @@ for name, block in (
     )
 resolved_output = "${{ needs.resolve-release.outputs.tag }}"
 require(f"RELEASE_TAG: {resolved_output}" in homebrew, "Homebrew must use the resolved tag")
-require(f"RELEASE_TAG: {resolved_output}" in appcast, "appcast must use the resolved tag")
 require(
     re.search(r'gh release download "\$RELEASE_TAG"\s+--repo "\$GITHUB_REPOSITORY"', homebrew) is not None,
     "Homebrew must download from this repository",
@@ -115,22 +113,6 @@ require(
 require(
     re.search(r'git commit -m "[^"\n]*\$RELEASE_TAG[^"\n]*"', homebrew) is not None,
     "Homebrew commit text must include the resolved tag",
-)
-require(
-    'git commit -m "Update appcast for $RELEASE_TAG"' in appcast,
-    "appcast commit text must include the resolved tag",
-)
-require(
-    "git push origin HEAD:refs/heads/appcast" in appcast,
-    "appcast publishing must push the branch head",
-)
-require(
-    "--force" not in appcast and "git commit-tree" not in appcast,
-    "appcast publishing must be a normal fast-forward push",
-)
-require(
-    'gh release download "$RELEASE_TAG"' in appcast,
-    "appcast download must specify the resolved tag",
 )
 
 if errors:

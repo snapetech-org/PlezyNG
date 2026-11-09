@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application android:label="Emulator containment tests" android:allowBackup="false">
+        <service android:name="com.edde746.plezy.games.RommIsolatedService"
+            android:process=":romm_isolated" android:isolatedProcess="true"
+            android:exported="false" android:stopWithTask="true" />
+    </application>
+</manifest>

@@ -7,6 +7,6 @@ Pod::Spec.new do |s|
   s.author = { 'PlezyNG' => 'https://github.com/snapetech-org' }
   s.source = { :path => '.' }
   s.platform = :ios, '15.5'
-  s.vendored_frameworks = 'Frameworks/ios/*.xcframework'
+  s.vendored_frameworks = 'Frameworks/ios/PlezyRetro.xcframework'
   s.resource_bundles = { 'PleazyngRommNotices' => ['Frameworks/ios/notices/**/*'] }
 end

@@ -801,7 +801,7 @@ class AppDatabase extends _$AppDatabase {
   static const FormatException _invalidRecoveryImage = FormatException('Invalid tvOS database recovery image');
 
   @override
-  int get schemaVersion => 35;
+  int get schemaVersion => 36;
 
   @override
   MigrationStrategy get migration {
@@ -821,6 +821,7 @@ class AppDatabase extends _$AppDatabase {
         await _createIptvExtensionTables();
         await _createIptvParentalTables();
         await _createIptvRecordingSchedules();
+        await _createMusicCatalogTables();
       },
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 7) {
@@ -974,6 +975,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 34) {
           appLogger.i('Adding scheduled IPTV recordings (v34 migration)');
           await _createIptvRecordingSchedules();
+        }
+        if (from < 36) {
+          await _createMusicCatalogTables();
         }
         if (from < 35) {
           appLogger.i('Adding protected IPTV playback headers (v35 migration)');
@@ -1825,6 +1829,29 @@ class AppDatabase extends _$AppDatabase {
   // Music session persistence (#2148)
   // ===========================================================================
 
+  Future<void> _createMusicCatalogTables() async {
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS music_queue_entries (
+        profile_id TEXT NOT NULL,
+        canonical_index INTEGER NOT NULL,
+        playback_index INTEGER NOT NULL,
+        metadata TEXT NOT NULL,
+        PRIMARY KEY (profile_id, canonical_index),
+        UNIQUE (profile_id, playback_index),
+        FOREIGN KEY (profile_id) REFERENCES music_sessions(profile_id) ON DELETE CASCADE
+      )
+    ''');
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS music_recipes (
+        profile_id TEXT NOT NULL,
+        id TEXT NOT NULL,
+        recipe TEXT NOT NULL,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (profile_id, id)
+      )
+    ''');
+  }
+
   /// Full snapshot write: replaces the profile's persisted music session.
   Future<void> upsertMusicSession(MusicSessionRow row) {
     return into(musicSessions).insertOnConflictUpdate(row);
@@ -1852,6 +1879,9 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteMusicSessionForProfile(String profileId) async {
     await (delete(musicSessions)..where((t) => t.profileId.equals(profileId))).go();
   }
+
+  Future<void> deleteMusicRecipesForProfile(String profileId) =>
+      customStatement('DELETE FROM music_recipes WHERE profile_id = ?', [profileId]);
 
   Future<List<SyncRuleItem>> getSyncRules({String? profileId}) {
     final query = select(syncRules);

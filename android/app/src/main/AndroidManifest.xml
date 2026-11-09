@@ -48,6 +48,10 @@
         android:fullBackupContent="@xml/credential_backup_rules"
         android:dataExtractionRules="@xml/credential_data_extraction_rules"
         android:usesCleartextTraffic="true">
+        <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+        <service android:name=".car.MusicBrowserService" android:exported="true">
+            <intent-filter><action android:name="android.media.browse.MediaBrowserService" /></intent-filter>
+        </service>
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.felnanuke.google_cast.GoogleCastOptionsProvider" />
@@ -60,6 +64,12 @@
         <service
             android:name="com.edde746.plezy.mpv.MilkRustRendererService"
             android:process=":milkrust_visualizer"
+            android:exported="false"
+            android:stopWithTask="true" />
+        <service
+            android:name="com.edde746.plezy.games.RommIsolatedService"
+            android:process=":romm_isolated"
+            android:isolatedProcess="true"
             android:exported="false"
             android:stopWithTask="true" />
 

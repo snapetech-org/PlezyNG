@@ -158,6 +158,12 @@
 		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
+			<key>CPTemplateApplicationSceneSessionRoleApplication</key>
+			<array><dict>
+				<key>UISceneClassName</key><string>CPTemplateApplicationScene</string>
+				<key>UISceneDelegateClassName</key><string>MusicCarSceneDelegate</string>
+				<key>UISceneConfigurationName</key><string>music-carplay</string>
+			</dict></array>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>

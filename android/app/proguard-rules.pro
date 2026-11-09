@@ -45,3 +45,8 @@
 
 # Native MilkRust JNI entry points and its worker image decoder callback.
 -keep class com.edde746.plezy.mpv.MilkRustNativeBridge { *; }
+
+# The trusted proxy calls these exact names through JNI in release builds.
+-keep class com.edde746.plezy.games.RommProcessBroker { *; }
+-keep class com.edde746.plezy.games.RommProcessBroker$Worker { *; }
+-keep class com.edde746.plezy.games.RommIsolatedService { *; }

@@ -114,6 +114,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$vi issueReport = _Translations$issueReport$vi._(_root);
 	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
 	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
+	@override late final _Translations$musicExperience$vi musicExperience = _Translations$musicExperience$vi._(_root);
 }
 
 // Path: app
@@ -4184,6 +4185,58 @@ class _Translations$subtitleCapture$vi extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Đang xử lý âm thanh trên thiết bị…';
 	@override String processingAudioProgress({required Object percent}) => 'Đang xử lý âm thanh trên thiết bị (${percent}%)…';
 	@override String get cpuFallback => 'Xử lý giọng nói bằng GPU thất bại. Đang thử lại bằng CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$vi extends Translations$musicExperience$en {
+	_Translations$musicExperience$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Khám phá âm nhạc';
+	@override String get mix => 'Tạo bản phối';
+	@override String get adventure => 'Hành trình âm thanh';
+	@override String get related => 'Âm thanh tương tự';
+	@override String get seeds => 'Nguồn và điểm dừng';
+	@override String get search => 'Tìm nghệ sĩ, album hoặc bài hát';
+	@override String get generate => 'Xem thử';
+	@override String get saveRecipe => 'Lưu công thức';
+	@override String get saved => 'Công thức đã lưu';
+	@override String get savePlaylist => 'Lưu danh sách phát';
+	@override String get name => 'Tên';
+	@override String get trackLimit => 'Giới hạn bài hát';
+	@override String get empty => 'Không có nhạc phù hợp. Tính năng âm thanh cần phân tích trên máy chủ.';
+	@override String get unsupported => 'Máy chủ này không cung cấp phân tích âm thanh.';
+	@override String get continuation => 'Tiếp tục phát nhạc tương tự';
+	@override String get shuffleAlbums => 'Trộn album';
+	@override String get nextAlbum => 'Album tiếp theo';
+	@override String get driving => 'Giao diện lái xe';
+	@override String get exitDriving => 'Thoát giao diện lái xe';
+	@override String get signalPath => 'Đường đi tín hiệu âm thanh';
+	@override String get source => 'Nguồn';
+	@override String get local => 'Âm thanh đã tải';
+	@override String get network => 'Âm thanh từ máy chủ';
+	@override String get engine => 'Bộ phát';
+	@override String get codec => 'Bộ mã hóa nguồn';
+	@override String get channels => 'Kênh nguồn';
+	@override String get processing => 'xử lý';
+	@override String get normalization => 'Chuẩn hóa';
+	@override String get equalizer => 'Bộ cân bằng';
+	@override String get fades => 'Chuyển âm lượng';
+	@override String get outputUnknown => 'Chưa đo định dạng đầu ra phần cứng.';
+	@override String get download => 'Tải phần chọn';
+	@override String get ready => 'sẵn sàng';
+	@override String get remove => 'Gỡ bỏ';
+	@override String get play => 'Phát phần chọn';
+	@override String get next => 'Phát kế tiếp';
+	@override String get error => 'Yêu cầu nhạc thất bại';
+	@override String get on => 'trên';
+	@override String get off => 'Tắt';
+	@override String get unknown => 'Không rõ';
+	@override String get routeLost => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.';
+	@override String get autoDriving => 'Mở giao diện lái xe khi kết nối với ô tô';
+	@override String get routeHint => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.';
 }
 
 // Path: appIcon.names
@@ -9238,6 +9291,49 @@ extension on TranslationsVi {
 			'subtitleCapture.processingAudio' => 'Đang xử lý âm thanh trên thiết bị…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Đang xử lý âm thanh trên thiết bị (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Xử lý giọng nói bằng GPU thất bại. Đang thử lại bằng CPU…',
+			'musicExperience.title' => 'Khám phá âm nhạc',
+			'musicExperience.mix' => 'Tạo bản phối',
+			'musicExperience.adventure' => 'Hành trình âm thanh',
+			'musicExperience.related' => 'Âm thanh tương tự',
+			'musicExperience.seeds' => 'Nguồn và điểm dừng',
+			'musicExperience.search' => 'Tìm nghệ sĩ, album hoặc bài hát',
+			'musicExperience.generate' => 'Xem thử',
+			'musicExperience.saveRecipe' => 'Lưu công thức',
+			'musicExperience.saved' => 'Công thức đã lưu',
+			'musicExperience.savePlaylist' => 'Lưu danh sách phát',
+			'musicExperience.name' => 'Tên',
+			'musicExperience.trackLimit' => 'Giới hạn bài hát',
+			'musicExperience.empty' => 'Không có nhạc phù hợp. Tính năng âm thanh cần phân tích trên máy chủ.',
+			'musicExperience.unsupported' => 'Máy chủ này không cung cấp phân tích âm thanh.',
+			'musicExperience.continuation' => 'Tiếp tục phát nhạc tương tự',
+			'musicExperience.shuffleAlbums' => 'Trộn album',
+			'musicExperience.nextAlbum' => 'Album tiếp theo',
+			'musicExperience.driving' => 'Giao diện lái xe',
+			'musicExperience.exitDriving' => 'Thoát giao diện lái xe',
+			'musicExperience.signalPath' => 'Đường đi tín hiệu âm thanh',
+			'musicExperience.source' => 'Nguồn',
+			'musicExperience.local' => 'Âm thanh đã tải',
+			'musicExperience.network' => 'Âm thanh từ máy chủ',
+			'musicExperience.engine' => 'Bộ phát',
+			'musicExperience.codec' => 'Bộ mã hóa nguồn',
+			'musicExperience.channels' => 'Kênh nguồn',
+			'musicExperience.processing' => 'xử lý',
+			'musicExperience.normalization' => 'Chuẩn hóa',
+			'musicExperience.equalizer' => 'Bộ cân bằng',
+			'musicExperience.fades' => 'Chuyển âm lượng',
+			'musicExperience.outputUnknown' => 'Chưa đo định dạng đầu ra phần cứng.',
+			'musicExperience.download' => 'Tải phần chọn',
+			'musicExperience.ready' => 'sẵn sàng',
+			'musicExperience.remove' => 'Gỡ bỏ',
+			'musicExperience.play' => 'Phát phần chọn',
+			'musicExperience.next' => 'Phát kế tiếp',
+			'musicExperience.error' => 'Yêu cầu nhạc thất bại',
+			'musicExperience.on' => 'trên',
+			'musicExperience.off' => 'Tắt',
+			'musicExperience.unknown' => 'Không rõ',
+			'musicExperience.routeLost' => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.',
+			'musicExperience.autoDriving' => 'Mở giao diện lái xe khi kết nối với ô tô',
+			'musicExperience.routeHint' => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.',
 			_ => null,
 		};
 	}

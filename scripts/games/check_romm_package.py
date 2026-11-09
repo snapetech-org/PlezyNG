@@ -42,13 +42,19 @@ def check_romm(archive, abis, readelf, temporary, *, is_apk):
     names = set(archive.namelist())
     lib_prefix = 'lib/' if is_apk else 'base/lib/'
     asset_prefix = 'assets/romm-notices/' if is_apk else 'base/assets/romm-notices/'
-    filenames = {'libplezy_retro.so', *(f'lib{core}_libretro.so' for core in DEFAULT_CORES)}
+    filenames = {'libplezy_retro.so', 'libplezy_retro_worker.so',
+                 *(f'lib{core}_libretro.so' for core in DEFAULT_CORES)}
     expected = {f'{lib_prefix}{abi}/{name}' for abi in abis for name in filenames}
     actual = {name for name in names if name.split('/')[-1] in filenames}
     if actual != expected:
         raise ValueError(f'RomM ABI/library set differs: missing={sorted(expected-actual)}, unexpected={sorted(actual-expected)}')
-    host = (ROOT / 'native/games/romm/retro_host.cpp').read_text()
-    host_exports = set(re.findall(r'\bAPI\s+[^\n(]*?\b(plezy_retro_\w+)\(', host))
+    # Only the public proxy ABI belongs in the app. Worker audio functions are
+    # intentionally absent; the service is entered through its separate JNI ABI.
+    host = (ROOT / 'native/games/romm/retro_api.h').read_text()
+    host_exports = set(re.findall(r'\bPLEZY_RETRO_EXPORT\s+[^\n(]*?\b(plezy_retro_\w+)\(', host))
+    host_exports.add('Java_com_edde746_plezy_games_RommProcessBroker_initialize')
+    host_exports.add('Java_com_edde746_plezy_games_RommProcessBroker_readOnlyInputFlags')
+    worker_exports = {'Java_com_edde746_plezy_games_RommIsolatedService_runWorker'}
     if len(host_exports) < 10:
         raise ValueError('RomM host export contract is incomplete')
     artifacts = []
@@ -59,9 +65,12 @@ def check_romm(archive, abis, readelf, temporary, *, is_apk):
         binary.write_bytes(data)
         details = subprocess.check_output([str(readelf), '--wide', '--file-header',
             '--program-headers', '--dynamic', '--dyn-syms', str(binary)], text=True)
-        exports = host_exports if name.endswith('/libplezy_retro.so') else CORE_EXPORTS
+        exports = (host_exports if name.endswith('/libplezy_retro.so') else
+                   worker_exports if name.endswith('/libplezy_retro_worker.so') else CORE_EXPORTS)
         inspect_elf(details, abi, exports)
         needed = set(re.findall(r'\(NEEDED\).*\[([^\]]+)\]', details))
+        if name.endswith('/libplezy_retro.so') and needed & (filenames - {'libplezy_retro.so'}):
+            raise ValueError('RomM app proxy must not link the worker or cores into the app process')
         for dependency in needed - SYSTEM_LIBRARIES:
             if '/' in dependency or '\\' in dependency:
                 raise ValueError('Invalid RomM runtime dependency')

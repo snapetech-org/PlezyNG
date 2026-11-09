@@ -43,6 +43,9 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterTextureView
 import io.flutter.embedding.android.RenderMode
 import io.flutter.embedding.android.TransparencyMode
+import io.flutter.embedding.engine.FlutterEngineCache
+import com.edde746.plezy.car.MusicBrowserService
+import com.edde746.os_media_controls.MusicCarApi
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.MethodChannel
@@ -920,13 +923,28 @@ class PlezyActivity : FlutterActivity() {
     textureView.resume()
   }
 
+  override fun provideFlutterEngine(context: Context): FlutterEngine? =
+    FlutterEngineCache.getInstance().get(MusicBrowserService.ENGINE_ID)
+
+  override fun shouldDestroyEngineWithHost(): Boolean = !MusicCarApi.hasCarHost
+
+  override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+    if (!MusicCarApi.hasCarHost) {
+      FlutterEngineCache.getInstance().remove(MusicBrowserService.ENGINE_ID)
+    }
+    super.cleanUpFlutterEngine(flutterEngine)
+  }
+
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
-    flutterEngine.plugins.add(MpvPlayerPlugin())
-    flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
-    flutterEngine.plugins.add(ExoPlayerPlugin())
-    flutterEngine.plugins.add(ExoWorkspacePlayerPlugin())
-    flutterEngine.plugins.add(MpvAudioPlayerPlugin())
+    runCatching { com.edde746.plezy.games.RommProcessBroker.attach(applicationContext) }
+      .onFailure { android.util.Log.w("RomM", "Isolated emulator service is unavailable") }
+    FlutterEngineCache.getInstance().put(MusicBrowserService.ENGINE_ID, flutterEngine)
+    if (!flutterEngine.plugins.has(MpvPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvPlayerPlugin())
+    if (!flutterEngine.plugins.has(MpvWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
+    if (!flutterEngine.plugins.has(ExoPlayerPlugin::class.java)) flutterEngine.plugins.add(ExoPlayerPlugin())
+    if (!flutterEngine.plugins.has(ExoWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(ExoWorkspacePlayerPlugin())
+    if (!flutterEngine.plugins.has(MpvAudioPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvAudioPlayerPlugin())
     if (runCatching {
         Class.forName("org.snapetech.plezyng.games.steam.SteamStreamView", false, classLoader)
       }.isSuccess

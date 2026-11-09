@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Retry Apple SwiftPM resolution once from a fresh run-scoped checkout after Xcode 26's internal package-graph insertion crash, while continuing to fail ordinary dependency errors without retrying.
+
 - Make the fresh-install authentication QA flow use the setup screen’s Back control, avoiding a second navigation pop when Maestro hides an already absent keyboard.
 
 - Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.

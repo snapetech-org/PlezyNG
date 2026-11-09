@@ -29,6 +29,8 @@ import '../providers/trackers_provider.dart';
 import '../providers/watch_state_store.dart';
 import '../services/credential_vault.dart';
 import '../sources/source_controller.dart';
+import '../sources/source_playback.dart';
+import '../multiview/source_recovery_binder.dart';
 import '../database/app_database.dart';
 import '../multiview/workspace_controller.dart';
 import '../multiview/workspace_overlay.dart';
@@ -180,6 +182,15 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                   unawaited(workspace.hydrate());
                   return workspace;
                 },
+              ),
+              Provider<SourceRecoveryBinder>(
+                lazy: false,
+                create: (context) => SourceRecoveryBinder(
+                  workspace: context.read<MultiviewWorkspaceController>(),
+                  playback: context.read<SourcePlayback>(),
+                  profileId: activeId,
+                ),
+                dispose: (_, binder) => binder.dispose(),
               ),
               ChangeNotifierProxyProvider<MultiServerProvider, WatchStateStore>(
                 create: (_) => WatchStateStore(),

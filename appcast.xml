@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Plezy Updates</title>
+    <item>
+      <title>Version 3.0.7</title>
+      <sparkle:version>166</sparkle:version>
+      <sparkle:shortVersionString>3.0.7</sparkle:shortVersionString>
+      <sparkle:releaseNotesLink>https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.7</sparkle:releaseNotesLink>
+      <enclosure url="https://github.com/snapetech-org/pleazyng/releases/download/v3.0.7/pleazyng-macos.dmg"
+       length="189181859" type="application/octet-stream"
+       sparkle:edSignature="8T7jamZBpnuxlwqLU+9LdKnGK92SDU/5jJp2+4du8w3I3xZD6JLlCB5oY1EZC2SUSytQhyJbo28kHL+Dr4T+CQ=="
+       sparkle:os="macos" />
+      <enclosure url="https://github.com/snapetech-org/pleazyng/releases/download/v3.0.7/pleazyng-windows-installer.exe"
+       length="120390834" type="application/octet-stream"
+       sparkle:edSignature="cZOiEYs9oJGGfJbj8MsHT5s9bYpLOz6jmErufwfhoyOEMkiFPLVx91/cgIiLyBd9j1PK5z9AvxuuQfyKQWz3Ag=="
+       sparkle:installerArguments="/SILENT /SP-"
+       sparkle:os="windows" />
+    </item>
+  </channel>
+</rss>

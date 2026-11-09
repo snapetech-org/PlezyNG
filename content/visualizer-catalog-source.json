@@ -17,7 +17,8 @@
       "searchText": "Warm Scope Blue Shape scope geometry shape fixture",
       "distributionStatus": "redistributable",
       "qualification": {
-        "status": "sample-fixture-only"
+        "status": "sample-fixture-only",
+        "targets": []
       }
     }
   ],

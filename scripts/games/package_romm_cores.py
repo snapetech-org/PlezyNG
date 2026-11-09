@@ -115,11 +115,14 @@ def stage_host_sources(values, output):
         'native/games/romm/CMakeLists.txt', 'native/games/romm/cores/CMakeLists.txt',
         'native/games/romm/core-sources.json',
         'native/games/romm/NOTICE.md', 'scripts/games/package_romm_cores.py',
-        'scripts/games/build_romm_apple.py', 'scripts/games/install_macos_worker.sh')}
+        'scripts/games/build_romm_apple.py', 'scripts/games/install_macos_worker.sh',
+        'android/app/src/main/AndroidManifest.xml', 'android/app/src/main/cpp/CMakeLists.txt',
+        'android/app/proguard-rules.pro', 'android/app/build.gradle.kts')}
     # Corresponding source must include the desktop proxy/worker and transport,
     # not only the former in-process host translation unit.
     for source in (*recipe.glob('retro_*.cpp'), *recipe.glob('retro_*.h'),
-                   *(ROOT / 'shared/process').glob('*.h')):
+                   *(ROOT / 'shared/process').glob('*.h'),
+                   *(ROOT / 'android/app/src/main/kotlin/com/edde746/plezy/games').glob('Romm*.kt')):
         copies[source] = 'build-recipe/' + source.relative_to(ROOT).as_posix()
     copies.update({roots['libretro_common'] / 'include/libretro.h': 'host/include/libretro.h',
                    roots['miniaudio'] / 'miniaudio.h': 'host/include/miniaudio.h',

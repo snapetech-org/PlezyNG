@@ -39,7 +39,7 @@ class _RetroBindings {
             ? '${p.dirname(Platform.resolvedExecutable)}/lib/libplezy_retro.so'
             : 'libplezy_retro.so',
       ) {
-    if (PlatformDetector.isDesktopOS() && isolationVersion() != 1) {
+    if ((PlatformDetector.isDesktopOS() || Platform.isAndroid) && isolationVersion() != 1) {
       throw const RommFailure('romm.nativeUnavailable');
     }
   }

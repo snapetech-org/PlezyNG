@@ -44,3 +44,57 @@ jobs:
           cmake -S native/games/romm -B "$RUNNER_TEMP/romm-native" -DPLEZY_ROMM_BUILD_CORES=OFF -DPLEZY_ROMM_ISOLATED=ON -DPLEZY_ROMM_NATIVE_TESTS=ON
           cmake --build "$RUNNER_TEMP/romm-native" --config Release --parallel 2
           ctest --test-dir "$RUNNER_TEMP/romm-native" -C Release --output-on-failure
+      - name: Inspect public Apple extension SDK contracts
+        if: runner.os == 'macOS'
+        run: python3 scripts/games/inspect_apple_isolation_sdk.py
+
+  android:
+    concurrency:
+      group: native-emulator-isolation-${{ github.ref }}-android
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          cmdline-tools-version: '15859902'
+          log-accepted-android-sdk-licenses: false
+      - name: Install Android test toolchains
+        run: |
+          python3 scripts/prepare_android_sdk.py install --direct-egress
+          sdkmanager 'emulator' 'system-images;android-35;google_apis;x86_64'
+      - name: Compile all app ABIs and inspect service integration
+        run: android/gradlew -p test/android/romm assembleDebug assembleDebugAndroidTest lintDebug --stacktrace
+      - name: Exercise the actual Android isolated service
+        run: |
+          set -euo pipefail
+          sudo chmod a+rw /dev/kvm
+          echo no | avdmanager create avd --name romm-isolation --package 'system-images;android-35;google_apis;x86_64' --force
+          "$ANDROID_HOME/emulator/emulator" -avd romm-isolation -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > "$RUNNER_TEMP/romm-emulator.log" 2>&1 &
+          emulator_pid=$!
+          trap 'adb emu kill || true; kill "$emulator_pid" 2>/dev/null || true' EXIT
+          timeout 180 adb wait-for-device
+          booted=false
+          for attempt in {1..120}; do
+            if [[ "$(adb shell getprop sys.boot_completed | tr -d '\r')" == 1 ]]; then booted=true; break; fi
+            sleep 2
+          done
+          $booted || { cat "$RUNNER_TEMP/romm-emulator.log"; exit 1; }
+          android/gradlew -p test/android/romm connectedDebugAndroidTest --stacktrace
+      - name: Preserve Android containment evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: android-emulator-containment
+          path: |
+            test/android/romm/build/reports
+            test/android/romm/build/outputs/androidTest-results
+            ${{ runner.temp }}/romm-emulator.log
+          retention-days: 7

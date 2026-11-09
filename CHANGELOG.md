@@ -20,6 +20,7 @@
 - Add a minimal native Requests destination for movies, TV seasons, ebooks and audiobooks with profile-owned status, discovery/search and basic details. SeerrNG book requests retain format-specific availability; the minimal flow keeps destination, approval and administrative controls in the server interface. Requested downstream by [@Tatsu941](https://github.com/Tatsu941) in [#267](https://github.com/snapetech-org/pleazyng/issues/267).
 
 - Include Book and AudioBook items in Jellyfin/Emby All browsing and library searches, fixing ebook libraries that appeared empty until switching to Folders ([#266](https://github.com/snapetech-org/pleazyng/issues/266)).
+- Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
 - Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.
 

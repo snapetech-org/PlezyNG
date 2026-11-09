@@ -45,12 +45,22 @@ Future<void> showSeerrRequestSheet(
   required int tmdbId,
   required String title,
   bool minimal = false,
+  int? seasonNumber,
+  bool prefer4k = false,
 }) async {
   final close = await OverlaySheetController.showAdaptive<SeerrRequestSheetClose>(
     context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => SeerrRequestSheet(source: source, kind: kind, tmdbId: tmdbId, title: title, minimal: minimal),
+    builder: (_) => SeerrRequestSheet(
+      source: source,
+      kind: kind,
+      tmdbId: tmdbId,
+      title: title,
+      minimal: minimal,
+      seasonNumber: seasonNumber,
+      prefer4k: prefer4k,
+    ),
   );
   if (close == SeerrRequestSheetClose.permissionRevoked && context.mounted) {
     showErrorSnackBar(context, t.seerr.permissionRevoked);
@@ -67,6 +77,8 @@ class SeerrRequestSheet extends StatefulWidget {
   final int tmdbId;
   final String title;
   final bool minimal;
+  final int? seasonNumber;
+  final bool prefer4k;
 
   const SeerrRequestSheet({
     super.key,
@@ -75,6 +87,8 @@ class SeerrRequestSheet extends StatefulWidget {
     required this.tmdbId,
     required this.title,
     this.minimal = false,
+    this.seasonNumber,
+    this.prefer4k = false,
   });
 
   @override
@@ -297,6 +311,11 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
         _settings = settings;
         _mediaInfo = mediaInfo;
         _seasons = seasons;
+        _is4k = widget.prefer4k && _can4k;
+        _selectedSeasons.clear();
+        if (widget.seasonNumber case final number? when seasons.any((season) => season.seasonNumber == number)) {
+          if (!_seasonBlocked(number)) _selectedSeasons.add(number);
+        }
         _isAnime = isAnime;
         _allServers =
             authorityGeneration == _authorityGeneration &&

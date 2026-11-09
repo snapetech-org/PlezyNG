@@ -41,6 +41,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
   }
 
   Widget _buildAvailableActionButtons(BuildContext context, MediaItem metadata) {
+    context.watch<SeerrAccountProvider?>();
     final isTv = PlatformDetector.isTV();
     final tvScale = TvLayoutConstants.scaleOf(context);
     final actionSize = isTv ? _tvDetailActionSize * tvScale : 48.0;
@@ -463,6 +464,46 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
           )
         : null;
 
+    // A library title already has Play. Offer Seerr only for a useful next
+    // step: a missing TV season or a separate 4K request. Never infer a TMDB
+    // match from a title string.
+    final seerr = context.watch<CatalogSourcesProvider?>()?.seerrSource;
+    final seerrId = _seerrTmdbId;
+    final intent = seerrId == null ? null : _seerrIntentStore?.peek(metadata.kind, seerrId);
+    final seerrAction = seerr == null || widget.isOffline
+        ? null
+        : librarySeerrTitleAction(seerr, metadata.kind, intent, hasNewSeason: _seerrHasNewSeason);
+    final seerrRequestAction = seerrAction == null
+        ? null
+        : FocusableAction(
+            debugLabel: 'detail_seerr_request',
+            onPressed: () => unawaited(
+              performSeerrTitleAction(
+                context,
+                source: seerr!,
+                kind: metadata.kind,
+                tmdbId: seerrId!,
+                title: metadata.title ?? '',
+                action: seerrAction,
+              ),
+            ),
+            builder: (context, state) => iconActionButton(
+              state,
+              icon: AppIcon(seerrAction.icon),
+              tooltip: seerrAction.label,
+              onPressed: () => unawaited(
+                performSeerrTitleAction(
+                  context,
+                  source: seerr!,
+                  kind: metadata.kind,
+                  tmdbId: seerrId!,
+                  title: metadata.title ?? '',
+                  action: seerrAction,
+                ),
+              ),
+            ),
+          );
+
     final downloadAction = !widget.isOffline && !PlatformDetector.isAppleTV()
         ? FocusableAction(
             debugLabel: 'detail_download',
@@ -547,6 +588,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         ),
       ?castAction,
       ?shuffleAction,
+      ?seerrRequestAction,
       ?downloadAction,
       watchedAction,
       ?watchlistAction,
@@ -590,6 +632,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         ?versionAction,
         ?castAction,
         ?remoteStreamAction,
+        ?seerrRequestAction,
         ?downloadAction,
         watchedAction,
         ?moreActionsAction,

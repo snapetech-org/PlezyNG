@@ -162,6 +162,8 @@ Future<void> _pumpSheet(
   required String title,
   SeerrAccountProvider? account,
   bool minimal = false,
+  int? seasonNumber,
+  bool prefer4k = false,
 }) async {
   final app = MaterialApp(
     theme: ThemeData(extensions: const [testMonoTokens]),
@@ -184,6 +186,8 @@ Future<void> _pumpSheet(
                             tmdbId: tmdbId,
                             title: title,
                             minimal: minimal,
+                            seasonNumber: seasonNumber,
+                            prefer4k: prefer4k,
                           ),
                           child: const Text('request'),
                         ),
@@ -262,6 +266,44 @@ void main() {
 
   setUp(() {
     LocaleSettings.setLocaleSync(AppLocale.en);
+  });
+
+  testWidgets('a verified catalog season opens selected without including other seasons', (tester) async {
+    Map<String, dynamic>? posted;
+    final source = _source(
+      MockClient((request) async {
+        switch (request.url.path) {
+          case '/api/v1/settings/public':
+            return _json(_publicSettings());
+          case '/api/v1/tv/1396':
+            return _json({
+              'id': 1396,
+              'name': 'Show',
+              'seasons': [
+                {'seasonNumber': 1, 'episodeCount': 8},
+                {'seasonNumber': 2, 'episodeCount': 8},
+              ],
+              'mediaInfo': {'status': 1, 'seasons': [], 'requests': []},
+            });
+          case '/api/v1/request':
+            posted = jsonDecode(request.body) as Map<String, dynamic>;
+            return _json({'id': 15, 'status': 1}, status: 201);
+        }
+        fail('Unexpected ${request.url.path}');
+      }),
+    );
+    await _pumpSheet(tester, source: source, kind: MediaKind.show, tmdbId: 1396, title: 'Show', seasonNumber: 2);
+    final first = tester.widget<CheckboxListTile>(
+      find.ancestor(of: find.text('Season 1'), matching: find.byType(CheckboxListTile)),
+    );
+    final second = tester.widget<CheckboxListTile>(
+      find.ancestor(of: find.text('Season 2'), matching: find.byType(CheckboxListTile)),
+    );
+    expect(first.value, false);
+    expect(second.value, true);
+    await tester.tap(find.widgetWithText(FilledButton, 'Request'));
+    await tester.pumpAndSettle();
+    expect(posted?['seasons'], [2]);
   });
 
   testWidgets('TV: disables unavailable seasons, drops specials, posts selected seasons', (tester) async {

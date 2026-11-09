@@ -22,4 +22,4 @@ dependencies:
   wakelock_plus_platform_interface: ^1.2.1
 
 dev_dependencies:
-  flutter_lints: ^3.0.2
+  flutter_lints: ">=3.0.2 <7.0.0"

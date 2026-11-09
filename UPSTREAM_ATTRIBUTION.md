@@ -190,3 +190,9 @@ endorsement of this fork.
 - [Watch Together guest version switching](https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
 
 - [Skia selection without Vulkan 1.1](https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Theme-derived focus fills](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Light-theme scrim color interpolation](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Transparent status-bar styling](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.

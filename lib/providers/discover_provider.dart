@@ -1039,8 +1039,9 @@ class DiscoverProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       if (updated == null ||
           isDisposed ||
           revision != _contentRevision ||
-          !identical(client, _multiServer.getClientForServer(serverId)))
+          !identical(client, _multiServer.getClientForServer(serverId))) {
         return;
+      }
       _replaceInHubs(globalKey, updated);
       safeNotifyListeners();
     } catch (_) {

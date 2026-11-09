@@ -719,6 +719,7 @@ class _Translations$settings$fa extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'سرعت پخش';
 	@override String get scopeShaderPreset => 'شیراز پیش بینی';
 	@override String get scopeAspectRatio => 'نسبت تصویر';
+	@override String get scopeZoom => 'بزرگ‌نمایی';
 	@override String get scopeSyncOffsets => 'Audio & Subtitle همگام سازی';
 	@override String get playerScopeOff => 'نجات ندهید';
 	@override String get playerScopeGlobal => 'همه جا';
@@ -5957,6 +5958,7 @@ extension on TranslationsFa {
 			'settings.scopePlaybackSpeed' => 'سرعت پخش',
 			'settings.scopeShaderPreset' => 'شیراز پیش بینی',
 			'settings.scopeAspectRatio' => 'نسبت تصویر',
+			'settings.scopeZoom' => 'بزرگ‌نمایی',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle همگام سازی',
 			'settings.playerScopeOff' => 'نجات ندهید',
 			'settings.playerScopeGlobal' => 'همه جا',
@@ -6400,9 +6402,9 @@ extension on TranslationsFa {
 			'videoControls.addBookmark' => 'اضافه کردن Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark نام',
 			'videoControls.bookmarkNameHint' => 'به عنوان مثال، صحنه باز',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'برچسب ها ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'برچسب ها ${n}',
 			'videoControls.bookmarkNameRequired' => 'نام این کتاب را وارد کنید.',
 			'videoControls.deleteBookmark' => 'حذف Bookmark',
 			'videoControls.bookmarkLimitReached' => 'این مقاله در حال حاضر دارای 100 دفترچه یادداشت است.',
@@ -6914,9 +6916,9 @@ extension on TranslationsFa {
 			'libraries.content' => 'محتوای کتابخانه',
 			'libraries.selectLibrary' => 'انتخاب کتابخانه',
 			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
-			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			'libraries.noCollections' => 'هیچ مجموعه ای در این کتابخانه وجود ندارد',
 			'libraries.noFoldersFound' => 'هیچ پوشه ای یافت نشد',
 			'libraries.folders' => 'پوشه‌ها',
@@ -7428,9 +7430,9 @@ extension on TranslationsFa {
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
-			'watchTogether.openSessionControls' => 'Open Watch با هم کنترل جلسه',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Open Watch با هم کنترل جلسه',
 			'watchTogether.reconnecting' => 'دوباره اتصال...',
 			'watchTogether.reconnectingDescription' => 'اتصال قطع شده است شما به طور خودکار به اتاق می روید.',
 			'watchTogether.connected' => 'اتصال',
@@ -7942,9 +7944,9 @@ extension on TranslationsFa {
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
 			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
 			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
-			'metadataEdit.noArtworkAvailable' => 'هیچ هنری در دسترس نیست',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'هیچ هنری در دسترس نیست',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'گزینه هنری ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'گزینه هنری ${index} انتخاب شده',
 			'metadataEdit.notSet' => 'نه تنظیم',
@@ -8456,9 +8458,9 @@ extension on TranslationsFa {
 			'universalMedia.queuePlaylistFolderRequired' => 'محلی برای ذخیره در همان پوشهٔ فایل‌های صف انتخاب کنید.',
 			'universalMedia.noFavorites' => 'در حال حاضر هیچ مورد علاقه ذخیره نشده است.Favorites در این پروفایل باقی بماند.',
 			'universalMedia.removeFavorite' => 'حذف جریان مورد علاقه',
-			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
 			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
 			'universalMedia.wifiTransfer' => 'ارسال فایل ها از طریق Wi-Fi',
@@ -8970,9 +8972,9 @@ extension on TranslationsFa {
 			'sourceSetup.metadataMatchHelp' => 'پیش از انتخاب، عنوان و سال را بررسی کنید. Trakt عنوان جست‌وجو را دریافت می‌کند؛ ویدیو در منبع خود باقی می‌ماند.',
 			'sourceSetup.metadataNoMatches' => 'عنوان مطابقی در اینترنت پیدا نشد. عنوان دیگری را امتحان کنید.',
 			'sourceSetup.metadataSearch' => 'جست‌وجوی فرادادهٔ آنلاین',
-			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
 			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',
 			'sourceSetup.metadataFailed' => 'فرادادهٔ آنلاین بارگیری نشد. پخش و اطلاعات محلی همچنان در دسترس هستند.',

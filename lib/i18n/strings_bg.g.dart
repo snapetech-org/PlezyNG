@@ -719,6 +719,7 @@ class _Translations$settings$bg extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Скорост на възпроизвеждане';
 	@override String get scopeShaderPreset => 'Предварителна настройка на шейдъра';
 	@override String get scopeAspectRatio => 'Съотношение на страните';
+	@override String get scopeZoom => 'Мащаб';
 	@override String get scopeSyncOffsets => 'Синхронизация на аудио и субтитри';
 	@override String get playerScopeOff => 'Не запазвай';
 	@override String get playerScopeGlobal => 'Навсякъде';
@@ -5957,6 +5958,7 @@ extension on TranslationsBg {
 			'settings.scopePlaybackSpeed' => 'Скорост на възпроизвеждане',
 			'settings.scopeShaderPreset' => 'Предварителна настройка на шейдъра',
 			'settings.scopeAspectRatio' => 'Съотношение на страните',
+			'settings.scopeZoom' => 'Мащаб',
 			'settings.scopeSyncOffsets' => 'Синхронизация на аудио и субтитри',
 			'settings.playerScopeOff' => 'Не запазвай',
 			'settings.playerScopeGlobal' => 'Навсякъде',
@@ -6400,9 +6402,9 @@ extension on TranslationsBg {
 			'videoControls.addBookmark' => 'Добавяне на Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark име',
 			'videoControls.bookmarkNameHint' => 'Например, отваряща сцена',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			'videoControls.bookmarkNameRequired' => 'Въведете име за тази книжка.',
 			'videoControls.deleteBookmark' => 'Изтриване Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Тази статия вече има 100 книжни знака.',
@@ -6914,9 +6916,9 @@ extension on TranslationsBg {
 			'libraries.content' => 'съдържание на библиотеката',
 			'libraries.selectLibrary' => 'Избери библиотека',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Филтри (${count})',
-			'libraries.noRecommendations' => 'Няма налични препоръки',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Няма налични препоръки',
 			'libraries.noCollections' => 'Няма колекции в тази библиотека',
 			'libraries.noFoldersFound' => 'Не са намерени папки',
 			'libraries.folders' => 'папки',
@@ -7428,9 +7430,9 @@ extension on TranslationsBg {
 			'watchTogether.shareInvite' => 'Сподели покана',
 			'watchTogether.inviteCopied' => 'Поканата е копирана. Поставете я в съобщение.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присъедини се към моята стая в Pleazyng: отвори „Гледане заедно“, избери „Присъедини се към стая“ и въведи ${code}.',
-			'watchTogether.openSessionControls' => 'Отвори контролите за сесията „Гледане заедно“',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Отвори контролите за сесията „Гледане заедно“',
 			'watchTogether.reconnecting' => 'Повторно свързване...',
 			'watchTogether.reconnectingDescription' => 'Връзката прекъсна. Ще се присъедините отново към стаята автоматично.',
 			'watchTogether.connected' => 'Свързано',
@@ -7942,9 +7944,9 @@ extension on TranslationsBg {
 			'metadataEdit.metadataUpdateFailed' => 'Неуспешно обновяване на метаданни',
 			'metadataEdit.artworkUpdated' => 'Обложката е обновена',
 			'metadataEdit.artworkUpdateFailed' => 'Неуспешно обновяване на обложката',
-			'metadataEdit.noArtworkAvailable' => 'Няма налична обложка',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Няма налична обложка',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант за обложка ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант за обложка ${index}, избран',
 			'metadataEdit.notSet' => 'Не е зададено',
@@ -8456,9 +8458,9 @@ extension on TranslationsBg {
 			'universalMedia.queuePlaylistFolderRequired' => 'Изберете място за запис в същата папка като файловете в опашката.',
 			'universalMedia.noFavorites' => 'Все още не са спасени любимите потоци.Favorites остават в този профил.',
 			'universalMedia.removeFavorite' => 'Премахване на любимия поток',
-			'universalMedia.filesHelp' => 'Изберете аудио, видео или ISO файлове за временна лента.Файлове и URL адреси не се добавят към историята на библиотеката.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Изберете аудио, видео или ISO файлове за временна лента.Файлове и URL адреси не се добавят към историята на библиотеката.',
 			'universalMedia.chooseFiles' => 'Изберете файлове',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
 			'universalMedia.wifiTransfer' => 'Изпращане на файлове чрез Wi-Fi',
@@ -8970,9 +8972,9 @@ extension on TranslationsBg {
 			'sourceSetup.metadataMatchHelp' => 'Проверете заглавието и годината, преди да изберете. Trakt получава търсеното заглавие; видеото остава в своя източник.',
 			'sourceSetup.metadataNoMatches' => 'Не са намерени съвпадащи заглавия онлайн. Опитайте друго заглавие.',
 			'sourceSetup.metadataSearch' => 'Търсене на онлайн метаданни',
-			'sourceSetup.metadataLoading' => 'Търсене на онлайн информация за филми и сериали…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Търсене на онлайн информация за филми и сериали…',
 			'sourceSetup.metadataFromTrakt' => 'Онлайн метаданни от Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Не е намерено автоматично съвпадение на заглавието. Потърсете заглавието, за да изберете съвпадение.',
 			'sourceSetup.metadataFailed' => 'Онлайн метаданните не можаха да се заредят. Възпроизвеждането и локалната информация остават достъпни.',

@@ -723,6 +723,7 @@ class _Translations$settings$uk extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Швидкість відтворення';
 	@override String get scopeShaderPreset => 'Шейдер Пресет';
 	@override String get scopeAspectRatio => 'Співвідношення сторін';
+	@override String get scopeZoom => 'Масштаб';
 	@override String get scopeSyncOffsets => 'Audio & Subtitle Співвідношення';
 	@override String get playerScopeOff => 'Не врятуйте';
 	@override String get playerScopeGlobal => 'всюди';
@@ -6001,6 +6002,7 @@ extension on TranslationsUk {
 			'settings.scopePlaybackSpeed' => 'Швидкість відтворення',
 			'settings.scopeShaderPreset' => 'Шейдер Пресет',
 			'settings.scopeAspectRatio' => 'Співвідношення сторін',
+			'settings.scopeZoom' => 'Масштаб',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle Співвідношення',
 			'settings.playerScopeOff' => 'Не врятуйте',
 			'settings.playerScopeGlobal' => 'всюди',
@@ -6444,9 +6446,9 @@ extension on TranslationsUk {
 			'videoControls.addBookmark' => 'Додати книжковий знак',
 			'videoControls.bookmarkName' => 'Bookmark ім\'я',
 			'videoControls.bookmarkNameHint' => 'Наприклад, відкриття сцені',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Книжковий знак ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Книжковий знак ${n}',
 			'videoControls.bookmarkNameRequired' => 'Введіть ім\'я для цієї книжкової марки.',
 			'videoControls.deleteBookmark' => 'Зняти книжковий знак',
 			'videoControls.bookmarkLimitReached' => 'Ця стаття вже має 100 книжкових знаків.',
@@ -6958,9 +6960,9 @@ extension on TranslationsUk {
 			'libraries.content' => 'Бібліотека контент',
 			'libraries.selectLibrary' => 'Вибір бібліотеки',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
-			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			'libraries.noCollections' => 'Ніяких колекцій в цій бібліотеці',
 			'libraries.noFoldersFound' => 'Не знайдено жодних паперів',
 			'libraries.folders' => 'Теки',
@@ -7472,9 +7474,9 @@ extension on TranslationsUk {
 			'watchTogether.shareInvite' => 'Поділимо запрошення',
 			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
-			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
 			'watchTogether.reconnecting' => 'Відновлення...',
 			'watchTogether.reconnectingDescription' => 'З\'єднання припинено. Ви приєднуєтеся до кімнати автоматично.',
 			'watchTogether.connected' => 'Зв\'язані',
@@ -7986,9 +7988,9 @@ extension on TranslationsUk {
 			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
 			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
 			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
-			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вибір художнього твору ${index}, вибраний',
 			'metadataEdit.notSet' => 'Не встановлюйте',
@@ -8500,9 +8502,9 @@ extension on TranslationsUk {
 			'universalMedia.queuePlaylistFolderRequired' => 'Виберіть місце збереження в тій самій папці, що й файли в черзі.',
 			'universalMedia.noFavorites' => 'Попередня статтяКто чего не любить?Фаворити залишаються в цьому профілі.',
 			'universalMedia.removeFavorite' => 'Зняти потік улюблений',
-			'universalMedia.filesHelp' => 'Виберіть аудіо, відео або файли ISO для тимчасового перегляду. Файли та URL-адреси не додаються до історії бібліотеки.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Виберіть аудіо, відео або файли ISO для тимчасового перегляду. Файли та URL-адреси не додаються до історії бібліотеки.',
 			'universalMedia.chooseFiles' => 'Вибір файлів',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
 			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
@@ -9014,9 +9016,9 @@ extension on TranslationsUk {
 			'sourceSetup.metadataMatchHelp' => 'Перед вибором перевірте назву й рік. Trakt отримує пошукову назву; відео залишається у своєму джерелі.',
 			'sourceSetup.metadataNoMatches' => 'Відповідних назв в інтернеті не знайдено. Спробуйте іншу назву.',
 			'sourceSetup.metadataSearch' => 'Пошук метаданих в інтернеті',
-			'sourceSetup.metadataLoading' => 'Пошук відомостей про фільми й серіали в інтернеті…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Пошук відомостей про фільми й серіали в інтернеті…',
 			'sourceSetup.metadataFromTrakt' => 'Метадані з Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматичного збігу назви не знайдено. Знайдіть назву, щоб вибрати збіг.',
 			'sourceSetup.metadataFailed' => 'Не вдалося завантажити метадані з інтернету. Відтворення та локальні відомості залишаються доступними.',

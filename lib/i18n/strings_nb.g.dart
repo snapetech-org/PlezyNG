@@ -719,6 +719,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Avspillingshastighet';
 	@override String get scopeShaderPreset => 'Forhåndsinnstilling for skyggelegging';
 	@override String get scopeAspectRatio => 'Sideforhold';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Synkronisering av lyd og undertekster';
 	@override String get playerScopeOff => 'Ikke lagre';
 	@override String get playerScopeGlobal => 'Overalt';
@@ -5957,6 +5958,7 @@ extension on TranslationsNb {
 			'settings.scopePlaybackSpeed' => 'Avspillingshastighet',
 			'settings.scopeShaderPreset' => 'Forhåndsinnstilling for skyggelegging',
 			'settings.scopeAspectRatio' => 'Sideforhold',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Synkronisering av lyd og undertekster',
 			'settings.playerScopeOff' => 'Ikke lagre',
 			'settings.playerScopeGlobal' => 'Overalt',
@@ -6400,9 +6402,9 @@ extension on TranslationsNb {
 			'videoControls.addBookmark' => 'Legg til bookmark',
 			'videoControls.bookmarkName' => 'Bookmark navn',
 			'videoControls.bookmarkNameHint' => 'For eksempel åpne scenen',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmerke ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmerke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Skriv inn et navn for dette bokmerket.',
 			'videoControls.deleteBookmark' => 'Fjern bokmerke',
 			'videoControls.bookmarkLimitReached' => 'Denne artikkelen har allerede 100 bokmerker.',
@@ -6914,9 +6916,9 @@ extension on TranslationsNb {
 			'libraries.content' => 'bibliotekinnhold',
 			'libraries.selectLibrary' => 'Velg bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtre (${count})',
-			'libraries.noRecommendations' => 'Ingen anbefalinger tilgjengelig',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Ingen anbefalinger tilgjengelig',
 			'libraries.noCollections' => 'Ingen samlinger i dette biblioteket',
 			'libraries.noFoldersFound' => 'Ingen mapper funnet',
 			'libraries.folders' => 'mapper',
@@ -7428,9 +7430,9 @@ extension on TranslationsNb {
 			'watchTogether.shareInvite' => 'Del invitasjon',
 			'watchTogether.inviteCopied' => 'Invitasjon kopiert. Lim den inn i en melding.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bli med i Se sammen-rommet mitt i Pleazyng: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.',
-			'watchTogether.openSessionControls' => 'Åpne øktkontroller for Se sammen',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Åpne øktkontroller for Se sammen',
 			'watchTogether.reconnecting' => 'Kobler til på nytt...',
 			'watchTogether.reconnectingDescription' => 'Tilkoblingen ble brutt. Du blir automatisk med i rommet igjen.',
 			'watchTogether.connected' => 'Tilkoblet',
@@ -7942,9 +7944,9 @@ extension on TranslationsNb {
 			'metadataEdit.metadataUpdateFailed' => 'Kunne ikke oppdatere metadata',
 			'metadataEdit.artworkUpdated' => 'Grafikk oppdatert',
 			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke oppdatere grafikken',
-			'metadataEdit.noArtworkAvailable' => 'Ingen grafikk tilgjengelig',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Ingen grafikk tilgjengelig',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Grafikkalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Grafikkalternativ ${index}, valgt',
 			'metadataEdit.notSet' => 'Ikke angitt',
@@ -8456,9 +8458,9 @@ extension on TranslationsNb {
 			'universalMedia.queuePlaylistFolderRequired' => 'Velg et lagringssted i samme mappe som filene i køen.',
 			'universalMedia.noFavorites' => 'Ingen sparte stream favoritter ennå. Favoritter forblir i denne profilen.',
 			'universalMedia.removeFavorite' => 'Fjern stream favoritt',
-			'universalMedia.filesHelp' => 'Velg audio, video eller ISO-filer for en midlertidig kue. filer og URL\'er er ikke lagt til bibliotekets historie.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Velg audio, video eller ISO-filer for en midlertidig kue. filer og URL\'er er ikke lagt til bibliotekets historie.',
 			'universalMedia.chooseFiles' => 'Velg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: '1 utvalgte filer', other: '${count} utvalgte filer', ), 
 			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
@@ -8970,9 +8972,9 @@ extension on TranslationsNb {
 			'sourceSetup.metadataMatchHelp' => 'Kontroller tittel og år før du velger. Trakt mottar søketittelen; videoen blir på kilden sin.',
 			'sourceSetup.metadataNoMatches' => 'Ingen samsvarende titler funnet på nettet. Prøv en annen tittel.',
 			'sourceSetup.metadataSearch' => 'Søk etter metadata på nettet',
-			'sourceSetup.metadataLoading' => 'Søker etter film- og serieinformasjon på nettet…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Søker etter film- og serieinformasjon på nettet…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata fra Trakt på nettet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Fant ikke et automatisk titteltreff. Søk etter tittelen for å velge et treff.',
 			'sourceSetup.metadataFailed' => 'Kunne ikke laste metadata fra nettet. Avspilling og lokal informasjon er fortsatt tilgjengelig.',

@@ -719,6 +719,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Lejátszási sebesség';
 	@override String get scopeShaderPreset => 'Shader-előbeállítás';
 	@override String get scopeAspectRatio => 'Képarány';
+	@override String get scopeZoom => 'Nagyítás';
 	@override String get scopeSyncOffsets => 'Hang- és feliratszinkronizálás';
 	@override String get playerScopeOff => 'Ne mentse';
 	@override String get playerScopeGlobal => 'Mindenhol';
@@ -5957,6 +5958,7 @@ extension on TranslationsHu {
 			'settings.scopePlaybackSpeed' => 'Lejátszási sebesség',
 			'settings.scopeShaderPreset' => 'Shader-előbeállítás',
 			'settings.scopeAspectRatio' => 'Képarány',
+			'settings.scopeZoom' => 'Nagyítás',
 			'settings.scopeSyncOffsets' => 'Hang- és feliratszinkronizálás',
 			'settings.playerScopeOff' => 'Ne mentse',
 			'settings.playerScopeGlobal' => 'Mindenhol',
@@ -6400,9 +6402,9 @@ extension on TranslationsHu {
 			'videoControls.addBookmark' => 'Hozzáadása Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark név',
 			'videoControls.bookmarkNameHint' => 'Például a színpad megnyitása',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'könyvjelző ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'könyvjelző ${n}',
 			'videoControls.bookmarkNameRequired' => 'Írjon be egy nevet erre a könyvjelzőre.',
 			'videoControls.deleteBookmark' => 'Távolítsa el a Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Ez a cikk már 100 könyvjelzővel rendelkezik.',
@@ -6914,9 +6916,9 @@ extension on TranslationsHu {
 			'libraries.content' => 'könyvtár tartalma',
 			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Szűrők (${count})',
-			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			'libraries.noCollections' => 'Nincsenek gyűjtemények ebben a könyvtárban',
 			'libraries.noFoldersFound' => 'Nem találhatók mappák',
 			'libraries.folders' => 'mappák',
@@ -7428,9 +7430,9 @@ extension on TranslationsHu {
 			'watchTogether.shareInvite' => 'Meghívó megosztása',
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Csatlakozz a Watch Together-szobámhoz a Plezyben: nyisd meg a Watch Together (Közös nézés) menüt, válaszd a Csatlakozás szobához lehetőséget, és írd be ezt a kódot: ${code}.',
-			'watchTogether.openSessionControls' => 'Watch Together munkamenet-vezérlők megnyitása',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Watch Together munkamenet-vezérlők megnyitása',
 			'watchTogether.reconnecting' => 'Újracsatlakozás...',
 			'watchTogether.reconnectingDescription' => 'Megszakadt a kapcsolat. Automatikusan visszacsatlakozol a szobához.',
 			'watchTogether.connected' => 'Csatlakozva',
@@ -7942,9 +7944,9 @@ extension on TranslationsHu {
 			'metadataEdit.metadataUpdateFailed' => 'Nem sikerült a metaadatok frissítése',
 			'metadataEdit.artworkUpdated' => 'Képek frissítve',
 			'metadataEdit.artworkUpdateFailed' => 'Nem sikerült a képek frissítése',
-			'metadataEdit.noArtworkAvailable' => 'Nincsenek elérhető képek',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Nincsenek elérhető képek',
 			'metadataEdit.artworkOption' => ({required Object index}) => '${index}. képváltozat',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '${index}. képváltozat, kiválasztva',
 			'metadataEdit.notSet' => 'Nincs beállítva',
@@ -8456,9 +8458,9 @@ extension on TranslationsHu {
 			'universalMedia.queuePlaylistFolderRequired' => 'A sor fájljaival azonos mappát válassz mentési helyként.',
 			'universalMedia.noFavorites' => 'Nincs mentett stream kedvencek még. Favoritek maradnak ebben a profilban.',
 			'universalMedia.removeFavorite' => 'Távolítsa el a kedvenc stream',
-			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
 			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
 			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
@@ -8970,9 +8972,9 @@ extension on TranslationsHu {
 			'sourceSetup.metadataMatchHelp' => 'Választás előtt ellenőrizd a címet és az évet. A Trakt a keresett címet kapja meg; a videó a forrásán marad.',
 			'sourceSetup.metadataNoMatches' => 'Nem található egyező cím online. Próbálj másik címet.',
 			'sourceSetup.metadataSearch' => 'Online metaadatok keresése',
-			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
 			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',
 			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',

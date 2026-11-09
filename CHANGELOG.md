@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add optional title, library and global persistence for custom video zoom, retaining session-only defaults and bounded values. Independently adapted from [upstream e90973fb](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
 - Keep focus visible on light surfaces, remove gray scrim bands and declare transparent status-bar styling for pages without app bars. Independently adapted from upstream commits [4eabc30c](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb), [13426a00](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), [c7f86ab8](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Debounce artwork resize requests and retain resolution on shrink, keep Watch Together guests synchronized after version changes, and select Skia on Android devices without Vulkan 1.1. Independently integrated upstream contributions by [@strata-scribe](https://github.com/strata-scribe) ([38c48f14](https://github.com/edde746/plezy/commit/38c48f14ac4107cc94b2ab2f41444f0448d64da0)) and [@edde746](https://github.com/edde746) ([6c87210c](https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd), [d2424018](https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499)); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).

@@ -631,6 +631,7 @@
     "scopePlaybackSpeed": "Uppspelningshastighet",
     "scopeShaderPreset": "Förinställning för shader",
     "scopeAspectRatio": "Bildförhållande",
+    "scopeZoom": "Zoom",
     "scopeSyncOffsets": "Synkronisering av ljud och undertexter",
     "playerScopeOff": "Spara inte",
     "playerScopeGlobal": "Överallt",

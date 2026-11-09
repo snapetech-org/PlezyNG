@@ -717,6 +717,7 @@ class _Translations$settings$ja extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => '再生速度';
 	@override String get scopeShaderPreset => 'シェーダープリセット';
 	@override String get scopeAspectRatio => 'アスペクト比';
+	@override String get scopeZoom => 'ズーム';
 	@override String get scopeSyncOffsets => '音声と字幕の同期';
 	@override String get playerScopeOff => '保存しない';
 	@override String get playerScopeGlobal => 'すべて';
@@ -5952,6 +5953,7 @@ extension on TranslationsJa {
 			'settings.scopePlaybackSpeed' => '再生速度',
 			'settings.scopeShaderPreset' => 'シェーダープリセット',
 			'settings.scopeAspectRatio' => 'アスペクト比',
+			'settings.scopeZoom' => 'ズーム',
 			'settings.scopeSyncOffsets' => '音声と字幕の同期',
 			'settings.playerScopeOff' => '保存しない',
 			'settings.playerScopeGlobal' => 'すべて',
@@ -6395,9 +6397,9 @@ extension on TranslationsJa {
 			'videoControls.addBookmark' => 'ブックマーク追加',
 			'videoControls.bookmarkName' => 'Bookmark 名称',
 			'videoControls.bookmarkNameHint' => 'たとえば、オープンシーン。',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'ブックマーク ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'ブックマーク ${n}',
 			'videoControls.bookmarkNameRequired' => 'このブックマークの名前を入力します。',
 			'videoControls.deleteBookmark' => 'ブックマーク削除',
 			'videoControls.bookmarkLimitReached' => 'この項目にはすでに100本のブックマークがあります。',
@@ -6909,9 +6911,9 @@ extension on TranslationsJa {
 			'libraries.content' => 'ライブラリコンテンツ',
 			'libraries.selectLibrary' => 'ライブラリを選択',
 			'libraries.filtersWithCount' => ({required Object count}) => 'フィルター (${count})',
-			'libraries.noRecommendations' => 'おすすめがありません',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'おすすめがありません',
 			'libraries.noCollections' => 'このライブラリにコレクションがありません',
 			'libraries.noFoldersFound' => 'フォルダが見つかりません',
 			'libraries.folders' => 'フォルダ',
@@ -7423,9 +7425,9 @@ extension on TranslationsJa {
 			'watchTogether.shareInvite' => '招待を共有',
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
-			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
 			'watchTogether.reconnecting' => '再接続中…',
 			'watchTogether.reconnectingDescription' => '接続が切断されました。自動的にルームに再参加します。',
 			'watchTogether.connected' => '接続済み',
@@ -7937,9 +7939,9 @@ extension on TranslationsJa {
 			'metadataEdit.metadataUpdateFailed' => 'メタデータの更新に失敗しました',
 			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
 			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
-			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}、選択済み',
 			'metadataEdit.notSet' => '未設定',
@@ -8451,9 +8453,9 @@ extension on TranslationsJa {
 			'universalMedia.queuePlaylistFolderRequired' => 'キュー内のファイルと同じフォルダーを保存先に選択してください。',
 			'universalMedia.noFavorites' => 'まだお気に入りのストリームを保存していません お気に入りはこのプロフィールに留まります。',
 			'universalMedia.removeFavorite' => 'お気に入りの流れを削除する',
-			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
 			'universalMedia.chooseFiles' => 'ファイルを選択',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
 			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
@@ -8965,9 +8967,9 @@ extension on TranslationsJa {
 			'sourceSetup.metadataMatchHelp' => '選択する前にタイトルと年を確認してください。検索タイトルは Trakt に送信されますが、動画はソースに残ります。',
 			'sourceSetup.metadataNoMatches' => 'オンラインで一致するタイトルが見つかりませんでした。別のタイトルをお試しください。',
 			'sourceSetup.metadataSearch' => 'オンラインメタデータを検索',
-			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
 			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
 			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',

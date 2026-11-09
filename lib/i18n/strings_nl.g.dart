@@ -719,6 +719,7 @@ class _Translations$settings$nl extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Afspeelsnelheid';
 	@override String get scopeShaderPreset => 'Shadervoorinstelling';
 	@override String get scopeAspectRatio => 'Beeldverhouding';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Audio- en ondertitelsynchronisatie';
 	@override String get playerScopeOff => 'Niet opslaan';
 	@override String get playerScopeGlobal => 'Overal';
@@ -5957,6 +5958,7 @@ extension on TranslationsNl {
 			'settings.scopePlaybackSpeed' => 'Afspeelsnelheid',
 			'settings.scopeShaderPreset' => 'Shadervoorinstelling',
 			'settings.scopeAspectRatio' => 'Beeldverhouding',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Audio- en ondertitelsynchronisatie',
 			'settings.playerScopeOff' => 'Niet opslaan',
 			'settings.playerScopeGlobal' => 'Overal',
@@ -6400,9 +6402,9 @@ extension on TranslationsNl {
 			'videoControls.addBookmark' => 'Voeg Bookmark toe',
 			'videoControls.bookmarkName' => 'Bookmark naam',
 			'videoControls.bookmarkNameHint' => 'Bijvoorbeeld de openingsscène',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Boekmark ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Boekmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Voer een naam in voor dit boekmerk.',
 			'videoControls.deleteBookmark' => 'Verwijder Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Dit item heeft al 100 bookmarks.',
@@ -6914,9 +6916,9 @@ extension on TranslationsNl {
 			'libraries.content' => 'bibliotheekinhoud',
 			'libraries.selectLibrary' => 'Bibliotheek kiezen',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
-			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			'libraries.noCollections' => 'Geen collecties in deze bibliotheek',
 			'libraries.noFoldersFound' => 'Geen mappen gevonden',
 			'libraries.folders' => 'mappen',
@@ -7428,9 +7430,9 @@ extension on TranslationsNl {
 			'watchTogether.shareInvite' => 'Uitnodiging delen',
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
-			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
 			'watchTogether.reconnecting' => 'Opnieuw verbinden...',
 			'watchTogether.reconnectingDescription' => 'De verbinding is verbroken. Je neemt automatisch weer deel aan de kamer.',
 			'watchTogether.connected' => 'Verbonden',
@@ -7942,9 +7944,9 @@ extension on TranslationsNl {
 			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
 			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
 			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
-			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Illustratie ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Illustratie ${index}, geselecteerd',
 			'metadataEdit.notSet' => 'Niet ingesteld',
@@ -8456,9 +8458,9 @@ extension on TranslationsNl {
 			'universalMedia.queuePlaylistFolderRequired' => 'Kies een opslaglocatie in dezelfde map als de bestanden in de wachtrij.',
 			'universalMedia.noFavorites' => 'Er zijn nog geen favorieten opgeslagen.Favorites blijven in dit profiel.',
 			'universalMedia.removeFavorite' => 'Verwijder de favoriete stream',
-			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
 			'universalMedia.chooseFiles' => 'Kies bestanden',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
 			'universalMedia.wifiTransfer' => 'Bestanden verzenden via Wi-Fi',
@@ -8970,9 +8972,9 @@ extension on TranslationsNl {
 			'sourceSetup.metadataMatchHelp' => 'Controleer titel en jaar voordat je kiest. Trakt ontvangt de gezochte titel; de video blijft op de bron.',
 			'sourceSetup.metadataNoMatches' => 'Geen overeenkomende titels online gevonden. Probeer een andere titel.',
 			'sourceSetup.metadataSearch' => 'Online metadata zoeken',
-			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',
 			'sourceSetup.metadataFailed' => 'Online metadata konden niet worden geladen. Afspelen en lokale informatie blijven beschikbaar.',

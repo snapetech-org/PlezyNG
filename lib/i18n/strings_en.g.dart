@@ -1878,6 +1878,9 @@ class Translations$settings$en {
 	/// en: 'Aspect Ratio'
 	String get scopeAspectRatio => 'Aspect Ratio';
 
+	/// en: 'Zoom'
+	String get scopeZoom => 'Zoom';
+
 	/// en: 'Audio & Subtitle Sync'
 	String get scopeSyncOffsets => 'Audio & Subtitle Sync';
 
@@ -17797,6 +17800,7 @@ extension on Translations {
 			'settings.scopePlaybackSpeed' => 'Playback Speed',
 			'settings.scopeShaderPreset' => 'Shader Preset',
 			'settings.scopeAspectRatio' => 'Aspect Ratio',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle Sync',
 			'settings.playerScopeOff' => 'Don\'t save',
 			'settings.playerScopeGlobal' => 'Everywhere',
@@ -18213,9 +18217,9 @@ extension on Translations {
 			'videoControls.sleepTimerEndOfVideo' => 'End of current video',
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
 			'videoControls.sleepTimerDurationHeader' => 'Timer',
-			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
 			'videoControls.continueWatching' => 'Continue',
@@ -18727,9 +18731,9 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.onlySdhDescription' => 'Use SDH subtitles only; do not fall back to standard subtitles.',
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
 			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
-			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			_ => null,
 		} ?? switch (path) {
+			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForced' => 'Only non-forced subtitles',
@@ -19241,9 +19245,9 @@ extension on Translations {
 			'explore.creditRole.writer' => 'Writer',
 			'explore.creditRole.producer' => 'Producer',
 			'explore.creditRole.creator' => 'Creator',
-			'explore.creditRole.composer' => 'Composer',
 			_ => null,
 		} ?? switch (path) {
+			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
 			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
@@ -19755,9 +19759,9 @@ extension on Translations {
 			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
-			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			'downloads.convertingOnServer' => 'Converting on server…',
 			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
@@ -20269,9 +20273,9 @@ extension on Translations {
 			'services.scrobble' => 'Track progress automatically',
 			'services.scrobbleDescription' => 'Update your list when you finish an episode or movie.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.',
 			_ => null,
 		} ?? switch (path) {
+			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.',
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -20783,9 +20787,9 @@ extension on Translations {
 			'universalMedia.captureStop' => 'Stop and save',
 			'universalMedia.captureMode' => 'Capture',
 			'universalMedia.shareMode' => 'Share',
-			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
@@ -21297,9 +21301,9 @@ extension on Translations {
 			'games.help' => 'Games help',
 			'games.helpBody' => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.',
 			'games.cancel' => 'Cancel',
-			'games.saveShortcut' => 'Save shortcut',
 			_ => null,
 		} ?? switch (path) {
+			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
@@ -21811,9 +21815,9 @@ extension on Translations {
 			'subtitleAiUi.bilingualSubtitleOutput' => 'Bilingual subtitle output',
 			'subtitleAiUi.showTheOriginalLineFollowedByItsTran_912a8201' => 'Show the original line followed by its translation in each cue',
 			'subtitleAiUi.translationGlossaryJSON' => 'Translation glossary (JSON)',
-			'subtitleAiUi.tARDISTARDISTheDoctorElDoctor' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.tARDISTARDISTheDoctorElDoctor' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
 			'subtitleAiUi.saveGlossary' => 'Save glossary',
 			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
@@ -22325,9 +22329,9 @@ extension on Translations {
 			'bonusExtras.personal' => 'Personal link',
 			'bonusExtras.unknownLanguage' => 'Language not specified',
 			'bonusExtras.spoilers' => 'Show extras that may contain spoilers',
-			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
 			'bonusExtras.externalEnabled' => 'Discover verified online extras',
 			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			'bonusExtras.serviceUrl' => 'Discovery server address',

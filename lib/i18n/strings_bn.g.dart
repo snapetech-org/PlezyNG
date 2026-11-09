@@ -719,6 +719,7 @@ class _Translations$settings$bn extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'গতি Playback';
 	@override String get scopeShaderPreset => 'শারীরিক প্রসেস্ট';
 	@override String get scopeAspectRatio => 'এস্পেক্ট রেসিও';
+	@override String get scopeZoom => 'জুম';
 	@override String get scopeSyncOffsets => 'অডিও & Subtitle Sync';
 	@override String get playerScopeOff => 'বাঁচান না';
 	@override String get playerScopeGlobal => 'যেখানে';
@@ -5957,6 +5958,7 @@ extension on TranslationsBn {
 			'settings.scopePlaybackSpeed' => 'গতি Playback',
 			'settings.scopeShaderPreset' => 'শারীরিক প্রসেস্ট',
 			'settings.scopeAspectRatio' => 'এস্পেক্ট রেসিও',
+			'settings.scopeZoom' => 'জুম',
 			'settings.scopeSyncOffsets' => 'অডিও & Subtitle Sync',
 			'settings.playerScopeOff' => 'বাঁচান না',
 			'settings.playerScopeGlobal' => 'যেখানে',
@@ -6400,9 +6402,9 @@ extension on TranslationsBn {
 			'videoControls.addBookmark' => 'Bookmark যোগ করুন',
 			'videoControls.bookmarkName' => 'Bookmark নাম',
 			'videoControls.bookmarkNameHint' => 'উদাহরণস্বরূপ, দৃশ্য খোলা',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'বইমার্ক ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'বইমার্ক ${n}',
 			'videoControls.bookmarkNameRequired' => 'এ বইয়ের জন্য একটি নাম লিখুন।',
 			'videoControls.deleteBookmark' => 'বুকমার্ক 삭제',
 			'videoControls.bookmarkLimitReached' => 'এই পণ্যটি এখন 100 বইমেলা আছে।',
@@ -6914,9 +6916,9 @@ extension on TranslationsBn {
 			'libraries.content' => 'লাইব্রেরি বিষয়বস্তু',
 			'libraries.selectLibrary' => 'লাইব্রেরি নির্বাচন',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ফিল্টার (${count})',
-			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'উপলব্ধি নেই',
 			'libraries.noCollections' => 'এই লাইব্রেরিতে কোন সংগ্রহ নেই',
 			'libraries.noFoldersFound' => 'কোন ফাইল পাওয়া যায়নি',
 			'libraries.folders' => 'ফোল্ডার',
@@ -7428,9 +7430,9 @@ extension on TranslationsBn {
 			'watchTogether.shareInvite' => 'বিতর্ক invitaciones',
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
-			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
 			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			'watchTogether.reconnectingDescription' => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।',
 			'watchTogether.connected' => 'সংযুক্ত',
@@ -7942,9 +7944,9 @@ extension on TranslationsBn {
 			'metadataEdit.metadataUpdateFailed' => 'মেটাদাটা আপডেট করতে পারেনি',
 			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
 			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
-			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ছবির বিকল্প ${index}, নির্বাচিত',
 			'metadataEdit.notSet' => 'সিস্টেম না',
@@ -8456,9 +8458,9 @@ extension on TranslationsBn {
 			'universalMedia.queuePlaylistFolderRequired' => 'কিউতে থাকা ফাইলগুলোর একই ফোল্ডারে সংরক্ষণের স্থান বেছে নিন।',
 			'universalMedia.noFavorites' => 'এখনো কোন প্রেমের পছন্দ সংরক্ষণ করা হয় না. পছন্দের এই प्रोফাইলে থাকুন।',
 			'universalMedia.removeFavorite' => 'প্রিয় স্ট্রিম মুছে ফেলুন',
-			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
@@ -8970,9 +8972,9 @@ extension on TranslationsBn {
 			'sourceSetup.metadataMatchHelp' => 'বেছে নেওয়ার আগে শিরোনাম ও বছর পরীক্ষা করুন। Trakt অনুসন্ধানের শিরোনাম পায়; ভিডিও তার উৎসেই থাকে।',
 			'sourceSetup.metadataNoMatches' => 'অনলাইনে মিলে যায় এমন কোনো শিরোনাম পাওয়া যায়নি। অন্য শিরোনাম দিয়ে চেষ্টা করুন।',
 			'sourceSetup.metadataSearch' => 'অনলাইন মেটাডেটা খুঁজুন',
-			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
 			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',

@@ -717,6 +717,7 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => '재생 속도';
 	@override String get scopeShaderPreset => '셰이더 프리셋';
 	@override String get scopeAspectRatio => '화면 비율';
+	@override String get scopeZoom => '확대/축소';
 	@override String get scopeSyncOffsets => '오디오 및 자막 동기화';
 	@override String get playerScopeOff => '저장하지 않음';
 	@override String get playerScopeGlobal => '모든 곳';
@@ -5952,6 +5953,7 @@ extension on TranslationsKo {
 			'settings.scopePlaybackSpeed' => '재생 속도',
 			'settings.scopeShaderPreset' => '셰이더 프리셋',
 			'settings.scopeAspectRatio' => '화면 비율',
+			'settings.scopeZoom' => '확대/축소',
 			'settings.scopeSyncOffsets' => '오디오 및 자막 동기화',
 			'settings.playerScopeOff' => '저장하지 않음',
 			'settings.playerScopeGlobal' => '모든 곳',
@@ -6395,9 +6397,9 @@ extension on TranslationsKo {
 			'videoControls.addBookmark' => 'Bookmark 추가하기',
 			'videoControls.bookmarkName' => 'Bookmark 이름',
 			'videoControls.bookmarkNameHint' => '예를 들어, 개방 장면',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => '책표 ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => '책표 ${n}',
 			'videoControls.bookmarkNameRequired' => '이 책자에 대한 이름을 입력합니다.',
 			'videoControls.deleteBookmark' => 'Bookmark 삭제',
 			'videoControls.bookmarkLimitReached' => '이 항목은 이미 100 개의 책표를 가지고 있습니다.',
@@ -6909,9 +6911,9 @@ extension on TranslationsKo {
 			'libraries.content' => '미디어 라이브러리 콘텐츠',
 			'libraries.selectLibrary' => '미디어 라이브러리 선택',
 			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
-			'libraries.noRecommendations' => '추천 없음',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => '추천 없음',
 			'libraries.noCollections' => '이 미디어 라이브러리에는 컬렉션이 없습니다',
 			'libraries.noFoldersFound' => '폴더를 찾을 수 없습니다',
 			'libraries.folders' => '폴더',
@@ -7423,9 +7425,9 @@ extension on TranslationsKo {
 			'watchTogether.shareInvite' => '초대 공유',
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
-			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
 			'watchTogether.reconnecting' => '재연결 중...',
 			'watchTogether.reconnectingDescription' => '연결이 끊어졌습니다. 자동으로 방에 다시 참여합니다.',
 			'watchTogether.connected' => '연결됨',
@@ -7937,9 +7939,9 @@ extension on TranslationsKo {
 			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
 			'metadataEdit.artworkUpdated' => '아트워크가 업데이트되었습니다',
 			'metadataEdit.artworkUpdateFailed' => '아트워크 업데이트 실패',
-			'metadataEdit.noArtworkAvailable' => '사용 가능한 아트워크 없음',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => '사용 가능한 아트워크 없음',
 			'metadataEdit.artworkOption' => ({required Object index}) => '아트워크 옵션 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '아트워크 옵션 ${index}, 선택됨',
 			'metadataEdit.notSet' => '설정되지 않음',
@@ -8451,9 +8453,9 @@ extension on TranslationsKo {
 			'universalMedia.queuePlaylistFolderRequired' => '대기열 파일과 같은 폴더를 저장 위치로 선택하세요.',
 			'universalMedia.noFavorites' => '아직 좋아하는 스트림을 저장하지 않았습니다.Favorites 이 프로필에 남아 있습니다.',
 			'universalMedia.removeFavorite' => '좋아하는 스트림을 제거',
-			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
 			'universalMedia.chooseFiles' => '파일 선택',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
@@ -8965,9 +8967,9 @@ extension on TranslationsKo {
 			'sourceSetup.metadataMatchHelp' => '선택하기 전에 제목과 연도를 확인하세요. Trakt에는 검색 제목이 전송되며, 동영상은 원래 소스에 그대로 남습니다.',
 			'sourceSetup.metadataNoMatches' => '일치하는 온라인 제목을 찾지 못했습니다. 다른 제목으로 검색하세요.',
 			'sourceSetup.metadataSearch' => '온라인 메타데이터 검색',
-			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
 			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',
 			'sourceSetup.metadataFailed' => '온라인 메타데이터를 불러오지 못했습니다. 재생과 로컬 정보는 계속 사용할 수 있습니다.',

@@ -196,3 +196,5 @@ endorsement of this fork.
 - [Light-theme scrim color interpolation](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
 
 - [Transparent status-bar styling](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Scoped custom video zoom](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted zoom persistence and finite bounds, retaining profile-keyed resets and agent validation. Zoom remains session-only by default.

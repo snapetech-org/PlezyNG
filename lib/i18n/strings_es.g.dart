@@ -721,6 +721,7 @@ class Translations$settings$es extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Velocidad de reproducción';
 	@override String get scopeShaderPreset => 'Preajuste de sombreado';
 	@override String get scopeAspectRatio => 'Relación de aspecto';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Sincronización de audio y subtítulos';
 	@override String get playerScopeOff => 'No guardar';
 	@override String get playerScopeGlobal => 'En todas partes';
@@ -5964,6 +5965,7 @@ extension on TranslationsEs {
 			'settings.scopePlaybackSpeed' => 'Velocidad de reproducción',
 			'settings.scopeShaderPreset' => 'Preajuste de sombreado',
 			'settings.scopeAspectRatio' => 'Relación de aspecto',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Sincronización de audio y subtítulos',
 			'settings.playerScopeOff' => 'No guardar',
 			'settings.playerScopeGlobal' => 'En todas partes',
@@ -6407,9 +6409,9 @@ extension on TranslationsEs {
 			'videoControls.addBookmark' => 'Añadir Bookmark',
 			'videoControls.bookmarkName' => 'Nombre Bookmark',
 			'videoControls.bookmarkNameHint' => 'Por ejemplo, la escena de apertura',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'El Bookmark ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'El Bookmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Introduce un nombre para esta etiqueta.',
 			'videoControls.deleteBookmark' => 'Eliminar el bookmark',
 			'videoControls.bookmarkLimitReached' => 'Este artículo ya tiene 100 bookmarks.',
@@ -6921,9 +6923,9 @@ extension on TranslationsEs {
 			'libraries.content' => 'contenido de la biblioteca',
 			'libraries.selectLibrary' => 'Seleccionar biblioteca',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtros (${count})',
-			'libraries.noRecommendations' => 'No hay recomendaciones disponibles',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'No hay recomendaciones disponibles',
 			'libraries.noCollections' => 'No hay colecciones en esta biblioteca',
 			'libraries.noFoldersFound' => 'No se encontraron carpetas',
 			'libraries.folders' => 'carpetas',
@@ -7435,9 +7437,9 @@ extension on TranslationsEs {
 			'watchTogether.shareInvite' => 'Compartir invitación',
 			'watchTogether.inviteCopied' => 'Invitación copiada. Pégala en un mensaje.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Únete a mi sala de Ver juntos en Pleazyng: abre «Ver juntos», elige «Unirse a una sala» e introduce ${code}.',
-			'watchTogether.openSessionControls' => 'Abrir los controles de la sesión de Ver juntos',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Abrir los controles de la sesión de Ver juntos',
 			'watchTogether.reconnecting' => 'Reconectando...',
 			'watchTogether.reconnectingDescription' => 'Se perdió la conexión. Volverás a unirte a la sala automáticamente.',
 			'watchTogether.connected' => 'Conectado',
@@ -7949,9 +7951,9 @@ extension on TranslationsEs {
 			'metadataEdit.metadataUpdateFailed' => 'Error al actualizar los metadatos',
 			'metadataEdit.artworkUpdated' => 'Imágenes actualizadas',
 			'metadataEdit.artworkUpdateFailed' => 'Error al actualizar las imágenes',
-			'metadataEdit.noArtworkAvailable' => 'No hay imágenes disponibles',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'No hay imágenes disponibles',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opción de imagen ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opción de imagen ${index}, seleccionada',
 			'metadataEdit.notSet' => 'No establecido',
@@ -8463,9 +8465,9 @@ extension on TranslationsEs {
 			'universalMedia.queuePlaylistFolderRequired' => 'Elige una ubicación de guardado en la misma carpeta que los archivos de la cola.',
 			'universalMedia.noFavorites' => 'No se ha salvado el flujo de favoritos aún. los favoritos permanecen en este perfil.',
 			'universalMedia.removeFavorite' => 'Eliminar el flujo favorito',
-			'universalMedia.filesHelp' => 'Seleccione los archivos de audio, vídeo o ISO para una cueva temporal.Los archivos y las URL no se añaden a la historia de la biblioteca.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Seleccione los archivos de audio, vídeo o ISO para una cueva temporal.Los archivos y las URL no se añaden a la historia de la biblioteca.',
 			'universalMedia.chooseFiles' => 'Elegir archivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n, one: '1 Archivo seleccionado', many: '${count} archivos seleccionados', other: '${count} archivos seleccionados', ), 
 			'universalMedia.wifiTransfer' => 'Enviar archivos a través de Wi-Fi',
@@ -8977,9 +8979,9 @@ extension on TranslationsEs {
 			'sourceSetup.metadataMatchHelp' => 'Revisa el título y el año antes de elegir. Trakt recibe el título buscado; el vídeo permanece en su fuente.',
 			'sourceSetup.metadataNoMatches' => 'No se encontraron títulos coincidentes en línea. Prueba con otro título.',
 			'sourceSetup.metadataSearch' => 'Buscar metadatos en línea',
-			'sourceSetup.metadataLoading' => 'Buscando información de películas y series en línea…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Buscando información de películas y series en línea…',
 			'sourceSetup.metadataFromTrakt' => 'Metadatos en línea de Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'No se encontró una coincidencia automática para el título. Busca el título para elegir una coincidencia.',
 			'sourceSetup.metadataFailed' => 'No se pudieron cargar los metadatos en línea. La reproducción y la información local siguen disponibles.',

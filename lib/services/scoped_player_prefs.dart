@@ -2,6 +2,7 @@ import '../media/ids.dart';
 import '../media/media_item.dart';
 import '../media/media_library.dart';
 import '../media/playback_rate.dart';
+import '../media/video_zoom.dart';
 import '../models/player_setting_scope.dart';
 import '../models/motion_clarity.dart';
 import '../utils/global_key_utils.dart';
@@ -121,6 +122,13 @@ abstract final class ScopedPlayerPrefs {
     SettingsService.motionClarityScope,
     SettingsService.motionClarityThreshold,
     _decodeMotionClarityThreshold,
+  );
+
+  static final videoZoom = ScopedPlayerPref<double>._(
+    'video_zoom',
+    SettingsService.videoZoomScope,
+    SettingsService.defaultVideoZoom,
+    _decodeZoom,
   );
 
   static final audioSyncOffset = ScopedPlayerPref<int>._(
@@ -305,6 +313,9 @@ abstract final class ScopedPlayerPrefs {
 
   static double? _decodeSpeed(Object? raw) =>
       raw is num ? raw.toDouble().clamp(minimumPlaybackRate, maximumPlaybackRate) : null;
+
+  static double? _decodeZoom(Object? raw) =>
+      raw is num && raw.isFinite ? raw.toDouble().clamp(minimumVideoZoom, maximumVideoZoom) : null;
 
   static int? _decodeInt(Object? raw) => raw is int ? raw : null;
 

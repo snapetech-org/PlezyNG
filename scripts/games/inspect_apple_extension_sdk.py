@@ -30,6 +30,11 @@ for base in template_roots:
         if 'Enhanced Security' in text or 'enhanced-security' in text:
             print('PUBLIC XCODE TEMPLATE: ' + str(template.relative_to(developer)))
             print(text[:30000])
+            for filename in ('AppExtension-EnhancedSecurity.swift', 'AppExtension-EnhancedSecurity.entitlements'):
+                source = template.parent / filename
+                if source.is_file():
+                    print('PUBLIC XCODE SOURCE: ' + filename)
+                    print(source.read_text()[:30000])
 for name, url in {
     'enhanced-security.md': 'https://developer.apple.com/documentation/xcode/creating-enhanced-security-helper-extensions.md',
     'extension-host.md': 'https://developer.apple.com/documentation/extensionfoundation/adding-support-for-app-extensions-to-your-app.md',

@@ -91,7 +91,13 @@ tags:
     visible: "(?s)^Appearance.*"
     timeout: 10000
 - assertVisible: "(?s)^Video Playback.*"
+- scrollUntilVisible:
+    element: "(?s)^Connections.*"
+    direction: DOWN
 - assertVisible: "(?s)^Connections.*"
+- scrollUntilVisible:
+    element: "(?s)^Appearance.*"
+    direction: UP
 - runFlow:
     when:
       platform: Android

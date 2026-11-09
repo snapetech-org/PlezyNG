@@ -1220,7 +1220,7 @@ def post_release_actions(tag: str, version: str, *, release_sha: str,
     # Tag serialization and persisted receipts make a repeated dispatch safe.
     try:
         command(["gh", "workflow", "run", "discord-release.yml", "--repo", PLEZY_REPO,
-                 "--ref", "main", "-f", "action=announce-release", "-f", "runner_pool=private",
+                 "--ref", "main", "-f", "action=announce-release", "-f", "runner_pool=hosted",
                  "-f", f"release_tag={tag}"])
     except Exception as error:
         result["notification_failures"].append(str(error))

@@ -1,5 +1,5 @@
 name: Discord Release Announcement
-run-name: action:announce-release:pool:private:tag:${{ inputs.release_tag || github.event.release.tag_name }}
+run-name: action:announce-release:pool:hosted:tag:${{ inputs.release_tag || github.event.release.tag_name }}
 
 on:
   release:
@@ -12,11 +12,11 @@ on:
         type: choice
         options: [announce-release]
       runner_pool:
-        description: Required private JIT runner pool
+        description: Hosted runner route for release announcements
         required: true
         type: choice
-        default: private
-        options: [private]
+        default: hosted
+        options: [hosted]
       release_tag:
         description: Published stable release tag to announce
         required: true
@@ -40,7 +40,7 @@ jobs:
       github.repository_id == '1433487464' &&
       ((github.event_name == 'release' && !github.event.release.draft && !github.event.release.prerelease) ||
        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
-    runs-on: ${{ fromJSON(format('{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-announce-discord"]}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: write # Persist per-message delivery receipts on the release.

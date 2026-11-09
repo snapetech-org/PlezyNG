@@ -1,6 +1,6 @@
 # Upstream source attribution
 
-This ledger publicly credits 31 source records from [edde746/plezy](https://github.com/edde746/plezy) that informed, supplied, or were reconciled with behavior or documentation in this fork.
+This ledger publicly credits 33 source records from [edde746/plezy](https://github.com/edde746/plezy) that informed, supplied, or were reconciled with behavior, documentation, or maintained plans in this fork.
 
 The linked people made their reports, suggestions, discussions, or code contributions to the upstream project. This is source credit only: it does not claim that they contributed directly to this fork, endorsed it, or participated in the fork integration. Fork maintainers adapted, integrated, or verified the resulting behavior separately.
 
@@ -46,8 +46,16 @@ These upstream commits supplied additional implementation ideas or code to the N
 - [commit `0ef47f2711`](https://github.com/edde746/plezy/commit/0ef47f2711ecb5ff30089831410b6f29b580cdcb) — “fix(tv): trigger list tile long-press from D-pad hold-select (#2964),” authored upstream by adamsparsons. Pleazyng independently adapted the upstream change.
 - [commit `d192a726b8`](https://github.com/edde746/plezy/commit/d192a726b8a8dd512d648f5cce9d568508d3ecd3) — “fix(downloads): exclude downloaded media from iCloud Backup on iOS,” authored upstream by [@edde746](https://github.com/edde746). Pleazyng independently adapted the upstream change.
 
+## Planned or not-yet-shipped upstream ideas
+
+These upstream reports informed Pleazyng’s maintained subtitle plan. They are
+credited as idea sources and are not presented as completed Pleazyng features.
+
+- [issue #689](https://github.com/edde746/plezy/issues/689) — “Add subtitle styling into player,” opened upstream by [@ayydaz](https://github.com/ayydaz). Pleazyng’s subtitle plan references this upstream idea; implementation status remains separate.
+- [issue #1442](https://github.com/edde746/plezy/issues/1442) — “Subtitle Size and Position Settings Are Ignored in Some Cases,” opened upstream by [@Shasoosh](https://github.com/Shasoosh). Pleazyng’s subtitle plan references this upstream report; implementation status remains separate.
+
 ## Feature inventory reference
 
 - [Upstream README snapshot](https://github.com/edde746/plezy/blob/738e18fdc552ace910dedabf6e689ab74e1dae58/README.md), pinned at [commit `738e18fdc5`](https://github.com/edde746/plezy/commit/738e18fdc552ace910dedabf6e689ab74e1dae58), authored upstream by [@edde746](https://github.com/edde746). Pleazyng independently verified the inherited feature baseline against this upstream project snapshot for the [Plex/Plezy/Pleazyng comparison](docs/FEATURE_COMPARISON.md). This credits the upstream inventory and snapshot author; the comparison does not attribute every inherited feature to one person or claim direct participation in this fork.
 
-_Attribution ledger refreshed 2026-11-09; 31 source records._
+_Attribution ledger refreshed 2026-11-09; 33 source records._

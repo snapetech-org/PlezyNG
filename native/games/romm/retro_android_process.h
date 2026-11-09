@@ -12,7 +12,7 @@
 namespace plezy::retro::android_process {
 inline JavaVM* vm = nullptr;
 inline jclass broker = nullptr;
-inline jmethodID launch = nullptr, detachFd = nullptr, close = nullptr, isDead = nullptr;
+inline jmethodID launch = nullptr, detachFd = nullptr, closeWorker = nullptr, isDead = nullptr;
 class Environment {
   bool attached_ = false;
 
@@ -58,7 +58,7 @@ class Control {
   void Abort() noexcept {
     if (worker) try {
         Environment state;
-        state.env->CallVoidMethod(worker, close);
+        state.env->CallVoidMethod(worker, closeWorker);
         state.Check();
       } catch (...) {
       }
@@ -101,7 +101,7 @@ inline std::unique_ptr<plezy::process::BytePipe> Spawn(
   control->worker = env->NewGlobalRef(object);
   state.Check();
   if (!control->worker) {
-    env->CallVoidMethod(object, close);
+    env->CallVoidMethod(object, closeWorker);
     state.Check();
     throw std::runtime_error("Could not retain emulator service");
   }

@@ -10,8 +10,8 @@ extern "C" JNIEXPORT void JNICALL Java_com_edde746_plezy_games_RommProcessBroker
       type, "launch",
       "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/edde746/plezy/games/RommProcessBroker$Worker;");
   detachFd = env->GetMethodID(worker, "detachFd", "()I");
-  close = env->GetMethodID(worker, "close", "()V");
+  closeWorker = env->GetMethodID(worker, "close", "()V");
   isDead = env->GetMethodID(worker, "isDead", "()Z");
-  if (env->ExceptionCheck() || !launch || !detachFd || !close || !isDead) return;
+  if (env->ExceptionCheck() || !launch || !detachFd || !closeWorker || !isDead) return;
   broker = static_cast<jclass>(env->NewGlobalRef(type));
 }

@@ -1,5 +1,5 @@
-name: Setup Flutter on the private Apple runner
-description: Prepare a checksum-verified Flutter SDK in the Mac JIT job's local APFS temporary directory.
+name: Setup Flutter on an Apple runner
+description: Prepare pinned Apple tooling and a checksum-verified Flutter SDK in task-owned local APFS storage.
 inputs:
   flutter-version:
     description: Exact Flutter stable version.
@@ -7,6 +7,16 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Select the stable hosted Xcode toolchain
+      if: runner.environment == 'github-hosted'
+      shell: bash
+      run: |
+        set -euo pipefail
+        developer_dir=/Applications/Xcode_26.5.app/Contents/Developer
+        test -d "$developer_dir"
+        echo "DEVELOPER_DIR=$developer_dir" >> "$GITHUB_ENV"
+        DEVELOPER_DIR="$developer_dir" xcodebuild -version
+
     - name: Prepare the pinned Flutter SDK in local APFS cache
       shell: bash
       env:

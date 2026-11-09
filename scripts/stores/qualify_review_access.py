@@ -82,7 +82,8 @@ def main():
         adb('shell', 'restorecon', '-R', prefs)
 
     def launch():
-        component = adb('shell', 'cmd', 'package', 'resolve-activity', '--brief', PACKAGE).splitlines()[-1]
+        component = adb('shell', 'cmd', 'package', 'resolve-activity', '--brief', '-a', 'android.intent.action.MAIN',
+                        '-c', 'android.intent.category.LAUNCHER', '-p', PACKAGE).splitlines()[-1]
         if not component.startswith(PACKAGE + '/'):
             raise RuntimeError('Expected app launcher activity not found')
         adb('shell', 'am', 'start', '-n', component)

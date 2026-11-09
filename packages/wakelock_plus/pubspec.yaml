@@ -26,7 +26,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   meta: ^1.17.0
-  wakelock_plus_platform_interface: 1.4.0
+  wakelock_plus_platform_interface: 1.7.0
 
   # Windows dependencies
   # win32 is compatible across v5 for Win32 only (not COM)

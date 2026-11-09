@@ -29,7 +29,8 @@ guards and release driver check this metadata before expensive work or tagging.
 After exact-main CI and platform canaries pass, run the complete release
 from an authenticated `gh` session. Compatible Linux, Android, Tizen, Windows
 x64, and native Windows ARM64 jobs use standard GitHub-hosted runners. Apple
-builds and the storage-heavy WebOS candidate use compatible private JIT runners.
+builds use compatible GitHub-hosted macOS runners; the storage-heavy WebOS
+candidate uses compatible private JIT runners.
 The hybrid execution profile routes each job to the compatible runner class;
 the broker pool remains available for jobs that need private capacity.
 
@@ -49,8 +50,9 @@ job still run in order.
 
 Capacity determines which eligible jobs start. The hybrid Linux, Android,
 Tizen, and Windows jobs can occupy separate hosted runners concurrently. iOS,
-tvOS, and macOS use the single private Apple JIT slot, so those three jobs run
-one at a time. WebOS uses its own private Linux route and can remain queued
+tvOS, and macOS use compatible GitHub-hosted macOS runners in the hybrid
+profile. Explicit private Apple runs share the single private Apple JIT slot
+and run one at a time. WebOS uses its own private Linux route and can remain queued
 until that compatible capacity is available; it has no dependency on an Apple
 job. The stage-by-stage waits in `release_all_platforms.py` protect the exact
 native-manifest, CI, tag, and release checks; they do not serialize

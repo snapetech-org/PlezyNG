@@ -4,13 +4,11 @@
 
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.
 
+- Verify the retained-home playback fix through the production player route and scaffold for Linux, Windows, shared Apple/mpv, and Android/ExoPlayer. Cover background artwork updates, the first-frame cover during source reloads, preserved controls, and returning home.
+
 - Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.
 
 - Build the nested Dolby Vision package graph directly from its verified `Package.resolved` pins, removing a redundant Xcode 26 resolve-only action that aborted consistently on hosted Apple Silicon.
-
-- Build the nested Dolby Vision package graph directly from its verified `Package.resolved` pins, removing a redundant Xcode 26 resolve-only action that aborted consistently on hosted Apple Silicon.
-
-- Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.
 
 - Retire the mutable updater-feed branch in favor of published release assets, preserve an immutable legacy updater bridge, and continuously audit/test the Decky build dependency graph.
 

@@ -254,16 +254,16 @@ jobs:
             exit 1
           fi
           if [[ "$ACTION" == "release" ]]; then
-            if [[ "$REF_TYPE" != "branch" || "$REF_NAME" != "main" ]]; then
-              echo "The release action must dispatch from refs/heads/main so the private main-ref runner policy applies." >&2
-              exit 1
-            fi
             VERSION="$BUILD_VERSION_INPUT"
             if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "The release action requires build_version=MAJOR.MINOR.PATCH." >&2
               exit 1
             fi
             RELEASE_TAG="v$VERSION"
+            if [[ ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" ) && ( "$REF_TYPE" != "tag" || "$REF_NAME" != "$RELEASE_TAG" ) ]]; then
+              echo "The release action requires trusted main or its exact immutable version tag." >&2
+              exit 1
+            fi
           else
             RELEASE_TAG="$BUILD_VERSION_INPUT"
             if [[ -z "$RELEASE_TAG" && ( "$MODE" == "release" || "$MODE" == "macos-validation" ) ]]; then
@@ -272,8 +272,8 @@ jobs:
             fi
             VERSION="$RELEASE_TAG"
           fi
-          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" || ( "$MODE" != "release" && "$MODE" != "android-validation" && "$MODE" != "macos-validation" ) || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
-            echo "The hybrid execution profile requires a CPU-backend release, Android or macOS validation build from refs/heads/main." >&2
+          if [[ "$EXECUTION_PROFILE" == "hybrid" && ( ( ( "$REF_TYPE" != "branch" || "$REF_NAME" != "main" ) && ( "$ACTION" != "release" || "$REF_TYPE" != "tag" || "$REF_NAME" != "$RELEASE_TAG" ) ) || ( "$MODE" != "release" && "$MODE" != "android-validation" && "$MODE" != "macos-validation" ) || "$SUBTITLE_GPU_BACKEND" != "cpu" ) ]]; then
+            echo "The hybrid execution profile requires trusted main or the exact immutable release tag." >&2
             exit 1
           fi
           if [[ "$MODE" == "release" && "$EXECUTION_PROFILE" != "hybrid" ]]; then
@@ -373,8 +373,8 @@ jobs:
           RELEASE_TAG: ${{ steps.request.outputs.release_tag }}
         run: |
           set -euo pipefail
-          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
-            echo "Release actions must run from refs/heads/main." >&2
+          if [[ "$GITHUB_REF" != "refs/heads/main" && "$GITHUB_REF" != "refs/tags/$RELEASE_TAG" ]]; then
+            echo "Release actions require trusted main or the exact immutable release tag." >&2
             exit 1
           fi
           if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then

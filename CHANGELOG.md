@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Switch Android mpv display mode before decoder creation: hold VOD decoding at demux preload while display matching settles, bound and cancel stale holds, reject predecessor-player tokens, and retain first-frame Live TV matching, Dolby/FEL routing and motion-processing output targets. Independently adapted from [upstream c577edda](https://github.com/edde746/plezy/commit/c577edda5cdf4b0a0c3d5dd0d543e432c5bed0d8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+- Register reviewed English fallbacks for the new Seerr availability-alert copy until translations land, and keep unexpected quick-request failures localized instead of exposing raw exception text.
 
 - System certificate authorities for GitHub asset redirects: retain system-only certificate trust through githubusercontent.com redirects on Android and dart:io, without enabling the upstream anime-feed migration. Independently adapted from [upstream cbd9205f](https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
@@ -13,6 +14,9 @@
 - Hold playback beneath the resume profile picker: pause the covered player and refuse native, media-session, Watch Together and Play Next resume intents until profile selection finishes, preserving Automotive restrictions and active PiP. Independently adapted from [upstream 9fe138ab](https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Add optional title, library and global persistence for custom video zoom, retaining session-only defaults and bounded values. Independently adapted from [upstream e90973fb](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Allow trusted immutable version tags to run the same hosted hybrid CI and release matrix as `main`, so exact release-source validation and publication cannot race concurrent main-branch work.
+
 - Repair AUR, COPR and Nix repacks of v3.0.7 with byte-matched WebKit helper processes, required sandbox tools and regenerated GTK image-loader caches. Qualify Nix WebView rendering and JavaScript with the WebKit process sandbox enabled. Existing GitHub release assets remain immutable.
 
 - Pin hosted Apple jobs to the installed Xcode 26.5 toolchain and retry the exact locked nested Dolby Vision build once after Xcode's package-model abort, retaining verified task-owned checkouts while discarding partial build products.

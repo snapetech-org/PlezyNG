@@ -184,3 +184,9 @@ endorsement of this fork.
 - [Continue Watching artwork reconciliation](https://github.com/edde746/plezy/commit/f2985a7b06b1190507946cde824779880d7d2af8), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
 
 - [Late display-switch restoration](https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
+
+- [Artwork resize debounce and resolution retention](https://github.com/edde746/plezy/commit/38c48f14ac4107cc94b2ab2f41444f0448d64da0), contributed upstream by [@strata-scribe](https://github.com/strata-scribe): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Watch Together guest version switching](https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Skia selection without Vulkan 1.1](https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.

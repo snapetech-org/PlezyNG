@@ -153,7 +153,8 @@ Extract the tracker device-code driver's scheduling/cancellation into a generic
 component while keeping tracker behavior unchanged. Real-Debrid's credentials
 step, AllDebrid's PIN envelope, Premiumize's device grant and TorBox's error
 codes are separate adapters; do not force them into one RFC-shaped parser.
-Register callback routes without altering existing `plezy://`/PlezyNG links.
+Register source callbacks under `pleazyng-source://oauth/callback` without
+changing the canonical `pleazyng://` media-link routes.
 Do not hardcode a development client ID as PlezyNG's registered production app.
 
 ### R04–R05: playback before broad UI

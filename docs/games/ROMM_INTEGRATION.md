@@ -168,7 +168,7 @@ execution remains pending; the source recipes alone do not certify those builds.
 Canonical format:
 
 ```text
-plezy://game?source=romm&server=https%3A%2F%2Fromm.example%2F&rom=42&copy=sha1%3A<40-hex>&platform=snes
+pleazyng://game?source=romm&server=https%3A%2F%2Fromm.example%2F&rom=42&copy=sha1%3A<40-hex>&platform=snes
 ```
 
 The `server` must match an already connected source. `rom` identifies an indexed

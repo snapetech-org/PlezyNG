@@ -1,6 +1,6 @@
 # Upstream source attribution
 
-This ledger publicly credits 30 source records from [edde746/plezy](https://github.com/edde746/plezy) that informed, supplied, or were reconciled with behavior in this fork.
+This ledger publicly credits 31 source records from [edde746/plezy](https://github.com/edde746/plezy) that informed, supplied, or were reconciled with behavior or documentation in this fork.
 
 The linked people made their reports, suggestions, discussions, or code contributions to the upstream project. This is source credit only: it does not claim that they contributed directly to this fork, endorsed it, or participated in the fork integration. Fork maintainers adapted, integrated, or verified the resulting behavior separately.
 
@@ -46,4 +46,8 @@ These upstream commits supplied additional implementation ideas or code to the N
 - [commit `0ef47f2711`](https://github.com/edde746/plezy/commit/0ef47f2711ecb5ff30089831410b6f29b580cdcb) — “fix(tv): trigger list tile long-press from D-pad hold-select (#2964),” authored upstream by adamsparsons. Pleazyng independently adapted the upstream change.
 - [commit `d192a726b8`](https://github.com/edde746/plezy/commit/d192a726b8a8dd512d648f5cce9d568508d3ecd3) — “fix(downloads): exclude downloaded media from iCloud Backup on iOS,” authored upstream by [@edde746](https://github.com/edde746). Pleazyng independently adapted the upstream change.
 
-_Attribution ledger refreshed 2026-11-09; 30 source records._
+## Feature inventory reference
+
+- [Upstream README snapshot](https://github.com/edde746/plezy/blob/738e18fdc552ace910dedabf6e689ab74e1dae58/README.md), pinned at [commit `738e18fdc5`](https://github.com/edde746/plezy/commit/738e18fdc552ace910dedabf6e689ab74e1dae58), authored upstream by [@edde746](https://github.com/edde746). Pleazyng independently verified the inherited feature baseline against this upstream project snapshot for the [Plex/Plezy/Pleazyng comparison](docs/FEATURE_COMPARISON.md). This credits the upstream inventory and snapshot author; the comparison does not attribute every inherited feature to one person or claim direct participation in this fork.
+
+_Attribution ledger refreshed 2026-11-09; 31 source records._

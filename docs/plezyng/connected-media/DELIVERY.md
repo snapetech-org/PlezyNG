@@ -30,9 +30,10 @@ source player. It preserves their layouts, playback routes and profile boundarie
   refresh the ordering while retaining focused row identity. Unknown metadata and
   alternative copies remain visible. Ranking does not switch editions or transfer
   timestamps between copies.
-- Android, iOS, macOS, tvOS, Linux and Windows accept `plezyng://` alongside
-  `plezy://` and the legacy `plezxyng://` alias. Generated links retain the existing
-  canonical scheme. A CI guard checks platform registration and dispatch wiring.
+- Android, iOS, macOS, tvOS, Linux and Windows register canonical `pleazyng://`
+  links, which the app generates. The fork-only `plezyng://` and `plezxyng://`
+  schemes remain compatibility aliases; upstream's scheme is not registered.
+  A CI guard checks platform registration and dispatch wiring.
 
 ## Automated verification
 

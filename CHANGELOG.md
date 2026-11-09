@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add a documented Plex/Plezy/Pleazyng feature comparison, distinguish inherited features from fork additions and Plex-only gaps, and correct media-link examples to `pleazyng://`. Pleazyng independently verified the upstream inventory at [commit `738e18fdc5`](https://github.com/edde746/plezy/commit/738e18fdc552ace910dedabf6e689ab74e1dae58), authored upstream by [@edde746](https://github.com/edde746); see the [source credit](UPSTREAM_ATTRIBUTION.md#feature-inventory-reference).
+
 - Publicly credit 30 Plezy pull requests and commits whose upstream code or ideas were independently adapted into Pleazyng. The [source ledger](UPSTREAM_ATTRIBUTION.md) links every originating record and upstream author while making clear that those people contributed to Plezy, not directly to this fork.
 
 - Reuse already verified Android SDK packages and retry failed SDK Manager requests before failing, preserving toolchain pins and avoiding unnecessary hosted-tool updates.

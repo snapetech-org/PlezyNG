@@ -548,10 +548,25 @@ class MediaContextMenuState extends State<MediaContextMenu> {
           await seerrSource.client.intents.load(mediaItem.kind, seerrTmdbId);
           final state = seerrSource.client.intents.peek(mediaItem.kind, seerrTmdbId);
           var hasNewSeason = false;
+          SeerrLegacyLibraryOpportunity? legacy;
           if (mediaItem.kind == MediaKind.show && state != null && state.canRequest && !state.hasMissingSeasons) {
             hasNewSeason = hasNewSeerrSeason(state, await seerrSource.client.getTv(seerrTmdbId));
+          } else if (state == null && seerrSource.client.intents.unsupported) {
+            // Upstream Seerr lacks the compact intent endpoint. Only the
+            // opened menu pays for the standard detail/settings lookup.
+            final details = mediaItem.kind == MediaKind.show
+                ? await seerrSource.client.getTv(seerrTmdbId)
+                : await seerrSource.client.getMovie(seerrTmdbId);
+            final settings = await seerrSource.client.getPublicSettings();
+            legacy = SeerrLegacyLibraryOpportunity.fromDetails(seerrSource, mediaItem.kind, details, settings);
           }
-          seerrActions = librarySeerrTitleActions(seerrSource, mediaItem.kind, state, hasNewSeason: hasNewSeason);
+          seerrActions = librarySeerrTitleActions(
+            seerrSource,
+            mediaItem.kind,
+            state,
+            hasNewSeason: hasNewSeason,
+            legacy: legacy,
+          );
         }
       } catch (e) {
         appLogger.d('Seerr: context menu id resolution failed', error: e);

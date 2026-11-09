@@ -1779,6 +1779,54 @@ void main() {
     await tester.pumpAndSettle();
     expect(alertDeletes, 1);
   });
+
+  testWidgets('plain Seerr library menu offers 4K through standard title detail', (tester) async {
+    var detailReads = 0;
+    final client = SeerrClient(
+      const SeerrSession(
+        baseUrl: 'https://seerr.example.com',
+        method: SeerrAuthMethod.local,
+        identifier: 'alice',
+        secret: 'pw',
+        cookie: 'session',
+        userId: 1,
+        permissions: SeerrPermission.request4kMovie,
+        displayName: 'Alice',
+        instanceLabel: 'Seerr',
+        createdAt: 0,
+      ),
+      onSessionInvalidated: () {},
+      httpClient: MockClient((request) async {
+        if (request.url.path == '/api/v1/request/intent/state') return http.Response('not found', 404);
+        if (request.url.path == '/api/v1/movie/603') {
+          detailReads++;
+          return jsonResponse({
+            'id': 603,
+            'mediaInfo': {'status': 5, 'status4k': 1, 'requests': <Object>[]},
+          });
+        }
+        if (request.url.path == '/api/v1/settings/public') {
+          return jsonResponse({'movie4kEnabled': true, 'mediaServerType': 1});
+        }
+        fail('Unexpected Seerr request: ${request.method} ${request.url.path}');
+      }),
+    );
+    addTearDown(client.dispose);
+    final harness = await _pumpWatchlistMenu(
+      tester,
+      sources: const [],
+      guids: ['tmdb://603'],
+      seerr: SeerrCatalogSource(client),
+    );
+    expect(detailReads, 0);
+
+    harness.menuKey.currentState!.showContextMenu(tester.element(find.text('watchlist target')));
+    await tester.pumpAndSettle();
+
+    expect(detailReads, 1);
+    expect(find.text(t.seerr.request4k), findsOneWidget);
+    expect(find.text(t.seerr.turnOffAlert), findsNothing);
+  });
 }
 
 Future<GlobalKey<MediaContextMenuState>> _pumpPlexMovieMenu(

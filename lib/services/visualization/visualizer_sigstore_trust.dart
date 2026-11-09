@@ -6,3 +6,7 @@ const catalogRekorPublicKey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2G2Y+2tabdTV5
 const catalogRekorLogId = 'wNI9atQGlz+VWfO6LRygH4QUfY/8W4RFwiT5i5WRgB0=';
 const catalogPublisherIdentity = 'https://github.com/snapetech-org/pleazyng/.github/workflows/visualizer-catalog.yml@refs/heads/main';
 const catalogPublisherIssuer = 'https://token.actions.githubusercontent.com';
+
+// Immutable GitHub account/repository IDs prevent trust following a recycled name.
+const catalogPublisherRepositoryId = '1433487464';
+const catalogPublisherOwnerId = '342151964';

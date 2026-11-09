@@ -2741,6 +2741,13 @@ class Translations$seerr$pt extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'O Pleazyng esquecerá esta instância do Seerr. Reconecte quando quiser.';
 	@override String get request => 'Solicitar';
 	@override String get request4k => 'Solicitar em 4K';
+	@override String get requestSeasons => 'Solicitar temporadas em falta';
+	@override String get notifyMe => 'Avise-me quando estiver disponível';
+	@override String get notifyMe4k => 'Avise-me quando 4K estiver disponível';
+	@override String get notificationsOn => 'Alerta de disponibilidade ativado';
+	@override String get notificationsEnabled => 'Avisaremos quando estiver disponível';
+	@override String get notificationsDisabled => 'Alerta de disponibilidade desativado';
+	@override String get notificationFailed => 'Não foi possível atualizar o alerta de disponibilidade';
 	@override String get seasons => 'Temporadas';
 	@override String get allSeasons => 'Todas as temporadas';
 	@override String get advancedOptions => 'Avançado';
@@ -8040,6 +8047,13 @@ extension on TranslationsPt {
 			'seerr.disconnectConfirmBody' => 'O Pleazyng esquecerá esta instância do Seerr. Reconecte quando quiser.',
 			'seerr.request' => 'Solicitar',
 			'seerr.request4k' => 'Solicitar em 4K',
+			'seerr.requestSeasons' => 'Solicitar temporadas em falta',
+			'seerr.notifyMe' => 'Avise-me quando estiver disponível',
+			'seerr.notifyMe4k' => 'Avise-me quando 4K estiver disponível',
+			'seerr.notificationsOn' => 'Alerta de disponibilidade ativado',
+			'seerr.notificationsEnabled' => 'Avisaremos quando estiver disponível',
+			'seerr.notificationsDisabled' => 'Alerta de disponibilidade desativado',
+			'seerr.notificationFailed' => 'Não foi possível atualizar o alerta de disponibilidade',
 			'seerr.seasons' => 'Temporadas',
 			'seerr.allSeasons' => 'Todas as temporadas',
 			'seerr.advancedOptions' => 'Avançado',
@@ -8458,6 +8472,8 @@ extension on TranslationsPt {
 			'universalMedia.playlistAddressHelp' => 'Abra uma lista de reprodução M3U, M3u8, ou PLS a partir de um endereço web. links de streaming direto não salvam a lista.',
 			'universalMedia.choosePlaylist' => 'Escolha o arquivo de playlist',
 			'universalMedia.openPlaylist' => 'Playlist aberta',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Uma lista de reprodução pode conter até 1.000 itens e 2 MB. HLS manifesta-se aberta como fluxos para que o jogador possa escolher uma qualidade.',
 			'universalMedia.saveQueuePlaylist' => 'Guardar fila como lista de reprodução',
 			'universalMedia.queuePlaylistSaved' => 'A lista de reprodução foi guardada junto aos ficheiros multimédia.',
@@ -8465,8 +8481,6 @@ extension on TranslationsPt {
 			'universalMedia.queuePlaylistFolderRequired' => 'Escolha uma localização na mesma pasta dos ficheiros da fila.',
 			'universalMedia.noFavorites' => 'Não foram salvos favoritos ainda. favoritos permanecem neste perfil.',
 			'universalMedia.removeFavorite' => 'Remover streaming favorito',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Escolha arquivos de áudio, vídeo ou ISO para uma quebra temporária. arquivos e URLs não são adicionados ao histórico da biblioteca.',
 			'universalMedia.chooseFiles' => 'Escolha arquivos',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
@@ -8972,6 +8986,8 @@ extension on TranslationsPt {
 			'sourceSetup.subtitlePrivacy' => 'Obtenha uma chave API em opensubtitles.com. A busca envia o título do vídeo e os IDs de IMDb/TMDB disponíveis, nunca o arquivo de vídeo. A chave e as credenciais opcionais da conta são criptografadas junto com esta fonte.',
 			'sourceSetup.automaticMetadata' => 'Metadados de vídeo online automáticos',
 			'sourceSetup.metadataPrivacy' => 'Envia apenas título/ano do nome do arquivo e números dos episódios, ou um ID NFO; nunca envia mídia ou credenciais. Os campos NFO mantêm a prioridade.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Para NFS criptografado, verifique o suporte a RFC 9289 e TLS 1.3 nos dois serviços do NAS, o nome no certificado e os UID/GID do compartilhamento. Pleazyng não tentará esta conexão novamente sem criptografia.',
 			'sourceSetup.sourceConnecting' => 'Conectando à fonte',
 			'sourceSetup.metadataSearchPrivacy' => 'Esta busca de títulos é enviada ao Trakt. Ela envia o título digitado, não o vídeo nem as credenciais da fonte.',
@@ -8979,8 +8995,6 @@ extension on TranslationsPt {
 			'sourceSetup.metadataMatchHelp' => 'Confira o título e o ano antes de escolher. O Trakt recebe o título pesquisado; o vídeo permanece na fonte.',
 			'sourceSetup.metadataNoMatches' => 'Nenhum título correspondente encontrado online. Tente outro título.',
 			'sourceSetup.metadataSearch' => 'Buscar metadados online',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Buscando detalhes de filmes e séries online…',
 			'sourceSetup.metadataFromTrakt' => 'Metadados online do Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nenhuma correspondência automática encontrada para o título. Pesquise o título para escolher uma correspondência.',

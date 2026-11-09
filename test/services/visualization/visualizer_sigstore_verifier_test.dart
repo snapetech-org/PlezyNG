@@ -71,5 +71,5 @@ void main() {
     test('rejects a log timestamp in the future', () {
       expect(() => VisualizerSigstoreVerifier.verify(bundle(), message(), DateTime.utc(2020)), throwsFormatException);
     });
-  }, skip: file.existsSync() ? false : 'Authentic publisher fixture is mandatory in keyless catalog CI');
+  });
 }

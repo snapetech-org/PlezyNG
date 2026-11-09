@@ -2734,6 +2734,13 @@ class _Translations$seerr$ko extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Plezy가 이 Seerr 인스턴스를 삭제합니다. 언제든 다시 연결할 수 있습니다.';
 	@override String get request => '요청';
 	@override String get request4k => '4K로 요청';
+	@override String get requestSeasons => '누락된 시즌 요청';
+	@override String get notifyMe => '이용 가능해지면 알림 받기';
+	@override String get notifyMe4k => '4K로 이용 가능해지면 알림 받기';
+	@override String get notificationsOn => '이용 가능 알림 켜짐';
+	@override String get notificationsEnabled => '이용 가능해지면 알려드릴게요';
+	@override String get notificationsDisabled => '이용 가능 알림이 꺼졌습니다';
+	@override String get notificationFailed => '이용 가능 알림을 업데이트하지 못했습니다';
 	@override String get seasons => '시즌';
 	@override String get allSeasons => '모든 시즌';
 	@override String get advancedOptions => '고급';
@@ -8028,6 +8035,13 @@ extension on TranslationsKo {
 			'seerr.disconnectConfirmBody' => 'Plezy가 이 Seerr 인스턴스를 삭제합니다. 언제든 다시 연결할 수 있습니다.',
 			'seerr.request' => '요청',
 			'seerr.request4k' => '4K로 요청',
+			'seerr.requestSeasons' => '누락된 시즌 요청',
+			'seerr.notifyMe' => '이용 가능해지면 알림 받기',
+			'seerr.notifyMe4k' => '4K로 이용 가능해지면 알림 받기',
+			'seerr.notificationsOn' => '이용 가능 알림 켜짐',
+			'seerr.notificationsEnabled' => '이용 가능해지면 알려드릴게요',
+			'seerr.notificationsDisabled' => '이용 가능 알림이 꺼졌습니다',
+			'seerr.notificationFailed' => '이용 가능 알림을 업데이트하지 못했습니다',
 			'seerr.seasons' => '시즌',
 			'seerr.allSeasons' => '모든 시즌',
 			'seerr.advancedOptions' => '고급',
@@ -8446,6 +8460,8 @@ extension on TranslationsKo {
 			'universalMedia.playlistAddressHelp' => '웹 주소에서 M3U, M3u8 또는 PLS 플레이리스트를 열 수 있습니다.Direct stream 링크는 플레이 리스트를 저장하지 않습니다.',
 			'universalMedia.choosePlaylist' => '플레이리스트 파일 선택',
 			'universalMedia.openPlaylist' => '오픈 플레이리스트',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => '플레이리스트는 최대 1,000 개의 항목과 2 MB를 포함할 수 있습니다.HLS는 스트림으로 열려 있으므로 플레이어가 품질을 선택할 수 있도록합니다.',
 			'universalMedia.saveQueuePlaylist' => '대기열을 재생목록으로 저장',
 			'universalMedia.queuePlaylistSaved' => '재생목록을 미디어 파일 옆에 저장했습니다.',
@@ -8453,8 +8469,6 @@ extension on TranslationsKo {
 			'universalMedia.queuePlaylistFolderRequired' => '대기열 파일과 같은 폴더를 저장 위치로 선택하세요.',
 			'universalMedia.noFavorites' => '아직 좋아하는 스트림을 저장하지 않았습니다.Favorites 이 프로필에 남아 있습니다.',
 			'universalMedia.removeFavorite' => '좋아하는 스트림을 제거',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
 			'universalMedia.chooseFiles' => '파일 선택',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
@@ -8960,6 +8974,8 @@ extension on TranslationsKo {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.',
 			'sourceSetup.automaticMetadata' => '온라인 동영상 메타데이터 자동 조회',
 			'sourceSetup.metadataPrivacy' => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. Pleazyng는 암호화 없이 이 연결을 다시 시도하지 않습니다.',
 			'sourceSetup.sourceConnecting' => '소스에 연결 중',
 			'sourceSetup.metadataSearchPrivacy' => '이 제목 검색은 Trakt로 전송됩니다. 입력한 제목만 전송하며, 동영상이나 소스 자격 증명은 전송하지 않습니다.',
@@ -8967,8 +8983,6 @@ extension on TranslationsKo {
 			'sourceSetup.metadataMatchHelp' => '선택하기 전에 제목과 연도를 확인하세요. Trakt에는 검색 제목이 전송되며, 동영상은 원래 소스에 그대로 남습니다.',
 			'sourceSetup.metadataNoMatches' => '일치하는 온라인 제목을 찾지 못했습니다. 다른 제목으로 검색하세요.',
 			'sourceSetup.metadataSearch' => '온라인 메타데이터 검색',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
 			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',

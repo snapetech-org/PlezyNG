@@ -2735,6 +2735,13 @@ class _Translations$seerr$zh_Hant extends Translations$seerr$zh {
 	@override String get disconnectConfirmBody => 'Pleazyng 將忘記此 Seerr 連線資訊。您可以隨時重新連線。';
 	@override String get request => '請求';
 	@override String get request4k => '請求 4K 版本';
+	@override String get requestSeasons => '要求缺少的季度';
+	@override String get notifyMe => '有片源時通知我';
+	@override String get notifyMe4k => '有 4K 片源時通知我';
+	@override String get notificationsOn => '可用性通知已開啟';
+	@override String get notificationsEnabled => '有片源時我們會通知你';
+	@override String get notificationsDisabled => '可用性通知已關閉';
+	@override String get notificationFailed => '無法更新可用性通知';
 	@override String get seasons => '季';
 	@override String get allSeasons => '所有季數';
 	@override String get advancedOptions => '進階設定';
@@ -8029,6 +8036,13 @@ extension on TranslationsZhHant {
 			'seerr.disconnectConfirmBody' => 'Pleazyng 將忘記此 Seerr 連線資訊。您可以隨時重新連線。',
 			'seerr.request' => '請求',
 			'seerr.request4k' => '請求 4K 版本',
+			'seerr.requestSeasons' => '要求缺少的季度',
+			'seerr.notifyMe' => '有片源時通知我',
+			'seerr.notifyMe4k' => '有 4K 片源時通知我',
+			'seerr.notificationsOn' => '可用性通知已開啟',
+			'seerr.notificationsEnabled' => '有片源時我們會通知你',
+			'seerr.notificationsDisabled' => '可用性通知已關閉',
+			'seerr.notificationFailed' => '無法更新可用性通知',
 			'seerr.seasons' => '季',
 			'seerr.allSeasons' => '所有季數',
 			'seerr.advancedOptions' => '進階設定',
@@ -8447,6 +8461,8 @@ extension on TranslationsZhHant {
 			'universalMedia.playlistAddressHelp' => '從網頁地址開啟 M3U、M3U8 或 PLS 播放列表. Direct Stream 連結不會儲存播放名單。',
 			'universalMedia.choosePlaylist' => '選擇 Playlist 檔案',
 			'universalMedia.openPlaylist' => '開放播放列表',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => '一張播放列表可以包含最多1000個專案和2MB的HLS顯示為流,所以玩家可以選擇質量。',
 			'universalMedia.saveQueuePlaylist' => '將佇列另存為播放清單',
 			'universalMedia.queuePlaylistSaved' => '播放清單已儲存於媒體檔案旁。',
@@ -8454,8 +8470,6 @@ extension on TranslationsZhHant {
 			'universalMedia.queuePlaylistFolderRequired' => '請選擇與佇列檔案相同資料夾中的儲存位置。',
 			'universalMedia.noFavorites' => '尚未儲存流喜愛. 喜愛留在此個人資料中。',
 			'universalMedia.removeFavorite' => '刪除流喜愛',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => '選擇音訊、影片或ISO檔案,以便進行臨時記錄. 檔案和URL不新增到圖書館歷史。',
 			'universalMedia.chooseFiles' => '選擇檔案',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 選擇的檔案', other: '${count} 已選擇的檔案', ), 
@@ -8961,6 +8975,8 @@ extension on TranslationsZhHant {
 			'sourceSetup.subtitlePrivacy' => '請從 opensubtitles.com 取得 API 金鑰。搜尋會傳送影片標題和可用的 IMDb/TMDB ID，絕不傳送影片檔案。金鑰和選填的帳戶認證資料會與此來源一同加密儲存。',
 			'sourceSetup.automaticMetadata' => '自動取得線上影片中繼資料',
 			'sourceSetup.metadataPrivacy' => '只傳送檔名中的標題、年份和集數，或 NFO ID，絕不傳送媒體或認證資料。NFO 欄位始終優先。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => '使用加密 NFS 時，請確認 NAS 的兩項服務皆支援 RFC 9289 和 TLS 1.3，並核對憑證名稱及匯出 UID/GID。Pleazyng 不會在未加密的情況下重試此連線。',
 			'sourceSetup.sourceConnecting' => '正在連線至來源',
 			'sourceSetup.metadataSearchPrivacy' => '此標題搜尋由 Trakt 處理。只會傳送您輸入的標題，不會傳送影片或來源認證資料。',
@@ -8968,8 +8984,6 @@ extension on TranslationsZhHant {
 			'sourceSetup.metadataMatchHelp' => '選擇前請核對標題與年份。Trakt 會收到搜尋標題；影片檔案會保留在原來源中。',
 			'sourceSetup.metadataNoMatches' => '找不到符合的線上標題。請嘗試其他標題。',
 			'sourceSetup.metadataSearch' => '搜尋線上中繼資料',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => '正在查詢線上電影與影集資訊…',
 			'sourceSetup.metadataFromTrakt' => '來自 Trakt 的線上中繼資料',
 			'sourceSetup.metadataNoAutomaticMatch' => '找不到自動符合的標題。請搜尋標題並選擇符合的結果。',

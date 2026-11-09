@@ -278,6 +278,13 @@ class _Certificate {
       _require(text.tag == 12 && utf8.decode(text.value) == catalogPublisherIssuer);
     }
     if (issuerV1 != null) _require(utf8.decode(issuerV1) == catalogPublisherIssuer);
+    for (final claim in {
+      '1.3.6.1.4.1.57264.1.15': catalogPublisherRepositoryId,
+      '1.3.6.1.4.1.57264.1.17': catalogPublisherOwnerId,
+    }.entries) {
+      final value = _Der.one(extensions[claim.key]!);
+      _require(value.tag == 12 && utf8.decode(value.value) == claim.value);
+    }
     final usage = _Der.one(extensions['2.5.29.15']!);
     _require(usage.tag == 3 && _same(usage.value, [7, 128]));
     final extended = _Der.one(extensions['2.5.29.37']!);

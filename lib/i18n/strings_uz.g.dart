@@ -2738,6 +2738,13 @@ class _Translations$seerr$uz extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.';
 	@override String get request => 'Soʻrov yuborish';
 	@override String get request4k => '4K soʻrov yuborish';
+	@override String get requestSeasons => 'Yetishmayotgan fasllarni so‘rash';
+	@override String get notifyMe => 'Mavjud bo‘lganda menga xabar bering';
+	@override String get notifyMe4k => '4K mavjud bo‘lganda menga xabar bering';
+	@override String get notificationsOn => 'Mavjudlik ogohlantirishi yoqilgan';
+	@override String get notificationsEnabled => 'Mavjud bo‘lganda sizga xabar beramiz';
+	@override String get notificationsDisabled => 'Mavjudlik ogohlantirishi o‘chirilgan';
+	@override String get notificationFailed => 'Mavjudlik ogohlantirishini yangilab bo‘lmadi';
 	@override String get seasons => 'Mavsumlar';
 	@override String get allSeasons => 'Barcha mavsumlar';
 	@override String get advancedOptions => 'Kengaytirilgan';
@@ -8033,6 +8040,13 @@ extension on TranslationsUz {
 			'seerr.disconnectConfirmBody' => 'Pleazyng ushbu Seerr nusxasini unutadi. Istalgan vaqtda qayta ulanishingiz mumkin.',
 			'seerr.request' => 'Soʻrov yuborish',
 			'seerr.request4k' => '4K soʻrov yuborish',
+			'seerr.requestSeasons' => 'Yetishmayotgan fasllarni so‘rash',
+			'seerr.notifyMe' => 'Mavjud bo‘lganda menga xabar bering',
+			'seerr.notifyMe4k' => '4K mavjud bo‘lganda menga xabar bering',
+			'seerr.notificationsOn' => 'Mavjudlik ogohlantirishi yoqilgan',
+			'seerr.notificationsEnabled' => 'Mavjud bo‘lganda sizga xabar beramiz',
+			'seerr.notificationsDisabled' => 'Mavjudlik ogohlantirishi o‘chirilgan',
+			'seerr.notificationFailed' => 'Mavjudlik ogohlantirishini yangilab bo‘lmadi',
 			'seerr.seasons' => 'Mavsumlar',
 			'seerr.allSeasons' => 'Barcha mavsumlar',
 			'seerr.advancedOptions' => 'Kengaytirilgan',
@@ -8451,6 +8465,8 @@ extension on TranslationsUz {
 			'universalMedia.playlistAddressHelp' => 'M3U, m3U8 ya PLS playlist o‘z web adresi. Direct stream link ko‘z bu playlist.',
 			'universalMedia.choosePlaylist' => 'Playlist fildi seçin',
 			'universalMedia.openPlaylist' => 'Open Playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Bir playlist 1000\'dan fazla o‘yadi, 2 MB. HLS-i qaytarlar olarak açılır, bu yüzden oyungan bir kalite seçib.',
 			'universalMedia.saveQueuePlaylist' => 'Navbatni pleylist sifatida saqlash',
 			'universalMedia.queuePlaylistSaved' => 'Pleylist media fayllari yonida saqlandi.',
@@ -8458,8 +8474,6 @@ extension on TranslationsUz {
 			'universalMedia.queuePlaylistFolderRequired' => 'Saqlash joyini navbatdagi fayllar bilan bir xil jilddan tanlang.',
 			'universalMedia.noFavorites' => 'U\'yadi bu profili yo‘zilgan.Favoritlar bu profilda qalib.',
 			'universalMedia.removeFavorite' => 'Riyadh preferni qaytadi.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Audio, video, o ISO fillar bir temporary quue. Fillar və URL\'ler library istoriyaya qo‘zilmaydi.',
 			'universalMedia.chooseFiles' => 'Filmi seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsUz {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytidan API kalitini oling. Qidiruv video nomi va mavjud IMDb/TMDB ID-larini yuboradi, video faylini esa hech qachon yubormaydi. Kalit va ixtiyoriy hisobga kirish ma’lumotlari ushbu manba bilan birga shifrlanadi.',
 			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metama’lumotlari',
 			'sourceSetup.metadataPrivacy' => 'Faqat fayl nomidagi nom/yil va qism raqamlari yoki NFO ID-sini yuboradi; media fayllari yoki kirish ma’lumotlarini hech qachon yubormaydi. NFO maydonlari ustuvor bo‘lib qoladi.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. Pleazyng bu ulanishni shifrlashsiz qayta sinamaydi.',
 			'sourceSetup.sourceConnecting' => 'Manbaga ulanmoqda',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu nom qidiruvi Trakt xizmatiga yuboriladi. Kiritgan nomingiz yuboriladi, video yoki manbaning kirish ma’lumotlari emas.',
@@ -8972,8 +8988,6 @@ extension on TranslationsUz {
 			'sourceSetup.metadataMatchHelp' => 'Tanlashdan oldin nomi va yilini tekshiring. Trakt qidirilayotgan nomni oladi; video o‘z manbasida qoladi.',
 			'sourceSetup.metadataNoMatches' => 'Onlayn mos nom topilmadi. Boshqa nomni sinab ko‘ring.',
 			'sourceSetup.metadataSearch' => 'Onlayn metama’lumotlarni qidirish',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Onlayn film va serial tafsilotlari qidirilmoqda…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt xizmatidan onlayn metama’lumotlar',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nomga avtomatik moslik topilmadi. Mos natijani tanlash uchun nomni qidiring.',

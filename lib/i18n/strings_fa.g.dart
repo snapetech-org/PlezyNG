@@ -2738,6 +2738,13 @@ class _Translations$seerr$fa extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng این مثال را فراموش خواهد کرد.در هر زمان دوباره اتصال.';
 	@override String get request => 'درخواست';
 	@override String get request4k => 'درخواست در 4K';
+	@override String get requestSeasons => 'درخواست فصل‌های جاافتاده';
+	@override String get notifyMe => 'هنگام در دسترس بودن به من اطلاع بده';
+	@override String get notifyMe4k => 'هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده';
+	@override String get notificationsOn => 'هشدار در دسترس شدن روشن است';
+	@override String get notificationsEnabled => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم';
+	@override String get notificationsDisabled => 'هشدار در دسترس شدن خاموش شد';
+	@override String get notificationFailed => 'به‌روزرسانی هشدار در دسترس شدن انجام نشد';
 	@override String get seasons => 'فصل ها';
 	@override String get allSeasons => 'همه فصل ها';
 	@override String get advancedOptions => 'پیشرفته';
@@ -8033,6 +8040,13 @@ extension on TranslationsFa {
 			'seerr.disconnectConfirmBody' => 'Pleazyng این مثال را فراموش خواهد کرد.در هر زمان دوباره اتصال.',
 			'seerr.request' => 'درخواست',
 			'seerr.request4k' => 'درخواست در 4K',
+			'seerr.requestSeasons' => 'درخواست فصل‌های جاافتاده',
+			'seerr.notifyMe' => 'هنگام در دسترس بودن به من اطلاع بده',
+			'seerr.notifyMe4k' => 'هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده',
+			'seerr.notificationsOn' => 'هشدار در دسترس شدن روشن است',
+			'seerr.notificationsEnabled' => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم',
+			'seerr.notificationsDisabled' => 'هشدار در دسترس شدن خاموش شد',
+			'seerr.notificationFailed' => 'به‌روزرسانی هشدار در دسترس شدن انجام نشد',
 			'seerr.seasons' => 'فصل ها',
 			'seerr.allSeasons' => 'همه فصل ها',
 			'seerr.advancedOptions' => 'پیشرفته',
@@ -8451,6 +8465,8 @@ extension on TranslationsFa {
 			'universalMedia.playlistAddressHelp' => 'یک لیست پخش M3U، M3u8 یا PLS را از یک آدرس وب باز کنید لینک های جریان مستقیم لیست پخش را ذخیره نمی کنند.',
 			'universalMedia.choosePlaylist' => 'انتخاب فایل playlist',
 			'universalMedia.openPlaylist' => 'باز کردن playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'یک لیست پخش می تواند حاوی حداکثر 1000 آیتم و 2 مگابایت باشد.HLS به عنوان جریان ها باز می شود تا بازیکن بتواند کیفیت را انتخاب کند.',
 			'universalMedia.saveQueuePlaylist' => 'ذخیره صف به‌صورت فهرست پخش',
 			'universalMedia.queuePlaylistSaved' => 'فهرست پخش کنار فایل‌های رسانه ذخیره شد.',
@@ -8458,8 +8474,6 @@ extension on TranslationsFa {
 			'universalMedia.queuePlaylistFolderRequired' => 'محلی برای ذخیره در همان پوشهٔ فایل‌های صف انتخاب کنید.',
 			'universalMedia.noFavorites' => 'در حال حاضر هیچ مورد علاقه ذخیره نشده است.Favorites در این پروفایل باقی بماند.',
 			'universalMedia.removeFavorite' => 'حذف جریان مورد علاقه',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
 			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsFa {
 			'sourceSetup.subtitlePrivacy' => 'کلید API را از opensubtitles.com بگیرید. جست‌وجو، عنوان ویدیو و شناسه‌های موجود IMDb/TMDB را ارسال می‌کند، اما هرگز فایل ویدیو را نمی‌فرستد. کلید و اطلاعات ورود اختیاری حساب، همراه این منبع به‌صورت رمزگذاری‌شده ذخیره می‌شوند.',
 			'sourceSetup.automaticMetadata' => 'دریافت خودکار فرادادهٔ آنلاین ویدیو',
 			'sourceSetup.metadataPrivacy' => 'فقط عنوان، سال و شمارهٔ قسمت از نام فایل یا شناسهٔ NFO ارسال می‌شود؛ رسانه و اطلاعات ورود هرگز ارسال نمی‌شوند. فیلدهای NFO همیشه اولویت دارند.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'برای NFS رمزگذاری‌شده، پشتیبانی هر دو سرویس NAS از RFC 9289 و TLS 1.3، نام گواهی و UID/GID اشتراک را بررسی کنید. Pleazyng این اتصال را بدون رمزگذاری دوباره امتحان نمی‌کند.',
 			'sourceSetup.sourceConnecting' => 'در حال اتصال به منبع',
 			'sourceSetup.metadataSearchPrivacy' => 'این جست‌وجوی عنوان به Trakt فرستاده می‌شود. فقط عنوانی که وارد می‌کنید ارسال می‌شود، نه ویدیو یا اطلاعات ورود منبع.',
@@ -8972,8 +8988,6 @@ extension on TranslationsFa {
 			'sourceSetup.metadataMatchHelp' => 'پیش از انتخاب، عنوان و سال را بررسی کنید. Trakt عنوان جست‌وجو را دریافت می‌کند؛ ویدیو در منبع خود باقی می‌ماند.',
 			'sourceSetup.metadataNoMatches' => 'عنوان مطابقی در اینترنت پیدا نشد. عنوان دیگری را امتحان کنید.',
 			'sourceSetup.metadataSearch' => 'جست‌وجوی فرادادهٔ آنلاین',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
 			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',

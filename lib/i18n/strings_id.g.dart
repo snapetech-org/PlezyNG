@@ -2719,6 +2719,13 @@ class _Translations$seerr$id extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng akan melupakan contoh Seerr ini. sambungkan kembali kapan saja.';
 	@override String get request => 'Permintaan';
 	@override String get request4k => 'Permintaan dalam 4K';
+	@override String get requestSeasons => 'Minta musim yang belum tersedia';
+	@override String get notifyMe => 'Beri tahu saya saat tersedia';
+	@override String get notifyMe4k => 'Beri tahu saya saat tersedia dalam 4K';
+	@override String get notificationsOn => 'Peringatan ketersediaan aktif';
+	@override String get notificationsEnabled => 'Kami akan memberi tahu Anda saat tersedia';
+	@override String get notificationsDisabled => 'Peringatan ketersediaan dinonaktifkan';
+	@override String get notificationFailed => 'Gagal memperbarui peringatan ketersediaan';
 	@override String get seasons => 'Musim';
 	@override String get allSeasons => 'Semua Musim';
 	@override String get advancedOptions => 'Canggih';
@@ -8008,6 +8015,13 @@ extension on TranslationsId {
 			'seerr.disconnectConfirmBody' => 'Pleazyng akan melupakan contoh Seerr ini. sambungkan kembali kapan saja.',
 			'seerr.request' => 'Permintaan',
 			'seerr.request4k' => 'Permintaan dalam 4K',
+			'seerr.requestSeasons' => 'Minta musim yang belum tersedia',
+			'seerr.notifyMe' => 'Beri tahu saya saat tersedia',
+			'seerr.notifyMe4k' => 'Beri tahu saya saat tersedia dalam 4K',
+			'seerr.notificationsOn' => 'Peringatan ketersediaan aktif',
+			'seerr.notificationsEnabled' => 'Kami akan memberi tahu Anda saat tersedia',
+			'seerr.notificationsDisabled' => 'Peringatan ketersediaan dinonaktifkan',
+			'seerr.notificationFailed' => 'Gagal memperbarui peringatan ketersediaan',
 			'seerr.seasons' => 'Musim',
 			'seerr.allSeasons' => 'Semua Musim',
 			'seerr.advancedOptions' => 'Canggih',
@@ -8426,6 +8440,8 @@ extension on TranslationsId {
 			'universalMedia.playlistAddressHelp' => 'Buka daftar main M3U, M3u8, atau PLS dari alamat web. link streaming langsung tidak menyimpan daftar main.',
 			'universalMedia.choosePlaylist' => 'Pilih file playlist',
 			'universalMedia.openPlaylist' => 'Pembukaan playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Daftar main dapat berisi lebih dari 1.000 item dan 2 MB. HLS terbuka sebagai arus sehingga pemain dapat memilih kualitas.',
 			'universalMedia.saveQueuePlaylist' => 'Simpan antrean sebagai daftar putar',
 			'universalMedia.queuePlaylistSaved' => 'Daftar putar disimpan di samping file media.',
@@ -8433,8 +8449,6 @@ extension on TranslationsId {
 			'universalMedia.queuePlaylistFolderRequired' => 'Pilih lokasi penyimpanan di folder yang sama dengan file dalam antrean.',
 			'universalMedia.noFavorites' => 'Belum disimpan streaming favorit sampai sekarang. favorit tetap di profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapus Stream Favorit',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Pilih file audio, video, atau ISO untuk catatan sementara.File dan URL tidak ditambahkan ke sejarah perpustakaan.',
 			'universalMedia.chooseFiles' => 'Pilih file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} file terpilih', ), 
@@ -8940,6 +8954,8 @@ extension on TranslationsId {
 			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API dari opensubtitles.com. Pencarian mengirim judul video dan ID IMDb/TMDB yang tersedia, tidak pernah mengirim file video. Kunci dan kredensial akun opsional dienkripsi bersama sumber ini.',
 			'sourceSetup.automaticMetadata' => 'Metadata video daring otomatis',
 			'sourceSetup.metadataPrivacy' => 'Hanya mengirim judul/tahun dari nama file dan nomor episode atau ID NFO, tidak pernah mengirim media atau kredensial. Kolom NFO tetap menjadi acuan utama.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS terenkripsi, periksa dukungan RFC 9289 dan TLS 1.3 pada kedua layanan NAS, nama sertifikat, serta UID/GID ekspor. Pleazyng tidak akan mencoba ulang koneksi ini tanpa enkripsi.',
 			'sourceSetup.sourceConnecting' => 'Menghubungkan ke sumber',
 			'sourceSetup.metadataSearchPrivacy' => 'Pencarian judul ini dikirim ke Trakt. Yang dikirim adalah judul yang Anda masukkan, bukan video atau kredensial sumber.',
@@ -8947,8 +8963,6 @@ extension on TranslationsId {
 			'sourceSetup.metadataMatchHelp' => 'Periksa judul dan tahun sebelum memilih. Trakt menerima judul pencarian; video tetap berada di sumbernya.',
 			'sourceSetup.metadataNoMatches' => 'Tidak ditemukan judul yang cocok secara daring. Coba judul lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata daring',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Mencari detail film dan acara TV secara daring…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata daring dari Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tidak ditemukan kecocokan judul otomatis. Cari judulnya untuk memilih kecocokan.',

@@ -2738,6 +2738,13 @@ class _Translations$seerr$bg extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng ще забрави тази Seerr инстанция. Можете да се свържете отново по всяко време.';
 	@override String get request => 'Заяви';
 	@override String get request4k => 'Заяви в 4K';
+	@override String get requestSeasons => 'Заяви липсващите сезони';
+	@override String get notifyMe => 'Уведоми ме, когато е налично';
+	@override String get notifyMe4k => 'Уведоми ме, когато е налично в 4K';
+	@override String get notificationsOn => 'Известяването за наличност е включено';
+	@override String get notificationsEnabled => 'Ще ви уведомим, когато е налично';
+	@override String get notificationsDisabled => 'Известяването за наличност е изключено';
+	@override String get notificationFailed => 'Неуспешно обновяване на известяването за наличност';
 	@override String get seasons => 'Сезони';
 	@override String get allSeasons => 'Всички сезони';
 	@override String get advancedOptions => 'Разширени';
@@ -8033,6 +8040,13 @@ extension on TranslationsBg {
 			'seerr.disconnectConfirmBody' => 'Pleazyng ще забрави тази Seerr инстанция. Можете да се свържете отново по всяко време.',
 			'seerr.request' => 'Заяви',
 			'seerr.request4k' => 'Заяви в 4K',
+			'seerr.requestSeasons' => 'Заяви липсващите сезони',
+			'seerr.notifyMe' => 'Уведоми ме, когато е налично',
+			'seerr.notifyMe4k' => 'Уведоми ме, когато е налично в 4K',
+			'seerr.notificationsOn' => 'Известяването за наличност е включено',
+			'seerr.notificationsEnabled' => 'Ще ви уведомим, когато е налично',
+			'seerr.notificationsDisabled' => 'Известяването за наличност е изключено',
+			'seerr.notificationFailed' => 'Неуспешно обновяване на известяването за наличност',
 			'seerr.seasons' => 'Сезони',
 			'seerr.allSeasons' => 'Всички сезони',
 			'seerr.advancedOptions' => 'Разширени',
@@ -8451,6 +8465,8 @@ extension on TranslationsBg {
 			'universalMedia.playlistAddressHelp' => 'Отворете списък на M3U, M3u8 или PLS от уеб адрес. директни връзки не съхраняват списъка.',
 			'universalMedia.choosePlaylist' => 'Изберете Playlist файлове',
 			'universalMedia.openPlaylist' => 'Отворена игра',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Възпроизвеждащият списък може да съдържа до 1000 елемента и 2 MB. HLS се отваря като потоци, така че играчът може да избере качество.',
 			'universalMedia.saveQueuePlaylist' => 'Запази опашката като плейлист',
 			'universalMedia.queuePlaylistSaved' => 'Плейлистът е запазен до медийните файлове.',
@@ -8458,8 +8474,6 @@ extension on TranslationsBg {
 			'universalMedia.queuePlaylistFolderRequired' => 'Изберете място за запис в същата папка като файловете в опашката.',
 			'universalMedia.noFavorites' => 'Все още не са спасени любимите потоци.Favorites остават в този профил.',
 			'universalMedia.removeFavorite' => 'Премахване на любимия поток',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Изберете аудио, видео или ISO файлове за временна лента.Файлове и URL адреси не се добавят към историята на библиотеката.',
 			'universalMedia.chooseFiles' => 'Изберете файлове',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsBg {
 			'sourceSetup.subtitlePrivacy' => 'Вземете API ключ от opensubtitles.com. Търсенето изпраща заглавието на видеото и наличните IMDb/TMDB ID, никога видеофайла. Ключът и незадължителните данни за вход се шифроват заедно с този източник.',
 			'sourceSetup.automaticMetadata' => 'Автоматични онлайн метаданни за видео',
 			'sourceSetup.metadataPrivacy' => 'Изпращат се само заглавие/година от името на файла и номера на епизоди или NFO ID, никога медийни файлове или данни за вход. Полетата NFO запазват предимство.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'За шифрован NFS проверете поддръжката на RFC 9289 и TLS 1.3 от двете NAS услуги, името в сертификата и UID/GID на експорта. Pleazyng няма да опита тази връзка отново без шифроване.',
 			'sourceSetup.sourceConnecting' => 'Свързване с източника',
 			'sourceSetup.metadataSearchPrivacy' => 'Това търсене на заглавие се изпраща до Trakt. Изпраща се въведеното заглавие, а не видеото или данните за вход в източника.',
@@ -8972,8 +8988,6 @@ extension on TranslationsBg {
 			'sourceSetup.metadataMatchHelp' => 'Проверете заглавието и годината, преди да изберете. Trakt получава търсеното заглавие; видеото остава в своя източник.',
 			'sourceSetup.metadataNoMatches' => 'Не са намерени съвпадащи заглавия онлайн. Опитайте друго заглавие.',
 			'sourceSetup.metadataSearch' => 'Търсене на онлайн метаданни',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Търсене на онлайн информация за филми и сериали…',
 			'sourceSetup.metadataFromTrakt' => 'Онлайн метаданни от Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Не е намерено автоматично съвпадение на заглавието. Потърсете заглавието, за да изберете съвпадение.',

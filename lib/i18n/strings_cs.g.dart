@@ -2772,6 +2772,13 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bude zapomenout na tento příklad Seerr.';
 	@override String get request => 'Žádost';
 	@override String get request4k => 'Vyžádání v 4K';
+	@override String get requestSeasons => 'Vyžádat chybějící sezóny';
+	@override String get notifyMe => 'Upozornit, až bude dostupné';
+	@override String get notifyMe4k => 'Upozornit, až bude dostupné ve 4K';
+	@override String get notificationsOn => 'Upozornění na dostupnost je zapnuté';
+	@override String get notificationsEnabled => 'Upozorníme vás, až bude dostupné';
+	@override String get notificationsDisabled => 'Upozornění na dostupnost bylo vypnuto';
+	@override String get notificationFailed => 'Upozornění na dostupnost se nepodařilo aktualizovat';
 	@override String get seasons => 'Série';
 	@override String get allSeasons => 'Všechny sezóny';
 	@override String get advancedOptions => 'Pokročilé';
@@ -8077,6 +8084,13 @@ extension on TranslationsCs {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bude zapomenout na tento příklad Seerr.',
 			'seerr.request' => 'Žádost',
 			'seerr.request4k' => 'Vyžádání v 4K',
+			'seerr.requestSeasons' => 'Vyžádat chybějící sezóny',
+			'seerr.notifyMe' => 'Upozornit, až bude dostupné',
+			'seerr.notifyMe4k' => 'Upozornit, až bude dostupné ve 4K',
+			'seerr.notificationsOn' => 'Upozornění na dostupnost je zapnuté',
+			'seerr.notificationsEnabled' => 'Upozorníme vás, až bude dostupné',
+			'seerr.notificationsDisabled' => 'Upozornění na dostupnost bylo vypnuto',
+			'seerr.notificationFailed' => 'Upozornění na dostupnost se nepodařilo aktualizovat',
 			'seerr.seasons' => 'Série',
 			'seerr.allSeasons' => 'Všechny sezóny',
 			'seerr.advancedOptions' => 'Pokročilé',
@@ -8495,6 +8509,8 @@ extension on TranslationsCs {
 			'universalMedia.playlistAddressHelp' => 'Otevřete playlist M3U, M3u8 nebo PLS z webové adresy. Přímé streamovací odkazy nezachovávají playlist.',
 			'universalMedia.choosePlaylist' => 'Vyberte soubor playlist',
 			'universalMedia.openPlaylist' => 'Otevřená playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Přehrávač může obsahovat až 1000 položek a 2 MB. HLS se otevírají jako toky, takže hráč si může vybrat kvalitu.',
 			'universalMedia.saveQueuePlaylist' => 'Uložit frontu jako seznam skladeb',
 			'universalMedia.queuePlaylistSaved' => 'Seznam skladeb byl uložen vedle souborů médií.',
@@ -8502,8 +8518,6 @@ extension on TranslationsCs {
 			'universalMedia.queuePlaylistFolderRequired' => 'Vyberte umístění ve stejné složce, ve které jsou soubory ve frontě.',
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
@@ -9009,6 +9023,8 @@ extension on TranslationsCs {
 			'sourceSetup.subtitlePrivacy' => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.',
 			'sourceSetup.automaticMetadata' => 'Automatická online metadata videa',
 			'sourceSetup.metadataPrivacy' => 'Odesílá pouze název/rok z názvu souboru a čísla epizod nebo ID NFO, nikdy média ani přihlašovací údaje. Pole NFO mají nadále přednost.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. Pleazyng se nepokusí toto spojení zopakovat bez šifrování.',
 			'sourceSetup.sourceConnecting' => 'Připojování ke zdroji',
 			'sourceSetup.metadataSearchPrivacy' => 'Toto hledání názvu se odesílá do Trakt. Odesílá zadaný název, nikoli video ani přihlašovací údaje zdroje.',
@@ -9016,8 +9032,6 @@ extension on TranslationsCs {
 			'sourceSetup.metadataMatchHelp' => 'Před výběrem zkontrolujte název a rok. Trakt obdrží hledaný název; video zůstává ve svém zdroji.',
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',

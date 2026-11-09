@@ -2738,6 +2738,13 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.';
 	@override String get request => 'অনুরোধ';
 	@override String get request4k => '4K অনুসন্ধান';
+	@override String get requestSeasons => 'অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন';
+	@override String get notifyMe => 'পাওয়া গেলে আমাকে জানান';
+	@override String get notifyMe4k => '4K-তে পাওয়া গেলে আমাকে জানান';
+	@override String get notificationsOn => 'পাওয়ার বিজ্ঞপ্তি চালু আছে';
+	@override String get notificationsEnabled => 'পাওয়া গেলে আমরা আপনাকে জানাব';
+	@override String get notificationsDisabled => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে';
+	@override String get notificationFailed => 'পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি';
 	@override String get seasons => 'সপ্তাহ';
 	@override String get allSeasons => 'সব সপ্তাহ';
 	@override String get advancedOptions => 'উন্নত';
@@ -8033,6 +8040,13 @@ extension on TranslationsBn {
 			'seerr.disconnectConfirmBody' => 'Pleazyng এই Seerr উদাহরণ ভুলে যাবে. প্রতিটি সময়ে আবার সংযোগ করুন.',
 			'seerr.request' => 'অনুরোধ',
 			'seerr.request4k' => '4K অনুসন্ধান',
+			'seerr.requestSeasons' => 'অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন',
+			'seerr.notifyMe' => 'পাওয়া গেলে আমাকে জানান',
+			'seerr.notifyMe4k' => '4K-তে পাওয়া গেলে আমাকে জানান',
+			'seerr.notificationsOn' => 'পাওয়ার বিজ্ঞপ্তি চালু আছে',
+			'seerr.notificationsEnabled' => 'পাওয়া গেলে আমরা আপনাকে জানাব',
+			'seerr.notificationsDisabled' => 'পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে',
+			'seerr.notificationFailed' => 'পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি',
 			'seerr.seasons' => 'সপ্তাহ',
 			'seerr.allSeasons' => 'সব সপ্তাহ',
 			'seerr.advancedOptions' => 'উন্নত',
@@ -8451,6 +8465,8 @@ extension on TranslationsBn {
 			'universalMedia.playlistAddressHelp' => 'একটি ওয়েব ঠিকানা থেকে একটি M3U, M3u8, বা PLS প্লেলিস্ট খোঁজ করুন. সরাসরি প্রদর্শন লিঙ্কগুলি প্লেলেস্ট সংরক্ষণ করে না।',
 			'universalMedia.choosePlaylist' => 'Playlist ফাইল নির্বাচন করুন',
 			'universalMedia.openPlaylist' => 'খোলা Playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'একটি খেলা লিস্টে সর্বাধিক 1,000 পণ্য এবং 2 মিবি রয়েছে. HLS স্ট্রিম হিসাবে খোলা হয়, তাই খেলোয়াড় একটি মান নির্বাচন করতে পারেন।',
 			'universalMedia.saveQueuePlaylist' => 'কিউ প্লেলিস্ট হিসেবে সংরক্ষণ করুন',
 			'universalMedia.queuePlaylistSaved' => 'মিডিয়া ফাইলগুলোর পাশে প্লেলিস্ট সংরক্ষিত হয়েছে।',
@@ -8458,8 +8474,6 @@ extension on TranslationsBn {
 			'universalMedia.queuePlaylistFolderRequired' => 'কিউতে থাকা ফাইলগুলোর একই ফোল্ডারে সংরক্ষণের স্থান বেছে নিন।',
 			'universalMedia.noFavorites' => 'এখনো কোন প্রেমের পছন্দ সংরক্ষণ করা হয় না. পছন্দের এই प्रोফাইলে থাকুন।',
 			'universalMedia.removeFavorite' => 'প্রিয় স্ট্রিম মুছে ফেলুন',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsBn {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com থেকে API কী নিন। অনুসন্ধানে ভিডিওর শিরোনাম ও উপলব্ধ IMDb/TMDB ID পাঠানো হয়, ভিডিও ফাইল কখনোই পাঠানো হয় না। কী ও ঐচ্ছিক অ্যাকাউন্টের প্রবেশতথ্য এই উৎসের সঙ্গে এনক্রিপ্ট করে রাখা হয়।',
 			'sourceSetup.automaticMetadata' => 'স্বয়ংক্রিয়ভাবে অনলাইন ভিডিও মেটাডেটা পান',
 			'sourceSetup.metadataPrivacy' => 'শুধু ফাইলের নাম থেকে শিরোনাম, বছর ও পর্বের নম্বর অথবা NFO ID পাঠানো হয়; মিডিয়া বা প্রবেশতথ্য কখনো পাঠানো হয় না। NFO ফিল্ড সবসময় অগ্রাধিকার পায়।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'এনক্রিপ্ট করা NFS-এর জন্য NAS-এর দুই সেবায় RFC 9289 ও TLS 1.3 সমর্থন, সার্টিফিকেটের নাম এবং এক্সপোর্টের UID/GID পরীক্ষা করুন। Pleazyng এনক্রিপশন ছাড়া এই সংযোগ আবার চেষ্টা করবে না।',
 			'sourceSetup.sourceConnecting' => 'উৎসের সঙ্গে সংযোগ করা হচ্ছে',
 			'sourceSetup.metadataSearchPrivacy' => 'এই শিরোনাম অনুসন্ধান Trakt-এ পাঠানো হয়। শুধু আপনার লেখা শিরোনাম পাঠানো হয়, ভিডিও বা উৎসের প্রবেশতথ্য নয়।',
@@ -8972,8 +8988,6 @@ extension on TranslationsBn {
 			'sourceSetup.metadataMatchHelp' => 'বেছে নেওয়ার আগে শিরোনাম ও বছর পরীক্ষা করুন। Trakt অনুসন্ধানের শিরোনাম পায়; ভিডিও তার উৎসেই থাকে।',
 			'sourceSetup.metadataNoMatches' => 'অনলাইনে মিলে যায় এমন কোনো শিরোনাম পাওয়া যায়নি। অন্য শিরোনাম দিয়ে চেষ্টা করুন।',
 			'sourceSetup.metadataSearch' => 'অনলাইন মেটাডেটা খুঁজুন',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',

@@ -2776,6 +2776,13 @@ class _Translations$seerr$ru extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng забудет этот экземпляр Seerr. Подключитесь снова в любое время.';
 	@override String get request => 'Запросить';
 	@override String get request4k => 'Запросить в 4K';
+	@override String get requestSeasons => 'Запросить недостающие сезоны';
+	@override String get notifyMe => 'Уведомить меня о появлении';
+	@override String get notifyMe4k => 'Уведомить меня о появлении в 4K';
+	@override String get notificationsOn => 'Оповещение о доступности включено';
+	@override String get notificationsEnabled => 'Мы сообщим, когда станет доступно';
+	@override String get notificationsDisabled => 'Оповещение о доступности выключено';
+	@override String get notificationFailed => 'Не удалось обновить оповещение о доступности';
 	@override String get seasons => 'Сезоны';
 	@override String get allSeasons => 'Все сезоны';
 	@override String get advancedOptions => 'Дополнительно';
@@ -8083,6 +8090,13 @@ extension on TranslationsRu {
 			'seerr.disconnectConfirmBody' => 'Pleazyng забудет этот экземпляр Seerr. Подключитесь снова в любое время.',
 			'seerr.request' => 'Запросить',
 			'seerr.request4k' => 'Запросить в 4K',
+			'seerr.requestSeasons' => 'Запросить недостающие сезоны',
+			'seerr.notifyMe' => 'Уведомить меня о появлении',
+			'seerr.notifyMe4k' => 'Уведомить меня о появлении в 4K',
+			'seerr.notificationsOn' => 'Оповещение о доступности включено',
+			'seerr.notificationsEnabled' => 'Мы сообщим, когда станет доступно',
+			'seerr.notificationsDisabled' => 'Оповещение о доступности выключено',
+			'seerr.notificationFailed' => 'Не удалось обновить оповещение о доступности',
 			'seerr.seasons' => 'Сезоны',
 			'seerr.allSeasons' => 'Все сезоны',
 			'seerr.advancedOptions' => 'Дополнительно',
@@ -8501,6 +8515,8 @@ extension on TranslationsRu {
 			'universalMedia.playlistAddressHelp' => 'Откройте перечень M3U, М3U8 или PLS с веб-адреса. прямые ссылки потока не сохраняют перечень просмотров.',
 			'universalMedia.choosePlaylist' => 'Выберите файл playlist',
 			'universalMedia.openPlaylist' => 'Открытый playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Список игр может содержать не более 1000 элементов и 2 Мб. HLS открывается как потоки, чтобы игрок мог выбрать качество.',
 			'universalMedia.saveQueuePlaylist' => 'Сохранить очередь как плейлист',
 			'universalMedia.queuePlaylistSaved' => 'Плейлист сохранён рядом с медиафайлами.',
@@ -8508,8 +8524,6 @@ extension on TranslationsRu {
 			'universalMedia.queuePlaylistFolderRequired' => 'Выберите место сохранения в той же папке, где находятся файлы очереди.',
 			'universalMedia.noFavorites' => 'До сих пор не сохранились любимые потоки.Фавориты остаются в этом профиле.',
 			'universalMedia.removeFavorite' => 'Удаление любимого потока',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Выберите аудио, видео или файлы ISO для временного перевода.Файлы и URL не добавляются в историю библиотеки.',
 			'universalMedia.chooseFiles' => 'Выберите файлы',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '1 Выбранный файл', few: '${count} выбранные файлы', many: '${count} выбранные файлы', other: '${count} выбранные файлы', ), 
@@ -9015,6 +9029,8 @@ extension on TranslationsRu {
 			'sourceSetup.subtitlePrivacy' => 'Получите ключ API на opensubtitles.com. Поиск отправляет название видео и доступные ID IMDb/TMDB, но никогда не отправляет видеофайл. Ключ и необязательные учётные данные аккаунта шифруются вместе с этим источником.',
 			'sourceSetup.automaticMetadata' => 'Автоматические метаданные видео из интернета',
 			'sourceSetup.metadataPrivacy' => 'Отправляет только название/год из имени файла и номера эпизодов либо ID NFO, но никогда не отправляет медиафайлы или учётные данные. Поля NFO сохраняют приоритет.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Для зашифрованного NFS проверьте поддержку RFC 9289 и TLS 1.3 обеими службами NAS, имя в сертификате и UID/GID экспорта. Pleazyng не будет повторять это подключение без шифрования.',
 			'sourceSetup.sourceConnecting' => 'Подключение к источнику',
 			'sourceSetup.metadataSearchPrivacy' => 'Этот поиск названия отправляется в Trakt. Передаётся введённое название, а не видео или учётные данные источника.',
@@ -9022,8 +9038,6 @@ extension on TranslationsRu {
 			'sourceSetup.metadataMatchHelp' => 'Перед выбором проверьте название и год. Trakt получает поисковое название; видео остаётся в своём источнике.',
 			'sourceSetup.metadataNoMatches' => 'Совпадающих названий в интернете не найдено. Попробуйте другое название.',
 			'sourceSetup.metadataSearch' => 'Поиск метаданных в интернете',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Поиск сведений о фильмах и сериалах в интернете…',
 			'sourceSetup.metadataFromTrakt' => 'Метаданные из Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматическое совпадение названия не найдено. Найдите название, чтобы выбрать совпадение.',

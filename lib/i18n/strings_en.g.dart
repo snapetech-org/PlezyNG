@@ -10616,6 +10616,9 @@ class Translations$sourceSetup$en {
 
 	// Translations
 
+	/// en: 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.'
+	String get bookorbitHelp => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.';
+
 	/// en: 'Saved server certificate'
 	String get savedCertificate => 'Saved server certificate';
 
@@ -21155,6 +21158,7 @@ extension on Translations {
 			'audiobook.recoveryImportConfirm' => 'Merge this encrypted recovery file with current reading positions and notes? Existing history will be retained. Shared library and item IDs are not included; set matching IDs on every device before importing.',
 			'audiobook.recoveryExported' => 'Encrypted recovery file saved.',
 			'audiobook.recoveryImported' => 'Recovery data merged.',
+			'sourceSetup.bookorbitHelp' => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.',
 			'sourceSetup.savedCertificate' => 'Saved server certificate',
 			'sourceSetup.projectGutenberg' => 'Project Gutenberg',
 			'sourceSetup.nfsEndpointInvalid' => 'Enter an NFS URL such as nfs://nas:2049/export.',
@@ -21321,9 +21325,9 @@ extension on Translations {
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
-			'games.gameId' => 'Host application ID',
 			_ => null,
 		} ?? switch (path) {
+			'games.gameId' => 'Host application ID',
 			'games.invalidGame' => 'Enter a game name and a positive numeric host application ID.',
 			'games.wake' => 'Wake computer',
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
@@ -21835,9 +21839,9 @@ extension on Translations {
 			'subtitleAiUi.translateTargetTextLocallyForMatchin_8e05d8e7' => 'Translate target text locally for matching; keep its original text',
 			'subtitleAiUi.repairCutsAcrossSubtitleLanguages' => 'Repair cuts across subtitle languages',
 			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
-			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
 			'subtitleAiUi.applyPiecewiseOffsetsWhereDialogueAn_cfd3013c' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
 			'subtitleAiUi.localSubtitleTranslation' => 'Local subtitle translation',
 			'subtitleAiUi.useASeriesSpecificGlossary' => 'Use a series-specific glossary',
@@ -22349,9 +22353,9 @@ extension on Translations {
 			'bonusExtras.openProvider' => 'Open in provider app or browser',
 			'bonusExtras.watchHere' => 'Watch here',
 			'bonusExtras.sendToPhone' => 'Open on your phone',
-			'bonusExtras.copyLink' => 'Copy link',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.copyLink' => 'Copy link',
 			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',
 			'bonusExtras.providerNotice' => 'Playback opens the provider’s player and may include its recommendations.',
 			'bonusExtras.external' => 'Online',

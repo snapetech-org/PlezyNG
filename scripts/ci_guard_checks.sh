@@ -37,5 +37,10 @@ for checker in \
 done
 
 for guard_test in scripts/test_*.py scripts/*/test_*.py tools/dv-engine/test_apple_runtime.py; do
+  # This compiles and executes the native descriptor worker against libretro
+  # headers provisioned by its dedicated workflow; it is not a unit guard.
+  if [[ "$guard_test" == "scripts/games/test_romm_descriptor_worker.py" ]]; then
+    continue
+  fi
   PYTHONPATH="$ROOT_DIR:$ROOT_DIR/scripts${PYTHONPATH:+:$PYTHONPATH}" python3 "$guard_test"
 done

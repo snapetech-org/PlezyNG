@@ -2719,6 +2719,13 @@ class _Translations$seerr$th extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng จะลืมตัวอย่าง Seerr นี้ ติดต่ออีกครั้งตลอดเวลา';
 	@override String get request => 'คําขอ';
 	@override String get request4k => 'คําขอใน 4K';
+	@override String get requestSeasons => 'ขอซีซันที่ขาดหายไป';
+	@override String get notifyMe => 'แจ้งเตือนเมื่อพร้อมใช้งาน';
+	@override String get notifyMe4k => 'แจ้งเตือนเมื่อมีเวอร์ชัน 4K';
+	@override String get notificationsOn => 'เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน';
+	@override String get notificationsEnabled => 'เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน';
+	@override String get notificationsDisabled => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน';
+	@override String get notificationFailed => 'อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ';
 	@override String get seasons => 'ฤดูกาล';
 	@override String get allSeasons => 'ทุกฤดูกาล';
 	@override String get advancedOptions => 'ขั้นสูง';
@@ -8008,6 +8015,13 @@ extension on TranslationsTh {
 			'seerr.disconnectConfirmBody' => 'Pleazyng จะลืมตัวอย่าง Seerr นี้ ติดต่ออีกครั้งตลอดเวลา',
 			'seerr.request' => 'คําขอ',
 			'seerr.request4k' => 'คําขอใน 4K',
+			'seerr.requestSeasons' => 'ขอซีซันที่ขาดหายไป',
+			'seerr.notifyMe' => 'แจ้งเตือนเมื่อพร้อมใช้งาน',
+			'seerr.notifyMe4k' => 'แจ้งเตือนเมื่อมีเวอร์ชัน 4K',
+			'seerr.notificationsOn' => 'เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน',
+			'seerr.notificationsEnabled' => 'เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน',
+			'seerr.notificationsDisabled' => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน',
+			'seerr.notificationFailed' => 'อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ',
 			'seerr.seasons' => 'ฤดูกาล',
 			'seerr.allSeasons' => 'ทุกฤดูกาล',
 			'seerr.advancedOptions' => 'ขั้นสูง',
@@ -8426,6 +8440,8 @@ extension on TranslationsTh {
 			'universalMedia.playlistAddressHelp' => 'เปิดรายการเล่น M3U, M3u8 หรือ PLS จากที่อยู่อาศัยเว็บ เชื่อมโยง Stream Direct ไม่บันทึกรายการเล่น',
 			'universalMedia.choosePlaylist' => 'เลือกไฟล์ Playlist',
 			'universalMedia.openPlaylist' => 'รายการเล่นเปิด',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'รายการการเล่นสามารถมีรายการสูงสุด 1,000 และ 2 MB HLS จะเปิดเป็น Streams เพื่อให้ผู้เล่นสามารถเลือกคุณภาพ',
 			'universalMedia.saveQueuePlaylist' => 'บันทึกคิวเป็นเพลย์ลิสต์',
 			'universalMedia.queuePlaylistSaved' => 'บันทึกเพลย์ลิสต์ไว้ข้างไฟล์สื่อแล้ว',
@@ -8433,8 +8449,6 @@ extension on TranslationsTh {
 			'universalMedia.queuePlaylistFolderRequired' => 'เลือกตำแหน่งบันทึกในโฟลเดอร์เดียวกับไฟล์ในคิว',
 			'universalMedia.noFavorites' => 'ไม่ได้บันทึก Stream Favorites ยังคงอยู่ในโปรไฟล์นี้',
 			'universalMedia.removeFavorite' => 'ลบ Stream Favorite',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
 			'universalMedia.chooseFiles' => 'เลือกไฟล์',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
@@ -8940,6 +8954,8 @@ extension on TranslationsTh {
 			'sourceSetup.subtitlePrivacy' => 'รับคีย์ API จาก opensubtitles.com การค้นหาจะส่งชื่อวิดีโอและ ID ของ IMDb/TMDB ที่มี แต่จะไม่ส่งไฟล์วิดีโอ คีย์และข้อมูลรับรองบัญชีที่ระบุเพิ่มเติมจะเข้ารหัสพร้อมกับแหล่งข้อมูลนี้',
 			'sourceSetup.automaticMetadata' => 'ข้อมูลกำกับวิดีโอออนไลน์อัตโนมัติ',
 			'sourceSetup.metadataPrivacy' => 'ส่งเฉพาะชื่อเรื่อง/ปีจากชื่อไฟล์และหมายเลขตอน หรือ ID ของ NFO โดยไม่ส่งสื่อหรือข้อมูลรับรอง ช่องข้อมูล NFO ยังคงมีลำดับความสำคัญสูงสุด',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'สำหรับ NFS ที่เข้ารหัส ให้ตรวจสอบว่าบริการทั้งสองของ NAS รองรับ RFC 9289 และ TLS 1.3 ตรวจสอบชื่อในใบรับรองและ UID/GID ของส่วนแบ่งปัน Pleazyng จะไม่ลองเชื่อมต่อใหม่โดยไม่มีการเข้ารหัส',
 			'sourceSetup.sourceConnecting' => 'กำลังเชื่อมต่อแหล่งข้อมูล',
 			'sourceSetup.metadataSearchPrivacy' => 'การค้นหาชื่อเรื่องนี้ส่งไปยัง Trakt โดยส่งชื่อที่คุณป้อน ไม่ใช่วิดีโอหรือข้อมูลรับรองของแหล่งข้อมูล',
@@ -8947,8 +8963,6 @@ extension on TranslationsTh {
 			'sourceSetup.metadataMatchHelp' => 'ตรวจสอบชื่อเรื่องและปีก่อนเลือก Trakt จะได้รับชื่อเรื่องที่ค้นหา ส่วนวิดีโอยังคงอยู่ในแหล่งข้อมูลเดิม',
 			'sourceSetup.metadataNoMatches' => 'ไม่พบชื่อเรื่องที่ตรงกันออนไลน์ ลองใช้ชื่อเรื่องอื่น',
 			'sourceSetup.metadataSearch' => 'ค้นหาข้อมูลกำกับออนไลน์',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
 			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',

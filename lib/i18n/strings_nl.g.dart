@@ -2738,6 +2738,13 @@ class _Translations$seerr$nl extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng vergeet deze Seerr-instantie. Je kunt altijd opnieuw verbinden.';
 	@override String get request => 'Aanvragen';
 	@override String get request4k => 'Aanvragen in 4K';
+	@override String get requestSeasons => 'Ontbrekende seizoenen aanvragen';
+	@override String get notifyMe => 'Meld me wanneer beschikbaar';
+	@override String get notifyMe4k => 'Meld me wanneer beschikbaar in 4K';
+	@override String get notificationsOn => 'Beschikbaarheidsmelding staat aan';
+	@override String get notificationsEnabled => 'We laten je weten wanneer het beschikbaar is';
+	@override String get notificationsDisabled => 'Beschikbaarheidsmelding is uitgeschakeld';
+	@override String get notificationFailed => 'De beschikbaarheidsmelding kon niet worden bijgewerkt';
 	@override String get seasons => 'Seizoenen';
 	@override String get allSeasons => 'Alle seizoenen';
 	@override String get advancedOptions => 'Geavanceerd';
@@ -8033,6 +8040,13 @@ extension on TranslationsNl {
 			'seerr.disconnectConfirmBody' => 'Pleazyng vergeet deze Seerr-instantie. Je kunt altijd opnieuw verbinden.',
 			'seerr.request' => 'Aanvragen',
 			'seerr.request4k' => 'Aanvragen in 4K',
+			'seerr.requestSeasons' => 'Ontbrekende seizoenen aanvragen',
+			'seerr.notifyMe' => 'Meld me wanneer beschikbaar',
+			'seerr.notifyMe4k' => 'Meld me wanneer beschikbaar in 4K',
+			'seerr.notificationsOn' => 'Beschikbaarheidsmelding staat aan',
+			'seerr.notificationsEnabled' => 'We laten je weten wanneer het beschikbaar is',
+			'seerr.notificationsDisabled' => 'Beschikbaarheidsmelding is uitgeschakeld',
+			'seerr.notificationFailed' => 'De beschikbaarheidsmelding kon niet worden bijgewerkt',
 			'seerr.seasons' => 'Seizoenen',
 			'seerr.allSeasons' => 'Alle seizoenen',
 			'seerr.advancedOptions' => 'Geavanceerd',
@@ -8451,6 +8465,8 @@ extension on TranslationsNl {
 			'universalMedia.playlistAddressHelp' => 'Open een M3U, M3u8 of PLS playlist vanuit een webadres. Direct stream links slaan de playlist niet op.',
 			'universalMedia.choosePlaylist' => 'Kies een playlist bestand',
 			'universalMedia.openPlaylist' => 'Open playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Een playlist kan maximaal 1.000 items en 2 MB bevatten.HLS manifesteert open als stromen zodat de speler een kwaliteit kan kiezen.',
 			'universalMedia.saveQueuePlaylist' => 'Wachtrij opslaan als afspeellijst',
 			'universalMedia.queuePlaylistSaved' => 'De afspeellijst is naast de mediabestanden opgeslagen.',
@@ -8458,8 +8474,6 @@ extension on TranslationsNl {
 			'universalMedia.queuePlaylistFolderRequired' => 'Kies een opslaglocatie in dezelfde map als de bestanden in de wachtrij.',
 			'universalMedia.noFavorites' => 'Er zijn nog geen favorieten opgeslagen.Favorites blijven in dit profiel.',
 			'universalMedia.removeFavorite' => 'Verwijder de favoriete stream',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
 			'universalMedia.chooseFiles' => 'Kies bestanden',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsNl {
 			'sourceSetup.subtitlePrivacy' => 'Vraag een API-sleutel aan op opensubtitles.com. Zoeken verstuurt de videotitel en beschikbare IMDb/TMDB-ID’s, nooit het videobestand. De sleutel en optionele accountgegevens worden samen met deze bron versleuteld.',
 			'sourceSetup.automaticMetadata' => 'Automatische online videometadata',
 			'sourceSetup.metadataPrivacy' => 'Verstuurt alleen titel/jaar uit de bestandsnaam en afleveringsnummers, of een NFO-ID; nooit media of toegangsgegevens. NFO-velden blijven leidend.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Controleer voor versleutelde NFS de ondersteuning van RFC 9289 en TLS 1.3 bij beide NAS-services, de certificaatnaam en de UID/GID van de share. Pleazyng probeert deze verbinding niet opnieuw zonder versleuteling.',
 			'sourceSetup.sourceConnecting' => 'Verbinden met bron',
 			'sourceSetup.metadataSearchPrivacy' => 'Deze titelzoekopdracht gaat naar Trakt. De ingevoerde titel wordt verstuurd, niet de video of de toegangsgegevens van de bron.',
@@ -8972,8 +8988,6 @@ extension on TranslationsNl {
 			'sourceSetup.metadataMatchHelp' => 'Controleer titel en jaar voordat je kiest. Trakt ontvangt de gezochte titel; de video blijft op de bron.',
 			'sourceSetup.metadataNoMatches' => 'Geen overeenkomende titels online gevonden. Probeer een andere titel.',
 			'sourceSetup.metadataSearch' => 'Online metadata zoeken',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',

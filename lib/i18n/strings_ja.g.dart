@@ -2734,6 +2734,13 @@ class _Translations$seerr$ja extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng はこの Seerr インスタンスの情報を削除します。いつでも再接続できます。';
 	@override String get request => 'リクエスト';
 	@override String get request4k => '4K でリクエスト';
+	@override String get requestSeasons => '未配信のシーズンをリクエスト';
+	@override String get notifyMe => '配信開始時に通知';
+	@override String get notifyMe4k => '4Kで配信開始時に通知';
+	@override String get notificationsOn => '配信通知オン';
+	@override String get notificationsEnabled => '配信開始時にお知らせします';
+	@override String get notificationsDisabled => '配信通知をオフにしました';
+	@override String get notificationFailed => '配信通知を更新できませんでした';
 	@override String get seasons => 'シーズン';
 	@override String get allSeasons => '全シーズン';
 	@override String get advancedOptions => '詳細';
@@ -8028,6 +8035,13 @@ extension on TranslationsJa {
 			'seerr.disconnectConfirmBody' => 'Pleazyng はこの Seerr インスタンスの情報を削除します。いつでも再接続できます。',
 			'seerr.request' => 'リクエスト',
 			'seerr.request4k' => '4K でリクエスト',
+			'seerr.requestSeasons' => '未配信のシーズンをリクエスト',
+			'seerr.notifyMe' => '配信開始時に通知',
+			'seerr.notifyMe4k' => '4Kで配信開始時に通知',
+			'seerr.notificationsOn' => '配信通知オン',
+			'seerr.notificationsEnabled' => '配信開始時にお知らせします',
+			'seerr.notificationsDisabled' => '配信通知をオフにしました',
+			'seerr.notificationFailed' => '配信通知を更新できませんでした',
 			'seerr.seasons' => 'シーズン',
 			'seerr.allSeasons' => '全シーズン',
 			'seerr.advancedOptions' => '詳細',
@@ -8446,6 +8460,8 @@ extension on TranslationsJa {
 			'universalMedia.playlistAddressHelp' => 'ウェブアドレスから M3U、M3U8 または PLS プレーリストを開きます。',
 			'universalMedia.choosePlaylist' => 'プレイリストファイルを選択',
 			'universalMedia.openPlaylist' => 'オープンプレイリスト',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'プレイリストには最大1000項目と2MBが含まれます HLSはストリームとして開きますので、プレイヤーは品質を選択できます。',
 			'universalMedia.saveQueuePlaylist' => 'キューをプレイリストとして保存',
 			'universalMedia.queuePlaylistSaved' => 'プレイリストをメディアファイルと同じ場所に保存しました。',
@@ -8453,8 +8469,6 @@ extension on TranslationsJa {
 			'universalMedia.queuePlaylistFolderRequired' => 'キュー内のファイルと同じフォルダーを保存先に選択してください。',
 			'universalMedia.noFavorites' => 'まだお気に入りのストリームを保存していません お気に入りはこのプロフィールに留まります。',
 			'universalMedia.removeFavorite' => 'お気に入りの流れを削除する',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
 			'universalMedia.chooseFiles' => 'ファイルを選択',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
@@ -8960,6 +8974,8 @@ extension on TranslationsJa {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com から API キーを取得してください。検索では動画のタイトルと利用可能な IMDb/TMDB ID を送信しますが、動画ファイルは一切送信しません。キーと任意のアカウント認証情報は、このソースとともに暗号化して保存されます。',
 			'sourceSetup.automaticMetadata' => '動画のオンラインメタデータを自動取得',
 			'sourceSetup.metadataPrivacy' => '送信するのはファイル名のタイトル・年・エピソード番号、または NFO ID のみです。メディアや認証情報は一切送信しません。NFO の項目が常に優先されます。',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => '暗号化された NFS では、NAS の両サービスが RFC 9289 と TLS 1.3 に対応しているか、証明書の名前とエクスポートの UID/GID が正しいかを確認してください。Pleazyng が暗号化なしでこの接続を再試行することはありません。',
 			'sourceSetup.sourceConnecting' => 'ソースに接続中',
 			'sourceSetup.metadataSearchPrivacy' => 'このタイトル検索は Trakt に送信されます。入力したタイトルのみを送信し、動画やソースの認証情報は送信しません。',
@@ -8967,8 +8983,6 @@ extension on TranslationsJa {
 			'sourceSetup.metadataMatchHelp' => '選択する前にタイトルと年を確認してください。検索タイトルは Trakt に送信されますが、動画はソースに残ります。',
 			'sourceSetup.metadataNoMatches' => 'オンラインで一致するタイトルが見つかりませんでした。別のタイトルをお試しください。',
 			'sourceSetup.metadataSearch' => 'オンラインメタデータを検索',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
 			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',

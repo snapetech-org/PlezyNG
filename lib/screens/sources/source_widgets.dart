@@ -70,6 +70,7 @@ String sourceKindName(FileSourceKind kind) => switch (kind) {
   FileSourceKind.opds => 'OPDS',
   FileSourceKind.komga => 'Komga',
   FileSourceKind.audiobookshelf => 'Audiobookshelf',
+  FileSourceKind.bookorbit => 'BookOrbit',
   FileSourceKind.remoteCloud => t.streaming.cloudFiles,
   FileSourceKind.openSubsonic => 'OpenSubsonic',
   FileSourceKind.podcastRss => 'Podcasts (RSS / Atom)',

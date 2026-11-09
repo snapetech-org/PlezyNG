@@ -2738,6 +2738,13 @@ class _Translations$seerr$kk extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng бұл Seerr серверін ұмытады. Кез келген уақытта қайта қосыла аласыз.';
 	@override String get request => 'Сұрау салу';
 	@override String get request4k => '4K сұрау салу';
+	@override String get requestSeasons => 'Жетіспейтін маусымдарға сұрау жіберу';
+	@override String get notifyMe => 'Қолжетімді болғанда маған хабарлаңыз';
+	@override String get notifyMe4k => '4K форматында қолжетімді болғанда маған хабарлаңыз';
+	@override String get notificationsOn => 'Қолжетімділік туралы ескерту қосулы';
+	@override String get notificationsEnabled => 'Қолжетімді болғанда сізге хабарлаймыз';
+	@override String get notificationsDisabled => 'Қолжетімділік туралы ескерту өшірілді';
+	@override String get notificationFailed => 'Қолжетімділік туралы ескертуді жаңарту мүмкін болмады';
 	@override String get seasons => 'Маусымдар';
 	@override String get allSeasons => 'Барлық маусымдар';
 	@override String get advancedOptions => 'Кеңейтілген';
@@ -8033,6 +8040,13 @@ extension on TranslationsKk {
 			'seerr.disconnectConfirmBody' => 'Pleazyng бұл Seerr серверін ұмытады. Кез келген уақытта қайта қосыла аласыз.',
 			'seerr.request' => 'Сұрау салу',
 			'seerr.request4k' => '4K сұрау салу',
+			'seerr.requestSeasons' => 'Жетіспейтін маусымдарға сұрау жіберу',
+			'seerr.notifyMe' => 'Қолжетімді болғанда маған хабарлаңыз',
+			'seerr.notifyMe4k' => '4K форматында қолжетімді болғанда маған хабарлаңыз',
+			'seerr.notificationsOn' => 'Қолжетімділік туралы ескерту қосулы',
+			'seerr.notificationsEnabled' => 'Қолжетімді болғанда сізге хабарлаймыз',
+			'seerr.notificationsDisabled' => 'Қолжетімділік туралы ескерту өшірілді',
+			'seerr.notificationFailed' => 'Қолжетімділік туралы ескертуді жаңарту мүмкін болмады',
 			'seerr.seasons' => 'Маусымдар',
 			'seerr.allSeasons' => 'Барлық маусымдар',
 			'seerr.advancedOptions' => 'Кеңейтілген',
@@ -8451,6 +8465,8 @@ extension on TranslationsKk {
 			'universalMedia.playlistAddressHelp' => 'Қаланың тұрақты тұрғындарының саны 3 адамды құрайды, 1 адамды қағидасы, 2 адамды жабдықтар, 4 адамды салыстырды.',
 			'universalMedia.choosePlaylist' => 'Серіктің қағидалары',
 			'universalMedia.openPlaylist' => 'Ауыз Playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Өмірінің соңына дейін 1 тыс. нәрсе бар және 2 Мб. HLS-дер көшірмеген, оның ішінде жүктеуге ұсынады.',
 			'universalMedia.saveQueuePlaylist' => 'Кезекті ойнату тізімі ретінде сақтау',
 			'universalMedia.queuePlaylistSaved' => 'Ойнату тізімі медиа файлдарының жанына сақталды.',
@@ -8458,8 +8474,6 @@ extension on TranslationsKk {
 			'universalMedia.queuePlaylistFolderRequired' => 'Кезектегі файлдармен бір қалтадағы сақтау орнын таңдаңыз.',
 			'universalMedia.noFavorites' => 'Қазіргі таңда бүкіл әлемде өте көп айтылады.Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Өткен қабырғасы',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Аудио, видео, немесе ISO файлы бар. Файлы және URL-дер библиографияның аяқталуы мүмкін емес.',
 			'universalMedia.chooseFiles' => 'Серіктің файл',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsKk {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com сайтынан API кілтін алыңыз. Іздеу бейне атауын және қолжетімді IMDb/TMDB ID мәндерін жібереді, бірақ бейнефайлды ешқашан жібермейді. Кілт пен қосымша тіркелгі деректері осы дереккөзбен бірге шифрланады.',
 			'sourceSetup.automaticMetadata' => 'Бейненің автоматты онлайн метадеректері',
 			'sourceSetup.metadataPrivacy' => 'Тек файл атауындағы атауды/жылды және эпизод нөмірлерін немесе NFO ID мәнін жібереді; медиа файлдар мен кіру деректерін ешқашан жібермейді. NFO өрістері басымдығын сақтайды.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. Pleazyng бұл қосылымды шифрлаусыз қайта жасамайды.',
 			'sourceSetup.sourceConnecting' => 'Дереккөзге қосылуда',
 			'sourceSetup.metadataSearchPrivacy' => 'Бұл атау іздеуі Trakt қызметіне жіберіледі. Енгізген атауыңыз жіберіледі, бейне не дереккөздің кіру деректері жіберілмейді.',
@@ -8972,8 +8988,6 @@ extension on TranslationsKk {
 			'sourceSetup.metadataMatchHelp' => 'Таңдамас бұрын атауы мен жылын тексеріңіз. Trakt ізделген атауды алады; бейне өз дереккөзінде қалады.',
 			'sourceSetup.metadataNoMatches' => 'Онлайн сәйкес атаулар табылмады. Басқа атауды байқап көріңіз.',
 			'sourceSetup.metadataSearch' => 'Онлайн метадеректерді іздеу',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Онлайн фильмдер мен сериалдар туралы мәліметтер ізделуде…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt қызметінен онлайн метадеректер',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Атауға автоматты сәйкестік табылмады. Сәйкес нәтижені таңдау үшін атауды іздеңіз.',

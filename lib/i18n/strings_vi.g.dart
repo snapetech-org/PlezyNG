@@ -2719,6 +2719,13 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.';
 	@override String get request => 'yêu cầu';
 	@override String get request4k => 'yêu cầu 4K';
+	@override String get requestSeasons => 'Yêu cầu các mùa còn thiếu';
+	@override String get notifyMe => 'Thông báo cho tôi khi có sẵn';
+	@override String get notifyMe4k => 'Thông báo cho tôi khi có bản 4K';
+	@override String get notificationsOn => 'Đã bật thông báo tình trạng khả dụng';
+	@override String get notificationsEnabled => 'Chúng tôi sẽ thông báo khi có sẵn';
+	@override String get notificationsDisabled => 'Đã tắt thông báo tình trạng khả dụng';
+	@override String get notificationFailed => 'Không thể cập nhật thông báo tình trạng khả dụng';
 	@override String get seasons => 'Phần';
 	@override String get allSeasons => 'Tất cả mùa';
 	@override String get advancedOptions => 'Nâng cao';
@@ -8008,6 +8015,13 @@ extension on TranslationsVi {
 			'seerr.disconnectConfirmBody' => 'Pleazyng sẽ quên ví dụ này Seerr. nối lại bất cứ lúc nào.',
 			'seerr.request' => 'yêu cầu',
 			'seerr.request4k' => 'yêu cầu 4K',
+			'seerr.requestSeasons' => 'Yêu cầu các mùa còn thiếu',
+			'seerr.notifyMe' => 'Thông báo cho tôi khi có sẵn',
+			'seerr.notifyMe4k' => 'Thông báo cho tôi khi có bản 4K',
+			'seerr.notificationsOn' => 'Đã bật thông báo tình trạng khả dụng',
+			'seerr.notificationsEnabled' => 'Chúng tôi sẽ thông báo khi có sẵn',
+			'seerr.notificationsDisabled' => 'Đã tắt thông báo tình trạng khả dụng',
+			'seerr.notificationFailed' => 'Không thể cập nhật thông báo tình trạng khả dụng',
 			'seerr.seasons' => 'Phần',
 			'seerr.allSeasons' => 'Tất cả mùa',
 			'seerr.advancedOptions' => 'Nâng cao',
@@ -8426,6 +8440,8 @@ extension on TranslationsVi {
 			'universalMedia.playlistAddressHelp' => 'Mở một danh sách chơi M3U, M3u8, hoặc PLS từ địa chỉ web. liên kết trực tiếp không lưu danh sách playlist.',
 			'universalMedia.choosePlaylist' => 'Chọn playlist file',
 			'universalMedia.openPlaylist' => 'playlist mở',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Một danh sách phát có thể chứa tối đa 1.000 mục và 2 MB. HLS hiển thị mở như dòng để người chơi có thể chọn một chất lượng.',
 			'universalMedia.saveQueuePlaylist' => 'Lưu hàng đợi thành danh sách phát',
 			'universalMedia.queuePlaylistSaved' => 'Danh sách phát đã được lưu cạnh các tệp phương tiện.',
@@ -8433,8 +8449,6 @@ extension on TranslationsVi {
 			'universalMedia.queuePlaylistFolderRequired' => 'Chọn vị trí lưu trong cùng thư mục với các tệp trong hàng đợi.',
 			'universalMedia.noFavorites' => 'Không được lưu stream yêu thích cho đến nay. Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Xóa stream yêu thích',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
 			'universalMedia.chooseFiles' => 'Chọn file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
@@ -8940,6 +8954,8 @@ extension on TranslationsVi {
 			'sourceSetup.subtitlePrivacy' => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.',
 			'sourceSetup.automaticMetadata' => 'Siêu dữ liệu video trực tuyến tự động',
 			'sourceSetup.metadataPrivacy' => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. Pleazyng sẽ không thử lại kết nối này khi không mã hóa.',
 			'sourceSetup.sourceConnecting' => 'Đang kết nối đến nguồn',
 			'sourceSetup.metadataSearchPrivacy' => 'Lượt tìm tiêu đề này được gửi đến Trakt. Chỉ tiêu đề bạn nhập được gửi đi, không phải video hay thông tin xác thực của nguồn.',
@@ -8947,8 +8963,6 @@ extension on TranslationsVi {
 			'sourceSetup.metadataMatchHelp' => 'Kiểm tra tiêu đề và năm trước khi chọn. Trakt nhận tiêu đề tìm kiếm; video vẫn ở nguồn của nó.',
 			'sourceSetup.metadataNoMatches' => 'Không tìm thấy tiêu đề trực tuyến phù hợp. Hãy thử tiêu đề khác.',
 			'sourceSetup.metadataSearch' => 'Tìm siêu dữ liệu trực tuyến',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
 			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',

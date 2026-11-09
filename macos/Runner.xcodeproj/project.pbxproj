@@ -362,7 +362,6 @@
 			buildPhases = (
 				B7F1001AA1100000000000A2 /* Isolate LuaJIT runtime */,
 				B7F1001AA1100000000000A1 /* Build MilkRust Runtime */,
-				B7F1001AA1100000000000A3 /* Install RomM Worker */,
 				5E41E5A55F14C910C5BEEE03 /* [CP] Check Pods Manifest.lock */,
 				66082DF2D9B2E84DE42C4474 /* Build Steam transport */,
 				2A19CEEE4387EA102496ED72 /* Bundle Dolby Vision runtime */,
@@ -372,6 +371,7 @@
 				33CC110E2044A8840003C045 /* Bundle Framework */,
 				3399D490228B24CF009A79C7 /* ShellScript */,
 				38D3B21B4A8B8C7FF266779D /* [CP] Embed Pods Frameworks */,
+				B7F1001AA1100000000000A3 /* Install RomM Worker */,
 			);
 			buildRules = (
 			);

@@ -14,3 +14,6 @@ if [[ "${CODE_SIGNING_ALLOWED:-YES}" == YES ]]; then
   # sandbox exceptions. Sign it independently before the enclosing app bundle.
   codesign --force --sign "$identity" --options runtime "${stamp[@]}" "$destination"
 fi
+
+# Copy core frameworks without adding them to CocoaPods' app link inputs.
+python3 "$repo_root/scripts/games/install_macos_romm_cores.py"

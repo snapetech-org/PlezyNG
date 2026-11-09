@@ -16,8 +16,8 @@ include(FetchContent)
 FetchContent_Declare(romm_libretro_common GIT_REPOSITORY https://github.com/libretro/libretro-common.git GIT_TAG d9597c359a5ca8399a4e244f816e7e975a92a2aa SOURCE_SUBDIR _plezy_headers_only)
 FetchContent_Declare(romm_miniaudio GIT_REPOSITORY https://github.com/mackron/miniaudio.git GIT_TAG 2da2b23eb2fc2966e76196b7dce98766e219c257 SOURCE_SUBDIR _plezy_headers_only)
 FetchContent_MakeAvailable(romm_libretro_common romm_miniaudio)
-# Apple mobile and TV runtimes cannot spawn this desktop helper. Keep their
-# explicit in-process backend; never silently fall back on a desktop failure.
+# Each platform must supply an OS-isolated helper. Platforms without one expose
+# an unavailable host; an in-process fallback must never load untrusted inputs.
 set(romm_isolated_default OFF)
 if(ANDROID OR WIN32 OR (APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin") OR
    (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64|AMD64|aarch64|arm64)$"))
@@ -60,7 +60,7 @@ if(PLEZY_ROMM_ISOLATED)
     target_link_libraries(plezy_retro_worker PRIVATE Threads::Threads ${CMAKE_DL_LIBS} m)
   endif()
 else()
-  add_library(plezy_retro SHARED retro_host.cpp)
+  add_library(plezy_retro SHARED retro_unavailable.cpp)
 endif()
 target_compile_features(plezy_retro PRIVATE cxx_std_17)
 target_include_directories(plezy_retro PRIVATE "${romm_libretro_common_SOURCE_DIR}/include" "${romm_miniaudio_SOURCE_DIR}")
@@ -140,6 +140,11 @@ if(PLEZY_ROMM_NATIVE_TESTS AND NOT ANDROID)
   add_test(NAME packaged_core_isolation COMMAND romm_packaged_test "${CMAKE_CURRENT_BINARY_DIR}/fixtures with spaces"
     production $<TARGET_FILE:romm_fixture_core>)
   set_tests_properties(packaged_core_isolation PROPERTIES TIMEOUT 45 ENVIRONMENT "PLEZY_TEST_SECRET=DUMMY_ENVIRONMENT_CREDENTIAL")
+  add_executable(romm_unavailable_test retro_unavailable.cpp ../../../test/native/romm_unavailable_test.cpp)
+  target_compile_features(romm_unavailable_test PRIVATE cxx_std_17)
+  add_dependencies(romm_unavailable_test romm_fixture_core)
+  add_test(NAME no_uncontained_core_fallback COMMAND romm_unavailable_test $<TARGET_FILE:romm_fixture_core>)
+  set_tests_properties(no_uncontained_core_fallback PROPERTIES TIMEOUT 5 ENVIRONMENT "PLEZY_TEST_REJECT_CORE_LOAD=1")
   if(UNIX)
     add_executable(romm_input_files_test ../../../test/native/romm_input_files_test.cpp)
     target_include_directories(romm_input_files_test PRIVATE "${romm_libretro_common_SOURCE_DIR}/include")

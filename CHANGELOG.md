@@ -8,6 +8,9 @@
 
 - Remove the vulnerable deepmerge build dependency from the Steam Cloud Decky extension, preserve its host React/UI and ESM entry contract with an esbuild runtime regression, and integrate the reviewed UI, TypeScript, React types and tslib dependency updates.
 - Repair existing-release Linux channel packaging: preserve binary payloads and root ownership in AUR packages, normalize bundled ELF search paths and GTK caches in COPR repacks, and add native x64/ARM64 Nix and macOS signature qualification without rebuilding application artifacts.
+- Require OS containment for native RomM emulation on every platform. iOS, tvOS, webOS and Tizen builds without a supported isolated helper now report native play unavailable; core probing cannot load a library into the app. Existing downloads, saves and capability-checked browser/streaming routes are preserved. Android package validation now requires the isolated worker and the required JNI entry points.
+
+- Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
 - Remove aerynOS from supported release channels and packaging at the owner's request.
 
@@ -22,7 +25,6 @@
 - Add a minimal native Requests destination for movies, TV seasons, ebooks and audiobooks with profile-owned status, discovery/search and basic details. SeerrNG book requests retain format-specific availability; the minimal flow keeps destination, approval and administrative controls in the server interface. Requested downstream by [@Tatsu941](https://github.com/Tatsu941) in [#267](https://github.com/snapetech-org/pleazyng/issues/267).
 
 - Include Book and AudioBook items in Jellyfin/Emby All browsing and library searches, fixing ebook libraries that appeared empty until switching to Folders ([#266](https://github.com/snapetech-org/pleazyng/issues/266)).
-- Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
 
 - Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.
 

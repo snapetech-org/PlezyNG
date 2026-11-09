@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include <fcntl.h>
+
 #include "retro_android_process.h"
+extern "C" JNIEXPORT jint JNICALL Java_com_edde746_plezy_games_RommProcessBroker_readOnlyInputFlags(JNIEnv*, jclass) {
+  return O_RDONLY | O_CLOEXEC | O_NOFOLLOW;
+}
 extern "C" JNIEXPORT void JNICALL Java_com_edde746_plezy_games_RommProcessBroker_initialize(JNIEnv* env, jclass type) {
   using namespace plezy::retro::android_process;
   if (broker) return;

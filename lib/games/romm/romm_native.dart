@@ -5,7 +5,6 @@ import 'dart:io';
 import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
-import '../../utils/platform_detector.dart';
 import 'romm_capabilities.dart';
 import 'romm_models.dart';
 
@@ -39,7 +38,7 @@ class _RetroBindings {
             ? '${p.dirname(Platform.resolvedExecutable)}/lib/libplezy_retro.so'
             : 'libplezy_retro.so',
       ) {
-    if ((PlatformDetector.isDesktopOS() || Platform.isAndroid) && isolationVersion() != 1) {
+    if (isolationVersion() != 1) {
       throw const RommFailure('romm.nativeUnavailable');
     }
   }
@@ -130,8 +129,8 @@ String _corePath(String core) {
   return '$root/${Platform.isWindows ? '' : 'lib/'}${core}_libretro.${Platform.isWindows ? 'dll' : 'so'}';
 }
 
-/// An isolate owns the native connection. Desktop cores execute in a sandboxed
-/// process; mobile runtimes retain their platform-specific in-process host.
+/// An isolate owns the native connection. Cores require an OS-isolated worker
+/// on every platform; no in-process fallback is admitted.
 /// Frame delivery is acknowledged to bound the render queue.
 class RommNative extends ChangeNotifier {
   SendPort? _commands;

@@ -723,6 +723,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Rychlost přehrávání';
 	@override String get scopeShaderPreset => 'Shader představení';
 	@override String get scopeAspectRatio => 'Poměr stran';
+	@override String get scopeZoom => 'Přiblížení';
 	@override String get scopeSyncOffsets => 'Audio a subtitle synchronizace';
 	@override String get playerScopeOff => 'Nenechte se zachránit';
 	@override String get playerScopeGlobal => 'Všude všude';
@@ -6001,6 +6002,7 @@ extension on TranslationsCs {
 			'settings.scopePlaybackSpeed' => 'Rychlost přehrávání',
 			'settings.scopeShaderPreset' => 'Shader představení',
 			'settings.scopeAspectRatio' => 'Poměr stran',
+			'settings.scopeZoom' => 'Přiblížení',
 			'settings.scopeSyncOffsets' => 'Audio a subtitle synchronizace',
 			'settings.playerScopeOff' => 'Nenechte se zachránit',
 			'settings.playerScopeGlobal' => 'Všude všude',
@@ -6444,9 +6446,9 @@ extension on TranslationsCs {
 			'videoControls.addBookmark' => 'Přidat bookmark',
 			'videoControls.bookmarkName' => 'Bookmark jméno',
 			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
 			'videoControls.bookmarkNameRequired' => 'Zadejte jméno pro tuto knižní značku.',
 			'videoControls.deleteBookmark' => 'Odstranit bookmark',
 			'videoControls.bookmarkLimitReached' => 'Tato položka má již 100 bookmarků.',
@@ -6958,9 +6960,9 @@ extension on TranslationsCs {
 			'libraries.content' => 'Obsah knihovny',
 			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
-			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
 			'libraries.noFoldersFound' => 'Žádné složky nenajdete',
 			'libraries.folders' => 'Složky',
@@ -7472,9 +7474,9 @@ extension on TranslationsCs {
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
-			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
 			'watchTogether.reconnecting' => 'Připojení...',
 			'watchTogether.reconnectingDescription' => 'Připojení je zrušené. automaticky se připojíte k místnosti.',
 			'watchTogether.connected' => 'připojené',
@@ -7986,9 +7988,9 @@ extension on TranslationsCs {
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
 			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
 			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
-			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Umělecká volba ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Možnost umělecké práce ${index}, vybraná',
 			'metadataEdit.notSet' => 'Není nastaven',
@@ -8500,9 +8502,9 @@ extension on TranslationsCs {
 			'universalMedia.queuePlaylistFolderRequired' => 'Vyberte umístění ve stejné složce, ve které jsou soubory ve frontě.',
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
-			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
 			'universalMedia.chooseFiles' => 'Vyberte soubory',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
 			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
@@ -9014,9 +9016,9 @@ extension on TranslationsCs {
 			'sourceSetup.metadataMatchHelp' => 'Před výběrem zkontrolujte název a rok. Trakt obdrží hledaný název; video zůstává ve svém zdroji.',
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
-			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
 			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
 			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',

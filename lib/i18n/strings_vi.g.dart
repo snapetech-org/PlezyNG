@@ -717,6 +717,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Tốc Độ Phát';
 	@override String get scopeShaderPreset => 'Shader Preset Đánh giá';
 	@override String get scopeAspectRatio => 'Tỷ Lệ Khung Hình';
+	@override String get scopeZoom => 'Thu phóng';
 	@override String get scopeSyncOffsets => 'Audio & Subtitle đồng bộ';
 	@override String get playerScopeOff => 'Đừng tiết kiệm';
 	@override String get playerScopeGlobal => 'khắp nơi';
@@ -5932,6 +5933,7 @@ extension on TranslationsVi {
 			'settings.scopePlaybackSpeed' => 'Tốc Độ Phát',
 			'settings.scopeShaderPreset' => 'Shader Preset Đánh giá',
 			'settings.scopeAspectRatio' => 'Tỷ Lệ Khung Hình',
+			'settings.scopeZoom' => 'Thu phóng',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle đồng bộ',
 			'settings.playerScopeOff' => 'Đừng tiết kiệm',
 			'settings.playerScopeGlobal' => 'khắp nơi',
@@ -6375,9 +6377,9 @@ extension on TranslationsVi {
 			'videoControls.addBookmark' => 'Thêm Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark tên',
 			'videoControls.bookmarkNameHint' => 'Ví dụ: Mở cảnh',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Đề ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Đề ${n}',
 			'videoControls.bookmarkNameRequired' => 'Nhập tên cho bookmark này.',
 			'videoControls.deleteBookmark' => 'xóa bookmark',
 			'videoControls.bookmarkLimitReached' => 'Bài viết này đã có 100 bookmarks.',
@@ -6889,9 +6891,9 @@ extension on TranslationsVi {
 			'libraries.content' => 'Thư viện Content',
 			'libraries.selectLibrary' => 'Chọn thư viện',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
-			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			'libraries.noCollections' => 'Không có tập hợp trong thư viện này',
 			'libraries.noFoldersFound' => 'Không tìm thấy thư mục',
 			'libraries.folders' => 'Thư Mục',
@@ -7403,9 +7405,9 @@ extension on TranslationsVi {
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
-			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
 			'watchTogether.reconnecting' => 'Kết nối lại...',
 			'watchTogether.reconnectingDescription' => 'Kết nối bị hỏng. bạn sẽ tự động vào phòng.',
 			'watchTogether.connected' => 'Kết nối',
@@ -7917,9 +7919,9 @@ extension on TranslationsVi {
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
 			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
 			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
-			'metadataEdit.noArtworkAvailable' => 'Không có tác phẩm nghệ thuật',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Không có tác phẩm nghệ thuật',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Tùy chọn nghệ thuật ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Tùy chọn Artwork ${index}, được chọn',
 			'metadataEdit.notSet' => 'Không đặt',
@@ -8431,9 +8433,9 @@ extension on TranslationsVi {
 			'universalMedia.queuePlaylistFolderRequired' => 'Chọn vị trí lưu trong cùng thư mục với các tệp trong hàng đợi.',
 			'universalMedia.noFavorites' => 'Không được lưu stream yêu thích cho đến nay. Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Xóa stream yêu thích',
-			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
 			'universalMedia.chooseFiles' => 'Chọn file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
 			'universalMedia.wifiTransfer' => 'Gửi file qua Wi-Fi',
@@ -8945,9 +8947,9 @@ extension on TranslationsVi {
 			'sourceSetup.metadataMatchHelp' => 'Kiểm tra tiêu đề và năm trước khi chọn. Trakt nhận tiêu đề tìm kiếm; video vẫn ở nguồn của nó.',
 			'sourceSetup.metadataNoMatches' => 'Không tìm thấy tiêu đề trực tuyến phù hợp. Hãy thử tiêu đề khác.',
 			'sourceSetup.metadataSearch' => 'Tìm siêu dữ liệu trực tuyến',
-			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
 			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',
 			'sourceSetup.metadataFailed' => 'Không tải được siêu dữ liệu trực tuyến. Vẫn có thể phát và xem thông tin cục bộ.',

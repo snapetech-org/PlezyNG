@@ -717,6 +717,7 @@ class _Translations$settings$th extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'ความเร็ว Playback';
 	@override String get scopeShaderPreset => 'โซเดอร์ Preset';
 	@override String get scopeAspectRatio => 'อัตราส่วน';
+	@override String get scopeZoom => 'ซูม';
 	@override String get scopeSyncOffsets => 'Audio & Subtitle ซิงค์';
 	@override String get playerScopeOff => 'อย่าบันทึก';
 	@override String get playerScopeGlobal => 'ทุกที่';
@@ -5932,6 +5933,7 @@ extension on TranslationsTh {
 			'settings.scopePlaybackSpeed' => 'ความเร็ว Playback',
 			'settings.scopeShaderPreset' => 'โซเดอร์ Preset',
 			'settings.scopeAspectRatio' => 'อัตราส่วน',
+			'settings.scopeZoom' => 'ซูม',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle ซิงค์',
 			'settings.playerScopeOff' => 'อย่าบันทึก',
 			'settings.playerScopeGlobal' => 'ทุกที่',
@@ -6375,9 +6377,9 @@ extension on TranslationsTh {
 			'videoControls.addBookmark' => 'เพิ่ม Bookmark',
 			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
 			'videoControls.bookmarkNameHint' => 'ตัวอย่างเช่น ฉากเปิด',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
 			'videoControls.bookmarkNameRequired' => 'ใส่ชื่อสําหรับจดหมายนี้',
 			'videoControls.deleteBookmark' => 'ลบหนังสือพิมพ์',
 			'videoControls.bookmarkLimitReached' => 'รายการนี้มี 100 บัญชี',
@@ -6889,9 +6891,9 @@ extension on TranslationsTh {
 			'libraries.content' => 'วัสดุห้องสมุด',
 			'libraries.selectLibrary' => 'เลือกห้องสมุด',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
-			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			'libraries.noCollections' => 'ไม่มีคอลเลกชันในห้องสมุดนี้',
 			'libraries.noFoldersFound' => 'ไม่พบโฟลเดอร์',
 			'libraries.folders' => 'โฟลเดอร์',
@@ -7403,9 +7405,9 @@ extension on TranslationsTh {
 			'watchTogether.shareInvite' => 'คู่มือ',
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ Pleazyng: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
-			'watchTogether.openSessionControls' => 'Open Watch ร่วมกันเซสชันควบคุม',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Open Watch ร่วมกันเซสชันควบคุม',
 			'watchTogether.reconnecting' => 'การเชื่อมต่อ...',
 			'watchTogether.reconnectingDescription' => 'การเชื่อมต่อถูกปิดแล้ว คุณจะเข้าสู่ห้องโดยอัตโนมัติ',
 			'watchTogether.connected' => 'เชื่อมต่อ',
@@ -7917,9 +7919,9 @@ extension on TranslationsTh {
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
 			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
 			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
-			'metadataEdit.noArtworkAvailable' => 'ไม่มีงานศิลปะ',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'ไม่มีงานศิลปะ',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ตัวเลือกงานศิลปะ ${index}, เลือก',
 			'metadataEdit.notSet' => 'ไม่ตั้งค่า',
@@ -8431,9 +8433,9 @@ extension on TranslationsTh {
 			'universalMedia.queuePlaylistFolderRequired' => 'เลือกตำแหน่งบันทึกในโฟลเดอร์เดียวกับไฟล์ในคิว',
 			'universalMedia.noFavorites' => 'ไม่ได้บันทึก Stream Favorites ยังคงอยู่ในโปรไฟล์นี้',
 			'universalMedia.removeFavorite' => 'ลบ Stream Favorite',
-			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
 			'universalMedia.chooseFiles' => 'เลือกไฟล์',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
 			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
@@ -8945,9 +8947,9 @@ extension on TranslationsTh {
 			'sourceSetup.metadataMatchHelp' => 'ตรวจสอบชื่อเรื่องและปีก่อนเลือก Trakt จะได้รับชื่อเรื่องที่ค้นหา ส่วนวิดีโอยังคงอยู่ในแหล่งข้อมูลเดิม',
 			'sourceSetup.metadataNoMatches' => 'ไม่พบชื่อเรื่องที่ตรงกันออนไลน์ ลองใช้ชื่อเรื่องอื่น',
 			'sourceSetup.metadataSearch' => 'ค้นหาข้อมูลกำกับออนไลน์',
-			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
 			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',
 			'sourceSetup.metadataFailed' => 'โหลดข้อมูลกำกับออนไลน์ไม่ได้ แต่ยังเล่นวิดีโอและดูข้อมูลในเครื่องได้',

@@ -727,6 +727,7 @@ class _Translations$settings$ar extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'سرعة التشغيل';
 	@override String get scopeShaderPreset => 'شاتر Preset';
 	@override String get scopeAspectRatio => 'نسبة العرض إلى الارتفاع';
+	@override String get scopeZoom => 'التكبير';
 	@override String get scopeSyncOffsets => 'الصوت و Subtitle Sync';
 	@override String get playerScopeOff => 'لا ينقذ';
 	@override String get playerScopeGlobal => 'في كل مكان';
@@ -6057,6 +6058,7 @@ extension on TranslationsAr {
 			'settings.scopePlaybackSpeed' => 'سرعة التشغيل',
 			'settings.scopeShaderPreset' => 'شاتر Preset',
 			'settings.scopeAspectRatio' => 'نسبة العرض إلى الارتفاع',
+			'settings.scopeZoom' => 'التكبير',
 			'settings.scopeSyncOffsets' => 'الصوت و Subtitle Sync',
 			'settings.playerScopeOff' => 'لا ينقذ',
 			'settings.playerScopeGlobal' => 'في كل مكان',
@@ -6500,9 +6502,9 @@ extension on TranslationsAr {
 			'videoControls.addBookmark' => 'إضافة bookmark',
 			'videoControls.bookmarkName' => 'Bookmark الاسم',
 			'videoControls.bookmarkNameHint' => 'على سبيل المثال، فتح المشهد',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'الكتابة ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'الكتابة ${n}',
 			'videoControls.bookmarkNameRequired' => 'أدخل اسمًا لهذا الكتاب.',
 			'videoControls.deleteBookmark' => 'إلغاء Bookmark',
 			'videoControls.bookmarkLimitReached' => 'هذا البند يحتوي بالفعل على 100 علامة كتابية.',
@@ -7014,9 +7016,9 @@ extension on TranslationsAr {
 			'libraries.content' => 'مكتبة المحتوى',
 			'libraries.selectLibrary' => 'اختيار المكتبة',
 			'libraries.filtersWithCount' => ({required Object count}) => 'الفلاتر (${count})',
-			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			'libraries.noCollections' => 'لا توجد مجموعات في هذه المكتبة',
 			'libraries.noFoldersFound' => 'لا توجد ملفات',
 			'libraries.folders' => 'المجلدات',
@@ -7528,9 +7530,9 @@ extension on TranslationsAr {
 			'watchTogether.shareInvite' => 'مشاركة دعوة',
 			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'انضم إلى غرفة Watch Together في Pleazyng: افتح غرفة Watch Together واختر انضم إلى غرفة وانضم إلى ${code}.',
-			'watchTogether.openSessionControls' => 'Open Watch معا مراقبة الجلسة',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Open Watch معا مراقبة الجلسة',
 			'watchTogether.reconnecting' => 'إعادة الاتصال...',
 			'watchTogether.reconnectingDescription' => 'انقطع الاتصال.تصل إلى الغرفة تلقائيًا.',
 			'watchTogether.connected' => 'متصلة',
@@ -8042,9 +8044,9 @@ extension on TranslationsAr {
 			'metadataEdit.metadataUpdateFailed' => 'فشل في تحديث البيانات الميتا',
 			'metadataEdit.artworkUpdated' => 'الفنون المحدثة',
 			'metadataEdit.artworkUpdateFailed' => 'فشل في تحديث أعمال الفن',
-			'metadataEdit.noArtworkAvailable' => 'لا توجد أعمال فنية متاحة',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'لا توجد أعمال فنية متاحة',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'الخيارات الفنية ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'الخيار الفن ${index}، اختياري',
 			'metadataEdit.notSet' => 'لا تضع',
@@ -8556,9 +8558,9 @@ extension on TranslationsAr {
 			'universalMedia.queuePlaylistFolderRequired' => 'اختر موقع حفظ في المجلد نفسه الذي توجد فيه الملفات في قائمة الانتظار.',
 			'universalMedia.noFavorites' => 'لم يتم تخزين المفضلة حتى الآن.المفضلة تبقى في هذا الملف الشخصي.',
 			'universalMedia.removeFavorite' => 'إزالة البث المفضل',
-			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
 			'universalMedia.chooseFiles' => 'اختيار الملفات',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
 			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
@@ -9070,9 +9072,9 @@ extension on TranslationsAr {
 			'sourceSetup.metadataMatchHelp' => 'راجع العنوان والسنة قبل الاختيار. يتلقى Trakt عنوان البحث؛ ويبقى الفيديو في مصدره.',
 			'sourceSetup.metadataNoMatches' => 'لم يُعثر على عناوين مطابقة على الإنترنت. جرّب عنوانًا آخر.',
 			'sourceSetup.metadataSearch' => 'البحث عن بيانات وصفية على الإنترنت',
-			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
 			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
 			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',
 			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',

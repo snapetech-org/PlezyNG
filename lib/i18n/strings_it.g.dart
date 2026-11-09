@@ -721,6 +721,7 @@ class _Translations$settings$it extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Velocità di riproduzione';
 	@override String get scopeShaderPreset => 'Preimpostazione shader';
 	@override String get scopeAspectRatio => 'Proporzioni';
+	@override String get scopeZoom => 'Zoom';
 	@override String get scopeSyncOffsets => 'Sincronizzazione audio e sottotitoli';
 	@override String get playerScopeOff => 'Non salvare';
 	@override String get playerScopeGlobal => 'Ovunque';
@@ -5964,6 +5965,7 @@ extension on TranslationsIt {
 			'settings.scopePlaybackSpeed' => 'Velocità di riproduzione',
 			'settings.scopeShaderPreset' => 'Preimpostazione shader',
 			'settings.scopeAspectRatio' => 'Proporzioni',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Sincronizzazione audio e sottotitoli',
 			'settings.playerScopeOff' => 'Non salvare',
 			'settings.playerScopeGlobal' => 'Ovunque',
@@ -6407,9 +6409,9 @@ extension on TranslationsIt {
 			'videoControls.addBookmark' => 'Aggiungi Bookmark',
 			'videoControls.bookmarkName' => 'Nome di Bookmark',
 			'videoControls.bookmarkNameHint' => 'Ad esempio, la scena di apertura',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Il Bookmark ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Il Bookmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Inserisci un nome per questo bookmark.',
 			'videoControls.deleteBookmark' => 'Rimuovere il bookmark',
 			'videoControls.bookmarkLimitReached' => 'Questo articolo ha già 100 bookmark.',
@@ -6921,9 +6923,9 @@ extension on TranslationsIt {
 			'libraries.content' => 'contenuto della libreria',
 			'libraries.selectLibrary' => 'Seleziona libreria',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtri (${count})',
-			'libraries.noRecommendations' => 'Nessun consiglio disponibile',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Nessun consiglio disponibile',
 			'libraries.noCollections' => 'Nessuna raccolta in questa libreria',
 			'libraries.noFoldersFound' => 'Nessuna cartella trovata',
 			'libraries.folders' => 'cartelle',
@@ -7435,9 +7437,9 @@ extension on TranslationsIt {
 			'watchTogether.shareInvite' => 'Condividi invito',
 			'watchTogether.inviteCopied' => 'Invito copiato. Incollalo in un messaggio.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Unisciti alla mia stanza di Guarda insieme su Pleazyng: apri «Guarda insieme», scegli «Unisciti a una stanza» e inserisci ${code}.',
-			'watchTogether.openSessionControls' => 'Apri i controlli della sessione di Guarda insieme',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Apri i controlli della sessione di Guarda insieme',
 			'watchTogether.reconnecting' => 'Riconnessione...',
 			'watchTogether.reconnectingDescription' => 'La connessione si è interrotta. Rientrerai automaticamente nella stanza.',
 			'watchTogether.connected' => 'Connesso',
@@ -7949,9 +7951,9 @@ extension on TranslationsIt {
 			'metadataEdit.metadataUpdateFailed' => 'Impossibile aggiornare i metadati',
 			'metadataEdit.artworkUpdated' => 'Immagini aggiornate',
 			'metadataEdit.artworkUpdateFailed' => 'Impossibile aggiornare le immagini',
-			'metadataEdit.noArtworkAvailable' => 'Nessuna immagine disponibile',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Nessuna immagine disponibile',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Opzione immagine ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opzione immagine ${index}, selezionata',
 			'metadataEdit.notSet' => 'Non impostato',
@@ -8463,9 +8465,9 @@ extension on TranslationsIt {
 			'universalMedia.queuePlaylistFolderRequired' => 'Scegli una posizione nella stessa cartella dei file in coda.',
 			'universalMedia.noFavorites' => 'Non è stato ancora salvato il flusso dei preferiti. i preferiti rimangono in questo profilo.',
 			'universalMedia.removeFavorite' => 'Rimuovere streaming preferito',
-			'universalMedia.filesHelp' => 'Selezionare file audio, video o ISO per una coppia temporanea. File e URL non vengono aggiunti alla storia della biblioteca.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Selezionare file audio, video o ISO per una coppia temporanea. File e URL non vengono aggiunti alla storia della biblioteca.',
 			'universalMedia.chooseFiles' => 'Scegli i file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('it'))(n, one: '1 file selezionati', many: '${count} file selezionati', other: '${count} file selezionati', ), 
 			'universalMedia.wifiTransfer' => 'Invia file tramite Wi-Fi',
@@ -8977,9 +8979,9 @@ extension on TranslationsIt {
 			'sourceSetup.metadataMatchHelp' => 'Controlla titolo e anno prima di scegliere. Trakt riceve il titolo cercato; il video rimane nella sua fonte.',
 			'sourceSetup.metadataNoMatches' => 'Nessun titolo corrispondente trovato online. Prova un titolo diverso.',
 			'sourceSetup.metadataSearch' => 'Cerca metadati online',
-			'sourceSetup.metadataLoading' => 'Ricerca online dei dettagli di film e serie TV…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Ricerca online dei dettagli di film e serie TV…',
 			'sourceSetup.metadataFromTrakt' => 'Metadati online da Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nessuna corrispondenza automatica trovata per il titolo. Cerca il titolo per scegliere una corrispondenza.',
 			'sourceSetup.metadataFailed' => 'Impossibile caricare i metadati online. La riproduzione e i dettagli locali restano disponibili.',

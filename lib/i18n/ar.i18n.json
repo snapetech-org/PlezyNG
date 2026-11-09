@@ -639,6 +639,7 @@
     "scopePlaybackSpeed": "سرعة التشغيل",
     "scopeShaderPreset": "شاتر Preset",
     "scopeAspectRatio": "نسبة العرض إلى الارتفاع",
+    "scopeZoom": "التكبير",
     "scopeSyncOffsets": "الصوت و Subtitle Sync",
     "playerScopeOff": "لا ينقذ",
     "playerScopeGlobal": "في كل مكان",

@@ -717,6 +717,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Kelajuan Playback';
 	@override String get scopeShaderPreset => 'Perbincangan Shader Preset';
 	@override String get scopeAspectRatio => 'Nisbah aspek';
+	@override String get scopeZoom => 'Zum';
 	@override String get scopeSyncOffsets => 'Audio dan Subtitle Sync';
 	@override String get playerScopeOff => 'Jangan menyelamatkan';
 	@override String get playerScopeGlobal => 'Di mana-mana sahaja';
@@ -5932,6 +5933,7 @@ extension on TranslationsMs {
 			'settings.scopePlaybackSpeed' => 'Kelajuan Playback',
 			'settings.scopeShaderPreset' => 'Perbincangan Shader Preset',
 			'settings.scopeAspectRatio' => 'Nisbah aspek',
+			'settings.scopeZoom' => 'Zum',
 			'settings.scopeSyncOffsets' => 'Audio dan Subtitle Sync',
 			'settings.playerScopeOff' => 'Jangan menyelamatkan',
 			'settings.playerScopeGlobal' => 'Di mana-mana sahaja',
@@ -6375,9 +6377,9 @@ extension on TranslationsMs {
 			'videoControls.addBookmark' => 'Menambah Bookmark',
 			'videoControls.bookmarkName' => 'Nama Bookmark',
 			'videoControls.bookmarkNameHint' => 'Sebagai contoh, adegan pembukaan',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Perpustakaan ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Perpustakaan ${n}',
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
 			'videoControls.deleteBookmark' => 'Menghapuskan Bookmark',
 			'videoControls.bookmarkLimitReached' => 'Artikel ini sudah mempunyai 100 buku.',
@@ -6889,9 +6891,9 @@ extension on TranslationsMs {
 			'libraries.content' => 'Perpustakaan kandungan',
 			'libraries.selectLibrary' => 'Pilih Perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
-			'libraries.noRecommendations' => 'Tiada cadangan yang tersedia',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Tiada cadangan yang tersedia',
 			'libraries.noCollections' => 'Tiada koleksi dalam perpustakaan ini',
 			'libraries.noFoldersFound' => 'Tiada folder yang ditemui',
 			'libraries.folders' => 'Folder-folder',
@@ -7403,9 +7405,9 @@ extension on TranslationsMs {
 			'watchTogether.shareInvite' => 'Memberi jemputan',
 			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
-			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kawalan sesi',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kawalan sesi',
 			'watchTogether.reconnecting' => 'Menghubungkan semula...',
 			'watchTogether.reconnectingDescription' => 'sambungan hilang. anda menyertai bilik secara automatik.',
 			'watchTogether.connected' => 'Terhubung',
@@ -7917,9 +7919,9 @@ extension on TranslationsMs {
 			'metadataEdit.metadataUpdateFailed' => 'Kegagalan Mengemas kini Metadata',
 			'metadataEdit.artworkUpdated' => 'Seni yang dikemaskini',
 			'metadataEdit.artworkUpdateFailed' => 'Kegagalan untuk mengemas kini karya seni',
-			'metadataEdit.noArtworkAvailable' => 'Tiada karya seni yang tersedia',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Tiada karya seni yang tersedia',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Pilihan seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Pilihan seni ${index}, dipilih',
 			'metadataEdit.notSet' => 'Tidak menetapkan',
@@ -8431,9 +8433,9 @@ extension on TranslationsMs {
 			'universalMedia.queuePlaylistFolderRequired' => 'Pilih lokasi simpanan dalam folder yang sama dengan fail dalam baris gilir.',
 			'universalMedia.noFavorites' => 'Tiada rangkaian kegemaran disimpan sehingga kini. kekal dalam profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapuskan stream kegemaran',
-			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
 			'universalMedia.chooseFiles' => 'Pilih fail',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
 			'universalMedia.wifiTransfer' => 'Hantar fail melalui Wi-Fi',
@@ -8945,9 +8947,9 @@ extension on TranslationsMs {
 			'sourceSetup.metadataMatchHelp' => 'Semak tajuk dan tahun sebelum memilih. Trakt menerima tajuk carian; video kekal pada sumbernya.',
 			'sourceSetup.metadataNoMatches' => 'Tiada padanan tajuk dalam talian ditemukan. Cuba tajuk lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata dalam talian',
-			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',
 			'sourceSetup.metadataFailed' => 'Metadata dalam talian tidak dapat dimuatkan. Main balik dan butiran setempat masih tersedia.',

@@ -719,6 +719,7 @@ class _Translations$settings$tr extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Oynatma hızı';
 	@override String get scopeShaderPreset => 'Gölgelendirici ön ayarı';
 	@override String get scopeAspectRatio => 'En-boy oranı';
+	@override String get scopeZoom => 'Yakınlaştırma';
 	@override String get scopeSyncOffsets => 'Ses ve altyazı senkronizasyonu';
 	@override String get playerScopeOff => 'Kaydetme';
 	@override String get playerScopeGlobal => 'Her yerde';
@@ -5957,6 +5958,7 @@ extension on TranslationsTr {
 			'settings.scopePlaybackSpeed' => 'Oynatma hızı',
 			'settings.scopeShaderPreset' => 'Gölgelendirici ön ayarı',
 			'settings.scopeAspectRatio' => 'En-boy oranı',
+			'settings.scopeZoom' => 'Yakınlaştırma',
 			'settings.scopeSyncOffsets' => 'Ses ve altyazı senkronizasyonu',
 			'settings.playerScopeOff' => 'Kaydetme',
 			'settings.playerScopeGlobal' => 'Her yerde',
@@ -6400,9 +6402,9 @@ extension on TranslationsTr {
 			'videoControls.addBookmark' => 'Bookmark ekleyin',
 			'videoControls.bookmarkName' => 'Bookmark Adı',
 			'videoControls.bookmarkNameHint' => 'Örneğin, açılan sahne',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Hakkında ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Hakkında ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu kitaplık için bir isim girin.',
 			'videoControls.deleteBookmark' => 'Bookmark Kaldır',
 			'videoControls.bookmarkLimitReached' => 'Bu bölümde zaten 100 kitaplık var.',
@@ -6914,9 +6916,9 @@ extension on TranslationsTr {
 			'libraries.content' => 'kitaplık içeriği',
 			'libraries.selectLibrary' => 'Kitaplık seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
-			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			'libraries.noCollections' => 'Bu kitaplıkta koleksiyon yok',
 			'libraries.noFoldersFound' => 'Klasör bulunamadı',
 			'libraries.folders' => 'klasörler',
@@ -7428,9 +7430,9 @@ extension on TranslationsTr {
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
 			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
-			'watchTogether.openSessionControls' => 'Birlikte İzle oturum kontrollerini aç',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Birlikte İzle oturum kontrollerini aç',
 			'watchTogether.reconnecting' => 'Yeniden bağlanılıyor...',
 			'watchTogether.reconnectingDescription' => 'Bağlantı koptu. Odaya otomatik olarak yeniden katılacaksınız.',
 			'watchTogether.connected' => 'Bağlı',
@@ -7942,9 +7944,9 @@ extension on TranslationsTr {
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
 			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
 			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
-			'metadataEdit.noArtworkAvailable' => 'Görsel bulunmuyor',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Görsel bulunmuyor',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Görsel seçeneği ${index}, seçildi',
 			'metadataEdit.notSet' => 'Ayarlanmadı',
@@ -8456,9 +8458,9 @@ extension on TranslationsTr {
 			'universalMedia.queuePlaylistFolderRequired' => 'Sıradaki dosyalarla aynı klasörde bir kayıt konumu seçin.',
 			'universalMedia.noFavorites' => 'Hiç kaydedilmemiş akış favori henüz. Favoriler bu profilde kalır.',
 			'universalMedia.removeFavorite' => 'En sevdiğiniz akışları kaldırın',
-			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
 			'universalMedia.chooseFiles' => 'Dosyaları seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi üzerinden dosyaları gönderin',
@@ -8970,9 +8972,9 @@ extension on TranslationsTr {
 			'sourceSetup.metadataMatchHelp' => 'Seçmeden önce başlığı ve yılı kontrol edin. Trakt aranan başlığı alır; video kendi kaynağında kalır.',
 			'sourceSetup.metadataNoMatches' => 'Çevrimiçi eşleşen başlık bulunamadı. Başka bir başlık deneyin.',
 			'sourceSetup.metadataSearch' => 'Çevrimiçi meta veri ara',
-			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',
 			'sourceSetup.metadataFailed' => 'Çevrimiçi meta veriler yüklenemedi. Oynatma ve yerel bilgiler hâlâ kullanılabilir.',

@@ -1878,6 +1878,9 @@ class Translations$settings$en {
 	/// en: 'Aspect Ratio'
 	String get scopeAspectRatio => 'Aspect Ratio';
 
+	/// en: 'Zoom'
+	String get scopeZoom => 'Zoom';
+
 	/// en: 'Audio & Subtitle Sync'
 	String get scopeSyncOffsets => 'Audio & Subtitle Sync';
 
@@ -17818,6 +17821,7 @@ extension on Translations {
 			'settings.scopePlaybackSpeed' => 'Playback Speed',
 			'settings.scopeShaderPreset' => 'Shader Preset',
 			'settings.scopeAspectRatio' => 'Aspect Ratio',
+			'settings.scopeZoom' => 'Zoom',
 			'settings.scopeSyncOffsets' => 'Audio & Subtitle Sync',
 			'settings.playerScopeOff' => 'Don\'t save',
 			'settings.playerScopeGlobal' => 'Everywhere',
@@ -18234,9 +18238,9 @@ extension on Translations {
 			'videoControls.sleepTimerEndOfVideo' => 'End of current video',
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
 			'videoControls.sleepTimerDurationHeader' => 'Timer',
-			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
 			'videoControls.continueWatching' => 'Continue',
@@ -18748,9 +18752,9 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.onlySdhDescription' => 'Use SDH subtitles only; do not fall back to standard subtitles.',
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
 			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
-			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			_ => null,
 		} ?? switch (path) {
+			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyNonForced' => 'Only non-forced subtitles',
@@ -19262,9 +19266,9 @@ extension on Translations {
 			'explore.creditRole.writer' => 'Writer',
 			'explore.creditRole.producer' => 'Producer',
 			'explore.creditRole.creator' => 'Creator',
-			'explore.creditRole.composer' => 'Composer',
 			_ => null,
 		} ?? switch (path) {
+			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
 			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
@@ -19776,9 +19780,9 @@ extension on Translations {
 			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
-			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
 			'downloads.convertingOnServer' => 'Converting on server…',
 			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
@@ -20290,9 +20294,9 @@ extension on Translations {
 			'services.linkedCatalogTitles' => 'Linked catalog titles',
 			'services.planNote' => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.',
 			'services.planLabel' => 'Plan label',
-			'services.setPlanLabel' => 'Set plan label',
 			_ => null,
 		} ?? switch (path) {
+			'services.setPlanLabel' => 'Set plan label',
 			'services.commissionDisclosure' => 'Pleazyng may earn a commission from some links.',
 			'services.notConnected' => 'Not connected',
 			'services.connectedAs' => ({required Object username}) => 'Connected as @${username}',
@@ -20804,9 +20808,9 @@ extension on Translations {
 			'universalMedia.captureFailed' => 'The recording could not be saved. Check device permission, available storage, and FFmpeg support.',
 			'universalMedia.captureSaved' => 'Screen recording saved.',
 			'universalMedia.captureElapsedLabel' => 'Recording time',
-			'universalMedia.captureStart' => 'Start recording',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.captureStart' => 'Start recording',
 			'universalMedia.capturePreview' => 'Preview in player',
 			'universalMedia.capturePreviewHelp' => 'Preview the selected source in the standard player. It is session-only and does not save a recording. Device support and permissions depend on MPV and the operating system. The preview uses video only; optional audio is included in saved recordings.',
 			'universalMedia.capturePreviewActive' => 'Live preview · not recording',
@@ -21318,9 +21322,9 @@ extension on Translations {
 			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
 			'games.gameId' => 'Host application ID',
-			'games.invalidGame' => 'Enter a game name and a positive numeric host application ID.',
 			_ => null,
 		} ?? switch (path) {
+			'games.invalidGame' => 'Enter a game name and a positive numeric host application ID.',
 			'games.wake' => 'Wake computer',
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
@@ -21832,9 +21836,9 @@ extension on Translations {
 			'subtitleAiUi.repairCutsAcrossSubtitleLanguages' => 'Repair cuts across subtitle languages',
 			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
 			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
-			'subtitleAiUi.applyPiecewiseOffsetsWhereDialogueAn_cfd3013c' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.applyPiecewiseOffsetsWhereDialogueAn_cfd3013c' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
 			'subtitleAiUi.localSubtitleTranslation' => 'Local subtitle translation',
 			'subtitleAiUi.useASeriesSpecificGlossary' => 'Use a series-specific glossary',
 			'subtitleAiUi.startsWithTheProfileGlossarySavedEdi_5ab98347' => 'Starts with the profile glossary; saved edits apply only to this series.',
@@ -22346,9 +22350,9 @@ extension on Translations {
 			'bonusExtras.watchHere' => 'Watch here',
 			'bonusExtras.sendToPhone' => 'Open on your phone',
 			'bonusExtras.copyLink' => 'Copy link',
-			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',
 			'bonusExtras.providerNotice' => 'Playback opens the provider’s player and may include its recommendations.',
 			'bonusExtras.external' => 'Online',
 			'bonusExtras.library' => 'In your library',

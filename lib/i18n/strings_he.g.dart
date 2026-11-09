@@ -721,6 +721,7 @@ class _Translations$settings$he extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'מהירות ניגון';
 	@override String get scopeShaderPreset => 'שארד Preset';
 	@override String get scopeAspectRatio => 'יחס גובה-רוחב';
+	@override String get scopeZoom => 'זום';
 	@override String get scopeSyncOffsets => 'תגית: Audio & Subtitle Sync';
 	@override String get playerScopeOff => 'אל תציל';
 	@override String get playerScopeGlobal => 'בכל מקום';
@@ -5965,6 +5966,7 @@ extension on TranslationsHe {
 			'settings.scopePlaybackSpeed' => 'מהירות ניגון',
 			'settings.scopeShaderPreset' => 'שארד Preset',
 			'settings.scopeAspectRatio' => 'יחס גובה-רוחב',
+			'settings.scopeZoom' => 'זום',
 			'settings.scopeSyncOffsets' => 'תגית: Audio & Subtitle Sync',
 			'settings.playerScopeOff' => 'אל תציל',
 			'settings.playerScopeGlobal' => 'בכל מקום',
@@ -6408,9 +6410,9 @@ extension on TranslationsHe {
 			'videoControls.addBookmark' => 'להוסיף bookmark',
 			'videoControls.bookmarkName' => 'Bookmark שם',
 			'videoControls.bookmarkNameHint' => 'לדוגמה, פתיחת סצנה',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'סימנייה ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'סימנייה ${n}',
 			'videoControls.bookmarkNameRequired' => 'הקלד שם עבור ספר זה.',
 			'videoControls.deleteBookmark' => 'הסרת ספרייה',
 			'videoControls.bookmarkLimitReached' => 'הפוסט הזה כבר מכיל 100 ספרות.',
@@ -6922,9 +6924,9 @@ extension on TranslationsHe {
 			'libraries.content' => 'ספרייה תוכן',
 			'libraries.selectLibrary' => 'בחר ספרייה',
 			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
-			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			'libraries.noCollections' => 'אין אוסף בספריה זו',
 			'libraries.noFoldersFound' => 'לא נמצאו קבצים',
 			'libraries.folders' => 'תיקיות',
@@ -7436,9 +7438,9 @@ extension on TranslationsHe {
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- Pleazyng: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
-			'watchTogether.openSessionControls' => 'Open Watch יחד בדיקת ישיבה',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Open Watch יחד בדיקת ישיבה',
 			'watchTogether.reconnecting' => 'חיבור מחדש...',
 			'watchTogether.reconnectingDescription' => 'הקשר נעלם, אתה נכנס לחדר באופן אוטומטי.',
 			'watchTogether.connected' => 'מחוברים',
@@ -7950,9 +7952,9 @@ extension on TranslationsHe {
 			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
 			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
 			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
-			'metadataEdit.noArtworkAvailable' => 'אין יצירות אמנות זמינות',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'אין יצירות אמנות זמינות',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'האפשרות האמנותית ${index}, נבחר',
 			'metadataEdit.notSet' => 'לא קבע',
@@ -8464,9 +8466,9 @@ extension on TranslationsHe {
 			'universalMedia.queuePlaylistFolderRequired' => 'יש לבחור מיקום שמירה באותה תיקייה שבה נמצאים הקבצים שבתור.',
 			'universalMedia.noFavorites' => 'עדיין לא נשמר זרימת הפופולרים.Favorites להישאר בפרופיל זה.',
 			'universalMedia.removeFavorite' => 'להסיר זרם אהוב',
-			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
 			'universalMedia.chooseFiles' => 'בחירת קבצים',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
 			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
@@ -8978,9 +8980,9 @@ extension on TranslationsHe {
 			'sourceSetup.metadataMatchHelp' => 'לפני הבחירה, יש לבדוק את השם והשנה. Trakt מקבל את שם החיפוש; הווידאו נשאר במקור שלו.',
 			'sourceSetup.metadataNoMatches' => 'לא נמצאו שמות תואמים בחיפוש המקוון. כדאי לנסות שם אחר.',
 			'sourceSetup.metadataSearch' => 'חיפוש מטא־נתונים מקוונים',
-			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
 			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',
 			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',

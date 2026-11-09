@@ -723,6 +723,7 @@ class _Translations$settings$ru extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Скорость воспроизведения';
 	@override String get scopeShaderPreset => 'Предустановка шейдера';
 	@override String get scopeAspectRatio => 'Соотношение сторон';
+	@override String get scopeZoom => 'Масштаб';
 	@override String get scopeSyncOffsets => 'Синхронизация аудио и субтитров';
 	@override String get playerScopeOff => 'Не сохранять';
 	@override String get playerScopeGlobal => 'Везде';
@@ -6007,6 +6008,7 @@ extension on TranslationsRu {
 			'settings.scopePlaybackSpeed' => 'Скорость воспроизведения',
 			'settings.scopeShaderPreset' => 'Предустановка шейдера',
 			'settings.scopeAspectRatio' => 'Соотношение сторон',
+			'settings.scopeZoom' => 'Масштаб',
 			'settings.scopeSyncOffsets' => 'Синхронизация аудио и субтитров',
 			'settings.playerScopeOff' => 'Не сохранять',
 			'settings.playerScopeGlobal' => 'Везде',
@@ -6450,9 +6452,9 @@ extension on TranslationsRu {
 			'videoControls.addBookmark' => 'Добавить Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark имя',
 			'videoControls.bookmarkNameHint' => 'Например, сцены открытия',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Букмарк ${n}',
 			'videoControls.bookmarkNameRequired' => 'Введите имя для этой книжной марки.',
 			'videoControls.deleteBookmark' => 'Удаление букмекеры',
 			'videoControls.bookmarkLimitReached' => 'Эта статья уже имеет 100 книжных знаков.',
@@ -6964,9 +6966,9 @@ extension on TranslationsRu {
 			'libraries.content' => 'содержимое библиотеки',
 			'libraries.selectLibrary' => 'Выбрать библиотеку',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтры (${count})',
-			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Рекомендации недоступны',
 			'libraries.noCollections' => 'В этой библиотеке нет коллекций',
 			'libraries.noFoldersFound' => 'Папки не найдены',
 			'libraries.folders' => 'папки',
@@ -7478,9 +7480,9 @@ extension on TranslationsRu {
 			'watchTogether.shareInvite' => 'Поделиться приглашением',
 			'watchTogether.inviteCopied' => 'Приглашение скопировано. Вставьте его в сообщение.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Присоединяйтесь к совместному просмотру в Pleazyng: откройте «Смотреть вместе», выберите «Войти в комнату» и введите ${code}.',
-			'watchTogether.openSessionControls' => 'Открыть управление сессией «Смотреть вместе»',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Открыть управление сессией «Смотреть вместе»',
 			'watchTogether.reconnecting' => 'Переподключение...',
 			'watchTogether.reconnectingDescription' => 'Соединение прервалось. Вы автоматически вернётесь в комнату.',
 			'watchTogether.connected' => 'Подключено',
@@ -7992,9 +7994,9 @@ extension on TranslationsRu {
 			'metadataEdit.metadataUpdateFailed' => 'Не удалось обновить метаданные',
 			'metadataEdit.artworkUpdated' => 'Обложка обновлена',
 			'metadataEdit.artworkUpdateFailed' => 'Не удалось обновить обложку',
-			'metadataEdit.noArtworkAvailable' => 'Обложки недоступны',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Обложки недоступны',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Вариант обложки ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вариант обложки ${index}, выбран',
 			'metadataEdit.notSet' => 'Не задано',
@@ -8506,9 +8508,9 @@ extension on TranslationsRu {
 			'universalMedia.queuePlaylistFolderRequired' => 'Выберите место сохранения в той же папке, где находятся файлы очереди.',
 			'universalMedia.noFavorites' => 'До сих пор не сохранились любимые потоки.Фавориты остаются в этом профиле.',
 			'universalMedia.removeFavorite' => 'Удаление любимого потока',
-			'universalMedia.filesHelp' => 'Выберите аудио, видео или файлы ISO для временного перевода.Файлы и URL не добавляются в историю библиотеки.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Выберите аудио, видео или файлы ISO для временного перевода.Файлы и URL не добавляются в историю библиотеки.',
 			'universalMedia.chooseFiles' => 'Выберите файлы',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n, one: '1 Выбранный файл', few: '${count} выбранные файлы', many: '${count} выбранные файлы', other: '${count} выбранные файлы', ), 
 			'universalMedia.wifiTransfer' => 'Передача файлов через Wi-Fi',
@@ -9020,9 +9022,9 @@ extension on TranslationsRu {
 			'sourceSetup.metadataMatchHelp' => 'Перед выбором проверьте название и год. Trakt получает поисковое название; видео остаётся в своём источнике.',
 			'sourceSetup.metadataNoMatches' => 'Совпадающих названий в интернете не найдено. Попробуйте другое название.',
 			'sourceSetup.metadataSearch' => 'Поиск метаданных в интернете',
-			'sourceSetup.metadataLoading' => 'Поиск сведений о фильмах и сериалах в интернете…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Поиск сведений о фильмах и сериалах в интернете…',
 			'sourceSetup.metadataFromTrakt' => 'Метаданные из Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматическое совпадение названия не найдено. Найдите название, чтобы выбрать совпадение.',
 			'sourceSetup.metadataFailed' => 'Не удалось загрузить метаданные из интернета. Воспроизведение и локальные сведения по-прежнему доступны.',

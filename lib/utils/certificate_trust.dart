@@ -47,6 +47,8 @@ abstract final class CertificateTrust {
     'jsdelivr.net',
     'github.com',
     'api.github.com',
+    // GitHub release downloads redirect here.
+    'githubusercontent.com',
     'image.tmdb.org',
   };
 

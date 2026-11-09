@@ -717,6 +717,7 @@ class Translations$settings$zh extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => '播放速度';
 	@override String get scopeShaderPreset => '着色器预设';
 	@override String get scopeAspectRatio => '宽高比';
+	@override String get scopeZoom => '缩放';
 	@override String get scopeSyncOffsets => '音频和字幕同步';
 	@override String get playerScopeOff => '不保存';
 	@override String get playerScopeGlobal => '所有位置';
@@ -5952,6 +5953,7 @@ extension on TranslationsZh {
 			'settings.scopePlaybackSpeed' => '播放速度',
 			'settings.scopeShaderPreset' => '着色器预设',
 			'settings.scopeAspectRatio' => '宽高比',
+			'settings.scopeZoom' => '缩放',
 			'settings.scopeSyncOffsets' => '音频和字幕同步',
 			'settings.playerScopeOff' => '不保存',
 			'settings.playerScopeGlobal' => '所有位置',
@@ -6395,9 +6397,9 @@ extension on TranslationsZh {
 			'videoControls.addBookmark' => '添加 Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark 名称',
 			'videoControls.bookmarkNameHint' => '例如,开幕式',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => '图标 ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => '图标 ${n}',
 			'videoControls.bookmarkNameRequired' => '请输入本书标志的名称。',
 			'videoControls.deleteBookmark' => '删除 Bookmark',
 			'videoControls.bookmarkLimitReached' => '这个项目已经有100个字符。',
@@ -6909,9 +6911,9 @@ extension on TranslationsZh {
 			'libraries.content' => '媒体库内容',
 			'libraries.selectLibrary' => '选择媒体库',
 			'libraries.filtersWithCount' => ({required Object count}) => '筛选器（${count}）',
-			'libraries.noRecommendations' => '暂无推荐',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => '暂无推荐',
 			'libraries.noCollections' => '此媒体库中没有合集',
 			'libraries.noFoldersFound' => '未找到文件夹',
 			'libraries.folders' => '文件夹',
@@ -7423,9 +7425,9 @@ extension on TranslationsZh {
 			'watchTogether.shareInvite' => '分享邀请',
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
 			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
-			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
 			'watchTogether.reconnecting' => '正在重新连接…',
 			'watchTogether.reconnectingDescription' => '连接已中断。你将自动重新加入房间。',
 			'watchTogether.connected' => '已连接',
@@ -7937,9 +7939,9 @@ extension on TranslationsZh {
 			'metadataEdit.metadataUpdateFailed' => '元数据更新失败',
 			'metadataEdit.artworkUpdated' => '封面图片已更新',
 			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
-			'metadataEdit.noArtworkAvailable' => '没有可用的封面图片',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => '没有可用的封面图片',
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面图片选项 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面图片选项 ${index}，已选择',
 			'metadataEdit.notSet' => '未设置',
@@ -8451,9 +8453,9 @@ extension on TranslationsZh {
 			'universalMedia.queuePlaylistFolderRequired' => '请选择与队列文件相同文件夹中的保存位置。',
 			'universalMedia.noFavorites' => '尚未存储流喜爱. 喜爱留在此个人资料中。',
 			'universalMedia.removeFavorite' => '删除流喜爱',
-			'universalMedia.filesHelp' => '选择音频、视频或ISO文件,以便进行临时记录. 文件和URL不添加到图书馆历史。',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => '选择音频、视频或ISO文件,以便进行临时记录. 文件和URL不添加到图书馆历史。',
 			'universalMedia.chooseFiles' => '选择文件',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ), 
 			'universalMedia.wifiTransfer' => '通过 Wi-Fi 发送文件',
@@ -8965,9 +8967,9 @@ extension on TranslationsZh {
 			'sourceSetup.metadataMatchHelp' => '选择前请核对标题和年份。Trakt 会收到搜索标题；视频文件会保留在原来源中。',
 			'sourceSetup.metadataNoMatches' => '未找到在线标题匹配结果。请尝试其他标题。',
 			'sourceSetup.metadataSearch' => '搜索在线元数据',
-			'sourceSetup.metadataLoading' => '正在查询在线电影和剧集信息…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => '正在查询在线电影和剧集信息…',
 			'sourceSetup.metadataFromTrakt' => '来自 Trakt 的在线元数据',
 			'sourceSetup.metadataNoAutomaticMatch' => '未找到自动匹配的标题。请搜索标题并选择匹配结果。',
 			'sourceSetup.metadataFailed' => '无法加载在线元数据。仍可播放媒体和查看本地信息。',

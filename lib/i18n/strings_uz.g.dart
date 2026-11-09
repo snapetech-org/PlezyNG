@@ -719,6 +719,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Ijro tezligi';
 	@override String get scopeShaderPreset => 'Sheyder oldindan sozlamasi';
 	@override String get scopeAspectRatio => 'Tomonlar nisbati';
+	@override String get scopeZoom => 'Masshtab';
 	@override String get scopeSyncOffsets => 'Audio va subtitr sinxronizatsiyasi';
 	@override String get playerScopeOff => 'Saqlamaslik';
 	@override String get playerScopeGlobal => 'Hamma joyda';
@@ -5957,6 +5958,7 @@ extension on TranslationsUz {
 			'settings.scopePlaybackSpeed' => 'Ijro tezligi',
 			'settings.scopeShaderPreset' => 'Sheyder oldindan sozlamasi',
 			'settings.scopeAspectRatio' => 'Tomonlar nisbati',
+			'settings.scopeZoom' => 'Masshtab',
 			'settings.scopeSyncOffsets' => 'Audio va subtitr sinxronizatsiyasi',
 			'settings.playerScopeOff' => 'Saqlamaslik',
 			'settings.playerScopeGlobal' => 'Hamma joyda',
@@ -6400,9 +6402,9 @@ extension on TranslationsUz {
 			'videoControls.addBookmark' => 'Xatcho‘p qo‘shish',
 			'videoControls.bookmarkName' => 'Xatcho‘p nomi',
 			'videoControls.bookmarkNameHint' => 'Masalan, kirish sahnasi',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Xatcho‘p ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Xatcho‘p ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu xatcho‘p uchun nom kiriting.',
 			'videoControls.deleteBookmark' => 'Xatcho‘pni o‘chirish',
 			'videoControls.bookmarkLimitReached' => 'Bu elementda allaqachon 100 ta xatcho‘p bor.',
@@ -6914,9 +6916,9 @@ extension on TranslationsUz {
 			'libraries.content' => 'kutubxona tarkibi',
 			'libraries.selectLibrary' => 'Kutubxonani tanlash',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlar (${count})',
-			'libraries.noRecommendations' => 'Tavsiyalar yoʻq',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Tavsiyalar yoʻq',
 			'libraries.noCollections' => 'Ushbu kutubxonada toʻplamlar yoʻq',
 			'libraries.noFoldersFound' => 'Jildlar topilmadi',
 			'libraries.folders' => 'jildlar',
@@ -7428,9 +7430,9 @@ extension on TranslationsUz {
 			'watchTogether.shareInvite' => 'Taklifni ulashish',
 			'watchTogether.inviteCopied' => 'Taklif nusxalandi. Uni xabarga joylashtiring.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.',
-			'watchTogether.openSessionControls' => 'Boshqaruv elementlarini ochish',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Boshqaruv elementlarini ochish',
 			'watchTogether.reconnecting' => 'Qayta ulanmoqda...',
 			'watchTogether.reconnectingDescription' => 'Ulanish uzildi. Xonaga avtomatik ravishda qayta qoʻshilasiz.',
 			'watchTogether.connected' => 'Ulandi',
@@ -7942,9 +7944,9 @@ extension on TranslationsUz {
 			'metadataEdit.metadataUpdateFailed' => 'Metamaʼlumotlarni yangilab boʻlmadi',
 			'metadataEdit.artworkUpdated' => 'Rasmlar yangilandi',
 			'metadataEdit.artworkUpdateFailed' => 'Rasmlarni yangilab boʻlmadi',
-			'metadataEdit.noArtworkAvailable' => 'Rasm mavjud emas',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Rasm mavjud emas',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Rasm opsiyasi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Rasm opsiyasi ${index}, tanlandi',
 			'metadataEdit.notSet' => 'Oʻrnatilmagan',
@@ -8456,9 +8458,9 @@ extension on TranslationsUz {
 			'universalMedia.queuePlaylistFolderRequired' => 'Saqlash joyini navbatdagi fayllar bilan bir xil jilddan tanlang.',
 			'universalMedia.noFavorites' => 'U\'yadi bu profili yo‘zilgan.Favoritlar bu profilda qalib.',
 			'universalMedia.removeFavorite' => 'Riyadh preferni qaytadi.',
-			'universalMedia.filesHelp' => 'Audio, video, o ISO fillar bir temporary quue. Fillar və URL\'ler library istoriyaya qo‘zilmaydi.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Audio, video, o ISO fillar bir temporary quue. Fillar və URL\'ler library istoriyaya qo‘zilmaydi.',
 			'universalMedia.chooseFiles' => 'Filmi seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
 			'universalMedia.wifiTransfer' => 'Filmi Wi-Fi-dan qaytadi',
@@ -8970,9 +8972,9 @@ extension on TranslationsUz {
 			'sourceSetup.metadataMatchHelp' => 'Tanlashdan oldin nomi va yilini tekshiring. Trakt qidirilayotgan nomni oladi; video o‘z manbasida qoladi.',
 			'sourceSetup.metadataNoMatches' => 'Onlayn mos nom topilmadi. Boshqa nomni sinab ko‘ring.',
 			'sourceSetup.metadataSearch' => 'Onlayn metama’lumotlarni qidirish',
-			'sourceSetup.metadataLoading' => 'Onlayn film va serial tafsilotlari qidirilmoqda…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Onlayn film va serial tafsilotlari qidirilmoqda…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt xizmatidan onlayn metama’lumotlar',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nomga avtomatik moslik topilmadi. Mos natijani tanlash uchun nomni qidiring.',
 			'sourceSetup.metadataFailed' => 'Onlayn metama’lumotlarni yuklab bo‘lmadi. Ijro va mahalliy tafsilotlar hali ham mavjud.',

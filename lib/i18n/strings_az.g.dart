@@ -719,6 +719,7 @@ class _Translations$settings$az extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Oxutma sürəti';
 	@override String get scopeShaderPreset => 'Şader ön ayarı';
 	@override String get scopeAspectRatio => 'Tərəf nisbəti';
+	@override String get scopeZoom => 'Miqyas';
 	@override String get scopeSyncOffsets => 'Audio və subtitr sinxronizasiyası';
 	@override String get playerScopeOff => 'Saxlama';
 	@override String get playerScopeGlobal => 'Hər yerdə';
@@ -5957,6 +5958,7 @@ extension on TranslationsAz {
 			'settings.scopePlaybackSpeed' => 'Oxutma sürəti',
 			'settings.scopeShaderPreset' => 'Şader ön ayarı',
 			'settings.scopeAspectRatio' => 'Tərəf nisbəti',
+			'settings.scopeZoom' => 'Miqyas',
 			'settings.scopeSyncOffsets' => 'Audio və subtitr sinxronizasiyası',
 			'settings.playerScopeOff' => 'Saxlama',
 			'settings.playerScopeGlobal' => 'Hər yerdə',
@@ -6400,9 +6402,9 @@ extension on TranslationsAz {
 			'videoControls.addBookmark' => 'Əlfəcin əlavə et',
 			'videoControls.bookmarkName' => 'Əlfəcin adı',
 			'videoControls.bookmarkNameHint' => 'Məsələn, açılış səhnəsi',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Əlfəcin ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Əlfəcin ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu əlfəcin üçün ad daxil edin.',
 			'videoControls.deleteBookmark' => 'Əlfəcini sil',
 			'videoControls.bookmarkLimitReached' => 'Bu elementdə artıq 100 əlfəcin var.',
@@ -6914,9 +6916,9 @@ extension on TranslationsAz {
 			'libraries.content' => 'kitabxana məzmunu',
 			'libraries.selectLibrary' => 'Kitabxana seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
-			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			'libraries.noCollections' => 'Bu kitabxanada kolleksiya yoxdur',
 			'libraries.noFoldersFound' => 'Qovluq tapılmadı',
 			'libraries.folders' => 'qovluqlar',
@@ -7428,9 +7430,9 @@ extension on TranslationsAz {
 			'watchTogether.shareInvite' => 'Dəvəti paylaş',
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
-			'watchTogether.openSessionControls' => 'Birlikdə İzlə seans idarəetmələrini aç',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Birlikdə İzlə seans idarəetmələrini aç',
 			'watchTogether.reconnecting' => 'Yenidən qoşulunur...',
 			'watchTogether.reconnectingDescription' => 'Əlaqə kəsildi. Otağa avtomatik olaraq yenidən qoşulacaqsınız.',
 			'watchTogether.connected' => 'Qoşulub',
@@ -7942,9 +7944,9 @@ extension on TranslationsAz {
 			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
 			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
 			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
-			'metadataEdit.noArtworkAvailable' => 'Şəkil əlçatan deyil',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Şəkil əlçatan deyil',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Şəkil seçimi ${index}, seçildi',
 			'metadataEdit.notSet' => 'Təyin edilməyib',
@@ -8456,9 +8458,9 @@ extension on TranslationsAz {
 			'universalMedia.queuePlaylistFolderRequired' => 'Yadda saxlama yeri növbədəki fayllarla eyni qovluqda olmalıdır.',
 			'universalMedia.noFavorites' => 'Movqe.Az xəbər verir ki, Hollandiyada futbolçular bu profildə qalır.',
 			'universalMedia.removeFavorite' => 'Movqe favoritləri',
-			'universalMedia.filesHelp' => 'Video, audio və ISO filləri seçin. Fillər və URL-lər kütüphane tarihinə daxil olmaz.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Video, audio və ISO filləri seçin. Fillər və URL-lər kütüphane tarihinə daxil olmaz.',
 			'universalMedia.chooseFiles' => 'Fillər seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '1 seçilmiş fil', other: '${count} seçilmiş dosyalar', ), 
 			'universalMedia.wifiTransfer' => 'Fillər Wi-Fi yoluyla göndərilir',
@@ -8970,9 +8972,9 @@ extension on TranslationsAz {
 			'sourceSetup.metadataMatchHelp' => 'Seçməzdən əvvəl adı və ili yoxlayın. Trakt axtarılan adı alır; video öz mənbəyində qalır.',
 			'sourceSetup.metadataNoMatches' => 'Onlayn uyğun ad tapılmadı. Başqa ad sınayın.',
 			'sourceSetup.metadataSearch' => 'Onlayn metadata axtar',
-			'sourceSetup.metadataLoading' => 'Onlayn film və serial məlumatları axtarılır…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Onlayn film və serial məlumatları axtarılır…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt-dan onlayn metadata',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Avtomatik ad uyğunluğu tapılmadı. Uyğun nəticəni seçmək üçün adı axtarın.',
 			'sourceSetup.metadataFailed' => 'Onlayn metadata yüklənmədi. Oynatma və yerli məlumatlar hələ də əlçatandır.',

@@ -719,6 +719,7 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get scopePlaybackSpeed => 'Ойнату жылдамдығы';
 	@override String get scopeShaderPreset => 'Шейдер алдын ала орнатымы';
 	@override String get scopeAspectRatio => 'Кадр пішімі';
+	@override String get scopeZoom => 'Масштаб';
 	@override String get scopeSyncOffsets => 'Аудио және субтитр синхрондауы';
 	@override String get playerScopeOff => 'Сақтамау';
 	@override String get playerScopeGlobal => 'Барлық жерде';
@@ -5957,6 +5958,7 @@ extension on TranslationsKk {
 			'settings.scopePlaybackSpeed' => 'Ойнату жылдамдығы',
 			'settings.scopeShaderPreset' => 'Шейдер алдын ала орнатымы',
 			'settings.scopeAspectRatio' => 'Кадр пішімі',
+			'settings.scopeZoom' => 'Масштаб',
 			'settings.scopeSyncOffsets' => 'Аудио және субтитр синхрондауы',
 			'settings.playerScopeOff' => 'Сақтамау',
 			'settings.playerScopeGlobal' => 'Барлық жерде',
@@ -6400,9 +6402,9 @@ extension on TranslationsKk {
 			'videoControls.addBookmark' => 'Бетбелгі қосу',
 			'videoControls.bookmarkName' => 'Бетбелгі атауы',
 			'videoControls.bookmarkNameHint' => 'Мысалы, кіріспе көрінісі',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Бетбелгі ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Бетбелгі ${n}',
 			'videoControls.bookmarkNameRequired' => 'Бұл бетбелгіге атау енгізіңіз.',
 			'videoControls.deleteBookmark' => 'Бетбелгіні өшіру',
 			'videoControls.bookmarkLimitReached' => 'Бұл элементте 100 бетбелгі бар.',
@@ -6914,9 +6916,9 @@ extension on TranslationsKk {
 			'libraries.content' => 'кітапхана мазмұны',
 			'libraries.selectLibrary' => 'Кітапхананы таңдау',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
-			'libraries.noRecommendations' => 'Ұсыныстар жоқ',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => 'Ұсыныстар жоқ',
 			'libraries.noCollections' => 'Бұл кітапханада топтамалар жоқ',
 			'libraries.noFoldersFound' => 'Қапшықтар табылмады',
 			'libraries.folders' => 'қапшықтар',
@@ -7428,9 +7430,9 @@ extension on TranslationsKk {
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
-			'watchTogether.openSessionControls' => 'Басқару элементтерін ашу',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => 'Басқару элементтерін ашу',
 			'watchTogether.reconnecting' => 'Қайта қосылуда...',
 			'watchTogether.reconnectingDescription' => 'Байланыс үзілді. Бөлмеге автоматты түрде қайта қосыласыз.',
 			'watchTogether.connected' => 'Қосылды',
@@ -7942,9 +7944,9 @@ extension on TranslationsKk {
 			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
 			'metadataEdit.artworkUpdated' => 'Суреттер жаңартылды',
 			'metadataEdit.artworkUpdateFailed' => 'Суреттерді жаңарту мүмкін болмады',
-			'metadataEdit.noArtworkAvailable' => 'Сурет қолжетімсіз',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => 'Сурет қолжетімсіз',
 			'metadataEdit.artworkOption' => ({required Object index}) => 'Сурет опциясы ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Сурет опциясы ${index}, таңдалды',
 			'metadataEdit.notSet' => 'Орнатылмаған',
@@ -8456,9 +8458,9 @@ extension on TranslationsKk {
 			'universalMedia.queuePlaylistFolderRequired' => 'Кезектегі файлдармен бір қалтадағы сақтау орнын таңдаңыз.',
 			'universalMedia.noFavorites' => 'Қазіргі таңда бүкіл әлемде өте көп айтылады.Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Өткен қабырғасы',
-			'universalMedia.filesHelp' => 'Аудио, видео, немесе ISO файлы бар. Файлы және URL-дер библиографияның аяқталуы мүмкін емес.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => 'Аудио, видео, немесе ISO файлы бар. Файлы және URL-дер библиографияның аяқталуы мүмкін емес.',
 			'universalMedia.chooseFiles' => 'Серіктің файл',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi қосылу үшін дағдарысты',
@@ -8970,9 +8972,9 @@ extension on TranslationsKk {
 			'sourceSetup.metadataMatchHelp' => 'Таңдамас бұрын атауы мен жылын тексеріңіз. Trakt ізделген атауды алады; бейне өз дереккөзінде қалады.',
 			'sourceSetup.metadataNoMatches' => 'Онлайн сәйкес атаулар табылмады. Басқа атауды байқап көріңіз.',
 			'sourceSetup.metadataSearch' => 'Онлайн метадеректерді іздеу',
-			'sourceSetup.metadataLoading' => 'Онлайн фильмдер мен сериалдар туралы мәліметтер ізделуде…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => 'Онлайн фильмдер мен сериалдар туралы мәліметтер ізделуде…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt қызметінен онлайн метадеректер',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Атауға автоматты сәйкестік табылмады. Сәйкес нәтижені таңдау үшін атауды іздеңіз.',
 			'sourceSetup.metadataFailed' => 'Онлайн метадеректер жүктелмеді. Ойнату мен жергілікті мәліметтер әлі де қолжетімді.',

@@ -35,6 +35,29 @@ void main() {
     });
   });
 
+  group('video zoom', () {
+    // Zoom was session-only before it could be scoped (#2977): upgrading must
+    // not make one title's zoom follow the viewer into everything else.
+    test('stays session-only until a persistence scope is chosen', () async {
+      await ScopedPlayerPrefs.write(ScopedPlayerPrefs.videoZoom, episode(), 1.3);
+
+      expect(ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.videoZoom, episode(id: 'ep-2')), 1.0);
+      expect(settings.prefs.containsKey(SettingsService.defaultVideoZoom.key), isFalse);
+      expect(settings.read(SettingsService.scopedPlayerPrefValues), isEmpty);
+    });
+  });
+
+  test('zoom persists per series only after opt-in and clamps finite values', () async {
+    await settings.write(SettingsService.videoZoomScope, PlayerSettingScope.title);
+    await ScopedPlayerPrefs.write(ScopedPlayerPrefs.videoZoom, episode(), 1.4);
+    expect(ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.videoZoom, episode(id: 'ep-2')), 1.4);
+    expect(ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.videoZoom, episode(series: 'other')), 1.0);
+    await ScopedPlayerPrefs.write(ScopedPlayerPrefs.videoZoom, episode(), 99.0);
+    expect(ScopedPlayerPrefs.resolve(ScopedPlayerPrefs.videoZoom, episode()), 2.0);
+    await settings.write(SettingsService.defaultVideoZoom, double.nan);
+    expect(settings.read(SettingsService.defaultVideoZoom), 1.0);
+  });
+
   group('title scope', () {
     setUp(() async {
       await settings.write(SettingsService.playbackSpeedScope, PlayerSettingScope.title);

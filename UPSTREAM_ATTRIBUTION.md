@@ -196,3 +196,13 @@ endorsement of this fork.
 - [Light-theme scrim color interpolation](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
 
 - [Transparent status-bar styling](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Scoped custom video zoom](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted zoom persistence and finite bounds, retaining profile-keyed resets and agent validation. Zoom remains session-only by default.
+
+- [Hold playback beneath the resume profile picker](https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted pause the covered player and refuse native, media-session, Watch Together and Play Next resume intents until profile selection finishes, preserving Automotive restrictions and active PiP.
+
+- [Windows pending-resize engine correction](https://github.com/edde746/plezy/commit/90b7ccca68cffcfe51fc8994c3463fcbf769ec18), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted pin the checksum-verified +2 engine for the existing Flutter ABI, retaining DirectComposition and x64/arm64 cache layouts; native Windows qualification remains separate.
+
+- [Stable package publication metadata guard](https://github.com/edde746/plezy/commit/1dd75b3e5e95913cdaa5b8c22911490e72dfb7c5), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted reject GitHub pre-releases even when their tags look like stable versions, retaining manual publication and the fork publisher.
+
+- [System certificate authorities for GitHub asset redirects](https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted retain system-only certificate trust through githubusercontent.com redirects on Android and dart:io, without enabling the upstream anime-feed migration.

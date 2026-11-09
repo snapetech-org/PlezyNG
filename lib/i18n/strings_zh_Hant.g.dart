@@ -718,6 +718,7 @@ class _Translations$settings$zh_Hant extends Translations$settings$zh {
 	@override String get scopePlaybackSpeed => '播放速度';
 	@override String get scopeShaderPreset => '著色器預設';
 	@override String get scopeAspectRatio => '顯示比例';
+	@override String get scopeZoom => '縮放';
 	@override String get scopeSyncOffsets => '音訊與字幕同步';
 	@override String get playerScopeOff => '不要儲存';
 	@override String get playerScopeGlobal => '全部';
@@ -5953,6 +5954,7 @@ extension on TranslationsZhHant {
 			'settings.scopePlaybackSpeed' => '播放速度',
 			'settings.scopeShaderPreset' => '著色器預設',
 			'settings.scopeAspectRatio' => '顯示比例',
+			'settings.scopeZoom' => '縮放',
 			'settings.scopeSyncOffsets' => '音訊與字幕同步',
 			'settings.playerScopeOff' => '不要儲存',
 			'settings.playerScopeGlobal' => '全部',
@@ -6396,9 +6398,9 @@ extension on TranslationsZhHant {
 			'videoControls.addBookmark' => '新增 Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark 名稱',
 			'videoControls.bookmarkNameHint' => '例如,開幕式',
-			'videoControls.bookmarkDefaultName' => ({required Object n}) => '圖示 ${n}',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkDefaultName' => ({required Object n}) => '圖示 ${n}',
 			'videoControls.bookmarkNameRequired' => '請輸入本書標誌的名稱。',
 			'videoControls.deleteBookmark' => '刪除 Bookmark',
 			'videoControls.bookmarkLimitReached' => '這個專案已經有100個字元。',
@@ -6910,9 +6912,9 @@ extension on TranslationsZhHant {
 			'libraries.content' => '媒體庫內容',
 			'libraries.selectLibrary' => '選擇媒體庫',
 			'libraries.filtersWithCount' => ({required Object count}) => '篩選器（${count}）',
-			'libraries.noRecommendations' => '目前沒有推薦',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.noRecommendations' => '目前沒有推薦',
 			'libraries.noCollections' => '此媒體庫中沒有收藏集',
 			'libraries.noFoldersFound' => '找不到資料夾',
 			'libraries.folders' => '資料夾',
@@ -7424,9 +7426,9 @@ extension on TranslationsZhHant {
 			'watchTogether.shareInvite' => '分享邀請',
 			'watchTogether.inviteCopied' => '已複製邀請。請將其貼到訊息中。',
 			'watchTogether.inviteMessage' => ({required Object code}) => '來 Pleazyng 加入我的「一起看」房間：開啟「一起看」，選擇「加入房間」，然後輸入 ${code}。',
-			'watchTogether.openSessionControls' => '開啟「一起看」工作階段控制面板',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.openSessionControls' => '開啟「一起看」工作階段控制面板',
 			'watchTogether.reconnecting' => '正在重新連線…',
 			'watchTogether.reconnectingDescription' => '連線已中斷。您將自動重新加入房間。',
 			'watchTogether.connected' => '已連線',
@@ -7938,9 +7940,9 @@ extension on TranslationsZhHant {
 			'metadataEdit.metadataUpdateFailed' => '中繼資料更新失敗',
 			'metadataEdit.artworkUpdated' => '封面圖片已更新',
 			'metadataEdit.artworkUpdateFailed' => '封面圖片更新失敗',
-			'metadataEdit.noArtworkAvailable' => '沒有可用的封面圖片',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.noArtworkAvailable' => '沒有可用的封面圖片',
 			'metadataEdit.artworkOption' => ({required Object index}) => '封面圖片選項 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面圖片選項 ${index}，已選擇',
 			'metadataEdit.notSet' => '未設定',
@@ -8452,9 +8454,9 @@ extension on TranslationsZhHant {
 			'universalMedia.queuePlaylistFolderRequired' => '請選擇與佇列檔案相同資料夾中的儲存位置。',
 			'universalMedia.noFavorites' => '尚未儲存流喜愛. 喜愛留在此個人資料中。',
 			'universalMedia.removeFavorite' => '刪除流喜愛',
-			'universalMedia.filesHelp' => '選擇音訊、影片或ISO檔案,以便進行臨時記錄. 檔案和URL不新增到圖書館歷史。',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.filesHelp' => '選擇音訊、影片或ISO檔案,以便進行臨時記錄. 檔案和URL不新增到圖書館歷史。',
 			'universalMedia.chooseFiles' => '選擇檔案',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 選擇的檔案', other: '${count} 已選擇的檔案', ), 
 			'universalMedia.wifiTransfer' => '透過 Wi-Fi 傳送檔案',
@@ -8966,9 +8968,9 @@ extension on TranslationsZhHant {
 			'sourceSetup.metadataMatchHelp' => '選擇前請核對標題與年份。Trakt 會收到搜尋標題；影片檔案會保留在原來源中。',
 			'sourceSetup.metadataNoMatches' => '找不到符合的線上標題。請嘗試其他標題。',
 			'sourceSetup.metadataSearch' => '搜尋線上中繼資料',
-			'sourceSetup.metadataLoading' => '正在查詢線上電影與影集資訊…',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataLoading' => '正在查詢線上電影與影集資訊…',
 			'sourceSetup.metadataFromTrakt' => '來自 Trakt 的線上中繼資料',
 			'sourceSetup.metadataNoAutomaticMatch' => '找不到自動符合的標題。請搜尋標題並選擇符合的結果。',
 			'sourceSetup.metadataFailed' => '無法載入線上中繼資料。仍可播放媒體及查看本機資訊。',

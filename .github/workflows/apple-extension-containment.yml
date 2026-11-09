@@ -1,0 +1,23 @@
+name: Apple extension containment
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/games/inspect_apple_extension_sdk.py', '.github/workflows/apple-extension-containment.yml', 'native/games/romm/apple/extension/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sdk-contract:
+    runs-on: macos-26-intel
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: python3 scripts/games/inspect_apple_extension_sdk.py
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: romm-extension-sdk-contract
+          path: build/romm-extension-sdk
+          if-no-files-found: error
+          retention-days: 14

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Run arm64-only tvOS simulator qualification on the documented Apple Silicon hosted runner, preserving Intel hosted lanes for compatible iOS/macOS checks. An Intel simulator host cannot execute the required tvOS arm64 destination.
+
 - Preserve compressed RomM source archives and their receipt hashes inside Android packages by using asset-safe filenames; retire only prior archives verified by their own receipts.
 
 - Package the embedded Android Moonlight and Steam receiver modules in ordinary app builds, including their native libraries and activity/stream implementations. Previously Gradle configured the modules without linking them into the application.

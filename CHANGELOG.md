@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.
+
 - Publish a responsive website feature comparison and link it from About and the repository. Use neutral capability names, concise comparison cells and linked evidence; preserve the current logo.
 - Run desktop RomM cores in a separate sandboxed helper with bounded IPC, crash/hang recovery, parent-owned audio/saves, and OS-confirmed teardown. Package and sign the macOS helper, restrict Windows cores with AppContainer, and require Landlock/seccomp on Linux. Add real worker-fault validation across desktop operating systems; mobile and TV containment remains tracked separately.
 - Automatically migrate untouched legacy webOS credentials to authenticated storage during startup, preserving concurrent changes and recoverability after interrupted writes.

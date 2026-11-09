@@ -522,24 +522,25 @@ in the audited feature inventory; third-party plugins and external workarounds
 are not counted. **Experimental** and **Partial** describe implemented paths
 with remaining qualification or functionality limits. Plex includes its
 official apps, Plex Media Server, Plexamp and Plex Photos where named.
+Each cell puts its status first, with scope notes in italic parentheses below it.
 See the [comparison notes, sources and remaining gaps](docs/FEATURE_COMPARISON.md).
 
 ### Capabilities outside these clients
 
 | Feature | Plex | Plezy | Pleazyng |
 | --- | --- | --- | --- |
-| [Full browser player and server-management UI](docs/FEATURE_COMPARISON.md#browser-client) | Yes | — | —; browser-based book reading is a separate feature |
-| [Roku, PlayStation and Xbox apps](docs/FEATURE_COMPARISON.md#device-coverage) | Yes | — | — |
-| [Free movies/shows and FAST channels](docs/FEATURE_COMPARISON.md#plex-hosted-content) | Yes | — | —; personal-server TV and independent IPTV are different sources |
-| [Movie rentals and purchases](docs/FEATURE_COMPARISON.md#rentals-and-purchases) | Yes | — | Storefront links only; no rental-library playback |
-| [Photo libraries, albums and slideshows](docs/FEATURE_COMPARISON.md#photo-libraries) | Yes | — | —; artwork screensavers and comic images are not photo-library support |
-| [Social profiles and shareable lists](docs/FEATURE_COMPARISON.md#social-and-lists) | Yes | Watchlist/catalog integration only | Watchlist/catalog integration and local shortlists; no equivalent social network |
-| [Interactive music journeys and AI DJ controls](docs/FEATURE_COMPARISON.md#plexamp-specialized-features) | Yes | —; ordinary Instant Mix is available | —; ordinary Instant Mix is available |
-| [CarPlay / Android Auto projection, Siri music integration](docs/FEATURE_COMPARISON.md#car-and-voice-integrations) | Yes | — | —; Android Automotive layout detection is not a projection integration |
-| [Headless Raspberry Pi music endpoint](docs/FEATURE_COMPARISON.md#headless-music) | Yes | — | — |
-| [Companion remote protocol / Alexa / Sonos integrations](docs/FEATURE_COMPARISON.md#companion-protocol) | Limited; platform restrictions apply | Own Plezy Remote protocol | Own remote and automation links; different protocol |
-| [Server-assisted external-SRT Auto-Sync](docs/FEATURE_COMPARISON.md#server-subtitle-auto-sync) | Yes | — | Local subtitle tools; no equivalent server auto-sync request workflow |
-| [Server hosting, analysis and sharing administration](docs/FEATURE_COMPARISON.md#server-owned-capabilities) | Yes | Uses an existing server | Uses an existing server; does not replace its administration or analysis |
+| [Full browser player and server-management UI](docs/FEATURE_COMPARISON.md#browser-client) | **Yes** | **—** | **—**<br>*(browser-based book reading is a separate feature)* |
+| [Roku, PlayStation and Xbox apps](docs/FEATURE_COMPARISON.md#device-coverage) | **Yes** | **—** | **—** |
+| [Free movies/shows and FAST channels](docs/FEATURE_COMPARISON.md#plex-hosted-content) | **Yes** | **—** | **—**<br>*(personal-server TV and independent IPTV are different sources)* |
+| [Movie rentals and purchases](docs/FEATURE_COMPARISON.md#rentals-and-purchases) | **Yes** | **—** | **Storefront links only**<br>*(no rental-library playback)* |
+| [Photo libraries, albums and slideshows](docs/FEATURE_COMPARISON.md#photo-libraries) | **Yes** | **—** | **—**<br>*(artwork screensavers and comic images are not photo-library support)* |
+| [Social profiles and shareable lists](docs/FEATURE_COMPARISON.md#social-and-lists) | **Yes** | **Watchlist/catalog integration only** | **Watchlist/catalog integration and local shortlists**<br>*(no equivalent social network)* |
+| [Interactive music journeys and AI DJ controls](docs/FEATURE_COMPARISON.md#plexamp-specialized-features) | **Yes** | **—**<br>*(ordinary Instant Mix is available)* | **—**<br>*(ordinary Instant Mix is available)* |
+| [CarPlay / Android Auto projection, Siri music integration](docs/FEATURE_COMPARISON.md#car-and-voice-integrations) | **Yes** | **—** | **—**<br>*(Android Automotive layout detection is not a projection integration)* |
+| [Headless Raspberry Pi music endpoint](docs/FEATURE_COMPARISON.md#headless-music) | **Yes** | **—** | **—** |
+| [Companion remote protocol / Alexa / Sonos integrations](docs/FEATURE_COMPARISON.md#companion-protocol) | **Limited**<br>*(platform restrictions apply)* | **Own Plezy Remote protocol** | **Own remote and automation links**<br>*(different protocol)* |
+| [Server-assisted external-SRT Auto-Sync](docs/FEATURE_COMPARISON.md#server-subtitle-auto-sync) | **Yes** | **—** | **Local subtitle tools**<br>*(no equivalent server auto-sync request workflow)* |
+| [Server hosting, analysis and sharing administration](docs/FEATURE_COMPARISON.md#server-owned-capabilities) | **Yes** | **Uses an existing server** | **Uses an existing server**<br>*(does not replace its administration or analysis)* |
 
 ### Plezy features inherited by Pleazyng that differ from Plex
 
@@ -549,14 +550,14 @@ link the audited upstream inventory.
 
 | Feature | Plex | Plezy | Pleazyng |
 | --- | --- | --- | --- |
-| [Plex, Jellyfin and Emby together in one client](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | Plex servers only | Yes | Yes — inherited |
-| [Combined cross-backend search and duplicate-copy selection](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | Plex ecosystem | Yes | Yes — inherited, extended with Files/books/catalogs |
-| [Trakt, MyAnimeList, AniList and Simkl catalogs, watchlists and scrobbling](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | No equivalent built-in multi-tracker workflow | Yes | Yes — inherited |
-| [Seerr requests with season, 4K and destination choices](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | External tools needed | Yes | Yes — inherited |
-| [Open Watch Party across users' own Plex/Jellyfin/Emby copies](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | Plex Watch Together remains in Web; being retired from new native apps | Yes | Yes — inherited; additional recovery/room controls |
-| [MPV shader controls and configurable ASS/SSA rendering](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | Client-dependent subtitle/rendering controls | Yes — supported player paths | Yes — inherited, with additional tools below |
-| [External Android player handoff with progress returned to the app](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | No equivalent documented workflow | Yes | Yes — inherited |
-| [Open-source application that can be built and modified](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | Official apps/server are proprietary | Yes — GPL-3.0 | Yes — GPL-3.0; dependencies retain their own licenses |
+| [Plex, Jellyfin and Emby together in one client](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **Plex servers only** | **Yes** | **Yes**<br>*(inherited)* |
+| [Combined cross-backend search and duplicate-copy selection](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **Plex ecosystem** | **Yes** | **Yes**<br>*(inherited, extended with Files/books/catalogs)* |
+| [Trakt, MyAnimeList, AniList and Simkl catalogs, watchlists and scrobbling](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **No equivalent built-in multi-tracker workflow** | **Yes** | **Yes**<br>*(inherited)* |
+| [Seerr requests with season, 4K and destination choices](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **External tools needed** | **Yes** | **Yes**<br>*(inherited)* |
+| [Open Watch Party across users' own Plex/Jellyfin/Emby copies](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **Plex Watch Together remains in Web**<br>*(being retired from new native apps)* | **Yes** | **Yes**<br>*(inherited; additional recovery/room controls)* |
+| [MPV shader controls and configurable ASS/SSA rendering](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **Client-dependent subtitle/rendering controls** | **Yes**<br>*(supported player paths)* | **Yes**<br>*(inherited, with additional tools below)* |
+| [External Android player handoff with progress returned to the app](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **No equivalent documented workflow** | **Yes** | **Yes**<br>*(inherited)* |
+| [Open-source application that can be built and modified](docs/FEATURE_COMPARISON.md#inherited-plezy-baseline) | **Official apps/server are proprietary** | **Yes**<br>*(GPL-3.0)* | **Yes**<br>*(GPL-3.0; dependencies retain their own licenses)* |
 
 ### Pleazyng additions without an equivalent in either inventory
 
@@ -566,48 +567,48 @@ lacks music, subtitles, recommendations or file playback in general.
 
 | Feature | Plex | Plezy | Pleazyng |
 | --- | --- | --- | --- |
-| [Serverless Files and books profiles](docs/FILES_AND_BOOKS.md) | — | — | Yes — no media-server account needed |
-| [Direct SMB, NFS, FTP/FTPS, SFTP, DLNA, WebDAV and S3 source browsing](docs/FILES_AND_BOOKS.md) | Server can mount storage; not this direct-client workflow | — | Yes — provider/platform limits apply |
-| [Google Drive, OneDrive and Dropbox source libraries](docs/FILES_AND_BOOKS.md) | — | — | Yes — configured account/provider required |
-| [Local/NAS video libraries with NFO/poster sidecars and metadata matching](docs/FILES_AND_BOOKS.md) | Server-managed libraries instead | — | Yes — direct-source indexing, offline sidecars and confidence-gated lookups |
-| [OPDS catalogs and EPUB/PDF reading with notes, highlights and read-along](docs/FILES_AND_BOOKS.md) | — | — | Yes — document reading is not available on TV; Linux uses a browser surface |
-| [Komga / CBZ comic reading with spreads, RTL and page controls](docs/plezyng/comics/DELIVERY.md) | — | — | Yes — reader/platform qualification limits documented |
-| [Audiobookshelf and dedicated multipart audiobook workflows](docs/FILES_AND_BOOKS.md) | Music-library workarounds, not a dedicated book client | — | Yes — ordering, chapters, bookmarks, speed and resume |
-| [Hardcover shelves and edition-aware reading-progress updates](docs/plezyng/service-integrations/README.md) | — | — | Yes — preview/undo; exact edition matching |
-| [Open Library / Google Books discovery and book/comic storefront handoffs](docs/plezyng/service-integrations/README.md) | Video discovery, not these book workflows | — | Yes — catalog/link access does not imply ownership or playback |
-| [Encrypted reading/listening progress and annotation sync](docs/FILES_AND_BOOKS.md) | — | — | Yes — supported storage targets; explicit conflict resolution |
-| [Find your next mixed-media discovery deck](docs/plezyng/swipe/README.md) | Video discovery, not a mixed book/comic/audio/video deck | — | Yes — source, genre, mood, familiarity and offline filters |
-| [Saved picks, undo/history, pick comparison and co-present voting](docs/plezyng/swipe/DELIVERY.md) | Watchlists/Lists, not this local decision workflow | — | Yes — optional encrypted sync |
-| [User-configured AI reranking of mixed-media picks](docs/plezyng/swipe/README.md) | — | — | Opt-in — ordinary ranking remains available |
-| [Debrid cloud-file libraries and durable preparation jobs](docs/plezyng/remote-streams/README.md) | — | — | Implemented — Real-Debrid, AllDebrid, Premiumize and TorBox; live-provider qualification remains open |
-| [Stremio add-on catalogs and stream selection](docs/plezyng/remote-streams/README.md) | — | — | Implemented — HTTPS add-ons, account import and source-local resume |
-| [Native libtorrent source streaming](docs/plezyng/remote-streams/IMPLEMENTATION.md) | — | — | Requires the compatible packaged runtime; provider/device limits apply |
-| [OpenSubsonic/Subsonic music-server browsing and playback](docs/FILES_AND_BOOKS.md) | Plex music servers only | — | Yes — configured server; local resume, no provider-side scrobbling |
-| [RSS/Atom podcasts, directory discovery, OPML and podcast chapters](docs/plezyng/podcasts/IMPLEMENTATION.md) | Native podcast service retired | — | Yes — Apple Podcasts / optional Podcast Index / Audiobookshelf |
-| [Podcast auto-download/retention and optional gpodder sync](docs/plezyng/podcasts/CLIENT_CONTRACT.md) | — | — | Implemented — protocol/device qualification limits apply |
-| [Karaoke songbook, singer rotation and CD+G/timed-lyric workflows](docs/plezyng/karaoke/PLAN.md) | — | — | Partial — licensed catalogs and native microphone monitoring remain open |
-| [Profile-owned M3U/XMLTV, Xtream, Tunerr, Dispatcharr and Stalker IPTV](docs/plezyng/iptv/PLAN.md) | Tuner/DVR support is a different workflow | — | Partial — source adapters exist; plan reconciliation, provider and device acceptance remain open |
-| [Universal network inputs, radio playlists, ISO/disc inputs and source queues](docs/UNIVERSAL_MEDIA.md) | Some apps open local video; no equivalent universal input workflow | — | Yes — HTTP(S), HLS, RTSP/RTMP, UDP/RTP and supported file/disc paths |
-| [Desktop folder queues and sibling-relative M3U export](docs/UNIVERSAL_MEDIA.md) | — | — | Yes — explicit local inputs and bounded scans |
-| [Foreground Wi-Fi file transfer into profile-owned storage](docs/UNIVERSAL_MEDIA.md#transfer-files-over-wi-fi) | — | — | Yes — desktop/handheld Android; active session required |
-| [Desktop screen/camera capture and live preview](docs/UNIVERSAL_MEDIA.md) | — | — | Yes — compatible devices/FFmpeg/MPV required |
-| [Temporary private-LAN HLS sharing](docs/UNIVERSAL_MEDIA.md) | Media Server sharing is a different service | — | Yes — session-owned sharing from desktop |
-| [Local conversion/remux and live-stream recording](docs/UNIVERSAL_MEDIA.md) | Server optimization is a different workflow | — | Yes — supported desktop tools/encoders required |
-| [Data-only search extensions and bundled `plezyctl` media tools](docs/UNIVERSAL_MEDIA.md) | Public API, not this bundled tool workflow | — | Yes — HTTPS search providers and existing Open media UI |
-| [Named local playback bookmarks and A/B segment looping](docs/VLC_FEATURE_PARITY.md) | — | — | Yes — supported seekable player paths |
-| [Local speech-to-subtitle, translation and bilingual revision review](docs/plezyng/subtitles/PLAN.md) | Subtitle search/auto-sync, not a local transcription/translation editor | — | Implemented — local models/audio inputs and export/attachment limits apply |
-| [Live caption/transcript capture and search](docs/plezyng/subtitles/LIVE_CAPTURE.md) | — | — | Partial — native capture/backend support required; webOS needs supplied audio |
-| [Motion & clarity presets, blending and motion-compensated frame generation](docs/plezyng/motion-clarity/guide.md) | —; TV/driver processing is external | — | Yes on compatible MPV paths; platform limits apply |
-| [Neural / NPU motion processing](docs/plezyng/motion-processing.md) | — | — | Experimental — included on compatible platforms; Settings opt-in, off by default |
-| [Dolby Vision Profile 7 FEL reconstruction experiments](docs/maintainers/dv-platform-buildout.md) | Native DV playback is not a general FEL reconstruction control | — | Experimental — normal compatible builds; Settings opt-in, off by default |
-| [Offline FEL-to-HDR/SDR processing tools](docs/maintainers/dv-platform-buildout.md) | — | — | Experimental — packaged compatible tools; output qualification remains separate |
-| [Importable projectM/MilkRust visualizer preset packs](docs/plezyng/visualizations/USER_GUIDE.md) | Built-in Plexamp visuals, not this preset-pack workflow | — | Experimental — native engine/PCM/runtime requirements apply |
-| [Embedded GameStream/Moonlight game receiver](docs/games/ARCHITECTURE.md) | Plex Arcade retired; not a GameStream client | — | Experimental — Android and compatible hosts |
-| [Embedded Steam receivers and game-session controls](docs/games/ARCHITECTURE.md) | — | — | Experimental — host, SDK and network qualification varies |
-| [RomM catalogs, play routes, offline games and save sync](docs/games/ROMM_INTEGRATION.md) | — | — | Partial — core/signing/device limits documented |
-| [App-owned floating / side-by-side Multiview workspace](docs/plezyng/multiview/DELIVERY.md) | — | — | Partial — concurrent decoding/composition limits; detached windows unfinished |
-| [Local PIN gates for Settings, download deletion and Explore](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | Plex Home PIN is a different account control | — | Yes — profile-local gates and Explore visibility |
-| [Portable settings backup/restore through HTTPS WebDAV](docs/plezyng/HANDOFF.md#remaining-work-and-platform-limits) | — | Local settings import/export only | Yes — excludes credentials, media and history |
+| [Serverless Files and books profiles](docs/FILES_AND_BOOKS.md) | **—** | **—** | **Yes**<br>*(no media-server account needed)* |
+| [Direct SMB, NFS, FTP/FTPS, SFTP, DLNA, WebDAV and S3 source browsing](docs/FILES_AND_BOOKS.md) | **Server can mount storage**<br>*(not this direct-client workflow)* | **—** | **Yes**<br>*(provider/platform limits apply)* |
+| [Google Drive, OneDrive and Dropbox source libraries](docs/FILES_AND_BOOKS.md) | **—** | **—** | **Yes**<br>*(configured account/provider required)* |
+| [Local/NAS video libraries with NFO/poster sidecars and metadata matching](docs/FILES_AND_BOOKS.md) | **Server-managed libraries instead** | **—** | **Yes**<br>*(direct-source indexing, offline sidecars and confidence-gated lookups)* |
+| [OPDS catalogs and EPUB/PDF reading with notes, highlights and read-along](docs/FILES_AND_BOOKS.md) | **—** | **—** | **Yes**<br>*(document reading is not available on TV; Linux uses a browser surface)* |
+| [Komga / CBZ comic reading with spreads, RTL and page controls](docs/plezyng/comics/DELIVERY.md) | **—** | **—** | **Yes**<br>*(reader/platform qualification limits documented)* |
+| [Audiobookshelf and dedicated multipart audiobook workflows](docs/FILES_AND_BOOKS.md) | **Music-library workarounds, not a dedicated book client** | **—** | **Yes**<br>*(ordering, chapters, bookmarks, speed and resume)* |
+| [Hardcover shelves and edition-aware reading-progress updates](docs/plezyng/service-integrations/README.md) | **—** | **—** | **Yes**<br>*(preview/undo; exact edition matching)* |
+| [Open Library / Google Books discovery and book/comic storefront handoffs](docs/plezyng/service-integrations/README.md) | **Video discovery, not these book workflows** | **—** | **Yes**<br>*(catalog/link access does not imply ownership or playback)* |
+| [Encrypted reading/listening progress and annotation sync](docs/FILES_AND_BOOKS.md) | **—** | **—** | **Yes**<br>*(supported storage targets; explicit conflict resolution)* |
+| [Find your next mixed-media discovery deck](docs/plezyng/swipe/README.md) | **Video discovery, not a mixed book/comic/audio/video deck** | **—** | **Yes**<br>*(source, genre, mood, familiarity and offline filters)* |
+| [Saved picks, undo/history, pick comparison and co-present voting](docs/plezyng/swipe/DELIVERY.md) | **Watchlists/Lists, not this local decision workflow** | **—** | **Yes**<br>*(optional encrypted sync)* |
+| [User-configured AI reranking of mixed-media picks](docs/plezyng/swipe/README.md) | **—** | **—** | **Opt-in**<br>*(ordinary ranking remains available)* |
+| [Debrid cloud-file libraries and durable preparation jobs](docs/plezyng/remote-streams/README.md) | **—** | **—** | **Implemented**<br>*(Real-Debrid, AllDebrid, Premiumize and TorBox; live-provider qualification remains open)* |
+| [Stremio add-on catalogs and stream selection](docs/plezyng/remote-streams/README.md) | **—** | **—** | **Implemented**<br>*(HTTPS add-ons, account import and source-local resume)* |
+| [Native libtorrent source streaming](docs/plezyng/remote-streams/IMPLEMENTATION.md) | **—** | **—** | **Requires the compatible packaged runtime**<br>*(provider/device limits apply)* |
+| [OpenSubsonic/Subsonic music-server browsing and playback](docs/FILES_AND_BOOKS.md) | **Plex music servers only** | **—** | **Yes**<br>*(configured server; local resume, no provider-side scrobbling)* |
+| [RSS/Atom podcasts, directory discovery, OPML and podcast chapters](docs/plezyng/podcasts/IMPLEMENTATION.md) | **Native podcast service retired** | **—** | **Yes**<br>*(Apple Podcasts / optional Podcast Index / Audiobookshelf)* |
+| [Podcast auto-download/retention and optional gpodder sync](docs/plezyng/podcasts/CLIENT_CONTRACT.md) | **—** | **—** | **Implemented**<br>*(protocol/device qualification limits apply)* |
+| [Karaoke songbook, singer rotation and CD+G/timed-lyric workflows](docs/plezyng/karaoke/PLAN.md) | **—** | **—** | **Partial**<br>*(licensed catalogs and native microphone monitoring remain open)* |
+| [Profile-owned M3U/XMLTV, Xtream, Tunerr, Dispatcharr and Stalker IPTV](docs/plezyng/iptv/PLAN.md) | **Tuner/DVR support is a different workflow** | **—** | **Partial**<br>*(source adapters exist; plan reconciliation, provider and device acceptance remain open)* |
+| [Universal network inputs, radio playlists, ISO/disc inputs and source queues](docs/UNIVERSAL_MEDIA.md) | **Some apps open local video**<br>*(no equivalent universal input workflow)* | **—** | **Yes**<br>*(HTTP(S), HLS, RTSP/RTMP, UDP/RTP and supported file/disc paths)* |
+| [Desktop folder queues and sibling-relative M3U export](docs/UNIVERSAL_MEDIA.md) | **—** | **—** | **Yes**<br>*(explicit local inputs and bounded scans)* |
+| [Foreground Wi-Fi file transfer into profile-owned storage](docs/UNIVERSAL_MEDIA.md#transfer-files-over-wi-fi) | **—** | **—** | **Yes**<br>*(desktop/handheld Android; active session required)* |
+| [Desktop screen/camera capture and live preview](docs/UNIVERSAL_MEDIA.md) | **—** | **—** | **Yes**<br>*(compatible devices/FFmpeg/MPV required)* |
+| [Temporary private-LAN HLS sharing](docs/UNIVERSAL_MEDIA.md) | **Media Server sharing is a different service** | **—** | **Yes**<br>*(session-owned sharing from desktop)* |
+| [Local conversion/remux and live-stream recording](docs/UNIVERSAL_MEDIA.md) | **Server optimization is a different workflow** | **—** | **Yes**<br>*(supported desktop tools/encoders required)* |
+| [Data-only search extensions and bundled `plezyctl` media tools](docs/UNIVERSAL_MEDIA.md) | **Public API, not this bundled tool workflow** | **—** | **Yes**<br>*(HTTPS search providers and existing Open media UI)* |
+| [Named local playback bookmarks and A/B segment looping](docs/VLC_FEATURE_PARITY.md) | **—** | **—** | **Yes**<br>*(supported seekable player paths)* |
+| [Local speech-to-subtitle, translation and bilingual revision review](docs/plezyng/subtitles/PLAN.md) | **Subtitle search/auto-sync, not a local transcription/translation editor** | **—** | **Implemented**<br>*(local models/audio inputs and export/attachment limits apply)* |
+| [Live caption/transcript capture and search](docs/plezyng/subtitles/LIVE_CAPTURE.md) | **—** | **—** | **Partial**<br>*(native capture/backend support required; webOS needs supplied audio)* |
+| [Motion & clarity presets, blending and motion-compensated frame generation](docs/plezyng/motion-clarity/guide.md) | **—**<br>*(TV/driver processing is external)* | **—** | **Yes on compatible MPV paths**<br>*(platform limits apply)* |
+| [Neural / NPU motion processing](docs/plezyng/motion-processing.md) | **—** | **—** | **Experimental**<br>*(included on compatible platforms; Settings opt-in, off by default)* |
+| [Dolby Vision Profile 7 FEL reconstruction experiments](docs/maintainers/dv-platform-buildout.md) | **Native DV playback is not a general FEL reconstruction control** | **—** | **Experimental**<br>*(normal compatible builds; Settings opt-in, off by default)* |
+| [Offline FEL-to-HDR/SDR processing tools](docs/maintainers/dv-platform-buildout.md) | **—** | **—** | **Experimental**<br>*(packaged compatible tools; output qualification remains separate)* |
+| [Importable projectM/MilkRust visualizer preset packs](docs/plezyng/visualizations/USER_GUIDE.md) | **Built-in Plexamp visuals, not this preset-pack workflow** | **—** | **Experimental**<br>*(native engine/PCM/runtime requirements apply)* |
+| [Embedded GameStream/Moonlight game receiver](docs/games/ARCHITECTURE.md) | **Plex Arcade retired**<br>*(not a GameStream client)* | **—** | **Experimental**<br>*(Android and compatible hosts)* |
+| [Embedded Steam receivers and game-session controls](docs/games/ARCHITECTURE.md) | **—** | **—** | **Experimental**<br>*(host, SDK and network qualification varies)* |
+| [RomM catalogs, play routes, offline games and save sync](docs/games/ROMM_INTEGRATION.md) | **—** | **—** | **Partial**<br>*(core/signing/device limits documented)* |
+| [App-owned floating / side-by-side Multiview workspace](docs/plezyng/multiview/DELIVERY.md) | **—** | **—** | **Partial**<br>*(concurrent decoding/composition limits; detached windows unfinished)* |
+| [Local PIN gates for Settings, download deletion and Explore](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | **Plex Home PIN is a different account control** | **—** | **Yes**<br>*(profile-local gates and Explore visibility)* |
+| [Portable settings backup/restore through HTTPS WebDAV](docs/plezyng/HANDOFF.md#remaining-work-and-platform-limits) | **—** | **Local settings import/export only** | **Yes**<br>*(excludes credentials, media and history)* |
 
 ### Other Pleazyng extensions to existing features
 
@@ -617,32 +618,32 @@ of the whole feature category.
 
 | Feature | Plex | Plezy | Pleazyng |
 | --- | --- | --- | --- |
-| [Converted downloads, per-rule quality and Continue Watching cleanup](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | Downloads, quality and keep/unplayed rules; Plex requirements apply | Downloads and automatic sync rules | Adds per-rule quality, shelf-driven cleanup and cross-server conversion; live-server limits documented |
-| [Pre-play track selection, per-show memory and subtitle automation](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | Account/player track preferences and subtitle search | Per-title/server track choices | Adds per-show and pre-play workflows, preferred-language fetching and scoped offsets |
-| [Dual subtitles, cue alignment and drift/cut correction](docs/plezyng/subtitles/PLAN.md) | Server-assisted external-SRT Auto-Sync with Plex Pass | Track, styling and timing controls | Adds local cue/two-anchor/review tools on compatible paths; not identical to Plex Auto-Sync |
-| [Ten-band EQ and video/audio effects](docs/VLC_FEATURE_PARITY.md) | Plexamp music EQ | Passthrough/channel/loudness controls | Adds MPV EQ, stereo widening, ambience and pitch controls; effects disable passthrough |
-| [Loudness-aware Sweet Fades and recorded-commercial marker skipping](docs/FEATURE_COMPARISON.md#client-playback-extensions) | Yes — Plexamp / compatible Plex players | Not listed in audited upstream features | Adds opt-in music fades and commercial-marker controls using server-provided data |
-| [Merged/custom Home rows and presentation controls](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | Customizable Plex sources/recommendations | TV layout and spotlight controls | Adds cross-server row composition, row sizing and separate Continue Watching / Next Up |
-| [Google Cast handoff](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | Yes — supported controller apps | Not listed in audited upstream features | Android/iOS handoff and progress reporting; receiver/network limits apply |
-| [LG webOS and Samsung Tizen packages](docs/FEATURE_COMPARISON.md#native-tv-ports) | Official apps | Not in audited upstream targets | Published native packages; model/firmware and device qualification remain limited |
-| [Media/profile/control automation links](docs/plezyng/android-automation.md) | Plex-specific integrations | Upstream app links and Plezy Remote | Canonical `pleazyng://` links, profile selection and active-video controls |
-| [LG native audio/subtitle paths and playback diagnostics](docs/maintainers/webos-tv.md) | Device-dependent codecs/subtitle rendering | No upstream LG port | Native LG route; SUP-sidecar overlay and source-aware diagnostics have documented limits |
+| [Converted downloads, per-rule quality and Continue Watching cleanup](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | **Downloads, quality and keep/unplayed rules**<br>*(Plex requirements apply)* | **Downloads and automatic sync rules** | **Adds per-rule quality, shelf-driven cleanup and cross-server conversion**<br>*(live-server limits documented)* |
+| [Pre-play track selection, per-show memory and subtitle automation](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | **Account/player track preferences and subtitle search** | **Per-title/server track choices** | **Adds per-show and pre-play workflows, preferred-language fetching and scoped offsets** |
+| [Dual subtitles, cue alignment and drift/cut correction](docs/plezyng/subtitles/PLAN.md) | **Server-assisted external-SRT Auto-Sync with Plex Pass** | **Track, styling and timing controls** | **Adds local cue/two-anchor/review tools on compatible paths**<br>*(not identical to Plex Auto-Sync)* |
+| [Ten-band EQ and video/audio effects](docs/VLC_FEATURE_PARITY.md) | **Plexamp music EQ** | **Passthrough/channel/loudness controls** | **Adds MPV EQ, stereo widening, ambience and pitch controls**<br>*(effects disable passthrough)* |
+| [Loudness-aware Sweet Fades and recorded-commercial marker skipping](docs/FEATURE_COMPARISON.md#client-playback-extensions) | **Yes**<br>*(Plexamp / compatible Plex players)* | **Not listed in audited upstream features** | **Adds opt-in music fades and commercial-marker controls using server-provided data** |
+| [Merged/custom Home rows and presentation controls](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | **Customizable Plex sources/recommendations** | **TV layout and spotlight controls** | **Adds cross-server row composition, row sizing and separate Continue Watching / Next Up** |
+| [Google Cast handoff](docs/plezyng/HANDOFF.md#implemented-in-this-work-branch) | **Yes**<br>*(supported controller apps)* | **Not listed in audited upstream features** | **Android/iOS handoff and progress reporting**<br>*(receiver/network limits apply)* |
+| [LG webOS and Samsung Tizen packages](docs/FEATURE_COMPARISON.md#native-tv-ports) | **Official apps** | **Not in audited upstream targets** | **Published native packages**<br>*(model/firmware and device qualification remain limited)* |
+| [Media/profile/control automation links](docs/plezyng/android-automation.md) | **Plex-specific integrations** | **Upstream app links and Plezy Remote** | **Canonical `pleazyng://` links, profile selection and active-video controls** |
+| [LG native audio/subtitle paths and playback diagnostics](docs/maintainers/webos-tv.md) | **Device-dependent codecs/subtitle rendering** | **No upstream LG port** | **Native LG route**<br>*(SUP-sidecar overlay and source-aware diagnostics have documented limits)* |
 
 <details>
 <summary>Shared feature baseline — already present in Plezy and retained by Pleazyng</summary>
 
 | Feature family | Plex | Plezy | Pleazyng |
 | --- | --- | --- | --- |
-| Movie/TV libraries, collections, playlists, search, filters and extras | Yes | Yes | Yes — inherited |
-| Continue Watching, resume, queues, shuffle, autoplay, chapters and thumbnails | Yes | Yes | Yes — inherited |
-| Direct play, server transcodes, track selection, HDR/DV and passthrough | Client/server/device dependent | Yes — compatible paths | Yes — inherited; platform limits apply |
-| Subtitles, styling, online search, speed, zoom, PiP and refresh matching | App/device dependent; some Plex Pass features | Yes — compatible paths | Yes — inherited and extended |
-| Music browsing, Instant Mix, gapless queues, lyrics and background controls | Yes — Plexamp / supported apps | Yes | Yes — inherited |
-| Personal-server Live TV, EPG and DVR controls | Yes — tuner/server/Plex Pass requirements | Yes — backend dependent | Yes — inherited and extended |
-| Offline downloads, queue management and automatic sync | Plex Pass / supported clients | Yes — no tvOS downloads | Yes — inherited and extended |
-| Profiles, Plex Home PIN switching, watch-state sync and metadata/art editing | Yes — appropriate permissions | Yes | Yes — inherited |
-| Remote-friendly navigation, desktop/mobile/TV layouts and platform integrations | App dependent | Yes | Yes — inherited |
-| Windows, macOS, Linux, Android/Fire TV, iOS and tvOS clients | Yes | Yes | Yes — inherited |
+| Movie/TV libraries, collections, playlists, search, filters and extras | **Yes** | **Yes** | **Yes**<br>*(inherited)* |
+| Continue Watching, resume, queues, shuffle, autoplay, chapters and thumbnails | **Yes** | **Yes** | **Yes**<br>*(inherited)* |
+| Direct play, server transcodes, track selection, HDR/DV and passthrough | **Client/server/device dependent** | **Yes**<br>*(compatible paths)* | **Yes**<br>*(inherited; platform limits apply)* |
+| Subtitles, styling, online search, speed, zoom, PiP and refresh matching | **App/device dependent**<br>*(some Plex Pass features)* | **Yes**<br>*(compatible paths)* | **Yes**<br>*(inherited and extended)* |
+| Music browsing, Instant Mix, gapless queues, lyrics and background controls | **Yes**<br>*(Plexamp / supported apps)* | **Yes** | **Yes**<br>*(inherited)* |
+| Personal-server Live TV, EPG and DVR controls | **Yes**<br>*(tuner/server/Plex Pass requirements)* | **Yes**<br>*(backend dependent)* | **Yes**<br>*(inherited and extended)* |
+| Offline downloads, queue management and automatic sync | **Plex Pass / supported clients** | **Yes**<br>*(no tvOS downloads)* | **Yes**<br>*(inherited and extended)* |
+| Profiles, Plex Home PIN switching, watch-state sync and metadata/art editing | **Yes**<br>*(appropriate permissions)* | **Yes** | **Yes**<br>*(inherited)* |
+| Remote-friendly navigation, desktop/mobile/TV layouts and platform integrations | **App dependent** | **Yes** | **Yes**<br>*(inherited)* |
+| Windows, macOS, Linux, Android/Fire TV, iOS and tvOS clients | **Yes** | **Yes** | **Yes**<br>*(inherited)* |
 
 </details>
 

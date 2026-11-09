@@ -1455,3 +1455,29 @@ jobs:
           path: ${{ github.workspace }}/packages/pleazyng-linux-x64.*
           if-no-files-found: error
           retention-days: 7
+
+  appimage-update-smoke:
+    name: AppImage update contract
+    if: ${{ inputs.execution_profile == 'hybrid' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install AppImage build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends zsync binutils
+      - name: Build and verify a fixture with the release packager
+        shell: bash
+        run: |
+          fixture="$RUNNER_TEMP/appimage-update-fixture"
+          mkdir -p "$fixture/bundle" "$fixture/output"
+          printf '#!/bin/sh\nexit 0\n' > "$fixture/bundle/pleazyng.sh"
+          chmod +x "$fixture/bundle/pleazyng.sh"
+          bash scripts/build_appimage.sh "$fixture/bundle" "$fixture/output" qa "$GITHUB_REPOSITORY"
+          python3 scripts/create_release_checksums.py "$fixture/output"
+          (cd "$fixture/output" && sha256sum --check SHA256SUMS.txt)

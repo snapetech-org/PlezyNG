@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'adapters/audiobookshelf_source.dart';
+import 'adapters/bookorbit_source.dart';
 import 'adapters/cloud_sources.dart';
 import 'adapters/dlna_source.dart';
 import 'adapters/ftp_source.dart';
@@ -1068,6 +1069,7 @@ class SourceController extends ChangeNotifier {
         credentials,
         persistCredentials: persistSourceCredentials,
       ),
+      FileSourceKind.bookorbit => BookOrbitSourceAdapter(source, transport, credentials),
       FileSourceKind.openSubsonic => OpenSubsonicSourceAdapter(source, transport, credentials),
       FileSourceKind.podcastRss => PodcastRssSourceAdapter(
         source,

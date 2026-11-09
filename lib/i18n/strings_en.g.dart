@@ -10616,6 +10616,9 @@ class Translations$sourceSetup$en {
 
 	// Translations
 
+	/// en: 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.'
+	String get bookorbitHelp => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.';
+
 	/// en: 'Saved server certificate'
 	String get savedCertificate => 'Saved server certificate';
 
@@ -21163,6 +21166,7 @@ extension on Translations {
 			'audiobook.recoveryImportConfirm' => 'Merge this encrypted recovery file with current reading positions and notes? Existing history will be retained. Shared library and item IDs are not included; set matching IDs on every device before importing.',
 			'audiobook.recoveryExported' => 'Encrypted recovery file saved.',
 			'audiobook.recoveryImported' => 'Recovery data merged.',
+			'sourceSetup.bookorbitHelp' => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.',
 			'sourceSetup.savedCertificate' => 'Saved server certificate',
 			'sourceSetup.projectGutenberg' => 'Project Gutenberg',
 			'sourceSetup.nfsEndpointInvalid' => 'Enter an NFS URL such as nfs://nas:2049/export.',
@@ -21327,9 +21331,9 @@ extension on Translations {
 			'games.touchResizeHint' => 'Enlarge this game window or use full screen to show the controller.',
 			'games.touchDescription' => 'Show the on-screen controller during a stream. It supports multiple fingers, sticks, buttons and triggers.',
 			'games.touchSetupHint' => 'Moonlight’s controller settings support position and opacity changes. During a Steam stream, open the stream menu to toggle its controller. Bluetooth or USB input is also supported.',
-			'games.addGame' => 'Add game shortcut',
 			_ => null,
 		} ?? switch (path) {
+			'games.addGame' => 'Add game shortcut',
 			'games.gameName' => 'Game name',
 			'games.gameId' => 'Host application ID',
 			'games.invalidGame' => 'Enter a game name and a positive numeric host application ID.',
@@ -21841,9 +21845,9 @@ extension on Translations {
 			'subtitleAiUi.useASameLanguageSRTVTTASSOrSSASubtit_4f603312' => 'Use a same-language SRT, VTT, ASS, or SSA subtitle as the timing reference',
 			'subtitleAiUi.syncAcrossSubtitleLanguages' => 'Sync across subtitle languages',
 			'subtitleAiUi.translateTargetTextLocallyForMatchin_8e05d8e7' => 'Translate target text locally for matching; keep its original text',
-			'subtitleAiUi.repairCutsAcrossSubtitleLanguages' => 'Repair cuts across subtitle languages',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.repairCutsAcrossSubtitleLanguages' => 'Repair cuts across subtitle languages',
 			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
 			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
 			'subtitleAiUi.applyPiecewiseOffsetsWhereDialogueAn_cfd3013c' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
@@ -22355,9 +22359,9 @@ extension on Translations {
 			'bonusExtras.hidePublisher' => 'Hide publisher',
 			'bonusExtras.remove' => 'Remove personal link',
 			'bonusExtras.openProvider' => 'Open in provider app or browser',
-			'bonusExtras.watchHere' => 'Watch here',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.watchHere' => 'Watch here',
 			'bonusExtras.sendToPhone' => 'Open on your phone',
 			'bonusExtras.copyLink' => 'Copy link',
 			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',

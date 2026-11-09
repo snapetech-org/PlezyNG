@@ -399,13 +399,14 @@ class SourceRepository {
       FileSourceKind.opds,
       FileSourceKind.s3,
       FileSourceKind.audiobookshelf,
+      FileSourceKind.bookorbit,
       FileSourceKind.komga,
       FileSourceKind.openSubsonic,
       FileSourceKind.podcastRss,
     }.contains(source.kind)) {
       final uri = Uri.parse(source.endpoint);
       validatePublicSourceUri(uri, allowHttp: source.options['allowHttp'] == 'true');
-      if (source.kind == FileSourceKind.openSubsonic &&
+      if ((source.kind == FileSourceKind.openSubsonic || source.kind == FileSourceKind.bookorbit) &&
           (uri.hasQuery || uri.pathSegments.any((part) => part == '.' || part == '..'))) {
         throw const SourceException(SourceFailure.permission);
       }

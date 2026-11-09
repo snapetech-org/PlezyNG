@@ -101,7 +101,7 @@ class ChannelRetryTests(unittest.TestCase):
 
     def test_chocolatey_publish_mode_is_derived_from_previous_run(self):
         self.previous.update(path='.github/workflows/publish-chocolatey.yml',
-                             display_title='action:publish-chocolatey:pool:private:tag:v3.0.1:publish:true')
+                             display_title='action:publish-chocolatey:pool:public:tag:v3.0.1:publish:true')
         _, dispatch = self.invoke()
         self.assertIn('publish=true', dispatch.call_args.args[0])
 

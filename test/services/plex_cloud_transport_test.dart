@@ -20,14 +20,24 @@ void main() {
 
   test('a server-supplied person tag cannot select the cloud destination', () async {
     final requests = <http.Request>[];
-    final client = testPlexClient(handler: (request) async {
-      requests.add(request);
-      return http.Response(jsonEncode({
-        'MediaContainer': request.url.host == 'plex.example.com'
-            ? {'Directory': [{'tagKey': 'https://attacker.example/steal'}]}
-            : {'Metadata': <Object>[]},
-      }), 200, headers: {'content-type': 'application/json'});
-    });
+    final client = testPlexClient(
+      handler: (request) async {
+        requests.add(request);
+        return http.Response(
+          jsonEncode({
+            'MediaContainer': request.url.host == 'plex.example.com'
+                ? {
+                    'Directory': [
+                      {'tagKey': 'https://attacker.example/steal'},
+                    ],
+                  }
+                : {'Metadata': <Object>[]},
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      },
+    );
     client.plexAccountToken = 'account-token';
     addTearDown(client.close);
 
@@ -38,13 +48,15 @@ void main() {
 
   test('cloud redirects cannot forward Plex credentials to another origin', () async {
     final requests = <http.Request>[];
-    final client = testPlexClient(handler: (request) async {
-      requests.add(request);
-      if (request.url.host == 'epg.provider.plex.tv') {
-        return http.Response('', 302, headers: {'location': 'https://other.example/favorites'});
-      }
-      return http.Response('{"MediaContainer":{}}', 200, headers: {'content-type': 'application/json'});
-    });
+    final client = testPlexClient(
+      handler: (request) async {
+        requests.add(request);
+        if (request.url.host == 'epg.provider.plex.tv') {
+          return http.Response('', 302, headers: {'location': 'https://other.example/favorites'});
+        }
+        return http.Response('{"MediaContainer":{}}', 200, headers: {'content-type': 'application/json'});
+      },
+    );
     addTearDown(client.close);
 
     expect(await client.liveTv.fetchFavoriteChannels(), isEmpty);
@@ -61,8 +73,10 @@ void main() {
         final client = testPlexClient(httpClient: transport)..plexAccountToken = 'account-token';
         addTearDown(client.close);
         final request = discover ? client.fetchPersonDetails('person') : client.liveTv.fetchFavoriteChannels();
-        final failed = expectLater(request,
-          throwsA(isA<MediaServerHttpException>().having((error) => error.isCancellation, 'cancelled', true)));
+        final failed = expectLater(
+          request,
+          throwsA(isA<MediaServerHttpException>().having((error) => error.isCancellation, 'cancelled', true)),
+        );
         await transport.started.future;
         if (graceful) {
           await client.closeGracefully();
@@ -83,18 +97,24 @@ class _PendingCloudClient extends http.BaseClient {
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     if (request.url.host == 'plex.example.com') {
-      return http.StreamedResponse(Stream.value(utf8.encode(
-        '{"MediaContainer":{"Directory":[{"tagKey":"person"}]}}',
-      )), 200, headers: {'content-type': 'application/json'});
+      return http.StreamedResponse(
+        Stream.value(utf8.encode('{"MediaContainer":{"Directory":[{"tagKey":"person"}]}}')),
+        200,
+        headers: {'content-type': 'application/json'},
+      );
     }
     final response = Completer<http.StreamedResponse>();
-    unawaited((request as http.Abortable).abortTrigger!.then((_) {
-      if (!response.isCompleted) response.completeError(http.RequestAbortedException(request.url));
-    }));
+    unawaited(
+      (request as http.Abortable).abortTrigger!.then((_) {
+        if (!response.isCompleted) response.completeError(http.RequestAbortedException(request.url));
+      }),
+    );
     started.complete();
     return response.future;
   }
 
   @override
-  void close() { closeCalls++; }
+  void close() {
+    closeCalls++;
+  }
 }

@@ -41,6 +41,47 @@ if [[ -z "${GITHUB_SHA:-}" || -z "${GITHUB_ENV:-}" || ! -w "$GITHUB_ENV" ]]; the
   echo "GitHub SHA and a writable GITHUB_ENV are required." >&2
   exit 1
 fi
+
+# GitHub-hosted macOS runners do not mount the private NFS workspace. Keep the
+# same short, per-run path contract entirely inside RUNNER_TEMP; the hosted VM
+# is already disposable, and the paired cleanup helper removes these exact
+# task-owned directories before the job exits.
+if [[ "${RUNNER_ENVIRONMENT:-}" == "github-hosted" ]]; then
+  if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then
+    echo "A real RUNNER_TEMP directory is required for hosted Apple scratch." >&2
+    exit 1
+  fi
+  runner_temp_real="$(cd "$RUNNER_TEMP" && /bin/pwd -P)"
+  free_kib="$(/bin/df -Pk "$runner_temp_real" | /usr/bin/awk 'NR == 2 { print $4 }')"
+  minimum_free_kib=$((minimum_free_gib * 1024 * 1024))
+  if [[ ! "$free_kib" =~ ^[0-9]+$ ]] || (( free_kib < minimum_free_kib )); then
+    echo "Hosted Apple scratch needs ${minimum_free_gib} GiB free before starting." >&2
+    /bin/df -h "$runner_temp_real" >&2
+    exit 1
+  fi
+  task_root="$runner_temp_real/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}"
+  local_xcode_root="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
+  local_build_dir="$local_xcode_root/build"
+  if [[ -e "$task_root" || -L "$task_root" || -e "$local_xcode_root" || -L "$local_xcode_root" ]]; then
+    echo "Refusing to reuse existing hosted Apple scratch paths." >&2
+    exit 1
+  fi
+  umask 077
+  /bin/mkdir -m 700 "$task_root" "$local_xcode_root" "$local_build_dir"
+  {
+    printf 'APPLE_HOSTED_SCRATCH=1\n'
+    printf 'PLEZYNG_APPLE_TASK_ROOT=%s\n' "$task_root"
+    printf 'PLEZYNG_APPLE_WORKSPACE=%s\n' "$task_root"
+    printf 'APPLE_LOCAL_BUILD_DIR=%s\n' "$local_build_dir"
+    printf 'APPLE_SCRATCH_MODE=%s\n' "$scratch_mode"
+    printf 'APPLE_SOURCE_PACKAGES_DIR=%s/%s/SourcePackages\n' "$local_build_dir" "$scratch_job"
+    printf 'APPLE_DERIVED_DATA_PATH=%s/DerivedData\n' "$local_xcode_root"
+    printf 'APPLE_RESULT_BUNDLE=%s/apple-native-reliability.xcresult\n' "$local_xcode_root"
+  } >> "$GITHUB_ENV"
+  echo "Prepared hosted per-run Apple scratch under $runner_temp_real." >&2
+  printf '%s\n' "$task_root"
+  exit 0
+fi
 if [[ ! -d "$NFS_RUNS_ROOT" || -L "$NFS_RUNS_ROOT" ]]; then
   echo "The NFS run-scratch directory is missing or is a symlink: $NFS_RUNS_ROOT" >&2
   exit 1

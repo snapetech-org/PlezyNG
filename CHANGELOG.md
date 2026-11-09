@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Give hosted Apple validation and release jobs short, task-owned local scratch paths with bounded free-space checks and exact cleanup, while preserving the private NFS path for explicitly constrained Apple JIT runs.
+
+- Route protected release-channel publication for containers, AUR, COPR, PPA, Snap, Chocolatey, and WinGet through compatible GitHub-hosted runners, removing the superseded private-JIT-only dispatch contract and container proxy requirement.
+
+- Correct release-workflow guidance to match the hybrid profile: compatible Apple jobs use GitHub-hosted macOS runners, while storage-heavy webOS work retains its private JIT route.
+
 - Add feature-documentation source footers with verified upstream PR/issue/commit links and author credits, turn the README's historical ticket numbers into links, and preserve the distinction between a source proposal and delivered behavior.
 
 - Harden HTTP response memory limits, request cancellation, authenticated metadata origins, nested crash-report redaction, companion TLS admission, lending gateway concurrency, and provider request budgets. Local PINs use random-salt PBKDF2 verifiers with durable attempt limits and upgrade on successful activation; new webOS credential envelopes authenticate ciphertext and its logical key. Preserve HLS tail playback and renew active sharing leases. LAN sharing offers HTTPS and requires explicit consent for plaintext compatibility. Add automatic security regressions, enforced dependency locks, and weekly multi-ecosystem dependency maintenance. See `docs/security/audit-remediation-2026-11-09.md` for validation and remaining deployment, isolation and qualification work.

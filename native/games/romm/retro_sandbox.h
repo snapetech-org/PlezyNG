@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(PLEZY_RETRO_APPLE_EXTENSION)
 #include <sys/resource.h>
 #include <unistd.h>
 
@@ -244,7 +244,15 @@ inline void RestrictLinuxSyscalls() {
 // No fallback to an unrestricted core if the OS cannot enforce the boundary.
 inline void RestrictCore(
     const std::string& core, const std::string& rom, const std::string& system, const std::string& saves) {
-#if defined(__ANDROID__)
+#if defined(PLEZY_RETRO_APPLE_EXTENSION)
+  // The OS enters the Enhanced Security sandbox before loading this extension.
+  // Its only inputs are duplicated read-only descriptors admitted at bootstrap.
+  if (!inputs::configured || core != inputs::core ||
+      (!rom.empty() && (!inputs::files.count(rom) || system != "/system" || saves != "/saves")))
+    throw std::runtime_error("Emulator requires the Enhanced Security extension");
+  const rlimit dumps{0, 0};
+  if (setrlimit(RLIMIT_CORE, &dumps)) throw std::runtime_error("Could not disable emulator dumps");
+#elif defined(__ANDROID__)
   const auto uid = getuid() % 100000;
   if (uid < 90000 || uid > 99999 || !inputs::configured || core != inputs::core ||
       (!rom.empty() && (!inputs::files.count(rom) || system != "/system" || saves != "/saves")))

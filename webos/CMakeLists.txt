@@ -7,10 +7,11 @@ target_link_libraries(${BINARY_NAME} PRIVATE flutter)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../packages/plezy_torrent/src" "${CMAKE_CURRENT_BINARY_DIR}/torrent")
 install(TARGETS plezy_torrent LIBRARY DESTINATION lib)
 
-# webOS reports Linux, but does not package or support the desktop worker.
-set(PLEZY_ROMM_ISOLATED OFF CACHE BOOL "No webOS isolated worker: native emulation unavailable" FORCE)
+# Older TV kernels use a descriptor-only, default-deny worker.
+set(PLEZY_ROMM_DESCRIPTOR_SANDBOX ON CACHE BOOL "Isolate webOS bundled cores" FORCE)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native/games/romm" "${CMAKE_CURRENT_BINARY_DIR}/romm_native")
 install(TARGETS plezy_retro LIBRARY DESTINATION lib)
+install(TARGETS plezy_retro_worker RUNTIME DESTINATION lib)
 if(PLEZY_ROMM_BUILD_CORES)
   install(TARGETS gambatte_libretro mgba_libretro fceumm_libretro LIBRARY DESTINATION lib)
   install(DIRECTORY "${ROMM_NOTICES_DIR}/" DESTINATION lib/romm-notices)

@@ -23,17 +23,21 @@ int main(int argc, char** argv) {
   try {
     Require(argc == 3 || argc == 4, "Expected fixture directory and test mode");
     const bool production = std::string(argv[2]) == "production";
+    const bool descriptor = std::string(argv[2]) == "descriptor";
     Require(!production || argc == 4, "Expected production fixture core");
     const fs::path root = fs::u8path(argv[1]);
     fs::create_directories(root / "system");
     fs::create_directories(root / "saves");
-    const auto core = (root / "core.bin").u8string(), rom = (root / "game.bin").u8string();
+    Require(!descriptor || argc == 4, "Expected descriptor fixture core");
+    const auto core = descriptor ? std::string(argv[3]) : (root / "core.bin").u8string();
+    const auto rom = (root / "game.bin").u8string();
     const auto system = (root / "system").u8string(), saves = (root / "saves").u8string();
     const auto secret = (root / "private-credential-fixture").u8string();
     if (production)
       fs::copy_file(fs::u8path(argv[3]), fs::u8path(core), fs::copy_options::overwrite_existing);
-    else
+    else if (!descriptor)
       std::ofstream(core) << "fixture";
+    std::ofstream(root / "system" / "bios.bin") << "DUMMY-FIRMWARE";
     std::ofstream(secret) << "DUMMY-CREDENTIAL";
     auto open = [&](char mode) {
       std::ofstream(rom) << mode << "\n" << secret << "\n";
@@ -71,7 +75,7 @@ int main(int argc, char** argv) {
         std::cout << "Passed isolated session " << mode << "\n";
       }
       if (!production)
-        for (char mode : {'C', 'H', 'F', 'M', 'D'}) {
+        for (char mode : (descriptor ? std::string("CHMD") : std::string("CHFMD"))) {
           open(mode);
           const auto start = Clock::now();
           if (mode == 'D')
@@ -81,7 +85,8 @@ int main(int argc, char** argv) {
               Require(plezy_retro_capture(1) == 0, "Oversized state accepted");
             else
               plezy_retro_run();
-            Require(!plezy_retro_healthy(), "Faulty core remained healthy");
+            // The production adapter rejects oversized states before IPC.
+            if (!descriptor || mode != 'M') Require(!plezy_retro_healthy(), "Faulty core remained healthy");
             plezy_retro_close();
           }
           Reap();

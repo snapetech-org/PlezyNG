@@ -49,7 +49,7 @@ int RommWorkerMain(BytePipe::Handle channel) {
             reader.End();
             Check(!core.empty() && !rom.empty() && !system.empty() && !saves.empty());
             RestrictCore(core, rom, system, saves);
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(PLEZY_RETRO_DESCRIPTOR_SANDBOX)
             // Start only after entering Landlock so this thread inherits its
             // restrictions too. No privileged sibling thread survives dlopen.
             std::thread([channel] {
@@ -61,7 +61,12 @@ int RommWorkerMain(BytePipe::Handle channel) {
               }
             }).detach();
 #endif
+#ifdef PLEZY_RETRO_DESCRIPTOR_SANDBOX
+            const auto virtualRom = "/rom/" + std::filesystem::path(rom).filename().string();
+            Check(plezy_retro_open(core.c_str(), virtualRom.c_str(), "/system", "/saves") == 1);
+#else
             Check(plezy_retro_open(core.c_str(), rom.c_str(), system.c_str(), saves.c_str()) == 1);
+#endif
             opened = true;
             const auto rate = plezy_retro_sample_rate();
             const auto fps = plezy_retro_fps();

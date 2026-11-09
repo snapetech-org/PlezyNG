@@ -6,8 +6,10 @@
     <title>Pleazyng</title>
     <authors>SnapeTech</authors>
     <owners>SnapeTech</owners>
+    <copyright>Original work Copyright (C) 2025 edde746; modified for Pleazyng by SnapeTech.</copyright>
     <licenseUrl>https://github.com/snapetech-org/pleazyng/blob/main/LICENSE</licenseUrl>
     <projectUrl>https://github.com/snapetech-org/pleazyng</projectUrl>
+    <iconUrl>https://rawcdn.githack.com/snapetech-org/pleazyng/9e9745362e9d8a4386a076ade2debdcce9de7c28/assets/branding/web/app-icon-180.png</iconUrl>
     <packageSourceUrl>https://github.com/snapetech-org/pleazyng/tree/main/packaging/chocolatey</packageSourceUrl>
     <bugTrackerUrl>https://github.com/snapetech-org/pleazyng/issues</bugTrackerUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

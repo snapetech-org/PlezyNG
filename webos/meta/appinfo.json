@@ -1,6 +1,6 @@
 {
     "id": "org.snapetech.pleazyng",
-    "version": "3.0.16",
+    "version": "3.0.17",
     "vendor": "Snapetech",
     "type": "native",
     "main": "pleazyng",

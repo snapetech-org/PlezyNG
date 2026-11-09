@@ -14,6 +14,26 @@ spec.loader.exec_module(rpaths)
 
 @unittest.skipUnless(shutil.which('cc') and shutil.which('patchelf'), 'cc and patchelf required')
 class BundleRpathTests(unittest.TestCase):
+    def test_embedded_tool_modules_find_their_private_runtime_after_relocation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            bundle = root / 'bundle'
+            (bundle / 'lib').mkdir(parents=True)
+            runtime = bundle / 'tools/dv/lib/runtime'
+            modules = bundle / 'tools/dv/lib/python3.12/lib-dynload'
+            runtime.mkdir(parents=True)
+            modules.mkdir(parents=True)
+            (root / 'value.c').write_text('int value(void) { return 42; }\n')
+            (root / 'main.c').write_text('int value(void); int main(void) { return value() != 42; }\n')
+            subprocess.run(['cc', '-shared', '-fPIC', str(root/'value.c'),
+                            '-o', str(runtime/'libqa_private.so')], check=True)
+            subprocess.run(['cc', str(root/'main.c'), '-L'+str(runtime), '-lqa_private',
+                            '-Wl,-rpath,/old/builder/runtime', '-o', str(modules/'probe')], check=True)
+            rpaths.normalize(bundle)
+            relocated = root / 'relocated'
+            bundle.rename(relocated)
+            subprocess.run([str(relocated/'tools/dv/lib/python3.12/lib-dynload/probe')], check=True)
+
     def test_private_dependency_chain_survives_relocation_and_paths_are_safe(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

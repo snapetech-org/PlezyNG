@@ -83,7 +83,7 @@ The GitHub-only release uses the unsigned developer iOS and tvOS IPAs. Signed Ap
 
 Store builds apply the same access rule on Google Play, Apple App Store, and Amazon Appstore: the app automatically starts a device-local seven-day full-access trial on first launch, then requires one one-time lifetime purchase. Each store sells only the lifetime unlock at a USD $2.99 base price; the app displays the store's localized price.
 
-Pleazyng has configured AUR, COPR and Launchpad PPA publishers. Nix packaging is maintained downstream pending native qualification and review; Flatpak remains a GitHub bundle until a source-built Flathub submission is accepted.
+Pleazyng has configured AUR, COPR and Launchpad PPA publishers. Nix and aerynOS packaging are maintained downstream pending native qualification and review; Flatpak remains a GitHub bundle until a source-built Flathub submission is accepted.
 
 ## Required configuration
 

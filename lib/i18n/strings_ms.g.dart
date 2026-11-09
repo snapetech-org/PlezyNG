@@ -115,6 +115,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$ms romm = _Translations$romm$ms._(_root);
 	@override late final _Translations$subtitleCapture$ms subtitleCapture = _Translations$subtitleCapture$ms._(_root);
 	@override late final _Translations$musicExperience$ms musicExperience = _Translations$musicExperience$ms._(_root);
+	@override late final _Translations$musicTools$ms musicTools = _Translations$musicTools$ms._(_root);
 }
 
 // Path: app
@@ -4237,6 +4238,38 @@ class _Translations$musicExperience$ms extends Translations$musicExperience$en {
 	@override String get routeLost => 'Output audio terputus. Main balik dijeda.';
 	@override String get autoDriving => 'Buka paparan pemanduan apabila disambungkan ke kereta';
 	@override String get routeHint => 'Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$ms extends Translations$musicTools$en {
+	_Translations$musicTools$ms._(TranslationsMs root) : this._root = root, super.internal(root);
+
+	final TranslationsMs _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ jemputan';
+	@override String get charts => 'Carta pendengaran';
+	@override String get rediscover => 'Temui semula';
+	@override String get stations => 'Stesen muzik';
+	@override String get prompt => 'Senarai main daripada penerangan';
+	@override String get provider => 'URL penjanaan penyedia';
+	@override String get model => 'Nama model';
+	@override String get consent => 'Hantar penerangan saya kepada penyedia ini';
+	@override String get promptHint => 'Terangkan muzik yang anda inginkan';
+	@override String get noHistory => 'Belum ada muzik untuk dipaparkan';
+	@override String get historyHint => 'Main balik yang direkodkan pada peranti ini';
+	@override String get days => 'Hari';
+	@override String get albumBlocks => 'Kekalkan album penuh bersama';
+	@override String get home => 'Muzik';
+	@override String get recent => 'Baru dimainkan';
+	@override String get apiKey => 'Kunci API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'Minit';
+	@override String get rules => 'Penapis';
+	@override String get exclusiveOutput => 'Output audio eksklusif';
+	@override String get preamp => 'Prapenguat';
+	@override String get ratingPending => 'Disimpan pada peranti ini; menunggu penyegerakan';
+	@override String get lyricsOffset => 'Anjakan masa lirik';
 }
 
 // Path: appIcon.names
@@ -9334,6 +9367,29 @@ extension on TranslationsMs {
 			'musicExperience.routeLost' => 'Output audio terputus. Main balik dijeda.',
 			'musicExperience.autoDriving' => 'Buka paparan pemanduan apabila disambungkan ke kereta',
 			'musicExperience.routeHint' => 'Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.',
+			'musicTools.guestDj' => 'DJ jemputan',
+			'musicTools.charts' => 'Carta pendengaran',
+			'musicTools.rediscover' => 'Temui semula',
+			'musicTools.stations' => 'Stesen muzik',
+			'musicTools.prompt' => 'Senarai main daripada penerangan',
+			'musicTools.provider' => 'URL penjanaan penyedia',
+			'musicTools.model' => 'Nama model',
+			'musicTools.consent' => 'Hantar penerangan saya kepada penyedia ini',
+			'musicTools.promptHint' => 'Terangkan muzik yang anda inginkan',
+			'musicTools.noHistory' => 'Belum ada muzik untuk dipaparkan',
+			'musicTools.historyHint' => 'Main balik yang direkodkan pada peranti ini',
+			'musicTools.days' => 'Hari',
+			'musicTools.albumBlocks' => 'Kekalkan album penuh bersama',
+			'musicTools.home' => 'Muzik',
+			'musicTools.recent' => 'Baru dimainkan',
+			'musicTools.apiKey' => 'Kunci API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'Minit',
+			'musicTools.rules' => 'Penapis',
+			'musicTools.exclusiveOutput' => 'Output audio eksklusif',
+			'musicTools.preamp' => 'Prapenguat',
+			'musicTools.ratingPending' => 'Disimpan pada peranti ini; menunggu penyegerakan',
+			'musicTools.lyricsOffset' => 'Anjakan masa lirik',
 			_ => null,
 		};
 	}

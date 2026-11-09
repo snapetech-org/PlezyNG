@@ -31,6 +31,8 @@ import '../services/watch_state_resolver.dart';
 import 'watch_state_store.dart';
 import '../media/media_server_client.dart';
 import '../services/sync_rule_executor.dart';
+import '../services/music/music_library_store.dart';
+import '../services/music/music_offline_bundle.dart';
 import '../utils/app_logger.dart';
 import '../utils/deletion_notifier.dart';
 import '../media/episode_collection.dart';
@@ -1818,6 +1820,7 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
         if (claimed) {
           await _hydrateClaimedDownload(metadataToStore, client, ownership: ownership, relatedContext: relatedContext);
           if (!_isQueueOwnershipCurrent(ownership)) return false;
+          await _prepareMusicBundle(metadataToStore, client, ownership);
           safeNotifyListeners();
         }
         return claimed;
@@ -1916,7 +1919,23 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
       _downloadLibraries[globalKey] = (libraryId: storedMetadata.libraryId, libraryTitle: storedMetadata.libraryTitle);
     }
     if (storedMetadata.isMovie || storedMetadata.isEpisode) unawaited(_refreshCollections(client));
+    await _prepareMusicBundle(storedMetadata, client, ownership);
     return true;
+  }
+
+  Future<void> _prepareMusicBundle(MediaItem track, MediaServerClient client, _QueueOwnership ownership) async {
+    if (track.kind != MediaKind.track || !_isQueueOwnershipCurrent(ownership)) return;
+    // Sequential with the batch queue: one optional request at a time, rather
+    // than launching thousands of lyric downloads for a large playlist.
+    try {
+      await MusicOfflineBundle(
+        MusicLibraryStore(_database, ownership.profileId),
+      ).prepare(track, client, current: () => !isDisposed && _isQueueOwnershipCurrent(ownership));
+    } catch (_) {
+      // Optional metadata/storage adapters cannot change a successfully queued
+      // audio download into a failure or interrupt the rest of an album batch.
+      appLogger.d('Optional music download bundle unavailable');
+    }
   }
 
   /// Load display metadata for a physical download [metadata] the profile in
@@ -2804,7 +2823,8 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
     if (existing == null || existing.profileId != profileId) return;
     if (existing.targetType != ContentTypes.collection &&
         existing.targetType != ContentTypes.playlist &&
-        existing.targetType != ContentTypes.continueWatching) {
+        existing.targetType != ContentTypes.continueWatching &&
+        existing.targetType != ContentTypes.musicStation) {
       throw ArgumentError.value(
         existing.targetType,
         'targetType',
@@ -2936,6 +2956,9 @@ class DownloadProvider extends ChangeNotifier with DisposableChangeNotifierMixin
           for (final downloadKey in downloadKeys) {
             await _database.associateSyncRuleDownload(rule, downloadKey);
           }
+          await _database.markSyncRuleDownloadLinksInitialized(rule.globalKey);
+          break;
+        case ContentTypes.musicStation:
           await _database.markSyncRuleDownloadLinksInitialized(rule.globalKey);
           break;
         case ContentTypes.collection:

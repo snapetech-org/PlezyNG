@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Integrate a configurable Music home, device-local listening history/charts, six Guest DJ modes, saved filter-based stations with scheduled downloads, opt-in prompt playlists, music ReplayGain/EQ/preamp/output controls and named presets. Reuse existing profiles, library filters, playlists, downloads and Now Playing; protect pending work across account changes.
+- Retain authorized lyrics and bounded seek-print analysis with downloaded music, add per-track lyric timing, durable music links and queued rating/favorite edits. Keep offline station playback limited to the active profile's completed downloads.
+- Add shared iOS phone/CarPlay engine startup, Siri media intents, Android headless device/restriction handling and background profile-frame scheduling; expand native playlist browsing and prevent pagination from consuming CarPlay navigation levels. Native signing/build/device qualification and remaining parity code are tracked in `docs/plezyng/music/STATUS.md`.
+
 - Close Linux emulator sandbox gaps in shared IPC and newer metadata syscalls, including when compiled with older kernel headers. Preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
 
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.

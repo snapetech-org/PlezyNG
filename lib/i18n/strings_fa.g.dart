@@ -115,6 +115,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$fa romm = _Translations$romm$fa._(_root);
 	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
 	@override late final _Translations$musicExperience$fa musicExperience = _Translations$musicExperience$fa._(_root);
+	@override late final _Translations$musicTools$fa musicTools = _Translations$musicTools$fa._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$fa extends Translations$musicExperience$en {
 	@override String get routeLost => 'خروجی صدا قطع شد. پخش مکث شد.';
 	@override String get autoDriving => 'باز کردن نمای رانندگی هنگام اتصال به خودرو';
 	@override String get routeHint => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$fa extends Translations$musicTools$en {
+	_Translations$musicTools$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'دی‌جی مهمان';
+	@override String get charts => 'آمار شنیدن';
+	@override String get rediscover => 'کشف دوباره';
+	@override String get stations => 'ایستگاه‌های موسیقی';
+	@override String get prompt => 'فهرست پخش از توضیح';
+	@override String get provider => 'نشانی تولید ارائه‌دهنده';
+	@override String get model => 'نام مدل';
+	@override String get consent => 'توضیح من را به این ارائه‌دهنده بفرست';
+	@override String get promptHint => 'موسیقی دلخواهتان را توصیف کنید';
+	@override String get noHistory => 'هنوز موسیقی‌ای برای نمایش نیست';
+	@override String get historyHint => 'پخش‌های ثبت‌شده در این دستگاه';
+	@override String get days => 'روزها';
+	@override String get albumBlocks => 'آلبوم‌ها را کامل نگه دار';
+	@override String get home => 'موسیقی‌ها';
+	@override String get recent => 'اخیراً پخش‌شده';
+	@override String get apiKey => 'کلید API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'دقیقه ها';
+	@override String get rules => 'صافی‌ها';
+	@override String get exclusiveOutput => 'خروجی صدای انحصاری';
+	@override String get preamp => 'پیش‌تقویت';
+	@override String get ratingPending => 'در این دستگاه ذخیره شد؛ در انتظار همگام‌سازی';
+	@override String get lyricsOffset => 'جابجایی زمان متن آهنگ';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsFa {
 			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
 			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
 			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
+			'musicTools.guestDj' => 'دی‌جی مهمان',
+			'musicTools.charts' => 'آمار شنیدن',
+			'musicTools.rediscover' => 'کشف دوباره',
+			'musicTools.stations' => 'ایستگاه‌های موسیقی',
+			'musicTools.prompt' => 'فهرست پخش از توضیح',
+			'musicTools.provider' => 'نشانی تولید ارائه‌دهنده',
+			'musicTools.model' => 'نام مدل',
+			'musicTools.consent' => 'توضیح من را به این ارائه‌دهنده بفرست',
+			'musicTools.promptHint' => 'موسیقی دلخواهتان را توصیف کنید',
+			'musicTools.noHistory' => 'هنوز موسیقی‌ای برای نمایش نیست',
+			'musicTools.historyHint' => 'پخش‌های ثبت‌شده در این دستگاه',
+			'musicTools.days' => 'روزها',
+			'musicTools.albumBlocks' => 'آلبوم‌ها را کامل نگه دار',
+			'musicTools.home' => 'موسیقی‌ها',
+			'musicTools.recent' => 'اخیراً پخش‌شده',
+			'musicTools.apiKey' => 'کلید API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'دقیقه ها',
+			'musicTools.rules' => 'صافی‌ها',
+			'musicTools.exclusiveOutput' => 'خروجی صدای انحصاری',
+			'musicTools.preamp' => 'پیش‌تقویت',
+			'musicTools.ratingPending' => 'در این دستگاه ذخیره شد؛ در انتظار همگام‌سازی',
+			'musicTools.lyricsOffset' => 'جابجایی زمان متن آهنگ',
 			_ => null,
 		};
 	}

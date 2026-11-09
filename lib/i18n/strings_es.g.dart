@@ -115,6 +115,7 @@ class TranslationsEs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$romm$es romm = Translations$romm$es.internal(_root);
 	@override late final Translations$subtitleCapture$es subtitleCapture = Translations$subtitleCapture$es.internal(_root);
 	@override late final Translations$musicExperience$es musicExperience = Translations$musicExperience$es.internal(_root);
+	@override late final Translations$musicTools$es musicTools = Translations$musicTools$es.internal(_root);
 }
 
 // Path: app
@@ -4267,6 +4268,38 @@ class Translations$musicExperience$es extends Translations$musicExperience$en {
 	@override String get routeLost => 'Salida de audio desconectada. Reproducción pausada.';
 	@override String get autoDriving => 'Abrir la vista de conducción al conectar con un coche';
 	@override String get routeHint => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.';
+}
+
+// Path: musicTools
+class Translations$musicTools$es extends Translations$musicTools$en {
+	Translations$musicTools$es.internal(TranslationsEs root) : this._root = root, super.internal(root);
+
+	final TranslationsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ invitado';
+	@override String get charts => 'Estadísticas de escucha';
+	@override String get rediscover => 'Redescubrir';
+	@override String get stations => 'Emisoras musicales';
+	@override String get prompt => 'Lista por descripción';
+	@override String get provider => 'URL de generación del proveedor';
+	@override String get model => 'Nombre del modelo';
+	@override String get consent => 'Enviar mi descripción a este proveedor';
+	@override String get promptHint => 'Describe la música que quieres';
+	@override String get noHistory => 'Aún no hay música para mostrar';
+	@override String get historyHint => 'Reproducciones registradas en este dispositivo';
+	@override String get days => 'Días';
+	@override String get albumBlocks => 'Mantener juntos los álbumes completos';
+	@override String get home => 'Música';
+	@override String get recent => 'Reproducido recientemente';
+	@override String get apiKey => 'Clave API';
+	@override String get missing => 'N/D';
+	@override String get minutes => 'Minutos';
+	@override String get rules => 'Filtros';
+	@override String get exclusiveOutput => 'Salida de audio exclusiva';
+	@override String get preamp => 'Preamplificación';
+	@override String get ratingPending => 'Guardado en este dispositivo; pendiente de sincronización';
+	@override String get lyricsOffset => 'Desfase de la letra';
 }
 
 // Path: appIcon.names
@@ -9366,6 +9399,29 @@ extension on TranslationsEs {
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',
 			'musicExperience.autoDriving' => 'Abrir la vista de conducción al conectar con un coche',
 			'musicExperience.routeHint' => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.',
+			'musicTools.guestDj' => 'DJ invitado',
+			'musicTools.charts' => 'Estadísticas de escucha',
+			'musicTools.rediscover' => 'Redescubrir',
+			'musicTools.stations' => 'Emisoras musicales',
+			'musicTools.prompt' => 'Lista por descripción',
+			'musicTools.provider' => 'URL de generación del proveedor',
+			'musicTools.model' => 'Nombre del modelo',
+			'musicTools.consent' => 'Enviar mi descripción a este proveedor',
+			'musicTools.promptHint' => 'Describe la música que quieres',
+			'musicTools.noHistory' => 'Aún no hay música para mostrar',
+			'musicTools.historyHint' => 'Reproducciones registradas en este dispositivo',
+			'musicTools.days' => 'Días',
+			'musicTools.albumBlocks' => 'Mantener juntos los álbumes completos',
+			'musicTools.home' => 'Música',
+			'musicTools.recent' => 'Reproducido recientemente',
+			'musicTools.apiKey' => 'Clave API',
+			'musicTools.missing' => 'N/D',
+			'musicTools.minutes' => 'Minutos',
+			'musicTools.rules' => 'Filtros',
+			'musicTools.exclusiveOutput' => 'Salida de audio exclusiva',
+			'musicTools.preamp' => 'Preamplificación',
+			'musicTools.ratingPending' => 'Guardado en este dispositivo; pendiente de sincronización',
+			'musicTools.lyricsOffset' => 'Desfase de la letra',
 			_ => null,
 		};
 	}

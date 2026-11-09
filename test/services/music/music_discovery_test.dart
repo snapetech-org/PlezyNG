@@ -11,6 +11,8 @@ MediaItem track(String id, {String server = 's', String library = 'lib'}) =>
     testMediaItem(id: id, serverId: server, libraryId: library, kind: MediaKind.track, title: id);
 
 class Client implements MediaServerClient, SonicMusicClient {
+  @override
+  final Object authenticationSessionId = Object();
   final Map<String, List<MediaItem>> mixes = {};
   final List<(String, String)> paths = [];
   @override
@@ -91,5 +93,7 @@ void main() {
     expect(await a.load(), hasLength(1));
     await db.deleteMusicRecipesForProfile('a');
     expect(await a.load(), isEmpty);
+    await a.save(recipe);
+    expect(await MusicRecipeStore(db, 'a').load(), isEmpty);
   });
 }

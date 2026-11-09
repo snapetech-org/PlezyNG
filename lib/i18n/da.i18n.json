@@ -5492,5 +5492,30 @@
     "routeLost": "Lydudgang afbrudt. Afspilning sat på pause.",
     "autoDriving": "Åbn kørselsvisning ved forbindelse til en bil",
     "routeHint": "Bilens system bestemmer, om appen kan vises automatisk."
+  },
+  "musicTools": {
+    "guestDj": "Gæste-DJ",
+    "charts": "Lyttestatistik",
+    "rediscover": "Genopdag",
+    "stations": "Musikstationer",
+    "prompt": "Afspilningsliste fra beskrivelse",
+    "provider": "Udbyderens genererings-URL",
+    "model": "Modelnavn",
+    "consent": "Send min beskrivelse til denne udbyder",
+    "promptHint": "Beskriv den ønskede musik",
+    "noHistory": "Ingen musik at vise endnu",
+    "historyHint": "Afspilninger registreret på denne enhed",
+    "days": "Dage",
+    "albumBlocks": "Hold hele album samlet",
+    "home": "Musik",
+    "recent": "Senest afspillet",
+    "apiKey": "API-nøgle",
+    "missing": "N/A",
+    "minutes": "Minutter",
+    "rules": "Filtre",
+    "exclusiveOutput": "Eksklusiv lydudgang",
+    "preamp": "Forforstærkning",
+    "ratingPending": "Gemt på denne enhed; afventer synkronisering",
+    "lyricsOffset": "Tidsforskydning af sangtekst"
   }
 }

@@ -29,6 +29,7 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import com.edde746.os_media_controls.MusicCarApi
 import com.edde746.plezy.car.CarRestrictionsMonitor
+import com.edde746.plezy.car.MusicBackgroundPlatformPlugin
 import com.edde746.plezy.car.MusicBrowserService
 import com.edde746.plezy.deeplink.DeepLinkPlugin
 import com.edde746.plezy.exoplayer.ExoPlayerPlugin
@@ -931,6 +932,9 @@ class PlezyActivity : FlutterActivity() {
     if (!MusicCarApi.hasCarHost) {
       FlutterEngineCache.getInstance().remove(MusicBrowserService.ENGINE_ID)
     }
+    if (MusicCarApi.hasCarHost) {
+      (flutterEngine.plugins.get(MusicBackgroundPlatformPlugin::class.java) as? MusicBackgroundPlatformPlugin)?.activateHeadless()
+    }
     super.cleanUpFlutterEngine(flutterEngine)
   }
 
@@ -939,6 +943,8 @@ class PlezyActivity : FlutterActivity() {
     runCatching { com.edde746.plezy.games.RommProcessBroker.attach(applicationContext) }
       .onFailure { android.util.Log.w("RomM", "Isolated emulator service is unavailable") }
     FlutterEngineCache.getInstance().put(MusicBrowserService.ENGINE_ID, flutterEngine)
+    if (!flutterEngine.plugins.has(MusicBackgroundPlatformPlugin::class.java)) flutterEngine.plugins.add(MusicBackgroundPlatformPlugin())
+    (flutterEngine.plugins.get(MusicBackgroundPlatformPlugin::class.java) as? MusicBackgroundPlatformPlugin)?.suspendForActivity()
     if (!flutterEngine.plugins.has(MpvPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvPlayerPlugin())
     if (!flutterEngine.plugins.has(MpvWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
     if (!flutterEngine.plugins.has(ExoPlayerPlugin::class.java)) flutterEngine.plugins.add(ExoPlayerPlugin())

@@ -115,6 +115,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$kk romm = _Translations$romm$kk._(_root);
 	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
 	@override late final _Translations$musicExperience$kk musicExperience = _Translations$musicExperience$kk._(_root);
+	@override late final _Translations$musicTools$kk musicTools = _Translations$musicTools$kk._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$kk extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.';
 	@override String get autoDriving => 'Көлікке қосылғанда жүргізу көрінісін ашу';
 	@override String get routeHint => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$kk extends Translations$musicTools$en {
+	_Translations$musicTools$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Қонақ диджей';
+	@override String get charts => 'Тыңдау рейтингі';
+	@override String get rediscover => 'Қайта ашу';
+	@override String get stations => 'Музыка станциялары';
+	@override String get prompt => 'Сипаттамадан ойнату тізімі';
+	@override String get provider => 'Провайдердің жасау мекенжайы';
+	@override String get model => 'Модель атауы';
+	@override String get consent => 'Сипаттамамды осы провайдерге жіберу';
+	@override String get promptHint => 'Қалаған музыкаңызды сипаттаңыз';
+	@override String get noHistory => 'Әзірге көрсетілетін музыка жоқ';
+	@override String get historyHint => 'Осы құрылғыда жазылған тыңдаулар';
+	@override String get days => 'Күндер';
+	@override String get albumBlocks => 'Альбомдарды тұтас сақтау';
+	@override String get home => 'Музыка';
+	@override String get recent => 'Жақында тыңдалған';
+	@override String get apiKey => 'API кілті';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Минут';
+	@override String get rules => 'Фильтрлер';
+	@override String get exclusiveOutput => 'Эксклюзивті аудио шығыс';
+	@override String get preamp => 'Алдын ала күшейту';
+	@override String get ratingPending => 'Осы құрылғыда сақталды; синхрондау күтілуде';
+	@override String get lyricsOffset => 'Ән мәтінінің уақыт ығысуы';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsKk {
 			'musicExperience.routeLost' => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.',
 			'musicExperience.autoDriving' => 'Көлікке қосылғанда жүргізу көрінісін ашу',
 			'musicExperience.routeHint' => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.',
+			'musicTools.guestDj' => 'Қонақ диджей',
+			'musicTools.charts' => 'Тыңдау рейтингі',
+			'musicTools.rediscover' => 'Қайта ашу',
+			'musicTools.stations' => 'Музыка станциялары',
+			'musicTools.prompt' => 'Сипаттамадан ойнату тізімі',
+			'musicTools.provider' => 'Провайдердің жасау мекенжайы',
+			'musicTools.model' => 'Модель атауы',
+			'musicTools.consent' => 'Сипаттамамды осы провайдерге жіберу',
+			'musicTools.promptHint' => 'Қалаған музыкаңызды сипаттаңыз',
+			'musicTools.noHistory' => 'Әзірге көрсетілетін музыка жоқ',
+			'musicTools.historyHint' => 'Осы құрылғыда жазылған тыңдаулар',
+			'musicTools.days' => 'Күндер',
+			'musicTools.albumBlocks' => 'Альбомдарды тұтас сақтау',
+			'musicTools.home' => 'Музыка',
+			'musicTools.recent' => 'Жақында тыңдалған',
+			'musicTools.apiKey' => 'API кілті',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Минут',
+			'musicTools.rules' => 'Фильтрлер',
+			'musicTools.exclusiveOutput' => 'Эксклюзивті аудио шығыс',
+			'musicTools.preamp' => 'Алдын ала күшейту',
+			'musicTools.ratingPending' => 'Осы құрылғыда сақталды; синхрондау күтілуде',
+			'musicTools.lyricsOffset' => 'Ән мәтінінің уақыт ығысуы',
 			_ => null,
 		};
 	}

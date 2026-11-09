@@ -5546,5 +5546,30 @@
     "routeLost": "Wyjście audio odłączone. Odtwarzanie wstrzymane.",
     "autoDriving": "Otwórz widok samochodowy po połączeniu z autem",
     "routeHint": "System samochodu decyduje, czy aplikacja może pojawić się automatycznie."
+  },
+  "musicTools": {
+    "guestDj": "Gościnny DJ",
+    "charts": "Statystyki słuchania",
+    "rediscover": "Odkryj ponownie",
+    "stations": "Stacje muzyczne",
+    "prompt": "Playlista z opisu",
+    "provider": "Adres generowania dostawcy",
+    "model": "Nazwa modelu",
+    "consent": "Wyślij mój opis do tego dostawcy",
+    "promptHint": "Opisz muzykę, której szukasz",
+    "noHistory": "Brak muzyki do wyświetlenia",
+    "historyHint": "Odtworzenia zapisane na tym urządzeniu",
+    "days": "Dni",
+    "albumBlocks": "Zachowuj całe albumy",
+    "home": "Muzyka",
+    "recent": "Ostatnio odtwarzane",
+    "apiKey": "Klucz API",
+    "missing": "N/D",
+    "minutes": "Minuty",
+    "rules": "Filtry",
+    "exclusiveOutput": "Wyłączne wyjście audio",
+    "preamp": "Wzmocnienie wstępne",
+    "ratingPending": "Zapisano na tym urządzeniu; oczekuje na synchronizację",
+    "lyricsOffset": "Przesunięcie czasu tekstu"
   }
 }

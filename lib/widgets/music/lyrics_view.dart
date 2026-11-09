@@ -12,6 +12,7 @@ import '../../i18n/strings.g.dart';
 import '../../media/lyrics.dart';
 import '../../screens/libraries/state_messages.dart';
 import '../../services/music/music_playback_service.dart';
+import '../../services/music/music_experience.dart';
 import '../../theme/mono_tokens.dart';
 
 /// Lyrics pane for the now-playing screen (swapped in over the artwork).
@@ -58,6 +59,35 @@ class _LyricsViewState extends State<LyricsView> {
 
   bool _paneFocused = false;
   int _focusedLine = 0;
+  int _offsetMs = 0;
+  String? _offsetKey;
+  MusicExperience? _experience;
+
+  Future<void> _loadOffset() async {
+    final key = context.read<MusicPlaybackService>().currentTrack?.globalKey;
+    _offsetKey = key;
+    _offsetMs = 0;
+    if (key == null) return;
+    try {
+      final document = await _experience?.store.document('lyricTiming', key);
+      if (!mounted || key != _offsetKey) return;
+      final offset = document?['offsetMs'];
+      setState(() => _offsetMs = offset is int ? offset.clamp(-30000, 30000) : 0);
+      _onPosition(context.read<MusicPlaybackService>().position, animate: false);
+    } catch (_) {
+      // A damaged optional timing preference must not hide the lyrics.
+    }
+  }
+
+  Future<void> _saveOffset() async {
+    final key = _offsetKey;
+    if (key == null) return;
+    try {
+      await _experience?.store.saveDocument('lyricTiming', key, {'version': 1, 'offsetMs': _offsetMs});
+    } catch (_) {
+      // Keep the current adjustment usable if local storage is unavailable.
+    }
+  }
 
   @override
   void initState() {
@@ -77,12 +107,17 @@ class _LyricsViewState extends State<LyricsView> {
         _lineKeys = const [];
       });
       _resolve(widget.lyricsFuture);
+      unawaited(_loadOffset());
     }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_positionSub == null) {
+      _experience = context.read<MusicExperience?>();
+      unawaited(_loadOffset());
+    }
     _positionSub ??= context.read<MusicPlaybackService>().positionStream.listen(_onPosition);
   }
 
@@ -119,7 +154,7 @@ class _LyricsViewState extends State<LyricsView> {
   int _activeIndexFor(Duration position) {
     final lines = _lyrics?.lines;
     if (lines == null || lines.isEmpty) return -1;
-    final ms = position.inMilliseconds;
+    final ms = position.inMilliseconds - _offsetMs;
     var lo = 0, hi = lines.length - 1, best = -1;
     while (lo <= hi) {
       final mid = (lo + hi) >> 1;
@@ -189,7 +224,9 @@ class _LyricsViewState extends State<LyricsView> {
   void _seekTo(LyricLine line) {
     final startMs = line.startMs;
     if (startMs == null) return;
-    unawaited(context.read<MusicPlaybackService>().seek(Duration(milliseconds: startMs)));
+    unawaited(
+      context.read<MusicPlaybackService>().seek(Duration(milliseconds: (startMs + _offsetMs).clamp(0, 1 << 53))),
+    );
   }
 
   // -------------------------------------------------------------------
@@ -268,8 +305,34 @@ class _LyricsViewState extends State<LyricsView> {
       ),
     );
 
+    final pane = Column(
+      children: [
+        if (lyrics.synced && _experience != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: [
+                Text('${t.musicTools.lyricsOffset}: ${(_offsetMs / 1000).toStringAsFixed(1)} s'),
+                Slider(
+                  value: _offsetMs.toDouble(),
+                  min: -30000,
+                  max: 30000,
+                  divisions: 600,
+                  semanticFormatterCallback: (value) => '${(value / 1000).toStringAsFixed(1)} s',
+                  onChanged: (value) {
+                    setState(() => _offsetMs = value.round());
+                    _onPosition(context.read<MusicPlaybackService>().position, animate: false);
+                  },
+                  onChangeEnd: (_) => _saveOffset(),
+                ),
+              ],
+            ),
+          ),
+        Expanded(child: list),
+      ],
+    );
     final focusNode = widget.focusNode;
-    if (focusNode == null) return list;
+    if (focusNode == null) return pane;
     return Focus(
       focusNode: focusNode,
       onKeyEvent: _handleKeyEvent,
@@ -277,7 +340,7 @@ class _LyricsViewState extends State<LyricsView> {
         _paneFocused = hasFocus;
         if (hasFocus && _activeIndex >= 0) _focusedLine = _activeIndex;
       }),
-      child: list,
+      child: pane,
     );
   }
 

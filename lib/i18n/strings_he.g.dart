@@ -115,6 +115,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$he romm = _Translations$romm$he._(_root);
 	@override late final _Translations$subtitleCapture$he subtitleCapture = _Translations$subtitleCapture$he._(_root);
 	@override late final _Translations$musicExperience$he musicExperience = _Translations$musicExperience$he._(_root);
+	@override late final _Translations$musicTools$he musicTools = _Translations$musicTools$he._(_root);
 }
 
 // Path: app
@@ -4268,6 +4269,38 @@ class _Translations$musicExperience$he extends Translations$musicExperience$en {
 	@override String get routeLost => 'פלט השמע נותק. הניגון הושהה.';
 	@override String get autoDriving => 'פתיחת תצוגת נהיגה בחיבור לרכב';
 	@override String get routeHint => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$he extends Translations$musicTools$en {
+	_Translations$musicTools$he._(TranslationsHe root) : this._root = root, super.internal(root);
+
+	final TranslationsHe _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'תקליטן אורח';
+	@override String get charts => 'דירוגי האזנה';
+	@override String get rediscover => 'לגלות מחדש';
+	@override String get stations => 'תחנות מוזיקה';
+	@override String get prompt => 'רשימה מתיאור';
+	@override String get provider => 'כתובת היצירה של הספק';
+	@override String get model => 'שם המודל';
+	@override String get consent => 'שליחת התיאור שלי לספק הזה';
+	@override String get promptHint => 'תיאור המוזיקה הרצויה';
+	@override String get noHistory => 'עדיין אין מוזיקה להצגה';
+	@override String get historyHint => 'השמעות שנרשמו במכשיר הזה';
+	@override String get days => 'ימים';
+	@override String get albumBlocks => 'שמירה על אלבומים שלמים ביחד';
+	@override String get home => 'מוסיקה';
+	@override String get recent => 'הושמעו לאחרונה';
+	@override String get apiKey => 'מפתח API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'דקות';
+	@override String get rules => 'מסננים';
+	@override String get exclusiveOutput => 'פלט שמע בלעדי';
+	@override String get preamp => 'קדם־הגברה';
+	@override String get ratingPending => 'נשמר במכשיר הזה; ממתין לסנכרון';
+	@override String get lyricsOffset => 'היסט תזמון המילים';
 }
 
 // Path: appIcon.names
@@ -9367,6 +9400,29 @@ extension on TranslationsHe {
 			'musicExperience.routeLost' => 'פלט השמע נותק. הניגון הושהה.',
 			'musicExperience.autoDriving' => 'פתיחת תצוגת נהיגה בחיבור לרכב',
 			'musicExperience.routeHint' => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.',
+			'musicTools.guestDj' => 'תקליטן אורח',
+			'musicTools.charts' => 'דירוגי האזנה',
+			'musicTools.rediscover' => 'לגלות מחדש',
+			'musicTools.stations' => 'תחנות מוזיקה',
+			'musicTools.prompt' => 'רשימה מתיאור',
+			'musicTools.provider' => 'כתובת היצירה של הספק',
+			'musicTools.model' => 'שם המודל',
+			'musicTools.consent' => 'שליחת התיאור שלי לספק הזה',
+			'musicTools.promptHint' => 'תיאור המוזיקה הרצויה',
+			'musicTools.noHistory' => 'עדיין אין מוזיקה להצגה',
+			'musicTools.historyHint' => 'השמעות שנרשמו במכשיר הזה',
+			'musicTools.days' => 'ימים',
+			'musicTools.albumBlocks' => 'שמירה על אלבומים שלמים ביחד',
+			'musicTools.home' => 'מוסיקה',
+			'musicTools.recent' => 'הושמעו לאחרונה',
+			'musicTools.apiKey' => 'מפתח API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'דקות',
+			'musicTools.rules' => 'מסננים',
+			'musicTools.exclusiveOutput' => 'פלט שמע בלעדי',
+			'musicTools.preamp' => 'קדם־הגברה',
+			'musicTools.ratingPending' => 'נשמר במכשיר הזה; ממתין לסנכרון',
+			'musicTools.lyricsOffset' => 'היסט תזמון המילים',
 			_ => null,
 		};
 	}

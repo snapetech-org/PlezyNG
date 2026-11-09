@@ -115,6 +115,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$romm$fr romm = Translations$romm$fr.internal(_root);
 	@override late final Translations$subtitleCapture$fr subtitleCapture = Translations$subtitleCapture$fr.internal(_root);
 	@override late final Translations$musicExperience$fr musicExperience = Translations$musicExperience$fr.internal(_root);
+	@override late final Translations$musicTools$fr musicTools = Translations$musicTools$fr.internal(_root);
 }
 
 // Path: app
@@ -4267,6 +4268,38 @@ class Translations$musicExperience$fr extends Translations$musicExperience$en {
 	@override String get routeLost => 'Sortie audio déconnectée. Lecture en pause.';
 	@override String get autoDriving => 'Ouvrir le mode conduite à la connexion à une voiture';
 	@override String get routeHint => 'Le système de la voiture décide si l’application peut s’afficher automatiquement.';
+}
+
+// Path: musicTools
+class Translations$musicTools$fr extends Translations$musicTools$en {
+	Translations$musicTools$fr.internal(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ invité';
+	@override String get charts => 'Classements d’écoute';
+	@override String get rediscover => 'Redécouvrir';
+	@override String get stations => 'Stations musicales';
+	@override String get prompt => 'Playlist par description';
+	@override String get provider => 'URL du fournisseur de génération';
+	@override String get model => 'Nom du modèle';
+	@override String get consent => 'Envoyer ma description à ce fournisseur';
+	@override String get promptHint => 'Décrivez la musique souhaitée';
+	@override String get noHistory => 'Aucune musique à afficher';
+	@override String get historyHint => 'Écoutes enregistrées sur cet appareil';
+	@override String get days => 'Jours';
+	@override String get albumBlocks => 'Garder les albums entiers';
+	@override String get home => 'Musique';
+	@override String get recent => 'Écoutés récemment';
+	@override String get apiKey => 'Clé API';
+	@override String get missing => 'N/D';
+	@override String get minutes => 'Minutes';
+	@override String get rules => 'Filtres';
+	@override String get exclusiveOutput => 'Sortie audio exclusive';
+	@override String get preamp => 'Préamplification';
+	@override String get ratingPending => 'Enregistré sur cet appareil ; synchronisation en attente';
+	@override String get lyricsOffset => 'Décalage des paroles';
 }
 
 // Path: appIcon.names
@@ -9366,6 +9399,29 @@ extension on TranslationsFr {
 			'musicExperience.routeLost' => 'Sortie audio déconnectée. Lecture en pause.',
 			'musicExperience.autoDriving' => 'Ouvrir le mode conduite à la connexion à une voiture',
 			'musicExperience.routeHint' => 'Le système de la voiture décide si l’application peut s’afficher automatiquement.',
+			'musicTools.guestDj' => 'DJ invité',
+			'musicTools.charts' => 'Classements d’écoute',
+			'musicTools.rediscover' => 'Redécouvrir',
+			'musicTools.stations' => 'Stations musicales',
+			'musicTools.prompt' => 'Playlist par description',
+			'musicTools.provider' => 'URL du fournisseur de génération',
+			'musicTools.model' => 'Nom du modèle',
+			'musicTools.consent' => 'Envoyer ma description à ce fournisseur',
+			'musicTools.promptHint' => 'Décrivez la musique souhaitée',
+			'musicTools.noHistory' => 'Aucune musique à afficher',
+			'musicTools.historyHint' => 'Écoutes enregistrées sur cet appareil',
+			'musicTools.days' => 'Jours',
+			'musicTools.albumBlocks' => 'Garder les albums entiers',
+			'musicTools.home' => 'Musique',
+			'musicTools.recent' => 'Écoutés récemment',
+			'musicTools.apiKey' => 'Clé API',
+			'musicTools.missing' => 'N/D',
+			'musicTools.minutes' => 'Minutes',
+			'musicTools.rules' => 'Filtres',
+			'musicTools.exclusiveOutput' => 'Sortie audio exclusive',
+			'musicTools.preamp' => 'Préamplification',
+			'musicTools.ratingPending' => 'Enregistré sur cet appareil ; synchronisation en attente',
+			'musicTools.lyricsOffset' => 'Décalage des paroles',
 			_ => null,
 		};
 	}

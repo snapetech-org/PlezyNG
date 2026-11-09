@@ -115,6 +115,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$th romm = _Translations$romm$th._(_root);
 	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
 	@override late final _Translations$musicExperience$th musicExperience = _Translations$musicExperience$th._(_root);
+	@override late final _Translations$musicTools$th musicTools = _Translations$musicTools$th._(_root);
 }
 
 // Path: app
@@ -4237,6 +4238,38 @@ class _Translations$musicExperience$th extends Translations$musicExperience$en {
 	@override String get routeLost => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว';
 	@override String get autoDriving => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ';
 	@override String get routeHint => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่';
+}
+
+// Path: musicTools
+class _Translations$musicTools$th extends Translations$musicTools$en {
+	_Translations$musicTools$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'ดีเจรับเชิญ';
+	@override String get charts => 'อันดับการฟัง';
+	@override String get rediscover => 'ค้นพบอีกครั้ง';
+	@override String get stations => 'สถานีเพลง';
+	@override String get prompt => 'เพลย์ลิสต์จากคำอธิบาย';
+	@override String get provider => 'URL สร้างรายการของผู้ให้บริการ';
+	@override String get model => 'ชื่อโมเดล';
+	@override String get consent => 'ส่งคำอธิบายของฉันให้ผู้ให้บริการนี้';
+	@override String get promptHint => 'อธิบายเพลงที่ต้องการ';
+	@override String get noHistory => 'ยังไม่มีเพลงให้แสดง';
+	@override String get historyHint => 'การเล่นที่บันทึกบนอุปกรณ์นี้';
+	@override String get days => 'วัน';
+	@override String get albumBlocks => 'เก็บอัลบั้มทั้งชุดไว้ด้วยกัน';
+	@override String get home => 'เพลง';
+	@override String get recent => 'เล่นล่าสุด';
+	@override String get apiKey => 'คีย์ API';
+	@override String get missing => 'หมายเลขรุ่น: A';
+	@override String get minutes => 'นาที';
+	@override String get rules => 'ฟิล์ม';
+	@override String get exclusiveOutput => 'เอาต์พุตเสียงแบบเอกสิทธิ์';
+	@override String get preamp => 'ปรีแอมป์';
+	@override String get ratingPending => 'บันทึกบนอุปกรณ์นี้แล้ว รอซิงค์';
+	@override String get lyricsOffset => 'ปรับเวลาเนื้อเพลง';
 }
 
 // Path: appIcon.names
@@ -9334,6 +9367,29 @@ extension on TranslationsTh {
 			'musicExperience.routeLost' => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว',
 			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
 			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
+			'musicTools.guestDj' => 'ดีเจรับเชิญ',
+			'musicTools.charts' => 'อันดับการฟัง',
+			'musicTools.rediscover' => 'ค้นพบอีกครั้ง',
+			'musicTools.stations' => 'สถานีเพลง',
+			'musicTools.prompt' => 'เพลย์ลิสต์จากคำอธิบาย',
+			'musicTools.provider' => 'URL สร้างรายการของผู้ให้บริการ',
+			'musicTools.model' => 'ชื่อโมเดล',
+			'musicTools.consent' => 'ส่งคำอธิบายของฉันให้ผู้ให้บริการนี้',
+			'musicTools.promptHint' => 'อธิบายเพลงที่ต้องการ',
+			'musicTools.noHistory' => 'ยังไม่มีเพลงให้แสดง',
+			'musicTools.historyHint' => 'การเล่นที่บันทึกบนอุปกรณ์นี้',
+			'musicTools.days' => 'วัน',
+			'musicTools.albumBlocks' => 'เก็บอัลบั้มทั้งชุดไว้ด้วยกัน',
+			'musicTools.home' => 'เพลง',
+			'musicTools.recent' => 'เล่นล่าสุด',
+			'musicTools.apiKey' => 'คีย์ API',
+			'musicTools.missing' => 'หมายเลขรุ่น: A',
+			'musicTools.minutes' => 'นาที',
+			'musicTools.rules' => 'ฟิล์ม',
+			'musicTools.exclusiveOutput' => 'เอาต์พุตเสียงแบบเอกสิทธิ์',
+			'musicTools.preamp' => 'ปรีแอมป์',
+			'musicTools.ratingPending' => 'บันทึกบนอุปกรณ์นี้แล้ว รอซิงค์',
+			'musicTools.lyricsOffset' => 'ปรับเวลาเนื้อเพลง',
 			_ => null,
 		};
 	}

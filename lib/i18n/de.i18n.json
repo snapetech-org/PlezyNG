@@ -5492,5 +5492,30 @@
     "routeLost": "Audioausgabe getrennt. Wiedergabe pausiert.",
     "autoDriving": "Fahransicht bei Verbindung mit einem Auto öffnen",
     "routeHint": "Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann."
+  },
+  "musicTools": {
+    "guestDj": "Gast-DJ",
+    "charts": "Hörstatistiken",
+    "rediscover": "Wiederentdecken",
+    "stations": "Musiksender",
+    "prompt": "Playlist aus Beschreibung",
+    "provider": "Generierungs-URL des Anbieters",
+    "model": "Modellname",
+    "consent": "Meine Beschreibung an diesen Anbieter senden",
+    "promptHint": "Beschreibe die gewünschte Musik",
+    "noHistory": "Noch keine Musik verfügbar",
+    "historyHint": "Auf diesem Gerät erfasste Wiedergaben",
+    "days": "Tage",
+    "albumBlocks": "Vollständige Alben zusammenhalten",
+    "home": "Musik",
+    "recent": "Zuletzt gespielt",
+    "apiKey": "API-Schlüssel",
+    "missing": "N. v.",
+    "minutes": "Minuten",
+    "rules": "Filter",
+    "exclusiveOutput": "Exklusive Audioausgabe",
+    "preamp": "Vorverstärkung",
+    "ratingPending": "Auf diesem Gerät gespeichert; Synchronisierung ausstehend",
+    "lyricsOffset": "Zeitversatz der Liedtexte"
   }
 }

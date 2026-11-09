@@ -115,6 +115,7 @@ class TranslationsCs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$cs romm = _Translations$romm$cs._(_root);
 	@override late final _Translations$subtitleCapture$cs subtitleCapture = _Translations$subtitleCapture$cs._(_root);
 	@override late final _Translations$musicExperience$cs musicExperience = _Translations$musicExperience$cs._(_root);
+	@override late final _Translations$musicTools$cs musicTools = _Translations$musicTools$cs._(_root);
 }
 
 // Path: app
@@ -4302,6 +4303,38 @@ class _Translations$musicExperience$cs extends Translations$musicExperience$en {
 	@override String get routeLost => 'Zvukový výstup odpojen. Přehrávání pozastaveno.';
 	@override String get autoDriving => 'Otevřít režim řízení při připojení k autu';
 	@override String get routeHint => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$cs extends Translations$musicTools$en {
+	_Translations$musicTools$cs._(TranslationsCs root) : this._root = root, super.internal(root);
+
+	final TranslationsCs _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Hostující DJ';
+	@override String get charts => 'Žebříčky poslechu';
+	@override String get rediscover => 'Znovu objevit';
+	@override String get stations => 'Hudební stanice';
+	@override String get prompt => 'Seznam podle popisu';
+	@override String get provider => 'URL generování poskytovatele';
+	@override String get model => 'Název modelu';
+	@override String get consent => 'Odeslat můj popis tomuto poskytovateli';
+	@override String get promptHint => 'Popište požadovanou hudbu';
+	@override String get noHistory => 'Zatím není co zobrazit';
+	@override String get historyHint => 'Přehrání zaznamenaná v tomto zařízení';
+	@override String get days => 'Dny';
+	@override String get albumBlocks => 'Ponechat celá alba pohromadě';
+	@override String get home => 'Hudba';
+	@override String get recent => 'Nedávno přehrané';
+	@override String get apiKey => 'Klíč API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'minuty';
+	@override String get rules => 'Filtry';
+	@override String get exclusiveOutput => 'Výhradní zvukový výstup';
+	@override String get preamp => 'Předzesílení';
+	@override String get ratingPending => 'Uloženo v tomto zařízení; čeká na synchronizaci';
+	@override String get lyricsOffset => 'Časový posun textu';
 }
 
 // Path: appIcon.names
@@ -9403,6 +9436,29 @@ extension on TranslationsCs {
 			'musicExperience.routeLost' => 'Zvukový výstup odpojen. Přehrávání pozastaveno.',
 			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
 			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
+			'musicTools.guestDj' => 'Hostující DJ',
+			'musicTools.charts' => 'Žebříčky poslechu',
+			'musicTools.rediscover' => 'Znovu objevit',
+			'musicTools.stations' => 'Hudební stanice',
+			'musicTools.prompt' => 'Seznam podle popisu',
+			'musicTools.provider' => 'URL generování poskytovatele',
+			'musicTools.model' => 'Název modelu',
+			'musicTools.consent' => 'Odeslat můj popis tomuto poskytovateli',
+			'musicTools.promptHint' => 'Popište požadovanou hudbu',
+			'musicTools.noHistory' => 'Zatím není co zobrazit',
+			'musicTools.historyHint' => 'Přehrání zaznamenaná v tomto zařízení',
+			'musicTools.days' => 'Dny',
+			'musicTools.albumBlocks' => 'Ponechat celá alba pohromadě',
+			'musicTools.home' => 'Hudba',
+			'musicTools.recent' => 'Nedávno přehrané',
+			'musicTools.apiKey' => 'Klíč API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'minuty',
+			'musicTools.rules' => 'Filtry',
+			'musicTools.exclusiveOutput' => 'Výhradní zvukový výstup',
+			'musicTools.preamp' => 'Předzesílení',
+			'musicTools.ratingPending' => 'Uloženo v tomto zařízení; čeká na synchronizaci',
+			'musicTools.lyricsOffset' => 'Časový posun textu',
 			_ => null,
 		};
 	}

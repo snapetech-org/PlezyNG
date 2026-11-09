@@ -115,6 +115,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$bg romm = _Translations$romm$bg._(_root);
 	@override late final _Translations$subtitleCapture$bg subtitleCapture = _Translations$subtitleCapture$bg._(_root);
 	@override late final _Translations$musicExperience$bg musicExperience = _Translations$musicExperience$bg._(_root);
+	@override late final _Translations$musicTools$bg musicTools = _Translations$musicTools$bg._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$bg extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.';
 	@override String get autoDriving => 'Отваряне на изгледа за шофиране при свързване с кола';
 	@override String get routeHint => 'Системата на колата определя дали приложението може да се показва автоматично.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$bg extends Translations$musicTools$en {
+	_Translations$musicTools$bg._(TranslationsBg root) : this._root = root, super.internal(root);
+
+	final TranslationsBg _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Гостуващ диджей';
+	@override String get charts => 'Класации на слушане';
+	@override String get rediscover => 'Преоткрийте';
+	@override String get stations => 'Музикални станции';
+	@override String get prompt => 'Плейлист по описание';
+	@override String get provider => 'Адрес за генериране на доставчика';
+	@override String get model => 'Име на модела';
+	@override String get consent => 'Изпрати описанието ми на този доставчик';
+	@override String get promptHint => 'Опишете желаната музика';
+	@override String get noHistory => 'Все още няма музика за показване';
+	@override String get historyHint => 'Възпроизвеждания, записани на това устройство';
+	@override String get days => 'Дни';
+	@override String get albumBlocks => 'Запазване на целите албуми заедно';
+	@override String get home => 'Музика';
+	@override String get recent => 'Наскоро слушани';
+	@override String get apiKey => 'API ключ';
+	@override String get missing => 'Н/Д';
+	@override String get minutes => 'Минути';
+	@override String get rules => 'Филтри';
+	@override String get exclusiveOutput => 'Изключителен аудиоизход';
+	@override String get preamp => 'Предусилване';
+	@override String get ratingPending => 'Запазено на това устройство; чака синхронизиране';
+	@override String get lyricsOffset => 'Отместване на текста';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsBg {
 			'musicExperience.routeLost' => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.',
 			'musicExperience.autoDriving' => 'Отваряне на изгледа за шофиране при свързване с кола',
 			'musicExperience.routeHint' => 'Системата на колата определя дали приложението може да се показва автоматично.',
+			'musicTools.guestDj' => 'Гостуващ диджей',
+			'musicTools.charts' => 'Класации на слушане',
+			'musicTools.rediscover' => 'Преоткрийте',
+			'musicTools.stations' => 'Музикални станции',
+			'musicTools.prompt' => 'Плейлист по описание',
+			'musicTools.provider' => 'Адрес за генериране на доставчика',
+			'musicTools.model' => 'Име на модела',
+			'musicTools.consent' => 'Изпрати описанието ми на този доставчик',
+			'musicTools.promptHint' => 'Опишете желаната музика',
+			'musicTools.noHistory' => 'Все още няма музика за показване',
+			'musicTools.historyHint' => 'Възпроизвеждания, записани на това устройство',
+			'musicTools.days' => 'Дни',
+			'musicTools.albumBlocks' => 'Запазване на целите албуми заедно',
+			'musicTools.home' => 'Музика',
+			'musicTools.recent' => 'Наскоро слушани',
+			'musicTools.apiKey' => 'API ключ',
+			'musicTools.missing' => 'Н/Д',
+			'musicTools.minutes' => 'Минути',
+			'musicTools.rules' => 'Филтри',
+			'musicTools.exclusiveOutput' => 'Изключителен аудиоизход',
+			'musicTools.preamp' => 'Предусилване',
+			'musicTools.ratingPending' => 'Запазено на това устройство; чака синхронизиране',
+			'musicTools.lyricsOffset' => 'Отместване на текста',
 			_ => null,
 		};
 	}

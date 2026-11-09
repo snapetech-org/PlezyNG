@@ -5540,5 +5540,30 @@
     "routeLost": "Zvukový výstup odpojen. Přehrávání pozastaveno.",
     "autoDriving": "Otevřít režim řízení při připojení k autu",
     "routeHint": "Systém auta určuje, zda se aplikace může zobrazit automaticky."
+  },
+  "musicTools": {
+    "guestDj": "Hostující DJ",
+    "charts": "Žebříčky poslechu",
+    "rediscover": "Znovu objevit",
+    "stations": "Hudební stanice",
+    "prompt": "Seznam podle popisu",
+    "provider": "URL generování poskytovatele",
+    "model": "Název modelu",
+    "consent": "Odeslat můj popis tomuto poskytovateli",
+    "promptHint": "Popište požadovanou hudbu",
+    "noHistory": "Zatím není co zobrazit",
+    "historyHint": "Přehrání zaznamenaná v tomto zařízení",
+    "days": "Dny",
+    "albumBlocks": "Ponechat celá alba pohromadě",
+    "home": "Hudba",
+    "recent": "Nedávno přehrané",
+    "apiKey": "Klíč API",
+    "missing": "N / A",
+    "minutes": "minuty",
+    "rules": "Filtry",
+    "exclusiveOutput": "Výhradní zvukový výstup",
+    "preamp": "Předzesílení",
+    "ratingPending": "Uloženo v tomto zařízení; čeká na synchronizaci",
+    "lyricsOffset": "Časový posun textu"
   }
 }

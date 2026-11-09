@@ -115,6 +115,7 @@ class TranslationsPl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$pl romm = _Translations$romm$pl._(_root);
 	@override late final _Translations$subtitleCapture$pl subtitleCapture = _Translations$subtitleCapture$pl._(_root);
 	@override late final _Translations$musicExperience$pl musicExperience = _Translations$musicExperience$pl._(_root);
+	@override late final _Translations$musicTools$pl musicTools = _Translations$musicTools$pl._(_root);
 }
 
 // Path: app
@@ -4306,6 +4307,38 @@ class _Translations$musicExperience$pl extends Translations$musicExperience$en {
 	@override String get routeLost => 'Wyjście audio odłączone. Odtwarzanie wstrzymane.';
 	@override String get autoDriving => 'Otwórz widok samochodowy po połączeniu z autem';
 	@override String get routeHint => 'System samochodu decyduje, czy aplikacja może pojawić się automatycznie.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$pl extends Translations$musicTools$en {
+	_Translations$musicTools$pl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gościnny DJ';
+	@override String get charts => 'Statystyki słuchania';
+	@override String get rediscover => 'Odkryj ponownie';
+	@override String get stations => 'Stacje muzyczne';
+	@override String get prompt => 'Playlista z opisu';
+	@override String get provider => 'Adres generowania dostawcy';
+	@override String get model => 'Nazwa modelu';
+	@override String get consent => 'Wyślij mój opis do tego dostawcy';
+	@override String get promptHint => 'Opisz muzykę, której szukasz';
+	@override String get noHistory => 'Brak muzyki do wyświetlenia';
+	@override String get historyHint => 'Odtworzenia zapisane na tym urządzeniu';
+	@override String get days => 'Dni';
+	@override String get albumBlocks => 'Zachowuj całe albumy';
+	@override String get home => 'Muzyka';
+	@override String get recent => 'Ostatnio odtwarzane';
+	@override String get apiKey => 'Klucz API';
+	@override String get missing => 'N/D';
+	@override String get minutes => 'Minuty';
+	@override String get rules => 'Filtry';
+	@override String get exclusiveOutput => 'Wyłączne wyjście audio';
+	@override String get preamp => 'Wzmocnienie wstępne';
+	@override String get ratingPending => 'Zapisano na tym urządzeniu; oczekuje na synchronizację';
+	@override String get lyricsOffset => 'Przesunięcie czasu tekstu';
 }
 
 // Path: appIcon.names
@@ -9409,6 +9442,29 @@ extension on TranslationsPl {
 			'musicExperience.routeLost' => 'Wyjście audio odłączone. Odtwarzanie wstrzymane.',
 			'musicExperience.autoDriving' => 'Otwórz widok samochodowy po połączeniu z autem',
 			'musicExperience.routeHint' => 'System samochodu decyduje, czy aplikacja może pojawić się automatycznie.',
+			'musicTools.guestDj' => 'Gościnny DJ',
+			'musicTools.charts' => 'Statystyki słuchania',
+			'musicTools.rediscover' => 'Odkryj ponownie',
+			'musicTools.stations' => 'Stacje muzyczne',
+			'musicTools.prompt' => 'Playlista z opisu',
+			'musicTools.provider' => 'Adres generowania dostawcy',
+			'musicTools.model' => 'Nazwa modelu',
+			'musicTools.consent' => 'Wyślij mój opis do tego dostawcy',
+			'musicTools.promptHint' => 'Opisz muzykę, której szukasz',
+			'musicTools.noHistory' => 'Brak muzyki do wyświetlenia',
+			'musicTools.historyHint' => 'Odtworzenia zapisane na tym urządzeniu',
+			'musicTools.days' => 'Dni',
+			'musicTools.albumBlocks' => 'Zachowuj całe albumy',
+			'musicTools.home' => 'Muzyka',
+			'musicTools.recent' => 'Ostatnio odtwarzane',
+			'musicTools.apiKey' => 'Klucz API',
+			'musicTools.missing' => 'N/D',
+			'musicTools.minutes' => 'Minuty',
+			'musicTools.rules' => 'Filtry',
+			'musicTools.exclusiveOutput' => 'Wyłączne wyjście audio',
+			'musicTools.preamp' => 'Wzmocnienie wstępne',
+			'musicTools.ratingPending' => 'Zapisano na tym urządzeniu; oczekuje na synchronizację',
+			'musicTools.lyricsOffset' => 'Przesunięcie czasu tekstu',
 			_ => null,
 		};
 	}

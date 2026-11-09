@@ -115,6 +115,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$ar romm = _Translations$romm$ar._(_root);
 	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar._(_root);
 	@override late final _Translations$musicExperience$ar musicExperience = _Translations$musicExperience$ar._(_root);
+	@override late final _Translations$musicTools$ar musicTools = _Translations$musicTools$ar._(_root);
 }
 
 // Path: app
@@ -4352,6 +4353,38 @@ class _Translations$musicExperience$ar extends Translations$musicExperience$en {
 	@override String get routeLost => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.';
 	@override String get autoDriving => 'فتح واجهة القيادة عند الاتصال بسيارة';
 	@override String get routeHint => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$ar extends Translations$musicTools$en {
+	_Translations$musicTools$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'منسق موسيقى ضيف';
+	@override String get charts => 'إحصاءات الاستماع';
+	@override String get rediscover => 'إعادة الاكتشاف';
+	@override String get stations => 'محطات موسيقية';
+	@override String get prompt => 'قائمة من وصف';
+	@override String get provider => 'رابط التوليد لدى المزود';
+	@override String get model => 'اسم النموذج';
+	@override String get consent => 'إرسال وصفي إلى هذا المزود';
+	@override String get promptHint => 'صف الموسيقى التي تريدها';
+	@override String get noHistory => 'لا توجد موسيقى لعرضها بعد';
+	@override String get historyHint => 'مرات التشغيل المسجلة على هذا الجهاز';
+	@override String get days => 'أيام';
+	@override String get albumBlocks => 'إبقاء الألبومات كاملة معًا';
+	@override String get home => 'الموسيقى';
+	@override String get recent => 'تم تشغيلها مؤخرًا';
+	@override String get apiKey => 'مفتاح API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'دقائق';
+	@override String get rules => 'الفلاتر';
+	@override String get exclusiveOutput => 'إخراج صوت حصري';
+	@override String get preamp => 'التضخيم المسبق';
+	@override String get ratingPending => 'حُفظ على هذا الجهاز؛ بانتظار المزامنة';
+	@override String get lyricsOffset => 'إزاحة توقيت الكلمات';
 }
 
 // Path: appIcon.names
@@ -9459,6 +9492,29 @@ extension on TranslationsAr {
 			'musicExperience.routeLost' => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.',
 			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
 			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
+			'musicTools.guestDj' => 'منسق موسيقى ضيف',
+			'musicTools.charts' => 'إحصاءات الاستماع',
+			'musicTools.rediscover' => 'إعادة الاكتشاف',
+			'musicTools.stations' => 'محطات موسيقية',
+			'musicTools.prompt' => 'قائمة من وصف',
+			'musicTools.provider' => 'رابط التوليد لدى المزود',
+			'musicTools.model' => 'اسم النموذج',
+			'musicTools.consent' => 'إرسال وصفي إلى هذا المزود',
+			'musicTools.promptHint' => 'صف الموسيقى التي تريدها',
+			'musicTools.noHistory' => 'لا توجد موسيقى لعرضها بعد',
+			'musicTools.historyHint' => 'مرات التشغيل المسجلة على هذا الجهاز',
+			'musicTools.days' => 'أيام',
+			'musicTools.albumBlocks' => 'إبقاء الألبومات كاملة معًا',
+			'musicTools.home' => 'الموسيقى',
+			'musicTools.recent' => 'تم تشغيلها مؤخرًا',
+			'musicTools.apiKey' => 'مفتاح API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'دقائق',
+			'musicTools.rules' => 'الفلاتر',
+			'musicTools.exclusiveOutput' => 'إخراج صوت حصري',
+			'musicTools.preamp' => 'التضخيم المسبق',
+			'musicTools.ratingPending' => 'حُفظ على هذا الجهاز؛ بانتظار المزامنة',
+			'musicTools.lyricsOffset' => 'إزاحة توقيت الكلمات',
 			_ => null,
 		};
 	}

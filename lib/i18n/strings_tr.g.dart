@@ -115,6 +115,7 @@ class TranslationsTr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$tr romm = _Translations$romm$tr._(_root);
 	@override late final _Translations$subtitleCapture$tr subtitleCapture = _Translations$subtitleCapture$tr._(_root);
 	@override late final _Translations$musicExperience$tr musicExperience = _Translations$musicExperience$tr._(_root);
+	@override late final _Translations$musicTools$tr musicTools = _Translations$musicTools$tr._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$tr extends Translations$musicExperience$en {
 	@override String get routeLost => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.';
 	@override String get autoDriving => 'Arabaya bağlanınca sürüş görünümünü aç';
 	@override String get routeHint => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$tr extends Translations$musicTools$en {
+	_Translations$musicTools$tr._(TranslationsTr root) : this._root = root, super.internal(root);
+
+	final TranslationsTr _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Konuk DJ';
+	@override String get charts => 'Dinleme listeleri';
+	@override String get rediscover => 'Yeniden keşfet';
+	@override String get stations => 'Müzik istasyonları';
+	@override String get prompt => 'Açıklamadan çalma listesi';
+	@override String get provider => 'Sağlayıcı üretim URL’si';
+	@override String get model => 'Model adı';
+	@override String get consent => 'Açıklamamı bu sağlayıcıya gönder';
+	@override String get promptHint => 'İstediğiniz müziği açıklayın';
+	@override String get noHistory => 'Henüz gösterilecek müzik yok';
+	@override String get historyHint => 'Bu cihazda kaydedilen dinlemeler';
+	@override String get days => 'Günler';
+	@override String get albumBlocks => 'Albümleri bütün olarak tut';
+	@override String get home => 'Müzik';
+	@override String get recent => 'Son çalınanlar';
+	@override String get apiKey => 'API anahtarı';
+	@override String get missing => 'Yok';
+	@override String get minutes => 'Dakika';
+	@override String get rules => 'Filtreler';
+	@override String get exclusiveOutput => 'Özel ses çıkışı';
+	@override String get preamp => 'Ön yükseltme';
+	@override String get ratingPending => 'Bu cihaza kaydedildi; eşitleme bekleniyor';
+	@override String get lyricsOffset => 'Şarkı sözü zaman kaydırması';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsTr {
 			'musicExperience.routeLost' => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.',
 			'musicExperience.autoDriving' => 'Arabaya bağlanınca sürüş görünümünü aç',
 			'musicExperience.routeHint' => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.',
+			'musicTools.guestDj' => 'Konuk DJ',
+			'musicTools.charts' => 'Dinleme listeleri',
+			'musicTools.rediscover' => 'Yeniden keşfet',
+			'musicTools.stations' => 'Müzik istasyonları',
+			'musicTools.prompt' => 'Açıklamadan çalma listesi',
+			'musicTools.provider' => 'Sağlayıcı üretim URL’si',
+			'musicTools.model' => 'Model adı',
+			'musicTools.consent' => 'Açıklamamı bu sağlayıcıya gönder',
+			'musicTools.promptHint' => 'İstediğiniz müziği açıklayın',
+			'musicTools.noHistory' => 'Henüz gösterilecek müzik yok',
+			'musicTools.historyHint' => 'Bu cihazda kaydedilen dinlemeler',
+			'musicTools.days' => 'Günler',
+			'musicTools.albumBlocks' => 'Albümleri bütün olarak tut',
+			'musicTools.home' => 'Müzik',
+			'musicTools.recent' => 'Son çalınanlar',
+			'musicTools.apiKey' => 'API anahtarı',
+			'musicTools.missing' => 'Yok',
+			'musicTools.minutes' => 'Dakika',
+			'musicTools.rules' => 'Filtreler',
+			'musicTools.exclusiveOutput' => 'Özel ses çıkışı',
+			'musicTools.preamp' => 'Ön yükseltme',
+			'musicTools.ratingPending' => 'Bu cihaza kaydedildi; eşitleme bekleniyor',
+			'musicTools.lyricsOffset' => 'Şarkı sözü zaman kaydırması',
 			_ => null,
 		};
 	}

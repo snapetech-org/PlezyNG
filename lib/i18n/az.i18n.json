@@ -5492,5 +5492,30 @@
     "routeLost": "Səs çıxışı ayrıldı. Oynatma dayandırıldı.",
     "autoDriving": "Avtomobilə qoşulduqda sürücülük görünüşünü aç",
     "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir."
+  },
+  "musicTools": {
+    "guestDj": "Qonaq DJ",
+    "charts": "Dinləmə reytinqləri",
+    "rediscover": "Yenidən kəşf et",
+    "stations": "Musiqi stansiyaları",
+    "prompt": "Təsvirdən pleylist",
+    "provider": "Provayderin generasiya URL-i",
+    "model": "Modelin adı",
+    "consent": "Təsvirimi bu provayderə göndər",
+    "promptHint": "İstədiyiniz musiqini təsvir edin",
+    "noHistory": "Hələ göstəriləcək musiqi yoxdur",
+    "historyHint": "Bu cihazda qeydə alınan dinləmələr",
+    "days": "Günlər",
+    "albumBlocks": "Albomları bütöv saxla",
+    "home": "Musiqi",
+    "recent": "Son dinlənilənlər",
+    "apiKey": "API açarı",
+    "missing": "Yoxdur",
+    "minutes": "Dəqiqə",
+    "rules": "Filtrlər",
+    "exclusiveOutput": "Eksklüziv səs çıxışı",
+    "preamp": "Ön gücləndirmə",
+    "ratingPending": "Bu cihazda saxlanıldı; sinxronizasiya gözlənilir",
+    "lyricsOffset": "Mahnı sözlərinin vaxt fərqi"
   }
 }

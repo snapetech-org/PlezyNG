@@ -116,6 +116,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$romm$zh_Hant romm = _Translations$romm$zh_Hant._(_root);
 	@override late final _Translations$subtitleCapture$zh_Hant subtitleCapture = _Translations$subtitleCapture$zh_Hant._(_root);
 	@override late final _Translations$musicExperience$zh_Hant musicExperience = _Translations$musicExperience$zh_Hant._(_root);
+	@override late final _Translations$musicTools$zh_Hant musicTools = _Translations$musicTools$zh_Hant._(_root);
 }
 
 // Path: app
@@ -4256,6 +4257,38 @@ class _Translations$musicExperience$zh_Hant extends Translations$musicExperience
 	@override String get routeLost => '音訊輸出已中斷。播放已暫停。';
 	@override String get autoDriving => '連接汽車時開啟駕駛畫面';
 	@override String get routeHint => '是否允許自動顯示應用程式由汽車系統決定。';
+}
+
+// Path: musicTools
+class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
+	_Translations$musicTools$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => '客座 DJ';
+	@override String get charts => '聆聽排行';
+	@override String get rediscover => '重新發現';
+	@override String get stations => '音樂電台';
+	@override String get prompt => '描述產生播放清單';
+	@override String get provider => '供應商產生位址';
+	@override String get model => '模型名稱';
+	@override String get consent => '將我的描述傳送給此供應商';
+	@override String get promptHint => '描述想聽的音樂';
+	@override String get noHistory => '尚無可顯示的音樂';
+	@override String get historyHint => '此裝置記錄的播放';
+	@override String get days => '天';
+	@override String get albumBlocks => '保持專輯完整';
+	@override String get home => '音樂';
+	@override String get recent => '最近播放';
+	@override String get apiKey => 'API 金鑰';
+	@override String get missing => 'N/A';
+	@override String get minutes => '分鐘';
+	@override String get rules => '篩選器';
+	@override String get exclusiveOutput => '獨佔音訊輸出';
+	@override String get preamp => '前置放大';
+	@override String get ratingPending => '已儲存在此裝置；等待同步';
+	@override String get lyricsOffset => '歌詞時間偏移';
 }
 
 // Path: appIcon.names
@@ -9355,6 +9388,29 @@ extension on TranslationsZhHant {
 			'musicExperience.routeLost' => '音訊輸出已中斷。播放已暫停。',
 			'musicExperience.autoDriving' => '連接汽車時開啟駕駛畫面',
 			'musicExperience.routeHint' => '是否允許自動顯示應用程式由汽車系統決定。',
+			'musicTools.guestDj' => '客座 DJ',
+			'musicTools.charts' => '聆聽排行',
+			'musicTools.rediscover' => '重新發現',
+			'musicTools.stations' => '音樂電台',
+			'musicTools.prompt' => '描述產生播放清單',
+			'musicTools.provider' => '供應商產生位址',
+			'musicTools.model' => '模型名稱',
+			'musicTools.consent' => '將我的描述傳送給此供應商',
+			'musicTools.promptHint' => '描述想聽的音樂',
+			'musicTools.noHistory' => '尚無可顯示的音樂',
+			'musicTools.historyHint' => '此裝置記錄的播放',
+			'musicTools.days' => '天',
+			'musicTools.albumBlocks' => '保持專輯完整',
+			'musicTools.home' => '音樂',
+			'musicTools.recent' => '最近播放',
+			'musicTools.apiKey' => 'API 金鑰',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => '分鐘',
+			'musicTools.rules' => '篩選器',
+			'musicTools.exclusiveOutput' => '獨佔音訊輸出',
+			'musicTools.preamp' => '前置放大',
+			'musicTools.ratingPending' => '已儲存在此裝置；等待同步',
+			'musicTools.lyricsOffset' => '歌詞時間偏移',
 			_ => null,
 		};
 	}

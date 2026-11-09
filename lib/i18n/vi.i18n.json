@@ -5465,5 +5465,30 @@
     "routeLost": "Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.",
     "autoDriving": "Mở giao diện lái xe khi kết nối với ô tô",
     "routeHint": "Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không."
+  },
+  "musicTools": {
+    "guestDj": "DJ khách mời",
+    "charts": "Bảng xếp hạng nghe",
+    "rediscover": "Khám phá lại",
+    "stations": "Đài âm nhạc",
+    "prompt": "Danh sách từ mô tả",
+    "provider": "URL tạo của nhà cung cấp",
+    "model": "Tên mô hình",
+    "consent": "Gửi mô tả của tôi đến nhà cung cấp này",
+    "promptHint": "Mô tả âm nhạc bạn muốn",
+    "noHistory": "Chưa có nhạc để hiển thị",
+    "historyHint": "Lượt phát được ghi trên thiết bị này",
+    "days": "Ngày",
+    "albumBlocks": "Giữ nguyên album",
+    "home": "Nhạc",
+    "recent": "Đã phát gần đây",
+    "apiKey": "Khóa API",
+    "missing": "N / A",
+    "minutes": "phút",
+    "rules": "Bộ lọc",
+    "exclusiveOutput": "Đầu ra âm thanh độc quyền",
+    "preamp": "Tiền khuếch đại",
+    "ratingPending": "Đã lưu trên thiết bị này; đang chờ đồng bộ",
+    "lyricsOffset": "Độ lệch thời gian lời bài hát"
   }
 }

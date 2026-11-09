@@ -115,6 +115,7 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$ru romm = _Translations$romm$ru._(_root);
 	@override late final _Translations$subtitleCapture$ru subtitleCapture = _Translations$subtitleCapture$ru._(_root);
 	@override late final _Translations$musicExperience$ru musicExperience = _Translations$musicExperience$ru._(_root);
+	@override late final _Translations$musicTools$ru musicTools = _Translations$musicTools$ru._(_root);
 }
 
 // Path: app
@@ -4306,6 +4307,38 @@ class _Translations$musicExperience$ru extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудиовыход отключён. Воспроизведение приостановлено.';
 	@override String get autoDriving => 'Открывать режим вождения при подключении к машине';
 	@override String get routeHint => 'Система автомобиля определяет, может ли приложение появляться автоматически.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$ru extends Translations$musicTools$en {
+	_Translations$musicTools$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+	final TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Приглашённый диджей';
+	@override String get charts => 'Статистика прослушиваний';
+	@override String get rediscover => 'Открыть заново';
+	@override String get stations => 'Музыкальные станции';
+	@override String get prompt => 'Плейлист по описанию';
+	@override String get provider => 'Адрес генерации провайдера';
+	@override String get model => 'Название модели';
+	@override String get consent => 'Отправить мой запрос этому провайдеру';
+	@override String get promptHint => 'Опишите желаемую музыку';
+	@override String get noHistory => 'Пока нет музыки для отображения';
+	@override String get historyHint => 'Прослушивания, записанные на этом устройстве';
+	@override String get days => 'Дни';
+	@override String get albumBlocks => 'Сохранять альбомы целиком';
+	@override String get home => 'Музыка';
+	@override String get recent => 'Недавно прослушанные';
+	@override String get apiKey => 'Ключ API';
+	@override String get missing => 'Н/Д';
+	@override String get minutes => 'Минуты';
+	@override String get rules => 'Фильтры';
+	@override String get exclusiveOutput => 'Монопольный аудиовыход';
+	@override String get preamp => 'Предусиление';
+	@override String get ratingPending => 'Сохранено на устройстве; ожидает синхронизации';
+	@override String get lyricsOffset => 'Смещение текста песни';
 }
 
 // Path: appIcon.names
@@ -9409,6 +9442,29 @@ extension on TranslationsRu {
 			'musicExperience.routeLost' => 'Аудиовыход отключён. Воспроизведение приостановлено.',
 			'musicExperience.autoDriving' => 'Открывать режим вождения при подключении к машине',
 			'musicExperience.routeHint' => 'Система автомобиля определяет, может ли приложение появляться автоматически.',
+			'musicTools.guestDj' => 'Приглашённый диджей',
+			'musicTools.charts' => 'Статистика прослушиваний',
+			'musicTools.rediscover' => 'Открыть заново',
+			'musicTools.stations' => 'Музыкальные станции',
+			'musicTools.prompt' => 'Плейлист по описанию',
+			'musicTools.provider' => 'Адрес генерации провайдера',
+			'musicTools.model' => 'Название модели',
+			'musicTools.consent' => 'Отправить мой запрос этому провайдеру',
+			'musicTools.promptHint' => 'Опишите желаемую музыку',
+			'musicTools.noHistory' => 'Пока нет музыки для отображения',
+			'musicTools.historyHint' => 'Прослушивания, записанные на этом устройстве',
+			'musicTools.days' => 'Дни',
+			'musicTools.albumBlocks' => 'Сохранять альбомы целиком',
+			'musicTools.home' => 'Музыка',
+			'musicTools.recent' => 'Недавно прослушанные',
+			'musicTools.apiKey' => 'Ключ API',
+			'musicTools.missing' => 'Н/Д',
+			'musicTools.minutes' => 'Минуты',
+			'musicTools.rules' => 'Фильтры',
+			'musicTools.exclusiveOutput' => 'Монопольный аудиовыход',
+			'musicTools.preamp' => 'Предусиление',
+			'musicTools.ratingPending' => 'Сохранено на устройстве; ожидает синхронизации',
+			'musicTools.lyricsOffset' => 'Смещение текста песни',
 			_ => null,
 		};
 	}

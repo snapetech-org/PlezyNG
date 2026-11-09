@@ -5487,5 +5487,30 @@
     "routeLost": "音訊輸出已中斷。播放已暫停。",
     "autoDriving": "連接汽車時開啟駕駛畫面",
     "routeHint": "是否允許自動顯示應用程式由汽車系統決定。"
+  },
+  "musicTools": {
+    "guestDj": "客座 DJ",
+    "charts": "聆聽排行",
+    "rediscover": "重新發現",
+    "stations": "音樂電台",
+    "prompt": "描述產生播放清單",
+    "provider": "供應商產生位址",
+    "model": "模型名稱",
+    "consent": "將我的描述傳送給此供應商",
+    "promptHint": "描述想聽的音樂",
+    "noHistory": "尚無可顯示的音樂",
+    "historyHint": "此裝置記錄的播放",
+    "days": "天",
+    "albumBlocks": "保持專輯完整",
+    "home": "音樂",
+    "recent": "最近播放",
+    "apiKey": "API 金鑰",
+    "missing": "N/A",
+    "minutes": "分鐘",
+    "rules": "篩選器",
+    "exclusiveOutput": "獨佔音訊輸出",
+    "preamp": "前置放大",
+    "ratingPending": "已儲存在此裝置；等待同步",
+    "lyricsOffset": "歌詞時間偏移"
   }
 }

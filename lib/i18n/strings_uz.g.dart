@@ -115,6 +115,7 @@ class TranslationsUz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$uz romm = _Translations$romm$uz._(_root);
 	@override late final _Translations$subtitleCapture$uz subtitleCapture = _Translations$subtitleCapture$uz._(_root);
 	@override late final _Translations$musicExperience$uz musicExperience = _Translations$musicExperience$uz._(_root);
+	@override late final _Translations$musicTools$uz musicTools = _Translations$musicTools$uz._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$uz extends Translations$musicExperience$en {
 	@override String get routeLost => 'Audio chiqishi uzildi. Ijro to‘xtatildi.';
 	@override String get autoDriving => 'Avtomobilga ulanganda haydash ko‘rinishini ochish';
 	@override String get routeHint => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$uz extends Translations$musicTools$en {
+	_Translations$musicTools$uz._(TranslationsUz root) : this._root = root, super.internal(root);
+
+	final TranslationsUz _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Mehmon DJ';
+	@override String get charts => 'Tinglash reytingi';
+	@override String get rediscover => 'Qayta kashf etish';
+	@override String get stations => 'Musiqa stansiyalari';
+	@override String get prompt => 'Tavsifdan pleylist';
+	@override String get provider => 'Provayder yaratish manzili';
+	@override String get model => 'Model nomi';
+	@override String get consent => 'Tavsifimni ushbu provayderga yuborish';
+	@override String get promptHint => 'Kerakli musiqani tasvirlang';
+	@override String get noHistory => 'Hozircha ko‘rsatiladigan musiqa yo‘q';
+	@override String get historyHint => 'Ushbu qurilmada yozilgan ijrolar';
+	@override String get days => 'Kunlar';
+	@override String get albumBlocks => 'Albomlarni butun saqlash';
+	@override String get home => 'Musiqa';
+	@override String get recent => 'Yaqinda ijro etilgan';
+	@override String get apiKey => 'API kaliti';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Daqiqa';
+	@override String get rules => 'Filtrlar';
+	@override String get exclusiveOutput => 'Eksklyuziv audio chiqish';
+	@override String get preamp => 'Oldindan kuchaytirish';
+	@override String get ratingPending => 'Ushbu qurilmada saqlandi; sinxronlash kutilmoqda';
+	@override String get lyricsOffset => 'Qo‘shiq matni vaqt siljishi';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsUz {
 			'musicExperience.routeLost' => 'Audio chiqishi uzildi. Ijro to‘xtatildi.',
 			'musicExperience.autoDriving' => 'Avtomobilga ulanganda haydash ko‘rinishini ochish',
 			'musicExperience.routeHint' => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.',
+			'musicTools.guestDj' => 'Mehmon DJ',
+			'musicTools.charts' => 'Tinglash reytingi',
+			'musicTools.rediscover' => 'Qayta kashf etish',
+			'musicTools.stations' => 'Musiqa stansiyalari',
+			'musicTools.prompt' => 'Tavsifdan pleylist',
+			'musicTools.provider' => 'Provayder yaratish manzili',
+			'musicTools.model' => 'Model nomi',
+			'musicTools.consent' => 'Tavsifimni ushbu provayderga yuborish',
+			'musicTools.promptHint' => 'Kerakli musiqani tasvirlang',
+			'musicTools.noHistory' => 'Hozircha ko‘rsatiladigan musiqa yo‘q',
+			'musicTools.historyHint' => 'Ushbu qurilmada yozilgan ijrolar',
+			'musicTools.days' => 'Kunlar',
+			'musicTools.albumBlocks' => 'Albomlarni butun saqlash',
+			'musicTools.home' => 'Musiqa',
+			'musicTools.recent' => 'Yaqinda ijro etilgan',
+			'musicTools.apiKey' => 'API kaliti',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Daqiqa',
+			'musicTools.rules' => 'Filtrlar',
+			'musicTools.exclusiveOutput' => 'Eksklyuziv audio chiqish',
+			'musicTools.preamp' => 'Oldindan kuchaytirish',
+			'musicTools.ratingPending' => 'Ushbu qurilmada saqlandi; sinxronlash kutilmoqda',
+			'musicTools.lyricsOffset' => 'Qo‘shiq matni vaqt siljishi',
 			_ => null,
 		};
 	}

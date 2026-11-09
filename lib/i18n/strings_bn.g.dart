@@ -115,6 +115,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
 	@override late final _Translations$musicExperience$bn musicExperience = _Translations$musicExperience$bn._(_root);
+	@override late final _Translations$musicTools$bn musicTools = _Translations$musicTools$bn._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$bn extends Translations$musicExperience$en {
 	@override String get routeLost => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।';
 	@override String get autoDriving => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন';
 	@override String get routeHint => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।';
+}
+
+// Path: musicTools
+class _Translations$musicTools$bn extends Translations$musicTools$en {
+	_Translations$musicTools$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'অতিথি ডিজে';
+	@override String get charts => 'শোনার তালিকা';
+	@override String get rediscover => 'আবার আবিষ্কার করুন';
+	@override String get stations => 'মিউজিক স্টেশন';
+	@override String get prompt => 'বর্ণনা থেকে প্লেলিস্ট';
+	@override String get provider => 'প্রদানকারীর তৈরির URL';
+	@override String get model => 'মডেলের নাম';
+	@override String get consent => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান';
+	@override String get promptHint => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন';
+	@override String get noHistory => 'এখনও দেখানোর মতো সঙ্গীত নেই';
+	@override String get historyHint => 'এই ডিভাইসে রেকর্ড করা প্লে';
+	@override String get days => 'দিন';
+	@override String get albumBlocks => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন';
+	@override String get home => 'সঙ্গীত';
+	@override String get recent => 'সম্প্রতি শোনা';
+	@override String get apiKey => 'API কী';
+	@override String get missing => 'ন/এ';
+	@override String get minutes => 'মিনিট';
+	@override String get rules => 'ফিল্টারগুলি';
+	@override String get exclusiveOutput => 'একচেটিয়া অডিও আউটপুট';
+	@override String get preamp => 'প্রিঅ্যাম্প';
+	@override String get ratingPending => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়';
+	@override String get lyricsOffset => 'গানের কথার সময়ের ব্যবধান';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsBn {
 			'musicExperience.routeLost' => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।',
 			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
 			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
+			'musicTools.guestDj' => 'অতিথি ডিজে',
+			'musicTools.charts' => 'শোনার তালিকা',
+			'musicTools.rediscover' => 'আবার আবিষ্কার করুন',
+			'musicTools.stations' => 'মিউজিক স্টেশন',
+			'musicTools.prompt' => 'বর্ণনা থেকে প্লেলিস্ট',
+			'musicTools.provider' => 'প্রদানকারীর তৈরির URL',
+			'musicTools.model' => 'মডেলের নাম',
+			'musicTools.consent' => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান',
+			'musicTools.promptHint' => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন',
+			'musicTools.noHistory' => 'এখনও দেখানোর মতো সঙ্গীত নেই',
+			'musicTools.historyHint' => 'এই ডিভাইসে রেকর্ড করা প্লে',
+			'musicTools.days' => 'দিন',
+			'musicTools.albumBlocks' => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন',
+			'musicTools.home' => 'সঙ্গীত',
+			'musicTools.recent' => 'সম্প্রতি শোনা',
+			'musicTools.apiKey' => 'API কী',
+			'musicTools.missing' => 'ন/এ',
+			'musicTools.minutes' => 'মিনিট',
+			'musicTools.rules' => 'ফিল্টারগুলি',
+			'musicTools.exclusiveOutput' => 'একচেটিয়া অডিও আউটপুট',
+			'musicTools.preamp' => 'প্রিঅ্যাম্প',
+			'musicTools.ratingPending' => 'এই ডিভাইসে সংরক্ষিত; সিঙ্কের অপেক্ষায়',
+			'musicTools.lyricsOffset' => 'গানের কথার সময়ের ব্যবধান',
 			_ => null,
 		};
 	}

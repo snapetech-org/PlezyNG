@@ -26,9 +26,13 @@ class MusicBrowserService : MediaBrowserServiceCompat() {
     // Boot the ordinary app/profile binder without opening an Activity.
     // PIN/account gates still decide whether Dart publishes a catalog.
     val engine = FlutterEngine(applicationContext)
+    engine.plugins.add(MusicBackgroundPlatformPlugin())
     engine.plugins.add(MpvAudioPlayerPlugin())
     FlutterEngineCache.getInstance().put(ENGINE_ID, engine)
-    engine.dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
+    engine.dartExecutor.executeDartEntrypoint(
+      DartExecutor.DartEntrypoint.createDefault(),
+      listOf("--pleazyng-car-host")
+    )
   }
   private val changed: () -> Unit = {
     MediaSessionHolder.sessionToken?.let { if (sessionToken == null) setSessionToken(it) }

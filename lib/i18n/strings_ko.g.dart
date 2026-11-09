@@ -115,6 +115,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$ko romm = _Translations$romm$ko._(_root);
 	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
 	@override late final _Translations$musicExperience$ko musicExperience = _Translations$musicExperience$ko._(_root);
+	@override late final _Translations$musicTools$ko musicTools = _Translations$musicTools$ko._(_root);
 }
 
 // Path: app
@@ -4255,6 +4256,38 @@ class _Translations$musicExperience$ko extends Translations$musicExperience$en {
 	@override String get routeLost => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.';
 	@override String get autoDriving => '차에 연결하면 운전 화면 열기';
 	@override String get routeHint => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$ko extends Translations$musicTools$en {
+	_Translations$musicTools$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => '게스트 DJ';
+	@override String get charts => '청취 순위';
+	@override String get rediscover => '다시 발견';
+	@override String get stations => '음악 스테이션';
+	@override String get prompt => '설명으로 재생목록 만들기';
+	@override String get provider => '공급자 생성 URL';
+	@override String get model => '모델 이름';
+	@override String get consent => '이 공급자에게 내 설명 보내기';
+	@override String get promptHint => '원하는 음악을 설명하세요';
+	@override String get noHistory => '아직 표시할 음악이 없습니다';
+	@override String get historyHint => '이 기기에 기록된 재생';
+	@override String get days => '일';
+	@override String get albumBlocks => '앨범 전체를 함께 유지';
+	@override String get home => '음악';
+	@override String get recent => '최근 재생한 음악';
+	@override String get apiKey => 'API 키';
+	@override String get missing => 'N/A';
+	@override String get minutes => '분';
+	@override String get rules => '필터';
+	@override String get exclusiveOutput => '독점 오디오 출력';
+	@override String get preamp => '프리앰프';
+	@override String get ratingPending => '이 기기에 저장됨; 동기화 대기 중';
+	@override String get lyricsOffset => '가사 타이밍 조정';
 }
 
 // Path: appIcon.names
@@ -9354,6 +9387,29 @@ extension on TranslationsKo {
 			'musicExperience.routeLost' => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.',
 			'musicExperience.autoDriving' => '차에 연결하면 운전 화면 열기',
 			'musicExperience.routeHint' => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.',
+			'musicTools.guestDj' => '게스트 DJ',
+			'musicTools.charts' => '청취 순위',
+			'musicTools.rediscover' => '다시 발견',
+			'musicTools.stations' => '음악 스테이션',
+			'musicTools.prompt' => '설명으로 재생목록 만들기',
+			'musicTools.provider' => '공급자 생성 URL',
+			'musicTools.model' => '모델 이름',
+			'musicTools.consent' => '이 공급자에게 내 설명 보내기',
+			'musicTools.promptHint' => '원하는 음악을 설명하세요',
+			'musicTools.noHistory' => '아직 표시할 음악이 없습니다',
+			'musicTools.historyHint' => '이 기기에 기록된 재생',
+			'musicTools.days' => '일',
+			'musicTools.albumBlocks' => '앨범 전체를 함께 유지',
+			'musicTools.home' => '음악',
+			'musicTools.recent' => '최근 재생한 음악',
+			'musicTools.apiKey' => 'API 키',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => '분',
+			'musicTools.rules' => '필터',
+			'musicTools.exclusiveOutput' => '독점 오디오 출력',
+			'musicTools.preamp' => '프리앰프',
+			'musicTools.ratingPending' => '이 기기에 저장됨; 동기화 대기 중',
+			'musicTools.lyricsOffset' => '가사 타이밍 조정',
 			_ => null,
 		};
 	}

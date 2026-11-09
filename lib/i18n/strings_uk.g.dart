@@ -115,6 +115,7 @@ class TranslationsUk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$uk romm = _Translations$romm$uk._(_root);
 	@override late final _Translations$subtitleCapture$uk subtitleCapture = _Translations$subtitleCapture$uk._(_root);
 	@override late final _Translations$musicExperience$uk musicExperience = _Translations$musicExperience$uk._(_root);
+	@override late final _Translations$musicTools$uk musicTools = _Translations$musicTools$uk._(_root);
 }
 
 // Path: app
@@ -4302,6 +4303,38 @@ class _Translations$musicExperience$uk extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудіовихід від’єднано. Відтворення призупинено.';
 	@override String get autoDriving => 'Відкривати режим водіння при підключенні до авто';
 	@override String get routeHint => 'Система автомобіля визначає, чи може застосунок з’являтися автоматично.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$uk extends Translations$musicTools$en {
+	_Translations$musicTools$uk._(TranslationsUk root) : this._root = root, super.internal(root);
+
+	final TranslationsUk _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Запрошений діджей';
+	@override String get charts => 'Статистика прослуховувань';
+	@override String get rediscover => 'Відкрити знову';
+	@override String get stations => 'Музичні станції';
+	@override String get prompt => 'Плейлист за описом';
+	@override String get provider => 'Адреса генерації постачальника';
+	@override String get model => 'Назва моделі';
+	@override String get consent => 'Надіслати мій опис цьому постачальнику';
+	@override String get promptHint => 'Опишіть бажану музику';
+	@override String get noHistory => 'Поки немає музики для показу';
+	@override String get historyHint => 'Прослуховування, записані на цьому пристрої';
+	@override String get days => 'Дні';
+	@override String get albumBlocks => 'Зберігати альбоми цілими';
+	@override String get home => 'Музика';
+	@override String get recent => 'Нещодавно прослухані';
+	@override String get apiKey => 'Ключ API';
+	@override String get missing => 'Н / А';
+	@override String get minutes => 'хвилин';
+	@override String get rules => 'Фільтри';
+	@override String get exclusiveOutput => 'Монопольний аудіовихід';
+	@override String get preamp => 'Попереднє підсилення';
+	@override String get ratingPending => 'Збережено на пристрої; очікує синхронізації';
+	@override String get lyricsOffset => 'Зсув тексту пісні';
 }
 
 // Path: appIcon.names
@@ -9403,6 +9436,29 @@ extension on TranslationsUk {
 			'musicExperience.routeLost' => 'Аудіовихід від’єднано. Відтворення призупинено.',
 			'musicExperience.autoDriving' => 'Відкривати режим водіння при підключенні до авто',
 			'musicExperience.routeHint' => 'Система автомобіля визначає, чи може застосунок з’являтися автоматично.',
+			'musicTools.guestDj' => 'Запрошений діджей',
+			'musicTools.charts' => 'Статистика прослуховувань',
+			'musicTools.rediscover' => 'Відкрити знову',
+			'musicTools.stations' => 'Музичні станції',
+			'musicTools.prompt' => 'Плейлист за описом',
+			'musicTools.provider' => 'Адреса генерації постачальника',
+			'musicTools.model' => 'Назва моделі',
+			'musicTools.consent' => 'Надіслати мій опис цьому постачальнику',
+			'musicTools.promptHint' => 'Опишіть бажану музику',
+			'musicTools.noHistory' => 'Поки немає музики для показу',
+			'musicTools.historyHint' => 'Прослуховування, записані на цьому пристрої',
+			'musicTools.days' => 'Дні',
+			'musicTools.albumBlocks' => 'Зберігати альбоми цілими',
+			'musicTools.home' => 'Музика',
+			'musicTools.recent' => 'Нещодавно прослухані',
+			'musicTools.apiKey' => 'Ключ API',
+			'musicTools.missing' => 'Н / А',
+			'musicTools.minutes' => 'хвилин',
+			'musicTools.rules' => 'Фільтри',
+			'musicTools.exclusiveOutput' => 'Монопольний аудіовихід',
+			'musicTools.preamp' => 'Попереднє підсилення',
+			'musicTools.ratingPending' => 'Збережено на пристрої; очікує синхронізації',
+			'musicTools.lyricsOffset' => 'Зсув тексту пісні',
 			_ => null,
 		};
 	}

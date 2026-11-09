@@ -5465,5 +5465,30 @@
     "routeLost": "Keluaran audio terputus. Pemutaran dijeda.",
     "autoDriving": "Buka tampilan berkendara saat terhubung ke mobil",
     "routeHint": "Sistem mobil menentukan apakah aplikasi dapat muncul otomatis."
+  },
+  "musicTools": {
+    "guestDj": "DJ tamu",
+    "charts": "Peringkat pendengaran",
+    "rediscover": "Temukan kembali",
+    "stations": "Stasiun musik",
+    "prompt": "Daftar putar dari deskripsi",
+    "provider": "URL pembuatan penyedia",
+    "model": "Nama model",
+    "consent": "Kirim deskripsi saya ke penyedia ini",
+    "promptHint": "Jelaskan musik yang diinginkan",
+    "noHistory": "Belum ada musik untuk ditampilkan",
+    "historyHint": "Pemutaran yang dicatat di perangkat ini",
+    "days": "Hari",
+    "albumBlocks": "Satukan album utuh",
+    "home": "Musik",
+    "recent": "Baru diputar",
+    "apiKey": "Kunci API",
+    "missing": "N / A",
+    "minutes": "Minit",
+    "rules": "Filter",
+    "exclusiveOutput": "Keluaran audio eksklusif",
+    "preamp": "Prapenguatan",
+    "ratingPending": "Disimpan di perangkat ini; menunggu sinkronisasi",
+    "lyricsOffset": "Pergeseran waktu lirik"
   }
 }

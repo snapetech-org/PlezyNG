@@ -6,8 +6,8 @@ import '../../utils/app_logger.dart';
 import '../../utils/external_ids.dart';
 import 'deep_link.dart';
 
-/// Whether [item] can be shared as a [PlayLink]: a movie, show or episode
-/// that names its server, on any backend.
+/// Whether a playable video or music item can be shared as a server-qualified
+/// [PlayLink], on any backend.
 bool canLinkItem(MediaItem item) => serverItemLink(item) != null;
 
 /// The link that plays [item] from its own server, or null when [item]
@@ -16,7 +16,12 @@ PlayLink? serverItemLink(MediaItem item) {
   final serverId = serverIdOrNull(item.serverId);
   if (serverId == null || item.id.trim().isEmpty) return null;
   return switch (item.kind) {
-    MediaKind.movie || MediaKind.show || MediaKind.episode => PlayLink(
+    MediaKind.movie ||
+    MediaKind.show ||
+    MediaKind.episode ||
+    MediaKind.track ||
+    MediaKind.album ||
+    MediaKind.artist => PlayLink(
       target: ItemPlayTarget(serverId: serverId, itemId: item.id),
     ),
     _ => null,

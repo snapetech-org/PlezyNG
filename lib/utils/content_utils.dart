@@ -19,6 +19,7 @@ class ContentTypes {
   /// convenient shared string constant for a sync rule's targetType column,
   /// alongside [collection]/[playlist] which serve the same dual purpose.
   static const String continueWatching = 'continueWatching';
+  static const String musicStation = 'musicStation';
 
   static const Set<String> musicTypes = {artist, album, track};
   static const Set<String> videoTypes = {movie, show, season, episode};

@@ -115,6 +115,7 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$ja romm = _Translations$romm$ja._(_root);
 	@override late final _Translations$subtitleCapture$ja subtitleCapture = _Translations$subtitleCapture$ja._(_root);
 	@override late final _Translations$musicExperience$ja musicExperience = _Translations$musicExperience$ja._(_root);
+	@override late final _Translations$musicTools$ja musicTools = _Translations$musicTools$ja._(_root);
 }
 
 // Path: app
@@ -4255,6 +4256,38 @@ class _Translations$musicExperience$ja extends Translations$musicExperience$en {
 	@override String get routeLost => '音声出力が切断されました。再生を一時停止しました。';
 	@override String get autoDriving => '車に接続したら運転用画面を開く';
 	@override String get routeHint => 'アプリを自動表示できるかどうかは車のシステムによって決まります。';
+}
+
+// Path: musicTools
+class _Translations$musicTools$ja extends Translations$musicTools$en {
+	_Translations$musicTools$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+	final TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'ゲストDJ';
+	@override String get charts => '再生ランキング';
+	@override String get rediscover => '再発見';
+	@override String get stations => 'ミュージックステーション';
+	@override String get prompt => '説明からプレイリスト';
+	@override String get provider => 'プロバイダーの生成URL';
+	@override String get model => 'モデル名';
+	@override String get consent => 'このプロバイダーに説明を送信';
+	@override String get promptHint => '聴きたい音楽を説明してください';
+	@override String get noHistory => '表示する音楽はまだありません';
+	@override String get historyHint => 'この端末で記録した再生';
+	@override String get days => '日';
+	@override String get albumBlocks => 'アルバム全体をまとめる';
+	@override String get home => '音楽';
+	@override String get recent => '最近再生した曲';
+	@override String get apiKey => 'API キー';
+	@override String get missing => 'N/A';
+	@override String get minutes => '分';
+	@override String get rules => 'フィルター';
+	@override String get exclusiveOutput => '排他オーディオ出力';
+	@override String get preamp => 'プリアンプ';
+	@override String get ratingPending => 'この端末に保存済み・同期待ち';
+	@override String get lyricsOffset => '歌詞のタイミング調整';
 }
 
 // Path: appIcon.names
@@ -9354,6 +9387,29 @@ extension on TranslationsJa {
 			'musicExperience.routeLost' => '音声出力が切断されました。再生を一時停止しました。',
 			'musicExperience.autoDriving' => '車に接続したら運転用画面を開く',
 			'musicExperience.routeHint' => 'アプリを自動表示できるかどうかは車のシステムによって決まります。',
+			'musicTools.guestDj' => 'ゲストDJ',
+			'musicTools.charts' => '再生ランキング',
+			'musicTools.rediscover' => '再発見',
+			'musicTools.stations' => 'ミュージックステーション',
+			'musicTools.prompt' => '説明からプレイリスト',
+			'musicTools.provider' => 'プロバイダーの生成URL',
+			'musicTools.model' => 'モデル名',
+			'musicTools.consent' => 'このプロバイダーに説明を送信',
+			'musicTools.promptHint' => '聴きたい音楽を説明してください',
+			'musicTools.noHistory' => '表示する音楽はまだありません',
+			'musicTools.historyHint' => 'この端末で記録した再生',
+			'musicTools.days' => '日',
+			'musicTools.albumBlocks' => 'アルバム全体をまとめる',
+			'musicTools.home' => '音楽',
+			'musicTools.recent' => '最近再生した曲',
+			'musicTools.apiKey' => 'API キー',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => '分',
+			'musicTools.rules' => 'フィルター',
+			'musicTools.exclusiveOutput' => '排他オーディオ出力',
+			'musicTools.preamp' => 'プリアンプ',
+			'musicTools.ratingPending' => 'この端末に保存済み・同期待ち',
+			'musicTools.lyricsOffset' => '歌詞のタイミング調整',
 			_ => null,
 		};
 	}

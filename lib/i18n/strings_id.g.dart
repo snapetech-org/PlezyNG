@@ -115,6 +115,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$id romm = _Translations$romm$id._(_root);
 	@override late final _Translations$subtitleCapture$id subtitleCapture = _Translations$subtitleCapture$id._(_root);
 	@override late final _Translations$musicExperience$id musicExperience = _Translations$musicExperience$id._(_root);
+	@override late final _Translations$musicTools$id musicTools = _Translations$musicTools$id._(_root);
 }
 
 // Path: app
@@ -4237,6 +4238,38 @@ class _Translations$musicExperience$id extends Translations$musicExperience$en {
 	@override String get routeLost => 'Keluaran audio terputus. Pemutaran dijeda.';
 	@override String get autoDriving => 'Buka tampilan berkendara saat terhubung ke mobil';
 	@override String get routeHint => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$id extends Translations$musicTools$en {
+	_Translations$musicTools$id._(TranslationsId root) : this._root = root, super.internal(root);
+
+	final TranslationsId _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ tamu';
+	@override String get charts => 'Peringkat pendengaran';
+	@override String get rediscover => 'Temukan kembali';
+	@override String get stations => 'Stasiun musik';
+	@override String get prompt => 'Daftar putar dari deskripsi';
+	@override String get provider => 'URL pembuatan penyedia';
+	@override String get model => 'Nama model';
+	@override String get consent => 'Kirim deskripsi saya ke penyedia ini';
+	@override String get promptHint => 'Jelaskan musik yang diinginkan';
+	@override String get noHistory => 'Belum ada musik untuk ditampilkan';
+	@override String get historyHint => 'Pemutaran yang dicatat di perangkat ini';
+	@override String get days => 'Hari';
+	@override String get albumBlocks => 'Satukan album utuh';
+	@override String get home => 'Musik';
+	@override String get recent => 'Baru diputar';
+	@override String get apiKey => 'Kunci API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'Minit';
+	@override String get rules => 'Filter';
+	@override String get exclusiveOutput => 'Keluaran audio eksklusif';
+	@override String get preamp => 'Prapenguatan';
+	@override String get ratingPending => 'Disimpan di perangkat ini; menunggu sinkronisasi';
+	@override String get lyricsOffset => 'Pergeseran waktu lirik';
 }
 
 // Path: appIcon.names
@@ -9334,6 +9367,29 @@ extension on TranslationsId {
 			'musicExperience.routeLost' => 'Keluaran audio terputus. Pemutaran dijeda.',
 			'musicExperience.autoDriving' => 'Buka tampilan berkendara saat terhubung ke mobil',
 			'musicExperience.routeHint' => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.',
+			'musicTools.guestDj' => 'DJ tamu',
+			'musicTools.charts' => 'Peringkat pendengaran',
+			'musicTools.rediscover' => 'Temukan kembali',
+			'musicTools.stations' => 'Stasiun musik',
+			'musicTools.prompt' => 'Daftar putar dari deskripsi',
+			'musicTools.provider' => 'URL pembuatan penyedia',
+			'musicTools.model' => 'Nama model',
+			'musicTools.consent' => 'Kirim deskripsi saya ke penyedia ini',
+			'musicTools.promptHint' => 'Jelaskan musik yang diinginkan',
+			'musicTools.noHistory' => 'Belum ada musik untuk ditampilkan',
+			'musicTools.historyHint' => 'Pemutaran yang dicatat di perangkat ini',
+			'musicTools.days' => 'Hari',
+			'musicTools.albumBlocks' => 'Satukan album utuh',
+			'musicTools.home' => 'Musik',
+			'musicTools.recent' => 'Baru diputar',
+			'musicTools.apiKey' => 'Kunci API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'Minit',
+			'musicTools.rules' => 'Filter',
+			'musicTools.exclusiveOutput' => 'Keluaran audio eksklusif',
+			'musicTools.preamp' => 'Prapenguatan',
+			'musicTools.ratingPending' => 'Disimpan di perangkat ini; menunggu sinkronisasi',
+			'musicTools.lyricsOffset' => 'Pergeseran waktu lirik',
 			_ => null,
 		};
 	}

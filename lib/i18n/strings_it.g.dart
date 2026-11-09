@@ -115,6 +115,7 @@ class TranslationsIt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$it romm = _Translations$romm$it._(_root);
 	@override late final _Translations$subtitleCapture$it subtitleCapture = _Translations$subtitleCapture$it._(_root);
 	@override late final _Translations$musicExperience$it musicExperience = _Translations$musicExperience$it._(_root);
+	@override late final _Translations$musicTools$it musicTools = _Translations$musicTools$it._(_root);
 }
 
 // Path: app
@@ -4267,6 +4268,38 @@ class _Translations$musicExperience$it extends Translations$musicExperience$en {
 	@override String get routeLost => 'Uscita audio scollegata. Riproduzione in pausa.';
 	@override String get autoDriving => 'Apri la vista guida quando ti colleghi a un’auto';
 	@override String get routeHint => 'Il sistema dell’auto decide se l’app può apparire automaticamente.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$it extends Translations$musicTools$en {
+	_Translations$musicTools$it._(TranslationsIt root) : this._root = root, super.internal(root);
+
+	final TranslationsIt _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ ospite';
+	@override String get charts => 'Classifiche di ascolto';
+	@override String get rediscover => 'Riscopri';
+	@override String get stations => 'Stazioni musicali';
+	@override String get prompt => 'Playlist da descrizione';
+	@override String get provider => 'URL di generazione del fornitore';
+	@override String get model => 'Nome del modello';
+	@override String get consent => 'Invia la mia descrizione a questo fornitore';
+	@override String get promptHint => 'Descrivi la musica che desideri';
+	@override String get noHistory => 'Nessuna musica da mostrare';
+	@override String get historyHint => 'Ascolti registrati su questo dispositivo';
+	@override String get days => 'Giorni';
+	@override String get albumBlocks => 'Mantieni gli album interi';
+	@override String get home => 'Musica';
+	@override String get recent => 'Ascoltati di recente';
+	@override String get apiKey => 'Chiave API';
+	@override String get missing => 'N/D';
+	@override String get minutes => 'Minuti';
+	@override String get rules => 'Filtri';
+	@override String get exclusiveOutput => 'Uscita audio esclusiva';
+	@override String get preamp => 'Preamplificazione';
+	@override String get ratingPending => 'Salvato sul dispositivo; sincronizzazione in attesa';
+	@override String get lyricsOffset => 'Sfasamento del testo';
 }
 
 // Path: appIcon.names
@@ -9366,6 +9399,29 @@ extension on TranslationsIt {
 			'musicExperience.routeLost' => 'Uscita audio scollegata. Riproduzione in pausa.',
 			'musicExperience.autoDriving' => 'Apri la vista guida quando ti colleghi a un’auto',
 			'musicExperience.routeHint' => 'Il sistema dell’auto decide se l’app può apparire automaticamente.',
+			'musicTools.guestDj' => 'DJ ospite',
+			'musicTools.charts' => 'Classifiche di ascolto',
+			'musicTools.rediscover' => 'Riscopri',
+			'musicTools.stations' => 'Stazioni musicali',
+			'musicTools.prompt' => 'Playlist da descrizione',
+			'musicTools.provider' => 'URL di generazione del fornitore',
+			'musicTools.model' => 'Nome del modello',
+			'musicTools.consent' => 'Invia la mia descrizione a questo fornitore',
+			'musicTools.promptHint' => 'Descrivi la musica che desideri',
+			'musicTools.noHistory' => 'Nessuna musica da mostrare',
+			'musicTools.historyHint' => 'Ascolti registrati su questo dispositivo',
+			'musicTools.days' => 'Giorni',
+			'musicTools.albumBlocks' => 'Mantieni gli album interi',
+			'musicTools.home' => 'Musica',
+			'musicTools.recent' => 'Ascoltati di recente',
+			'musicTools.apiKey' => 'Chiave API',
+			'musicTools.missing' => 'N/D',
+			'musicTools.minutes' => 'Minuti',
+			'musicTools.rules' => 'Filtri',
+			'musicTools.exclusiveOutput' => 'Uscita audio esclusiva',
+			'musicTools.preamp' => 'Preamplificazione',
+			'musicTools.ratingPending' => 'Salvato sul dispositivo; sincronizzazione in attesa',
+			'musicTools.lyricsOffset' => 'Sfasamento del testo',
 			_ => null,
 		};
 	}

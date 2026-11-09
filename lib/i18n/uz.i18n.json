@@ -5492,5 +5492,30 @@
     "routeLost": "Audio chiqishi uzildi. Ijro to‘xtatildi.",
     "autoDriving": "Avtomobilga ulanganda haydash ko‘rinishini ochish",
     "routeHint": "Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi."
+  },
+  "musicTools": {
+    "guestDj": "Mehmon DJ",
+    "charts": "Tinglash reytingi",
+    "rediscover": "Qayta kashf etish",
+    "stations": "Musiqa stansiyalari",
+    "prompt": "Tavsifdan pleylist",
+    "provider": "Provayder yaratish manzili",
+    "model": "Model nomi",
+    "consent": "Tavsifimni ushbu provayderga yuborish",
+    "promptHint": "Kerakli musiqani tasvirlang",
+    "noHistory": "Hozircha ko‘rsatiladigan musiqa yo‘q",
+    "historyHint": "Ushbu qurilmada yozilgan ijrolar",
+    "days": "Kunlar",
+    "albumBlocks": "Albomlarni butun saqlash",
+    "home": "Musiqa",
+    "recent": "Yaqinda ijro etilgan",
+    "apiKey": "API kaliti",
+    "missing": "N/A",
+    "minutes": "Daqiqa",
+    "rules": "Filtrlar",
+    "exclusiveOutput": "Eksklyuziv audio chiqish",
+    "preamp": "Oldindan kuchaytirish",
+    "ratingPending": "Ushbu qurilmada saqlandi; sinxronlash kutilmoqda",
+    "lyricsOffset": "Qo‘shiq matni vaqt siljishi"
   }
 }

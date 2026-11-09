@@ -5492,5 +5492,30 @@
     "routeLost": "Ljudutgången kopplades från. Uppspelningen pausades.",
     "autoDriving": "Öppna körvyn vid anslutning till en bil",
     "routeHint": "Bilens system avgör om appen kan visas automatiskt."
+  },
+  "musicTools": {
+    "guestDj": "Gäst-DJ",
+    "charts": "Lyssningslistor",
+    "rediscover": "Återupptäck",
+    "stations": "Musikstationer",
+    "prompt": "Spellista från beskrivning",
+    "provider": "Leverantörens genererings-URL",
+    "model": "Modellnamn",
+    "consent": "Skicka min beskrivning till leverantören",
+    "promptHint": "Beskriv musiken du vill ha",
+    "noHistory": "Ingen musik att visa ännu",
+    "historyHint": "Uppspelningar registrerade på den här enheten",
+    "days": "Dagar",
+    "albumBlocks": "Håll hela album samman",
+    "home": "Musik",
+    "recent": "Senast spelat",
+    "apiKey": "API-nyckel",
+    "missing": "N/A",
+    "minutes": "Minuter",
+    "rules": "Filter",
+    "exclusiveOutput": "Exklusiv ljudutgång",
+    "preamp": "Förförstärkning",
+    "ratingPending": "Sparat på den här enheten; väntar på synkronisering",
+    "lyricsOffset": "Tidsförskjutning för sångtext"
   }
 }

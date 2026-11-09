@@ -1,3 +1,4 @@
+import 'services/music/music_background_frames.dart';
 import 'dart:async';
 import 'dart:io' show Directory, File, Platform, ProcessInfo, stderr;
 import 'dart:ui' show AppExitResponse;
@@ -178,6 +179,11 @@ void _registerTvosPlatformPlugins() {
 
 void main([List<String> args = const <String>[]]) {
   final binding = PlezyWidgetsBinding.ensureInitialized();
+  final carBootstrap = args.contains('--pleazyng-car-host');
+  if (carBootstrap || Platform.isAndroid) {
+    // Warm phone engines can later become the car's background engine too.
+    MusicBackgroundFrames(binding, active: () => carBootstrap || MusicBackgroundFrames.carConnected).install();
+  }
   if (args.contains('--plezy-preparation-worker')) {
     unawaited(runDesktopPreparationWorker());
     return;

@@ -125,6 +125,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$karaokeUi$en karaokeUi = Translations$karaokeUi$en.internal(_root);
 	late final Translations$bonusExtras$en bonusExtras = Translations$bonusExtras$en.internal(_root);
 	late final Translations$musicExperience$en musicExperience = Translations$musicExperience$en.internal(_root);
+	late final Translations$musicTools$en musicTools = Translations$musicTools$en.internal(_root);
 }
 
 // Path: app
@@ -14597,6 +14598,84 @@ class Translations$musicExperience$en {
 	String get routeHint => 'The car system controls whether the app can appear automatically.';
 }
 
+// Path: musicTools
+class Translations$musicTools$en {
+	Translations$musicTools$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Guest DJ'
+	String get guestDj => 'Guest DJ';
+
+	/// en: 'Listening charts'
+	String get charts => 'Listening charts';
+
+	/// en: 'Rediscover'
+	String get rediscover => 'Rediscover';
+
+	/// en: 'Music stations'
+	String get stations => 'Music stations';
+
+	/// en: 'Prompt playlist'
+	String get prompt => 'Prompt playlist';
+
+	/// en: 'Provider completion URL'
+	String get provider => 'Provider completion URL';
+
+	/// en: 'Model name'
+	String get model => 'Model name';
+
+	/// en: 'Send my prompt to this provider'
+	String get consent => 'Send my prompt to this provider';
+
+	/// en: 'Describe the music you want'
+	String get promptHint => 'Describe the music you want';
+
+	/// en: 'No music to show yet'
+	String get noHistory => 'No music to show yet';
+
+	/// en: 'Plays recorded on this device'
+	String get historyHint => 'Plays recorded on this device';
+
+	/// en: 'Days'
+	String get days => 'Days';
+
+	/// en: 'Keep whole albums together'
+	String get albumBlocks => 'Keep whole albums together';
+
+	/// en: 'Music'
+	String get home => 'Music';
+
+	/// en: 'Recently played'
+	String get recent => 'Recently played';
+
+	/// en: 'API key'
+	String get apiKey => 'API key';
+
+	/// en: 'N/A'
+	String get missing => 'N/A';
+
+	/// en: 'Minutes'
+	String get minutes => 'Minutes';
+
+	/// en: 'Filters'
+	String get rules => 'Filters';
+
+	/// en: 'Exclusive audio output'
+	String get exclusiveOutput => 'Exclusive audio output';
+
+	/// en: 'Preamp'
+	String get preamp => 'Preamp';
+
+	/// en: 'Saved on this device; waiting to sync'
+	String get ratingPending => 'Saved on this device; waiting to sync';
+
+	/// en: 'Lyrics timing offset'
+	String get lyricsOffset => 'Lyrics timing offset';
+}
+
 // Path: appIcon.names
 class Translations$appIcon$names$en {
 	Translations$appIcon$names$en.internal(this._root);
@@ -22420,6 +22499,29 @@ extension on Translations {
 			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
+			'musicTools.guestDj' => 'Guest DJ',
+			'musicTools.charts' => 'Listening charts',
+			'musicTools.rediscover' => 'Rediscover',
+			'musicTools.stations' => 'Music stations',
+			'musicTools.prompt' => 'Prompt playlist',
+			'musicTools.provider' => 'Provider completion URL',
+			'musicTools.model' => 'Model name',
+			'musicTools.consent' => 'Send my prompt to this provider',
+			'musicTools.promptHint' => 'Describe the music you want',
+			'musicTools.noHistory' => 'No music to show yet',
+			'musicTools.historyHint' => 'Plays recorded on this device',
+			'musicTools.days' => 'Days',
+			'musicTools.albumBlocks' => 'Keep whole albums together',
+			'musicTools.home' => 'Music',
+			'musicTools.recent' => 'Recently played',
+			'musicTools.apiKey' => 'API key',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minutes',
+			'musicTools.rules' => 'Filters',
+			'musicTools.exclusiveOutput' => 'Exclusive audio output',
+			'musicTools.preamp' => 'Preamp',
+			'musicTools.ratingPending' => 'Saved on this device; waiting to sync',
+			'musicTools.lyricsOffset' => 'Lyrics timing offset',
 			_ => null,
 		};
 	}

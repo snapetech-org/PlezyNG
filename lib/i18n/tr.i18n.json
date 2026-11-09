@@ -5492,5 +5492,30 @@
     "routeLost": "Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.",
     "autoDriving": "Arabaya bağlanınca sürüş görünümünü aç",
     "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
+  },
+  "musicTools": {
+    "guestDj": "Konuk DJ",
+    "charts": "Dinleme listeleri",
+    "rediscover": "Yeniden keşfet",
+    "stations": "Müzik istasyonları",
+    "prompt": "Açıklamadan çalma listesi",
+    "provider": "Sağlayıcı üretim URL’si",
+    "model": "Model adı",
+    "consent": "Açıklamamı bu sağlayıcıya gönder",
+    "promptHint": "İstediğiniz müziği açıklayın",
+    "noHistory": "Henüz gösterilecek müzik yok",
+    "historyHint": "Bu cihazda kaydedilen dinlemeler",
+    "days": "Günler",
+    "albumBlocks": "Albümleri bütün olarak tut",
+    "home": "Müzik",
+    "recent": "Son çalınanlar",
+    "apiKey": "API anahtarı",
+    "missing": "Yok",
+    "minutes": "Dakika",
+    "rules": "Filtreler",
+    "exclusiveOutput": "Özel ses çıkışı",
+    "preamp": "Ön yükseltme",
+    "ratingPending": "Bu cihaza kaydedildi; eşitleme bekleniyor",
+    "lyricsOffset": "Şarkı sözü zaman kaydırması"
   }
 }

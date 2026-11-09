@@ -115,6 +115,7 @@ class TranslationsHu extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$hu romm = _Translations$romm$hu._(_root);
 	@override late final _Translations$subtitleCapture$hu subtitleCapture = _Translations$subtitleCapture$hu._(_root);
 	@override late final _Translations$musicExperience$hu musicExperience = _Translations$musicExperience$hu._(_root);
+	@override late final _Translations$musicTools$hu musicTools = _Translations$musicTools$hu._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$hu extends Translations$musicExperience$en {
 	@override String get routeLost => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.';
 	@override String get autoDriving => 'Vezetési nézet megnyitása autóhoz csatlakozáskor';
 	@override String get routeHint => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$hu extends Translations$musicTools$en {
+	_Translations$musicTools$hu._(TranslationsHu root) : this._root = root, super.internal(root);
+
+	final TranslationsHu _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Vendég DJ';
+	@override String get charts => 'Hallgatási toplisták';
+	@override String get rediscover => 'Újrafelfedezés';
+	@override String get stations => 'Zenei állomások';
+	@override String get prompt => 'Lejátszási lista leírásból';
+	@override String get provider => 'Szolgáltató generálási URL-je';
+	@override String get model => 'Modell neve';
+	@override String get consent => 'Leírásom elküldése ennek a szolgáltatónak';
+	@override String get promptHint => 'Írd le a kívánt zenét';
+	@override String get noHistory => 'Még nincs megjeleníthető zene';
+	@override String get historyHint => 'Ezen az eszközön rögzített lejátszások';
+	@override String get days => 'Napok';
+	@override String get albumBlocks => 'Teljes albumok együtt tartása';
+	@override String get home => 'Zene';
+	@override String get recent => 'Legutóbb lejátszott';
+	@override String get apiKey => 'API-kulcs';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Perc';
+	@override String get rules => 'Szűrők';
+	@override String get exclusiveOutput => 'Kizárólagos hangkimenet';
+	@override String get preamp => 'Előerősítés';
+	@override String get ratingPending => 'Ezen az eszközön mentve; szinkronizálásra vár';
+	@override String get lyricsOffset => 'Dalszöveg időeltolása';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsHu {
 			'musicExperience.routeLost' => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.',
 			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
 			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
+			'musicTools.guestDj' => 'Vendég DJ',
+			'musicTools.charts' => 'Hallgatási toplisták',
+			'musicTools.rediscover' => 'Újrafelfedezés',
+			'musicTools.stations' => 'Zenei állomások',
+			'musicTools.prompt' => 'Lejátszási lista leírásból',
+			'musicTools.provider' => 'Szolgáltató generálási URL-je',
+			'musicTools.model' => 'Modell neve',
+			'musicTools.consent' => 'Leírásom elküldése ennek a szolgáltatónak',
+			'musicTools.promptHint' => 'Írd le a kívánt zenét',
+			'musicTools.noHistory' => 'Még nincs megjeleníthető zene',
+			'musicTools.historyHint' => 'Ezen az eszközön rögzített lejátszások',
+			'musicTools.days' => 'Napok',
+			'musicTools.albumBlocks' => 'Teljes albumok együtt tartása',
+			'musicTools.home' => 'Zene',
+			'musicTools.recent' => 'Legutóbb lejátszott',
+			'musicTools.apiKey' => 'API-kulcs',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Perc',
+			'musicTools.rules' => 'Szűrők',
+			'musicTools.exclusiveOutput' => 'Kizárólagos hangkimenet',
+			'musicTools.preamp' => 'Előerősítés',
+			'musicTools.ratingPending' => 'Ezen az eszközön mentve; szinkronizálásra vár',
+			'musicTools.lyricsOffset' => 'Dalszöveg időeltolása',
 			_ => null,
 		};
 	}

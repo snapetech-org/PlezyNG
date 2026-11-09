@@ -1,4 +1,7 @@
 import 'music_discovery.dart';
+import 'music_audio_policy.dart';
+import 'music_library_store.dart';
+import 'music_offline_bundle.dart';
 
 import 'dart:async';
 import 'dart:io' show Platform;
@@ -23,6 +26,7 @@ import '../../mpv/player/player_native.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/notification_permission.dart';
 import '../../utils/platform_detector.dart';
+import '../../utils/serial_future_queue.dart';
 import '../car_ux_restrictions_service.dart';
 import '../companion_remote/companion_remote_receiver.dart';
 import '../discord_rpc_service.dart';
@@ -93,7 +97,93 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicVisualizationAudioService,
         MusicKaraokeControls,
         MusicDiscoveryControls,
+        MusicAudioControls,
         MusicSignalPathService {
+  final MusicLibraryStore? _libraryStore;
+  MusicAudioPolicy? _audioPolicy;
+  int _audioPolicyRevision = 0;
+  final SerialFutureQueue _audioChanges = SerialFutureQueue();
+  double get _outputGain => _audioPolicy?.gain ?? 1;
+  @override
+  MusicAudioPolicy get audioPolicy => _audioPolicy ?? const MusicAudioPolicy();
+
+  @override
+  Future<void> setAudioPolicy(MusicAudioPolicy policy) {
+    policy.validate();
+    // Copy mutable caller lists before entering the asynchronous native queue.
+    policy = MusicAudioPolicy.fromJson(policy.toJson());
+    ++_audioPolicyRevision;
+    return _audioChanges.run(() async {
+      if (_disposed) throw StateError('Music session ended');
+      final previous = _audioPolicy;
+      final player = _player;
+      try {
+        if (player != null && !player.disposed) {
+          await policy.apply(player, albumContext: !shuffled && _playContext?.kind == MusicPlayContextKind.album);
+        }
+        if (_disposed) return;
+        _audioPolicy = policy;
+        _setMusicGain(_musicGain, force: true);
+        await _libraryStore?.saveDocument('audio', 'active', policy.toJson());
+        if (!_disposed) notifyListeners();
+      } catch (_) {
+        if (!_disposed) {
+          _audioPolicy = previous;
+          if (player != null && !player.disposed) {
+            if (previous == null) {
+              await const MusicAudioPolicy().apply(player, albumContext: false);
+              await _applyAudioOutputDevice(player);
+              await _applyAudioPassthrough(player);
+            }
+            await _applyMusicAudioSettingsNow(player);
+          }
+          _setMusicGain(_musicGain, force: true);
+        }
+        rethrow;
+      }
+    });
+  }
+
+  Future<void> _restoreAudioPolicy() async {
+    final revision = _audioPolicyRevision;
+    try {
+      final json = await _libraryStore?.document('audio', 'active');
+      if (json == null || _disposed || revision != _audioPolicyRevision) return;
+      await _audioChanges.run(() async {
+        if (_disposed || revision != _audioPolicyRevision) return;
+        _audioPolicy = MusicAudioPolicy.fromJson(json);
+        final player = _player;
+        if (player != null && !player.disposed) await _applyMusicAudioSettingsNow(player);
+        if (!_disposed) _setMusicGain(_musicGain, force: true);
+      });
+    } catch (error) {
+      appLogger.w('Music audio policy could not be restored', error: error);
+    }
+  }
+
+  @override
+  Future<Map<String, String>> inspectAudioOutput() async {
+    final player = _player;
+    if (player == null || player.playerType != 'mpv') return {};
+    final result = <String, String>{};
+    for (final property in [
+      'audio-params/samplerate',
+      'audio-params/channel-count',
+      'audio-out-params/samplerate',
+      'audio-out-params/channel-count',
+      'audio-out-params/format',
+      'current-ao',
+      'audio-device',
+      'replaygain',
+      'af',
+    ]) {
+      final value = await player.getProperty(property);
+      if (_disposed || _player != player) return {};
+      if (value != null && value.isNotEmpty) result[property] = value;
+    }
+    return result;
+  }
+
   MediaItem? _continuationSeed;
   int _continuationEpoch = 0;
   bool _continuationLoading = false;
@@ -193,8 +283,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       engine: _player?.playerType ?? 'Unknown',
       codec: selected?.codec,
       channels: selected?.channels,
-      normalization: settings?.read(SettingsService.audioNormalization) ?? false,
-      equalizer: settings != null && SettingsService.audioEqualizerBandPrefs.any((pref) => settings.read(pref) != 0),
+      normalization: _audioPolicy != null
+          ? _audioPolicy!.leveling != MusicLeveling.off
+          : settings?.read(SettingsService.audioNormalization) ?? false,
+      equalizer: _audioPolicy != null
+          ? _audioPolicy!.bands.any((band) => band != 0)
+          : settings != null && SettingsService.audioEqualizerBandPrefs.any((pref) => settings.read(pref) != 0),
       fades: _sweetFadesEnabled,
     );
   }
@@ -254,6 +348,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   MusicPlaybackServiceImpl({
     required MultiServerManager serverManager,
     AppDatabase? database,
+    this._libraryStore,
     this._offlineWatchService,
     MusicSourceResolver? resolver,
     this._audioPlayerFactory = Player.audio,
@@ -299,6 +394,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (_sessionStore != null) {
       unawaited(_maybeRestoreSession());
     }
+    if (_libraryStore != null) unawaited(_restoreAudioPolicy());
   }
 
   static const _previousRestartThreshold = Duration(seconds: 3);
@@ -393,6 +489,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   /// Identifies the queue session that asynchronous enqueue work belongs to.
   int _queueSessionRevision = 0;
+  int _playbackOccurrenceRevision = 0;
+
+  @override
+  int get playbackOccurrenceRevision => _playbackOccurrenceRevision;
 
   /// Gapless arm work is serialized into one latest-request slot. The
   /// generation stales continuations while the pending flag distinguishes
@@ -1024,8 +1124,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       final debugLogging = SettingsService.instanceOrNull?.read(SettingsService.enableDebugLogging) ?? false;
       await player.setLogLevel(debugLogging ? 'v' : 'warn');
     }
-    if (isNew && _player == player && !player.disposed && (_volume != 100.0 || !_workspaceAudioEnabled)) {
-      unawaited(player.setVolume(_workspaceAudioEnabled ? _volume * _musicGain : 0));
+    if (isNew &&
+        _player == player &&
+        !player.disposed &&
+        (_volume != 100.0 || _outputGain != 1 || !_workspaceAudioEnabled)) {
+      unawaited(player.setVolume(_workspaceAudioEnabled ? _volume * _musicGain * _outputGain : 0));
     }
     if (isNew && _player == player && !player.disposed) {
       await _applyAudioPassthrough(player);
@@ -1056,7 +1159,15 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
   }
 
-  Future<void> _applyMusicAudioSettings(Player player) async {
+  Future<void> _applyMusicAudioSettings(Player player) => _audioChanges.run(() => _applyMusicAudioSettingsNow(player));
+
+  Future<void> _applyMusicAudioSettingsNow(Player player) async {
+    if (_disposed || player.disposed) return;
+    final policy = _audioPolicy;
+    if (policy != null) {
+      await policy.apply(player, albumContext: !shuffled && _playContext?.kind == MusicPlayContextKind.album);
+      return;
+    }
     final settings = SettingsService.instanceOrNull;
     if (settings == null || player.disposed) return;
     await player.setAudioNormalization(settings.read(SettingsService.audioNormalization));
@@ -1397,6 +1508,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// `_wirePerItemPlaybackServices`. The previous track must already be
   /// finalized.
   void _bindTrackServices(MediaItem track, MusicSource source, {bool fadeIn = false}) {
+    _playbackOccurrenceRevision++;
+    if (_audioPolicy != null) _onAudioSettingsChanged();
     unawaited(_extendStation());
     _tracker?.dispose();
     _tracker = null;
@@ -1494,6 +1607,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         unawaited(rpc.pausePlayback());
       }
     }
+    // Repeat-one retains the same item and queue index. Publish the occurrence
+    // boundary so history/DJ observers do not merge consecutive performances.
+    if (!_disposed) notifyListeners();
   }
 
   /// Stop tracking and fire the final `stopped` report for the current
@@ -1535,9 +1651,38 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
-  Future<AudioLoudnessProfile?> loadCurrentTrackLoudnessProfile() {
+  Future<AudioLoudnessProfile?> loadCurrentTrackLoudnessProfile() async {
     final source = _currentSource;
-    return source == null ? Future.value(null) : _loadLoudnessProfile(source);
+    final track = _currentTrack;
+    if (source == null || track == null) return null;
+    final profile = await _loadLoudnessProfile(source);
+    if (_disposed || _currentTrack?.globalKey != track.globalKey) return null;
+    if (profile != null) {
+      final document = musicAnalysisDocument(track, profile);
+      if (document != null) await _libraryStore?.saveDocument('analysis', track.globalKey, document);
+      return profile;
+    }
+    final cached = await _libraryStore?.document('analysis', track.globalKey);
+    if (_disposed ||
+        _currentTrack?.globalKey != track.globalKey ||
+        cached == null ||
+        cached['version'] != 1 ||
+        track.updatedAt != null && cached['updatedAt'] != track.updatedAt) {
+      return null;
+    }
+    final levels = cached['levels'];
+    if (levels is! List ||
+        levels.isEmpty ||
+        levels.length > 512 ||
+        levels.any((v) => v is! num || !v.isFinite) ||
+        cached['samples'] is! int ||
+        (cached['samples'] as int) < 1) {
+      return null;
+    }
+    return AudioLoudnessProfile(
+      levelsDb: levels.map((v) => (v as num).toDouble()).toList(),
+      totalSamples: cached['samples'] as int,
+    );
   }
 
   String? _loudnessProfileCacheKey(MusicSource source) {
@@ -1710,7 +1855,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (player == null || player.disposed) {
       return;
     }
-    final effectiveVolume = (_volume * normalized * (_workspaceAudioEnabled ? 1.0 : 0.0)).clamp(0.0, 100.0).toDouble();
+    final effectiveVolume = (_volume * normalized * _outputGain * (_workspaceAudioEnabled ? 1.0 : 0.0))
+        .clamp(0.0, 100.0)
+        .toDouble();
     unawaited(
       player.setVolume(effectiveVolume).catchError((Object _) {
         appLogger.d('Music fade volume update failed');
@@ -2194,7 +2341,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (clamped != _volume) {
       _volume = clamped;
       _volumeNotifier.value = clamped;
-      playerUpdate = _player?.setVolume(clamped * _musicGain * (_workspaceAudioEnabled ? 1.0 : 0.0));
+      playerUpdate = _player?.setVolume(clamped * _musicGain * _outputGain * (_workspaceAudioEnabled ? 1.0 : 0.0));
     }
 
     final persistence = persist ? _persistVolume(clamped) : null;
@@ -2225,7 +2372,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       } catch (error, stackTrace) {
         appLogger.w('Music workspace audio focus handoff failed', error: error, stackTrace: stackTrace);
       }
-      await player.setVolume(_volume * _musicGain);
+      await player.setVolume(_volume * _musicGain * _outputGain);
       return;
     }
 
@@ -2567,15 +2714,53 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   @override
   Future<Lyrics?> fetchLyrics(MediaItem track) async {
     final client = _clientFor(track);
-    if (client == null) {
+    if (client != null && !client.isOfflineMode) {
+      try {
+        final authentication = client.authenticationSessionId;
+        final lyrics = await client.fetchLyrics(track);
+        if (_disposed ||
+            !identical(_clientFor(track), client) ||
+            !identical(authentication, client.authenticationSessionId)) {
+          return null;
+        }
+        try {
+          if (lyrics == null) {
+            await _libraryStore?.deleteDocument('lyrics', track.globalKey);
+          } else {
+            await _libraryStore?.saveDocument('lyrics', track.globalKey, {
+              'version': 1,
+              'updatedAt': track.updatedAt,
+              'lyrics': lyrics.toJson(),
+            });
+          }
+        } catch (error) {
+          appLogger.w('Lyrics could not be cached', error: error);
+        }
+        return lyrics;
+      } catch (_) {
+        final cached = await _libraryStore?.document('lyrics', track.globalKey);
+        if (cached == null) rethrow;
+      }
+    }
+    final cached = await _libraryStore?.document('lyrics', track.globalKey);
+    if (_disposed ||
+        cached == null ||
+        cached['version'] != 1 ||
+        track.updatedAt != null && cached['updatedAt'] != track.updatedAt) {
       return null;
     }
-    return client.fetchLyrics(track);
+    try {
+      return Lyrics.fromJson(Map<String, dynamic>.from(cached['lyrics'] as Map));
+    } on FormatException {
+      return null;
+    } on TypeError {
+      return null;
+    }
   }
 
   MediaServerClient? _clientFor(MediaItem item) {
     final serverId = serverIdOrNull(item.serverId);
-    if (serverId == null) {
+    if (serverId == null || !_serverManager.isServerVisible(serverId)) {
       return null;
     }
     return _serverManager.getClient(serverId);

@@ -115,6 +115,7 @@ class TranslationsZh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$romm$zh romm = Translations$romm$zh.internal(_root);
 	@override late final Translations$subtitleCapture$zh subtitleCapture = Translations$subtitleCapture$zh.internal(_root);
 	@override late final Translations$musicExperience$zh musicExperience = Translations$musicExperience$zh.internal(_root);
+	@override late final Translations$musicTools$zh musicTools = Translations$musicTools$zh.internal(_root);
 }
 
 // Path: app
@@ -4255,6 +4256,38 @@ class Translations$musicExperience$zh extends Translations$musicExperience$en {
 	@override String get routeLost => '音频输出已断开。播放已暂停。';
 	@override String get autoDriving => '连接汽车时打开驾驶界面';
 	@override String get routeHint => '是否允许自动显示应用由汽车系统决定。';
+}
+
+// Path: musicTools
+class Translations$musicTools$zh extends Translations$musicTools$en {
+	Translations$musicTools$zh.internal(TranslationsZh root) : this._root = root, super.internal(root);
+
+	final TranslationsZh _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => '客座 DJ';
+	@override String get charts => '收听排行';
+	@override String get rediscover => '重新发现';
+	@override String get stations => '音乐电台';
+	@override String get prompt => '描述生成歌单';
+	@override String get provider => '提供商生成地址';
+	@override String get model => '模型名称';
+	@override String get consent => '将我的描述发送给此提供商';
+	@override String get promptHint => '描述想听的音乐';
+	@override String get noHistory => '暂无可显示的音乐';
+	@override String get historyHint => '此设备记录的播放';
+	@override String get days => '天';
+	@override String get albumBlocks => '保持专辑完整';
+	@override String get home => '音乐';
+	@override String get recent => '最近播放';
+	@override String get apiKey => 'API 密钥';
+	@override String get missing => 'N/A';
+	@override String get minutes => '分钟';
+	@override String get rules => '筛选';
+	@override String get exclusiveOutput => '独占音频输出';
+	@override String get preamp => '前置放大';
+	@override String get ratingPending => '已保存在此设备；等待同步';
+	@override String get lyricsOffset => '歌词时间偏移';
 }
 
 // Path: appIcon.names
@@ -9354,6 +9387,29 @@ extension on TranslationsZh {
 			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
 			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
 			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
+			'musicTools.guestDj' => '客座 DJ',
+			'musicTools.charts' => '收听排行',
+			'musicTools.rediscover' => '重新发现',
+			'musicTools.stations' => '音乐电台',
+			'musicTools.prompt' => '描述生成歌单',
+			'musicTools.provider' => '提供商生成地址',
+			'musicTools.model' => '模型名称',
+			'musicTools.consent' => '将我的描述发送给此提供商',
+			'musicTools.promptHint' => '描述想听的音乐',
+			'musicTools.noHistory' => '暂无可显示的音乐',
+			'musicTools.historyHint' => '此设备记录的播放',
+			'musicTools.days' => '天',
+			'musicTools.albumBlocks' => '保持专辑完整',
+			'musicTools.home' => '音乐',
+			'musicTools.recent' => '最近播放',
+			'musicTools.apiKey' => 'API 密钥',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => '分钟',
+			'musicTools.rules' => '筛选',
+			'musicTools.exclusiveOutput' => '独占音频输出',
+			'musicTools.preamp' => '前置放大',
+			'musicTools.ratingPending' => '已保存在此设备；等待同步',
+			'musicTools.lyricsOffset' => '歌词时间偏移',
 			_ => null,
 		};
 	}

@@ -115,6 +115,7 @@ class TranslationsNl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$nl romm = _Translations$romm$nl._(_root);
 	@override late final _Translations$subtitleCapture$nl subtitleCapture = _Translations$subtitleCapture$nl._(_root);
 	@override late final _Translations$musicExperience$nl musicExperience = _Translations$musicExperience$nl._(_root);
+	@override late final _Translations$musicTools$nl musicTools = _Translations$musicTools$nl._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$nl extends Translations$musicExperience$en {
 	@override String get routeLost => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.';
 	@override String get autoDriving => 'Rijweergave openen bij verbinding met een auto';
 	@override String get routeHint => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$nl extends Translations$musicTools$en {
+	_Translations$musicTools$nl._(TranslationsNl root) : this._root = root, super.internal(root);
+
+	final TranslationsNl _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gast-dj';
+	@override String get charts => 'Luisterlijsten';
+	@override String get rediscover => 'Herontdekken';
+	@override String get stations => 'Muziekstations';
+	@override String get prompt => 'Afspeellijst uit beschrijving';
+	@override String get provider => 'Generatie-URL van aanbieder';
+	@override String get model => 'Modelnaam';
+	@override String get consent => 'Mijn beschrijving naar deze aanbieder sturen';
+	@override String get promptHint => 'Beschrijf de gewenste muziek';
+	@override String get noHistory => 'Nog geen muziek om te tonen';
+	@override String get historyHint => 'Op dit apparaat vastgelegde afspeelbeurten';
+	@override String get days => 'Dagen';
+	@override String get albumBlocks => 'Volledige albums bij elkaar houden';
+	@override String get home => 'Muziek';
+	@override String get recent => 'Onlangs afgespeeld';
+	@override String get apiKey => 'API-sleutel';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Minuten';
+	@override String get rules => 'Filters';
+	@override String get exclusiveOutput => 'Exclusieve audio-uitvoer';
+	@override String get preamp => 'Voorversterking';
+	@override String get ratingPending => 'Op dit apparaat opgeslagen; wacht op synchronisatie';
+	@override String get lyricsOffset => 'Tijdsverschuiving songtekst';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsNl {
 			'musicExperience.routeLost' => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.',
 			'musicExperience.autoDriving' => 'Rijweergave openen bij verbinding met een auto',
 			'musicExperience.routeHint' => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.',
+			'musicTools.guestDj' => 'Gast-dj',
+			'musicTools.charts' => 'Luisterlijsten',
+			'musicTools.rediscover' => 'Herontdekken',
+			'musicTools.stations' => 'Muziekstations',
+			'musicTools.prompt' => 'Afspeellijst uit beschrijving',
+			'musicTools.provider' => 'Generatie-URL van aanbieder',
+			'musicTools.model' => 'Modelnaam',
+			'musicTools.consent' => 'Mijn beschrijving naar deze aanbieder sturen',
+			'musicTools.promptHint' => 'Beschrijf de gewenste muziek',
+			'musicTools.noHistory' => 'Nog geen muziek om te tonen',
+			'musicTools.historyHint' => 'Op dit apparaat vastgelegde afspeelbeurten',
+			'musicTools.days' => 'Dagen',
+			'musicTools.albumBlocks' => 'Volledige albums bij elkaar houden',
+			'musicTools.home' => 'Muziek',
+			'musicTools.recent' => 'Onlangs afgespeeld',
+			'musicTools.apiKey' => 'API-sleutel',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minuten',
+			'musicTools.rules' => 'Filters',
+			'musicTools.exclusiveOutput' => 'Exclusieve audio-uitvoer',
+			'musicTools.preamp' => 'Voorversterking',
+			'musicTools.ratingPending' => 'Op dit apparaat opgeslagen; wacht op synchronisatie',
+			'musicTools.lyricsOffset' => 'Tijdsverschuiving songtekst',
 			_ => null,
 		};
 	}

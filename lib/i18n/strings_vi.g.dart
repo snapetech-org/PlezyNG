@@ -115,6 +115,7 @@ class TranslationsVi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$vi romm = _Translations$romm$vi._(_root);
 	@override late final _Translations$subtitleCapture$vi subtitleCapture = _Translations$subtitleCapture$vi._(_root);
 	@override late final _Translations$musicExperience$vi musicExperience = _Translations$musicExperience$vi._(_root);
+	@override late final _Translations$musicTools$vi musicTools = _Translations$musicTools$vi._(_root);
 }
 
 // Path: app
@@ -4237,6 +4238,38 @@ class _Translations$musicExperience$vi extends Translations$musicExperience$en {
 	@override String get routeLost => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.';
 	@override String get autoDriving => 'Mở giao diện lái xe khi kết nối với ô tô';
 	@override String get routeHint => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$vi extends Translations$musicTools$en {
+	_Translations$musicTools$vi._(TranslationsVi root) : this._root = root, super.internal(root);
+
+	final TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'DJ khách mời';
+	@override String get charts => 'Bảng xếp hạng nghe';
+	@override String get rediscover => 'Khám phá lại';
+	@override String get stations => 'Đài âm nhạc';
+	@override String get prompt => 'Danh sách từ mô tả';
+	@override String get provider => 'URL tạo của nhà cung cấp';
+	@override String get model => 'Tên mô hình';
+	@override String get consent => 'Gửi mô tả của tôi đến nhà cung cấp này';
+	@override String get promptHint => 'Mô tả âm nhạc bạn muốn';
+	@override String get noHistory => 'Chưa có nhạc để hiển thị';
+	@override String get historyHint => 'Lượt phát được ghi trên thiết bị này';
+	@override String get days => 'Ngày';
+	@override String get albumBlocks => 'Giữ nguyên album';
+	@override String get home => 'Nhạc';
+	@override String get recent => 'Đã phát gần đây';
+	@override String get apiKey => 'Khóa API';
+	@override String get missing => 'N / A';
+	@override String get minutes => 'phút';
+	@override String get rules => 'Bộ lọc';
+	@override String get exclusiveOutput => 'Đầu ra âm thanh độc quyền';
+	@override String get preamp => 'Tiền khuếch đại';
+	@override String get ratingPending => 'Đã lưu trên thiết bị này; đang chờ đồng bộ';
+	@override String get lyricsOffset => 'Độ lệch thời gian lời bài hát';
 }
 
 // Path: appIcon.names
@@ -9334,6 +9367,29 @@ extension on TranslationsVi {
 			'musicExperience.routeLost' => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.',
 			'musicExperience.autoDriving' => 'Mở giao diện lái xe khi kết nối với ô tô',
 			'musicExperience.routeHint' => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.',
+			'musicTools.guestDj' => 'DJ khách mời',
+			'musicTools.charts' => 'Bảng xếp hạng nghe',
+			'musicTools.rediscover' => 'Khám phá lại',
+			'musicTools.stations' => 'Đài âm nhạc',
+			'musicTools.prompt' => 'Danh sách từ mô tả',
+			'musicTools.provider' => 'URL tạo của nhà cung cấp',
+			'musicTools.model' => 'Tên mô hình',
+			'musicTools.consent' => 'Gửi mô tả của tôi đến nhà cung cấp này',
+			'musicTools.promptHint' => 'Mô tả âm nhạc bạn muốn',
+			'musicTools.noHistory' => 'Chưa có nhạc để hiển thị',
+			'musicTools.historyHint' => 'Lượt phát được ghi trên thiết bị này',
+			'musicTools.days' => 'Ngày',
+			'musicTools.albumBlocks' => 'Giữ nguyên album',
+			'musicTools.home' => 'Nhạc',
+			'musicTools.recent' => 'Đã phát gần đây',
+			'musicTools.apiKey' => 'Khóa API',
+			'musicTools.missing' => 'N / A',
+			'musicTools.minutes' => 'phút',
+			'musicTools.rules' => 'Bộ lọc',
+			'musicTools.exclusiveOutput' => 'Đầu ra âm thanh độc quyền',
+			'musicTools.preamp' => 'Tiền khuếch đại',
+			'musicTools.ratingPending' => 'Đã lưu trên thiết bị này; đang chờ đồng bộ',
+			'musicTools.lyricsOffset' => 'Độ lệch thời gian lời bài hát',
 			_ => null,
 		};
 	}

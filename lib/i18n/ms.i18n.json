@@ -5465,5 +5465,30 @@
     "routeLost": "Output audio terputus. Main balik dijeda.",
     "autoDriving": "Buka paparan pemanduan apabila disambungkan ke kereta",
     "routeHint": "Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik."
+  },
+  "musicTools": {
+    "guestDj": "DJ jemputan",
+    "charts": "Carta pendengaran",
+    "rediscover": "Temui semula",
+    "stations": "Stesen muzik",
+    "prompt": "Senarai main daripada penerangan",
+    "provider": "URL penjanaan penyedia",
+    "model": "Nama model",
+    "consent": "Hantar penerangan saya kepada penyedia ini",
+    "promptHint": "Terangkan muzik yang anda inginkan",
+    "noHistory": "Belum ada muzik untuk dipaparkan",
+    "historyHint": "Main balik yang direkodkan pada peranti ini",
+    "days": "Hari",
+    "albumBlocks": "Kekalkan album penuh bersama",
+    "home": "Muzik",
+    "recent": "Baru dimainkan",
+    "apiKey": "Kunci API",
+    "missing": "N / A",
+    "minutes": "Minit",
+    "rules": "Penapis",
+    "exclusiveOutput": "Output audio eksklusif",
+    "preamp": "Prapenguat",
+    "ratingPending": "Disimpan pada peranti ini; menunggu penyegerakan",
+    "lyricsOffset": "Anjakan masa lirik"
   }
 }

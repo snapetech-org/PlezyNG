@@ -115,6 +115,7 @@ class TranslationsDa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$da romm = _Translations$romm$da._(_root);
 	@override late final _Translations$subtitleCapture$da subtitleCapture = _Translations$subtitleCapture$da._(_root);
 	@override late final _Translations$musicExperience$da musicExperience = _Translations$musicExperience$da._(_root);
+	@override late final _Translations$musicTools$da musicTools = _Translations$musicTools$da._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$da extends Translations$musicExperience$en {
 	@override String get routeLost => 'Lydudgang afbrudt. Afspilning sat på pause.';
 	@override String get autoDriving => 'Åbn kørselsvisning ved forbindelse til en bil';
 	@override String get routeHint => 'Bilens system bestemmer, om appen kan vises automatisk.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$da extends Translations$musicTools$en {
+	_Translations$musicTools$da._(TranslationsDa root) : this._root = root, super.internal(root);
+
+	final TranslationsDa _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gæste-DJ';
+	@override String get charts => 'Lyttestatistik';
+	@override String get rediscover => 'Genopdag';
+	@override String get stations => 'Musikstationer';
+	@override String get prompt => 'Afspilningsliste fra beskrivelse';
+	@override String get provider => 'Udbyderens genererings-URL';
+	@override String get model => 'Modelnavn';
+	@override String get consent => 'Send min beskrivelse til denne udbyder';
+	@override String get promptHint => 'Beskriv den ønskede musik';
+	@override String get noHistory => 'Ingen musik at vise endnu';
+	@override String get historyHint => 'Afspilninger registreret på denne enhed';
+	@override String get days => 'Dage';
+	@override String get albumBlocks => 'Hold hele album samlet';
+	@override String get home => 'Musik';
+	@override String get recent => 'Senest afspillet';
+	@override String get apiKey => 'API-nøgle';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Minutter';
+	@override String get rules => 'Filtre';
+	@override String get exclusiveOutput => 'Eksklusiv lydudgang';
+	@override String get preamp => 'Forforstærkning';
+	@override String get ratingPending => 'Gemt på denne enhed; afventer synkronisering';
+	@override String get lyricsOffset => 'Tidsforskydning af sangtekst';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsDa {
 			'musicExperience.routeLost' => 'Lydudgang afbrudt. Afspilning sat på pause.',
 			'musicExperience.autoDriving' => 'Åbn kørselsvisning ved forbindelse til en bil',
 			'musicExperience.routeHint' => 'Bilens system bestemmer, om appen kan vises automatisk.',
+			'musicTools.guestDj' => 'Gæste-DJ',
+			'musicTools.charts' => 'Lyttestatistik',
+			'musicTools.rediscover' => 'Genopdag',
+			'musicTools.stations' => 'Musikstationer',
+			'musicTools.prompt' => 'Afspilningsliste fra beskrivelse',
+			'musicTools.provider' => 'Udbyderens genererings-URL',
+			'musicTools.model' => 'Modelnavn',
+			'musicTools.consent' => 'Send min beskrivelse til denne udbyder',
+			'musicTools.promptHint' => 'Beskriv den ønskede musik',
+			'musicTools.noHistory' => 'Ingen musik at vise endnu',
+			'musicTools.historyHint' => 'Afspilninger registreret på denne enhed',
+			'musicTools.days' => 'Dage',
+			'musicTools.albumBlocks' => 'Hold hele album samlet',
+			'musicTools.home' => 'Musik',
+			'musicTools.recent' => 'Senest afspillet',
+			'musicTools.apiKey' => 'API-nøgle',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minutter',
+			'musicTools.rules' => 'Filtre',
+			'musicTools.exclusiveOutput' => 'Eksklusiv lydudgang',
+			'musicTools.preamp' => 'Forforstærkning',
+			'musicTools.ratingPending' => 'Gemt på denne enhed; afventer synkronisering',
+			'musicTools.lyricsOffset' => 'Tidsforskydning af sangtekst',
 			_ => null,
 		};
 	}

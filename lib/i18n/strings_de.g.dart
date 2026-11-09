@@ -115,6 +115,7 @@ class TranslationsDe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$de romm = _Translations$romm$de._(_root);
 	@override late final _Translations$subtitleCapture$de subtitleCapture = _Translations$subtitleCapture$de._(_root);
 	@override late final _Translations$musicExperience$de musicExperience = _Translations$musicExperience$de._(_root);
+	@override late final _Translations$musicTools$de musicTools = _Translations$musicTools$de._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$de extends Translations$musicExperience$en {
 	@override String get routeLost => 'Audioausgabe getrennt. Wiedergabe pausiert.';
 	@override String get autoDriving => 'Fahransicht bei Verbindung mit einem Auto öffnen';
 	@override String get routeHint => 'Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$de extends Translations$musicTools$en {
+	_Translations$musicTools$de._(TranslationsDe root) : this._root = root, super.internal(root);
+
+	final TranslationsDe _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gast-DJ';
+	@override String get charts => 'Hörstatistiken';
+	@override String get rediscover => 'Wiederentdecken';
+	@override String get stations => 'Musiksender';
+	@override String get prompt => 'Playlist aus Beschreibung';
+	@override String get provider => 'Generierungs-URL des Anbieters';
+	@override String get model => 'Modellname';
+	@override String get consent => 'Meine Beschreibung an diesen Anbieter senden';
+	@override String get promptHint => 'Beschreibe die gewünschte Musik';
+	@override String get noHistory => 'Noch keine Musik verfügbar';
+	@override String get historyHint => 'Auf diesem Gerät erfasste Wiedergaben';
+	@override String get days => 'Tage';
+	@override String get albumBlocks => 'Vollständige Alben zusammenhalten';
+	@override String get home => 'Musik';
+	@override String get recent => 'Zuletzt gespielt';
+	@override String get apiKey => 'API-Schlüssel';
+	@override String get missing => 'N. v.';
+	@override String get minutes => 'Minuten';
+	@override String get rules => 'Filter';
+	@override String get exclusiveOutput => 'Exklusive Audioausgabe';
+	@override String get preamp => 'Vorverstärkung';
+	@override String get ratingPending => 'Auf diesem Gerät gespeichert; Synchronisierung ausstehend';
+	@override String get lyricsOffset => 'Zeitversatz der Liedtexte';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsDe {
 			'musicExperience.routeLost' => 'Audioausgabe getrennt. Wiedergabe pausiert.',
 			'musicExperience.autoDriving' => 'Fahransicht bei Verbindung mit einem Auto öffnen',
 			'musicExperience.routeHint' => 'Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.',
+			'musicTools.guestDj' => 'Gast-DJ',
+			'musicTools.charts' => 'Hörstatistiken',
+			'musicTools.rediscover' => 'Wiederentdecken',
+			'musicTools.stations' => 'Musiksender',
+			'musicTools.prompt' => 'Playlist aus Beschreibung',
+			'musicTools.provider' => 'Generierungs-URL des Anbieters',
+			'musicTools.model' => 'Modellname',
+			'musicTools.consent' => 'Meine Beschreibung an diesen Anbieter senden',
+			'musicTools.promptHint' => 'Beschreibe die gewünschte Musik',
+			'musicTools.noHistory' => 'Noch keine Musik verfügbar',
+			'musicTools.historyHint' => 'Auf diesem Gerät erfasste Wiedergaben',
+			'musicTools.days' => 'Tage',
+			'musicTools.albumBlocks' => 'Vollständige Alben zusammenhalten',
+			'musicTools.home' => 'Musik',
+			'musicTools.recent' => 'Zuletzt gespielt',
+			'musicTools.apiKey' => 'API-Schlüssel',
+			'musicTools.missing' => 'N. v.',
+			'musicTools.minutes' => 'Minuten',
+			'musicTools.rules' => 'Filter',
+			'musicTools.exclusiveOutput' => 'Exklusive Audioausgabe',
+			'musicTools.preamp' => 'Vorverstärkung',
+			'musicTools.ratingPending' => 'Auf diesem Gerät gespeichert; Synchronisierung ausstehend',
+			'musicTools.lyricsOffset' => 'Zeitversatz der Liedtexte',
 			_ => null,
 		};
 	}

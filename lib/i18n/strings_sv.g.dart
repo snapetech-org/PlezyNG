@@ -115,6 +115,7 @@ class TranslationsSv extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$sv romm = _Translations$romm$sv._(_root);
 	@override late final _Translations$subtitleCapture$sv subtitleCapture = _Translations$subtitleCapture$sv._(_root);
 	@override late final _Translations$musicExperience$sv musicExperience = _Translations$musicExperience$sv._(_root);
+	@override late final _Translations$musicTools$sv musicTools = _Translations$musicTools$sv._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$sv extends Translations$musicExperience$en {
 	@override String get routeLost => 'Ljudutgången kopplades från. Uppspelningen pausades.';
 	@override String get autoDriving => 'Öppna körvyn vid anslutning till en bil';
 	@override String get routeHint => 'Bilens system avgör om appen kan visas automatiskt.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$sv extends Translations$musicTools$en {
+	_Translations$musicTools$sv._(TranslationsSv root) : this._root = root, super.internal(root);
+
+	final TranslationsSv _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gäst-DJ';
+	@override String get charts => 'Lyssningslistor';
+	@override String get rediscover => 'Återupptäck';
+	@override String get stations => 'Musikstationer';
+	@override String get prompt => 'Spellista från beskrivning';
+	@override String get provider => 'Leverantörens genererings-URL';
+	@override String get model => 'Modellnamn';
+	@override String get consent => 'Skicka min beskrivning till leverantören';
+	@override String get promptHint => 'Beskriv musiken du vill ha';
+	@override String get noHistory => 'Ingen musik att visa ännu';
+	@override String get historyHint => 'Uppspelningar registrerade på den här enheten';
+	@override String get days => 'Dagar';
+	@override String get albumBlocks => 'Håll hela album samman';
+	@override String get home => 'Musik';
+	@override String get recent => 'Senast spelat';
+	@override String get apiKey => 'API-nyckel';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Minuter';
+	@override String get rules => 'Filter';
+	@override String get exclusiveOutput => 'Exklusiv ljudutgång';
+	@override String get preamp => 'Förförstärkning';
+	@override String get ratingPending => 'Sparat på den här enheten; väntar på synkronisering';
+	@override String get lyricsOffset => 'Tidsförskjutning för sångtext';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsSv {
 			'musicExperience.routeLost' => 'Ljudutgången kopplades från. Uppspelningen pausades.',
 			'musicExperience.autoDriving' => 'Öppna körvyn vid anslutning till en bil',
 			'musicExperience.routeHint' => 'Bilens system avgör om appen kan visas automatiskt.',
+			'musicTools.guestDj' => 'Gäst-DJ',
+			'musicTools.charts' => 'Lyssningslistor',
+			'musicTools.rediscover' => 'Återupptäck',
+			'musicTools.stations' => 'Musikstationer',
+			'musicTools.prompt' => 'Spellista från beskrivning',
+			'musicTools.provider' => 'Leverantörens genererings-URL',
+			'musicTools.model' => 'Modellnamn',
+			'musicTools.consent' => 'Skicka min beskrivning till leverantören',
+			'musicTools.promptHint' => 'Beskriv musiken du vill ha',
+			'musicTools.noHistory' => 'Ingen musik att visa ännu',
+			'musicTools.historyHint' => 'Uppspelningar registrerade på den här enheten',
+			'musicTools.days' => 'Dagar',
+			'musicTools.albumBlocks' => 'Håll hela album samman',
+			'musicTools.home' => 'Musik',
+			'musicTools.recent' => 'Senast spelat',
+			'musicTools.apiKey' => 'API-nyckel',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Minuter',
+			'musicTools.rules' => 'Filter',
+			'musicTools.exclusiveOutput' => 'Exklusiv ljudutgång',
+			'musicTools.preamp' => 'Förförstärkning',
+			'musicTools.ratingPending' => 'Sparat på den här enheten; väntar på synkronisering',
+			'musicTools.lyricsOffset' => 'Tidsförskjutning för sångtext',
 			_ => null,
 		};
 	}

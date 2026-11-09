@@ -9,16 +9,27 @@ No adapter owns a second playback queue or starts audio merely on connection.
 
 `MusicCarHost` binds the `com.pleazyng/music_car` channel only while an unlocked
 profile session is mounted. It exposes queue, downloaded music, authorized
-libraries, saved recipes, search and transport. Media IDs contain stable item
-identities, not media URLs, tokens or local file paths. The in-memory lookup
+libraries, server audio playlists, saved recipes/stations, recent listening, search
+and transport. Media IDs are opaque session-scoped references, never media URLs,
+tokens or local file paths. The in-memory lookup
 registry is bounded to 2,000 items and may require refreshing an old browser page.
 Browser pages contain at most 99 content entries plus a continuation folder.
 
-Queue rows carry a catalog revision; commands for old indices fail. Profile
+Queue rows carry a queue-shape revision; commands for old indices fail, while
+play/pause notifications do not invalidate unchanged rows. Profile
 replacement rejects in-flight results and clears the native catalog. Search is
 bounded to 200 query characters and 100 results. Exact-title voice resolution
 rejects ambiguity instead of playing an arbitrary match. Recipes are resolved
-through the current profile's authorized clients at use time.
+through the current profile's authorized clients at use time. Cached station
+snapshots intersect the current profile's completed downloads for offline play.
+Native playlist selection resolves ordered pages before replacing the queue,
+preserving duplicates and rejecting a changed account or excessive response.
+CarPlay continuation folders update the current template instead of increasing
+the navigation stack depth.
+
+Library visibility, account sessions and completed-download membership changes
+refresh native catalogs. Progress-only download notifications do not repeatedly
+reload a car browser. Playback rechecks hidden-library access at selection time.
 
 The existing playback coordinator still arbitrates music, video and other audio.
 Existing OS playback controls and the music engine remain authoritative.
@@ -33,11 +44,22 @@ preserve the same ownership contract and all existing platform behavior.
 
 Trusted callers are checked through AndroidX MediaSessionManager. The service
 reuses a cached Flutter engine or starts the ordinary application entry point
-without opening an Activity. This boot path is source implementation only:
-initialization that waits for a visible first frame, plugin activity attachment,
-profile unlocking and process recreation must be completed/qualified before
-claiming reliable native cold launch. Android Auto host recognition and callback
-ordering must be tested on the actual host.
+without opening an Activity. The new `MusicBackgroundPlatformPlugin` supplies
+engine-only device identity and vehicle-restriction channels; an AAOS engine
+cannot accidentally identify itself as an ordinary phone. Unknown vehicle
+restrictions retain the existing fail-closed policy. The Activity suspends that
+monitor while installing its complete handlers, then restores the background
+handlers when a car session retains the engine.
+
+`MusicBackgroundFrames` requests a coalesced warm-up frame only for dirty builds
+when a car engine has no resumed phone surface. It keeps ordinary profile/PIN
+bootstrap and lifecycle state; it does not invent a resumed Activity or autoplay.
+A phone-created Android engine also enables this scheduling while connected to a
+car, so profile/connection changes can settle after the phone is backgrounded.
+Connection also wakes an already-dirty build that was scheduled before attachment.
+These are source implementations with Dart scheduling tests. Android Auto host
+recognition, activity plugins and callback/process-recreation ordering still
+require a new native build and actual-host qualification.
 
 A disconnected browser clears its connection state and pauses through the shared
 Dart session. Existing audio-focus/noisy-route logic remains in the playback
@@ -65,17 +87,33 @@ all other entitlements. Do not replace production signing with an unapproved
 profile. Verify the resulting signed app's entitlements and run the CarPlay
 simulator/device tests before distribution.
 
-CarPlay-only cold launch still needs an independently initialized Flutter engine;
-currently the bridge becomes ready with the normal application engine. Native
-fallback messages need localized resources, and Siri media intents are not
-implemented in this change. Neither source registration nor a simulator session
-would establish final App Store/device approval.
+`AppDelegate.ensureMusicEngine` now runs one explicit headless-capable Flutter
+engine and registers the application's normal plugins. `MusicPhoneSceneDelegate`
+attaches the phone controller to that same engine and forwards scene callbacks
+through Flutter's scene lifecycle adapter. CarPlay can request the engine before
+any phone window exists. A second phone scene cannot detach the existing phone
+controller. Launch storyboard and independent external-video scenes are retained.
+
+Siri `INPlayMediaIntent` handling resolves names through the active profile's
+catalog, returns ambiguous choices for disambiguation, and sends shuffle/repeat
+and next/later commands to the shared player. An unavailable/locked profile
+requires app launch; it never falls through to an old account. Native fallback
+messages still need localized resources. Native keyboard search is not emulated
+using navigation-only CarPlay templates: supported audio voice entry uses Siri.
+See Apple's [CarPlay guide](https://developer.apple.com/download/files/CarPlay-Developer-Guide.pdf)
+and [music integration documentation](https://developer.apple.com/documentation/carplay/integrating-carplay-with-your-music-app).
+
+The additional scene/intent sources have not been compiled with Xcode in this
+workspace. Artwork integration, signed entitlement verification, plugin lifecycle
+checks and simulator/hardware qualification remain. Neither source registration
+nor a simulator session would establish final App Store/device approval.
 
 ## Phone driving presentation
 
 The view is available manually from Now Playing. Its persisted automatic-entry
 setting opens it only while the app is foregrounded and a native car projection
-connection is reported. A view opened automatically is removed on disconnect;
+connection is reported. It is enabled for new settings; an existing explicit
+opt-out remains respected. A view opened automatically is removed on disconnect;
 manual navigation remains user-controlled. Opening either native or phone car
 presentation does not autoplay. The operating system/head unit controls native
 app selection and background-launch policy.

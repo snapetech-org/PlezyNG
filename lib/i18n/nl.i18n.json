@@ -5492,5 +5492,30 @@
     "routeLost": "Audio-uitvoer verbroken. Afspelen gepauzeerd.",
     "autoDriving": "Rijweergave openen bij verbinding met een auto",
     "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen."
+  },
+  "musicTools": {
+    "guestDj": "Gast-dj",
+    "charts": "Luisterlijsten",
+    "rediscover": "Herontdekken",
+    "stations": "Muziekstations",
+    "prompt": "Afspeellijst uit beschrijving",
+    "provider": "Generatie-URL van aanbieder",
+    "model": "Modelnaam",
+    "consent": "Mijn beschrijving naar deze aanbieder sturen",
+    "promptHint": "Beschrijf de gewenste muziek",
+    "noHistory": "Nog geen muziek om te tonen",
+    "historyHint": "Op dit apparaat vastgelegde afspeelbeurten",
+    "days": "Dagen",
+    "albumBlocks": "Volledige albums bij elkaar houden",
+    "home": "Muziek",
+    "recent": "Onlangs afgespeeld",
+    "apiKey": "API-sleutel",
+    "missing": "N/A",
+    "minutes": "Minuten",
+    "rules": "Filters",
+    "exclusiveOutput": "Exclusieve audio-uitvoer",
+    "preamp": "Voorversterking",
+    "ratingPending": "Op dit apparaat opgeslagen; wacht op synchronisatie",
+    "lyricsOffset": "Tijdsverschuiving songtekst"
   }
 }

@@ -12,6 +12,9 @@ import '../../models/transcode_quality_preset.dart';
 import '../../providers/download_provider.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../services/sync_rule_executor.dart';
+import '../../services/music/music_library_store.dart';
+import '../../services/music/music_station.dart';
+import '../music/music_station_screen.dart';
 import '../../utils/content_utils.dart';
 import '../../utils/download_utils.dart';
 import '../../utils/quality_preset_labels.dart';
@@ -68,6 +71,7 @@ class _SyncRulesScreenState extends State<SyncRulesScreen> {
                       final entry = syncRules.entries.elementAt(index);
                       final rule = entry.value;
                       return _SyncRuleTile(
+                        key: ValueKey(rule.globalKey),
                         rule: rule,
                         metadata: downloadProvider.metadata,
                         downloadProvider: downloadProvider,
@@ -102,6 +106,7 @@ class _SyncRuleTile extends StatefulWidget {
   final bool autofocus;
 
   const _SyncRuleTile({
+    super.key,
     required this.rule,
     required this.metadata,
     required this.downloadProvider,
@@ -115,6 +120,37 @@ class _SyncRuleTile extends StatefulWidget {
 }
 
 class _SyncRuleTileState extends State<_SyncRuleTile> {
+  String? _stationTitle;
+  int _stationRevision = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStationTitle();
+  }
+
+  @override
+  void didUpdateWidget(covariant _SyncRuleTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.rule != rule) _loadStationTitle();
+  }
+
+  Future<void> _loadStationTitle() async {
+    final revision = ++_stationRevision;
+    if (rule.targetType != ContentTypes.musicStation) return;
+    try {
+      final document = await MusicLibraryStore(
+        context.read<AppDatabase>(),
+        rule.profileId,
+      ).document('station', rule.ratingKey);
+      if (mounted && revision == _stationRevision) {
+        setState(() => _stationTitle = document?['title'] as String?);
+      }
+    } catch (_) {
+      // Missing/deleted station documents keep a removable rule visible.
+    }
+  }
+
   final _rowFocusNode = FocusNode(debugLabel: 'sync_rule_row');
   final _qualityFocusNode = FocusNode(debugLabel: 'sync_rule_quality');
   final _switchFocusNode = FocusNode(debugLabel: 'sync_rule_switch');
@@ -137,6 +173,8 @@ class _SyncRuleTileState extends State<_SyncRuleTile> {
 
   IconData _leadingIcon() {
     switch (rule.targetType) {
+      case ContentTypes.musicStation:
+        return Symbols.radio_rounded;
       case ContentTypes.playlist:
         return Symbols.playlist_play_rounded;
       case ContentTypes.collection:
@@ -156,6 +194,8 @@ class _SyncRuleTileState extends State<_SyncRuleTile> {
     final qualityLabel = quality == null ? null : qualityPresetLabel(quality);
     final qualitySuffix = qualityLabel == null ? '' : ' · $qualityLabel';
     switch (rule.targetType) {
+      case ContentTypes.musicStation:
+        return t.musicTools.stations;
       case ContentTypes.collection:
       case ContentTypes.playlist:
         return '${rule.downloadFilter == SyncRuleFilter.all ? t.downloads.syncAllItems : t.downloads.syncUnwatchedItems}$qualitySuffix';
@@ -214,7 +254,16 @@ class _SyncRuleTileState extends State<_SyncRuleTile> {
   }
 
   Future<void> _onTap(BuildContext context) async {
-    if (rule.isListRule) {
+    if (rule.targetType == ContentTypes.musicStation) {
+      final document = await MusicLibraryStore(
+        context.read<AppDatabase>(),
+        rule.profileId,
+      ).document('station', rule.ratingKey);
+      if (!context.mounted || document == null) return;
+      final station = MusicStation.fromJson(document);
+      await Navigator.of(context).push<void>(MaterialPageRoute(builder: (_) => MusicStationScreen(station: station)));
+      if (mounted) await _loadStationTitle();
+    } else if (rule.isListRule) {
       await editSyncRuleFilter(
         context,
         downloadProvider: downloadProvider,
@@ -233,6 +282,7 @@ class _SyncRuleTileState extends State<_SyncRuleTile> {
   }
 
   String _title() {
+    if (rule.targetType == ContentTypes.musicStation) return _stationTitle ?? t.musicTools.stations;
     final publicGlobalKey = '${rule.serverId}:${rule.ratingKey}';
     final meta = metadata[rule.globalKey] ?? metadata[publicGlobalKey];
     return meta?.title ?? rule.ratingKey;

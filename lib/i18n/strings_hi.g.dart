@@ -115,6 +115,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$hi romm = _Translations$romm$hi._(_root);
 	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
 	@override late final _Translations$musicExperience$hi musicExperience = _Translations$musicExperience$hi._(_root);
+	@override late final _Translations$musicTools$hi musicTools = _Translations$musicTools$hi._(_root);
 }
 
 // Path: app
@@ -4260,6 +4261,38 @@ class _Translations$musicExperience$hi extends Translations$musicExperience$en {
 	@override String get routeLost => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।';
 	@override String get autoDriving => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें';
 	@override String get routeHint => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।';
+}
+
+// Path: musicTools
+class _Translations$musicTools$hi extends Translations$musicTools$en {
+	_Translations$musicTools$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'अतिथि डीजे';
+	@override String get charts => 'सुनने की रैंकिंग';
+	@override String get rediscover => 'फिर खोजें';
+	@override String get stations => 'संगीत स्टेशन';
+	@override String get prompt => 'विवरण से प्लेलिस्ट';
+	@override String get provider => 'प्रदाता का जनरेशन URL';
+	@override String get model => 'मॉडल का नाम';
+	@override String get consent => 'मेरा विवरण इस प्रदाता को भेजें';
+	@override String get promptHint => 'अपना पसंदीदा संगीत बताएं';
+	@override String get noHistory => 'अभी दिखाने के लिए संगीत नहीं है';
+	@override String get historyHint => 'इस डिवाइस पर दर्ज प्ले';
+	@override String get days => 'दिन';
+	@override String get albumBlocks => 'पूरे एल्बम साथ रखें';
+	@override String get home => 'संगीत';
+	@override String get recent => 'हाल ही में सुने गए';
+	@override String get apiKey => 'API कुंजी';
+	@override String get missing => 'ए / ए';
+	@override String get minutes => 'मिनट';
+	@override String get rules => 'फ़िल्टर';
+	@override String get exclusiveOutput => 'विशेष ऑडियो आउटपुट';
+	@override String get preamp => 'प्रीएम्प';
+	@override String get ratingPending => 'इस डिवाइस पर सहेजा गया; सिंक की प्रतीक्षा में';
+	@override String get lyricsOffset => 'गीत के बोल का समय अंतर';
 }
 
 // Path: appIcon.names
@@ -9359,6 +9392,29 @@ extension on TranslationsHi {
 			'musicExperience.routeLost' => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।',
 			'musicExperience.autoDriving' => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें',
 			'musicExperience.routeHint' => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।',
+			'musicTools.guestDj' => 'अतिथि डीजे',
+			'musicTools.charts' => 'सुनने की रैंकिंग',
+			'musicTools.rediscover' => 'फिर खोजें',
+			'musicTools.stations' => 'संगीत स्टेशन',
+			'musicTools.prompt' => 'विवरण से प्लेलिस्ट',
+			'musicTools.provider' => 'प्रदाता का जनरेशन URL',
+			'musicTools.model' => 'मॉडल का नाम',
+			'musicTools.consent' => 'मेरा विवरण इस प्रदाता को भेजें',
+			'musicTools.promptHint' => 'अपना पसंदीदा संगीत बताएं',
+			'musicTools.noHistory' => 'अभी दिखाने के लिए संगीत नहीं है',
+			'musicTools.historyHint' => 'इस डिवाइस पर दर्ज प्ले',
+			'musicTools.days' => 'दिन',
+			'musicTools.albumBlocks' => 'पूरे एल्बम साथ रखें',
+			'musicTools.home' => 'संगीत',
+			'musicTools.recent' => 'हाल ही में सुने गए',
+			'musicTools.apiKey' => 'API कुंजी',
+			'musicTools.missing' => 'ए / ए',
+			'musicTools.minutes' => 'मिनट',
+			'musicTools.rules' => 'फ़िल्टर',
+			'musicTools.exclusiveOutput' => 'विशेष ऑडियो आउटपुट',
+			'musicTools.preamp' => 'प्रीएम्प',
+			'musicTools.ratingPending' => 'इस डिवाइस पर सहेजा गया; सिंक की प्रतीक्षा में',
+			'musicTools.lyricsOffset' => 'गीत के बोल का समय अंतर',
 			_ => null,
 		};
 	}

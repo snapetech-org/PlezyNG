@@ -5501,5 +5501,30 @@
     "routeLost": "Sortie audio déconnectée. Lecture en pause.",
     "autoDriving": "Ouvrir le mode conduite à la connexion à une voiture",
     "routeHint": "Le système de la voiture décide si l’application peut s’afficher automatiquement."
+  },
+  "musicTools": {
+    "guestDj": "DJ invité",
+    "charts": "Classements d’écoute",
+    "rediscover": "Redécouvrir",
+    "stations": "Stations musicales",
+    "prompt": "Playlist par description",
+    "provider": "URL du fournisseur de génération",
+    "model": "Nom du modèle",
+    "consent": "Envoyer ma description à ce fournisseur",
+    "promptHint": "Décrivez la musique souhaitée",
+    "noHistory": "Aucune musique à afficher",
+    "historyHint": "Écoutes enregistrées sur cet appareil",
+    "days": "Jours",
+    "albumBlocks": "Garder les albums entiers",
+    "home": "Musique",
+    "recent": "Écoutés récemment",
+    "apiKey": "Clé API",
+    "missing": "N/D",
+    "minutes": "Minutes",
+    "rules": "Filtres",
+    "exclusiveOutput": "Sortie audio exclusive",
+    "preamp": "Préamplification",
+    "ratingPending": "Enregistré sur cet appareil ; synchronisation en attente",
+    "lyricsOffset": "Décalage des paroles"
   }
 }

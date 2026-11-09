@@ -5492,5 +5492,30 @@
     "routeLost": "A hangkimenet megszakadt. Lejátszás szüneteltetve.",
     "autoDriving": "Vezetési nézet megnyitása autóhoz csatlakozáskor",
     "routeHint": "Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e."
+  },
+  "musicTools": {
+    "guestDj": "Vendég DJ",
+    "charts": "Hallgatási toplisták",
+    "rediscover": "Újrafelfedezés",
+    "stations": "Zenei állomások",
+    "prompt": "Lejátszási lista leírásból",
+    "provider": "Szolgáltató generálási URL-je",
+    "model": "Modell neve",
+    "consent": "Leírásom elküldése ennek a szolgáltatónak",
+    "promptHint": "Írd le a kívánt zenét",
+    "noHistory": "Még nincs megjeleníthető zene",
+    "historyHint": "Ezen az eszközön rögzített lejátszások",
+    "days": "Napok",
+    "albumBlocks": "Teljes albumok együtt tartása",
+    "home": "Zene",
+    "recent": "Legutóbb lejátszott",
+    "apiKey": "API-kulcs",
+    "missing": "N/A",
+    "minutes": "Perc",
+    "rules": "Szűrők",
+    "exclusiveOutput": "Kizárólagos hangkimenet",
+    "preamp": "Előerősítés",
+    "ratingPending": "Ezen az eszközön mentve; szinkronizálásra vár",
+    "lyricsOffset": "Dalszöveg időeltolása"
   }
 }

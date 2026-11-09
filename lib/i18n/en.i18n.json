@@ -5570,5 +5570,30 @@
     "routeLost": "Audio output disconnected. Playback paused.",
     "autoDriving": "Open driving view when connected to a car",
     "routeHint": "The car system controls whether the app can appear automatically."
+  },
+  "musicTools": {
+    "guestDj": "Guest DJ",
+    "charts": "Listening charts",
+    "rediscover": "Rediscover",
+    "stations": "Music stations",
+    "prompt": "Prompt playlist",
+    "provider": "Provider completion URL",
+    "model": "Model name",
+    "consent": "Send my prompt to this provider",
+    "promptHint": "Describe the music you want",
+    "noHistory": "No music to show yet",
+    "historyHint": "Plays recorded on this device",
+    "days": "Days",
+    "albumBlocks": "Keep whole albums together",
+    "home": "Music",
+    "recent": "Recently played",
+    "apiKey": "API key",
+    "missing": "N/A",
+    "minutes": "Minutes",
+    "rules": "Filters",
+    "exclusiveOutput": "Exclusive audio output",
+    "preamp": "Preamp",
+    "ratingPending": "Saved on this device; waiting to sync",
+    "lyricsOffset": "Lyrics timing offset"
   }
 }

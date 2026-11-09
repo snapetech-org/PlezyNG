@@ -13,7 +13,7 @@ import '../utils/catalog_navigation_helper.dart';
 import '../utils/app_logger.dart';
 import '../utils/snackbar_helper.dart';
 import 'app_menu.dart';
-import 'seerr_request_sheet.dart';
+import 'seerr_title_action.dart';
 
 enum _CatalogMenuActionType { viewDetails, toggleWatchlist, request, openUrl }
 
@@ -38,6 +38,16 @@ Future<void> showCatalogItemMenu(BuildContext context, CatalogItem item, {Offset
   final seerr = sources?.seerrSource;
   final tmdbId = item.ids.tmdb;
   final canRequest = seerr != null && tmdbId != null && seerr.canRequest(item.kind);
+  if (canRequest) await seerr.client.intents.load(item.kind, tmdbId);
+  if (!context.mounted || (canRequest && !identical(sources?.seerrSource, seerr))) return;
+  final requestAction = canRequest
+      ? seerrTitleAction(
+          seerr,
+          item.kind,
+          seerr.client.intents.peek(item.kind, tmdbId),
+          seasonNumber: item.season?.agreedSeason,
+        )
+      : null;
   final onWatchlist = source?.isOnWatchlist(item.kind, item.ids);
   if (source != null && onWatchlist == null) {
     // Load in the background so the row is actionable next open.
@@ -79,8 +89,8 @@ Future<void> showCatalogItemMenu(BuildContext context, CatalogItem item, {Offset
           label: onWatchlist ? t.explore.removeFromWatchlist : t.explore.addToWatchlist,
           icon: onWatchlist ? Symbols.bookmark_remove_rounded : Symbols.bookmark_add_rounded,
         ),
-      if (canRequest)
-        AppMenuItem(value: _CatalogMenuAction.request, label: t.seerr.request, icon: Symbols.download_rounded),
+      if (requestAction != null && requestAction.interactive)
+        AppMenuItem(value: _CatalogMenuAction.request, label: requestAction.label, icon: requestAction.icon),
     ],
   );
   if (action == null || !context.mounted) return;
@@ -100,7 +110,16 @@ Future<void> showCatalogItemMenu(BuildContext context, CatalogItem item, {Offset
         if (context.mounted) showErrorSnackBar(context, t.explore.watchlistUpdateFailed);
       }
     case _CatalogMenuActionType.request:
-      await showSeerrRequestSheet(context, source: seerr!, kind: item.kind, tmdbId: tmdbId!, title: item.title);
+      if (!identical(sources?.seerrSource, seerr)) return;
+      await performSeerrTitleAction(
+        context,
+        source: seerr!,
+        kind: item.kind,
+        tmdbId: tmdbId!,
+        title: item.title,
+        action: requestAction!,
+        seasonNumber: item.season?.agreedSeason,
+      );
     case _CatalogMenuActionType.openUrl:
       final url = action.url;
       if (url != null) await _launchCatalogUrl(url);

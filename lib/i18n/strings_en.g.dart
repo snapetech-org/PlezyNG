@@ -7838,6 +7838,27 @@ class Translations$seerr$en {
 	/// en: 'Request in 4K'
 	String get request4k => 'Request in 4K';
 
+	/// en: 'Request missing seasons'
+	String get requestSeasons => 'Request missing seasons';
+
+	/// en: 'Notify me when available'
+	String get notifyMe => 'Notify me when available';
+
+	/// en: 'Notify me when 4K is available'
+	String get notifyMe4k => 'Notify me when 4K is available';
+
+	/// en: 'Availability alert on'
+	String get notificationsOn => 'Availability alert on';
+
+	/// en: 'We'll notify you when it's available'
+	String get notificationsEnabled => 'We\'ll notify you when it\'s available';
+
+	/// en: 'Availability alert turned off'
+	String get notificationsDisabled => 'Availability alert turned off';
+
+	/// en: 'Couldn't update the availability alert'
+	String get notificationFailed => 'Couldn\'t update the availability alert';
+
 	/// en: 'Seasons'
 	String get seasons => 'Seasons';
 
@@ -20220,6 +20241,13 @@ extension on Translations {
 			'seerr.disconnectConfirmBody' => 'Pleazyng will forget this Seerr instance. Reconnect any time.',
 			'seerr.request' => 'Request',
 			'seerr.request4k' => 'Request in 4K',
+			'seerr.requestSeasons' => 'Request missing seasons',
+			'seerr.notifyMe' => 'Notify me when available',
+			'seerr.notifyMe4k' => 'Notify me when 4K is available',
+			'seerr.notificationsOn' => 'Availability alert on',
+			'seerr.notificationsEnabled' => 'We\'ll notify you when it\'s available',
+			'seerr.notificationsDisabled' => 'Availability alert turned off',
+			'seerr.notificationFailed' => 'Couldn\'t update the availability alert',
 			'seerr.seasons' => 'Seasons',
 			'seerr.allSeasons' => 'All seasons',
 			'seerr.advancedOptions' => 'Advanced',
@@ -20263,6 +20291,8 @@ extension on Translations {
 			'services.planNote' => 'Optional plan note. This label is only for you; Pleazyng does not verify account access.',
 			'services.planLabel' => 'Plan label',
 			'services.setPlanLabel' => 'Set plan label',
+			_ => null,
+		} ?? switch (path) {
 			'services.commissionDisclosure' => 'Pleazyng may earn a commission from some links.',
 			'services.notConnected' => 'Not connected',
 			'services.connectedAs' => ({required Object username}) => 'Connected as @${username}',
@@ -20270,8 +20300,6 @@ extension on Translations {
 			'services.scrobbleDescription' => 'Update your list when you finish an episode or movie.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
 			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.',
-			_ => null,
-		} ?? switch (path) {
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
@@ -20777,6 +20805,8 @@ extension on Translations {
 			'universalMedia.captureSaved' => 'Screen recording saved.',
 			'universalMedia.captureElapsedLabel' => 'Recording time',
 			'universalMedia.captureStart' => 'Start recording',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.capturePreview' => 'Preview in player',
 			'universalMedia.capturePreviewHelp' => 'Preview the selected source in the standard player. It is session-only and does not save a recording. Device support and permissions depend on MPV and the operating system. The preview uses video only; optional audio is included in saved recordings.',
 			'universalMedia.capturePreviewActive' => 'Live preview · not recording',
@@ -20784,8 +20814,6 @@ extension on Translations {
 			'universalMedia.captureMode' => 'Capture',
 			'universalMedia.shareMode' => 'Share',
 			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
@@ -21291,6 +21319,8 @@ extension on Translations {
 			'games.gameName' => 'Game name',
 			'games.gameId' => 'Host application ID',
 			'games.invalidGame' => 'Enter a game name and a positive numeric host application ID.',
+			_ => null,
+		} ?? switch (path) {
 			'games.wake' => 'Wake computer',
 			'games.wakeSent' => 'Wake request sent. The computer must support Wake-on-LAN on this network.',
 			'games.mac' => 'MAC address (optional)',
@@ -21298,8 +21328,6 @@ extension on Translations {
 			'games.helpBody' => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.',
 			'games.cancel' => 'Cancel',
 			'games.saveShortcut' => 'Save shortcut',
-			_ => null,
-		} ?? switch (path) {
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
@@ -21805,6 +21833,8 @@ extension on Translations {
 			'subtitleAiUi.usesTranslatedTextForAnchorsAndKeeps_3fd7071f' => 'Uses translated text for anchors and keeps the original target text',
 			'subtitleAiUi.repairCutsUsingAnotherSubtitle' => 'Repair cuts using another subtitle',
 			'subtitleAiUi.applyPiecewiseOffsetsWhereDialogueAn_cfd3013c' => 'Apply piecewise offsets where dialogue anchors show a timing discontinuity',
+			_ => null,
+		} ?? switch (path) {
 			'subtitleAiUi.localSubtitleTranslation' => 'Local subtitle translation',
 			'subtitleAiUi.useASeriesSpecificGlossary' => 'Use a series-specific glossary',
 			'subtitleAiUi.startsWithTheProfileGlossarySavedEdi_5ab98347' => 'Starts with the profile glossary; saved edits apply only to this series.',
@@ -21812,8 +21842,6 @@ extension on Translations {
 			'subtitleAiUi.showTheOriginalLineFollowedByItsTran_912a8201' => 'Show the original line followed by its translation in each cue',
 			'subtitleAiUi.translationGlossaryJSON' => 'Translation glossary (JSON)',
 			'subtitleAiUi.tARDISTARDISTheDoctorElDoctor' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
-			_ => null,
-		} ?? switch (path) {
 			'subtitleAiUi.saveGlossary' => 'Save glossary',
 			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
@@ -22319,6 +22347,8 @@ extension on Translations {
 			'bonusExtras.sendToPhone' => 'Open on your phone',
 			'bonusExtras.copyLink' => 'Copy link',
 			'bonusExtras.playbackUnavailable' => 'Playback is unavailable here. Try the provider app, scan the code, or copy the link.',
+			_ => null,
+		} ?? switch (path) {
 			'bonusExtras.providerNotice' => 'Playback opens the provider’s player and may include its recommendations.',
 			'bonusExtras.external' => 'Online',
 			'bonusExtras.library' => 'In your library',
@@ -22326,8 +22356,6 @@ extension on Translations {
 			'bonusExtras.unknownLanguage' => 'Language not specified',
 			'bonusExtras.spoilers' => 'Show extras that may contain spoilers',
 			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
-			_ => null,
-		} ?? switch (path) {
 			'bonusExtras.externalEnabled' => 'Discover verified online extras',
 			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			'bonusExtras.serviceUrl' => 'Discovery server address',

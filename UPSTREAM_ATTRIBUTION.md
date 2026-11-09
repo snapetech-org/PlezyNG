@@ -168,3 +168,31 @@ _Attribution ledger refreshed 2026-11-09; 89 source records._
 ## Music media-session integration
 
 The music/car integration vendors the already pinned [edde746/media_controls commit a27208e](https://github.com/edde746/media_controls/commit/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), retaining its license and existing platform implementations. Pleazyng independently adds the music browser bridge. The sonic request contract was checked against [Python-PlexAPI](https://github.com/pkkid/python-plexapi)'s published `nearest` and `computePath` client implementation; no Python source was copied. Native qualification and full parity remain tracked in `docs/plezyng/music/STATUS.md`.
+
+## Reviewed upstream synchronization — 2026-11-09
+
+These authors contributed the changes to upstream Plezy; Pleazyng independently
+adapted and verified the behavior. This does not imply direct contribution or
+endorsement of this fork.
+
+- [Companion remote reconnect state](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce), upstream commit by [@edde746](https://github.com/edde746): retain selected controls and scroll position during reconnect.
+- [Covered-route focus handoff](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01), upstream commit by [@edde746](https://github.com/edde746): let an unfocused page above the main screen receive remote navigation.
+- [Non-atomic RSS sampling regression](https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58), upstream commit by [@edde746](https://github.com/edde746): test independent OS counters without an unsupported ordering requirement.
+
+- [Newly-online Continue Watching version copies](https://github.com/edde746/plezy/commit/119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
+
+- [Continue Watching artwork reconciliation](https://github.com/edde746/plezy/commit/f2985a7b06b1190507946cde824779880d7d2af8), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
+
+- [Late display-switch restoration](https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997), upstream commit by [@edde746](https://github.com/edde746): independently adapted to the fork, retaining its profile/transport and failed-restore retry guards.
+
+- [Artwork resize debounce and resolution retention](https://github.com/edde746/plezy/commit/38c48f14ac4107cc94b2ab2f41444f0448d64da0), contributed upstream by [@strata-scribe](https://github.com/strata-scribe): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Watch Together guest version switching](https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Skia selection without Vulkan 1.1](https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently integrated and verified this change, preserving its existing artwork and session behavior.
+
+- [Theme-derived focus fills](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Light-theme scrim color interpolation](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.
+
+- [Transparent status-bar styling](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), upstream commit by [@edde746](https://github.com/edde746): independently adapted while preserving Pleazyng palettes, rasterized gradients and custom player chrome.

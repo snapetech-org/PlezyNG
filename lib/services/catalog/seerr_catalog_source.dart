@@ -49,10 +49,12 @@ class SeerrCatalogSource implements CatalogSource {
 
   /// Whether the signed-in user may request titles of [kind] — gates the
   /// detail-screen Request action.
-  bool canRequest(MediaKind kind) => seerrHasPermission(client.session.permissions, [
-    SeerrPermission.request,
-    kind == MediaKind.movie ? SeerrPermission.requestMovie : SeerrPermission.requestTv,
-  ]);
+  bool canRequest(MediaKind kind) =>
+      (kind == MediaKind.movie || kind == MediaKind.show) &&
+      seerrHasPermission(client.session.permissions, [
+        SeerrPermission.request,
+        kind == MediaKind.movie ? SeerrPermission.requestMovie : SeerrPermission.requestTv,
+      ]);
 
   @override
   Listenable get watchlistChanges => _watchlistChanges;

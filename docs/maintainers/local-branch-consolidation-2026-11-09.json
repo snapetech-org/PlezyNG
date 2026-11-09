@@ -1,0 +1,82 @@
+{
+  "repository": "snapetech-org/pleazyng",
+  "recorded_at": "2026-11-09T22:02:18.991315+00:00",
+  "integration_commit": "0d3833d90e8f2202ef15f586c5e191456f520f50",
+  "retired_local_branches": [
+    {
+      "branch": "fix/qa-image-security-refresh",
+      "sha": "71b007f30057a932f227b0d0d89418718747a1fd",
+      "worktree": "/home/keith/Documents/code/snape.local/.task-worktrees/pleazyng-qa-security",
+      "disposition": "Fully merged; worktree retained at the identical detached commit."
+    },
+    {
+      "branch": "task-upstream-attribution-release",
+      "sha": "c6664ba8532a53e52dde398e717186002425bc66",
+      "worktree": "/home/keith/Documents/code/.task-hosted-policy-20261109/pleazyng",
+      "disposition": "Fully merged; worktree retained at the identical detached commit."
+    },
+    {
+      "branch": "task/first-channel-publication",
+      "sha": "0d3833d90e8f2202ef15f586c5e191456f520f50",
+      "worktree": "/mnt/disks/scratch/task-scratch/pleazyng-first-publication-20261109/source",
+      "disposition": "Packaging push completed and is on origin/main; retained worktree at the identical detached commit."
+    }
+  ],
+  "removed_upstream_tracking_refs": [
+    {
+      "ref": "refs/remotes/upstream/ab/hdr-keep-alive-probe",
+      "sha": "8dc8fdf7e87275ebf5b6b8ab05544ae0cbd34431"
+    },
+    {
+      "ref": "refs/remotes/upstream/appcast",
+      "sha": "620c800e262c651e4a466d13a30174edeeacf4aa"
+    },
+    {
+      "ref": "refs/remotes/upstream/claude/new-session-zk5gno",
+      "sha": "fcbc865d610d8398a2d9330210d8e116f6074057"
+    },
+    {
+      "ref": "refs/remotes/upstream/dependabot/github_actions/actions/attest-build-provenance-4.2.2",
+      "sha": "6ff40ea4461b8285b865af2ba3c98d17cb241727"
+    },
+    {
+      "ref": "refs/remotes/upstream/dependabot/github_actions/actions/setup-go-7.0.0",
+      "sha": "61c7453a7a291203e9e2ded9512b7b2e72336287"
+    },
+    {
+      "ref": "refs/remotes/upstream/dependabot/github_actions/actions/setup-java-6.0.1",
+      "sha": "d61b45b8417084c4adf7a111258036a009b00a71"
+    },
+    {
+      "ref": "refs/remotes/upstream/dependabot/github_actions/softprops/action-gh-release-3.0.3",
+      "sha": "d3218107c908354ac5fff24d556e781a42cce1c4"
+    },
+    {
+      "ref": "refs/remotes/upstream/feat/mpv-android-aar",
+      "sha": "8568096429dff155d595b576b32df57e8bf568ed"
+    },
+    {
+      "ref": "refs/remotes/upstream/fix/display-mode-restore-before-exit",
+      "sha": "102a1bc633449480a77a04f858e141260d612e30"
+    },
+    {
+      "ref": "refs/remotes/upstream/refactor/focus-consolidation",
+      "sha": "703df6a5610cb1dab707974b6f168a873331857b"
+    },
+    {
+      "ref": "refs/remotes/upstream/refactor/mpv-build-helpers",
+      "sha": "5da2016f5899e6cd3ad8520c914f81fa46754687"
+    }
+  ],
+  "remaining_local_branches": [
+    "main"
+  ],
+  "remaining_origin_branches": [
+    "main"
+  ],
+  "upstream_fetch": "+refs/heads/main:refs/remotes/upstream/main",
+  "foreign_branches_modified": false,
+  "detached_worktrees_preserved": true,
+  "upstream_unique_commits_backup": "upstream-tracking-before.bundle",
+  "scratch_directory": "/home/keith/Documents/qa/pleazyng-local-branch-consolidation-20261109"
+}

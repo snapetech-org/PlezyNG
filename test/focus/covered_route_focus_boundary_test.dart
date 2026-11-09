@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/focus/covered_route_focus_boundary.dart';
 
@@ -21,14 +22,14 @@ class _Harness {
   bool showSheet = false;
   StateSetter? _rebuildNested;
 
-  Future<void> pump({bool boundary = true}) async {
+  Future<void> pump({bool boundary = true, bool innerBoundary = false}) async {
     Widget session = Navigator(
       onGenerateRoute: (_) => MaterialPageRoute(
         builder: (context) => StatefulBuilder(
           builder: (context, setState) {
             nestedContext = context;
             _rebuildNested = setState;
-            return Column(
+            final body = Column(
               children: [
                 Focus(focusNode: hidden, child: const SizedBox(height: 10, width: 10)),
                 FocusScope(
@@ -49,6 +50,7 @@ class _Harness {
                   ),
               ],
             );
+            return innerBoundary ? CoveredRouteFocusBoundary(child: body) : body;
           },
         ),
       ),
@@ -94,6 +96,35 @@ class _Harness {
 }
 
 void main() {
+  testWidgets('a sibling route that claims no focus of its own still gets it over the focused screen (#2302)', (
+    tester,
+  ) async {
+    // The Logs screen sets no first focus and relies on its route scope
+    // receiving it. Excluding the focused screen below made Flutter refocus
+    // the covered route's scope instead, so the D-pad drove the hidden screen.
+    final h = _Harness(tester);
+    addTearDown(h.dispose);
+    await h.pump(innerBoundary: true);
+    final pageItem = FocusNode(debugLabel: 'UnclaimedPageItem');
+    addTearDown(pageItem.dispose);
+
+    Navigator.of(h.nestedContext).push(
+      MaterialPageRoute<void>(
+        builder: (_) => Align(
+          alignment: Alignment.topLeft,
+          child: Focus(focusNode: pageItem, child: const SizedBox(height: 10, width: 10)),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+
+    expect(pageItem.hasPrimaryFocus, isTrue);
+  });
+
   testWidgets('without the boundary a nested self-heal steals focus from the root cover', (tester) async {
     final h = _Harness(tester);
     addTearDown(h.dispose);

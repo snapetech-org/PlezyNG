@@ -11,6 +11,10 @@
     <projectUrl>https://github.com/snapetech-org/pleazyng</projectUrl>
     <iconUrl>https://rawcdn.githack.com/snapetech-org/pleazyng/9e9745362e9d8a4386a076ade2debdcce9de7c28/assets/branding/web/app-icon-180.png</iconUrl>
     <packageSourceUrl>https://github.com/snapetech-org/pleazyng/tree/main/packaging/chocolatey</packageSourceUrl>
+    <projectSourceUrl>https://github.com/snapetech-org/pleazyng</projectSourceUrl>
+    <docsUrl>https://github.com/snapetech-org/pleazyng#readme</docsUrl>
+    <mailingListUrl>https://github.com/snapetech-org/pleazyng/discussions</mailingListUrl>
+    <releaseNotes>https://github.com/snapetech-org/pleazyng/releases</releaseNotes>
     <bugTrackerUrl>https://github.com/snapetech-org/pleazyng/issues</bugTrackerUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Pleazyng is an enhanced Plex client that also supports Jellyfin and Emby. Browse movies, shows, and music across your servers, search connected libraries, and keep watchlists and viewing progress in sync. Download media for offline playback. Watch Live TV and DVR where your server supports them. Choose audio tracks and subtitles, adjust playback speed and audio sync, and use HDR or Dolby Vision on supported devices. Watch Together keeps playback in sync when everyone can access the same media on the same server. Use Pleazyng on phones, tablets, TVs, and desktop computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary by server, device, and media.</description>

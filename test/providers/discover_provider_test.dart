@@ -143,6 +143,7 @@ class _FakeClient implements MediaServerClient {
   final String serverNameValue;
   final List<String> fetchedItemIds = [];
   MediaItem? itemResult;
+  Future<void>? itemGate;
   final _PushChannel channel = _PushChannel();
 
   @override
@@ -168,6 +169,7 @@ class _FakeClient implements MediaServerClient {
   @override
   Future<MediaItem?> fetchItem(String id, {bool useCache = true}) async {
     fetchedItemIds.add(id);
+    await itemGate;
     return itemResult;
   }
 
@@ -1090,7 +1092,6 @@ void main() {
     final serverTwoClient = _FakeClient(serverIdValue: 'server_2', serverNameValue: 'Server Two');
     manager.debugRegisterClientForTesting(serverTwoClient);
 
-    aggregation.onDeckResult = () => [serverOneItem, serverTwoItem];
     aggregation.hubsResult = () => [
       _hub('hub-1', serverId: 'server_1', items: [serverOneItem]),
       _hub('hub-2', serverId: 'server_2', items: [serverTwoItem]),
@@ -1115,12 +1116,70 @@ void main() {
     expect(aggregation.onDeckCalls, onDeckCallsBefore);
     expect(aggregation.hubCalls, hubCallsBefore);
 
-    final onDeckByKey = {for (final item in provider.onDeck) item.globalKey: item};
     final hubItemsByKey = {for (final item in provider.hubs.expand((hub) => hub.items)) item.globalKey: item};
-    expect(onDeckByKey[serverOneItem.globalKey], same(serverOneItem));
-    expect(onDeckByKey[serverTwoItem.globalKey], same(updated));
     expect(hubItemsByKey[serverOneItem.globalKey], same(serverOneItem));
     expect(hubItemsByKey[serverTwoItem.globalKey], same(updated));
+  });
+
+  test('delayed item refresh cannot overwrite a newer discover load', () async {
+    final original = _item('hub-item');
+    aggregation.hubsResult = () => [
+      _hub('recent', items: [original]),
+    ];
+    await provider.load();
+    final gate = Completer<void>();
+    client.itemGate = gate.future;
+    client.itemResult = original.copyWith(title: 'Old response');
+    final pending = provider.updateItem(original);
+    aggregation.hubsResult = () => [
+      _hub('recent', items: [original.copyWith(title: 'New load')]),
+    ];
+    await provider.load();
+    gate.complete();
+    await pending;
+    expect(provider.hubs.where((hub) => hub.id == 'recent').single.items.single.title, 'New load');
+  });
+
+  group('updateItem on a Continue Watching row (#2950)', () {
+    // Plex's full metadata carries the season poster; an older server's
+    // Continue Watching row does not, so a spliced copy changes the artwork.
+    final row = _item('ep-1', parentId: 'season-1', grandparentId: 'show-1');
+    final fullMetadata = row.copyWith(parentThumbPath: '/library/metadata/season-1/thumb/1');
+
+    test('reconciles through the on-deck fetch instead of splicing item metadata', () async {
+      aggregation.onDeckResult = () => [row];
+      await provider.load();
+      final onDeckCallsBefore = aggregation.onDeckCalls;
+      final hubCallsBefore = aggregation.hubCalls;
+      client.itemResult = fullMetadata;
+      // An in-place edit (rating, tags) surfaces through the refetched row.
+      aggregation.onDeckResult = () => [row.copyWith(title: 'Edited')];
+
+      await provider.updateItem(provider.onDeck.single);
+
+      expect(client.fetchedItemIds, isEmpty);
+      expect(aggregation.onDeckCalls, onDeckCallsBefore + 1);
+      expect(aggregation.hubCalls, hubCallsBefore);
+      expect(provider.onDeck.single.title, 'Edited');
+      expect(provider.hubs.where((hub) => hub.id == 'continue_watching').single.items.single.title, 'Edited');
+      expect(provider.onDeck.single.parentThumbPath, isNull);
+    });
+
+    test('leaves the row alone while still refreshing an ordinary hub holding the same item', () async {
+      aggregation.onDeckResult = () => [row];
+      aggregation.hubsResult = () => [
+        _hub('recent', items: [row]),
+      ];
+      await provider.load();
+      client.itemResult = fullMetadata;
+
+      await provider.updateItem(provider.onDeck.single);
+
+      expect(client.fetchedItemIds, ['ep-1']);
+      expect(provider.onDeck.single.parentThumbPath, isNull);
+      expect(provider.hubs.where((hub) => hub.id == 'recent').single.items.single, same(fullMetadata));
+      expect(provider.hubs.where((hub) => hub.id == 'continue_watching').single.items.single.parentThumbPath, isNull);
+    });
   });
 
   test('syncToOnlineServers reloads for mid-session connects only', () async {

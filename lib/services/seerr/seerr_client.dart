@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 
 import 'package:http/http.dart' as http;
 
@@ -10,6 +12,8 @@ import '../../models/seerr/seerr_media.dart';
 import '../../models/seerr/seerr_page.dart';
 import '../../models/seerr/seerr_public_settings.dart';
 import '../../models/seerr/seerr_request.dart';
+import '../../models/seerr/seerr_request_intent.dart';
+import '../../media/media_kind.dart';
 import '../../models/seerr/seerr_request_item.dart';
 import 'seerr_constants.dart';
 import '../../models/seerr/seerr_service.dart';
@@ -20,6 +24,7 @@ import '../trackers/future_coalescer.dart';
 import 'seerr_auth_service.dart';
 import 'seerr_exceptions.dart';
 import 'seerr_http_client.dart';
+import 'seerr_request_intent_store.dart';
 
 /// Supplies the profile's current Plex account token at silent-re-auth time,
 /// so plex-method sessions never store a token copy that could go stale.
@@ -36,6 +41,7 @@ class SeerrClient {
   final FutureCoalescer<void> _reauth = FutureCoalescer();
   bool _disposed = false;
   final _requestTitleCache = <String, Map<String, dynamic>>{};
+  final _requestKeys = <String, (String, DateTime)>{};
   int _cookieGeneration = 0;
   int _authorityRead = 0;
 
@@ -63,10 +69,13 @@ class SeerrClient {
        _auth = authService ?? SeerrAuthService();
 
   SeerrSession get session => _session;
+  late final SeerrRequestIntentStore intents = SeerrRequestIntentStore(this);
 
   void dispose() {
     _disposed = true;
+    intents.dispose();
     _requestTitleCache.clear();
+    _requestKeys.clear();
     _http.dispose();
   }
 
@@ -209,8 +218,63 @@ class SeerrClient {
   // ---------- Requests ----------
 
   Future<SeerrRequest> createRequest(SeerrRequestPayload payload) async {
-    final data = await _request('POST', '/request', body: payload.toJson());
+    final body = payload.toJson();
+    final identity = jsonEncode(body);
+    if (_requestKeys.length > 100) {
+      _requestKeys.removeWhere((_, entry) => DateTime.now().difference(entry.$2) >= const Duration(minutes: 5));
+      while (_requestKeys.length > 100) {
+        _requestKeys.remove(_requestKeys.keys.first);
+      }
+    }
+    final previous = _requestKeys[identity];
+    final random = Random.secure();
+    final key = previous != null && DateTime.now().difference(previous.$2) < const Duration(minutes: 5)
+        ? previous.$1
+        : List.generate(16, (_) => random.nextInt(256)).map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+    _requestKeys[identity] = (key, DateTime.now());
+    late final dynamic data;
+    try {
+      data = await _request('POST', '/request', body: body, extraHeaders: {'Idempotency-Key': key});
+    } on SeerrApiException catch (e) {
+      if (e.statusCode == 409) _requestKeys.remove(identity);
+      rethrow;
+    }
+    final kind = payload.mediaType == 'movie' ? MediaKind.movie : MediaKind.show;
+    intents.refreshIfObserved(kind, payload.mediaId);
     return SeerrRequest.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<List<SeerrRequestIntent>> getRequestIntents(List<(MediaKind, int)> identities) async {
+    final data = await _request(
+      'POST',
+      '/request/intent/state',
+      body: {
+        'items': [
+          for (final (kind, id) in identities) {'mediaType': kind == MediaKind.movie ? 'movie' : 'tv', 'tmdbId': id},
+        ],
+      },
+    );
+    return [
+      for (final raw in (data as Map<String, dynamic>)['items'] as List<dynamic>)
+        SeerrRequestIntent.fromJson(raw as Map<String, dynamic>),
+    ];
+  }
+
+  Future<void> subscribeToAvailability(MediaKind kind, int tmdbId, {bool? is4k, int? seasonNumber}) async {
+    await _request(
+      'POST',
+      '/user/${session.userId}/availability-subscriptions/${kind == MediaKind.movie ? 'movie' : 'tv'}/$tmdbId',
+      body: {'is4k': ?is4k, 'seasonNumber': ?seasonNumber},
+    );
+    intents.refreshIfObserved(kind, tmdbId);
+  }
+
+  Future<void> unsubscribeFromAvailability(MediaKind kind, int tmdbId) async {
+    await _request(
+      'DELETE',
+      '/user/${session.userId}/availability-subscriptions/${kind == MediaKind.movie ? 'movie' : 'tv'}/$tmdbId',
+    );
+    intents.refreshIfObserved(kind, tmdbId);
   }
 
   /// User-only request overview and discovery. Server authorization remains authoritative.
@@ -364,12 +428,13 @@ class SeerrClient {
     String path, {
     Map<String, Object?>? query,
     Map<String, Object?>? body,
+    Map<String, String>? extraHeaders,
   }) async {
     for (var attempt = 0; ; attempt++) {
       _ensureActive();
       final cookieGeneration = _cookieGeneration;
       final authorityRead = path == '/auth/me' ? ++_authorityRead : null;
-      final res = await _http.send(method, path, query: query, body: body);
+      final res = await _http.send(method, path, query: query, body: body, extraHeaders: extraHeaders);
       _ensureActive();
       final rejection = SeerrHttpClient.classify(res, path: path);
       if (rejection == SeerrRejection.routeDenied) {
@@ -509,7 +574,9 @@ class SeerrClient {
     if (_disposed) return;
     final product = _publicSettingsCache?.product ?? _session.product;
     final merged = product == SeerrProduct.unknown || product == next.product ? next : next.copyWith(product: product);
+    final permissionsChanged = merged.permissions != _session.permissions;
     _session = merged;
+    if (permissionsChanged) intents.invalidateAll();
     _http.cookie = merged.cookie;
     onSessionUpdated?.call(merged);
   }

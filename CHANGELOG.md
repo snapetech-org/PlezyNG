@@ -4,15 +4,25 @@
 
 - Repair AUR, COPR and Nix repacks of v3.0.7 with byte-matched WebKit helper processes, required sandbox tools and regenerated GTK image-loader caches. Qualify Nix WebView rendering and JavaScript with the WebKit process sandbox enabled. Existing GitHub release assets remain immutable.
 
+- Pin hosted Apple jobs to the installed Xcode 26.5 toolchain and retry the exact locked nested Dolby Vision build once after Xcode's package-model abort, retaining verified task-owned checkouts while discarding partial build products.
+
+- Keep focus visible on light surfaces, remove gray scrim bands and declare transparent status-bar styling for pages without app bars. Independently adapted from upstream commits [4eabc30c](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb), [13426a00](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), [c7f86ab8](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Debounce artwork resize requests and retain resolution on shrink, keep Watch Together guests synchronized after version changes, and select Skia on Android devices without Vulkan 1.1. Independently integrated upstream contributions by [@strata-scribe](https://github.com/strata-scribe) ([38c48f14](https://github.com/edde746/plezy/commit/38c48f14ac4107cc94b2ab2f41444f0448d64da0)) and [@edde746](https://github.com/edde746) ([6c87210c](https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd), [d2424018](https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499)); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Retain newly-online Continue Watching copies, reconcile artwork through the authoritative on-deck fetch, and undo display switches that finish after fullscreen playback has ended. Independently adapted from upstream commits [119ce59d](https://github.com/edde746/plezy/commit/119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4), [f2985a7b](https://github.com/edde746/plezy/commit/f2985a7b06b1190507946cde824779880d7d2af8), [ddcfda3c](https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Preserve companion-remote controls across reconnect, restore TV focus to newly opened pages and avoid a flaky diagnostic counter-order assertion. Independently adapted from upstream commits [e871d095](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce), [5076836a](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01) and [55ef954e](https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Close Linux emulator sandbox gaps in shared IPC, descriptor signal ownership and newer metadata syscalls, including when compiled with older kernel headers. Remove inherited capabilities, preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
+
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.
 
+- Verify the retained-home playback fix through the production player route and scaffold for Linux, Windows, shared Apple/mpv, and Android/ExoPlayer. Cover background artwork updates, the first-frame cover during source reloads, preserved controls, and returning home.
+
 - Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.
 
 - Build the nested Dolby Vision package graph directly from its verified `Package.resolved` pins, removing a redundant Xcode 26 resolve-only action that aborted consistently on hosted Apple Silicon.
-
-- Build the nested Dolby Vision package graph directly from its verified `Package.resolved` pins, removing a redundant Xcode 26 resolve-only action that aborted consistently on hosted Apple Silicon.
-
-- Generate AUR metadata with native makepkg so its public package index receives the package stanza, checksum the local recipe sources, and preserve native provider binaries when creating Fedora RPMs without synthetic debug packages.
 
 - Retire the mutable updater-feed branch in favor of published release assets, preserve an immutable legacy updater bridge, and continuously audit/test the Decky build dependency graph.
 

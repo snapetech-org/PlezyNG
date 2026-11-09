@@ -33,6 +33,8 @@ import '../providers/download_provider.dart';
 import '../providers/multi_server_provider.dart';
 import '../providers/offline_mode_provider.dart';
 import '../providers/catalog_sources_provider.dart';
+import '../services/catalog/seerr_catalog_source.dart';
+import 'seerr_title_action.dart';
 import '../profiles/active_profile_provider.dart';
 import '../profiles/profile.dart';
 import '../utils/provider_extensions.dart';
@@ -84,6 +86,9 @@ class _MenuContext {
   final MediaPlaylist? playlist;
   final MediaServerClient? mediaClient;
   final CatalogSourcesProvider? catalogSources;
+  final SeerrCatalogSource? seerrSource;
+  final int? seerrTmdbId;
+  final SeerrTitleAction? seerrAction;
   final bool isAdmin;
   final bool canTranscode;
   final bool itemServerOnline;
@@ -101,6 +106,9 @@ class _MenuContext {
     required this.playlist,
     required this.mediaClient,
     required this.catalogSources,
+    required this.seerrSource,
+    required this.seerrTmdbId,
+    required this.seerrAction,
     required this.isAdmin,
     required this.canTranscode,
     required this.itemServerOnline,
@@ -117,6 +125,9 @@ class _MenuContext {
     : playlist = null,
       mediaClient = null,
       catalogSources = null,
+      seerrSource = null,
+      seerrTmdbId = null,
+      seerrAction = null,
       isAdmin = false,
       canTranscode = false,
       itemServerOnline = false,
@@ -516,6 +527,34 @@ class MediaContextMenuState extends State<MediaContextMenu> {
     // cold cache can never turn a press into a surprise removal. Opening
     // the menu warms both caches for the tap and the next open.
     final catalogSources = Provider.of<CatalogSourcesProvider?>(context, listen: false);
+    final isOffline = context.read<OfflineModeProvider>().isOffline;
+    final seerrSource = catalogSources?.seerrSource;
+    int? seerrTmdbId;
+    SeerrTitleAction? seerrAction;
+    if (mediaItem != null &&
+        mediaClient != null &&
+        seerrSource != null &&
+        seerrSource.canRequest(mediaItem.kind) &&
+        itemServerOnline &&
+        !widget.isOffline &&
+        !isOffline) {
+      try {
+        // Server-provided external ids are exact; never match library rows
+        // to Seerr by title/year or infer a TV id from an episode id.
+        seerrTmdbId = (await mediaClient.fetchExternalIds(mediaItem.id)).tmdb;
+        if (seerrTmdbId != null) {
+          await seerrSource.client.intents.load(mediaItem.kind, seerrTmdbId);
+          final state = seerrSource.client.intents.peek(mediaItem.kind, seerrTmdbId);
+          var hasNewSeason = false;
+          if (mediaItem.kind == MediaKind.show && state != null && state.canRequest && !state.hasMissingSeasons) {
+            hasNewSeason = hasNewSeerrSeason(state, await seerrSource.client.getTv(seerrTmdbId));
+          }
+          seerrAction = librarySeerrTitleAction(seerrSource, mediaItem.kind, state, hasNewSeason: hasNewSeason);
+        }
+      } catch (e) {
+        appLogger.d('Seerr: context menu id resolution failed', error: e);
+      }
+    }
     var showWatchlistEntry = false;
     var watchlistRemoveOffered = false;
     if (mediaItem != null &&
@@ -523,7 +562,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
         catalogSources != null &&
         catalogSources.watchlistCapableSources.isNotEmpty &&
         itemServerOnline &&
-        !context.read<OfflineModeProvider>().isOffline) {
+        !isOffline) {
       final cachedCandidates = catalogSources.cachedWatchlistCandidatesFor(mediaItem);
       // Resolved-and-empty means no connected source can hold this item.
       showWatchlistEntry = cachedCandidates == null || cachedCandidates.isNotEmpty;
@@ -567,6 +606,9 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       playlist: playlist,
       mediaClient: mediaClient,
       catalogSources: catalogSources,
+      seerrSource: seerrSource,
+      seerrTmdbId: seerrTmdbId,
+      seerrAction: seerrAction,
       isAdmin: isAdmin,
       canTranscode: canTranscode,
       itemServerOnline: itemServerOnline,
@@ -636,6 +678,8 @@ class MediaContextMenuState extends State<MediaContextMenu> {
 
     return [
       if (mediaKind.isMusic) ..._musicMenuActions(context, menu, mediaItem),
+      if (menu.seerrAction case final action?)
+        _MenuAction(value: 'seerr_request', icon: action.icon, label: action.label),
       if (hasActiveProgress)
         _MenuAction(value: 'play_from_beginning', icon: Symbols.replay_rounded, label: t.mediaMenu.playFromBeginning),
       // Trailer playback. The detail row may hide its trailer button on small
@@ -900,6 +944,25 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       case 'play_trailer':
         outcome.didNavigate = true;
         widget.onPlayTrailer?.call();
+        break;
+      case 'seerr_request':
+        final source = menu.seerrSource;
+        final id = menu.seerrTmdbId;
+        final action = menu.seerrAction;
+        if (source != null &&
+            id != null &&
+            action != null &&
+            context.mounted &&
+            identical(context.read<CatalogSourcesProvider?>()?.seerrSource, source)) {
+          await performSeerrTitleAction(
+            context,
+            source: source,
+            kind: mediaItem.kind,
+            tmdbId: id,
+            title: mediaItem.title ?? '',
+            action: action,
+          );
+        }
         break;
       case 'watch' || 'unwatch':
         await _handleSetWatched(context, mediaItem, watched: selected == 'watch');

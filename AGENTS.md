@@ -98,3 +98,17 @@ Link the original PR, issue, report, discussion or commit and the upstream
 author, describe its relevant scope, and link `UPSTREAM_ATTRIBUTION.md`.
 Keep proposal/report credit distinct from implementation and qualification;
 do not attach unrelated records to new downstream features.
+
+## Branch consolidation — owner directive, 2026-11-09
+
+Keep `main` as the only local branch and the steady-state branch on `origin`.
+Use detached worktrees for isolated tasks. Integrate reviewed changes into main
+and push promptly; retire merged or explicitly superseded task/PR branch names.
+Before removing a checked-out branch, wait for active Git/build consumers,
+verify its final tip is on main or explicitly accounted for, and detach the
+worktree at that identical commit. Preserve its files, index, caches and evidence.
+Do not remove worktrees or unique work merely to reduce a branch count.
+
+The `upstream` remote is the separate Plezy project. Track its `main` only;
+its feature branches are not Pleazyng work to merge or delete automatically.
+Keep upstream attribution requirements when actually adapting upstream work.

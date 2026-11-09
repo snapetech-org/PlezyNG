@@ -27,6 +27,19 @@ desktop cores are unavailable; existing alternative game routes remain subject
 to their own capability checks. This does not raise the OS requirement for the
 rest of the app.
 
+The Linux syscall filter also denies shared System V semaphore operations,
+POSIX message queues, extended-attribute reads and cross-process scheduling or
+memory controls. The worker removes effective, permitted, inheritable and
+ambient capabilities before loading a core. Device controls, filesystem watches,
+locks and descriptor ownership commands are denied; `fcntl` permits only
+descriptor duplication and ordinary descriptor/status flags. This prevents
+asynchronous descriptor notifications from targeting the parent through a path
+other than a signal syscall. Syscalls beyond the reviewed legacy range (through `rseq` on
+x86_64 and arm64) return `ENOSYS` unless explicitly rejected earlier. This keeps
+new metadata APIs, including `fchmodat2` and the `*xattrat` family, from bypassing
+restrictions when the app was compiled against older kernel headers. Library
+fallbacks can use the permitted older APIs; new syscall support requires review.
+
 ## Protocol and lifetime limits
 
 - Frames are at most 2048 × 2048 RGBA pixels; audio is at most 32,768 interleaved
@@ -60,6 +73,11 @@ An additional CMake/CTest target loads a fixture shared library through the
 production worker and libretro adapter; it verifies constructors, frame
 conversion, private-file denial and save restore without using real game files.
 A constructor-trap fixture verifies that the unavailable host cannot load a core even during capability probing.
+The Linux-only `linux_syscall_containment` CTest uses the production filter,
+models older build headers, and checks real parent-owned file permissions,
+semaphores and message queues. It also checks thread creation and inherited
+restrictions. It can run without Landlock and is only syscall-policy evidence,
+not a substitute for the complete filesystem sandbox tests.
 Actual bundled-core, signed-package, audio-device and game compatibility checks
 remain part of platform release qualification.
 
@@ -77,6 +95,9 @@ The OS contracts used here are documented in the
 [Windows AppContainer launch guidance](https://learn.microsoft.com/en-us/windows/win32/secauthz/implementing-an-appcontainer).
 Android's process boundary is defined by the
 [`isolatedProcess` service contract](https://developer.android.com/guide/topics/manifest/service-element#isolated).
+The Linux syscall review uses the kernel's
+[x86_64 syscall table](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl)
+and [generic 64-bit syscall definitions](https://github.com/torvalds/linux/blob/v6.12/include/uapi/asm-generic/unistd.h).
 
 On 2026-11-09 the API-36 x86_64 headless emulator on kspld0 passed the
 production-service instrumentation suite, including private-file/network denial,
@@ -85,3 +106,10 @@ stuck close, whole-process suspension and restart. All four Android ABIs compile
 and Android lint passed. Linux production CMake/CTest and real worker/protocol
 fault suites also passed. These are emulator/Linux results; signed packages,
 physical devices, Windows and macOS remain independently qualified lanes.
+
+Subsequently, [hosted run 42708996100](https://github.com/snapetech-org/pleazyng/actions/runs/42708996100)
+passed Linux, Windows and macOS containment/production builds and Android API-35
+service instrumentation, all four test ABI builds and lint. The final Linux
+syscall/descriptor/capability policy passed [job 129477197269](https://github.com/snapetech-org/pleazyng/actions/runs/42710141311/job/129477197269),
+including all four production CTest cases and packaging checks. These hosted
+results do not replace actual-core, signed-release or physical-device acceptance.

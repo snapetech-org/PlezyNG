@@ -6,6 +6,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/mpv/models.dart';
 import 'package:plezy/mpv/player/player_native.dart';
+import 'package:plezy/mpv/player/platform/player_android.dart';
+import 'package:plezy/mpv/player/platform/player_linux.dart';
+import 'package:plezy/mpv/player/platform/player_windows.dart';
+import 'package:plezy/widgets/overlay_sheet.dart';
 import 'package:plezy/mpv/video.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/utils/video_player_navigation.dart';
@@ -24,69 +28,114 @@ void main() {
 
   tearDown(SettingsService.resetForTesting);
 
-  testWidgets('native video clears underlying artwork only after its first frame', (tester) async {
-    await withMockPlayerChannels(
-      methodChannelName: 'com.plezy/mpv_player',
-      eventChannelName: 'com.plezy/mpv_player/events',
-      methodHandler: (call) async => call.method == 'initialize' ? true : null,
-      testBody: () async {
-        final player = PlayerNative();
-        final firstFrame = ValueNotifier(false);
-        final capture = GlobalKey();
-        final navigator = GlobalKey<NavigatorState>();
-        await tester.pumpWidget(
-          RepaintBoundary(
-            key: capture,
-            child: MaterialApp(
-              navigatorKey: navigator,
-              home: const ColoredBox(color: Colors.red),
-            ),
-          ),
-        );
-        unawaited(
-          VideoPlayerRoute(
-            builder: (_) => Stack(
-              children: [
-                Positioned(
-                  left: 20,
-                  top: 20,
-                  width: 100,
-                  height: 100,
-                  child: Video(
-                    player: player,
-                    hasFirstFrame: firstFrame,
-                    controls: (_) => const Align(
-                      alignment: Alignment.topLeft,
-                      child: SizedBox(width: 10, height: 10, child: ColoredBox(color: Colors.blue)),
+  for (final backend in [
+    (name: 'Linux', create: PlayerLinux.new, channel: 'mpv_player'),
+    (name: 'Windows', create: PlayerWindows.new, channel: 'mpv_player'),
+    (name: 'Apple/mpv', create: PlayerNative.new, channel: 'mpv_player'),
+    (name: 'Android/ExoPlayer', create: PlayerAndroid.new, channel: 'exo_player'),
+  ]) {
+    testWidgets('${backend.name} clears the retained home route throughout resumed playback', (tester) async {
+      await withMockPlayerChannels(
+        methodChannelName: 'com.plezy/${backend.channel}',
+        eventChannelName: 'com.plezy/${backend.channel}/events',
+        methodHandler: (call) async => call.method == 'initialize' ? true : null,
+        testBody: () async {
+          final player = backend.create();
+          final firstFrame = ValueNotifier(false);
+          final capture = GlobalKey();
+          final navigator = GlobalKey<NavigatorState>();
+          final artwork = ValueNotifier(Colors.red);
+          try {
+            await tester.pumpWidget(
+              RepaintBoundary(
+                key: capture,
+                child: MaterialApp(
+                  navigatorKey: navigator,
+                  home: ValueListenableBuilder<Color>(
+                    valueListenable: artwork,
+                    builder: (_, color, _) => ColoredBox(color: color),
+                  ),
+                ),
+              ),
+            );
+            unawaited(
+              VideoPlayerRoute(
+                builder: (_) => OverlaySheetHost(
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: Stack(
+                      children: [
+                        Positioned(
+                          left: 20,
+                          top: 20,
+                          width: 100,
+                          height: 100,
+                          child: Video(
+                            player: player,
+                            hasFirstFrame: firstFrame,
+                            controls: (_) => const Align(
+                              alignment: Alignment.topLeft,
+                              child: SizedBox(width: 10, height: 10, child: ColoredBox(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ).push(navigator.currentState!),
-        );
-        await tester.pumpAndSettle();
-        Future<int> alpha(int x, int y) async {
-          final boundary = capture.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-          final image = (await tester.runAsync(() => boundary.toImage()))!;
-          final data = (await tester.runAsync(() => image.toByteData(format: ui.ImageByteFormat.rawRgba)))!;
-          final result = data.getUint8((y * image.width + x) * 4 + 3);
-          image.dispose();
-          return result;
-        }
+              ).push(navigator.currentState!),
+            );
+            await tester.pumpAndSettle();
+            Future<int> pixel(int x, int y) async {
+              final boundary = capture.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+              final image = (await tester.runAsync(() => boundary.toImage()))!;
+              final data = (await tester.runAsync(() => image.toByteData(format: ui.ImageByteFormat.rawRgba)))!;
+              final offset = (y * image.width + x) * 4;
+              final result = Color.fromARGB(
+                data.getUint8(offset + 3),
+                data.getUint8(offset),
+                data.getUint8(offset + 1),
+                data.getUint8(offset + 2),
+              );
+              image.dispose();
+              return result.toARGB32();
+            }
 
-        expect(await alpha(50, 50), 255);
-        firstFrame.value = true;
-        await tester.pump();
-        expect(await alpha(50, 50), 0);
-        expect(await alpha(25, 25), 255);
-        expect(await alpha(5, 5), 255);
-        await tester.pumpWidget(const SizedBox.shrink());
-        await tester.runAsync(() => player.dispose());
-        firstFrame.dispose();
-      },
-    );
-  });
+            expect(await pixel(50, 50), Colors.black.toARGB32());
+            // The screen releases its startup cover after resume and display setup.
+            firstFrame.value = true;
+            await tester.pump();
+            expect(await pixel(50, 50), Colors.transparent.toARGB32());
+            expect(await pixel(25, 25), Colors.blue.toARGB32());
+            expect(await pixel(5, 5), Colors.red.toARGB32());
+            // Home keeps repainting below a non-opaque player route (e.g. its hero
+            // carousel advances). It must never cover the native video plane again.
+            artwork.value = Colors.green;
+            await tester.pump();
+            expect(await pixel(50, 50), Colors.transparent.toARGB32());
+            expect(await pixel(25, 25), Colors.blue.toARGB32());
+
+            // An episode/source reload reinstates black until its own first frame.
+            firstFrame.value = false;
+            await tester.pump();
+            expect(await pixel(50, 50), Colors.black.toARGB32());
+            firstFrame.value = true;
+            await tester.pump();
+            expect(await pixel(50, 50), Colors.transparent.toARGB32());
+
+            navigator.currentState!.pop();
+            await tester.pumpAndSettle();
+            expect(await pixel(50, 50), Colors.green.toARGB32());
+          } finally {
+            await tester.pumpWidget(const SizedBox.shrink());
+            await tester.runAsync(() => player.dispose());
+            firstFrame.dispose();
+            artwork.dispose();
+          }
+        },
+      );
+    });
+  }
 
   testWidgets('Video reports updated physical pane bounds when workspace layout moves', (tester) async {
     final rectCalls = <Map<Object?, Object?>>[];

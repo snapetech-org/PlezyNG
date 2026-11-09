@@ -125,6 +125,7 @@ class SeerrHttpClient {
     String path, {
     Map<String, Object?>? query,
     Map<String, Object?>? body,
+    Map<String, String>? extraHeaders,
     Duration timeout = SeerrConstants.requestTimeout,
     bool authenticated = true,
   }) async {
@@ -134,6 +135,7 @@ class SeerrHttpClient {
     final uri = _uri(path, query);
     final headers = <String, String>{
       'Accept': 'application/json',
+      ...?extraHeaders,
       if (authenticated && _cookie != null) 'Cookie': '${SeerrConstants.sessionCookieName}=$_cookie',
       if (body != null) 'Content-Type': 'application/json',
     };

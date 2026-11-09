@@ -15,10 +15,13 @@ and [validation](VALIDATION.md). Full Gradle/R8 app packaging, the Kotlin app
 bridge, iOS SDK builds and paired-host acceptance remain separate gates. The
 42-export evidence in the historical table below predates this follow-up.
 
-All Actions jobs remain on compatible private ephemeral JIT runners. Provision
-only an idle, isolated build agent; preserve active builds and existing SDKs.
-Missing private capacity is a provisioning blocker. No hosted fallback, runner
-trust widening, publishing, account mutation or deployment is part of SDK setup.
+Use compatible GitHub-hosted runners for these SDK preparation and build jobs
+by default, preserving each target's native operating system and architecture.
+Use a private ephemeral JIT runner only when the job needs private hardware,
+network access, files, storage, or explicit JIT validation. Missing private
+capacity is not a blocker when a compatible hosted runner is available.
+Preserve active builds and existing SDKs. Runner trust widening, publishing,
+account mutation, and deployment remain outside this SDK setup handoff.
 
 ## What is ready
 

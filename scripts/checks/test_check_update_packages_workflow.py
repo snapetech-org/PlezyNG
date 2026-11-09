@@ -32,6 +32,12 @@ class UpdatePackagesWorkflowTest(unittest.TestCase):
         result = self.run_guard(WORKFLOW.read_text())
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_homebrew_requires_notarized_payload_even_without_outer_dmg_ticket(self) -> None:
+        workflow = WORKFLOW.read_text()
+        result = self.run_guard(workflow.replace('xcrun stapler validate "$app"', 'true', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('mounted app signature, stapled ticket', result.stderr)
+
     def test_homebrew_checkout_cannot_target_an_unrelated_tap(self) -> None:
         workflow = WORKFLOW.read_text()
         original = "repository: snapetech-org/homebrew-pleazyng"

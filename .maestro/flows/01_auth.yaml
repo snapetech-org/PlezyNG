@@ -28,16 +28,6 @@ tags:
     timeout: 10000
 - assertVisible: "(?s)Server URLs.*"
 - assertVisible: "Find server"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn: "Back"
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          optional: true
-      - back
+# Use the route control: hideKeyboard may itself send Back when the IME is absent.
+- tapOn: "Back"
 - assertVisible: "Sign in with Plex"

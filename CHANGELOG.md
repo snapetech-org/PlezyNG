@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Make the fresh-install authentication QA flow use the setup screen’s Back control, avoiding a second navigation pop when Maestro hides an already absent keyboard.
+
 - Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.
 
 - Use the verified `macos-26-intel` hosted image for Apple CI, signing preflight, and release builds after generic `macos-26` jobs were cancelled before receiving a public runner. Prepare the checksum-verified pinned Flutter SDK for either x64 hosted Macs or ARM64 private JIT, retaining the latter only for explicitly constrained execution.

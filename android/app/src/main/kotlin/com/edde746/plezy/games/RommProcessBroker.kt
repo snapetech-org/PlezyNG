@@ -34,6 +34,7 @@ object RommProcessBroker {
   }
 
   @JvmStatic private external fun initialize()
+
   // O_CLOEXEC exists in the NDK on every supported device, while the framework
   // OsConstants field was only exposed in API 27. Preserve atomic close-on-exec.
   @JvmStatic private external fun readOnlyInputFlags(): Int
@@ -65,20 +66,30 @@ object RommProcessBroker {
     private val app: Context,
     private val core: String,
     private val rom: String,
-    private val system: String,
+    private val system: String
   ) : ServiceConnection {
     internal val connected = CountDownLatch(1)
+
     @Volatile internal var binder: IBinder? = null
+
     @Volatile private var dead = false
+
     @Volatile private var closing = false
     private var bound = false // main thread only
     private var pipe: ParcelFileDescriptor? = null
 
     internal fun bind() {
-      if (closing) { dead = true; connected.countDown(); return }
+      if (closing) {
+        dead = true
+        connected.countDown()
+        return
+      }
       try {
         bound = app.bindService(Intent(app, RommIsolatedService::class.java), this, Context.BIND_AUTO_CREATE)
-        if (!bound) { dead = true; connected.countDown() }
+        if (!bound) {
+          dead = true
+          connected.countDown()
+        }
       } catch (_: Exception) {
         dead = true
         connected.countDown()
@@ -88,7 +99,10 @@ object RommProcessBroker {
     override fun onServiceConnected(name: ComponentName, service: IBinder) {
       binder = service
       try {
-        service.linkToDeath({ dead = true; close() }, 0)
+        service.linkToDeath({
+          dead = true
+          close()
+        }, 0)
         if (closing) close()
       } catch (_: Exception) {
         dead = true
@@ -148,7 +162,9 @@ object RommProcessBroker {
             for (file in children.sortedBy { it.name }) {
               // Do not follow symlinks, including directory links.
               require(file.canonicalFile == file.absoluteFile) { "Linked firmware is unsupported." }
-              if (file.isDirectory) visit(file, depth + 1) else {
+              if (file.isDirectory) {
+                visit(file, depth + 1)
+              } else {
                 require(files.size < 65)
                 val path = file.relativeTo(root).invariantSeparatorsPath
                 require(path.length <= 1024 && !path.split('/').contains(".."))

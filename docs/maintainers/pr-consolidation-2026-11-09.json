@@ -1034,6 +1034,6 @@
     "url": "https://github.com/snapetech-org/pleazyng/actions/runs/42705515200",
     "revision": "aa17d7fea800655896a864fa483974aefe395280",
     "runner_class": "ubuntu-24.04",
-    "status_at_receipt": "queued"
+    "conclusion": "success"
   }
 }

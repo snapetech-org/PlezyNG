@@ -20,7 +20,11 @@ class RommIsolatedService : Service() {
   private var isolated = false
   private var started = false
   private val handler = Handler(Looper.getMainLooper()) { message ->
-    if (message.what == STOP) terminate() else if (message.what == START) start(message)
+    if (message.what == STOP) {
+      terminate()
+    } else if (message.what == START) {
+      start(message)
+    }
     true
   }
   private val messenger = Messenger(handler)

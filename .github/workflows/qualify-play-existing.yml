@@ -1,0 +1,86 @@
+# Existing-artifact qualification only. No AAB upload or store-state mutation.
+name: Fetch existing Play qualification artifacts
+run-name: qualify-play:${{ inputs.release_tag }}:code:${{ inputs.version_code }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing published release used for the first Play upload
+        type: string
+        required: true
+        default: v3.0.7
+      version_code:
+        description: Existing uploaded Play version code; never uploads another AAB
+        type: string
+        required: true
+        default: '166'
+permissions:
+  contents: read
+  attestations: read
+concurrency:
+  group: qualify-play-${{ inputs.version_code }}
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Validate protected publication context
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          PLAY_VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$PLAY_VERSION_CODE" =~ ^[1-9][0-9]*$ ]]
+          test "$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = false
+          mkdir -p "$RUNNER_TEMP/play-qualification"
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/play-qualification"
+          python3 scripts/verify_release_attestation.py "$RUNNER_TEMP/play-qualification/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY"
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Fetch Google-generated signed APKs without changing the release
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          PLAY_VERSION_CODE: ${{ inputs.version_code }}
+          PLAY_QUALIFICATION_OUTPUT: ${{ runner.temp }}/play-qualification
+        run: bundle exec ruby scripts/stores/fetch_play_qualification.rb
+      - name: Verify APK identity and signing certificate
+        env:
+          PLAY_VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          set -euo pipefail
+          apksigner=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          apkanalyzer=$(find "$ANDROID_HOME/cmdline-tools" -name apkanalyzer -type f | sort -V | tail -1)
+          test -x "$apksigner"
+          test -x "$apkanalyzer"
+          for apk in "$RUNNER_TEMP/play-qualification/"*.apk; do
+            test "$("$apkanalyzer" manifest application-id "$apk")" = org.snapetech.pleazyng
+            test "$("$apkanalyzer" manifest version-code "$apk")" = "$PLAY_VERSION_CODE"
+            "$apksigner" verify --verbose --print-certs "$apk" > "$apk.signing.txt"
+          done
+          python3 - "$RUNNER_TEMP/play-qualification" <<'PY'
+          import json,re,sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); path=root/'play-qualification.json'; receipt=json.loads(path.read_text())
+          for apk in receipt['apks']:
+              text=(root/(apk['file']+'.signing.txt')).read_text()
+              actual=re.findall(r'^Signer #[0-9]+ certificate SHA-256 digest: ([0-9a-fA-F:]+)$', text, re.M)
+              norm=lambda value:value.lower().replace(':','')
+              assert norm(apk['expected_signing_certificate_sha256']) in [norm(value) for value in actual], 'Play signing certificate mismatch'
+              apk['signing_certificate_verified']=True
+          path.write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: play-existing-${{ inputs.version_code }}-qualification
+          path: ${{ runner.temp }}/play-qualification
+          retention-days: 14

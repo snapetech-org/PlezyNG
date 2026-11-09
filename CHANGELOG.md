@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Close Linux emulator sandbox gaps in shared IPC and newer metadata syscalls, including when compiled with older kernel headers. Preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
+
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.
 
 - Verify the retained-home playback fix through the production player route and scaffold for Linux, Windows, shared Apple/mpv, and Android/ExoPlayer. Cover background artwork updates, the first-frame cover during source reloads, preserved controls, and returning home.

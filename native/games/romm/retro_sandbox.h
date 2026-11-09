@@ -30,6 +30,184 @@
 #endif
 
 namespace plezy::retro {
+#if defined(__linux__) && !defined(__ANDROID__)
+// Kept independently testable: this complements, never replaces, Landlock.
+inline void RestrictLinuxSyscalls() {
+  // Landlock does not cover every metadata syscall. Deny metadata mutations,
+  // networking, process introspection, and new executable code.
+  std::vector<sock_filter> filter;
+  auto stmt = [&](uint16_t code, uint32_t value) { filter.push_back(BPF_STMT(code, value)); };
+  auto deny = [&](uint32_t call, uint32_t error = EPERM) {
+    filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, call, 0, 1));
+    stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | error);
+  };
+  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, arch));
+#if defined(__x86_64__)
+  constexpr uint32_t arch = AUDIT_ARCH_X86_64;
+#elif defined(__aarch64__)
+  constexpr uint32_t arch = AUDIT_ARCH_AARCH64;
+#else
+#error Unsupported isolated emulator Linux architecture
+#endif
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, arch, 1, 0));
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_KILL_PROCESS);
+  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, nr));
+#if defined(__x86_64__)
+  // The x32 ABI shares AUDIT_ARCH_X86_64 but uses different syscall numbers.
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JGE | BPF_K, 0x40000000, 0, 1));
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_KILL_PROCESS);
+#endif
+  for (const auto call :
+       {SYS_socket,
+        SYS_socketpair,
+        SYS_connect,
+        SYS_bind,
+        SYS_listen,
+        SYS_accept,
+        SYS_accept4,
+        SYS_execve,
+        SYS_execveat,
+        SYS_ptrace,
+        SYS_process_vm_readv,
+        SYS_process_vm_writev,
+        SYS_mount,
+        SYS_umount2,
+        SYS_unshare,
+        SYS_setns,
+        SYS_bpf,
+        SYS_perf_event_open,
+        SYS_open_by_handle_at,
+        SYS_keyctl,
+        SYS_add_key,
+        SYS_request_key,
+        SYS_userfaultfd,
+        SYS_fchmod,
+        SYS_fchmodat,
+        SYS_fchown,
+        SYS_fchownat,
+        SYS_setxattr,
+        SYS_lsetxattr,
+        SYS_fsetxattr,
+        SYS_getxattr,
+        SYS_lgetxattr,
+        SYS_fgetxattr,
+        SYS_listxattr,
+        SYS_llistxattr,
+        SYS_flistxattr,
+        SYS_removexattr,
+        SYS_lremovexattr,
+        SYS_fremovexattr,
+        SYS_utimensat,
+        SYS_kill,
+        SYS_tkill,
+        SYS_tgkill,
+        SYS_rt_sigqueueinfo,
+        SYS_rt_tgsigqueueinfo,
+        SYS_shmget,
+        SYS_shmat,
+        SYS_shmctl,
+        SYS_semget,
+        SYS_semop,
+        SYS_semtimedop,
+        SYS_semctl,
+        SYS_msgget,
+        SYS_msgsnd,
+        SYS_msgrcv,
+        SYS_msgctl,
+        SYS_mq_open,
+        SYS_mq_unlink,
+        SYS_mq_timedsend,
+        SYS_mq_timedreceive,
+        SYS_mq_notify,
+        SYS_mq_getsetattr,
+        SYS_prctl,
+        SYS_setpriority,
+        SYS_ioprio_set,
+        SYS_migrate_pages,
+        SYS_move_pages,
+        SYS_get_robust_list,
+        SYS_kcmp,
+        SYS_sched_setaffinity,
+        SYS_sched_setscheduler,
+        SYS_sched_setattr,
+        SYS_sched_setparam})
+    deny(call);
+#ifdef SYS_fsopen
+  deny(SYS_fsopen);
+  deny(SYS_fsmount);
+  deny(SYS_move_mount);
+  deny(SYS_open_tree);
+#endif
+#ifdef SYS_mount_setattr
+  deny(SYS_mount_setattr);
+#endif
+#ifdef SYS_pidfd_open
+  deny(SYS_pidfd_open);
+  deny(SYS_pidfd_send_signal);
+#endif
+#ifdef SYS_pidfd_getfd
+  deny(SYS_pidfd_getfd);
+#endif
+#ifdef SYS_chmod
+  deny(SYS_chmod);
+#endif
+#ifdef SYS_chown
+  deny(SYS_chown);
+#endif
+#ifdef SYS_lchown
+  deny(SYS_lchown);
+#endif
+#ifdef SYS_utime
+  deny(SYS_utime);
+#endif
+#ifdef SYS_utimes
+  deny(SYS_utimes);
+#endif
+#ifdef SYS_futimesat
+  deny(SYS_futimesat);
+#endif
+#ifdef SYS_fchmodat2
+  deny(SYS_fchmodat2);
+#endif
+#ifdef SYS_fork
+  deny(SYS_fork);
+#endif
+#ifdef SYS_vfork
+  deny(SYS_vfork);
+#endif
+#ifdef SYS_io_uring_setup
+  deny(SYS_io_uring_setup);
+#endif
+#ifdef SYS_clone3
+  deny(SYS_clone3, ENOSYS);  // Let libc use the inspectable legacy clone ABI.
+#endif
+  // Freeze the reviewed legacy syscall range on both supported architectures.
+  // Later calls default to ENOSYS, allowing libc's older-ABI fallbacks. Do not
+  // let old build headers silently allow new metadata/IPC calls on a newer
+  // kernel (e.g. fchmodat2, setxattrat, removexattrat, file_setattr). Extend this
+  // boundary only after reviewing a new call's arguments and sandbox effects.
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JGT | BPF_K, SYS_rseq, 0, 1));
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | ENOSYS);
+  // glibc uses prlimit64 for this process's resource limits. The same-UID
+  // parent must never be addressable through that API, even for a query.
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_prlimit64, 0, 5));
+  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, args[0]));
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, 0, 1, 0));
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, uint32_t(getpid()), 0, 1));
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ALLOW);
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | EPERM);
+  // Software cores may create threads, but never another process.
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_clone, 0, 3));
+  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, args[0]));
+  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JSET | BPF_K, 0x10000 /* CLONE_THREAD */, 1, 0));
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | EPERM);
+  stmt(BPF_RET | BPF_K, SECCOMP_RET_ALLOW);
+  sock_fprog program{static_cast<unsigned short>(filter.size()), filter.data()};
+  if (syscall(SYS_seccomp, SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &program))
+    throw std::runtime_error("Could not enter emulator syscall sandbox");
+}
+#endif
+
 // Apply before dlopen: even a core's static constructors run inside this policy.
 // No fallback to an unrestricted core if the OS cannot enforce the boundary.
 inline void RestrictCore(
@@ -104,151 +282,7 @@ inline void RestrictCore(
     close(rules);
     throw;
   }
-  // Landlock does not cover every metadata syscall. Deny metadata mutations,
-  // networking, process introspection, and new executable code.
-  std::vector<sock_filter> filter;
-  auto stmt = [&](uint16_t code, uint32_t value) { filter.push_back(BPF_STMT(code, value)); };
-  auto deny = [&](uint32_t call, uint32_t error = EPERM) {
-    filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, call, 0, 1));
-    stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | error);
-  };
-  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, arch));
-#if defined(__x86_64__)
-  constexpr uint32_t arch = AUDIT_ARCH_X86_64;
-#elif defined(__aarch64__)
-  constexpr uint32_t arch = AUDIT_ARCH_AARCH64;
-#else
-#error Unsupported isolated emulator Linux architecture
-#endif
-  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, arch, 1, 0));
-  stmt(BPF_RET | BPF_K, SECCOMP_RET_KILL_PROCESS);
-  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, nr));
-#if defined(__x86_64__)
-  // The x32 ABI shares AUDIT_ARCH_X86_64 but uses different syscall numbers.
-  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JGE | BPF_K, 0x40000000, 0, 1));
-  stmt(BPF_RET | BPF_K, SECCOMP_RET_KILL_PROCESS);
-#endif
-  for (const auto call :
-       {SYS_socket,
-        SYS_socketpair,
-        SYS_connect,
-        SYS_bind,
-        SYS_listen,
-        SYS_accept,
-        SYS_accept4,
-        SYS_execve,
-        SYS_execveat,
-        SYS_ptrace,
-        SYS_process_vm_readv,
-        SYS_process_vm_writev,
-        SYS_mount,
-        SYS_umount2,
-        SYS_unshare,
-        SYS_setns,
-        SYS_bpf,
-        SYS_perf_event_open,
-        SYS_open_by_handle_at,
-        SYS_keyctl,
-        SYS_add_key,
-        SYS_request_key,
-        SYS_userfaultfd,
-        SYS_fchmod,
-        SYS_fchmodat,
-        SYS_fchown,
-        SYS_fchownat,
-        SYS_setxattr,
-        SYS_lsetxattr,
-        SYS_fsetxattr,
-        SYS_removexattr,
-        SYS_lremovexattr,
-        SYS_fremovexattr,
-        SYS_utimensat,
-        SYS_kill,
-        SYS_tkill,
-        SYS_tgkill,
-        SYS_rt_sigqueueinfo,
-        SYS_rt_tgsigqueueinfo,
-        SYS_shmget,
-        SYS_shmat,
-        SYS_shmctl,
-        SYS_semget,
-        SYS_semctl,
-        SYS_msgget,
-        SYS_msgsnd,
-        SYS_msgrcv,
-        SYS_msgctl,
-        SYS_prctl,
-        SYS_setpriority,
-        SYS_sched_setaffinity,
-        SYS_sched_setscheduler,
-        SYS_sched_setparam})
-    deny(call);
-#ifdef SYS_fsopen
-  deny(SYS_fsopen);
-  deny(SYS_fsmount);
-  deny(SYS_move_mount);
-  deny(SYS_open_tree);
-#endif
-#ifdef SYS_mount_setattr
-  deny(SYS_mount_setattr);
-#endif
-#ifdef SYS_pidfd_open
-  deny(SYS_pidfd_open);
-  deny(SYS_pidfd_send_signal);
-#endif
-#ifdef SYS_pidfd_getfd
-  deny(SYS_pidfd_getfd);
-#endif
-#ifdef SYS_chmod
-  deny(SYS_chmod);
-#endif
-#ifdef SYS_chown
-  deny(SYS_chown);
-#endif
-#ifdef SYS_lchown
-  deny(SYS_lchown);
-#endif
-#ifdef SYS_utime
-  deny(SYS_utime);
-#endif
-#ifdef SYS_utimes
-  deny(SYS_utimes);
-#endif
-#ifdef SYS_futimesat
-  deny(SYS_futimesat);
-#endif
-#ifdef SYS_fchmodat2
-  deny(SYS_fchmodat2);
-#endif
-#ifdef SYS_fork
-  deny(SYS_fork);
-#endif
-#ifdef SYS_vfork
-  deny(SYS_vfork);
-#endif
-#ifdef SYS_io_uring_setup
-  deny(SYS_io_uring_setup);
-#endif
-#ifdef SYS_clone3
-  deny(SYS_clone3, ENOSYS);  // Let libc use the inspectable legacy clone ABI.
-#endif
-  // glibc uses prlimit64 for this process's resource limits. The same-UID
-  // parent must never be addressable through that API, even for a query.
-  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_prlimit64, 0, 5));
-  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, args[0]));
-  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, 0, 1, 0));
-  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, uint32_t(getpid()), 0, 1));
-  stmt(BPF_RET | BPF_K, SECCOMP_RET_ALLOW);
-  stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | EPERM);
-  // Software cores may create threads, but never another process.
-  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, SYS_clone, 0, 3));
-  stmt(BPF_LD | BPF_W | BPF_ABS, offsetof(seccomp_data, args[0]));
-  filter.push_back(BPF_JUMP(BPF_JMP | BPF_JSET | BPF_K, 0x10000 /* CLONE_THREAD */, 1, 0));
-  stmt(BPF_RET | BPF_K, SECCOMP_RET_ERRNO | EPERM);
-  stmt(BPF_RET | BPF_K, SECCOMP_RET_ALLOW);
-  sock_fprog program{static_cast<unsigned short>(filter.size()), filter.data()};
-  if (syscall(SYS_seccomp, SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &program))
-    throw std::runtime_error("Could not enter emulator syscall sandbox");
+  RestrictLinuxSyscalls();
   rlimit memory{768 * 1024 * 1024, 768 * 1024 * 1024};
   rlimit dumps{0, 0};
   if (setrlimit(RLIMIT_AS, &memory) || setrlimit(RLIMIT_CORE, &dumps))

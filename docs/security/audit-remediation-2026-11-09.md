@@ -31,6 +31,7 @@ Audit baseline: `da2909290f6a2ad8dcb3378be9395c97bd0914a2`. This ledger distingu
 | PLY-23 | Guard added; translation work remains | Freeze the reviewed fallback ceiling at 1,242 keys / 44,712 locale entries. No machine-generated strings are represented as reviewed translations. |
 | PLY-24 | Blocked on authentic release trust material | Keep remote catalog updates fail-closed. Do not invent production signing keys; pin only the actual owner-reviewed immutable active MilkRust root. The pinned revision `16490403726ba0240249b41903855583f4f9292d` was checked: `content/catalog-trust.json` still has `keys: {}` and `status: not-provisioned`. Provisioning authentic release custody is external to this app fix. |
 | PLY-25 | Implemented; Python verified | Absolute deadlines for headers and small JSON request bodies, bounded worker slots, and forwarded-client headers accepted only from loopback reverse proxy. Drip-fed headers/bodies cannot renew the deadline. |
+| PLY-26 | Implemented; Linux syscall regressions verified | Final containment review reproduced same-user shared IPC access and `fchmodat2` file-mode changes through the old filter when compiled with older headers. Block semaphore operations, POSIX queues, extended-attribute reads and additional cross-process controls. Reject syscalls beyond the reviewed legacy ABI with `ENOSYS` so new kernel APIs cannot silently bypass the policy; libc retains its older thread-creation fallback. The regression fails against the previous filter and passes with the fix, verifying untouched parent-owned IPC and file fixtures. Full Landlock qualification remains a separate hosted check. |
 
 ## Qualification backlog
 
@@ -55,10 +56,45 @@ These acceptance items require the specified devices, test accounts, provider ap
 - **Q17 — LG and Samsung TV qualification**: open. Validate actual supported model/firmware combinations, native package install/signing, remote input, visible frames, HDR/audio passthrough and subtitle paths. LG embedded PGS/no-burn negotiations and older/broader model support remain constrained; Samsung physical-device acceptance is explicitly unqualified in the guide. Native packages do not constitute a full browser client or store approval.
 - **Q18 — Accessibility and language quality**: open. Complete native-speaker review and device checks for large text, RTL, focus, remote/gamepad navigation, screen readers and reduced motion across new flows. Structural translation and widget checks do not establish usability on all supported targets.
 - **Q19 — Deployment and supply-chain evidence**: open. Inspect actual TLS/proxy settings, trusted forwarding headers, secret management, logs/retention, quotas, backup/restore and production resource limits. Separately inventory built binaries, vendored/native advisories and historical secret exposure. Current-tree pattern checks, Go advisory checks and release-script review do not establish these external facts.
-- **Q20 — Reconcile implementation and qualification records**: documentation reconciled; platform evidence remains open. The capability manifest now distinguishes implemented desktop video detachment from non-video detached surfaces and crash playback restart. The coverage report records 5,169 messages, 1,242 fallback keys and 44,712 fallback entries. Older F01–F17 entries remain historical; no device qualification is inferred from these edits.
+- **Q20 — Reconcile implementation and qualification records**: documentation reconciled; platform evidence remains open. The capability manifest now distinguishes implemented desktop video detachment from non-video detached surfaces and crash playback restart. The localization checker at integrated main `8c8728b6a684968264f9ad51ea5afd276edaa16b` records 5,212 messages across 37 locales, with the unchanged ceiling of 1,242 fallback keys and 44,712 fallback entries. Older F01–F17 entries remain historical; no device qualification is inferred from these edits.
+
+## Latest integration and closure boundaries
+
+The Android isolated service, universal isolation-ABI requirement, unavailable
+host for unsupported platforms, worker/source packaging and Apple core-linkage
+corrections are integrated into `main`. The Android test workflow now creates its
+AVD in explicit runner-local directories and verifies emulator discovery before
+compiling. Startup has an absolute deadline, detects an exited emulator and
+preserves device logs and test APKs on failure. The workflow syntax correction is
+commit [`b8b4ebd9412c29a25cbd512e4f5b1fb79202b6cf`](https://github.com/snapetech-org/pleazyng/commit/b8b4ebd9412c29a25cbd512e4f5b1fb79202b6cf).
+
+- The integrated candidate `e0c08e674b1b25248be2ebc3f275e162d80c56a2` passed
+  [hosted Dart analysis, focused regressions, formatting and repository checks](https://github.com/snapetech-org/pleazyng/actions/runs/42701734184/job/129449274454).
+  Its Android job compiled all four test ABIs and passed lint, but failed to find
+  the emulator before instrumentation started; that failure motivated the AVD
+  workflow repair and is not counted as a runtime pass.
+- Main revision `74e8d63d2c0ee757456d45c8aeed43e0bb74c905` passed the
+  [Windows containment and production-build job](https://github.com/snapetech-org/pleazyng/actions/runs/42706066033/job/129463057202).
+  Main revision `8c4d90647bbe30e46d022297ec7f6964fe87da9f` passed the
+  [macOS containment and production-build job](https://github.com/snapetech-org/pleazyng/actions/runs/42706865641/job/129465848102).
+- The separate [repository integration record](../maintainers/pr-consolidation-2026-11-09.md)
+  reports a successful API-36 x86_64 emulator run on kspld0, Android lint and all
+  four test ABIs. It also records a complete main-revision `74e8d63d2` Android
+  debug app build with native exports, worker/core packaging, source receipts
+  and 16 KiB alignment verified. These results are distinct from the queued
+  hosted API-35 instrumentation run and from signed-release/device acceptance.
+
+Audit closure still requires reviewed translations (PLY-23), authentic MilkRust
+release trust material (PLY-24), and the environments and evidence listed in
+Q01–Q20. Native workers for iOS/tvOS/webOS/Tizen, non-video detached surfaces and
+crash playback restart remain explicit implementation scope; unavailable or
+unfinished features are not represented as shipped. Provider approvals,
+production deployment, physical-device acceptance and signing custody cannot be
+inferred from a source commit or a passing unit test.
 
 ## Executed validation
 
+- PLY-26 follow-up: the syscall regression fails against the pre-fix production filter and passes with the fix, including an actual `fchmodat2` attempt against a private test file and same-user semaphore/message-queue fixtures. The production native targets rebuilt successfully; three local CTest cases (syscall policy, read-only input descriptors and unavailable-host core rejection), seven malformed-IPC cases and 25 RomM packaging tests passed. The local kernel still cannot supply Landlock; this result does not replace the hosted full-containment lane.
 - Prior integrated main `06908c891ba25de05e14e8e2b99a3173aa2ce665`: [run 42664501317](https://github.com/snapetech-org/pleazyng/actions/runs/42664501317) passed every job, including full analysis, 9,897 Dart/widget tests (22 skipped), 789 focused regressions, 563 repository checker tests (9 skipped), canonical formatting and Go vulnerability scanning.
 - Continuation: local seven-case malformed-protocol tests and 18 RomM packaging tests and 26 Tizen packaging tests passed. The migration candidate at `e1a609b21bdbf9167e1314194e400f0baf2514a4` passed full analysis, 836 focused Dart/widget tests and 563 repository checker tests (9 skipped) in [run 42686737474](https://github.com/snapetech-org/pleazyng/actions/runs/42686737474); its exact canonical-format patch was applied. The desktop candidate at `993c0f3b50e1b589a069fe49849769fb1ae049df` passed Linux and macOS sandbox fault tests and production compilation in [run 42687188056](https://github.com/snapetech-org/pleazyng/actions/runs/42687188056). The production libretro fixture integration also passed on Linux in [run 42688005316](https://github.com/snapetech-org/pleazyng/actions/runs/42688005316), and on Windows and macOS in [run 42688938069](https://github.com/snapetech-org/pleazyng/actions/runs/42688938069). The final stage-retirement candidate passed all three desktop jobs, including production builds and fixture-core integration, in [run 42689691356](https://github.com/snapetech-org/pleazyng/actions/runs/42689691356). That desktop candidate retained the older TV backend; the subsequent universal ABI guard and unavailable-host change remove that unsafe fallback. Source packages include the worker, transport and license notices. The local container reports Landlock `ENOSYS`; it was not treated as full sandbox validation.
 

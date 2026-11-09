@@ -2719,6 +2719,8 @@ class _Translations$seerr$bn extends Translations$seerr$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'অনুরোধসমূহ';
+	@override String get statusNotRequested => 'অনুরোধ করা হয়নি';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'সংযোগ Seerr';
 	@override String get serverUrl => 'URL সার্ভার';
@@ -7959,6 +7961,8 @@ extension on TranslationsBn {
 			'trakt.scrobbleDescription' => 'খেলা, pause, এবং stop events পাঠান Trakt Playback সময়।',
 			'trakt.watchedSync' => 'সিন্ক দেখানো অবস্থা',
 			'trakt.watchedSyncDescription' => 'যখন আপনি Pleazyng এর অনুসন্ধানের মত পণ্যগুলি চিহ্নিত করেন, তখন তারা Trakt এর অনুসন্ধানের মতও চিহ্নিত হয়।',
+			'seerr.requests' => 'অনুরোধসমূহ',
+			'seerr.statusNotRequested' => 'অনুরোধ করা হয়নি',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'সংযোগ Seerr',
 			'seerr.serverUrl' => 'URL সার্ভার',
@@ -8400,10 +8404,10 @@ extension on TranslationsBn {
 			'universalMedia.noFavorites' => 'এখনো কোন প্রেমের পছন্দ সংরক্ষণ করা হয় না. পছন্দের এই प्रोফাইলে থাকুন।',
 			'universalMedia.removeFavorite' => 'প্রিয় স্ট্রিম মুছে ফেলুন',
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
-			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
 			'universalMedia.wifiTransferHelp' => 'সমর্থিত ফাইলগুলি এক ব্রাউজার থেকে একই বিশ্বাসযোগ্য নেটওয়ার্কে স্থানান্তর করুন।',
 			'universalMedia.wifiTransferIntro' => 'অন্য ডিভাইসের একটি ব্রাউজারে এই ঠিকানা খোঁজ করুন. ফাইলগুলি নির্বাচন করে এই ডিভিশনের ফাইল এবং বই লাইব্রিয়ামে যোগ করুন.',
@@ -8914,10 +8918,10 @@ extension on TranslationsBn {
 			'sourceSetup.metadataNoMatches' => 'অনলাইনে মিলে যায় এমন কোনো শিরোনাম পাওয়া যায়নি। অন্য শিরোনাম দিয়ে চেষ্টা করুন।',
 			'sourceSetup.metadataSearch' => 'অনলাইন মেটাডেটা খুঁজুন',
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
-			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
+			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
 			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',
 			'sourceSetup.videoDetailsLoading' => 'ভিডিওর তথ্য লোড হচ্ছে',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API কী প্রয়োজন',

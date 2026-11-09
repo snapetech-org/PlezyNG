@@ -2719,6 +2719,8 @@ class _Translations$seerr$hi extends Translations$seerr$en {
 	final TranslationsHi _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'अनुरोध';
+	@override String get statusNotRequested => 'अनुरोध नहीं किया गया';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'कनेक्ट करें Seerr';
 	@override String get serverUrl => 'सर्वर URL';
@@ -7959,6 +7961,8 @@ extension on TranslationsHi {
 			'trakt.scrobbleDescription' => 'प्लेबैक के दौरान प्लेबैक, ब्रेक, और स्टॉप घटनाओं को Trakt पर भेजें।',
 			'trakt.watchedSync' => 'सिंक्रनाइज़ेशन की स्थिति',
 			'trakt.watchedSyncDescription' => 'जब आप Pleazyng में देखे गए आइटम को चिह्नित करते हैं, तो वे Trakt में देखे गए आइटम को भी चिह्नित करते हैं।',
+			'seerr.requests' => 'अनुरोध',
+			'seerr.statusNotRequested' => 'अनुरोध नहीं किया गया',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'कनेक्ट करें Seerr',
 			'seerr.serverUrl' => 'सर्वर URL',
@@ -8400,10 +8404,10 @@ extension on TranslationsHi {
 			'universalMedia.noFavorites' => 'अभी तक कोई स्ट्रीम पसंदीदा नहीं बचाया गया है. इस प्रोफ़ाइल में रहें।',
 			'universalMedia.removeFavorite' => 'पसंदीदा स्ट्रीम को हटा दें',
 			'universalMedia.filesHelp' => 'ऑडियो, वीडियो, या आईएसओ फ़ाइलों का चयन करें एक अस्थायी कवच के लिए. फ़ाइलें और यूआरएल लाइब्रेरी इतिहास में जोड़ा नहीं जाता है.',
-			'universalMedia.chooseFiles' => 'फ़ाइल चुनें',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '1 चयनित फ़ाइल', other: '${count} चयनित फ़ाइलें', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'फ़ाइल चुनें',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '1 चयनित फ़ाइल', other: '${count} चयनित फ़ाइलें', ), 
 			'universalMedia.wifiTransfer' => 'फ़ाइलों को Wi-Fi के माध्यम से भेजें',
 			'universalMedia.wifiTransferHelp' => 'एक ब्राउज़र से समर्थित फ़ाइलों को उसी विश्वसनीय नेटवर्क पर स्थानांतरित करें।',
 			'universalMedia.wifiTransferIntro' => 'किसी अन्य डिवाइस पर एक ब्राउज़र में इस पते को खोलें. फ़ाइलों को जोड़ने के लिए फ़ाइलें और किताबें पुस्तकालय में चुनें.',
@@ -8914,10 +8918,10 @@ extension on TranslationsHi {
 			'sourceSetup.metadataNoMatches' => 'कोई मेल खाता ऑनलाइन शीर्षक नहीं मिला। कोई दूसरा शीर्षक आज़माएँ।',
 			'sourceSetup.metadataSearch' => 'ऑनलाइन मेटाडेटा खोजें',
 			'sourceSetup.metadataLoading' => 'फ़िल्म और टीवी कार्यक्रम की जानकारी ऑनलाइन खोजी जा रही है…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt से ऑनलाइन मेटाडेटा',
-			'sourceSetup.metadataNoAutomaticMatch' => 'अपने-आप कोई मेल खाता शीर्षक नहीं मिला। शीर्षक खोजकर सही परिणाम चुनें।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt से ऑनलाइन मेटाडेटा',
+			'sourceSetup.metadataNoAutomaticMatch' => 'अपने-आप कोई मेल खाता शीर्षक नहीं मिला। शीर्षक खोजकर सही परिणाम चुनें।',
 			'sourceSetup.metadataFailed' => 'ऑनलाइन मेटाडेटा लोड नहीं हो सका। प्लेबैक और स्थानीय जानकारी अब भी उपलब्ध हैं।',
 			'sourceSetup.videoDetailsLoading' => 'वीडियो की जानकारी लोड हो रही है',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API कुंजी ज़रूरी है',

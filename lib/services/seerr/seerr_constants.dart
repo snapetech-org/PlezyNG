@@ -42,6 +42,7 @@ abstract final class SeerrPermission {
   static const int requestAdvanced = 8192;
   static const int requestMovie = 262144;
   static const int requestTv = 524288;
+  static const int requestBook = 34359738368;
 }
 
 /// Seerr permission semantics: `ADMIN` implies everything, otherwise the

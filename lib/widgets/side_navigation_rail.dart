@@ -20,6 +20,7 @@ import '../media/media_library.dart';
 import '../mixins/mounted_set_state_mixin.dart';
 import '../navigation/navigation_tabs.dart';
 import '../providers/catalog_sources_provider.dart';
+import '../providers/seerr_account_provider.dart';
 import '../profiles/active_profile_provider.dart';
 import '../providers/hidden_libraries_provider.dart';
 import '../providers/libraries_provider.dart';
@@ -685,6 +686,8 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
         return _showDownloads ? _kDownloads : null;
       case NavigationTabId.settings:
         return _kSettings;
+      case NavigationTabId.requests:
+        return 'requests';
       case NavigationTabId.games:
         return 'games';
       case NavigationTabId.liveTv:
@@ -730,12 +733,14 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     required bool hasLiveTv,
     required bool hasNowPlaying,
     required bool hasExplore,
+    required bool hasRequests,
     required bool hasGames,
   }) {
     return {
       _kHome,
       if (hasNowPlaying) _kNowPlaying,
       _kLibraries,
+      if (hasRequests) 'requests',
       if (hasExplore) _kExplore,
       _kSearch,
       if (hasGames) 'games',
@@ -815,11 +820,13 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     required bool hasLiveTv,
     required bool hasNowPlaying,
     required bool hasExplore,
+    required bool hasRequests,
     required bool hasGames,
     required bool isCollapsed,
   }) {
     return [
       if (widget.isOfflineMode && widget.onReconnect != null) _kReconnect,
+      if (widget.isOfflineMode && hasRequests) 'requests',
       if (!widget.isOfflineMode) ...[
         _kHome,
         if (hasNowPlaying) _kNowPlaying,
@@ -835,6 +842,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
             if (_hiddenLibrariesExpanded) ..._focusKeysForLibraryRows(hiddenRows),
           ],
         ],
+        if (hasRequests) 'requests',
         if (hasLiveTv) 'liveTv',
         if (hasExplore) _kExplore,
         _kSearch,
@@ -944,6 +952,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
     final hasLiveTv = context.watch<MultiServerProvider>().hasLiveTv;
     // Nullable watch: rail tests (and any host without the profile session
     // scope) simply never show the Explore item.
+    final hasRequestsSource = context.watch<SeerrAccountProvider?>()?.isConnected ?? false;
     final hasExploreSource = context.watch<CatalogSourcesProvider?>()?.hasAnySource ?? false;
     // Nullable watch: rail tests (and any host without the profile session
     // scope) simply never show the Now Playing item. TV-only — it is the
@@ -984,6 +993,8 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
         final profileAllowsExplore =
             activeProfileId == null ||
             SettingsService.instance.read(SettingsService.showExploreTabForProfile(activeProfileId));
+        final hasRequests =
+            hasRequestsSource && SettingsService.instance.read(SettingsService.showExploreTab) && profileAllowsExplore;
         final hasExplore =
             hasExploreSource && SettingsService.instance.read(SettingsService.showExploreTab) && profileAllowsExplore;
         // Server grouping: only when multi-server AND the user-facing toggle is on.
@@ -1010,6 +1021,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
             hasLiveTv: hasLiveTv,
             hasNowPlaying: nowPlayingTrack != null,
             hasExplore: hasExplore,
+            hasRequests: hasRequests,
             hasGames: hasGames,
           ),
         );
@@ -1020,6 +1032,7 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
           hasLiveTv: hasLiveTv,
           hasNowPlaying: nowPlayingTrack != null,
           hasExplore: hasExplore,
+          hasRequests: hasRequests,
           hasGames: hasGames,
           isCollapsed: isCollapsed,
         );
@@ -1126,6 +1139,18 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
                                         isCollapsed: isCollapsed,
                                       ),
                                       const SizedBox(height: _itemGap),
+                                      if (hasRequests) ...[
+                                        _buildNavItem(
+                                          icon: Symbols.add_to_queue_rounded,
+                                          selectedIcon: Symbols.add_to_queue_rounded,
+                                          label: Translations.of(context).seerr.requests,
+                                          isSelected: widget.selectedTab == NavigationTabId.requests,
+                                          onTap: () => widget.onDestinationSelected(NavigationTabId.requests),
+                                          focusNode: _focusTracker.get('requests'),
+                                          isCollapsed: isCollapsed,
+                                        ),
+                                        const SizedBox(height: _itemGap),
+                                      ],
                                       if (context.watch<MultiServerProvider>().hasLiveTv) ...[
                                         _buildNavItem(
                                           icon: Symbols.live_tv_rounded,
@@ -1157,6 +1182,18 @@ class SideNavigationRailState extends State<SideNavigationRail> with MountedSetS
                                         isSelected: widget.selectedTab == NavigationTabId.search,
                                         onTap: () => widget.onDestinationSelected(NavigationTabId.search),
                                         focusNode: _focusTracker.get(_kSearch),
+                                        isCollapsed: isCollapsed,
+                                      ),
+                                      const SizedBox(height: _itemGap),
+                                    ],
+                                    if (widget.isOfflineMode && hasRequests) ...[
+                                      _buildNavItem(
+                                        icon: Symbols.add_to_queue_rounded,
+                                        selectedIcon: Symbols.add_to_queue_rounded,
+                                        label: Translations.of(context).seerr.requests,
+                                        isSelected: widget.selectedTab == NavigationTabId.requests,
+                                        onTap: () => widget.onDestinationSelected(NavigationTabId.requests),
+                                        focusNode: _focusTracker.get('requests'),
                                         isCollapsed: isCollapsed,
                                       ),
                                       const SizedBox(height: _itemGap),

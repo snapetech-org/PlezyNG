@@ -3258,6 +3258,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "請求",
+    "statusNotRequested": "未請求",
     "title": "Seerr",
     "connectTitle": "連線至 Seerr",
     "serverUrl": "伺服器 URL",

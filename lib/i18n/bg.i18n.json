@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Заявки",
+    "statusNotRequested": "Не е заявено",
     "title": "Seerr",
     "connectTitle": "Свързване със Seerr",
     "serverUrl": "URL на сървъра",

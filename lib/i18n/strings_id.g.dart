@@ -2700,6 +2700,8 @@ class _Translations$seerr$id extends Translations$seerr$en {
 	final TranslationsId _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Permintaan';
+	@override String get statusNotRequested => 'Belum diminta';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Menghubungkan Seerr';
 	@override String get serverUrl => 'URL server';
@@ -7934,6 +7936,8 @@ extension on TranslationsId {
 			'trakt.scrobbleDescription' => 'Hantar permainan, istirahat, dan menghentikan acara ke Trakt selama pemutaran.',
 			'trakt.watchedSync' => 'Sinkronisasi status',
 			'trakt.watchedSyncDescription' => 'Ketika Anda menandakan item seperti yang dilihat di Pleazyng, mereka juga ditandakan seperti yang dilihat di Trakt.',
+			'seerr.requests' => 'Permintaan',
+			'seerr.statusNotRequested' => 'Belum diminta',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Menghubungkan Seerr',
 			'seerr.serverUrl' => 'URL server',
@@ -8375,10 +8379,10 @@ extension on TranslationsId {
 			'universalMedia.noFavorites' => 'Belum disimpan streaming favorit sampai sekarang. favorit tetap di profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapus Stream Favorit',
 			'universalMedia.filesHelp' => 'Pilih file audio, video, atau ISO untuk catatan sementara.File dan URL tidak ditambahkan ke sejarah perpustakaan.',
-			'universalMedia.chooseFiles' => 'Pilih file',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} file terpilih', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Pilih file',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, other: '${count} file terpilih', ), 
 			'universalMedia.wifiTransfer' => 'Mengirim file melalui Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Memindahkan file yang didukung dari browser pada jaringan yang sama.',
 			'universalMedia.wifiTransferIntro' => 'Buka alamat ini dalam browser pada perangkat lain. pilih file untuk menambahkan mereka ke perpustakaan File dan buku perangkat ini.',
@@ -8889,10 +8893,10 @@ extension on TranslationsId {
 			'sourceSetup.metadataNoMatches' => 'Tidak ditemukan judul yang cocok secara daring. Coba judul lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata daring',
 			'sourceSetup.metadataLoading' => 'Mencari detail film dan acara TV secara daring…',
-			'sourceSetup.metadataFromTrakt' => 'Metadata daring dari Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Tidak ditemukan kecocokan judul otomatis. Cari judulnya untuk memilih kecocokan.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Metadata daring dari Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Tidak ditemukan kecocokan judul otomatis. Cari judulnya untuk memilih kecocokan.',
 			'sourceSetup.metadataFailed' => 'Metadata daring tidak dapat dimuat. Pemutaran dan detail lokal tetap tersedia.',
 			'sourceSetup.videoDetailsLoading' => 'Memuat detail video',
 			'sourceSetup.subtitleKeyRequired' => 'Kunci API OpenSubtitles diperlukan',

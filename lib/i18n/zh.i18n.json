@@ -3258,6 +3258,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "请求",
+    "statusNotRequested": "未请求",
     "title": "Seerr",
     "connectTitle": "连接 Seerr",
     "serverUrl": "服务器 URL",

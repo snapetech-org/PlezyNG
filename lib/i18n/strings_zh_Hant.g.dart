@@ -2716,6 +2716,8 @@ class _Translations$seerr$zh_Hant extends Translations$seerr$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => '請求';
+	@override String get statusNotRequested => '未請求';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => '連線至 Seerr';
 	@override String get serverUrl => '伺服器 URL';
@@ -7955,6 +7957,8 @@ extension on TranslationsZhHant {
 			'trakt.scrobbleDescription' => '在播放時向 Trakt 傳送播放、暫停和停止等狀態。',
 			'trakt.watchedSync' => '同步已觀看狀態',
 			'trakt.watchedSyncDescription' => '在 Pleazyng 中將項目標記為已觀看時，也會在 Trakt 上標記為已觀看。',
+			'seerr.requests' => '請求',
+			'seerr.statusNotRequested' => '未請求',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => '連線至 Seerr',
 			'seerr.serverUrl' => '伺服器 URL',
@@ -8396,10 +8400,10 @@ extension on TranslationsZhHant {
 			'universalMedia.noFavorites' => '尚未儲存流喜愛. 喜愛留在此個人資料中。',
 			'universalMedia.removeFavorite' => '刪除流喜愛',
 			'universalMedia.filesHelp' => '選擇音訊、影片或ISO檔案,以便進行臨時記錄. 檔案和URL不新增到圖書館歷史。',
-			'universalMedia.chooseFiles' => '選擇檔案',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 選擇的檔案', other: '${count} 已選擇的檔案', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => '選擇檔案',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 選擇的檔案', other: '${count} 已選擇的檔案', ), 
 			'universalMedia.wifiTransfer' => '透過 Wi-Fi 傳送檔案',
 			'universalMedia.wifiTransferHelp' => '從同一信任網路的瀏覽器傳輸支援的檔案。',
 			'universalMedia.wifiTransferIntro' => '在另一個裝置上的瀏覽器中開啟此地址. 選擇檔案以將其新增到該裝置的檔案和書籍圖書館。',
@@ -8910,10 +8914,10 @@ extension on TranslationsZhHant {
 			'sourceSetup.metadataNoMatches' => '找不到符合的線上標題。請嘗試其他標題。',
 			'sourceSetup.metadataSearch' => '搜尋線上中繼資料',
 			'sourceSetup.metadataLoading' => '正在查詢線上電影與影集資訊…',
-			'sourceSetup.metadataFromTrakt' => '來自 Trakt 的線上中繼資料',
-			'sourceSetup.metadataNoAutomaticMatch' => '找不到自動符合的標題。請搜尋標題並選擇符合的結果。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => '來自 Trakt 的線上中繼資料',
+			'sourceSetup.metadataNoAutomaticMatch' => '找不到自動符合的標題。請搜尋標題並選擇符合的結果。',
 			'sourceSetup.metadataFailed' => '無法載入線上中繼資料。仍可播放媒體及查看本機資訊。',
 			'sourceSetup.videoDetailsLoading' => '正在載入影片資訊',
 			'sourceSetup.subtitleKeyRequired' => '需要 OpenSubtitles API 金鑰',

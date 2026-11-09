@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "So‘rovlar",
+    "statusNotRequested": "So‘ralmagan",
     "title": "Seerr",
     "connectTitle": "Seerr ulash",
     "serverUrl": "Server URL-i",

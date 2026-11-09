@@ -3258,6 +3258,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "リクエスト",
+    "statusNotRequested": "未リクエスト",
     "title": "Seerr",
     "connectTitle": "Seerrに接続",
     "serverUrl": "サーバー URL",

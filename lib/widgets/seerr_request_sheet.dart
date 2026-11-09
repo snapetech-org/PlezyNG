@@ -44,12 +44,13 @@ Future<void> showSeerrRequestSheet(
   required MediaKind kind,
   required int tmdbId,
   required String title,
+  bool minimal = false,
 }) async {
   final close = await OverlaySheetController.showAdaptive<SeerrRequestSheetClose>(
     context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => SeerrRequestSheet(source: source, kind: kind, tmdbId: tmdbId, title: title),
+    builder: (_) => SeerrRequestSheet(source: source, kind: kind, tmdbId: tmdbId, title: title, minimal: minimal),
   );
   if (close == SeerrRequestSheetClose.permissionRevoked && context.mounted) {
     showErrorSnackBar(context, t.seerr.permissionRevoked);
@@ -65,6 +66,7 @@ class SeerrRequestSheet extends StatefulWidget {
   final MediaKind kind;
   final int tmdbId;
   final String title;
+  final bool minimal;
 
   const SeerrRequestSheet({
     super.key,
@@ -72,6 +74,7 @@ class SeerrRequestSheet extends StatefulWidget {
     required this.kind,
     required this.tmdbId,
     required this.title,
+    this.minimal = false,
   });
 
   @override
@@ -141,9 +144,10 @@ class _SeerrRequestSheetState extends State<SeerrRequestSheet> {
 
   int get _permissions => widget.source.client.session.permissions;
 
-  bool get _advancedAllowed => seerrHasPermission(_permissions, [SeerrPermission.requestAdvanced]);
+  bool get _advancedAllowed => !widget.minimal && seerrHasPermission(_permissions, [SeerrPermission.requestAdvanced]);
 
   bool get _can4k {
+    if (widget.minimal) return false;
     final settings = _settings;
     if (settings == null) return false;
     final enabled = _isMovie ? settings.movie4kEnabled : settings.series4kEnabled;

@@ -2723,6 +2723,8 @@ class _Translations$seerr$he extends Translations$seerr$en {
 	final TranslationsHe _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'בקשות';
+	@override String get statusNotRequested => 'לא התבקש';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'חיבור Seerr';
 	@override String get serverUrl => 'כתובת URL';
@@ -7967,6 +7969,8 @@ extension on TranslationsHe {
 			'trakt.scrobbleDescription' => 'שלח משחקים, הפסקות, ולעצור אירועים ל- Trakt במהלך הצפייה.',
 			'trakt.watchedSync' => 'סינכרון מצב צופה',
 			'trakt.watchedSyncDescription' => 'כאשר אתה מסמן פריטים כפי שנצפה ב- Pleazyng, הם מסומנים גם כפי שנצפה ב- Trakt.',
+			'seerr.requests' => 'בקשות',
+			'seerr.statusNotRequested' => 'לא התבקש',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'חיבור Seerr',
 			'seerr.serverUrl' => 'כתובת URL',
@@ -8408,10 +8412,10 @@ extension on TranslationsHe {
 			'universalMedia.noFavorites' => 'עדיין לא נשמר זרימת הפופולרים.Favorites להישאר בפרופיל זה.',
 			'universalMedia.removeFavorite' => 'להסיר זרם אהוב',
 			'universalMedia.filesHelp' => 'בחר קבצים אודיו, וידאו או ISO עבור קובץ זמני.קבצים וכתובות URL אינם מופיעים בהיסטוריה של הספרייה.',
-			'universalMedia.chooseFiles' => 'בחירת קבצים',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'בחירת קבצים',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: '1 קובץ שנבחר', two: '${count} קבצים שנבחרו', other: '${count} קבצים שנבחרו', ), 
 			'universalMedia.wifiTransfer' => 'שליחת קבצים דרך Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'העברת קבצים תומכים מתוך דפדפן באותו רשת מאובטחת.',
 			'universalMedia.wifiTransferIntro' => 'פתח את כתובת זו בדפדפן במכשיר אחר. בחר קבצים כדי להוסיף אותם לספריה של קבצי מכשיר זה וספרים.',
@@ -8922,10 +8926,10 @@ extension on TranslationsHe {
 			'sourceSetup.metadataNoMatches' => 'לא נמצאו שמות תואמים בחיפוש המקוון. כדאי לנסות שם אחר.',
 			'sourceSetup.metadataSearch' => 'חיפוש מטא־נתונים מקוונים',
 			'sourceSetup.metadataLoading' => 'מתבצע חיפוש מקוון של פרטי סרטים וסדרות…',
-			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'מטא־נתונים מקוונים מ־Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'לא נמצאה התאמה אוטומטית לשם. יש לחפש את השם כדי לבחור תוצאה תואמת.',
 			'sourceSetup.metadataFailed' => 'לא ניתן לטעון מטא־נתונים מקוונים. ההפעלה והפרטים המקומיים עדיין זמינים.',
 			'sourceSetup.videoDetailsLoading' => 'פרטי הווידאו נטענים',
 			'sourceSetup.subtitleKeyRequired' => 'נדרש מפתח API של OpenSubtitles',

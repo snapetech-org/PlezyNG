@@ -6,7 +6,7 @@ import '../i18n/strings.g.dart';
 import '../utils/platform_detector.dart';
 
 /// Navigation tab identifiers
-enum NavigationTabId { discover, explore, libraries, liveTv, search, downloads, settings, games }
+enum NavigationTabId { discover, explore, libraries, liveTv, search, downloads, settings, games, requests }
 
 /// Represents a navigation tab with its configuration
 class NavigationTab {
@@ -47,9 +47,11 @@ class NavigationTab {
     bool hasExplore = false,
     bool hasGames = false,
     bool hasFileSources = false,
+    bool hasRequests = false,
   }) {
     return allNavigationTabs.where((tab) {
       if (isOffline && tab.onlineOnly && !(hasFileSources && tab.id == NavigationTabId.search)) return false;
+      if (tab.id == NavigationTabId.requests && !hasRequests) return false;
       if (tab.id == NavigationTabId.games && !hasGames) return false;
       if (tab.id == NavigationTabId.liveTv && !hasLiveTv) return false;
       if (tab.id == NavigationTabId.explore && !hasExplore) return false;
@@ -69,6 +71,7 @@ class NavigationTab {
     bool hasExplore = false,
     bool hasGames = false,
     bool hasFileSources = false,
+    bool hasRequests = false,
     required NavigationTabId? preferredStartup,
   }) {
     final tabs = getVisibleTabs(
@@ -77,6 +80,7 @@ class NavigationTab {
       hasExplore: hasExplore,
       hasGames: hasGames,
       hasFileSources: hasFileSources,
+      hasRequests: hasRequests,
     );
     if (isOffline && tabs.any((t) => t.id == NavigationTabId.downloads)) {
       return NavigationTabId.downloads;
@@ -100,6 +104,7 @@ const startupSectionTabs = [
 ];
 
 // Label getters (must be top-level for const constructor)
+String _getRequestsLabel() => t.seerr.requests;
 String _getHomeLabel() => t.common.home;
 String _getExploreLabel() => t.navigation.explore;
 String _getLibrariesLabel() => t.navigation.libraries;
@@ -117,6 +122,12 @@ const allNavigationTabs = [
     onlineOnly: true,
     icon: Symbols.video_library_rounded,
     getLabel: _getLibrariesLabel,
+  ),
+  NavigationTab(
+    id: NavigationTabId.requests,
+    onlineOnly: false,
+    icon: Symbols.add_to_queue_rounded,
+    getLabel: _getRequestsLabel,
   ),
   NavigationTab(id: NavigationTabId.liveTv, onlineOnly: true, icon: Symbols.live_tv_rounded, getLabel: _getLiveTvLabel),
   NavigationTab(

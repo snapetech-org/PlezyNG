@@ -3304,6 +3304,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Запросы",
+    "statusNotRequested": "Не запрошено",
     "title": "Seerr",
     "connectTitle": "Подключить Seerr",
     "serverUrl": "URL сервера",

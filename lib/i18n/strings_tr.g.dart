@@ -2719,6 +2719,8 @@ class _Translations$seerr$tr extends Translations$seerr$en {
 	final TranslationsTr _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'İstekler';
+	@override String get statusNotRequested => 'İstenmedi';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Seerr Bağla';
 	@override String get serverUrl => 'Sunucu URL\'si';
@@ -7959,6 +7961,8 @@ extension on TranslationsTr {
 			'trakt.scrobbleDescription' => 'Oynatma sırasında Trakt\'a oynatma, duraklatma ve durdurma olayları gönderin.',
 			'trakt.watchedSync' => 'İzleme durumunu eşitle',
 			'trakt.watchedSyncDescription' => 'Pleazyng\'de ögeleri izlendi olarak işaretlediğinizde, Trakt üzerinde de izlendi olarak işaretlenir.',
+			'seerr.requests' => 'İstekler',
+			'seerr.statusNotRequested' => 'İstenmedi',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr Bağla',
 			'seerr.serverUrl' => 'Sunucu URL\'si',
@@ -8400,10 +8404,10 @@ extension on TranslationsTr {
 			'universalMedia.noFavorites' => 'Hiç kaydedilmemiş akış favori henüz. Favoriler bu profilde kalır.',
 			'universalMedia.removeFavorite' => 'En sevdiğiniz akışları kaldırın',
 			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
-			'universalMedia.chooseFiles' => 'Dosyaları seçin',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Dosyaları seçin',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi üzerinden dosyaları gönderin',
 			'universalMedia.wifiTransferHelp' => 'Desteklenen dosyaları aynı güvenilir ağda bir tarayıcıdan aktarın.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başka bir cihazda bir tarayıcıda açın. dosyaları bu cihazın Dosya ve kitap kütüphanesine eklemek için seçin.',
@@ -8914,10 +8918,10 @@ extension on TranslationsTr {
 			'sourceSetup.metadataNoMatches' => 'Çevrimiçi eşleşen başlık bulunamadı. Başka bir başlık deneyin.',
 			'sourceSetup.metadataSearch' => 'Çevrimiçi meta veri ara',
 			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',
 			'sourceSetup.metadataFailed' => 'Çevrimiçi meta veriler yüklenemedi. Oynatma ve yerel bilgiler hâlâ kullanılabilir.',
 			'sourceSetup.videoDetailsLoading' => 'Video bilgileri yükleniyor',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API anahtarı gerekli',

@@ -2719,6 +2719,8 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Kérések';
+	@override String get statusNotRequested => 'Nincs kérve';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Seerr csatlakoztatása';
 	@override String get serverUrl => 'Szerver URL-címe';
@@ -7959,6 +7961,8 @@ extension on TranslationsHu {
 			'trakt.scrobbleDescription' => 'Lejátszási, szüneteltetési és leállítási események küldése a Traktnak lejátszás közben.',
 			'trakt.watchedSync' => 'Megtekintési állapot szinkronizálása',
 			'trakt.watchedSyncDescription' => 'Ha egy elemet megtekintettként jelölsz meg a Plezyben, a Trakt is megtekintettként jelöli.',
+			'seerr.requests' => 'Kérések',
+			'seerr.statusNotRequested' => 'Nincs kérve',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr csatlakoztatása',
 			'seerr.serverUrl' => 'Szerver URL-címe',
@@ -8400,10 +8404,10 @@ extension on TranslationsHu {
 			'universalMedia.noFavorites' => 'Nincs mentett stream kedvencek még. Favoritek maradnak ebben a profilban.',
 			'universalMedia.removeFavorite' => 'Távolítsa el a kedvenc stream',
 			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
-			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
 			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Támogatott fájlok átadása egy böngészőről ugyanazon megbízható hálózaton.',
 			'universalMedia.wifiTransferIntro' => 'Nyissa meg ezt a címet egy böngészőben egy másik eszközön. Válassza ki a fájlokat, hogy hozzáadják őket a készülék Fájlok és könyvek könyvtárába.',
@@ -8914,10 +8918,10 @@ extension on TranslationsHu {
 			'sourceSetup.metadataNoMatches' => 'Nem található egyező cím online. Próbálj másik címet.',
 			'sourceSetup.metadataSearch' => 'Online metaadatok keresése',
 			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
-			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',
 			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',
 			'sourceSetup.videoDetailsLoading' => 'Videóadatok betöltése',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-kulcs szükséges',

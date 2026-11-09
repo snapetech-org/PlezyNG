@@ -2715,6 +2715,8 @@ class Translations$seerr$zh extends Translations$seerr$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => '请求';
+	@override String get statusNotRequested => '未请求';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => '连接 Seerr';
 	@override String get serverUrl => '服务器 URL';
@@ -7954,6 +7956,8 @@ extension on TranslationsZh {
 			'trakt.scrobbleDescription' => '播放期间将播放、暂停和停止事件发送到 Trakt。',
 			'trakt.watchedSync' => '同步已观看状态',
 			'trakt.watchedSyncDescription' => '在 Pleazyng 中将内容标记为已观看时，也会在 Trakt 上标记为已观看。',
+			'seerr.requests' => '请求',
+			'seerr.statusNotRequested' => '未请求',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => '连接 Seerr',
 			'seerr.serverUrl' => '服务器 URL',
@@ -8395,10 +8399,10 @@ extension on TranslationsZh {
 			'universalMedia.noFavorites' => '尚未存储流喜爱. 喜爱留在此个人资料中。',
 			'universalMedia.removeFavorite' => '删除流喜爱',
 			'universalMedia.filesHelp' => '选择音频、视频或ISO文件,以便进行临时记录. 文件和URL不添加到图书馆历史。',
-			'universalMedia.chooseFiles' => '选择文件',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => '选择文件',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ), 
 			'universalMedia.wifiTransfer' => '通过 Wi-Fi 发送文件',
 			'universalMedia.wifiTransferHelp' => '从同一信任网络的浏览器传输支持的文件。',
 			'universalMedia.wifiTransferIntro' => '在另一个设备上的浏览器中打开此地址. 选择文件以将其添加到该设备的文件和书籍图书馆。',
@@ -8909,10 +8913,10 @@ extension on TranslationsZh {
 			'sourceSetup.metadataNoMatches' => '未找到在线标题匹配结果。请尝试其他标题。',
 			'sourceSetup.metadataSearch' => '搜索在线元数据',
 			'sourceSetup.metadataLoading' => '正在查询在线电影和剧集信息…',
-			'sourceSetup.metadataFromTrakt' => '来自 Trakt 的在线元数据',
-			'sourceSetup.metadataNoAutomaticMatch' => '未找到自动匹配的标题。请搜索标题并选择匹配结果。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => '来自 Trakt 的在线元数据',
+			'sourceSetup.metadataNoAutomaticMatch' => '未找到自动匹配的标题。请搜索标题并选择匹配结果。',
 			'sourceSetup.metadataFailed' => '无法加载在线元数据。仍可播放媒体和查看本地信息。',
 			'sourceSetup.videoDetailsLoading' => '正在加载视频信息',
 			'sourceSetup.subtitleKeyRequired' => '需要 OpenSubtitles API 密钥',

@@ -2719,6 +2719,8 @@ class _Translations$seerr$bg extends Translations$seerr$en {
 	final TranslationsBg _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Заявки';
+	@override String get statusNotRequested => 'Не е заявено';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Свързване със Seerr';
 	@override String get serverUrl => 'URL на сървъра';
@@ -7959,6 +7961,8 @@ extension on TranslationsBg {
 			'trakt.scrobbleDescription' => 'Изпращай събития за пускане, пауза и спиране към Trakt по време на възпроизвеждане.',
 			'trakt.watchedSync' => 'Синхронизирай статус гледано',
 			'trakt.watchedSyncDescription' => 'Когато маркирате елементи като гледани в Pleazyng, те се маркират и в Trakt.',
+			'seerr.requests' => 'Заявки',
+			'seerr.statusNotRequested' => 'Не е заявено',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Свързване със Seerr',
 			'seerr.serverUrl' => 'URL на сървъра',
@@ -8400,10 +8404,10 @@ extension on TranslationsBg {
 			'universalMedia.noFavorites' => 'Все още не са спасени любимите потоци.Favorites остават в този профил.',
 			'universalMedia.removeFavorite' => 'Премахване на любимия поток',
 			'universalMedia.filesHelp' => 'Изберете аудио, видео или ISO файлове за временна лента.Файлове и URL адреси не се добавят към историята на библиотеката.',
-			'universalMedia.chooseFiles' => 'Изберете файлове',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Изберете файлове',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bg'))(n, one: '1 Избрани файлове', other: '${count} избрани файлове', ), 
 			'universalMedia.wifiTransfer' => 'Изпращане на файлове чрез Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Прехвърляне на поддържани файлове от браузър в една и съща надеждна мрежа.',
 			'universalMedia.wifiTransferIntro' => 'Отворете този адрес в браузър на друго устройство. Изберете файлове, за да ги добавите към библиотеката с файлове и книги на това устройство.',
@@ -8914,10 +8918,10 @@ extension on TranslationsBg {
 			'sourceSetup.metadataNoMatches' => 'Не са намерени съвпадащи заглавия онлайн. Опитайте друго заглавие.',
 			'sourceSetup.metadataSearch' => 'Търсене на онлайн метаданни',
 			'sourceSetup.metadataLoading' => 'Търсене на онлайн информация за филми и сериали…',
-			'sourceSetup.metadataFromTrakt' => 'Онлайн метаданни от Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Не е намерено автоматично съвпадение на заглавието. Потърсете заглавието, за да изберете съвпадение.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Онлайн метаданни от Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Не е намерено автоматично съвпадение на заглавието. Потърсете заглавието, за да изберете съвпадение.',
 			'sourceSetup.metadataFailed' => 'Онлайн метаданните не можаха да се заредят. Възпроизвеждането и локалната информация остават достъпни.',
 			'sourceSetup.videoDetailsLoading' => 'Зареждане на информация за видеото',
 			'sourceSetup.subtitleKeyRequired' => 'Необходим е API ключ за OpenSubtitles',

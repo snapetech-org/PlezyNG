@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "अनुरोध",
+    "statusNotRequested": "अनुरोध नहीं किया गया",
     "title": "Seerr",
     "connectTitle": "कनेक्ट करें Seerr",
     "serverUrl": "सर्वर URL",

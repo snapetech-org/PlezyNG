@@ -2715,6 +2715,8 @@ class _Translations$seerr$ko extends Translations$seerr$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => '요청';
+	@override String get statusNotRequested => '요청하지 않음';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Seerr에 연결';
 	@override String get serverUrl => '서버 URL';
@@ -7954,6 +7956,8 @@ extension on TranslationsKo {
 			'trakt.scrobbleDescription' => '재생 중 재생, 일시정지, 정지 이벤트를 Trakt로 전송합니다.',
 			'trakt.watchedSync' => '시청 상태 동기화',
 			'trakt.watchedSyncDescription' => 'Plezy에서 시청 완료로 표시한 항목이 Trakt에도 시청 완료로 표시됩니다.',
+			'seerr.requests' => '요청',
+			'seerr.statusNotRequested' => '요청하지 않음',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr에 연결',
 			'seerr.serverUrl' => '서버 URL',
@@ -8395,10 +8399,10 @@ extension on TranslationsKo {
 			'universalMedia.noFavorites' => '아직 좋아하는 스트림을 저장하지 않았습니다.Favorites 이 프로필에 남아 있습니다.',
 			'universalMedia.removeFavorite' => '좋아하는 스트림을 제거',
 			'universalMedia.filesHelp' => '오디오, 비디오 또는 ISO 파일을 일시적인 쿼드를 선택합니다.파일 및 URL은 도서관 역사에 추가되지 않습니다.',
-			'universalMedia.chooseFiles' => '파일 선택',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => '파일 선택',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '1 선택된 파일', other: '${count} 선택된 파일', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi를 통해 파일을 보내기',
 			'universalMedia.wifiTransferHelp' => '동일한 신뢰할 수 있는 네트워크에서 브라우저에서 지원된 파일을 전송합니다.',
 			'universalMedia.wifiTransferIntro' => '다른 장치에서 브라우저에서 이 주소를 열어 파일을 선택하여 이 장치의 파일 및 책 라이브러리에 추가합니다.',
@@ -8909,10 +8913,10 @@ extension on TranslationsKo {
 			'sourceSetup.metadataNoMatches' => '일치하는 온라인 제목을 찾지 못했습니다. 다른 제목으로 검색하세요.',
 			'sourceSetup.metadataSearch' => '온라인 메타데이터 검색',
 			'sourceSetup.metadataLoading' => '온라인 영화 및 TV 프로그램 정보 조회 중…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
-			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt의 온라인 메타데이터',
+			'sourceSetup.metadataNoAutomaticMatch' => '자동으로 일치하는 제목을 찾지 못했습니다. 제목을 검색하여 일치하는 결과를 선택하세요.',
 			'sourceSetup.metadataFailed' => '온라인 메타데이터를 불러오지 못했습니다. 재생과 로컬 정보는 계속 사용할 수 있습니다.',
 			'sourceSetup.videoDetailsLoading' => '동영상 정보 불러오는 중',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API 키 필요',

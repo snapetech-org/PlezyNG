@@ -60,6 +60,20 @@ void main() {
   });
 
   group('NavigationTab.getVisibleTabs', () {
+    test('Requests requires its own account but not a media-server connection', () {
+      expect(
+        NavigationTab.getVisibleTabs(isOffline: false).map((t) => t.id),
+        isNot(contains(NavigationTabId.requests)),
+      );
+      expect(
+        NavigationTab.getVisibleTabs(isOffline: false, hasRequests: true).map((t) => t.id),
+        contains(NavigationTabId.requests),
+      );
+      expect(
+        NavigationTab.getVisibleTabs(isOffline: true, hasRequests: true).map((t) => t.id),
+        contains(NavigationTabId.requests),
+      );
+    });
     test('Search remains reachable offline when Files has configured sources', () {
       expect(
         NavigationTab.getVisibleTabs(isOffline: true).map((tab) => tab.id),

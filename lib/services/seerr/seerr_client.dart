@@ -10,13 +10,14 @@ import '../../models/seerr/seerr_media.dart';
 import '../../models/seerr/seerr_page.dart';
 import '../../models/seerr/seerr_public_settings.dart';
 import '../../models/seerr/seerr_request.dart';
+import '../../models/seerr/seerr_request_item.dart';
+import 'seerr_constants.dart';
 import '../../models/seerr/seerr_service.dart';
 import '../../models/seerr/seerr_session.dart';
 import '../../models/seerr/seerr_user.dart';
 import '../../utils/app_logger.dart';
 import '../trackers/future_coalescer.dart';
 import 'seerr_auth_service.dart';
-import 'seerr_constants.dart';
 import 'seerr_exceptions.dart';
 import 'seerr_http_client.dart';
 
@@ -34,6 +35,7 @@ typedef SeerrPlexTokenSupplier = Future<String?> Function();
 class SeerrClient {
   final FutureCoalescer<void> _reauth = FutureCoalescer();
   bool _disposed = false;
+  final _requestTitleCache = <String, Map<String, dynamic>>{};
   int _cookieGeneration = 0;
   int _authorityRead = 0;
 
@@ -64,6 +66,7 @@ class SeerrClient {
 
   void dispose() {
     _disposed = true;
+    _requestTitleCache.clear();
     _http.dispose();
   }
 
@@ -208,6 +211,125 @@ class SeerrClient {
   Future<SeerrRequest> createRequest(SeerrRequestPayload payload) async {
     final data = await _request('POST', '/request', body: payload.toJson());
     return SeerrRequest.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// User-only request overview and discovery. Server authorization remains authoritative.
+  Future<SeerrRequestBrowsePage> browseRequests(
+    SeerrRequestCategory category, {
+    bool discover = false,
+    String query = '',
+    int page = 1,
+  }) async {
+    if (page < 1 || page > 500) throw RangeError.range(page, 1, 500, 'page');
+    if (query.length > 200) throw const FormatException('Request search is too long');
+    final searching = query.trim().isNotEmpty;
+    final path = discover || searching
+        ? searching
+              ? '/search'
+              : category.isBook
+              ? '/discover/books'
+              : category == SeerrRequestCategory.movies
+              ? '/discover/movies'
+              : '/discover/tv'
+        : category.isBook
+        ? '/request/status'
+        : '/request';
+    final data = await _request(
+      'GET',
+      path,
+      query: {
+        if (discover || searching) 'page': page,
+        if (searching) ...{'query': query.trim(), 'type': category.mediaType, 'language': _language},
+        if (category.isBook && (discover || searching)) 'format': category.format,
+        if (!discover && !searching) ...{
+          'take': 20,
+          'skip': (page - 1) * 20,
+          'requestedBy': session.userId,
+          'mediaType': category.mediaType,
+          if (category.isBook) 'bookFormat': category.format,
+        },
+      },
+    );
+    final body = data as Map<String, dynamic>;
+    final results = (body['results'] as List? ?? const []).whereType<Map<String, dynamic>>().take(
+      discover || searching ? 50 : 20,
+    );
+    final items = <SeerrRequestItem>[];
+    for (final result in results) {
+      if (discover || searching) {
+        final type = result['mediaType'] ?? category.mediaType;
+        if (type == category.mediaType) items.add(SeerrRequestItem.fromJson(result, category));
+      } else {
+        final request = (category.isBook ? result['request'] : result) as Map<String, dynamic>;
+        if (request['type'] != category.mediaType) continue;
+        // Defense in depth even if an older server ignores requestedBy.
+        if ((request['requestedBy'] as Map?)?['id'] != session.userId) continue;
+        final media = request['media'] as Map<String, dynamic>? ?? const {};
+        Object? id = media['tmdbId'];
+        if (category.isBook) {
+          final identifiers = (media['identifiers'] as List? ?? const []).whereType<Map>();
+          id = identifiers
+              .where((v) => v['provider'] == 'openlibrary' || v['provider'] == 'bookshelf')
+              .firstOrNull?['value'];
+        }
+        if (id == null) continue;
+        // Cache title metadata in this account client; status always comes from
+        // the fresh request response. Refresh must not refetch every book from
+        // its rate-limited metadata route. A missing title must not hide history.
+        final path = '/${category.mediaType}/${Uri.encodeComponent('$id')}';
+        var details = _requestTitleCache[path];
+        if (details == null) {
+          try {
+            details = await _request('GET', path, query: {'language': _language}) as Map<String, dynamic>;
+            _rememberRequestTitle(path, details);
+          } catch (error) {
+            _ensureActive();
+            appLogger.w('Request title metadata unavailable', error: error);
+            details = {'id': id};
+          }
+        }
+        _ensureActive();
+        items.add(
+          SeerrRequestItem.fromJson(
+            {...details, 'id': id, 'mediaInfo': media},
+            category,
+            requestStatus: request['status'] as int?,
+            is4k: request['is4k'] == true,
+          ),
+        );
+      }
+    }
+    final info = body['pageInfo'] as Map?;
+    final totalPages = (body['totalPages'] ?? info?['pages']) as int?;
+    return SeerrRequestBrowsePage(items, hasMore: totalPages != null ? page < totalPages : results.length == 20);
+  }
+
+  void _rememberRequestTitle(String path, Map<String, dynamic> details) {
+    _requestTitleCache.remove(path);
+    _requestTitleCache[path] = details;
+    if (_requestTitleCache.length > 128) _requestTitleCache.remove(_requestTitleCache.keys.first);
+  }
+
+  Future<SeerrRequestItem> requestDetails(SeerrRequestItem item) async {
+    final data = await _request(
+      'GET',
+      '/${item.category.mediaType}/${Uri.encodeComponent('${item.id}')}',
+      query: {'language': _language},
+    );
+    _rememberRequestTitle(
+      '/${item.category.mediaType}/${Uri.encodeComponent('${item.id}')}',
+      data as Map<String, dynamic>,
+    );
+    return SeerrRequestItem.fromJson(data, item.category, requestStatus: item.requestStatus, is4k: item.is4k);
+  }
+
+  Future<void> requestBook(SeerrRequestItem item) async {
+    if (!item.category.isBook) throw ArgumentError('Only book requests belong here');
+    if (!seerrHasPermission(session.permissions, [SeerrPermission.request, SeerrPermission.requestBook])) {
+      throw const SeerrAuthException('Book request permission denied');
+    }
+    // No userId, service, destination or approval override: apply server defaults.
+    await _request('POST', '/request', body: {'mediaType': 'book', 'mediaId': item.id, 'format': item.category.format});
   }
 
   // ---------- Sonarr / Radarr options (request sheet advanced pickers) ----------

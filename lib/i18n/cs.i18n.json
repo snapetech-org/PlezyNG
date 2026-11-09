@@ -3298,6 +3298,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Požadavky",
+    "statusNotRequested": "Nevyžádáno",
     "title": "Seerr",
     "connectTitle": "Připojte se Seerr",
     "serverUrl": "server URL",

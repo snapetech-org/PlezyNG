@@ -2719,6 +2719,8 @@ class _Translations$seerr$az extends Translations$seerr$en {
 	final TranslationsAz _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Sorğular';
+	@override String get statusNotRequested => 'Sorğu göndərilməyib';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Seerr qoş';
 	@override String get serverUrl => 'Server URL-i';
@@ -7959,6 +7961,8 @@ extension on TranslationsAz {
 			'trakt.scrobbleDescription' => 'Oynatma zamanı Trakt-a məlumat göndər.',
 			'trakt.watchedSync' => 'Baxış statusunu eyniləşdir',
 			'trakt.watchedSyncDescription' => 'Pleazyng-də baxıldı işarələdikdə Trakt-da da işarələnsin.',
+			'seerr.requests' => 'Sorğular',
+			'seerr.statusNotRequested' => 'Sorğu göndərilməyib',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr qoş',
 			'seerr.serverUrl' => 'Server URL-i',
@@ -8400,10 +8404,10 @@ extension on TranslationsAz {
 			'universalMedia.noFavorites' => 'Movqe.Az xəbər verir ki, Hollandiyada futbolçular bu profildə qalır.',
 			'universalMedia.removeFavorite' => 'Movqe favoritləri',
 			'universalMedia.filesHelp' => 'Video, audio və ISO filləri seçin. Fillər və URL-lər kütüphane tarihinə daxil olmaz.',
-			'universalMedia.chooseFiles' => 'Fillər seçin',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '1 seçilmiş fil', other: '${count} seçilmiş dosyalar', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Fillər seçin',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '1 seçilmiş fil', other: '${count} seçilmiş dosyalar', ), 
 			'universalMedia.wifiTransfer' => 'Fillər Wi-Fi yoluyla göndərilir',
 			'universalMedia.wifiTransferHelp' => 'Desteklə olan dosyaları bir browserdan aynı güvenilir ağda göndərir.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başqa cihazda bir browserda açın.Bu cihazın Fillər və kitab kütüphanasına ekləmək üçün dosyaları seçin.',
@@ -8914,10 +8918,10 @@ extension on TranslationsAz {
 			'sourceSetup.metadataNoMatches' => 'Onlayn uyğun ad tapılmadı. Başqa ad sınayın.',
 			'sourceSetup.metadataSearch' => 'Onlayn metadata axtar',
 			'sourceSetup.metadataLoading' => 'Onlayn film və serial məlumatları axtarılır…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt-dan onlayn metadata',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Avtomatik ad uyğunluğu tapılmadı. Uyğun nəticəni seçmək üçün adı axtarın.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt-dan onlayn metadata',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Avtomatik ad uyğunluğu tapılmadı. Uyğun nəticəni seçmək üçün adı axtarın.',
 			'sourceSetup.metadataFailed' => 'Onlayn metadata yüklənmədi. Oynatma və yerli məlumatlar hələ də əlçatandır.',
 			'sourceSetup.videoDetailsLoading' => 'Video məlumatları yüklənir',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API açarı tələb olunur',

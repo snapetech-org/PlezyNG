@@ -2719,6 +2719,8 @@ class _Translations$seerr$kk extends Translations$seerr$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Сұраулар';
+	@override String get statusNotRequested => 'Сұралмаған';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Seerr қосу';
 	@override String get serverUrl => 'Сервер URL-і';
@@ -7959,6 +7961,8 @@ extension on TranslationsKk {
 			'trakt.scrobbleDescription' => 'Ойнату кезінде Trakt-қа деректер жіберу.',
 			'trakt.watchedSync' => 'Көру мәртебесін синхрондау',
 			'trakt.watchedSyncDescription' => 'Pleazyng-де белгіленгенде Trakt-та да белгіленеді.',
+			'seerr.requests' => 'Сұраулар',
+			'seerr.statusNotRequested' => 'Сұралмаған',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr қосу',
 			'seerr.serverUrl' => 'Сервер URL-і',
@@ -8400,10 +8404,10 @@ extension on TranslationsKk {
 			'universalMedia.noFavorites' => 'Қазіргі таңда бүкіл әлемде өте көп айтылады.Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Өткен қабырғасы',
 			'universalMedia.filesHelp' => 'Аудио, видео, немесе ISO файлы бар. Файлы және URL-дер библиографияның аяқталуы мүмкін емес.',
-			'universalMedia.chooseFiles' => 'Серіктің файл',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Серіктің файл',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
 			'universalMedia.wifiTransfer' => 'Wi-Fi қосылу үшін дағдарысты',
 			'universalMedia.wifiTransferHelp' => 'Біздің веб-сайты мен электрондық пошталардан басқа да сіздің сайын өздерінің бір-бірімен танымал.',
 			'universalMedia.wifiTransferIntro' => 'Осылайша «Барселона» АҚ-ның «Аль-Каида» бағдарламасын көшіруге, «Файлы» және «Книги» библиотекасы бар.',
@@ -8914,10 +8918,10 @@ extension on TranslationsKk {
 			'sourceSetup.metadataNoMatches' => 'Онлайн сәйкес атаулар табылмады. Басқа атауды байқап көріңіз.',
 			'sourceSetup.metadataSearch' => 'Онлайн метадеректерді іздеу',
 			'sourceSetup.metadataLoading' => 'Онлайн фильмдер мен сериалдар туралы мәліметтер ізделуде…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt қызметінен онлайн метадеректер',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Атауға автоматты сәйкестік табылмады. Сәйкес нәтижені таңдау үшін атауды іздеңіз.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt қызметінен онлайн метадеректер',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Атауға автоматты сәйкестік табылмады. Сәйкес нәтижені таңдау үшін атауды іздеңіз.',
 			'sourceSetup.metadataFailed' => 'Онлайн метадеректер жүктелмеді. Ойнату мен жергілікті мәліметтер әлі де қолжетімді.',
 			'sourceSetup.videoDetailsLoading' => 'Бейне мәліметтері жүктелуде',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API кілті қажет',

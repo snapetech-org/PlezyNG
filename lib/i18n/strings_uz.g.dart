@@ -2719,6 +2719,8 @@ class _Translations$seerr$uz extends Translations$seerr$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'So‘rovlar';
+	@override String get statusNotRequested => 'So‘ralmagan';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Seerr ulash';
 	@override String get serverUrl => 'Server URL-i';
@@ -7959,6 +7961,8 @@ extension on TranslationsUz {
 			'trakt.scrobbleDescription' => 'Ijro paytida Trakt-ga maʼlumot yuborish.',
 			'trakt.watchedSync' => 'Koʻrish holatini sinxronlash',
 			'trakt.watchedSyncDescription' => 'Pleazyng-da belgilanganda Trakt-da ham belgilanadi.',
+			'seerr.requests' => 'So‘rovlar',
+			'seerr.statusNotRequested' => 'So‘ralmagan',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerr ulash',
 			'seerr.serverUrl' => 'Server URL-i',
@@ -8400,10 +8404,10 @@ extension on TranslationsUz {
 			'universalMedia.noFavorites' => 'U\'yadi bu profili yo‘zilgan.Favoritlar bu profilda qalib.',
 			'universalMedia.removeFavorite' => 'Riyadh preferni qaytadi.',
 			'universalMedia.filesHelp' => 'Audio, video, o ISO fillar bir temporary quue. Fillar və URL\'ler library istoriyaya qo‘zilmaydi.',
-			'universalMedia.chooseFiles' => 'Filmi seçin',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Filmi seçin',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '1 seçkin fildi', other: '${count} seçkin fillar', ), 
 			'universalMedia.wifiTransfer' => 'Filmi Wi-Fi-dan qaytadi',
 			'universalMedia.wifiTransferHelp' => 'Transfer supported files from a browser on the same trusted network.',
 			'universalMedia.wifiTransferIntro' => 'Bu adresi başka bir cihazda bir browser\'da açın. Fillar seçin bu cihazın Fillar və kitaplar kütüphanaya eklemek.',
@@ -8914,10 +8918,10 @@ extension on TranslationsUz {
 			'sourceSetup.metadataNoMatches' => 'Onlayn mos nom topilmadi. Boshqa nomni sinab ko‘ring.',
 			'sourceSetup.metadataSearch' => 'Onlayn metama’lumotlarni qidirish',
 			'sourceSetup.metadataLoading' => 'Onlayn film va serial tafsilotlari qidirilmoqda…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt xizmatidan onlayn metama’lumotlar',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Nomga avtomatik moslik topilmadi. Mos natijani tanlash uchun nomni qidiring.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt xizmatidan onlayn metama’lumotlar',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Nomga avtomatik moslik topilmadi. Mos natijani tanlash uchun nomni qidiring.',
 			'sourceSetup.metadataFailed' => 'Onlayn metama’lumotlarni yuklab bo‘lmadi. Ijro va mahalliy tafsilotlar hali ham mavjud.',
 			'sourceSetup.videoDetailsLoading' => 'Video tafsilotlari yuklanmoqda',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API kaliti zarur',

@@ -3263,6 +3263,8 @@
     "historyExportTooLarge": "This history is too large to package here. Use Trakt's own data export to split very large histories."
   },
   "seerr": {
+    "requests": "Requests",
+    "statusNotRequested": "Not requested",
     "title": "Seerr",
     "connectTitle": "Connect Seerr",
     "serverUrl": "Server URL",

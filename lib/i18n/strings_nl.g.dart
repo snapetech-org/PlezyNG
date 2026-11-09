@@ -2719,6 +2719,8 @@ class _Translations$seerr$nl extends Translations$seerr$en {
 	final TranslationsNl _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Aanvragen';
+	@override String get statusNotRequested => 'Niet aangevraagd';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Verbinden met Seerr';
 	@override String get serverUrl => 'Server-URL';
@@ -7959,6 +7961,8 @@ extension on TranslationsNl {
 			'trakt.scrobbleDescription' => 'Stuur tijdens het afspelen gebeurtenissen voor afspelen, pauzeren en stoppen naar Trakt.',
 			'trakt.watchedSync' => 'Kijkstatus synchroniseren',
 			'trakt.watchedSyncDescription' => 'Wanneer je items in Pleazyng als bekeken markeert, worden ze op Trakt ook als bekeken gemarkeerd.',
+			'seerr.requests' => 'Aanvragen',
+			'seerr.statusNotRequested' => 'Niet aangevraagd',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Verbinden met Seerr',
 			'seerr.serverUrl' => 'Server-URL',
@@ -8400,10 +8404,10 @@ extension on TranslationsNl {
 			'universalMedia.noFavorites' => 'Er zijn nog geen favorieten opgeslagen.Favorites blijven in dit profiel.',
 			'universalMedia.removeFavorite' => 'Verwijder de favoriete stream',
 			'universalMedia.filesHelp' => 'Kies audio, video of ISO-bestanden voor een tijdelijke waaier. bestanden en URL\'s worden niet toegevoegd aan de bibliotheekgeschiedenis.',
-			'universalMedia.chooseFiles' => 'Kies bestanden',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Kies bestanden',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: '1 geselecteerde bestanden', other: '${count} geselecteerde bestanden', ), 
 			'universalMedia.wifiTransfer' => 'Bestanden verzenden via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Overdracht van ondersteunde bestanden uit een browser op hetzelfde vertrouwde netwerk.',
 			'universalMedia.wifiTransferIntro' => 'Open deze adres in een browser op een ander apparaat.Kies bestanden om ze toe te voegen aan de bibliotheek Bestanden en boeken van dit apparaat',
@@ -8914,10 +8918,10 @@ extension on TranslationsNl {
 			'sourceSetup.metadataNoMatches' => 'Geen overeenkomende titels online gevonden. Probeer een andere titel.',
 			'sourceSetup.metadataSearch' => 'Online metadata zoeken',
 			'sourceSetup.metadataLoading' => 'Online informatie over films en series zoeken…',
-			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Online metadata van Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Geen automatische titelovereenkomst gevonden. Zoek naar de titel om een overeenkomst te kiezen.',
 			'sourceSetup.metadataFailed' => 'Online metadata konden niet worden geladen. Afspelen en lokale informatie blijven beschikbaar.',
 			'sourceSetup.videoDetailsLoading' => 'Videogegevens laden',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-sleutel vereist',

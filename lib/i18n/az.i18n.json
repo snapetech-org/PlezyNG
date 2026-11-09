@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Sorğular",
+    "statusNotRequested": "Sorğu göndərilməyib",
     "title": "Seerr",
     "connectTitle": "Seerr qoş",
     "serverUrl": "Server URL-i",

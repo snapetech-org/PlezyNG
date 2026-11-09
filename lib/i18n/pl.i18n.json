@@ -3304,6 +3304,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Prośby",
+    "statusNotRequested": "Nie zamówiono",
     "title": "Seerr",
     "connectTitle": "Połącz Seerr",
     "serverUrl": "Adres URL serwera",

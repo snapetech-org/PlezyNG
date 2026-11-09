@@ -2700,6 +2700,8 @@ class _Translations$seerr$th extends Translations$seerr$en {
 	final TranslationsTh _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'คำขอ';
+	@override String get statusNotRequested => 'ยังไม่ได้ร้องขอ';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'เชื่อมต่อ Seerr';
 	@override String get serverUrl => 'URL ของเซิร์ฟเวอร์';
@@ -7934,6 +7936,8 @@ extension on TranslationsTh {
 			'trakt.scrobbleDescription' => 'ส่งการเล่นหยุดและหยุดกิจกรรมไปยัง Trakt ในระหว่างการเล่น',
 			'trakt.watchedSync' => 'สภาพที่สังเกต',
 			'trakt.watchedSyncDescription' => 'เมื่อคุณทําเครื่องหมายรายการตามที่ดูใน Pleazyng พวกเขาจะทําเครื่องหมายตามที่ดูใน Trakt',
+			'seerr.requests' => 'คำขอ',
+			'seerr.statusNotRequested' => 'ยังไม่ได้ร้องขอ',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'เชื่อมต่อ Seerr',
 			'seerr.serverUrl' => 'URL ของเซิร์ฟเวอร์',
@@ -8375,10 +8379,10 @@ extension on TranslationsTh {
 			'universalMedia.noFavorites' => 'ไม่ได้บันทึก Stream Favorites ยังคงอยู่ในโปรไฟล์นี้',
 			'universalMedia.removeFavorite' => 'ลบ Stream Favorite',
 			'universalMedia.filesHelp' => 'เลือกไฟล์เสียงวิดีโอหรือไฟล์ ISO สําหรับแบบชั่วคราว ไฟล์และ URLs ไม่มีการเพิ่มไปยังประวัติของห้องสมุด',
-			'universalMedia.chooseFiles' => 'เลือกไฟล์',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'เลือกไฟล์',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} ไฟล์ที่เลือก', ), 
 			'universalMedia.wifiTransfer' => 'ส่งไฟล์ผ่าน Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'การถ่ายโอนไฟล์ที่สนับสนุนจากเบราว์เซอร์บนเครือข่ายที่เชื่อถือได้เดียวกัน',
 			'universalMedia.wifiTransferIntro' => 'เปิดที่อยู่นี้ในเบราว์เซอร์บนอุปกรณ์อื่น เลือกไฟล์เพื่อเพิ่มไปยังห้องสมุดไฟล์และหนังสือของอุปกรณ์นี้',
@@ -8889,10 +8893,10 @@ extension on TranslationsTh {
 			'sourceSetup.metadataNoMatches' => 'ไม่พบชื่อเรื่องที่ตรงกันออนไลน์ ลองใช้ชื่อเรื่องอื่น',
 			'sourceSetup.metadataSearch' => 'ค้นหาข้อมูลกำกับออนไลน์',
 			'sourceSetup.metadataLoading' => 'กำลังค้นหาข้อมูลภาพยนตร์และรายการทีวีออนไลน์…',
-			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'ข้อมูลกำกับออนไลน์จาก Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'ไม่พบชื่อเรื่องที่ตรงกันโดยอัตโนมัติ ค้นหาชื่อเรื่องเพื่อเลือกผลลัพธ์ที่ตรงกัน',
 			'sourceSetup.metadataFailed' => 'โหลดข้อมูลกำกับออนไลน์ไม่ได้ แต่ยังเล่นวิดีโอและดูข้อมูลในเครื่องได้',
 			'sourceSetup.videoDetailsLoading' => 'กำลังโหลดรายละเอียดวิดีโอ',
 			'sourceSetup.subtitleKeyRequired' => 'ต้องมีคีย์ API ของ OpenSubtitles',

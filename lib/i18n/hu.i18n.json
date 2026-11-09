@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Kérések",
+    "statusNotRequested": "Nincs kérve",
     "title": "Seerr",
     "connectTitle": "Seerr csatlakoztatása",
     "serverUrl": "Szerver URL-címe",

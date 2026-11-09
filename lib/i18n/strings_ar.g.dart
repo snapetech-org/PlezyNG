@@ -2795,6 +2795,8 @@ class _Translations$seerr$ar extends Translations$seerr$en {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'الطلبات';
+	@override String get statusNotRequested => 'لم يُطلب';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'الاتصال Seerr';
 	@override String get serverUrl => 'URL الخادم';
@@ -8059,6 +8061,8 @@ extension on TranslationsAr {
 			'trakt.scrobbleDescription' => 'إرسال لعبة، وقف، وقف الأحداث إلى Trakt أثناء تشغيل.',
 			'trakt.watchedSync' => 'سينك مراقبة الوضع',
 			'trakt.watchedSyncDescription' => 'عند وضع علامة على العناصر كما تم مشاهدتها في Pleazyng، يتم وضع علامة على العناصر كما تم مشاهدتها في Trakt.',
+			'seerr.requests' => 'الطلبات',
+			'seerr.statusNotRequested' => 'لم يُطلب',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'الاتصال Seerr',
 			'seerr.serverUrl' => 'URL الخادم',
@@ -8500,10 +8504,10 @@ extension on TranslationsAr {
 			'universalMedia.noFavorites' => 'لم يتم تخزين المفضلة حتى الآن.المفضلة تبقى في هذا الملف الشخصي.',
 			'universalMedia.removeFavorite' => 'إزالة البث المفضل',
 			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
-			'universalMedia.chooseFiles' => 'اختيار الملفات',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'اختيار الملفات',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
 			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'نقل الملفات المدعومة من متصفح على نفس الشبكة الموثوقة.',
 			'universalMedia.wifiTransferIntro' => 'افتح هذا العنوان في متصفح على جهاز آخر.اختر الملفات لإضافتها إلى مكتبة الملفين والكتب لهذا الجهاز.',
@@ -9014,10 +9018,10 @@ extension on TranslationsAr {
 			'sourceSetup.metadataNoMatches' => 'لم يُعثر على عناوين مطابقة على الإنترنت. جرّب عنوانًا آخر.',
 			'sourceSetup.metadataSearch' => 'البحث عن بيانات وصفية على الإنترنت',
 			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
-			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
-			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
+			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',
 			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',
 			'sourceSetup.videoDetailsLoading' => 'جارٍ تحميل معلومات الفيديو',
 			'sourceSetup.subtitleKeyRequired' => 'يلزم مفتاح API لخدمة OpenSubtitles',

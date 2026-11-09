@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Förfrågningar",
+    "statusNotRequested": "Inte begärt",
     "title": "Seerr",
     "connectTitle": "Anslut Seerr",
     "serverUrl": "Server-URL",

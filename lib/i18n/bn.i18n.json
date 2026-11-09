@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "অনুরোধসমূহ",
+    "statusNotRequested": "অনুরোধ করা হয়নি",
     "title": "Seerr",
     "connectTitle": "সংযোগ Seerr",
     "serverUrl": "URL সার্ভার",

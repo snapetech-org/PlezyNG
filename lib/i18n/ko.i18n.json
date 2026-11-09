@@ -3258,6 +3258,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "요청",
+    "statusNotRequested": "요청하지 않음",
     "title": "Seerr",
     "connectTitle": "Seerr에 연결",
     "serverUrl": "서버 URL",

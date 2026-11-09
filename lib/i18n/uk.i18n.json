@@ -3298,6 +3298,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Запити",
+    "statusNotRequested": "Не запитано",
     "title": "Seerr",
     "connectTitle": "Зв'яжіть Seerr",
     "serverUrl": "Сервер URL",

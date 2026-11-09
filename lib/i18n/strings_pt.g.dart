@@ -2722,6 +2722,8 @@ class Translations$seerr$pt extends Translations$seerr$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Pedidos';
+	@override String get statusNotRequested => 'Não solicitado';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Conectar ao Seerr';
 	@override String get serverUrl => 'URL do servidor';
@@ -7966,6 +7968,8 @@ extension on TranslationsPt {
 			'trakt.scrobbleDescription' => 'Envia eventos de reprodução, pausa e parada ao Trakt durante a exibição.',
 			'trakt.watchedSync' => 'Sincronizar status de assistido',
 			'trakt.watchedSyncDescription' => 'Ao marcar itens como assistidos no Pleazyng, eles também serão marcados no Trakt.',
+			'seerr.requests' => 'Pedidos',
+			'seerr.statusNotRequested' => 'Não solicitado',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Conectar ao Seerr',
 			'seerr.serverUrl' => 'URL do servidor',
@@ -8407,10 +8411,10 @@ extension on TranslationsPt {
 			'universalMedia.noFavorites' => 'Não foram salvos favoritos ainda. favoritos permanecem neste perfil.',
 			'universalMedia.removeFavorite' => 'Remover streaming favorito',
 			'universalMedia.filesHelp' => 'Escolha arquivos de áudio, vídeo ou ISO para uma quebra temporária. arquivos e URLs não são adicionados ao histórico da biblioteca.',
-			'universalMedia.chooseFiles' => 'Escolha arquivos',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Escolha arquivos',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '1 arquivo selecionado', many: '${count} arquivos selecionados', other: '${count} arquivos selecionados', ), 
 			'universalMedia.wifiTransfer' => 'Enviar arquivos por Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Transferir arquivos suportados de um navegador na mesma rede confiável.',
 			'universalMedia.wifiTransferIntro' => 'Abra este endereço num navegador em outro dispositivo. selecione arquivos para adicioná-los à biblioteca de Arquivos e Livros deste dispositivo.',
@@ -8921,10 +8925,10 @@ extension on TranslationsPt {
 			'sourceSetup.metadataNoMatches' => 'Nenhum título correspondente encontrado online. Tente outro título.',
 			'sourceSetup.metadataSearch' => 'Buscar metadados online',
 			'sourceSetup.metadataLoading' => 'Buscando detalhes de filmes e séries online…',
-			'sourceSetup.metadataFromTrakt' => 'Metadados online do Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Nenhuma correspondência automática encontrada para o título. Pesquise o título para escolher uma correspondência.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Metadados online do Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Nenhuma correspondência automática encontrada para o título. Pesquise o título para escolher uma correspondência.',
 			'sourceSetup.metadataFailed' => 'Não foi possível carregar os metadados online. A reprodução e os detalhes locais continuam disponíveis.',
 			'sourceSetup.videoDetailsLoading' => 'Carregando detalhes do vídeo',
 			'sourceSetup.subtitleKeyRequired' => 'É necessária uma chave API do OpenSubtitles',

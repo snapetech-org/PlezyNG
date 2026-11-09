@@ -2753,6 +2753,8 @@ class _Translations$seerr$uk extends Translations$seerr$en {
 	final TranslationsUk _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Запити';
+	@override String get statusNotRequested => 'Не запитано';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Зв\'яжіть Seerr';
 	@override String get serverUrl => 'Сервер URL';
@@ -8003,6 +8005,8 @@ extension on TranslationsUk {
 			'trakt.scrobbleDescription' => 'Надіслати відгуки, перерви та зупинки подій на номер Trakt під час перегляду.',
 			'trakt.watchedSync' => 'Синхен спостерігається статус',
 			'trakt.watchedSyncDescription' => 'Коли ви відзначаєте елементи, як спостерігалося в Pleazyng, вони також відзначаються як спостерігалося в Trakt.',
+			'seerr.requests' => 'Запити',
+			'seerr.statusNotRequested' => 'Не запитано',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Зв\'яжіть Seerr',
 			'seerr.serverUrl' => 'Сервер URL',
@@ -8444,10 +8448,10 @@ extension on TranslationsUk {
 			'universalMedia.noFavorites' => 'Попередня статтяКто чего не любить?Фаворити залишаються в цьому профілі.',
 			'universalMedia.removeFavorite' => 'Зняти потік улюблений',
 			'universalMedia.filesHelp' => 'Виберіть аудіо, відео або файли ISO для тимчасового перегляду. Файли та URL-адреси не додаються до історії бібліотеки.',
-			'universalMedia.chooseFiles' => 'Вибір файлів',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Вибір файлів',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
 			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача підтримуваних файлів з браузера в тій же надійній мережі.',
 			'universalMedia.wifiTransferIntro' => 'Відкрийте цю адресу в браузері на іншому пристрої. Виберіть файли, щоб додати їх до бібліотеки файлів та книг цього пристрою.',
@@ -8958,10 +8962,10 @@ extension on TranslationsUk {
 			'sourceSetup.metadataNoMatches' => 'Відповідних назв в інтернеті не знайдено. Спробуйте іншу назву.',
 			'sourceSetup.metadataSearch' => 'Пошук метаданих в інтернеті',
 			'sourceSetup.metadataLoading' => 'Пошук відомостей про фільми й серіали в інтернеті…',
-			'sourceSetup.metadataFromTrakt' => 'Метадані з Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматичного збігу назви не знайдено. Знайдіть назву, щоб вибрати збіг.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Метадані з Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматичного збігу назви не знайдено. Знайдіть назву, щоб вибрати збіг.',
 			'sourceSetup.metadataFailed' => 'Не вдалося завантажити метадані з інтернету. Відтворення та локальні відомості залишаються доступними.',
 			'sourceSetup.videoDetailsLoading' => 'Завантаження відомостей про відео',
 			'sourceSetup.subtitleKeyRequired' => 'Потрібен ключ API OpenSubtitles',

@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "درخواست‌ها",
+    "statusNotRequested": "درخواست نشده",
     "title": "Seerr",
     "connectTitle": "اتصال به Seerr",
     "serverUrl": "سرور URL",

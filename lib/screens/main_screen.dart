@@ -1,4 +1,5 @@
 import 'games/games_screen.dart';
+import 'requests/requests_screen.dart';
 import 'dart:async';
 import '../media/ids.dart';
 import '../media/media_item.dart';
@@ -475,6 +476,8 @@ class _MainScreenState extends State<MainScreen>
   bool _hasFileSources = false;
   MultiServerProvider? _multiServerProvider;
   CatalogSourcesProvider? _catalogSourcesProvider;
+  SeerrAccountProvider? _requestsAccount;
+  bool _hasRequests = false;
   ValueListenable<bool>? _showExploreTabListenable;
   ValueListenable<bool>? _gamesTabListenable;
   ValueListenable<bool>? _profileShowExploreTabListenable;
@@ -883,7 +886,7 @@ class _MainScreenState extends State<MainScreen>
 
     if (id != _explorePinApprovedProfileId) {
       _explorePinApprovedProfileId = null;
-      if (_currentTab == NavigationTabId.explore && mounted) {
+      if ((_currentTab == NavigationTabId.explore || _currentTab == NavigationTabId.requests) && mounted) {
         _selectTab(NavigationTabId.discover);
       }
     }
@@ -1094,6 +1097,16 @@ class _MainScreenState extends State<MainScreen>
       }
     }
 
+    final requestsAccount = context.read<SeerrAccountProvider?>();
+    if (!identical(requestsAccount, _requestsAccount)) {
+      _requestsAccount?.removeListener(_handleRequestsChanged);
+      _requestsAccount = requestsAccount;
+      _requestsAccount?.addListener(_handleRequestsChanged);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _handleRequestsChanged();
+      });
+    }
+
     // Listen for catalog sources (Explore tab) appearing/disappearing when a
     // provider like Trakt is connected or disconnected mid-session.
     final catalogSources = context.read<CatalogSourcesProvider>();
@@ -1197,6 +1210,7 @@ class _MainScreenState extends State<MainScreen>
     _offlineModeProvider?.removeListener(_handleOfflineStatusChanged);
     _multiServerProvider?.removeListener(_handleLiveTvChanged);
     _catalogSourcesProvider?.removeListener(_handleCatalogSourcesChanged);
+    _requestsAccount?.removeListener(_handleRequestsChanged);
     _showExploreTabListenable?.removeListener(_handleCatalogSourcesChanged);
     _gamesTabListenable?.removeListener(_handleTabAvailabilityChanged);
     _profileShowExploreTabListenable?.removeListener(_handleCatalogSourcesChanged);
@@ -1374,6 +1388,7 @@ class _MainScreenState extends State<MainScreen>
       NavigationTabId.downloads => DownloadsScreen(key: _screenKeys[tab]),
       NavigationTabId.settings => SettingsScreen(key: _screenKeys[tab]),
       NavigationTabId.games => GamesScreen(key: _screenKeys[tab]),
+      NavigationTabId.requests => RequestsScreen(key: _screenKeys[tab]),
     };
   }
 
@@ -1391,6 +1406,7 @@ class _MainScreenState extends State<MainScreen>
     hasExplore: _lastHasExplore,
     hasGames: _hasGames,
     hasFileSources: _hasFileSources,
+    hasRequests: _hasRequests,
     preferredStartup: SettingsService.instanceOrNull?.read(SettingsService.startupSection),
   );
 
@@ -1453,6 +1469,14 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
+  void _handleRequestsChanged() {
+    if (!mounted) return;
+    final available = (_requestsAccount?.isConnected ?? false) && _showExploreTabSetting;
+    if (_hasRequests == available) return;
+    _hasRequests = available;
+    _handleTabAvailabilityChanged();
+  }
+
   void _handleFileSourcesChanged() {
     if (!mounted) return;
     final sources = _navigationSources;
@@ -1490,6 +1514,7 @@ class _MainScreenState extends State<MainScreen>
   }
 
   void _handleCatalogSourcesChanged() {
+    _handleRequestsChanged();
     final hasExplore = (_catalogSourcesProvider?.hasAnySource ?? false) && _showExploreTabSetting;
     if (hasExplore == _lastHasExplore) return;
     _lastHasExplore = hasExplore;
@@ -2127,12 +2152,12 @@ class _MainScreenState extends State<MainScreen>
     if (!_getVisibleTabs(_isOffline).any((t) => t.id == tab)) return;
 
     final activeProfile = context.read<ActiveProfileProvider>().active;
-    if (tab == NavigationTabId.explore &&
+    if ((tab == NavigationTabId.explore || tab == NavigationTabId.requests) &&
         _currentTab != tab &&
         activeProfile is LocalProfile &&
         activeProfile.isPinProtected &&
         _explorePinApprovedProfileId != activeProfile.id) {
-      if (!_checkingExplorePin) unawaited(_unlockExploreAndSelect(activeProfile.id, focusSearchInput));
+      if (!_checkingExplorePin) unawaited(_unlockExploreAndSelect(activeProfile.id, focusSearchInput, tab: tab));
       return;
     }
 
@@ -2152,7 +2177,7 @@ class _MainScreenState extends State<MainScreen>
         // User made an explicit offline selection, so don't auto-restore later.
         _autoSwitchedToDownloads = false;
       }
-      if (tab != NavigationTabId.explore) _explorePinApprovedProfileId = null;
+      if (tab != NavigationTabId.explore && tab != NavigationTabId.requests) _explorePinApprovedProfileId = null;
     });
     _updateTvBackPassthrough();
 
@@ -2202,14 +2227,18 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  Future<void> _unlockExploreAndSelect(String profileId, bool focusSearchInput) async {
+  Future<void> _unlockExploreAndSelect(
+    String profileId,
+    bool focusSearchInput, {
+    NavigationTabId tab = NavigationTabId.explore,
+  }) async {
     _checkingExplorePin = true;
     final allowed = await requestActiveProfileActionPin(context);
     if (!mounted) return;
     _checkingExplorePin = false;
     if (!allowed || context.read<ActiveProfileProvider>().activeId != profileId) return;
     _explorePinApprovedProfileId = profileId;
-    _selectTab(NavigationTabId.explore, focusSearchInput: focusSearchInput);
+    _selectTab(tab, focusSearchInput: focusSearchInput);
   }
 
   /// Handle library selection from side navigation rail
@@ -2319,6 +2348,7 @@ class _MainScreenState extends State<MainScreen>
       hasExplore: _lastHasExplore,
       hasGames: _hasGames,
       hasFileSources: _hasFileSources,
+      hasRequests: _hasRequests,
     );
   }
 

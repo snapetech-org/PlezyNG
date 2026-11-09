@@ -6,6 +6,8 @@
 
 - Correct Pleazyng's Flatpak app-data path, sandbox wording, package filenames and Play test identity. Replace upstream installation directions with Pleazyng Pacman/RPM downloads and explicit pending channel status; add checksum-pinned Nix/aerynOS recipe preparation and a release qualification guide without claiming unpublished packages are available.
 
+- Add a minimal native Requests destination for movies, TV seasons, ebooks and audiobooks with profile-owned status, discovery/search and basic details. SeerrNG book requests retain format-specific availability; the minimal flow keeps destination, approval and administrative controls in the server interface. Requested downstream by [@Tatsu941](https://github.com/Tatsu941) in [#267](https://github.com/snapetech-org/pleazyng/issues/267).
+
 - Include Book and AudioBook items in Jellyfin/Emby All browsing and library searches, fixing ebook libraries that appeared empty until switching to Folders ([#266](https://github.com/snapetech-org/pleazyng/issues/266)).
 
 - Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.

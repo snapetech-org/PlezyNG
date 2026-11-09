@@ -2700,6 +2700,8 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Yêu cầu';
+	@override String get statusNotRequested => 'Chưa yêu cầu';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Kết nối Seerr';
 	@override String get serverUrl => 'URL máy chủ';
@@ -7934,6 +7936,8 @@ extension on TranslationsVi {
 			'trakt.scrobbleDescription' => 'Gửi game, nghỉ ngơi, và dừng các sự kiện đến Trakt trong khi chơi lại.',
 			'trakt.watchedSync' => 'Sync theo dõi trạng thái',
 			'trakt.watchedSyncDescription' => 'Khi bạn đánh dấu các mục như được xem ở Pleazyng, chúng cũng được đánh dấu như được xem ở Trakt.',
+			'seerr.requests' => 'Yêu cầu',
+			'seerr.statusNotRequested' => 'Chưa yêu cầu',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Kết nối Seerr',
 			'seerr.serverUrl' => 'URL máy chủ',
@@ -8375,10 +8379,10 @@ extension on TranslationsVi {
 			'universalMedia.noFavorites' => 'Không được lưu stream yêu thích cho đến nay. Favorites stay in this profile.',
 			'universalMedia.removeFavorite' => 'Xóa stream yêu thích',
 			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
-			'universalMedia.chooseFiles' => 'Chọn file',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Chọn file',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
 			'universalMedia.wifiTransfer' => 'Gửi file qua Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Chuyển các tập tin được hỗ trợ từ một trình duyệt trên cùng một mạng đáng tin cậy.',
 			'universalMedia.wifiTransferIntro' => 'Mở địa chỉ này trong một trình duyệt trên thiết bị khác.Chọn các tệp để thêm chúng vào thư viện tệp và sách của thiết bị này.',
@@ -8889,10 +8893,10 @@ extension on TranslationsVi {
 			'sourceSetup.metadataNoMatches' => 'Không tìm thấy tiêu đề trực tuyến phù hợp. Hãy thử tiêu đề khác.',
 			'sourceSetup.metadataSearch' => 'Tìm siêu dữ liệu trực tuyến',
 			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
-			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',
 			'sourceSetup.metadataFailed' => 'Không tải được siêu dữ liệu trực tuyến. Vẫn có thể phát và xem thông tin cục bộ.',
 			'sourceSetup.videoDetailsLoading' => 'Đang tải thông tin video',
 			'sourceSetup.subtitleKeyRequired' => 'Cần có khóa API OpenSubtitles',

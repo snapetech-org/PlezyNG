@@ -161,6 +161,7 @@ Future<void> _pumpSheet(
   required int tmdbId,
   required String title,
   SeerrAccountProvider? account,
+  bool minimal = false,
 }) async {
   final app = MaterialApp(
     theme: ThemeData(extensions: const [testMonoTokens]),
@@ -176,8 +177,14 @@ Future<void> _pumpSheet(
                     body: Builder(
                       builder: (context) => Center(
                         child: TextButton(
-                          onPressed: () =>
-                              showSeerrRequestSheet(context, source: source, kind: kind, tmdbId: tmdbId, title: title),
+                          onPressed: () => showSeerrRequestSheet(
+                            context,
+                            source: source,
+                            kind: kind,
+                            tmdbId: tmdbId,
+                            title: title,
+                            minimal: minimal,
+                          ),
                           child: const Text('request'),
                         ),
                       ),
@@ -337,6 +344,37 @@ void main() {
     expect(find.text('Season 2'), findsNothing);
     expect(find.text('request'), findsOneWidget);
     expect(find.text('Request submitted'), findsOneWidget);
+  });
+
+  testWidgets('minimal request mode hides advanced and 4K controls even for an admin', (tester) async {
+    Map<String, dynamic>? posted;
+    final source = _source(
+      MockClient((request) async {
+        switch (request.url.path) {
+          case '/api/v1/settings/public':
+            return _json({..._publicSettings(), 'movie4kEnabled': true});
+          case '/api/v1/movie/603':
+            return _json({
+              'id': 603,
+              'title': 'The Matrix',
+              'mediaInfo': {'status': 1},
+            });
+          case '/api/v1/request':
+            posted = jsonDecode(request.body) as Map<String, dynamic>;
+            return _json({'id': 1, 'status': 1});
+          default:
+            fail('Minimal mode must not read admin/service routes: ${request.url.path}');
+        }
+      }),
+      permissions: SeerrPermission.admin,
+    );
+    await _pumpSheet(tester, source: source, kind: MediaKind.movie, tmdbId: 603, title: 'The Matrix', minimal: true);
+    expect(find.text('Advanced'), findsNothing);
+    expect(find.text('Request in 4K'), findsNothing);
+    expect(find.text('Destination server'), findsNothing);
+    await tester.tap(find.widgetWithText(FilledButton, 'Request'));
+    await tester.pumpAndSettle();
+    expect(posted, {'mediaType': 'movie', 'mediaId': 603, 'is4k': false});
   });
 
   testWidgets('movie that is already available offers nothing to request', (tester) async {

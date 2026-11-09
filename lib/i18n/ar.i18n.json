@@ -3346,6 +3346,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "الطلبات",
+    "statusNotRequested": "لم يُطلب",
     "title": "Seerr",
     "connectTitle": "الاتصال Seerr",
     "serverUrl": "URL الخادم",

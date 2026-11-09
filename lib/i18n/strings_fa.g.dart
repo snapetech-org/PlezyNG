@@ -2719,6 +2719,8 @@ class _Translations$seerr$fa extends Translations$seerr$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'درخواست‌ها';
+	@override String get statusNotRequested => 'درخواست نشده';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'اتصال به Seerr';
 	@override String get serverUrl => 'سرور URL';
@@ -7959,6 +7961,8 @@ extension on TranslationsFa {
 			'trakt.scrobbleDescription' => 'ارسال بازی، استراحت و توقف رویدادهای به Trakt در هنگام پخش.',
 			'trakt.watchedSync' => 'Sync وضعیت مشاهده شده',
 			'trakt.watchedSyncDescription' => 'هنگامی که شما آیتم ها را به عنوان مشاهده شده در Pleazyng نشان می دهید، آنها نیز به عنوان مشاهده شده در Trakt نشان داده می شوند.',
+			'seerr.requests' => 'درخواست‌ها',
+			'seerr.statusNotRequested' => 'درخواست نشده',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'اتصال به Seerr',
 			'seerr.serverUrl' => 'سرور URL',
@@ -8400,10 +8404,10 @@ extension on TranslationsFa {
 			'universalMedia.noFavorites' => 'در حال حاضر هیچ مورد علاقه ذخیره نشده است.Favorites در این پروفایل باقی بماند.',
 			'universalMedia.removeFavorite' => 'حذف جریان مورد علاقه',
 			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
-			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
 			'universalMedia.wifiTransfer' => 'ارسال فایل ها از طریق Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'انتقال فایل های پشتیبانی شده از یک مرورگر در همان شبکه قابل اعتماد.',
 			'universalMedia.wifiTransferIntro' => 'این آدرس را در یک مرورگر در دستگاه دیگری باز کنید فایل ها را انتخاب کنید تا آنها را به کتابخانه فایل ها و کتاب های این دستگاه اضافه کنید.',
@@ -8914,10 +8918,10 @@ extension on TranslationsFa {
 			'sourceSetup.metadataNoMatches' => 'عنوان مطابقی در اینترنت پیدا نشد. عنوان دیگری را امتحان کنید.',
 			'sourceSetup.metadataSearch' => 'جست‌وجوی فرادادهٔ آنلاین',
 			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
-			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',
 			'sourceSetup.metadataFailed' => 'فرادادهٔ آنلاین بارگیری نشد. پخش و اطلاعات محلی همچنان در دسترس هستند.',
 			'sourceSetup.videoDetailsLoading' => 'در حال بارگیری اطلاعات ویدیو',
 			'sourceSetup.subtitleKeyRequired' => 'کلید API سرویس OpenSubtitles لازم است',

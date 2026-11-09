@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Сұраулар",
+    "statusNotRequested": "Сұралмаған",
     "title": "Seerr",
     "connectTitle": "Seerr қосу",
     "serverUrl": "Сервер URL-і",

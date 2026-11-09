@@ -3266,6 +3266,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "בקשות",
+    "statusNotRequested": "לא התבקש",
     "title": "Seerr",
     "connectTitle": "חיבור Seerr",
     "serverUrl": "כתובת URL",

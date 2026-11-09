@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "İstekler",
+    "statusNotRequested": "İstenmedi",
     "title": "Seerr",
     "connectTitle": "Seerr Bağla",
     "serverUrl": "Sunucu URL'si",

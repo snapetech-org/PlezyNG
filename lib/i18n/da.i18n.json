@@ -3262,6 +3262,8 @@
     "historyExportTooLarge": ""
   },
   "seerr": {
+    "requests": "Anmodninger",
+    "statusNotRequested": "Ikke anmodet",
     "title": "Seerr",
     "connectTitle": "Forbind Seerr",
     "serverUrl": "Server-URL",

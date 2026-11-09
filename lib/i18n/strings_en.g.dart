@@ -7786,6 +7786,12 @@ class Translations$seerr$en {
 
 	// Translations
 
+	/// en: 'Requests'
+	String get requests => 'Requests';
+
+	/// en: 'Not requested'
+	String get statusNotRequested => 'Not requested';
+
 	/// en: 'Seerr'
 	String get title => 'Seerr';
 
@@ -20058,6 +20064,8 @@ extension on Translations {
 			'trakt.historyExportPartial' => ({required Object saved, required Object total}) => 'Export stopped after saving ${saved} of ${total} files.',
 			'trakt.historyExportSaveFailed' => 'Couldn\'t save the CSV file. Try again.',
 			'trakt.historyExportTooLarge' => 'This history is too large to package here. Use Trakt\'s own data export to split very large histories.',
+			'seerr.requests' => 'Requests',
+			'seerr.statusNotRequested' => 'Not requested',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Connect Seerr',
 			'seerr.serverUrl' => 'Server URL',
@@ -20123,10 +20131,10 @@ extension on Translations {
 			'services.scrobbleDescription' => 'Update your list when you finish an episode or movie.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Disconnect ${service}?',
 			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.',
-			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
-			'services.names.mal' => 'MyAnimeList',
 			_ => null,
 		} ?? switch (path) {
+			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
+			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
 			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
@@ -20637,10 +20645,10 @@ extension on Translations {
 			'universalMedia.captureMode' => 'Capture',
 			'universalMedia.shareMode' => 'Share',
 			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
-			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
-			'universalMedia.shareChooseFile' => 'Choose media file',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
+			'universalMedia.shareChooseFile' => 'Choose media file',
 			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
 			'universalMedia.shareFfmpegMissing' => 'FFmpeg or the H.264/AAC encoders are unavailable. Install FFmpeg with H.264 and AAC encoder support.',
 			'universalMedia.shareFailed' => 'The stream could not start or stopped unexpectedly. Check FFmpeg and network access.',
@@ -21151,10 +21159,10 @@ extension on Translations {
 			'games.helpBody' => 'Your library brings Steam games from your account and paired computers together. Link Steam to browse your account catalog; pair a computer to play from it. These are separate connections. In Connections, find computers on your local network or add an address manually. Each computer must approve its first pairing.\n\nOpen game details to choose a computer, set a preferred route or see the last reported installation status. An installed game may still need its computer to be switched on and reachable. Achievements, news and friends information load only when you request them.\n\nStreaming settings apply to new sessions. Extra picture, sound and input features depend on the receiver, host and display. Away-from-home Steam play requires the optional internet service to be configured and enabled, or a reachable VPN address. Local discovery does not search the internet.\n\nOn supported phones and tablets, Use as controller sends your input while the game stays on the computer. Disconnecting a stream leaves the game running there.',
 			'games.cancel' => 'Cancel',
 			'games.saveShortcut' => 'Save shortcut',
-			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
-			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			_ => null,
 		} ?? switch (path) {
+			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
+			'games.engineUnavailable' => 'In-app streaming is not available here yet',
 			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
@@ -21665,10 +21673,10 @@ extension on Translations {
 			'subtitleAiUi.showTheOriginalLineFollowedByItsTran_912a8201' => 'Show the original line followed by its translation in each cue',
 			'subtitleAiUi.translationGlossaryJSON' => 'Translation glossary (JSON)',
 			'subtitleAiUi.tARDISTARDISTheDoctorElDoctor' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
-			'subtitleAiUi.saveGlossary' => 'Save glossary',
-			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.saveGlossary' => 'Save glossary',
+			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
 			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
 			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
 			'subtitleAiUi.requiresACUDAEnabledArgosCTranslate2_25eb4fab' => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
@@ -22179,10 +22187,10 @@ extension on Translations {
 			'bonusExtras.unknownLanguage' => 'Language not specified',
 			'bonusExtras.spoilers' => 'Show extras that may contain spoilers',
 			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
-			'bonusExtras.externalEnabled' => 'Discover verified online extras',
-			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.externalEnabled' => 'Discover verified online extras',
+			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
 			'bonusExtras.serviceUrl' => 'Discovery server address',
 			'bonusExtras.serviceToken' => 'Discovery access token',
 			'bonusExtras.aiMode' => 'AI assistance',

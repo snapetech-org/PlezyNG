@@ -15,6 +15,7 @@ import 'package:plezy/media/media_server_client.dart';
 import 'package:plezy/media/server_capabilities.dart';
 import 'package:plezy/navigation/navigation_tabs.dart';
 import 'package:plezy/providers/catalog_sources_provider.dart';
+import 'package:plezy/providers/seerr_account_provider.dart';
 import 'package:plezy/providers/hidden_libraries_provider.dart';
 import 'package:plezy/providers/libraries_provider.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
@@ -57,6 +58,11 @@ class _GatedLibrariesClient implements MediaServerClient {
 }
 
 /// Minimal source-bearing stand-in: the rail only reads [hasAnySource].
+class _ConnectedRequests extends SeerrAccountProvider {
+  @override
+  bool get isConnected => true;
+}
+
 class _FakeCatalogSourcesProvider extends CatalogSourcesProvider {
   @override
   bool get hasAnySource => true;
@@ -110,8 +116,10 @@ Future<void> _pumpBasicRail(
   List<MediaLibrary> libraries = const [],
   bool isSidebarFocused = false,
   bool alwaysExpanded = false,
+  bool isOfflineMode = false,
   double? height,
   CatalogSourcesProvider? catalogSources,
+  SeerrAccountProvider? requestsAccount,
   ValueChanged<bool>? onFloatingPanelChanged,
 }) async {
   await SettingsService.getInstance();
@@ -136,6 +144,7 @@ Future<void> _pumpBasicRail(
     selectedLibraryKey: selectedLibraryKey,
     isSidebarFocused: isSidebarFocused,
     alwaysExpanded: alwaysExpanded,
+    isOfflineMode: isOfflineMode,
     onDestinationSelected: (_) {},
     onLibrarySelected: (_) {},
     onFloatingPanelChanged: onFloatingPanelChanged,
@@ -148,6 +157,7 @@ Future<void> _pumpBasicRail(
           ChangeNotifierProvider<LibrariesProvider>.value(value: librariesProvider),
           ChangeNotifierProvider<HiddenLibrariesProvider>.value(value: hiddenLibrariesProvider),
           ChangeNotifierProvider<MultiServerProvider>.value(value: multiServerProvider),
+          if (requestsAccount != null) ChangeNotifierProvider<SeerrAccountProvider>.value(value: requestsAccount),
           if (catalogSources != null) ChangeNotifierProvider<CatalogSourcesProvider>.value(value: catalogSources),
         ],
         child: MaterialApp(
@@ -453,6 +463,46 @@ void main() {
 
     client.libraries.complete([movies]);
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('Requests stays reachable when media servers are offline', (tester) async {
+    final account = _ConnectedRequests();
+    addTearDown(account.dispose);
+    final key = GlobalKey<SideNavigationRailState>();
+    await _pumpBasicRail(
+      tester,
+      requestsAccount: account,
+      isOfflineMode: true,
+      alwaysExpanded: true,
+      selectedTab: NavigationTabId.requests,
+      sideNavKey: key,
+    );
+    final requests = find.widgetWithText(NavigationRailItem, 'Requests');
+    expect(requests, findsOneWidget);
+    key.currentState!.focusActiveItem(targetKey: 'requests');
+    await tester.pumpAndSettle();
+    expect(tester.widget<NavigationRailItem>(requests).focusNode.hasFocus, isTrue);
+  });
+
+  testWidgets('Requests appears in the vertical rail and respects discovery visibility', (tester) async {
+    final account = _ConnectedRequests();
+    addTearDown(account.dispose);
+    final key = GlobalKey<SideNavigationRailState>();
+    await _pumpBasicRail(
+      tester,
+      requestsAccount: account,
+      alwaysExpanded: true,
+      selectedTab: NavigationTabId.requests,
+      sideNavKey: key,
+    );
+    final requests = find.widgetWithText(NavigationRailItem, 'Requests');
+    expect(requests, findsOneWidget);
+    key.currentState!.focusActiveItem(targetKey: 'requests');
+    await tester.pumpAndSettle();
+    expect(tester.widget<NavigationRailItem>(requests).focusNode.hasFocus, isTrue);
+    await SettingsService.instance.write(SettingsService.showExploreTab, false);
+    await tester.pumpAndSettle();
+    expect(requests, findsNothing);
   });
 
   testWidgets('Explore item follows the showExploreTab appearance setting', (tester) async {

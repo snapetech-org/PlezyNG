@@ -2753,6 +2753,8 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Požadavky';
+	@override String get statusNotRequested => 'Nevyžádáno';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Připojte se Seerr';
 	@override String get serverUrl => 'server URL';
@@ -8003,6 +8005,8 @@ extension on TranslationsCs {
 			'trakt.scrobbleDescription' => 'Pošlete si hraní, přestávku a zastavení událostí na adresu Trakt během přehrávání.',
 			'trakt.watchedSync' => 'Sync sledovaný status',
 			'trakt.watchedSyncDescription' => 'Pokud označíte položky podle zobrazení v čísle Pleazyng, označují se také podle zobrazení v čísle Trakt.',
+			'seerr.requests' => 'Požadavky',
+			'seerr.statusNotRequested' => 'Nevyžádáno',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Připojte se Seerr',
 			'seerr.serverUrl' => 'server URL',
@@ -8444,10 +8448,10 @@ extension on TranslationsCs {
 			'universalMedia.noFavorites' => 'Není zachráněno stream oblíbené zatím. Oblíbené zůstanou v tomto profilu.',
 			'universalMedia.removeFavorite' => 'Odstranit stream oblíbené',
 			'universalMedia.filesHelp' => 'Vyberte si audio, video nebo ISO soubory pro dočasný průběh. Soubory a URL nejsou přidány do historie knihovny.',
-			'universalMedia.chooseFiles' => 'Vyberte soubory',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Vyberte soubory',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: '1 vybrané soubory', few: '${count} vybrané soubory', many: '${count} vybrané soubory', other: '${count} vybrané soubory', ), 
 			'universalMedia.wifiTransfer' => 'Odesílání souborů přes Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Přenos podporovaných souborů z prohlížeče na stejnou důvěryhodnou síť.',
 			'universalMedia.wifiTransferIntro' => 'Otevřete tuto adresu v prohlížeči na jiném zařízení. Vyberte soubory, abyste je přidali do knihovny souborů a knih tohoto zařízení.',
@@ -8958,10 +8962,10 @@ extension on TranslationsCs {
 			'sourceSetup.metadataNoMatches' => 'Online nebyl nalezen odpovídající název. Zkuste jiný název.',
 			'sourceSetup.metadataSearch' => 'Hledat online metadata',
 			'sourceSetup.metadataLoading' => 'Vyhledávání online informací o filmech a seriálech…',
-			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Online metadata z Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Nebyla nalezena automatická shoda názvu. Vyhledejte název a vyberte shodu.',
 			'sourceSetup.metadataFailed' => 'Online metadata se nepodařilo načíst. Přehrávání i místní informace jsou stále dostupné.',
 			'sourceSetup.videoDetailsLoading' => 'Načítání informací o videu',
 			'sourceSetup.subtitleKeyRequired' => 'Je vyžadován klíč API OpenSubtitles',

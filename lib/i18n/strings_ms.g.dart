@@ -2700,6 +2700,8 @@ class _Translations$seerr$ms extends Translations$seerr$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Permintaan';
+	@override String get statusNotRequested => 'Belum diminta';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Menghubungkan Seerr';
 	@override String get serverUrl => 'Pelayan URL';
@@ -7934,6 +7936,8 @@ extension on TranslationsMs {
 			'trakt.scrobbleDescription' => 'Hantar permainan, istirahat, dan menghentikan peristiwa kepada Trakt semasa pemutaran.',
 			'trakt.watchedSync' => 'Sinkronkan status yang dilihat',
 			'trakt.watchedSyncDescription' => 'Apabila anda menandakan item seperti yang dilihat di Pleazyng, mereka juga ditandakan seperti yang dilihat di Trakt.',
+			'seerr.requests' => 'Permintaan',
+			'seerr.statusNotRequested' => 'Belum diminta',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Menghubungkan Seerr',
 			'seerr.serverUrl' => 'Pelayan URL',
@@ -8375,10 +8379,10 @@ extension on TranslationsMs {
 			'universalMedia.noFavorites' => 'Tiada rangkaian kegemaran disimpan sehingga kini. kekal dalam profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapuskan stream kegemaran',
 			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
-			'universalMedia.chooseFiles' => 'Pilih fail',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Pilih fail',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
 			'universalMedia.wifiTransfer' => 'Hantar fail melalui Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Memindahkan fail yang disokong daripada pelayar pada rangkaian yang sama dipercayai.',
 			'universalMedia.wifiTransferIntro' => 'Buka alamat ini dalam pelayar pada peranti lain. pilih fail untuk menambahnya ke perpustakaan Fail dan buku peranti ini.',
@@ -8889,10 +8893,10 @@ extension on TranslationsMs {
 			'sourceSetup.metadataNoMatches' => 'Tiada padanan tajuk dalam talian ditemukan. Cuba tajuk lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata dalam talian',
 			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
-			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',
 			'sourceSetup.metadataFailed' => 'Metadata dalam talian tidak dapat dimuatkan. Main balik dan butiran setempat masih tersedia.',
 			'sourceSetup.videoDetailsLoading' => 'Memuatkan butiran video',
 			'sourceSetup.subtitleKeyRequired' => 'Kunci API OpenSubtitles diperlukan',

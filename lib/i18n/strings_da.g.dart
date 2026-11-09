@@ -2719,6 +2719,8 @@ class _Translations$seerr$da extends Translations$seerr$en {
 	final TranslationsDa _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'Anmodninger';
+	@override String get statusNotRequested => 'Ikke anmodet';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Forbind Seerr';
 	@override String get serverUrl => 'Server-URL';
@@ -7959,6 +7961,8 @@ extension on TranslationsDa {
 			'trakt.scrobbleDescription' => 'Send afspil-, pause- og stop-begivenheder til Trakt under afspilning.',
 			'trakt.watchedSync' => 'Synkroniser set-status',
 			'trakt.watchedSyncDescription' => 'Når du markerer elementer som set i Pleazyng, markeres de også på Trakt.',
+			'seerr.requests' => 'Anmodninger',
+			'seerr.statusNotRequested' => 'Ikke anmodet',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Forbind Seerr',
 			'seerr.serverUrl' => 'Server-URL',
@@ -8400,10 +8404,10 @@ extension on TranslationsDa {
 			'universalMedia.noFavorites' => 'Der er endnu ingen gemt streaming favoritter. Favoritter forbliver i denne profil.',
 			'universalMedia.removeFavorite' => 'Fjern streaming favorit',
 			'universalMedia.filesHelp' => 'Vælg lyd, video eller ISO-filer for en midlertidig kue. filer og URL\'er tilføjes ikke til bibliotekets historie.',
-			'universalMedia.chooseFiles' => 'Vælg filer',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: '1 udvalgte filer', other: '${count} udvalgte filer', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'Vælg filer',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: '1 udvalgte filer', other: '${count} udvalgte filer', ), 
 			'universalMedia.wifiTransfer' => 'Send filer via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Overfør støttet filer fra en browser til det samme pålidelige netværk.',
 			'universalMedia.wifiTransferIntro' => 'Åbn denne adresse i en browser på en anden enhed.Vælg filer for at tilføje dem til denne enheds Filer og bøger bibliotek.',
@@ -8914,10 +8918,10 @@ extension on TranslationsDa {
 			'sourceSetup.metadataNoMatches' => 'Ingen matchende titler fundet online. Prøv en anden titel.',
 			'sourceSetup.metadataSearch' => 'Søg efter metadata online',
 			'sourceSetup.metadataLoading' => 'Henter film- og serieoplysninger online…',
-			'sourceSetup.metadataFromTrakt' => 'Onlinemetadata fra Trakt',
-			'sourceSetup.metadataNoAutomaticMatch' => 'Der blev ikke fundet et automatisk titelmatch. Søg efter titlen for at vælge et match.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Onlinemetadata fra Trakt',
+			'sourceSetup.metadataNoAutomaticMatch' => 'Der blev ikke fundet et automatisk titelmatch. Søg efter titlen for at vælge et match.',
 			'sourceSetup.metadataFailed' => 'Onlinemetadata kunne ikke indlæses. Afspilning og lokale oplysninger er stadig tilgængelige.',
 			'sourceSetup.videoDetailsLoading' => 'Indlæser videooplysninger',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-nøgle påkrævet',

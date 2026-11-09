@@ -2715,6 +2715,8 @@ class _Translations$seerr$ja extends Translations$seerr$en {
 	final TranslationsJa _root; // ignore: unused_field
 
 	// Translations
+	@override String get requests => 'リクエスト';
+	@override String get statusNotRequested => '未リクエスト';
 	@override String get title => 'Seerr';
 	@override String get connectTitle => 'Seerrに接続';
 	@override String get serverUrl => 'サーバー URL';
@@ -7954,6 +7956,8 @@ extension on TranslationsJa {
 			'trakt.scrobbleDescription' => '再生中に再生・一時停止・停止の各イベントをTraktに送信します。',
 			'trakt.watchedSync' => '視聴済みステータスを同期',
 			'trakt.watchedSyncDescription' => 'Plezyで項目を視聴済みにすると、Traktでも視聴済みになります。',
+			'seerr.requests' => 'リクエスト',
+			'seerr.statusNotRequested' => '未リクエスト',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Seerrに接続',
 			'seerr.serverUrl' => 'サーバー URL',
@@ -8395,10 +8399,10 @@ extension on TranslationsJa {
 			'universalMedia.noFavorites' => 'まだお気に入りのストリームを保存していません お気に入りはこのプロフィールに留まります。',
 			'universalMedia.removeFavorite' => 'お気に入りの流れを削除する',
 			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
-			'universalMedia.chooseFiles' => 'ファイルを選択',
-			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.chooseFiles' => 'ファイルを選択',
+			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
 			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
 			'universalMedia.wifiTransferHelp' => '同じ信頼できるネットワーク上のブラウザからサポートされたファイルを転送します。',
 			'universalMedia.wifiTransferIntro' => 'このアドレスを別のデバイスでブラウザで開きます. ファイルを選択して、このデバイスのファイルと本の図書館に追加します。',
@@ -8909,10 +8913,10 @@ extension on TranslationsJa {
 			'sourceSetup.metadataNoMatches' => 'オンラインで一致するタイトルが見つかりませんでした。別のタイトルをお試しください。',
 			'sourceSetup.metadataSearch' => 'オンラインメタデータを検索',
 			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
-			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
-			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
+			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
 			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',
 			'sourceSetup.videoDetailsLoading' => '動画の情報を読み込み中',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles の API キーが必要です',

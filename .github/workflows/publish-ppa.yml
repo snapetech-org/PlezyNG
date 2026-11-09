@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# ng-runner-policy: hosted-first-v1
 name: Publish Launchpad PPA package
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.release_tag) }}
 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Publication action authorized by private JIT routing
+        description: Publication action authorized on the protected default branch
         required: true
         type: choice
         options: [publish-ppa]
@@ -14,7 +14,7 @@ on:
         description: Runner pool for this publication
         required: true
         type: choice
-        options: [private]
+        options: [public]
       release_tag:
         description: Published Pleazyng release tag
         required: true
@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-publish"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:

@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# ng-runner-policy: hosted-first-v1
 # packer-windows-jit-v1
 name: Submit WinGet Manifest
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:submit:{3}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.submit) }}
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Publication action authorized by private JIT routing
+        description: Publication action authorized on the protected default branch
         required: true
         type: choice
         options: [publish-winget]
@@ -15,7 +15,7 @@ on:
         description: Runner pool for this publication
         required: true
         type: choice
-        options: [private]
+        options: [public]
       release_tag:
         description: Published release tag to process
         required: true
@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   submit:
-    runs-on: ${{ fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","on-demand","packer-windows","Pleazyng","gha-{0}-submit"]}}', github.run_id)) }}
+    runs-on: windows-2025
     timeout-minutes: 20
     steps:
       - name: Resolve and validate published release

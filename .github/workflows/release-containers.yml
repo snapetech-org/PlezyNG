@@ -1,4 +1,4 @@
-# ng-runner-policy: private-jit-only-v1
+# ng-runner-policy: hosted-first-v1
 name: Publish Relay Containers
 run-name: ${{ format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.release_tag) }}
 
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: Publication action authorized by private JIT routing
+        description: Publication action authorized on the protected default branch
         required: true
         type: choice
         options: [publish-containers]
@@ -14,13 +14,13 @@ on:
         description: Runner pool for this publication
         required: true
         type: choice
-        options: [private]
+        options: [public]
       release_tag:
         description: Published release tag to publish
         required: true
         type: string
 
-# Several publication gates run before checkout in fresh private guests.
+# Publication gates run before checkout on a fresh hosted runner.
 env:
   GH_REPO: ${{ github.repository }}
 
@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish"]}}', github.run_id)) }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Require the default branch for manual retries
@@ -77,33 +77,8 @@ jobs:
           ref: ${{ steps.release.outputs.tag }}
           persist-credentials: false
 
-      - name: Resolve the private container download proxy
-        id: proxy
-        shell: bash
-        run: |
-          python3 - <<'PYPROXY'
-          import os
-          from pathlib import Path
-          from urllib.parse import urlsplit
-          raw = os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
-          proxy = urlsplit(raw)
-          if (not raw or any(c.isspace() for c in raw)
-                  or proxy.scheme != 'http' or not proxy.hostname or not proxy.port
-                  or proxy.username or proxy.password or proxy.query or proxy.fragment
-                  or proxy.path not in ('', '/')):
-              raise SystemExit('An unauthenticated private HTTP proxy is required')
-          with Path(os.environ['GITHUB_OUTPUT']).open('a') as output:
-              output.write('url=' + raw.rstrip('/') + '\n')
-          PYPROXY
-
       - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
-        with:
-          driver-opts: |
-            env.HTTP_PROXY=${{ steps.proxy.outputs.url }}
-            env.HTTPS_PROXY=${{ steps.proxy.outputs.url }}
-            env.http_proxy=${{ steps.proxy.outputs.url }}
-            env.https_proxy=${{ steps.proxy.outputs.url }}
 
       - name: Set OCI build date
         id: build-metadata

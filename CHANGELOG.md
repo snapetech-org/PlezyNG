@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Route protected release-channel publication for containers, AUR, COPR, PPA, Snap, Chocolatey, and WinGet through compatible GitHub-hosted runners, removing the superseded private-JIT-only dispatch contract and container proxy requirement.
+
 - Correct release-workflow guidance to match the hybrid profile: compatible Apple jobs use GitHub-hosted macOS runners, while storage-heavy webOS work retains its private JIT route.
 
 - Add feature-documentation source footers with verified upstream PR/issue/commit links and author credits, turn the README's historical ticket numbers into links, and preserve the distinction between a source proposal and delivered behavior.

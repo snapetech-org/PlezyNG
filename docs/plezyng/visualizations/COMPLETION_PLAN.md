@@ -1,5 +1,9 @@
 # PlezyNG visualization and community preset implementation plan
 
+> Runner policy update (2026-11-09): compatible GitHub-hosted runners are the
+> default. Private JIT is used only for capabilities hosted runners cannot
+> provide; private-only wording in historical checkpoints is superseded.
+
 **Current code gate (2026-10-30): 100% complete for the documented implementation
 scope.** See [SOURCE_COMPLETION.md](SOURCE_COMPLETION.md) for source evidence
 mapped to V0–V10. The user's current code-only completion instruction separates

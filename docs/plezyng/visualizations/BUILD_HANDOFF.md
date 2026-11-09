@@ -1,5 +1,10 @@
 # Visualization build and release handoff
 
+> Runner policy update (2026-11-09): use compatible GitHub-hosted runners by
+> default. Use private JIT only for Apple, device, private-network/storage, or
+> other unavailable hosted capabilities. Private-only wording in dated
+> handoffs below is retained as history and is not a current instruction.
+
 PR #82 was reconciled into current main on 2026-11-05, including the ABI v2
 runtime, renderer process/lifetime handling and packaging hooks. Five native
 C++ regression binaries compile and pass without a GPU. Runtime-receipt and

@@ -1,5 +1,10 @@
 # PlezyNG karaoke implementation
 
+> Runner policy update (2026-11-09): compatible GitHub-hosted runners are the
+> default. Private JIT is reserved for platform, device, private-network, or
+> storage requirements that hosted runners cannot satisfy. Historical
+> no-hosted-fallback wording below is superseded.
+
 Owner request: implement the full 48-requirement karaoke assessment dated 2026-10-29.
 
 ## Integration and validation

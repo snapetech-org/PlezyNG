@@ -1,5 +1,10 @@
 # Visualizer implementation status
 
+> Runner policy update (2026-11-09): compatible GitHub-hosted runners are the
+> default. Private JIT is reserved for Apple, device, private-network/storage,
+> or other capabilities hosted runners cannot provide. Private-only wording in
+> dated checkpoints below is historical and no longer instructs new runs.
+
 Current integration: PR #82 was reconciled into main on 2026-11-05. See SOURCE_COMPLETION.md and BUILD_HANDOFF.md for the current ABI v2 pin, executed regression checks and remaining artifact/device/provisioning gates. Dated sections below retain their original commit scope.
 
 Updated 2026-10-30. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/pleazyng/pull/82)
@@ -14,8 +19,8 @@ source to V0–V10 and defines the separate pending validation/delivery gates.
 The user's current instruction does not require test execution to close the
 code gate. No build, test, conversion run or device run is claimed. Source
 completion does not establish universal compatibility or a working release.
-All executable acceptance work remains assigned to compatible private
-ephemeral JIT runners.
+Executable acceptance work should use compatible hosted runners, with private
+JIT only where the required platform, device, or private resource demands it.
 
 
 ## Source delivered

@@ -52,7 +52,7 @@ jobs:
   dart:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/audit-remediation/')
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 60
     env:
       DASH__SUPPRESS_ANALYTICS: 'true'
       FLUTTER_SUPPRESS_ANALYTICS: 'true'
@@ -95,6 +95,10 @@ jobs:
             test/android/network_security_config_test.dart \
             test/sources/source_transport_lifecycle_test.dart \
             test/sources/network_media_stream_server_test.dart
+      - name: Run the complete Dart and widget suite
+        run: scripts/run_tests.sh --no-pub -j 2 --timeout=180s
+      - name: Run all repository checker regressions with Dart available
+        run: python3 -m unittest discover -s scripts/checks -p 'test_*.py'
       - name: Format maintained Dart sources
         if: always()
         run: |

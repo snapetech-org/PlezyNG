@@ -84,6 +84,35 @@ class JobsTest(unittest.TestCase):
 
 
 class TransportTest(unittest.TestCase):
+    def test_drip_fed_headers_have_an_absolute_deadline(self):
+        server = Server(('127.0.0.1', 0), Handler)
+        server.header_timeout = 0.2
+        server.token = "fixture-only-token-with-at-least-32-bytes"
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        stop = threading.Event()
+        try:
+            with socket.create_connection(server.server_address, timeout=1) as peer:
+                peer.sendall(b'GET /v1/libraries HTTP/1.1\r\nX-Slow: ')
+                def drip():
+                    while not stop.wait(0.02):
+                        try:
+                            peer.sendall(b'x')
+                        except OSError:
+                            return
+                sender = threading.Thread(target=drip, daemon=True)
+                sender.start()
+                try:
+                    self.assertEqual(peer.recv(1), b'')
+                finally:
+                    stop.set()
+                    sender.join(timeout=1)
+        finally:
+            stop.set()
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
+
     def test_idle_tls_peer_does_not_block_accept_and_times_out(self):
         fixtures = Path(__file__).resolve().parents[2] / "test/fixtures/steam_relay"
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)

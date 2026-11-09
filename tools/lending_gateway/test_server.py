@@ -43,6 +43,34 @@ class GatewayTest(unittest.TestCase):
             server.server_close()
             thread.join(timeout=2)
 
+    def test_drip_fed_headers_have_an_absolute_deadline(self):
+        server = Server(('127.0.0.1', 0), handler(self.gateway))
+        server.header_timeout = 0.2
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        stop = threading.Event()
+        try:
+            with socket.create_connection(server.server_address, timeout=1) as peer:
+                peer.sendall(b'GET /v1/libraries HTTP/1.1\r\nX-Slow: ')
+                def drip():
+                    while not stop.wait(0.02):
+                        try:
+                            peer.sendall(b'x')
+                        except OSError:
+                            return
+                sender = threading.Thread(target=drip, daemon=True)
+                sender.start()
+                try:
+                    self.assertEqual(peer.recv(1), b'')
+                finally:
+                    stop.set()
+                    sender.join(timeout=1)
+        finally:
+            stop.set()
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
+
     def test_worker_slots_reject_excess_connections(self):
         server = Server(('127.0.0.1', 0), handler(self.gateway))
         for _ in range(16):
@@ -57,6 +85,36 @@ class GatewayTest(unittest.TestCase):
         finally:
             for _ in range(16): server.slots.release()
             server.server_close()
+
+    def test_drip_fed_json_body_has_an_absolute_deadline(self):
+        server = Server(('127.0.0.1', 0), handler(self.gateway))
+        server.body_timeout = 0.2
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        stop = threading.Event()
+        try:
+            with socket.create_connection(server.server_address, timeout=1) as peer:
+                peer.sendall(b'POST /v1/refresh HTTP/1.1\r\nHost: library.example\r\n'
+                             b'Content-Type: application/json\r\nContent-Length: 100\r\n\r\n{')
+                def drip():
+                    while not stop.wait(0.02):
+                        try:
+                            peer.sendall(b' ')
+                        except OSError:
+                            return
+                sender = threading.Thread(target=drip, daemon=True)
+                sender.start()
+                try:
+                    self.assertEqual(peer.recv(1), b'')
+                finally:
+                    stop.set()
+                    sender.join(timeout=1)
+            self.assertEqual(self.exchanges, [])
+        finally:
+            stop.set()
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
 
     def test_hosted_login_never_exposes_developer_secret(self):
         identifier, secret, query = self.start()

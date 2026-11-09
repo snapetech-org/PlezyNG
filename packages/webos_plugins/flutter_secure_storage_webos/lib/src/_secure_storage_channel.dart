@@ -73,9 +73,13 @@ class SecureStorageChannel {
     final datas = jsonEncode(next.values.toList(growable: false));
     try {
       final digest = base64Encode((await Sha256().hash(utf8.encode(datas))).bytes);
-      staged = await _client.createSecret(jsonEncode({
-        'version': 3, 'keys': next.keys.toList(growable: false), 'valuesDigest': digest,
-      }), context: dbRowKey);
+      staged = await _client.createSecret(
+          jsonEncode({
+            'version': 3,
+            'keys': next.keys.toList(growable: false),
+            'valuesDigest': digest,
+          }),
+          context: dbRowKey);
     } catch (error) {
       throw StorageWriteException(error, mayHaveCommitted: false);
     }

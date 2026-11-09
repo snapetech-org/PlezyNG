@@ -13,6 +13,7 @@ import ipaddress
 import os
 import re
 import secrets
+import socket
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -171,6 +172,30 @@ def handler(gateway):
             self.request.settimeout(self.server.header_timeout)
             super().setup()
 
+        def handle_one_request(self):
+            # A socket idle timeout alone can be defeated by sending one byte at a
+            # time. Bound the entire unauthenticated request line/header phase.
+            self._header_expired = threading.Event()
+            def expire():
+                self._header_expired.set()
+                try:
+                    self.connection.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    pass
+            self._header_timer = threading.Timer(self.server.header_timeout, expire)
+            self._header_timer.daemon = True
+            self._header_timer.start()
+            try:
+                super().handle_one_request()
+            finally:
+                self._header_timer.cancel()
+
+        def parse_request(self):
+            try:
+                return super().parse_request() and not self._header_expired.is_set()
+            finally:
+                self._header_timer.cancel()
+
         def log_message(self, *_args):
             pass  # Authorization codes and tokens must not enter access logs.
 
@@ -213,7 +238,28 @@ def handler(gateway):
                 length = int(self.headers.get('Content-Length', '0'))
                 if length <= 0 or length > 16384 or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
                     raise InvalidRequest(400)
-                data = json.loads(self.rfile.read(length))
+                # The small JSON body has a total deadline as well: otherwise
+                # a byte arriving before every socket timeout pins a worker.
+                expired = threading.Event()
+                def expire_body():
+                    expired.set()
+                    try:
+                        self.connection.shutdown(socket.SHUT_RDWR)
+                    except OSError:
+                        pass
+                timer = threading.Timer(self.server.body_timeout, expire_body)
+                timer.daemon = True
+                timer.start()
+                try:
+                    payload = self.rfile.read(length)
+                finally:
+                    timer.cancel()
+                if expired.is_set():
+                    self.close_connection = True
+                    return
+                if len(payload) != length:
+                    raise InvalidRequest(400)
+                data = json.loads(payload)
                 if not isinstance(data, dict):
                     raise InvalidRequest()
                 if parts == ['v1', 'authorizations']:
@@ -226,8 +272,10 @@ def handler(gateway):
                 raise InvalidRequest(404)
             except InvalidRequest as error:
                 self._reply(error.status, {'error': 'Request could not be completed.'})
-            except (ValueError, KeyError, TypeError, OSError):
+            except (ValueError, KeyError, TypeError):
                 self._reply(400, {'error': 'Invalid request.'})
+            except OSError:
+                self.close_connection = True
 
         def do_GET(self):
             self._run()
@@ -241,6 +289,7 @@ class Server(ThreadingHTTPServer):
     daemon_threads = True
     request_queue_size = 16
     header_timeout = 10
+    body_timeout = 25
 
     def __init__(self, *args, **kwargs):
         self.slots = threading.BoundedSemaphore(16)

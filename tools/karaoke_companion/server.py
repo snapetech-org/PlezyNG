@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import socket
 import shutil
 import signal
 import ssl
@@ -213,6 +214,30 @@ class Jobs:
 
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
+    def handle_one_request(self):
+        # A socket idle timeout alone can be defeated by sending one byte at a
+        # time. Bound the entire unauthenticated request line/header phase.
+        self._header_expired = threading.Event()
+        def expire():
+            self._header_expired.set()
+            try:
+                self.connection.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+        self._header_timer = threading.Timer(self.server.header_timeout, expire)
+        self._header_timer.daemon = True
+        self._header_timer.start()
+        try:
+            super().handle_one_request()
+        finally:
+            self._header_timer.cancel()
+
+    def parse_request(self):
+        try:
+            return super().parse_request() and not self._header_expired.is_set()
+        finally:
+            self._header_timer.cancel()
+
     def log_message(self, *_): pass
     def setup(self):
         super().setup(); self.connection.settimeout(30)
@@ -296,6 +321,7 @@ class Handler(BaseHTTPRequestHandler):
 class Server(ThreadingHTTPServer):
     daemon_threads = True
     request_queue_size = 16
+    header_timeout = 10
     def __init__(self, *args, tls_context=None, handshake_timeout=5, **kwargs):
         self.slots = threading.BoundedSemaphore(8)
         self.tls_context = tls_context

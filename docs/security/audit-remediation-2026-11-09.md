@@ -6,64 +6,64 @@ Audit baseline: `da2909290f6a2ad8dcb3378be9395c97bd0914a2`. This ledger distingu
 
 | ID | Status | Change and remaining boundary |
 | --- | --- | --- |
-| PLY-01 | Implemented; Python verified | Worker-owned TLS handshake timeout; raw listening socket; bounded workers. |
-| PLY-02 | Implemented; Dart CI pending | 16 MiB default bounded accumulation for JSON/tracker helpers; reject declared and streamed oversize. |
-| PLY-03 | Implemented; Dart CI pending | Abort and cancel artwork error bodies before releasing concurrency slots. |
-| PLY-04 | Implemented; Dart CI pending | Cancel failed downloads under the receive deadline instead of draining arbitrary bodies. |
-| PLY-05 | Implemented; Dart CI pending | Apply the poster upload ceiling inside getBytes before Content-Length allocation. |
+| PLY-01 | Implemented; Python verified | Worker-owned TLS handshake timeout; raw listening socket; bounded workers and absolute HTTP header deadline resistant to drip-fed traffic. |
+| PLY-02 | Implemented; Dart regressions verified | 16 MiB default bounded accumulation for JSON/tracker helpers; reject declared and streamed oversize. |
+| PLY-03 | Implemented; Dart regressions verified | Abort and cancel artwork error bodies before releasing concurrency slots. |
+| PLY-04 | Implemented; Dart regressions verified | Cancel failed downloads under the receive deadline instead of draining arbitrary bodies. |
+| PLY-05 | Implemented; Dart regressions verified | Apply the poster upload ceiling inside getBytes before Content-Length allocation. |
 | PLY-06 | Mitigated; Node verified | Rolling global burst/refill with durable hourly client quotas replaces the shared UTC-day lockout. Distributed denial remains possible for a public endpoint; deploy the Worker change separately. |
 | PLY-07 | Implemented; Go race verified | Coalesce same-key lookups, bound distinct in-flight fetches, provider-wide burst/refill, and cache failures. Limits are per process; deployment replicas multiply allowance. |
-| PLY-08 | Implemented; Dart CI pending | Reject absolute initial targets outside an authenticated client base origin before attaching its default headers. |
-| PLY-09 | Implemented; Dart CI pending | Owned abort signals, header/body deadlines, late-response cancellation, unclaimed-response expiry and close-time abort. |
-| PLY-10 | Implemented; Dart CI pending | Bound PUT replies to 64 KiB and GET to 4 MiB with whole-request cancellation and owner checks. |
+| PLY-08 | Implemented; Dart regressions verified | Reject absolute initial targets outside an authenticated client base origin before attaching its default headers. |
+| PLY-09 | Implemented; Dart regressions verified | Owned abort signals, header/body deadlines, late-response cancellation, unclaimed-response expiry and close-time abort. |
+| PLY-10 | Implemented; Dart regressions verified | Bound PUT replies to 64 KiB and GET to 4 MiB with whole-request cancellation and owner checks. |
 | PLY-11 | Implemented compatibility policy; device qualification pending | HTTPS available for Wi-Fi transfer, stream-out and karaoke. HTTP requires explicit session consent; it remains plaintext by design when selected. Certificates must be trusted by receivers; no TLS-error downgrade. |
-| PLY-12 | Implemented; Dart/FFmpeg CI pending | Retain successful encoder output for five minutes after EOF so lagging clients can finish. |
-| PLY-13 | Implemented; Dart/FFmpeg CI pending | Renew the one-hour idle lease on authorized requests, with an explicit 24-hour absolute cap and fixed EOF grace. |
-| PLY-14 | Implemented; Dart CI pending | Random 128-bit salts and PBKDF2-HMAC-SHA256, 210,000 iterations; constant-time comparison; durable attempt throttling; legacy upgrade during successful activation. Four digits remain a local parental control, not strong account authentication. |
-| PLY-15 | Implemented; Dart CI pending | Add MDBList to Android and Dart system-authority-only API domains. |
+| PLY-12 | Implemented; Dart/FFmpeg verified | Retain successful encoder output for five minutes after EOF so lagging clients can finish. |
+| PLY-13 | Implemented; Dart/FFmpeg verified | Renew the one-hour idle lease on authorized requests, with an explicit 24-hour absolute cap and fixed EOF grace. |
+| PLY-14 | Implemented; Dart regressions verified | Random 128-bit salts and PBKDF2-HMAC-SHA256, 210,000 iterations; constant-time comparison; durable attempt throttling; legacy upgrade during successful activation. Four digits remain a local parental control, not strong account authentication. |
+| PLY-15 | Implemented; Dart regressions verified | Add MDBList to Android and Dart system-authority-only API domains. |
 | PLY-16 | Implemented for new writes; legacy migration remains | AES-256-GCM authenticated envelopes bind logical key and OS key identity, authenticate the complete stored value list, and use a distinct OS-key namespace to reject CBC downgrade; random data key is wrapped by webOS keymanager. Existing CBC rows remain readable and upgrade on write. Real webOS key-service qualification and migration of untouched legacy rows remain. |
 | PLY-17 | Partially mitigated; architectural work remains | Native shutdown no longer traps the exit UI; files and native lease remain owned until real acknowledgment. Native cores still run in-process: process isolation, sandbox policy and platform-specific recovery are not implemented. |
-| PLY-18 | Implemented; Dart CI pending | Bounded recursive redaction of serialized Sentry events, nested maps/lists/keys; drop event on serialization/redaction failure. |
+| PLY-18 | Implemented; Dart regressions verified | Bounded recursive redaction of serialized Sentry events, nested maps/lists/keys; drop event on serialization/redaction failure. |
 | PLY-19 | Partially implemented; administrator action remains | Automatic main-branch hosted security checks added. Required checks and branch protection still need repository administration; public PRs must use the owner-mandated isolated restricted-egress sandbox. |
-| PLY-20 | Implemented; CI resolution pending | Root CI dependency resolution now enforces pubspec.lock. |
+| PLY-20 | Implemented; enforced resolution verified | Root CI dependency resolution now enforces pubspec.lock. |
 | PLY-21 | Implemented; scheduled execution pending | Weekly Dependabot across Actions, Pub packages, Go, npm and Python requirements; scheduled Go vulnerability scan. Native vendored sources still require owner maintenance. |
 | PLY-22 | Implemented; Python verified | Mock release qualification and assert the intended failure before dispatch; never invoke gh on a real run from this unit test. |
 | PLY-23 | Guard added; translation work remains | Freeze the reviewed fallback ceiling at 1,244 keys / 44,784 locale entries. No machine-generated strings are represented as reviewed translations. |
 | PLY-24 | Blocked on authentic release trust material | Keep remote catalog updates fail-closed. Do not invent production signing keys; pin only the actual owner-reviewed immutable active MilkRust root. |
-| PLY-25 | Implemented; Python verified | Header deadline before parsing, bounded worker slots, and forwarded-client headers accepted only from loopback reverse proxy. |
+| PLY-25 | Implemented; Python verified | Absolute deadlines for headers and small JSON request bodies, bounded worker slots, and forwarded-client headers accepted only from loopback reverse proxy. Drip-fed headers/bodies cannot renew the deadline. |
 
 ## Qualification backlog
 
 These acceptance items require the specified devices, test accounts, provider approvals or environments. They remain open until evidence is recorded; existing product features and experiments remain available under their established runtime controls.
 
-- **Q01 — Full application qualification**: open; see the original audit for acceptance scope.
-- **Q02 — Profile/session race acceptance**: open; see the original audit for acceptance scope.
-- **Q03 — Backup/restore durability**: open; see the original audit for acceptance scope.
-- **Q04 — Two-device sync and shared book identity**: open; see the original audit for acceptance scope.
-- **Q05 — Discovery and recommendation acceptance**: open; see the original audit for acceptance scope.
-- **Q06 — Publication and browser interoperability**: open; see the original audit for acceptance scope.
-- **Q07 — Connected-source interoperability and scale**: open; see the original audit for acceptance scope.
-- **Q08 — Download and index recovery**: open; see the original audit for acceptance scope.
-- **Q09 — Purchase-entitlement acceptance**: open; see the original audit for acceptance scope.
-- **Q10 — Steam receiver and optional service acceptance**: open; see the original audit for acceptance scope.
-- **Q11 — RomM cores, saves and package signing**: open; see the original audit for acceptance scope.
-- **Q12 — Multiview platform and unfinished surface scope**: open; see the original audit for acceptance scope.
-- **Q13 — Dolby Vision, FEL and acceleration experiments**: open; see the original audit for acceptance scope.
-- **Q14 — Visualizer runtime and formats**: open; see the original audit for acceptance scope.
-- **Q15 — Lending activation and provider boundaries**: open; see the original audit for acceptance scope.
-- **Q16 — Karaoke acceptance and remaining product scope**: open; see the original audit for acceptance scope.
-- **Q17 — LG and Samsung TV qualification**: open; see the original audit for acceptance scope.
-- **Q18 — Accessibility and language quality**: open; see the original audit for acceptance scope.
-- **Q19 — Deployment and supply-chain evidence**: open; see the original audit for acceptance scope.
-- **Q20 — Reconcile implementation and qualification records**: open; see the original audit for acceptance scope.
+- **Q01 — Full application qualification**: open. Full Flutter analysis and the 348 targeted regressions have passed. The complete Dart/widget and repository checker suites are pending the integrated hosted run; required native platform builds and generated-code/device acceptance remain open. Prior successful builds do not qualify this candidate.
+- **Q02 — Profile/session race acceptance**: open. Exercise A→B→A profile transitions with delayed adapter loading, credential refresh, pending reader/media work and settings writes. Verify generation/owner guards using actual backends and platform stores; implemented guards are not evidence of completed device acceptance.
+- **Q03 — Backup/restore durability**: open. Inject download cancellation, malformed imports, profile switches, storage failure and mid-import rollback. Preserve credentials and unrelated profiles; distinguish the PLY-10 network defect from otherwise implemented import ownership protections.
+- **Q04 — Two-device sync and shared book identity**: open. Prove conflict convergence, deletion/tombstone compaction, stale-device rejoin, target failure isolation and encrypted recovery. Explicit shared item/library IDs are required for some cross-provider book matches; title similarity alone must not merge editions.
+- **Q05 — Discovery and recommendation acceptance**: open. Qualify mixed-media decks, saved picks/voting, local taste controls, exact-ID adaptation matching, optional AI fallback and request privacy against actual providers. Measure target-device latency and verify that opt-out/local-only choices stay local.
+- **Q06 — Publication and browser interoperability**: open. Run real EPUB/comic/PDF fixtures across Android WebView, Apple WebKit, Windows WebView2 and the Linux browser lifecycle, including malformed publications, navigation, selection and accessibility. Chromium-only checks cannot qualify every engine.
+- **Q07 — Connected-source interoperability and scale**: open. Test the supported NAS/cloud providers, auth refresh, reconnect, cancellation and large directories on real systems. In particular qualify NFS RPC reuse/read-ahead, SFTP host-key changes and cloud OAuth behavior, and record latency/RAM/I/O budgets.
+- **Q08 — Download and index recovery**: open. Exercise crash/resume, low disk, OS suspension, background transfer, lost source permissions and interrupted indexing. Confirm incomplete scans do not delete unvisited rows, while complete scans remove genuinely deleted entries.
+- **Q09 — Purchase-entitlement acceptance**: open. Use store sandboxes for purchase/restore, replay, invalid or empty transaction history, refunds/revocation and offline operation. Source verification logic exists; this audit did not transact with Apple, Google, Microsoft or TV stores.
+- **Q10 — Steam receiver and optional service acceptance**: open. Qualify native SDK app builds and real account/network/controller/decoder paths, deployed optional services, relay behavior and capture. The isolated H26x test is useful parser evidence, not an end-to-end Steam streaming qualification.
+- **Q11 — RomM cores, saves and package signing**: open. Qualify each supported core/platform package, exact-copy matching, browser/native/stream routes, save restore compatibility, interrupts and storage lifetime. Include the crash/hang containment acceptance from PLY-17.
+- **Q12 — Multiview platform and unfinished surface scope**: open. Detached video-window source is integrated on macOS, Windows and Linux. Native builds, concurrent decoder limits, audio/input ownership and device accessibility need acceptance. Non-video detached surfaces and application-crash playback restart remain explicitly open scope.
+- **Q13 — Dolby Vision, FEL and acceleration experiments**: open. Retain the default-off/experimental boundaries until reference-output, HDR/DV signaling, seeking, synchronization and platform-specific evidence is captured. Ordinary builds should include implemented experiments per repository policy; packaging success is not image-quality proof.
+- **Q14 — Visualizer runtime and formats**: open. Beyond the empty remote trust root, qualify actual helper/runtime packages, patched mpv capability detection, rendering fidelity, driver compatibility and lifecycle on each target. Unsupported .milk2 and link-only community sources must remain accurately labeled.
+- **Q15 — Lending activation and provider boundaries**: open. OverDrive remains disabled by default pending approval, assigned credentials, deployed gateway controls and live authorization/circulation/fulfillment validation. Hoopla and other official handoffs are not equivalent native integrations. Do not remove gates merely because UI/source exists.
+- **Q16 — Karaoke acceptance and remaining product scope**: open. Qualify companion jobs, cancellation/storage quotas, trusted HTTPS phone capture, microphone permissions and real device timing. Licensed catalog, hosted sharing, proprietary-format and live-monitor scope is documented as remaining work rather than supplied by the existing local workflow.
+- **Q17 — LG and Samsung TV qualification**: open. Validate actual supported model/firmware combinations, native package install/signing, remote input, visible frames, HDR/audio passthrough and subtitle paths. LG embedded PGS/no-burn negotiations and older/broader model support remain constrained; Samsung physical-device acceptance is explicitly unqualified in the guide. Native packages do not constitute a full browser client or store approval.
+- **Q18 — Accessibility and language quality**: open. Complete native-speaker review and device checks for large text, RTL, focus, remote/gamepad navigation, screen readers and reduced motion across new flows. Structural translation and widget checks do not establish usability on all supported targets.
+- **Q19 — Deployment and supply-chain evidence**: open. Inspect actual TLS/proxy settings, trusted forwarding headers, secret management, logs/retention, quotas, backup/restore and production resource limits. Separately inventory built binaries, vendored/native advisories and historical secret exposure. Current-tree pattern checks, Go advisory checks and release-script review do not establish these external facts.
+- **Q20 — Reconcile implementation and qualification records**: documentation reconciled; platform evidence remains open. The capability manifest now distinguishes implemented desktop video detachment from non-video detached surfaces and crash playback restart. The coverage report records 5,168 messages, 1,244 fallback keys and 44,784 fallback entries. Older F01–F17 entries remain historical; no device qualification is inferred from these edits.
 
 ## Executed validation
 
 - Go server and healthcheck: `go test -race ./...` passed; upstream coalescing, cancellation, failure cache and refill regressions included.
 - Cloudflare Worker: 14 tests passed.
-- Lending gateway: 10 tests passed, including slow headers and exhausted workers.
-- Karaoke companion TLS regression passed; optional analysis dependencies remain uninstalled locally.
+- Lending gateway: 12 tests passed, including idle headers, drip-fed headers/bodies and exhausted workers.
+- Karaoke companion: 7 tests passed, including TLS admission and drip-fed headers; 3 optional-analysis tests skipped because those dependencies remain uninstalled locally.
 - Workflow security/action-pin checks and locale structural/source checks passed. The broader Python checker suite ran 572 tests: 557 passed, 13 skipped and two failed solely because local Dart was unavailable. Hosted Go vulnerability scanning also passed.
-- Clean hosted Flutter 3.47.1 resolved the enforced lockfile and completed analysis; its initial two lint diagnostics were corrected. Runtime regression execution is pending the updated hosted run. The local SDK bootstrap was rejected by automatic approval review; it was not retried or bypassed.
+- Clean hosted Flutter 3.47.1 resolved the enforced lockfile and passed full analysis plus all 348 targeted Dart/widget/FFmpeg regressions at `fee85b0c5cb03b78d3c7d463ac68dd3503f2b9f6` ([run 42654814752](https://github.com/snapetech-org/pleazyng/actions/runs/42654814752)). The PIN timing failures from the earlier run are corrected. The only remaining failure in this run was canonical formatting of the new webOS index document; its formatter patch has been applied. Complete Dart/widget and repository-checker regression execution is pending the integrated follow-up run. The local SDK bootstrap was rejected by automatic approval review; it was not retried or bypassed.
 
 Deployment changes are not live merely because source is committed. Apply the Worker and gateway/server changes through their existing deployment runbooks, preserving sessions, provider secrets, route bindings and rollback artifacts.

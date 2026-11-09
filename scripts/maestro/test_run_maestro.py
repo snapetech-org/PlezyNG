@@ -231,6 +231,9 @@ class LifecycleTests(unittest.TestCase):
             run_maestro.build_jellyfin_image(config)
 
         self.assertEqual(run_command.call_count, 2)
+        command = run_command.call_args.args[0]
+        refresh = command[command.index("--build-arg") + 1]
+        self.assertRegex(refresh, r"^SECURITY_PACKAGE_REFRESH=\d{4}-\d{2}-\d{2}$")
         sleep.assert_called_once_with(5)
 
     def test_health_wait_rejects_degraded_until_healthy(self) -> None:

@@ -26,7 +26,7 @@ with zipfile.ZipFile(archive) as source:
     if len({row.filename for row in entries}) != len(entries):
         raise SystemExit('Duplicate common-runtime entries.')
     for row in entries:
-        if not row.filename.startswith('include/') or row.is_dir():
+        if not row.filename.startswith(('include/', 'runner_base/public/')) or row.is_dir():
             continue
         name = PurePosixPath(row.filename)
         if (name.is_absolute() or '..' in name.parts or '\\' in row.filename
@@ -62,16 +62,17 @@ includes=(-I "$scratch_dir/include" -iquote "$plugin" -I "$plugin/include"
           -I "$plugin/../src" -I "$plugin/../src/soloud/include" -I "$plugin/../src/soloud/src")
 failures=0
 video_plugin="$ROOT/packages/webos_plugins/video_player_drm/webos"
-for unit in "$plugin"/*.cc "$video_plugin"/*.cc; do
+for unit in "$plugin"/*.cc "$video_plugin"/*.cc "$ROOT/webos/runner/main.cc"; do
   printf 'Checking webOS ARM source: %s\n' "${unit##*/}"
   if ! "${compiler[@]}" -std=c++17 -fsyntax-only -Wall -Werror \
       -Wno-unused-command-line-argument -DFLUTTER_PLUGIN_IMPL \
-      "${flags[@]}" "${includes[@]}" -I "$video_plugin/include" "$unit"; then
+      "${flags[@]}" "${includes[@]}" -I "$video_plugin/include" \
+      -I "$scratch_dir/runner_base/public" -I "$ROOT/webos" "$unit"; then
     failures=$((failures + 1))
   fi
 done
 if (( failures != 0 )); then
-  printf 'WebOS media plugins have %s incompatible native translation units.\n' "$failures" >&2
+  printf 'WebOS media plugins/runner have %s incompatible native translation units.\n' "$failures" >&2
   exit 1
 fi
-echo 'All webOS audio/video plugin translation units match the pinned ARM SDK.'
+echo 'All webOS audio/video plugins and the navigation runner match the pinned ARM SDK.'

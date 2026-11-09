@@ -126,7 +126,8 @@ class _InputModeTrackerState extends State<InputModeTracker> with WidgetsBinding
     // API 36 can deliver native Back between an already-handled KeyDown and
     // KeyUp after IME use. The key owner will act exactly once on its chosen
     // phase. Gestures and keys declined at the true root remain platform-owned.
-    return defaultTargetPlatform == TargetPlatform.android && BackPressGate.ownsHeldPlatformBack;
+    if (defaultTargetPlatform == TargetPlatform.android && BackPressGate.ownsHeldPlatformBack) return true;
+    return SystemBackIntent.dispatch();
   }
 
   /// A Back KeyDown acted on a focus chain that has since been torn down, so

@@ -22,6 +22,7 @@ import 'package:window_manager/window_manager.dart';
 import '../i18n/strings.g.dart';
 import '../services/app_exit_service.dart';
 import '../services/tvos_system_navigation_service.dart';
+import '../services/webos_system_navigation_service.dart';
 import '../services/update_service.dart';
 import '../utils/app_logger.dart';
 import '../widgets/auth_error_banner.dart';
@@ -316,8 +317,8 @@ List<NavigationTab> mainScreenPrimaryMobileBottomNavigationTabs({
 }
 
 @visibleForTesting
-bool shouldPassTvosMenuToSystem({
-  required bool isAppleTV,
+bool shouldPassTvBackToSystem({
+  required bool supportsSystemBackPassthrough,
   required bool isShowingProfileSelection,
   required bool isOverlaySheetOpen,
   required bool isRouteCurrent,
@@ -325,7 +326,7 @@ bool shouldPassTvosMenuToSystem({
   required bool hasVisibleTabs,
   required bool isCurrentTabRoot,
 }) {
-  return isAppleTV &&
+  return supportsSystemBackPassthrough &&
       isSidebarFocused &&
       !isShowingProfileSelection &&
       !isOverlaySheetOpen &&
@@ -718,7 +719,7 @@ class _MainScreenState extends State<MainScreen>
         CoveredRouteFocusBoundary.requestInitialFocus(context, _contentFocusScope);
       }
 
-      _updateTvosMenuPassthrough();
+      _updateTvBackPassthrough();
 
       // Check for updates on startup
       unawaited(_checkForUpdatesOnStartup());
@@ -949,7 +950,7 @@ class _MainScreenState extends State<MainScreen>
   /// passthrough for as long as it is up.
   Future<void> _pushProfileSelection() async {
     _isShowingProfileSelection = true;
-    _setTvosMenuPassthrough(false);
+    _setTvBackPassthrough(false);
     // A link waits for the viewer's choice; a different profile acts on it
     // in its own session.
     _detachDeepLinks();
@@ -959,7 +960,7 @@ class _MainScreenState extends State<MainScreen>
     ).push(MaterialPageRoute(builder: (context) => const ProfileSwitchScreen(requireSelection: true)));
     if (!mounted) return;
     _isShowingProfileSelection = false;
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
     _attachDeepLinks();
   }
 
@@ -1209,7 +1210,7 @@ class _MainScreenState extends State<MainScreen>
     _sidebarFocusScope.dispose();
     _contentFocusScope.removeListener(_syncSidebarFocusWithContent);
     _contentFocusScope.dispose();
-    _setTvosMenuPassthrough(false);
+    _setTvBackPassthrough(false);
 
     // Clean up only callbacks still owned by this screen. A replacement
     // MainScreen may already have installed its callbacks this frame.
@@ -1440,7 +1441,7 @@ class _MainScreenState extends State<MainScreen>
       _mountedTabs.add(nextTab);
       _screens = _buildScreens(_isOffline);
     });
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
 
     if (restoreContentFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1547,7 +1548,7 @@ class _MainScreenState extends State<MainScreen>
         _onScreen<FocusableTab>(currentTab, (screen) => screen.focusActiveTabIfReady());
       });
     }
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
 
     // Refresh sidebar focus after rebuilding navigation. Not when the content
     // held focus: it keeps it (or has it restored above), and pulling it into
@@ -1587,7 +1588,7 @@ class _MainScreenState extends State<MainScreen>
     // and overwrites lastFocusedKey (e.g. to the Libraries toggle button).
     final targetKey = _sideNavKey.currentState?.lastFocusedKey;
     setState(() => _isSidebarFocused = true);
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
     _sidebarFocusScope.requestFocus();
     // Focus the active item after the focus scope has focus
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1597,7 +1598,7 @@ class _MainScreenState extends State<MainScreen>
 
   void _focusContent({bool restorePreviousFocus = true}) {
     setState(() => _isSidebarFocused = false);
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
     if (restorePreviousFocus) {
       _contentFocusScope.requestFocus();
     }
@@ -1616,7 +1617,7 @@ class _MainScreenState extends State<MainScreen>
   void _syncSidebarFocusWithContent() {
     if (!mounted || !_isSidebarFocused || !_contentFocusScope.hasFocus) return;
     setState(() => _isSidebarFocused = false);
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
   }
 
   void _handleOverlaySheetOpenChanged(bool open) {
@@ -1628,7 +1629,7 @@ class _MainScreenState extends State<MainScreen>
     } else {
       _scheduleScreensaver();
     }
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
   }
 
   void _handleScreensaverSettingsChanged() {
@@ -1854,10 +1855,10 @@ class _MainScreenState extends State<MainScreen>
         : SideNavigationRailState.collapsedWidthForContext(context);
   }
 
-  bool get _shouldPassTvosMenuToSystem {
+  bool get _shouldPassTvBackToSystem {
     final tabs = _getVisibleTabs(_isOffline);
-    return shouldPassTvosMenuToSystem(
-      isAppleTV: PlatformDetector.isAppleTV(),
+    return shouldPassTvBackToSystem(
+      supportsSystemBackPassthrough: PlatformDetector.isAppleTV() || PlatformDetector.isWebOSBuild(),
       isShowingProfileSelection: _isShowingProfileSelection,
       isOverlaySheetOpen: _isOverlaySheetOpen,
       isRouteCurrent: ModalRoute.of(context)?.isCurrent == true,
@@ -1867,14 +1868,17 @@ class _MainScreenState extends State<MainScreen>
     );
   }
 
-  void _setTvosMenuPassthrough(bool enabled) {
-    if (!PlatformDetector.isAppleTV()) return;
-    unawaited(TvosSystemNavigationService.setMenuPassthroughEnabled(enabled));
+  void _setTvBackPassthrough(bool enabled) {
+    if (PlatformDetector.isAppleTV()) {
+      unawaited(TvosSystemNavigationService.setMenuPassthroughEnabled(enabled));
+    } else if (PlatformDetector.isWebOSBuild()) {
+      unawaited(WebosSystemNavigationService.setBackPassthroughEnabled(enabled));
+    }
   }
 
-  void _updateTvosMenuPassthrough() {
+  void _updateTvBackPassthrough() {
     if (!mounted) return;
-    _setTvosMenuPassthrough(_shouldPassTvosMenuToSystem);
+    _setTvBackPassthrough(_shouldPassTvBackToSystem);
   }
 
   /// Owner gate for the one Back the content region consumes before the route:
@@ -1907,7 +1911,7 @@ class _MainScreenState extends State<MainScreen>
       _lastBackPressAt = null;
       appLogger.d(
         'tvOS Menu reached MainScreen at the home root: '
-        'passthrough=$_shouldPassTvosMenuToSystem picker=$_isShowingProfileSelection '
+        'passthrough=$_shouldPassTvBackToSystem picker=$_isShowingProfileSelection '
         'focus=${FocusManager.instance.primaryFocus?.debugLabel}',
       );
       return;
@@ -2039,7 +2043,7 @@ class _MainScreenState extends State<MainScreen>
     NewEpisodeNotificationService.instance.setForeground(false);
     _screensaverIdleTimer?.cancel();
     _dismissContentScreensaver();
-    _setTvosMenuPassthrough(false);
+    _setTvBackPassthrough(false);
     // A pushed detail route covers the bottom bar — drop the mini-player to
     // the true (safe-area) bottom while it's hidden.
     _miniPlayerInsets?.setNavBarSuspended(true);
@@ -2057,7 +2061,7 @@ class _MainScreenState extends State<MainScreen>
     );
     _scheduleScreensaver();
     // Called when returning to this route from a child route (e.g., from video player)
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
     _miniPlayerInsets?.setNavBarSuspended(false);
     if (_currentTab == NavigationTabId.discover) {
       _onScreen<TabVisibilityAware>(NavigationTabId.discover, (screen) => screen.onTabShown());
@@ -2148,7 +2152,7 @@ class _MainScreenState extends State<MainScreen>
       }
       if (tab != NavigationTabId.explore) _explorePinApprovedProfileId = null;
     });
-    _updateTvosMenuPassthrough();
+    _updateTvBackPassthrough();
 
     if (previousTab != tab) {
       // The previous tab is necessarily mounted because it was current.

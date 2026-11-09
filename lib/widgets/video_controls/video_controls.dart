@@ -400,7 +400,7 @@ class PlayerNavigationCoordinator {
     final disposition = resolvePlayerBackDisposition(
       navigationKey: navigationKey,
       contentStripVisible: chromeController.contentStripVisible,
-      controlsVisible: isChromePresented(),
+      controlsVisible: chromeController.controlsVisible && isChromePresented(),
       physicalEscapeExitsFullscreen: _physicalEscapeExitsFullscreen(),
     );
     _applyDisposition(disposition);
@@ -415,7 +415,9 @@ class PlayerNavigationCoordinator {
         unawaited(_handlePhysicalEscape());
         return;
       case PlayerBackDisposition.hideControls:
-        chromeController.hide();
+        // Explicit Back overrides auto-hide holds (paused scrubbing/pointer
+        // interaction). Inner sheets and content strips have already gone.
+        chromeController.hide(ignoreHolds: true);
         return;
       case PlayerBackDisposition.exitPlayer:
         exitPlayer();
@@ -426,14 +428,14 @@ class PlayerNavigationCoordinator {
   Future<void> _handlePhysicalEscape() async {
     if (_handlingPhysicalEscape) return;
     _handlingPhysicalEscape = true;
-    final chromeWasPresented = isChromePresented();
+    final chromeWasPresented = chromeController.controlsVisible && isChromePresented();
     try {
       if (await exitFullscreenIfActive()) return;
       if (!isActive()) return;
       final disposition = resolvePlayerBackDisposition(
         navigationKey: PlayerNavigationKey.back,
         contentStripVisible: chromeController.contentStripVisible,
-        controlsVisible: chromeWasPresented || isChromePresented(),
+        controlsVisible: chromeWasPresented || (chromeController.controlsVisible && isChromePresented()),
       );
       _applyDisposition(disposition);
     } finally {

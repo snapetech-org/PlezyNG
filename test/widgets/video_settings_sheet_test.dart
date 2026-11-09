@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/focus/focusable_slider.dart';
+import 'package:plezy/focus/input_mode_tracker.dart';
 import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_backend.dart';
 import 'package:plezy/media/media_file_info.dart';
@@ -141,6 +142,49 @@ void main() {
     expect(SettingsService.instance.read(SettingsService.audioChannelLimit), AudioChannelLimit.surround51);
     expect(find.byType(VideoSettingsSheet), findsNothing);
   });
+
+  for (final source in ['system', 'remote']) {
+    for (final submenu in ['Audio Output', 'Playback Speed', 'Audio Channels']) {
+      testWidgets('$source Back returns from $submenu before closing settings', (tester) async {
+        final player = _FakeSettingsPlayer(
+          state: const PlayerState(
+            audioDevices: [AudioDevice(name: 'auto', description: 'Autoselect device')],
+          ),
+        );
+        await _pumpSheetViaOverlayRoute(tester, player);
+        await tester.scrollUntilVisible(find.text(submenu), 300, scrollable: find.byType(Scrollable).first);
+        await tester.tap(find.text(submenu));
+        await tester.pumpAndSettle();
+
+        if (source == 'system') {
+          await tester.binding.handlePopRoute();
+        } else {
+          await tester.sendKeyEvent(
+            LogicalKeyboardKey.goBack,
+            physicalKey: PhysicalKeyboardKey.escape,
+            platform: 'android',
+          );
+        }
+        await tester.pumpAndSettle();
+
+        expect(find.byType(VideoSettingsSheet), findsOneWidget);
+        expect(find.text('Playback Speed'), findsOneWidget, reason: 'Back must restore the parent options menu');
+
+        if (source == 'system') {
+          await tester.binding.handlePopRoute();
+        } else {
+          await tester.sendKeyEvent(
+            LogicalKeyboardKey.goBack,
+            physicalKey: PhysicalKeyboardKey.escape,
+            platform: 'android',
+          );
+        }
+        await tester.pumpAndSettle();
+        expect(find.byType(VideoSettingsSheet), findsNothing);
+        expect(find.text('Open settings'), findsOneWidget);
+      }, variant: TargetPlatformVariant.only(TargetPlatform.linux));
+    }
+  }
 
   // #2744: the pick has to outlive this player, or every new video starts back
   // on "Autoselect device". The Audio Output row is a desktop/TV control.
@@ -741,21 +785,23 @@ Future<void> _pumpSheet(
 
 Future<void> _pumpSheetViaOverlayRoute(WidgetTester tester, Player player) async {
   await tester.pumpWidget(
-    MaterialApp(
-      theme: ThemeData(extensions: const [testMonoTokensAnimated]),
-      home: OverlaySheetHost(
-        child: Scaffold(
-          body: Builder(
-            builder: (context) => TextButton(
-              onPressed: () => unawaited(
-                OverlaySheetController.of(context).show<void>(
-                  builder: (_) => VideoSettingsSheet(
-                    player: player,
-                    trackControlsState: const TrackControlsState(canControl: true),
+    InputModeTracker(
+      child: MaterialApp(
+        theme: ThemeData(extensions: const [testMonoTokensAnimated]),
+        home: OverlaySheetHost(
+          child: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => unawaited(
+                  OverlaySheetController.of(context).show<void>(
+                    builder: (_) => VideoSettingsSheet(
+                      player: player,
+                      trackControlsState: const TrackControlsState(canControl: true),
+                    ),
                   ),
                 ),
+                child: const Text('Open settings'),
               ),
-              child: const Text('Open settings'),
             ),
           ),
         ),

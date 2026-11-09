@@ -115,6 +115,48 @@ class BackPressGate {
   }
 }
 
+/// Native/gesture Back follows the same innermost focused owner as key Back.
+/// A single action dispatch avoids notifying every PopScope on the route,
+/// which would close a submenu and its parent on the same press.
+class SystemBackIntent extends Intent {
+  const SystemBackIntent();
+
+  static bool dispatch() {
+    final context = FocusManager.instance.primaryFocus?.context;
+    if (context == null) return false;
+    // Focus may still belong to the covered route during a push. Never let
+    // that route act underneath the one that now owns the screen.
+    var route = ModalRoute.of(context);
+    while (route != null) {
+      if (!route.isCurrent) return false;
+      final navigatorContext = route.navigator?.context;
+      if (navigatorContext == null) break;
+      route = ModalRoute.of(navigatorContext);
+    }
+    return Actions.maybeInvoke(context, const SystemBackIntent()) == true;
+  }
+}
+
+class SystemBackHandler extends StatelessWidget {
+  const SystemBackHandler({super.key, required this.onBack, required this.child});
+
+  final VoidCallback onBack;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Actions(
+    actions: {
+      SystemBackIntent: CallbackAction<SystemBackIntent>(
+        onInvoke: (_) {
+          onBack();
+          return true;
+        },
+      ),
+    },
+    child: child,
+  );
+}
+
 /// A non-focusable [Focus] that consumes Back for its subtree with its own
 /// [BackPressGate], for owners that are not already a `State` holding a gate:
 /// a sheet sub-page returning to its parent, a screen region whose Back moves
@@ -146,13 +188,16 @@ class _BackKeyOwnerState extends State<BackKeyOwner> {
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      canRequestFocus: false,
-      skipTraversal: true,
-      includeSemantics: false,
-      debugLabel: 'BackKeyOwner',
-      onKeyEvent: _handleKeyEvent,
-      child: widget.child,
+    return SystemBackHandler(
+      onBack: widget.onBack,
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        includeSemantics: false,
+        debugLabel: 'BackKeyOwner',
+        onKeyEvent: _handleKeyEvent,
+        child: widget.child,
+      ),
     );
   }
 }

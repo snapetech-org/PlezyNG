@@ -645,6 +645,24 @@ void main() {
       expect(exits, 1);
     });
 
+    testWidgets('paused remote Back hides held chrome, then exits during its fade', (tester) async {
+      final chromeController = PlayerChromeController();
+      addTearDown(chromeController.dispose);
+      chromeController.setPlaying(false);
+      chromeController.hold(PlayerChromeHold.pointerPress);
+      var exits = 0;
+      final coordinator = coordinatorFor(chromeController, exitPlayer: () => exits++);
+      await pumpNavigationFocus(tester, coordinator);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.gameButtonB);
+      expect(chromeController.controlsVisible, isFalse);
+      expect(chromeController.controlsPresented, isTrue);
+      expect(exits, 0);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.gameButtonB);
+      expect(exits, 1, reason: 'another press must leave the player even before the OSD fade finishes');
+    });
+
     testWidgets('Back exits during pre-first-frame loading even when controls default visible', (tester) async {
       final chromeController = PlayerChromeController();
       addTearDown(chromeController.dispose);

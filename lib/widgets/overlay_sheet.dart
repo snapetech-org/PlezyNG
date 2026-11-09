@@ -498,16 +498,13 @@ class _OverlaySheetHostState extends State<OverlaySheetHost> with SingleTickerPr
   }
 
   void _autoFocus({bool clearSelectSuppression = true}) {
-    final focusDescendant = InputModeTracker.isKeyboardMode(context, listen: false);
-
     // First post-frame: the FocusScope is now built and the node is attached.
-    // Always grab scope focus so key events (especially back) are trapped, even
-    // when a pointer opened the sheet. In keyboard mode, a second post-frame
-    // callback focuses the first descendant for dpad navigation.
+    // Then focus inside the page even when a pointer opened it: focusing only
+    // the outer scope bypasses the submenu's Back owner. InputModeTracker
+    // still suppresses the focus ring for pointer users.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_isOpen) return;
       _sheetFocusScopeNode.requestFocus();
-      if (!focusDescendant) return;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_isOpen) return;
         // If the current top entry has an initialFocusNode that is attached,
@@ -874,9 +871,15 @@ class _OverlaySheetHostState extends State<OverlaySheetHost> with SingleTickerPr
 
     // A host above Scaffold does not inherit its keyboard-resized body.
     // Reduce the overlay's available height so focused fields stay visible.
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: sheet,
+    return SystemBackHandler(
+      onBack: () {
+        // Consume Back during close as well: the fading sheet still owns focus.
+        if (!_isClosing) _handleBack();
+      },
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+        child: sheet,
+      ),
     );
   }
 }

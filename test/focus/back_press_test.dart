@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/focus/back_press.dart';
+import 'package:plezy/focus/input_mode_tracker.dart';
 import 'package:plezy/utils/platform_detector.dart';
 
 KeyDownEvent _down(LogicalKeyboardKey key) =>
@@ -86,6 +89,45 @@ void main() {
   });
 
   group('BackKeyOwner', () {
+    testWidgets('system Back chooses only the innermost owner and falls through on a covered route', (tester) async {
+      final navigator = GlobalKey<NavigatorState>();
+      final focus = FocusNode();
+      addTearDown(focus.dispose);
+      var innerBacks = 0;
+      var outerBacks = 0;
+      await tester.pumpWidget(
+        InputModeTracker(
+          child: MaterialApp(
+            navigatorKey: navigator,
+            home: BackKeyOwner(
+              onBack: () => outerBacks++,
+              child: BackKeyOwner(
+                onBack: () => innerBacks++,
+                child: Focus(focusNode: focus, autofocus: true, child: const SizedBox.expand()),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.binding.handlePopRoute();
+      expect(innerBacks, 1);
+      expect(outerBacks, 0);
+
+      unawaited(
+        navigator.currentState!.push<void>(
+          MaterialPageRoute(requestFocus: false, builder: (_) => const Scaffold(body: Text('Covered'))),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(focus.hasFocus, isTrue, reason: 'exercise stale focus below the top route');
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Covered'), findsNothing);
+      expect(innerBacks, 1);
+      expect(outerBacks, 0);
+    });
+
     testWidgets('consumes Back for its subtree and lets other keys through', (tester) async {
       var backs = 0;
       final outer = <LogicalKeyboardKey>[];

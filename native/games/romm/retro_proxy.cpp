@@ -8,6 +8,9 @@
 #include "retro_windows_sandbox.h"
 #include "retro_audio.h"
 #include <mutex>
+#ifdef PLEZY_RETRO_TEST_NO_AUDIO
+#include <cstdio>
+#endif
 #if defined(_WIN32)
 #define API extern "C" __declspec(dllexport)
 #else
@@ -18,6 +21,16 @@ using namespace plezy::retro;
 using plezy::process::BytePipe;
 namespace child = plezy::process::child_detail;
 namespace {
+void Diagnostic(const std::exception& error) {
+#ifdef PLEZY_RETRO_TEST_NO_AUDIO
+  std::fprintf(stderr, "Isolated worker: %s\n", error.what());
+#ifdef _WIN32
+  std::fprintf(stderr, "Windows error: %lu\n", GetLastError());
+#endif
+#else
+  (void)error;
+#endif
+}
 std::recursive_mutex mutex;
 std::shared_ptr<child::Control> retiring;
 std::filesystem::path Helper() {
@@ -101,7 +114,8 @@ API int plezy_retro_has_core(const char* path) {
     Session probe(path); Bytes body; Text(body, probe.core);
     const auto result = probe.Request(Command::Probe, body, 8); Reader reader(result);
     const auto available = reader.U32(); reader.End(); Check(available <= 1); return available;
-  } catch (...) { return 0; }
+  } catch (const std::exception& error) { Diagnostic(error); return 0; }
+  catch (...) { return 0; }
 }
 API int plezy_retro_open(const char* core, const char* rom, const char* system, const char* saves) {
   std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -113,7 +127,8 @@ API int plezy_retro_open(const char* core, const char* rom, const char* system, 
     Reader reader(result); const auto rate = reader.U32(); session->fps = reader.Double(); session->identity = reader.Text(512); reader.End();
     Check(rate >= 8000 && rate <= 192000 && std::isfinite(session->fps) && session->fps >= 15 && session->fps <= 120);
     session->audio = std::make_unique<AudioOutput>(rate); session->healthy = true; return 1;
-  } catch (...) { Stop(); return 0; }
+  } catch (const std::exception& error) { Diagnostic(error); Stop(); return 0; }
+  catch (...) { Stop(); return 0; }
 }
 API void plezy_retro_close() { std::lock_guard<std::recursive_mutex> lock(mutex); Stop(); }
 API int plezy_retro_shutdown_complete() { std::lock_guard<std::recursive_mutex> lock(mutex); return !session && Reaped() ? 1 : 0; }

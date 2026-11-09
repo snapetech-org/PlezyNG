@@ -17,7 +17,9 @@ class WindowsSandbox {
   PSECURITY_DESCRIPTOR security_ = nullptr;
   HANDLE lease_ = INVALID_HANDLE_VALUE;
   std::filesystem::path root_;
-  static void Require(bool value) { if (!value) throw std::runtime_error("Could not prepare emulator AppContainer"); }
+  static void Require(bool value, const char* operation = "prepare AppContainer") {
+    if (!value) throw std::runtime_error(std::string("Could not ") + operation + " (Windows error " + std::to_string(GetLastError()) + ")");
+  }
   static void Remove(const std::filesystem::path& path) noexcept {
     const auto flags = GetFileAttributesW(path.c_str());
     if (flags == INVALID_FILE_ATTRIBUTES) return;
@@ -66,10 +68,10 @@ class WindowsSandbox {
   void Copy(const std::filesystem::path& source, const std::filesystem::path& target, uintmax_t maximum) {
     Require(std::filesystem::is_regular_file(source) && !std::filesystem::is_symlink(source));
     Require(std::filesystem::file_size(source) <= maximum);
-    Require(CopyFileW(source.c_str(), target.c_str(), TRUE) != 0);
+    Require(CopyFileW(source.c_str(), target.c_str(), TRUE) != 0, "copy worker resource");
     // Do not rely on CopyFile's OS-version-specific security propagation.
     Require(SetFileSecurityW(target.c_str(), DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION |
-      LABEL_SECURITY_INFORMATION, security_) != 0);
+      LABEL_SECURITY_INFORMATION, security_) != 0, "restrict worker resource ACL");
   }
  public:
   std::filesystem::path helper, core, rom, system, saves;
@@ -79,7 +81,7 @@ class WindowsSandbox {
       constexpr auto profile = L"Pleazyng.Romm.Core";
       auto result = CreateAppContainerProfile(profile, L"Pleazyng emulator", L"Isolated bundled software cores", nullptr, 0, &sid_);
       if (result == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS)) result = DeriveAppContainerSidFromAppContainerName(profile, &sid_);
-      Require(SUCCEEDED(result) && sid_);
+      Require(SUCCEEDED(result) && sid_, "create AppContainer identity");
       wchar_t temporary[32768]; const auto count = GetTempPathW(32768, temporary);
       Require(count && count < 32768);
       CleanupStale(temporary);
@@ -101,7 +103,7 @@ class WindowsSandbox {
       Require(ConvertStringSecurityDescriptorToSecurityDescriptorW(sddl.c_str(), SDDL_REVISION_1, &security_, nullptr) != 0);
       SECURITY_ATTRIBUTES attributes{sizeof(attributes), security_, FALSE};
       const bool created = CreateDirectoryW(root_.c_str(), &attributes) != 0;
-      Require(created);
+      Require(created, "create worker stage");
       lease_ = CreateFileW((root_ / L"session.lease").c_str(), GENERIC_READ | GENERIC_WRITE,
         FILE_SHARE_READ, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
       Require(lease_ != INVALID_HANDLE_VALUE);

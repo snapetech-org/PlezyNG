@@ -1,10 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include <cstdio>
 #include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#if defined(__linux__)
+#if defined(__ANDROID__)
+#include <sys/resource.h>
+#include <unistd.h>
+
+#include "retro_input_files.h"
+#elif defined(__linux__)
 #include <fcntl.h>
 #include <linux/audit.h>
 #include <linux/filter.h>
@@ -28,7 +34,31 @@ namespace plezy::retro {
 // No fallback to an unrestricted core if the OS cannot enforce the boundary.
 inline void RestrictCore(
     const std::string& core, const std::string& rom, const std::string& system, const std::string& saves) {
-#if defined(__linux__)
+#if defined(__ANDROID__)
+  const auto uid = getuid() % 100000;
+  if (uid < 90000 || uid > 99999 || !inputs::configured || core != inputs::core ||
+      (!rom.empty() && (!inputs::files.count(rom) || system != "/system" || saves != "/saves")))
+    throw std::runtime_error("Emulator requires an Android isolated service");
+  const rlimit dumps{0, 0};
+  if (setrlimit(RLIMIT_CORE, &dumps)) throw std::runtime_error("Could not disable emulator core dumps");
+  // The Android runtime already reserves its own heap. Bound further data
+  // mappings without claiming that this is a cgroup-wide resident-memory cap.
+  FILE* status = fopen("/proc/self/statm", "r");
+  unsigned long pages[6]{};
+  const auto count =
+      status
+          ? fscanf(status, "%lu %lu %lu %lu %lu %lu", &pages[0], &pages[1], &pages[2], &pages[3], &pages[4], &pages[5])
+          : 0;
+  if (status) fclose(status);
+  const auto pageSize = sysconf(_SC_PAGESIZE);
+  if (count != 6 || pageSize <= 0 || pages[5] > (8ull * 1024 * 1024 * 1024) / pageSize)
+    throw std::runtime_error("Could not bound emulator allocations");
+  rlimit limit{};
+  if (getrlimit(RLIMIT_DATA, &limit)) throw std::runtime_error("Could not inspect emulator allocation limit");
+  limit.rlim_cur = limit.rlim_max =
+      static_cast<rlim_t>(std::min<uint64_t>(limit.rlim_max, uint64_t(pages[5]) * pageSize + 512ull * 1024 * 1024));
+  if (setrlimit(RLIMIT_DATA, &limit)) throw std::runtime_error("Could not limit emulator allocations");
+#elif defined(__linux__)
   const int abi = static_cast<int>(syscall(SYS_landlock_create_ruleset, nullptr, 0, LANDLOCK_CREATE_RULESET_VERSION));
   if (abi < 3) throw std::runtime_error("Emulator isolation requires Landlock ABI 3 or later");
   // ABI 3 includes truncate; later rights are handled where supported.

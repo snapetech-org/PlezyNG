@@ -14,22 +14,8 @@
 using namespace plezy::retro;
 using plezy::process::BytePipe;
 
-int main(int argc, char** argv) {
+int RommWorkerMain(BytePipe::Handle channel) {
   try {
-    Check(argc == 3 && std::string(argv[1]) == "--plezy-retro-pipe");
-    char* end = nullptr;
-    const auto raw = std::strtoull(argv[2], &end, 10);
-    Check(end && !*end && raw);
-#ifdef _WIN32
-    const auto channel = reinterpret_cast<HANDLE>(static_cast<uintptr_t>(raw));
-#else
-    Check(raw == 3);
-    const auto channel = static_cast<int>(raw);
-#if defined(__linux__)
-    const auto parent = getppid();
-    Check(parent > 1 && prctl(PR_SET_PDEATHSIG, SIGKILL) == 0 && getppid() == parent);
-#endif
-#endif
     BytePipe pipe(channel);
     uint32_t sequence = 0;
     bool opened = false;
@@ -164,3 +150,26 @@ int main(int argc, char** argv) {
     std::_Exit(2);
   }
 }
+#ifndef __ANDROID__
+int main(int argc, char** argv) {
+  try {
+    Check(argc == 3 && std::string(argv[1]) == "--plezy-retro-pipe");
+    char* end = nullptr;
+    const auto raw = std::strtoull(argv[2], &end, 10);
+    Check(end && !*end && raw);
+#ifdef _WIN32
+    const auto channel = reinterpret_cast<HANDLE>(static_cast<uintptr_t>(raw));
+#else
+    Check(raw == 3);
+    const auto channel = static_cast<int>(raw);
+#if defined(__linux__)
+    const auto parent = getppid();
+    Check(parent > 1 && prctl(PR_SET_PDEATHSIG, SIGKILL) == 0 && getppid() == parent);
+#endif
+#endif
+    return RommWorkerMain(channel);
+  } catch (...) {
+    std::_Exit(2);
+  }
+}
+#endif

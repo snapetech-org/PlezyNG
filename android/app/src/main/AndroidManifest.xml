@@ -62,6 +62,12 @@
             android:process=":milkrust_visualizer"
             android:exported="false"
             android:stopWithTask="true" />
+        <service
+            android:name="com.edde746.plezy.games.RommIsolatedService"
+            android:process=":romm_isolated"
+            android:isolatedProcess="true"
+            android:exported="false"
+            android:stopWithTask="true" />
 
         <uses-library android:name="android.car" android:required="false" />
         <!-- Qualcomm DSP RPC is a vendor library used by the optional QNN HTP runtime. -->

@@ -922,6 +922,8 @@ class PlezyActivity : FlutterActivity() {
 
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
+    runCatching { com.edde746.plezy.games.RommProcessBroker.attach(applicationContext) }
+      .onFailure { android.util.Log.w("RomM", "Isolated emulator service is unavailable") }
     flutterEngine.plugins.add(MpvPlayerPlugin())
     flutterEngine.plugins.add(MpvWorkspacePlayerPlugin())
     flutterEngine.plugins.add(ExoPlayerPlugin())

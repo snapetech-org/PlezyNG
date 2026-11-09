@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Isolate Android RomM cores in a permissionless service with a distinct UID. Pass only read-only game/firmware descriptors through a bounded virtual filesystem, retain audio and saves in the app, and wait for Android's process-death notification before releasing a session. Add device-runtime fault and access-boundary tests.
+
 - Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.
 
 - Publish a responsive website feature comparison and link it from About and the repository. Use neutral capability names, concise comparison cells and linked evidence; preserve the current logo.

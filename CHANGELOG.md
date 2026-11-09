@@ -6,6 +6,8 @@
 
 - Remove aerynOS from supported release channels and packaging at the owner's request.
 
+- Retry the nested Dolby Vision Swift package resolution once from clean task-owned state when Xcode 26 aborts inside its package-graph model; ordinary resolver failures still fail immediately.
+
 - Keep mixed-library search expectations aligned with the supported Jellyfin/Emby book and audiobook item types.
 
 - Install XcodeGen and Git LFS in Apple native CI before exercising generated Dolby Vision projects, matching the release jobs on both Intel and Apple-Silicon hosted Macs.

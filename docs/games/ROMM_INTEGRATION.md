@@ -144,7 +144,7 @@ source pin set. No emulator executable is downloaded at runtime.
 Apple builds stage the entire host/core/source set before replacing the previous
 set, and verify the cache's file contents, permissions and framework symlinks.
 Android release inspection requires the proxy, worker and all three cores per ABI, their exported
-interfaces, alignment and dependencies, and the matching source receipts.
+interfaces, alignment and dependencies, and the matching source receipts. The proxy cannot link a worker/core as a startup dependency. Apple pods link only the proxy; macOS copies and signs core frameworks separately for the helper.
 The desktop install steps run after Flutter's bundle cleanup so the cleanup
 cannot delete the just-installed host.
 

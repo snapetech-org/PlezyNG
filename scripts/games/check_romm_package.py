@@ -53,6 +53,7 @@ def check_romm(archive, abis, readelf, temporary, *, is_apk):
     host = (ROOT / 'native/games/romm/retro_api.h').read_text()
     host_exports = set(re.findall(r'\bPLEZY_RETRO_EXPORT\s+[^\n(]*?\b(plezy_retro_\w+)\(', host))
     host_exports.add('Java_com_edde746_plezy_games_RommProcessBroker_initialize')
+    host_exports.add('Java_com_edde746_plezy_games_RommProcessBroker_readOnlyInputFlags')
     worker_exports = {'Java_com_edde746_plezy_games_RommIsolatedService_runWorker'}
     if len(host_exports) < 10:
         raise ValueError('RomM host export contract is incomplete')
@@ -68,6 +69,8 @@ def check_romm(archive, abis, readelf, temporary, *, is_apk):
                    worker_exports if name.endswith('/libplezy_retro_worker.so') else CORE_EXPORTS)
         inspect_elf(details, abi, exports)
         needed = set(re.findall(r'\(NEEDED\).*\[([^\]]+)\]', details))
+        if name.endswith('/libplezy_retro.so') and needed & (filenames - {'libplezy_retro.so'}):
+            raise ValueError('RomM app proxy must not link the worker or cores into the app process')
         for dependency in needed - SYSTEM_LIBRARIES:
             if '/' in dependency or '\\' in dependency:
                 raise ValueError('Invalid RomM runtime dependency')

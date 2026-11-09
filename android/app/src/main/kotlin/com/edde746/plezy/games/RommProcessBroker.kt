@@ -34,6 +34,9 @@ object RommProcessBroker {
   }
 
   @JvmStatic private external fun initialize()
+  // O_CLOEXEC exists in the NDK on every supported device, while the framework
+  // OsConstants field was only exposed in API 27. Preserve atomic close-on-exec.
+  @JvmStatic private external fun readOnlyInputFlags(): Int
 
   // Called by the trusted native proxy from a Dart worker thread, never the UI.
   @JvmStatic
@@ -116,7 +119,7 @@ object RommProcessBroker {
     }
 
     private fun input(file: File, maximum: Long): ParcelFileDescriptor {
-      val fd = Os.open(file.path, OsConstants.O_RDONLY or OsConstants.O_CLOEXEC or OsConstants.O_NOFOLLOW, 0)
+      val fd = Os.open(file.path, readOnlyInputFlags(), 0)
       try {
         val stat = Os.fstat(fd)
         require(OsConstants.S_ISREG(stat.st_mode) && stat.st_size in 1..maximum) { "Invalid game input." }

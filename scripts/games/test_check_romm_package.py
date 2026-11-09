@@ -30,13 +30,13 @@ class AndroidRommTests(unittest.TestCase):
         self.entries[self.manifest] = json.dumps({'schemaVersion': 1, 'platform': 'Android',
             'architecture': 'arm64-v8a', 'cores': records}).encode()
 
-    def check(self, *, apk=True):
+    def check(self, *, apk=True, elf=''):
         path = self.root / 'app.zip'
         with zipfile.ZipFile(path, 'w') as archive:
             for name, data in self.entries.items():
                 archive.writestr(name if apk else 'base/' + name, data)
         with zipfile.ZipFile(path) as archive, patch.object(package, 'inspect_elf') as inspect, \
-                patch.object(package.subprocess, 'check_output', return_value=''):
+                patch.object(package.subprocess, 'check_output', return_value=elf):
             report = package.check_romm(archive, {'arm64-v8a'}, Path('readelf'), self.root, is_apk=apk)
             self.assertEqual(inspect.call_count, 5)
             contracts = [call.args[2] for call in inspect.call_args_list]
@@ -55,6 +55,11 @@ class AndroidRommTests(unittest.TestCase):
         self.entries.pop('lib/arm64-v8a/libplezy_retro_worker.so')
         with self.assertRaisesRegex(ValueError, 'library set'):
             self.check()
+
+    def test_proxy_cannot_load_worker_or_core_as_linker_dependency(self):
+        for name in ('libplezy_retro_worker.so', 'libgambatte_libretro.so'):
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'app proxy must not link'):
+                self.check(elf=f'(NEEDED) Shared library: [{name}]')
 
     def test_missing_core_or_additional_abi_rejected(self):
         self.entries.pop('lib/arm64-v8a/libmgba_libretro.so')

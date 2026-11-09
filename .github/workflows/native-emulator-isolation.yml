@@ -61,10 +61,6 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-24.04
     timeout-minutes: 40
-    env:
-      ANDROID_USER_HOME: ${{ runner.temp }}/romm-android-state
-      ANDROID_EMULATOR_HOME: ${{ runner.temp }}/romm-android-state
-      ANDROID_AVD_HOME: ${{ runner.temp }}/romm-android-state/avd
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -84,6 +80,10 @@ jobs:
       - name: Create and verify the test emulator before compilation
         run: |
           set -euo pipefail
+          export ANDROID_USER_HOME="$RUNNER_TEMP/romm-android-state"
+          export ANDROID_EMULATOR_HOME="$ANDROID_USER_HOME"
+          export ANDROID_AVD_HOME="$ANDROID_USER_HOME/avd"
+          printf 'ANDROID_USER_HOME=%s\nANDROID_EMULATOR_HOME=%s\nANDROID_AVD_HOME=%s\n' "$ANDROID_USER_HOME" "$ANDROID_EMULATOR_HOME" "$ANDROID_AVD_HOME" >> "$GITHUB_ENV"
           mkdir -p "$ANDROID_AVD_HOME"
           avdmanager create avd --name romm-isolation --device pixel_2 --path "$ANDROID_AVD_HOME/romm-isolation.avd" --package 'system-images;android-35;google_apis;x86_64' --force
           test -f "$ANDROID_AVD_HOME/romm-isolation.avd/config.ini"

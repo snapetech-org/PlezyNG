@@ -2738,6 +2738,13 @@ class _Translations$seerr$az extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bu Seerr serverini unudacaq. İstənilən vaxt yenidən qoşula bilərsiniz.';
 	@override String get request => 'Sorğu göndər';
 	@override String get request4k => '4K sorğu göndər';
+	@override String get requestSeasons => 'Çatışmayan mövsümlər üçün sorğu göndər';
+	@override String get notifyMe => 'Əlçatan olduqda mənə bildir';
+	@override String get notifyMe4k => '4K əlçatan olduqda mənə bildir';
+	@override String get notificationsOn => 'Əlçatanlıq bildirişi aktivdir';
+	@override String get notificationsEnabled => 'Əlçatan olduqda sizə xəbər verəcəyik';
+	@override String get notificationsDisabled => 'Əlçatanlıq bildirişi söndürüldü';
+	@override String get notificationFailed => 'Əlçatanlıq bildirişini yeniləmək mümkün olmadı';
 	@override String get seasons => 'Mövsümlər';
 	@override String get allSeasons => 'Bütün mövsümlər';
 	@override String get advancedOptions => 'Təkmilləşdirilmiş';
@@ -8033,6 +8040,13 @@ extension on TranslationsAz {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bu Seerr serverini unudacaq. İstənilən vaxt yenidən qoşula bilərsiniz.',
 			'seerr.request' => 'Sorğu göndər',
 			'seerr.request4k' => '4K sorğu göndər',
+			'seerr.requestSeasons' => 'Çatışmayan mövsümlər üçün sorğu göndər',
+			'seerr.notifyMe' => 'Əlçatan olduqda mənə bildir',
+			'seerr.notifyMe4k' => '4K əlçatan olduqda mənə bildir',
+			'seerr.notificationsOn' => 'Əlçatanlıq bildirişi aktivdir',
+			'seerr.notificationsEnabled' => 'Əlçatan olduqda sizə xəbər verəcəyik',
+			'seerr.notificationsDisabled' => 'Əlçatanlıq bildirişi söndürüldü',
+			'seerr.notificationFailed' => 'Əlçatanlıq bildirişini yeniləmək mümkün olmadı',
 			'seerr.seasons' => 'Mövsümlər',
 			'seerr.allSeasons' => 'Bütün mövsümlər',
 			'seerr.advancedOptions' => 'Təkmilləşdirilmiş',
@@ -8451,6 +8465,8 @@ extension on TranslationsAz {
 			'universalMedia.playlistAddressHelp' => 'M3U, M3u8 və ya PLS oynatma listasını bir web adresindən açın.',
 			'universalMedia.choosePlaylist' => 'Playlist filləri seçin',
 			'universalMedia.openPlaylist' => 'Açıklandı Playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Bir oyun listəsi 1000-dən çox element və 2 MB içerir. HLS akışlar kimi açılır, bu yüzden oyuncu bir kalitə seçebilir.',
 			'universalMedia.saveQueuePlaylist' => 'Növbəni pleylist kimi saxla',
 			'universalMedia.queuePlaylistSaved' => 'Pleylist media fayllarının yanında saxlanıldı.',
@@ -8458,8 +8474,6 @@ extension on TranslationsAz {
 			'universalMedia.queuePlaylistFolderRequired' => 'Yadda saxlama yeri növbədəki fayllarla eyni qovluqda olmalıdır.',
 			'universalMedia.noFavorites' => 'Movqe.Az xəbər verir ki, Hollandiyada futbolçular bu profildə qalır.',
 			'universalMedia.removeFavorite' => 'Movqe favoritləri',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Video, audio və ISO filləri seçin. Fillər və URL-lər kütüphane tarihinə daxil olmaz.',
 			'universalMedia.chooseFiles' => 'Fillər seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '1 seçilmiş fil', other: '${count} seçilmiş dosyalar', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsAz {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytından API açarı alın. Axtarış videonun adını və mövcud IMDb/TMDB ID-lərini göndərir, video faylını isə heç vaxt göndərmir. Açar və istəyə bağlı hesab giriş məlumatları bu mənbə ilə birlikdə şifrələnir.',
 			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metadatası',
 			'sourceSetup.metadataPrivacy' => 'Yalnız fayl adındakı adı/ili və epizod nömrələrini və ya NFO ID-sini göndərir; media və giriş məlumatlarını heç vaxt göndərmir. NFO sahələri üstünlüyünü saxlayır.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Şifrələnmiş NFS üçün hər iki NAS xidmətində RFC 9289 və TLS 1.3 dəstəyini, sertifikat adını və paylaşımın UID/GID dəyərlərini yoxlayın. Pleazyng bu bağlantını şifrələmə olmadan yenidən sınamayacaq.',
 			'sourceSetup.sourceConnecting' => 'Mənbəyə qoşulur',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu ad axtarışı Trakt-a göndərilir. Daxil etdiyiniz ad göndərilir, video və ya mənbənin giriş məlumatları deyil.',
@@ -8972,8 +8988,6 @@ extension on TranslationsAz {
 			'sourceSetup.metadataMatchHelp' => 'Seçməzdən əvvəl adı və ili yoxlayın. Trakt axtarılan adı alır; video öz mənbəyində qalır.',
 			'sourceSetup.metadataNoMatches' => 'Onlayn uyğun ad tapılmadı. Başqa ad sınayın.',
 			'sourceSetup.metadataSearch' => 'Onlayn metadata axtar',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Onlayn film və serial məlumatları axtarılır…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt-dan onlayn metadata',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Avtomatik ad uyğunluğu tapılmadı. Uyğun nəticəni seçmək üçün adı axtarın.',

@@ -2738,6 +2738,13 @@ class _Translations$seerr$da extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng glemmer denne Seerr-instans. Du kan altid oprette forbindelse igen.';
 	@override String get request => 'Anmod';
 	@override String get request4k => 'Anmod i 4K';
+	@override String get requestSeasons => 'Anmod om manglende sæsoner';
+	@override String get notifyMe => 'Giv mig besked, når det er tilgængeligt';
+	@override String get notifyMe4k => 'Giv mig besked, når det er tilgængeligt i 4K';
+	@override String get notificationsOn => 'Tilgængelighedsadvarsel er slået til';
+	@override String get notificationsEnabled => 'Vi giver dig besked, når det er tilgængeligt';
+	@override String get notificationsDisabled => 'Tilgængelighedsadvarsel er slået fra';
+	@override String get notificationFailed => 'Tilgængelighedsadvarslen kunne ikke opdateres';
 	@override String get seasons => 'Sæsoner';
 	@override String get allSeasons => 'Alle sæsoner';
 	@override String get advancedOptions => 'Avanceret';
@@ -8033,6 +8040,13 @@ extension on TranslationsDa {
 			'seerr.disconnectConfirmBody' => 'Pleazyng glemmer denne Seerr-instans. Du kan altid oprette forbindelse igen.',
 			'seerr.request' => 'Anmod',
 			'seerr.request4k' => 'Anmod i 4K',
+			'seerr.requestSeasons' => 'Anmod om manglende sæsoner',
+			'seerr.notifyMe' => 'Giv mig besked, når det er tilgængeligt',
+			'seerr.notifyMe4k' => 'Giv mig besked, når det er tilgængeligt i 4K',
+			'seerr.notificationsOn' => 'Tilgængelighedsadvarsel er slået til',
+			'seerr.notificationsEnabled' => 'Vi giver dig besked, når det er tilgængeligt',
+			'seerr.notificationsDisabled' => 'Tilgængelighedsadvarsel er slået fra',
+			'seerr.notificationFailed' => 'Tilgængelighedsadvarslen kunne ikke opdateres',
 			'seerr.seasons' => 'Sæsoner',
 			'seerr.allSeasons' => 'Alle sæsoner',
 			'seerr.advancedOptions' => 'Avanceret',
@@ -8451,6 +8465,8 @@ extension on TranslationsDa {
 			'universalMedia.playlistAddressHelp' => 'Åbn en M3U, M3u8 eller PLS playlist fra en webadresse. direkte streaming links gemmer ikke playlisten.',
 			'universalMedia.choosePlaylist' => 'Vælg Playlist fil',
 			'universalMedia.openPlaylist' => 'Åbent playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'En playlist kan indeholde op til 1.000 elementer og 2 MB. HLS manifesterer sig åbent som strømme, så spilleren kan vælge en kvalitet.',
 			'universalMedia.saveQueuePlaylist' => 'Gem kø som afspilningsliste',
 			'universalMedia.queuePlaylistSaved' => 'Afspilningslisten blev gemt ved siden af mediefilerne.',
@@ -8458,8 +8474,6 @@ extension on TranslationsDa {
 			'universalMedia.queuePlaylistFolderRequired' => 'Vælg en placering i samme mappe som filerne i køen.',
 			'universalMedia.noFavorites' => 'Der er endnu ingen gemt streaming favoritter. Favoritter forbliver i denne profil.',
 			'universalMedia.removeFavorite' => 'Fjern streaming favorit',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Vælg lyd, video eller ISO-filer for en midlertidig kue. filer og URL\'er tilføjes ikke til bibliotekets historie.',
 			'universalMedia.chooseFiles' => 'Vælg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('da'))(n, one: '1 udvalgte filer', other: '${count} udvalgte filer', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsDa {
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøgle på opensubtitles.com. Søgning sender videotitlen og tilgængelige IMDb/TMDB-ID’er, aldrig videofilen. Nøglen og valgfrie kontooplysninger krypteres sammen med denne kilde.',
 			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
 			'sourceSetup.metadataPrivacy' => 'Sender kun titel/år fra filnavnet og afsnitsnumre eller et NFO-ID, aldrig medier eller legitimationsoplysninger. NFO-felter har fortsat forrang.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Ved krypteret NFS skal du kontrollere understøttelse af RFC 9289 og TLS 1.3 på begge NAS-tjenester, certifikatnavnet og delingens UID/GID. Pleazyng forsøger ikke denne forbindelse igen uden kryptering.',
 			'sourceSetup.sourceConnecting' => 'Opretter forbindelse til kilden',
 			'sourceSetup.metadataSearchPrivacy' => 'Denne titelsøgning sendes til Trakt. Den sender den titel, du angiver, ikke videoen eller kildens legitimationsoplysninger.',
@@ -8972,8 +8988,6 @@ extension on TranslationsDa {
 			'sourceSetup.metadataMatchHelp' => 'Kontrollér titel og årstal, før du vælger. Trakt modtager søgetitlen; videoen bliver på sin kilde.',
 			'sourceSetup.metadataNoMatches' => 'Ingen matchende titler fundet online. Prøv en anden titel.',
 			'sourceSetup.metadataSearch' => 'Søg efter metadata online',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Henter film- og serieoplysninger online…',
 			'sourceSetup.metadataFromTrakt' => 'Onlinemetadata fra Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Der blev ikke fundet et automatisk titelmatch. Søg efter titlen for at vælge et match.',

@@ -2738,6 +2738,13 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'A Pleazyng elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.';
 	@override String get request => 'Igénylés';
 	@override String get request4k => 'Igénylés 4K-ban';
+	@override String get requestSeasons => 'Hiányzó évadok igénylése';
+	@override String get notifyMe => 'Értesíts, amikor elérhető';
+	@override String get notifyMe4k => 'Értesíts, amikor 4K-ban elérhető';
+	@override String get notificationsOn => 'Elérhetőségi értesítés bekapcsolva';
+	@override String get notificationsEnabled => 'Értesítünk, amint elérhető';
+	@override String get notificationsDisabled => 'Elérhetőségi értesítés kikapcsolva';
+	@override String get notificationFailed => 'Nem sikerült frissíteni az elérhetőségi értesítést';
 	@override String get seasons => 'Évadok';
 	@override String get allSeasons => 'Minden évad';
 	@override String get advancedOptions => 'Haladó';
@@ -8033,6 +8040,13 @@ extension on TranslationsHu {
 			'seerr.disconnectConfirmBody' => 'A Pleazyng elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.',
 			'seerr.request' => 'Igénylés',
 			'seerr.request4k' => 'Igénylés 4K-ban',
+			'seerr.requestSeasons' => 'Hiányzó évadok igénylése',
+			'seerr.notifyMe' => 'Értesíts, amikor elérhető',
+			'seerr.notifyMe4k' => 'Értesíts, amikor 4K-ban elérhető',
+			'seerr.notificationsOn' => 'Elérhetőségi értesítés bekapcsolva',
+			'seerr.notificationsEnabled' => 'Értesítünk, amint elérhető',
+			'seerr.notificationsDisabled' => 'Elérhetőségi értesítés kikapcsolva',
+			'seerr.notificationFailed' => 'Nem sikerült frissíteni az elérhetőségi értesítést',
 			'seerr.seasons' => 'Évadok',
 			'seerr.allSeasons' => 'Minden évad',
 			'seerr.advancedOptions' => 'Haladó',
@@ -8451,6 +8465,8 @@ extension on TranslationsHu {
 			'universalMedia.playlistAddressHelp' => 'Nyissa meg a M3U, M3u8 vagy PLS lejátszási listát egy webcímről. közvetlen áramlás linkek nem menthetik meg a lejátszó listát.',
 			'universalMedia.choosePlaylist' => 'Válassza ki a Playlist fájlt',
 			'universalMedia.openPlaylist' => 'Nyílt Playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'A lejátszó listája legfeljebb 1000 elemet és 2 MB-ot tartalmazhat. a HLS nyílt áramlatként jelenik meg, így a játékos kiválaszthatja a minőséget.',
 			'universalMedia.saveQueuePlaylist' => 'Sor mentése lejátszási listaként',
 			'universalMedia.queuePlaylistSaved' => 'A lejátszási lista a médiafájlok mellé lett mentve.',
@@ -8458,8 +8474,6 @@ extension on TranslationsHu {
 			'universalMedia.queuePlaylistFolderRequired' => 'A sor fájljaival azonos mappát válassz mentési helyként.',
 			'universalMedia.noFavorites' => 'Nincs mentett stream kedvencek még. Favoritek maradnak ebben a profilban.',
 			'universalMedia.removeFavorite' => 'Távolítsa el a kedvenc stream',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
 			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsHu {
 			'sourceSetup.subtitlePrivacy' => 'Szerezz API-kulcsot az opensubtitles.com oldalon. A keresés a videó címét és az elérhető IMDb/TMDB-azonosítókat küldi el, a videófájlt soha. A kulcs és az opcionális fiókhitelesítő adatok ezzel a forrással együtt titkosítva tárolódnak.',
 			'sourceSetup.automaticMetadata' => 'Automatikus online videómetaadatok',
 			'sourceSetup.metadataPrivacy' => 'Csak a fájlnévből származó címet/évet és epizódszámokat vagy egy NFO-azonosítót küld el, médiát vagy hitelesítő adatokat soha. Az NFO-mezők elsőbbsége megmarad.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Titkosított NFS esetén ellenőrizd az RFC 9289 és a TLS 1.3 támogatását mindkét NAS-szolgáltatásnál, a tanúsítvány nevét és a megosztás UID/GID értékeit. A Pleazyng nem próbálja újra ezt a kapcsolatot titkosítás nélkül.',
 			'sourceSetup.sourceConnecting' => 'Kapcsolódás a forráshoz',
 			'sourceSetup.metadataSearchPrivacy' => 'Ez a címkeresés a Trakthoz kerül. A megadott címet küldi el, nem a videót vagy a forrás hitelesítő adatait.',
@@ -8972,8 +8988,6 @@ extension on TranslationsHu {
 			'sourceSetup.metadataMatchHelp' => 'Választás előtt ellenőrizd a címet és az évet. A Trakt a keresett címet kapja meg; a videó a forrásán marad.',
 			'sourceSetup.metadataNoMatches' => 'Nem található egyező cím online. Próbálj másik címet.',
 			'sourceSetup.metadataSearch' => 'Online metaadatok keresése',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
 			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',

@@ -2738,6 +2738,13 @@ class _Translations$seerr$tr extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bu Seerr örneğini unutacak. İstediğiniz zaman yeniden bağlanabilirsiniz.';
 	@override String get request => 'İstek Gönder';
 	@override String get request4k => '4K İstek Gönder';
+	@override String get requestSeasons => 'Eksik sezonları iste';
+	@override String get notifyMe => 'Kullanılabilir olduğunda bildir';
+	@override String get notifyMe4k => '4K kullanılabilir olduğunda bildir';
+	@override String get notificationsOn => 'Kullanılabilirlik bildirimi açık';
+	@override String get notificationsEnabled => 'Kullanılabilir olduğunda sana bildireceğiz';
+	@override String get notificationsDisabled => 'Kullanılabilirlik bildirimi kapalı';
+	@override String get notificationFailed => 'Kullanılabilirlik bildirimi güncellenemedi';
 	@override String get seasons => 'Sezonlar';
 	@override String get allSeasons => 'Tüm sezonlar';
 	@override String get advancedOptions => 'Gelişmiş';
@@ -8033,6 +8040,13 @@ extension on TranslationsTr {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bu Seerr örneğini unutacak. İstediğiniz zaman yeniden bağlanabilirsiniz.',
 			'seerr.request' => 'İstek Gönder',
 			'seerr.request4k' => '4K İstek Gönder',
+			'seerr.requestSeasons' => 'Eksik sezonları iste',
+			'seerr.notifyMe' => 'Kullanılabilir olduğunda bildir',
+			'seerr.notifyMe4k' => '4K kullanılabilir olduğunda bildir',
+			'seerr.notificationsOn' => 'Kullanılabilirlik bildirimi açık',
+			'seerr.notificationsEnabled' => 'Kullanılabilir olduğunda sana bildireceğiz',
+			'seerr.notificationsDisabled' => 'Kullanılabilirlik bildirimi kapalı',
+			'seerr.notificationFailed' => 'Kullanılabilirlik bildirimi güncellenemedi',
 			'seerr.seasons' => 'Sezonlar',
 			'seerr.allSeasons' => 'Tüm sezonlar',
 			'seerr.advancedOptions' => 'Gelişmiş',
@@ -8451,6 +8465,8 @@ extension on TranslationsTr {
 			'universalMedia.playlistAddressHelp' => 'Bir web adresinden bir M3U, M3u8 veya PLS oynatma listesi açın.',
 			'universalMedia.choosePlaylist' => 'Playlist dosyasını seçin',
 			'universalMedia.openPlaylist' => 'Açık Playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Bir oynatma listesi en fazla 1000 öğe ve 2 MB içerebilir. HLS akışlar olarak açıktır, böylece oyuncu bir kaliteyi seçebilir.',
 			'universalMedia.saveQueuePlaylist' => 'Sırayı çalma listesi olarak kaydet',
 			'universalMedia.queuePlaylistSaved' => 'Çalma listesi medya dosyalarının yanına kaydedildi.',
@@ -8458,8 +8474,6 @@ extension on TranslationsTr {
 			'universalMedia.queuePlaylistFolderRequired' => 'Sıradaki dosyalarla aynı klasörde bir kayıt konumu seçin.',
 			'universalMedia.noFavorites' => 'Hiç kaydedilmemiş akış favori henüz. Favoriler bu profilde kalır.',
 			'universalMedia.removeFavorite' => 'En sevdiğiniz akışları kaldırın',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Ses, video veya ISO dosyalarını geçici bir çerçeve için seçin. Dosyalar ve URL\'ler kütüphane geçmişine eklenmez.',
 			'universalMedia.chooseFiles' => 'Dosyaları seçin',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('tr'))(n, one: '1 seçilmiş dosya', other: '${count} seçilmiş dosyalar', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsTr {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com adresinden API anahtarı alın. Arama, video başlığını ve mevcut IMDb/TMDB kimliklerini gönderir; video dosyasını asla göndermez. Anahtar ve isteğe bağlı hesap kimlik bilgileri bu kaynakla birlikte şifrelenir.',
 			'sourceSetup.automaticMetadata' => 'Otomatik çevrimiçi video meta verileri',
 			'sourceSetup.metadataPrivacy' => 'Yalnızca dosya adındaki başlık/yıl ve bölüm numaralarını veya bir NFO kimliğini gönderir; medyayı ya da kimlik bilgilerini asla göndermez. NFO alanları önceliğini korur.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Şifreli NFS için her iki NAS hizmetinde RFC 9289 ve TLS 1.3 desteğini, sertifika adını ve paylaşımın UID/GID değerlerini kontrol edin. Pleazyng bu bağlantıyı şifreleme olmadan yeniden denemeyecek.',
 			'sourceSetup.sourceConnecting' => 'Kaynağa bağlanılıyor',
 			'sourceSetup.metadataSearchPrivacy' => 'Bu başlık araması Trakt’a gönderilir. Girdiğiniz başlığı gönderir; videoyu veya kaynak kimlik bilgilerini göndermez.',
@@ -8972,8 +8988,6 @@ extension on TranslationsTr {
 			'sourceSetup.metadataMatchHelp' => 'Seçmeden önce başlığı ve yılı kontrol edin. Trakt aranan başlığı alır; video kendi kaynağında kalır.',
 			'sourceSetup.metadataNoMatches' => 'Çevrimiçi eşleşen başlık bulunamadı. Başka bir başlık deneyin.',
 			'sourceSetup.metadataSearch' => 'Çevrimiçi meta veri ara',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Çevrimiçi film ve dizi bilgileri aranıyor…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt’tan çevrimiçi meta veriler',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Otomatik başlık eşleşmesi bulunamadı. Eşleşme seçmek için başlığı arayın.',

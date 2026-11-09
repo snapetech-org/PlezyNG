@@ -2814,6 +2814,13 @@ class _Translations$seerr$ar extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng سوف تنسى هذه الحالة Seerr.';
 	@override String get request => 'طلب';
 	@override String get request4k => 'طلب في 4K';
+	@override String get requestSeasons => 'اطلب المواسم المفقودة';
+	@override String get notifyMe => 'أخبرني عند التوفر';
+	@override String get notifyMe4k => 'أخبرني عند توفر 4K';
+	@override String get notificationsOn => 'تنبيه التوفر مفعّل';
+	@override String get notificationsEnabled => 'سنخطرك عند توفره';
+	@override String get notificationsDisabled => 'تم إيقاف تنبيه التوفر';
+	@override String get notificationFailed => 'تعذّر تحديث تنبيه التوفر';
 	@override String get seasons => 'المواسم';
 	@override String get allSeasons => 'جميع الموسم';
 	@override String get advancedOptions => 'متقدم';
@@ -8133,6 +8140,13 @@ extension on TranslationsAr {
 			'seerr.disconnectConfirmBody' => 'Pleazyng سوف تنسى هذه الحالة Seerr.',
 			'seerr.request' => 'طلب',
 			'seerr.request4k' => 'طلب في 4K',
+			'seerr.requestSeasons' => 'اطلب المواسم المفقودة',
+			'seerr.notifyMe' => 'أخبرني عند التوفر',
+			'seerr.notifyMe4k' => 'أخبرني عند توفر 4K',
+			'seerr.notificationsOn' => 'تنبيه التوفر مفعّل',
+			'seerr.notificationsEnabled' => 'سنخطرك عند توفره',
+			'seerr.notificationsDisabled' => 'تم إيقاف تنبيه التوفر',
+			'seerr.notificationFailed' => 'تعذّر تحديث تنبيه التوفر',
 			'seerr.seasons' => 'المواسم',
 			'seerr.allSeasons' => 'جميع الموسم',
 			'seerr.advancedOptions' => 'متقدم',
@@ -8551,6 +8565,8 @@ extension on TranslationsAr {
 			'universalMedia.playlistAddressHelp' => 'افتح قائمة تشغيل M3U أو M3 U8 أو PLS من عنوان ويب. لنقرات البث المباشر لا تخزن قائمة التشغيل.',
 			'universalMedia.choosePlaylist' => 'اختيار ملف Playlist',
 			'universalMedia.openPlaylist' => 'قائمة ألعاب مفتوحة',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'يمكن أن يحتوي قائمة التشغيل على ما يصل إلى 1000 عنصر و 2 ميغابايت.HLS يظهر مفتوحا مثل التدفقات بحيث يمكن للاعب اختيار نوعية.',
 			'universalMedia.saveQueuePlaylist' => 'حفظ قائمة الانتظار كقائمة تشغيل',
 			'universalMedia.queuePlaylistSaved' => 'تم حفظ قائمة التشغيل بجوار ملفات الوسائط.',
@@ -8558,8 +8574,6 @@ extension on TranslationsAr {
 			'universalMedia.queuePlaylistFolderRequired' => 'اختر موقع حفظ في المجلد نفسه الذي توجد فيه الملفات في قائمة الانتظار.',
 			'universalMedia.noFavorites' => 'لم يتم تخزين المفضلة حتى الآن.المفضلة تبقى في هذا الملف الشخصي.',
 			'universalMedia.removeFavorite' => 'إزالة البث المفضل',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
 			'universalMedia.chooseFiles' => 'اختيار الملفات',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
@@ -9065,6 +9079,8 @@ extension on TranslationsAr {
 			'sourceSetup.subtitlePrivacy' => 'احصل على مفتاح API من opensubtitles.com. يرسل البحث عنوان الفيديو ومعرّفات IMDb/TMDB المتاحة، ولا يرسل ملف الفيديو مطلقًا. يُحفظ المفتاح وبيانات الحساب الاختيارية بشكل مشفّر مع هذا المصدر.',
 			'sourceSetup.automaticMetadata' => 'جلب بيانات الفيديو الوصفية من الإنترنت تلقائيًا',
 			'sourceSetup.metadataPrivacy' => 'يُرسل فقط العنوان والسنة وأرقام الحلقات المستخرجة من اسم الملف، أو معرّف NFO، ولا يرسل الوسائط أو بيانات الاعتماد مطلقًا. تظل الأولوية لحقول NFO.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'لاتصال NFS المشفّر، تحقّق من دعم RFC 9289 وTLS 1.3 في خدمتي NAS، ومن اسم الشهادة ومعرّفات UID/GID للتصدير. لن يعيد Pleazyng محاولة هذا الاتصال دون تشفير.',
 			'sourceSetup.sourceConnecting' => 'جارٍ الاتصال بالمصدر',
 			'sourceSetup.metadataSearchPrivacy' => 'يُرسل هذا البحث عن العنوان إلى Trakt. يُرسل العنوان الذي تدخله فقط، ولا يُرسل الفيديو أو بيانات اعتماد المصدر.',
@@ -9072,8 +9088,6 @@ extension on TranslationsAr {
 			'sourceSetup.metadataMatchHelp' => 'راجع العنوان والسنة قبل الاختيار. يتلقى Trakt عنوان البحث؛ ويبقى الفيديو في مصدره.',
 			'sourceSetup.metadataNoMatches' => 'لم يُعثر على عناوين مطابقة على الإنترنت. جرّب عنوانًا آخر.',
 			'sourceSetup.metadataSearch' => 'البحث عن بيانات وصفية على الإنترنت',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
 			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
 			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',

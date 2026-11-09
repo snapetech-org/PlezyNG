@@ -2738,6 +2738,13 @@ class _Translations$seerr$nb extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng glemmer denne Seerr-instansen. Koble til igjen når som helst.';
 	@override String get request => 'Be om';
 	@override String get request4k => 'Be om i 4K';
+	@override String get requestSeasons => 'Be om manglende sesonger';
+	@override String get notifyMe => 'Varsle meg når tilgjengelig';
+	@override String get notifyMe4k => 'Varsle meg når tilgjengelig i 4K';
+	@override String get notificationsOn => 'Tilgjengelighetsvarsel er på';
+	@override String get notificationsEnabled => 'Vi varsler deg når det blir tilgjengelig';
+	@override String get notificationsDisabled => 'Tilgjengelighetsvarselet er slått av';
+	@override String get notificationFailed => 'Kunne ikke oppdatere tilgjengelighetsvarselet';
 	@override String get seasons => 'Sesonger';
 	@override String get allSeasons => 'Alle sesonger';
 	@override String get advancedOptions => 'Avansert';
@@ -8033,6 +8040,13 @@ extension on TranslationsNb {
 			'seerr.disconnectConfirmBody' => 'Pleazyng glemmer denne Seerr-instansen. Koble til igjen når som helst.',
 			'seerr.request' => 'Be om',
 			'seerr.request4k' => 'Be om i 4K',
+			'seerr.requestSeasons' => 'Be om manglende sesonger',
+			'seerr.notifyMe' => 'Varsle meg når tilgjengelig',
+			'seerr.notifyMe4k' => 'Varsle meg når tilgjengelig i 4K',
+			'seerr.notificationsOn' => 'Tilgjengelighetsvarsel er på',
+			'seerr.notificationsEnabled' => 'Vi varsler deg når det blir tilgjengelig',
+			'seerr.notificationsDisabled' => 'Tilgjengelighetsvarselet er slått av',
+			'seerr.notificationFailed' => 'Kunne ikke oppdatere tilgjengelighetsvarselet',
 			'seerr.seasons' => 'Sesonger',
 			'seerr.allSeasons' => 'Alle sesonger',
 			'seerr.advancedOptions' => 'Avansert',
@@ -8451,6 +8465,8 @@ extension on TranslationsNb {
 			'universalMedia.playlistAddressHelp' => 'Åpne en M3U, M3u8, eller PLS-spillliste fra en nettadresse. direkte strømlinjer sparer ikke spilllisten.',
 			'universalMedia.choosePlaylist' => 'Velg Playlist filer',
 			'universalMedia.openPlaylist' => 'Åpne playlist',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'En spillliste kan inneholde opptil 1000 elementer og 2 MB. HLS manifesterer seg åpent som strømmer slik at spilleren kan velge en kvalitet.',
 			'universalMedia.saveQueuePlaylist' => 'Lagre køen som spilleliste',
 			'universalMedia.queuePlaylistSaved' => 'Spillelisten ble lagret ved siden av mediefilene.',
@@ -8458,8 +8474,6 @@ extension on TranslationsNb {
 			'universalMedia.queuePlaylistFolderRequired' => 'Velg et lagringssted i samme mappe som filene i køen.',
 			'universalMedia.noFavorites' => 'Ingen sparte stream favoritter ennå. Favoritter forblir i denne profilen.',
 			'universalMedia.removeFavorite' => 'Fjern stream favoritt',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Velg audio, video eller ISO-filer for en midlertidig kue. filer og URL\'er er ikke lagt til bibliotekets historie.',
 			'universalMedia.chooseFiles' => 'Velg filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: '1 utvalgte filer', other: '${count} utvalgte filer', ), 
@@ -8965,6 +8979,8 @@ extension on TranslationsNb {
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøkkel fra opensubtitles.com. Søk sender videotittelen og tilgjengelige IMDb/TMDB-ID-er, aldri videofilen. Nøkkelen og valgfri kontoinformasjon krypteres sammen med denne kilden.',
 			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
 			'sourceSetup.metadataPrivacy' => 'Sender bare tittel/år fra filnavnet og episodenumre eller en NFO-ID, aldri medier eller påloggingsinformasjon. NFO-feltene beholder forrang.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'For kryptert NFS må du kontrollere støtte for RFC 9289 og TLS 1.3 på begge NAS-tjenestene, sertifikatnavnet og delingens UID/GID. Pleazyng prøver ikke denne tilkoblingen på nytt uten kryptering.',
 			'sourceSetup.sourceConnecting' => 'Kobler til kilde',
 			'sourceSetup.metadataSearchPrivacy' => 'Dette tittelsøket sendes til Trakt. Det sender tittelen du oppgir, ikke videoen eller kildens påloggingsinformasjon.',
@@ -8972,8 +8988,6 @@ extension on TranslationsNb {
 			'sourceSetup.metadataMatchHelp' => 'Kontroller tittel og år før du velger. Trakt mottar søketittelen; videoen blir på kilden sin.',
 			'sourceSetup.metadataNoMatches' => 'Ingen samsvarende titler funnet på nettet. Prøv en annen tittel.',
 			'sourceSetup.metadataSearch' => 'Søk etter metadata på nettet',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Søker etter film- og serieinformasjon på nettet…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata fra Trakt på nettet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Fant ikke et automatisk titteltreff. Søk etter tittelen for å velge et treff.',

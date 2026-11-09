@@ -2719,6 +2719,13 @@ class _Translations$seerr$ms extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.';
 	@override String get request => 'Permintaan';
 	@override String get request4k => 'Permintaan dalam 4K';
+	@override String get requestSeasons => 'Minta musim yang belum tersedia';
+	@override String get notifyMe => 'Beritahu saya apabila tersedia';
+	@override String get notifyMe4k => 'Beritahu saya apabila tersedia dalam 4K';
+	@override String get notificationsOn => 'Amaran ketersediaan dihidupkan';
+	@override String get notificationsEnabled => 'Kami akan memaklumkan anda apabila tersedia';
+	@override String get notificationsDisabled => 'Amaran ketersediaan dimatikan';
+	@override String get notificationFailed => 'Tidak dapat mengemas kini amaran ketersediaan';
 	@override String get seasons => 'Musim';
 	@override String get allSeasons => 'Semua musim';
 	@override String get advancedOptions => 'Kemajuan';
@@ -8008,6 +8015,13 @@ extension on TranslationsMs {
 			'seerr.disconnectConfirmBody' => 'Pleazyng akan melupakan instans Seerr ini. sambungkan semula pada bila-bila masa.',
 			'seerr.request' => 'Permintaan',
 			'seerr.request4k' => 'Permintaan dalam 4K',
+			'seerr.requestSeasons' => 'Minta musim yang belum tersedia',
+			'seerr.notifyMe' => 'Beritahu saya apabila tersedia',
+			'seerr.notifyMe4k' => 'Beritahu saya apabila tersedia dalam 4K',
+			'seerr.notificationsOn' => 'Amaran ketersediaan dihidupkan',
+			'seerr.notificationsEnabled' => 'Kami akan memaklumkan anda apabila tersedia',
+			'seerr.notificationsDisabled' => 'Amaran ketersediaan dimatikan',
+			'seerr.notificationFailed' => 'Tidak dapat mengemas kini amaran ketersediaan',
 			'seerr.seasons' => 'Musim',
 			'seerr.allSeasons' => 'Semua musim',
 			'seerr.advancedOptions' => 'Kemajuan',
@@ -8426,6 +8440,8 @@ extension on TranslationsMs {
 			'universalMedia.playlistAddressHelp' => 'Buka senarai m3U, M3U8, atau PLS daripada alamat web. pautan siaran langsung tidak menyimpan senarai main.',
 			'universalMedia.choosePlaylist' => 'Pilih fail playlist',
 			'universalMedia.openPlaylist' => 'Senarai Permainan Terbuka',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.playlistFormatsHelp' => 'Senarai main boleh mengandungi sehingga 1,000 item dan 2 MB. HLS terbuka sebagai aliran supaya pemain boleh memilih kualiti.',
 			'universalMedia.saveQueuePlaylist' => 'Simpan baris gilir sebagai senarai main',
 			'universalMedia.queuePlaylistSaved' => 'Senarai main disimpan di sebelah fail media.',
@@ -8433,8 +8449,6 @@ extension on TranslationsMs {
 			'universalMedia.queuePlaylistFolderRequired' => 'Pilih lokasi simpanan dalam folder yang sama dengan fail dalam baris gilir.',
 			'universalMedia.noFavorites' => 'Tiada rangkaian kegemaran disimpan sehingga kini. kekal dalam profil ini.',
 			'universalMedia.removeFavorite' => 'Menghapuskan stream kegemaran',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
 			'universalMedia.chooseFiles' => 'Pilih fail',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
@@ -8940,6 +8954,8 @@ extension on TranslationsMs {
 			'sourceSetup.subtitlePrivacy' => 'Dapatkan kunci API daripada opensubtitles.com. Carian menghantar tajuk video dan ID IMDb/TMDB yang tersedia, bukan fail video sama sekali. Kunci dan bukti kelayakan akaun pilihan disulitkan bersama sumber ini.',
 			'sourceSetup.automaticMetadata' => 'Metadata video dalam talian automatik',
 			'sourceSetup.metadataPrivacy' => 'Hanya menghantar tajuk/tahun daripada nama fail dan nombor episod atau ID NFO; tidak sekali-kali menghantar media atau bukti kelayakan. Medan NFO kekal sebagai rujukan utama.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsEncryptionFailure' => 'Untuk NFS disulitkan, semak sokongan RFC 9289 dan TLS 1.3 pada kedua-dua perkhidmatan NAS, nama sijil dan UID/GID perkongsian. Pleazyng tidak akan mencuba semula sambungan ini tanpa penyulitan.',
 			'sourceSetup.sourceConnecting' => 'Menyambung ke sumber',
 			'sourceSetup.metadataSearchPrivacy' => 'Carian tajuk ini dihantar ke Trakt. Carian menghantar tajuk yang anda masukkan, bukan video atau bukti kelayakan sumber.',
@@ -8947,8 +8963,6 @@ extension on TranslationsMs {
 			'sourceSetup.metadataMatchHelp' => 'Semak tajuk dan tahun sebelum memilih. Trakt menerima tajuk carian; video kekal pada sumbernya.',
 			'sourceSetup.metadataNoMatches' => 'Tiada padanan tajuk dalam talian ditemukan. Cuba tajuk lain.',
 			'sourceSetup.metadataSearch' => 'Cari metadata dalam talian',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',

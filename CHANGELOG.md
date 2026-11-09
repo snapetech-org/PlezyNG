@@ -4,6 +4,8 @@
 
 - Add feature-documentation source footers with verified upstream PR/issue/commit links and author credits, turn the README's historical ticket numbers into links, and preserve the distinction between a source proposal and delivered behavior.
 
+- Route trusted-main Apple validation and release builds through compatible GitHub-hosted macOS runners in the hybrid profile, retaining private Apple JIT only as an explicit fallback.
+
 - Add a documented Plex/Plezy/Pleazyng feature comparison, distinguish inherited features from fork additions and Plex-only gaps, and correct media-link examples to `pleazyng://`. Pleazyng independently verified the upstream inventory at [commit `738e18fdc5`](https://github.com/edde746/plezy/commit/738e18fdc552ace910dedabf6e689ab74e1dae58), authored upstream by [@edde746](https://github.com/edde746); see the [source credit](UPSTREAM_ATTRIBUTION.md#feature-inventory-reference).
 
 - Publicly credit 89 Plezy pull requests, issues, commits, and the pinned upstream inventory whose code, reports, or ideas informed implemented behavior or maintained plans in Pleazyng. The [source ledger](UPSTREAM_ATTRIBUTION.md) separates shipped adaptations, related feature context, and planned work and makes clear that those people contributed to Plezy, not directly to this fork.

@@ -113,7 +113,7 @@ jobs:
         run: |
           set -euo pipefail
           brew tap snapetech-org/pleazyng https://github.com/snapetech-org/homebrew-pleazyng
-          brew install --cask snapetech-pleazyng 2>&1 | tee "$RUNNER_TEMP/channel-qualification/homebrew-install.txt"
+          brew install --cask snapetech-org/pleazyng/snapetech-pleazyng 2>&1 | tee "$RUNNER_TEMP/channel-qualification/homebrew-install.txt"
           app="/Applications/Pleazyng.app"
           test -d "$app"
           test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist")" = org.snapetech.pleazyng

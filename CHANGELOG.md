@@ -2,8 +2,6 @@
 
 ## [Unreleased]
 
-- Prevent one Android Back press after keyboard use from closing two screens on API 36. Use Android’s legacy Back dispatch while preserving keyboard dismissal and native Back navigation; predictive Back animations are disabled.
-
 - Make the fresh-install authentication QA flow use the setup screen’s Back control, avoiding a second navigation pop when Maestro hides an already absent keyboard.
 
 - Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.

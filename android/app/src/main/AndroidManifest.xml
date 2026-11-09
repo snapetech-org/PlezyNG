@@ -35,12 +35,9 @@
 
     <uses-feature android:name="android.hardware.type.automotive" android:required="false" />
 
-    <!-- Keep one Back delivery path: API 36 can invoke predictive Back after an
-         already-handled hardware key-up following IME use, popping two routes. -->
     <application
         android:label="Pleazyng"
         android:name="${applicationName}"
-        android:enableOnBackInvokedCallback="false"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/tv_banner"
         android:appCategory="video"

@@ -859,10 +859,9 @@ mixin _PlexLiveTvClientMethods on _PlexClientInternals implements LiveTvSupport,
   Future<List<FavoriteChannel>> fetchFavoriteChannels({bool migrate = true, void Function()? checkCurrent}) async {
     // A plex.tv failure says nothing about this media server's endpoints, so
     // it must not walk (or exhaust) the server's failover list.
-    final response = await _http.get(
+    final response = await _epgCloudHttp.get(
       _favoriteChannelsUrl,
-      headers: _providerVersionHeader,
-      allowEndpointFailover: false,
+      headers: {...config.headers, ..._providerVersionHeader},
     );
     _throwIfFailed(response);
     final container = _getMediaContainer(response);
@@ -883,10 +882,10 @@ mixin _PlexLiveTvClientMethods on _PlexClientInternals implements LiveTvSupport,
     checkCurrent?.call();
     try {
       await _expectOk(
-        () => _http.put(
+        () => _epgCloudHttp.put(
           _favoriteChannelsUrl,
           body: channels.map((c) => c.toJson()).toList(),
-          headers: _providerVersionHeader,
+          headers: {...config.headers, ..._providerVersionHeader},
         ),
       );
     } catch (e, stackTrace) {

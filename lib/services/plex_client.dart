@@ -386,6 +386,8 @@ class _PlexMediaProviderState {
 /// per file. Members used by a single part stay declared in that part.
 mixin _PlexClientInternals on MediaServerCacheMixin {
   FailoverHttpClient get _http;
+  MediaServerHttpClient get _discoverHttp;
+  MediaServerHttpClient get _epgCloudHttp;
 
   Future<MediaServerResponse> _getWithFailover(
     String path, {
@@ -430,6 +432,19 @@ mixin _PlexClientInternals on MediaServerCacheMixin {
   Future<String> buildMetadataUri(String ratingKey);
 }
 
+/// Cloud requests share the owned connection pool, with independent origin and
+/// cancellation scopes. Only the parent server client closes the transport.
+class _BorrowedPlexTransport extends http.BaseClient {
+  _BorrowedPlexTransport(this._transport);
+  final http.Client _transport;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) => _transport.send(request);
+
+  @override
+  void close() {}
+}
+
 class PlexClient
     with
         MediaServerCacheMixin,
@@ -452,6 +467,10 @@ class PlexClient
 
   @override
   late final FailoverHttpClient _http;
+  @override
+  late final MediaServerHttpClient _discoverHttp;
+  @override
+  late final MediaServerHttpClient _epgCloudHttp;
   final Future<void> Function(String newBaseUrl)? _onEndpointChanged;
   final VoidCallback? _onAllEndpointsExhausted;
 
@@ -622,6 +641,15 @@ class PlexClient
       onAllEndpointsExhausted: _onAllEndpointsExhausted,
       validateCandidate: _validateFailoverCandidate,
     );
+
+    MediaServerHttpClient cloudClient(String endpoint) => MediaServerHttpClient(
+      client: _BorrowedPlexTransport(_http.inner),
+      baseUrl: Uri.parse(endpoint).origin,
+      defaultHeaders: const {'Accept': 'application/json'},
+    );
+
+    _discoverHttp = cloudClient(_discoverPeopleUrl);
+    _epgCloudHttp = cloudClient(_favoriteChannelsUrl);
   }
 
   /// Test-only factory that injects an [http.Client] so URL-builder tests can
@@ -664,12 +692,18 @@ class PlexClient
 
   @override
   void close() {
+    _discoverHttp.close();
+    _epgCloudHttp.close();
     _http.close();
   }
 
   @override
-  Future<void> closeGracefully({Duration drainTimeout = const Duration(seconds: 2)}) {
-    return _http.closeGracefully(drainTimeout: drainTimeout);
+  Future<void> closeGracefully({Duration drainTimeout = const Duration(seconds: 2)}) async {
+    await Future.wait([
+      _discoverHttp.closeGracefully(drainTimeout: drainTimeout),
+      _epgCloudHttp.closeGracefully(drainTimeout: drainTimeout),
+    ]);
+    await _http.closeGracefully(drainTimeout: drainTimeout);
   }
 
   /// Execute a GET request with endpoint failover (see [FailoverHttpClient]

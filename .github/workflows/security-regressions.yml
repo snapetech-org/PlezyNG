@@ -89,6 +89,7 @@ jobs:
             test/services/image_cache_service_test.dart \
             test/services/trackers/tracker_http_client_test.dart \
             test/services/cloud_settings_backup_service_test.dart \
+            test/services/plex*_test.dart \
             test/services/webos_secure_storage_recovery_test.dart \
             test/profiles \
             test/screens/profile/profile_switch_screen_test.dart \

@@ -201,10 +201,7 @@ void main() {
     expect(await read(), 'SECRET');
   });
 
-  for (final fixture in {
-    'ASCII': 'x' * (4 * 1024 * 1024 + 1),
-    'UTF-8': 'é' * (2 * 1024 * 1024 + 1),
-  }.entries) {
+  for (final fixture in {'ASCII': 'x' * (4 * 1024 * 1024 + 1), 'UTF-8': 'é' * (2 * 1024 * 1024 + 1)}.entries) {
     test('oversized ${fixture.key} credential preserves saved storage', () async {
       final saved = Map<String, String?>.of(backend.row);
       await expectLater(write(fixture.value), throwsA(isA<PlatformException>()));

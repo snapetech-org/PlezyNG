@@ -259,11 +259,10 @@ mixin _PlexCollectionMethods on _PlexClientInternals {
     if (tagKey is! String || tagKey.isEmpty) return MediaPersonDetails.empty;
     // A plex.tv failure says nothing about this server's endpoints, so it
     // must not walk (or exhaust) the server's failover list.
-    final response = await _http.get(
+    final response = await _discoverHttp.get(
       '$_discoverPeopleUrl${Uri.encodeComponent(tagKey)}',
-      headers: {'X-Plex-Token': accountToken},
+      headers: {..._http.defaultHeaders, 'X-Plex-Token': accountToken},
       abort: abort,
-      allowEndpointFailover: false,
     );
     throwIfHttpError(response);
     final container = _getMediaContainer(response);

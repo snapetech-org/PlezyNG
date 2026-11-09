@@ -158,8 +158,8 @@ class SecureStorageClient {
 
   PlatformException _unavailable() => PlatformException(
       code: 'secure_storage_unavailable', message: 'The key service is unavailable. Retry the operation.');
-  PlatformException _tooLarge() =>
-      PlatformException(code: 'secure_storage_invalid_value', message: 'The credential exceeds the storage size limit.');
+  PlatformException _tooLarge() => PlatformException(
+      code: 'secure_storage_invalid_value', message: 'The credential exceeds the storage size limit.');
   PlatformException _corrupt() =>
       PlatformException(code: 'secure_storage_corrupt', message: 'The saved credential could not be decoded.');
 }

@@ -109,11 +109,12 @@ def _copy_dependency_state(source_root: Path, target_root: Path) -> None:
     config_path = target / "package_config.json"
     if config_path.is_file() and any(item.get("name") == "pdfium_dart" for item in json.loads(config_path.read_text())["packages"]):
         sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-        from prepare_native_downloads import prepare_pdfium
+        from prepare_native_downloads import prepare_pdfium, prepare_smb
         host = {"Linux": "linux", "Darwin": "macos", "Windows": "windows"}[platform.system()]
         arch = "arm64" if platform.machine().lower() in {"arm64", "aarch64"} else "x64"
         cache = Path(os.environ.get("PLEAZYNG_NATIVE_DOWNLOAD_CACHE", str(Path.home() / ".cache/pleazyng-native-downloads")))
         prepare_pdfium(target_root, host, arch, cache)
+        prepare_smb(target_root, host, arch, cache)
 
 
 def _create_isolated_checkout(root: Path, destination: Path) -> None:

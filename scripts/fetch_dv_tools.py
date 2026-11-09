@@ -104,8 +104,12 @@ def main() -> None:
         with tempfile.NamedTemporaryFile(suffix=".tar.zst") as archive:
             url = lock["assetBase"] + "/" + entry["asset"]
             print("Fetching locked offline runtime: " + url, file=sys.stderr, flush=True)
-            with safe_urlopen(url) as response:
-                shutil.copyfileobj(response, archive)
+            if url.startswith("https://github.com/snapetech-org/mpv-build/releases/download/"):
+                from prepare_native_downloads import prepare_github_url
+                prepare_github_url(url, entry["checksum"], Path(archive.name), Path.home() / ".cache/pleazyng-native-downloads")
+            else:
+                with safe_urlopen(url) as response:
+                    shutil.copyfileobj(response, archive)
             archive.flush()
             install(Path(archive.name), destination, entry, architecture)
     print(destination)

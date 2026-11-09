@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prefetch the pinned SMB hook, Apple torrent CMake sources and Linux native archives through the same verified API path, preserving their original shared-cache layouts and native hashes.
+
 - Stage pinned PDFium, Gradle, CMake sources, Windows tools and webOS toolchains through verified GitHub API downloads when release-page transport fails, preserving source pins and isolated native ABI outputs.
 
 - Accept canonical pleazyng build provenance in TV packages and prefetch checksum-pinned SQLite, libdovi and AppImage runtime assets with verified retries. Reuse immutable application CI only after checking that subsequent changes are confined to release infrastructure.

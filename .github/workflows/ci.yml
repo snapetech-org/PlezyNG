@@ -1352,6 +1352,8 @@ jobs:
       # downloads the linux asset for this arch, verifies its SHA-256, and
       # extracts the prefix tree.
       - name: Fetch libmpv
+        env:
+          GH_TOKEN: ${{ github.token }}
         if: steps.libmpv-cache.outputs.cache-hit != 'true'
         run: |
           command -v zstd >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y --no-install-recommends zstd; }

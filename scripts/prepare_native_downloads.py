@@ -16,7 +16,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
-PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime", "bblanchon/pdfium-binaries", "gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "arvidn/libtorrent", "simdutf/simdutf", "ninja-build/ninja", "snapetech-org/mpv-build", "vslavik/winsparkle", "libsdl-org/SDL", "jrsoftware/issrc", "AppImage/appimagetool", "lg-flutter-webos/ndk", "lg-flutter-webos/artifacts"}
+PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime", "bblanchon/pdfium-binaries", "gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "arvidn/libtorrent", "simdutf/simdutf", "ninja-build/ninja", "snapetech-org/mpv-build", "vslavik/winsparkle", "libsdl-org/SDL", "jrsoftware/issrc", "AppImage/appimagetool", "lg-flutter-webos/ndk", "lg-flutter-webos/artifacts", "ales-drnz/dart_smb2"}
 
 
 def sha256(path):
@@ -195,6 +195,41 @@ PDFIUM_PINS = {
 }
 
 
+def prepare_smb(root, platform, arch, cache):
+    config_path = root / ".dart_tool/package_config.json"
+    config = json.loads(config_path.read_text())
+    entry = next(item for item in config["packages"] if item["name"] == "dart_smb2")
+    uri = urllib.parse.urlparse(urllib.parse.urljoin(config_path.as_uri(), entry["rootUri"]))
+    if uri.scheme != "file" or uri.netloc:
+        raise ValueError("SMB must resolve to the locked local pub cache")
+    hook = Path(urllib.request.url2pathname(uri.path)) / "hook/build.dart"
+    if not hook.is_file() and platform == "tvos":
+        return  # tvOS resolves the existing AMSMB2 MethodChannel adapter stub.
+    content = hook.read_text()
+    release = re.search(r"const _release = '([^']+)'", content)[1]
+    hashes = dict(re.findall(r"'([^']+)':\s*'([a-f0-9]{64})'", content))
+    if platform == "ios":
+        targets = ["libsmb2_ios.xcframework.zip", "libsmb2_macos.xcframework.zip"]
+    elif platform in {"macos", "tvos"}:
+        targets = ["libsmb2_macos.xcframework.zip"]
+    elif platform == "android":
+        targets = [f"libsmb2_android-{abi}.so" for abi in ("armeabi-v7a", "arm64-v8a", "x86_64")] + ["libsmb2_linux-x86_64.so"]
+    elif platform == "windows":
+        targets = [f"libsmb2_windows-{'x86_64' if arch == 'x64' else 'arm64'}.dll"]
+    else:
+        targets = [f"libsmb2_linux-{'x86_64' if arch == 'x64' else 'aarch64'}.so"]
+    for name in targets:
+        digest = hashes[name]
+        source = pinned_asset("ales-drnz/dart_smb2", release, name, digest, cache)
+        target = root / ".dart_tool/hooks_runner/shared/dart_smb2/build" / digest / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.is_symlink():
+            raise ValueError("Refusing linked SMB hook output")
+        shutil.copyfile(source, target)  # The original hook verifies the full hash again.
+        if sha256(target) != digest:
+            raise ValueError("Staged SMB library changed")
+
+
 def prepare_pdfium(root, platform, arch, cache):
     config_path = root / ".dart_tool/package_config.json"
     config = json.loads(config_path.read_text())
@@ -276,6 +311,9 @@ def prepare_cmake_downloads(root, platform, arch, cache):
     if platform == "linux":
         deps = root / "build/linux" / arch / "release/_deps"
         files = [root / "packages/plezy_torrent/src/CMakeLists.txt", root / "linux/CMakeLists.txt"]
+    elif platform in {"ios", "tvos", "macos"}:
+        deps = root / "build/p2p/dependencies"
+        files = [root / "packages/plezy_torrent/src/CMakeLists.txt"]
     elif platform == "android":
         deps = Path(os.environ["RUNNER_TEMP"]) / "pleazyng-cmake-sources"
         files = [root / "packages/plezy_torrent/src/CMakeLists.txt"]
@@ -327,6 +365,9 @@ def main():
     if args.sqlite_platform:
         prepare_sqlite(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
         prepare_pdfium(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
+        prepare_smb(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
+        if args.sqlite_platform in {"ios", "tvos", "macos"}:
+            prepare_cmake_downloads(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
         if args.sqlite_platform == "android":
             prepare_gradle(args.project_root.resolve(), args.cache_dir.resolve())
     if args.cmake_deps:

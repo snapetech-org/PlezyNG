@@ -43,6 +43,9 @@ DOWNLOAD_ATTEMPTS = 4
 DOWNLOAD_RETRY_INITIAL_DELAY_SECONDS = 1
 APPLE_JIT_EVIDENCE_ROOT: Path | None = None
 RELEASE_TAG_REUSE_ALLOWLIST = frozenset({
+    "scripts/fetch_linux_libmpv.py",
+    "scripts/fetch_dv_tools.py",
+
     "tools/webos/build_release_candidate.sh",
     "windows/tool/download-pinned-mpv.ps1",
     "windows/tool/download-pinned-simdutf.ps1",

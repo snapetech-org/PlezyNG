@@ -95,10 +95,17 @@ def main() -> int:
     print(f"fetching {url}", flush=True)
     digest = hashlib.sha256()
     with tempfile.NamedTemporaryFile(suffix=".tar.zst") as archive:
-        with safe_urlopen(url) as response:
-            while chunk := response.read(DOWNLOAD_CHUNK_SIZE):
-                digest.update(chunk)
-                archive.write(chunk)
+        if url.startswith("https://github.com/snapetech-org/mpv-build/releases/download/"):
+            from prepare_native_downloads import prepare_github_url
+            prepare_github_url(url, entry["checksum"], Path(archive.name), Path.home() / ".cache/pleazyng-native-downloads")
+            with open(archive.name, "rb") as response:
+                while chunk := response.read(DOWNLOAD_CHUNK_SIZE):
+                    digest.update(chunk)
+        else:
+            with safe_urlopen(url) as response:
+                while chunk := response.read(DOWNLOAD_CHUNK_SIZE):
+                    digest.update(chunk)
+                    archive.write(chunk)
         archive.flush()
         if digest.hexdigest() != entry["checksum"]:
             print(

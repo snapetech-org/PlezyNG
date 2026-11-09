@@ -128,6 +128,29 @@ class NativeDownloadsTests(unittest.TestCase):
         source = self.root / "pleazyng-cmake-sources/libtorrent-source/CMakeLists.txt"
         self.assertEqual(source.read_bytes(), self.content)
 
+    def test_smb_keeps_the_original_hook_full_hash_cache_and_target_asset(self):
+        package = self.root / "smb-package"
+        (package / "hook").mkdir(parents=True)
+        (package / "hook/build.dart").write_text("const _release = 'libsmb2-r9';\nconst hashes = {'libsmb2_windows-arm64.dll':\n '" + self.digest + "'};")
+        (self.root / ".dart_tool").mkdir()
+        (self.root / ".dart_tool/package_config.json").write_text(json.dumps({"packages": [{"name": "dart_smb2", "rootUri": package.as_uri()}]}))
+        library = self.root / "verified.dll"
+        library.write_bytes(self.content)
+        with patch.object(downloads, "pinned_asset", return_value=library) as fetch:
+            downloads.prepare_smb(self.root, "windows", "arm64", self.root / "cache")
+        self.assertEqual(fetch.call_args.args[:4], ("ales-drnz/dart_smb2", "libsmb2-r9", "libsmb2_windows-arm64.dll", self.digest))
+        output = self.root / ".dart_tool/hooks_runner/shared/dart_smb2/build" / self.digest / "libsmb2_windows-arm64.dll"
+        self.assertEqual(output.read_bytes(), self.content)
+
+    def test_apple_cmake_uses_the_existing_pod_dependency_download_cache(self):
+        cmake = self.root / "packages/plezy_torrent/src"
+        cmake.mkdir(parents=True)
+        (cmake / "CMakeLists.txt").write_text('FetchContent_Declare(libtorrent\n URL https://github.com/arvidn/libtorrent/releases/download/v2.0.11/source.tar.gz\n URL_HASH SHA256=' + self.digest + ')')
+        with patch.object(downloads, "prepare_github_url") as stage:
+            downloads.prepare_cmake_downloads(self.root, "ios", None, self.root / "cache")
+        output = stage.call_args.args[2]
+        self.assertEqual(output, self.root / "build/p2p/dependencies/libtorrent-subbuild/libtorrent-populate-prefix/src/source.tar.gz")
+
     def test_libdovi_cache_wrapper_preserves_verified_archives_and_other_curl_calls(self):
         android = self.root / "android/app"
         android.mkdir(parents=True)

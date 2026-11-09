@@ -292,7 +292,7 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
     android_pending = len(android) == 1 and pending and android[0].get("status") in {"queued", "in_progress", "waiting", "pending", "requested"} and not android[0].get("conclusion")
     if android_pending:
         pending_jobs.append("build-android")
-    elif len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") not in {"failure", "success"}:
+    elif len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") not in {"failure", "success", "cancelled", "timed_out"}:
         raise RecoveryError("Recovery requires exactly one completed Android build.")
     if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped"
            and not (pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion"))

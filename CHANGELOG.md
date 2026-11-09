@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Rebuild canceled or timed-out Android jobs during verified platform recovery while continuing to reject their artifacts for reuse.
+
 - Disable duplicate Gradle file-system watches in ephemeral Android CI, retain dependency caches, and provide verbose build progress with bounded JVM diagnostics without stopping builds for system load.
 
 - Include all transitive Python helpers in the release assembly checkout, check imports in isolation, and reuse verified webOS packages during an assembly-only retry.

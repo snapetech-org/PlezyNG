@@ -44,6 +44,15 @@ class SourceProofTests(unittest.TestCase):
     def test_all_platforms_can_be_recovered_after_only_bootstrap_fix(self):
         self.assertEqual(self.prove()["source_sha"], "a" * 40)
 
+    def test_cancelled_or_timed_out_android_requires_a_new_build(self):
+        for conclusion in ("cancelled", "timed_out"):
+            with self.subTest(conclusion=conclusion):
+                self.jobs[-2]["conclusion"] = conclusion
+                proof = recovery.compose_proof(self.prove())
+                self.assertIn("build-android", proof["rebuilt_jobs"])
+                self.assertNotIn("build-android", proof["reused_jobs"])
+                self.assertNotIn("android_source", proof)
+
     def test_webos_only_failure_keeps_a_successful_android_build_reusable(self):
         self.jobs[-2]["conclusion"] = "success"
         self.jobs.append({"name": "Build WebOS TV package (ARMv7)", "status": "completed", "conclusion": "failure"})
@@ -386,9 +395,11 @@ class AndroidSourceTests(unittest.TestCase):
             self.prove()
 
     def test_failed_or_untrusted_android_cannot_be_reused(self):
-        self.jobs[0]["conclusion"] = "failure"
-        with self.assertRaisesRegex(recovery.RecoveryError, "uniquely successful"):
-            self.prove()
+        for conclusion in ("failure", "cancelled", "timed_out"):
+            with self.subTest(conclusion=conclusion):
+                self.jobs[0]["conclusion"] = conclusion
+                with self.assertRaisesRegex(recovery.RecoveryError, "uniquely successful"):
+                    self.prove()
         self.source["head_branch"] = "feature"
         with self.assertRaisesRegex(recovery.RecoveryError, "trusted-main"):
             self.prove()

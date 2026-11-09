@@ -1,6 +1,6 @@
 Name:           pleazyng
 Version:        2.24.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Plex client with Jellyfin and Emby support, offline downloads, and HDR
 License:        GPL-3.0-only
 URL:            https://github.com/snapetech-org/pleazyng
@@ -10,7 +10,11 @@ Source2:        pleazyng.sh
 Source3:        org.snapetech.pleazyng.desktop
 Source4:        pleazyng.png
 Source5:        LICENSE
+Source6:        normalize-bundle-rpaths.py
+Source7:        relocate-caches.py
 BuildRequires:  tar
+BuildRequires:  patchelf
+BuildRequires:  python3
 Requires:       gtk3
 Requires:       webkit2gtk4.1
 Requires:       libsecret
@@ -61,6 +65,8 @@ tar -xzf %{SOURCE1} -C .
 %install
 install -d %{buildroot}/opt/pleazyng
 cp -a . %{buildroot}/opt/pleazyng/
+python3 %{SOURCE6} %{buildroot}/opt/pleazyng
+python3 %{SOURCE7} %{buildroot}/opt/pleazyng --runtime-prefix /opt/pleazyng
 install -Dm755 %{SOURCE2} %{buildroot}/usr/bin/pleazyng
 install -Dm644 %{SOURCE3} %{buildroot}/usr/share/applications/org.snapetech.pleazyng.desktop
 install -Dm644 %{SOURCE4} %{buildroot}/usr/share/icons/hicolor/512x512/apps/pleazyng.png

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Repair existing-release Linux channel packaging: preserve binary payloads and root ownership in AUR packages, normalize bundled ELF search paths and GTK caches in COPR repacks, and add native x64/ARM64 Nix and macOS signature qualification without rebuilding application artifacts.
+
 - Remove aerynOS from supported release channels and packaging at the owner's request.
 
 - Keep mixed-library search expectations aligned with the supported Jellyfin/Emby book and audiobook item types.

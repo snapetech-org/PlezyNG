@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- System certificate authorities for GitHub asset redirects: retain system-only certificate trust through githubusercontent.com redirects on Android and dart:io, without enabling the upstream anime-feed migration. Independently adapted from [upstream cbd9205f](https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Stable package publication metadata guard: reject GitHub pre-releases even when their tags look like stable versions, retaining manual publication and the fork publisher. Independently adapted from [upstream 1dd75b3e](https://github.com/edde746/plezy/commit/1dd75b3e5e95913cdaa5b8c22911490e72dfb7c5), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
+- Windows pending-resize engine correction: pin the checksum-verified +2 engine for the existing Flutter ABI, retaining DirectComposition and x64/arm64 cache layouts; native Windows qualification remains separate. Independently adapted from [upstream 90b7ccca](https://github.com/edde746/plezy/commit/90b7ccca68cffcfe51fc8994c3463fcbf769ec18), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
 - Hold playback beneath the resume profile picker: pause the covered player and refuse native, media-session, Watch Together and Play Next resume intents until profile selection finishes, preserving Automotive restrictions and active PiP. Independently adapted from [upstream 9fe138ab](https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Add optional title, library and global persistence for custom video zoom, retaining session-only defaults and bounded values. Independently adapted from [upstream e90973fb](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).

@@ -51,6 +51,8 @@
         <domain includeSubdomains="true">github.com</domain>
         <!-- Release check (lib/services/update_service.dart:161). -->
         <domain includeSubdomains="true">api.github.com</domain>
+        <!-- GitHub release asset redirect target. -->
+        <domain includeSubdomains="true">githubusercontent.com</domain>
         <!-- TMDB artwork (lib/services/catalog/seerr_catalog_source.dart:163). -->
         <domain includeSubdomains="true">image.tmdb.org</domain>
         <trust-anchors>

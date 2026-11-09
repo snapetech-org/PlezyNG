@@ -17,6 +17,7 @@ const _expectedDomains = <String>{
   'jsdelivr.net',
   'github.com',
   'api.github.com',
+  'githubusercontent.com',
   'image.tmdb.org',
 };
 const _fixedEndpointSourcePaths = <String>[
@@ -118,7 +119,7 @@ void main() {
       expect(() => requirePleazyngServiceUrl('https://$host'), throwsStateError);
     }
     final unobservedDomains = _expectedDomains
-        .where((domain) => domain != 'plezy.app')
+        .where((domain) => domain != 'plezy.app' && domain != 'githubusercontent.com')
         .where((domain) => !discoveredHosts.any((host) => host == domain || host.endsWith('.$domain')))
         .toList();
     expect(

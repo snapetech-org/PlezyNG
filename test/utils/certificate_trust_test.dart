@@ -107,7 +107,15 @@ void main() {
         same(userStore),
         reason: 'a parent-domain match must stop at a label boundary',
       );
-      for (final fixed in ['plex.tv', 'app.plex.tv', 'PLEX.TV', 'github.com', 'api.github.com', 'image.tmdb.org']) {
+      for (final fixed in [
+        'plex.tv',
+        'app.plex.tv',
+        'PLEX.TV',
+        'github.com',
+        'api.github.com',
+        'release-assets.githubusercontent.com',
+        'image.tmdb.org',
+      ]) {
         expect(CertificateTrust.contextFor(fixed), isNull, reason: fixed);
       }
     });

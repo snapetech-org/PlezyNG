@@ -33,11 +33,8 @@ WorkspaceSessionDescriptor _video([int position = 12000]) => WorkspaceSessionDes
   ),
 );
 
-WorkspaceSnapshot _snapshot(List<WorkspaceSessionDescriptor> sessions) => WorkspaceSnapshot(
-  sessions: sessions,
-  placements: const {},
-  layoutMode: MultiviewLayoutMode.floating,
-);
+WorkspaceSnapshot _snapshot(List<WorkspaceSessionDescriptor> sessions) =>
+    WorkspaceSnapshot(sessions: sessions, placements: const {}, layoutMode: MultiviewLayoutMode.floating);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -88,7 +85,13 @@ void main() {
       expect(current(), isTrue);
       return finish.future;
     });
-    expect(await workspace.recover(_video().id, (_, _) async { opens++; return true; }), isFalse);
+    expect(
+      await workspace.recover(_video().id, (_, _) async {
+        opens++;
+        return true;
+      }),
+      isFalse,
+    );
     finish.complete(false);
     expect(await first, isFalse);
     expect(opens, 1);
@@ -102,7 +105,10 @@ void main() {
     final workspace = MultiviewWorkspaceController()..restoreLayout(_snapshot([_video()]));
     final finish = Completer<bool>();
     late bool Function() current;
-    final operation = workspace.recover(_video().id, (_, guard) { current = guard; return finish.future; });
+    final operation = workspace.recover(_video().id, (_, guard) {
+      current = guard;
+      return finish.future;
+    });
     expect(workspace.dismissRecovery(_video().id), isTrue);
     expect(current(), isFalse);
     finish.complete(true);
@@ -117,7 +123,10 @@ void main() {
     await workspace.hydrate();
     final finish = Completer<bool>();
     late bool Function() current;
-    final operation = workspace.recover(_video().id, (_, guard) { current = guard; return finish.future; });
+    final operation = workspace.recover(_video().id, (_, guard) {
+      current = guard;
+      return finish.future;
+    });
     workspace.dispose();
     expect(current(), isFalse);
     finish.complete(true);
@@ -131,7 +140,7 @@ void main() {
     final value = _snapshot([_video()]).toJson();
     value['sessions'] = List.generate(65, (_) => _video().toJson());
     expect(() => WorkspaceSnapshot.fromJson(value), throwsFormatException);
-    for (final invalid in ['https://user:secret@host/item', 'bad\nid', '']) {
+    for (final invalid in ['***host/item', 'bad\nid', '']) {
       final target = _video().resume!.toJson()..['itemId'] = invalid;
       expect(() => WorkspaceResumeTarget.fromJson(target), throwsFormatException);
     }

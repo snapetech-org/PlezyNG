@@ -72,9 +72,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   bool get active => !_disposed;
   List<WorkspaceSessionDescriptor> get recoverableSessions {
     final activeIds = _activeRecovery.values.map((value) => value.id).toSet();
-    return List.unmodifiable(_pendingRecovery.values.where(
-      (value) => !_sessions.containsKey(value.id) && !activeIds.contains(value.id),
-    ));
+    return List.unmodifiable(
+      _pendingRecovery.values.where((value) => !_sessions.containsKey(value.id) && !activeIds.contains(value.id)),
+    );
   }
 
   bool recoveryPending(String id) => _recoveryOperations.containsKey(id);
@@ -82,8 +82,9 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// Checkpoints use the existing owner, including full-screen playback.
   /// No hidden player or route is created merely to record recovery state.
   void watchRecovery(Object owner, WorkspaceSessionDescriptor? Function() read) {
-    if (_disposed || (!_recoverySources.containsKey(owner) &&
-        _recoverySources.length >= WorkspaceSnapshot.maxSessions)) return;
+    if (_disposed || (!_recoverySources.containsKey(owner) && _recoverySources.length >= WorkspaceSnapshot.maxSessions)) {
+      return;
+    }
     _recoverySources[owner] = read;
     _captureRecovery();
     _recoveryTimer ??= Timer.periodic(const Duration(seconds: 10), (_) {
@@ -130,16 +131,12 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     return true;
   }
 
-  Future<bool> recover(
-    String id,
-    Future<bool> Function(WorkspaceSessionDescriptor, bool Function()) open,
-  ) async {
+  Future<bool> recover(String id, Future<bool> Function(WorkspaceSessionDescriptor, bool Function()) open) async {
     final descriptor = _pendingRecovery[id];
     if (_disposed || descriptor == null || recoveryPending(id)) return false;
     final token = Object();
     _recoveryOperations[id] = token;
-    bool current() => !_disposed && identical(_recoveryOperations[id], token) &&
-        _pendingRecovery.containsKey(id);
+    bool current() => !_disposed && identical(_recoveryOperations[id], token) && _pendingRecovery.containsKey(id);
     _publish();
     try {
       final opened = await open(descriptor, current);
@@ -153,6 +150,7 @@ class MultiviewWorkspaceController extends ChangeNotifier {
       if (!_disposed) _publish();
     }
   }
+
   Future<void> _persistenceQueue = Future<void>.value();
   WorkspaceSnapshot? _pendingSnapshot;
   bool _hydrated;
@@ -346,8 +344,10 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// cannot replace the adapter currently driving a visible pane.
   bool register(WorkspaceSurfaceRegistration registration) {
     final descriptor = registration.descriptor;
-    if (_disposed || _sessions.length >= WorkspaceSnapshot.maxSessions ||
-        descriptor.id.trim().isEmpty || descriptor.title.trim().isEmpty) {
+    if (_disposed ||
+        _sessions.length >= WorkspaceSnapshot.maxSessions ||
+        descriptor.id.trim().isEmpty ||
+        descriptor.title.trim().isEmpty) {
       return false;
     }
     if (descriptor.hasAudio && registration.onAudioOwnershipChanged == null) {
@@ -1273,14 +1273,16 @@ class MultiviewWorkspaceController extends ChangeNotifier {
     // Prefer the most recent active owners if stale recovery records fill the cap.
     final retained = descriptors.values.toList();
     return WorkspaceSnapshot(
-    sessions: retained.skip((retained.length - WorkspaceSnapshot.maxSessions).clamp(0, retained.length).toInt()).toList(growable: false),
-    placements: Map<String, WorkspacePlacement>.unmodifiable(_placements),
-    layoutMode: _layoutMode,
-    focusedSessionId: _focusedSessionId,
-    audibleSessionId: _hasExplicitAudioSelection ? _requestedAudibleSessionId : null,
-    inputSessionId: _requestedInputSessionId,
-    audioSelectionExplicit: _hasExplicitAudioSelection,
-  );
+      sessions: retained
+          .skip((retained.length - WorkspaceSnapshot.maxSessions).clamp(0, retained.length).toInt())
+          .toList(growable: false),
+      placements: Map<String, WorkspacePlacement>.unmodifiable(_placements),
+      layoutMode: _layoutMode,
+      focusedSessionId: _focusedSessionId,
+      audibleSessionId: _hasExplicitAudioSelection ? _requestedAudibleSessionId : null,
+      inputSessionId: _requestedInputSessionId,
+      audioSelectionExplicit: _hasExplicitAudioSelection,
+    );
   }
 
   void restoreLayout(WorkspaceSnapshot snapshot) {

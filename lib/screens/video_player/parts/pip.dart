@@ -27,9 +27,16 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
     _recoveryWorkspace!.watchRecovery(this, () {
       final metadata = _currentMetadata;
       final serverId = metadata.serverId;
-      if (!mounted || player == null || _shuttingDown || widget.isLive ||
-          widget.isPreroll || widget.isOffline || serverId == null ||
-          _activeExternalPlaybackSource != null) return null;
+      if (!mounted ||
+          player == null ||
+          _shuttingDown ||
+          widget.isLive ||
+          widget.isPreroll ||
+          widget.isOffline ||
+          serverId == null ||
+          _activeExternalPlaybackSource != null) {
+        return null;
+      }
       return WorkspaceSessionDescriptor(
         id: 'video:${metadata.globalKey}',
         kind: MultiviewMediaKind.video,

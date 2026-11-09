@@ -47,6 +47,24 @@ void main() {
     );
   }
 
+  test('release trust accepts the actual keyless publisher catalog metadata', () async {
+    final bytes = File('test/fixtures/visualizer/authenticated-catalog.json').readAsBytesSync();
+    final wrapper = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+    final payload = jsonDecode(utf8.decode(base64Decode(wrapper['payload'] as String))) as Map<String, dynamic>;
+    final clock = DateTime.parse(payload['issuedAt'] as String).add(const Duration(hours: 1));
+    final release = VisualizerCatalogTrust.release();
+    expect(release.keylessPublisher, isTrue);
+    final snapshot = await VisualizerCatalogVerifier(release).verify(bytes, clock);
+    expect(snapshot.entries.single.id, VisualizerPackCatalogEntry.sampleFixtureId);
+    expect(snapshot.sequence, payload['sequence']);
+    await expectLater(VisualizerCatalogVerifier(trust).verify(bytes, clock), throwsFormatException);
+    final changed = Map<String, dynamic>.from(wrapper)..['signatures'] = [];
+    await expectLater(
+      VisualizerCatalogVerifier(release).verify(utf8.encode(jsonEncode(changed)), clock),
+      throwsFormatException,
+    );
+  });
+
   setUp(() async {
     // Deterministic test-only key. Never a production trust root.
     key = await Ed25519().newKeyPairFromSeed(List<int>.generate(32, (i) => i));

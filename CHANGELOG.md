@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Install XcodeGen and Git LFS in Apple native CI before exercising generated Dolby Vision projects, matching the release jobs on both Intel and Apple-Silicon hosted Macs.
+
 - Include Book and AudioBook items in Jellyfin/Emby All browsing and library searches, fixing ebook libraries that appeared empty until switching to Folders ([#266](https://github.com/snapetech-org/pleazyng/issues/266)).
 
 - Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.

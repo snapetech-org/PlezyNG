@@ -211,3 +211,23 @@ aliases, not the generated scheme, and the upstream scheme is not registered.
 Implemented Dolby Vision/FEL and NPU experiments belong in normal compatible
 builds with persisted Settings opt-in, off by default; device qualification is
 reported separately. Do not reintroduce a separate experimental-app build gate.
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+- Configurable Home and merged-row source history: [PR #2203](https://github.com/edde746/plezy/pull/2203) by [@jpdexter101-lang](https://github.com/jpdexter101-lang).
+- Watch-link and external-player source history: [PR #2681](https://github.com/edde746/plezy/pull/2681) by [@razzamatazm](https://github.com/razzamatazm); [PR #2738](https://github.com/edde746/plezy/pull/2738) by [@dvitjuks](https://github.com/dvitjuks).
+- Cast feature request: [issue #126](https://github.com/edde746/plezy/issues/126) by [@benfrussell](https://github.com/benfrussell).
+- Subtitle styling proposal and report: [issue #689](https://github.com/edde746/plezy/issues/689) by [@ayydaz](https://github.com/ayydaz); [issue #1442](https://github.com/edde746/plezy/issues/1442) by [@Shasoosh](https://github.com/Shasoosh).
+
+The inherited baseline was independently verified against the
+[upstream README snapshot](https://github.com/edde746/plezy/blob/738e18fdc552ace910dedabf6e689ab74e1dae58/README.md),
+pinned at [commit `738e18fdc5`](https://github.com/edde746/plezy/commit/738e18fdc552ace910dedabf6e689ab74e1dae58),
+authored upstream by [@edde746](https://github.com/edde746). The ledger links
+the other feature-specific PRs, requests and reports. These credits do not
+change a feature from Partial/Experimental to qualified or released.
+
+See the [full source ledger and dispositions](../UPSTREAM_ATTRIBUTION.md).

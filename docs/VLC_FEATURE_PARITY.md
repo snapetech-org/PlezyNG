@@ -108,3 +108,20 @@ This is a feature comparison, not a claim of binary parity. The following VLC ca
 - Bookmarks are stored locally on the device; they do not sync between installs or update server-side resume state.
 
 The detailed implementation limits and UI help are documented alongside each feature so controls appear only where they can work and unsupported cases fail visibly and safely.
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+- Playlist repeat foundation and related request: [PR #1757](https://github.com/edde746/plezy/pull/1757) by [@UltimateInternet](https://github.com/UltimateInternet); [issue #1985](https://github.com/edde746/plezy/issues/1985) by [@balupton](https://github.com/balupton).
+- Existing subtitle preview, timing and local-import references: [PR #2347](https://github.com/edde746/plezy/pull/2347) by [@infixlabs](https://github.com/infixlabs); [PR #2824](https://github.com/edde746/plezy/pull/2824) by [@Rukko](https://github.com/Rukko); [issue #1431](https://github.com/edde746/plezy/issues/1431) by [@Kuboczoch](https://github.com/Kuboczoch).
+- Equalizer proposal: [PR #2292](https://github.com/edde746/plezy/pull/2292) by [@whereareiam](https://github.com/whereareiam).
+- External-player progress return: [PR #2738](https://github.com/edde746/plezy/pull/2738) by [@dvitjuks](https://github.com/dvitjuks).
+
+These references cover the named player controls, not a claim that upstream
+Plezy supplied all VLC-style media tools. The fork implementation history is
+recorded in [Open media](UNIVERSAL_MEDIA.md#upstream-sources).
+
+See the [full source ledger and dispositions](../UPSTREAM_ATTRIBUTION.md).

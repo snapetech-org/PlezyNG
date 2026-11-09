@@ -45,3 +45,16 @@ launch the app while someone is watching. Check submenu → options → OSD →
 hidden OSD → browse, other-tab → home, and native exit only at home. Headless
 tests and SDK compilation establish routing correctness; they do not claim a
 physical remote/device qualification.
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+Related remote-input foundation: [D-pad hold-select/context-menu handling](https://github.com/edde746/plezy/commit/0ef47f2711ecb5ff30089831410b6f29b580cdcb)
+by [@adamsparsons](https://github.com/adamsparsons), authored upstream and
+independently adapted in Pleazyng. That commit concerns held Select and context
+menus; the Back ownership and TV exit fixes described here are downstream work.
+
+See the [full source ledger and dispositions](../../UPSTREAM_ATTRIBUTION.md).

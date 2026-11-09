@@ -157,3 +157,20 @@ This guide covers the VLC comparison features selected for this client: safe loc
 The additions fit the existing Open media pane, playback settings, and chapter areas, using PlezyNG’s standard player, focus handling, and navigation. They do not claim full VLC parity: the stream-out path is bounded HLS file sharing; extensions are declarative search mappings rather than executable Lua modules; and `plezyctl` handles those manifests rather than controlling arbitrary playback sessions.
 
 New localized strings belong in `lib/i18n/en.i18n.json`; run the repository’s localization and Slang generation workflow after editing the catalog. Platform checks and FFmpeg/disc requirements should remain explicit in future UI and release notes.
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+- Related playlist repeat controls and repeat request: [PR #1757](https://github.com/edde746/plezy/pull/1757) by [@UltimateInternet](https://github.com/UltimateInternet); [issue #1985](https://github.com/edde746/plezy/issues/1985) by [@balupton](https://github.com/balupton).
+- Device-local equalizer proposal: [PR #2292](https://github.com/edde746/plezy/pull/2292) by [@whereareiam](https://github.com/whereareiam).
+
+The desktop capture, temporary sharing, data-only search extensions and CLI were
+introduced in [Pleazyng PR #42](https://github.com/snapetech-org/pleazyng/pull/42)
+by [@snapetech](https://github.com/snapetech).
+That fork implementation record is distinct from the upstream player references.
+The conversion, source queues and media-tool limits above remain unchanged.
+
+See the [full source ledger and dispositions](../UPSTREAM_ATTRIBUTION.md).

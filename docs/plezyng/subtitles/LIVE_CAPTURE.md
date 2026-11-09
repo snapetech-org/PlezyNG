@@ -27,3 +27,17 @@ position to remain available to the player.
 Source regression cases cover clock rollback, stale queued packets after a DVR
 seek, pauses and format changes. Device execution, native ABI qualification and
 server DVR handoff execution remain pending.
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+- Related Plex DVR/timeshift timeline foundation: [PR #2300](https://github.com/edde746/plezy/pull/2300) by [@nullroute77](https://github.com/nullroute77).
+
+This is source credit for the existing playback timeline. PCM capture, local
+inference and live-caption retention are separate downstream implementations;
+the upstream timeline PR does not qualify those paths.
+
+See the [full source ledger and dispositions](../../../UPSTREAM_ATTRIBUTION.md).

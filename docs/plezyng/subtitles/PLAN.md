@@ -687,3 +687,22 @@ Repository links below are pinned to the audited commit except PRs and upstream 
 [W36]: https://ryzenai.docs.amd.com/en/latest/whisper_cpp.html
 [W37]: https://github.com/PaddlePaddle/PaddleOCR
 [W38]: https://pub.dev/packages/flutter_whisper_ggml
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+- Existing Emby search, style-preview and delay-control foundations: [PR #2091](https://github.com/edde746/plezy/pull/2091) by [@Bockiii](https://github.com/Bockiii); [PR #2347](https://github.com/edde746/plezy/pull/2347) by [@infixlabs](https://github.com/infixlabs); [PR #2824](https://github.com/edde746/plezy/pull/2824) by [@Rukko](https://github.com/Rukko).
+- In-player styling, fonts, placement and local-file requests: [issue #689](https://github.com/edde746/plezy/issues/689) by [@ayydaz](https://github.com/ayydaz); [issue #95](https://github.com/edde746/plezy/issues/95) by [@sangju41](https://github.com/sangju41); [issue #2174](https://github.com/edde746/plezy/issues/2174) by [@saakethkaashyap](https://github.com/saakethkaashyap); [issue #1431](https://github.com/edde746/plezy/issues/1431) by [@Kuboczoch](https://github.com/Kuboczoch).
+- Rendering bug report: [issue #1442](https://github.com/edde746/plezy/issues/1442) by [@Shasoosh](https://github.com/Shasoosh).
+- Language policy, per-series and broader preference requests: [issue #1758](https://github.com/edde746/plezy/issues/1758) by [@tr3bag](https://github.com/tr3bag); [issue #2116](https://github.com/edde746/plezy/issues/2116) by [@pjakessonVS](https://github.com/pjakessonVS); [issue #2382](https://github.com/edde746/plezy/issues/2382) by [@uaverb](https://github.com/uaverb); [issue #2792](https://github.com/edde746/plezy/issues/2792) by [@calmcacil](https://github.com/calmcacil).
+- Always-on subtitle and item-offset proposals: [PR #2346](https://github.com/edde746/plezy/pull/2346) by [@infixlabs](https://github.com/infixlabs); [PR #1956](https://github.com/edde746/plezy/pull/1956) by [@basymbhamani](https://github.com/basymbhamani).
+
+Requests and reports are credited separately from completed behavior. A broader
+upstream preference request does not establish that all of its scope shipped.
+Local ASR, translation, capture and acceleration remain governed by this plan
+and its qualification records, not by the status of these upstream tickets.
+
+See the [full source ledger and dispositions](../../../UPSTREAM_ATTRIBUTION.md).

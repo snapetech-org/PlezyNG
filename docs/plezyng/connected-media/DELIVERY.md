@@ -67,3 +67,18 @@ Copy ordering is a recommendation based on available metadata and existing devic
 capabilities, not a guarantee of successful decoding. Offline verification checks
 identity, containment and length, not a full content checksum. Cross-provider
 timeline equivalence and automatic failover remain outside this change.
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+- Media watch-link foundation: [PR #2681](https://github.com/edde746/plezy/pull/2681) by [@razzamatazm](https://github.com/razzamatazm).
+- External-player progress return: [PR #2738](https://github.com/edde746/plezy/pull/2738) by [@dvitjuks](https://github.com/dvitjuks).
+- Selected Plex direct-play media/part negotiation: [PR #2960](https://github.com/edde746/plezy/pull/2960) by [@nrlcode](https://github.com/nrlcode).
+
+These sources concern the existing link/playback/reporting foundations. The
+Files/books indexing, offline-readiness and retry work above is downstream work.
+
+See the [full source ledger and dispositions](../../../UPSTREAM_ATTRIBUTION.md).

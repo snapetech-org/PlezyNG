@@ -91,3 +91,10 @@ implementation, or unresolved investigation, add it to a clearly labeled
 planned/not-yet-shipped section. Preserve a reviewed disposition for captured
 records that are withdrawn, superseded, inapplicable, or still unreviewed;
 never turn source credit into a claim that unfinished behavior shipped.
+
+Feature guides and implementation records must include a short **Upstream
+sources** footer when an upstream record materially informed the feature.
+Link the original PR, issue, report, discussion or commit and the upstream
+author, describe its relevant scope, and link `UPSTREAM_ATTRIBUTION.md`.
+Keep proposal/report credit distinct from implementation and qualification;
+do not attach unrelated records to new downstream features.

@@ -74,3 +74,22 @@ hardcoded-string, workflow-guard, icon-consistency, native-format and analyzer
 checks failed outside this batch. Commits use the documented hook bypass after
 focused validation; no schema or translation generation changes are part of
 this batch.
+
+## Upstream sources
+
+These authors made the linked contributions or suggestions to upstream Plezy.
+Pleazyng independently adapted or reviewed the relevant behavior; the feature
+status and limits above remain authoritative.
+
+- Download storage-refusal scheduling: [PR #2938](https://github.com/edde746/plezy/pull/2938) by [@moust4ki](https://github.com/moust4ki).
+- Plex direct-play negotiation: [PR #2960](https://github.com/edde746/plezy/pull/2960) by [@nrlcode](https://github.com/nrlcode).
+- Plex server deletion capability: [PR #2898](https://github.com/edde746/plezy/pull/2898) by [@primetime43](https://github.com/primetime43).
+- Linux HDR output-detection override: [PR #2971](https://github.com/edde746/plezy/pull/2971) by [@Hermes-howly](https://github.com/Hermes-howly).
+
+Additional upstream commits independently adapted for this batch:
+
+- [Desktop download capacity accounting](https://github.com/edde746/plezy/commit/80c562ff06db237b48592a89efb0f0b7baeb0e10) by [@edde746](https://github.com/edde746).
+- [D-pad hold-select/context-menu handling](https://github.com/edde746/plezy/commit/0ef47f2711ecb5ff30089831410b6f29b580cdcb) by [@adamsparsons](https://github.com/adamsparsons).
+- [Managed iOS download exclusion from iCloud Backup](https://github.com/edde746/plezy/commit/d192a726b8a8dd512d648f5cce9d568508d3ecd3) by [@edde746](https://github.com/edde746).
+
+See the [full source ledger and dispositions](../../UPSTREAM_ATTRIBUTION.md).

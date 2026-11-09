@@ -153,7 +153,10 @@ class _VideoState extends State<Video> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _updateVideoRect(context, constraints);
           });
-          return const SizedBox.expand();
+          return CustomPaint(
+            painter: _NativeVideoAperture(clear: _hasFirstFrame),
+            child: const SizedBox.expand(),
+          );
         },
       );
     }
@@ -234,4 +237,19 @@ class _VideoState extends State<Video> {
       player.reportVideoRectError(PlayerError('Failed to set video rect: $e'));
     });
   }
+}
+
+/// Native video lives below Flutter. Transparent paint alone retains pixels from
+/// covered routes and workspace tiles, so erase the aperture before controls.
+class _NativeVideoAperture extends CustomPainter {
+  const _NativeVideoAperture({required this.clear});
+  final bool clear;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (clear) canvas.drawRect(Offset.zero & size, Paint()..blendMode = BlendMode.clear);
+  }
+
+  @override
+  bool shouldRepaint(_NativeVideoAperture oldDelegate) => clear != oldDelegate.clear;
 }

@@ -1,9 +1,14 @@
+import 'dart:async';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/mpv/models.dart';
 import 'package:plezy/mpv/player/player_native.dart';
 import 'package:plezy/mpv/video.dart';
 import 'package:plezy/services/settings_service.dart';
+import 'package:plezy/utils/video_player_navigation.dart';
 
 import '../test_helpers/mock_player_channels.dart';
 import '../test_helpers/prefs.dart';
@@ -18,6 +23,70 @@ void main() {
   });
 
   tearDown(SettingsService.resetForTesting);
+
+  testWidgets('native video clears underlying artwork only after its first frame', (tester) async {
+    await withMockPlayerChannels(
+      methodChannelName: 'com.plezy/mpv_player',
+      eventChannelName: 'com.plezy/mpv_player/events',
+      methodHandler: (call) async => call.method == 'initialize' ? true : null,
+      testBody: () async {
+        final player = PlayerNative();
+        final firstFrame = ValueNotifier(false);
+        final capture = GlobalKey();
+        final navigator = GlobalKey<NavigatorState>();
+        await tester.pumpWidget(
+          RepaintBoundary(
+            key: capture,
+            child: MaterialApp(
+              navigatorKey: navigator,
+              home: const ColoredBox(color: Colors.red),
+            ),
+          ),
+        );
+        unawaited(
+          VideoPlayerRoute(
+            builder: (_) => Stack(
+              children: [
+                Positioned(
+                  left: 20,
+                  top: 20,
+                  width: 100,
+                  height: 100,
+                  child: Video(
+                    player: player,
+                    hasFirstFrame: firstFrame,
+                    controls: (_) => const Align(
+                      alignment: Alignment.topLeft,
+                      child: SizedBox(width: 10, height: 10, child: ColoredBox(color: Colors.blue)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ).push(navigator.currentState!),
+        );
+        await tester.pumpAndSettle();
+        Future<int> alpha(int x, int y) async {
+          final boundary = capture.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+          final image = (await tester.runAsync(() => boundary.toImage()))!;
+          final data = (await tester.runAsync(() => image.toByteData(format: ui.ImageByteFormat.rawRgba)))!;
+          final result = data.getUint8((y * image.width + x) * 4 + 3);
+          image.dispose();
+          return result;
+        }
+
+        expect(await alpha(50, 50), 255);
+        firstFrame.value = true;
+        await tester.pump();
+        expect(await alpha(50, 50), 0);
+        expect(await alpha(25, 25), 255);
+        expect(await alpha(5, 5), 255);
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.runAsync(() => player.dispose());
+        firstFrame.dispose();
+      },
+    );
+  });
 
   testWidgets('Video reports updated physical pane bounds when workspace layout moves', (tester) async {
     final rectCalls = <Map<Object?, Object?>>[];

@@ -399,7 +399,7 @@ void main() {
       'lib-shows': {'Series', 'Episode'},
       'lib-home': {'Video', 'MusicVideo'},
       'lib-mvids': {'Video', 'MusicVideo'},
-      'lib-mixed': {'Movie', 'Series', 'Episode', 'MusicAlbum', 'Audio'},
+      'lib-mixed': {'Movie', 'Series', 'Episode', 'MusicAlbum', 'Audio', 'Book', 'AudioBook'},
     });
   });
 

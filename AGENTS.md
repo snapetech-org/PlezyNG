@@ -68,3 +68,20 @@ The local `plezyng` path is a compatibility symlink for existing tools and cache
 absolute paths. Use the canonical path for new work. Upstream remains
 `edde746/plezy`; published tags, binaries and signed provenance retain their
 original identities.
+
+## Upstream source attribution
+
+When Pleazyng gathers or adapts an idea, report, discussion, patch, rejected
+request, issue, pull request, or commit from upstream Plezy, update
+`UPSTREAM_ATTRIBUTION.md` and the user-facing changelog in the same change.
+Record the originating upstream URL, the upstream author’s GitHub handle, the
+kind of source, and the behavior brought into Pleazyng. Say that the person
+contributed or suggested it to the upstream project and that Pleazyng
+independently adapted, integrated, or verified it. Never imply that the person
+contributed directly to, endorsed, or participated in this fork.
+
+Credit closed, unmerged, superseded, and rejected upstream records when their
+code or ideas materially informed the fork. Before a release, audit every new
+upstream reference in commits, release-note fragments, and changelog entries
+for an author link and originating issue, PR, or commit link. Missing source
+credit is a release-note defect and must be fixed before publication.

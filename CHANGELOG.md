@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Publicly credit 30 Plezy pull requests and commits whose upstream code or ideas were independently adapted into Pleazyng. The [source ledger](UPSTREAM_ATTRIBUTION.md) links every originating record and upstream author while making clear that those people contributed to Plezy, not directly to this fork.
+
 - Reuse already verified Android SDK packages and retry failed SDK Manager requests before failing, preserving toolchain pins and avoiding unnecessary hosted-tool updates.
 
 - Rebuild canceled or timed-out Android jobs during verified platform recovery while continuing to reject their artifacts for reuse.

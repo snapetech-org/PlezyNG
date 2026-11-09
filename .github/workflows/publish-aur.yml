@@ -157,30 +157,17 @@ jobs:
           sed -i "s/^sha256sums_x86_64=.*/sha256sums_x86_64=('${x64_sha}')/" "$aur_repo/PKGBUILD"
           sed -i "s/^sha256sums_aarch64=.*/sha256sums_aarch64=('${arm64_sha}')/" "$aur_repo/PKGBUILD"
 
+          desktop_sha="$(sha256sum "$aur_repo/pleazyng.desktop" | cut -d ' ' -f 1)"
+          license_sha="$(sha256sum "$aur_repo/LICENSE" | cut -d ' ' -f 1)"
+          sed -i "s/^sha256sums=.*/sha256sums=('${desktop_sha}' '${license_sha}')/" "$aur_repo/PKGBUILD"
+          # makepkg is authoritative for options, architecture scopes and the
+          # unindented pkgname section required by AUR's package index.
+          docker run --rm --network none --user "$(id -u):$(id -g)" \
+            --mount "type=bind,src=$aur_repo,dst=/work,readonly" -w /work \
+            archlinux@sha256:2de80105abb49f813a85393c6758a4334deb6bcec4a2411bd2f059c0bee6ee4c \
+            bash -lc 'makepkg --printsrcinfo' > "$aur_repo/.SRCINFO"
           (
             cd "$aur_repo"
-            source PKGBUILD
-            {
-              printf 'pkgbase = %s\n' "$pkgname"
-              printf '\tpkgdesc = %s\n' "$pkgdesc"
-              printf '\tpkgver = %s\n' "$pkgver"
-              printf '\tpkgrel = %s\n' "$pkgrel"
-              printf '\turl = %s\n' "$url"
-              for value in "${arch[@]}"; do printf '\tarch = %s\n' "$value"; done
-              for value in "${license[@]}"; do printf '\tlicense = %s\n' "$value"; done
-              for value in "${depends[@]}"; do printf '\tdepends = %s\n' "$value"; done
-              for value in "${provides[@]}"; do printf '\tprovides = %s\n' "$value"; done
-              for value in "${noextract[@]}"; do printf '\tnoextract = %s\n' "$value"; done
-              for value in "${source[@]}"; do printf '\tsource = %s\n' "$value"; done
-              for value in "${sha256sums[@]}"; do printf '\tsha256sums = %s\n' "$value"; done
-              for arch_name in x86_64 aarch64; do
-                declare -n arch_sources="source_${arch_name}"
-                declare -n arch_sums="sha256sums_${arch_name}"
-                for value in "${arch_sources[@]}"; do printf '\tsource_%s = %s\n' "$arch_name" "$value"; done
-                for value in "${arch_sums[@]}"; do printf '\tsha256sums_%s = %s\n' "$arch_name" "$value"; done
-              done
-              printf '\n\tpkgname = %s\n' "$pkgname"
-            } > .SRCINFO
             git config user.name "Pleazyng Release Bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add PKGBUILD .SRCINFO pleazyng.desktop LICENSE

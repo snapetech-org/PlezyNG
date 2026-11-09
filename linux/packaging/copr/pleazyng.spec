@@ -1,6 +1,11 @@
+# Repackage the qualified upstream release payload; do not fabricate Fedora
+# debuginfo or require build IDs absent from some packaged native providers.
+%global debug_package %{nil}
+%global _build_id_links none
+
 Name:           pleazyng
 Version:        2.24.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Plex client with Jellyfin and Emby support, offline downloads, and HDR
 License:        GPL-3.0-only
 URL:            https://github.com/snapetech-org/pleazyng

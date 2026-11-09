@@ -400,10 +400,11 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
 
     run('cmake', '-S', ROOT / 'native/games/romm', '-B', out / 'romm-build',
         f'-DCMAKE_TOOLCHAIN_FILE={toolchain}', '-DCMAKE_BUILD_TYPE=Release',
-        '-DPLEZY_ROMM_ISOLATED=OFF',
+        '-DPLEZY_ROMM_DESCRIPTOR_SANDBOX=ON',
         f'-DFETCHCONTENT_BASE_DIR={sources / "romm-dependencies"}')
     run('cmake', '--build', out / 'romm-build', '--target', 'plezy_retro', '--parallel', args.jobs)
     shutil.copyfile(out / 'romm-build/libplezy_retro.so', out / 'libplezy_retro.so')
+    shutil.copy2(out / 'romm-build/plezy_retro_worker', out / 'plezy_retro_worker')
     romm_cores = ('gambatte', 'mgba', 'fceumm')
     for core in romm_cores:
         libraries = list((out / 'romm-build/cores').rglob(f'{core}_libretro.so'))
@@ -431,7 +432,7 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
         'whisper': {'version': WHISPER_GGML_VERSION, 'archive_sha256': WHISPER_GGML_SHA256},
         'libraries': {},
     }
-    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libplezy_retro.so',
+    for name in ('libplezy_sqlite3.so', 'libdart_smb2.so', 'libplezy_torrent.so', 'libplezy_retro.so', 'plezy_retro_worker',
                  'libflutter_whisper_plugin.so', *(f'{core}_libretro.so' for core in romm_cores)):
         path = out / name
         if elf_arch(path.read_bytes()[:64]) != args.arch:
@@ -493,6 +494,7 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
     native_library_names = ['libdart_smb2.so', 'libplezy_sqlite3.so', 'libplezy_torrent.so']
     if 'libplezy_retro.so' in report['libraries']:
         native_library_names.append('libplezy_retro.so')
+        native_library_names.append('plezy_retro_worker')
         native_library_names.extend(f'{core}_libretro.so' for core in ('gambatte', 'mgba', 'fceumm'))
         notices = report.get('rommNotices', {})
         if 'romm-cores.json' not in notices:
@@ -516,6 +518,8 @@ def stage(source, destination, native_dir, arch, *, visualizer_native=None, visu
         dest = destination / 'build-inputs' / name if name == 'libdart_smb2.so' else native_target / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, dest)
+        if name == 'plezy_retro_worker':
+            dest.chmod(0o755)
     if bool(visualizer_native) != bool(visualizer_manifest_sha256):
         raise ValueError('Specify both the MilkRust bundle and its reviewed manifest SHA-256')
     if visualizer_native:

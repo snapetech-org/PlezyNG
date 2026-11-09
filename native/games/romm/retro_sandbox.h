@@ -11,6 +11,8 @@
 #include <unistd.h>
 
 #include "retro_input_files.h"
+#elif defined(PLEZY_RETRO_DESCRIPTOR_SANDBOX)
+#include "retro_descriptor_sandbox.h"
 #elif defined(__linux__)
 #include <fcntl.h>
 #include <linux/audit.h>
@@ -32,7 +34,7 @@
 #endif
 
 namespace plezy::retro {
-#if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__) && !defined(PLEZY_RETRO_DESCRIPTOR_SANDBOX)
 // Kept independently testable: this complements, never replaces, Landlock.
 inline void RestrictLinuxSyscalls() {
   // An app started with inherited or ambient capabilities must not pass those
@@ -266,6 +268,9 @@ inline void RestrictCore(
   limit.rlim_cur = limit.rlim_max =
       static_cast<rlim_t>(std::min<uint64_t>(limit.rlim_max, uint64_t(pages[5]) * pageSize + 512ull * 1024 * 1024));
   if (setrlimit(RLIMIT_DATA, &limit)) throw std::runtime_error("Could not limit emulator allocations");
+#elif defined(PLEZY_RETRO_DESCRIPTOR_SANDBOX)
+  (void)saves;
+  PrepareDescriptorCore(core, rom, system);
 #elif defined(__linux__)
   const int abi = static_cast<int>(syscall(SYS_landlock_create_ruleset, nullptr, 0, LANDLOCK_CREATE_RULESET_VERSION));
   if (abi < 3) throw std::runtime_error("Emulator isolation requires Landlock ABI 3 or later");

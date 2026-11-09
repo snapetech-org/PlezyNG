@@ -1098,7 +1098,7 @@ require(
     "platform builds must be manually dispatched with an explicit action and pool",
 )
 require(
-    "if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}"
+    "if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}"
     in job_block(ci_text, "linux-packages"),
     "the optional Linux package smoke build must not run on pushes",
 )

@@ -26,14 +26,17 @@ extension _VideoPlayerDisplayMatchingMethods on VideoPlayerScreenState {
 
   /// Ask Android for [target], then refresh the mpv decoder if the display
   /// actually switched — seeking to [refreshPosition] when given (where the
-  /// measurement window started), else in place. The caller has already
-  /// paused playback. Returns whether a switch was initiated.
+  /// measurement window started), else in place. A switch made while the
+  /// decoder is held has no decoder to refresh ([refreshDecoder] false). The
+  /// caller has already paused playback. Returns whether a switch was
+  /// initiated.
   Future<bool> _switchDisplayToTarget({
     required Player currentPlayer,
     required SettingsService settingsService,
     required ({double? fps, int width, int height}) target,
     required String reason,
     Duration? refreshPosition,
+    bool refreshDecoder = true,
   }) async {
     _frameRate.applied = true;
     final durationMs = currentPlayer.state.duration.inMilliseconds;
@@ -45,7 +48,7 @@ extension _VideoPlayerDisplayMatchingMethods on VideoPlayerScreenState {
       videoWidth: target.width,
       videoHeight: target.height,
     );
-    if (didSwitch && mounted && player == currentPlayer) {
+    if (didSwitch && refreshDecoder && mounted && player == currentPlayer) {
       await _refreshAndroidMpvDecoderAfterFrameRateSwitch(reason: reason, targetPosition: refreshPosition);
     }
 
@@ -62,6 +65,76 @@ extension _VideoPlayerDisplayMatchingMethods on VideoPlayerScreenState {
       '(duration: ${durationMs}ms, switched=$didSwitch, $reason)',
     );
     return didSwitch;
+  }
+
+  /// Kodi's order for an Android mpv VOD open (#2998): hold the file's video
+  /// decoder once the demuxer has opened it, switch the display from the
+  /// rate and size the container declares, then let the decoder open. A
+  /// decoder created before an HDMI mode switch can stay bound to the old
+  /// mode: on a Fire TV Stick 4K the Dolby Vision decoder kept the TV in
+  /// Dolby Vision mode through a 59.94 → 23.976 Hz switch and showed the
+  /// picture green and purple. Arm right before the open; the first-frame
+  /// negotiation awaits [_FrameRateStartupPlan.displaySwitchBeforeDecoder]
+  /// and then checks the presented format, which switches again only where
+  /// it differs from the declared one: a decoder that deinterlaces by itself
+  /// presents fields, and mpv exposes no field order before decoding, so
+  /// unlike Kodi an interlaced file is matched to its frame rate here and to
+  /// its field rate there.
+  void _armDisplaySwitchBeforeDecoder({
+    required Player currentPlayer,
+    required SettingsService settingsService,
+    required _FrameRateStartupPlan plan,
+    required PlaybackOpenOutcome outcome,
+  }) {
+    // needsDecoderRefreshAfterDisplaySwitch: the Android mpv core. Apple TV's
+    // first-frame gate waits out AVDisplayManager instead.
+    if (!plan.needsFirstFrameSwitch || !currentPlayer.needsDecoderRefreshAfterDisplaySwitch) return;
+    final hold = currentPlayer.holdVideoDecoderAtPreload();
+    if (hold == null) return;
+    plan.displaySwitchBeforeDecoder = _switchDisplayWhileDecoderHeld(
+      currentPlayer: currentPlayer,
+      settingsService: settingsService,
+      hold: hold,
+      outcome: outcome,
+      plan: plan,
+    );
+  }
+
+  /// See [_armDisplaySwitchBeforeDecoder]. Always releases the hold, which
+  /// also cancels one the open never reached.
+  Future<void> _switchDisplayWhileDecoderHeld({
+    required Player currentPlayer,
+    required SettingsService settingsService,
+    required VideoDecoderHold hold,
+    required _FrameRateStartupPlan plan,
+    required PlaybackOpenOutcome outcome,
+  }) async {
+    try {
+      // file-loaded follows the hold, so it ends this wait for an open the
+      // hold never reached: a failed or aborted load.
+      final format = await Future.any([hold.format, outcome.fileLoaded.then<DemuxedVideoFormat?>((_) => null)]);
+      if (format == null || !mounted || player != currentPlayer) return;
+      final output = PlayerOutputFormat(fps: format.fps, width: format.width, height: format.height);
+      final target = plan.motionCompensatedOutputFps != null
+          ? (
+              fps: plan.motionCompensatedOutputFps,
+              width: settingsService.read(SettingsService.matchContentResolution) ? output.width : 0,
+              height: settingsService.read(SettingsService.matchContentResolution) ? output.height : 0,
+            )
+          : _displayTargetFor(settingsService, output, suppressContentRateMatching: plan.suppressContentRateMatching);
+      if (target == null) return;
+      await _switchDisplayToTarget(
+        currentPlayer: currentPlayer,
+        settingsService: settingsService,
+        target: target,
+        reason: 'display switch before the decoder',
+        refreshDecoder: false,
+      );
+    } catch (e, stackTrace) {
+      appLogger.w('Display matching: the switch before the decoder failed', error: e, stackTrace: stackTrace);
+    } finally {
+      await hold.release();
+    }
   }
 
   /// Post-first-frame display matching for an Android open that no startup

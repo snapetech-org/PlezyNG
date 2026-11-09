@@ -53,6 +53,36 @@ import org.robolectric.shadows.ShadowDisplayManager
 class MpvPlayerPluginTest {
 
   @Test
+  fun stalePlayerCannotArmTheSuccessorsDecoderHold() {
+    val plugin = MpvPlayerPlugin()
+    val core = testCore(null)
+    installCore(plugin, core)
+    setPluginField(plugin, "coreInstanceId", 2L)
+    val result = RecordingResult()
+    plugin.onMethodCall(MethodCall("holdVideoDecoder", mapOf("instanceId" to 1L, "token" to 1L)), result)
+    assertEquals(1, result.completionCount)
+    val field = MpvPlayerCore::class.java.getDeclaredField("decoderHold").apply { isAccessible = true }
+    assertNull((field.get(core) as DecoderHold).take())
+  }
+
+  @Test
+  fun stalePlayerCannotReleaseTheSuccessorsDecoderHold() {
+    val plugin = MpvPlayerPlugin()
+    val core = testCore(null)
+    installCore(plugin, core)
+    setPluginField(plugin, "coreInstanceId", 2L)
+    val field = MpvPlayerCore::class.java.getDeclaredField("decoderHold").apply { isAccessible = true }
+    val gate = field.get(core) as DecoderHold
+    gate.arm(1L) {}
+    val held = gate.take()!!
+    val result = RecordingResult()
+    plugin.onMethodCall(MethodCall("releaseVideoDecoderHold", mapOf("instanceId" to 1L, "token" to 1L)), result)
+    assertEquals(1, result.completionCount)
+    assertFalse(held.released.isCompleted)
+    gate.close()
+  }
+
+  @Test
   fun commandWithoutCoreReportsNotInitialized() {
     val result = RecordingResult()
 

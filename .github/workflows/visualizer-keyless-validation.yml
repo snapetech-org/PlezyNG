@@ -1,0 +1,66 @@
+name: Keyless catalog verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - lib/services/visualization/visualizer_sigstore*
+      - lib/services/visualization/visualizer_signed_catalog.dart
+      - test/services/visualization/visualizer_sigstore_verifier_test.dart
+      - test/fixtures/visualizer/authenticated-catalog.json
+      - .github/workflows/visualizer-keyless-validation.yml
+  workflow_run:
+    workflows: [Authenticated visualizer catalog]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: >-
+      github.repository == 'snapetech-org/pleazyng' &&
+      (github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == 'snapetech-org/pleazyng'))
+    runs-on: macos-26-intel
+    timeout-minutes: 30
+    env:
+      PLEZY_CATALOG_FIXTURE: build/authenticated-catalog.json
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: stable
+          flutter-version: '3.47.1'
+          cache: false
+      - name: Resolve locked dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Fetch the actual published signature fixture
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p build
+          revision=$(gh api repos/snapetech-org/pleazyng/commits/main --jq .sha)
+          gh api --method GET repos/snapetech-org/pleazyng/contents/content/visualizer-catalog.json \
+            -f "ref=$revision" --jq .content | base64 --decode > "$PLEZY_CATALOG_FIXTURE"
+          test -s "$PLEZY_CATALOG_FIXTURE"
+          shasum -a 256 "$PLEZY_CATALOG_FIXTURE"
+      - name: Analyze the verifier
+        run: flutter analyze --no-pub lib/services/visualization test/services/visualization
+      - name: Verify authentic signatures and adversarial mutations
+        run: flutter test --no-pub test/services/visualization/visualizer_sigstore_verifier_test.dart test/services/visualization/visualizer_signed_catalog_test.dart
+      - name: Produce canonical maintained-source formatting
+        if: always()
+        run: |
+          scripts/format_dart.sh
+          python3 - <<'PY'
+          import json, pathlib, subprocess
+          for path in subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines():
+              if path.endswith('.dart'):
+                  print('DART_SOURCE ' + json.dumps({'path': path, 'content': pathlib.Path(path).read_text()}))
+          PY
+      - name: Require canonical source formatting
+        run: git diff --exit-code

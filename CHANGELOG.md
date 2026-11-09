@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Correct release-workflow guidance to match the hybrid profile: compatible Apple jobs use GitHub-hosted macOS runners, while storage-heavy webOS work retains its private JIT route.
+
 - Add feature-documentation source footers with verified upstream PR/issue/commit links and author credits, turn the README's historical ticket numbers into links, and preserve the distinction between a source proposal and delivered behavior.
 
 - Route trusted-main Apple validation and release builds through compatible GitHub-hosted macOS runners in the hybrid profile, retaining private Apple JIT only as an explicit fallback.

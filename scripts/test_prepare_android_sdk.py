@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import stat
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -191,6 +192,8 @@ class AndroidSdkTests(unittest.TestCase):
         manager.parent.mkdir(parents=True)
         manager.touch()
         with patch.object(MODULE.subprocess, "run") as run, patch.object(MODULE, "verify_packages") as verify:
+            packages = MODULE.required_packages(self.root)
+            verify.side_effect = [ValueError("not installed")] * len(packages) + [None] * len(packages)
             MODULE.install(self.root, self.env | {"ANDROID_HOME": str(sdk)})
         packages = MODULE.required_packages(self.root)
         self.assertEqual(run.call_count, 1 + len(packages))
@@ -199,7 +202,7 @@ class AndroidSdkTests(unittest.TestCase):
             self.assertIn("--proxy_host=10.0.2.100", arguments)
             self.assertIn("--proxy_port=3128", arguments)
             self.assertEqual(arguments[arguments.index("--install") + 1:], [package])
-        self.assertEqual([c.args for c in verify.call_args_list], [(sdk, [package]) for package in packages])
+        self.assertEqual([c.args for c in verify.call_args_list], [(sdk, [package]) for package in packages] * 2)
 
     def test_direct_egress_installer_does_not_require_or_configure_a_proxy(self):
         sdk = self.root / "sdk"
@@ -207,6 +210,8 @@ class AndroidSdkTests(unittest.TestCase):
         manager.parent.mkdir(parents=True)
         manager.touch()
         with patch.object(MODULE.subprocess, "run") as run, patch.object(MODULE, "verify_packages") as verify:
+            packages = MODULE.required_packages(self.root)
+            verify.side_effect = [ValueError("not installed")] * len(packages) + [None] * len(packages)
             MODULE.install(self.root, {"ANDROID_HOME": str(sdk)}, direct_egress=True)
         packages = MODULE.required_packages(self.root)
         self.assertEqual(run.call_count, 1 + len(packages))
@@ -216,7 +221,65 @@ class AndroidSdkTests(unittest.TestCase):
             self.assertNotIn("--proxy=http", arguments)
             self.assertFalse(any(argument.startswith("--proxy_") for argument in arguments))
             self.assertEqual(arguments[arguments.index("--install") + 1:], [package])
-        self.assertEqual([c.args for c in verify.call_args_list], [(sdk, [package]) for package in packages])
+        self.assertEqual([c.args for c in verify.call_args_list], [(sdk, [package]) for package in packages] * 2)
+
+    def test_existing_platform_tools_are_reused_without_network_or_updates(self):
+        sdk = self.root / "sdk"
+        adb = sdk / "platform-tools/adb"
+        adb.parent.mkdir(parents=True)
+        adb.write_text("existing hosted tool")
+        adb.chmod(0o755)
+        with patch.object(MODULE, "required_packages", return_value=["platform-tools"]), patch.object(MODULE.subprocess, "run") as run:
+            MODULE.install(self.root, {"ANDROID_HOME": str(sdk)}, direct_egress=True)
+        run.assert_not_called()
+        self.assertEqual(adb.read_text(), "existing hosted tool")
+
+    def test_transient_missing_package_install_is_retried_and_verified(self):
+        sdk = self.root / "sdk"
+        manager = sdk / "cmdline-tools/latest/bin/sdkmanager"
+        manager.parent.mkdir(parents=True)
+        manager.touch()
+        attempts = []
+
+        def execute(arguments, **options):
+            if "--install" in arguments:
+                attempts.append(arguments)
+                if len(attempts) < 3:
+                    raise subprocess.CalledProcessError(1, arguments)
+                adb = sdk / "platform-tools/adb"
+                adb.parent.mkdir()
+                adb.write_text("verified install")
+                adb.chmod(0o755)
+
+        with patch.object(MODULE, "required_packages", return_value=["platform-tools"]), patch.object(MODULE.subprocess, "run", side_effect=execute), patch.object(MODULE.time, "sleep") as sleep:
+            MODULE.install(self.root, {"ANDROID_HOME": str(sdk)}, direct_egress=True)
+        self.assertEqual(len(attempts), 3)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [1, 2])
+        MODULE.verify_packages(sdk, ["platform-tools"])
+
+    def test_persistent_sdk_failure_remains_fatal_after_three_attempts(self):
+        with patch.object(MODULE.subprocess, "run", side_effect=subprocess.CalledProcessError(1, ["sdkmanager"])) as run, patch.object(MODULE.time, "sleep"):
+            with self.assertRaises(subprocess.CalledProcessError):
+                MODULE.run_sdkmanager(["sdkmanager", "--install", "platform-tools"], {})
+        self.assertEqual(run.call_count, 3)
+
+    def test_wrong_ndk_metadata_is_never_reused_as_the_pinned_version(self):
+        sdk = self.root / "sdk"
+        manager = sdk / "cmdline-tools/latest/bin/sdkmanager"
+        manager.parent.mkdir(parents=True)
+        manager.touch()
+        ndk = sdk / "ndk/29.0.14206865"
+        for relative in ("ndk-build", "toolchains/llvm/prebuilt/linux-x86_64/bin/clang"):
+            tool = ndk / relative
+            tool.parent.mkdir(parents=True, exist_ok=True)
+            tool.write_text("tool")
+            tool.chmod(0o755)
+        (ndk / "source.properties").write_text("Pkg.Revision = 28.2.13676358\n")
+        with patch.object(MODULE, "required_packages", return_value=["ndk;29.0.14206865"]), patch.object(MODULE.platform, "system", return_value="Linux"), patch.object(MODULE.subprocess, "run") as run:
+            with self.assertRaisesRegex(ValueError, "declared version"):
+                MODULE.install(self.root, {"ANDROID_HOME": str(sdk)}, direct_egress=True)
+        self.assertEqual(run.call_count, 2)
+        self.assertEqual(run.call_args.args[0][-2:], ["--install", "ndk;29.0.14206865"])
 
     def test_ci_release_and_games_use_shared_setup_in_order(self):
         for filename in ("ci.yml", "build.yml", "games-native.yml"):

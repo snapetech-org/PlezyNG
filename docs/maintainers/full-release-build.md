@@ -177,6 +177,14 @@ preserves the build's exit status, and forwards cancellation only to its own
 process group. It never stops a build based on CPU or I/O pressure. See
 [Gradle file-system watching](https://docs.gradle.org/current/userguide/file_system_watching.html).
 
+Android SDK preparation verifies installed package files and pinned NDK metadata
+before making network requests. It reuses qualified packages unchanged, avoiding
+an unnecessary upgrade of the hosted image's working platform-tools. Only
+missing or invalid packages go through SDK Manager; license and installation
+requests retry up to three times, and the original post-install verification
+remains mandatory. Persistent failures and wrong NDK versions still fail the
+build. Keep the SDK/toolchain pins unchanged when repairing download transport.
+
 GitHub's release API checks workflow-write authorization against the supplied
 `target_commitish`, even when a historical version tag already exists. The
 release job verifies that the remote tag still resolves to the exact validated

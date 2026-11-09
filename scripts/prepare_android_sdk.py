@@ -307,8 +307,33 @@ def repair_nested_platform(sdk: Path, package: str) -> None:
     print(f"Repaired {package}; previous container retained at {archive}", flush=True)
 
 
+def run_sdkmanager(arguments: list[str], env: dict[str, str], **options) -> None:
+    for attempt in range(3):
+        try:
+            subprocess.run(arguments, check=True, env=env, **options)
+            return
+        except subprocess.CalledProcessError:
+            if attempt == 2:
+                raise
+            print(f"SDK Manager request failed; retrying ({attempt + 1}/3).", flush=True)
+            time.sleep(2 ** attempt)
+
+
 def install_locked(root: Path, env: dict[str, str], *, direct_egress: bool = False) -> None:
     sdk = sdk_root(env)
+    packages = required_packages(root)
+    print("Provisioning pinned Android packages: " + ", ".join(packages), flush=True)
+    missing = []
+    for package in packages:
+        repair_nested_platform(sdk, package)
+        try:
+            verify_packages(sdk, [package])
+        except ValueError:
+            missing.append(package)
+        else:
+            print(f"Reusing verified Android package: {package}", flush=True)
+    if not missing:
+        return
     suffix = ".bat" if platform.system() == "Windows" else ""
     managers = sorted(sdk.glob(f"cmdline-tools/*/bin/sdkmanager{suffix}"))
     if not managers:
@@ -320,15 +345,12 @@ def install_locked(root: Path, env: dict[str, str], *, direct_egress: bool = Fal
     if not direct_egress and (env.get("HTTPS_PROXY") or env.get("https_proxy") or env.get("GITHUB_ACTIONS") == "true"):
         host, port = proxy_parts(env)
         args += ["--proxy=http", f"--proxy_host={host}", f"--proxy_port={port}"]
-    packages = required_packages(root)
-    print("Provisioning pinned Android packages: " + ", ".join(packages), flush=True)
-    subprocess.run(args + ["--licenses"], input="y\n" * 100, text=True,
-                   stdout=subprocess.DEVNULL, check=True, env=env)
+    run_sdkmanager(args + ["--licenses"], env, input="y\n" * 100, text=True,
+                   stdout=subprocess.DEVNULL)
     # Verify each installation before proceeding. Some legacy platform archives
     # unpack incorrectly when several SDK generations share one install batch.
-    for package in packages:
-        repair_nested_platform(sdk, package)
-        subprocess.run(args + ["--install", package], check=True, env=env)
+    for package in missing:
+        run_sdkmanager(args + ["--install", package], env)
         repair_nested_platform(sdk, package)
         verify_packages(sdk, [package])
 

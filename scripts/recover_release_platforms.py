@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "snapetech-org/pleazyng"
 # Application sources, dependency pins, and native toolchain inputs are excluded.
 RECOVERY_FILES = frozenset({
+    "scripts/prepare_android_sdk.py", "scripts/test_prepare_android_sdk.py",
     "tools/webos/NATIVE-PREFLIGHT.md",
     "webos/CMakeLists.txt", "scripts/verify_webos_link_patch.py", "scripts/test_verify_webos_link_patch.py",
     "tools/webos/check_audio_plugin_syntax.sh", "tools/webos/build_release_candidate.sh",

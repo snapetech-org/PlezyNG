@@ -66,6 +66,8 @@ def prepare(tag: str, checksums: Path, output: Path) -> None:
         files[f"{channel}/relocate-caches.py"] = (
             ROOT / "linux/packaging/flatpak/relocate-caches.py"
         ).read_bytes()
+        for name in ('webkit-runtime.json', 'install-webkit-helpers.py', 'rebuild-pixbuf-cache.py'):
+            files[f'{channel}/{name}'] = (ROOT / 'linux/packaging' / name).read_bytes()
     receipt = {
         "release_tag": tag,
         "repository": "snapetech-org/pleazyng",

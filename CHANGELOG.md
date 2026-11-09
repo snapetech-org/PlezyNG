@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 - Add optional title, library and global persistence for custom video zoom, retaining session-only defaults and bounded values. Independently adapted from [upstream e90973fb](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+- Repair AUR, COPR and Nix repacks of v3.0.7 with byte-matched WebKit helper processes, required sandbox tools and regenerated GTK image-loader caches. Qualify Nix WebView rendering and JavaScript with the WebKit process sandbox enabled. Existing GitHub release assets remain immutable.
+
+- Pin hosted Apple jobs to the installed Xcode 26.5 toolchain and retry the exact locked nested Dolby Vision build once after Xcode's package-model abort, retaining verified task-owned checkouts while discarding partial build products.
 
 - Keep focus visible on light surfaces, remove gray scrim bands and declare transparent status-bar styling for pages without app bars. Independently adapted from upstream commits [4eabc30c](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb), [13426a00](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598), [c7f86ab8](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 

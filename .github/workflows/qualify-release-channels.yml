@@ -20,7 +20,7 @@ permissions:
   attestations: read
 
 concurrency:
-  group: qualify-channel-${{ inputs.channel }}-${{ inputs.release_tag }}
+  group: qualify-channel-${{ inputs.channel }}-${{ inputs.release_tag }}-${{ github.sha }}
   cancel-in-progress: false
 
 env:

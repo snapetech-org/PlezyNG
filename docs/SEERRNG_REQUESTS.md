@@ -1,5 +1,15 @@
 # Minimal Requests
 
+## Quiet requests while browsing
+
+With a linked SeerrNG account, a movie or show with an exact TMDB identity gains a small action in its existing title controls and card context menu. The action follows its scope: **Request**, **Request missing seasons**, **Requested**, **Notify me when available**, or **Available**. A playable library copy keeps its normal Play action; where configured, an extra action offers **Request in 4K** for a movie or show, or **Request missing seasons** for a show. On a library show detail, Pleazyng checks aired TV seasons against SeerrNG's stored season coverage, so a new season can be offered even before it has a stored SeerrNG row. Library items resolve their TMDB identity from their own Plex/Jellyfin/Emby server rather than a fuzzy title match. Unsupported kinds and unresolved IDs have no request action.
+
+For a movie with a configured default destination on SeerrNG, pressing Request submits it once and updates the existing badge. A TV show opens the current season selector; a catalog item whose source agrees on an exact TMDB season number preselects only that season. The existing sheet remains responsible for availability, permissions, 4K and advanced destination choices. An in-flight quick request is guarded against a second press, and SeerrNG uses the supplied idempotency key to recover a committed request whose response was lost.
+
+If another viewer requested a title, **Notify me** uses SeerrNG's own availability notification preferences. Where the server supports the scope, a 4K alert waits for 4K and a season alert waits for that season. The title action can turn the alert off. The app never displays the other requester's identity. Request status and playback are separate: SeerrNG's available state does not manufacture a Play button until the active profile has a verified, usable library copy.
+
+State reads for visible cards are coalesced into batches of at most 40 and cached within the active profile's Seerr session for two minutes. A request, notification change, permission refresh or profile switch invalidates the relevant state. A server without the new endpoint retains the older movie/TV request sheet; Pleazyng does not assume scoped notifications or fast submission on those servers.
+
 Connect your instance in **Settings → Services → Seerr**. **Requests** appears in the desktop/TV sidebar and mobile navigation's additional destinations. It follows the profile's Explore visibility and local action-PIN controls. Its Seerr connection is independent of media-server availability: an offline Plex/Jellyfin/Emby server does not hide Requests. Your request instance itself still needs to be reachable.
 
 Choose **Movies**, **TV Shows**, **Ebooks** or **Audiobooks**. The default view lists the signed-in user's requests and their state. **Discover** shows that category's catalog; enter a title and submit Search to find something specific. Refresh updates status, and Load more retrieves another bounded page.

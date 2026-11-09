@@ -43,6 +43,7 @@ import '../services/catalog/catalog_library_matcher.dart';
 import '../services/catalog/catalog_source.dart';
 import '../services/catalog/community_ratings.dart';
 import '../services/catalog/seerr_catalog_source.dart';
+import '../services/seerr/seerr_request_intent_store.dart';
 import '../services/remote_streams/remote_stream_models.dart';
 import '../services/remote_streams/remote_streaming_provider.dart';
 import '../services/data_aggregation_service.dart';
@@ -63,6 +64,7 @@ import '../utils/rating_utils.dart';
 import '../utils/snackbar_helper.dart';
 import 'remote_streams/remote_stream_picker_screen.dart';
 import 'settings/remote_streaming_settings_screen.dart';
+import '../widgets/seerr_title_action.dart';
 import '../widgets/app_bar_back_button.dart';
 import '../widgets/app_icon.dart';
 import '../widgets/backend_badge.dart';
@@ -72,7 +74,6 @@ import '../widgets/focusable_list_tile.dart';
 import '../widgets/hub_section.dart';
 import '../widgets/optimized_media_image.dart';
 import '../widgets/overlay_sheet.dart';
-import '../widgets/seerr_request_sheet.dart';
 import '../widgets/settings_section.dart';
 import '../widgets/stat_chip.dart';
 import 'external_access_screen.dart';
@@ -143,6 +144,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   final Map<String, FocusNode> _libraryMatchNodesByKey = {};
   List<FocusNode> _libraryMatchFocusNodes = const [];
   CatalogSource? _watchlistSource;
+  SeerrRequestIntentStore? _intentStore;
   bool _mutatingWatchlist = false;
 
   CatalogItem? _detailItem;
@@ -192,6 +194,8 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
     unawaited(_resolveMatches(widget.item));
     unawaited(_loadDetail());
     final sources = context.read<CatalogSourcesProvider>();
+    _bindIntentStore(sources.seerrSource);
+    _warmIntent(widget.item);
     _watchlistSource = sources.watchlistSourceFor(widget.item);
     final source = _watchlistSource;
     if (source != null) {
@@ -209,7 +213,33 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _bindIntentStore(context.watch<CatalogSourcesProvider>().seerrSource);
+    _warmIntent(_item);
+  }
+
+  void _bindIntentStore(SeerrCatalogSource? source) {
+    final next = source?.client.intents;
+    if (identical(next, _intentStore)) return;
+    _intentStore?.removeListener(_onIntentChanged);
+    _intentStore = next;
+    next?.addListener(_onIntentChanged);
+  }
+
+  void _onIntentChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _warmIntent(CatalogItem item) {
+    if (item.ids.tmdb case final id? when _requestSource != null) {
+      unawaited(_intentStore?.load(item.kind, id));
+    }
+  }
+
+  @override
   void dispose() {
+    _intentStore?.removeListener(_onIntentChanged);
     _extras?.dispose();
     _copyServers?.removeListener(_onPlaybackEnvironmentChanged);
     _copyNetwork?.removeListener(_onPlaybackEnvironmentChanged);
@@ -417,6 +447,7 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
           _relationEntries = relationEntries;
           _episodes = detail.episodes;
         });
+        _warmIntent(detail.item);
         _syncExtras(detail.item, detail.extras);
         if (!hadActions && _hasActions) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -490,7 +521,19 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
   /// Fribb mapping at row time, but Plex Discover's hub/search/related
   /// endpoints ignore includeGuids, so a Plex item's tmdb id only arrives
   /// with the detail fetch (issue #1959).
-  bool get _canRequest => _requestSource != null && _item.ids.tmdb != null;
+  SeerrTitleAction? get _requestAction {
+    final source = _requestSource;
+    final id = _item.ids.tmdb;
+    if (source == null || id == null) return null;
+    return seerrTitleAction(
+      source,
+      _item.kind,
+      _intentStore?.peek(_item.kind, id),
+      seasonNumber: _item.season?.agreedSeason,
+    );
+  }
+
+  bool get _canRequest => _requestAction != null;
 
   String? _streamLookupId(CatalogItem item) =>
       item.ids.imdb ??
@@ -2062,20 +2105,25 @@ class _CatalogItemDetailScreenState extends State<CatalogItemDetailScreen> {
                                                   ),
                                                 ),
                                               ),
-                                            if (_requestSource case final SeerrCatalogSource seerr when tmdbId != null)
+                                            if (_requestSource case final SeerrCatalogSource seerr
+                                                when tmdbId != null && _requestAction != null)
                                               FocusableAction(
                                                 debugLabel: 'catalog_request',
-                                                icon: Symbols.download_rounded,
-                                                tooltip: t.seerr.request,
-                                                onPressed: () => unawaited(
-                                                  showSeerrRequestSheet(
-                                                    hostContext,
-                                                    source: seerr,
-                                                    kind: item.kind,
-                                                    tmdbId: tmdbId,
-                                                    title: item.title,
-                                                  ),
-                                                ),
+                                                icon: _requestAction!.icon,
+                                                tooltip: _requestAction!.label,
+                                                onPressed: !_requestAction!.interactive
+                                                    ? null
+                                                    : () => unawaited(
+                                                        performSeerrTitleAction(
+                                                          hostContext,
+                                                          source: seerr,
+                                                          kind: item.kind,
+                                                          tmdbId: tmdbId,
+                                                          title: item.title,
+                                                          action: _requestAction!,
+                                                          seasonNumber: item.season?.agreedSeason,
+                                                        ),
+                                                      ),
                                               ),
                                             if (_canWatchWithServices)
                                               FocusableAction(

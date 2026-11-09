@@ -64,6 +64,10 @@ on:
         type: boolean
         required: false
         default: false
+      reuse_repaired_run_id:
+        description: Reuse verified Linux and fully qualified Mac jobs from a prior repair run
+        required: false
+        type: string
       reuse_platform_run_id:
         description: Recover verified passing platform artifacts from the same product source; rebuild Android and WebOS
         required: false
@@ -385,7 +389,10 @@ jobs:
           while IFS= read -r changed_file; do
             [[ -z "$changed_file" ]] && continue
             case "$changed_file" in
-              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/apple_jit_process_tree.py|scripts/cleanup_apple_jit_scratch.sh|scripts/checks/test_apple_jit_process_tree.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/retain_macos_app.py|scripts/test_retain_macos_app.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/package_ipk.py|tools/webos/verify_package.py|tools/webos/tests/test_package_ipk.py|scripts/tizen/package.py|scripts/tizen/test_package.py|scripts/ci_guard_checks.sh|scripts/prepare_native_downloads.py|scripts/test_prepare_native_downloads.py|scripts/checks/check_capability_manifest.py|scripts/checks/check_codegen.py|scripts/checks/test_check_codegen.py|windows/tool/install-patched-engine.ps1|windows/tool/download-pinned-mpv.ps1|windows/tool/download-pinned-simdutf.ps1|windows/tool/download-pinned-winsparkle.ps1|windows/tool/download-pinned-sdl3.ps1|windows/tool/download-pinned-torrent-dependencies.ps1|windows/tool/prepare-build-toolchain.ps1|tools/webos/build_release_candidate.sh|scripts/fetch_linux_libmpv.py|scripts/fetch_dv_tools.py|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)
+              webos/CMakeLists.txt)
+                python3 scripts/verify_webos_link_patch.py "$release_commit" "$GITHUB_SHA"
+                ;;
+              .github/actions/setup-flutter-windows/action.yml|.github/workflows/build.yml|.github/workflows/ci.yml|.github/workflows/tizen.yml|AGENTS.md|CHANGELOG.md|CONTRIBUTING.md|docs/games/VALIDATION.md|docs/maintainers/apple-jit-runner.md|docs/maintainers/branch-consolidation-2026-10-27.md|docs/maintainers/capability-manifest.json|docs/maintainers/dv-platform-buildout.md|docs/maintainers/full-release-build.md|docs/maintainers/release-channels.md|docs/maintainers/tizen-tv.md|docs/plezyng/subtitles/PLAN.md|native/games/apple/SteamAppleSinkTests.mm|scripts/checks/check_build_workflow.py|scripts/checks/test_check_build_workflow.py|scripts/checks/test_release_ci_gate.py|scripts/checks/test_apple_jit_queue.py|scripts/launch_apple_jit_runner.sh|scripts/cleanup_apple_jit_derived_data.py|scripts/apple_jit_process_tree.py|scripts/cleanup_apple_jit_scratch.sh|scripts/checks/test_apple_jit_process_tree.py|scripts/copy_apple_jit_sources.py|scripts/checks/test_copy_apple_jit_sources.py|scripts/launch_queued_apple_jit_jobs.py|scripts/prepare_android_sdk.py|scripts/prepare_gradle_repositories.py|scripts/gradle/plezyng-maven-mirror.init.gradle|scripts/checks/test_prepare_gradle_repositories.py|scripts/recover_macos_app.py|scripts/test_recover_macos_app.py|scripts/apple/prepare_macos_app_for_signing.py|scripts/apple/test_prepare_macos_app_for_signing.py|scripts/checks/test_macos_validation_request.py|scripts/checks/test_macos_packaging_recovery.py|scripts/retain_macos_app.py|scripts/test_retain_macos_app.py|scripts/recover_release_platforms.py|scripts/checks/test_recover_release_platforms.py|scripts/release_all_platforms.py|scripts/refresh_apple_spm.sh|tools/reader-tests/README.md|tools/webos/package_ipk.py|tools/webos/verify_package.py|tools/webos/tests/test_package_ipk.py|scripts/tizen/package.py|scripts/tizen/test_package.py|scripts/ci_guard_checks.sh|scripts/prepare_native_downloads.py|scripts/test_prepare_native_downloads.py|scripts/checks/check_capability_manifest.py|scripts/checks/check_codegen.py|scripts/checks/test_check_codegen.py|windows/tool/install-patched-engine.ps1|windows/tool/download-pinned-mpv.ps1|windows/tool/download-pinned-simdutf.ps1|windows/tool/download-pinned-winsparkle.ps1|windows/tool/download-pinned-sdl3.ps1|windows/tool/download-pinned-torrent-dependencies.ps1|windows/tool/prepare-build-toolchain.ps1|tools/webos/build_release_candidate.sh|scripts/fetch_linux_libmpv.py|scripts/fetch_dv_tools.py|tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py|scripts/verify_webos_link_patch.py|scripts/test_verify_webos_link_patch.py|tools/webos/check_audio_plugin_syntax.sh|tools/webos/NATIVE-PREFLIGHT.md)
                 ;;
               *)
                 echo "Release tag $RELEASE_TAG differs from main in non-release source '$changed_file'; refusing to build mixed source." >&2
@@ -467,6 +474,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REBUILD_LINUX: ${{ inputs.rebuild_linux }}
           REBUILD_MACOS: ${{ inputs.rebuild_macos }}
+          REPAIRED_RUN: ${{ inputs.reuse_repaired_run_id }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
@@ -490,6 +498,7 @@ jobs:
           options=()
           if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
+          if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
           if [[ -n "$MACOS_RUN" ]]; then options+=(--macos-run "$MACOS_RUN"); fi
@@ -2901,6 +2910,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REBUILD_LINUX: ${{ inputs.rebuild_linux }}
           REBUILD_MACOS: ${{ inputs.rebuild_macos }}
+          REPAIRED_RUN: ${{ inputs.reuse_repaired_run_id }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
           ANDROID_RUN: ${{ inputs.reuse_android_run_id }}
           MACOS_RUN: ${{ inputs.reuse_macos_package_run_id }}
@@ -2912,6 +2922,7 @@ jobs:
           options=()
           if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
+          if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
           if [[ -n "$ANDROID_RUN" ]]; then options+=(--android-run "$ANDROID_RUN"); fi
           if [[ -n "$MACOS_RUN" ]]; then options+=(--macos-run "$MACOS_RUN"); fi

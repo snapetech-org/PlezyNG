@@ -207,6 +207,7 @@ COMMON_ARCHIVE="$(download_locked webos-common.zip "$COMMON_ARCHIVE_URL" "$COMMO
 env -u LD_LIBRARY_PATH PATH=/usr/bin:/bin:/usr/sbin:/sbin \
   bash "$NDK_INSTALLER" -y -d "$NDK_ROOT"
 WEBOS_NDK_ROOT="$NDK_ROOT" WEBOS_ENGINE_COMMON_ARCHIVE="$COMMON_ARCHIVE" \
+  WEBOS_ENGINE_ARM_ARCHIVE="$BASE_ENGINE_ARCHIVE" \
   WEBOS_PYTHON_BIN="$PYTHON_BIN" bash "$ROOT/tools/webos/check_audio_plugin_syntax.sh" \
   2>&1 | tee "$LOG_ROOT/native-syntax.log"
 

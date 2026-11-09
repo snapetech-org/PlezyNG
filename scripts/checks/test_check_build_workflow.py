@@ -141,6 +141,14 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("architecture matrix checks passed", result.stdout)
 
+    def test_webos_link_exception_requires_its_exact_change_verifier(self) -> None:
+        workflow = self._workflow()
+        command = 'python3 scripts/verify_webos_link_patch.py "$release_commit" "$GITHUB_SHA"'
+        self.assertIn(command, workflow)
+        result = self._run(workflow.replace(command, ':', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('immutable ancestors', result.stderr)
+
     def test_store_msix_cannot_reuse_unlocked_direct_payload(self) -> None:
         workflow = self._workflow()
         result = self._run(workflow.replace('-X64BuildDir "build-store-x64"', '-X64BuildDir "build-x64"', 1))

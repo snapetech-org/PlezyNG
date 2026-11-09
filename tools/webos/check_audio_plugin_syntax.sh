@@ -4,12 +4,13 @@ set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 : "${WEBOS_NDK_ROOT:?Set the pinned webOS NDK root}"
 : "${WEBOS_ENGINE_COMMON_ARCHIVE:?Set the pinned webOS common-runtime archive}"
+: "${WEBOS_ENGINE_ARM_ARCHIVE:?Set the pinned webOS ARM-runtime archive}"
 WEBOS_PYTHON_BIN="${WEBOS_PYTHON_BIN:-python3}"
 scratch_dir="$(mktemp -d "${TMPDIR:-/tmp}/pleazyng-webos-native-syntax.XXXXXXXX")"
 trap 'rm -rf -- "$scratch_dir"' EXIT
 printf 'WebOS native preflight scratch: %s\n' "$scratch_dir"
 
-"$WEBOS_PYTHON_BIN" - "$ROOT" "$WEBOS_ENGINE_COMMON_ARCHIVE" "$scratch_dir" <<'PY'
+"$WEBOS_PYTHON_BIN" - "$ROOT" "$WEBOS_ENGINE_COMMON_ARCHIVE" "$scratch_dir" "$WEBOS_ENGINE_ARM_ARCHIVE" <<'PY'
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -17,8 +18,9 @@ import stat
 import sys
 import zipfile
 
-root, archive, scratch = map(Path, sys.argv[1:])
-expected = json.loads((root / 'tools/webos/compatibility.json').read_text())['lgArtifacts']['commonArchiveSha256']
+root, archive, scratch, arm_archive = map(Path, sys.argv[1:])
+pins = json.loads((root / 'tools/webos/compatibility.json').read_text())['lgArtifacts']
+expected = pins['commonArchiveSha256']
 if archive.is_symlink() or not archive.is_file() or hashlib.sha256(archive.read_bytes()).hexdigest() != expected:
     raise SystemExit('WebOS syntax validation requires the checksum-pinned common-runtime archive.')
 with zipfile.ZipFile(archive) as source:
@@ -37,6 +39,18 @@ with zipfile.ZipFile(archive) as source:
         output.write_bytes(source.read(row))
 if not (scratch / 'include/flutter/texture_registrar.h').is_file():
     raise SystemExit('Pinned common-runtime archive has no C++ texture registrar headers.')
+if arm_archive.is_symlink() or not arm_archive.is_file() or hashlib.sha256(arm_archive.read_bytes()).hexdigest() not in {pins['baseEngineArchiveSha256'], pins['engineArchiveSha256']}:
+    raise SystemExit('WebOS link validation requires the pinned ARM-runtime archive.')
+with zipfile.ZipFile(arm_archive) as source:
+    matches = [row for row in source.infolist() if row.filename == 'libflutter_common.so']
+    if len(matches) != 1 or stat.S_ISLNK(matches[0].external_attr >> 16):
+        raise SystemExit('Pinned ARM-runtime archive has no unique regular common library.')
+    content = source.read(matches[0])
+    if hashlib.sha256(content).hexdigest() != pins['runtimeLibraries']['libflutter_common.so']:
+        raise SystemExit('Pinned Flutter common runtime hash mismatch.')
+    (scratch / 'libflutter_common.so').write_bytes(content)
+if (root / 'webos/CMakeLists.txt').read_text().count('target_link_libraries(${BINARY_NAME} PRIVATE flutter)') != 1:
+    raise SystemExit('The webOS runner must link the SDK Flutter/common interface directly.')
 PY
 
 "$WEBOS_PYTHON_BIN" "$ROOT/tools/webos/ndk_environment.py" \
@@ -76,3 +90,14 @@ if (( failures != 0 )); then
   exit 1
 fi
 echo 'All webOS audio/video plugins and the navigation runner match the pinned ARM SDK.'
+
+cat > "$scratch_dir/navigation_codec_probe.cc" <<'CPP'
+#include <flutter/standard_message_codec.h>
+extern "C" const void* navigation_codec_probe() {
+  return &flutter::StandardMessageCodec::GetInstance();
+}
+CPP
+"${compiler[@]}" -std=c++17 -shared -fPIC -Wl,-z,defs \
+  -I "$scratch_dir/include" "$scratch_dir/navigation_codec_probe.cc" \
+  "$scratch_dir/libflutter_common.so" -o "$scratch_dir/navigation_codec_probe.so"
+echo 'The navigation codec links against the checksum-pinned ARM Flutter common runtime.'

@@ -77,6 +77,19 @@ class SourceProofTests(unittest.TestCase):
         mac["steps"] = [{"name": name, "status": "completed", "conclusion": "success"} for name in ("Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask")]
         self.assertTrue(self.prove(require_homebrew_cask=True)["macos_cask_qualified"])
 
+    def test_original_failed_linux_and_mac_require_verified_repair_sources(self):
+        for job in self.jobs:
+            if job["name"] in {"build-macos", "Build Linux (x64)"}:
+                job["conclusion"] = "failure"
+        repaired = {"source_run_id": 84, "source_sha": "c" * 40,
+                    "reused_jobs": ["build-macos", "Build Linux (x64)", "Build Linux (arm64)"],
+                    "pending_jobs": [], "platforms_complete": True, "macos_cask_qualified": True}
+        with patch.object(recovery, "verify_repaired_run", return_value=repaired):
+            proof = self.prove(repaired_run=84, require_homebrew_cask=True)
+        self.assertEqual(proof["repaired_source"]["source_run_id"], 84)
+        self.assertTrue(proof["macos_cask_qualified"])
+        self.assertNotIn("build-macos", proof["rebuilt_jobs"])
+
     def test_failed_mac_requires_a_fresh_build_and_qualification(self):
         next(job for job in self.jobs if job["name"] == "build-macos")["conclusion"] = "failure"
         with self.assertRaises(recovery.RecoveryError):
@@ -171,6 +184,7 @@ class SourceProofTests(unittest.TestCase):
         def encoded(code):
             return {"encoding": "base64", "content": base64.b64encode(code.encode()).decode()}
         for replacement in (loader_fix, native_change):
+            recovery.immutable_content.cache_clear()  # Each fixture models different immutable commits.
             with self.subTest(replacement=replacement), patch.object(recovery, "api", side_effect=[encoded(original), encoded(replacement)]):
                 if replacement == loader_fix:
                     recovery.verify_webos_transport_patch(recovery.REPOSITORY, "a" * 40, "b" * 40, [{"filename": "scripts/prepare_native_downloads.py"}])
@@ -234,6 +248,23 @@ class ArtifactTests(unittest.TestCase):
             result = recovery.download_platforms(proof, self.root)
         self.assertEqual(result["artifacts"][0]["source_run_id"], 84)
         self.assertEqual((self.root / "android-apk/payload.exe").read_bytes(), b"binary")
+
+    def test_repaired_linux_and_mac_artifacts_use_the_repaired_run_and_digest(self):
+        archive = self.archive()
+        names = ("linux-x64", "macos-dmg")
+        items = [{"id": index, "name": name, "expired": False,
+                  "digest": "sha256:" + hashlib.sha256(archive).hexdigest(),
+                  "workflow_run": {"id": 84, "head_sha": "b" * 40}} for index, name in enumerate(names, 1)]
+        proof = {"source_run_id": 42, "source_sha": "a" * 40,
+                 "repaired_source": {"source_run_id": 84, "source_sha": "b" * 40}}
+        def download(_args, stdout):
+            stdout.write(archive)
+            return SimpleNamespace(returncode=0)
+        with patch.object(recovery, "ARTIFACTS", {name: name for name in names}), \
+             patch.object(recovery, "collection", side_effect=[[], items]), \
+             patch.object(recovery.subprocess, "run", side_effect=download):
+            result = recovery.download_platforms(proof, self.root)
+        self.assertEqual([record["source_run_id"] for record in result["artifacts"]], [84, 84])
 
     def test_verified_download_records_actual_source_and_digests(self):
         archive = self.archive()
@@ -354,6 +385,60 @@ class AndroidSourceTests(unittest.TestCase):
     def test_pending_source_android_cannot_trigger_a_duplicate_fresh_android_build(self):
         with self.assertRaisesRegex(recovery.RecoveryError, "duplicate build"):
             recovery.compose_proof({"pending_jobs": ["build-android"]})
+
+
+class RepairedSourceTests(unittest.TestCase):
+    def setUp(self):
+        recovery.immutable_content.cache_clear()
+        self.run = {"status": "completed", "event": "workflow_dispatch", "head_branch": "main",
+                    "head_repository": {"full_name": recovery.REPOSITORY}, "head_sha": "a" * 40,
+                    "path": ".github/workflows/build.yml", "display_title": "action:release:pool:private:tag:v3.0.7"}
+        self.compare = {"status": "ahead", "merge_base_commit": {"sha": "a" * 40}, "files": []}
+        self.jobs = [{"name": name, "status": "completed", "conclusion": "success"} for name in
+                     ("Validate release request", "Build Linux (x64)", "Build Linux (arm64)", "build-macos")]
+        self.jobs[-1]["steps"] = [{"name": name, "status": "completed", "conclusion": "success"} for name in
+                                  ("Build macOS", "Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask")]
+        self.jobs += [{"name": "Build WebOS TV package (ARMv7)", "status": "completed", "conclusion": "failure"},
+                      {"name": "create-release", "status": "completed", "conclusion": "skipped"}]
+        self.workflow = 'env:\n  SDK: pinned\njobs:\n  build-macos:\n    run: compile-mac\n  build-linux:\n    run: compile-linux\n  other:\n'
+
+    def prove(self, *, workflows=None, **options):
+        with patch.object(recovery, "api", side_effect=[self.run, self.compare]), \
+             patch.object(recovery, "collection", return_value=self.jobs), \
+             patch.object(recovery, "immutable_content", side_effect=workflows or [self.workflow, self.workflow]):
+            return recovery.verify_repaired_run(84, "b" * 40, "3.0.7", recovery.REPOSITORY, **options)
+
+    def test_unrelated_failure_does_not_erase_the_three_verified_repaired_jobs(self):
+        proof = self.prove(require_homebrew_cask=True)
+        self.assertTrue(proof["platforms_complete"])
+        self.assertTrue(proof["macos_cask_qualified"])
+        self.assertEqual(len(proof["reused_jobs"]), 3)
+
+    def test_pending_mac_is_allowed_only_in_preflight(self):
+        self.run["status"] = "in_progress"
+        self.jobs[3].update(status="queued", conclusion=None, steps=[])
+        self.assertEqual(self.prove(allow_pending=True)["pending_jobs"], ["build-macos"])
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+
+    def test_missing_mac_qualification_or_a_failed_repaired_job_is_rejected(self):
+        self.jobs[3]["steps"].pop()
+        with self.assertRaisesRegex(recovery.RecoveryError, "qualification"):
+            self.prove(require_homebrew_cask=True)
+        self.jobs[1]["conclusion"] = "failure"
+        with self.assertRaisesRegex(recovery.RecoveryError, "did not succeed"):
+            self.prove()
+
+    def test_changed_compiler_contract_inputs_or_publication_are_rejected(self):
+        with self.assertRaisesRegex(recovery.RecoveryError, "contracts changed"):
+            self.prove(workflows=[self.workflow, self.workflow.replace('compile-mac', 'different-flags')])
+        self.compare["files"] = [{"filename": "lib/main.dart"}]
+        with self.assertRaisesRegex(recovery.RecoveryError, "inputs changed"):
+            self.prove()
+        self.compare["files"] = []
+        self.jobs[-1]["conclusion"] = "success"
+        with self.assertRaisesRegex(recovery.RecoveryError, "publication"):
+            self.prove()
 
 
 if __name__ == "__main__":

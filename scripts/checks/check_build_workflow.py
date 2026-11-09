@@ -1643,7 +1643,8 @@ require(
     and 'git merge-base --is-ancestor "$release_commit" refs/remotes/origin/main' in trusted_ref
     and 'git diff --name-only "$release_commit" "$GITHUB_SHA"' in trusted_ref
     and "AGENTS.md|CHANGELOG.md" in trusted_ref
-    and "tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py)" in trusted_ref
+    and "tools/webos/compatibility.json|tools/webos/build_ipk.sh|tools/webos/tests/test_source_ndk_environment.py" in trusted_ref
+    and 'python3 scripts/verify_webos_link_patch.py "$release_commit" "$GITHUB_SHA"' in trusted_ref
     and 'printf \'commit=%s\\n\' "$release_commit" >> "$GITHUB_OUTPUT"' in trusted_ref,
     "release tags must be immutable ancestors of trusted main with only allowlisted release-infrastructure changes",
 )

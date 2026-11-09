@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Link the webOS navigation channel to the existing pinned Flutter common runtime, verify that ARM link before SDK builds, and retain verified Linux/Mac repair artifacts across a webOS-only retry.
+
 - Start independent recovery builds while source Android is still running; require its completed successful job and verified artifact before final release assembly.
 
 - Verify the original PDFium CocoaPods XCFramework download through the asset API and allow a fresh qualified Mac build during artifact recovery without repeating successful platform builds.

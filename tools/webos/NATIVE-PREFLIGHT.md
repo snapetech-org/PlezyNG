@@ -1,21 +1,24 @@
-# webOS native API preflight
+# webOS native API and link preflight
 
 Every webOS build checks all audio, visualization and video plugin C++ translation units
 against the pinned LG ARM NDK and checksum-verified common-runtime headers before
 fetching and building the Flutter engine. This catches missing namespace imports
-and unsupported SDK API overloads without waiting for the engine build.
+and unsupported SDK API overloads without waiting for the engine build. It also
+links the navigation codec against the pinned ARM Flutter common runtime and
+requires the runner's direct SDK interface link.
 
 Reuse the retained NDK and matching common archive for a local check:
 
 ```sh
 WEBOS_NDK_ROOT=/absolute/path/to/webos-ndk \
 WEBOS_ENGINE_COMMON_ARCHIVE=/absolute/path/to/webos-common.zip \
+WEBOS_ENGINE_ARM_ARCHIVE=/absolute/path/to/webos-arm-release.zip \
 taskset -c 0,1 bash tools/webos/check_audio_plugin_syntax.sh
 ```
 
 The command reads the caches and removes only its temporary header/environment
 directory. CI retains its output in `logs/native-syntax.log` on failure. Passing
-this check proves native source/API compatibility; the full IPK build and physical
+this check proves native source/API compatibility and the codec's ARM link; the full IPK build and physical
 TV validation remain separate checks.
 
 After packaging, validation mode also runs the release integrity check against

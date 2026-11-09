@@ -542,3 +542,22 @@ Linux, webOS and Mac repairs can start in parallel. This is deferred evidence,
 not permission to reuse unfinished outputs: final assembly waits for source
 completion and requires Android success, a matching artifact and its full
 digest before downloading or publishing it.
+
+If Linux and macOS were repaired successfully but webOS still failed, pass
+`--reuse-repaired-run RUN` alongside the original `--reuse-platform-run` and
+`--reuse-android-run`. It replaces only the two Linux jobs and the full Mac job.
+The repair source must be a trusted main release of the same version, with
+unchanged Linux/Mac job definitions and SDK environment. Final assembly requires
+their success, the Mac compilation/notarization/Gatekeeper steps, source identities
+and artifact digests. Pending jobs are allowed only during preflight. Do not
+combine this option with fresh Linux/Mac builds or signing-only recovery.
+
+The webOS runner uses the standard message codec from the already bundled
+`libflutter_common.so`; link the SDK `flutter` interface directly after including
+the generated build graph. Header-only syntax checking cannot detect a missing
+direct link. The early ARM preflight now also requires
+`WEBOS_ENGINE_ARM_ARCHIVE`, validates the archive and common-library hashes, and
+links a codec probe with undefined symbols forbidden. Immutable-tag/recovery
+checks allow only this exact one-line CMake addition; other CMake changes still
+require a new version and fresh qualification. Application C++/Dart sources and
+native dependency pins are unchanged by this link repair.

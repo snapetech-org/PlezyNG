@@ -4972,6 +4972,9 @@ class Translations$about$en {
 
 	// Translations
 
+	/// en: 'Feature comparison'
+	String get featureComparison => 'Feature comparison';
+
 	/// en: 'About'
 	String get title => 'About';
 
@@ -19052,6 +19055,7 @@ extension on Translations {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Selected items: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Items updated: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Updated ${succeeded}; failed ${failed}. Failed items remain selected.',
+			'about.featureComparison' => 'Feature comparison',
 			'about.title' => 'About',
 			'about.openSourceLicenses' => 'Open Source Licenses',
 			'about.versionLabel' => ({required Object version}) => 'Version ${version}',
@@ -19232,9 +19236,9 @@ extension on Translations {
 			'explore.creditRole.producer' => 'Producer',
 			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
-			'explore.relation.prequel' => 'Prequel',
 			_ => null,
 		} ?? switch (path) {
+			'explore.relation.prequel' => 'Prequel',
 			'explore.relation.sequel' => 'Sequel',
 			'explore.relation.sideStory' => 'Side story',
 			'explore.relation.spinOff' => 'Spin-off',
@@ -19746,9 +19750,9 @@ extension on Translations {
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
-			'downloads.convertingOnServer' => 'Converting on server…',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.convertingOnServer' => 'Converting on server…',
 			'downloads.convertingOnServerPercent' => ({required Object percent}) => 'Converting on server · ${percent}%',
 			'downloads.errorHttpStatus' => ({required Object status}) => 'Download failed (HTTP ${status})',
 			'downloads.errorPostProcessing' => ({required Object reason}) => 'Post-processing failed: ${reason}',
@@ -20260,9 +20264,9 @@ extension on Translations {
 			'services.disconnectConfirmBody' => ({required Object service}) => 'Pleazyng will stop updating ${service}. Reconnect any time.',
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
-			'services.names.anilist' => 'AniList',
 			_ => null,
 		} ?? switch (path) {
+			'services.names.anilist' => 'AniList',
 			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
@@ -20774,9 +20778,9 @@ extension on Translations {
 			'universalMedia.shareIntro' => 'Send a local media file to another device on your private network. Pleazyng creates a temporary HLS stream.',
 			'universalMedia.sharePrivacy' => 'Anyone on your local network who receives the private link can watch while it is active. The link expires after 60 minutes. Stop sharing to close the server and invalidate the link.',
 			'universalMedia.shareChooseFile' => 'Choose media file',
-			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.shareChooseHelp' => 'Select a local audio or video file. The file stays on this computer.',
 			'universalMedia.shareFfmpegMissing' => 'FFmpeg or the H.264/AAC encoders are unavailable. Install FFmpeg with H.264 and AAC encoder support.',
 			'universalMedia.shareFailed' => 'The stream could not start or stopped unexpectedly. Check FFmpeg and network access.',
 			'universalMedia.shareActive' => 'The stream is ready on your private network.',
@@ -21288,9 +21292,9 @@ extension on Translations {
 			'games.saveShortcut' => 'Save shortcut',
 			'games.manualHint' => 'For Moonlight use the host’s GameStream HTTP port (usually 47989), not its web settings port. Steam normally advertises on 27036.',
 			'games.engineUnavailable' => 'In-app streaming is not available here yet',
-			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			_ => null,
 		} ?? switch (path) {
+			'games.nativeEnginePending' => 'This build does not include a streaming engine for this platform. You can save the computer, but it cannot play here yet.',
 			'games.steamEnginePending' => 'This build does not include an embedded Steam receiver for this device. You can browse your library and manage computers. Playing here requires a build with a compatible receiver.',
 			'games.steamBetaTitle' => 'Pyrowave · experimental',
 			'games.steamBetaDescription' => 'Try Steam’s low-latency codec on a fast wired network. Uses substantially more bandwidth. If it cannot start, Pleazyng reconnects using a compatible codec.',
@@ -21802,9 +21806,9 @@ extension on Translations {
 			'subtitleAiUi.tARDISTARDISTheDoctorElDoctor' => '{"TARDIS":"TARDIS","The Doctor":"El Doctor"}',
 			'subtitleAiUi.saveGlossary' => 'Save glossary',
 			'subtitleAiUi.allowLanguageModelDownloadsOverMobileData' => 'Allow language-model downloads over mobile data',
-			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.prepareOfflineLanguageModels' => 'Prepare offline language models',
 			'subtitleAiUi.requestArgosCUDA' => 'Request Argos CUDA',
 			'subtitleAiUi.requiresACUDAEnabledArgosCTranslate2_25eb4fab' => 'Requires a CUDA-enabled Argos/CTranslate2 install and an NVIDIA driver. If the request fails, translation retries on CPU; actual per-operation placement is not reported.',
 			'subtitleAiUi.translateAnExistingSubtitle' => 'Translate an existing subtitle',
@@ -22316,9 +22320,9 @@ extension on Translations {
 			'bonusExtras.spoilerHint' => 'Unwatched titles hide extras unless their spoiler status is verified.',
 			'bonusExtras.externalEnabled' => 'Discover verified online extras',
 			'bonusExtras.includeAnalysis' => 'Include reviewed filmmaking analysis',
-			'bonusExtras.serviceUrl' => 'Discovery server address',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.serviceUrl' => 'Discovery server address',
 			'bonusExtras.serviceToken' => 'Discovery access token',
 			'bonusExtras.aiMode' => 'AI assistance',
 			'bonusExtras.aiOff' => 'Off',

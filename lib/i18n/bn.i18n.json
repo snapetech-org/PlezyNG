@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "বৈশিষ্ট্য তুলনা",
     "title": "সম্পর্কে",
     "openSourceLicenses": "খোলা সূত্র লাইসেন্স",
     "versionLabel": "সংস্করণ ${version}",

@@ -98,11 +98,15 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 ## Validation record
 
 - Flutter 3.47.1 / Dart 3.13.1, pinned repository dependency versions.
-- Combined music service/screen/widget/Plex discovery suite: 201 tests passed.
-- After adding continuation persistence and the migration regression: database,
-  session, playback and native-bridge suite: 165 tests passed. These suites
-  overlap; their counts must not be added together.
-- Canonical code generation completed. Localization coverage/source/placeholder
+- Final combined database, music service/screen/widget, Plex discovery, profile
+  navigation/teardown and About regression suite: 285 tests passed after the
+  main integration. The music/database-only run also passed all 274 tests.
+- Canonical code generation and the isolated generated-output check passed on
+  the integrated implementation; canonical generation was repeated after the
+  latest main translation merge. The isolated check used archives/binaries
+  verified against repository hashes to satisfy native dependencies without a
+  `gh` executable.
+  Localization coverage/source/placeholder
   and translation hygiene checks passed for 37 locales. Icon consistency passed.
 - Android APK compilation was attempted. Flutter's pinned Android engine download
   returned proxy HTTP 403. A direct Gradle Kotlin compile also could not retrieve

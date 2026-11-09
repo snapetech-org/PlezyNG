@@ -1,0 +1,46 @@
+name: Native emulator isolation
+
+on:
+  push:
+    branches: [main, 'audit-remediation/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  containment:
+    # Queue each platform independently. An unavailable runner must not hold
+    # up validation on every other operating system, including revised routes.
+    concurrency:
+      group: native-emulator-isolation-${{ github.ref }}-${{ matrix.os }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-26-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Exercise real worker faults and sandbox boundaries
+        if: runner.os != 'Windows'
+        run: python3 scripts/games/test_romm_process.py
+      - name: Exercise Windows AppContainer and worker faults
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (!$installation) { throw 'A compatible MSVC installation is required' }
+          $developer = Join-Path $installation 'Common7\Tools\VsDevCmd.bat'
+          & cmd.exe /d /s /c "call `"$developer`" -no_logo -arch=x64 && python scripts/games/test_romm_process.py"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile production host and worker
+        shell: bash
+        run: |
+          cmake -S native/games/romm -B "$RUNNER_TEMP/romm-native" -DPLEZY_ROMM_BUILD_CORES=OFF -DPLEZY_ROMM_ISOLATED=ON -DPLEZY_ROMM_NATIVE_TESTS=ON
+          cmake --build "$RUNNER_TEMP/romm-native" --config Release --parallel 2
+          ctest --test-dir "$RUNNER_TEMP/romm-native" -C Release --output-on-failure

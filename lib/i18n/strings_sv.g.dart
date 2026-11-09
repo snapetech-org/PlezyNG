@@ -1737,6 +1737,7 @@ class _Translations$about$sv extends Translations$about$en {
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Funktionsjämförelse';
 	@override String get title => 'Om';
 	@override String get openSourceLicenses => 'Licenser för öppen källkod';
 	@override String versionLabel({required Object version}) => 'Version ${version}';
@@ -6996,6 +6997,7 @@ extension on TranslationsSv {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Välj objekt: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Uppdaterade objekt: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Uppdaterad ${succeeded}; misslyckad ${failed}. misslyckade objekt förblir markerade.',
+			'about.featureComparison' => 'Funktionsjämförelse',
 			'about.title' => 'Om',
 			'about.openSourceLicenses' => 'Licenser för öppen källkod',
 			'about.versionLabel' => ({required Object version}) => 'Version ${version}',
@@ -7425,9 +7427,9 @@ extension on TranslationsSv {
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i Pleazyng: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
 			'watchTogether.openSessionControls' => 'Öppna sessionskontroller för Titta tillsammans',
-			'watchTogether.reconnecting' => 'Återansluter...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Återansluter...',
 			'watchTogether.reconnectingDescription' => 'Anslutningen bröts. Du går automatiskt med i rummet igen.',
 			'watchTogether.connected' => 'Ansluten',
 			'watchTogether.disconnected' => 'Frånkopplad',
@@ -7939,9 +7941,9 @@ extension on TranslationsSv {
 			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
 			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
 			'metadataEdit.noArtworkAvailable' => 'Inget bildmaterial är tillgängligt',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Bildalternativ ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Bildalternativ ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Bildalternativ ${index}, valt',
 			'metadataEdit.notSet' => 'Inte angiven',
 			'metadataEdit.libraryDefault' => 'Biblioteksstandard',
@@ -8453,9 +8455,9 @@ extension on TranslationsSv {
 			'universalMedia.filesHelp' => 'Välj ljud, video eller ISO-filer för en tillfällig spårning. filer och URL-adresser läggs inte till i bibliotekshistorik.',
 			'universalMedia.chooseFiles' => 'Välj filer',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: '1 Utvalda filer', other: '${count} valda filer', ), 
-			'universalMedia.wifiTransfer' => 'Skicka filer via Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Skicka filer via Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Överföra stödda filer från en webbläsare på samma betrodda nätverk.',
 			'universalMedia.wifiTransferIntro' => 'Öppna denna adress i en webbläsare på en annan enhet. Välj filer för att lägga till dem i den här enhetens Filer och böcker bibliotek.',
 			'universalMedia.wifiTransferPrivacy' => 'Den här enheten får filer via ditt lokala nätverk.Vem som känner till denna adress kan skicka filer tills du stoppar överföringen eller adressen löper ut efter 15 minuter.Maksimum: 100 filer, 4 GiB per fil, 10 GiB totalt.',
@@ -8967,9 +8969,9 @@ extension on TranslationsSv {
 			'sourceSetup.metadataLoading' => 'Söker efter film- och serieinformation på nätet…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata från Trakt på nätet',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Ingen automatisk titelträff hittades. Sök efter titeln för att välja en träff.',
-			'sourceSetup.metadataFailed' => 'Metadata från nätet kunde inte läsas in. Uppspelning och lokal information är fortfarande tillgängliga.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Metadata från nätet kunde inte läsas in. Uppspelning och lokal information är fortfarande tillgängliga.',
 			'sourceSetup.videoDetailsLoading' => 'Läser in videoinformation',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-nyckel krävs',
 			'sourceSetup.subtitleKeyHelp' => 'Redigera den här filkällan och lägg till en OpenSubtitles-API-nyckel i dess valfria undertextinställningar.',

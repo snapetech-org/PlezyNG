@@ -1994,6 +1994,7 @@
     }
   },
   "about": {
+    "featureComparison": "功能比較",
     "title": "關於",
     "openSourceLicenses": "開源授權條款",
     "versionLabel": "版本 ${version}",

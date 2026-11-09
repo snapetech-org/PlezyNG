@@ -1994,6 +1994,7 @@
     }
   },
   "about": {
+    "featureComparison": "기능 비교",
     "title": "소개",
     "openSourceLicenses": "오픈소스 라이선스",
     "versionLabel": "버전 ${version}",

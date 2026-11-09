@@ -1988,6 +1988,7 @@
     }
   },
   "about": {
+    "featureComparison": "So sánh tính năng",
     "title": "Về",
     "openSourceLicenses": "Giấy phép nguồn mở",
     "versionLabel": "Phiên bản ${version}",

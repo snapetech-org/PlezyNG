@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "सुविधाओं की तुलना",
     "title": "के बारे",
     "openSourceLicenses": "Open Source लाइसेंस",
     "versionLabel": "संस्करण ${version}",

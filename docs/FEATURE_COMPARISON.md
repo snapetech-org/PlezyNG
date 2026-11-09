@@ -1,7 +1,7 @@
-# Plex, Plezy and Pleazyng comparison notes
+# Feature comparison: evidence and limitations
 
 Reviewed **2026-11-09**. This is the evidence and gap register for the
-[README comparison](../README.md#feature-comparison). Features are grouped by
+[website comparison](https://plezyng.app/features.html) and [README summary](../README.md#feature-comparison). Features are grouped by
 workflow rather than listing every setting as a separate capability.
 
 Pleazyng is a fork of Plezy: an inherited capability belongs in both columns.
@@ -28,7 +28,7 @@ device, provider or media-format combination. Plans with a requirement ledger
 are evidence only for rows marked implemented or partial, not for their whole
 requested scope.
 
-## Plex capabilities and remaining gaps
+## Capabilities outside these clients
 
 ### Browser client
 

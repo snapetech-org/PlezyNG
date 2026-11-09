@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/focusable_list_tile.dart';
@@ -63,6 +64,12 @@ class AboutScreen extends StatelessWidget {
                   SettingsGroup(
                     margin: EdgeInsets.zero,
                     children: [
+                      FocusableListTile(
+                        leading: const AppIcon(Symbols.compare_rounded, fill: 1),
+                        title: Text(t.about.featureComparison),
+                        onTap: () =>
+                            launchUrl(Uri.https('plezyng.app', '/features.html'), mode: LaunchMode.externalApplication),
+                      ),
                       FocusableListTile(
                         leading: const AppIcon(Symbols.description_rounded, fill: 1),
                         title: Text(t.about.openSourceLicenses),

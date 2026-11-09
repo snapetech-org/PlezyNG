@@ -362,6 +362,7 @@
 			buildPhases = (
 				B7F1001AA1100000000000A2 /* Isolate LuaJIT runtime */,
 				B7F1001AA1100000000000A1 /* Build MilkRust Runtime */,
+				B7F1001AA1100000000000A3 /* Install RomM Worker */,
 				5E41E5A55F14C910C5BEEE03 /* [CP] Check Pods Manifest.lock */,
 				66082DF2D9B2E84DE42C4474 /* Build Steam transport */,
 				2A19CEEE4387EA102496ED72 /* Bundle Dolby Vision runtime */,
@@ -495,6 +496,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+        B7F1001AA1100000000000A3 /* Install RomM Worker */ = {
+            isa = PBXShellScriptBuildPhase;
+            alwaysOutOfDate = 1;
+            buildActionMask = 2147483647;
+            files = ();
+            inputPaths = ();
+            name = "Install RomM Worker";
+            outputPaths = ("$(TARGET_BUILD_DIR)/$(EXECUTABLE_FOLDER_PATH)/plezy_retro_worker",);
+            runOnlyForDeploymentPostprocessing = 0;
+            shellPath = /bin/bash;
+            shellScript = "bash \"$PROJECT_DIR/../scripts/games/install_macos_worker.sh\"";
+        };
+
 		B7F1001AA1100000000000A2 /* Isolate LuaJIT runtime */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;

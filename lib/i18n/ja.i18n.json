@@ -1994,6 +1994,7 @@
     }
   },
   "about": {
+    "featureComparison": "機能比較",
     "title": "アプリについて",
     "openSourceLicenses": "オープンソースライセンス",
     "versionLabel": "バージョン ${version}",

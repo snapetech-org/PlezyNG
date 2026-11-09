@@ -1729,6 +1729,7 @@ class _Translations$about$vi extends Translations$about$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'So sánh tính năng';
 	@override String get title => 'Về';
 	@override String get openSourceLicenses => 'Giấy phép nguồn mở';
 	@override String versionLabel({required Object version}) => 'Phiên bản ${version}';
@@ -6971,6 +6972,7 @@ extension on TranslationsVi {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Các mục được chọn: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Các mục được cập nhật: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Cập nhật ${succeeded}; thất bại ${failed}. mục thất bại vẫn được chọn.',
+			'about.featureComparison' => 'So sánh tính năng',
 			'about.title' => 'Về',
 			'about.openSourceLicenses' => 'Giấy phép nguồn mở',
 			'about.versionLabel' => ({required Object version}) => 'Phiên bản ${version}',
@@ -7400,9 +7402,9 @@ extension on TranslationsVi {
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
-			'watchTogether.reconnecting' => 'Kết nối lại...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Kết nối lại...',
 			'watchTogether.reconnectingDescription' => 'Kết nối bị hỏng. bạn sẽ tự động vào phòng.',
 			'watchTogether.connected' => 'Kết nối',
 			'watchTogether.disconnected' => 'Khóa kết nối',
@@ -7914,9 +7916,9 @@ extension on TranslationsVi {
 			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
 			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
 			'metadataEdit.noArtworkAvailable' => 'Không có tác phẩm nghệ thuật',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Tùy chọn nghệ thuật ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Tùy chọn nghệ thuật ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Tùy chọn Artwork ${index}, được chọn',
 			'metadataEdit.notSet' => 'Không đặt',
 			'metadataEdit.libraryDefault' => 'Thư viện thất bại',
@@ -8428,9 +8430,9 @@ extension on TranslationsVi {
 			'universalMedia.filesHelp' => 'Chọn các tệp âm thanh, video hoặc ISO cho một cặp tạm thời. tệp và URL không được thêm vào lịch sử thư viện.',
 			'universalMedia.chooseFiles' => 'Chọn file',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: '${count} tập tin được chọn', ), 
-			'universalMedia.wifiTransfer' => 'Gửi file qua Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Gửi file qua Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Chuyển các tập tin được hỗ trợ từ một trình duyệt trên cùng một mạng đáng tin cậy.',
 			'universalMedia.wifiTransferIntro' => 'Mở địa chỉ này trong một trình duyệt trên thiết bị khác.Chọn các tệp để thêm chúng vào thư viện tệp và sách của thiết bị này.',
 			'universalMedia.wifiTransferPrivacy' => 'Thiết bị này nhận được tệp qua mạng địa phương của bạn. bất cứ ai biết địa chỉ này có thể gửi tệp cho đến khi bạn ngừng chuyển giao hoặc địa chỉ hết hạn sau 15 phút. tối đa: 100 tệp, 4 GiB mỗi tệp; tổng cộng 10 GiB.',
@@ -8942,9 +8944,9 @@ extension on TranslationsVi {
 			'sourceSetup.metadataLoading' => 'Đang tra cứu thông tin phim và chương trình TV trực tuyến…',
 			'sourceSetup.metadataFromTrakt' => 'Siêu dữ liệu trực tuyến từ Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Không tự động tìm thấy tiêu đề phù hợp. Hãy tìm tiêu đề để chọn kết quả.',
-			'sourceSetup.metadataFailed' => 'Không tải được siêu dữ liệu trực tuyến. Vẫn có thể phát và xem thông tin cục bộ.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Không tải được siêu dữ liệu trực tuyến. Vẫn có thể phát và xem thông tin cục bộ.',
 			'sourceSetup.videoDetailsLoading' => 'Đang tải thông tin video',
 			'sourceSetup.subtitleKeyRequired' => 'Cần có khóa API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Chỉnh sửa nguồn tệp này và thêm khóa API OpenSubtitles trong phần cài đặt phụ đề tùy chọn.',

@@ -1769,6 +1769,7 @@ class _Translations$about$ar extends Translations$about$en {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'مقارنة الميزات';
 	@override String get title => 'حول';
 	@override String get openSourceLicenses => 'ترخيص المصدر المفتوح';
 	@override String versionLabel({required Object version}) => 'النسخة ${version}';
@@ -7096,6 +7097,7 @@ extension on TranslationsAr {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'العناصر المختارة: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'تحديث العناصر: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'تحديث ${succeeded}؛ فشل ${failed}. لا تزال العناصر المفقودة مختارة.',
+			'about.featureComparison' => 'مقارنة الميزات',
 			'about.title' => 'حول',
 			'about.openSourceLicenses' => 'ترخيص المصدر المفتوح',
 			'about.versionLabel' => ({required Object version}) => 'النسخة ${version}',
@@ -7525,9 +7527,9 @@ extension on TranslationsAr {
 			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'انضم إلى غرفة Watch Together في Pleazyng: افتح غرفة Watch Together واختر انضم إلى غرفة وانضم إلى ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch معا مراقبة الجلسة',
-			'watchTogether.reconnecting' => 'إعادة الاتصال...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'إعادة الاتصال...',
 			'watchTogether.reconnectingDescription' => 'انقطع الاتصال.تصل إلى الغرفة تلقائيًا.',
 			'watchTogether.connected' => 'متصلة',
 			'watchTogether.disconnected' => 'انقطاع الاتصال',
@@ -8039,9 +8041,9 @@ extension on TranslationsAr {
 			'metadataEdit.artworkUpdated' => 'الفنون المحدثة',
 			'metadataEdit.artworkUpdateFailed' => 'فشل في تحديث أعمال الفن',
 			'metadataEdit.noArtworkAvailable' => 'لا توجد أعمال فنية متاحة',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'الخيارات الفنية ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'الخيارات الفنية ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'الخيار الفن ${index}، اختياري',
 			'metadataEdit.notSet' => 'لا تضع',
 			'metadataEdit.libraryDefault' => 'مكتبة الافتراضية',
@@ -8553,9 +8555,9 @@ extension on TranslationsAr {
 			'universalMedia.filesHelp' => 'حدد الملفات الصوتية أو الفيديوية أو ملفات ISO لفترة مؤقتة.لا يتم إضافة الملفين أو عناوين URL إلى تاريخ المكتبة.',
 			'universalMedia.chooseFiles' => 'اختيار الملفات',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${count} الملفات المختارة', one: '1 الملفات المختارة', two: '${count} الملفات المختارة', few: '${count} الملفات المختارة', many: '${count} الملفات المختارة', other: '${count} الملفات المختارة', ), 
-			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'إرسال الملفات عبر Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'نقل الملفات المدعومة من متصفح على نفس الشبكة الموثوقة.',
 			'universalMedia.wifiTransferIntro' => 'افتح هذا العنوان في متصفح على جهاز آخر.اختر الملفات لإضافتها إلى مكتبة الملفين والكتب لهذا الجهاز.',
 			'universalMedia.wifiTransferPrivacy' => 'يمكن لأي شخص يعرف هذا العنوان إرسال الملفات حتى تتوقف عن نقلها أو تنتهي العنوان بعد 15 دقيقة.',
@@ -9067,9 +9069,9 @@ extension on TranslationsAr {
 			'sourceSetup.metadataLoading' => 'جارٍ البحث عن معلومات الأفلام والمسلسلات على الإنترنت…',
 			'sourceSetup.metadataFromTrakt' => 'بيانات وصفية من Trakt عبر الإنترنت',
 			'sourceSetup.metadataNoAutomaticMatch' => 'لم يُعثر على تطابق تلقائي للعنوان. ابحث عن العنوان لاختيار نتيجة مطابقة.',
-			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'تعذّر تحميل البيانات الوصفية من الإنترنت. لا يزال التشغيل والمعلومات المحلية متاحين.',
 			'sourceSetup.videoDetailsLoading' => 'جارٍ تحميل معلومات الفيديو',
 			'sourceSetup.subtitleKeyRequired' => 'يلزم مفتاح API لخدمة OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'عدّل مصدر الملفات هذا وأضف مفتاح API لخدمة OpenSubtitles في إعدادات الترجمة النصية الاختيارية.',

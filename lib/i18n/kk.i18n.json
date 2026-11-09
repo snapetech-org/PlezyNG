@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Мүмкіндіктерді салыстыру",
     "title": "Қолданба туралы",
     "openSourceLicenses": "Ашық бастапқы код лицензиялары",
     "versionLabel": "Нұсқа ${version}",

@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Sammenligning af funktioner",
     "title": "Om",
     "openSourceLicenses": "Open source-licenser",
     "versionLabel": "Version ${version}",

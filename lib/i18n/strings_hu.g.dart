@@ -1737,6 +1737,7 @@ class _Translations$about$hu extends Translations$about$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Funkciók összehasonlítása';
 	@override String get title => 'Névjegy';
 	@override String get openSourceLicenses => 'Nyílt forráskódú licencek';
 	@override String versionLabel({required Object version}) => 'Verzió: ${version}';
@@ -6996,6 +6997,7 @@ extension on TranslationsHu {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Válogatott elemek: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Aktualizált elemek: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Aktualizált ${succeeded}; nem sikerült ${failed}. A nem sikerült elemeket továbbra is kiválasztották.',
+			'about.featureComparison' => 'Funkciók összehasonlítása',
 			'about.title' => 'Névjegy',
 			'about.openSourceLicenses' => 'Nyílt forráskódú licencek',
 			'about.versionLabel' => ({required Object version}) => 'Verzió: ${version}',
@@ -7425,9 +7427,9 @@ extension on TranslationsHu {
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Csatlakozz a Watch Together-szobámhoz a Plezyben: nyisd meg a Watch Together (Közös nézés) menüt, válaszd a Csatlakozás szobához lehetőséget, és írd be ezt a kódot: ${code}.',
 			'watchTogether.openSessionControls' => 'Watch Together munkamenet-vezérlők megnyitása',
-			'watchTogether.reconnecting' => 'Újracsatlakozás...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Újracsatlakozás...',
 			'watchTogether.reconnectingDescription' => 'Megszakadt a kapcsolat. Automatikusan visszacsatlakozol a szobához.',
 			'watchTogether.connected' => 'Csatlakozva',
 			'watchTogether.disconnected' => 'Kapcsolat bontva',
@@ -7939,9 +7941,9 @@ extension on TranslationsHu {
 			'metadataEdit.artworkUpdated' => 'Képek frissítve',
 			'metadataEdit.artworkUpdateFailed' => 'Nem sikerült a képek frissítése',
 			'metadataEdit.noArtworkAvailable' => 'Nincsenek elérhető képek',
-			'metadataEdit.artworkOption' => ({required Object index}) => '${index}. képváltozat',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => '${index}. képváltozat',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '${index}. képváltozat, kiválasztva',
 			'metadataEdit.notSet' => 'Nincs beállítva',
 			'metadataEdit.libraryDefault' => 'Könyvtári alapértelmezés',
@@ -8453,9 +8455,9 @@ extension on TranslationsHu {
 			'universalMedia.filesHelp' => 'Válassza ki az audio, a videó vagy az ISO fájlokat egy ideiglenes tartományhoz. A fájlok és URL-ek nem kerülnek hozzáadásra a könyvtár történetéhez.',
 			'universalMedia.chooseFiles' => 'Válasszon fájlokat',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hu'))(n, one: '1 kiválasztott fájl', other: '${count} kiválasztott fájlok', ), 
-			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Fájlok küldése Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Támogatott fájlok átadása egy böngészőről ugyanazon megbízható hálózaton.',
 			'universalMedia.wifiTransferIntro' => 'Nyissa meg ezt a címet egy böngészőben egy másik eszközön. Válassza ki a fájlokat, hogy hozzáadják őket a készülék Fájlok és könyvek könyvtárába.',
 			'universalMedia.wifiTransferPrivacy' => 'Ez a készülék fogadja a fájlokat a helyi hálózaton keresztül. Bárki, aki ismeri ezt az címet, elküldheti azokat addig, amíg nem hagyja abba az átutalást vagy a cím 15 perc elteltével megszűnik. Maximum: 100 fájlt, 4 GiB fájlokonként, 10 GiB összesen.',
@@ -8967,9 +8969,9 @@ extension on TranslationsHu {
 			'sourceSetup.metadataLoading' => 'Filmek és sorozatok adatainak keresése online…',
 			'sourceSetup.metadataFromTrakt' => 'Online metaadatok a Trakttól',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nem található automatikus címegyezés. Keress rá a címre a találat kiválasztásához.',
-			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Az online metaadatok nem tölthetők be. A lejátszás és a helyi adatok továbbra is elérhetők.',
 			'sourceSetup.videoDetailsLoading' => 'Videóadatok betöltése',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles-API-kulcs szükséges',
 			'sourceSetup.subtitleKeyHelp' => 'Szerkeszd ezt a fájlforrást, és adj hozzá OpenSubtitles-API-kulcsot az opcionális feliratbeállításoknál.',

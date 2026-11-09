@@ -1751,6 +1751,7 @@ class _Translations$about$uk extends Translations$about$en {
 	final TranslationsUk _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Порівняння можливостей';
 	@override String get title => 'Про';
 	@override String get openSourceLicenses => 'Відкритий код ліцензій';
 	@override String versionLabel({required Object version}) => 'Версія ${version}';
@@ -7040,6 +7041,7 @@ extension on TranslationsUk {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Вибрані пункти: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Оновлені пункти: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Оновлено ${succeeded}; не вдалося ${failed}. Не вдалося залишити вибір.',
+			'about.featureComparison' => 'Порівняння можливостей',
 			'about.title' => 'Про',
 			'about.openSourceLicenses' => 'Відкритий код ліцензій',
 			'about.versionLabel' => ({required Object version}) => 'Версія ${version}',
@@ -7469,9 +7471,9 @@ extension on TranslationsUk {
 			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
-			'watchTogether.reconnecting' => 'Відновлення...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Відновлення...',
 			'watchTogether.reconnectingDescription' => 'З\'єднання припинено. Ви приєднуєтеся до кімнати автоматично.',
 			'watchTogether.connected' => 'Зв\'язані',
 			'watchTogether.disconnected' => 'Відключені',
@@ -7983,9 +7985,9 @@ extension on TranslationsUk {
 			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
 			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Вибір художньої роботи ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Вибір художнього твору ${index}, вибраний',
 			'metadataEdit.notSet' => 'Не встановлюйте',
 			'metadataEdit.libraryDefault' => 'Бібліотека дефолт',
@@ -8497,9 +8499,9 @@ extension on TranslationsUk {
 			'universalMedia.filesHelp' => 'Виберіть аудіо, відео або файли ISO для тимчасового перегляду. Файли та URL-адреси не додаються до історії бібліотеки.',
 			'universalMedia.chooseFiles' => 'Вибір файлів',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: '1 Вибрані файли', few: '${count} вибрані файли', many: '${count} вибрані файли', other: '${count} вибрані файли', ), 
-			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Завантажити файли через Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Передача підтримуваних файлів з браузера в тій же надійній мережі.',
 			'universalMedia.wifiTransferIntro' => 'Відкрийте цю адресу в браузері на іншому пристрої. Виберіть файли, щоб додати їх до бібліотеки файлів та книг цього пристрою.',
 			'universalMedia.wifiTransferPrivacy' => 'Цей пристрій отримує файли через вашу локальну мережу.Кожен, хто знає цю адресу, може відправити файли до припинення передачі або адреса закінчується після 15 хвилин.Максимум: 100 файлів, 4 ГБ за файл, 10 ГБ в цілому.',
@@ -9011,9 +9013,9 @@ extension on TranslationsUk {
 			'sourceSetup.metadataLoading' => 'Пошук відомостей про фільми й серіали в інтернеті…',
 			'sourceSetup.metadataFromTrakt' => 'Метадані з Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Автоматичного збігу назви не знайдено. Знайдіть назву, щоб вибрати збіг.',
-			'sourceSetup.metadataFailed' => 'Не вдалося завантажити метадані з інтернету. Відтворення та локальні відомості залишаються доступними.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Не вдалося завантажити метадані з інтернету. Відтворення та локальні відомості залишаються доступними.',
 			'sourceSetup.videoDetailsLoading' => 'Завантаження відомостей про відео',
 			'sourceSetup.subtitleKeyRequired' => 'Потрібен ключ API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Змініть це файлове джерело й додайте ключ API OpenSubtitles у необов’язкових налаштуваннях субтитрів.',

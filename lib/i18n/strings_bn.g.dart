@@ -1737,6 +1737,7 @@ class _Translations$about$bn extends Translations$about$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'বৈশিষ্ট্য তুলনা';
 	@override String get title => 'সম্পর্কে';
 	@override String get openSourceLicenses => 'খোলা সূত্র লাইসেন্স';
 	@override String versionLabel({required Object version}) => 'সংস্করণ ${version}';
@@ -6996,6 +6997,7 @@ extension on TranslationsBn {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'নির্বাচিত পণ্য: ${count}',
 			'libraries.selection.completed' => ({required Object count}) => 'আপডেট পণ্য: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'আপডেট ${succeeded}; ভুল ${failed}. ভুল পণ্যগুলি বেছে নিতে থাকে।',
+			'about.featureComparison' => 'বৈশিষ্ট্য তুলনা',
 			'about.title' => 'সম্পর্কে',
 			'about.openSourceLicenses' => 'খোলা সূত্র লাইসেন্স',
 			'about.versionLabel' => ({required Object version}) => 'সংস্করণ ${version}',
@@ -7425,9 +7427,9 @@ extension on TranslationsBn {
 			'watchTogether.inviteCopied' => 'কপি করুন, এটি একটি বার্তাে প্রবেশ করুন।',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng: খুলুন ঘোড়ি একসাথে, চিহ্ন করুন ঘোড়ি একসাথে এবং ${code} এ প্রবেশ করুন।',
 			'watchTogether.openSessionControls' => 'Open Watch Together সেশন কন্ট্রোল',
-			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'আবার সংযোগ...',
 			'watchTogether.reconnectingDescription' => 'সংযোগ বন্ধ হয়ে গেছে. আপনি স্বয়ংক্রিয়ভাবে রুমে যোগ দেবেন।',
 			'watchTogether.connected' => 'সংযুক্ত',
 			'watchTogether.disconnected' => 'বিচ্ছিন্ন',
@@ -7939,9 +7941,9 @@ extension on TranslationsBn {
 			'metadataEdit.artworkUpdated' => 'অ্যাকাউন্ট আপডেট',
 			'metadataEdit.artworkUpdateFailed' => 'শিল্প কাজ আপডেট করতে পারিনি',
 			'metadataEdit.noArtworkAvailable' => 'কোন শিল্প কাজ পাওয়া যায় না',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'শিল্প বিকল্প ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'ছবির বিকল্প ${index}, নির্বাচিত',
 			'metadataEdit.notSet' => 'সিস্টেম না',
 			'metadataEdit.libraryDefault' => 'লাইব্রেরি ভুল',
@@ -8453,9 +8455,9 @@ extension on TranslationsBn {
 			'universalMedia.filesHelp' => 'অডিও, ভিডিও বা আইএসও ফাইলগুলি একটি temporary quue জন্য নির্বাচন করুন. ফাইল এবং URLs লাইব্রেরির ইতিহাসে যোগ করা হয় না।',
 			'universalMedia.chooseFiles' => 'ফাইল নির্বাচন',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('bn'))(n, one: '1 নির্বাচিত ফাইল', other: '${count} নির্বাচিত ফাইল', ), 
-			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Wi-Fi এর মাধ্যমে ফাইল পাঠান',
 			'universalMedia.wifiTransferHelp' => 'সমর্থিত ফাইলগুলি এক ব্রাউজার থেকে একই বিশ্বাসযোগ্য নেটওয়ার্কে স্থানান্তর করুন।',
 			'universalMedia.wifiTransferIntro' => 'অন্য ডিভাইসের একটি ব্রাউজারে এই ঠিকানা খোঁজ করুন. ফাইলগুলি নির্বাচন করে এই ডিভিশনের ফাইল এবং বই লাইব্রিয়ামে যোগ করুন.',
 			'universalMedia.wifiTransferPrivacy' => 'এই ডিভাইস আপনার স্থানীয় নেটওয়ার্কের মাধ্যমে ফাইল গ্রহণ করে. যে কেউ এই ঠিকানা জানে, আপনি ট্রান্সফার বন্ধ করা পর্যন্ত ফাইল পাঠাতে পারেন বা ঠিকানা 15 মিনিট পরে শেষ হয়. সর্বোচ্চ: 100 ফাইল, 4 জিবি প্রতি ফিল, 10 জিबी মোট।',
@@ -8967,9 +8969,9 @@ extension on TranslationsBn {
 			'sourceSetup.metadataLoading' => 'সিনেমা ও টিভি অনুষ্ঠানের তথ্য অনলাইনে খোঁজা হচ্ছে…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt থেকে অনলাইন মেটাডেটা',
 			'sourceSetup.metadataNoAutomaticMatch' => 'স্বয়ংক্রিয়ভাবে কোনো শিরোনামের মিল পাওয়া যায়নি। শিরোনাম খুঁজে সঠিক ফলাফল বেছে নিন।',
-			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'অনলাইন মেটাডেটা লোড করা যায়নি। প্লেব্যাক ও স্থানীয় তথ্য এখনো পাওয়া যাবে।',
 			'sourceSetup.videoDetailsLoading' => 'ভিডিওর তথ্য লোড হচ্ছে',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API কী প্রয়োজন',
 			'sourceSetup.subtitleKeyHelp' => 'এই ফাইল উৎসটি সম্পাদনা করে তার ঐচ্ছিক সাবটাইটেল সেটিংসে OpenSubtitles API কী যোগ করুন।',

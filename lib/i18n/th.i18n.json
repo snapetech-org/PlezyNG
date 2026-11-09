@@ -1988,6 +1988,7 @@
     }
   },
   "about": {
+    "featureComparison": "เปรียบเทียบคุณสมบัติ",
     "title": "เกี่ยวกับ",
     "openSourceLicenses": "ใบอนุญาต Open Source",
     "versionLabel": "รุ่น ${version}",

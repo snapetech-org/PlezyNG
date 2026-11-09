@@ -1735,6 +1735,7 @@ class _Translations$about$ja extends Translations$about$en {
 	final TranslationsJa _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => '機能比較';
 	@override String get title => 'アプリについて';
 	@override String get openSourceLicenses => 'オープンソースライセンス';
 	@override String versionLabel({required Object version}) => 'バージョン ${version}';
@@ -6991,6 +6992,7 @@ extension on TranslationsJa {
 			'libraries.selection.confirmCount' => ({required Object count}) => '選ばれた項目: ${count}',
 			'libraries.selection.completed' => ({required Object count}) => '更新項目: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => '更新 ${succeeded}; 失敗 ${failed}. 失敗した項目は選択されます。',
+			'about.featureComparison' => '機能比較',
 			'about.title' => 'アプリについて',
 			'about.openSourceLicenses' => 'オープンソースライセンス',
 			'about.versionLabel' => ({required Object version}) => 'バージョン ${version}',
@@ -7420,9 +7422,9 @@ extension on TranslationsJa {
 			'watchTogether.inviteCopied' => '招待をコピーしました。メッセージに貼り付けてください。',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Plezyの「一緒に見る」ルームに参加しませんか？「一緒に見る」を開いて「ルームに参加」を選び、${code}を入力してください。',
 			'watchTogether.openSessionControls' => '「一緒に見る」セッションのコントロールを開く',
-			'watchTogether.reconnecting' => '再接続中…',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => '再接続中…',
 			'watchTogether.reconnectingDescription' => '接続が切断されました。自動的にルームに再参加します。',
 			'watchTogether.connected' => '接続済み',
 			'watchTogether.disconnected' => '切断されました',
@@ -7934,9 +7936,9 @@ extension on TranslationsJa {
 			'metadataEdit.artworkUpdated' => 'アートワークを更新しました',
 			'metadataEdit.artworkUpdateFailed' => 'アートワークの更新に失敗しました',
 			'metadataEdit.noArtworkAvailable' => 'アートワークがありません',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'アートワークの選択肢 ${index}、選択済み',
 			'metadataEdit.notSet' => '未設定',
 			'metadataEdit.libraryDefault' => 'ライブラリのデフォルト',
@@ -8448,9 +8450,9 @@ extension on TranslationsJa {
 			'universalMedia.filesHelp' => 'オーディオ、ビデオ、またはISOファイルを選択して一時的なスイッチを選択します. ファイルやURLは図書館の歴史に追加されません。',
 			'universalMedia.chooseFiles' => 'ファイルを選択',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n, one: '1 選ばれたファイル', other: '${count} 選択したファイル', ), 
-			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'ファイルをWi-Fiで送信',
 			'universalMedia.wifiTransferHelp' => '同じ信頼できるネットワーク上のブラウザからサポートされたファイルを転送します。',
 			'universalMedia.wifiTransferIntro' => 'このアドレスを別のデバイスでブラウザで開きます. ファイルを選択して、このデバイスのファイルと本の図書館に追加します。',
 			'universalMedia.wifiTransferPrivacy' => 'このデバイスは、地元のネットワークを通じてファイルを受け取ります. このアドレスを知っている人は、送信を停止するまでファイルを送信することができますか? 15 分後にアドレスが終了します. 最大: 100 ファイル、1 ファイルあたり 4 GiB, 10 GiB 合計。',
@@ -8962,9 +8964,9 @@ extension on TranslationsJa {
 			'sourceSetup.metadataLoading' => '映画や番組の情報をオンラインで検索中…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt のオンラインメタデータ',
 			'sourceSetup.metadataNoAutomaticMatch' => 'タイトルの自動照合で一致が見つかりませんでした。タイトルを検索して、一致する作品を選択してください。',
-			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'オンラインメタデータを読み込めませんでした。再生とローカルの情報は引き続き利用できます。',
 			'sourceSetup.videoDetailsLoading' => '動画の情報を読み込み中',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles の API キーが必要です',
 			'sourceSetup.subtitleKeyHelp' => 'このファイルソースを編集し、任意の字幕設定に OpenSubtitles の API キーを追加してください。',

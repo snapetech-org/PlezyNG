@@ -1753,6 +1753,7 @@ class _Translations$about$pl extends Translations$about$en {
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Porównanie funkcji';
 	@override String get title => 'O aplikacji';
 	@override String get openSourceLicenses => 'Licencje oprogramowania open source';
 	@override String versionLabel({required Object version}) => 'Wersja ${version}';
@@ -7046,6 +7047,7 @@ extension on TranslationsPl {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Wybrane elementy: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Aktualizowane elementy: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Aktualizacja ${succeeded}; nieudane ${failed}. nieudane elementy pozostają wybrane.',
+			'about.featureComparison' => 'Porównanie funkcji',
 			'about.title' => 'O aplikacji',
 			'about.openSourceLicenses' => 'Licencje oprogramowania open source',
 			'about.versionLabel' => ({required Object version}) => 'Wersja ${version}',
@@ -7475,9 +7477,9 @@ extension on TranslationsPl {
 			'watchTogether.inviteCopied' => 'Skopiowano zaproszenie. Wklej je do wiadomości.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Dołącz do mojego pokoju „Oglądaj razem” w Pleazyng: otwórz „Oglądaj razem”, wybierz „Dołącz do pokoju” i wpisz kod ${code}.',
 			'watchTogether.openSessionControls' => 'Otwórz sterowanie sesją „Oglądaj razem”',
-			'watchTogether.reconnecting' => 'Ponowne łączenie...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Ponowne łączenie...',
 			'watchTogether.reconnectingDescription' => 'Połączenie zostało przerwane. Ponowne dołączenie do pokoju nastąpi automatycznie.',
 			'watchTogether.connected' => 'Połączono',
 			'watchTogether.disconnected' => 'Rozłączono',
@@ -7989,9 +7991,9 @@ extension on TranslationsPl {
 			'metadataEdit.artworkUpdated' => 'Grafika zaktualizowana',
 			'metadataEdit.artworkUpdateFailed' => 'Nie udało się zaktualizować grafiki',
 			'metadataEdit.noArtworkAvailable' => 'Brak dostępnej grafiki',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Opcja grafiki ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Opcja grafiki ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Opcja grafiki ${index}, wybrana',
 			'metadataEdit.notSet' => 'Nie ustawiono',
 			'metadataEdit.libraryDefault' => 'Domyślne dla biblioteki',
@@ -8503,9 +8505,9 @@ extension on TranslationsPl {
 			'universalMedia.filesHelp' => 'Wybierz pliki audio, wideo lub ISO dla tymczasowego odcinka. pliki i adresy URL nie są dodawane do historii biblioteki.',
 			'universalMedia.chooseFiles' => 'Wybierz pliki',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pl'))(n, one: '1 wybrane pliki', few: '${count} wybrane pliki', many: '${count} wybrane pliki', other: '${count} wybrane pliki', ), 
-			'universalMedia.wifiTransfer' => 'Wyślij pliki za pośrednictwem Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Wyślij pliki za pośrednictwem Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Przekazywanie plików obsługiwanych z przeglądarki na tej samej zaufanej sieci.',
 			'universalMedia.wifiTransferIntro' => 'Otwórz ten adres w przeglądarce na innym urządzeniu. Wybierz pliki, aby dodać je do biblioteki plików i książek tego urządzenia.',
 			'universalMedia.wifiTransferPrivacy' => 'Ten urządzenie otrzymuje pliki za pośrednictwem sieci lokalnej.Każdy, kto zna tę adresę może wysłać pliki do momentu zaprzestania transferu lub adres wygasł po 15 minutach. maksymalnie: 100 plików, 4 GiB na plik, 10 GiB w sumie.',
@@ -9017,9 +9019,9 @@ extension on TranslationsPl {
 			'sourceSetup.metadataLoading' => 'Wyszukiwanie informacji o filmach i serialach w internecie…',
 			'sourceSetup.metadataFromTrakt' => 'Metadane z Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Nie znaleziono automatycznego dopasowania tytułu. Wyszukaj tytuł, aby wybrać dopasowanie.',
-			'sourceSetup.metadataFailed' => 'Nie udało się wczytać metadanych z internetu. Odtwarzanie i informacje lokalne nadal są dostępne.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Nie udało się wczytać metadanych z internetu. Odtwarzanie i informacje lokalne nadal są dostępne.',
 			'sourceSetup.videoDetailsLoading' => 'Wczytywanie szczegółów wideo',
 			'sourceSetup.subtitleKeyRequired' => 'Wymagany klucz API OpenSubtitles',
 			'sourceSetup.subtitleKeyHelp' => 'Edytuj to źródło plików i dodaj klucz API OpenSubtitles w opcjonalnych ustawieniach napisów.',

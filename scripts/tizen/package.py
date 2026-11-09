@@ -400,6 +400,7 @@ target_link_options(plezy_sqlite3 PRIVATE "-Wl,-Bsymbolic-functions")
 
     run('cmake', '-S', ROOT / 'native/games/romm', '-B', out / 'romm-build',
         f'-DCMAKE_TOOLCHAIN_FILE={toolchain}', '-DCMAKE_BUILD_TYPE=Release',
+        '-DPLEZY_ROMM_ISOLATED=OFF',
         f'-DFETCHCONTENT_BASE_DIR={sources / "romm-dependencies"}')
     run('cmake', '--build', out / 'romm-build', '--target', 'plezy_retro', '--parallel', args.jobs)
     shutil.copyfile(out / 'romm-build/libplezy_retro.so', out / 'libplezy_retro.so')

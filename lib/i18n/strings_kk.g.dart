@@ -1737,6 +1737,7 @@ class _Translations$about$kk extends Translations$about$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Мүмкіндіктерді салыстыру';
 	@override String get title => 'Қолданба туралы';
 	@override String get openSourceLicenses => 'Ашық бастапқы код лицензиялары';
 	@override String versionLabel({required Object version}) => 'Нұсқа ${version}';
@@ -6996,6 +6997,7 @@ extension on TranslationsKk {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Қаланың тұрақты тұрғындарының саны: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Қаланың тұрақты тұрғындарының саны: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Жаңартылды: ${succeeded}; сәтсіз: ${failed}. Сәтсіз элементтер таңдалған күйінде қалады.',
+			'about.featureComparison' => 'Мүмкіндіктерді салыстыру',
 			'about.title' => 'Қолданба туралы',
 			'about.openSourceLicenses' => 'Ашық бастапқы код лицензиялары',
 			'about.versionLabel' => ({required Object version}) => 'Нұсқа ${version}',
@@ -7425,9 +7427,9 @@ extension on TranslationsKk {
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
 			'watchTogether.openSessionControls' => 'Басқару элементтерін ашу',
-			'watchTogether.reconnecting' => 'Қайта қосылуда...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Қайта қосылуда...',
 			'watchTogether.reconnectingDescription' => 'Байланыс үзілді. Бөлмеге автоматты түрде қайта қосыласыз.',
 			'watchTogether.connected' => 'Қосылды',
 			'watchTogether.disconnected' => 'Ажыратылды',
@@ -7939,9 +7941,9 @@ extension on TranslationsKk {
 			'metadataEdit.artworkUpdated' => 'Суреттер жаңартылды',
 			'metadataEdit.artworkUpdateFailed' => 'Суреттерді жаңарту мүмкін болмады',
 			'metadataEdit.noArtworkAvailable' => 'Сурет қолжетімсіз',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Сурет опциясы ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Сурет опциясы ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Сурет опциясы ${index}, таңдалды',
 			'metadataEdit.notSet' => 'Орнатылмаған',
 			'metadataEdit.libraryDefault' => 'Кітапхана әдепкісі',
@@ -8453,9 +8455,9 @@ extension on TranslationsKk {
 			'universalMedia.filesHelp' => 'Аудио, видео, немесе ISO файлы бар. Файлы және URL-дер библиографияның аяқталуы мүмкін емес.',
 			'universalMedia.chooseFiles' => 'Серіктің файл',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: '1 Жылдық артықшылығы', other: '${count} жабдықтау файлы', ), 
-			'universalMedia.wifiTransfer' => 'Wi-Fi қосылу үшін дағдарысты',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Wi-Fi қосылу үшін дағдарысты',
 			'universalMedia.wifiTransferHelp' => 'Біздің веб-сайты мен электрондық пошталардан басқа да сіздің сайын өздерінің бір-бірімен танымал.',
 			'universalMedia.wifiTransferIntro' => 'Осылайша «Барселона» АҚ-ның «Аль-Каида» бағдарламасын көшіруге, «Файлы» және «Книги» библиотекасы бар.',
 			'universalMedia.wifiTransferPrivacy' => 'Қаланың тұрақты тұрғындарының саны 10 адамды құрайды және 1 адамды қағидасы бар.',
@@ -8967,9 +8969,9 @@ extension on TranslationsKk {
 			'sourceSetup.metadataLoading' => 'Онлайн фильмдер мен сериалдар туралы мәліметтер ізделуде…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt қызметінен онлайн метадеректер',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Атауға автоматты сәйкестік табылмады. Сәйкес нәтижені таңдау үшін атауды іздеңіз.',
-			'sourceSetup.metadataFailed' => 'Онлайн метадеректер жүктелмеді. Ойнату мен жергілікті мәліметтер әлі де қолжетімді.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Онлайн метадеректер жүктелмеді. Ойнату мен жергілікті мәліметтер әлі де қолжетімді.',
 			'sourceSetup.videoDetailsLoading' => 'Бейне мәліметтері жүктелуде',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API кілті қажет',
 			'sourceSetup.subtitleKeyHelp' => 'Осы файл дереккөзін өңдеп, қосымша субтитр параметрлеріне OpenSubtitles API кілтін қосыңыз.',

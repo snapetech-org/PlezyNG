@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "Funksiyaların müqayisəsi",
     "title": "Haqqında",
     "openSourceLicenses": "Açıq mənbə lisenziyaları",
     "versionLabel": "Versiya ${version}",

@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Separate comparison statuses from their explanations: put scope notes on a new line in italic parentheses in the README and website.
+
+- Publish a responsive website feature comparison and link it from About and the repository. Use neutral capability names, concise comparison cells and linked evidence; preserve the current logo.
+- Run desktop RomM cores in a separate sandboxed helper with bounded IPC, crash/hang recovery, parent-owned audio/saves, and OS-confirmed teardown. Package and sign the macOS helper, restrict Windows cores with AppContainer, and require Landlock/seccomp on Linux. Add real worker-fault validation across desktop operating systems; mobile and TV containment remains tracked separately.
+- Automatically migrate untouched legacy webOS credentials to authenticated storage during startup, preserving concurrent changes and recoverability after interrupted writes.
+
+- Run arm64-only tvOS simulator qualification on the documented Apple Silicon hosted runner, preserving Intel hosted lanes for compatible iOS/macOS checks. An Intel simulator host cannot execute the required tvOS arm64 destination.
+
+- Include copyright metadata and a commit-pinned Pleazyng app icon in future Chocolatey packages.
+
 - Integrate multi-seed music mixes, saved recipes, Plex sonic similarity and waypoint paths into artist, album and Now Playing screens; reuse playlist saving and downloads. Preserve full large queues in paged storage, add guarded radio continuation, album shuffle/skip, analysis seek prints, applied music EQ/normalization, signal-path information and a large-control driving view.
 - Add native Android music browsing and CarPlay templates over the profile-owned music session. Native signing/device qualification and remaining Plexamp parity are tracked explicitly in `docs/plezyng/music/STATUS.md`. The existing [media-controls dependency](https://github.com/edde746/media_controls/tree/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), is vendored at its existing pin to extend its single Android media session; see [source attribution](UPSTREAM_ATTRIBUTION.md#music-media-session-integration).
 

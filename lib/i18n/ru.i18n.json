@@ -2012,6 +2012,7 @@
     }
   },
   "about": {
+    "featureComparison": "Сравнение возможностей",
     "title": "О приложении",
     "openSourceLicenses": "Лицензии открытого ПО",
     "versionLabel": "Версия ${version}",

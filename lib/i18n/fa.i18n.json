@@ -1996,6 +1996,7 @@
     }
   },
   "about": {
+    "featureComparison": "مقایسهٔ قابلیت‌ها",
     "title": "درباره",
     "openSourceLicenses": "مجوز منبع باز",
     "versionLabel": "نسخه ${version}",

@@ -2012,6 +2012,7 @@
     }
   },
   "about": {
+    "featureComparison": "Porównanie funkcji",
     "title": "O aplikacji",
     "openSourceLicenses": "Licencje oprogramowania open source",
     "versionLabel": "Wersja ${version}",

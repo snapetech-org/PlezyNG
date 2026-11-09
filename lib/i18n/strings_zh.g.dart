@@ -1735,6 +1735,7 @@ class Translations$about$zh extends Translations$about$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => '功能对比';
 	@override String get title => '关于';
 	@override String get openSourceLicenses => '开源许可证';
 	@override String versionLabel({required Object version}) => '版本 ${version}';
@@ -6991,6 +6992,7 @@ extension on TranslationsZh {
 			'libraries.selection.confirmCount' => ({required Object count}) => '已选择的项目: ${count}。',
 			'libraries.selection.completed' => ({required Object count}) => '更新項目: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => '更新 ${succeeded}; 失败 ${failed}. 失败的项目仍然被选择。',
+			'about.featureComparison' => '功能对比',
 			'about.title' => '关于',
 			'about.openSourceLicenses' => '开源许可证',
 			'about.versionLabel' => ({required Object version}) => '版本 ${version}',
@@ -7420,9 +7422,9 @@ extension on TranslationsZh {
 			'watchTogether.inviteCopied' => '邀请已复制。请将其粘贴到消息中。',
 			'watchTogether.inviteMessage' => ({required Object code}) => '加入我在 Pleazyng 中的“一起看”房间：打开“一起看”，选择“加入房间”，然后输入 ${code}。',
 			'watchTogether.openSessionControls' => '打开“一起看”会话控制',
-			'watchTogether.reconnecting' => '正在重新连接…',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => '正在重新连接…',
 			'watchTogether.reconnectingDescription' => '连接已中断。你将自动重新加入房间。',
 			'watchTogether.connected' => '已连接',
 			'watchTogether.disconnected' => '已断开连接',
@@ -7934,9 +7936,9 @@ extension on TranslationsZh {
 			'metadataEdit.artworkUpdated' => '封面图片已更新',
 			'metadataEdit.artworkUpdateFailed' => '封面图片更新失败',
 			'metadataEdit.noArtworkAvailable' => '没有可用的封面图片',
-			'metadataEdit.artworkOption' => ({required Object index}) => '封面图片选项 ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => '封面图片选项 ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => '封面图片选项 ${index}，已选择',
 			'metadataEdit.notSet' => '未设置',
 			'metadataEdit.libraryDefault' => '媒体库默认',
@@ -8448,9 +8450,9 @@ extension on TranslationsZh {
 			'universalMedia.filesHelp' => '选择音频、视频或ISO文件,以便进行临时记录. 文件和URL不添加到图书馆历史。',
 			'universalMedia.chooseFiles' => '选择文件',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n, one: '1 选择的文件', other: '${count} 已选择的文件', ), 
-			'universalMedia.wifiTransfer' => '通过 Wi-Fi 发送文件',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => '通过 Wi-Fi 发送文件',
 			'universalMedia.wifiTransferHelp' => '从同一信任网络的浏览器传输支持的文件。',
 			'universalMedia.wifiTransferIntro' => '在另一个设备上的浏览器中打开此地址. 选择文件以将其添加到该设备的文件和书籍图书馆。',
 			'universalMedia.wifiTransferPrivacy' => '本设备通过您的本地网络接收文件. 任何知道此地址的人都可以发送文件,直到您停止传输或地址在15分钟后终止。',
@@ -8962,9 +8964,9 @@ extension on TranslationsZh {
 			'sourceSetup.metadataLoading' => '正在查询在线电影和剧集信息…',
 			'sourceSetup.metadataFromTrakt' => '来自 Trakt 的在线元数据',
 			'sourceSetup.metadataNoAutomaticMatch' => '未找到自动匹配的标题。请搜索标题并选择匹配结果。',
-			'sourceSetup.metadataFailed' => '无法加载在线元数据。仍可播放媒体和查看本地信息。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => '无法加载在线元数据。仍可播放媒体和查看本地信息。',
 			'sourceSetup.videoDetailsLoading' => '正在加载视频信息',
 			'sourceSetup.subtitleKeyRequired' => '需要 OpenSubtitles API 密钥',
 			'sourceSetup.subtitleKeyHelp' => '请编辑此文件来源，在可选的字幕设置中添加 OpenSubtitles API 密钥。',

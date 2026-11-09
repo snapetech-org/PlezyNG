@@ -1737,6 +1737,7 @@ class _Translations$about$fa extends Translations$about$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'مقایسهٔ قابلیت‌ها';
 	@override String get title => 'درباره';
 	@override String get openSourceLicenses => 'مجوز منبع باز';
 	@override String versionLabel({required Object version}) => 'نسخه ${version}';
@@ -6996,6 +6997,7 @@ extension on TranslationsFa {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'تعداد بازدید : ${count}',
 			'libraries.selection.completed' => ({required Object count}) => 'بایگانی برچسب ها: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'به روز شده ${succeeded}؛ شکست خورده ${failed}.نمونه های شکست خورده باقی می ماند.',
+			'about.featureComparison' => 'مقایسهٔ قابلیت‌ها',
 			'about.title' => 'درباره',
 			'about.openSourceLicenses' => 'مجوز منبع باز',
 			'about.versionLabel' => ({required Object version}) => 'نسخه ${version}',
@@ -7425,9 +7427,9 @@ extension on TranslationsFa {
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
 			'watchTogether.openSessionControls' => 'Open Watch با هم کنترل جلسه',
-			'watchTogether.reconnecting' => 'دوباره اتصال...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'دوباره اتصال...',
 			'watchTogether.reconnectingDescription' => 'اتصال قطع شده است شما به طور خودکار به اتاق می روید.',
 			'watchTogether.connected' => 'اتصال',
 			'watchTogether.disconnected' => 'انحطاط',
@@ -7939,9 +7941,9 @@ extension on TranslationsFa {
 			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
 			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
 			'metadataEdit.noArtworkAvailable' => 'هیچ هنری در دسترس نیست',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'گزینه هنری ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'گزینه هنری ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'گزینه هنری ${index} انتخاب شده',
 			'metadataEdit.notSet' => 'نه تنظیم',
 			'metadataEdit.libraryDefault' => 'کتابخانه های ناشناخته',
@@ -8453,9 +8455,9 @@ extension on TranslationsFa {
 			'universalMedia.filesHelp' => 'فایل های صوتی، ویدئویی یا ISO را برای یک دوره موقت انتخاب کنید.فایلهای و URL ها به تاریخچه کتابخانه اضافه نمی شوند.',
 			'universalMedia.chooseFiles' => 'انتخاب فایل ها',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fa'))(n, one: '1 فایل انتخاب شده', other: '${count} فایل های انتخاب شده', ), 
-			'universalMedia.wifiTransfer' => 'ارسال فایل ها از طریق Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'ارسال فایل ها از طریق Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'انتقال فایل های پشتیبانی شده از یک مرورگر در همان شبکه قابل اعتماد.',
 			'universalMedia.wifiTransferIntro' => 'این آدرس را در یک مرورگر در دستگاه دیگری باز کنید فایل ها را انتخاب کنید تا آنها را به کتابخانه فایل ها و کتاب های این دستگاه اضافه کنید.',
 			'universalMedia.wifiTransferPrivacy' => 'این دستگاه فایل ها را از طریق شبکه محلی شما دریافت می کند.هر کسی که این آدرس را می داند، می تواند تا زمانی که انتقال را متوقف کنید یا آدرس پس از 15 دقیقه به پایان برسد، فایل های خود را ارسال کند. حداکثر: 100 فایل، 4 GiB در هر فایل، 10 GiB کل.',
@@ -8967,9 +8969,9 @@ extension on TranslationsFa {
 			'sourceSetup.metadataLoading' => 'در حال جست‌وجوی آنلاین اطلاعات فیلم و سریال…',
 			'sourceSetup.metadataFromTrakt' => 'فرادادهٔ آنلاین از Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'عنوان مطابقی به‌صورت خودکار پیدا نشد. عنوان را جست‌وجو کنید تا نتیجهٔ مطابق را انتخاب کنید.',
-			'sourceSetup.metadataFailed' => 'فرادادهٔ آنلاین بارگیری نشد. پخش و اطلاعات محلی همچنان در دسترس هستند.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'فرادادهٔ آنلاین بارگیری نشد. پخش و اطلاعات محلی همچنان در دسترس هستند.',
 			'sourceSetup.videoDetailsLoading' => 'در حال بارگیری اطلاعات ویدیو',
 			'sourceSetup.subtitleKeyRequired' => 'کلید API سرویس OpenSubtitles لازم است',
 			'sourceSetup.subtitleKeyHelp' => 'این منبع فایل را ویرایش کنید و در تنظیمات اختیاری زیرنویس، کلید API سرویس OpenSubtitles را اضافه کنید.',

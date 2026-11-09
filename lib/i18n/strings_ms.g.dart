@@ -1729,6 +1729,7 @@ class _Translations$about$ms extends Translations$about$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'Perbandingan ciri';
 	@override String get title => 'Mengenai';
 	@override String get openSourceLicenses => 'Lesen sumber terbuka';
 	@override String versionLabel({required Object version}) => 'Perbincangan:Bahasa Inggeris ${version}';
@@ -6971,6 +6972,7 @@ extension on TranslationsMs {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'Jumlah item yang dipilih : ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'Item yang dikemaskini: ${count}.',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'Diperbaharui ${succeeded}; gagal ${failed}. item yang gagal kekal dipilih.',
+			'about.featureComparison' => 'Perbandingan ciri',
 			'about.title' => 'Mengenai',
 			'about.openSourceLicenses' => 'Lesen sumber terbuka',
 			'about.versionLabel' => ({required Object version}) => 'Perbincangan:Bahasa Inggeris ${version}',
@@ -7400,9 +7402,9 @@ extension on TranslationsMs {
 			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Bersama-sama kawalan sesi',
-			'watchTogether.reconnecting' => 'Menghubungkan semula...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'Menghubungkan semula...',
 			'watchTogether.reconnectingDescription' => 'sambungan hilang. anda menyertai bilik secara automatik.',
 			'watchTogether.connected' => 'Terhubung',
 			'watchTogether.disconnected' => 'Disambungkan',
@@ -7914,9 +7916,9 @@ extension on TranslationsMs {
 			'metadataEdit.artworkUpdated' => 'Seni yang dikemaskini',
 			'metadataEdit.artworkUpdateFailed' => 'Kegagalan untuk mengemas kini karya seni',
 			'metadataEdit.noArtworkAvailable' => 'Tiada karya seni yang tersedia',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'Pilihan seni ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'Pilihan seni ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'Pilihan seni ${index}, dipilih',
 			'metadataEdit.notSet' => 'Tidak menetapkan',
 			'metadataEdit.libraryDefault' => 'Perpustakaan kekurangan',
@@ -8428,9 +8430,9 @@ extension on TranslationsMs {
 			'universalMedia.filesHelp' => 'Pilih fail audio, video, atau ISO untuk tempoh sementara. fail dan URL tidak ditambah kepada sejarah perpustakaan.',
 			'universalMedia.chooseFiles' => 'Pilih fail',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ms'))(n, other: '${count} fail yang dipilih', ), 
-			'universalMedia.wifiTransfer' => 'Hantar fail melalui Wi-Fi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'Hantar fail melalui Wi-Fi',
 			'universalMedia.wifiTransferHelp' => 'Memindahkan fail yang disokong daripada pelayar pada rangkaian yang sama dipercayai.',
 			'universalMedia.wifiTransferIntro' => 'Buka alamat ini dalam pelayar pada peranti lain. pilih fail untuk menambahnya ke perpustakaan Fail dan buku peranti ini.',
 			'universalMedia.wifiTransferPrivacy' => 'Peranti ini menerima fail melalui rangkaian tempatan anda. sesiapa sahaja yang tahu alamat ini boleh menghantar fail sehingga anda berhenti pemindahan atau alamat tamat tempoh selepas 15 minit. maksimum: 100 fail, 4 GiB per fail, 10 GiB total.',
@@ -8942,9 +8944,9 @@ extension on TranslationsMs {
 			'sourceSetup.metadataLoading' => 'Mencari butiran filem dan rancangan TV dalam talian…',
 			'sourceSetup.metadataFromTrakt' => 'Metadata dalam talian daripada Trakt',
 			'sourceSetup.metadataNoAutomaticMatch' => 'Tiada padanan tajuk automatik ditemukan. Cari tajuk untuk memilih padanan.',
-			'sourceSetup.metadataFailed' => 'Metadata dalam talian tidak dapat dimuatkan. Main balik dan butiran setempat masih tersedia.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'Metadata dalam talian tidak dapat dimuatkan. Main balik dan butiran setempat masih tersedia.',
 			'sourceSetup.videoDetailsLoading' => 'Memuatkan butiran video',
 			'sourceSetup.subtitleKeyRequired' => 'Kunci API OpenSubtitles diperlukan',
 			'sourceSetup.subtitleKeyHelp' => 'Edit sumber fail ini dan tambah kunci API OpenSubtitles dalam tetapan sari kata pilihannya.',

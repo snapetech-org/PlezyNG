@@ -13,6 +13,13 @@ class FlutterSecureStorageWebos extends FlutterSecureStoragePlatform {
 
   static void registerWith() => FlutterSecureStoragePlatform.instance = FlutterSecureStorageWebos();
 
+  /// Explicit startup maintenance. Ordinary reads retain their non-mutating
+  /// contract; other platform implementations are never touched.
+  static Future<void> migrateRegisteredLegacy() async {
+    final platform = FlutterSecureStoragePlatform.instance;
+    if (platform is FlutterSecureStorageWebos) await platform.migrateLegacy();
+  }
+
   final SecureStorageClient _client = SecureStorageClient();
   late final SecureStorageChannel _store = SecureStorageChannel(_client);
   // All instances in one isolate share the lock. Native compare-and-store
@@ -38,6 +45,43 @@ class FlutterSecureStorageWebos extends FlutterSecureStoragePlatform {
   void _validateKey(String key) {
     if (key.isEmpty) throw PlatformException(code: 'Invalid argument', message: 'No key provided.');
   }
+
+  /// Rewrap the entire legacy row in one durable compare-and-store operation.
+  /// A key-service failure preserves the old row. An uncertain commit retains
+  /// staged keys until a subsequent load establishes which row is durable.
+  Future<int> migrateLegacy() => _run(() async {
+        if (!_store.needsMigration) return 0;
+        final old = _store.entries();
+        final next = Map<String, String>.of(old);
+        final staged = <String, String>{};
+        var mayHaveCommitted = false;
+        try {
+          for (final entry in old.entries) {
+            if (entry.value.startsWith('v3:')) continue;
+            final clear = await _client.readSecret(entry.key, entry.value);
+            final envelope = await _client.createSecret(clear, context: entry.key);
+            staged[entry.key] = envelope;
+            next[entry.key] = envelope;
+          }
+          try {
+            await _store.replaceRaw(next);
+          } on StorageWriteException catch (error) {
+            mayHaveCommitted = error.mayHaveCommitted;
+            rethrow;
+          }
+        } catch (_) {
+          if (!mayHaveCommitted) {
+            for (final entry in staged.entries) {
+              await _client.removeSecretBestEffort(entry.key, entry.value);
+            }
+          }
+          rethrow;
+        }
+        for (final key in staged.keys) {
+          await _client.removeSecretBestEffort(key, old[key]!);
+        }
+        return staged.length;
+      });
 
   @override
   Future<void> write({required String key, required String value, required Map<String, String> options}) async {

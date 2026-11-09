@@ -1737,6 +1737,7 @@ class _Translations$about$hi extends Translations$about$en {
 	final TranslationsHi _root; // ignore: unused_field
 
 	// Translations
+	@override String get featureComparison => 'सुविधाओं की तुलना';
 	@override String get title => 'के बारे';
 	@override String get openSourceLicenses => 'Open Source लाइसेंस';
 	@override String versionLabel({required Object version}) => 'संस्करण ${version}';
@@ -6996,6 +6997,7 @@ extension on TranslationsHi {
 			'libraries.selection.confirmCount' => ({required Object count}) => 'चयनित आइटम: ${count}.',
 			'libraries.selection.completed' => ({required Object count}) => 'पदों की संख्या: ${count}',
 			'libraries.selection.partialFailure' => ({required Object succeeded, required Object failed}) => 'अद्यतन ${succeeded}; असफल ${failed}. असफल आइटम चुने हुए रहते हैं।',
+			'about.featureComparison' => 'सुविधाओं की तुलना',
 			'about.title' => 'के बारे',
 			'about.openSourceLicenses' => 'Open Source लाइसेंस',
 			'about.versionLabel' => ({required Object version}) => 'संस्करण ${version}',
@@ -7425,9 +7427,9 @@ extension on TranslationsHi {
 			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng में मेरे घड़ी एक साथ कमरे में शामिल हों: घड़ी एक साथ खोलें, शामिल कमरे का चयन करें और ${code} में प्रवेश करें।',
 			'watchTogether.openSessionControls' => 'Open Watch एक साथ सत्र नियंत्रण',
-			'watchTogether.reconnecting' => 'फिर से कनेक्ट...',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.reconnecting' => 'फिर से कनेक्ट...',
 			'watchTogether.reconnectingDescription' => 'कनेक्शन बंद हो गया. आप स्वचालित रूप से कमरे में प्रवेश करते हैं.',
 			'watchTogether.connected' => 'कनेक्ट',
 			'watchTogether.disconnected' => 'विघटित',
@@ -7939,9 +7941,9 @@ extension on TranslationsHi {
 			'metadataEdit.artworkUpdated' => 'Artwork अद्यतन',
 			'metadataEdit.artworkUpdateFailed' => 'कला के काम को अपडेट करने में विफलता',
 			'metadataEdit.noArtworkAvailable' => 'कोई कला उपलब्ध नहीं है',
-			'metadataEdit.artworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.artworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}',
 			'metadataEdit.selectedArtworkOption' => ({required Object index}) => 'आर्टवर्क विकल्प ${index}, चुना गया',
 			'metadataEdit.notSet' => 'सेट नहीं',
 			'metadataEdit.libraryDefault' => 'लाइब्रेरी अभाव',
@@ -8453,9 +8455,9 @@ extension on TranslationsHi {
 			'universalMedia.filesHelp' => 'ऑडियो, वीडियो, या आईएसओ फ़ाइलों का चयन करें एक अस्थायी कवच के लिए. फ़ाइलें और यूआरएल लाइब्रेरी इतिहास में जोड़ा नहीं जाता है.',
 			'universalMedia.chooseFiles' => 'फ़ाइल चुनें',
 			'universalMedia.fileQueue' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n, one: '1 चयनित फ़ाइल', other: '${count} चयनित फ़ाइलें', ), 
-			'universalMedia.wifiTransfer' => 'फ़ाइलों को Wi-Fi के माध्यम से भेजें',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.wifiTransfer' => 'फ़ाइलों को Wi-Fi के माध्यम से भेजें',
 			'universalMedia.wifiTransferHelp' => 'एक ब्राउज़र से समर्थित फ़ाइलों को उसी विश्वसनीय नेटवर्क पर स्थानांतरित करें।',
 			'universalMedia.wifiTransferIntro' => 'किसी अन्य डिवाइस पर एक ब्राउज़र में इस पते को खोलें. फ़ाइलों को जोड़ने के लिए फ़ाइलें और किताबें पुस्तकालय में चुनें.',
 			'universalMedia.wifiTransferPrivacy' => 'यह डिवाइस आपके स्थानीय नेटवर्क के माध्यम से फ़ाइलों को प्राप्त करता है. जो कोई भी इस पते को जानता है वह फ़ाइलें भेज सकता है जब तक कि आप स्थानांतरण को रोक न दें या 15 मिनट के बाद पता समाप्त हो जाता है. अधिकतम: 100 फाइल, 4 जीबी प्रति फ़ाई, 10 जीबी कुल।',
@@ -8967,9 +8969,9 @@ extension on TranslationsHi {
 			'sourceSetup.metadataLoading' => 'फ़िल्म और टीवी कार्यक्रम की जानकारी ऑनलाइन खोजी जा रही है…',
 			'sourceSetup.metadataFromTrakt' => 'Trakt से ऑनलाइन मेटाडेटा',
 			'sourceSetup.metadataNoAutomaticMatch' => 'अपने-आप कोई मेल खाता शीर्षक नहीं मिला। शीर्षक खोजकर सही परिणाम चुनें।',
-			'sourceSetup.metadataFailed' => 'ऑनलाइन मेटाडेटा लोड नहीं हो सका। प्लेबैक और स्थानीय जानकारी अब भी उपलब्ध हैं।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.metadataFailed' => 'ऑनलाइन मेटाडेटा लोड नहीं हो सका। प्लेबैक और स्थानीय जानकारी अब भी उपलब्ध हैं।',
 			'sourceSetup.videoDetailsLoading' => 'वीडियो की जानकारी लोड हो रही है',
 			'sourceSetup.subtitleKeyRequired' => 'OpenSubtitles API कुंजी ज़रूरी है',
 			'sourceSetup.subtitleKeyHelp' => 'इस फ़ाइल स्रोत में बदलाव करें और उसकी वैकल्पिक सबटाइटल सेटिंग में OpenSubtitles API कुंजी जोड़ें।',

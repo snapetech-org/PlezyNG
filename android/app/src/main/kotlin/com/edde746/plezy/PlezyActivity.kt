@@ -548,7 +548,16 @@ class PlezyActivity : FlutterActivity() {
     // non-modifier keys (see withoutModifierScanCode).
     val content = findViewById<ViewGroup>(android.R.id.content)
     val wrapper = object : FrameLayout(this) {
-      override fun dispatchKeyEvent(event: KeyEvent): Boolean = super.dispatchKeyEvent(event.withoutModifierScanCode())
+      override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // With a registered system callback, API 36 can also synthesize raw
+        // Back keys after IME use. Its cancelled key-up becomes an ordinary
+        // Flutter KeyUp and pops once before the real system callback pops again.
+        // Let that callback own navigation; legacy/root keys still reach Flutter.
+        if (Build.VERSION.SDK_INT >= 33 && frameworkHandlesSystemBack && event.keyCode == KeyEvent.KEYCODE_BACK) {
+          return true
+        }
+        return super.dispatchKeyEvent(event.withoutModifierScanCode())
+      }
 
       override fun dispatchKeyEventPreIme(event: KeyEvent): Boolean {
         if (isDpadKeyCode(event.keyCode)) {
@@ -618,6 +627,13 @@ class PlezyActivity : FlutterActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     handleDeepLinkIntent(intent)
+  }
+
+  private var frameworkHandlesSystemBack = false
+
+  override fun setFrameworkHandlesBack(frameworkHandlesBack: Boolean) {
+    frameworkHandlesSystemBack = frameworkHandlesBack
+    super.setFrameworkHandlesBack(frameworkHandlesBack)
   }
 
   override fun dispatchKeyEvent(event: KeyEvent): Boolean {

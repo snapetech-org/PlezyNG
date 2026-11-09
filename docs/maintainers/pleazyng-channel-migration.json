@@ -271,7 +271,7 @@
       "tester_list": "Pleazyng Alpha testers",
       "existing_members_preserved": 5,
       "feedback": "support@snape.tech",
-      "state": "Countries and tester configuration saved; no releases in new app"
+      "state": "Existing v3.0.7+166 AAB uploaded and release saved in Publishing overview, ready for review; not submitted or activated"
     },
     "organization_conversion": {
       "current_account_type": "Personal",
@@ -281,7 +281,16 @@
       "developer_display_name_state": "Under review; previous name remains visible until approved",
       "conversion_state": "Opened supported conversion flow; new organization payments profile creation requires D-U-N-S as first field; not submitted",
       "next": "Use issued D-U-N-S, verify company document and public/private contact codes; confirm Production eligibility after approved conversion"
-    }
+    },
+    "lifetime_product_2026_11_09": {
+      "sku": "pleazyng_lifetime_unlock",
+      "purchase_option": "lifetime",
+      "status": "Active; backwards compatible Buy",
+      "base_price_usd": "2.99",
+      "countries_regions": 174
+    },
+    "foreground_service_declaration": "Saved 2026-11-09: data sync network processing and media playback with existing demonstration videos",
+    "review_public_key_binary_check": "Configured public key found in all three v3.0.7 Play AAB libapp.so ABIs; actual expired-trial grant redemption remains required"
   },
   "copr": {
     "owner": "slskdn",

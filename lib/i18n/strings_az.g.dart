@@ -2738,11 +2738,11 @@ class _Translations$seerr$az extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'Pleazyng bu Seerr serverini unudacaq. İstənilən vaxt yenidən qoşula bilərsiniz.';
 	@override String get request => 'Sorğu göndər';
 	@override String get request4k => '4K sorğu göndər';
-	@override String get requestSeasons => 'Çatışmayan mövsümləri istə';
+	@override String get requestSeasons => 'Çatışmayan mövsümlər üçün sorğu göndər';
 	@override String get notifyMe => 'Əlçatan olduqda mənə bildir';
 	@override String get notifyMe4k => '4K əlçatan olduqda mənə bildir';
 	@override String get notificationsOn => 'Əlçatanlıq bildirişi aktivdir';
-	@override String get notificationsEnabled => 'Əlçatan olduqda sizə bildirəcəyik';
+	@override String get notificationsEnabled => 'Əlçatan olduqda sizə xəbər verəcəyik';
 	@override String get notificationsDisabled => 'Əlçatanlıq bildirişi söndürüldü';
 	@override String get notificationFailed => 'Əlçatanlıq bildirişini yeniləmək mümkün olmadı';
 	@override String get seasons => 'Mövsümlər';
@@ -8044,11 +8044,11 @@ extension on TranslationsAz {
 			'seerr.disconnectConfirmBody' => 'Pleazyng bu Seerr serverini unudacaq. İstənilən vaxt yenidən qoşula bilərsiniz.',
 			'seerr.request' => 'Sorğu göndər',
 			'seerr.request4k' => '4K sorğu göndər',
-			'seerr.requestSeasons' => 'Çatışmayan mövsümləri istə',
+			'seerr.requestSeasons' => 'Çatışmayan mövsümlər üçün sorğu göndər',
 			'seerr.notifyMe' => 'Əlçatan olduqda mənə bildir',
 			'seerr.notifyMe4k' => '4K əlçatan olduqda mənə bildir',
 			'seerr.notificationsOn' => 'Əlçatanlıq bildirişi aktivdir',
-			'seerr.notificationsEnabled' => 'Əlçatan olduqda sizə bildirəcəyik',
+			'seerr.notificationsEnabled' => 'Əlçatan olduqda sizə xəbər verəcəyik',
 			'seerr.notificationsDisabled' => 'Əlçatanlıq bildirişi söndürüldü',
 			'seerr.notificationFailed' => 'Əlçatanlıq bildirişini yeniləmək mümkün olmadı',
 			'seerr.seasons' => 'Mövsümlər',

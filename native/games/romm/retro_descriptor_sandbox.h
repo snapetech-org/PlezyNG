@@ -160,7 +160,7 @@ inline void PrepareDescriptorCore(const std::string& core, const std::string& ro
   };
   if (!rom.empty()) {
     add(rom, "/rom/" + fs::path(rom).filename().string());
-    uint64_t total = inputs::files.begin()->second.size();
+    uint64_t total = inputs::files.begin()->second.size;
     size_t visited = 0;
     for (const auto& entry : fs::recursive_directory_iterator(system)) {
       if (++visited > 4096) throw std::runtime_error("Firmware directory budget exceeded");

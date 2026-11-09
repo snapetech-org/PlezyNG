@@ -2738,9 +2738,9 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	@override String get disconnectConfirmBody => 'A Pleazyng elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.';
 	@override String get request => 'Igénylés';
 	@override String get request4k => 'Igénylés 4K-ban';
-	@override String get requestSeasons => 'Hiányzó évadok kérése';
-	@override String get notifyMe => 'Értesítést kérek, ha elérhető';
-	@override String get notifyMe4k => 'Értesítést kérek, ha 4K-ban elérhető';
+	@override String get requestSeasons => 'Hiányzó évadok igénylése';
+	@override String get notifyMe => 'Értesíts, amikor elérhető';
+	@override String get notifyMe4k => 'Értesíts, amikor 4K-ban elérhető';
 	@override String get notificationsOn => 'Elérhetőségi értesítés bekapcsolva';
 	@override String get notificationsEnabled => 'Értesítünk, amint elérhető';
 	@override String get notificationsDisabled => 'Elérhetőségi értesítés kikapcsolva';
@@ -8044,9 +8044,9 @@ extension on TranslationsHu {
 			'seerr.disconnectConfirmBody' => 'A Pleazyng elfelejti ezt a Seerr példányt. Bármikor újracsatlakozhatsz.',
 			'seerr.request' => 'Igénylés',
 			'seerr.request4k' => 'Igénylés 4K-ban',
-			'seerr.requestSeasons' => 'Hiányzó évadok kérése',
-			'seerr.notifyMe' => 'Értesítést kérek, ha elérhető',
-			'seerr.notifyMe4k' => 'Értesítést kérek, ha 4K-ban elérhető',
+			'seerr.requestSeasons' => 'Hiányzó évadok igénylése',
+			'seerr.notifyMe' => 'Értesíts, amikor elérhető',
+			'seerr.notifyMe4k' => 'Értesíts, amikor 4K-ban elérhető',
 			'seerr.notificationsOn' => 'Elérhetőségi értesítés bekapcsolva',
 			'seerr.notificationsEnabled' => 'Értesítünk, amint elérhető',
 			'seerr.notificationsDisabled' => 'Elérhetőségi értesítés kikapcsolva',

@@ -10,21 +10,26 @@ The published `v3.0.7` GitHub release contains x64 and ARM64 tarballs, Pacman
 packages, RPMs and Flatpak bundles. These are named `pleazyng-linux-*` and the
 Flatpak application ID is `org.snapetech.pleazyng`.
 
-| Channel | Evidence checked | Remaining before channel availability |
+| Channel | Verified publication / native evidence | Remaining acceptance or qualification |
 | --- | --- | --- |
-| Arch / Pacman direct | Both `.pkg.tar.zst` assets exist in v3.0.7 | Users install the matching asset with `pacman -U`; this does not register a pacman repository |
-| AUR | Public RPC returns zero entries for `pleazyng-bin`; repository variable and SSH secret name exist; no publisher runs recorded | Validate the rendered recipe with native `makepkg`, publish it, and verify its public `.SRCINFO`, both architecture URLs and package installation |
-| Fedora RPM direct | Both RPM assets exist in v3.0.7 | Use `dnf install ./pleazyng-linux-<arch>.rpm`; RHEL dependency support needs separate qualification |
-| COPR | Project target `slskdn/pleazyng` and credential names configured; public build list empty; no publisher runs recorded | Submit checked SRPM, wait for successful supported Fedora x86_64/aarch64 builds and verify repository installation |
-| Nix | Candidate generator and FHS bundle recipe added | Build on x86_64-linux and aarch64-linux, qualify runtime and pin the tested nixpkgs revision; arrange maintainer and nixpkgs review or a maintained downstream distribution |
-| Google Play | New app ID recorded as `org.snapetech.pleazyng`; `GOOGLE_PLAY_BOOTSTRAP_COMPLETE=false`, track `alpha`, status `completed`; AAB exists in v3.0.7 | First console bootstrap/App Signing, signed AAB and purchase/reviewer-access qualification, review and explicit activation; an AAB on GitHub does not prove a live test |
-| Homebrew | Dedicated tap configured, but Cask raw-file request returned 404 | Signed/notarized/Gatekeeper-qualified DMG and successful verified tap publication |
+| GitHub direct Linux bundles | Existing immutable v3.0.7 x64/ARM64 artifacts and attested checksum manifest preserved | The repaired channel repacks below do not modify those original assets |
+| AUR | Public `pleazyng-bin` 3.0.7-3, commit `bad1d8026657d10bac568abb5e03762870f9f433`; [publisher run](https://github.com/snapetech-org/pleazyng/actions/runs/42715848434) succeeded. Native x64 makepkg build and clean Arch install resolve the app and matched WebKit helper ELF dependencies | Native ARM recipe installation and hardware playback remain separate |
+| COPR | [Build 11294319](https://copr.fedorainfracloud.org/coprs/build/11294319/) succeeded on Fedora 43/44/45/rawhide, x86_64 and aarch64. Native Fedora 43 repack, clean local RPM install and clean installation from public `slskdn/pleazyng` all passed | RHEL dependency support, other Fedora desktop sessions and hardware playback remain separate |
+| Nix | [Both native builds](https://github.com/snapetech-org/pleazyng/actions/runs/42714489114) passed. Maintained locked flake built locally. Software WebView smoke rendered HTML and ran JavaScript with WebKit sandbox enabled (`NoNewPrivs=1`, `Seccomp=2`). Final Nixpkgs proposal also built on x64 | [Nixpkgs PR 585758](https://github.com/NixOS/nixpkgs/pull/585758) awaits maintainer acceptance; full NixOS desktop and hardware playback remain unqualified |
+| Google Play | Existing v3.0.7+166 AAB uploaded to closed Alpha; foreground-service declaration and release notes saved; release saved in Publishing overview, ready for review. Lifetime SKU is active at USD 2.99 base in 174 regions. Compiled reviewer public key matches on all three ABIs | Signed-build expired-trial grant redemption, purchase/restore, Google review and actual test activation remain gates; `GOOGLE_PLAY_BOOTSTRAP_COMPLETE` stays false |
+| Homebrew | Tap Cask 3.0.7 published by [run 42702581594](https://github.com/snapetech-org/pleazyng/actions/runs/42702581594); [native signature/ticket/Gatekeeper qualification](https://github.com/snapetech-org/pleazyng/actions/runs/42702586238) passed | [Native Cask installation and installed-app Gatekeeper qualification](https://github.com/snapetech-org/pleazyng/actions/runs/42717147909) passed |
 
-Public checks used the [AUR RPC](https://aur.archlinux.org/rpc/v5/info?arg%5B%5D=pleazyng-bin),
-[COPR build API](https://copr.fedorainfracloud.org/api_3/build/list?ownername=slskdn&projectname=pleazyng),
-and [GitHub v3.0.7 assets](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.7).
-Treat these results as dated evidence and recheck before acting.
-No package publisher or app-store upload was dispatched during this audit.
+The AUR RPC and cgit responses may be cached briefly after a push. Verify the
+public Git head and use a fresh RPC request before treating stale metadata as a
+failed publication. COPR submission success alone is not asynchronous build
+success; inspect every supported chroot.
+
+Homebrew installation uses the fully qualified Cask name, granting trust only
+to that item under [Homebrew tap trust](https://docs.brew.sh/Tap-Trust).
+
+All work above repairs delivery against the existing v3.0.7 artifacts. No new
+all-platform application build was requested. Dated machine-readable evidence
+is retained in [the first-publication receipt](releases/v3.0.7-channels.json).
 
 ## Prepare immutable Nix candidates
 
@@ -59,8 +64,9 @@ nix-build "$channel_scratch/recipes-v3.0.7/nix/pleazyng.nix" -o "$channel_scratc
 "$channel_scratch/nix-result/bin/pleazyng"
 ```
 
-The expression currently uses the host's `<nixpkgs>`; record and pin the revision
-that passes evaluation and runtime qualification before distributing it.
+The rendered expression uses the host's `<nixpkgs>`. The maintained flake pins
+revision `4fe25e12eb9f4c744966dd3de5a05246cf098601`, which passed native builds
+on x64 and ARM64. Use the locked flake for user installation.
 
 The v3.0.7 checksum manifest passed GitHub attestation verification against
 `snapetech-org/pleazyng` (repository ID `1433487464`). The Nix candidate was
@@ -68,8 +74,22 @@ generated from that manifest. Four preparation/cache-relocation tests and five
 existing Linux launcher/COPR staging tests passed. These checks validate
 preparation and staging, not playback.
 
-The recipe preserves the full bundle layout and relocates GTK cache paths.
-Before advertising the channel, verify fonts, TLS, desktop/URI launch, file
+The recipe preserves the full media bundle layout, regenerates the released
+empty GdkPixbuf module cache with a native ABI-compatible query tool, and
+relocates its paths. Exact Ubuntu WebKit 2.52.6 helper packages are pinned by
+signed-index checksums in `linux/packaging/webkit-runtime.json`; the installer
+requires the released library and downloaded package library to match
+byte-for-byte before staging helpers. The helpers occupy the Ubuntu multiarch
+paths compiled into the production library. `WEBKIT_EXEC_PATH` is not a
+production-library repair. Nix's bubblewrap adapter exposes only the immutable
+runtime closure read-only to WebKit's nested sandbox; it does not disable the
+sandbox. The native software smoke explicitly enables MiniBrowser's sandbox,
+checks the actual WebKitWebProcess executable and seccomp state, and serves only
+a local test page. That test does not establish hardware video qualification.
+
+The matching helpers and cache repair apply to channel repacks; immutable
+GitHub binary packages are unchanged.
+For complete desktop/device qualification, verify fonts, TLS, desktop/URI launch, file
 chooser, Wayland video, GPU drivers/hardware decoding, audio, offline downloads,
 and persisted opt-in experimental settings with packaged native components.
 Inspect every bundled ELF and provider, including dynamically loaded libraries;
@@ -79,8 +99,7 @@ experimental engines or substituting a system mpv. Keep Off as the default.
 Repository submission must include a maintainer, license/provenance review and
 the tested native outputs. Confirm whether each community requires source
 builds; a request for source packaging is a separate build adaptation, not a
-reason to describe a binary candidate as accepted. No nixpkgs PR is submitted
-by the renderer and no binary cache is configured.
+reason to describe a binary candidate as accepted. The renderer does not submit PRs. The approved Nixpkgs PR is linked above; no binary cache is configured.
 
 ## Publish already-built Arch and Fedora artifacts
 

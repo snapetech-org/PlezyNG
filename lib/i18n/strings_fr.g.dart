@@ -2742,8 +2742,8 @@ class Translations$seerr$fr extends Translations$seerr$en {
 	@override String get request => 'Demander';
 	@override String get request4k => 'Demander en 4K';
 	@override String get requestSeasons => 'Demander les saisons manquantes';
-	@override String get notifyMe => 'Me prévenir de la disponibilité';
-	@override String get notifyMe4k => 'Me prévenir de la disponibilité en 4K';
+	@override String get notifyMe => 'Me prévenir dès que ce sera disponible';
+	@override String get notifyMe4k => 'Me prévenir dès que ce sera disponible en 4K';
 	@override String get notificationsOn => 'Alerte de disponibilité activée';
 	@override String get notificationsEnabled => 'Nous vous préviendrons dès que ce sera disponible';
 	@override String get notificationsDisabled => 'Alerte de disponibilité désactivée';
@@ -8052,8 +8052,8 @@ extension on TranslationsFr {
 			'seerr.request' => 'Demander',
 			'seerr.request4k' => 'Demander en 4K',
 			'seerr.requestSeasons' => 'Demander les saisons manquantes',
-			'seerr.notifyMe' => 'Me prévenir de la disponibilité',
-			'seerr.notifyMe4k' => 'Me prévenir de la disponibilité en 4K',
+			'seerr.notifyMe' => 'Me prévenir dès que ce sera disponible',
+			'seerr.notifyMe4k' => 'Me prévenir dès que ce sera disponible en 4K',
 			'seerr.notificationsOn' => 'Alerte de disponibilité activée',
 			'seerr.notificationsEnabled' => 'Nous vous préviendrons dès que ce sera disponible',
 			'seerr.notificationsDisabled' => 'Alerte de disponibilité désactivée',

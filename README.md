@@ -214,12 +214,11 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ### macOS — Homebrew
 
-The `snapetech-pleazyng` Cask is being prepared in the [Pleazyng Homebrew tap](https://github.com/snapetech-org/homebrew-pleazyng). Publication requires a signed, notarized release and a verified tap update. Until then, use the DMG above.
+Install the signed and notarized macOS release from the [Pleazyng Homebrew tap](https://github.com/snapetech-org/homebrew-pleazyng):
 
 ```bash
-# After the Cask is published in this tap
 brew tap snapetech-org/pleazyng https://github.com/snapetech-org/homebrew-pleazyng
-brew install --cask snapetech-pleazyng
+brew install --cask snapetech-org/pleazyng/snapetech-pleazyng
 ```
 
 ### Linux — Flatpak
@@ -247,27 +246,36 @@ On arm64, install `pleazyng-linux-arm64.flatpak`.
 
 ### Arch Linux — Pacman / AUR
 
-Download the Pleazyng `.pkg.tar.zst` for your architecture from the release above, then install it locally:
+Install [Pleazyng from the AUR](https://aur.archlinux.org/packages/pleazyng-bin) on x86_64 or ARM64:
 
 ```bash
-sudo pacman -U ./pleazyng-linux-x64.pkg.tar.zst
+git clone https://aur.archlinux.org/pleazyng-bin.git
+cd pleazyng-bin
+makepkg -si
 ```
 
-On ARM64, use `pleazyng-linux-arm64.pkg.tar.zst`. The `pleazyng-bin` AUR publisher is configured, but its first package publication is pending; use the release package until the AUR entry is verified.
+The recipe downloads Pleazyng's own release bundles and verifies their checksums. It is separate from upstream Plezy's Arch package.
 
 ### Fedora — DNF / COPR
 
-Download the Pleazyng RPM for your architecture from the release above, then install it locally:
+Install Pleazyng on supported Fedora releases, on x86_64 or ARM64, from the [Pleazyng COPR repository](https://copr.fedorainfracloud.org/coprs/slskdn/pleazyng/):
 
 ```bash
-sudo dnf install ./pleazyng-linux-x64.rpm
+sudo dnf copr enable slskdn/pleazyng
+sudo dnf install pleazyng
 ```
 
-On ARM64, use `pleazyng-linux-arm64.rpm`. The [Pleazyng COPR project](https://copr.fedorainfracloud.org/coprs/slskdn/pleazyng/) is configured for Fedora, but its first successful package builds are pending. RHEL-compatible distributions need separate dependency qualification; the Flatpak bundle above is an alternative where Flatpak is supported.
+RHEL-compatible distributions need separate dependency qualification. The Flatpak bundle above is an alternative where Flatpak is supported.
 
 ### Nix
 
-Pleazyng's Nix recipe preparation is tracked in the [Linux channel release guide](docs/maintainers/linux-distribution-channels.md). Native Nix builds and playback qualification are pending; no Pleazyng nixpkgs entry or binary cache is claimed. Use the Pleazyng Flatpak bundle above on systems configured for Flatpak.
+Run Pleazyng using its maintained flake on x86_64 Linux or ARM64 Linux:
+
+```bash
+nix run 'github:snapetech-org/pleazyng?dir=linux/packaging#pleazyng'
+```
+
+The flake pins nixpkgs and the published Pleazyng release. Native builds pass on both architectures; hardware playback qualification remains separate. The [nixpkgs contribution](https://github.com/NixOS/nixpkgs/pull/585758) is awaiting upstream review.
 
 Package publication and store acceptance are separate from the complete GitHub release. See the [channel readiness and qualification steps](docs/maintainers/linux-distribution-channels.md).
 

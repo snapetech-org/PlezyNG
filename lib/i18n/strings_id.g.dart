@@ -2722,10 +2722,10 @@ class _Translations$seerr$id extends Translations$seerr$en {
 	@override String get requestSeasons => 'Minta musim yang belum tersedia';
 	@override String get notifyMe => 'Beri tahu saya saat tersedia';
 	@override String get notifyMe4k => 'Beri tahu saya saat tersedia dalam 4K';
-	@override String get notificationsOn => 'Pemberitahuan ketersediaan aktif';
+	@override String get notificationsOn => 'Peringatan ketersediaan aktif';
 	@override String get notificationsEnabled => 'Kami akan memberi tahu Anda saat tersedia';
-	@override String get notificationsDisabled => 'Pemberitahuan ketersediaan dinonaktifkan';
-	@override String get notificationFailed => 'Pemberitahuan ketersediaan tidak dapat diperbarui';
+	@override String get notificationsDisabled => 'Peringatan ketersediaan dinonaktifkan';
+	@override String get notificationFailed => 'Gagal memperbarui peringatan ketersediaan';
 	@override String get seasons => 'Musim';
 	@override String get allSeasons => 'Semua Musim';
 	@override String get advancedOptions => 'Canggih';
@@ -8022,10 +8022,10 @@ extension on TranslationsId {
 			'seerr.requestSeasons' => 'Minta musim yang belum tersedia',
 			'seerr.notifyMe' => 'Beri tahu saya saat tersedia',
 			'seerr.notifyMe4k' => 'Beri tahu saya saat tersedia dalam 4K',
-			'seerr.notificationsOn' => 'Pemberitahuan ketersediaan aktif',
+			'seerr.notificationsOn' => 'Peringatan ketersediaan aktif',
 			'seerr.notificationsEnabled' => 'Kami akan memberi tahu Anda saat tersedia',
-			'seerr.notificationsDisabled' => 'Pemberitahuan ketersediaan dinonaktifkan',
-			'seerr.notificationFailed' => 'Pemberitahuan ketersediaan tidak dapat diperbarui',
+			'seerr.notificationsDisabled' => 'Peringatan ketersediaan dinonaktifkan',
+			'seerr.notificationFailed' => 'Gagal memperbarui peringatan ketersediaan',
 			'seerr.seasons' => 'Musim',
 			'seerr.allSeasons' => 'Semua Musim',
 			'seerr.advancedOptions' => 'Canggih',

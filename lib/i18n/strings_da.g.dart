@@ -114,6 +114,7 @@ class TranslationsDa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$da issueReport = _Translations$issueReport$da._(_root);
 	@override late final _Translations$romm$da romm = _Translations$romm$da._(_root);
 	@override late final _Translations$subtitleCapture$da subtitleCapture = _Translations$subtitleCapture$da._(_root);
+	@override late final _Translations$musicExperience$da musicExperience = _Translations$musicExperience$da._(_root);
 }
 
 // Path: app
@@ -4207,6 +4208,58 @@ class _Translations$subtitleCapture$da extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Behandler lyd lokalt…';
 	@override String processingAudioProgress({required Object percent}) => 'Behandler lyd lokalt (${percent}%)…';
 	@override String get cpuFallback => 'Talebehandling på GPU mislykkedes. Prøver igen på CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$da extends Translations$musicExperience$en {
+	_Translations$musicExperience$da._(TranslationsDa root) : this._root = root, super.internal(root);
+
+	final TranslationsDa _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Opdag musik';
+	@override String get mix => 'Lav et mix';
+	@override String get adventure => 'Lydeventyr';
+	@override String get related => 'Lignende lyd';
+	@override String get seeds => 'Udgangspunkter og stop';
+	@override String get search => 'Find kunstner, album eller nummer';
+	@override String get generate => 'Forhåndsvisning';
+	@override String get saveRecipe => 'Gem opskrift';
+	@override String get saved => 'Gemte opskrifter';
+	@override String get savePlaylist => 'Gem afspilningsliste';
+	@override String get name => 'Navn';
+	@override String get trackLimit => 'Maksimalt antal numre';
+	@override String get empty => 'Ingen matchende musik. Lydfunktioner kræver analyse på serveren.';
+	@override String get unsupported => 'Denne server tilbyder ikke lydanalyse.';
+	@override String get continuation => 'Fortsæt med lignende musik';
+	@override String get shuffleAlbums => 'Bland album';
+	@override String get nextAlbum => 'Næste album';
+	@override String get driving => 'Kørselsvisning';
+	@override String get exitDriving => 'Luk kørselsvisning';
+	@override String get signalPath => 'Lydsignalets vej';
+	@override String get source => 'Kilde';
+	@override String get local => 'Downloadet lyd';
+	@override String get network => 'Lyd fra server';
+	@override String get engine => 'Afspilningsmotor';
+	@override String get codec => 'Kildecodec';
+	@override String get channels => 'Kildekanaler';
+	@override String get processing => 'Behandles';
+	@override String get normalization => 'Normalisering';
+	@override String get equalizer => 'Equalizer';
+	@override String get fades => 'Lydstyrkefades';
+	@override String get outputUnknown => 'Hardwarens outputformat er ikke målt.';
+	@override String get download => 'Download udvalget';
+	@override String get ready => 'Klar';
+	@override String get remove => 'Fjern';
+	@override String get play => 'Afspil udvalget';
+	@override String get next => 'Afspil næste';
+	@override String get error => 'Musikanmodningen mislykkedes';
+	@override String get on => 'på';
+	@override String get off => 'Fra';
+	@override String get unknown => 'Ukendt';
+	@override String get routeLost => 'Lydudgang afbrudt. Afspilning sat på pause.';
+	@override String get autoDriving => 'Åbn kørselsvisning ved forbindelse til en bil';
+	@override String get routeHint => 'Bilens system bestemmer, om appen kan vises automatisk.';
 }
 
 // Path: appIcon.names
@@ -9263,6 +9316,49 @@ extension on TranslationsDa {
 			'subtitleCapture.processingAudio' => 'Behandler lyd lokalt…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Behandler lyd lokalt (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Talebehandling på GPU mislykkedes. Prøver igen på CPU…',
+			'musicExperience.title' => 'Opdag musik',
+			'musicExperience.mix' => 'Lav et mix',
+			'musicExperience.adventure' => 'Lydeventyr',
+			'musicExperience.related' => 'Lignende lyd',
+			'musicExperience.seeds' => 'Udgangspunkter og stop',
+			'musicExperience.search' => 'Find kunstner, album eller nummer',
+			'musicExperience.generate' => 'Forhåndsvisning',
+			'musicExperience.saveRecipe' => 'Gem opskrift',
+			'musicExperience.saved' => 'Gemte opskrifter',
+			'musicExperience.savePlaylist' => 'Gem afspilningsliste',
+			'musicExperience.name' => 'Navn',
+			'musicExperience.trackLimit' => 'Maksimalt antal numre',
+			'musicExperience.empty' => 'Ingen matchende musik. Lydfunktioner kræver analyse på serveren.',
+			'musicExperience.unsupported' => 'Denne server tilbyder ikke lydanalyse.',
+			'musicExperience.continuation' => 'Fortsæt med lignende musik',
+			'musicExperience.shuffleAlbums' => 'Bland album',
+			'musicExperience.nextAlbum' => 'Næste album',
+			'musicExperience.driving' => 'Kørselsvisning',
+			'musicExperience.exitDriving' => 'Luk kørselsvisning',
+			'musicExperience.signalPath' => 'Lydsignalets vej',
+			'musicExperience.source' => 'Kilde',
+			'musicExperience.local' => 'Downloadet lyd',
+			'musicExperience.network' => 'Lyd fra server',
+			'musicExperience.engine' => 'Afspilningsmotor',
+			'musicExperience.codec' => 'Kildecodec',
+			'musicExperience.channels' => 'Kildekanaler',
+			'musicExperience.processing' => 'Behandles',
+			'musicExperience.normalization' => 'Normalisering',
+			'musicExperience.equalizer' => 'Equalizer',
+			'musicExperience.fades' => 'Lydstyrkefades',
+			'musicExperience.outputUnknown' => 'Hardwarens outputformat er ikke målt.',
+			'musicExperience.download' => 'Download udvalget',
+			'musicExperience.ready' => 'Klar',
+			'musicExperience.remove' => 'Fjern',
+			'musicExperience.play' => 'Afspil udvalget',
+			'musicExperience.next' => 'Afspil næste',
+			'musicExperience.error' => 'Musikanmodningen mislykkedes',
+			'musicExperience.on' => 'på',
+			'musicExperience.off' => 'Fra',
+			'musicExperience.unknown' => 'Ukendt',
+			'musicExperience.routeLost' => 'Lydudgang afbrudt. Afspilning sat på pause.',
+			'musicExperience.autoDriving' => 'Åbn kørselsvisning ved forbindelse til en bil',
+			'musicExperience.routeHint' => 'Bilens system bestemmer, om appen kan vises automatisk.',
 			_ => null,
 		};
 	}

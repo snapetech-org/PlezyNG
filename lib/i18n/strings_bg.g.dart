@@ -114,6 +114,7 @@ class TranslationsBg extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$bg issueReport = _Translations$issueReport$bg._(_root);
 	@override late final _Translations$romm$bg romm = _Translations$romm$bg._(_root);
 	@override late final _Translations$subtitleCapture$bg subtitleCapture = _Translations$subtitleCapture$bg._(_root);
+	@override late final _Translations$musicExperience$bg musicExperience = _Translations$musicExperience$bg._(_root);
 }
 
 // Path: app
@@ -4207,6 +4208,58 @@ class _Translations$subtitleCapture$bg extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Локална обработка на аудиото…';
 	@override String processingAudioProgress({required Object percent}) => 'Локална обработка на аудиото (${percent}%)…';
 	@override String get cpuFallback => 'Обработката на речта чрез GPU е неуспешна. Повторен опит чрез CPU…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$bg extends Translations$musicExperience$en {
+	_Translations$musicExperience$bg._(TranslationsBg root) : this._root = root, super.internal(root);
+
+	final TranslationsBg _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Откриване на музика';
+	@override String get mix => 'Създаване на микс';
+	@override String get adventure => 'Звуково пътешествие';
+	@override String get related => 'Подобно звучене';
+	@override String get seeds => 'Източници и спирки';
+	@override String get search => 'Търсене на изпълнител, албум или песен';
+	@override String get generate => 'Визуализация';
+	@override String get saveRecipe => 'Запазване на рецепта';
+	@override String get saved => 'Запазени рецепти';
+	@override String get savePlaylist => 'Запазване на плейлист';
+	@override String get name => 'Име';
+	@override String get trackLimit => 'Лимит на песните';
+	@override String get empty => 'Няма съвпадаща музика. Звуковите функции изискват анализ на сървъра.';
+	@override String get unsupported => 'Този сървър не предлага звуков анализ.';
+	@override String get continuation => 'Продължаване с подобна музика';
+	@override String get shuffleAlbums => 'Разбъркване на албуми';
+	@override String get nextAlbum => 'Следващ албум';
+	@override String get driving => 'Изглед за шофиране';
+	@override String get exitDriving => 'Изход от изгледа за шофиране';
+	@override String get signalPath => 'Път на аудиосигнала';
+	@override String get source => 'източник';
+	@override String get local => 'Изтеглено аудио';
+	@override String get network => 'Аудио от сървъра';
+	@override String get engine => 'Модул за възпроизвеждане';
+	@override String get codec => 'Кодек на източника';
+	@override String get channels => 'Канали на източника';
+	@override String get processing => 'Обработва се';
+	@override String get normalization => 'Нормализиране';
+	@override String get equalizer => 'Еквалайзер';
+	@override String get fades => 'Плавни промени на силата';
+	@override String get outputUnknown => 'Форматът на хардуерния изход не е измерен.';
+	@override String get download => 'Изтегляне на избора';
+	@override String get ready => 'Готов';
+	@override String get remove => 'Премахни';
+	@override String get play => 'Пускане на избора';
+	@override String get next => 'Пусни следващото';
+	@override String get error => 'Заявката за музика е неуспешна';
+	@override String get on => 'на';
+	@override String get off => 'Изкл.';
+	@override String get unknown => 'Неизвестно';
+	@override String get routeLost => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.';
+	@override String get autoDriving => 'Отваряне на изгледа за шофиране при свързване с кола';
+	@override String get routeHint => 'Системата на колата определя дали приложението може да се показва автоматично.';
 }
 
 // Path: appIcon.names
@@ -9263,6 +9316,49 @@ extension on TranslationsBg {
 			'subtitleCapture.processingAudio' => 'Локална обработка на аудиото…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Локална обработка на аудиото (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Обработката на речта чрез GPU е неуспешна. Повторен опит чрез CPU…',
+			'musicExperience.title' => 'Откриване на музика',
+			'musicExperience.mix' => 'Създаване на микс',
+			'musicExperience.adventure' => 'Звуково пътешествие',
+			'musicExperience.related' => 'Подобно звучене',
+			'musicExperience.seeds' => 'Източници и спирки',
+			'musicExperience.search' => 'Търсене на изпълнител, албум или песен',
+			'musicExperience.generate' => 'Визуализация',
+			'musicExperience.saveRecipe' => 'Запазване на рецепта',
+			'musicExperience.saved' => 'Запазени рецепти',
+			'musicExperience.savePlaylist' => 'Запазване на плейлист',
+			'musicExperience.name' => 'Име',
+			'musicExperience.trackLimit' => 'Лимит на песните',
+			'musicExperience.empty' => 'Няма съвпадаща музика. Звуковите функции изискват анализ на сървъра.',
+			'musicExperience.unsupported' => 'Този сървър не предлага звуков анализ.',
+			'musicExperience.continuation' => 'Продължаване с подобна музика',
+			'musicExperience.shuffleAlbums' => 'Разбъркване на албуми',
+			'musicExperience.nextAlbum' => 'Следващ албум',
+			'musicExperience.driving' => 'Изглед за шофиране',
+			'musicExperience.exitDriving' => 'Изход от изгледа за шофиране',
+			'musicExperience.signalPath' => 'Път на аудиосигнала',
+			'musicExperience.source' => 'източник',
+			'musicExperience.local' => 'Изтеглено аудио',
+			'musicExperience.network' => 'Аудио от сървъра',
+			'musicExperience.engine' => 'Модул за възпроизвеждане',
+			'musicExperience.codec' => 'Кодек на източника',
+			'musicExperience.channels' => 'Канали на източника',
+			'musicExperience.processing' => 'Обработва се',
+			'musicExperience.normalization' => 'Нормализиране',
+			'musicExperience.equalizer' => 'Еквалайзер',
+			'musicExperience.fades' => 'Плавни промени на силата',
+			'musicExperience.outputUnknown' => 'Форматът на хардуерния изход не е измерен.',
+			'musicExperience.download' => 'Изтегляне на избора',
+			'musicExperience.ready' => 'Готов',
+			'musicExperience.remove' => 'Премахни',
+			'musicExperience.play' => 'Пускане на избора',
+			'musicExperience.next' => 'Пусни следващото',
+			'musicExperience.error' => 'Заявката за музика е неуспешна',
+			'musicExperience.on' => 'на',
+			'musicExperience.off' => 'Изкл.',
+			'musicExperience.unknown' => 'Неизвестно',
+			'musicExperience.routeLost' => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.',
+			'musicExperience.autoDriving' => 'Отваряне на изгледа за шофиране при свързване с кола',
+			'musicExperience.routeHint' => 'Системата на колата определя дали приложението може да се показва автоматично.',
 			_ => null,
 		};
 	}

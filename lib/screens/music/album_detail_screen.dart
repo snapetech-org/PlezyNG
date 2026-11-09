@@ -1,3 +1,4 @@
+import 'music_discovery_screen.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -252,6 +253,7 @@ class _AlbumDetailScreenState extends BaseMediaListDetailScreen<AlbumDetailScree
   List<FocusableAction> getAppBarActions() {
     final client = context.tryGetMediaClientWithFallback(serverIdOrNull(widget.album.serverId));
     return buildMusicActions(
+      onDiscovery: () => openMusicDiscovery(context, widget.album),
       onPlay: () => unawaited(_playAll()),
       onShuffle: () => unawaited(_playAll(shuffle: true)),
       onInstantMix: (client?.capabilities.instantMix ?? false)

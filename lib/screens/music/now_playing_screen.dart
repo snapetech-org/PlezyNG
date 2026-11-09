@@ -1,3 +1,6 @@
+import '../../widgets/music/music_seek_print.dart';
+import 'music_discovery_screen.dart';
+import 'music_driving_screen.dart';
 import '../../karaoke/karaoke_screen.dart';
 import '../../karaoke/karaoke_strings.dart';
 import 'dart:async';
@@ -826,6 +829,21 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
       key: contextMenuKey,
       item: track,
       extraEntries: [
+        MediaMenuExtraEntry(
+          icon: Symbols.explore_rounded,
+          label: t.musicExperience.title,
+          onSelected: () => openMusicDiscovery(context, track),
+        ),
+        MediaMenuExtraEntry(
+          icon: Symbols.directions_car_rounded,
+          label: t.musicExperience.driving,
+          onSelected: () => openMusicDriving(context),
+        ),
+        MediaMenuExtraEntry(
+          icon: Symbols.graphic_eq_rounded,
+          label: t.musicExperience.signalPath,
+          onSelected: () => showMusicSignalPath(context),
+        ),
         MediaMenuExtraEntry(icon: Symbols.bedtime_rounded, label: t.music.sleepTimer, onSelected: _showSleepTimerSheet),
       ],
       child: FocusableButton(
@@ -918,12 +936,18 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   }
 
   Widget _buildSeekBar(MediaItem track) {
-    return _NowPlayingSeekBar(
-      trackKey: track.globalKey,
-      focusNode: _seekFocusNode,
-      onNavigateUp: PlatformDetector.isTV() ? _overflowFocusNode.requestFocus : null,
-      onNavigateDown: _focusTransport,
-      onBack: _pop,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        MusicSeekPrint(trackKey: track.globalKey),
+        _NowPlayingSeekBar(
+          trackKey: track.globalKey,
+          focusNode: _seekFocusNode,
+          onNavigateUp: PlatformDetector.isTV() ? _overflowFocusNode.requestFocus : null,
+          onNavigateDown: _focusTransport,
+          onBack: _pop,
+        ),
+      ],
     );
   }
 

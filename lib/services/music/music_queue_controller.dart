@@ -226,6 +226,44 @@ class MusicQueueController {
     }
   }
 
+  /// Shuffle complete album blocks, preserving disc/track sequence within each
+  /// block and keeping the playing album at the head. Duplicate occurrences
+  /// remain separate entries inside their block.
+  void shuffleAlbums() {
+    if (_items.isEmpty) return;
+    final currentItem = _order[_cursor];
+    final blocks = <String, List<int>>{};
+    String key(int i) => _items[i].parentId == null ? 'entry:$i' : '${_items[i].serverId}:${_items[i].parentId}';
+    for (var i = 0; i < _items.length; i++) {
+      (blocks[key(i)] ??= []).add(i);
+    }
+    for (final block in blocks.values) {
+      block.sort((a, b) {
+        final disc = (_items[a].parentIndex ?? 0).compareTo(_items[b].parentIndex ?? 0);
+        if (disc != 0) return disc;
+        final track = (_items[a].index ?? a).compareTo(_items[b].index ?? b);
+        return track == 0 ? a.compareTo(b) : track;
+      });
+    }
+    final anchor = blocks.remove(key(currentItem))!;
+    final rest = blocks.values.toList()..shuffle(_random);
+    _order = [...anchor, for (final block in rest) ...block];
+    _cursor = _order.indexOf(currentItem);
+    _shuffled = true;
+  }
+
+  int? nextAlbumIndex() {
+    final active = current;
+    if (active == null) return null;
+    for (var i = _cursor + 1; i < _order.length; i++) {
+      final candidate = trackAt(i)!;
+      if (active.parentId == null || candidate.parentId != active.parentId || candidate.serverId != active.serverId) {
+        return i;
+      }
+    }
+    return null;
+  }
+
   void _shuffleAnchoringCurrent() {
     final anchor = _order[_cursor < 0 ? 0 : _cursor];
     final rest = [

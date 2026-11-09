@@ -4,6 +4,7 @@ import UIKit
 import AVFoundation
 import MediaPlayer
 import MusicKit
+import CarPlay
 
 /// Re-downloadable media is not user-created document data. Keep the policy
 /// confined to our two managed roots, including their legacy support paths.
@@ -89,6 +90,9 @@ enum DownloadBackupPolicy {
     }
 
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "MusicCarBridge") {
+      MusicCarBridge.shared.attach(registrar.messenger())
+    }
 
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DownloadStorageChannel") {
       let channel = FlutterMethodChannel(name: "com.pleazyng/download_storage", binaryMessenger: registrar.messenger())
@@ -378,6 +382,119 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
       result(nil)
     default:
       result(FlutterMethodNotImplemented)
+    }
+  }
+}
+
+
+/// Native CarPlay templates backed by the same profile-scoped Dart catalog.
+/// MPNowPlaying/remote commands remain owned by os_media_controls.
+final class MusicCarBridge {
+  static let shared = MusicCarBridge()
+  private var channel: FlutterMethodChannel?
+  private(set) var ready = false
+  private var epoch = 0
+  private(set) var connected = false
+  weak var scene: MusicCarSceneDelegate?
+
+  func attach(_ messenger: FlutterBinaryMessenger) {
+    channel = FlutterMethodChannel(name: "com.pleazyng/music_car", binaryMessenger: messenger)
+    channel?.setMethodCallHandler { [weak self] call, result in
+      guard let self else { result(nil); return }
+      switch call.method {
+      case "ready":
+        self.ready = true
+        self.epoch += 1
+        if self.connected { self.connection(true) }
+        self.scene?.refresh()
+        result(nil)
+      case "snapshot": result(nil)
+      case "close":
+        self.ready = false
+        self.epoch += 1
+        self.scene?.refresh()
+        result(nil)
+      default: result(FlutterMethodNotImplemented)
+      }
+    }
+  }
+
+  func connection(_ value: Bool) {
+    connected = value
+    guard ready else { return }
+    channel?.invokeMethod("connection", arguments: ["connected": value])
+  }
+
+  func request(_ method: String, _ args: [String: Any], completion: @escaping (Any?) -> Void) {
+    guard ready, let channel else { completion(nil); return }
+    let expected = epoch
+    var finished = false
+    let finish: (Any?) -> Void = { [weak self] value in
+      guard !finished else { return }
+      finished = true
+      completion(self?.epoch == expected ? value : nil)
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 10) { finish(nil) }
+    channel.invokeMethod(method, arguments: args, result: finish)
+  }
+}
+
+@objc(MusicCarSceneDelegate)
+final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
+  private var controller: CPInterfaceController?
+
+  func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
+                                didConnect interfaceController: CPInterfaceController) {
+    controller = interfaceController
+    MusicCarBridge.shared.scene = self
+    MusicCarBridge.shared.connection(true)
+    refresh()
+  }
+
+  func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
+                                didDisconnect interfaceController: CPInterfaceController) {
+    MusicCarBridge.shared.connection(false)
+    MusicCarBridge.shared.scene = nil
+    controller = nil
+  }
+
+  func refresh() {
+    guard let controller else { return }
+    if !MusicCarBridge.shared.ready {
+      let item = CPListItem(text: NSLocalizedString("Open Pleazyng to unlock your music", comment: "CarPlay locked profile"), detailText: nil)
+      item.isEnabled = false
+      controller.setRootTemplate(CPListTemplate(title: "Pleazyng", sections: [CPListSection(items: [item])]), animated: false, completion: nil)
+      return
+    }
+    show(id: "root", title: "Pleazyng", root: true)
+  }
+
+  private func show(id: String, title: String, root: Bool = false) {
+    MusicCarBridge.shared.request("browse", ["id": id]) { [weak self] value in
+      guard let self, let controller = self.controller else { return }
+      let rows = value as? [[String: Any]] ?? []
+      let items: [CPListItem] = rows.prefix(100).compactMap { row in
+        guard let id = row["id"] as? String, let title = row["title"] as? String else { return nil }
+        let item = CPListItem(text: title, detailText: row["subtitle"] as? String)
+        item.handler = { [weak self] _, done in
+          if row["playable"] as? Bool == true {
+            MusicCarBridge.shared.request("playItem", ["id": id]) { success in
+              if success as? Bool == true {
+                self?.controller?.pushTemplate(CPNowPlayingTemplate.shared, animated: true, completion: nil)
+              }
+              done()
+            }
+          } else {
+            self?.show(id: id, title: title)
+            done()
+          }
+        }
+        return item
+      }
+      let template = CPListTemplate(title: title, sections: [CPListSection(items: items)])
+      template.emptyViewTitleVariants = [NSLocalizedString("No music available", comment: "CarPlay empty list")]
+      if root { controller.setRootTemplate(template, animated: false, completion: nil) }
+      else { controller.pushTemplate(template, animated: true, completion: nil) }
     }
   }
 }

@@ -114,6 +114,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$ko issueReport = _Translations$issueReport$ko._(_root);
 	@override late final _Translations$romm$ko romm = _Translations$romm$ko._(_root);
 	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
+	@override late final _Translations$musicExperience$ko musicExperience = _Translations$musicExperience$ko._(_root);
 }
 
 // Path: app
@@ -4202,6 +4203,58 @@ class _Translations$subtitleCapture$ko extends Translations$subtitleCapture$en {
 	@override String get processingAudio => '로컬에서 오디오 처리 중…';
 	@override String processingAudioProgress({required Object percent}) => '로컬에서 오디오 처리 중 (${percent}%)…';
 	@override String get cpuFallback => 'GPU 음성 처리에 실패했습니다. CPU로 다시 시도하는 중…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$ko extends Translations$musicExperience$en {
+	_Translations$musicExperience$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => '음악 둘러보기';
+	@override String get mix => '믹스 만들기';
+	@override String get adventure => '사운드 어드벤처';
+	@override String get related => '비슷한 사운드';
+	@override String get seeds => '기준 항목 및 경유 곡';
+	@override String get search => '아티스트, 앨범 또는 곡 찾기';
+	@override String get generate => '미리보기';
+	@override String get saveRecipe => '레시피 저장';
+	@override String get saved => '저장된 레시피';
+	@override String get savePlaylist => '재생목록 저장';
+	@override String get name => '이름';
+	@override String get trackLimit => '곡 수 제한';
+	@override String get empty => '일치하는 음악이 없습니다. 사운드 기능에는 서버 분석이 필요합니다.';
+	@override String get unsupported => '이 서버는 사운드 분석을 지원하지 않습니다.';
+	@override String get continuation => '비슷한 음악 계속 재생';
+	@override String get shuffleAlbums => '앨범 섞기';
+	@override String get nextAlbum => '다음 앨범';
+	@override String get driving => '운전 화면';
+	@override String get exitDriving => '운전 화면 종료';
+	@override String get signalPath => '오디오 신호 경로';
+	@override String get source => '출처';
+	@override String get local => '다운로드한 오디오';
+	@override String get network => '서버 오디오';
+	@override String get engine => '재생 엔진';
+	@override String get codec => '원본 코덱';
+	@override String get channels => '원본 채널';
+	@override String get processing => '처리 중';
+	@override String get normalization => '정규화';
+	@override String get equalizer => '이퀄라이저';
+	@override String get fades => '볼륨 페이드';
+	@override String get outputUnknown => '하드웨어 출력 형식이 측정되지 않았습니다.';
+	@override String get download => '선곡 다운로드';
+	@override String get ready => '준비됨';
+	@override String get remove => '제거';
+	@override String get play => '선곡 재생';
+	@override String get next => '다음에 재생';
+	@override String get error => '음악 요청에 실패했습니다';
+	@override String get on => '에';
+	@override String get off => '꺼짐';
+	@override String get unknown => '알 수 없는';
+	@override String get routeLost => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.';
+	@override String get autoDriving => '차에 연결하면 운전 화면 열기';
+	@override String get routeHint => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.';
 }
 
 // Path: appIcon.names
@@ -9258,6 +9311,49 @@ extension on TranslationsKo {
 			'subtitleCapture.processingAudio' => '로컬에서 오디오 처리 중…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '로컬에서 오디오 처리 중 (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU 음성 처리에 실패했습니다. CPU로 다시 시도하는 중…',
+			'musicExperience.title' => '음악 둘러보기',
+			'musicExperience.mix' => '믹스 만들기',
+			'musicExperience.adventure' => '사운드 어드벤처',
+			'musicExperience.related' => '비슷한 사운드',
+			'musicExperience.seeds' => '기준 항목 및 경유 곡',
+			'musicExperience.search' => '아티스트, 앨범 또는 곡 찾기',
+			'musicExperience.generate' => '미리보기',
+			'musicExperience.saveRecipe' => '레시피 저장',
+			'musicExperience.saved' => '저장된 레시피',
+			'musicExperience.savePlaylist' => '재생목록 저장',
+			'musicExperience.name' => '이름',
+			'musicExperience.trackLimit' => '곡 수 제한',
+			'musicExperience.empty' => '일치하는 음악이 없습니다. 사운드 기능에는 서버 분석이 필요합니다.',
+			'musicExperience.unsupported' => '이 서버는 사운드 분석을 지원하지 않습니다.',
+			'musicExperience.continuation' => '비슷한 음악 계속 재생',
+			'musicExperience.shuffleAlbums' => '앨범 섞기',
+			'musicExperience.nextAlbum' => '다음 앨범',
+			'musicExperience.driving' => '운전 화면',
+			'musicExperience.exitDriving' => '운전 화면 종료',
+			'musicExperience.signalPath' => '오디오 신호 경로',
+			'musicExperience.source' => '출처',
+			'musicExperience.local' => '다운로드한 오디오',
+			'musicExperience.network' => '서버 오디오',
+			'musicExperience.engine' => '재생 엔진',
+			'musicExperience.codec' => '원본 코덱',
+			'musicExperience.channels' => '원본 채널',
+			'musicExperience.processing' => '처리 중',
+			'musicExperience.normalization' => '정규화',
+			'musicExperience.equalizer' => '이퀄라이저',
+			'musicExperience.fades' => '볼륨 페이드',
+			'musicExperience.outputUnknown' => '하드웨어 출력 형식이 측정되지 않았습니다.',
+			'musicExperience.download' => '선곡 다운로드',
+			'musicExperience.ready' => '준비됨',
+			'musicExperience.remove' => '제거',
+			'musicExperience.play' => '선곡 재생',
+			'musicExperience.next' => '다음에 재생',
+			'musicExperience.error' => '음악 요청에 실패했습니다',
+			'musicExperience.on' => '에',
+			'musicExperience.off' => '꺼짐',
+			'musicExperience.unknown' => '알 수 없는',
+			'musicExperience.routeLost' => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.',
+			'musicExperience.autoDriving' => '차에 연결하면 운전 화면 열기',
+			'musicExperience.routeHint' => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.',
 			_ => null,
 		};
 	}

@@ -862,6 +862,84 @@ void main() {
 
   tearDown(() => h.dispose());
 
+  test('continuation cannot append into a replacement session', () async {
+    await h.playTracks([t1]);
+    final gate = Completer<List<MediaItem>>();
+    h.client.instantMixGate = gate;
+    h.service.setContinuationEnabled(true);
+    expect(h.service.continuationLoading, isTrue);
+    await h.playTracks([t3]);
+    gate.complete([t2]);
+    await Future<void>.delayed(Duration.zero);
+    expect(h.service.queue.map((t) => t.id), ['t3']);
+    expect(h.service.continuationEnabled, isFalse);
+  });
+
+  test('clear upcoming cancels pending continuation and respects manual queue edits', () async {
+    await h.playTracks([t1]);
+    final gate = Completer<List<MediaItem>>();
+    h.client.instantMixGate = gate;
+    h.service.setContinuationEnabled(true);
+    h.service.addNext([t3]);
+    h.service.clearUpcoming();
+    gate.complete([t2]);
+    await Future<void>.delayed(Duration.zero);
+    expect(h.service.queue.map((t) => t.id), ['t1']);
+    expect(h.service.continuationEnabled, isFalse);
+  });
+
+  test('continuation appends unique tracks after manually queued entries', () async {
+    await h.playTracks([t1]);
+    final gate = Completer<List<MediaItem>>();
+    h.client.instantMixGate = gate;
+    h.service.setContinuationEnabled(true);
+    h.service.addNext([t3]);
+    gate.complete([t1, t2, t2, t3]);
+    await Future<void>.delayed(Duration.zero);
+    expect(h.service.queue.map((t) => t.id), ['t1', 't3', 't2']);
+  });
+
+  test('a slow continuation advances after the last track finishes', () async {
+    await h.playTracks([t1]);
+    final gate = Completer<List<MediaItem>>();
+    h.client.instantMixGate = gate;
+    h.service.setContinuationEnabled(true);
+    h.player.emitCompleted();
+    await pumpEventQueue();
+    expect(h.service.currentTrack?.id, 't1');
+    gate.complete([t2]);
+    await pumpEventQueue();
+    expect(h.service.currentTrack?.id, 't2');
+    expect(h.service.isPlaying, isTrue);
+  });
+
+  test('a pause while waiting at EOF prevents a late continuation from resuming', () async {
+    await h.playTracks([t1]);
+    final gate = Completer<List<MediaItem>>();
+    h.client.instantMixGate = gate;
+    h.service.setContinuationEnabled(true);
+    h.player.emitCompleted();
+    await pumpEventQueue();
+    await h.service.pause();
+    gate.complete([t2]);
+    await pumpEventQueue();
+    expect(h.service.currentTrack?.id, 't1');
+    expect(h.service.isPlaying, isFalse);
+  });
+
+  test('an exhausted continuation parks the final track', () async {
+    await h.playTracks([t1]);
+    final gate = Completer<List<MediaItem>>();
+    h.client.instantMixGate = gate;
+    h.service.setContinuationEnabled(true);
+    h.player.emitCompleted();
+    await pumpEventQueue();
+    gate.complete([t1]);
+    await pumpEventQueue();
+    expect(h.service.currentTrack?.id, 't1');
+    expect(h.service.status, MusicPlaybackStatus.paused);
+  });
+
   group('shuffled session start (#1811)', () {
     final playlist = [for (var i = 0; i < 6; i++) _track('p$i')];
 

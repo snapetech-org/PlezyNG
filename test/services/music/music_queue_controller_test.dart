@@ -18,6 +18,31 @@ void main() {
 
   MusicQueueController controller({int seed = 42}) => MusicQueueController(random: Random(seed));
 
+  test('album shuffle preserves disc order, active occurrence and server identity', () {
+    MediaItem albumTrack(String id, String server, String album, int disc, int number) => testMediaItem(
+      id: id,
+      kind: MediaKind.track,
+      serverId: server,
+      parentId: album,
+      parentIndex: disc,
+      index: number,
+    );
+    final items = [
+      albumTrack('a2', 'one', 'album', 2, 1),
+      albumTrack('b1', 'two', 'album', 1, 1),
+      albumTrack('a1', 'one', 'album', 1, 1),
+      albumTrack('c1', 'one', 'other', 1, 1),
+    ];
+    final q = controller()..load(items, startIndex: 0);
+    q.shuffleAlbums();
+    expect(q.queue.take(2).map((t) => t.id), ['a1', 'a2']);
+    expect(q.current!.id, 'a2');
+    expect(q.nextAlbumIndex(), 2);
+    q.toggleShuffle();
+    expect(q.queue.map((t) => t.id), items.map((t) => t.id));
+    expect(q.current!.id, 'a2');
+  });
+
   group('load', () {
     test('starts at startIndex in canonical order', () {
       final q = controller()..load(tracks, startIndex: 2);

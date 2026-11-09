@@ -1243,11 +1243,9 @@ packages:
   os_media_controls:
     dependency: "direct main"
     description:
-      path: "."
-      ref: a27208e641790029ac54d825b97508575caee1a7
-      resolved-ref: a27208e641790029ac54d825b97508575caee1a7
-      url: "https://github.com/edde746/media_controls"
-    source: git
+      path: "packages/os_media_controls"
+      relative: true
+    source: path
     version: "0.3.0"
   package_config:
     dependency: transitive

@@ -32,6 +32,9 @@
 
 - Include copyright metadata and a commit-pinned Pleazyng app icon in future Chocolatey packages.
 
+- Integrate multi-seed music mixes, saved recipes, Plex sonic similarity and waypoint paths into artist, album and Now Playing screens; reuse playlist saving and downloads. Preserve full large queues in paged storage, add guarded radio continuation, album shuffle/skip, analysis seek prints, applied music EQ/normalization, signal-path information and a large-control driving view.
+- Add native Android music browsing and CarPlay templates over the profile-owned music session. Native signing/device qualification and remaining Plexamp parity are tracked explicitly in `docs/plezyng/music/STATUS.md`. The existing [media-controls dependency](https://github.com/edde746/media_controls/tree/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), is vendored at its existing pin to extend its single Android media session; see [source attribution](UPSTREAM_ATTRIBUTION.md#music-media-session-integration).
+
 - Preserve compressed RomM source archives and their receipt hashes inside Android packages by using asset-safe filenames; retire only prior archives verified by their own receipts.
 
 - Package the embedded Android Moonlight and Steam receiver modules in ordinary app builds, including their native libraries and activity/stream implementations. Previously Gradle configured the modules without linking them into the application.

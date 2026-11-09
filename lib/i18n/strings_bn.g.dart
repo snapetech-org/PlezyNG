@@ -114,6 +114,7 @@ class TranslationsBn extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$bn issueReport = _Translations$issueReport$bn._(_root);
 	@override late final _Translations$romm$bn romm = _Translations$romm$bn._(_root);
 	@override late final _Translations$subtitleCapture$bn subtitleCapture = _Translations$subtitleCapture$bn._(_root);
+	@override late final _Translations$musicExperience$bn musicExperience = _Translations$musicExperience$bn._(_root);
 }
 
 // Path: app
@@ -4207,6 +4208,58 @@ class _Translations$subtitleCapture$bn extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে…';
 	@override String processingAudioProgress({required Object percent}) => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে (${percent}%)…';
 	@override String get cpuFallback => 'GPU-তে বাক্‌ প্রক্রিয়াকরণ ব্যর্থ হয়েছে। CPU-তে আবার চেষ্টা করা হচ্ছে…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$bn extends Translations$musicExperience$en {
+	_Translations$musicExperience$bn._(TranslationsBn root) : this._root = root, super.internal(root);
+
+	final TranslationsBn _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'সংগীত আবিষ্কার';
+	@override String get mix => 'মিক্স তৈরি';
+	@override String get adventure => 'ধ্বনি যাত্রা';
+	@override String get related => 'একই রকম ধ্বনি';
+	@override String get seeds => 'উৎস ও বিরতির স্থান';
+	@override String get search => 'শিল্পী, অ্যালবাম বা গান খুঁজুন';
+	@override String get generate => 'পূর্বাভাস';
+	@override String get saveRecipe => 'রেসিপি সংরক্ষণ';
+	@override String get saved => 'সংরক্ষিত রেসিপি';
+	@override String get savePlaylist => 'প্লেলিস্ট সংরক্ষণ';
+	@override String get name => 'নাম';
+	@override String get trackLimit => 'গানের সীমা';
+	@override String get empty => 'মিলে যায় এমন সংগীত নেই। ধ্বনির সুবিধাগুলোর জন্য সার্ভারে বিশ্লেষণ দরকার।';
+	@override String get unsupported => 'এই সার্ভারে ধ্বনি বিশ্লেষণ নেই।';
+	@override String get continuation => 'একই রকম সংগীত চালিয়ে যান';
+	@override String get shuffleAlbums => 'অ্যালবাম এলোমেলো করুন';
+	@override String get nextAlbum => 'পরের অ্যালবাম';
+	@override String get driving => 'গাড়ি চালানোর দৃশ্য';
+	@override String get exitDriving => 'গাড়ি চালানোর দৃশ্য বন্ধ করুন';
+	@override String get signalPath => 'অডিও সংকেতের পথ';
+	@override String get source => 'উৎস';
+	@override String get local => 'ডাউনলোড করা অডিও';
+	@override String get network => 'সার্ভারের অডিও';
+	@override String get engine => 'প্লেব্যাক ইঞ্জিন';
+	@override String get codec => 'উৎস কোডেক';
+	@override String get channels => 'উৎস চ্যানেল';
+	@override String get processing => 'প্রক্রিয়া';
+	@override String get normalization => 'শব্দমাত্রা সমন্বয়';
+	@override String get equalizer => 'ইকুয়ালাইজার';
+	@override String get fades => 'শব্দের মাত্রা ধীরে পরিবর্তন';
+	@override String get outputUnknown => 'হার্ডওয়্যার আউটপুটের ফরম্যাট মাপা হয়নি।';
+	@override String get download => 'নির্বাচন ডাউনলোড করুন';
+	@override String get ready => 'প্রস্তুত';
+	@override String get remove => 'সরান';
+	@override String get play => 'নির্বাচন চালান';
+	@override String get next => 'Next খেলুন';
+	@override String get error => 'সংগীতের অনুরোধ ব্যর্থ হয়েছে';
+	@override String get on => 'এতে';
+	@override String get off => 'বন্ধ';
+	@override String get unknown => 'অজানা';
+	@override String get routeLost => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।';
+	@override String get autoDriving => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন';
+	@override String get routeHint => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।';
 }
 
 // Path: appIcon.names
@@ -9263,6 +9316,49 @@ extension on TranslationsBn {
 			'subtitleCapture.processingAudio' => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'এই ডিভাইসে অডিও প্রক্রিয়াকরণ হচ্ছে (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'GPU-তে বাক্‌ প্রক্রিয়াকরণ ব্যর্থ হয়েছে। CPU-তে আবার চেষ্টা করা হচ্ছে…',
+			'musicExperience.title' => 'সংগীত আবিষ্কার',
+			'musicExperience.mix' => 'মিক্স তৈরি',
+			'musicExperience.adventure' => 'ধ্বনি যাত্রা',
+			'musicExperience.related' => 'একই রকম ধ্বনি',
+			'musicExperience.seeds' => 'উৎস ও বিরতির স্থান',
+			'musicExperience.search' => 'শিল্পী, অ্যালবাম বা গান খুঁজুন',
+			'musicExperience.generate' => 'পূর্বাভাস',
+			'musicExperience.saveRecipe' => 'রেসিপি সংরক্ষণ',
+			'musicExperience.saved' => 'সংরক্ষিত রেসিপি',
+			'musicExperience.savePlaylist' => 'প্লেলিস্ট সংরক্ষণ',
+			'musicExperience.name' => 'নাম',
+			'musicExperience.trackLimit' => 'গানের সীমা',
+			'musicExperience.empty' => 'মিলে যায় এমন সংগীত নেই। ধ্বনির সুবিধাগুলোর জন্য সার্ভারে বিশ্লেষণ দরকার।',
+			'musicExperience.unsupported' => 'এই সার্ভারে ধ্বনি বিশ্লেষণ নেই।',
+			'musicExperience.continuation' => 'একই রকম সংগীত চালিয়ে যান',
+			'musicExperience.shuffleAlbums' => 'অ্যালবাম এলোমেলো করুন',
+			'musicExperience.nextAlbum' => 'পরের অ্যালবাম',
+			'musicExperience.driving' => 'গাড়ি চালানোর দৃশ্য',
+			'musicExperience.exitDriving' => 'গাড়ি চালানোর দৃশ্য বন্ধ করুন',
+			'musicExperience.signalPath' => 'অডিও সংকেতের পথ',
+			'musicExperience.source' => 'উৎস',
+			'musicExperience.local' => 'ডাউনলোড করা অডিও',
+			'musicExperience.network' => 'সার্ভারের অডিও',
+			'musicExperience.engine' => 'প্লেব্যাক ইঞ্জিন',
+			'musicExperience.codec' => 'উৎস কোডেক',
+			'musicExperience.channels' => 'উৎস চ্যানেল',
+			'musicExperience.processing' => 'প্রক্রিয়া',
+			'musicExperience.normalization' => 'শব্দমাত্রা সমন্বয়',
+			'musicExperience.equalizer' => 'ইকুয়ালাইজার',
+			'musicExperience.fades' => 'শব্দের মাত্রা ধীরে পরিবর্তন',
+			'musicExperience.outputUnknown' => 'হার্ডওয়্যার আউটপুটের ফরম্যাট মাপা হয়নি।',
+			'musicExperience.download' => 'নির্বাচন ডাউনলোড করুন',
+			'musicExperience.ready' => 'প্রস্তুত',
+			'musicExperience.remove' => 'সরান',
+			'musicExperience.play' => 'নির্বাচন চালান',
+			'musicExperience.next' => 'Next খেলুন',
+			'musicExperience.error' => 'সংগীতের অনুরোধ ব্যর্থ হয়েছে',
+			'musicExperience.on' => 'এতে',
+			'musicExperience.off' => 'বন্ধ',
+			'musicExperience.unknown' => 'অজানা',
+			'musicExperience.routeLost' => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।',
+			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
+			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
 			_ => null,
 		};
 	}

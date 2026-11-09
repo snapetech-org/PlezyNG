@@ -114,6 +114,7 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$ja issueReport = _Translations$issueReport$ja._(_root);
 	@override late final _Translations$romm$ja romm = _Translations$romm$ja._(_root);
 	@override late final _Translations$subtitleCapture$ja subtitleCapture = _Translations$subtitleCapture$ja._(_root);
+	@override late final _Translations$musicExperience$ja musicExperience = _Translations$musicExperience$ja._(_root);
 }
 
 // Path: app
@@ -4202,6 +4203,58 @@ class _Translations$subtitleCapture$ja extends Translations$subtitleCapture$en {
 	@override String get processingAudio => '音声をローカルで処理しています…';
 	@override String processingAudioProgress({required Object percent}) => '音声をローカルで処理しています（${percent}%）…';
 	@override String get cpuFallback => 'GPUでの音声処理に失敗しました。CPUで再試行しています…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$ja extends Translations$musicExperience$en {
+	_Translations$musicExperience$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+	final TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => '音楽を探す';
+	@override String get mix => 'ミックス作成';
+	@override String get adventure => 'サウンドアドベンチャー';
+	@override String get related => '似たサウンド';
+	@override String get seeds => '選曲の基点と経由曲';
+	@override String get search => 'アーティスト・アルバム・曲を検索';
+	@override String get generate => 'プレビュー';
+	@override String get saveRecipe => 'レシピを保存';
+	@override String get saved => '保存済みレシピ';
+	@override String get savePlaylist => 'プレイリストを保存';
+	@override String get name => '名称';
+	@override String get trackLimit => '曲数の上限';
+	@override String get empty => '該当する音楽がありません。サウンド機能にはサーバー側の解析が必要です。';
+	@override String get unsupported => 'このサーバーではサウンド解析を利用できません。';
+	@override String get continuation => '似た音楽を続けて再生';
+	@override String get shuffleAlbums => 'アルバムをシャッフル';
+	@override String get nextAlbum => '次のアルバム';
+	@override String get driving => '運転用画面';
+	@override String get exitDriving => '運転用画面を閉じる';
+	@override String get signalPath => '音声信号の経路';
+	@override String get source => '源泉';
+	@override String get local => 'ダウンロード済み音声';
+	@override String get network => 'サーバーの音声';
+	@override String get engine => '再生エンジン';
+	@override String get codec => '元のコーデック';
+	@override String get channels => '元のチャンネル数';
+	@override String get processing => '処理中';
+	@override String get normalization => '音量の正規化';
+	@override String get equalizer => 'イコライザー';
+	@override String get fades => '音量フェード';
+	@override String get outputUnknown => 'ハードウェアの出力形式は測定されていません。';
+	@override String get download => '選曲をダウンロード';
+	@override String get ready => '準備完了';
+	@override String get remove => '削除';
+	@override String get play => '選曲を再生';
+	@override String get next => '次に再生';
+	@override String get error => '音楽の取得に失敗しました';
+	@override String get on => 'で';
+	@override String get off => 'オフ';
+	@override String get unknown => '不明';
+	@override String get routeLost => '音声出力が切断されました。再生を一時停止しました。';
+	@override String get autoDriving => '車に接続したら運転用画面を開く';
+	@override String get routeHint => 'アプリを自動表示できるかどうかは車のシステムによって決まります。';
 }
 
 // Path: appIcon.names
@@ -9258,6 +9311,49 @@ extension on TranslationsJa {
 			'subtitleCapture.processingAudio' => '音声をローカルで処理しています…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => '音声をローカルで処理しています（${percent}%）…',
 			'subtitleCapture.cpuFallback' => 'GPUでの音声処理に失敗しました。CPUで再試行しています…',
+			'musicExperience.title' => '音楽を探す',
+			'musicExperience.mix' => 'ミックス作成',
+			'musicExperience.adventure' => 'サウンドアドベンチャー',
+			'musicExperience.related' => '似たサウンド',
+			'musicExperience.seeds' => '選曲の基点と経由曲',
+			'musicExperience.search' => 'アーティスト・アルバム・曲を検索',
+			'musicExperience.generate' => 'プレビュー',
+			'musicExperience.saveRecipe' => 'レシピを保存',
+			'musicExperience.saved' => '保存済みレシピ',
+			'musicExperience.savePlaylist' => 'プレイリストを保存',
+			'musicExperience.name' => '名称',
+			'musicExperience.trackLimit' => '曲数の上限',
+			'musicExperience.empty' => '該当する音楽がありません。サウンド機能にはサーバー側の解析が必要です。',
+			'musicExperience.unsupported' => 'このサーバーではサウンド解析を利用できません。',
+			'musicExperience.continuation' => '似た音楽を続けて再生',
+			'musicExperience.shuffleAlbums' => 'アルバムをシャッフル',
+			'musicExperience.nextAlbum' => '次のアルバム',
+			'musicExperience.driving' => '運転用画面',
+			'musicExperience.exitDriving' => '運転用画面を閉じる',
+			'musicExperience.signalPath' => '音声信号の経路',
+			'musicExperience.source' => '源泉',
+			'musicExperience.local' => 'ダウンロード済み音声',
+			'musicExperience.network' => 'サーバーの音声',
+			'musicExperience.engine' => '再生エンジン',
+			'musicExperience.codec' => '元のコーデック',
+			'musicExperience.channels' => '元のチャンネル数',
+			'musicExperience.processing' => '処理中',
+			'musicExperience.normalization' => '音量の正規化',
+			'musicExperience.equalizer' => 'イコライザー',
+			'musicExperience.fades' => '音量フェード',
+			'musicExperience.outputUnknown' => 'ハードウェアの出力形式は測定されていません。',
+			'musicExperience.download' => '選曲をダウンロード',
+			'musicExperience.ready' => '準備完了',
+			'musicExperience.remove' => '削除',
+			'musicExperience.play' => '選曲を再生',
+			'musicExperience.next' => '次に再生',
+			'musicExperience.error' => '音楽の取得に失敗しました',
+			'musicExperience.on' => 'で',
+			'musicExperience.off' => 'オフ',
+			'musicExperience.unknown' => '不明',
+			'musicExperience.routeLost' => '音声出力が切断されました。再生を一時停止しました。',
+			'musicExperience.autoDriving' => '車に接続したら運転用画面を開く',
+			'musicExperience.routeHint' => 'アプリを自動表示できるかどうかは車のシステムによって決まります。',
 			_ => null,
 		};
 	}

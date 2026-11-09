@@ -1,3 +1,4 @@
+import '../services/music/music_car_host.dart';
 import '../karaoke/karaoke_session.dart';
 import 'dart:async';
 
@@ -433,6 +434,7 @@ class _ProfileSessionNavigatorState extends State<_ProfileSessionNavigator> {
   }
 
   Widget _withAgentControls(Widget child) {
+    child = MusicCarHost(navigatorKey: _navigatorKey, child: child);
     if (!agentControlEnabled) {
       return child;
     }

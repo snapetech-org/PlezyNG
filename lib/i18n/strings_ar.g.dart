@@ -114,6 +114,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$issueReport$ar issueReport = _Translations$issueReport$ar._(_root);
 	@override late final _Translations$romm$ar romm = _Translations$romm$ar._(_root);
 	@override late final _Translations$subtitleCapture$ar subtitleCapture = _Translations$subtitleCapture$ar._(_root);
+	@override late final _Translations$musicExperience$ar musicExperience = _Translations$musicExperience$ar._(_root);
 }
 
 // Path: app
@@ -4299,6 +4300,58 @@ class _Translations$subtitleCapture$ar extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'جارٍ معالجة الصوت محليًا…';
 	@override String processingAudioProgress({required Object percent}) => 'جارٍ معالجة الصوت محليًا (${percent}٪)…';
 	@override String get cpuFallback => 'فشلت معالجة الكلام باستخدام معالج الرسومات. تجري إعادة المحاولة باستخدام المعالج المركزي…';
+}
+
+// Path: musicExperience
+class _Translations$musicExperience$ar extends Translations$musicExperience$en {
+	_Translations$musicExperience$ar._(TranslationsAr root) : this._root = root, super.internal(root);
+
+	final TranslationsAr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'اكتشاف الموسيقى';
+	@override String get mix => 'إنشاء مزيج';
+	@override String get adventure => 'رحلة صوتية';
+	@override String get related => 'أصوات مشابهة';
+	@override String get seeds => 'المصادر والمحطات';
+	@override String get search => 'ابحث عن فنان أو ألبوم أو أغنية';
+	@override String get generate => 'معاينة';
+	@override String get saveRecipe => 'حفظ الوصفة';
+	@override String get saved => 'الوصفات المحفوظة';
+	@override String get savePlaylist => 'حفظ قائمة التشغيل';
+	@override String get name => 'الاسم';
+	@override String get trackLimit => 'الحد الأقصى للأغاني';
+	@override String get empty => 'لا توجد موسيقى مطابقة. تتطلب الميزات الصوتية تحليلاً على الخادم.';
+	@override String get unsupported => 'هذا الخادم لا يوفر التحليل الصوتي.';
+	@override String get continuation => 'متابعة تشغيل موسيقى مشابهة';
+	@override String get shuffleAlbums => 'خلط الألبومات';
+	@override String get nextAlbum => 'الألبوم التالي';
+	@override String get driving => 'واجهة القيادة';
+	@override String get exitDriving => 'الخروج من واجهة القيادة';
+	@override String get signalPath => 'مسار إشارة الصوت';
+	@override String get source => 'المصدر';
+	@override String get local => 'الصوت الذي تم تنزيله';
+	@override String get network => 'صوت الخادم';
+	@override String get engine => 'محرك التشغيل';
+	@override String get codec => 'ترميز المصدر';
+	@override String get channels => 'قنوات المصدر';
+	@override String get processing => 'المعالجة';
+	@override String get normalization => 'تسوية الصوت';
+	@override String get equalizer => 'معادل الصوت';
+	@override String get fades => 'تلاشي مستوى الصوت';
+	@override String get outputUnknown => 'لم يتم قياس تنسيق إخراج الجهاز.';
+	@override String get download => 'تنزيل الاختيار';
+	@override String get ready => 'جاهز';
+	@override String get remove => 'إزالة';
+	@override String get play => 'تشغيل الاختيار';
+	@override String get next => 'تشغيل التالي';
+	@override String get error => 'فشل طلب الموسيقى';
+	@override String get on => 'مفعّل';
+	@override String get off => 'إيقاف';
+	@override String get unknown => 'غير معروف';
+	@override String get routeLost => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.';
+	@override String get autoDriving => 'فتح واجهة القيادة عند الاتصال بسيارة';
+	@override String get routeHint => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.';
 }
 
 // Path: appIcon.names
@@ -9363,6 +9416,49 @@ extension on TranslationsAr {
 			'subtitleCapture.processingAudio' => 'جارٍ معالجة الصوت محليًا…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'جارٍ معالجة الصوت محليًا (${percent}٪)…',
 			'subtitleCapture.cpuFallback' => 'فشلت معالجة الكلام باستخدام معالج الرسومات. تجري إعادة المحاولة باستخدام المعالج المركزي…',
+			'musicExperience.title' => 'اكتشاف الموسيقى',
+			'musicExperience.mix' => 'إنشاء مزيج',
+			'musicExperience.adventure' => 'رحلة صوتية',
+			'musicExperience.related' => 'أصوات مشابهة',
+			'musicExperience.seeds' => 'المصادر والمحطات',
+			'musicExperience.search' => 'ابحث عن فنان أو ألبوم أو أغنية',
+			'musicExperience.generate' => 'معاينة',
+			'musicExperience.saveRecipe' => 'حفظ الوصفة',
+			'musicExperience.saved' => 'الوصفات المحفوظة',
+			'musicExperience.savePlaylist' => 'حفظ قائمة التشغيل',
+			'musicExperience.name' => 'الاسم',
+			'musicExperience.trackLimit' => 'الحد الأقصى للأغاني',
+			'musicExperience.empty' => 'لا توجد موسيقى مطابقة. تتطلب الميزات الصوتية تحليلاً على الخادم.',
+			'musicExperience.unsupported' => 'هذا الخادم لا يوفر التحليل الصوتي.',
+			'musicExperience.continuation' => 'متابعة تشغيل موسيقى مشابهة',
+			'musicExperience.shuffleAlbums' => 'خلط الألبومات',
+			'musicExperience.nextAlbum' => 'الألبوم التالي',
+			'musicExperience.driving' => 'واجهة القيادة',
+			'musicExperience.exitDriving' => 'الخروج من واجهة القيادة',
+			'musicExperience.signalPath' => 'مسار إشارة الصوت',
+			'musicExperience.source' => 'المصدر',
+			'musicExperience.local' => 'الصوت الذي تم تنزيله',
+			'musicExperience.network' => 'صوت الخادم',
+			'musicExperience.engine' => 'محرك التشغيل',
+			'musicExperience.codec' => 'ترميز المصدر',
+			'musicExperience.channels' => 'قنوات المصدر',
+			'musicExperience.processing' => 'المعالجة',
+			'musicExperience.normalization' => 'تسوية الصوت',
+			'musicExperience.equalizer' => 'معادل الصوت',
+			'musicExperience.fades' => 'تلاشي مستوى الصوت',
+			'musicExperience.outputUnknown' => 'لم يتم قياس تنسيق إخراج الجهاز.',
+			'musicExperience.download' => 'تنزيل الاختيار',
+			'musicExperience.ready' => 'جاهز',
+			'musicExperience.remove' => 'إزالة',
+			'musicExperience.play' => 'تشغيل الاختيار',
+			'musicExperience.next' => 'تشغيل التالي',
+			'musicExperience.error' => 'فشل طلب الموسيقى',
+			'musicExperience.on' => 'مفعّل',
+			'musicExperience.off' => 'إيقاف',
+			'musicExperience.unknown' => 'غير معروف',
+			'musicExperience.routeLost' => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.',
+			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
+			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
 			_ => null,
 		};
 	}

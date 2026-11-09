@@ -275,14 +275,14 @@ void main() {
     );
 
     await pumpNowPlaying(tester, service, isTv: false);
-    expect(service.loudnessProfileLoads, 0, reason: 'the profile stays unloaded while artwork is shown');
+    expect(service.loudnessProfileLoads, 1, reason: 'the seek print requests analysis while artwork is shown');
 
     await tester.tap(find.byTooltip(t.music.visualizer));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.byKey(const ValueKey('now_playing_visualizer')), findsOneWidget);
-    expect(service.loudnessProfileLoads, 1);
+    expect(service.loudnessProfileLoads, 2, reason: 'the visualizer requests the service-cached analysis on demand');
     expect(find.byWidgetPredicate((widget) => widget is CustomPaint && widget.child is SizedBox), findsOneWidget);
   });
 

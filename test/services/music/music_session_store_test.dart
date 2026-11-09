@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
@@ -131,6 +132,23 @@ void main() {
     expect(await store().load(), isNotNull);
   });
 
+  test('continuation seed and exclusions survive restart within their profile', () async {
+    await store().save(
+      MusicSessionSnapshot(
+        queue: state(items: [track('a')]),
+        playContext: null,
+        position: Duration.zero,
+        continuationSeed: track('seed'),
+        continuationExcluded: {'srv:removed'},
+      ),
+    );
+    final restored = await store().load();
+    expect(restored!.continuationSeed!.id, 'seed');
+    expect(restored.continuationSeed!.serverId, 'srv');
+    expect(restored.continuationExcluded, {'srv:removed'});
+    expect(await store(profileId: 'other').load(), isNull);
+  });
+
   test('malformed queue JSON discards the whole snapshot', () async {
     await db.upsertMusicSession(
       MusicSessionRow(
@@ -139,6 +157,48 @@ void main() {
         orderJson: '[0]',
         cursor: 0,
         shuffled: false,
+        repeatMode: 'off',
+        contextTitle: null,
+        contextKind: null,
+        positionMs: 0,
+        updatedAt: 0,
+      ),
+    );
+    expect(await store().load(), isNull);
+  });
+
+  test('legacy JSON queues upgrade without losing duplicate occurrences', () async {
+    await db.upsertMusicSession(
+      MusicSessionRow(
+        profileId: 'p1',
+        queueJson: jsonEncode([track('a').toJson(), track('a').toJson(), track('b').toJson()]),
+        orderJson: '[2,0,1]',
+        cursor: 1,
+        shuffled: true,
+        repeatMode: 'off',
+        contextTitle: 'Old queue',
+        contextKind: 'tracks',
+        positionMs: 12000,
+        updatedAt: 0,
+      ),
+    );
+    final snapshot = await store().load();
+    expect(snapshot!.queue.order, [2, 0, 1]);
+    expect(snapshot.queue.items.map((t) => t.id), ['a', 'a', 'b']);
+    await store().save(snapshot);
+    final row = await db.getMusicSession('p1');
+    expect(jsonDecode(row!.queueJson), {'version': 2, 'length': 3});
+    expect((await store().load())!.position, const Duration(seconds: 12));
+  });
+
+  test('invalid legacy permutations are rejected at the persistence boundary', () async {
+    await db.upsertMusicSession(
+      MusicSessionRow(
+        profileId: 'p1',
+        queueJson: jsonEncode([track('a').toJson(), track('b').toJson()]),
+        orderJson: '[0,0]',
+        cursor: 0,
+        shuffled: true,
         repeatMode: 'off',
         contextTitle: null,
         contextKind: null,
@@ -167,55 +227,58 @@ void main() {
     expect(await store().load(), isNull);
   });
 
-  test('oversized queues persist a playback-order window around the cursor', () async {
-    final items = [for (var i = 0; i < 1050; i++) track('i$i')];
-    await store().save(
-      MusicSessionSnapshot(
-        queue: state(items: items, cursor: 700),
-        playContext: null,
-        position: Duration.zero,
-      ),
-    );
-
-    final loaded = await store().load();
-    expect(loaded!.queue.items, hasLength(MusicSessionStore.maxPersistedTracks));
-    // Window start = (700 - 250) clamped to [0, 50] = 50; identity permutation.
-    expect(loaded.queue.items.first.id, 'i50');
-    expect(loaded.queue.items.last.id, 'i1049');
-    expect(loaded.queue.cursor, 650);
-    expect(loaded.queue.order.first, 0);
-    expect(loaded.queue.order.last, MusicSessionStore.maxPersistedTracks - 1);
-    // The windowed state must satisfy controller invariants.
-    expect(MusicQueueController().restoreState(loaded.queue), isTrue);
-  });
-
-  test('progress on an oversized queue stays window-relative and re-windows when the cursor leaves', () async {
-    final items = [for (var i = 0; i < 2000; i++) track('i$i')];
+  test('10,000 tracks and duplicate occurrences retain full canonical and shuffle order', () async {
+    final items = [for (var i = 0; i < 10000; i++) track('i${i ~/ 2}')];
+    final order = [for (var i = items.length - 1; i >= 0; i--) i];
     final session = store();
     await session.save(
       MusicSessionSnapshot(
-        queue: state(items: items, cursor: 700),
+        queue: state(items: items, order: order, cursor: 700, shuffled: true),
+        playContext: null,
+        position: const Duration(seconds: 35),
+      ),
+    );
+    final loaded = await session.load();
+    expect(loaded!.queue.items, hasLength(10000));
+    expect(loaded.queue.order, order);
+    expect(loaded.queue.cursor, 700);
+    final controller = MusicQueueController();
+    expect(controller.restoreState(loaded.queue), isTrue);
+    final current = controller.current!.id;
+    controller.toggleShuffle();
+    expect(controller.queue.map((t) => t.id), items.map((t) => t.id));
+    expect(controller.current!.id, current);
+    await session.updateProgress(cursor: 9999, position: const Duration(seconds: 1));
+    expect((await session.load())!.queue.cursor, 9999);
+  });
+
+  test('save, progress and clear serialize without resurrecting a stopped session', () async {
+    final session = store();
+    final save = session.save(
+      MusicSessionSnapshot(
+        queue: state(items: [track('a'), track('b')]),
         playContext: null,
         position: Duration.zero,
       ),
     );
+    final progress = session.updateProgress(cursor: 1, position: const Duration(seconds: 30));
+    final clear = session.clear();
+    await Future.wait([save, progress, clear]);
+    expect(await session.load(), isNull);
+    final count = await db.customSelect('SELECT COUNT(*) AS n FROM music_queue_entries').getSingle();
+    expect(count.read<int>('n'), 0);
+  });
 
-    // Window start = 700 - 250 = 450.
-    await session.updateProgress(cursor: 701, position: const Duration(seconds: 5));
-    var loaded = await store().load();
-    expect(loaded!.queue.items[loaded.queue.cursor].id, 'i701');
-    expect(loaded.position, const Duration(seconds: 5));
-
-    // Past the window's end (450 + 1000): re-windowed around the cursor.
-    await session.updateProgress(cursor: 1600, position: const Duration(seconds: 1));
-    loaded = await store().load();
-    expect(loaded!.queue.items, hasLength(MusicSessionStore.maxPersistedTracks));
-    expect(loaded.queue.items[loaded.queue.cursor].id, 'i1600');
-    expect(loaded.position, const Duration(seconds: 1));
-    expect(MusicQueueController().restoreState(loaded.queue), isTrue);
-
-    await session.updateProgress(cursor: 1601, position: Duration.zero);
-    loaded = await store().load();
-    expect(loaded!.queue.items[loaded.queue.cursor].id, 'i1601');
+  test('partial durable queue is rejected instead of silently truncating', () async {
+    final session = store();
+    await session.save(
+      MusicSessionSnapshot(
+        queue: state(items: [track('a'), track('b')]),
+        playContext: null,
+        position: Duration.zero,
+      ),
+    );
+    await db.customStatement('DELETE FROM music_queue_entries WHERE canonical_index = 1');
+    expect(await session.load(), isNull);
   });
 }

@@ -14,6 +14,7 @@ const _expectedDomains = <String>{
   'simkl.com',
   'simkl.in',
   'jsdelivr.net',
+  'github.com',
   'api.github.com',
   'image.tmdb.org',
 };

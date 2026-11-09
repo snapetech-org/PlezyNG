@@ -1522,7 +1522,7 @@ require(
     "release requests must reject incomplete platform selections",
 )
 require(
-    "if: ${{ inputs.reuse_macos_package_run_id == '' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}" in webos_download
+    "if: ${{ inputs.reuse_macos_package_run_id == '' && inputs.reuse_webos_run_id == '' && needs.validate-trusted-ref.outputs.include_webos_release == 'true' }}" in webos_download
     and "name: webos-ipk" in webos_download,
     "the WebOS release artifact must be downloaded only after explicit opt-in",
 )
@@ -1571,10 +1571,10 @@ require(
 
 require("draft: true" in release, "build output must remain a draft release")
 release_checkout = release.split("      - name:", 1)[0]
-release_scripts = set(re.findall(r"python3 (scripts/[A-Za-z0-9_./-]+\.py)", release))
-release_scripts.add("scripts/recover_macos_app.py")
 require(
-    all(f"            {script}\n" in release_checkout for script in release_scripts),
+    "            scripts/**\n" in release_checkout
+    and "Validate release assembly imports" in release
+    and "import recover_release_platforms, release_all_platforms, verify_webos_link_patch" in release,
     "release sparse checkout must include every executed script and recovery import",
 )
 require("body_path: release-notes.md" in release, "draft notes must come from the changelog renderer")
@@ -1611,6 +1611,9 @@ require(
     and "inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != ''" in release_condition
     and "platform-reuse-provenance.json" in collect_release_files
     and "needs.validate-trusted-ref.outputs.android_source_sha != ''" in release_condition
+    and "needs.validate-trusted-ref.outputs.webos_source_sha != ''" in release_condition
+    and "--webos-run" in recovery_gate
+    and "--webos-run" in recovery_download
     and "--android-run" in recovery_gate
     and "--android-run" in recovery_download
     and "inputs.reuse_android_run_id == ''" in job("build-android").split("needs:", 1)[0]

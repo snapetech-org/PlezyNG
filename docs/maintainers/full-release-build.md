@@ -561,3 +561,18 @@ links a codec probe with undefined symbols forbidden. Immutable-tag/recovery
 checks allow only this exact one-line CMake addition; other CMake changes still
 require a new version and fresh qualification. Application C++/Dart sources and
 native dependency pins are unchanged by this link repair.
+
+If the webOS job passed but release assembly failed before `Create Release`, add
+`--reuse-webos-run RUN` to the verified platform-recovery command. Its complete
+successful webOS job, unchanged SDK environment/build steps, source identity and
+artifact digest remain mandatory; a failed publishing step cannot be reused as
+proof that no release was created. The controller waits locally for remaining
+source jobs before dispatching an assembly-only workflow, so waiting does not
+occupy a hosted runner. The public provenance records the webOS package's actual
+source separately from the assembly revision.
+
+Release assembly checks out `scripts/**`, including transitive imports, and runs
+an import smoke check before downloading artifacts. The regression suite creates
+the actual Git sparse checkout in an isolated repository and imports its recovery
+helpers with Python isolation enabled; adding a helper must not create another
+late assembly failure after successful platform builds.

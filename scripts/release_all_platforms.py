@@ -1035,6 +1035,7 @@ def ensure_release(
     rebuild_linux: bool = False,
     rebuild_macos: bool = False,
     reuse_repaired_run_id: int | None = None,
+    reuse_webos_run_id: int | None = None,
 ) -> dict:
     if reuse_android_run_id and not reuse_platform_run_id:
         raise ReleaseError("Android reuse requires a verified platform source run.")
@@ -1051,6 +1052,8 @@ def ensure_release(
             options["rebuild_macos"] = True
         if reuse_repaired_run_id:
             options["repaired_run"] = reuse_repaired_run_id
+        if reuse_webos_run_id:
+            options["webos_run"] = reuse_webos_run_id
         if prepare_homebrew_cask and not reuse_macos_run_id:
             options["require_homebrew_cask"] = True
         if reuse_macos_run_id:
@@ -1123,6 +1126,8 @@ def ensure_release(
         fields["rebuild_macos"] = "true"
     if reuse_repaired_run_id:
         fields["reuse_repaired_run_id"] = str(reuse_repaired_run_id)
+    if reuse_webos_run_id:
+        fields["reuse_webos_run_id"] = str(reuse_webos_run_id)
     if reuse_platform_run_id:
         fields["reuse_platform_run_id"] = str(reuse_platform_run_id)
     if reuse_android_run_id:
@@ -1141,7 +1146,7 @@ def ensure_release(
 
 
 def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
-                             android_run=None, macos_run=None, include_webos_build=True, wait_complete=False,
+                             android_run=None, macos_run=None, webos_run=None, include_webos_build=True, wait_complete=False,
                              rebuild_linux=False, rebuild_macos=False, repaired_run=None, require_homebrew_cask=False) -> dict:
     from recover_release_platforms import RecoveryError, compose_proof, verify_source_run, wait_for_source_run, verify_macos_packaging_recovery
 
@@ -1158,7 +1163,7 @@ def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
         source = (verify_macos_packaging_recovery(run_id, macos_run, commit_sha, version) if macos_run else
                   wait_for_source_run(run_id, commit_sha, version, 10800, **options) if wait_complete else
                   verify_source_run(run_id, commit_sha, version, allow_pending=True, **options))
-        return compose_proof(source, android_run, include_webos_build)
+        return compose_proof(source, android_run, include_webos_build, webos_run)
     except (RecoveryError, RuntimeError) as error:
         raise ReleaseError(f"Platform artifact recovery rejected: {error}") from error
 
@@ -1571,6 +1576,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--reuse-macos-run", type=int, help="Use a qualified signing-only Mac recovery with every original platform artifact.")
     parser.add_argument("--rebuild-linux", action="store_true", help="Rebuild Linux during verified platform recovery")
+    parser.add_argument("--reuse-webos-run", type=int, help="Reuse a verified webOS package and wait locally for completed source outputs before assembly")
     parser.add_argument("--reuse-repaired-run", type=int, help="Reuse successful Linux and fully qualified Mac jobs from a prior repair run")
     parser.add_argument("--rebuild-macos", action="store_true", help="Build and qualify macOS during verified platform recovery")
     parser.add_argument("--reuse-android-run", type=int, help="Reuse a separately successful Android release artifact.")
@@ -1646,6 +1652,8 @@ def main() -> int:
         or args.execution_profile != "hybrid"
     ):
         raise ReleaseError("Platform recovery supports hybrid GitHub-only or draft publication without fresh Apple or Homebrew qualification.")
+    if args.reuse_webos_run and (args.reuse_webos_run < 1 or not args.reuse_platform_run or args.reuse_macos_run):
+        raise ReleaseError("WebOS reuse requires verified platform recovery without signing-only substitution")
     if args.reuse_repaired_run and (args.reuse_repaired_run < 1 or not args.reuse_platform_run or args.reuse_macos_run or args.rebuild_linux or args.rebuild_macos):
         raise ReleaseError("Repaired Linux/Mac reuse requires original platform recovery without rebuilding those platforms")
     if args.rebuild_macos and (not args.reuse_platform_run or args.reuse_macos_run):
@@ -1749,9 +1757,10 @@ def main() -> int:
                 **({"rebuild_linux": True} if args.rebuild_linux else {}),
                 **({"rebuild_macos": True} if args.rebuild_macos else {}),
                 **({"repaired_run": args.reuse_repaired_run} if args.reuse_repaired_run else {}),
+                **({"webos_run": args.reuse_webos_run} if args.reuse_webos_run else {}),
                 **({"require_homebrew_cask": True} if args.prepare_homebrew_cask and not args.reuse_macos_run else {}),
                 **({"macos_run": args.reuse_macos_run} if args.reuse_macos_run else {}),
-                wait_complete=bool(args.reuse_android_run and args.skip_webos_build),
+                wait_complete=bool(args.reuse_webos_run or (args.reuse_android_run and args.skip_webos_build)),
             )
             ci = {"databaseId": proof["ci_run_id"]}
             progress["platform_recovery"] = proof
@@ -1787,6 +1796,7 @@ def main() -> int:
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
             **({"reuse_repaired_run_id": args.reuse_repaired_run} if args.reuse_repaired_run else {}),
+            **({"reuse_webos_run_id": args.reuse_webos_run} if args.reuse_webos_run else {}),
             **({"reuse_platform_run_id": args.reuse_platform_run} if args.reuse_platform_run else {}),
             **({"reuse_android_run_id": args.reuse_android_run} if args.reuse_android_run else {}),
             **({"reuse_macos_run_id": args.reuse_macos_run} if args.reuse_macos_run else {}),

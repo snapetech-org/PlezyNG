@@ -149,6 +149,12 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('immutable ancestors', result.stderr)
 
+    def test_assembly_checkout_must_include_transitive_script_imports(self) -> None:
+        workflow = self._workflow()
+        result = self._run(workflow.replace('            scripts/**\n', '            scripts/recover_release_platforms.py\n', 1))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('sparse checkout', result.stderr)
+
     def test_store_msix_cannot_reuse_unlocked_direct_payload(self) -> None:
         workflow = self._workflow()
         result = self._run(workflow.replace('-X64BuildDir "build-store-x64"', '-X64BuildDir "build-x64"', 1))
@@ -165,7 +171,8 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_recovery_requires_source_verification_and_public_provenance(self) -> None:
         for original in ("--download artifacts", "needs.validate-trusted-ref.outputs.reuse_source_sha != ''",
-                         "needs.validate-trusted-ref.outputs.android_source_sha != ''"):
+                         "needs.validate-trusted-ref.outputs.android_source_sha != ''",
+                         "needs.validate-trusted-ref.outputs.webos_source_sha != ''"):
             with self.subTest(original=original):
                 changed = self._workflow().replace(original, "REMOVED", 1)
                 result = self._run(changed)
@@ -241,7 +248,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
 
     def test_release_sparse_checkout_cannot_omit_coverage_validator(self) -> None:
         workflow = self._workflow()
-        entry = '            scripts/release_coverage.py\n'
+        entry = '            scripts/**\n'
         self.assertIn(entry, workflow)
         result = self._run(workflow.replace(entry, '', 1))
         self.assertNotEqual(result.returncode, 0)

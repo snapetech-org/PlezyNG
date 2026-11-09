@@ -5,6 +5,7 @@ import copy
 import base64
 import hashlib
 import io
+import shutil
 import stat
 import sys
 import tempfile
@@ -266,6 +267,23 @@ class ArtifactTests(unittest.TestCase):
             result = recovery.download_platforms(proof, self.root)
         self.assertEqual([record["source_run_id"] for record in result["artifacts"]], [84, 84])
 
+    def test_webos_artifact_uses_its_successful_run_identity(self):
+        archive = self.archive()
+        item = {"id": 7, "name": "webos-ipk", "expired": False,
+                "digest": "sha256:" + hashlib.sha256(archive).hexdigest(),
+                "workflow_run": {"id": 84, "head_sha": "b" * 40}}
+        proof = {"source_run_id": 42, "source_sha": "a" * 40,
+                 "webos_source": {"source_run_id": 84, "source_sha": "b" * 40}}
+        def download(_args, stdout):
+            stdout.write(archive)
+            return SimpleNamespace(returncode=0)
+        with patch.object(recovery, "ARTIFACTS", {}), \
+             patch.object(recovery, "collection", side_effect=[[], [item]]), \
+             patch.object(recovery.subprocess, "run", side_effect=download):
+            result = recovery.download_platforms(proof, self.root)
+        self.assertEqual(result["artifacts"][0]["source_run_id"], 84)
+        self.assertEqual((self.root / "webos/payload.exe").read_bytes(), b"binary")
+
     def test_verified_download_records_actual_source_and_digests(self):
         archive = self.archive()
         digest = "sha256:" + hashlib.sha256(archive).hexdigest()
@@ -439,6 +457,44 @@ class RepairedSourceTests(unittest.TestCase):
         self.jobs[-1]["conclusion"] = "success"
         with self.assertRaisesRegex(recovery.RecoveryError, "publication"):
             self.prove()
+
+    def test_webos_can_be_reused_after_assembly_failed_before_publishing(self):
+        self.jobs = [self.jobs[0], {"name": "Build WebOS TV package (ARMv7)", "status": "completed", "conclusion": "success"},
+                     {"name": "create-release", "status": "completed", "conclusion": "failure",
+                      "steps": [{"name": "Create Release", "conclusion": "skipped"}]}]
+        before = 'env:\n  SDK: pinned\njobs:\n  build-webos:\n    if: ${{ trusted }}\n    run: compile-webos\n  other:\n'
+        after = before.replace('if: ${{ ', "if: ${{ inputs.reuse_webos_run_id == '' && ")
+        proof = self.prove(workflows=[before, after], webos_only=True)
+        self.assertEqual(proof["reused_jobs"], ["Build WebOS TV package (ARMv7)"])
+        self.jobs[-1]["steps"][0]["conclusion"] = "failure"
+        with self.assertRaisesRegex(recovery.RecoveryError, "publication"):
+            self.prove(workflows=[before, after], webos_only=True)
+
+
+class AssemblyCheckoutTests(unittest.TestCase):
+    def test_actual_sparse_checkout_imports_recovery_and_all_transitive_helpers(self):
+        import subprocess
+        root = Path(recovery.__file__).resolve().parents[1]
+        workflow = (root / '.github/workflows/build.yml').read_text().split('\n  create-release:\n', 1)[1]
+        selection = workflow.split('          sparse-checkout: |\n', 1)[1].split('          sparse-checkout-cone-mode:', 1)[0]
+        patterns = [line.strip() for line in selection.splitlines() if line.strip()]
+        tracked = subprocess.check_output(['git', 'ls-files', '-z', '--', 'scripts'], cwd=root).decode().split('\0')
+        with tempfile.TemporaryDirectory() as temporary:
+            checkout = Path(temporary)
+            for name in [name for name in tracked if name] + [name for name in patterns if '*' not in name]:
+                target = checkout / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(root / name, target)
+            def git(*args, **kwargs):
+                return subprocess.run(['git', '-c', 'core.hooksPath=/dev/null', '-c', 'commit.gpgsign=false',
+                                       '-c', 'core.autocrlf=false', *args], cwd=checkout, capture_output=True, text=True, check=True, **kwargs)
+            git('init', '-q')
+            git('add', '.')
+            git('-c', 'user.name=Assembly Test', '-c', 'user.email=assembly-test@example.invalid', 'commit', '-qm', 'fixture')
+            git('sparse-checkout', 'set', '--no-cone', '--stdin', input='\n'.join(patterns) + '\n')
+            code = "import sys; sys.path.insert(0, 'scripts'); import recover_release_platforms, release_all_platforms, verify_webos_link_patch; recover_release_platforms.release_ci._manifest_gate()"
+            result = subprocess.run([sys.executable, '-I', '-c', code], cwd=checkout, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":

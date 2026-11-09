@@ -172,8 +172,8 @@ def verify_webos_transport_patch(repository, source_sha, head_sha, files):
         raise RecoveryError("Native download pins or non-webOS transport code changed; refusing artifact reuse")
 
 
-def verify_repaired_run(run_id, head_sha, version, repository, *, allow_pending=False, require_homebrew_cask=False):
-    """Reuse only the explicitly repaired Linux matrix and full Mac build."""
+def verify_repaired_run(run_id, head_sha, version, repository, *, allow_pending=False, require_homebrew_cask=False, webos_only=False):
+    """Verify prior Linux/Mac repairs or a successful webOS build without changing inputs."""
     if not str(run_id).isdigit():
         raise RecoveryError("Repaired platform source requires an exact run ID")
     run = api(f"repos/{repository}/actions/runs/{run_id}")
@@ -197,14 +197,19 @@ def verify_repaired_run(run_id, head_sha, version, repository, *, allow_pending=
     verify_webos_link_patch(repository, source_sha, head_sha, files)
     verify_webos_transport_patch(repository, source_sha, head_sha, files)
     workflows = [immutable_content(repository, revision, ".github/workflows/build.yml") for revision in (source_sha, head_sha)]
-    for pattern in (r"(?ms)^env:\n.*?(?=^jobs:)",
-                    r"(?ms)^  build-macos:\n.*?(?=^  [a-zA-Z0-9_-]+:|\Z)",
-                    r"(?ms)^  build-linux:\n.*?(?=^  [a-zA-Z0-9_-]+:|\Z)"):
+    patterns = [r"(?ms)^env:\n.*?(?=^jobs:)"]
+    patterns += [r"(?ms)^  " + job + r":\n.*?(?=^  [a-zA-Z0-9_-]+:|\Z)"
+                 for job in (("build-webos",) if webos_only else ("build-macos", "build-linux"))]
+    for pattern in patterns:
         blocks = [re.findall(pattern, content) for content in workflows]
-        if any(len(block) != 1 for block in blocks) or blocks[0] != blocks[1]:
-            raise RecoveryError("Repaired Linux/Mac compiler and packaging contracts changed")
+        if any(len(block) != 1 for block in blocks):
+            raise RecoveryError("Repaired platform compiler and packaging contracts are incomplete")
+        if webos_only and "build-webos" in pattern and blocks[0] != blocks[1]:
+            blocks[1] = [blocks[1][0].replace("    if: ${{ inputs.reuse_webos_run_id == '' && ", "    if: ${{ ", 1)]
+        if blocks[0] != blocks[1]:
+            raise RecoveryError("Repaired platform compiler and packaging contracts changed")
     jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
-    names = ("Build Linux (x64)", "Build Linux (arm64)", "build-macos")
+    names = ("Build WebOS TV package (ARMv7)",) if webos_only else ("Build Linux (x64)", "Build Linux (arm64)", "build-macos")
     pending_jobs = []
     for name in ("Validate release request", *names):
         matches = [job for job in jobs if job.get("name") == name]
@@ -220,10 +225,17 @@ def verify_repaired_run(run_id, head_sha, version, repository, *, allow_pending=
             steps = ["Build macOS"] + (["Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask"] if require_homebrew_cask else [])
             if any(not any(step.get("name") == required and step.get("conclusion") == "success" and step.get("status") == "completed" for step in job.get("steps", [])) for required in steps):
                 raise RecoveryError("Repaired Mac lacks full compilation or required notarization/Gatekeeper qualification")
-    if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped"
-           and not (pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion")) for job in jobs):
+    for job in jobs:
+        if job.get("name") != "create-release" or job.get("conclusion") == "skipped":
+            continue
+        if pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion"):
+            continue
+        if webos_only and job.get("status") == "completed" and job.get("conclusion") == "failure" and any(
+                step.get("name") == "Create Release" and step.get("conclusion") == "skipped"
+                for step in job.get("steps", [])):
+            continue  # A failed assembly before the publishing step cannot publish a release.
         raise RecoveryError("Repaired source already attempted publication; inspect side effects")
-    macos = next(job for job in jobs if job.get("name") == "build-macos")
+    macos = next((job for job in jobs if job.get("name") == "build-macos"), {})
     qualified = all(any(step.get("name") == name and step.get("conclusion") == "success" and step.get("status") == "completed" for step in macos.get("steps", []))
                     for name in ("Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask"))
     return {"source_run_id": int(run_id), "source_sha": source_sha, "reused_jobs": list(names),
@@ -431,8 +443,10 @@ def verify_android_run(run_id, head_sha, version, repository=REPOSITORY, *, allo
             **({"pending": True} if android_pending else {})}
 
 
-def compose_proof(proof, android_run=None, include_webos_build=True):
+def compose_proof(proof, android_run=None, include_webos_build=True, webos_run=None):
     if proof.get("profile") == "macos-packaging":
+        if webos_run:
+            raise RecoveryError("Signing-only recovery cannot substitute another webOS source")
         if not include_webos_build or (android_run and str(android_run) != str(proof["source_run_id"])):
             raise RecoveryError("Mac packaging recovery requires every original platform without substitution or omission.")
         return proof
@@ -442,6 +456,13 @@ def compose_proof(proof, android_run=None, include_webos_build=True):
     if android_run:
         proof = {**proof, "android_source": verify_android_run(android_run, proof["head_sha"], proof["version"], allow_pending=not proof.get("platforms_complete", True))}
         rebuilt.remove("build-android")
+    if webos_run:
+        if not include_webos_build:
+            raise RecoveryError("Verified webOS reuse must remain included in the complete release")
+        proof = {**proof, "webos_source": verify_repaired_run(webos_run, proof["head_sha"], proof["version"], REPOSITORY, allow_pending=not proof.get("platforms_complete", True), webos_only=True)}
+        if not proof["webos_source"]["platforms_complete"]:
+            raise RecoveryError("WebOS source must be complete before assembly-only recovery")
+        rebuilt.remove("Build WebOS TV package (ARMv7)")
     if not include_webos_build:
         rebuilt.remove("Build WebOS TV package (ARMv7)")
     return {**proof, "rebuilt_jobs": sorted(rebuilt),
@@ -492,9 +513,14 @@ def download_platforms(proof, destination, repository=REPOSITORY):
         repaired = proof["repaired_source"]
         inventories[repaired["source_run_id"]] = collection(
             f"repos/{repository}/actions/runs/{repaired['source_run_id']}/artifacts", "artifacts")
+    if proof.get("webos_source"):
+        webos = proof["webos_source"]
+        inventories[webos["source_run_id"]] = collection(f"repos/{repository}/actions/runs/{webos['source_run_id']}/artifacts", "artifacts")
+        wanted["webos-ipk"] = "webos"
     records = []
     for name, folder in wanted.items():
-        source = (proof["android_source"] if name == "android-apk" else
+        source = (proof["webos_source"] if name == "webos-ipk" and proof.get("webos_source") else
+                  proof["android_source"] if name == "android-apk" else
                   proof["repaired_source"] if proof.get("repaired_source") and (name.startswith("linux-") or name == "macos-dmg") else
                   proof["macos_source"] if name == "macos-dmg" and proof.get("macos_source") else proof)
         artifact_run = source["source_run_id"]
@@ -538,6 +564,7 @@ def main():
     parser.add_argument("--rebuild-macos", action="store_true", help="Build and qualify a fresh Mac package instead of reusing a failed Mac job")
     parser.add_argument("--repaired-run", help="Reuse verified Linux and fully qualified Mac jobs from a prior repair run")
     parser.add_argument("--require-homebrew-cask", action="store_true", help="Require the reused Mac notarization and Gatekeeper checks")
+    parser.add_argument("--webos-run", help="Reuse a successful verified webOS package from a prior release run")
     parser.add_argument("--android-run", help="Reuse a separately successful Android release build.")
     parser.add_argument("--skip-webos-build", action="store_true", help="Exclude the non-public experimental WebOS candidate.")
     parser.add_argument("--allow-building", action="store_true", help="Preflight only: native jobs may still be running.")
@@ -547,6 +574,8 @@ def main():
         parser.error("Signing-only Mac recovery cannot be combined with fresh platform rebuilding")
     if args.repaired_run and (args.macos_run or args.rebuild_macos or args.rebuild_linux):
         parser.error("Repaired Linux/Mac reuse cannot be combined with rebuilding or signing-only recovery")
+    if args.webos_run and (args.macos_run or args.skip_webos_build):
+        parser.error("WebOS reuse must remain included and cannot substitute signing-only recovery")
     if args.allow_building and args.download:
         parser.error("--allow-building is only a preflight; downloads require completed successful platform jobs")
     if not 0 <= args.wait_for_source <= 10800:
@@ -556,12 +585,14 @@ def main():
              wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask)
              if args.wait_for_source else
              verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask))
-    proof = compose_proof(proof, args.android_run, not args.skip_webos_build)
+    proof = compose_proof(proof, args.android_run, not args.skip_webos_build, args.webos_run)
     if args.download:
         proof = download_platforms(proof, args.download)
     if os.environ.get("GITHUB_OUTPUT"):
         with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
             output.write(f"source_sha={proof['source_sha']}\nci_run_id={proof['ci_run_id']}\n")
+            if proof.get("webos_source"):
+                output.write(f"webos_source_sha={proof['webos_source']['source_sha']}\n")
             if proof.get("android_source"):
                 output.write(f"android_source_sha={proof['android_source']['source_sha']}\n")
     print(json.dumps(proof, indent=2))

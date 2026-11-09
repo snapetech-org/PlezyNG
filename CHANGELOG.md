@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Include all transitive Python helpers in the release assembly checkout, check imports in isolation, and reuse verified webOS packages during an assembly-only retry.
+
 - Link the webOS navigation channel to the existing pinned Flutter common runtime, verify that ARM link before SDK builds, and retain verified Linux/Mac repair artifacts across a webOS-only retry.
 
 - Start independent recovery builds while source Android is still running; require its completed successful job and verified artifact before final release assembly.

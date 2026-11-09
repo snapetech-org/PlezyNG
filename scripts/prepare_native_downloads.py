@@ -352,12 +352,14 @@ def prepare_webos_python(cache):
     toolcache = Path(os.environ["RUNNER_TOOL_CACHE"])
     destination = toolcache / "Python/3.14.8/x64"
     marker = destination.with_name("x64.complete")
+    environment = {**os.environ, "AGENT_TOOLSDIRECTORY": str(toolcache),
+                   "LD_LIBRARY_PATH": str(destination / "lib") + (":" + os.environ["LD_LIBRARY_PATH"] if os.environ.get("LD_LIBRARY_PATH") else "")}
     if destination.is_symlink() or marker.is_symlink():
         raise ValueError("Refusing linked Python cache")
     if destination.exists() or marker.exists():
         if not destination.is_dir() or not marker.is_file():
             raise ValueError("Existing incomplete Python cache retained; refusing to replace it")
-        result = subprocess.check_output([str(destination / "bin/python3.14"), "--version"], text=True).strip()
+        result = subprocess.check_output([str(destination / "bin/python3.14"), "--version"], text=True, env=environment).strip()
         if result != "Python 3.14.8":
             raise ValueError("Existing Python cache has the wrong version")
         return
@@ -371,9 +373,8 @@ def prepare_webos_python(cache):
             bundle.extractall(stage, filter="data")
         # The pinned upstream installer creates the completion marker only after
         # successful installation. Its replace-existing branch is excluded above.
-        environment = {**os.environ, "AGENT_TOOLSDIRECTORY": str(toolcache)}
         subprocess.run(["bash", "setup.sh"], cwd=stage, env=environment, check=True)
-        if not marker.is_file() or subprocess.check_output([str(destination / "bin/python3.14"), "--version"], text=True).strip() != "Python 3.14.8":
+        if not marker.is_file() or subprocess.check_output([str(destination / "bin/python3.14"), "--version"], text=True, env=environment).strip() != "Python 3.14.8":
             raise ValueError("Upstream Python installer did not produce its expected cache")
     except Exception:
         print(f"Retained Python installer diagnostics: {stage}", file=sys.stderr)

@@ -489,3 +489,20 @@ SHA, uses the upstream installer to populate the runner's normal tool cache,
 and checks its version and completion marker. Complete matching caches are
 reused; partial or mismatched caches are retained and rejected, never replaced.
 The later setup-python action remains and verifies/discovers the same version.
+
+For a webOS-only infrastructure failure, preserve successful platform outputs.
+Stop only the local failed-run monitor (never its remote jobs) before starting
+`scripts/launch_queued_apple_jit_jobs.py RUN --evidence-dir TASK_SCRATCH --continue-after-platform-failure`;
+otherwise that monitor intentionally drains/cancels the obsolete queued Apple
+jobs. This explicit recovery mode still waits for the single physical Mac and
+its cleanup, and stops launching after any Apple failure. After the source run
+finishes, use the driver with `--reuse-platform-run RUN --reuse-android-run RUN`
+to rebuild webOS and assemble the verified original outputs. Every reused
+platform job must have succeeded; no platform is omitted. Recovery records the
+actual tag CI source separately after verifying tag ancestry and the complete
+infrastructure-only diff. A native-download-helper change is accepted only
+inside the webOS Python bootstrap function; any changed native pin or other
+transport/compiler input rejects recovery. The pinned Python installer and
+cache checks use the destination's `lib` directory in `LD_LIBRARY_PATH`, as
+setup-python normally does. Fresh installation and completed-cache reuse were
+both verified in an isolated Ubuntu 24.04 container.

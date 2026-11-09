@@ -2,6 +2,7 @@
 """Recovery must prove product equivalence, source checks, and artifact integrity."""
 
 import copy
+import base64
 import hashlib
 import io
 import stat
@@ -41,6 +42,24 @@ class SourceProofTests(unittest.TestCase):
 
     def test_all_platforms_can_be_recovered_after_only_bootstrap_fix(self):
         self.assertEqual(self.prove()["source_sha"], "a" * 40)
+
+    def test_webos_only_failure_keeps_a_successful_android_build_reusable(self):
+        self.jobs[-2]["conclusion"] = "success"
+        self.jobs.append({"name": "Build WebOS TV package (ARMv7)", "status": "completed", "conclusion": "failure"})
+        self.assertEqual(self.prove()["source_sha"], "a" * 40)
+
+    def test_ci_tag_reuse_requires_complete_product_equivalence(self):
+        tag = "c" * 40
+        comparison = {"status": "ahead", "merge_base_commit": {"sha": tag}, "files": [{"filename": "scripts/prepare_native_downloads.py"}]}
+        for changed in (comparison, {**comparison, "files": [{"filename": "pubspec.lock"}]},
+                        {**comparison, "files": [{"filename": "CHANGELOG.md", "previous_filename": "lib/main.dart"}]},
+                        {**comparison, "files": comparison["files"] * 300}):
+            with self.subTest(changed=changed), patch.object(recovery, "api", side_effect=[{"object": {"type": "commit", "sha": tag}}, changed]):
+                if changed is comparison:
+                    self.assertEqual(recovery.immutable_ci_source(recovery.REPOSITORY, "a" * 40, "3.0.0"), tag)
+                else:
+                    with self.assertRaises(recovery.RecoveryError):
+                        recovery.immutable_ci_source(recovery.REPOSITORY, "a" * 40, "3.0.0")
 
     def test_preflight_allows_running_native_jobs_but_never_a_failure(self):
         self.source["status"] = "queued"
@@ -107,6 +126,20 @@ class SourceProofTests(unittest.TestCase):
         self.jobs[-1]["conclusion"] = "success"
         with self.assertRaisesRegex(recovery.RecoveryError, "side effects"):
             self.prove()
+
+    def test_transport_recovery_cannot_change_native_pins_outside_python_bootstrap(self):
+        original = "PDFIUM_PINS = {'asset': 'pinned'}\ndef prepare_webos_python(cache):\n return 1\n"
+        loader_fix = original.replace("return 1", "return 2")
+        native_change = loader_fix.replace("'pinned'", "'different'")
+        def encoded(code):
+            return {"encoding": "base64", "content": base64.b64encode(code.encode()).decode()}
+        for replacement in (loader_fix, native_change):
+            with self.subTest(replacement=replacement), patch.object(recovery, "api", side_effect=[encoded(original), encoded(replacement)]):
+                if replacement == loader_fix:
+                    recovery.verify_webos_transport_patch(recovery.REPOSITORY, "a" * 40, "b" * 40, [{"filename": "scripts/prepare_native_downloads.py"}])
+                else:
+                    with self.assertRaisesRegex(recovery.RecoveryError, "Native download pins"):
+                        recovery.verify_webos_transport_patch(recovery.REPOSITORY, "a" * 40, "b" * 40, [{"filename": "scripts/prepare_native_downloads.py"}])
 
     def test_source_ci_requires_complete_successful_exact_sha_checks(self):
         with patch.dict("os.environ", {"GH_TOKEN": "test-token"}), \

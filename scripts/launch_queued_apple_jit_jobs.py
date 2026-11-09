@@ -219,10 +219,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="Task scratch directory for launcher output, runner diagnostics, and job logs",
     )
+    parser.add_argument("--continue-after-platform-failure", action="store_true",
+                        help="Complete queued Apple builds for verified artifact recovery after a non-Apple failure")
     return parser.parse_args()
 
 
-def run_queue(run_id: str, evidence_root: Path) -> int:
+def run_queue(run_id: str, evidence_root: Path, *, continue_after_platform_failure: bool = False) -> int:
     evidence_run_dir = evidence_root / run_id
     attempts: dict[int, int] = {}
     failures: list[str] = []
@@ -242,7 +244,11 @@ def run_queue(run_id: str, evidence_root: Path) -> int:
         if active_jobs:
             time.sleep(POLL_SECONDS)
             continue
-        if is_failed_release_build(run, jobs):
+        if is_failed_release_build(run, jobs) and (
+            not continue_after_platform_failure or any(
+                job.get("conclusion") in {"failure", "timed_out", "cancelled"} for job in apple_jobs
+            )
+        ):
             save_github_logs(run_id, apple_jobs, evidence_run_dir)
             print(
                 f"Apple JIT queue: run {run_id} has failed; active Apple work and cleanup "
@@ -360,7 +366,7 @@ def main() -> int:
         raise QueueError(f"Another Apple queue controller owns run {args.run_id}.") from error
     os.fchmod(lock_fd, 0o600)
     try:
-        return run_queue(args.run_id, evidence_root)
+        return run_queue(args.run_id, evidence_root, continue_after_platform_failure=args.continue_after_platform_failure)
     finally:
         os.close(lock_fd)
 

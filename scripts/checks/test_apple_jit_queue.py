@@ -78,6 +78,27 @@ class AppleQueueTests(unittest.TestCase):
             self.assertEqual(sleep.call_count, 1)
             logs.assert_called_once()
 
+    def test_recovery_mode_completes_apple_jobs_after_a_non_apple_failure(self):
+        failure = {"id": 2, "name": "WebOS", "status": "completed", "conclusion": "failure"}
+        with tempfile.TemporaryDirectory() as scratch, \
+                patch.object(queue, "get_run", side_effect=[failed_release(), {"status": "completed"}]), \
+                patch.object(queue, "get_jobs", side_effect=[[failure, apple_job()], [failure, apple_job("completed")]]), \
+                patch.object(queue, "get_job", return_value=apple_job("completed")), \
+                patch.object(queue, "active_run_scoped_apple_runner", return_value=False), \
+                patch.object(queue, "launch_job", return_value=0) as launch, \
+                patch.object(queue, "save_github_logs"):
+            self.assertEqual(queue.run_queue("42", Path(scratch), continue_after_platform_failure=True), 0)
+            launch.assert_called_once()
+
+    def test_recovery_mode_still_stops_on_an_apple_failure(self):
+        failed = {**apple_job("completed"), "conclusion": "failure"}
+        with tempfile.TemporaryDirectory() as scratch, \
+                patch.object(queue, "get_run", return_value=failed_release()), \
+                patch.object(queue, "get_jobs", return_value=[failed, {**apple_job(), "id": 124}]), \
+                patch.object(queue, "launch_job") as launch, patch.object(queue, "save_github_logs"):
+            self.assertEqual(queue.run_queue("42", Path(scratch), continue_after_platform_failure=True), 0)
+            launch.assert_not_called()
+
     def test_ci_failure_does_not_stop_collection_of_other_test_results(self):
         run = {**failed_release(), "path": ".github/workflows/ci.yml"}
         self.assertFalse(queue.is_failed_release_build(run, [{"conclusion": "failure"}]))

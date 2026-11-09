@@ -2,6 +2,8 @@
 """Recover successful platform outputs while rebuilding Android and WebOS after CI fixes."""
 
 import argparse
+import ast
+import base64
 import hashlib
 import json
 import os
@@ -20,6 +22,8 @@ ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "snapetech-org/pleazyng"
 # Application sources, dependency pins, and native toolchain inputs are excluded.
 RECOVERY_FILES = frozenset({
+    "scripts/prepare_native_downloads.py", "scripts/test_prepare_native_downloads.py",
+    "scripts/launch_queued_apple_jit_jobs.py", "scripts/checks/test_apple_jit_queue.py",
     "scripts/retain_macos_app.py", "scripts/test_retain_macos_app.py",
     ".github/workflows/build.yml", ".github/workflows/ci.yml", "CHANGELOG.md",
     "docs/maintainers/full-release-build.md", "docs/maintainers/apple-jit-runner.md",
@@ -71,19 +75,65 @@ def collection(path, key):
     return values
 
 
-def ci_proof(repository, source_sha):
+def immutable_ci_source(repository, source_sha, version):
+    """Resolve exact app CI only after a complete infrastructure-only comparison."""
+    if repository != REPOSITORY or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
+        raise RecoveryError("Invalid immutable CI source identity")
+    from release_all_platforms import RELEASE_TAG_REUSE_ALLOWLIST
+    obj = api(f"repos/{repository}/git/ref/tags/v{version}")["object"]
+    for _ in range(8):
+        if not re.fullmatch(r"[a-f0-9]{40}", obj.get("sha", "")):
+            raise RecoveryError("Invalid immutable CI tag object")
+        if obj.get("type") == "commit":
+            break
+        if obj.get("type") != "tag":
+            raise RecoveryError("Invalid immutable CI tag type")
+        obj = api(f"repos/{repository}/git/tags/{obj['sha']}")["object"]
+    else:
+        raise RecoveryError("Immutable CI tag chain is too long")
+    tag_sha = obj["sha"]
+    if source_sha != tag_sha:
+        comparison = api(f"repos/{repository}/compare/{tag_sha}...{source_sha}")
+        files = comparison.get("files")
+        if (comparison.get("status") not in {"ahead", "identical"}
+            or comparison.get("merge_base_commit", {}).get("sha") != tag_sha
+            or not isinstance(files, list) or len(files) >= 300
+            or any(path not in RELEASE_TAG_REUSE_ALLOWLIST for entry in files
+                   for path in (entry.get("filename"), entry.get("previous_filename")) if path)):
+            raise RecoveryError("Cannot reuse tag CI: application/native inputs changed or comparison incomplete")
+    return tag_sha
+
+
+def ci_proof(repository, source_sha, version=None):
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
         result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True, check=True)
         token = result.stdout.strip()
+    ci_source = immutable_ci_source(repository, source_sha, version) if version else source_sha
     gate = release_ci._manifest_gate()
-    run = release_ci._latest_run(token, repository, source_sha, gate)
+    run = release_ci._latest_run(token, repository, ci_source, gate)
     if run.get("status") != "completed" or run.get("conclusion") != "success":
         raise RecoveryError("The source release commit has no successful exact-SHA CI run.")
     errors = release_ci._check_jobs(token, repository, run, gate)
     if errors:
         raise RecoveryError("Source CI is incomplete: " + "; ".join(errors))
-    return {"ci_run_id": run["id"], "ci_run_url": run["html_url"]}
+    return {"ci_run_id": run["id"], "ci_run_url": run["html_url"], "ci_source_sha": ci_source}
+
+
+def verify_webos_transport_patch(repository, source_sha, head_sha, files):
+    path = "scripts/prepare_native_downloads.py"
+    if not any(entry.get("filename") == path for entry in files):
+        return
+    fingerprints = []
+    for revision in (source_sha, head_sha):
+        response = api(f"repos/{repository}/contents/{path}?ref={revision}")
+        if response.get("encoding") != "base64":
+            raise RecoveryError("Native transport source evidence is incomplete")
+        tree = ast.parse(base64.b64decode(response["content"]).decode())
+        tree.body = [node for node in tree.body if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or node.name != "prepare_webos_python"]
+        fingerprints.append(ast.dump(tree, include_attributes=False))
+    if fingerprints[0] != fingerprints[1]:
+        raise RecoveryError("Native download pins or non-webOS transport code changed; refusing artifact reuse")
 
 
 def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False):
@@ -110,6 +160,7 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
                       if path and path not in RECOVERY_FILES})
     if blocked:
         raise RecoveryError("Application or pinned native inputs changed: " + ", ".join(blocked))
+    verify_webos_transport_patch(repository, source_sha, head_sha, changed)
     jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
     pending_jobs = []
     for name in REQUIRED_JOBS:
@@ -125,8 +176,8 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
     if failures:
         raise RecoveryError("Other source jobs failed: " + ", ".join(failures))
     android = [job for job in jobs if job.get("name") == "build-android"]
-    if len(android) != 1 or android[0].get("conclusion") != "failure":
-        raise RecoveryError("Recovery requires exactly one failed Android job.")
+    if len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") not in {"failure", "success"}:
+        raise RecoveryError("Recovery requires exactly one completed Android build.")
     if any(job.get("name") == "create-release" and job.get("conclusion") != "skipped"
            and not (pending and job.get("status") in {"queued", "waiting", "pending"} and not job.get("conclusion"))
            for job in jobs):
@@ -135,7 +186,7 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
             "version": version, "reused_jobs": list(REQUIRED_JOBS),
             "rebuilt_jobs": sorted(REBUILT_JOBS),
             "platforms_complete": source.get("status") == "completed", "pending_jobs": pending_jobs,
-            **ci_proof(repository, source_sha)}
+            **ci_proof(repository, source_sha, version)}
 
 
 def verify_macos_packaging_recovery(run_id, macos_run, head_sha, version, repository=REPOSITORY):
@@ -204,7 +255,7 @@ def verify_macos_packaging_recovery(run_id, macos_run, head_sha, version, reposi
             "macos_source": {"source_run_id": int(macos_run), "source_sha": native["head_sha"],
                              "job_id": recovered_job["id"]},
             "android_source": {"source_run_id": int(run_id), "source_sha": source_sha},
-            **ci_proof(repository, source_sha)}
+            **ci_proof(repository, source_sha, version)}
 
 
 def verify_macos_receipt(receipt, proof):
@@ -251,6 +302,7 @@ def verify_android_run(run_id, head_sha, version, repository=REPOSITORY):
         or any(path not in RECOVERY_FILES for entry in files
                for path in (entry.get("filename"), entry.get("previous_filename")) if path)):
         raise RecoveryError("Android product input equivalence could not be proven.")
+    verify_webos_transport_patch(repository, source_sha, head_sha, files)
     jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
     android = [job for job in jobs if job.get("name") == "build-android"]
     if len(android) != 1 or android[0].get("status") != "completed" or android[0].get("conclusion") != "success":

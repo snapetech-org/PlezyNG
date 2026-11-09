@@ -82,7 +82,8 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// Checkpoints use the existing owner, including full-screen playback.
   /// No hidden player or route is created merely to record recovery state.
   void watchRecovery(Object owner, WorkspaceSessionDescriptor? Function() read) {
-    if (_disposed || (!_recoverySources.containsKey(owner) && _recoverySources.length >= WorkspaceSnapshot.maxSessions)) {
+    if (_disposed ||
+        (!_recoverySources.containsKey(owner) && _recoverySources.length >= WorkspaceSnapshot.maxSessions)) {
       return;
     }
     _recoverySources[owner] = read;

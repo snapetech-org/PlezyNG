@@ -183,14 +183,17 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                   return workspace;
                 },
               ),
-              Provider<SourceRecoveryBinder>(
+              Provider<SourceRecoveryBinder?>(
                 lazy: false,
-                create: (context) => SourceRecoveryBinder(
-                  workspace: context.read<MultiviewWorkspaceController>(),
-                  playback: context.read<SourcePlayback>(),
-                  profileId: activeId,
-                ),
-                dispose: (_, binder) => binder.dispose(),
+                create: (context) {
+                  final playback = context.read<SourcePlayback?>();
+                  return playback == null ? null : SourceRecoveryBinder(
+                    workspace: context.read<MultiviewWorkspaceController>(),
+                    playback: playback,
+                    profileId: activeId,
+                  );
+                },
+                dispose: (_, binder) => binder?.dispose(),
               ),
               ChangeNotifierProxyProvider<MultiServerProvider, WatchStateStore>(
                 create: (_) => WatchStateStore(),

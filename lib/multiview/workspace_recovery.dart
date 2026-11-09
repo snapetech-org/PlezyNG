@@ -41,6 +41,7 @@ Future<bool> resumeWorkspaceSession(
   if (client == null) return false;
   final item = await client.fetchItem(target.itemId).timeout(const Duration(seconds: 20));
   if (!context.mounted ||
+      !routeContext.mounted ||
       !workspace.active ||
       !operationCurrent() ||
       provider.getClientForServer(ServerId(target.providerId)) != client ||
@@ -90,7 +91,6 @@ Future<bool> resumeWorkspaceSession(
   }
 }
 
-
 /// Reconstruct the exact selected edition after reauthentication. Reordering,
 /// replacement or disappearance must never silently select a different file.
 List<PublicationFile>? recoverySourceFiles(SourceEntry entry, WorkspaceResumeTarget target) {
@@ -117,8 +117,15 @@ Future<bool> _resumeSource(
   final profile = sources.profileId;
   final generation = sources.generation;
   var expired = false;
-  bool current() => !expired && context.mounted && workspace.active && operationCurrent() &&
-      profile != null && sources.profileId == profile && sources.current(generation) && !sources.blocked;
+  bool current() =>
+      !expired &&
+      context.mounted &&
+      workspace.active &&
+      operationCurrent() &&
+      profile != null &&
+      sources.profileId == profile &&
+      sources.current(generation) &&
+      !sources.blocked;
   if (!current()) return false;
   final deadline = Timer(const Duration(seconds: 45), () => expired = true);
   try {
@@ -136,22 +143,36 @@ Future<bool> _resumeSource(
       if (files.length != 1 || !const {SourceItemKind.ebook, SourceItemKind.comic}.contains(files.single.kind)) {
         return false;
       }
-      unawaited(Navigator.of(context).push<void>(MaterialPageRoute<void>(
-        builder: (_) => PublicationReaderScreen(entry: entry, file: files.single),
-      )));
+      if (!context.mounted) return false;
+      unawaited(
+        Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => PublicationReaderScreen(entry: entry, file: files.single),
+          ),
+        ),
+      );
       return true;
     }
     final video = descriptor.kind == MultiviewMediaKind.video;
     if ((!video && descriptor.kind != MultiviewMediaKind.music && descriptor.kind != MultiviewMediaKind.audiobook) ||
-        files.any((file) => video ? file.kind != SourceItemKind.video
-            : !const {SourceItemKind.audiobook, SourceItemKind.music}.contains(file.kind)) ||
-        playback.active) return false;
-    await playback.start(entry, files,
-      playbackMode: video ? PublicationMode.watching : PublicationMode.listening,
-      onlyIfIdle: true,
-      isStartCurrent: current,
-    ).timeout(const Duration(seconds: 40));
-    if (!current() || playback.entry?.key != entry.key || playback.failure != null) return false;
+        files.any(
+          (file) => video
+              ? file.kind != SourceItemKind.video
+              : !const {SourceItemKind.audiobook, SourceItemKind.music}.contains(file.kind),
+        ) ||
+        playback.active) {
+      return false;
+    }
+    await playback
+        .start(
+          entry,
+          files,
+          playbackMode: video ? PublicationMode.watching : PublicationMode.listening,
+          onlyIfIdle: true,
+          isStartCurrent: current,
+        )
+        .timeout(const Duration(seconds: 40));
+    if (!context.mounted || !current() || playback.entry?.key != entry.key || playback.failure != null) return false;
     unawaited(Navigator.of(context).push<void>(MaterialPageRoute<void>(builder: (_) => const SourcePlayerScreen())));
     return true;
   } finally {

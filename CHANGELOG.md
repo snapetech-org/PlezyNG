@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Remove the vulnerable deepmerge build dependency from the Steam Cloud Decky extension, preserve its host React/UI and ESM entry contract with an esbuild runtime regression, and integrate the reviewed UI, TypeScript, React types and tslib dependency updates.
+
 - Keep mixed-library search expectations aligned with the supported Jellyfin/Emby book and audiobook item types.
 
 - Install XcodeGen and Git LFS in Apple native CI before exercising generated Dolby Vision projects, matching the release jobs on both Intel and Apple-Silicon hosted Macs.

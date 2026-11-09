@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Software-rendered libretro host. Desktop builds link this only into the
-// isolated helper; mobile platforms with no helper retain the isolate host.
+// Software-rendered libretro adapter, linked only into an isolated worker.
+#ifndef PLEZY_RETRO_REMOTE_AUDIO
+#error Libretro cores must run in an isolated worker with parent-owned audio
+#endif
 #include <algorithm>
 #include <atomic>
 #include <cmath>

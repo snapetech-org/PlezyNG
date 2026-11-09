@@ -20,6 +20,12 @@
 #include "libretro.h"
 
 namespace {
+// The unavailable-host test points at this real library. Any accidental probe
+// through dlopen/LoadLibrary must fail before a core API is even called.
+const bool allowedConstructor = [] {
+  if (std::getenv("PLEZY_TEST_REJECT_CORE_LOAD")) std::abort();
+  return true;
+}();
 retro_environment_t environment = nullptr;
 retro_video_refresh_t video = nullptr;
 retro_audio_sample_batch_t audio = nullptr;

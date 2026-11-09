@@ -212,6 +212,7 @@ class AppleCacheTests(unittest.TestCase):
                 package.stage_host_sources([f'libretro_common={common}', f'miniaudio={audio}'], output)
             for relative in (
                 'native/games/romm/retro_host.cpp', 'native/games/romm/retro_proxy.cpp',
+                'native/games/romm/retro_unavailable.cpp',
                 'native/games/romm/retro_worker.cpp', 'native/games/romm/retro_protocol.h',
                 'native/games/romm/retro_sandbox.h', 'native/games/romm/retro_windows_sandbox.h',
                 'native/games/romm/retro_android_worker.cpp', 'native/games/romm/retro_input_files.h',
@@ -220,6 +221,7 @@ class AppleCacheTests(unittest.TestCase):
                 'android/app/src/main/AndroidManifest.xml', 'android/app/proguard-rules.pro',
                 'shared/process/byte_pipe.h', 'shared/process/child_process.h',
                 'scripts/games/build_romm_apple.py', 'scripts/games/install_macos_worker.sh',
+                'scripts/games/install_macos_romm_cores.py',
             ):
                 self.assertEqual((output / 'build-recipe' / relative).read_bytes(),
                                  (package.ROOT / relative).read_bytes())

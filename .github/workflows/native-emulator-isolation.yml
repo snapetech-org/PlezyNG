@@ -44,9 +44,16 @@ jobs:
           cmake -S native/games/romm -B "$RUNNER_TEMP/romm-native" -DPLEZY_ROMM_BUILD_CORES=OFF -DPLEZY_ROMM_ISOLATED=ON -DPLEZY_ROMM_NATIVE_TESTS=ON
           cmake --build "$RUNNER_TEMP/romm-native" --config Release --parallel 2
           ctest --test-dir "$RUNNER_TEMP/romm-native" -C Release --output-on-failure
-      - name: Inspect public Apple extension SDK contracts
-        if: runner.os == 'macOS'
-        run: python3 scripts/games/inspect_apple_isolation_sdk.py
+      - name: Check emulator package contracts
+        if: runner.os == 'Linux'
+        run: python3 -m unittest discover -s scripts/games -p 'test_*romm*.py'
+      - name: Verify Apple pod metadata locks
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ruby ruby-dev
+          gem install cocoapods-core --version 1.17.0 --no-document --install-dir "$RUNNER_TEMP/romm-gems"
+          GEM_HOME="$RUNNER_TEMP/romm-gems" GEM_PATH="$RUNNER_TEMP/romm-gems:$(gem env gempath)" ruby scripts/check_podspec_locks.rb
 
   android:
     concurrency:

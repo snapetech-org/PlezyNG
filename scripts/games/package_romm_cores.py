@@ -116,6 +116,7 @@ def stage_host_sources(values, output):
         'native/games/romm/core-sources.json',
         'native/games/romm/NOTICE.md', 'scripts/games/package_romm_cores.py',
         'scripts/games/build_romm_apple.py', 'scripts/games/install_macos_worker.sh',
+        'scripts/games/install_macos_romm_cores.py',
         'android/app/src/main/AndroidManifest.xml', 'android/app/src/main/cpp/CMakeLists.txt',
         'android/app/proguard-rules.pro', 'android/app/build.gradle.kts')}
     # Corresponding source must include the desktop proxy/worker and transport,

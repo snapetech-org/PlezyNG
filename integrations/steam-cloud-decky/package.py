@@ -9,7 +9,7 @@ parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
 root = Path(__file__).resolve().parent
 files = ['plugin.json', 'main.py', 'bridge.py', 'windows_pipe.py', 'dist/index.js', 'dist/index.js.map', 'README.md',
-         'src/cloud.mjs', 'src/index.tsx', 'package.json', 'package-lock.json', 'rollup.config.js', 'tsconfig.json']
+         'src/cloud.mjs', 'src/index.tsx', 'package.json', 'package-lock.json', 'build.mjs', 'build.test.mjs', 'src/cloud.test.mjs', 'tsconfig.json']
 for name in files:
     if not (root / name).is_file():
         parser.error(f'Missing build input: {name}; run npm ci and npm run build first')

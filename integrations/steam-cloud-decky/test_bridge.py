@@ -31,7 +31,12 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
 
     async def close_writer(self, writer):
         writer.close()
-        await writer.wait_closed()
+        try:
+            await writer.wait_closed()
+        except (ConnectionResetError, BrokenPipeError):
+            # A deliberately rejected client can be reset after its reply.
+            # Protocol assertions above still verify the admission decision.
+            pass
 
     async def test_disabled_by_default_and_private_socket(self):
         self.assertEqual(self.bridge.path.stat().st_mode & 0o777, 0o600)

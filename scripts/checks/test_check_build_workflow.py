@@ -360,7 +360,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         prefix, windows = self._workflow().split("  build-windows:\n", 1)
         java_step = (
             '      - name: Setup Java\n'
-            '        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v5\n'
+            '        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0\n'
             '        with:\n'
             '          distribution: "temurin"\n'
             '          java-version: "21"\n'

@@ -21,10 +21,11 @@ python3 -m unittest discover -p 'test_*.py'
 python3 package.py --output build/plezyng-steam-cloud.zip
 ```
 
-The build overrides pin patched glob/minimatch releases and rollup-plugin-delete
-3. The cleanup plugin uses the current del API so it does not retain an obsolete
-rimraf/glob dependency chain. JavaScript tests, TypeScript checking, and a build
-with a stale-output sentinel verify matching and cleanup compatibility.
+The esbuild pipeline emits an ESM plugin with Decky's host-owned React/JSX/UI
+globals and bundles the Decky API. A runtime-contract test checks the loader
+handshake and plugin entry point. The lockfile excludes the unpatched deepmerge
+build dependency ([GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4)).
+Run `npm run typecheck` alongside the build and tests when refreshing dependencies.
 
 Install the archive using Decky's explicit local-plugin installation flow on the
 chosen gaming computer. The package requests **no root flag**. It must run as the

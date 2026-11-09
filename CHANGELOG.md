@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Give hosted Apple validation and release jobs short, task-owned local scratch paths with bounded free-space checks and exact cleanup, while preserving the private NFS path for explicitly constrained Apple JIT runs.
+
 - Route protected release-channel publication for containers, AUR, COPR, PPA, Snap, Chocolatey, and WinGet through compatible GitHub-hosted runners, removing the superseded private-JIT-only dispatch contract and container proxy requirement.
 
 - Correct release-workflow guidance to match the hybrid profile: compatible Apple jobs use GitHub-hosted macOS runners, while storage-heavy webOS work retains its private JIT route.

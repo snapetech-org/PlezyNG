@@ -21,6 +21,30 @@ if [[ ! "${GITHUB_RUN_ID:-}" =~ ^[0-9]+$ || ! "${GITHUB_RUN_ATTEMPT:-}" =~ ^[0-9
 fi
 
 scratch_job="$1"
+
+if [[ "${APPLE_HOSTED_SCRATCH:-}" == 1 ]]; then
+  if [[ -z "${RUNNER_TEMP:-}" || ! -d "$RUNNER_TEMP" ]]; then
+    echo "RUNNER_TEMP is unavailable; refusing hosted Apple scratch cleanup." >&2
+    exit 1
+  fi
+  runner_temp_real="$(cd "$RUNNER_TEMP" && /bin/pwd -P)"
+  task_root="$runner_temp_real/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}"
+  local_xcode_root="$runner_temp_real/pleazyng-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}-xcode"
+  for path in "$task_root" "$local_xcode_root"; do
+    if [[ -L "$path" || ( -e "$path" && ! -d "$path" ) ]]; then
+      echo "Refusing to clean redirected or non-directory hosted Apple scratch: $path" >&2
+      exit 1
+    fi
+    if [[ -d "$path" && "$(cd "$path" && /bin/pwd -P)" != "$path" ]]; then
+      echo "Refusing to clean hosted Apple scratch that resolves elsewhere: $path" >&2
+      exit 1
+    fi
+  done
+  /bin/rm -rf -- "$task_root" "$local_xcode_root"
+  echo "Removed task-owned hosted Apple scratch for $scratch_job."
+  exit 0
+fi
+
 task_root="$NFS_RUNS_ROOT/p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}"
 owner_file="$NFS_RUNS_ROOT/.plezyng-apple-scratch-p${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scratch_job}.owner"
 

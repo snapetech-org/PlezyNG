@@ -3,4 +3,4 @@
 # GOOGLE_TENSOR_SDK_BETA to its path before installing this file.
 -r requirements-android-litert-models.txt
 ai-edge-litert==2.3.0
-ai-edge-litert-sdk-google-tensor-nightly==2.3.0.dev20261001
+ai-edge-litert-sdk-google-tensor-nightly==2.4.0.dev20261105

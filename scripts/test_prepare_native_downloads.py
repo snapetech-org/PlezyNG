@@ -86,6 +86,31 @@ class NativeDownloadsTests(unittest.TestCase):
         self.assertEqual(staged.read_bytes(), self.content)
         self.assertFalse(staged.with_suffix(".zip.ok").exists(), "Only the original Wrapper may acknowledge verification/extraction")
 
+    def test_cocoapods_receives_only_the_original_verified_pdfium_zip(self):
+        package = self.root / "pdfium-flutter"
+        (package / "darwin").mkdir(parents=True)
+        url = "https://github.com/espresso3389/pdfium-xcframework/releases/download/v1/PDFium.zip"
+        (package / "darwin/pdfium_flutter.podspec").write_text(f'PDFIUM_URL = "{url}"\nPDFIUM_HASH = "{self.digest}"\n')
+        (self.root / ".dart_tool").mkdir()
+        (self.root / ".dart_tool/package_config.json").write_text(json.dumps({"packages": [{"name": "pdfium_flutter", "rootUri": package.as_uri()}]}))
+        archive = self.root / "verified.zip"
+        archive.write_bytes(self.content)
+        curl = self.root / "original-curl"
+        curl.write_text("#!/bin/sh\nexit 7\n")
+        curl.chmod(0o755)
+        with patch.dict(downloads.os.environ, {"RUNNER_TEMP": str(self.root), "GITHUB_PATH": str(self.root / "github-path")}), \
+                patch.object(downloads, "pinned_asset", return_value=archive) as fetch, \
+                patch.object(downloads.shutil, "which", return_value=str(curl)):
+            downloads.prepare_apple_pdfium(self.root, self.root / "cache")
+        self.assertEqual(fetch.call_args.args[:4], ("espresso3389/pdfium-xcframework", "v1", "PDFium.zip", self.digest))
+        wrapper = self.root / "pleazyng-pdfium-curl/curl"
+        args = [str(wrapper), "-L", "-o", "pdfium.zip", url]
+        subprocess.run(args, cwd=self.root, check=True)
+        self.assertEqual((self.root / "pdfium.zip").read_bytes(), self.content)
+        self.assertEqual(subprocess.run([str(wrapper), "--version"], cwd=self.root).returncode, 7)
+        archive.write_bytes(b"corrupt response")
+        self.assertNotEqual(subprocess.run(args, cwd=self.root, capture_output=True).returncode, 0)
+
     def test_pdfium_stages_only_the_regular_pinned_library(self):
         package = self.root / "pdfium-package"
         (package / "hook").mkdir(parents=True)

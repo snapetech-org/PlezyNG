@@ -522,3 +522,17 @@ Source recovery polls at most once a minute while Apple jobs finish. Each full
 proof rechecks GitHub source, job and CI evidence; the interval leaves API
 capacity for final artifact verification and publication. Active builders keep
 running throughout this status wait.
+
+Use `--rebuild-macos` if the source Mac job failed before producing its qualified
+DMG. This excludes the source Mac artifact and requires a new universal Mac
+build, signing, notarization and Gatekeeper verification when
+`--prepare-homebrew-cask` is selected. It can accompany `--rebuild-linux`; it
+cannot accompany signing-only `--reuse-macos-run`. Other successful platform
+outputs still require the complete source and digest proof.
+
+Apple PDFium also has a CocoaPods download separate from the Dart native hook.
+The prefetcher reads the original locked `pdfium_flutter` podspec URL and SHA,
+fetches that same XCFramework ZIP through the GitHub asset API, and installs a
+job-local curl wrapper for only that exact CocoaPods command. CocoaPods retains
+its own ZIP verification and extraction. Other curl invocations are delegated,
+and neither the dependency source nor its version/checksum is edited.

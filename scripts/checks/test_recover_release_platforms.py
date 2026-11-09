@@ -77,6 +77,15 @@ class SourceProofTests(unittest.TestCase):
         mac["steps"] = [{"name": name, "status": "completed", "conclusion": "success"} for name in ("Notarize Application", "Verify Gatekeeper acceptance for Homebrew Cask")]
         self.assertTrue(self.prove(require_homebrew_cask=True)["macos_cask_qualified"])
 
+    def test_failed_mac_requires_a_fresh_build_and_qualification(self):
+        next(job for job in self.jobs if job["name"] == "build-macos")["conclusion"] = "failure"
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+        proof = self.prove(rebuild_macos=True, require_homebrew_cask=True)
+        self.assertNotIn("build-macos", proof["reused_jobs"])
+        self.assertIn("build-macos", proof["rebuilt_jobs"])
+        self.assertFalse(proof["macos_cask_qualified"])
+
     def test_preflight_allows_running_native_jobs_but_never_a_failure(self):
         self.source["status"] = "queued"
         self.jobs[0].update(status="in_progress", conclusion=None)

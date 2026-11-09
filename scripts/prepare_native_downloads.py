@@ -17,6 +17,7 @@ import urllib.request
 import uuid
 
 PRODUCERS = {"simolus3/sqlite3.dart", "edde746/libdovi-builds", "AppImage/type2-runtime", "bblanchon/pdfium-binaries", "gradle/gradle-distributions", "edde746/flutter-plezy", "boostorg/boost", "arvidn/libtorrent", "simdutf/simdutf", "ninja-build/ninja", "snapetech-org/mpv-build", "vslavik/winsparkle", "libsdl-org/SDL", "jrsoftware/issrc", "AppImage/appimagetool", "lg-flutter-webos/ndk", "lg-flutter-webos/artifacts", "ales-drnz/dart_smb2", "actions/python-versions"}
+PRODUCERS.add("espresso3389/pdfium-xcframework")
 
 
 def sha256(path):
@@ -266,6 +267,49 @@ def prepare_pdfium(root, platform, arch, cache):
                 shutil.copyfileobj(source, output)
 
 
+def prepare_apple_pdfium(root, cache):
+    """Feed CocoaPods its original checksum-pinned ZIP without editing the pod."""
+    config_path = root / ".dart_tool/package_config.json"
+    config = json.loads(config_path.read_text())
+    entry = next(item for item in config["packages"] if item["name"] == "pdfium_flutter")
+    uri = urllib.parse.urlparse(urllib.parse.urljoin(config_path.as_uri(), entry["rootUri"]))
+    if uri.scheme != "file" or uri.netloc:
+        raise ValueError("PDFium Flutter must resolve to the locked local pub cache")
+    content = (Path(urllib.request.url2pathname(uri.path)) / "darwin/pdfium_flutter.podspec").read_text()
+    url = re.search(r'^PDFIUM_URL = "([^"]+)"', content, re.M)[1]
+    digest = re.search(r'^PDFIUM_HASH = "([a-f0-9]{64})"', content, re.M)[1]
+    match = re.fullmatch(r"https://github\.com/espresso3389/pdfium-xcframework/releases/download/([^/]+)/([^/]+)", url)
+    if not match:
+        raise ValueError("Unreviewed PDFium CocoaPods producer")
+    archive = pinned_asset("espresso3389/pdfium-xcframework", match[1], match[2], digest, cache)
+    real_curl = shutil.which("curl")
+    if not real_curl:
+        raise ValueError("The build host has no curl")
+    wrapper_dir = Path(os.environ["RUNNER_TEMP"]) / "pleazyng-pdfium-curl"
+    wrapper_dir.mkdir(parents=True, exist_ok=True)
+    (wrapper_dir / "download.json").write_text(json.dumps({"curl": real_curl, "url": url, "path": str(archive), "sha256": digest}))
+    wrapper = wrapper_dir / "curl"
+    wrapper.write_text('''#!/usr/bin/env python3
+import hashlib, json, os, pathlib, shutil, sys
+config = json.loads(pathlib.Path(__file__).with_name("download.json").read_text())
+args = sys.argv[1:]
+if args == ["-L", "-o", "pdfium.zip", config["url"]]:
+    source, target = pathlib.Path(config["path"]), pathlib.Path("pdfium.zip")
+    if source.is_symlink() or target.is_symlink():
+        raise SystemExit("Refusing linked PDFium CocoaPods download")
+    if hashlib.sha256(source.read_bytes()).hexdigest() != config["sha256"]:
+        raise SystemExit("Pinned PDFium CocoaPods cache changed")
+    shutil.copyfile(source, target)
+    if hashlib.sha256(target.read_bytes()).hexdigest() != config["sha256"]:
+        raise SystemExit("Staged PDFium CocoaPods archive changed")
+    raise SystemExit(0)
+os.execv(config["curl"], [config["curl"], *args])
+''')
+    wrapper.chmod(0o755)
+    with open(os.environ["GITHUB_PATH"], "a") as stream:
+        stream.write(str(wrapper_dir.resolve()) + "\n")
+
+
 def base36(value):
     result = ""
     while value:
@@ -408,6 +452,8 @@ def main():
         prepare_smb(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
         if args.sqlite_platform in {"ios", "tvos", "macos"}:
             prepare_cmake_downloads(args.project_root.resolve(), args.sqlite_platform, args.arch, args.cache_dir.resolve())
+        if args.sqlite_platform in {"ios", "macos"}:
+            prepare_apple_pdfium(args.project_root.resolve(), args.cache_dir.resolve())
         if args.sqlite_platform == "android":
             prepare_gradle(args.project_root.resolve(), args.cache_dir.resolve())
     if args.cmake_deps:

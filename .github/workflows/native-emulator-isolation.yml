@@ -67,10 +67,9 @@ jobs:
           cmdline-tools-version: '15859902'
           log-accepted-android-sdk-licenses: false
       - name: Install Android test toolchains
-        run: >-
-          sdkmanager 'platforms;android-37' 'build-tools;36.1.0'
-          'ndk;29.0.14206865' 'cmake;3.22.1' 'platform-tools' 'emulator'
-          'system-images;android-35;google_apis;x86_64'
+        run: |
+          python3 scripts/prepare_android_sdk.py install --direct-egress
+          sdkmanager 'emulator' 'system-images;android-35;google_apis;x86_64'
       - name: Compile all app ABIs and inspect service integration
         run: android/gradlew -p test/android/romm assembleDebug assembleDebugAndroidTest lintDebug --stacktrace
       - name: Exercise the actual Android isolated service

@@ -3,7 +3,7 @@
 See [the current publishing readiness matrix](publishing-readiness.md) for business, technical and review gates and staged automation settings.
 
 For the 2026-11-09 Arch/COPR public audit, fork-specific installation paths,
-and checksum-pinned Nix/aerynOS recipe preparation, see the
+and checksum-pinned Nix recipe preparation, see the
 [Linux distribution channel guide](linux-distribution-channels.md).
 
 Live account migration is in progress. See [the dated channel migration receipt](pleazyng-channel-migration.json) for verified new records, API access and pending steps. The older readiness snapshots below describe their audit dates and do not prove current publication readiness.
@@ -83,7 +83,7 @@ The GitHub-only release uses the unsigned developer iOS and tvOS IPAs. Signed Ap
 
 Store builds apply the same access rule on Google Play, Apple App Store, and Amazon Appstore: the app automatically starts a device-local seven-day full-access trial on first launch, then requires one one-time lifetime purchase. Each store sells only the lifetime unlock at a USD $2.99 base price; the app displays the store's localized price.
 
-The upstream [Plezy download guide](https://github.com/edde746/plezy#download) also lists Arch, Fedora/RHEL, Nix, and aerynOS channels. Pleazyng now publishes to AUR, COPR, and Launchpad PPA when their accounts are configured. Nix and aerynOS remain community-maintained package channels; Flatpak remains a GitHub bundle until a source-built Flathub submission is accepted.
+Pleazyng has configured AUR, COPR and Launchpad PPA publishers. Nix packaging is maintained downstream pending native qualification and review; Flatpak remains a GitHub bundle until a source-built Flathub submission is accepted.
 
 ## Required configuration
 

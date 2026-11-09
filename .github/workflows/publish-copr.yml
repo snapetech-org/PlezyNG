@@ -72,7 +72,8 @@ jobs:
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: ${{ steps.release.outputs.tag }}
+          # Publisher fixes come from protected main; source archives stay immutable.
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
 
       - name: Check COPR publisher settings
@@ -128,6 +129,8 @@ jobs:
           cp linux/packaging/org.snapetech.pleazyng.desktop "$top/SOURCES/org.snapetech.pleazyng.desktop"
           cp assets/pleazyng.png "$top/SOURCES/pleazyng.png"
           cp LICENSE "$top/SOURCES/LICENSE"
+          cp linux/packaging/normalize-bundle-rpaths.py "$top/SOURCES/normalize-bundle-rpaths.py"
+          cp linux/packaging/flatpak/relocate-caches.py "$top/SOURCES/relocate-caches.py"
           sed "s/^Version:.*/Version:        $RELEASE_VERSION/" linux/packaging/copr/pleazyng.spec > "$top/SPECS/pleazyng.spec"
           rpmbuild --define "_topdir $top" -bs "$top/SPECS/pleazyng.spec"
 

@@ -5,6 +5,8 @@ pkgdesc='Plex client with Jellyfin and Emby support, offline downloads, and HDR'
 arch=('x86_64' 'aarch64')
 url='https://github.com/snapetech-org/pleazyng'
 license=('GPL-3.0-only')
+# Preserve the released native engines and provider binaries.
+options=('!strip' '!debug')
 depends=('alsa-lib' 'glib2' 'gtk3' 'webkit2gtk-4.1' 'libsecret' 'libdrm' 'libepoxy' 'libevdev' 'libglvnd' 'libva' 'libvdpau' 'vulkan-icd-loader' 'libx11' 'libxcb' 'libxext' 'mesa' 'wayland')
 provides=('pleazyng')
 source=('pleazyng.desktop' 'LICENSE')
@@ -24,7 +26,7 @@ package() {
   esac
 
   install -d "$pkgdir/opt/pleazyng"
-  tar -xzf "$archive" -C "$pkgdir/opt/pleazyng"
+  tar --no-same-owner -xzf "$archive" -C "$pkgdir/opt/pleazyng"
   install -Dm755 "$pkgdir/opt/pleazyng/pleazyng.sh" "$pkgdir/usr/bin/pleazyng"
   sed -i 's|INSTALL_DIR="/opt/pleazyng"|INSTALL_DIR="/opt/pleazyng"|' "$pkgdir/usr/bin/pleazyng"
   install -Dm644 "$srcdir/pleazyng.desktop" "$pkgdir/usr/share/applications/org.snapetech.pleazyng.desktop"

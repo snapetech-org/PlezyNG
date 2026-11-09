@@ -269,10 +269,6 @@ On ARM64, use `pleazyng-linux-arm64.rpm`. The [Pleazyng COPR project](https://co
 
 Pleazyng's Nix recipe preparation is tracked in the [Linux channel release guide](docs/maintainers/linux-distribution-channels.md). Native Nix builds and playback qualification are pending; no Pleazyng nixpkgs entry or binary cache is claimed. Use the Pleazyng Flatpak bundle above on systems configured for Flatpak.
 
-### aerynOS — Moss
-
-Pleazyng's aerynOS recipe preparation is tracked in the [Linux channel release guide](docs/maintainers/linux-distribution-channels.md). A native Boulder build, runtime qualification and repository acceptance are pending, so there is no verified `moss install pleazyng` command yet. Use the Pleazyng Flatpak bundle above on systems configured for Flatpak.
-
 Package publication and store acceptance are separate from the complete GitHub release. See the [channel readiness and qualification steps](docs/maintainers/linux-distribution-channels.md).
 
 </details>

@@ -17,7 +17,6 @@ Flatpak application ID is `org.snapetech.pleazyng`.
 | Fedora RPM direct | Both RPM assets exist in v3.0.7 | Use `dnf install ./pleazyng-linux-<arch>.rpm`; RHEL dependency support needs separate qualification |
 | COPR | Project target `slskdn/pleazyng` and credential names configured; public build list empty; no publisher runs recorded | Submit checked SRPM, wait for successful supported Fedora x86_64/aarch64 builds and verify repository installation |
 | Nix | Candidate generator and FHS bundle recipe added | Build on x86_64-linux and aarch64-linux, qualify runtime and pin the tested nixpkgs revision; arrange maintainer and nixpkgs review or a maintained downstream distribution |
-| aerynOS / Moss | Candidate generator and x64 binary-bundle Stone recipe added | Build with Boulder on aerynOS, resolve automatic dependency/provider and package-splitting findings, qualify runtime and obtain repository acceptance; binary repackaging policy acceptance is unverified |
 | Google Play | New app ID recorded as `org.snapetech.pleazyng`; `GOOGLE_PLAY_BOOTSTRAP_COMPLETE=false`, track `alpha`, status `completed`; AAB exists in v3.0.7 | First console bootstrap/App Signing, signed AAB and purchase/reviewer-access qualification, review and explicit activation; an AAB on GitHub does not prove a live test |
 | Homebrew | Dedicated tap configured, but Cask raw-file request returned 404 | Signed/notarized/Gatekeeper-qualified DMG and successful verified tap publication |
 
@@ -27,7 +26,7 @@ and [GitHub v3.0.7 assets](https://github.com/snapetech-org/pleazyng/releases/ta
 Treat these results as dated evidence and recheck before acting.
 No package publisher or app-store upload was dispatched during this audit.
 
-## Prepare immutable Nix and aerynOS candidates
+## Prepare immutable Nix candidates
 
 Use a fresh task-owned scratch directory on a host with sufficient free space.
 Download only the checksum manifest first, then authenticate it using the
@@ -62,22 +61,15 @@ nix-build "$channel_scratch/recipes-v3.0.7/nix/pleazyng.nix" -o "$channel_scratc
 
 The expression currently uses the host's `<nixpkgs>`; record and pin the revision
 that passes evaluation and runtime qualification before distributing it.
-Neither Nix nor Boulder is installed on the audit host, so generation does not
-establish that these candidates build. The aerynOS candidate targets the x64
-release bundle; it does not imply a new ARM64 aerynOS port. Use the current
-[Boulder build/test workflow](https://aerynos.com/packaging/workflow/basic-workflow/)
-on aerynOS and retain the `.stone`, dependency findings and install/upgrade logs.
-Increment the Stone package release number for recipe-only revisions.
 
 The v3.0.7 checksum manifest passed GitHub attestation verification against
-`snapetech-org/pleazyng` (repository ID `1433487464`). Both candidates were
+`snapetech-org/pleazyng` (repository ID `1433487464`). The Nix candidate was
 generated from that manifest. Four preparation/cache-relocation tests and five
-existing Linux launcher/COPR staging tests passed; generated Stone YAML parsed
-successfully. These checks validate preparation and staging, not native Nix or
-aerynOS builds or playback.
+existing Linux launcher/COPR staging tests passed. These checks validate
+preparation and staging, not playback.
 
-Both recipes preserve the full bundle layout and relocate GTK cache paths.
-Before advertising either channel, verify fonts, TLS, desktop/URI launch, file
+The recipe preserves the full bundle layout and relocates GTK cache paths.
+Before advertising the channel, verify fonts, TLS, desktop/URI launch, file
 chooser, Wayland video, GPU drivers/hardware decoding, audio, offline downloads,
 and persisted opt-in experimental settings with packaged native components.
 Inspect every bundled ELF and provider, including dynamically loaded libraries;
@@ -87,8 +79,8 @@ experimental engines or substituting a system mpv. Keep Off as the default.
 Repository submission must include a maintainer, license/provenance review and
 the tested native outputs. Confirm whether each community requires source
 builds; a request for source packaging is a separate build adaptation, not a
-reason to describe a binary candidate as accepted. No nixpkgs or aerynOS PR is
-submitted by the renderer, and no binary cache or Moss repository is configured.
+reason to describe a binary candidate as accepted. No nixpkgs PR is submitted
+by the renderer and no binary cache is configured.
 
 ## Publish already-built Arch and Fedora artifacts
 
@@ -125,8 +117,6 @@ conversion. Never treat an upload or completed workflow as review approval.
 ## Packaging references
 
 - [Nixpkgs FHS environments](https://nixos.org/manual/nixpkgs/stable/#sec-fhs-environments)
-- [aerynOS recipe format](https://aerynos.com/packaging/recipes/overview/)
-- [aerynOS runtime dependencies and automatic providers](https://aerynos.com/packaging/recipes/package-definition/)
 
 These candidates package Pleazyng's own release bundles. They do not copy the
 upstream Plezy recipes or imply participation by their maintainers.

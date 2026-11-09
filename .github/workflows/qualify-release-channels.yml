@@ -1,0 +1,118 @@
+# Existing-artifact qualification only; compatible public native runners.
+name: Qualify existing release channels
+run-name: qualify:${{ inputs.channel }}:tag:${{ inputs.release_tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing immutable published release
+        required: true
+        type: string
+      channel:
+        description: Native qualification lane
+        required: true
+        type: choice
+        options: [nix, macos]
+
+permissions:
+  contents: read
+  attestations: read
+
+concurrency:
+  group: qualify-channel-${{ inputs.channel }}-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+env:
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  nix:
+    if: inputs.channel == 'nix'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            arch: x64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Authenticate published checksum manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = false
+          mkdir -p "$RUNNER_TEMP/channel-qualification"
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP/channel-qualification"
+          python3 scripts/verify_release_attestation.py "$RUNNER_TEMP/channel-qualification/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY"
+          python3 scripts/prepare_linux_channel_recipes.py --tag "$RELEASE_TAG" --checksums "$RUNNER_TEMP/channel-qualification/SHA256SUMS.txt" --output "$RUNNER_TEMP/channel-qualification/recipes"
+      - name: Build Nix package on native architecture
+        run: |
+          set -euo pipefail
+          docker run --rm --cpus 4 --memory 12g \
+            --mount "type=bind,src=$RUNNER_TEMP/channel-qualification,dst=/work" \
+            nixos/nix@sha256:f159a58f390677f41e8e900a74b6e2f9c7f27b364122ae6acf7a652ce6c551c0 \
+            sh -lc 'set -eu
+              uname -m
+              nix-channel --add https://github.com/NixOS/nixpkgs/archive/4fe25e12eb9f4c744966dd3de5a05246cf098601.tar.gz nixpkgs
+              nix-channel --update
+              nix-instantiate --eval --strict -E "(import <nixpkgs> {}).lib.version"
+              nix-build /work/recipes/nix/pleazyng.nix -o /work/nix-result
+              nix-store --query --requisites "$(readlink -f /work/nix-result)" > /work/nix-closure.txt
+            ' 2>&1 | tee "$RUNNER_TEMP/channel-qualification/nix-build.log"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: nix-${{ matrix.arch }}-${{ inputs.release_tag }}-qualification
+          path: |
+            ${{ runner.temp }}/channel-qualification/nix-build.log
+            ${{ runner.temp }}/channel-qualification/nix-closure.txt
+            ${{ runner.temp }}/channel-qualification/recipes/preparation.json
+
+  macos:
+    if: inputs.channel == 'macos'
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Authenticate and inspect existing macOS release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = false
+          work="$RUNNER_TEMP/channel-qualification"
+          mkdir -p "$work/mounted"
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern pleazyng-macos.dmg --pattern SHA256SUMS.txt --dir "$work"
+          python3 scripts/verify_release_attestation.py "$work/SHA256SUMS.txt" --repo "$GITHUB_REPOSITORY"
+          cd "$work"
+          expected=$(awk '$2 == "pleazyng-macos.dmg" {print $1}' SHA256SUMS.txt)
+          test "$(shasum -a 256 pleazyng-macos.dmg | cut -d ' ' -f 1)" = "$expected"
+          trap 'hdiutil detach "$work/mounted" || true' EXIT
+          hdiutil attach -readonly -nobrowse -mountpoint "$work/mounted" pleazyng-macos.dmg
+          app=$(python3 -c 'from pathlib import Path; import sys; apps=list(Path(sys.argv[1]).glob("*.app")); assert len(apps)==1; print(apps[0])' "$work/mounted")
+          codesign --display --verbose=4 "$app" 2>&1 | tee codesign-identity.txt
+          codesign --verify --deep --strict --verbose=2 \
+            --test-requirement='anchor apple generic and certificate leaf[subject.OU] = "DM9A59DC85"' "$app" 2>&1 | tee codesign-verification.txt
+          spctl --assess --type execute --verbose=4 "$app" 2>&1 | tee gatekeeper.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: macos-${{ inputs.release_tag }}-qualification
+          path: |
+            ${{ runner.temp }}/channel-qualification/codesign-identity.txt
+            ${{ runner.temp }}/channel-qualification/codesign-verification.txt
+            ${{ runner.temp }}/channel-qualification/gatekeeper.txt

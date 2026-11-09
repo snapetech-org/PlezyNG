@@ -3,12 +3,17 @@
 ## [Unreleased]
 
 - Remove the vulnerable deepmerge build dependency from the Steam Cloud Decky extension, preserve its host React/UI and ESM entry contract with an esbuild runtime regression, and integrate the reviewed UI, TypeScript, React types and tslib dependency updates.
+- Repair existing-release Linux channel packaging: preserve binary payloads and root ownership in AUR packages, normalize bundled ELF search paths and GTK caches in COPR repacks, and add native x64/ARM64 Nix and macOS signature qualification without rebuilding application artifacts.
+
+- Remove aerynOS from supported release channels and packaging at the owner's request.
+
+- Retry the nested Dolby Vision Swift package resolution once from clean task-owned state when Xcode 26 aborts inside its package-graph model; ordinary resolver failures still fail immediately.
 
 - Keep mixed-library search expectations aligned with the supported Jellyfin/Emby book and audiobook item types.
 
 - Install XcodeGen and Git LFS in Apple native CI before exercising generated Dolby Vision projects, matching the release jobs on both Intel and Apple-Silicon hosted Macs.
 
-- Correct Pleazyng's Flatpak app-data path, sandbox wording, package filenames and Play test identity. Replace upstream installation directions with Pleazyng Pacman/RPM downloads and explicit pending channel status; add checksum-pinned Nix/aerynOS recipe preparation and a release qualification guide without claiming unpublished packages are available.
+- Correct Pleazyng's Flatpak app-data path, sandbox wording, package filenames and Play test identity. Replace upstream installation directions with Pleazyng Pacman/RPM downloads and explicit pending channel status; add checksum-pinned Nix recipe preparation and a release qualification guide without claiming unpublished packages are available.
 
 - Add a minimal native Requests destination for movies, TV seasons, ebooks and audiobooks with profile-owned status, discovery/search and basic details. SeerrNG book requests retain format-specific availability; the minimal flow keeps destination, approval and administrative controls in the server interface. Requested downstream by [@Tatsu941](https://github.com/Tatsu941) in [#267](https://github.com/snapetech-org/pleazyng/issues/267).
 

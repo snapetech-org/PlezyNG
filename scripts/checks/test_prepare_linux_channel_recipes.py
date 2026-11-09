@@ -41,7 +41,7 @@ class RecipePreparationTests(unittest.TestCase):
             nix = (output / 'nix/pleazyng.nix').read_text()
             self.assertIn('aarch64-linux', nix)
             self.assertIn('"' + 'b' * 64 + '"', nix)
-            for relative in ('nix/pleazyng.nix', 'aerynos/stone.yaml'):
+            for relative in ('nix/pleazyng.nix',):
                 text = (output / relative).read_text()
                 self.assertIn('/releases/download/v3.0.7/', text)
                 self.assertNotIn('@@', text)

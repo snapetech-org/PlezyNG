@@ -165,3 +165,9 @@ add_dependencies(${BINARY_NAME} plezy_retro)
 add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:plezy_retro>" "$<TARGET_FILE_DIR:${BINARY_NAME}>"
   VERBATIM)
+if(TARGET plezy_retro_worker)
+  # Keep direct IDE/debug builds usable before the bundle INSTALL target runs.
+  add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:plezy_retro_worker>" "$<TARGET_FILE_DIR:${BINARY_NAME}>"
+    VERBATIM)
+endif()

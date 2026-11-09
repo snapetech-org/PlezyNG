@@ -2,7 +2,7 @@
 
 ## Scope and evidence
 
-Inspected `snapetech-org/PlezyNG` at **main `0d0626cc375b8fa95124775365a6b37e2a03c9be`**. The recursive tree was complete, and a shallow local checkout was used to read the integration, navigation, source, lending, tracker and design owners. This is a focused architecture audit, not an exhaustive security audit or a device test.
+Inspected `snapetech-org/pleazyng` at **main `0d0626cc375b8fa95124775365a6b37e2a03c9be`**. The recursive tree was complete, and a shallow local checkout was used to read the integration, navigation, source, lending, tracker and design owners. This is a focused architecture audit, not an exhaustive security audit or a device test.
 
 Before publication, refreshed main to **`fb371d5046d16ecfaa7af9869b028b253f06ff83`** and compared the intervening changes. They affect the private-JIT Windows CI marker, its workflow guards/tests and changelog only; none of the audited application owners changed. This documentation branch incorporates that updated base.
 

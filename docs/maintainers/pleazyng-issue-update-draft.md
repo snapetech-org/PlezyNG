@@ -6,4 +6,4 @@ The repository name is intentionally unchanged for now, so existing source links
 
 This is source implementation, not a claim that every channel has shipped. Signed platform builds, existing-user data/purchase migration, fresh store screenshots, provider registrations, domain cutover and store/package submissions still need verification. Current build blockers and the remaining cutover work are recorded here:
 
-https://github.com/snapetech-org/PlezyNG/blob/main/docs/maintainers/pleazyng-rebrand-handoff.md
+https://github.com/snapetech-org/pleazyng/blob/main/docs/maintainers/pleazyng-rebrand-handoff.md

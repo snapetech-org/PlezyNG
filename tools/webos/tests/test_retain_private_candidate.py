@@ -37,7 +37,7 @@ class PrivateCandidateTests(unittest.TestCase):
         (self.source / "SHA256SUMS.txt").write_text(self.checksums)
         self.env = {
             "GHA_JIT_OUTPUTS": str(self.destination),
-            "GITHUB_REPOSITORY": "snapetech-org/PlezyNG",
+            "GITHUB_REPOSITORY": "snapetech-org/pleazyng",
             "GITHUB_JOB": "build-webos", "GITHUB_RUN_ID": "42",
             "GITHUB_RUN_ATTEMPT": "1", "GITHUB_SHA": "a" * 40,
         }

@@ -17,7 +17,7 @@ METADATA = {
     "license": "GPL-3.0",
     "vendor": "SnapeTech",
     "maintainer": "SnapeTech <noreply@github.com>",
-    "url": "https://github.com/snapetech-org/PlezyNG",
+    "url": "https://github.com/snapetech-org/pleazyng",
     "description": "Plex client with Jellyfin and Emby support, offline downloads, and HDR",
 }
 

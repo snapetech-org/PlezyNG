@@ -300,9 +300,9 @@ color-range and visible-pixel qualification on each server family.
 ## Validation and Luna's next tasks
 
 Checkpoint for source commit `9c0fb9693ad7b705e737a1829d10bfd70c6ce17e`
-([PR #24](https://github.com/snapetech-org/PlezyNG/pull/24)):
+([PR #24](https://github.com/snapetech-org/pleazyng/pull/24)):
 
-- [Platform workflow run 40289796275](https://github.com/snapetech-org/PlezyNG/actions/runs/40289796275)
+- [Platform workflow run 40289796275](https://github.com/snapetech-org/pleazyng/actions/runs/40289796275)
   finished **failed**. The 111 targeted Flutter tests, native renderer-selection
   tests, Slang/format freshness, and Linux/Windows/macOS contract jobs passed.
   The workflow was not green.
@@ -357,7 +357,7 @@ service, or other worktree was changed during this work.
 This is only the Dolby workflow route. The org-wide inventory tracked in
 [Packer PR #9](https://github.com/snapetech-org/packer/pull/9) counts 407
 workflow files and 779 jobs across 60 repositories; 667 job definitions still
-contain hosted runner labels. Plezy's [shared-JIT PR #26](https://github.com/snapetech-org/PlezyNG/pull/26)
+contain hosted runner labels. Plezy's [shared-JIT PR #26](https://github.com/snapetech-org/pleazyng/pull/26)
 covers three trusted release jobs, not the remaining Plezy or org-wide routes.
 Keep each lane blocked until a compatible runner route and its trust boundary are
 verified. Use private JIT when hardware, private storage/network, or the

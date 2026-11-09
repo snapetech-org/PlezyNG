@@ -26,8 +26,8 @@ AppStream summary, 30 characters:
 
 ## Store links
 
-- Privacy policy: `https://github.com/snapetech-org/PlezyNG/blob/main/PRIVACY.md`
-- Support: `https://github.com/snapetech-org/PlezyNG/issues`
+- Privacy policy: `https://github.com/snapetech-org/pleazyng/blob/main/PRIVACY.md`
+- Support: `https://github.com/snapetech-org/pleazyng/issues`
 
 ## Channel audit
 

@@ -3,7 +3,7 @@ Version:        2.24.1
 Release:        1%{?dist}
 Summary:        Plex client with Jellyfin and Emby support, offline downloads, and HDR
 License:        GPL-3.0-only
-URL:            https://github.com/snapetech-org/PlezyNG
+URL:            https://github.com/snapetech-org/pleazyng
 Source0:        pleazyng-linux-x64.tar.gz
 Source1:        pleazyng-linux-arm64.tar.gz
 Source2:        pleazyng.sh

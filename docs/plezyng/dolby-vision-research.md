@@ -15,7 +15,7 @@ untested hardware combinations and complete proprietary display-mapper equivalen
 
 - `tools/dv-engine/` builds an isolated pinned-source Linux FFmpeg/libplacebo/mpv
   engine, including dual-layer interfaces, the FEL composer and mpv paired-frame
-  integration. [Run 40276002261](https://github.com/snapetech-org/PlezyNG/actions/runs/40276002261)
+  integration. [Run 40276002261](https://github.com/snapetech-org/pleazyng/actions/runs/40276002261)
   passed the build, 17/17 mpv tests (including the pairing decision-helper test),
   16 libplacebo tests with one expected headless skip, software GLES render/readback,
   six synthetic residual vectors and fail-closed missing/invalid EL cases. The

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-11-05",
+  "updated": "2026-11-08",
   "product": "Pleazyng",
-  "state": "source_implemented_cutover_blocked",
+  "state": "source_implemented_application_repository_migrated",
   "completed": [
     "Removed upstream relay URL fallback and reject upstream domains in configured relay URLs",
     "Removed bundled upstream Discord and tracker client identifiers",
@@ -14,15 +14,15 @@
     "Scoped public identity and upstream-protocol regression guard added",
     "Website deployed to Cloudflare Pages and existing owner-private ChatGPT Site with audience preserved",
     "Replaced all nine inherited README pictograms and classified all 39 shared upstream images",
-    "Updated GitHub repository descriptions and Pleazyng topic without renaming repositories"
+    "Updated GitHub repository descriptions and Pleazyng topic without renaming repositories",
+    "Application GitHub repository and local checkout renamed; redirects and exact runner workflow access migrated"
   ],
   "pending": [
-    "Owner-deferred repository renames",
+    "Website and other repository renames outside the application repository scope",
     "Data/purchase continuity bridges and device qualification",
     "Domain ownership/DNS/TLS and migration redirects",
     "Store/channel records, signing, provider registrations and owned services",
-    "Fresh native store screenshots",
-    "Existing main compilation defects and exact-commit all-platform release qualification"
+    "Fresh native store screenshots"
   ],
   "checks": {
     "brand_exports": "590 exports reproduced byte-for-byte with --check",
@@ -33,9 +33,10 @@
     "webos_package_tests": "49 passed",
     "focused_flutter_tests": "72 passed",
     "website_build_and_checks": "passed; 4 browser-logic tests",
-    "full_flutter_launcher": "failed on 9e9745362 after concurrent integration repairs; see handoff",
+    "full_flutter_launcher": "Superseded by 3.0.5 source f253feb9a: 9845 passed, 22 skipped; exact-source CI 42518011825 and complete release 42521168847 succeeded",
     "native_release_matrix": "not run; release blocked",
-    "full_commit_hook": "failed existing formatting/icon/compile/dependency checks; bypass documented in handoff"
+    "full_commit_hook": "failed existing formatting/icon/compile/dependency checks; bypass documented in handoff",
+    "github_release": "v3.0.5 published with every required platform; repository ID 1433487464 retained through rename"
   },
   "handoff": "docs/maintainers/pleazyng-rebrand-handoff.md",
   "website_receipts": {

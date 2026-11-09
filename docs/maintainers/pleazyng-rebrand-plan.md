@@ -1,12 +1,12 @@
 # PlezyNG to Pleazyng: brand, assets, packages and publishing migration
 
-Status: source implementation landed in this work; external cutover and native qualification remain blocked. See [implementation record](pleazyng-rebrand-handoff.md) and [machine-readable status](pleazyng-rebrand-status.json). Repository renames are deferred by the owner. The original audit and checklist below are retained as the scope baseline; unchecked items are not completion claims.
+Status: source implementation and the application repository/local checkout rename are complete. The owner authorized the repository cutover on 8 November 2026; see [repository migration](repository-rename.md). Other external channels and device qualification remain separately tracked in the [implementation record](pleazyng-rebrand-handoff.md) and [machine-readable status](pleazyng-rebrand-status.json). The original audit and checklist below are retained as the scope baseline; unchecked items are not completion claims.
 Date: 5 November 2026 (America/Regina).
 Owner/publisher: SnapeTech.
-Source repository at audit: snapetech-org/PlezyNG, main at 2bc45e1b890776cb6b1a19ba3434867d01f0a404.
+Source repository at audit: snapetech-org/PlezyNG (now snapetech-org/pleazyng), main at 2bc45e1b890776cb6b1a19ba3434867d01f0a404.
 Related website source: snapetech-org/plezyng.app (private), tree 99f46c955f86fbe7ff7c5b8f22d23fd30cf5c0ba.
 Upstream comparison: edde746/plezy, tree 0ef47f2711ecb5ff30089831410b6f29b580cdcb.
-Issue: [Rename fork before publishing, #149](https://github.com/snapetech-org/PlezyNG/issues/149).
+Issue: [Rename fork before publishing, #149](https://github.com/snapetech-org/pleazyng/issues/149).
 Inventory: [pleazyng-rebrand-inventory.json](pleazyng-rebrand-inventory.json).
 
 The approved destination is **Pleazyng**, pronounced “pleasing”, presented as a whole word. This document maps the entire transition, including graphics and inherited artwork. It does not assert trademark clearance, store acceptance, or completion of the changes. Upstream approval is not an execution dependency in this plan; applicable rights and actual channel policies still apply.
@@ -44,7 +44,7 @@ The following are targets, not claims that names, domains or store records are r
 | --- | --- | --- |
 | Product/display name | PlezyNG; residual Plezy | Pleazyng |
 | Publisher/maintainer | SnapeTech | SnapeTech |
-| Main repository | snapetech-org/PlezyNG | snapetech-org/Pleazyng |
+| Main repository | snapetech-org/pleazyng | snapetech-org/Pleazyng |
 | Website source repository | snapetech-org/plezyng.app (private) | snapetech-org/pleazyng.app (private) |
 | Website | plezyng.app / www.plezyng.app | pleazyng.app / www.pleazyng.app, subject to verified ownership |
 | Primary application/package ID | org.snapetech.plezyng | org.snapetech.pleazyng |
@@ -183,7 +183,7 @@ Exit: network evidence from enabled integrations shows no calls to upstream-oper
 - [ ] Rename the existing private website repository to pleazyng.app and preserve its visibility. Preserve the existing private Site identity and audience in .openai/hosting.json.
 - [ ] Update repository description, homepage, topics, social-preview image, README badges/download links, FUNDING/support metadata, issue/PR templates and release descriptions for the new public identity.
 - [ ] Update remotes in working clones and CI workspaces; retain edde746/plezy as upstream. Do not rename unrelated shared dependencies such as mpv-build or MilkRust merely for this migration.
-- [ ] Audit all literal snapetech-org/PlezyNG and plezyng.app references in workflows, scripts, source, manifests, lockfiles, website source, native-asset repositories and packaging consumers.
+- [ ] Audit all literal snapetech-org/pleazyng and plezyng.app references in workflows, scripts, source, manifests, lockfiles, website source, native-asset repositories and packaging consumers.
 - [ ] Check cross-repository actions/reusable workflow calls, token/repository allowlists, GitHub App installation access, deploy keys, environment policies, package links, Pages/custom-domain settings, webhooks and OIDC trust subjects. Repository redirects do not make every consumer work automatically.
 - [ ] Update the shared JIT broker/source routing in snapetech-org/packer where it keys on repository names, and only the relevant repository-specific runner labels. Preserve current compatible-hosted-first routing and private JIT for private resources; do not restart active brokers or displace running work.
 - [ ] Keep CodeQL disabled as directed by AGENTS.md. Do not enable it or change runner isolation as incidental rebrand work.
@@ -201,7 +201,7 @@ Canonical new release filenames use lower-case pleazyng-<platform>-<architecture
 | Channel | Implementation and external migration |
 | --- | --- |
 | GitHub Releases | Use the next unused version, new release title/name, canonical asset names, matching checksums/provenance, accurate release notes and a migration notice. Update release coverage/recovery logic; do not reuse old-brand binaries as newly branded outputs. |
-| Sparkle / WinSparkle | Current feed is cdn.jsdelivr.net/gh/snapetech-org/PlezyNG@appcast/appcast.xml. Update clients and feed generation to the new repository/verified owned feed URL. Keep a signed, tested bridge for installed old clients; preserve signing keys. Test CDN, old feed URL, app identity and installer handling rather than assuming redirects suffice. |
+| Sparkle / WinSparkle | Current feed is cdn.jsdelivr.net/gh/snapetech-org/pleazyng@appcast/appcast.xml. Update clients and feed generation to the new repository/verified owned feed URL. Keep a signed, tested bridge for installed old clients; preserve signing keys. Test CDN, old feed URL, app identity and installer handling rather than assuming redirects suffice. |
 | Homebrew | Rename Casks/snapetech-plezyng.rb.template and generator references; change cask token, app bundle, URL, name and fork-owned data-path handling. Provide a supported cask migration rather than relying on replacing an installed token. Keep old data during migration; review zap rules. Preserve signing/notarization requirements. |
 | WinGet | Move generated identity from SnapeTech.PlezyNG to SnapeTech.Pleazyng; update publisher/package/display/installer URLs, executable and ARP/installer identity. Submit the appropriate new/migration manifests and track repository review. A merged package PR is separate from generating manifests. |
 | Chocolatey | Rename nuspec/package/output and install URLs/scripts, preserve upgrade/uninstall behaviour and user data, and handle old-package transition explicitly. Track moderation and installed-package continuity. |
@@ -283,7 +283,7 @@ Exit: each claimed platform/channel is verifiably complete at its stated stage, 
 | R2 native app/package/link identities | Planned | Inspected final binaries/manifests and coexistence results |
 | R3 data and entitlement migration | Planned | Upgrade/import/recovery results for each affected identity |
 | R4 services and provider registrations | Planned; upstream defaults identified | Fork ownership, consent/callback and network evidence |
-| R5 repositories and automation | Planned | New repository/remotes/consumer/runner routing checks |
+| R5 repositories and automation | Application repository/local checkout migrated on 2026-11-08; other repository/registry renames separate | [Repository, redirect and runner routing record](repository-rename.md) |
 | R6 publishing channels | Planned; existing GitHub release verified | Per-channel records, signed outputs and publication-stage receipts |
 | R7 website and public collateral | Planned; private site source inspected | Domain control, actual deployment, redirects, complete branding sync |
 | R8 release verification and cutover | Planned | Complete platform matrix, exact-SHA evidence and final migration record |

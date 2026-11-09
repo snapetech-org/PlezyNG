@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "observedAt": "2026-11-08",
-  "source": "https://api.github.com/repos/snapetech-org/PlezyNG/releases/latest",
+  "observedAt": "2026-11-09",
+  "source": "https://api.github.com/repos/snapetech-org/pleazyng/releases/latest",
   "id": 438598191,
   "tag_name": "v3.0.5",
   "target_commitish": "main",
@@ -9,10 +9,11 @@
   "prerelease": false,
   "published_at": "2026-11-08T23:34:10Z",
   "tag_commit": "f253feb9a8a0949443d569af901f521df2be6f3c",
-  "html_url": "https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5",
+  "html_url": "https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.5",
   "assetNames": [
     "SHA256SUMS.txt",
     "appcast.xml",
+    "discord-announcement-receipt.json",
     "org.snapetech.pleazyng_3.0.5_arm.ipk",
     "pleazyng-amazon-firetv-provenance.json",
     "pleazyng-amazon-firetv.apk",

@@ -15,7 +15,7 @@ UPSTREAM = "q7t6eu1txRrqv1PeWDCRV95rFxnmD/D3GZWbUPMwUyU="
 
 
 class UpdaterTrustTest(unittest.TestCase):
-    def run_config(self, public="", private="", repository="snapetech-org/PlezyNG"):
+    def run_config(self, public="", private="", repository="snapetech-org/pleazyng"):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             for name in ("macos/Runner/Info.plist", "windows/runner/Runner.rc"):

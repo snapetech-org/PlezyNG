@@ -15,7 +15,7 @@
     "version": "3.0.5",
     "publicationStatus": "published",
     "publicLatestAvailable": true,
-    "releasesPage": "https://github.com/snapetech-org/PlezyNG/releases",
+    "releasesPage": "https://github.com/snapetech-org/pleazyng/releases",
     "requiredCiJobs": [
       "Code Analysis",
       "Unit Tests",

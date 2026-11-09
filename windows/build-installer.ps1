@@ -49,9 +49,9 @@ AppId={{$AppGuid}
 AppName={#Name}
 AppVersion={#Version}
 AppPublisher={#Publisher}
-AppPublisherURL=https://github.com/snapetech-org/PlezyNG
-AppSupportURL=https://github.com/snapetech-org/PlezyNG
-AppUpdatesURL=https://github.com/snapetech-org/PlezyNG/releases/latest
+AppPublisherURL=https://github.com/snapetech-org/pleazyng
+AppSupportURL=https://github.com/snapetech-org/pleazyng
+AppUpdatesURL=https://github.com/snapetech-org/pleazyng/releases/latest
 DefaultDirName={autopf}\{#Name}
 DefaultGroupName={#Name}
 AllowNoIcons=yes
@@ -71,7 +71,7 @@ ArchitecturesInstallIn64BitMode=$ArchAllowed
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-ElevationRequired=Pleazyng is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://github.com/snapetech-org/PlezyNG/releases/latest
+ElevationRequired=Pleazyng is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://github.com/snapetech-org/pleazyng/releases/latest
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked

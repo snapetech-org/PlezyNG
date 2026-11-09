@@ -1,6 +1,6 @@
 # Steam SDK preparation and build-agent handoff
 
-Use the current head of [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81),
+Use the current head of [PR #81](https://github.com/snapetech-org/pleazyng/pull/81),
 branch `codex/steam-vulkan-cloud-relay-20261028`. Record the exact commit before
 starting. This handoff prepares real platform SDKs and builds the implemented
 receiver. It does not certify a signed app, physical HDR output or a live Steam

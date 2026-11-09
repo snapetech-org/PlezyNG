@@ -36,6 +36,6 @@ Pleazyng은 Pleazyng 사용자 계정을 만들거나 운영하지 않습니다.
 
 ## 문의
 
-개인정보 관련 문의는 [Pleazyng GitHub 프로젝트 페이지](https://github.com/snapetech-org/PlezyNG/issues)를 이용하세요. GitHub 이슈는 공개되므로 비밀번호, 액세스 토큰, 서버 주소 또는 기타 민감한 정보를 이슈에 포함하지 마세요.
+개인정보 관련 문의는 [Pleazyng GitHub 프로젝트 페이지](https://github.com/snapetech-org/pleazyng/issues)를 이용하세요. GitHub 이슈는 공개되므로 비밀번호, 액세스 토큰, 서버 주소 또는 기타 민감한 정보를 이슈에 포함하지 마세요.
 
 앱의 데이터 처리 방식이 변경되면 이 안내를 갱신할 수 있습니다. 개정할 때마다 위 시행일을 변경합니다.

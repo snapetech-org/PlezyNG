@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--repo', default='snapetech-org/PlezyNG')
+    parser.add_argument('--repo', default='snapetech-org/pleazyng')
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--emit-code', action='store_true', help='Emit the NEW grant to a trusted console-entry consumer; never use in CI logs')
     args = parser.parse_args()

@@ -55,7 +55,7 @@ class BuildSnapAdmissionTests(unittest.TestCase):
             "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
             "GITHUB_ACTIONS": "true",
             "GITHUB_RUN_ID": "123456",
-            "GITHUB_REPOSITORY": "snapetech-org/PlezyNG",
+            "GITHUB_REPOSITORY": "snapetech-org/pleazyng",
             "GITHUB_REF": "refs/heads/main",
             "GITHUB_EVENT_NAME": "workflow_dispatch",
             "RUNNER_ENVIRONMENT": "github-hosted",

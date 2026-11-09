@@ -1,6 +1,6 @@
 # webOS TV port status
 
-**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.4](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.4). The exact released package was installed and its four production binary hashes verified on the rooted LG C6 on 2026-11-08. The owner confirmed audible playback of the 4K HEVC test source. Plex recorded six-channel AAC at 768 kbps after DTS-HD MA compatibility conversion; receiver input channels, final HDR signalling after fallback, and physical 1080p playback remain unverified. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are historical evidence.**
+**Status: experimental native ARMv7 IPK published with [Pleazyng 3.0.4](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.4). The exact released package was installed and its four production binary hashes verified on the rooted LG C6 on 2026-11-08. The owner confirmed audible playback of the 4K HEVC test source. Plex recorded six-channel AAC at 768 kbps after DTS-HD MA compatibility conversion; receiver input channels, final HDR signalling after fallback, and physical 1080p playback remain unverified. The device is an `OLED77C6HUP` on webOS 26 / firmware `43.21.79`; other models and firmware remain unqualified. Earlier candidate hashes and observations below are historical evidence.**
 
 ## Compatibility matrix
 

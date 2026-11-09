@@ -1,4 +1,4 @@
-module github.com/snapetech-org/PlezyNG/server
+module github.com/snapetech-org/pleazyng/server
 
 go 1.27.3
 

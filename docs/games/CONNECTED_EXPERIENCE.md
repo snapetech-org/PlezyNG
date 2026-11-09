@@ -1,6 +1,6 @@
 # Connected games implementation ledger
 
-Current source checkpoint: [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81)
+Current source checkpoint: [PR #81](https://github.com/snapetech-org/pleazyng/pull/81)
 adds [Android/Wayland Vulkan and HDR10](VULKAN_RECEIVER.md),
 [scoped Cloud file actions](STEAM_CLOUD.md) and
 [paired internet traversal/relay](STEAM_INTERNET.md),

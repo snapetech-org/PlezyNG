@@ -397,7 +397,7 @@ def preserve_verified_download_urls(
         url = previous.get("url")
         if not isinstance(filename, str) or Path(filename).name != filename or not isinstance(url, str):
             continue
-        prefix = "https://raw.githubusercontent.com/snapetech-org/PlezyNG/"
+        prefix = "https://raw.githubusercontent.com/snapetech-org/pleazyng/"
         if not url.startswith(prefix):
             continue
         revision_and_path = url[len(prefix):]

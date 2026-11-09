@@ -34,7 +34,7 @@ To delete an account held by a connected service, use that service's account con
 
 ## Contact
 
-For privacy questions, use the [Pleazyng GitHub project page](https://github.com/snapetech-org/PlezyNG/issues). GitHub issues are public; do not include passwords, access tokens, server addresses, or other sensitive information in an issue.
+For privacy questions, use the [Pleazyng GitHub project page](https://github.com/snapetech-org/pleazyng/issues). GitHub issues are public; do not include passwords, access tokens, server addresses, or other sensitive information in an issue.
 
 We may update this notice when the app's data practices change. The effective date above will change with each revision.
 

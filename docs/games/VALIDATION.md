@@ -262,7 +262,7 @@ hardware, live accounts and service deployment remain the handoff gates.
 
 ## Earlier source checkpoints
 
-Current source checkpoint is [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81):
+Current source checkpoint is [PR #81](https://github.com/snapetech-org/pleazyng/pull/81):
 [Vulkan/HDR10](VULKAN_RECEIVER.md), [Cloud files](STEAM_CLOUD.md) and
 [paired internet streaming](STEAM_INTERNET.md), [Windows/Apple HDR](DESKTOP_HDR.md)
 and [Families management](STEAM_FAMILIES.md). Its checkpoint sections
@@ -387,12 +387,12 @@ coverage. This is experimental implementation, not certified streaming support.
 
 ## Evidence
 
-- GitHub Actions [run 40295331169](https://github.com/snapetech-org/PlezyNG/actions/runs/40295331169), commit `a948f57c74d3c908984c8b21d82c5d662e2414d3`: **Moonlight Android library/JNI/adapter build passed**. This run predates the new Steam module and does not validate it.
-- Historical GitHub Actions [Games embedded engine run 40356122282](https://github.com/snapetech-org/PlezyNG/actions/runs/40356122282), commit `ecf7759a989f8aa6d708978e6cfb3ada8420939e`, and [run 40357578204](https://github.com/snapetech-org/PlezyNG/actions/runs/40357578204), head `3cd7f91bdb1fbc40007c428750a2abf04bd0659c`: both Android library builds and all 38 portable transport/adapter tests passed with sanitizers. These runs came from the now-removed standalone workflow, which used GitHub-hosted `ubuntu-latest`; they are historical test evidence, not validation of current runner routing.
+- GitHub Actions [run 40295331169](https://github.com/snapetech-org/pleazyng/actions/runs/40295331169), commit `a948f57c74d3c908984c8b21d82c5d662e2414d3`: **Moonlight Android library/JNI/adapter build passed**. This run predates the new Steam module and does not validate it.
+- Historical GitHub Actions [Games embedded engine run 40356122282](https://github.com/snapetech-org/pleazyng/actions/runs/40356122282), commit `ecf7759a989f8aa6d708978e6cfb3ada8420939e`, and [run 40357578204](https://github.com/snapetech-org/pleazyng/actions/runs/40357578204), head `3cd7f91bdb1fbc40007c428750a2abf04bd0659c`: both Android library builds and all 38 portable transport/adapter tests passed with sanitizers. These runs came from the now-removed standalone workflow, which used GitHub-hosted `ubuntu-latest`; they are historical test evidence, not validation of current runner routing.
 - The standalone Games workflow has been removed. Current Games tests are integrated into the `android-test` and `linux-native-test` jobs in `.github/workflows/ci.yml`. The default hybrid profile runs compatible Linux jobs on GitHub-hosted Ubuntu; the private profile remains available for constrained environments. The temporary localization-generation workflow was also removed; checked-in localization output is verified by the code-analysis job.
 - Flutter 3.47.1: **64 focused tests passed** on the combined Games/latest-main tree. Full Dart analysis reports no issues. Structural localization checks pass for 37 locales and 3,146 messages, with placeholders/source hashes verified; localized quantity generation is current.
 - The 38 native tests cover authorization, crypto, launch transactions, retransmission, HID, tracked-frame ownership, cancellation, late callbacks and Pyrowave parsing/negotiation. CI runs the Steam suite with AddressSanitizer, UndefinedBehaviorSanitizer and leak detection.
-- On the earlier head, Code Analysis run [40357578052](https://github.com/snapetech-org/PlezyNG/actions/runs/40357578052) detected stale generated `strings_*.g.dart` outputs; these were regenerated and committed in `6ca060b8f4e29d95a0a9b18b3720292884524401`. That historical run's iOS job also stopped at the CocoaPods lockfile-preservation check after Flutter configuration changed `ios/Podfile.lock`; current-head CI is needed to establish whether that issue remains. Android host-native and JVM/API checks passed in run [40356122352](https://github.com/snapetech-org/PlezyNG/actions/runs/40356122352).
+- On the earlier head, Code Analysis run [40357578052](https://github.com/snapetech-org/pleazyng/actions/runs/40357578052) detected stale generated `strings_*.g.dart` outputs; these were regenerated and committed in `6ca060b8f4e29d95a0a9b18b3720292884524401`. That historical run's iOS job also stopped at the CocoaPods lockfile-preservation check after Flutter configuration changed `ios/Podfile.lock`; current-head CI is needed to establish whether that issue remains. Android host-native and JVM/API checks passed in run [40356122352](https://github.com/snapetech-org/pleazyng/actions/runs/40356122352).
 - All six Android Steam Java sources compile against Google's real Android API 36 stubs with Java 17; five expected compatibility deprecation warnings remain. Linux JNI syntax/type checking passed with strict warnings. The embedded-engine workflow also verifies the Android module builds, while full app/minified release and device testing remain release gates.
 - Two Python tests passed for private embedded manifests and cancellation patches. Source preparation accepts the pinned Steam recipe. Native C/C++/Java formatting and Kotlin ktlint passed.
 
@@ -663,7 +663,7 @@ and the Linux adapter passes strict compilation against Flutter's headers.
 To run the existing private workflow from an authenticated maintainer session:
 
 ```sh
-gh workflow run ci.yml --repo snapetech-org/PlezyNG \
+gh workflow run ci.yml --repo snapetech-org/pleazyng \
   --ref codex/steam-receivers-and-controls \
   -f action=ci -f runner_pool=private -f build_linux_packages=true
 ```

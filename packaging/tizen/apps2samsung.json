@@ -2,7 +2,7 @@
   "name": "Pleazyng",
   "description": "Native Flutter client for Plex, Jellyfin and Emby on Samsung TVs. Experimental; Tizen 6.0 or later.",
   "category": "media",
-  "repo": "snapetech-org/PlezyNG",
+  "repo": "snapetech-org/pleazyng",
   "source": "release",
   "branch": "main",
   "enabled": false,

@@ -188,7 +188,7 @@ This table is a snapshot of downstream work and its current limits. The linked u
 <p>
   <a href="https://plezyng.app/">Website</a> ·
   <a href="https://github.com/edde746/plezy">Upstream Plezy</a> ·
-  <a href="https://github.com/snapetech-org/PlezyNG/issues">Pleazyng issues</a> ·
+  <a href="https://github.com/snapetech-org/pleazyng/issues">Pleazyng issues</a> ·
   <a href="#download">Download</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="LICENSE">License</a>
@@ -200,13 +200,13 @@ This table is a snapshot of downstream work and its current limits. The linked u
 
 ## Download
 
-[Pleazyng 3.0.5 is published](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5) with Android, Fire TV, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS packages. See the [recorded GitHub publication evidence](docs/maintainers/releases/v3.0.5.json) and [all releases](https://github.com/snapetech-org/PlezyNG/releases).
+[Pleazyng 3.0.5 is published](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.5) with Android, Fire TV, Linux x64/ARM64, Windows x64/ARM64, universal macOS, iOS, tvOS, Tizen and webOS packages. See the [recorded GitHub publication evidence](docs/maintainers/releases/v3.0.5.json) and [all releases](https://github.com/snapetech-org/pleazyng/releases).
 
 | Platform | Download |
 | --- | --- |
-| Desktop and mobile | [Release files for Android, Fire TV, Linux, Windows, macOS, iOS and tvOS](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5) |
-| webOS TV | [Experimental ARMv7 IPK](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5); model/firmware and media playback qualification remain separate from publication. See the [compatibility matrix and port status](docs/maintainers/webos-tv.md). |
-| Samsung Tizen TV | [Experimental ARM tester handoff](https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.5); TV qualification and Tizen 10 remain pending. See the [build guide and rollout plan](docs/maintainers/tizen-tv.md). |
+| Desktop and mobile | [Release files for Android, Fire TV, Linux, Windows, macOS, iOS and tvOS](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.5) |
+| webOS TV | [Experimental ARMv7 IPK](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.5); model/firmware and media playback qualification remain separate from publication. See the [compatibility matrix and port status](docs/maintainers/webos-tv.md). |
+| Samsung Tizen TV | [Experimental ARM tester handoff](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.5); TV qualification and Tizen 10 remain pending. See the [build guide and rollout plan](docs/maintainers/tizen-tv.md). |
 
 <details>
 <summary>Install with a package manager</summary>
@@ -217,7 +217,7 @@ The `snapetech-plezyng` Cask is being prepared. It will be installable after a s
 
 ```bash
 # After the Cask is published in this tap
-brew tap snapetech-org/PlezyNG https://github.com/snapetech-org/PlezyNG
+brew tap snapetech-org/pleazyng https://github.com/snapetech-org/pleazyng
 brew install --cask snapetech-plezyng
 ```
 
@@ -538,7 +538,7 @@ On iOS, use the Open URLs action in Shortcuts.
 ### Setup
 
 ```bash
-git clone https://github.com/snapetech-org/PlezyNG.git
+git clone https://github.com/snapetech-org/pleazyng.git
 cd Pleazyng
 flutter pub get
 scripts/codegen.sh

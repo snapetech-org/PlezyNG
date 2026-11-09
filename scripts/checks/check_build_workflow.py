@@ -244,7 +244,7 @@ require(
     and '"${RUNNER_ENVIRONMENT:-}" == self-hosted' in snap_builder
     and '"${RUNNER_ENVIRONMENT:-}" == github-hosted' in snap_builder
     and '"${PLEZYNG_ALLOW_PUBLIC_SNAP:-}" == true' in snap_builder
-    and '"${GITHUB_REPOSITORY:-}" == snapetech-org/PlezyNG' in snap_builder
+    and '"${GITHUB_REPOSITORY:-}" == snapetech-org/pleazyng' in snap_builder
     and '"${GITHUB_REF:-}" == refs/heads/main' in snap_builder
     and '"${GITHUB_EVENT_NAME:-}" == workflow_dispatch' in snap_builder,
     "public Snap packaging must be limited to the explicitly enabled trusted-main workflow",
@@ -782,7 +782,7 @@ require(
 linux = job("build-linux")
 require(
     '"group":"ng-shared-main-jit"' in linux
-    and "ng-shared-main-plezyng" in linux
+    and "ng-shared-main-pleazyng" in linux
     and '"linux","x64"' in linux
     and '"linux","arm64"' in linux
     and "matrix.arch == 'x64'" in linux

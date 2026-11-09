@@ -6,7 +6,7 @@ The review corrected **1,218 distinct source messages in 33 catalogs: 1,217 tran
 
 ## Snapshot and independence
 
-- PR: <https://github.com/snapetech-org/PlezyNG/pull/20>
+- PR: <https://github.com/snapetech-org/pleazyng/pull/20>
 - Published input head: `776377c17296df39e1fc17471ee9104659784104`.
 - Published input tree: `3db4a8a763e21bbc868b0ac06cfcdf811be447ee`.
 - Review date: 2026-10-26.

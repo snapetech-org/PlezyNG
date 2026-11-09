@@ -19,4 +19,4 @@ not a claim that the new release is already published everywhere.
 
 Our current per-channel status and remaining requirements are recorded here:
 
-https://github.com/snapetech-org/PlezyNG/blob/main/docs/maintainers/publishing-readiness.md
+https://github.com/snapetech-org/pleazyng/blob/main/docs/maintainers/publishing-readiness.md

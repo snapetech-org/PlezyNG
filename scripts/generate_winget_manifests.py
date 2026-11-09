@@ -10,7 +10,7 @@ import re
 import zipfile
 
 
-REPOSITORY = "snapetech-org/PlezyNG"
+REPOSITORY = "snapetech-org/pleazyng"
 PACKAGE_ID = "SnapeTech.Pleazyng"
 MANIFEST_VERSION = "1.12.0"
 INSTALLER_NAME = "pleazyng-windows-installer.exe"

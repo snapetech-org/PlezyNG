@@ -42,7 +42,7 @@ artifact; it is not an independent trust attestation.
 
 Before packaging, the build checks FFmpeg's Dolby Vision stream-group and `dovi_split` support, libplacebo's enhancement-frame/NLQ interfaces, mpv's `gpu-next` VO and the experimental `opengl-next` render API. It also builds the paired-frame logic and its decision-helper test.
 
-The latest successful build is [workflow run 40276002261](https://github.com/snapetech-org/PlezyNG/actions/runs/40276002261), for engine source commit `3fe080bd3298d197019d524045a442224bf2717c`.
+The latest successful build is [workflow run 40276002261](https://github.com/snapetech-org/pleazyng/actions/runs/40276002261), for engine source commit `3fe080bd3298d197019d524045a442224bf2717c`.
 
 - FFmpeg, libplacebo, mpv/libmpv and the exact-pin fail-closed mpv patch compiled.
 - The `fel-pair-state` helper test passed as part of **17/17 mpv tests**. It covers PTS match, stale/newer EL, unknown or non-finite PTS, EOF and bounded queues. It does not instantiate mpv's filter graph.

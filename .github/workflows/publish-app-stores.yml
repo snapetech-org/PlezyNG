@@ -64,7 +64,7 @@ concurrency:
 jobs:
   validate-release:
     name: Validate published release
-    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-release"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-release"]}}', github.run_id)) }}
     outputs:
       release_tag: ${{ steps.validate.outputs.release_tag }}
     steps:
@@ -138,7 +138,7 @@ jobs:
     name: Upload to Google Play
     needs: validate-release
     if: ${{ inputs.channel == 'google-play' }}
-    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-google-play"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish-google-play"]}}', github.run_id)) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -193,7 +193,7 @@ jobs:
     name: Upload to Amazon Appstore
     needs: validate-release
     if: ${{ inputs.channel == 'amazon-appstore' }}
-    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-amazon-appstore"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish-amazon-appstore"]}}', github.run_id)) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -250,7 +250,7 @@ jobs:
     name: Upload to Apple App Store Connect
     needs: validate-release
     if: ${{ inputs.channel == 'app-store-ios' || inputs.channel == 'app-store-tvos' }}
-    runs-on: ${{ inputs.runner_pool == 'public' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-publish-apple-app-store"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.runner_pool == 'public' && 'macos-15' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish-apple-app-store"]}}', github.run_id)) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -292,7 +292,7 @@ jobs:
           if expected != [actual]:
               raise SystemExit("Signed IPA checksum missing, ambiguous, or mismatched")
           PYHASH
-          gh attestation verify "$IPA_ASSET" --repo "$GITHUB_REPOSITORY"
+          python3 "$GITHUB_WORKSPACE/scripts/verify_release_attestation.py" "$IPA_ASSET" --repo "$GITHUB_REPOSITORY"
 
       - uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
         with:

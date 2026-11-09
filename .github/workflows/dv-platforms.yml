@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [linux-x64, windows-x64, macos-arm64]
-    runs-on: ${{ matrix.platform == 'linux-x64' && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-contracts"]}}', github.run_id, strategy.job-index)) || matrix.platform == 'windows-x64' && fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","packer-windows","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-contracts"]}}', github.run_id, strategy.job-index)) || matrix.platform == 'macos-arm64' && fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-contracts"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ matrix.platform == 'linux-x64' && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-contracts"]}}', github.run_id, strategy.job-index)) || matrix.platform == 'windows-x64' && fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","packer-windows","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-contracts"]}}', github.run_id, strategy.job-index)) || matrix.platform == 'macos-arm64' && fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-contracts"]}}', github.run_id, strategy.job-index)) }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -47,7 +47,7 @@ jobs:
 
   app-tests:
     if: inputs.action == 'dv-platforms'
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-app-tests"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-app-tests"]}}', github.run_id)) }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -78,7 +78,7 @@ jobs:
 
   felbaker-source:
     if: inputs.action == 'dv-platforms'
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-felbaker-source"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-felbaker-source"]}}', github.run_id)) }}
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -106,7 +106,7 @@ jobs:
 
   apple-source:
     if: inputs.action == 'dv-platforms'
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-apple-source"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-apple-source"]}}', github.run_id)) }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -130,7 +130,7 @@ jobs:
 
   windows-engine:
     if: inputs.action == 'dv-platforms'
-    runs-on: ${{ fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","packer-windows","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-windows-engine"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"packer-windows","labels":["self-hosted","Windows","X64","packer-windows","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-windows-engine"]}}', github.run_id)) }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -173,7 +173,7 @@ jobs:
 
   native-patch-audit:
     if: inputs.action == 'dv-platforms'
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-patch-audit"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-native-patch-audit"]}}', github.run_id)) }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

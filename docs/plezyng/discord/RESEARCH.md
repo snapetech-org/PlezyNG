@@ -19,7 +19,7 @@ Confidence labels: **high** means directly supported by inspected code or explic
 
 The presence service uses application ID `1453773470306402439`. This is a public identifier, not a credential. Ownership of that application and permission to reuse it for broader account features were not established. The poster path uploads bounded artwork to the configured Plezy service; it is not an account-authentication or video-transport path. Playback presence and CI webhooks grant no Discord message-history or call access. **Confidence: high** for the code boundaries; operational setup remains unverified.
 
-Immutable starting points: [presence at the audited revision](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/services/discord_rpc_service.dart), [workspace controller](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/multiview/workspace_controller.dart), and [vendored webview manifest](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/packages/flutter_inappwebview/pubspec.yaml).
+Immutable starting points: [presence at the audited revision](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/services/discord_rpc_service.dart), [workspace controller](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/multiview/workspace_controller.dart), and [vendored webview manifest](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/packages/flutter_inappwebview/pubspec.yaml).
 
 ## What the workspace already supplies
 

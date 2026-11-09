@@ -14,8 +14,8 @@
     <p>Watch Together keeps playback in sync when everyone can access the same media on the same server. Use Pleazyng on phones, tablets, TVs, and desktop computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary by server, device, and media.</p>
   </description>
   <launchable type="desktop-id">org.snapetech.pleazyng.desktop</launchable>
-  <url type="homepage">https://github.com/snapetech-org/PlezyNG</url>
-  <url type="vcs-browser">https://github.com/snapetech-org/PlezyNG</url>
+  <url type="homepage">https://github.com/snapetech-org/pleazyng</url>
+  <url type="vcs-browser">https://github.com/snapetech-org/pleazyng</url>
   <content_rating type="oars-1.1"/>
   <supports>
     <control>pointing</control>

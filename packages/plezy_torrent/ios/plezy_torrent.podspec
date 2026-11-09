@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   s.version = '1.0.0'
   s.summary = 'PlezyNG native verified-piece torrent streaming'
   s.description = s.summary
-  s.homepage = 'https://github.com/snapetech-org/PlezyNG'
+  s.homepage = 'https://github.com/snapetech-org/pleazyng'
   s.license = { :type => 'BSD-3-Clause and BSL-1.0', :file => '../NOTICE.md' }
   s.author = { 'PlezyNG' => 'https://github.com/snapetech-org' }
   s.source = { :path => '.' }

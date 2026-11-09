@@ -44,7 +44,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
         ensure_ci(commit_sha)
 
         dispatch.assert_called_once_with(
-            "snapetech-org/PlezyNG",
+            "snapetech-org/pleazyng",
             "ci.yml",
             "main",
             {
@@ -67,7 +67,7 @@ class ReleaseCIGateManifestTests(unittest.TestCase):
         ensure_ci(commit_sha, execution_profile="hybrid")
 
         dispatch.assert_called_once_with(
-            "snapetech-org/PlezyNG",
+            "snapetech-org/pleazyng",
             "ci.yml",
             "main",
             {
@@ -123,10 +123,10 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
         }
 
         self.assertTrue(
-            run_has_successful_step("snapetech-org/PlezyNG", run, "build-ios", "Build signed iOS App Store IPA")
+            run_has_successful_step("snapetech-org/pleazyng", run, "build-ios", "Build signed iOS App Store IPA")
         )
         self.assertFalse(
-            run_has_successful_step("snapetech-org/PlezyNG", run, "build-ios", "Attest signed iOS App Store IPA")
+            run_has_successful_step("snapetech-org/pleazyng", run, "build-ios", "Attest signed iOS App Store IPA")
         )
 
     @patch("release_all_platforms.ensure_remote_main_sha")
@@ -141,7 +141,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
 
         ensure_main.assert_called_once_with(commit_sha, "dispatching the 3.0.0 release-mode candidate")
         dispatch.assert_called_once_with(
-            "snapetech-org/PlezyNG",
+            "snapetech-org/pleazyng",
             "build.yml",
             "main",
             {
@@ -188,7 +188,7 @@ class ReleaseCandidateBuildGateTests(unittest.TestCase):
 
         self.assertIs(ensure_candidate_build("3.0.0", "b" * 40), successful)
         matching_run.assert_called_once_with(
-            "snapetech-org/PlezyNG",
+            "snapetech-org/pleazyng",
             "build.yml",
             "b" * 40,
             ref="main",

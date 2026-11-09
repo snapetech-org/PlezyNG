@@ -14,7 +14,7 @@ from release_coverage import missing_assets
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = "snapetech-org/PlezyNG"
+REPOSITORY = "snapetech-org/pleazyng"
 
 
 def github(path: str) -> dict:

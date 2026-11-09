@@ -116,7 +116,7 @@ jobs:
   validate-trusted-ref:
     name: Validate release request
     if: ${{ inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-validate-trusted-ref"]}}', github.run_id)) }}
     outputs:
       action: ${{ steps.request.outputs.action }}
       runner_pool: ${{ steps.request.outputs.runner_pool }}
@@ -517,7 +517,7 @@ jobs:
     timeout-minutes: 360
     env:
       CMAKE_BUILD_PARALLEL_LEVEL: "2"
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-build-android"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-android"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write
@@ -787,7 +787,7 @@ jobs:
         - self-hosted
         - linux
         - x64
-        - ng-shared-main-plezyng
+        - ng-shared-main-pleazyng
         - ${{ format('ng-main-run-{0}', github.run_id) }}
         - ${{ format('gha-{0}-build-webos', github.run_id) }}
     permissions:
@@ -978,7 +978,7 @@ jobs:
   build-ios:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write
@@ -1203,7 +1203,7 @@ jobs:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build tvOS developer package (arm64)
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-tvos"]}}', github.run_id)) }}
     permissions:
       id-token: write
       attestations: write
@@ -1403,7 +1403,7 @@ jobs:
   build-macos:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'macos-validation') }}
     needs: validate-trusted-ref
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-macos"]}}', github.run_id)) }}
     permissions:
       actions: read
       id-token: write
@@ -1936,7 +1936,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ matrix.native_cache_path }}
-          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-windows-native-${{ matrix.arch }}-${{ hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', 'windows/tool/build-toolchain.lock.json') }}
+          key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-windows-native-${{ github.event.repository.name }}-${{ matrix.arch }}-${{ hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', 'windows/tool/build-toolchain.lock.json') }}
 
       - name: Setup Flutter
         id: setup_flutter_windows
@@ -2416,7 +2416,7 @@ jobs:
     if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     name: Build Linux (${{ matrix.arch }})
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') || (matrix.arch == 'x64' && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index))) || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","arm64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') || (matrix.arch == 'x64' && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index))) || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","arm64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-build-linux"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       id-token: write
       attestations: write
@@ -2786,7 +2786,7 @@ jobs:
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
     if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && needs.build-tvos.result == 'skipped' && needs.build-macos.result == 'skipped' && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && needs.build-linux.result == 'skipped' && (needs.build-webos.result == 'success' || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
-    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-create-release"]}}', github.run_id)) }}
+    runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-create-release"]}}', github.run_id)) }}
     permissions:
       contents: write
       actions: read

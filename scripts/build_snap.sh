@@ -15,7 +15,7 @@ if [[ "${RUNNER_ENVIRONMENT:-}" == self-hosted ]]; then
   : # Private JIT jobs must provide their restricted HTTP proxy below.
 elif [[ "${RUNNER_ENVIRONMENT:-}" == github-hosted \
     && "${PLEZYNG_ALLOW_PUBLIC_SNAP:-}" == true \
-    && "${GITHUB_REPOSITORY:-}" == snapetech-org/PlezyNG \
+    && "${GITHUB_REPOSITORY:-}" == snapetech-org/pleazyng \
     && "${GITHUB_REF:-}" == refs/heads/main \
     && "${GITHUB_EVENT_NAME:-}" == workflow_dispatch ]]; then
   # The release workflow's trusted-ref validator gates this explicit hybrid

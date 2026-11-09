@@ -4,7 +4,7 @@ Checked 2026-11-06. The owned relay is live at `https://pleazyng-api.snape.tech`
 
 ## Registration values
 
-Use the application name **Pleazyng**, publisher **SnapeTech / SNAPE TECHNOLOGIES LIMITED**, the existing public source repository `https://github.com/snapetech-org/PlezyNG`, and support/privacy pages under `https://snape.tech/privacy/pleazyng/`. Repository renaming is deferred. Keep owner authentication and client secrets outside this document and Git.
+Use the application name **Pleazyng**, publisher **SnapeTech / SNAPE TECHNOLOGIES LIMITED**, the existing public source repository `https://github.com/snapetech-org/pleazyng`, and support/privacy pages under `https://snape.tech/privacy/pleazyng/`. Repository renaming is deferred. Keep owner authentication and client secrets outside this document and Git.
 
 | Provider | Actual application path | Required registration/configuration | Current gate |
 | --- | --- | --- | --- |

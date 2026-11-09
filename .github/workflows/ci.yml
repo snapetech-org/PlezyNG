@@ -44,7 +44,7 @@ jobs:
   analyze:
     name: Code Analysis
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && github.run_attempt > 1 && fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) || inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-analyze"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -168,7 +168,7 @@ jobs:
   test:
     name: Unit Tests
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-test"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-test"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -271,7 +271,7 @@ jobs:
   android-test:
     name: Android JVM and Native Tests
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-android-test"]}}', github.run_id)) }}
     permissions:
       actions: read
       contents: read
@@ -489,7 +489,7 @@ jobs:
   native-format:
     name: Native Formatting
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-native-format"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -510,7 +510,7 @@ jobs:
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-linux-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     strategy:
@@ -655,7 +655,7 @@ jobs:
   apple-native-test:
     name: Apple native reliability (${{ matrix.platform }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-{1}-apple-native-test"]}}', github.run_id, strategy.job-index)) }}
     permissions:
       contents: read
     env:
@@ -1187,7 +1187,7 @@ jobs:
   dependency-check:
     name: Dependency Validation
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-dependency-check"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-dependency-check"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -1233,7 +1233,7 @@ jobs:
   server:
     name: Server checks
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-server"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-server"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:
@@ -1265,7 +1265,7 @@ jobs:
   linux-packages:
     name: Linux package smoke build
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.build_linux_packages && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main') }}
-    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-linux-packages"]}}', github.run_id)) }}
+    runs-on: ${{ inputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-linux-packages"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:

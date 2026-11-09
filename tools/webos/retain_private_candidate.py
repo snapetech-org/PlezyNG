@@ -26,7 +26,7 @@ def preflight(env: dict[str, str]) -> tuple[Path, dict[str, str]]:
     if any(destination.iterdir()):
         raise ValueError("Private output storage must be empty and scoped to this job")
     required = {
-        "GITHUB_REPOSITORY": r"snapetech-org/PlezyNG",
+        "GITHUB_REPOSITORY": r"snapetech-org/pleazyng",
         "GITHUB_JOB": r"build-webos",
         "GITHUB_RUN_ID": r"[1-9][0-9]*",
         "GITHUB_RUN_ATTEMPT": r"[1-9][0-9]*",

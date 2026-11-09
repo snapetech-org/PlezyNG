@@ -62,7 +62,7 @@ class PackageIpkTests(unittest.TestCase):
                 (TOOLS_ROOT.parents[1] / "native/visualizer/sources.lock.json").read_text(encoding="utf-8")
             )["milkrust"]["commit"],
             "runnerPolicy": "private-ephemeral-jit",
-            "buildRun": "https://github.com/snapetech-org/PlezyNG/actions/runs/123",
+            "buildRun": "https://github.com/snapetech-org/pleazyng/actions/runs/123",
             "librarySha256": "0" * 64,
             "sourceArchiveSha256": "1" * 64,
             "noticesSha256": "2" * 64,
@@ -84,7 +84,7 @@ class PackageIpkTests(unittest.TestCase):
                 "schemaVersion": 2, "renderProtocol": 2, "hostSourceRevision": "a" * 40,
                 "abi": 2, "target": "webos-arm", "runnerPolicy": "private-ephemeral-jit",
                 "sourceRevision": json.loads((package_ipk.ROOT / "native/visualizer/sources.lock.json").read_text())["milkrust"]["commit"],
-                "buildRun": "https://github.com/snapetech-org/PlezyNG/actions/runs/123",
+                "buildRun": "https://github.com/snapetech-org/pleazyng/actions/runs/123",
             }
             for name, data in content.items():
                 (bundle / name).write_bytes(data)

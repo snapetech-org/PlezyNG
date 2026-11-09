@@ -1,6 +1,6 @@
 # Dolby Vision FEL experimental build — handoff
 
-Updated 2026-10-26. Repository: [snapetech-org/PlezyNG](https://github.com/snapetech-org/PlezyNG). Follow-up work is tracked in [PR #16](https://github.com/snapetech-org/PlezyNG/pull/16) and `tools/dv-engine/`. This brief records the validated engine revision; later documentation or main-sync commits do not change the engine test result.
+Updated 2026-10-26. Repository: [snapetech-org/pleazyng](https://github.com/snapetech-org/pleazyng). Follow-up work is tracked in [PR #16](https://github.com/snapetech-org/pleazyng/pull/16) and `tools/dv-engine/`. This brief records the validated engine revision; later documentation or main-sync commits do not change the engine test result.
 
 ## Goal and guardrails
 
@@ -13,7 +13,7 @@ The current work includes opt-in Linux and Android mpv experiments plus a separa
 ## Validated checkpoint
 
 - Engine source revision: `3fe080bd3298d197019d524045a442224bf2717c`.
-- Successful build: [GitHub Actions run 40276002261](https://github.com/snapetech-org/PlezyNG/actions/runs/40276002261), job `linux-engine`.
+- Successful build: [GitHub Actions run 40276002261](https://github.com/snapetech-org/pleazyng/actions/runs/40276002261), job `linux-engine`.
 - CI compiled pinned FFmpeg, libplacebo, mpv/libmpv and the exact-source fail-closed mpv patch.
 - **17/17 mpv tests passed**, including `fel-pair-state`: timestamp match, stale/newer EL, unknown/non-finite timestamps, EOF and bounded-queue cases. This exercises the exact decision helper, not mpv's filter graph.
 - **16 libplacebo tests passed; one headless surfaceless test was skipped as expected; zero failed.**

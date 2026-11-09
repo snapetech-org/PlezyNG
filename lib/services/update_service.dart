@@ -14,8 +14,8 @@ import 'base_shared_preferences_service.dart';
 /// via auto_updater for native update dialogs and in-app installs.
 /// On all other platforms: falls back to GitHub API check + browser link dialog.
 class UpdateService {
-  static const String _githubRepo = 'snapetech-org/PlezyNG';
-  static const String _feedUrl = 'https://cdn.jsdelivr.net/gh/snapetech-org/PlezyNG@appcast/appcast.xml';
+  static const String _githubRepo = 'snapetech-org/pleazyng';
+  static const String _feedUrl = 'https://github.com/snapetech-org/pleazyng/releases/latest/download/appcast.xml';
 
   static const String _keySkippedVersion = 'update_skipped_version';
   static const String _keyLastCheckTime = 'update_last_check_time';

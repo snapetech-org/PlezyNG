@@ -23,8 +23,8 @@ except ModuleNotFoundError:
 
 MAX_EMBED_DESCRIPTION = 3500
 RECEIPT_NAME = "discord-announcement-receipt.json"
-REPOSITORY = "snapetech-org/PlezyNG"
-USER_AGENT = "DiscordBot (https://github.com/snapetech-org/PlezyNG, 1.0)"
+REPOSITORY = "snapetech-org/pleazyng"
+USER_AGENT = "DiscordBot (https://github.com/snapetech-org/pleazyng, 1.0)"
 
 
 class RejectedPost(RuntimeError):

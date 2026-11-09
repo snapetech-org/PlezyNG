@@ -16,10 +16,10 @@ description: |
   computers. You’ll need your own Plex, Jellyfin, or Emby server. Features vary
   by server, device, and media.
 license: GPL-3.0-only
-contact: https://github.com/snapetech-org/PlezyNG/issues
-website: https://github.com/snapetech-org/PlezyNG
-source-code: https://github.com/snapetech-org/PlezyNG
-issues: https://github.com/snapetech-org/PlezyNG/issues
+contact: https://github.com/snapetech-org/pleazyng/issues
+website: https://github.com/snapetech-org/pleazyng
+source-code: https://github.com/snapetech-org/pleazyng
+issues: https://github.com/snapetech-org/pleazyng/issues
 icon: gui/pleazyng.png
 base: core24
 grade: stable

@@ -132,13 +132,13 @@ class AppleQueueTests(unittest.TestCase):
             root = Path(temporary)
             gh = root / 'gh'
             run = {'status': 'completed', 'run_attempt': 1, 'event': 'workflow_dispatch',
-                   'head_branch': 'main', 'head_repository': {'full_name': 'snapetech-org/PlezyNG'}}
+                   'head_branch': 'main', 'head_repository': {'full_name': 'snapetech-org/pleazyng'}}
             gh.write_text('#!/usr/bin/env python3\nimport json,os,sys\n'
                           'args=sys.argv[1:]\n'
                           'if args[:2]==["repo","view"]:\n'
                           ' assert "GH_REPO" not in os.environ\n'
-                          ' print("snapetech-org/PlezyNG")\n'
-                          'elif args==["api","repos/snapetech-org/PlezyNG/actions/runs/42"]:\n'
+                          ' print("snapetech-org/pleazyng")\n'
+                          'elif args==["api","repos/snapetech-org/pleazyng/actions/runs/42"]:\n'
                           f' print({json.dumps(json.dumps(run))})\n'
                           'else:\n raise SystemExit("Unexpected GitHub request: "+repr(args))\n')
             gh.chmod(0o755)

@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   s.version = '1.0.0'
   s.summary = 'PlezyNG preparation workers'
   s.description = s.summary
-  s.homepage = 'https://github.com/snapetech-org/PlezyNG'
+  s.homepage = 'https://github.com/snapetech-org/pleazyng'
   s.license = { :type => 'GPL-3.0' }
   s.author = { 'PlezyNG' => 'https://github.com/snapetech-org' }
   s.source = { :path => '.' }

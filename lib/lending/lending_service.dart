@@ -199,7 +199,7 @@ class LendingService {
         'limit': '30',
         'fields': 'key,title,author_name,cover_i,isbn',
       }),
-      headers: const {'User-Agent': 'Pleazyng (https://github.com/snapetech-org/PlezyNG)'},
+      headers: const {'User-Agent': 'Pleazyng (https://github.com/snapetech-org/pleazyng)'},
     );
     check();
     final books = sourceList(result['docs'])

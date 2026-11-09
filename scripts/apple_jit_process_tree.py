@@ -246,7 +246,7 @@ def cancelled_proof(proof, scope):
     if (run.get("id") != int(scope["run"]) or run.get("run_attempt") != int(scope["attempt"])
             or run.get("status") != "completed" or run.get("conclusion") != "cancelled"
             or run.get("event") != "workflow_dispatch" or run.get("head_branch") != "main"
-            or run.get("head_repository", {}).get("full_name") != "snapetech-org/PlezyNG"
+            or run.get("head_repository", {}).get("full_name") != "snapetech-org/pleazyng"
             or job.get("id") != int(scope["job"]) or job.get("run_id") != int(scope["run"])
             or job.get("run_attempt") != int(scope["attempt"])
             or job.get("status") != "completed" or job.get("conclusion") != "cancelled"

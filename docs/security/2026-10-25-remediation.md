@@ -24,7 +24,7 @@ CI also identified [GO-2026-6809](https://pkg.go.dev/vuln/GO-2026-6809) in the p
 
 ## Fork release trust and remaining administrator work
 
-The inherited Sparkle/WinSparkle public key has been removed. Release builds enable native updating only when `SPARKLE_PUBLIC_KEY` is configured. If a private signing seed is supplied, the build verifies it matches the public key; the inherited upstream key and malformed/mismatched keys fail the build. As of 2026-10-26, the fork-owned Ed25519 key pair is configured in the `snapetech-org/PlezyNG` repository as secret `SPARKLE_PRIVATE_KEY` and variable `SPARKLE_PUBLIC_KEY`. Existing installations need a trusted PlezyNG installer/manual update before they can use this new trust root. The existing appcast generator already omitted unsigned enclosures; this audit does **not** claim it published unsigned updates.
+The inherited Sparkle/WinSparkle public key has been removed. Release builds enable native updating only when `SPARKLE_PUBLIC_KEY` is configured. If a private signing seed is supplied, the build verifies it matches the public key; the inherited upstream key and malformed/mismatched keys fail the build. As of 2026-10-26, the fork-owned Ed25519 key pair is configured in the `snapetech-org/pleazyng` repository as secret `SPARKLE_PRIVATE_KEY` and variable `SPARKLE_PUBLIC_KEY`. Existing installations need a trusted PlezyNG installer/manual update before they can use this new trust root. The existing appcast generator already omitted unsigned enclosures; this audit does **not** claim it published unsigned updates.
 
 Branch protection remains disabled at the repository owner's explicit request. The following release tasks still require the appropriate credentials:
 

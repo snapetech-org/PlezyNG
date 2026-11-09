@@ -88,7 +88,7 @@ class RuntimeOutputTests(unittest.TestCase):
         self.addCleanup(mock.patch.stopall)
         mock.patch.object(build_runtime, 'ROOT', self.root).start()
         mock.patch.object(build_runtime, 'build_context',
-                          return_value=('123', 'self-hosted', 'snapetech-org/PlezyNG')).start()
+                          return_value=('123', 'self-hosted', 'snapetech-org/pleazyng')).start()
 
     def write_receipt(self):
         self.output.mkdir(parents=True)
@@ -98,7 +98,7 @@ class RuntimeOutputTests(unittest.TestCase):
             'sourceRevision': self.source['commit'], 'platform': self.args.platform,
             'architectures': ['arm64'], 'rustToolchain': build_runtime.RUST,
             'runId': '123', 'runnerPolicy': 'self-hosted',
-            'repository': 'snapetech-org/PlezyNG',
+            'repository': 'snapetech-org/pleazyng',
             'recipeSha256': build_runtime.digest(Path(build_runtime.__file__)),
             'files': {library.name: build_runtime.digest(library)},
         }
@@ -221,8 +221,8 @@ class RuntimeReceiptTests(unittest.TestCase):
         self.assertEqual(build_runtime.build_context({}), ("local", "local", None))
         for runner in ("github-hosted", "self-hosted"):
             env = {"GITHUB_ACTIONS": "true", "GITHUB_RUN_ID": "123",
-                   "GITHUB_REPOSITORY": "snapetech-org/PlezyNG", "RUNNER_ENVIRONMENT": runner}
-            self.assertEqual(build_runtime.build_context(env), ("123", runner, "snapetech-org/PlezyNG"))
+                   "GITHUB_REPOSITORY": "snapetech-org/pleazyng", "RUNNER_ENVIRONMENT": runner}
+            self.assertEqual(build_runtime.build_context(env), ("123", runner, "snapetech-org/pleazyng"))
             for field, value in [("GITHUB_RUN_ID", "0"), ("GITHUB_RUN_ID", "../run"),
                                  ("GITHUB_REPOSITORY", "../repo"), ("RUNNER_ENVIRONMENT", "unknown")]:
                 with self.assertRaises(ValueError):

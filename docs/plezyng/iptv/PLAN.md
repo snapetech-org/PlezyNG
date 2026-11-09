@@ -3,7 +3,7 @@ Total output lines: 1498
 
 # PlezyNG IPTV — comprehensive research and implementation plan
 
-Prepared 27 October 2026 in America/Regina. Repository baseline: `snapetech-org/PlezyNG` main at `0d0626cc375b8fa95124775365a6b37e2a03c9be`.
+Prepared 27 October 2026 in America/Regina. Repository baseline: `snapetech-org/pleazyng` main at `0d0626cc375b8fa95124775365a6b37e2a03c9be`.
 
 **30 product families · 61 source groups · 18 repository evidence groups · 240 requirements · 42 implementation slices.**
 
@@ -27,7 +27,7 @@ That statement records the state when this plan was prepared. Implementation beg
 
 ## IPTV market research and product decisions
 
-Research date: 27 October 2026, America/Regina. Target: the existing Live TV experience in `snapetech-org/PlezyNG`. “PlezyTV” is treated as the requested IPTV experience inside PlezyNG, not a new application or brand.
+Research date: 27 October 2026, America/Regina. Target: the existing Live TV experience in `snapetech-org/pleazyng`. “PlezyTV” is treated as the requested IPTV experience inside PlezyNG, not a new application or brand.
 
 The strongest opportunity is a coherent television system: effortless direct playback, persistent guide and channel organization, honest time controls, recoverable recordings, optional household infrastructure, and the same interaction language as the rest of PlezyNG. Feature count alone is insufficient. Low latency, buffering tolerance, power consumption, device compatibility and simultaneous stream count conflict; the plan makes those tradeoffs explicit.
 
@@ -886,7 +886,7 @@ These are dependency-ordered review units, not a promise that every unit fits on
 
 ## Luna implementation handoff
 
-Implement IPTV as an extension of PlezyNG's existing Live TV and media experience. The planning baseline is `snapetech-org/PlezyNG` main commit `0d0626cc375b8fa95124775365a6b37e2a03c9be`. The current branch may have advanced. This packet contains 240 numbered requirements, 42 dependency-ordered implementation slices, a 30-product research survey and 61 source groups.
+Implement IPTV as an extension of PlezyNG's existing Live TV and media experience. The planning baseline is `snapetech-org/pleazyng` main commit `0d0626cc375b8fa95124775365a6b37e2a03c9be`. The current branch may have advanced. This packet contains 240 numbered requirements, 42 dependency-ordered implementation slices, a 30-product research survey and 61 source groups.
 
 ### Read first
 
@@ -1015,23 +1015,23 @@ The source links below are precise baseline evidence. Later code may supersede t
 
 | Baseline | Inspected code and implication |
 | --- | --- |
-| B01 | [DESIGN.md](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/DESIGN.md) and [UX-CONTRACT.md](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/UX-CONTRACT.md): Mono tokens, platform typography, shared menus/sheets, focus and profile contracts |
-| B02 | [Live TV screen](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/livetv/live_tv_screen.dart): Guide, Plex-gated What's On and capability-gated Recordings |
-| B03 | [Live TV support](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/live_tv_support.dart): session, favorites and optional DVR contracts; some DVR payloads remain Plex-shaped |
-| B04 | [Timeline](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/live_tv_timeline.dart): UTC seconds, explicit accuracy, seek-window bounds and programme intervals |
-| B05 | [Live player navigation](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/utils/live_tv_player_navigation.dart): current entry assumes a reachable server and creates a backend-specific placeholder |
-| B06 | [MultiServerProvider](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/providers/multi_server_provider.dart): source discovery and last-good availability under transient errors |
-| B07 | [Guide](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/livetv/tabs/guide_tab.dart) and [guide search](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/livetv/guide_search_sheet.dart): existing virtualized rows and source grouping; guide search loads a bounded schedule then filters in memory |
-| B08 | [PlaybackCoordinator](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/services/playback_coordinator.dart) and [workspace controller](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/multiview/workspace_controller.dart): two video slots, audio ownership and shared workspace |
-| B09 | [Multiview delivery ledger](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/docs/plezyng/multiview/DELIVERY.md): implementation exists, platform qualification is not established by this document |
-| B10 | [Universal media parser](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/sources/universal_media_input.dart): bounded one-off playlist parser; does not provide a persistent IPTV account, EPG database or Xtream adapter |
-| B11 | [Add connection](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/settings/add_connection_screen.dart), [Connection](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/connection/connection.dart), [connection registry](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/connection/connection_registry.dart): shared setup UX, but current connection type is media-server-specific |
-| B12 | [Credential vault](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/services/credential_vault.dart): OS-keystore-backed encryption; current field protection has backend-specific allowlists |
-| B13 | [App database](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/database/app_database.dart): Drift, protected identity mutations and tvOS recovery |
-| B14 | [SearchHit](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/search_hit.dart) and [SearchScreen](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/search_screen.dart): typed heterogeneous results; no direct IPTV hit type at baseline |
-| B15 | [Navigation tabs](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/navigation/navigation_tabs.dart): one existing Live TV destination, conditional visibility |
-| B16 | [Playback copy ranking](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/playback_copy_ranking.dart): network-aware ordering is explicitly not authority to switch editions or transfer progress |
-| B17 | [AGENTS.md](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/AGENTS.md) at the captured revision required private ephemeral JIT runners only; the current root `AGENTS.md` permits compatible GitHub-hosted runners again. |
-| B18 | [README](https://github.com/snapetech-org/PlezyNG/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/README.md): current platform claims, experimental webOS/Tizen qualifications and existing live deep links |
+| B01 | [DESIGN.md](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/DESIGN.md) and [UX-CONTRACT.md](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/UX-CONTRACT.md): Mono tokens, platform typography, shared menus/sheets, focus and profile contracts |
+| B02 | [Live TV screen](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/livetv/live_tv_screen.dart): Guide, Plex-gated What's On and capability-gated Recordings |
+| B03 | [Live TV support](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/live_tv_support.dart): session, favorites and optional DVR contracts; some DVR payloads remain Plex-shaped |
+| B04 | [Timeline](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/live_tv_timeline.dart): UTC seconds, explicit accuracy, seek-window bounds and programme intervals |
+| B05 | [Live player navigation](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/utils/live_tv_player_navigation.dart): current entry assumes a reachable server and creates a backend-specific placeholder |
+| B06 | [MultiServerProvider](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/providers/multi_server_provider.dart): source discovery and last-good availability under transient errors |
+| B07 | [Guide](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/livetv/tabs/guide_tab.dart) and [guide search](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/livetv/guide_search_sheet.dart): existing virtualized rows and source grouping; guide search loads a bounded schedule then filters in memory |
+| B08 | [PlaybackCoordinator](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/services/playback_coordinator.dart) and [workspace controller](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/multiview/workspace_controller.dart): two video slots, audio ownership and shared workspace |
+| B09 | [Multiview delivery ledger](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/docs/plezyng/multiview/DELIVERY.md): implementation exists, platform qualification is not established by this document |
+| B10 | [Universal media parser](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/sources/universal_media_input.dart): bounded one-off playlist parser; does not provide a persistent IPTV account, EPG database or Xtream adapter |
+| B11 | [Add connection](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/settings/add_connection_screen.dart), [Connection](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/connection/connection.dart), [connection registry](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/connection/connection_registry.dart): shared setup UX, but current connection type is media-server-specific |
+| B12 | [Credential vault](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/services/credential_vault.dart): OS-keystore-backed encryption; current field protection has backend-specific allowlists |
+| B13 | [App database](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/database/app_database.dart): Drift, protected identity mutations and tvOS recovery |
+| B14 | [SearchHit](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/search_hit.dart) and [SearchScreen](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/screens/search_screen.dart): typed heterogeneous results; no direct IPTV hit type at baseline |
+| B15 | [Navigation tabs](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/navigation/navigation_tabs.dart): one existing Live TV destination, conditional visibility |
+| B16 | [Playback copy ranking](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/lib/media/playback_copy_ranking.dart): network-aware ordering is explicitly not authority to switch editions or transfer progress |
+| B17 | [AGENTS.md](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/AGENTS.md) at the captured revision required private ephemeral JIT runners only; the current root `AGENTS.md` permits compatible GitHub-hosted runners again. |
+| B18 | [README](https://github.com/snapetech-org/pleazyng/blob/0d0626cc375b8fa95124775365a6b37e2a03c9be/README.md): current platform claims, experimental webOS/Tizen qualifications and existing live deep links |
 
 No competitor binary was reverse engineered, no proprietary app code was copied, and no live provider account was probed. Compatibility fixtures and controlled runtime comparisons remain implementation/release work.

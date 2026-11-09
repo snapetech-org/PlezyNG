@@ -1,6 +1,6 @@
 # Steam visual and interaction completion
 
-Status: implemented on [PR #81](https://github.com/snapetech-org/PlezyNG/pull/81), with production-widget render review and portable regression checks. Physical-device acceptance and reviewed translations remain open. Baseline: `3fb6d831a7765310b37b216d47cffde96b53c7d8`.
+Status: implemented on [PR #81](https://github.com/snapetech-org/pleazyng/pull/81), with production-widget render review and portable regression checks. Physical-device acceptance and reviewed translations remain open. Baseline: `3fb6d831a7765310b37b216d47cffde96b53c7d8`.
 
 ## Acceptance scope
 

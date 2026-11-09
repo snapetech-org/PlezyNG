@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Pleazyng
-Source: https://github.com/snapetech-org/PlezyNG
+Source: https://github.com/snapetech-org/pleazyng
 
 Files: *
 Copyright: SnapeTech

@@ -11,7 +11,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = 'snapetech-org/PlezyNG'
+REPOSITORY = 'snapetech-org/pleazyng'
 PACKAGING_FILES = frozenset({
     '.github/workflows/build.yml', 'CHANGELOG.md',
     'docs/maintainers/apple-jit-runner.md',

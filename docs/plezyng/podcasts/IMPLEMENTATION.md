@@ -1,6 +1,6 @@
 # Podcast support: assessment and implementation
 
-Assessed 30 October 2026 against `snapetech-org/PlezyNG` main `4448858044d10814756527dd02c5604318831b3e`.
+Assessed 30 October 2026 against `snapetech-org/pleazyng` main `4448858044d10814756527dd02c5604318831b3e`.
 
 ## Existing support
 

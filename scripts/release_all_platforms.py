@@ -32,7 +32,7 @@ import launch_queued_apple_jit_jobs as apple_queue
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PLEZY_REPO = "snapetech-org/PlezyNG"
+PLEZY_REPO = "snapetech-org/pleazyng"
 MPV_REPO = "snapetech-org/mpv-build"
 MPV_WORKFLOW = "publish.yml"
 CI_WORKFLOW = "ci.yml"

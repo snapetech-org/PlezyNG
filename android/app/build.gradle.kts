@@ -720,7 +720,7 @@ val stageAndroidLiteRtModels = tasks.register<Sync>("stageAndroidLiteRtModels") 
           verifySha256(modelFile, expectedSha256, "LiteRT model $filename")
           val downloadUrl = record["url"] as? String
           val expectedUrl = Regex(
-            "^https://raw\\.githubusercontent\\.com/snapetech-org/PlezyNG/$androidLiteRtModelArtifactsRevision/" +
+            "^https://raw\\.githubusercontent\\.com/snapetech-org/pleazyng/$androidLiteRtModelArtifactsRevision/" +
               "assets/motion_models/litert/${Regex.escape(filename)}$"
           )
           if (!bundleAndroidLiteRtModels && (downloadUrl == null || !expectedUrl.matches(downloadUrl))) {

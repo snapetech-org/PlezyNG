@@ -49,6 +49,13 @@ require(
 
 homebrew = job("update-homebrew")
 require(
+    'verify_release_attestation.py" snapetech-pleazyng.rb' in homebrew
+    and 'verify_release_attestation.py" SHA256SUMS.txt' in homebrew
+    and '--repository-output "$RUNNER_TEMP/cask-publisher-repository.txt"' in homebrew
+    and '--publisher-repository-file "$RUNNER_TEMP/cask-publisher-repository.txt"' in homebrew,
+    "Homebrew must verify both artifacts and preserve their verified publisher identity",
+)
+require(
     "repository: snapetech-org/homebrew-pleazyng" in homebrew,
     "Homebrew publisher must target the dedicated Pleazyng tap",
 )

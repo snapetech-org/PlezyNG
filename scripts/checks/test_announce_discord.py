@@ -21,7 +21,7 @@ spec.loader.exec_module(publisher)
 
 def release(body="First release note"):
     return {"id": 42, "tag_name": "v3.0.0", "body": body,
-            "html_url": "https://github.com/snapetech-org/PlezyNG/releases/tag/v3.0.0",
+            "html_url": "https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.0",
             "draft": False, "prerelease": False, "published_at": "2026-11-05T06:48:35Z", "assets": []}
 
 

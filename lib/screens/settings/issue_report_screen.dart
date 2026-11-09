@@ -62,7 +62,7 @@ class _IssueReportScreenState extends State<IssueReportScreen> {
       '### Steps to reproduce',
       '1. ',
     ].join('\n');
-    return Uri.https('github.com', '/snapetech-org/PlezyNG/issues/new', {
+    return Uri.https('github.com', '/snapetech-org/pleazyng/issues/new', {
       'title': '[Pleazyng] Bug report',
       'body': body,
     });

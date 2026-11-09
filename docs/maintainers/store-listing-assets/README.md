@@ -18,7 +18,7 @@ Fire OS hardware, playback or Amazon purchase/restore behavior.
 
 The screenshots use version **3.0.0**, source
 `28486bba2bb42d25bc17d127ca73c5ccc27ba1a3`, from the successful
-[Android validation run](https://github.com/snapetech-org/PlezyNG/actions/runs/42142321277).
+[Android validation run](https://github.com/snapetech-org/pleazyng/actions/runs/42142321277).
 The APK SHA256 is
 `cb02bfbce6fd5b940de104ddcee52c9f34a0e422555ec2f06c8bce336926622a`.
 [Build, signature and attestation evidence](capture-build-evidence/) is committed

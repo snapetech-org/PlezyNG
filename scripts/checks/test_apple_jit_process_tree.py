@@ -53,7 +53,7 @@ class CancellationTests(unittest.TestCase):
         self.scope = {"run": "42", "job": "123", "attempt": "1"}
         self.proof = {"run": {"id": 42, "run_attempt": 1, "status": "completed",
                        "conclusion": "cancelled", "event": "workflow_dispatch", "head_branch": "main",
-                       "head_repository": {"full_name": "snapetech-org/PlezyNG"}},
+                       "head_repository": {"full_name": "snapetech-org/pleazyng"}},
                       "job": {"id": 123, "run_id": 42, "run_attempt": 1,
                               "status": "completed", "conclusion": "cancelled"},
                       "registrationGone": True}
@@ -464,20 +464,20 @@ counts[key]=counts.get(key,0)+1
 state.write_text(json.dumps(counts))
 run={'id':42,'run_attempt':1,'status':'completed','conclusion':'cancelled',
      'event':'workflow_dispatch','head_branch':'main',
-     'head_repository':{'full_name':'snapetech-org/PlezyNG'}}
+     'head_repository':{'full_name':'snapetech-org/pleazyng'}}
 job={'id':123,'run_id':42,'run_attempt':1,'status':'completed','conclusion':'cancelled',
      'labels':['private-apple','macOS','ARM64','gha-42-build-macos']}
 if args[:2]==['repo','view']:
- print('snapetech-org/PlezyNG')
+ print('snapetech-org/pleazyng')
 elif any('generate-jitconfig' in value for value in args):
  print('fixture-not-a-real-credential')
-elif args==['api','repos/snapetech-org/PlezyNG/actions/runs/42']:
+elif args==['api','repos/snapetech-org/pleazyng/actions/runs/42']:
  if counts[key]<=2:run['status']='in_progress';run['conclusion']=None
  print(json.dumps(run))
-elif args==['api','repos/snapetech-org/PlezyNG/actions/runs/42/jobs?per_page=100']:
+elif args==['api','repos/snapetech-org/pleazyng/actions/runs/42/jobs?per_page=100']:
  if counts[key]==1:job['status']='queued';job['conclusion']=None
  print(json.dumps({'jobs':[job]}))
-elif args==['api','repos/snapetech-org/PlezyNG/actions/jobs/123']:
+elif args==['api','repos/snapetech-org/pleazyng/actions/jobs/123']:
  print(json.dumps(job))
 elif args[:1]==['api'] and 'runner-groups/8/runners?' in key:
  print('{"runners":[]}')

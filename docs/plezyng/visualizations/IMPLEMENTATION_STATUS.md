@@ -2,7 +2,7 @@
 
 Current integration: PR #82 was reconciled into main on 2026-11-05. See SOURCE_COMPLETION.md and BUILD_HANDOFF.md for the current ABI v2 pin, executed regression checks and remaining artifact/device/provisioning gates. Dated sections below retain their original commit scope.
 
-Updated 2026-10-30. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/PlezyNG/pull/82)
+Updated 2026-10-30. Current source: [PlezyNG PR #82](https://github.com/snapetech-org/pleazyng/pull/82)
 and [MilkRust PR #20](https://github.com/snapetech-org/MilkRust/pull/20). The app
 pins the current MilkRust PR #20 source revision in `native/visualizer/sources.lock.json`; the exact dependency
 contract is in that file. The

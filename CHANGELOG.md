@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Rename the GitHub repository and local checkout to pleazyng, update canonical links and runner routing, and preserve historical release verification through the original repository identity.
+
 - Apply source-aware audio diagnostics to Samsung Tizen, retain native channel/rate/bitrate data, and reject contradictory source hints. Refresh spotlight and queue artwork on server changes across layouts, and cancel unfinished redirect bodies in the shared native TV proxy.
 
 - Keep live-program and audio-format header subscriptions independently keyed, and avoid resolving an artwork URL when an item has no picture.

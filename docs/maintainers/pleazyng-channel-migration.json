@@ -1,6 +1,6 @@
 {
   "date": "2026-11-05",
-  "repository_rename": "deferred",
+  "repository_rename": "application repository completed; website repository unchanged",
   "browser": "Dedicated Agent VM Firefox on :11; existing Proton Pass extension",
   "accounts": {
     "default": "keith@snape.tech",
@@ -689,5 +689,13 @@
       "Owned client registration and matching public client configuration",
       "Consent, PKCE/exchange, refresh and tracker synchronization qualification"
     ]
+  },
+  "application_repository": {
+    "id": 1433487464,
+    "canonical": "snapetech-org/pleazyng",
+    "previous": "snapetech-org/PlezyNG",
+    "local_checkout": "/home/keith/Documents/code/pleazyng",
+    "local_compatibility_alias": "/home/keith/Documents/code/plezyng",
+    "record": "docs/maintainers/repository-rename.md"
   }
 }

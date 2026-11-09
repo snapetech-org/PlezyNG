@@ -143,10 +143,12 @@ jobs:
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" \
             --pattern pleazyng-macos.dmg --pattern SHA256SUMS.txt \
             --pattern snapetech-pleazyng.rb
-          gh attestation verify snapetech-pleazyng.rb --repo "$GITHUB_REPOSITORY"
-          gh attestation verify SHA256SUMS.txt --repo "$GITHUB_REPOSITORY"
+          python3 "$GITHUB_WORKSPACE/scripts/verify_release_attestation.py" snapetech-pleazyng.rb \
+            --repo "$GITHUB_REPOSITORY" --repository-output "$RUNNER_TEMP/cask-publisher-repository.txt"
+          python3 "$GITHUB_WORKSPACE/scripts/verify_release_attestation.py" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY"
           python3 "$GITHUB_WORKSPACE/scripts/generate_homebrew_cask.py" \
-            --version "$RELEASE_VERSION" --checksums SHA256SUMS.txt --output expected.rb
+            --version "$RELEASE_VERSION" --checksums SHA256SUMS.txt --output expected.rb \
+            --publisher-repository-file "$RUNNER_TEMP/cask-publisher-repository.txt"
           cmp expected.rb snapetech-pleazyng.rb
           EXPECTED_SHA=$(awk '$2 == "pleazyng-macos.dmg" {print $1}' SHA256SUMS.txt)
           ACTUAL_SHA=$(shasum -a 256 pleazyng-macos.dmg | cut -d' ' -f1)

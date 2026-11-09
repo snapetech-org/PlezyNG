@@ -10,8 +10,8 @@ files may offer later versions). The complete GPL text accompanies this notice.
 
 Upstream source: https://github.com/moonlight-stream/moonlight-android
 PlezyNG adapter and reproducible source preparation:
-https://github.com/snapetech-org/PlezyNG/tree/main/android/moonlight
-https://github.com/snapetech-org/PlezyNG/blob/main/scripts/games/prepare_moonlight.py
+https://github.com/snapetech-org/pleazyng/tree/main/android/moonlight
+https://github.com/snapetech-org/pleazyng/blob/main/scripts/games/prepare_moonlight.py
 
 PlezyNG modifications make the engine app-private, add pending-request
 cancellation/deadlines, and connect pairing, libraries and touch controls to the

@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = "snapetech-org/PlezyNG"
+REPOSITORY = "snapetech-org/pleazyng"
 RUNNER_GROUP_ID = os.environ.get("APPLE_JIT_RUNNER_GROUP_ID", "8")
 APPLE_LABELS = {"private-apple", "macOS", "ARM64"}
 POLL_SECONDS = 15

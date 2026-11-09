@@ -30,7 +30,7 @@ permissions:
 jobs:
   update-aur:
     name: Update pleazyng-bin on AUR
-    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-plezyng","ng-main-run-{0}","gha-{0}-update-aur"]}}', github.run_id)) }}
+    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-update-aur"]}}', github.run_id)) }}
     steps:
       - name: Require main for manual updates
         if: github.event_name == 'workflow_dispatch'

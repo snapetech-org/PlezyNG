@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Check public Pleazyng identities; compatibility exceptions are documented below.
 
-Retained: snapetech-org/PlezyNG URLs (owner deferred repo rename), internal
+Canonical repository: snapetech-org/pleazyng. Retained: historical redirect
+aliases, internal
 com.edde746.plezy / org.snapetech.plezyng JNI and method channels, credential
 vault keys, persisted schemas, docs/plezyng paths, runner labels and existing
 environment/secret names. Historical release receipts and GPL notices remain.

@@ -37,7 +37,7 @@ jobs:
   announce-discord:
     name: Announce published release to Discord
     if: >-
-      github.repository == 'snapetech-org/PlezyNG' &&
+      github.repository_id == '1433487464' &&
       ((github.event_name == 'release' && !github.event.release.draft && !github.event.release.prerelease) ||
        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
     runs-on: ubuntu-24.04

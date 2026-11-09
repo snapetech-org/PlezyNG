@@ -277,7 +277,7 @@ busy. Inspect queued Apple job IDs first:
 
 ```sh
 run_id=YOUR_RUN_ID
-gh api "repos/snapetech-org/PlezyNG/actions/runs/$run_id/jobs?per_page=100" \
+gh api "repos/snapetech-org/pleazyng/actions/runs/$run_id/jobs?per_page=100" \
   | jq -r '.jobs[] | select(.status == "queued") | [.id,.name,(.labels|join(","))] | @tsv'
 ```
 

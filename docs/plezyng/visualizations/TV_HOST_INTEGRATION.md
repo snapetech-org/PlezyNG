@@ -1,8 +1,8 @@
 # TV visualization integration
 
 Status: Tizen PCM, EGL/texture host and the initial artifact packaging source from
-closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) were merged
-through [PR #78](https://github.com/snapetech-org/PlezyNG/pull/78). Those
+closed [PR #74](https://github.com/snapetech-org/pleazyng/pull/74) were merged
+through [PR #78](https://github.com/snapetech-org/pleazyng/pull/78). Those
 sources have not been compiled or run. webOS now has a separate, bounded
 SoLoud-owned audio route and native PCM/texture host source; the standard
 candidate-build source path builds and requires its MilkRust runtime bundle.

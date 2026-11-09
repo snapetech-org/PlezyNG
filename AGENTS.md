@@ -58,3 +58,13 @@ remain required, without a device-qualification or build-time inclusion gate.
 ## Dart generation and formatting
 
 Use `scripts/format_dart.sh` for maintained Dart source and `scripts/format_dart.sh --check` to verify it. Regenerate translations and model outputs with `scripts/codegen.sh`; preserve those canonical outputs instead of formatting generated files manually.
+
+## Repository identity — owner directive, 2026-11-08
+
+The canonical repository is `snapetech-org/pleazyng` and the authoritative local
+checkout is `/home/keith/Documents/code/pleazyng`. The old `PlezyNG` GitHub URL
+redirects to this same repository; do not recreate a repository at the old name.
+The local `plezyng` path is a compatibility symlink for existing tools and cached
+absolute paths. Use the canonical path for new work. Upstream remains
+`edde746/plezy`; published tags, binaries and signed provenance retain their
+original identities.

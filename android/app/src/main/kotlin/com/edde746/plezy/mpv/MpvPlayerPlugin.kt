@@ -1026,7 +1026,7 @@ open class MpvPlayerPlugin(
     val rawUrl = record.optString("url").takeIf(String::isNotBlank) ?: return null
     val url = URL(rawUrl)
     val expectedPath =
-      "/snapetech-org/PlezyNG/$LITERT_MODEL_ARTIFACTS_REVISION/assets/motion_models/litert/$filename"
+      "/snapetech-org/pleazyng/$LITERT_MODEL_ARTIFACTS_REVISION/assets/motion_models/litert/$filename"
     if (
       url.protocol != "https" ||
       !url.host.equals("raw.githubusercontent.com", ignoreCase = true) ||

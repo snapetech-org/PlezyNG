@@ -22,7 +22,7 @@ To produce only the signed Amazon APK from current main, without creating or cha
 a release or uploading to a store:
 
 ```sh
-gh workflow run build.yml -R snapetech-org/PlezyNG --ref main \
+gh workflow run build.yml -R snapetech-org/pleazyng --ref main \
   -f action=build -f runner_pool=private -f execution_profile=hybrid \
   -f mode=android-validation -f include_webos_build=false \
   -f include_webos_release=false -f include_tizen_build=false

@@ -126,7 +126,7 @@ workflow accepts these parameters (substitute the real qualified tag and channel
 this example preserves a Play draft):
 
 ```sh
-gh workflow run publish-app-stores.yml --repo snapetech-org/PlezyNG --ref main \
+gh workflow run publish-app-stores.yml --repo snapetech-org/pleazyng --ref main \
   -f action=publish-app-stores -f runner_pool=public -f release_tag=vX.Y.Z \
   -f channel=google-play -f play_track=alpha -f play_release_status=draft
 ```

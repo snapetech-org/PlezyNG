@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   contracts:
-    if: ${{ github.repository == 'snapetech-org/PlezyNG' }}
+    if: ${{ github.repository_id == '1433487464' }}
     runs-on:
       group: gvisor-sandbox
       labels: gvisor-sandbox

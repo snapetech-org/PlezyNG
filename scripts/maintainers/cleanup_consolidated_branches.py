@@ -7,7 +7,7 @@ import re
 import subprocess
 import tempfile
 
-REPOSITORY = 'snapetech-org/PlezyNG'
+REPOSITORY = 'snapetech-org/pleazyng'
 PROTECTED = {'main', 'master'}
 MANIFEST = 'docs/maintainers/branch-consolidation-2026-10-27.json'
 SHA = re.compile(r'^[0-9a-f]{40}$')

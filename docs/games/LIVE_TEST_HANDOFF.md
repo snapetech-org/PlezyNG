@@ -1,6 +1,6 @@
 # Steam receiver testing handoff
 
-PR: [#81](https://github.com/snapetech-org/PlezyNG/pull/81)
+PR: [#81](https://github.com/snapetech-org/pleazyng/pull/81)
 
 Branch: `codex/steam-vulkan-cloud-relay-20261028`
 
@@ -74,10 +74,10 @@ The repository's workflows are manually dispatched. From an authenticated
 maintainer session:
 
 ```sh
-gh workflow run ci.yml --repo snapetech-org/PlezyNG \
+gh workflow run ci.yml --repo snapetech-org/pleazyng \
   --ref codex/steam-vulkan-cloud-relay-20261028 \
   -f action=ci -f runner_pool=private -f build_linux_packages=true
-gh workflow run games-native.yml --repo snapetech-org/PlezyNG \
+gh workflow run games-native.yml --repo snapetech-org/pleazyng \
   --ref codex/steam-vulkan-cloud-relay-20261028 \
   -f action=games -f runner_pool=private
 ```

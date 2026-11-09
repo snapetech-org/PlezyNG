@@ -17,7 +17,7 @@ import verify_release_ci as release_ci
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = "snapetech-org/PlezyNG"
+REPOSITORY = "snapetech-org/pleazyng"
 # Application sources, dependency pins, and native toolchain inputs are excluded.
 RECOVERY_FILES = frozenset({
     "scripts/retain_macos_app.py", "scripts/test_retain_macos_app.py",

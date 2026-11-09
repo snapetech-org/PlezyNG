@@ -395,7 +395,7 @@
           "gpu": {
             "bytes": 10708864,
             "file": "anvil-m-1080p.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-1080p.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-1080p.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -419,7 +419,7 @@
             "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-m-1080p-w8a8.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-1080p-w8a8.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-1080p-w8a8.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -446,7 +446,7 @@
             "bytes": 7678736,
             "execution": "aot",
             "file": "anvil-m-720p-google-tensor-g5.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p-google-tensor-g5.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p-google-tensor-g5.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -471,7 +471,7 @@
             "bytes": 16964368,
             "execution": "aot",
             "file": "anvil-m-720p-google-tensor-g6.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p-google-tensor-g6.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p-google-tensor-g6.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -494,7 +494,7 @@
           "gpu": {
             "bytes": 10707640,
             "file": "anvil-m-720p.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -518,7 +518,7 @@
             "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-m-720p-w8a8.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p-w8a8.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-m-720p-w8a8.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -552,7 +552,7 @@
           "gpu": {
             "bytes": 3464436,
             "file": "anvil-s-1080p.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-1080p.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-1080p.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -576,7 +576,7 @@
             "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-s-1080p-w8a8.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-1080p-w8a8.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-1080p-w8a8.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -603,7 +603,7 @@
             "bytes": 3852816,
             "execution": "aot",
             "file": "anvil-s-720p-google-tensor-g5.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p-google-tensor-g5.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p-google-tensor-g5.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -628,7 +628,7 @@
             "bytes": 11572240,
             "execution": "aot",
             "file": "anvil-s-720p-google-tensor-g6.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p-google-tensor-g6.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p-google-tensor-g6.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -651,7 +651,7 @@
           "gpu": {
             "bytes": 3463252,
             "file": "anvil-s-720p.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,
@@ -675,7 +675,7 @@
             "calibration_metadata_sha256": "61f677653a8cc9765ff927ba3a272e77256bb12784ccee143cceba93391dc9a2",
             "execution": "jit",
             "file": "anvil-s-720p-w8a8.tflite",
-            "url": "https://raw.githubusercontent.com/snapetech-org/PlezyNG/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p-w8a8.tflite",
+            "url": "https://raw.githubusercontent.com/snapetech-org/pleazyng/e80ebf0d8d3a0d98d2ab05319548f844d18e0655/assets/motion_models/litert/anvil-s-720p-w8a8.tflite",
             "input_layout": "NHWC",
             "input_shape": [
               1,

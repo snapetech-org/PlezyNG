@@ -131,7 +131,7 @@ also require reviewing the existing announcement rather than silently reposting.
 To announce a previously published release through the same verified route:
 
 ```sh
-gh workflow run discord-release.yml --repo snapetech-org/PlezyNG --ref main \
+gh workflow run discord-release.yml --repo snapetech-org/pleazyng --ref main \
   -f action=announce-release -f runner_pool=hosted -f release_tag=v3.0.0
 ```
 

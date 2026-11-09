@@ -10,8 +10,8 @@ ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 : "${WEBOS_NDK_ROOT:?Set this to the pinned LG webOS 26 NDK root}"
 : "${WEBOS_PYTHON_BIN:=python3}"
 
-if [[ "$GITHUB_REPOSITORY" != "snapetech-org/PlezyNG" || "${RUNNER_ENVIRONMENT:-}" != "self-hosted" ]]; then
-  echo "MilkRust webOS provenance must be produced by snapetech-org/PlezyNG." >&2
+if [[ "$GITHUB_REPOSITORY" != "snapetech-org/pleazyng" || "${RUNNER_ENVIRONMENT:-}" != "self-hosted" ]]; then
+  echo "MilkRust webOS provenance must be produced by snapetech-org/pleazyng." >&2
   exit 1
 fi
 if [[ ! "$GITHUB_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
@@ -210,7 +210,7 @@ manifest = {
     "abi": int(abi),
     "target": "webos-arm",
     "sourceRevision": source_revision,
-    "buildRun": f"https://github.com/snapetech-org/PlezyNG/actions/runs/{run_id}",
+    "buildRun": f"https://github.com/snapetech-org/pleazyng/actions/runs/{run_id}",
     "runnerPolicy": runner_policy,
     "rustToolchain": toolchain,
     "rustTarget": target,

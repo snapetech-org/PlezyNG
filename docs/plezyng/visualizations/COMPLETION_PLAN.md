@@ -30,7 +30,7 @@ This is the implementation handoff for Luna, prepared October 27, 2026, for **Pl
 | PlezyNG pack management | No MilkRust dependency or pack-download path found in the inspected main integration | Catalog, download/install/update/remove, local imports, offline storage and UI |
 | Release | PlezyNG 2.24.1 is a draft; MilkRust release query returned no releases | Built, installed and qualified artifacts plus an actual published pack catalog |
 
-Sources: [PlezyNG visualizer](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/widgets/music/music_visualizer.dart), [scene enum](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/widgets/music/music_visualizer_preset.dart), [Now Playing](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/screens/music/now_playing_screen.dart), [music service interface](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/services/music/music_playback_service.dart), [pack summary](https://github.com/snapetech-org/MilkRust/blob/bca17689c4c8a1a9e0554d3a576f6bbe8672cc7e/content/generated/community-pack-summary.json), [catalog](https://github.com/snapetech-org/MilkRust/blob/bca17689c4c8a1a9e0554d3a576f6bbe8672cc7e/content/catalog.json), [pack format](https://github.com/snapetech-org/MilkRust/blob/bca17689c4c8a1a9e0554d3a576f6bbe8672cc7e/docs/PRESET_PACKS.md).
+Sources: [PlezyNG visualizer](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/widgets/music/music_visualizer.dart), [scene enum](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/widgets/music/music_visualizer_preset.dart), [Now Playing](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/screens/music/now_playing_screen.dart), [music service interface](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/services/music/music_playback_service.dart), [pack summary](https://github.com/snapetech-org/MilkRust/blob/bca17689c4c8a1a9e0554d3a576f6bbe8672cc7e/content/generated/community-pack-summary.json), [catalog](https://github.com/snapetech-org/MilkRust/blob/bca17689c4c8a1a9e0554d3a576f6bbe8672cc7e/content/catalog.json), [pack format](https://github.com/snapetech-org/MilkRust/blob/bca17689c4c8a1a9e0554d3a576f6bbe8672cc7e/docs/PRESET_PACKS.md).
 
 This is early integration work in PlezyNG, with useful foundations elsewhere. A single percentage would conflate asset collection, partial engine implementation and a working app feature.
 
@@ -126,13 +126,13 @@ Dependency order: V0 precedes compatibility claims. V1 and V2 establish the audi
 
 # Audio and renderer implementation requirements
 
-PlezyNG’s `Player.audio()` uses a dedicated mpv audio core on Android, Apple, Windows and Linux, independently of Android’s video-backend choice. webOS and Tizen use their own audio-only players. Start with this actual music path, not ExoPlayer or microphone capture. See [player factory](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/mpv/player/player.dart), [native player](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/mpv/player/player_native.dart) and [music implementation](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/services/music/music_playback_service_impl.dart).
+PlezyNG’s `Player.audio()` uses a dedicated mpv audio core on Android, Apple, Windows and Linux, independently of Android’s video-backend choice. webOS and Tizen use their own audio-only players. Start with this actual music path, not ExoPlayer or microphone capture. See [player factory](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/mpv/player/player.dart), [native player](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/mpv/player/player_native.dart) and [music implementation](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/lib/services/music/music_playback_service_impl.dart).
 
 Add an optional `MusicVisualizationAudioService` capability. Feed interleaved float PCM with sample rate, channel layout, presentation timestamp and session generation. The native callback only copies into a preallocated bounded ring; it must not allocate, block on rendering, perform network work or call Dart. Drop analysis samples on overflow rather than delaying playback. Reset buffers and equation state appropriately for seek, track changes, profile switches and source discontinuities.
 
 Place the analysis tap after decode and the relevant timing-changing audio processing, before hardware output, with an explicitly documented policy for normalization, volume and downmixing. Preserve stereo information and actual sample rate. Produce waveform/spectrum/energy features for the six original scenes; let each compatibility engine perform its required analysis from PCM. Test sample rates, mono/stereo/multichannel input, playback speed, crossfade/gapless behavior, pause, buffering and Bluetooth latency.
 
-Do not assume libmpv exposes an arbitrary decoded-PCM callback. Prove the chosen tap in the pinned mpv build. If an engine patch is required, maintain it in the correct build source, produce all affected binaries, and update dependency locks with checksums. The audited [mpv lock](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/mpv-build.lock.json) still names `edde746/mpv-build`; do not assume the SnapeTech fork is already the active dependency.
+Do not assume libmpv exposes an arbitrary decoded-PCM callback. Prove the chosen tap in the pinned mpv build. If an engine patch is required, maintain it in the correct build source, produce all affected binaries, and update dependency locks with checksums. The audited [mpv lock](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/mpv-build.lock.json) still names `edde746/mpv-build`; do not assume the SnapeTech fork is already the active dependency.
 
 When passthrough, protected paths, remote casting, or a TV backend cannot expose suitable PCM, show an accurate capability state. Preserve the existing output mode; do not silently disable Atmos/passthrough or start another decoder. Offer the original loudness/ambient scenes where available. A change to decoded output is a separate explicit user action.
 
@@ -206,14 +206,14 @@ Qualify Linux x64/arm64 and Wayland, Windows x64/arm64, macOS Apple Silicon and 
 
 For the initial imported corpus, every file must be accounted for and every advertised preset must pass the declared renderer tier. Full custom compatibility requires the MilkRust gate too. Newly discovered valid formats/features add tracked conformance cases; exceptions remain visible rather than quietly shrinking the denominator.
 
-Use compatible GitHub-hosted runners for jobs whose OS, architecture, trust, and hardware needs they satisfy. Use private ephemeral JIT runners for private-network, special-hardware/storage, or explicitly private validation needs. Missing JIT capacity is a blocker only when no compatible hosted route meets the job's requirements; do not disturb active builds. Update [PlezyNG’s capability ledger](https://github.com/snapetech-org/PlezyNG/blob/bae33540a1bad9d230c519d1043d58da5c291f32/docs/maintainers/capability-manifest.json) with implementation, test, device and release states separately.
+Use compatible GitHub-hosted runners for jobs whose OS, architecture, trust, and hardware needs they satisfy. Use private ephemeral JIT runners for private-network, special-hardware/storage, or explicitly private validation needs. Missing JIT capacity is a blocker only when no compatible hosted route meets the job's requirements; do not disturb active builds. Update [PlezyNG’s capability ledger](https://github.com/snapetech-org/pleazyng/blob/bae33540a1bad9d230c519d1043d58da5c291f32/docs/maintainers/capability-manifest.json) with implementation, test, device and release states separately.
 
 Luna should deliver reviewable PRs, exact engine/content pins, reports, logs and representative captures; update the user guide, acknowledgements and changelog. A merged PR, successful build or draft release alone does not establish downloadable delivery.
 
 # Luna start prompt
 
 ```codex-prompt
-Implement the PlezyNG visualization completion plan on this Page. The host is snapetech-org/PlezyNG and the reusable custom engine/content source is snapetech-org/MilkRust. Read current AGENTS.md files and preserve unrelated work.
+Implement the PlezyNG visualization completion plan on this Page. The host is snapetech-org/pleazyng and the reusable custom engine/content source is snapetech-org/MilkRust. Read current AGENTS.md files and preserve unrelated work.
 
 Start with V0: reproduce the standard MilkDrop shader/key parsing blind spots, report every corpus file including read/encoding failures, and reconcile npm tool entrypoints. Then implement V1 and V2 as a real audio-to-native-texture vertical slice in PlezyNG. Use the dedicated Player.audio() path; do not substitute microphone capture, a second playback decoder, synthetic FFT or a wireframe preview for actual playback visualization.
 
@@ -267,7 +267,7 @@ session. Source preparation is recorded separately from those checks.
 
 The original scope and completion gates above remain unchanged. PRs #55/#57
 merged the library, Linux projectM and signed-catalog client source. Follow-up
-[PR #61](https://github.com/snapetech-org/PlezyNG/pull/61) adds native MilkRust host
+[PR #61](https://github.com/snapetech-org/pleazyng/pull/61) adds native MilkRust host
 source for Linux, Windows, macOS, iOS/tvOS and Android/TV, paired with MilkRust
 PR #20. The latter also contains the saved-pair parser, native C renderer ABI,
 conservative MIT pack-conversion recipe and signed-catalog publisher source.
@@ -282,11 +282,11 @@ increments. See
 
 ## Tizen source continuation after PR #74 closure, 2026-10-28
 
-Closed [PR #74](https://github.com/snapetech-org/PlezyNG/pull/74) added the
+Closed [PR #74](https://github.com/snapetech-org/pleazyng/pull/74) added the
 Samsung same-player PCM/EGL/texture path, source-generation protection, app
 capability routing and explicit artifact/source/notice packaging inputs. Its
 source is retained on current-main
-[PR #78](https://github.com/snapetech-org/PlezyNG/pull/78) for re-review. This
+[PR #78](https://github.com/snapetech-org/pleazyng/pull/78) for re-review. This
 preserves the original plan; V1 remains open for SDK/device qualification and
 context-loss/hang handling. Tizen's current
 source limits are normal-speed S16LE stereo and PNG/JPEG/BMP/TGA texture

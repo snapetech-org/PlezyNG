@@ -673,7 +673,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         ]
         for responses, succeeds in cases:
             with self.subTest(responses=responses), patch.dict(os.environ, {
-                    'GITHUB_REPOSITORY': 'snapetech-org/PlezyNG', 'RELEASE_TAG': 'v3.0.3',
+                    'GITHUB_REPOSITORY': 'snapetech-org/pleazyng', 'RELEASE_TAG': 'v3.0.3',
                     'EXPECTED_RELEASE_COMMIT': expected}), patch.object(
                         subprocess, 'check_output', side_effect=[json.dumps(r) for r in responses]) as api:
                 if succeeds:
@@ -683,7 +683,7 @@ class BuildWorkflowGuardTest(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, 'Immutable release tag changed'):
                         exec(compile(script, 'release-tag-preflight', 'exec'), {})
                 self.assertEqual(api.call_args_list[0].args[0][-1],
-                                 'repos/snapetech-org/PlezyNG/git/ref/tags/v3.0.3')
+                                 'repos/snapetech-org/pleazyng/git/ref/tags/v3.0.3')
                 self.assertEqual(api.call_count, len(responses))
 
     def test_release_tag_preflight_must_compare_the_validated_source(self) -> None:

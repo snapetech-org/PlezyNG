@@ -47,7 +47,7 @@ The in-app target must not depend on system PiP support. Preserve the broader [M
 2. [ARCHITECTURE.md](ARCHITECTURE.md) defines proposed session, transport, audio, rendering, privacy, and platform boundaries.
 3. [DELIVERY.md](DELIVERY.md) defines activation decisions, ordered experiments, acceptance criteria, qualification evidence, and rollback.
 
-The initial repository audit used [`bae33540a1bad9d230c519d1043d58da5c291f32`](https://github.com/snapetech-org/PlezyNG/commit/bae33540a1bad9d230c519d1043d58da5c291f32). Core Discord, workspace, PiP, settings/vault, startup, and webview source snapshots were compared against documentation baseline [`b8dca283e069bc86db59926257b27ab974999b33`](https://github.com/snapetech-org/PlezyNG/commit/b8dca283e069bc86db59926257b27ab974999b33) and were unchanged. File links below the documentation tree are navigation aids to current code; pinned references in the research preserve audit context.
+The initial repository audit used [`bae33540a1bad9d230c519d1043d58da5c291f32`](https://github.com/snapetech-org/pleazyng/commit/bae33540a1bad9d230c519d1043d58da5c291f32). Core Discord, workspace, PiP, settings/vault, startup, and webview source snapshots were compared against documentation baseline [`b8dca283e069bc86db59926257b27ab974999b33`](https://github.com/snapetech-org/pleazyng/commit/b8dca283e069bc86db59926257b27ab974999b33) and were unchanged. File links below the documentation tree are navigation aids to current code; pinned references in the research preserve audit context.
 
 ## Conditions before any implementation
 

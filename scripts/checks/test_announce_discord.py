@@ -150,7 +150,7 @@ class DiscordDeliveryTest(unittest.TestCase):
                 dispatch = command.call_args.args[0]
                 self.assertEqual(dispatch[:4], ["gh", "workflow", "run", "discord-release.yml"])
                 self.assertIn("release_tag=v3.0.0", dispatch)
-                self.assertIn("runner_pool=hosted", dispatch)
+                self.assertIn("runner_pool=private", dispatch)
 
 
 if __name__ == "__main__":

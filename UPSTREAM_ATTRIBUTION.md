@@ -168,3 +168,13 @@ _Attribution ledger refreshed 2026-11-09; 89 source records._
 ## Music media-session integration
 
 The music/car integration vendors the already pinned [edde746/media_controls commit a27208e](https://github.com/edde746/media_controls/commit/a27208e641790029ac54d825b97508575caee1a7), maintained by [@edde746](https://github.com/edde746), retaining its license and existing platform implementations. Pleazyng independently adds the music browser bridge. The sonic request contract was checked against [Python-PlexAPI](https://github.com/pkkid/python-plexapi)'s published `nearest` and `computePath` client implementation; no Python source was copied. Native qualification and full parity remain tracked in `docs/plezyng/music/STATUS.md`.
+
+## Reviewed upstream synchronization — 2026-11-09
+
+These authors contributed the changes to upstream Plezy; Pleazyng independently
+adapted and verified the behavior. This does not imply direct contribution or
+endorsement of this fork.
+
+- [Companion remote reconnect state](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce), upstream commit by [@edde746](https://github.com/edde746): retain selected controls and scroll position during reconnect.
+- [Covered-route focus handoff](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01), upstream commit by [@edde746](https://github.com/edde746): let an unfocused page above the main screen receive remote navigation.
+- [Non-atomic RSS sampling regression](https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58), upstream commit by [@edde746](https://github.com/edde746): test independent OS counters without an unsupported ordering requirement.

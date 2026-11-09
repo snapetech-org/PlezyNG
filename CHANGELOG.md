@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve companion-remote controls across reconnect, restore TV focus to newly opened pages and avoid a flaky diagnostic counter-order assertion. Independently adapted from upstream commits [e871d095](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce), [5076836a](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01) and [55ef954e](https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
 - Close Linux emulator sandbox gaps in shared IPC, descriptor signal ownership and newer metadata syscalls, including when compiled with older kernel headers. Remove inherited capabilities, preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.
 
 - Apply the repository's native Kotlin and Swift formatters to the integrated Android isolation, car adapter, and iOS application changes before release validation.

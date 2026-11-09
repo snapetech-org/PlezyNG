@@ -4,7 +4,7 @@
 
 - Remove obsolete karaoke translation entries after the room security changes, restoring strict translation hygiene checks.
 
-- Use the verified `macos-26-intel` hosted image for Apple CI, signing preflight, and release builds after generic `macos-26` jobs were cancelled before receiving a public runner; retain ARM64 private JIT only for explicitly constrained execution.
+- Use the verified `macos-26-intel` hosted image for Apple CI, signing preflight, and release builds after generic `macos-26` jobs were cancelled before receiving a public runner. Prepare the checksum-verified pinned Flutter SDK for either x64 hosted Macs or ARM64 private JIT, retaining the latter only for explicitly constrained execution.
 
 - Fix native video being hidden behind media-detail artwork on Windows and other retained desktop surfaces. Clear only the video aperture after its first frame, preserving controls, surrounding workspace content, and the black startup cover ([#292](https://github.com/snapetech-org/pleazyng/issues/292)).
 

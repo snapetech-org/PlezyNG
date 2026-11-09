@@ -39,17 +39,17 @@ CONTENT_RANGE_RE = re.compile(r"^bytes (\d+)-(\d+)/(\d+)$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
-def release_metadata(manifest: dict, version: str) -> dict[str, str]:
-    """Select the exact stable Apple Silicon SDK release from Flutter's manifest."""
+def release_metadata(manifest: dict, version: str, architecture: str = "arm64") -> dict[str, str]:
+    """Select the exact stable SDK release for the requested Mac architecture."""
     matches = [
         release
         for release in manifest.get("releases", [])
         if release.get("channel") == "stable"
         and release.get("version") == version
-        and release.get("dart_sdk_arch") == "arm64"
+        and release.get("dart_sdk_arch") == architecture
     ]
     if len(matches) != 1:
-        raise ValueError(f"expected one stable macOS arm64 Flutter {version} release")
+        raise ValueError(f"expected one stable macOS {architecture} Flutter {version} release")
     release = matches[0]
     archive = release.get("archive")
     digest = release.get("sha256")
@@ -72,7 +72,7 @@ def release_metadata(manifest: dict, version: str) -> dict[str, str]:
     }
 
 
-def fetch_release_metadata(version: str) -> dict[str, str]:
+def fetch_release_metadata(version: str, architecture: str = "arm64") -> dict[str, str]:
     request = urllib.request.Request(
         MANIFEST_URL,
         headers={"User-Agent": "pleazyng-macos-flutter-cache/1"},
@@ -81,7 +81,7 @@ def fetch_release_metadata(version: str) -> dict[str, str]:
         manifest = json.load(response)
     if not isinstance(manifest, dict):
         raise ValueError("Flutter release manifest is not a JSON object")
-    return release_metadata(manifest, version)
+    return release_metadata(manifest, version, architecture)
 
 
 def _sha256(path: Path) -> str:
@@ -330,8 +330,10 @@ def download_archive(
     return destination
 
 
-def _extract_sdk_archive(archive: Path, cache_root: Path, version: str, sha256: str) -> Path:
-    cache_path = cache_root / f"stable-{version}-arm64"
+def _extract_sdk_archive(
+    archive: Path, cache_root: Path, version: str, sha256: str, architecture: str = "arm64"
+) -> Path:
+    cache_path = cache_root / f"stable-{version}-{architecture}"
     if cache_path.is_symlink():
         raise RuntimeError(f"refusing a symlink in the Flutter SDK cache: {cache_path}")
     cache_root.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -363,13 +365,18 @@ def _extract_sdk_archive(archive: Path, cache_root: Path, version: str, sha256: 
 
 
 def ensure_sdk(version: str, cache_root: Path) -> Path:
-    if sys.platform != "darwin" or os.uname().machine != "arm64":
-        raise RuntimeError("the pinned macOS Flutter cache can only be prepared on Apple Silicon")
+    if sys.platform != "darwin":
+        raise RuntimeError("the pinned macOS Flutter cache can only be prepared on macOS")
+    machine = os.uname().machine
+    architectures = {"arm64": "arm64", "x86_64": "x64"}
+    if machine not in architectures:
+        raise RuntimeError(f"unsupported macOS architecture for the Flutter cache: {machine}")
+    architecture = architectures[machine]
     cache_root = require_per_job_cache_root(cache_root, os.environ.get("RUNNER_TEMP"))
-    metadata = fetch_release_metadata(version)
+    metadata = fetch_release_metadata(version, architecture)
     cache_root = _ensure_private_directory(cache_root)
     with _cache_lock(cache_root):
-        cache_path = cache_root / f"stable-{version}-arm64"
+        cache_path = cache_root / f"stable-{version}-{architecture}"
         if cache_is_valid(cache_path, version, metadata["sha256"]):
             if shutil.disk_usage(cache_root).free < MIN_FREE_BYTES:
                 raise RuntimeError(f"Mac JIT APFS free space fell below {MIN_FREE_BYTES / 1024**3:.0f} GiB")
@@ -390,7 +397,9 @@ def ensure_sdk(version: str, cache_root: Path) -> Path:
         require_install_headroom(
             shutil.disk_usage(cache_root).free, expanded_size, "extraction"
         )
-        cache_path = _extract_sdk_archive(archive, cache_root, version, metadata["sha256"])
+        cache_path = _extract_sdk_archive(
+            archive, cache_root, version, metadata["sha256"], architecture
+        )
         archive.unlink(missing_ok=True)
         for part in downloads.glob(f".{archive.name}.part-*"):
             if part.is_file() and not part.is_symlink():
@@ -406,13 +415,14 @@ def main(argv: list[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
     metadata_parser = subparsers.add_parser("metadata")
     metadata_parser.add_argument("--version", required=True)
+    metadata_parser.add_argument("--architecture", choices=("arm64", "x64"), default="arm64")
     ensure_parser = subparsers.add_parser("ensure")
     ensure_parser.add_argument("--version", required=True)
     ensure_parser.add_argument("--cache-root", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.command == "metadata":
-        metadata = fetch_release_metadata(args.version)
-        print(f"cache_key=flutter-macos-stable-{args.version}-arm64-{metadata['release_hash']}")
+        metadata = fetch_release_metadata(args.version, args.architecture)
+        print(f"cache_key=flutter-macos-stable-{args.version}-{args.architecture}-{metadata['release_hash']}")
         print(f"archive_url={metadata['archive_url']}")
         print(f"sha256={metadata['sha256']}")
         print(f"archive_name={metadata['archive_name']}")

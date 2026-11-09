@@ -23,7 +23,7 @@ runs:
       with:
         channel: stable
         flutter-version: ${{ inputs.flutter-version }}
-        architecture: arm64
+        architecture: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
         cache: false
-        cache-path: ${{ runner.temp }}/flutter-sdk/stable-${{ inputs.flutter-version }}-arm64
+        cache-path: ${{ runner.temp }}/flutter-sdk/stable-${{ inputs.flutter-version }}-${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
         pub-cache: false

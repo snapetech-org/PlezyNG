@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Retain newly-online Continue Watching copies, reconcile artwork through the authoritative on-deck fetch, and undo display switches that finish after fullscreen playback has ended. Independently adapted from upstream commits [119ce59d](https://github.com/edde746/plezy/commit/119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4), [f2985a7b](https://github.com/edde746/plezy/commit/f2985a7b06b1190507946cde824779880d7d2af8), [ddcfda3c](https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
+
 - Preserve companion-remote controls across reconnect, restore TV focus to newly opened pages and avoid a flaky diagnostic counter-order assertion. Independently adapted from upstream commits [e871d095](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce), [5076836a](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01) and [55ef954e](https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Close Linux emulator sandbox gaps in shared IPC, descriptor signal ownership and newer metadata syscalls, including when compiled with older kernel headers. Remove inherited capabilities, preserve thread-creation fallbacks and add regressions using private file, semaphore and message-queue fixtures.

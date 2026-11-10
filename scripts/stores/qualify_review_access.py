@@ -183,11 +183,22 @@ def main():
     if not any('Restore lifetime purchase' in value for value in labels(tree)):
         raise RuntimeError('Expired gate is missing purchase restore control')
     (root / 'expired-trial.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
-    tap = click(tree, 'Store review access')
-    (root / 'review-dialog-open-tap.json').write_text(json.dumps(tap) + '\n')
+    taps = []
     try:
-        # TextField labels can be exposed as hints rather than text. Require
-        # the actual focused editable field and dialog controls before typing.
+        # Re-read the visible gate before a bounded retry: early Flutter/store
+        # initialization can consume the first touch or move its controls.
+        # Never tap the underlying gate once the dialog is present.
+        for _ in range(3):
+            taps.append(click(tree, 'Store review access'))
+            (root / 'review-dialog-open-tap.json').write_text(json.dumps({'taps': taps}) + '\n')
+            time.sleep(2)
+            tree = wait_for(lambda current: review_dialog_ready(current) or (
+                any(EXPIRED in value for value in labels(current))
+                and not any('Activate' in value for value in labels(current))), with_tree=True)
+            if review_dialog_ready(tree):
+                break
+        # Require the actual focused editable field and dialog controls before
+        # typing. Repeated taps never count as successful dialog activation.
         tree = wait_for(review_dialog_ready, with_tree=True)
     except RuntimeError:
         (root / 'pre-grant-dialog-failure.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))

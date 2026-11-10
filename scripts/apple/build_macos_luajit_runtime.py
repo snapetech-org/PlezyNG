@@ -27,6 +27,11 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def verify_architectures(path: Path, architectures: list[str]) -> None:
+    for arch in architectures:
+        run("xcrun", "lipo", str(path), "-verify_arch", arch)
+
+
 def main() -> None:
     if os.environ.get("PLATFORM_NAME") != "macosx":
         raise SystemExit("LuaJIT dynamic isolation is only required on macOS.")
@@ -43,8 +48,7 @@ def main() -> None:
     for path in headers.values():
         if not path.is_file():
             raise SystemExit(f"Pinned LuaJIT copyright notice header is missing: {path}")
-    for arch in architectures:
-        run("xcrun", "lipo", "-verify_arch", arch, str(archive))
+    verify_architectures(archive, architectures)
     work = Path(os.environ["DERIVED_FILE_DIR"]) / "plezy-luajit"
     work.mkdir(parents=True, exist_ok=True)
     library = work / NAME
@@ -60,8 +64,7 @@ def main() -> None:
         "-o", str(library),
     ])
     subprocess.run(command, check=True)
-    for arch in architectures:
-        run("xcrun", "lipo", "-verify_arch", arch, str(library))
+    verify_architectures(library, architectures)
 
     app = Path(os.environ["TARGET_BUILD_DIR"])
     embedded = app / os.environ["FRAMEWORKS_FOLDER_PATH"] / NAME

@@ -1,11 +1,31 @@
 #!/usr/bin/env python3
 """AT-SPI client for the installed release app; no application test build needed."""
+import contextlib
+import io
 import json
+import os
+from pathlib import Path
+import socket
 import sys
+
+SOCKET = Path(os.environ['XDG_RUNTIME_DIR']) / 'pleazyng-ui-qa.sock'
+
+if len(sys.argv) > 1 and sys.argv[1] == 'request':
+    with socket.socket(socket.AF_UNIX) as client:
+        client.settimeout(30)
+        client.connect(str(SOCKET))
+        client.sendall((json.dumps(sys.argv[2:]) + '\n').encode())
+        with client.makefile('rb') as stream:
+            result = json.loads(stream.readline(1024 * 1024))
+    if 'error' in result:
+        raise RuntimeError(result['error'])
+    print(json.dumps(result['result']))
+    sys.exit(0)
+
 import gi
 
 gi.require_version('Atspi', '2.0')
-from gi.repository import Atspi
+from gi.repository import Atspi, GLib
 
 
 def walk(node, depth=0):
@@ -77,5 +97,35 @@ def main():
     print(json.dumps(result))
 
 
+def serve():
+    # Keep one accessibility-bus client alive across the complete UI scenario.
+    # Repeated short-lived clients churn GTK's key-event listener registration.
+    SOCKET.unlink(missing_ok=True)
+    with socket.socket(socket.AF_UNIX) as server:
+        server.bind(str(SOCKET))
+        SOCKET.chmod(0o600)
+        server.listen(1)
+        while True:
+            client, _ = server.accept()
+            with client, client.makefile('rb') as stream:
+                try:
+                    sys.argv = ['qa-ui', *json.loads(stream.readline(65536))]
+                    context = GLib.MainContext.default()
+                    for _ in range(100):
+                        if not context.pending():
+                            break
+                        context.iteration(False)
+                    output = io.StringIO()
+                    with contextlib.redirect_stdout(output):
+                        main()
+                    result = {'result': json.loads(output.getvalue())}
+                except Exception as error:
+                    result = {'error': str(error)}
+                client.sendall((json.dumps(result) + '\n').encode())
+
+
 if __name__ == '__main__':
-    main()
+    if sys.argv[1] == 'serve':
+        serve()
+    else:
+        main()

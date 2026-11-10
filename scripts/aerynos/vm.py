@@ -140,7 +140,7 @@ p=root/'etc/systemd/system/multi-user.target.wants/qa-bootstrap.service';p.paren
 
     def user(self, command):
         return self.ssh('runuser -u live -- env XDG_RUNTIME_DIR=/run/user/1000 '
-                        'DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus ' + command)
+                        'DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus bash -c ' + shlex.quote(command))
 
     def put(self, source: Path, destination: str):
         self.ssh('cat > ' + shlex.quote(destination), data=source.read_bytes())

@@ -58,10 +58,16 @@ def serve(directory):
 class AppQA:
     def __init__(self, guest, evidence):
         self.guest, self.evidence = guest, evidence
+        self.ui_started = False
         guest.put(HERE / 'guest_ui.py', '/tmp/qa-ui.py')
 
     def ui(self, action='dump', name='', value=None):
-        args = ['python3', '/tmp/qa-ui.py', action]
+        if not self.ui_started:
+            self.guest.user('systemctl --user stop pleazyng-ui-qa.service; '
+                            'systemd-run --user --unit=pleazyng-ui-qa --collect python3 /tmp/qa-ui.py serve')
+            time.sleep(1)
+            self.ui_started = True
+        args = ['python3', '/tmp/qa-ui.py', 'request', action]
         if action != 'dump':
             args.append(name)
         if value is not None:
@@ -400,7 +406,8 @@ def qualify(args):
     finally:
         try:
             if guest.process and guest.process.poll() is None:
-                for name, query in [('runtime.log', 'journalctl --user -b -u pleazyng-qa --no-pager')]:
+                for name, query in [('runtime.log', 'journalctl --user -b -u pleazyng-qa --no-pager'),
+                                    ('accessibility.log', 'journalctl --user -b -u pleazyng-ui-qa --no-pager')]:
                     try:
                         (evidence / name).write_bytes(guest.user(query).stdout)
                     except subprocess.SubprocessError:

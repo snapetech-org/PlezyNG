@@ -1111,7 +1111,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     // start track the list turns out not to contain.
     int? startIndex;
     if (startTrack != null) {
-      final index = tracks.indexWhere((t) => t.globalKey == startTrack.globalKey);
+      var index = startTrack.playlistItemId == null
+          ? -1
+          : tracks.indexWhere(
+              (track) => track.globalKey == startTrack.globalKey && track.playlistItemId == startTrack.playlistItemId,
+            );
+      if (index < 0) index = tracks.indexWhere((track) => identical(track, startTrack));
+      if (index < 0) index = tracks.indexWhere((track) => track.globalKey == startTrack.globalKey);
       if (index >= 0) {
         startIndex = index;
       }
@@ -1353,7 +1359,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final armed = _ArmedTrack(track: target, source: source);
     _armed = armed;
     if (_sweetFadesEnabled) {
-      unawaited(_loadLoudnessProfile(source));
+      unawaited(_loadLoudnessProfile(source, target));
     }
     appLogger.d('Music: arming cursor $targetCursor "${target.title}"');
     final ok = await _trySetNext(player, Media(source.url, headers: source.headers));
@@ -1889,7 +1895,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
 
-    final profileKey = _loudnessProfileCacheKey(source);
+    final profileKey = _loudnessProfileCacheKey(source, track);
     _currentLoudnessProfile = profileKey == null ? null : _loadedLoudnessProfiles[profileKey];
     final trackDuration = duration ?? Duration.zero;
     final trackHeadLevel = _currentLoudnessProfile?.levelAt(const Duration(milliseconds: 300), trackDuration);
@@ -1897,7 +1903,6 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         fadeIn &&
         _sweetFadesEnabled &&
         _playContext?.kind != MusicPlayContextKind.album &&
-        !source.isOffline &&
         trackDuration >= const Duration(seconds: 6) &&
         trackHeadLevel != null &&
         trackHeadLevel > -48;
@@ -1913,7 +1918,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     // end-of-track fade on the newly adopted source.
     if (_sweetFadesEnabled && _currentLoudnessProfile == null) {
       unawaited(
-        _loadLoudnessProfile(source).then((profile) {
+        _loadLoudnessProfile(source, track).then((profile) {
           if (_disposed || !identical(_currentSource, source)) {
             return;
           }
@@ -2026,39 +2031,21 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final source = _currentSource;
     final track = _currentTrack;
     if (source == null || track == null) return null;
-    final profile = await _loadLoudnessProfile(source);
-    if (_disposed || _currentTrack?.globalKey != track.globalKey) return null;
+    final profile = await _loadLoudnessProfile(source, track);
+    if (_disposed || !identical(_currentSource, source) || !identical(_currentTrack, track)) return null;
     if (profile != null) {
       final document = musicAnalysisDocument(track, profile);
       if (document != null) await _libraryStore?.saveDocument('analysis', track.globalKey, document);
       return profile;
     }
     final cached = await _libraryStore?.document('analysis', track.globalKey);
-    if (_disposed ||
-        _currentTrack?.globalKey != track.globalKey ||
-        cached == null ||
-        cached['version'] != 1 ||
-        track.updatedAt != null && cached['updatedAt'] != track.updatedAt) {
-      return null;
-    }
-    final levels = cached['levels'];
-    if (levels is! List ||
-        levels.isEmpty ||
-        levels.length > 512 ||
-        levels.any((v) => v is! num || !v.isFinite) ||
-        cached['samples'] is! int ||
-        (cached['samples'] as int) < 1) {
-      return null;
-    }
-    return AudioLoudnessProfile(
-      levelsDb: levels.map((v) => (v as num).toDouble()).toList(),
-      totalSamples: cached['samples'] as int,
-    );
+    if (_disposed || !identical(_currentSource, source) || !identical(_currentTrack, track)) return null;
+    return musicAnalysisProfile(track, cached);
   }
 
-  String? _loudnessProfileCacheKey(MusicSource source) {
+  String? _loudnessProfileCacheKey(MusicSource source, MediaItem track) {
     if (source.isOffline) {
-      return null;
+      return 'offline:${track.globalKey}:${track.updatedAt}:${source.url}';
     }
     final client = source.reportingClient;
     if (client == null || client is! PlexLoudnessProfileClient) {
@@ -2073,15 +2060,31 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
     for (final track in tracks) {
       if (track.selected) {
-        return '${client.serverId}:${track.id}';
+        return '${client.serverId}:${identityHashCode(client.authenticationSessionId)}:${track.id}';
       }
     }
     return null;
   }
 
-  Future<AudioLoudnessProfile?> _loadLoudnessProfile(MusicSource source) {
+  Future<AudioLoudnessProfile?> _loadLoudnessProfile(MusicSource source, MediaItem track) {
+    if (source.isOffline) {
+      final key = _loudnessProfileCacheKey(source, track)!;
+      final cached = _loadedLoudnessProfiles[key];
+      if (cached != null) return Future.value(cached);
+      final store = _libraryStore;
+      if (store == null || !store.active) return Future.value(null);
+      return store.document('analysis', track.globalKey).then((document) {
+        if (_disposed || !store.active) return null;
+        final profile = musicAnalysisProfile(track, document);
+        if (profile != null) {
+          if (_loadedLoudnessProfiles.length >= 24) _loadedLoudnessProfiles.remove(_loadedLoudnessProfiles.keys.first);
+          _loadedLoudnessProfiles[key] = profile;
+        }
+        return profile;
+      });
+    }
     final client = source.reportingClient;
-    if (source.isOffline || client == null || client is! PlexLoudnessProfileClient) {
+    if (client == null || client is! PlexLoudnessProfileClient) {
       return Future.value(null);
     }
     final profileClient = client as PlexLoudnessProfileClient;
@@ -2103,7 +2106,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return Future.value(null);
     }
 
-    final key = '${client.serverId}:${selectedTrack.id}';
+    final key = _loudnessProfileCacheKey(source, track)!;
     final cached = _loudnessProfileRequests[key];
     if (cached != null) {
       return cached;
@@ -2166,7 +2169,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     final nextDuration = incoming.track.durationMs;
-    final key = _loudnessProfileCacheKey(incoming.source);
+    final key = _loudnessProfileCacheKey(incoming.source, incoming.track);
     final nextProfile = key == null ? null : _loadedLoudnessProfiles[key];
     if (nextProfile == null ||
         nextDuration == null ||
@@ -2349,9 +2352,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         );
       }
       final source = _currentSource;
-      if (source != null) {
+      final track = _currentTrack;
+      if (source != null && track != null) {
         unawaited(
-          _loadLoudnessProfile(source).then((profile) {
+          _loadLoudnessProfile(source, track).then((profile) {
             if (_disposed || !identical(_currentSource, source)) {
               return;
             }
@@ -2360,9 +2364,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
           }),
         );
       }
-      final armedSource = _armed?.source;
-      if (armedSource != null) {
-        unawaited(_loadLoudnessProfile(armedSource));
+      final armed = _armed;
+      if (armed != null) {
+        unawaited(_loadLoudnessProfile(armed.source, armed.track));
       }
       _updateSweetFade(_player?.currentPosition ?? Duration.zero);
     }
@@ -2377,7 +2381,6 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     if (!_sweetFadesEnabled ||
         _playContext?.kind == MusicPlayContextKind.album ||
         source == null ||
-        source.isOffline ||
         _player?.audioPassthroughActive == true ||
         profile == null) {
       _fadeCurrentTrackIn = false;

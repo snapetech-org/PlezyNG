@@ -34,6 +34,7 @@ import 'package:plezy/services/media_controls_manager.dart';
 import 'package:plezy/services/multi_server_manager.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/services/music/music_playback_service_impl.dart';
+import 'package:plezy/services/music/music_library_store.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_session_store.dart';
 import 'package:plezy/services/music/music_source_resolver.dart';
@@ -720,6 +721,7 @@ class _Harness {
   factory _Harness.create({
     Future<void> Function(double)? volumePersistenceWriter,
     MusicSessionStore? sessionStore,
+    MusicLibraryStore? libraryStore,
     bool overlapDecoder = false,
   }) {
     final queueRandom = _ScriptedRandom();
@@ -739,6 +741,7 @@ class _Harness {
     final service = MusicPlaybackServiceImpl(
       serverManager: serverManager,
       sessionStore: sessionStore,
+      libraryStore: libraryStore,
       resolver: resolver,
       audioPlayerFactory: newPlayer,
       overlapPlayerFactory: overlapDecoder ? (_) => newPlayer() : null,
@@ -2314,7 +2317,85 @@ void main() {
     });
   });
 
+  group('duplicate playlist selection', () {
+    test('starts the selected playlist occurrence, including a copied entry', () async {
+      final first = MediaItem.fromJson({...t1.toJson(), 'playlistItemId': 10});
+      final repeated = MediaItem.fromJson({...t1.toJson(), 'playlistItemId': 11});
+      await h.playTracks([first, t2, repeated, t3], startTrack: repeated.copyWith(title: 'Selected'));
+      expect(h.service.currentIndex, 2);
+      expect(h.service.currentTrack?.playlistItemId, 11);
+    });
+
+    test('prefers exact object when entries do not have occurrence identifiers', () async {
+      final repeated = t1.copyWith(title: 'Second occurrence');
+      await h.playTracks([t1, t2, repeated, t3], startTrack: repeated);
+      expect(h.service.currentIndex, 2);
+    });
+
+    test('falls back to media identity when the selected entry is not present', () async {
+      await h.playTracks([t1, t2, t1], startTrack: MediaItem.fromJson({...t1.toJson(), 'playlistItemId': 99}));
+      expect(h.service.currentIndex, 0);
+    });
+  });
+
   group('Sweet Fades', () {
+    test('downloaded revision-matched analysis drives offline overlapping playback', () async {
+      resetSharedPreferencesForTest();
+      final settings = await SettingsService.getInstance();
+      await settings.write(SettingsService.musicSweetFades, true);
+      final database = AppDatabase.forTesting(NativeDatabase.memory());
+      final store = MusicLibraryStore(database, 'offline-fades');
+      h.dispose();
+      h = _Harness.create(overlapDecoder: true, libraryStore: store);
+      for (final track in [t1, t2]) {
+        await store.saveDocument('analysis', track.globalKey, {
+          'version': 1,
+          'updatedAt': track.updatedAt,
+          'levels': [-24, -24, -24],
+          'samples': 3000,
+        });
+        h.resolver.sourceOverrides[track.id] = MusicSource(url: _urlFor(track), isOffline: true);
+      }
+      await h.playTracks([t1, t2], kind: MusicPlayContextKind.tracks);
+      await pumpEventQueue();
+      final outgoing = h.player;
+      outgoing.setPosition(const Duration(minutes: 2, seconds: 59));
+      await pumpEventQueue();
+      expect(h.players, hasLength(2));
+      expect(h.client.loudnessProfileFetchCounts, isEmpty);
+      outgoing.emitCompleted();
+      await pumpEventQueue();
+      expect(h.service.currentTrack?.id, t2.id);
+      await h.service.stop();
+      await database.close();
+    });
+
+    test('stale downloaded analysis keeps offline playback at full volume', () async {
+      resetSharedPreferencesForTest();
+      final settings = await SettingsService.getInstance();
+      await settings.write(SettingsService.musicSweetFades, true);
+      final database = AppDatabase.forTesting(NativeDatabase.memory());
+      final store = MusicLibraryStore(database, 'stale-fades');
+      h.dispose();
+      h = _Harness.create(overlapDecoder: true, libraryStore: store);
+      for (final track in [t1, t2]) {
+        await store.saveDocument('analysis', track.globalKey, {
+          'version': 1,
+          'updatedAt': 123,
+          'levels': [-24, -24, -24],
+          'samples': 3000,
+        });
+        h.resolver.sourceOverrides[track.id] = MusicSource(url: _urlFor(track), isOffline: true);
+      }
+      await h.playTracks([t1, t2], kind: MusicPlayContextKind.tracks);
+      h.player.setPosition(const Duration(minutes: 2, seconds: 59));
+      await pumpEventQueue();
+      expect(h.players, hasLength(1));
+      expect(h.player.volumes.every((volume) => volume == 100), isTrue);
+      await h.service.stop();
+      await database.close();
+    });
+
     test('overlaps two decoded songs and promotes the incoming decoder at EOF', () async {
       resetSharedPreferencesForTest();
       final settings = await SettingsService.getInstance();

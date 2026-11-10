@@ -50,6 +50,29 @@ void main() {
     client = LyricsClient()..response = () async => lyrics;
   });
   tearDown(() => database.close());
+  test('stored analysis rejects malformed, oversized, and mismatched revisions', () {
+    final track = musicTrack('a').copyWith(updatedAt: 123);
+    final document = {
+      'version': 1,
+      'updatedAt': 123,
+      'levels': [-24, -18],
+      'samples': 2000,
+    };
+    expect(musicAnalysisProfile(track, document)?.levelsDb, [-24, -18]);
+    for (final invalid in [
+      {...document, 'version': 2},
+      {...document, 'updatedAt': null},
+      {...document, 'samples': 0},
+      {...document, 'levels': <double>[]},
+      {
+        ...document,
+        'levels': [double.nan],
+      },
+      {...document, 'levels': List.filled(513, -24)},
+    ]) {
+      expect(musicAnalysisProfile(track, invalid), isNull);
+    }
+  });
   test('explicit downloads retain timed server lyrics in their owning profile', () async {
     await MusicOfflineBundle(store).prepare(musicTrack('a'), client, current: () => true);
     final saved = await store.document('lyrics', 's:a');

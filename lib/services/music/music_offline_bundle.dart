@@ -68,6 +68,23 @@ Map<String, dynamic>? musicAnalysisDocument(MediaItem track, AudioLoudnessProfil
   return {'version': 1, 'updatedAt': track.updatedAt, 'levels': bounded, 'samples': profile.totalSamples};
 }
 
+AudioLoudnessProfile? musicAnalysisProfile(MediaItem track, Map<String, dynamic>? document) {
+  if (document == null || document['version'] != 1 || document['updatedAt'] != track.updatedAt) return null;
+  final levels = document['levels'], samples = document['samples'];
+  if (levels is! List ||
+      levels.isEmpty ||
+      levels.length > 512 ||
+      levels.any((value) => value is! num || !value.isFinite) ||
+      samples is! int ||
+      samples < 1) {
+    return null;
+  }
+  return AudioLoudnessProfile(
+    levelsDb: levels.map((value) => (value as num).toDouble()).toList(),
+    totalSamples: samples,
+  );
+}
+
 /// A saved station/recipe is playable offline only through currently owned,
 /// completed downloads. Cached metadata alone never grants a file or account.
 List<MediaItem> musicSnapshotTracks(

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Use revision-checked downloaded loudness analysis for offline fades and overlapping playback. Start repeated playlist tracks at the selected occurrence instead of the first matching song.
+
 - Reject Chocolatey installer and package payloads larger than 190,000,000 bytes before submission, preventing scanner-size regressions without removing playback components.
 
 - Add Friendgänger Guest DJ mixing across currently accessible friend-shared music libraries, preserving queue order and rejecting hidden, revoked, or account-switched sources.

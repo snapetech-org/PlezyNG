@@ -32,6 +32,14 @@ def accessibility_failure_reason(stdout, stderr):
     return 'malformed_xml' if '<?xml' in stdout else 'no_xml'
 
 
+def review_dialog_ready(tree):
+    labels = [node.get(key, '') for node in tree.iter('node') for key in ('text', 'content-desc')]
+    return (any('Store review access' in value for value in labels)
+            and any('Activate' in value for value in labels)
+            and any(node.get('class') == 'android.widget.EditText' and node.get('focused') == 'true'
+                    for node in tree.iter('node')))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--serial', required=True)
@@ -134,7 +142,7 @@ def main():
     def labels(tree):
         return [node.get(key, '') for node in tree.iter('node') for key in ('text', 'content-desc')]
 
-    def wait_for(predicate):
+    def wait_for(predicate, *, with_tree=False):
         deadline = time.monotonic() + 90
         while (remaining := deadline - time.monotonic()) > 0:
             try:
@@ -144,7 +152,7 @@ def main():
                 # accessibility root. Retry without logging sensitive UI XML.
                 time.sleep(min(1, max(0, deadline - time.monotonic())))
                 continue
-            if predicate(labels(tree)):
+            if predicate(tree if with_tree else labels(tree)):
                 return tree
             time.sleep(min(1, max(0, deadline - time.monotonic())))
         raise RuntimeError('Expected application state did not appear')
@@ -163,6 +171,7 @@ def main():
             raise RuntimeError('Expected native UI control not found')
         _, x, y = min(matches)
         adb('shell', 'input', 'tap', str(x), str(y))
+        return {'x': x, 'y': y}
 
     launch()
     try:
@@ -174,8 +183,15 @@ def main():
     if not any('Restore lifetime purchase' in value for value in labels(tree)):
         raise RuntimeError('Expired gate is missing purchase restore control')
     (root / 'expired-trial.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
-    click(tree, 'Store review access')
-    tree = wait_for(lambda values: any('Review code' in value for value in values))
+    tap = click(tree, 'Store review access')
+    (root / 'review-dialog-open-tap.json').write_text(json.dumps(tap) + '\n')
+    try:
+        # TextField labels can be exposed as hints rather than text. Require
+        # the actual focused editable field and dialog controls before typing.
+        tree = wait_for(review_dialog_ready, with_tree=True)
+    except RuntimeError:
+        (root / 'pre-grant-dialog-failure.png').write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
+        raise
     # No screenshots, XML files, command echo or raw logs are retained from here
     # until the dialog has closed. The existing grant stays in the CI secret.
     adb('shell', 'input', 'text', token)

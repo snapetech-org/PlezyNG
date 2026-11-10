@@ -44,7 +44,7 @@ class DesktopWorkspaceViews extends ChangeNotifier with WidgetsBindingObserver {
     _leases[id] = lease;
     bool current() => !_disposed && identical(_leases[id], lease);
     try {
-      _available ??= await _channel.invokeMethod<bool>('available') ?? false;
+      _available ??= await _channel.invokeMethod<bool>('available').timeout(const Duration(seconds: 3)) ?? false;
       if (!current() || !_available!) return false;
       final existingViewIds = WidgetsBinding.instance.platformDispatcher.views.map((view) => view.viewId).toSet();
       final result = await _channel
@@ -67,7 +67,7 @@ class DesktopWorkspaceViews extends ChangeNotifier with WidgetsBindingObserver {
           WidgetsBinding.instance.scheduleFrame();
           await WidgetsBinding.instance.endOfFrame;
           if (!current()) return false;
-          await _channel.invokeMethod<void>('show', {'token': token});
+          await _channel.invokeMethod<void>('show', {'token': token}).timeout(const Duration(seconds: 3));
           opened = current();
           return opened;
         }

@@ -63,6 +63,7 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$dialog$fr dialog = Translations$dialog$fr.internal(_root);
 	@override late final Translations$profiles$fr profiles = Translations$profiles$fr.internal(_root);
 	@override late final Translations$connections$fr connections = Translations$connections$fr.internal(_root);
+	@override late final Translations$iptv$fr iptv = Translations$iptv$fr.internal(_root);
 	@override late final Translations$accountPreferences$fr accountPreferences = Translations$accountPreferences$fr.internal(_root);
 	@override late final Translations$discover$fr discover = Translations$discover$fr.internal(_root);
 	@override late final Translations$errors$fr errors = Translations$errors$fr.internal(_root);
@@ -112,8 +113,10 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final Translations$deepLinks$fr deepLinks = Translations$deepLinks$fr.internal(_root);
 	@override late final Translations$householdSetup$fr householdSetup = Translations$householdSetup$fr.internal(_root);
 	@override late final Translations$issueReport$fr issueReport = Translations$issueReport$fr.internal(_root);
+	@override late final Translations$podcasts$fr podcasts = Translations$podcasts$fr.internal(_root);
 	@override late final Translations$romm$fr romm = Translations$romm$fr.internal(_root);
 	@override late final Translations$subtitleCapture$fr subtitleCapture = Translations$subtitleCapture$fr.internal(_root);
+	@override late final Translations$karaokeUi$fr karaokeUi = Translations$karaokeUi$fr.internal(_root);
 	@override late final Translations$musicExperience$fr musicExperience = Translations$musicExperience$fr.internal(_root);
 	@override late final Translations$musicTools$fr musicTools = Translations$musicTools$fr.internal(_root);
 }
@@ -1559,6 +1562,19 @@ class Translations$connections$fr extends Translations$connections$en {
 	@override String get signInAgain => 'Se reconnecter';
 	@override String editMediaBrowserTitle({required Object product}) => 'Modifier la connexion ${product}';
 	@override String editMediaBrowserIntro({required Object serverName}) => 'Ajoutez ou retirez des URL pour ${serverName}. Pleazyng utilisera l\'URL joignable avec la latence la plus faible.';
+}
+
+// Path: iptv
+class Translations$iptv$fr extends Translations$iptv$en {
+	Translations$iptv$fr.internal(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get parentalPinRequired => 'Le verrouillage des chaînes nécessite un profil local protégé par un code PIN. Ajoutez un code PIN dans Profils pour utiliser le contrôle parental.';
+	@override String get allowHttp => 'Autoriser le HTTP non chiffré';
+	@override String get allowHttpDescription => 'À utiliser uniquement sur un réseau local de confiance. Préférez HTTPS lorsqu’il est disponible.';
+	@override String get httpNotAllowed => 'Activez HTTP pour cette source ou utilisez une URL HTTPS.';
 }
 
 // Path: accountPreferences
@@ -3711,6 +3727,7 @@ class Translations$audiobook$fr extends Translations$audiobook$en {
 	@override String get addSyncSource => 'Ajouter Google Drive, OneDrive, Dropbox, WebDAV ou S3 dans les fichiers et les livres d’abord.';
 	@override String get syncDestination => 'Sync compte de stockage';
 	@override String get syncFolder => 'Synchronisation des fichiers ou préfix';
+	@override String get syncFolderHelp => 'Choisissez un dossier WebDAV existant et distinct ou un préfixe S3 dédié aux fichiers d’état de l’application. Les fichiers multimédias ne sont jamais envoyés, remplacés, renommés ni supprimés.';
 	@override String get syncCode => 'Code de sync privé';
 	@override String get syncCodeHelp => 'Créez un code sur votre premier appareil, puis entrez ce code sur vos autres appareils. Gardez une copie privée: c\'est la clé de votre état chiffré. Utilisez un code différent pour chaque personne.';
 	@override String get showCode => 'Afficher ou cacher le code sync';
@@ -3720,6 +3737,7 @@ class Translations$audiobook$fr extends Translations$audiobook$en {
 	@override String get syncSourceDisconnect => 'En supprimant cette source, la lecture et l\'écoute de synchronisation sont désactivées ici. les fichiers de synchronisation cryptés restent dans le fournisseur.';
 	@override String get syncReconnect => 'Récupérer le compte de stockage';
 	@override String lastSynced({required Object time}) => 'Dernière synchronisation à ${time}';
+	@override String get syncPrivacy => 'La synchronisation dans le cloud écrit les données chiffrées de progression, de fin de lecture, de signets et de notes dans des fichiers de synchronisation propres à l’application. Les fichiers multimédias ne sont jamais envoyés, remplacés, renommés ni supprimés. Les jetons de compte et les mots de passe ne sont pas envoyés. Google Drive et OneDrive utilisent le stockage de l’application ; Dropbox utilise Pleazyng Sync ; WebDAV et S3 utilisent le dossier ou le préfixe choisi. L’activation de la synchronisation peut nécessiter une autorisation d’écriture du fournisseur, mais l’application écrit uniquement ces fichiers d’état. La synchronisation dans le cloud et la synchronisation compatible de la progression et des signets avec le serveur fonctionnent indépendamment, avec des tentatives de relance distinctes. Les conflits sont affichés pour que vous puissiez les résoudre. Désactiver la synchronisation conserve l’historique local et l’état distant.';
 	@override String get syncConflicts => 'Choisissez où revenir';
 	@override String get conflictHelp => 'Ces modifications ont été effectuées indépendamment. Choisissez la position ou la version de la note pour garder. Un timestamp ultérieur ou un pourcentage plus élevé ne gagne pas automatiquement.';
 	@override String syncDevice({required Object device}) => 'Équipement ${device}';
@@ -3973,6 +3991,15 @@ class Translations$games$fr extends Translations$games$en {
 	@override String get disconnect => 'Disconnect';
 	@override String get streamControls => 'Stream controls';
 	@override String get steamPairInstructions => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.';
+	@override String get microphoneMuted => 'Microphone coupé';
+	@override String get microphoneStarting => 'Démarrage du microphone…';
+	@override String get microphoneActive => 'Microphone partagé avec Steam';
+	@override String get microphoneEnable => 'Partager le microphone';
+	@override String get microphoneHelp => 'Envoyez le son du microphone en direct à cet ordinateur Steam associé pour les jeux et la discussion vocale. L’enregistrement s’arrête lorsque vous quittez la diffusion, ouvrez une boîte de dialogue ou changez le propriétaire des commandes. Vous devez le réactiver. Utilisez un casque pour éviter le larsen.';
+	@override String get microphoneFailed => 'Le microphone n’a pas pu démarrer. Vérifiez les autorisations de l’appareil, le périphérique d’entrée et le réglage du microphone Remote Play sur l’ordinateur hôte, puis réessayez.';
+	@override String get microphoneMute => 'Couper le microphone';
+	@override String get streamRecoveryHelp => 'Vérifiez l’ordinateur et la connexion, puis reconnectez-vous. Vous déconnecter ici laisse le jeu en cours sur l’ordinateur.';
+	@override String get steamActivityPrivacy => 'Les actualités et les succès sont chargés à la demande. L’activité des amis est facultative.';
 	@override String get nearby => 'Nearby computers';
 	@override String get scanHint => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.';
 	@override String get noNearby => 'No computers found on this network. You can enter an address manually.';
@@ -4029,6 +4056,17 @@ class Translations$issueReport$fr extends Translations$issueReport$en {
 	@override String get privacy => 'Le brouillon contient la version de l’application, la plateforme et le nombre de connexions. Il exclut les adresses des serveurs, les noms de comptes et de profils, les titres et les chemins de fichiers.';
 	@override String get logPrivacy => 'Les journaux sont facultatifs. Relisez-les avant de les envoyer. Leur identifiant est ajouté au brouillon, qui peut être public.';
 	@override String get openDraft => 'Ouvrir le brouillon GitHub';
+}
+
+// Path: podcasts
+class Translations$podcasts$fr extends Translations$podcasts$en {
+	Translations$podcasts$fr.internal(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get syncPrivacy => 'Ce serveur reçoit les URL des abonnements et des épisodes, qui peuvent contenir des jetons d’abonnement privés, ainsi que les positions d’écoute. Les identifiants de connexion et les points de reprise de synchronisation sont chiffrés sur cet appareil. La suppression d’un abonnement est synchronisée ; les téléchargements et l’historique existants sont conservés.';
+	@override String get syncConsent => 'Partager les URL des podcasts et la progression d’écoute avec ce serveur';
 }
 
 // Path: romm
@@ -4241,6 +4279,22 @@ class Translations$subtitleCapture$fr extends Translations$subtitleCapture$en {
 	@override String get processingAudio => 'Traitement local de l’audio…';
 	@override String processingAudioProgress({required Object percent}) => 'Traitement local de l’audio (${percent}%)…';
 	@override String get cpuFallback => 'Le traitement vocal sur le GPU a échoué. Nouvelle tentative sur le CPU…';
+}
+
+// Path: karaokeUi
+class Translations$karaokeUi$fr extends Translations$karaokeUi$en {
+	Translations$karaokeUi$fr.internal(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get chooseAMicrophone => 'Choisir un microphone';
+	@override String get microphoneAndPrivateTake => 'Microphone et prise privée';
+	@override String get pitchFeedbackAndDryRecordingUseYourSelectedMicrophone => 'L’indication de justesse et l’enregistrement sans effets utilisent le microphone sélectionné. Utilisez une table de mixage externe pour l’amplification.';
+	@override String get runThePlezyNGKaraokeCompanionOnYourComputerHTTPS => 'Exécutez l’application compagnon de karaoké Pleazyng sur votre ordinateur. HTTPS est obligatoire pour un hôte distant. Le jeton est enregistré dans le coffre d’identifiants du système d’exploitation.';
+	@override String get configureHTTPS => 'Configurer HTTPS';
+	@override String get selectTrustedPEMCertificate => 'Sélectionner un certificat PEM de confiance';
+	@override String get hostExitPIN => 'Code PIN de sortie de l’animateur';
 }
 
 // Path: musicExperience
@@ -4648,6 +4702,9 @@ class Translations$discover$findNext$fr extends Translations$discover$findNext$e
 	@override String get anyTime => 'Sans limite de temps';
 	@override String get timeAvailable => 'De combien de temps disposez-vous ?';
 	@override String get filters => 'Choisissez selon le moment';
+	@override String get votePrivacy => 'Chaque invité vote en privé sur cet appareil. Les bulletins remplis restent masqués ; aucun vote ni aucune identité d’invité n’est enregistré.';
+	@override String get aiConsentTitle => 'Examiner les données du classement par IA';
+	@override String get aiConsentBody => 'Lorsqu’il est activé, le service configuré reçoit jusqu’à 24 suggestions avec des identifiants temporaires, leur titre, leur type de média, leurs étiquettes de genre et d’ambiance issues des métadonnées, ainsi que les filtres que vous avez choisis pour ce moment : média, durée, genre, ambiance et familiarité. Il ne reçoit aucun identifiant de serveur ou de source, aucune URL, aucun nom de fichier, historique de lecture, donnée de compte, note, identifiant de connexion ni contenu. Les résultats peuvent uniquement réordonner les suggestions déjà admissibles sur cet appareil.';
 	@override String get watch => 'Regarder';
 	@override String get listen => 'Écouter';
 	@override String get read => 'Lire';
@@ -6769,6 +6826,10 @@ extension on TranslationsFr {
 			'connections.signInAgain' => 'Se reconnecter',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Modifier la connexion ${product}',
 			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Ajoutez ou retirez des URL pour ${serverName}. Pleazyng utilisera l\'URL joignable avec la latence la plus faible.',
+			'iptv.parentalPinRequired' => 'Le verrouillage des chaînes nécessite un profil local protégé par un code PIN. Ajoutez un code PIN dans Profils pour utiliser le contrôle parental.',
+			'iptv.allowHttp' => 'Autoriser le HTTP non chiffré',
+			'iptv.allowHttpDescription' => 'À utiliser uniquement sur un réseau local de confiance. Préférez HTTPS lorsqu’il est disponible.',
+			'iptv.httpNotAllowed' => 'Activez HTTP pour cette source ou utilisez une URL HTTPS.',
 			'accountPreferences.sectionTitle' => 'Préférences du compte',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Options audio, sous-titres et bibliothèque enregistrées sur ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Options audio, sous-titres et bibliothèque enregistrées sur ${count} comptes',
@@ -6870,6 +6931,9 @@ extension on TranslationsFr {
 			'discover.findNext.anyTime' => 'Sans limite de temps',
 			'discover.findNext.timeAvailable' => 'De combien de temps disposez-vous ?',
 			'discover.findNext.filters' => 'Choisissez selon le moment',
+			'discover.findNext.votePrivacy' => 'Chaque invité vote en privé sur cet appareil. Les bulletins remplis restent masqués ; aucun vote ni aucune identité d’invité n’est enregistré.',
+			'discover.findNext.aiConsentTitle' => 'Examiner les données du classement par IA',
+			'discover.findNext.aiConsentBody' => 'Lorsqu’il est activé, le service configuré reçoit jusqu’à 24 suggestions avec des identifiants temporaires, leur titre, leur type de média, leurs étiquettes de genre et d’ambiance issues des métadonnées, ainsi que les filtres que vous avez choisis pour ce moment : média, durée, genre, ambiance et familiarité. Il ne reçoit aucun identifiant de serveur ou de source, aucune URL, aucun nom de fichier, historique de lecture, donnée de compte, note, identifiant de connexion ni contenu. Les résultats peuvent uniquement réordonner les suggestions déjà admissibles sur cet appareil.',
 			'discover.findNext.watch' => 'Regarder',
 			'discover.findNext.listen' => 'Écouter',
 			'discover.findNext.read' => 'Lire',
@@ -6982,6 +7046,8 @@ extension on TranslationsFr {
 			'libraries.emptyTrashConfirm' => ({required Object title}) => 'Voulez-vous vraiment vider la corbeille de « ${title} » ?',
 			'libraries.manageLibraries' => 'Gérer les bibliothèques',
 			'libraries.sort' => 'Trier',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.sortBy' => 'Trier par',
 			'libraries.filters' => 'Filtres',
 			'libraries.confirmActionMessage' => 'Êtes-vous sûr de vouloir effectuer cette action ?',
@@ -6989,8 +7055,6 @@ extension on TranslationsFr {
 			'libraries.hideLibrary' => 'Masquer la bibliothèque',
 			'libraries.libraryOptions' => 'Options de bibliothèque',
 			'libraries.content' => 'contenu de la bibliothèque',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.selectLibrary' => 'Sélectionner la bibliothèque',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtres (${count})',
 			'libraries.noRecommendations' => 'Aucune recommandation disponible',
@@ -7496,6 +7560,8 @@ extension on TranslationsFr {
 			'watchTogether.relayCustom' => ({required Object url}) => 'Les salons utilisent votre relais à l’adresse ${url}.',
 			'watchTogether.recentRooms' => 'Salons récents',
 			'watchTogether.roomActions' => 'Actions du salon',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.renameRoom' => 'Renommer le salon',
 			'watchTogether.removeRoom' => 'Supprimer',
 			'watchTogether.enterRoomCode' => 'Saisissez le code à 6 caractères communiqué par l’hôte.',
@@ -7503,8 +7569,6 @@ extension on TranslationsFr {
 			'watchTogether.paste' => 'Coller',
 			'watchTogether.noCodeInClipboard' => 'Le presse-papiers ne contient pas de code de salon',
 			'watchTogether.copyCode' => 'Copier le code',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.codeCopied' => 'Code du salon copié',
 			'watchTogether.shareInvite' => 'Partager l’invitation',
 			'watchTogether.inviteCopied' => 'Invitation copiée. Collez-la dans un message.',
@@ -8010,6 +8074,8 @@ extension on TranslationsFr {
 			'metadataEdit.background' => 'Arrière-plan',
 			'metadataEdit.logo' => 'Logo',
 			'metadataEdit.squareArt' => 'Image carrée',
+			_ => null,
+		} ?? switch (path) {
 			'metadataEdit.selectPoster' => 'Sélectionner l\'affiche',
 			'metadataEdit.selectBackground' => 'Sélectionner l\'arrière-plan',
 			'metadataEdit.selectLogo' => 'Sélectionner le logo',
@@ -8017,8 +8083,6 @@ extension on TranslationsFr {
 			'metadataEdit.fromUrl' => 'Depuis une URL',
 			'metadataEdit.uploadFile' => 'Importer un fichier',
 			'metadataEdit.enterImageUrl' => 'Entrer l\'URL de l\'image',
-			_ => null,
-		} ?? switch (path) {
 			'metadataEdit.imageUrl' => 'URL de l\'image',
 			'metadataEdit.metadataUpdated' => 'Métadonnées mises à jour',
 			'metadataEdit.metadataUpdateFailed' => 'Échec de la mise à jour des métadonnées',
@@ -8524,6 +8588,8 @@ extension on TranslationsFr {
 			'universalMedia.title' => 'Médias ouverts',
 			'universalMedia.shortcutHelp' => 'Jouez à un lien, une playlist ou un fichier pour cette session.',
 			'universalMedia.intro' => 'Ouvrez un lien, une liste de lecture ou un fichier. Playback utilise le lecteur standard de Pleazyng et n’ajoute pas d’historique à votre bibliothèque.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.openWhat' => 'Que voudriez-vous ouvrir ?',
 			'universalMedia.stream' => 'Adresse de courant',
 			'universalMedia.playlist' => 'Joueurs',
@@ -8531,8 +8597,6 @@ extension on TranslationsFr {
 			'universalMedia.favorites' => 'Réservation de flux favoris',
 			'universalMedia.address' => 'Adresse médiatique',
 			'universalMedia.addressHelp' => 'Les URL avec des paramètres d\'accréditation ou de signature reconnus ne sont utilisés que pour cette session et ne peuvent pas être sauvegardés comme favoris.',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.displayName' => 'Nom d’affichage (optionnel)',
 			'universalMedia.displayNameHelp' => 'Choisissez un nom court pour le lecteur et les contrôles de médias du système.',
 			'universalMedia.allowHttp' => 'Permettre une connexion HTTP non cryptée',
@@ -8957,6 +9021,7 @@ extension on TranslationsFr {
 			'audiobook.addSyncSource' => 'Ajouter Google Drive, OneDrive, Dropbox, WebDAV ou S3 dans les fichiers et les livres d’abord.',
 			'audiobook.syncDestination' => 'Sync compte de stockage',
 			'audiobook.syncFolder' => 'Synchronisation des fichiers ou préfix',
+			'audiobook.syncFolderHelp' => 'Choisissez un dossier WebDAV existant et distinct ou un préfixe S3 dédié aux fichiers d’état de l’application. Les fichiers multimédias ne sont jamais envoyés, remplacés, renommés ni supprimés.',
 			'audiobook.syncCode' => 'Code de sync privé',
 			'audiobook.syncCodeHelp' => 'Créez un code sur votre premier appareil, puis entrez ce code sur vos autres appareils. Gardez une copie privée: c\'est la clé de votre état chiffré. Utilisez un code différent pour chaque personne.',
 			'audiobook.showCode' => 'Afficher ou cacher le code sync',
@@ -8966,6 +9031,7 @@ extension on TranslationsFr {
 			'audiobook.syncSourceDisconnect' => 'En supprimant cette source, la lecture et l\'écoute de synchronisation sont désactivées ici. les fichiers de synchronisation cryptés restent dans le fournisseur.',
 			'audiobook.syncReconnect' => 'Récupérer le compte de stockage',
 			'audiobook.lastSynced' => ({required Object time}) => 'Dernière synchronisation à ${time}',
+			'audiobook.syncPrivacy' => 'La synchronisation dans le cloud écrit les données chiffrées de progression, de fin de lecture, de signets et de notes dans des fichiers de synchronisation propres à l’application. Les fichiers multimédias ne sont jamais envoyés, remplacés, renommés ni supprimés. Les jetons de compte et les mots de passe ne sont pas envoyés. Google Drive et OneDrive utilisent le stockage de l’application ; Dropbox utilise Pleazyng Sync ; WebDAV et S3 utilisent le dossier ou le préfixe choisi. L’activation de la synchronisation peut nécessiter une autorisation d’écriture du fournisseur, mais l’application écrit uniquement ces fichiers d’état. La synchronisation dans le cloud et la synchronisation compatible de la progression et des signets avec le serveur fonctionnent indépendamment, avec des tentatives de relance distinctes. Les conflits sont affichés pour que vous puissiez les résoudre. Désactiver la synchronisation conserve l’historique local et l’état distant.',
 			'audiobook.syncConflicts' => 'Choisissez où revenir',
 			'audiobook.conflictHelp' => 'Ces modifications ont été effectuées indépendamment. Choisissez la position ou la version de la note pour garder. Un timestamp ultérieur ou un pourcentage plus élevé ne gagne pas automatiquement.',
 			'audiobook.syncDevice' => ({required Object device}) => 'Équipement ${device}',
@@ -9036,6 +9102,8 @@ extension on TranslationsFr {
 			'sourceSetup.nfsGroupIdHelp' => 'Par défaut : 1000. Utilisez l’identifiant de groupe autorisé par le partage NFS du NAS.',
 			'sourceSetup.nfsEncryption' => 'Exiger NFS chiffré (RPC-with-TLS)',
 			'sourceSetup.nfsEncryptionHelp' => 'Exiger TLS 1.3 pour NFS et le service de montage. Si le NAS ne le prend pas en charge, la connexion est refusée.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.nfsTrustCertificate' => 'CA NFS personnalisée ou certificat du serveur (PEM, facultatif)',
 			'sourceSetup.nfsTrustHelp' => 'Laissez vide pour utiliser les certificats reconnus par cet appareil. Si nécessaire, ajoutez un certificat d’une CA privée ou un certificat de serveur autosigné ; ses noms doivent correspondre à l’hôte de l’URL NFS.',
 			'sourceSetup.nfsTrustInvalid' => 'Utilisez un certificat de CA ou de serveur au format PEM. N’incluez pas de clé privée.',
@@ -9045,8 +9113,6 @@ extension on TranslationsFr {
 			'sourceSetup.clientCertificate' => 'Certificat client (facultatif)',
 			'sourceSetup.clientCertificateHelp' => 'Permet au NAS d’authentifier ce client ; les identifiants AUTH_SYS dépendent toujours des règles du partage NFS du NAS.',
 			'sourceSetup.savedIdentity' => 'Une identité client enregistrée sera utilisée.',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Remplacer l’identité client enregistrée',
 			'sourceSetup.chooseIdentity' => 'Choisir une identité client PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Phrase secrète de l’identité client',
@@ -9194,6 +9260,15 @@ extension on TranslationsFr {
 			'games.disconnect' => 'Disconnect',
 			'games.streamControls' => 'Stream controls',
 			'games.steamPairInstructions' => 'Enter this code in Steam’s Remote Play pairing prompt on your computer. Keep this screen open until Steam approves.',
+			'games.microphoneMuted' => 'Microphone coupé',
+			'games.microphoneStarting' => 'Démarrage du microphone…',
+			'games.microphoneActive' => 'Microphone partagé avec Steam',
+			'games.microphoneEnable' => 'Partager le microphone',
+			'games.microphoneHelp' => 'Envoyez le son du microphone en direct à cet ordinateur Steam associé pour les jeux et la discussion vocale. L’enregistrement s’arrête lorsque vous quittez la diffusion, ouvrez une boîte de dialogue ou changez le propriétaire des commandes. Vous devez le réactiver. Utilisez un casque pour éviter le larsen.',
+			'games.microphoneFailed' => 'Le microphone n’a pas pu démarrer. Vérifiez les autorisations de l’appareil, le périphérique d’entrée et le réglage du microphone Remote Play sur l’ordinateur hôte, puis réessayez.',
+			'games.microphoneMute' => 'Couper le microphone',
+			'games.streamRecoveryHelp' => 'Vérifiez l’ordinateur et la connexion, puis reconnectez-vous. Vous déconnecter ici laisse le jeu en cours sur l’ordinateur.',
+			'games.steamActivityPrivacy' => 'Les actualités et les succès sont chargés à la demande. L’activité des amis est facultative.',
 			'games.nearby' => 'Nearby computers',
 			'games.scanHint' => 'Keep Steam Remote Play or Sunshine running on the same network. VPNs and guest networks may need a manual address.',
 			'games.noNearby' => 'No computers found on this network. You can enter an address manually.',
@@ -9223,6 +9298,8 @@ extension on TranslationsFr {
 			'issueReport.privacy' => 'Le brouillon contient la version de l’application, la plateforme et le nombre de connexions. Il exclut les adresses des serveurs, les noms de comptes et de profils, les titres et les chemins de fichiers.',
 			'issueReport.logPrivacy' => 'Les journaux sont facultatifs. Relisez-les avant de les envoyer. Leur identifiant est ajouté au brouillon, qui peut être public.',
 			'issueReport.openDraft' => 'Ouvrir le brouillon GitHub',
+			'podcasts.syncPrivacy' => 'Ce serveur reçoit les URL des abonnements et des épisodes, qui peuvent contenir des jetons d’abonnement privés, ainsi que les positions d’écoute. Les identifiants de connexion et les points de reprise de synchronisation sont chiffrés sur cet appareil. La suppression d’un abonnement est synchronisée ; les téléchargements et l’historique existants sont conservés.',
+			'podcasts.syncConsent' => 'Partager les URL des podcasts et la progression d’écoute avec ce serveur',
 			'romm.chooseFile' => 'Choose a game file',
 			'romm.chooseCopy' => 'Choose an exact game copy',
 			'romm.favorite' => 'Favorite',
@@ -9417,6 +9494,13 @@ extension on TranslationsFr {
 			'subtitleCapture.processingAudio' => 'Traitement local de l’audio…',
 			'subtitleCapture.processingAudioProgress' => ({required Object percent}) => 'Traitement local de l’audio (${percent}%)…',
 			'subtitleCapture.cpuFallback' => 'Le traitement vocal sur le GPU a échoué. Nouvelle tentative sur le CPU…',
+			'karaokeUi.chooseAMicrophone' => 'Choisir un microphone',
+			'karaokeUi.microphoneAndPrivateTake' => 'Microphone et prise privée',
+			'karaokeUi.pitchFeedbackAndDryRecordingUseYourSelectedMicrophone' => 'L’indication de justesse et l’enregistrement sans effets utilisent le microphone sélectionné. Utilisez une table de mixage externe pour l’amplification.',
+			'karaokeUi.runThePlezyNGKaraokeCompanionOnYourComputerHTTPS' => 'Exécutez l’application compagnon de karaoké Pleazyng sur votre ordinateur. HTTPS est obligatoire pour un hôte distant. Le jeton est enregistré dans le coffre d’identifiants du système d’exploitation.',
+			'karaokeUi.configureHTTPS' => 'Configurer HTTPS',
+			'karaokeUi.selectTrustedPEMCertificate' => 'Sélectionner un certificat PEM de confiance',
+			'karaokeUi.hostExitPIN' => 'Code PIN de sortie de l’animateur',
 			'musicExperience.title' => 'Découverte musicale',
 			'musicExperience.mix' => 'Créateur de mix',
 			'musicExperience.adventure' => 'Aventure sonore',

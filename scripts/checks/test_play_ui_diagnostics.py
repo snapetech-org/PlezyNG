@@ -3,6 +3,7 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import xml.etree.ElementTree as ET
 
 
 spec = importlib.util.spec_from_file_location(
@@ -12,6 +13,16 @@ spec.loader.exec_module(module)
 
 
 class PlayUiDiagnosticsTest(unittest.TestCase):
+    def test_private_input_requires_focused_editable_dialog(self):
+        tree = ET.fromstring('<hierarchy><node text="Store review access"/><node text="Activate"/>'
+                             '<node class="android.widget.EditText" focused="true" text=""/></hierarchy>')
+        self.assertTrue(module.review_dialog_ready(tree))
+        tree[-1].set('focused', 'false')
+        self.assertFalse(module.review_dialog_ready(tree))
+        tree[-1].set('focused', 'true')
+        tree[1].set('text', '')
+        self.assertFalse(module.review_dialog_ready(tree))
+
     def test_aosp_errors_from_stderr_are_actionable(self):
         for stderr, expected in (
             ('ERROR: null root node returned by UiTestAutomationBridge.', 'null_root'),

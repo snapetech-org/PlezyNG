@@ -39,6 +39,8 @@ jobs:
           python3 -m unittest discover -s tools/karaoke_companion -p 'test_*.py'
           python3 -m unittest discover -s tools/lending_gateway -p 'test_*.py'
           python3 -m unittest discover -s scripts/checks -p test_release_signing_options.py
+      - name: Fixed-engine artifact and producer trust regressions
+        run: python3 -m unittest discover -s scripts/flutter -p 'test_*.py'
       - name: Workflow and locale controls
         run: |
           python3 scripts/checks/check_workflow_security.py

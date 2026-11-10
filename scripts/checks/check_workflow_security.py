@@ -15,7 +15,7 @@ CI_WORKFLOW = Path(".github/workflows/ci.yml")
 SECURITY_ENGINE_PUBLISHER = Path(".github/workflows/publish-security-engine.yml")
 # The owner authorized this exact main-only, provenance-checked binary publisher.
 # Any workflow edit must be reviewed alongside an explicit digest update.
-SECURITY_ENGINE_PUBLISHER_SHA256 = '56feed0ddc507fbcd74e1cf037fad19d51308fac781b6cde5990844316056396'
+SECURITY_ENGINE_PUBLISHER_SHA256 = 'af51f852cd827f8ba57ee88ffa7ef296cf3ab92ec94bee18969dd466630df470'
 FULL_SHA = re.compile(r"[0-9a-f]{40}")
 
 

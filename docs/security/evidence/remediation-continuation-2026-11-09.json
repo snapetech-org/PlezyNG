@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "recordedOn": "2026-11-09",
+  "applicationBaseline": "c5c8a765697d0973e6be9eff0f551186b20f9022",
+  "mainAtRecord": "15f9e559aabc287016cc3f9f60f8d9daa793a030",
+  "applicationLibTree": "59f8834e5e93b07d944ed074757e625d1d1dfc58",
+  "testCorrectionCommit": "2834e05efe49d7bf39dec372564fdc719be6cedc",
+  "environment": {
+    "flutter": "3.47.1",
+    "dart": "3.13.1",
+    "os": "Linux x64",
+    "note": "Local source validation. This does not qualify the pending fixed-SDK Windows release engines."
+  },
+  "dartValidation": {
+    "analysis": "passed, no issues",
+    "canonicalFormatting": "passed, 2334 files, zero changes",
+    "focusedRecoveryProfileSourceCatalog": {
+      "passed": 155
+    },
+    "playerStartupRegressions": {
+      "passed": 13
+    },
+    "localizationAndFormatters": {
+      "passed": 65
+    },
+    "broadRun": {
+      "status": "interrupted after the transient filesystem filled",
+      "passedAtLastCompleteReport": 5370,
+      "skippedAtLastCompleteReport": 8,
+      "historicalAssertionFailures": 2,
+      "filesReported": 511
+    },
+    "continuation": {
+      "status": "passed",
+      "passed": 5175,
+      "skipped": 15,
+      "failed": 0,
+      "inputFiles": 414,
+      "coverage": "All initially unreported files, the two last active files, the failed context-menu file and item-link regressions."
+    },
+    "uniqueTestFileCoverage": 922,
+    "missingTestFiles": [],
+    "assertionResolution": "Two historical context-menu assertions excluded Plex album/track links. Music sharing was already implemented; corrected coverage now tests album/track/artist link-dialog creation and exact server-qualified URI round trips. No sharing feature was removed to make the tests pass.",
+    "countingNote": "Broad-run and continuation pass counts overlap; they must not be added as a unique test total."
+  },
+  "repositoryCheckers": {
+    "total": 607,
+    "skipped": 19,
+    "failed": 0
+  },
+  "nativeValidation": {
+    "descriptorTvWorker": "passed local file/network denial, saves, crash/hang recovery and restart",
+    "malformedWorkerProtocol": {
+      "passed": 7
+    },
+    "rommPackaging": {
+      "passed": 25
+    },
+    "iosExtensionPackagingRun": 42735407265,
+    "iosExtensionPackagingJob": 129563300381,
+    "iosExtensionPackaging": "passed SDK contract, production compilation, real extension linkage, embedding/idempotency and bundle metadata",
+    "desktopViewRun": 42734123451,
+    "windowsViewJob": 129559071460,
+    "macosViewJob": 129559071720,
+    "windowsAndMacosViews": "passed native compile and same-engine lifecycle probes",
+    "linuxView": "hosted Wayland run still pending at review"
+  },
+  "remainingBoundaries": [
+    "44,422 English fallback locale entries and native-speaker/device language review",
+    "Signed iOS worker and physical-device containment acceptance",
+    "Supported tvOS native-core containment API remains unavailable; native cores stay disabled",
+    "Fixed-SDK Windows engine builds and release-pin promotion",
+    "Linux native-window qualification and the device/provider/deployment acceptance items in the audit ledger"
+  ]
+}

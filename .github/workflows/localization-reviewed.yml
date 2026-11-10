@@ -38,6 +38,8 @@ jobs:
         run: |
           python3 scripts/checks/check_localizations.py --report docs/localization/coverage.json
           python3 scripts/checks/clean_translations.py --check --clean
+          python3 scripts/localization/verify_review_records.py
+          python3 -m unittest discover -s scripts/localization -p 'test_verify_review_records.py'
       - name: Regenerate all canonical outputs
         run: scripts/codegen.sh
       - name: Verify locale behavior

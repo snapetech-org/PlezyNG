@@ -27,6 +27,7 @@ ASSET_SUFFIXES = (
     ".7z",
     ".zip",
     ".zst",
+    ".zsync",
 )
 
 

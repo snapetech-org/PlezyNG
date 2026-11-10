@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Run post-publication catalog verification through a read-only reusable workflow, preserving automatic validation while removing the privileged workflow-run trigger rejected by repository policy.
+
+- AppImage update metadata and verified zsync sidecars: build x64 AppImages with fork-specific update information, verify control-file names, blocks and digests, checksum and attest both artifacts, and preserve immutable legacy images without update metadata. Independently adapted from [upstream d832b421](https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723), contributed upstream by [@nataloko](https://github.com/nataloko); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 - Restore interrupted source audio, books and readers from the media-session tray using current profile authorization and the exact saved edition. Keep source URLs out of workspace snapshots, preserve background audio checkpoints, and prevent delayed resume requests from replacing a newer player.
 - Repair the TV containment workflow after its integration script was renamed.
 - Prepare the Flutter 3.47.8 security engine while retaining the Windows presentation fixes independently adapted from [@edde746's upstream patch series](https://github.com/edde746/flutter-plezy/commit/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2). Build validation and release SDK migration are pending; see [source credit](UPSTREAM_ATTRIBUTION.md).

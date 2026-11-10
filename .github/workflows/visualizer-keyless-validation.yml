@@ -9,6 +9,7 @@ on:
       - test/fixtures/visualizer/authenticated-catalog.json
       - .github/workflows/visualizer-keyless-validation.yml
       - content/visualizer-catalog.json
+  workflow_call:
   workflow_dispatch:
 permissions:
   contents: read

@@ -217,6 +217,7 @@ endorsement of this fork.
 
 - [More reliable iOS speed-change qualification](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746): Pleazyng independently adapted test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage.
 
+- [AppImage update metadata and verified zsync sidecars](https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723), contributed upstream by [@nataloko](https://github.com/nataloko): Pleazyng independently adapted build x64 AppImages with fork-specific update information, verify control-file names, blocks and digests, checksum and attest both artifacts, and preserve immutable legacy images without update metadata.
 
 ## Flutter security engine build (2026-11-09)
 

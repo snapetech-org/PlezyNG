@@ -104,6 +104,9 @@ jobs:
           $installer = Join-Path $PWD 'release-assets\pleazyng-windows-installer.exe'
           $checksums = Join-Path $PWD 'release-assets\SHA256SUMS.txt'
           foreach ($asset in @($package[0], (Get-Item $installer))) {
+            if ($asset.Length -gt 190000000) {
+              throw "Chocolatey payload exceeds the 190000000-byte budget: $($asset.Name) ($($asset.Length) bytes)."
+            }
             $line = @(Select-String -Path $checksums -Pattern ("^([0-9a-f]{64})\s+" + [regex]::Escape($asset.Name) + '$'))
             if ($line.Count -ne 1) { throw "SHA256SUMS.txt has no unique entry for $($asset.Name)" }
             $expected = $line[0].Matches[0].Groups[1].Value.ToLowerInvariant()

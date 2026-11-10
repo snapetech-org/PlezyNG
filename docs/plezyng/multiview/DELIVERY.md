@@ -1,6 +1,6 @@
 # Multiview delivery ledger
 
-Current source: main, assessed and remediated on 2026-11-05. Earlier draft-branch
+Current source: main, assessed and remediated through 2026-11-09. Earlier draft-branch
 instructions and completion claims in this file have been superseded by the
 owner's direct-to-main remediation request. This ledger distinguishes source
 implementation from executed platform qualification.
@@ -13,16 +13,18 @@ implementation from executed platform qualification.
 | Detached controls | Localized native buttons delegate play/pause and skip intent to the original video/source route. Watch Together, relative-seek accumulation and live capture-buffer policy remain in those owners. Closing the native window returns the plane to its pane; explicit full-route restore waits for successful native attachment. Tokens reject delayed controls; at most 32 intents queue. |
 | Window geometry | Profile/slot SHA-256 keys separate geometry without storing profile names or media credentials. macOS uses frame autosave and screen clamping. Windows stores validated bounds and clamps restored windows to an available work area. Wayland persists normal window size; global positioning belongs to the compositor. Persistence updates during movement/resize, so a clean close is not required to retain the last saved geometry. |
 | Native lifecycle | Native windows belong to their existing native player plugin. Player/profile teardown closes them before destroying native resources. Parent-widget geometry/visibility cannot hide or resize a detached plane; its latest requested visibility is applied when the plane returns, including parked panes. Source playback persists but does not pause when Flutter loses focus to its native video window. A window close does not create another playback owner or end the media session. |
-| Other surfaces | Music, publication readers, Steam/game surfaces and native TV video keep their current in-app workspace adapters. They do not advertise desktop video-plane detachment. |
-| Recovery | The existing profile-local workspace snapshot retains safe descriptors, placements and ownership preferences. On application restart, live media owners are supplied by normal routes/services; snapshots never deserialize credentials, players or provider sessions. Automatic playback restart following an application crash is not implemented by the window host. |
+| Other surfaces | Supported desktop non-video surfaces can move into additional Flutter views on the existing engine. Their original routes/services retain ownership; window messages contain opaque tokens and presentation metadata. Native video keeps its platform-specific plane adapter. TV platforms retain their in-app workspace adapters. |
+| Recovery | Profile-local checkpoints retain safe identities, positions and layout. The session tray offers explicit resume or dismissal after restart; resume reauthorizes through the current profile and existing media/source routes. Library video, source audio and readers, including fully cached source editions, use the same owner guards. Checkpoints never store media URLs, credentials, players or provider sessions. Missing workspace checkpointing cannot abort player startup. Games are never launched automatically. |
 
 ## Validation
 
-The relative Dart directive/import check passes against the complete tracked-path
-inventory. New Flutter regression cases cover token rejection, control revocation
-on native close, geometry isolation and awaiting attachment before route restore.
-Those cases are authored, not executed: Flutter/Dart and the desktop platform SDKs
-are absent in this environment. Native compilation and device results are unknown.
+Local focused validation passed 155 tests for workspace/recovery, profile
+navigation, source playback and signed catalogs, plus 13 player-startup
+regressions after optional checkpoint attachment was corrected. The latter
+cover live fallback, display matching, retry UI and ambient-light restoration
+without a workspace provider. Native-window calls have deadlines, and the
+unresponsive-availability regression passed. Native desktop and device results
+remain separately recorded in the [audit ledger](../../security/audit-remediation-2026-11-09.md).
 
 Required platform acceptance remains: detach/reattach both reserved video slots,
 resize and move between mixed-DPI/HDR displays, unplug the saved display, exercise

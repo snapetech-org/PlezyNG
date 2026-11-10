@@ -1501,8 +1501,13 @@ jobs:
           persist-credentials: false
       - name: Install AppImage build tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends zsync binutils
+          # Hosted Ubuntu's Azure mirror can retry for longer than this smoke
+          # job's deadline. The public archive is the runner's working fallback.
+          if test -f /etc/apt/apt-mirrors.txt; then
+            printf 'https://archive.ubuntu.com/ubuntu\n' | sudo tee /etc/apt/apt-mirrors.txt >/dev/null
+          fi
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 update
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 install -y --no-install-recommends zsync binutils
       - name: Build and verify a fixture with the release packager
         shell: bash
         run: |

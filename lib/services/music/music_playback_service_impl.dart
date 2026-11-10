@@ -192,7 +192,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   String? _outputEqSignature;
   int _audioPolicyRevision = 0;
   final SerialFutureQueue _audioChanges = SerialFutureQueue();
-  double get _outputGain => (_outputEqualizer ?? _audioPolicy)?.gain ?? 1;
+  double get _outputGain => _playbackOutput == null ? (_outputEqualizer ?? _audioPolicy)?.gain ?? 1 : 1;
   @override
   MusicAudioPolicy get audioPolicy => _audioPolicy ?? const MusicAudioPolicy();
 
@@ -472,10 +472,14 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       engine: _player?.playerType ?? 'Unknown',
       codec: selected?.codec,
       channels: selected?.channels,
-      normalization: _audioPolicy != null
+      normalization: _playbackOutput != null
+          ? false
+          : _audioPolicy != null
           ? _audioPolicy!.leveling != MusicLeveling.off
           : settings?.read(SettingsService.audioNormalization) ?? false,
-      equalizer: _audioPolicy != null
+      equalizer: _playbackOutput != null
+          ? false
+          : _audioPolicy != null
           ? _audioPolicy!.bands.any((band) => band != 0)
           : settings != null && SettingsService.audioEqualizerBandPrefs.any((pref) => settings.read(pref) != 0),
       fades: _sweetFadesEnabled,

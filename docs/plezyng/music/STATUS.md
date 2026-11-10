@@ -60,8 +60,9 @@ are documented in [PAIRING_AND_SHORTCUTS.md](PAIRING_AND_SHORTCUTS.md).
 
 Remaining implementation includes provider/reference metadata equivalence,
 additional discovery controls, a RAM-independent live queue, cross-device
-listening-event import, other platforms' widgets/NFC, a complete shared music
-Cast receiver queue, and arbitrary multi-endpoint synchronized groups. Native
+listening-event import, other platforms' widgets/NFC, and arbitrary multi-endpoint
+synchronized groups. The shared music queue now drives Cast through an output
+adapter; receiver hardware/format qualification remains. Native
 car artwork/provisioning and physical Pi/car/DAC/codec/reference qualification
 also remain. No complete-parity claim is made.
 
@@ -163,7 +164,7 @@ also remain. No complete-parity claim is made.
 | U04 | Accessibility/localization | Music-tools strings, including NFC scanning actions, have explicit base-locale text and existing regional inheritance; widget transport labels use localized shared strings. Native fallback strings and human language/screen-reader review remain. | Localization/placeholder/source checks and 320px/200% text tests pass. |
 | U05 | Shortcuts/widgets/settings | Android home-screen widget uses the existing shared session and profile/queue-qualified transport. Metadata is process-local, inactive controls open the app, and immutable stale intents are rejected. Internal installation is required. Other platform widgets/tray/shortcut parity remains. | Shared transport regressions, focused Kotlin/API and Android resource compilation pass; no full native package/device qualification. |
 | U06 | Links/NFC | Durable server-qualified links resolve through profile authorization, including owned offline copies. Android details can write token-free links to writable NDEF tags with cancellation, deadlines and capacity checks. Other platform NFC writing remains. | Link/write payload/cancellation tests and focused Android API compilation pass; physical tag qualification pending. |
-| R01 | Chromecast music | Cast loads are serialized and bound to the original profile/authentication, matching custom ownership token and receiver media-session acknowledgement. Foreign media retires controls/progress ownership. Complete shared music receiver queue integration remains. | Ownership/revocation and profile lifecycle regressions pass; no live receiver qualification. |
+| R01 | Chromecast music | Now Playing can select an acknowledged Cast output inside the shared session. Receiver URLs come from the active server adapter rather than local files or request headers; queue edits, duplicate occurrences, repeat, shuffle, EOF and OS controls retain the shared queue. Takeover/disconnect returns locally paused without stopping foreign media. Native DSP/overlap is bypassed and reported absent on Cast. | Output switching, stale preflight, receiver controls, EOF/reset, takeover, auth revocation and profile lifecycle regressions pass; no live receiver/format qualification. Receiver continuation still requires the sender process. |
 | R02 | AirPlay/system routes | Existing native routing retained; no general cross-platform sender added. New output diagnostics/recovery parity remains. | No new route hardware evidence. |
 | R03 | Control/transfer distinction | Version-negotiated transfer sends a bounded credential-free queue snapshot; receivers validate their own source access and matching acknowledgement pauses only an unchanged sender. Transfer and paired synchronization are separate explicit actions; selecting a control target starts neither. | Snapshot/protocol/receiver/provider/Now Playing regressions pass; live paired-device qualification remains. |
 | R04 | Headless Raspberry Pi | Linux ARM64 endpoint packaging, explicit headless launch mode and a managed user-service installer are present. Configure and authorize the profile normally first; virtual X11 dependencies remain. | Mode/profile and installer regressions pass; focused Linux x64 checks are not physical Pi or ARM64 package qualification. |

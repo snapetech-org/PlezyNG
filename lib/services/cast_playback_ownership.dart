@@ -4,12 +4,18 @@ Future<void> loadAcknowledgedCastMedia<Status>({
   required Stream<Status> statuses,
   required bool Function(Status) acknowledge,
   required Future<void> Function() load,
+  Stream<void>? invalidated,
   Duration timeout = const Duration(seconds: 15),
 }) async {
   final accepted = Completer<void>();
   final subscription = statuses.listen(
     (status) {
-      if (!accepted.isCompleted && acknowledge(status)) accepted.complete();
+      if (accepted.isCompleted) return;
+      try {
+        if (acknowledge(status)) accepted.complete();
+      } catch (error, stack) {
+        accepted.completeError(error, stack);
+      }
     },
     onError: (Object error, StackTrace stack) {
       if (!accepted.isCompleted) accepted.completeError(error, stack);
@@ -18,6 +24,9 @@ Future<void> loadAcknowledgedCastMedia<Status>({
       if (!accepted.isCompleted) accepted.completeError(StateError('Cast status stream closed'));
     },
   );
+  final cancellation = invalidated?.listen((_) {
+    if (!accepted.isCompleted) accepted.completeError(StateError('Cast load was invalidated'));
+  });
   final deadline = Timer(timeout, () {
     if (!accepted.isCompleted) accepted.completeError(TimeoutException('Cast load was not acknowledged', timeout));
   });
@@ -26,6 +35,7 @@ Future<void> loadAcknowledgedCastMedia<Status>({
   } finally {
     deadline.cancel();
     await subscription.cancel();
+    await cancellation?.cancel();
   }
 }
 
@@ -50,8 +60,10 @@ class CastPlaybackOwnership {
     return true;
   }
 
-  bool owns(String? token, int session) =>
-      _session != null && session == _session && (token == null || token == _token) && _authorized?.call() == true;
+  bool owns(String? token, int session) => matches(token, session) && _authorized?.call() == true;
+
+  bool matches(String? token, int session) =>
+      _session != null && session == _session && (token == null || token == _token);
 
   bool get authorized => _token != null && _authorized?.call() == true;
 

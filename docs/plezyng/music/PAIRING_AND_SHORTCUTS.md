@@ -79,10 +79,20 @@ identity against the currently authorized profile. A tag is not an access grant.
 Tags are not permanently locked by the writer. Physical tag qualification and
 other platforms' NFC writing remain separate work.
 
-## Cast ownership limits
+## Cast music output
 
-Existing Cast loads now wait for a matching ownership token and receiver media
-session, reject changed source authentication/profile intent, and stop treating
-another sender's media as owned progress or transport. This does not implement a
-complete shared music Cast queue. Paired synchronization is an app-to-app feature,
-not a Google Cast speaker-group controller.
+On Android and iOS, use the Now Playing device action to select a Cast receiver.
+The receiver prepares the current track paused and acknowledges a matching owner
+token/media session before local playback is released. The existing music queue
+remains authoritative for transport, duplicate tracks, repeat, shuffle and edits;
+its occurrence is preserved during the output switch. Cancelling the Cast output
+returns to the local device. Disconnect or another sender taking over instead
+returns locally paused and never stops the foreign media.
+
+Cast resolves receiver-accessible HTTP streams using the current server account;
+downloaded files, prefetch paths and native request-header sources are not sent.
+Local EQ, normalization and two-decoder fades are not applied to remote PCM and
+are reported absent. Receiver playback beyond the current track requires the
+sender process to remain active; receiver-side durable autonomous queues, live
+codec qualification and Google Cast speaker-group management remain separate.
+Paired synchronization is app-to-app, not a Cast speaker-group controller.

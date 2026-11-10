@@ -16,6 +16,8 @@ import '../utils/watch_state_notifier.dart';
 import '../utils/serial_future_queue.dart';
 import '../utils/session_identifier.dart';
 import 'cast_playback_ownership.dart';
+import 'music/cast_music_output.dart';
+import 'multi_server_manager.dart';
 import 'playback_report_session.dart';
 import 'trackers/tracker_coordinator.dart';
 
@@ -151,6 +153,33 @@ class CastMediaService extends ChangeNotifier {
       mediaIndex: mediaIndex,
       mediaSourceId: mediaSourceId,
     );
+  }
+
+  Future<CastMusicOutput?> connectMusicOutput(BuildContext context, MultiServerManager serverManager) async {
+    await initialize();
+    final profile = _profileRevision;
+    final intent = ++_loadIntent;
+    bool current() => profile == _profileRevision && intent == _loadIntent;
+    final device = _sessions.hasConnectedSession || !context.mounted ? null : await _pickDevice(context);
+    if (!current() || !context.mounted || (device == null && !_sessions.hasConnectedSession)) return null;
+    return _loads.run(() async {
+      if (!current()) return null;
+      await _finishPlayback(_lastOwnedPosition);
+      if (!current()) return null;
+      if (device != null) {
+        if (!await _sessions.startSessionWithDevice(device)) {
+          throw const CastPlaybackException('Could not connect to that Cast device.');
+        }
+        await _waitForConnection();
+      }
+      if (!current() || !_sessions.hasConnectedSession) return null;
+      return CastMusicOutput(
+        name: device?.friendlyName ?? _sessions.currentSession?.device?.friendlyName ?? t.cast.chooseDevice,
+        serverManager: serverManager,
+        authorized: current,
+        receiver: GoogleMusicCastReceiver(),
+      );
+    });
   }
 
   Future<GoogleCastDevice?> _pickDevice(BuildContext context) async {

@@ -34,6 +34,9 @@ import '../../mixins/context_menu_tap_mixin.dart';
 import '../../mpv/mpv.dart';
 import '../../services/device_performance.dart';
 import '../../services/music/music_playback_service.dart';
+import '../../services/music/music_playback_output.dart';
+import '../../services/cast_media_service.dart';
+import '../../providers/multi_server_provider.dart';
 import '../../theme/mono_motion.dart';
 import '../../theme/mono_tokens.dart';
 import '../../utils/formatters.dart';
@@ -841,13 +844,42 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
   Widget _buildOverflowButton(MediaItem track, {bool focusable = false}) {
     final tk = tokens(context);
     final companion = context.watch<CompanionRemoteProvider>();
+    final session = context.read<MusicPlaybackService>();
+    final output = session is MusicOutputControls ? session as MusicOutputControls : null;
     void showMenu() => contextMenuKey.currentState?.showContextMenu(context);
 
     return MediaContextMenu(
       key: contextMenuKey,
       item: track,
       extraEntries: [
-        if (companion.supportsMusicGroup)
+        if (output != null && CastMediaService.isSupportedPlatform)
+          MediaMenuExtraEntry(
+            icon: Symbols.cast_rounded,
+            label: output.remoteOutputName == null
+                ? t.cast.chooseDevice
+                : '${t.common.cancel} · ${output.remoteOutputName}',
+            onSelected: () async {
+              try {
+                if (output.remoteOutputName != null) {
+                  await output.selectOutput(null);
+                } else {
+                  final manager = context.read<MultiServerProvider>().serverManager;
+                  final receiver = await CastMediaService.instance.connectMusicOutput(context, manager);
+                  if (receiver != null && mounted && identical(_service, session)) {
+                    companion.leaveMusicGroup();
+                    if (!await output.selectOutput(receiver) && mounted) {
+                      showErrorSnackBar(context, t.musicExperience.error);
+                    }
+                  } else if (receiver != null) {
+                    await receiver.player.dispose();
+                  }
+                }
+              } catch (error) {
+                if (mounted) showErrorSnackBar(context, t.musicExperience.error);
+              }
+            },
+          ),
+        if (companion.supportsMusicGroup && output?.remoteOutputName == null)
           MediaMenuExtraEntry(
             icon: Symbols.speaker_group_rounded,
             label: companion.musicGroupActive

@@ -101,6 +101,10 @@ final class EventOrderRecorder: MpvPlayerDelegate {
 }
 
 final class MpvPlayerContractTests: XCTestCase {
+  // Eventual native/scheduler completion, not a product latency deadline.
+  // Cold simulator startup can delay replies while retaining event order.
+  private let nativeCompletionTimeout: TimeInterval = 10
+
   private let failure = NSError(
     domain: "MpvPlayerContractTests",
     code: 1,
@@ -235,7 +239,7 @@ final class MpvPlayerContractTests: XCTestCase {
       queueEntered.fulfill()
       releaseQueue.wait()
     }
-    wait(for: [queueEntered], timeout: 2)
+    wait(for: [queueEntered], timeout: nativeCompletionTimeout)
 
     let completion = expectation(description: "pause write completed")
     var writeCompleted = false
@@ -255,7 +259,7 @@ final class MpvPlayerContractTests: XCTestCase {
     core.queue.async { queueResumed.fulfill() }
     // This test deliberately backlogs native events; qualify eventual reply
     // separately from the synchronous pause-intent assertion above.
-    wait(for: [queueResumed, completion], timeout: 10)
+    wait(for: [queueResumed, completion], timeout: nativeCompletionTimeout)
   }
 
   func testPendingSetPropertyIsCancelledExactlyOnceOnDispose() {
@@ -268,7 +272,7 @@ final class MpvPlayerContractTests: XCTestCase {
       queueEntered.fulfill()
       releaseQueue.wait()
     }
-    wait(for: [queueEntered], timeout: 2)
+    wait(for: [queueEntered], timeout: nativeCompletionTimeout)
 
     let completion = expectation(description: "cancelled property completion")
     completion.assertForOverFulfill = true
@@ -287,7 +291,7 @@ final class MpvPlayerContractTests: XCTestCase {
 
     core.dispose()
     releaseQueue.signal()
-    wait(for: [completion], timeout: 2)
+    wait(for: [completion], timeout: nativeCompletionTimeout)
     core.queue.sync {}
     XCTAssertEqual(completionCount, 1)
     XCTAssertTrue(completionError is MpvLifecycleUnavailableError)
@@ -329,7 +333,7 @@ final class MpvPlayerContractTests: XCTestCase {
     let drained = expectation(description: "main delivery drained")
     DispatchQueue.main.async { drained.fulfill() }
     // Queue ordering must tolerate application startup work on the main thread.
-    wait(for: [drained], timeout: 10)
+    wait(for: [drained], timeout: nativeCompletionTimeout)
     XCTAssertTrue(delegate.events.isEmpty)
     XCTAssertTrue(delegate.properties.isEmpty)
   }
@@ -351,7 +355,7 @@ final class MpvPlayerContractTests: XCTestCase {
         completed.fulfill()
       }
     }
-    wait(for: [completed], timeout: 2)
+    wait(for: [completed], timeout: nativeCompletionTimeout)
     XCTAssertEqual(completionCount, 1)
   }
 
@@ -401,7 +405,7 @@ final class MpvPlayerContractTests: XCTestCase {
       queueHeld.fulfill()
       releaseQueue.wait()
     }
-    wait(for: [queueHeld], timeout: 2)
+    wait(for: [queueHeld], timeout: nativeCompletionTimeout)
 
     // Overflow the core's log buffer ahead of the failure. The second client's
     // synchronous commands put nothing in the core's event queue.
@@ -600,7 +604,7 @@ final class MpvPlayerContractTests: XCTestCase {
       queueHeld.fulfill()
       releaseQueue.wait()
     }
-    wait(for: [queueHeld], timeout: 2)
+    wait(for: [queueHeld], timeout: nativeCompletionTimeout)
 
     let endFileDelivered = expectation(description: "end-file delivered")
     endFileDelivered.assertForOverFulfill = false
@@ -636,7 +640,7 @@ final class MpvPlayerContractTests: XCTestCase {
       propertyResult = $0
       completion.fulfill()
     }
-    wait(for: [completion], timeout: 2)
+    wait(for: [completion], timeout: nativeCompletionTimeout)
     return propertyResult ?? .failure(failure)
   }
 
@@ -647,7 +651,7 @@ final class MpvPlayerContractTests: XCTestCase {
       propertyResult = $0
       completion.fulfill()
     }
-    wait(for: [completion], timeout: 2)
+    wait(for: [completion], timeout: nativeCompletionTimeout)
     return propertyResult ?? .failure(failure)
   }
 

@@ -20,7 +20,7 @@ the live producer again. Published releases retain their original provenance.
 
 ## Release procedure
 
-Set a new version with `python3 scripts/set_release_version.py 3.0.7+166`.
+Set a new version with `python3 scripts/set_release_version.py 3.0.29+188`.
 This updates both `pubspec.yaml` and `webos/meta/appinfo.json`, preserving the
 native app identity, permissions, and other metadata. Use the next unused
 version and build number; never move an existing tag. The shared commit/CI
@@ -33,6 +33,24 @@ builds use compatible GitHub-hosted macOS runners; the storage-heavy WebOS
 candidate uses compatible private JIT runners.
 The hybrid execution profile routes each job to the compatible runner class;
 the broker pool remains available for jobs that need private capacity.
+
+## Apple native qualification
+
+The iOS and macOS mpv contract suites use a ten-second
+`nativeCompletionTimeout` for eventual native replies and scheduler barriers.
+This bounds the test harness while allowing simulator startup work; it does
+not change production timeouts. Keep value, event-order, main-thread and
+exactly-once assertions, synchronous pause-intent checks, measured playback
+intervals and injected PiP timeout behavior intact. A failed completion guard
+still fails qualification; do not skip it or infer a passing native result.
+
+The real H.264 pixel test waits through XCTest so the main run loop remains
+available, then checks decoded pixels and teardown. tvOS additionally waits
+for the real Dart database bootstrap and checks its SQLite version against
+the packaged source receipt. Failed iOS/tvOS XCTest bundles are retained as
+`apple-native-results-<platform>-<run ID>` artifacts for diagnosis before
+task scratch cleanup. Simulator results do not establish physical-device or
+store qualification.
 
 ## Release job concurrency
 

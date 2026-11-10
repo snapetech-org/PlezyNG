@@ -52,7 +52,10 @@ def main():
         print(json.dumps([{'name': n.get_name(), 'role': n.get_role_name()} for n in nodes]))
         return
     label = sys.argv[2]
-    found = [n for n in nodes if (n.get_name() or '').split('\n', 1)[0] == label]
+    found = ([n for n in nodes if n.get_role_name() == label] if command == 'fill-role'
+             else [n for n in nodes if (n.get_name() or '').split('\n', 1)[0] == label])
+    if command == 'fill-role' and len(found) != 1:
+        raise RuntimeError('Expected one editable field with role ' + label)
     if not found:
         raise RuntimeError(f'Control not found: {label}')
     node = found[0]
@@ -86,7 +89,7 @@ def main():
                 break
         if not result:
             raise RuntimeError('No activation action for ' + label)
-    elif command == 'fill':
+    elif command in ('fill', 'fill-role'):
         result = node.get_editable_text_iface().set_text_contents(sys.argv[3])
     elif command == 'length':
         result = node.get_text_iface().get_character_count()

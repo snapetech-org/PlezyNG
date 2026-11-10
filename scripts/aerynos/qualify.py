@@ -222,19 +222,30 @@ class AppQA:
         self.key('esc')
 
     def open_movie(self, name):
-        # Search through the normal app UI; no release-only automation endpoint.
-        self.click(38, 190)
-        time.sleep(1)
-        try:
-            self.wait('Search movies, shows, music...', timeout=3)
-        except TimeoutError:
-            self.click(80, 374)
-            self.wait('Search movies, shows, music...')
-        self.ui('fill', 'Search movies, shows, music...', name)
+        # A nonempty search field no longer exposes its placeholder as a label.
+        def ready():
+            nodes = self.ui()
+            return any(n['role'] == 'header' and n['name'] == 'Search' for n in nodes) and any(n['role'] == 'text' for n in nodes)
+        for _ in range(3):
+            if ready():
+                break
+            self.ui('click', 'Search')
+            time.sleep(1)
+        if not ready():
+            raise RuntimeError('Search did not expose its editable field')
+        self.ui('fill-role', 'text', name)
         self.wait(name)
         self.ui('click', name)
-        self.wait('Play')
-        self.ui('click', 'Play')
+        deadline = time.monotonic() + 120
+        while time.monotonic() < deadline:
+            names = {n['name'] for n in self.ui()}
+            action = next((name for name in ('Resume', 'Play') if name in names), None)
+            if action:
+                self.ui('click', action)
+                break
+            time.sleep(1)
+        else:
+            raise TimeoutError('No media detail playback action')
         self.wait('Show playback controls')
 
     def visible_h264(self):
@@ -245,7 +256,7 @@ class AppQA:
         while time.monotonic() < deadline:
             self.guest.screenshot(path)
             image = Image.open(path).convert('RGB').crop((100, 150, 1180, 700))
-            vivid = sum(max(p) - min(p) > 100 and max(p) > 160 for p in image.getdata()) / (image.width * image.height)
+            vivid = sum(max(p) - min(p) > 100 and max(p) > 160 for p in getattr(image, 'get_flattened_data', image.getdata)()) / (image.width * image.height)
             if vivid > 0.4:
                 break
             time.sleep(1)
@@ -264,7 +275,7 @@ class AppQA:
         a = Image.open(self.evidence / 'paused-1.png').crop((100, 150, 1180, 550))
         before_seek = Image.open(self.evidence / 'before-seek.png').crop((100, 150, 1180, 550))
         delta = ImageChops.difference(before_seek.convert('RGB'), a.convert('RGB'))
-        changed = sum(max(pixel) > 20 for pixel in delta.getdata()) / (delta.width * delta.height)
+        changed = sum(max(pixel) > 20 for pixel in getattr(delta, 'get_flattened_data', delta.getdata)()) / (delta.width * delta.height)
         (self.evidence / 'seek-result.json').write_text(json.dumps({'changed_frame_fraction': changed}) + '\n')
         if changed < 0.02:
             raise RuntimeError('Seek did not visibly advance the authored moving pattern')
@@ -283,6 +294,163 @@ class AppQA:
         self.wait('Back')
         self.ui('click', 'Back')
 
+    def controls(self):
+        names = {n['name'] for n in self.ui()}
+        if 'Show playback controls' in names:
+            self.ui('click', 'Show playback controls')
+        return {n['name'] for n in self.ui()}
+
+    def clock(self):
+        self.controls()
+        times = []
+        for node in self.ui():
+            for label in (node['name'] or '').splitlines():
+                if re.fullmatch(r'\d{1,2}:\d{2}(?::\d{2})?', label):
+                    value = 0
+                    for part in label.split(':'):
+                        value = value * 60 + int(part)
+                    times.append(value)
+        if not times:
+            raise RuntimeError('No visible playback clock')
+        return min(times)
+
+    def audio_since(self, offset):
+        import numpy as np
+        import struct
+        audio = (self.guest.root / 'audio.wav').read_bytes()
+        if audio[:4] != b'RIFF' or audio[8:16] != b'WAVEfmt ' or audio[36:40] != b'data':
+            raise RuntimeError('Unexpected QEMU PCM capture format')
+        format_id, channels, rate, _, align, bits = struct.unpack_from('<HHIIHH', audio, 20)
+        if (format_id, channels, align, bits) != (1, 2, 4, 16):
+            raise RuntimeError('Expected stereo signed 16-bit PCM capture')
+        start = max(44, offset)
+        start += (44 - start) % align
+        end = len(audio) - (len(audio) - 44) % align
+        samples = np.frombuffer(audio[start:end], dtype='<i2').astype(np.float64)
+        mono = samples.reshape((-1, channels)).mean(axis=1) if len(samples) else np.array([])
+        rms = float(np.sqrt(np.mean(mono * mono))) if len(mono) else 0.0
+        frequency = None
+        if len(mono) >= 2048 and rms > 100:
+            length = min(rate, len(mono))
+            windows = (mono[start:start + length] for start in range(0, len(mono) - length + 1, max(1, length // 2)))
+            window = max(windows, key=lambda samples: float(np.dot(samples, samples)))
+            spectrum = abs(np.fft.rfft(window * np.hanning(len(window))))
+            frequency = float(np.argmax(spectrum[1:]) + 1) * rate / len(window)
+        return {'frames': len(mono), 'sample_rate': rate, 'rms': rms, 'peak_frequency_hz': frequency,
+                'note': 'PCM payload read without relying on QEMU placeholder RIFF/data lengths'}
+
+    def observe_playback(self, label, paused=False):
+        from PIL import Image, ImageChops
+        names = self.controls()
+        expected = 'Play' if paused else 'Pause'
+        if expected not in names:
+            raise RuntimeError(f'{label}: expected {expected} control')
+        before = self.clock()
+        self.ui('click', 'Hide playback controls')
+        time.sleep(0.6)
+        offset = (self.guest.root / 'audio.wav').stat().st_size
+        first, second = (self.evidence / f'{label}-{n}.png' for n in (1, 2))
+        self.guest.screenshot(first)
+        time.sleep(3)
+        self.guest.screenshot(second)
+        audio = self.audio_since(offset)
+        after = self.clock()
+        a = Image.open(first).convert('RGB').crop((100, 150, 1180, 550))
+        b = Image.open(second).convert('RGB').crop((100, 150, 1180, 550))
+        pixels = getattr(b, 'get_flattened_data', b.getdata)()
+        vivid = sum(max(p) - min(p) > 100 and max(p) > 160 for p in pixels) / (b.width * b.height)
+        difference = ImageChops.difference(a, b)
+        pixels = getattr(difference, 'get_flattened_data', difference.getdata)()
+        changed = sum(max(p) > 20 for p in pixels) / (b.width * b.height)
+        result = {'clock_before': before, 'clock_after': after, 'vivid_fraction': vivid,
+                  'changed_frame_fraction': changed, 'paused': paused, 'audio': audio}
+        (self.evidence / f'{label}.json').write_text(json.dumps(result, indent=2) + '\n')
+        if vivid < 0.4:
+            raise RuntimeError(label + ': authored video pattern is not visible')
+        if paused:
+            if abs(after - before) > 1 or difference.getbbox() is not None or audio['rms'] > 10:
+                raise RuntimeError(label + ': paused clock, image or audio changed')
+        elif (after < before + 1 or changed < 0.02 or audio['rms'] <= 100
+              or audio['peak_frequency_hz'] is None or not 420 <= audio['peak_frequency_hz'] <= 460):
+            raise RuntimeError(label + ': moving video, advancing clock and authored audio did not all return')
+        return result
+
+    def background_return(self, label):
+        image = self.evidence / f'{label}-window.png'
+        self.guest.screenshot(image)
+        result = run(['tesseract', image, 'stdout', 'tsv'], capture_output=True, text=True)
+        rows = csv.DictReader(io.StringIO(result.stdout), delimiter='\t')
+        title = next((r for r in rows if r['text'].casefold() == 'pleazyng' and int(r['top']) < 150), None)
+        if title is None:
+            raise RuntimeError('Native window title is not visible before backgrounding')
+        self.click(int(title['left']) + int(title['width']) // 2,
+                   int(title['top']) + int(title['height']) // 2)
+        self.key('meta_l-h')
+        time.sleep(2)
+        if any(frame['active'] for frame in self.ui('window-state')):
+            raise RuntimeError('The native app did not leave foreground')
+        self.guest.screenshot(self.evidence / f'{label}-background.png')
+        self.key('alt-tab')
+        time.sleep(3)
+        if not any(frame['active'] for frame in self.ui('window-state')):
+            raise RuntimeError('The native app did not return to foreground')
+
+    def lifecycle(self):
+        self.open_movie('Maestro Movie')
+        self.observe_playback('lifecycle-initial')
+        self.background_return('background-playing')
+        self.observe_playback('background-playing')
+        self.ui('click', 'Pause')
+        time.sleep(1)
+        self.background_return('background-paused')
+        self.observe_playback('background-paused', paused=True)
+        self.ui('click', 'Play')
+        self.observe_playback('explicit-resume')
+        previous = self.clock()
+        departed = time.monotonic()
+        self.ui('click', 'Back')
+        self.wait('Resume')
+        self.ui('click', 'Resume')
+        self.wait('Show playback controls')
+        resumed = self.clock()
+        elapsed = time.monotonic() - departed
+        if not previous - 2 <= resumed <= previous + elapsed + 2:
+            raise RuntimeError(f'Route resume lost saved position: {previous} -> {resumed}')
+        (self.evidence / 'route-position.json').write_text(json.dumps({'before': previous, 'resumed': resumed, 'elapsed_seconds': elapsed}) + '\n')
+        self.observe_playback('route-resume')
+        bookmark = self.clock()
+        self.ui('click', 'Chapters')
+        self.wait('Add bookmark')
+        self.ui('click', 'Add bookmark')
+        self.wait('Save')
+        bookmark_label = 'QA resume ' + str(time.time_ns())
+        self.ui('fill-role', 'text', bookmark_label)
+        self.ui('click', 'Save')
+        self.wait(bookmark_label)
+        self.key('esc')
+        self.controls()
+        self.ui('click', 'Seek forward 10 seconds')
+        self.ui('click', 'Seek forward 10 seconds')
+        time.sleep(1)
+        moved = self.clock()
+        if moved < bookmark + 15:
+            raise RuntimeError('Bookmark test did not first move away from its saved position')
+        self.ui('click', 'Chapters')
+        self.wait(bookmark_label)
+        self.ui('click', bookmark_label)
+        time.sleep(1)
+        restored = self.clock()
+        if abs(restored - bookmark) > 5:
+            raise RuntimeError(f'Bookmark did not restore position: {bookmark} -> {restored}')
+        self.observe_playback('bookmark-resume')
+        (self.evidence / 'saved-positions.json').write_text(json.dumps({
+            'route_before': previous, 'route_resumed': resumed,
+            'bookmark_label': bookmark_label, 'bookmark_saved': bookmark, 'moved_away': moved, 'bookmark_restored': restored}, indent=2) + '\n')
+        self.ui('click', 'Back')
+        self.wait('Back')
+        self.ui('click', 'Back')
+
+
 
 def fixture(source, root):
     data = root / 'jellyfin'
@@ -291,7 +459,7 @@ def fixture(source, root):
     run([sys.executable, source / 'scripts/maestro/maestro_real_jellyfin.py', 'prepare', '--output-dir', data / 'media'])
     movie = data / 'media/movies/maestro-movie/Maestro Movie.mp4'
     run(['ffmpeg', '-y', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=size=640x360:rate=24',
-         '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=44100', '-t', '60',
+         '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=44100', '-t', '180',
          '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '24', '-c:a', 'aac', '-movflags', '+faststart', movie])
     server_port = port()
     name = 'pleazyng-aerynos-ci-' + root.name.lower().replace('_', '-')
@@ -305,6 +473,7 @@ def fixture(source, root):
     except BaseException:
         run(['docker', 'rm', '-f', name])
         raise
+    (root / 'fixture.json').write_text(json.dumps({'container': name, 'server_port': server_port, 'image': image}, indent=2) + '\n')
     return name, server_port
 
 
@@ -381,6 +550,7 @@ def qualify(args):
         app.sign_in(server_port)
         app.verify_default()
         app.visible_h264()
+        app.lifecycle()
         app.stop()
         guest.screenshot(evidence / 'after-playback.png')
         command(guest, 'journalctl _COMM=pleazyng --no-pager', evidence / 'runtime.log')
@@ -389,6 +559,7 @@ def qualify(args):
                          'iso_sha256': ISO_SHA256, 'status': 'qualified',
                          'recipe_tooling_sha': tooling_sha,
                          'checks': ['native_boulder_build', 'native_moss_install', 'native_moss_upgrade', 'installed_elf', 'bundled_im_cache', 'ordinary_release_launch',
+                                    'background_return_playing', 'background_return_paused', 'route_resume', 'bookmark_resume', 'audio_clock',
                                     'jellyfin_sign_in', 'dv_default_on', 'fallback_default_on', 'visible_h264', 'pause', 'seek', 'fullscreen'],
                          'not_qualified': ['physical HDR/Dolby Vision output', 'FEL reference picture accuracy', 'physical GPU/NPU execution'],
                          'stone': names[0], 'stone_sha256': digest(output / names[0]), 'build': build, 'baseline': baseline,

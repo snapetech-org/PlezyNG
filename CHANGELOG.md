@@ -9,7 +9,7 @@
 - Repair the TV containment workflow after its integration script was renamed.
 - Prepare the Flutter 3.47.8 security engine while retaining the Windows presentation fixes independently adapted from [@edde746's upstream patch series](https://github.com/edde746/flutter-plezy/commit/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2). Build validation and release SDK migration are pending; see [source credit](UPSTREAM_ATTRIBUTION.md).
 
-- Remove aerynOS release-channel recipes, generator output and installation documentation under the owner’s channel decision.
+- Restore downstream aerynOS recipe preparation and isolated native qualification under the owner’s subsequent explicit restore-and-continue instruction. Public availability remains conditional on qualified artifacts; no official repository entry is implied.
 
 - Enable automatic Dolby Vision/Profile 7 FEL routing and compatibility fallback by default. Preserve explicit Off and manual conversion choices, try implemented local Android/Apple/desktop paths before server conversion, and retain ordinary Apple playback when the bundled DV runtime cannot initialize. Keep qualification and actual layer use explicit; neural motion smoothing remains separately opt-in.
 

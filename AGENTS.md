@@ -118,10 +118,11 @@ The `upstream` remote is the separate Plezy project. Track its `main` only;
 its feature branches are not Pleazyng work to merge or delete automatically.
 Keep upstream attribution requirements when actually adapting upstream work.
 
-## Distribution exclusion — owner directive, 2026-11-09
+## aerynOS review and qualification — owner directive, 2026-11-09
 
-aerynOS is excluded from Pleazyng release channels and maintained packaging.
-Do not restore its recipe, generator output, installation section, qualification
-plan or publisher lane without a new explicit owner instruction reversing this
-decision. Preserve historical QA evidence outside the active release-channel
-documentation; do not stop unrelated running work as part of this removal.
+The owner subsequently explicitly requested restoration of a working aerynOS
+recipe for review, native installation and QA, and continuation of that work.
+This supersedes the earlier channel exclusion for downstream recipe preparation
+and isolated qualification. Preserve truthful candidate/qualified status and
+historical QA evidence. Do not imply official aerynOS repository acceptance or
+publish an unqualified candidate as a supported release channel.

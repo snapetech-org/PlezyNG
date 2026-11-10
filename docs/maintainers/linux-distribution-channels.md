@@ -18,6 +18,7 @@ Flatpak application ID is `org.snapetech.pleazyng`.
 | Nix | [Both native builds](https://github.com/snapetech-org/pleazyng/actions/runs/42714489114) passed. Maintained locked flake built locally. Software WebView smoke rendered HTML and ran JavaScript with WebKit sandbox enabled (`NoNewPrivs=1`, `Seccomp=2`). Final Nixpkgs proposal also built on x64 | [Nixpkgs PR 585758](https://github.com/NixOS/nixpkgs/pull/585758) awaits maintainer acceptance; full NixOS desktop and hardware playback remain unqualified |
 | Google Play | Existing v3.0.7+166 AAB uploaded to closed Alpha; foreground-service declaration and release notes saved; release saved in Publishing overview, ready for review. Lifetime SKU is active at USD 2.99 base in 174 regions. Compiled reviewer public key matches on all three ABIs | Signed-build expired-trial grant redemption, purchase/restore, Google review and actual test activation remain gates; `GOOGLE_PLAY_BOOTSTRAP_COMPLETE` stays false |
 | Homebrew | Tap Cask 3.0.7 published by [run 42702581594](https://github.com/snapetech-org/pleazyng/actions/runs/42702581594); [native signature/ticket/Gatekeeper qualification](https://github.com/snapetech-org/pleazyng/actions/runs/42702586238) passed | [Native Cask installation and installed-app Gatekeeper qualification](https://github.com/snapetech-org/pleazyng/actions/runs/42717147909) passed |
+| aerynOS / Moss | x86_64 Boulder build, Moss install, launch and Jellyfin sign-in pass in aerynOS 2026.11 | v3.0.7 video remains covered by the preceding route; use a new bundle containing the aperture repair and repeat playback QA; official acceptance is separate |
 
 The AUR RPC and cgit responses may be cached briefly after a push. Verify the
 public Git head and use a fresh RPC request before treating stale metadata as a
@@ -31,7 +32,7 @@ All work above repairs delivery against the existing v3.0.7 artifacts. No new
 all-platform application build was requested. Dated machine-readable evidence
 is retained in [the first-publication receipt](releases/v3.0.7-channels.json).
 
-## Prepare immutable Nix candidates
+## Prepare immutable Nix and aerynOS candidates
 
 Use a fresh task-owned scratch directory on a host with sufficient free space.
 Download only the checksum manifest first, then authenticate it using the
@@ -91,15 +92,54 @@ The matching helpers and cache repair apply to channel repacks; immutable
 GitHub binary packages are unchanged.
 For complete desktop/device qualification, verify fonts, TLS, desktop/URI launch, file
 chooser, Wayland video, GPU drivers/hardware decoding, audio, offline downloads,
-and persisted opt-in experimental settings with packaged native components.
+and persisted automatic-DV and optional neural settings with packaged native components.
 Inspect every bundled ELF and provider, including dynamically loaded libraries;
 resolve dependency and duplicate-provider conflicts without silently deleting
-experimental engines or substituting a system mpv. Keep Off as the default.
+experimental engines or substituting a system mpv. Keep automatic DV/FEL and compatibility fallback enabled by default; neural
+motion processing remains off by default.
 
 Repository submission must include a maintainer, license/provenance review and
 the tested native outputs. Confirm whether each community requires source
 builds; a request for source packaging is a separate build adaptation, not a
 reason to describe a binary candidate as accepted. The renderer does not submit PRs. The approved Nixpkgs PR is linked above; no binary cache is configured.
+
+## aerynOS
+
+The same preparation command produces `aerynos/stone.yaml` and its supporting
+files in `aerynos/pkg/`, as required by Boulder's `%(pkgdir)` macro. This recipe
+packages the x86_64 release bundle. It does not build the app from source or
+add an ARM64 aerynOS port.
+
+The archive has no enclosing directory, so `stripdirs: 0` is required. The
+recipe preserves the bundled engines, providers and models, installs the
+checksum-pinned WebKit helper processes matching the bundled library,
+normalizes ELF search paths, and rebuilds the GdkPixbuf cache with installed
+paths. Stripping and debug splitting are disabled. ELF search paths and cache
+files change during packaging; the native components remain included.
+
+On an aerynOS host with Boulder configured:
+
+```sh
+cd "$channel_scratch/recipes-v3.0.7/aerynos"
+boulder build stone.yaml
+```
+
+Inspect the resulting manifest for dependency/provider conflicts and unintended
+subpackage splitting before indexing and installing the `.stone` output in the isolated
+test instance. The current Moss CLI uses `moss index --input-dir <output-dir>`,
+`moss repo add <name> file://<absolute-output-dir>/stone.index`, and
+`moss -y pkg add pleazyng`. Keep this repository local to the test guest. Retain the package, manifest, build/install logs and runtime QA
+evidence. Increment `release` for recipe-only changes to an already distributed
+version. See the [native qualification record](aerynos-qualification.md): build
+and installation pass; the published v3.0.7 input fails video playback QA.
+
+This is downstream packaging for review. No official aerynOS submission or Moss
+repository publication is performed by the generator. The official project's
+[contribution policy](https://github.com/aerynOS/.github/blob/main/CONTRIBUTING.md#llm-contributions)
+prohibits LLM-generated contributions; a human submitting this AI-assisted recipe
+does not change its authorship. That policy does not establish a prohibition on
+independently publishing compatible packages or on packaging an application
+whose upstream code includes AI-assisted work.
 
 ## Publish already-built Arch and Fedora artifacts
 
@@ -136,6 +176,8 @@ conversion. Never treat an upload or completed workflow as review approval.
 ## Packaging references
 
 - [Nixpkgs FHS environments](https://nixos.org/manual/nixpkgs/stable/#sec-fhs-environments)
+- [aerynOS upstream archive options](https://aerynos.com/packaging/recipes/upstreams/)
+- [aerynOS package definitions and runtime dependencies](https://aerynos.com/packaging/recipes/package-definition/)
 
 These candidates package Pleazyng's own release bundles. They do not copy the
 upstream Plezy recipes or imply participation by their maintainers.

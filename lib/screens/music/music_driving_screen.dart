@@ -23,8 +23,9 @@ class MusicDrivingScreen extends StatelessWidget {
     if (!context.mounted ||
         experience != null && !experience.store.active ||
         !identical(context.read<MusicExperience?>(), experience) ||
-        !identical(context.read<MusicPlaybackService>(), music))
+        !identical(context.read<MusicPlaybackService>(), music)) {
       return;
+    }
     List<MediaItem> currentTracks() => offline ? downloads?.downloadedTracks ?? [] : favorites?.tracks ?? [];
     final title = offline ? t.navigation.downloads : t.libraries.filterCategories.favorites;
     final selected = await showModalBottomSheet<MediaItem>(

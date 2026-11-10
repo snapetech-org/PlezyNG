@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Exercise independent concurrent music decoders against real Linux libmpv with generated PCM and null output, including separate gain and outgoing-core teardown. This is not acoustic or physical-device qualification.
+
 - Restart the paired Linux music endpoint when reinstalling its service, preserve service files if stopping fails, and expose failed service status to diagnostic callers.
 
 - Add a customizable Favorites music shelf and large driving shortcuts for favorites and owned downloads. Revalidate source visibility and download ownership before explicit playback in the shared session.

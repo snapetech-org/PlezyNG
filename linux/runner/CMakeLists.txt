@@ -202,6 +202,17 @@ if(PLEZY_BUILD_MPV_PLAYER_LIFECYCLE_TESTS)
   target_include_directories(mpv_player_hdr_output_test PRIVATE "${CMAKE_SOURCE_DIR}")
   target_include_directories(mpv_player_hdr_output_test PRIVATE "${CMAKE_SOURCE_DIR}/../shared/cpp")
 
+  add_executable(music_dual_core_test
+    "mpv/mpv_player.cc"
+    "mpv/music_dual_core_test.cc"
+  )
+  apply_standard_settings(music_dual_core_test)
+  target_compile_definitions(music_dual_core_test PRIVATE PLEZY_MPV_PLAYER_LIFECYCLE_TEST=1)
+  target_link_libraries(music_dual_core_test PRIVATE
+    flutter PkgConfig::GTK PkgConfig::MPV PkgConfig::EPOXY simdutf Threads::Threads ${CMAKE_DL_LIBS})
+  target_include_directories(music_dual_core_test PRIVATE
+    "${CMAKE_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/../shared/cpp")
+
   option(PLEZY_MPV_LIFECYCLE_SANITIZERS
     "Enable ASan and UBSan for the focused mpv_player.cc tests" ON)
   if(PLEZY_MPV_LIFECYCLE_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
@@ -212,6 +223,8 @@ if(PLEZY_BUILD_MPV_PLAYER_LIFECYCLE_TESTS)
       target_link_options(mpv_player_lifecycle_test PRIVATE -fsanitize=address,undefined)
       target_compile_options(mpv_player_hdr_output_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
       target_link_options(mpv_player_hdr_output_test PRIVATE -fsanitize=address,undefined)
+      target_compile_options(music_dual_core_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
+      target_link_options(music_dual_core_test PRIVATE -fsanitize=address,undefined)
     endif()
   endif()
 
@@ -219,6 +232,8 @@ if(PLEZY_BUILD_MPV_PLAYER_LIFECYCLE_TESTS)
   set_tests_properties(mpv_player_lifecycle_test PROPERTIES TIMEOUT 30)
   add_test(NAME mpv_player_hdr_output_test COMMAND mpv_player_hdr_output_test)
   set_tests_properties(mpv_player_hdr_output_test PROPERTIES TIMEOUT 30)
+  add_test(NAME music_dual_core_test COMMAND music_dual_core_test)
+  set_tests_properties(music_dual_core_test PROPERTIES TIMEOUT 30)
 endif()
 
 option(PLEZY_BUILD_MPV_PROPERTY_CONTRACT_TESTS

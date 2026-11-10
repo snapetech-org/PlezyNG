@@ -5,6 +5,8 @@ import 'package:plezy/database/app_database.dart';
 import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/library_query.dart';
 import 'package:plezy/media/media_item.dart';
+import 'package:plezy/media/media_part.dart';
+import 'package:plezy/media/media_version.dart';
 import 'package:plezy/models/download_models.dart';
 import 'package:plezy/services/music/music_library_store.dart';
 import 'package:plezy/services/music/music_station.dart';
@@ -152,6 +154,32 @@ void main() {
     );
     expect(result!.queuedCount, 0);
     expect((await store.document('stationSnapshot', 'station'))!['tracks'], ['keep']);
+  });
+  test('exact source byte estimates survive repeated failed station retries', () async {
+    final station = (await store.document('station', 'station'))!..['storageLimitMiB'] = 1;
+    await store.saveDocument('station', 'station', station);
+    client.rows = [
+      musicTrack('exact').copyWith(
+        mediaVersions: [
+          const MediaVersion(
+            id: 'version',
+            parts: [MediaPart(id: 'part', sizeBytes: 500)],
+          ),
+        ],
+      ),
+    ];
+    for (var attempt = 0; attempt < 3; attempt++) {
+      expect((await run((_) async => false))!.failed, isTrue);
+      expect((await store.pendingStationSnapshot('station'))!['estimatedBytes'], {'s:exact': 500});
+    }
+    final queued = <String>[];
+    await run((track) async {
+      queued.add(track.id);
+      return true;
+    });
+    expect(queued, ['exact']);
+    expect(client.queries, hasLength(1));
+    expect((await store.document('stationSnapshot', 'station'))!['estimatedBytes'], {'s:exact': 500});
   });
   test('tampered retry byte estimates cannot bypass a station budget', () async {
     final station = (await store.document('station', 'station'))!..['storageLimitMiB'] = 1;

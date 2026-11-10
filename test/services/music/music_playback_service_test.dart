@@ -37,6 +37,7 @@ import 'package:plezy/services/music/music_playback_service_impl.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_session_store.dart';
 import 'package:plezy/services/music/music_source_resolver.dart';
+import 'package:plezy/services/music/music_transfer_snapshot.dart';
 import 'package:plezy/services/offline_watch_sync_service.dart';
 import 'package:plezy/services/playback_coordinator.dart';
 import 'package:plezy/services/settings_service.dart';
@@ -487,6 +488,10 @@ class FakeMediaServerClient extends Fake
     with PlaybackReportRecorder
     implements MediaServerClient, PlexLoudnessProfileClient {
   final List<RecordedReport> reports = [];
+  final Object _authenticationSession = Object();
+
+  @override
+  Object get authenticationSessionId => _authenticationSession;
   final List<String> markedWatched = [];
   final Map<int, AudioLoudnessProfile?> loudnessProfiles = {};
   final Map<int, int> loudnessProfileFetchCounts = {};
@@ -497,6 +502,9 @@ class FakeMediaServerClient extends Fake
 
   @override
   ServerId get serverId => ServerId('srv');
+
+  @override
+  MediaBackend get backend => MediaBackend.plex;
 
   @override
   double get watchedThreshold => 0.9;
@@ -1429,6 +1437,67 @@ void main() {
 
     expect(h.service.currentTrack?.id, t3.id);
     expect(h.service.queue.map((track) => track.id), [t3.id]);
+  });
+
+  group('remote transfer receiver', () {
+    MusicTransferSnapshot transfer({MediaItem? current}) => MusicTransferSnapshot(
+      queue: MusicQueueState(
+        items: [t1, t2, current ?? t1],
+        order: const [2, 0, 1],
+        cursor: 1,
+        shuffled: true,
+        repeatMode: MusicRepeatMode.all,
+      ),
+      position: const Duration(seconds: 42),
+      playing: false,
+      playContext: const MusicPlayContext(title: 'Transferred mix', kind: MusicPlayContextKind.mix),
+    );
+
+    test('prepares on the receiver, then adopts the exact queue and playhead', () async {
+      await h.playTracks([t3]);
+      expect(await h.service.acceptTransfer(transfer()), isTrue);
+      await pumpEventQueue();
+      expect(h.service.queue.map((item) => item.id), ['t1', 't1', 't2']);
+      expect(h.service.currentIndex, 1);
+      expect(h.service.shuffled, isTrue);
+      expect(h.service.repeatMode, MusicRepeatMode.all);
+      expect(h.service.status, MusicPlaybackStatus.paused);
+      expect(h.service.playContext?.title, 'Transferred mix');
+      expect(h.player.openStarts.last, const Duration(seconds: 42));
+      expect(h.resolver.resolveCounts['t1'], 1, reason: 'preflight source is reused for open');
+    });
+
+    test('acknowledges a playing transfer only after the receiver opens it', () async {
+      final paused = transfer();
+      final playing = MusicTransferSnapshot(
+        queue: paused.queue,
+        position: paused.position,
+        playing: true,
+        playContext: paused.playContext,
+      );
+      expect(await h.service.acceptTransfer(playing), isTrue);
+      expect(h.service.status, MusicPlaybackStatus.playing);
+      expect(h.player.openStarts.single, const Duration(seconds: 42));
+    });
+
+    test('denies a server the receiver cannot access without replacing playback', () async {
+      await h.playTracks([t3]);
+      final foreign = _track('foreign').copyWith(serverId: 'other');
+      expect(await h.service.acceptTransfer(transfer(current: foreign)), isFalse);
+      expect(h.service.currentTrack?.id, 't3');
+      expect(h.service.queue.map((item) => item.id), ['t3']);
+    });
+
+    test('a newer local queue wins a pending receiver preflight', () async {
+      await h.playTracks([t3]);
+      final gate = h.resolver._gateNextResolve('t1');
+      final accepted = h.service.acceptTransfer(transfer());
+      await gate.entered;
+      await h.playTracks([t2]);
+      gate.release();
+      expect(await accepted, isFalse);
+      expect(h.service.currentTrack?.id, 't2');
+    });
   });
 
   test('trackTransition advances the cursor, re-arms, and reports the previous track stopped at duration', () async {

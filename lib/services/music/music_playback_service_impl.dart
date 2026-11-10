@@ -48,6 +48,7 @@ import 'music_playback_service.dart';
 import 'music_queue_controller.dart';
 import 'music_session_store.dart';
 import 'music_source_resolver.dart';
+import 'music_transfer_snapshot.dart';
 
 /// A gapless-armed next track: what [Player.setNext] was fed, so the
 /// trackTransition event can be mapped back to a queue entry and its
@@ -593,6 +594,91 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   final Duration _positionPersistInterval;
 
   final MusicQueueController _queue;
+  int _queueEditRevision = 0;
+
+  /// The peer protocol uses this only after the user explicitly requests a
+  /// transfer. A selection alone never changes playback or output routing.
+  MusicTransferSnapshot? captureTransfer() {
+    if (_disposed ||
+        _currentTrack == null ||
+        (_status != MusicPlaybackStatus.playing && _status != MusicPlaybackStatus.paused)) {
+      return null;
+    }
+    final snapshot = MusicTransferSnapshot(
+      queue: _queue.captureState(),
+      position: position,
+      playing: isPlaying,
+      playContext: _playContext,
+    );
+    try {
+      snapshot.toJson();
+      return snapshot;
+    } on StateError {
+      return null;
+    }
+  }
+
+  /// Validate *this receiver's* active server credentials before changing its
+  /// queue. The sender's metadata never grants access or provides a stream URL.
+  /// An open failure is not acknowledged, so the sender retains its playback.
+  Future<bool> acceptTransfer(MusicTransferSnapshot snapshot) async {
+    try {
+      snapshot.toJson();
+    } on StateError {
+      return false;
+    }
+    if (_disposed || (snapshot.playing && !automotiveMusicPlaybackAllowedNow())) return false;
+    final clients = <MediaServerClient, Object?>{};
+    for (final item in snapshot.queue.items) {
+      final serverId = serverIdOrNull(item.serverId);
+      if (serverId == null || !_serverManager.isServerVisible(serverId)) return false;
+      final client = _serverManager.getClient(serverId);
+      if (client == null || client.backend != item.backend || client.isOfflineMode) return false;
+      clients[client] = client.authenticationSessionId;
+    }
+    final track = snapshot.queue.items[snapshot.queue.order[snapshot.queue.cursor]];
+    final intent = beginPlayIntent();
+    final generation = _generation;
+    final edit = _queueEditRevision;
+    final transport = _continuationResumeRevision;
+    MusicSource source;
+    try {
+      source = await _cachedSource(await _resolver.resolve(track));
+    } catch (error, stackTrace) {
+      appLogger.w('Music transfer source could not be prepared', error: error, stackTrace: stackTrace);
+      return false;
+    }
+    if (source.reportingClient != null &&
+        !identical(source.reportingClient, _serverManager.getClient(ServerId(track.serverId!)))) {
+      return false;
+    }
+    if (!isPlayIntentCurrent(intent) ||
+        generation != _generation ||
+        edit != _queueEditRevision ||
+        transport != _continuationResumeRevision ||
+        clients.entries.any(
+          (entry) =>
+              !identical(entry.key.authenticationSessionId, entry.value) ||
+              !identical(_serverManager.getClient(entry.key.serverId), entry.key) ||
+              !_serverManager.isServerVisible(entry.key.serverId),
+        )) {
+      return false;
+    }
+    final expectedRevision = _queueSessionRevision + 1;
+    await _startQueue(
+      tracks: snapshot.queue.items,
+      playContext:
+          snapshot.playContext ?? MusicPlayContext(title: track.title ?? track.id, kind: MusicPlayContextKind.tracks),
+      autoplay: snapshot.playing,
+      initialPosition: snapshot.position,
+      restoredQueue: snapshot.queue,
+      preparedSource: source,
+    );
+    return !_disposed &&
+        _queueSessionRevision == expectedRevision &&
+        _queue.current?.globalKey == track.globalKey &&
+        _status == (snapshot.playing ? MusicPlaybackStatus.playing : MusicPlaybackStatus.paused);
+  }
 
   /// Bounded per-service cache. The endpoint is optional and profiles are
   /// small (at most 512 samples), so keeping a few recent queue items avoids
@@ -909,6 +995,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     Duration? initialPosition,
     bool offline = false,
     PlaybackLaunchObserver? launchObserver,
+    MusicQueueState? restoredQueue,
+    MusicSource? preparedSource,
   }) async {
     if (tracks.isEmpty || _disposed) {
       return;
@@ -964,12 +1052,22 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         startIndex = index;
       }
     }
-    _queue.load(tracks, startIndex: startIndex, shuffle: shuffle);
+    if (restoredQueue != null) {
+      if (!_queue.restoreState(restoredQueue)) return;
+    } else {
+      _queue.load(tracks, startIndex: startIndex, shuffle: shuffle);
+    }
     _playContext = playContext;
     _consecutiveFailures = 0;
     _pendingRestoreResume = null;
     _persistSessionSnapshot(positionOverride: Duration.zero);
-    await _openCurrent(generation, play: autoplay, initialPosition: initialPosition, offline: offline);
+    await _openCurrent(
+      generation,
+      play: autoplay,
+      initialPosition: initialPosition,
+      offline: offline,
+      preparedSource: preparedSource,
+    );
   }
 
   // ---------------------------------------------------------------------
@@ -978,7 +1076,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   /// Resolve and open the queue's current track. All failure handling funnels
   /// through [_handlePlaybackFailure].
-  Future<void> _openCurrent(int generation, {bool play = true, Duration? initialPosition, bool offline = false}) async {
+  Future<void> _openCurrent(
+    int generation, {
+    bool play = true,
+    Duration? initialPosition,
+    bool offline = false,
+    MusicSource? preparedSource,
+  }) async {
     final track = _queue.current;
     if (track == null) {
       return;
@@ -1047,7 +1151,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
       MusicSource source;
       try {
-        source = await _cachedSource(await _resolver.resolve(track, offline: offline));
+        source = preparedSource ?? await _cachedSource(await _resolver.resolve(track, offline: offline));
       } catch (e, st) {
         appLogger.w('Music source resolve failed for ${track.id}', error: e, stackTrace: st);
         if (launchCurrent()) {
@@ -2716,6 +2820,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _afterQueueEdit() {
+    _queueEditRevision++;
     _rearmIfNeeded();
     _syncControlsAvailability();
     _persistSessionSnapshot();

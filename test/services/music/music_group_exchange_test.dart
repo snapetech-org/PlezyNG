@@ -128,6 +128,37 @@ void main() {
     });
   });
 
+  test('retired preparation cannot resurrect a group', () {
+    fakeAsync((async) {
+      final pair = _Pair(async);
+      unawaited(pair.leader.start());
+      async.flushMicrotasks();
+      final invitation = pair.messages.firstWhere((message) => message['op'] == 'prepare');
+      final initial = pair.prepared.length;
+      pair.leader.leave();
+      async.flushMicrotasks();
+      pair.follower.receive(invitation);
+      async.flushMicrotasks();
+      expect(pair.follower.active, isFalse);
+      expect(pair.prepared.length, initial);
+      pair.close();
+    });
+  });
+
+  test('a transport exception during leave retires ownership only once', () {
+    fakeAsync((async) {
+      final pair = _Pair(async);
+      unawaited(pair.leader.start());
+      async.flushMicrotasks();
+      pair.failSend = true;
+      expect(pair.leader.leave, returnsNormally);
+      async.flushMicrotasks();
+      expect(pair.leader.active, isFalse);
+      expect(pair.releases, 1);
+      pair.close();
+    });
+  });
+
   test('expired preparation cannot resurrect playback', () {
     fakeAsync((async) {
       final gate = Completer<bool>();
@@ -161,6 +192,7 @@ class _Pair {
       changed: () {},
       now: () => 10000 + async.elapsed.inMilliseconds,
       send: (message) {
+        if (failSend) throw StateError('Disconnected');
         messages.add(message);
         if (deliver) follower.receive(message);
       },
@@ -189,6 +221,7 @@ class _Pair {
   }
   late final MusicGroupExchange leader, follower;
   bool allowed = true, deliver = true, acceptAlignment = true;
+  bool failSend = false;
   int releases = 0;
   bool Function()? preparationCurrent;
   MusicTransferSnapshot snapshot = _snapshot();

@@ -2,8 +2,11 @@ class CastPlaybackOwnership {
   String? _token;
   int? _session;
   bool Function()? _authorized;
+  int _revision = 0;
+  int get revision => _revision;
 
   void begin(String token, bool Function() authorized) {
+    _revision++;
     _token = token;
     _session = null;
     _authorized = authorized;
@@ -22,6 +25,7 @@ class CastPlaybackOwnership {
   bool get authorized => _token != null && _authorized?.call() == true;
 
   void clear() {
+    _revision++;
     _token = null;
     _session = null;
     _authorized = null;

@@ -28,11 +28,14 @@ void main() {
   test('new load and disconnect cannot reuse a previous media session', () {
     final owner = CastPlaybackOwnership()..begin('one', () => true);
     owner.acknowledge('one', 1);
+    final revision = owner.revision;
     owner.begin('two', () => true);
+    expect(owner.revision, greaterThan(revision));
     expect(owner.acknowledge('one', 1), isFalse);
     expect(owner.owns('two', 1), isFalse);
     expect(owner.acknowledge('two', 2), isTrue);
     owner.clear();
+    expect(owner.revision, greaterThan(revision + 1));
     expect(owner.authorized, isFalse);
     expect(owner.owns('two', 2), isFalse);
   });

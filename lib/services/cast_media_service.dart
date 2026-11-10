@@ -63,7 +63,18 @@ class CastMediaService extends ChangeNotifier {
     _loadIntent++;
     _ownership.clear();
     _progressTimer?.cancel();
-    unawaited(_loads.run(() => _finishPlayback(_lastOwnedPosition)));
+    _retirePlayback();
+  }
+
+  void _retirePlayback() {
+    if (_activeItem == null) return;
+    final revision = _ownership.revision;
+    final position = _lastOwnedPosition;
+    unawaited(
+      _loads.run(() async {
+        if (_ownership.revision == revision) await _finishPlayback(position);
+      }),
+    );
   }
 
   bool _ownsReceiver() {
@@ -99,7 +110,9 @@ class CastMediaService extends ChangeNotifier {
     _sessionSubscription = _sessions.currentSessionStream.listen(_onSessionChanged);
     _statusSubscription = _remote.mediaStatusStream.listen(_onMediaStatusChanged);
     _positionSubscription = _remote.playerPositionStream.listen((_) {
-      if (_ownsReceiver()) _lastOwnedPosition = _currentItemPosition();
+      if (_ownsReceiver() && _remote.mediaStatus?.playerState != CastMediaPlayerState.idle) {
+        _lastOwnedPosition = _currentItemPosition();
+      }
       notifyListeners();
     });
     _initialized = true;
@@ -394,7 +407,7 @@ class CastMediaService extends ChangeNotifier {
     unawaited(TrackerCoordinator.instance.startPlayback(item, client));
     _progressTimer?.cancel();
     _progressTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      unawaited(_reportPosition(_currentItemPosition(), isStopped: false));
+      if (_ownsReceiver()) unawaited(_reportPosition(_currentItemPosition(), isStopped: false));
     });
   }
 
@@ -406,6 +419,9 @@ class CastMediaService extends ChangeNotifier {
     final duration = _duration;
     final reportSession = _reportSession;
     if (item == null || client == null || !_ownership.authorized) return;
+    if (!isStopped && !_ownsReceiver()) return;
+    final revision = _ownership.revision;
+    bool current() => revision == _ownership.revision && _ownership.authorized;
 
     final clampedPosition = duration == null
         ? position
@@ -437,7 +453,7 @@ class CastMediaService extends ChangeNotifier {
           ),
         );
         if (isStopped) stoppedReportSucceeded = delivered;
-        if (!isStopped && _ownership.authorized) {
+        if (!isStopped && current()) {
           WatchStateNotifier().notifyProgress(
             item: item,
             cacheServerId: client.cacheServerId,
@@ -453,7 +469,7 @@ class CastMediaService extends ChangeNotifier {
     }
 
     if (!isStopped ||
-        !_ownership.authorized ||
+        !current() ||
         !stoppedReportSucceeded ||
         duration == null ||
         clampedPosition.inMilliseconds < duration.inMilliseconds * client.watchedThreshold) {
@@ -470,7 +486,7 @@ class CastMediaService extends ChangeNotifier {
 
   void _onSessionChanged(GoogleCastSession? session) {
     if (session == null && _activeItem != null && !_finishingPlayback) {
-      unawaited(_loads.run(() => _finishPlayback(_lastOwnedPosition)));
+      _retirePlayback();
     }
     if (session?.device?.friendlyName case final String name) _deviceName = name;
     notifyListeners();
@@ -480,14 +496,17 @@ class CastMediaService extends ChangeNotifier {
     if (_activeItem != null) {
       if (!_ownsReceiver()) {
         _progressTimer?.cancel();
-        unawaited(_loads.run(() => _finishPlayback(_lastOwnedPosition)));
+        _retirePlayback();
         return;
       }
-      _lastOwnedPosition = _currentItemPosition();
+      if (status?.playerState != CastMediaPlayerState.idle) _lastOwnedPosition = _currentItemPosition();
       if (status?.playerState == CastMediaPlayerState.idle &&
           status?.idleReason != null &&
           status?.idleReason != GoogleCastMediaIdleReason.none) {
-        unawaited(_loads.run(() => _finishPlayback(_lastOwnedPosition)));
+        if (status?.idleReason == GoogleCastMediaIdleReason.finished && _duration != null) {
+          _lastOwnedPosition = _duration!;
+        }
+        _retirePlayback();
       } else if ((status?.playerState == CastMediaPlayerState.playing ||
               status?.playerState == CastMediaPlayerState.paused) &&
           _lastPausedState != (status?.playerState == CastMediaPlayerState.paused)) {
@@ -565,7 +584,9 @@ class CastMediaService extends ChangeNotifier {
                         tooltip: isPaused ? t.common.resume : t.common.pause,
                         onPressed: !_ownsReceiver() || !isPaused && !isPlaying
                             ? null
-                            : () => unawaited(isPaused ? _remote.play() : _remote.pause()),
+                            : () {
+                                if (_ownsReceiver()) unawaited(isPaused ? _remote.play() : _remote.pause());
+                              },
                         icon: AppIcon(isPaused ? Symbols.play_arrow_rounded : Symbols.pause_rounded),
                       ),
                       const SizedBox(width: 8),
@@ -573,8 +594,17 @@ class CastMediaService extends ChangeNotifier {
                         tooltip: t.cast.stopCasting,
                         onPressed: () async {
                           if (!_ownsReceiver()) return;
+                          final status = _remote.mediaStatus!;
+                          final token = _ownerToken(status);
+                          final profile = _profileRevision;
                           await _remote.stop();
-                          await _sessions.endSessionAndStopCasting();
+                          final current = _remote.mediaStatus;
+                          if (profile == _profileRevision &&
+                              current != null &&
+                              current.mediaSessionID == status.mediaSessionID &&
+                              _ownerToken(current) == token) {
+                            await _sessions.endSessionAndStopCasting();
+                          }
                           if (sheetContext.mounted) Navigator.of(sheetContext).pop();
                         },
                         icon: const AppIcon(Symbols.stop_rounded),

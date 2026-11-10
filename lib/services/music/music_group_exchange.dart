@@ -31,7 +31,12 @@ class MusicGroupExchange {
     required this.send,
     required this.changed,
     int Function()? now,
-  }) : _now = now ?? (Stopwatch()..start()).elapsedMillisecondsGetter;
+  }) : _now = now ?? _monotonic();
+
+  static int Function() _monotonic() {
+    final clock = Stopwatch()..start();
+    return () => clock.elapsedMilliseconds;
+  }
 
   final bool Function() allowed;
   final MusicTransferSnapshot? Function() capture;
@@ -52,6 +57,8 @@ class MusicGroupExchange {
   int _generation = 0;
   int _sequence = 0;
   int _received = -1;
+  int _acknowledged = -1;
+  final Set<String> _retired = {};
   int _lastAnchor = 0;
   int? _probe;
   Timer? _pulse;
@@ -114,12 +121,13 @@ class MusicGroupExchange {
       'probe' => {'sent'},
       'clock' => {'sent', 'received', 'replied'},
       'anchor' => {'sequence', 'sent', 'snapshot'},
-      'ready' || 'joined' || 'leave' => <String>{},
+      'joined' => {'sequence'},
+      'ready' || 'leave' => <String>{},
       _ => null,
     };
     if (keys == null || message.keys.any((key) => !{'version', 'group', 'op', ...keys}.contains(key))) return;
     if (op == 'prepare') {
-      if (active) return;
+      if (active || _retired.contains(group)) return;
       final snapshot = MusicTransferSnapshot.tryParse(message['snapshot']);
       if (snapshot == null) return;
       _group = group;
@@ -170,9 +178,12 @@ class MusicGroupExchange {
         _received = sequence;
         _lastAnchor = _now();
         if (_applying) return;
-        unawaited(_align(snapshot, max(0, age), _generation));
+        unawaited(_align(snapshot, max(0, age), _generation, sequence));
       case 'joined':
         if (!_leader || !_joined) return;
+        final sequence = message['sequence'];
+        if (sequence is! int || sequence > _sequence || sequence <= _acknowledged) return;
+        _acknowledged = sequence;
         _lastAnchor = _now();
         _deadline?.cancel();
         final pending = _pending;
@@ -241,7 +252,7 @@ class MusicGroupExchange {
     _send('anchor', {'sequence': ++_sequence, 'sent': _now(), 'snapshot': snapshot.toJson()});
   }
 
-  Future<void> _align(MusicTransferSnapshot snapshot, int age, int generation) async {
+  Future<void> _align(MusicTransferSnapshot snapshot, int age, int generation, int sequence) async {
     _applying = true;
     bool current() => _current(generation);
     var accepted = false;
@@ -272,18 +283,23 @@ class MusicGroupExchange {
       _deadline?.cancel();
       changed();
     }
-    _send('joined');
+    _send('joined', {'sequence': sequence});
   }
 
   void leave({bool notifyPeer = true}) {
     if (!active) return;
+    final group = _group;
     if (notifyPeer) _send('leave');
+    if (_group != group) return;
+    if (_retired.length >= 256) _retired.remove(_retired.first);
+    _retired.add(_group!);
     _group = null;
     _queue = null;
     _joined = false;
     _generation++;
     _sequence = 0;
     _received = -1;
+    _acknowledged = -1;
     _applying = false;
     _pulse?.cancel();
     _deadline?.cancel();
@@ -295,7 +311,7 @@ class MusicGroupExchange {
     pending?.complete(false);
     if (_clockReady?.isCompleted == false) _clockReady!.complete(false);
     _clockReady = null;
-    unawaited(release());
+    unawaited(Future.sync(release).catchError((Object _) {}));
     changed();
   }
 
@@ -303,8 +319,4 @@ class MusicGroupExchange {
     leave();
     _closed = true;
   }
-}
-
-extension on Stopwatch {
-  int elapsedMillisecondsGetter() => elapsedMilliseconds;
 }

@@ -379,6 +379,8 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
                         child: Text(
                           mode == MusicDjMode.off
                               ? t.common.off
+                              : mode == MusicDjMode.friendganger
+                              ? 'DJ Friendgänger'
                               : 'DJ ${mode.name[0].toUpperCase()}${mode.name.substring(1)}',
                         ),
                       ),

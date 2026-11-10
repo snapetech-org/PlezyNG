@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_item.dart';
+import 'package:plezy/media/ids.dart';
+import 'package:plezy/media/library_query.dart';
 import 'package:plezy/services/music/music_guest_dj.dart';
 import '../../test_helpers/music_experience_fakes.dart';
 
@@ -81,4 +83,89 @@ void main() {
     await dj.select(MusicDjMode.contempo);
     expect(music.queue.map((t) => t.id), ['a', 'near', 'b']);
   });
+  test('Friendganger interleaves libraries and rejects missing or foreign provenance', () async {
+    dj.dispose();
+    final first = _SharedClient('friend1')
+      ..rows = [
+        musicTrack('one', server: 'friend1'),
+        musicTrack('foreign', server: 'other'),
+        musicTrack('missing', server: 'friend1').copyWith(libraryId: 'other'),
+        musicTrack('three', server: 'friend1'),
+      ];
+    final second = _SharedClient('friend2')..rows = [musicTrack('two', server: 'friend2')];
+    dj = MusicGuestDj(
+      music,
+      (_) => client,
+      sharedSources: () async => [
+        MusicDjSource(client: first, libraryId: 'library', isCurrent: () => true),
+        MusicDjSource(client: second, libraryId: 'library', isCurrent: () => true),
+      ],
+    );
+    await dj.select(MusicDjMode.friendganger);
+    expect(music.queue.map((item) => item.id), ['a', 'one', 'two', 'three', 'b']);
+    await dj.select(MusicDjMode.off);
+    expect(music.queue.map((item) => item.id), ['a', 'b']);
+  });
+  test('Friendganger rechecks every source after the last fetch', () async {
+    dj.dispose();
+    var visible = true;
+    final first = _SharedClient('friend1')..rows = [musicTrack('one', server: 'friend1')];
+    final second = _SharedClient('friend2')
+      ..page = (_) async {
+        visible = false;
+        return LibraryPage(items: [musicTrack('two', server: 'friend2')], totalCount: 1);
+      };
+    dj = MusicGuestDj(
+      music,
+      (_) => client,
+      sharedSources: () async => [
+        MusicDjSource(client: first, libraryId: 'library', isCurrent: () => visible),
+        MusicDjSource(client: second, libraryId: 'library', isCurrent: () => true),
+      ],
+    );
+    await dj.select(MusicDjMode.friendganger);
+    expect(music.queue.map((item) => item.id), ['a', 'two', 'b']);
+  });
+  test('Friendganger rejects authentication changes during requests', () async {
+    dj.dispose();
+    final remote = _SharedClient('friend');
+    remote.page = (_) async {
+      remote.authenticationSessionId = Object();
+      return LibraryPage(items: [musicTrack('stale', server: 'friend')], totalCount: 1);
+    };
+    dj = MusicGuestDj(
+      music,
+      (_) => client,
+      sharedSources: () async => [MusicDjSource(client: remote, libraryId: 'library', isCurrent: () => true)],
+    );
+    await dj.select(MusicDjMode.friendganger);
+    expect(music.queue.map((item) => item.id), ['a', 'b']);
+  });
+  test('Friendganger continues past unavailable libraries', () async {
+    dj.dispose();
+    final failed = _SharedClient('failed')..page = (_) async => throw StateError('offline');
+    final remote = _SharedClient('friend')..rows = [musicTrack('available', server: 'friend')];
+    dj = MusicGuestDj(
+      music,
+      (_) => client,
+      sharedSources: () async => [
+        MusicDjSource(client: failed, libraryId: 'library', isCurrent: () => true),
+        MusicDjSource(client: remote, libraryId: 'library', isCurrent: () => true),
+      ],
+    );
+    await dj.select(MusicDjMode.friendganger);
+    expect(music.queue.map((item) => item.id), ['a', 'available', 'b']);
+  });
+  test('Friendganger with no shared libraries leaves the queue unchanged', () async {
+    await dj.select(MusicDjMode.friendganger);
+    expect(music.queue.map((item) => item.id), ['a', 'b']);
+    expect(dj.failure, 'empty');
+  });
+}
+
+class _SharedClient extends ExperienceClient {
+  _SharedClient(this.id);
+  final String id;
+  @override
+  ServerId get serverId => ServerId(id);
 }

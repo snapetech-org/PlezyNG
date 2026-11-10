@@ -34,8 +34,8 @@ import com.edde746.plezy.car.MusicBrowserService
 import com.edde746.plezy.deeplink.DeepLinkPlugin
 import com.edde746.plezy.exoplayer.ExoPlayerPlugin
 import com.edde746.plezy.exoplayer.ExoWorkspacePlayerPlugin
-import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
 import com.edde746.plezy.mpv.MpvAudioOverlapPlugin
+import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
 import com.edde746.plezy.mpv.MpvPlayerPlugin
 import com.edde746.plezy.mpv.MpvWorkspacePlayerPlugin
 import com.edde746.plezy.shared.AssistiveTechnologyMonitor

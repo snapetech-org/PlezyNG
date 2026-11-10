@@ -9,17 +9,26 @@ import '../../media/media_server_client.dart';
 import 'music_discovery.dart';
 import 'music_playback_service.dart';
 
-enum MusicDjMode { off, stretch, gemini, freeze, twofer, groupie, contempo }
+enum MusicDjMode { off, stretch, gemini, freeze, twofer, groupie, contempo, friendganger }
+
+class MusicDjSource {
+  const MusicDjSource({required this.client, required this.libraryId, required this.isCurrent});
+
+  final MediaServerClient client;
+  final String libraryId;
+  final bool Function() isCurrent;
+}
 
 /// Queue augmentation belongs to the existing session. The original upcoming
 /// entries stay in order; only explicitly labelled generated entries are
 /// removed when a DJ is disabled. Manual edits invalidate pending requests.
 class MusicGuestDj extends ChangeNotifier {
-  MusicGuestDj(this.music, this.clientFor) {
+  MusicGuestDj(this.music, this.clientFor, {this.sharedSources}) {
     music.addListener(_changed);
   }
   final MusicPlaybackService music;
   final MediaServerClient? Function(MediaItem) clientFor;
+  final Future<List<MusicDjSource>> Function()? sharedSources;
   MusicDjMode _mode = MusicDjMode.off;
   MediaItem? _anchor;
   int _epoch = 0, _handledOccurrence = -1, _session = -1;
@@ -101,8 +110,9 @@ class MusicGuestDj extends ChangeNotifier {
           candidates
               .where(
                 (item) =>
+                    _mode == MusicDjMode.friendganger ||
                     item.serverId == seed.serverId &&
-                    (seed.libraryId == null || item.libraryId == null || item.libraryId == seed.libraryId),
+                        (seed.libraryId == null || item.libraryId == null || item.libraryId == seed.libraryId),
               )
               .toList(),
         ],
@@ -135,6 +145,48 @@ class MusicGuestDj extends ChangeNotifier {
 
   Future<List<MediaItem>> _candidates(MediaServerClient client, MediaItem seed, MediaItem? next) async {
     switch (_mode) {
+      case MusicDjMode.friendganger:
+        final epoch = _epoch;
+        final sources = await sharedSources?.call() ?? <MusicDjSource>[];
+        final batches = <({MusicDjSource source, Object authentication, List<MediaItem> tracks})>[];
+        final seen = <String>{};
+        for (final source in sources.take(8)) {
+          if (_disposed || epoch != _epoch) return [];
+          final remote = source.client;
+          if (remote.isOfflineMode || !source.isCurrent() || !seen.add('${remote.serverId}:${source.libraryId}')) {
+            continue;
+          }
+          final authentication = remote.authenticationSessionId;
+          try {
+            final page = await remote
+                .fetchLibraryPagedContent(
+                  source.libraryId,
+                  query: const LibraryQuery(
+                    kind: MediaKind.track,
+                    limit: 50,
+                    sort: LibrarySort(field: 'random'),
+                  ),
+                )
+                .timeout(const Duration(seconds: 15));
+            batches.add((source: source, authentication: authentication, tracks: page.items));
+          } catch (_) {
+            continue;
+          }
+        }
+        return MusicDiscovery.interleave([
+          for (final batch in batches)
+            if (batch.source.isCurrent() &&
+                !batch.source.client.isOfflineMode &&
+                identical(batch.authentication, batch.source.client.authenticationSessionId))
+              batch.tracks
+                  .where(
+                    (item) =>
+                        item.kind == MediaKind.track &&
+                        item.serverId == batch.source.client.serverId &&
+                        item.libraryId == batch.source.libraryId,
+                  )
+                  .toList(),
+        ], limit: 20);
       case MusicDjMode.off:
         return [];
       case MusicDjMode.gemini:

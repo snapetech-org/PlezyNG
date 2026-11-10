@@ -10,8 +10,8 @@ import androidx.media.MediaSessionManager
 import com.edde746.os_media_controls.MediaSessionHolder
 import com.edde746.os_media_controls.MusicCarApi
 import com.edde746.plezy.BuildConfig
-import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
 import com.edde746.plezy.mpv.MpvAudioOverlapPlugin
+import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor

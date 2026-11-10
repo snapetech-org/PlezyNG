@@ -1,6 +1,9 @@
 import '../utils/platform_detector.dart';
 import '../services/music/music_car_host.dart';
 import '../services/music/music_experience.dart';
+import '../services/music/music_guest_dj.dart';
+import '../media/media_backend.dart';
+import '../media/media_kind.dart';
 import '../services/music/music_library_store.dart';
 import '../karaoke/karaoke_session.dart';
 import 'dart:async';
@@ -381,10 +384,38 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                   lazy: false,
                   create: (context) {
                     final manager = context.read<MultiServerProvider>().serverManager;
+                    final libraries = context.read<LibrariesProvider>();
+                    final hidden = context.read<HiddenLibrariesProvider>();
                     return MusicExperience(
                       music: context.read<MusicPlaybackService>(),
                       store: MusicLibraryStore(context.read<AppDatabase>(), activeId),
                       connectionChanges: manager.statusStream,
+                      sharedSources: () async {
+                        await hidden.ensureInitialized();
+                        return [
+                          for (final library in libraries.libraries)
+                            if (library.backend == MediaBackend.plex &&
+                                library.kind == MediaKind.artist &&
+                                library.serverId != null &&
+                                !library.hidden &&
+                                !hidden.hiddenLibraryKeys.contains(library.globalKey) &&
+                                manager.isServerVisible(ServerId(library.serverId!)) &&
+                                !manager.isOwnerOrAdmin(ServerId(library.serverId!)))
+                              if (manager.getClient(ServerId(library.serverId!)) case final client?)
+                                MusicDjSource(
+                                  client: client,
+                                  libraryId: library.id,
+                                  isCurrent: () =>
+                                      manager.isServerVisible(ServerId(library.serverId!)) &&
+                                      identical(manager.getClient(ServerId(library.serverId!)), client) &&
+                                      !manager.isOwnerOrAdmin(ServerId(library.serverId!)) &&
+                                      !hidden.hiddenLibraryKeys.contains(library.globalKey) &&
+                                      libraries.libraries.any(
+                                        (current) => current.globalKey == library.globalKey && !current.hidden,
+                                      ),
+                                ),
+                        ];
+                      },
                       clientFor: (item) => item.serverId == null || !manager.isServerVisible(ServerId(item.serverId!))
                           ? null
                           : manager.getClient(ServerId(item.serverId!)),

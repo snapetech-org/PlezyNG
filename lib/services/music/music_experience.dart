@@ -16,9 +16,10 @@ class MusicExperience extends ChangeNotifier {
     required this.music,
     required this.store,
     required this.clientFor,
+    Future<List<MusicDjSource>> Function()? sharedSources,
     Stream<Object?>? connectionChanges,
   }) {
-    dj = MusicGuestDj(music, clientFor)..addListener(notifyListeners);
+    dj = MusicGuestDj(music, clientFor, sharedSources: sharedSources)..addListener(notifyListeners);
     recorder = MusicListeningRecorder(music, store);
     ratings = MusicRatingJournal(store, clientFor);
     _connections = connectionChanges?.listen((_) => _syncRatings());

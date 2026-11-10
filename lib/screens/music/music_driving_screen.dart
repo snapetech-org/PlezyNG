@@ -4,13 +4,85 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
+import '../../media/media_item.dart';
+import '../../providers/download_provider.dart';
+import '../../services/music/music_experience.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../services/music/music_audio_policy.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../widgets/music/music_favorites_shelf.dart';
 
-/// Simplified presentation only. It never creates a second player, changes
-/// the queue, starts playback on entry, or overrides vehicle restrictions.
 class MusicDrivingScreen extends StatelessWidget {
   const MusicDrivingScreen({super.key});
+
+  Future<void> _choose(BuildContext context, {required bool offline}) async {
+    final music = context.read<MusicPlaybackService>();
+    final experience = context.read<MusicExperience?>();
+    final downloads = context.read<DownloadProvider?>();
+    final favorites = offline ? null : await loadProfileMusicFavorites(context);
+    if (!context.mounted ||
+        experience != null && !experience.store.active ||
+        !identical(context.read<MusicExperience?>(), experience) ||
+        !identical(context.read<MusicPlaybackService>(), music))
+      return;
+    List<MediaItem> currentTracks() => offline ? downloads?.downloadedTracks ?? [] : favorites?.tracks ?? [];
+    final title = offline ? t.navigation.downloads : t.libraries.filterCategories.favorites;
+    final selected = await showModalBottomSheet<MediaItem>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * 0.7,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(title, style: Theme.of(sheetContext).textTheme.titleLarge),
+              ),
+              Expanded(
+                child: Builder(
+                  builder: (_) {
+                    final tracks = currentTracks();
+                    if (tracks.isEmpty) return Center(child: Text(t.messages.noResultsFound));
+                    return ListView.builder(
+                      itemCount: tracks.length,
+                      itemBuilder: (_, index) => ListTile(
+                        minVerticalPadding: 16,
+                        title: Text(tracks[index].displayTitle),
+                        subtitle: Text(tracks[index].trackArtistTitle ?? ''),
+                        onTap: () => Navigator.pop(sheetContext, tracks[index]),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (!context.mounted ||
+        selected == null ||
+        experience != null && !experience.store.active ||
+        !identical(context.read<MusicExperience?>(), experience) ||
+        !identical(context.read<MusicPlaybackService>(), music) ||
+        offline && !identical(context.read<DownloadProvider?>(), downloads)) {
+      return;
+    }
+    final tracks = currentTracks();
+    if (!tracks.any((track) => track.globalKey == selected.globalKey)) return;
+    try {
+      await music.playFromList(
+        tracks: tracks,
+        startTrack: selected,
+        offline: offline,
+        playContext: MusicPlayContext(title: title, kind: MusicPlayContextKind.tracks),
+      );
+    } catch (_) {
+      if (context.mounted) showErrorSnackBar(context, t.musicExperience.error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +140,27 @@ class MusicDrivingScreen extends StatelessWidget {
                       primary: true,
                     ),
                     control(Symbols.skip_next_rounded, t.music.nextTrack, music.next),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    FilledButton.tonalIcon(
+                      style: FilledButton.styleFrom(minimumSize: const Size(160, 64)),
+                      icon: const AppIcon(Symbols.favorite_rounded),
+                      label: Text(t.libraries.filterCategories.favorites),
+                      onPressed: () => _choose(context, offline: false),
+                    ),
+                    if (context.watch<DownloadProvider?>() != null)
+                      FilledButton.tonalIcon(
+                        style: FilledButton.styleFrom(minimumSize: const Size(160, 64)),
+                        icon: const AppIcon(Symbols.download_rounded),
+                        label: Text(t.navigation.downloads),
+                        onPressed: () => _choose(context, offline: true),
+                      ),
                   ],
                 ),
               ],

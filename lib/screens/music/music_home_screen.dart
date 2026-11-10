@@ -14,6 +14,7 @@ import '../../services/music/music_playback_service.dart';
 import '../../services/music/music_station.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/music/music_anniversary_shelf.dart';
+import '../../widgets/music/music_favorites_shelf.dart';
 import '../../utils/snackbar_helper.dart';
 import 'music_discovery_screen.dart';
 import 'music_driving_screen.dart';
@@ -35,7 +36,16 @@ class MusicHomeScreen extends StatefulWidget {
 class _MusicHomeScreenState extends State<MusicHomeScreen> {
   late final MusicExperience _experience = context.read<MusicExperience>();
   late Future<void> _loadFuture;
-  List<String> _order = ['recent', 'anniversaries', 'rediscover', 'charts', 'recipes', 'stations', 'downloads'];
+  List<String> _order = [
+    'recent',
+    'favorites',
+    'anniversaries',
+    'rediscover',
+    'charts',
+    'recipes',
+    'stations',
+    'downloads',
+  ];
   final Set<String> _hidden = {};
   List<MediaItem> _recent = [], _rediscover = [];
   List<MusicChartEntry> _chart = [];
@@ -103,6 +113,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
       _experience.store.saveDocument('home', 'layout', {'order': _order, 'hidden': _hidden.toList()});
   String _label(String key) => switch (key) {
     'recent' => t.musicTools.recent,
+    'favorites' => t.libraries.filterCategories.favorites,
     'anniversaries' => t.musicTools.anniversaries,
     'rediscover' => t.musicTools.rediscover,
     'charts' => t.musicTools.charts,
@@ -212,6 +223,7 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
           if (!_editing && !_hidden.contains(key))
             switch (key) {
               'recent' => _tracks(_recent, title),
+              'favorites' => MusicFavoritesShelf(key: ValueKey(_loadRevision)),
               'anniversaries' => MusicAnniversaryShelf(key: ValueKey(_loadRevision)),
               'rediscover' => _tracks(_rediscover, title),
               'downloads' => _tracks(context.watch<DownloadProvider>().downloadedTracks, title, offline: true),

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add a customizable Favorites music shelf and large driving shortcuts for favorites and owned downloads. Revalidate source visibility and download ownership before explicit playback in the shared session.
+
 - Apply separate cellular and remote music streaming-quality overrides, with cellular taking precedence and unchanged original-quality offline downloads.
 
 - Add estimated per-station download storage budgets with whole-album preservation, retry validation, and accounting for already linked download bytes during scheduled refreshes.

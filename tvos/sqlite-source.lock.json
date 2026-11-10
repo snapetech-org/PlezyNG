@@ -1,0 +1,8 @@
+{
+  "packageVersion": "3.5.0",
+  "sqliteVersion": "3.53.3",
+  "archiveUrl": "https://sqlite.org/2026/sqlite-amalgamation-3530300.zip",
+  "archiveSha256": "646421e12aac110282ef8cc68f1a62d4bb15fc7b8f09da0b53e29ee690500431",
+  "archiveRoot": "sqlite-amalgamation-3530300",
+  "sourceReference": "https://github.com/simolus3/sqlite3.dart/blob/sqlite3-3.5.0/tool/download_sqlite.dart"
+}

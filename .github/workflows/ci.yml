@@ -528,6 +528,9 @@ jobs:
       - name: Verify native formatting
         run: scripts/format_native.sh --check
 
+      - name: Verify tvOS native asset platform and framework metadata checks
+        run: python3 -m unittest scripts.checks.test_tvos_native_assets scripts.checks.test_tvos_framework_metadata
+
   linux-native-test:
     name: Linux native reliability (${{ matrix.sanitizer }})
     if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (inputs.execution_profile != 'hybrid' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
@@ -1033,6 +1036,8 @@ jobs:
         if: matrix.platform != 'macOS'
         run: |
           result_bundle="$APPLE_RESULT_BUNDLE"
+          test_log="$(dirname "$result_bundle")/native-test-output.log"
+          set -o pipefail
           set +e
           xcodebuild test \
             -workspace "${{ matrix.workspace }}" \
@@ -1045,11 +1050,18 @@ jobs:
             -resultBundlePath "$result_bundle" \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            ARCHS=arm64
+            ARCHS=arm64 2>&1 | tee "$test_log"
           test_status=$?
           set -e
           if [ "$test_status" -ne 0 ]; then
             xcrun xcresulttool get test-results tests --path "$result_bundle"
+          fi
+          if [ "${{ matrix.platform }}" = "tvOS" ] && [ "$test_status" -eq 0 ]; then
+            sqlite_version="$(python3 -c 'import json; print(json.load(open("tvos/sqlite-source.lock.json"))["sqliteVersion"])')"
+            if ! grep -Fq "tvOS SQLite ready: $sqlite_version " "$test_log"; then
+              echo "::error::The real Dart app did not open its database using the pinned tvOS SQLite binary."
+              exit 1
+            fi
           fi
           exit "$test_status"
 

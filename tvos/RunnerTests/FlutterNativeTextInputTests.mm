@@ -126,7 +126,9 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     [expectation fulfill];
   });
-  [self waitForExpectations:@[ expectation ] timeout:2];
+  // A queue barrier must tolerate simulator startup work, including the native
+  // keyboard. This bounds synchronization rather than keyboard responsiveness.
+  [self waitForExpectations:@[ expectation ] timeout:10];
 }
 
 @end

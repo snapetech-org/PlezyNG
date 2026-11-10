@@ -319,7 +319,8 @@ final class MpvPlayerContractTests: XCTestCase {
 
     let drained = expectation(description: "main delivery drained")
     DispatchQueue.main.async { drained.fulfill() }
-    wait(for: [drained], timeout: 2)
+    // Queue ordering must tolerate application startup work on the main thread.
+    wait(for: [drained], timeout: 10)
     XCTAssertTrue(delegate.events.isEmpty)
     XCTAssertTrue(delegate.properties.isEmpty)
   }

@@ -146,6 +146,10 @@ class AppDatabase extends _$AppDatabase {
           );
         }
       }
+      if (isTvos && outcome != TvosDatabaseRecoveryOutcome.recoveryRequired) {
+        final version = await database.customSelect('SELECT sqlite_version() AS version').getSingle();
+        appLogger.i('tvOS SQLite ready: ${version.read<String>('version')} (schema ${database.schemaVersion})');
+      }
       return AppDatabaseBootstrap(database: database, recoveryOutcome: outcome);
     } catch (_) {
       await database.close();

@@ -286,6 +286,16 @@ EmbedFlutterFrameworks() {
     CopyOwnedFramework "$source" "$destination"
   done
 
+  # Native assets are staged separately with genuine tvOS binaries. The stock
+  # Flutter embed phase is not used by this custom engine integration.
+  if [[ ! -f "$BUILT_PRODUCTS_DIR/native_assets/sqlite3.framework/sqlite3" ]]; then
+    echo " └─ERROR: tvOS SQLite native asset was not built" >&2
+    return 1
+  fi
+  for source in "$BUILT_PRODUCTS_DIR/native_assets/"*.framework; do
+    CopyOwnedFramework "$source" "$app_frameworks_dir/$(basename "$source")"
+  done
+
   for framework in "$app_frameworks_dir"/*.framework; do
     if [[ ! -d "$framework" ]]; then
       continue
@@ -439,7 +449,18 @@ BuildFlutterAssetBundle() {
       BUILT_PRODUCTS_DIR="$output_dir" \
       TREE_SHAKE_ICONS=NO \
       "$flutter_root/packages/flutter_tools/bin/xcode_backend.sh" build ios
-  )
+  ) || return 1
+  local native_architectures="arm64"
+  if [[ "${PLATFORM_NAME:-}" == "appletvsimulator" ]]; then
+    native_architectures="${ARCHS:-$SIM_ARCH}"
+  fi
+  python3 "$FLUTTER_APPLICATION_PATH/tvos/scripts/stage_native_assets.py" \
+    --project-root "$FLUTTER_APPLICATION_PATH" \
+    --input-dir "$output_dir/native_assets" \
+    --output-dir "$BUILT_PRODUCTS_DIR/native_assets" \
+    --platform "$PLATFORM_NAME" \
+    --architectures "$native_architectures" \
+    --minimum "$TVOS_DEPLOYMENT_TARGET"
 }
 
 BuildAppDebug() {

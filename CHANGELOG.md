@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Build and embed SQLite from checksum-pinned source for the actual tvOS device/simulator SDK, preserving the locked Dart package's compile options and FFI exports. Verify a real Dart database open and SQLite version during native qualification. Correct the iOS intent-handler override for the current Flutter SDK and allow Apple test queue barriers to tolerate startup work.
+
 - Link the C++ runtime in every production iOS emulator-worker configuration, and verify that setting without a qualification-only linker workaround. Keep the release controller alive across bounded retries of transient GitHub inventory failures.
 
 - Automatically deliver every complete fresh release to the configured Google Play testing track, verify the committed bundle, preserve interrupted uploads for retry, and serialize release builds and app-wide Play edits. Retire the old v3.0.7 store-repack workflows.

@@ -144,6 +144,7 @@ class FrameworkMetadataTest(unittest.TestCase):
         for name in ("App", "Flutter"):
             sources[name] = self.framework(cache, name, "26.0", readonly=True)
             (products / f"{name}.framework").symlink_to(sources[name], target_is_directory=True)
+        self.framework(products / 'native_assets', 'sqlite3', '16.0', readonly=True)
         optional = self.framework(cache, "OptionalRuntime", "26.0", "arm64-18.0", readonly=True)
         sources["OptionalRuntime"] = optional
         embedded = products / "Runner.app/Frameworks"
@@ -165,6 +166,7 @@ class FrameworkMetadataTest(unittest.TestCase):
             self.assertFalse(copied.is_symlink())
             self.assertEqual(self.minimum(copied), "18.0" if name == "OptionalRuntime" else "16.0")
         self.assertEqual(list(embedded.glob(".framework-copy.*")), [])
+        self.assertTrue((embedded / 'sqlite3.framework/sqlite3').is_file())
 
     def test_sync_version_preserves_optional_runtime_floors(self):
         products = self.root / "products"
@@ -177,6 +179,7 @@ class FrameworkMetadataTest(unittest.TestCase):
         (self.root / "pubspec.yaml").write_text("version: 3.0.1+160\n")
         for name in ("App", "Flutter"):
             self.framework(products, name, "16.0")
+        self.framework(products / 'native_assets', 'sqlite3', '16.0')
         vendor = self.framework(app / "Frameworks", "AetherLibavcodec", "26.0", readonly=True)
         optional = self.framework(app / "Frameworks", "PlezyNGDVRuntime", "18.0", "arm64-18.0")
         environment = os.environ | {

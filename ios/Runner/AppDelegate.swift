@@ -68,8 +68,8 @@ enum DownloadBackupPolicy {
 
   private let musicIntentHandler = MusicPlayIntentHandler()
 
-  func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
-    intent is INPlayMediaIntent ? musicIntentHandler : nil
+  override func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
+    intent is INPlayMediaIntent ? musicIntentHandler : super.application(application, handlerFor: intent)
   }
 
   private var deviceAdjustmentChannel: FlutterMethodChannel?

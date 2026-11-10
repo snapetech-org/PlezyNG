@@ -694,7 +694,7 @@ On iOS, use the Open URLs action in Shortcuts.
 ## Building from Source
 
 ### Prerequisites
-- Flutter SDK 3.47.0
+- Flutter SDK 3.47.8 (tvOS builds use the separately pinned custom 3.47.1 engine)
 - A Plex account, or a Jellyfin or Emby server with user credentials
 
 ### Setup
@@ -706,6 +706,16 @@ flutter pub get
 scripts/codegen.sh
 flutter run
 ```
+
+For a Windows source build, install the [qualified patched Flutter runtime components](https://github.com/snapetech-org/pleazyng/releases/tag/flutter-security-3.47.8) into the matching Flutter 3.47.8 SDK cache after precaching. The script downloads and checks the architecture-specific archive against its pinned SHA-256 digest:
+
+```powershell
+flutter precache --windows
+.\windows\tool\install-patched-engine.ps1 -Architecture x64
+# Use -Architecture arm64 on a native ARM64 build host.
+```
+
+These ZIP files are Flutter engine components for building Pleazyng, not Pleazyng installers. For app downloads, use the [Pleazyng release](https://github.com/snapetech-org/pleazyng/releases/tag/v3.0.7). Re-run the script after an SDK upgrade or forced precache.
 
 <details>
 <summary>Code generation</summary>

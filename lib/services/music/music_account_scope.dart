@@ -4,6 +4,28 @@ import 'package:crypto/crypto.dart';
 
 import '../../media/media_server_client.dart';
 import '../plex_client.dart';
+import '../jellyfin_client.dart';
+
+abstract interface class MusicHistoryAccountClient {
+  String? get musicHistoryAccountIdentity;
+}
+
+String? musicHistoryAccountScope(MediaServerClient client) {
+  String? identity;
+  if (client is MusicHistoryAccountClient) {
+    identity = (client as MusicHistoryAccountClient).musicHistoryAccountIdentity;
+  } else if (client is PlexClient) {
+    final account = client.plexAccountId, user = client.plexMusicUserIdentifier;
+    if (account == null || account.isEmpty || user == null || user.isEmpty) return null;
+    identity = jsonEncode(['plex', client.serverId.value, account, user]);
+  } else if (client is JellyfinClient) {
+    final connection = client.connection;
+    if (connection.userId.isEmpty) return null;
+    identity = jsonEncode([client.backend.name, connection.serverMachineId, connection.userId]);
+  }
+  if (identity == null || identity.isEmpty) return null;
+  return sha256.convert(utf8.encode(identity)).toString();
+}
 
 /// Stable, credential-free identity for a music user's pending writes and
 /// generated downloads. A server alone can host several distinct accounts.

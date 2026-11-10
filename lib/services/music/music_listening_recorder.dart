@@ -13,8 +13,13 @@ import 'music_group_playback.dart';
 /// Counts observed playback, excluding pauses, buffering and seeks. It stores
 /// cumulative values against one occurrence UUID so retries cannot add plays.
 class MusicListeningRecorder {
-  MusicListeningRecorder(this.service, this.store, {DateTime Function()? now, int Function()? monotonicMs})
-    : _now = now ?? DateTime.now {
+  MusicListeningRecorder(
+    this.service,
+    this.store, {
+    DateTime Function()? now,
+    int Function()? monotonicMs,
+    this.accountFor,
+  }) : _now = now ?? DateTime.now {
     final clock = Stopwatch()..start();
     _clock = monotonicMs ?? () => clock.elapsedMilliseconds;
     service.addListener(_changed);
@@ -24,6 +29,7 @@ class MusicListeningRecorder {
   }
   final MusicPlaybackService service;
   final MusicLibraryStore store;
+  final String? Function(MediaItem)? accountFor;
   final DateTime Function() _now;
   late final int Function() _clock;
   late final StreamSubscription<Duration> _positionSub;
@@ -35,6 +41,7 @@ class MusicListeningRecorder {
   int _occurrence = -1, _listened = 0, _lastFlush = 0;
   int? _lastPosition, _lastClock;
   bool _wasPlaying = false;
+  String? _account;
 
   void _changed() {
     final session = service;
@@ -46,10 +53,15 @@ class MusicListeningRecorder {
       _resetAnchor();
       return;
     }
-    if (_occurrence != service.playbackOccurrenceRevision || _track?.globalKey != service.currentTrack?.globalKey) {
+    final currentTrack = service.currentTrack;
+    final account = currentTrack == null ? null : accountFor?.call(currentTrack);
+    if (_occurrence != service.playbackOccurrenceRevision ||
+        _track?.globalKey != currentTrack?.globalKey ||
+        _account != account) {
       unawaited(flush(finished: true));
       _occurrence = service.playbackOccurrenceRevision;
       _track = service.currentTrack;
+      _account = account;
       _id = _track == null ? null : const Uuid().v4();
       _started = _now();
       _listened = 0;
@@ -69,6 +81,7 @@ class MusicListeningRecorder {
   }
 
   void _position(Duration position) {
+    if (_track != null && accountFor?.call(_track!) != _account) _changed();
     final session = service;
     if (session is MusicGroupSession && (session as MusicGroupSession).isMusicGroupFollower) {
       _resetAnchor();
@@ -92,10 +105,19 @@ class MusicListeningRecorder {
   }
 
   Future<void> flush({bool finished = false}) {
-    final track = _track, id = _id, started = _started, listened = _listened;
+    final track = _track, id = _id, started = _started, listened = _listened, account = _account;
     if (track == null || id == null || started == null || listened == 0) return Future.value();
     return _writes
-        .run(() => store.record(id: id, track: track, startedAt: started, listenedMs: listened, finished: finished))
+        .run(
+          () => store.record(
+            id: id,
+            track: track,
+            startedAt: started,
+            listenedMs: listened,
+            finished: finished,
+            account: account,
+          ),
+        )
         .catchError((Object error, StackTrace stack) {
           appLogger.w('Music history write failed', error: error, stackTrace: stack);
         });

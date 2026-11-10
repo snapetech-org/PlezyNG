@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bind newly recorded listening occurrences to portable account identities, keep legacy unscoped history private, and reject conflicting occurrence IDs before cross-device reconciliation.
+
 - Route Chromecast music through the existing shared queue and controls, with receiver-only stream resolution, paused load acknowledgement, repeat/shuffle/duplicate preservation, and receiver-takeover fallback without local DSP claims.
 
 - Add acknowledged remote music output switching inside the shared queue, preserving playback occurrences and playhead while rejecting stale preparation and returning locally paused after receiver revocation.

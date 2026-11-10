@@ -18,6 +18,75 @@ void main() {
   Future<List<MusicChartEntry>> chart({MusicChartGroup group = MusicChartGroup.tracks}) =>
       store.chart(from: now.subtract(const Duration(days: 365)), until: now.add(const Duration(days: 1)), group: group);
 
+  test('sync pages expose only account-bound occurrences and retain partial listens', () async {
+    final account = List.filled(64, 'a').join();
+    final other = List.filled(64, 'b').join();
+    for (var index = 0; index < 20; index++) {
+      await store.record(
+        id: 'event-$index',
+        track: musicTrack('same'),
+        startedAt: now,
+        listenedMs: 1000,
+        finished: false,
+        account: account,
+      );
+    }
+    await store.record(id: 'legacy', track: musicTrack('same'), startedAt: now, listenedMs: 30000, finished: true);
+    await store.record(
+      id: 'other',
+      track: musicTrack('same'),
+      startedAt: now,
+      listenedMs: 30000,
+      finished: true,
+      account: other,
+    );
+    final entries = <MusicHistoryEntry>[];
+    (int, String)? cursor;
+    do {
+      final page = await store.historySyncPage(accounts: {account}, before: cursor);
+      expect(page.entries.length, lessThanOrEqualTo(8));
+      entries.addAll(page.entries);
+      cursor = page.cursor;
+    } while (cursor != null);
+    expect(entries, hasLength(20));
+    expect(entries.every((entry) => entry.account == account && entry.listenedMs == 1000), isTrue);
+    await store.clearHistory();
+    expect((await store.documents('historyOwner')), isEmpty);
+  });
+
+  test('occurrence IDs cannot overwrite another track, timestamp or account', () async {
+    final account = List.filled(64, 'a').join();
+    await store.record(
+      id: 'event',
+      track: musicTrack('one'),
+      startedAt: now,
+      listenedMs: 30000,
+      finished: false,
+      account: account,
+    );
+    for (final replacement in [
+      (musicTrack('two'), now, account),
+      (musicTrack('one'), now.add(const Duration(seconds: 1)), account),
+      (musicTrack('one'), now, List.filled(64, 'b').join()),
+    ]) {
+      await expectLater(
+        store.record(
+          id: 'event',
+          track: replacement.$1,
+          startedAt: replacement.$2,
+          listenedMs: 60000,
+          finished: true,
+          account: replacement.$3,
+        ),
+        throwsStateError,
+      );
+    }
+    final entry = (await store.historySyncPage()).entries.single;
+    expect(entry.item.id, 'one');
+    expect(entry.listenedMs, 30000);
+    expect(entry.finished, isFalse);
+  });
+
   test('cursor pages retain repeated occurrences and timestamp ties without duplicates', () async {
     for (var index = 0; index < 123; index++) {
       await store.record(

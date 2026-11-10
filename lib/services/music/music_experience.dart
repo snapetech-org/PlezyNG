@@ -9,6 +9,7 @@ import 'music_library_store.dart';
 import 'music_listening_recorder.dart';
 import 'music_playback_service.dart';
 import 'music_rating_journal.dart';
+import 'music_account_scope.dart';
 
 /// Created eagerly with the profile session, independent of music screens.
 class MusicExperience extends ChangeNotifier {
@@ -20,7 +21,14 @@ class MusicExperience extends ChangeNotifier {
     Stream<Object?>? connectionChanges,
   }) {
     dj = MusicGuestDj(music, clientFor, sharedSources: sharedSources)..addListener(notifyListeners);
-    recorder = MusicListeningRecorder(music, store);
+    recorder = MusicListeningRecorder(
+      music,
+      store,
+      accountFor: (track) {
+        final client = clientFor(track);
+        return client == null ? null : musicHistoryAccountScope(client);
+      },
+    );
     ratings = MusicRatingJournal(store, clientFor);
     _connections = connectionChanges?.listen((_) => _syncRatings());
     _syncRatings();

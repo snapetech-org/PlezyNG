@@ -38,12 +38,14 @@ class MusicHistoryEntry {
     required this.startedAt,
     required this.listenedMs,
     required this.finished,
+    this.account,
   });
   final String id;
   final MediaItem item;
   final DateTime startedAt;
   final int listenedMs;
   final bool finished;
+  final String? account;
   (int, String) get cursor => (startedAt.millisecondsSinceEpoch, id);
 }
 
@@ -101,6 +103,51 @@ class MusicLibraryStore {
         )
         .toList();
     return MusicHistoryPage(entries, rows.length > limit ? entries.last.cursor : null);
+  }
+
+  Future<MusicHistoryPage> historySyncPage({int limit = 8, (int, String)? before, Set<String>? accounts}) async {
+    if (limit < 1 || limit > 8) throw ArgumentError('Invalid history sync page size');
+    if (!active) return const MusicHistoryPage([], null);
+    if (accounts?.isEmpty == true) return const MusicHistoryPage([], null);
+    final rows = await database
+        .customSelect(
+          'SELECT h.id, h.metadata, h.started_at, h.listened_ms, h.finished, d.document '
+          'FROM music_listens h JOIN music_documents d ON d.profile_id=h.profile_id AND d.id=h.id AND d.kind=? '
+          'WHERE h.profile_id=? '
+          '${accounts == null ? '' : 'AND json_extract(d.document, \'\$.account\') IN (${List.filled(accounts.length, '?').join(',')}) '}'
+          '${before == null ? '' : 'AND (h.started_at < ? OR (h.started_at = ? AND h.id < ?)) '}'
+          'ORDER BY h.started_at DESC, h.id DESC LIMIT ?',
+          variables: [
+            Variable('historyOwner'),
+            Variable(profileId),
+            if (accounts != null) ...accounts.map(Variable.new),
+            if (before != null) ...[Variable(before.$1), Variable(before.$1), Variable(before.$2)],
+            Variable(limit + 1),
+          ],
+        )
+        .get();
+    if (!active) return const MusicHistoryPage([], null);
+    final entries = <MusicHistoryEntry>[];
+    for (final row in rows.take(limit)) {
+      final owner = jsonDecode(row.read<String>('document'));
+      final account = owner is Map ? owner['account'] : null;
+      if (account is! String) continue;
+      entries.add(
+        MusicHistoryEntry(
+          id: row.read<String>('id'),
+          item: MediaItem.fromJson(jsonDecode(row.read<String>('metadata'))),
+          startedAt: DateTime.fromMillisecondsSinceEpoch(row.read<int>('started_at'), isUtc: true),
+          listenedMs: row.read<int>('listened_ms'),
+          finished: row.read<int>('finished') != 0,
+          account: account,
+        ),
+      );
+    }
+    final last = rows.isEmpty ? null : rows.take(limit).last;
+    return MusicHistoryPage(
+      entries,
+      rows.length > limit && last != null ? (last.read<int>('started_at'), last.read<String>('id')) : null,
+    );
   }
 
   Future<void> saveDocument(String kind, String id, Map<String, dynamic> value) {
@@ -263,6 +310,8 @@ class MusicLibraryStore {
     required DateTime startedAt,
     required int listenedMs,
     required bool finished,
+    String? account,
+    bool Function()? current,
   }) async {
     if (!active) return;
     if (track.kind != MediaKind.track || track.serverId == null || listenedMs < 0) {
@@ -274,27 +323,49 @@ class MusicLibraryStore {
     // listening; the recorder measures progression, not the final playhead.
     final threshold = duration != null && duration > 0 ? (duration ~/ 2).clamp(1, 240000) : 240000;
     final item = musicIdentity(track);
-    await database.customStatement(
-      '''
+    await database.transaction(() async {
+      if (!active || current?.call() == false) return;
+      final existing = await database
+          .customSelect(
+            'SELECT track_key, started_at FROM music_listens WHERE profile_id=? AND id=?',
+            variables: [Variable(profileId), Variable(id)],
+          )
+          .getSingleOrNull();
+      final owner = await document('historyOwner', id);
+      if (!active || current?.call() == false) return;
+      if ((existing != null &&
+              (existing.read<String>('track_key') != item.globalKey ||
+                  existing.read<int>('started_at') != startedAt.toUtc().millisecondsSinceEpoch)) ||
+          (owner != null && owner['account'] != account)) {
+        throw StateError('Listening occurrence identity conflict');
+      }
+      if (account != null) {
+        if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(account)) throw ArgumentError('Invalid history account');
+        await saveDocument('historyOwner', id, {'account': account});
+      }
+      if (!active || current?.call() == false) return;
+      await database.customStatement(
+        '''
       INSERT INTO music_listens VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(profile_id, id) DO UPDATE SET
         listened_ms=MAX(listened_ms, excluded.listened_ms),
         qualified=MAX(qualified, excluded.qualified), finished=MAX(finished, excluded.finished)
     ''',
-      [
-        profileId,
-        id,
-        item.globalKey,
-        '${item.serverId}:${item.grandparentId ?? item.trackArtistTitle ?? item.id}',
-        '${item.serverId}:${item.parentId ?? item.id}',
-        jsonEncode(item.toJson()),
-        startedAt.toUtc().millisecondsSinceEpoch,
-        listenedMs,
-        listenedMs >= threshold ? 1 : 0,
-        finished ? 1 : 0,
-      ],
-    );
-    database.notifyUpdates({const TableUpdate('music_listens')});
+        [
+          profileId,
+          id,
+          item.globalKey,
+          '${item.serverId}:${item.grandparentId ?? item.trackArtistTitle ?? item.id}',
+          '${item.serverId}:${item.parentId ?? item.id}',
+          jsonEncode(item.toJson()),
+          startedAt.toUtc().millisecondsSinceEpoch,
+          listenedMs,
+          listenedMs >= threshold ? 1 : 0,
+          finished ? 1 : 0,
+        ],
+      );
+      database.notifyUpdates({const TableUpdate('music_listens')});
+    });
   }
 
   Future<List<MusicChartEntry>> chart({
@@ -354,7 +425,13 @@ class MusicLibraryStore {
 
   Future<void> clearHistory() async {
     if (!active) return;
-    await database.customStatement('DELETE FROM music_listens WHERE profile_id=?', [profileId]);
+    await database.transaction(() async {
+      await database.customStatement('DELETE FROM music_listens WHERE profile_id=?', [profileId]);
+      await database.customStatement('DELETE FROM music_documents WHERE profile_id=? AND kind=?', [
+        profileId,
+        'historyOwner',
+      ]);
+    });
     database.notifyUpdates({const TableUpdate('music_listens')});
   }
 }

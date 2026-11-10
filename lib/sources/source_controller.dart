@@ -1548,7 +1548,10 @@ class SourceController extends ChangeNotifier {
       return false;
     }
     final profile = profileId!;
-    if (await downloads.local(profile, entry.sourceId, file) != null) {
+    final epoch = generation;
+    final downloaded = await downloads.local(profile, entry.sourceId, file);
+    requireSession(epoch);
+    if (downloaded != null) {
       return true;
     }
     final source = sources.where((item) => item.id == entry.sourceId).firstOrNull;
@@ -1557,10 +1560,12 @@ class SourceController extends ChangeNotifier {
     }
     try {
       final lease = await adapter(entry.sourceId).resolve(file);
+      requireSession(epoch);
       if (lease.uri.scheme != 'file') {
         return false;
       }
       final stat = await File.fromUri(lease.uri).stat();
+      requireSession(epoch);
       return stat.type == FileSystemEntityType.file && stat.size > 0;
     } on Object {
       return false;

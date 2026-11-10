@@ -187,11 +187,13 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                 lazy: false,
                 create: (context) {
                   final playback = context.read<SourcePlayback?>();
-                  return playback == null ? null : SourceRecoveryBinder(
-                    workspace: context.read<MultiviewWorkspaceController>(),
-                    playback: playback,
-                    profileId: activeId,
-                  );
+                  return playback == null
+                      ? null
+                      : SourceRecoveryBinder(
+                          workspace: context.read<MultiviewWorkspaceController>(),
+                          playback: playback,
+                          profileId: activeId,
+                        );
                 },
                 dispose: (_, binder) => binder?.dispose(),
               ),

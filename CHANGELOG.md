@@ -7,6 +7,7 @@
 - Fix Windows workspace-window compilation with the supported Windows SDK target while retaining monitor-aware sizing.
 - Prepare v3.0.24 from the corrected desktop workspace integration and current main, retaining the upstream source credits and Apple runtime compatibility backport.
 - Recover Google Play first publication from a permanently reserved archived version code by preparing a signed store-only repack of the existing v3.0.7 bundle. Preserve compiled application files, verify every payload and upload signer, and retain explicit draft/review and native qualification gates.
+- Build and relocate the bundled GTK input-method cache in aerynOS packages so fresh password entry uses the matching shipped modules. Preserve locale-capable input methods and gate snapshots on ordinary fresh sign-in.
 
 - Add the ordinary Linux snapshot builder and fresh native aerynOS VM harness for continuous channel qualification; automatic feed promotion is being integrated separately.
 

@@ -5555,5 +5555,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "재생 기기",
+    "thisDevice": "이 기기",
+    "playingOn": "${device}에서 재생 중",
+    "remembered": "저장된 기기",
+    "forget": "기기 삭제",
+    "receive": "이 기기에서 재생 허용",
+    "nearbyHint": "다른 기기에서 재생 기기 메뉴를 열고 재생을 허용하세요.",
+    "receiverHint": "음악을 받으려면 Pleazyng을 열어 두세요. 이 코드로 한 번 페어링하세요.",
+    "moveFailed": "재생을 옮기지 못했습니다. 기기가 켜져 있고 페어링되어 있으며 음악 서버에 접근할 수 있는지 확인하세요.",
+    "uncertain": "연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요."
   }
 }

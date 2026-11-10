@@ -116,6 +116,7 @@ class TranslationsSv extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$sv subtitleCapture = _Translations$subtitleCapture$sv._(_root);
 	@override late final _Translations$musicExperience$sv musicExperience = _Translations$musicExperience$sv._(_root);
 	@override late final _Translations$musicTools$sv musicTools = _Translations$musicTools$sv._(_root);
+	@override late final _Translations$musicDevices$sv musicDevices = _Translations$musicDevices$sv._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$sv extends Translations$musicDevices$en {
+	_Translations$musicDevices$sv._(TranslationsSv root) : this._root = root, super.internal(root);
+
+	final TranslationsSv _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Spela på';
+	@override String get thisDevice => 'Den här enheten';
+	@override String playingOn({required Object device}) => 'Spelar på ${device}';
+	@override String get remembered => 'Sparade enheter';
+	@override String get forget => 'Glöm enhet';
+	@override String get receive => 'Tillåt uppspelning på den här enheten';
+	@override String get nearbyHint => 'Öppna enhetsväljaren på den andra enheten och tillåt uppspelning där.';
+	@override String get receiverHint => 'Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.';
+	@override String get moveFailed => 'Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.';
+	@override String get uncertain => 'Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsSv {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Spela på',
+			'musicDevices.thisDevice' => 'Den här enheten',
+			'musicDevices.playingOn' => ({required Object device}) => 'Spelar på ${device}',
+			'musicDevices.remembered' => 'Sparade enheter',
+			'musicDevices.forget' => 'Glöm enhet',
+			'musicDevices.receive' => 'Tillåt uppspelning på den här enheten',
+			'musicDevices.nearbyHint' => 'Öppna enhetsväljaren på den andra enheten och tillåt uppspelning där.',
+			'musicDevices.receiverHint' => 'Håll Pleazyng öppet för att ta emot musik. Parkoppla en gång med den här koden.',
+			'musicDevices.moveFailed' => 'Det gick inte att flytta uppspelningen. Kontrollera att enheten är vaken, parkopplad och når musikservern.',
+			'musicDevices.uncertain' => 'Anslutningen avbröts. Anslut till den valda enheten igen för att kontrollera uppspelningen.',
 			_ => null,
 		};
 	}

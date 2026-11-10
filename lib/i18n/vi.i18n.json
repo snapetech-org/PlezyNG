@@ -5533,5 +5533,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Phát trên",
+    "thisDevice": "Thiết bị này",
+    "playingOn": "Đang phát trên ${device}",
+    "remembered": "Thiết bị đã lưu",
+    "forget": "Quên thiết bị",
+    "receive": "Cho phép phát trên thiết bị này",
+    "nearbyHint": "Mở trình chọn thiết bị trên thiết bị kia và cho phép phát ở đó.",
+    "receiverHint": "Giữ Pleazyng mở để nhận nhạc. Ghép đôi một lần bằng mã này.",
+    "moveFailed": "Không thể chuyển phát nhạc. Kiểm tra thiết bị đã bật, được ghép đôi và truy cập được máy chủ nhạc.",
+    "uncertain": "Kết nối bị gián đoạn. Kết nối lại thiết bị đã chọn để kiểm tra việc phát nhạc."
   }
 }

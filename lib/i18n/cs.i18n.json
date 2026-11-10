@@ -5608,5 +5608,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Přehrávat na",
+    "thisDevice": "Toto zařízení",
+    "playingOn": "Přehrává se na ${device}",
+    "remembered": "Zapamatovaná zařízení",
+    "forget": "Zapomenout zařízení",
+    "receive": "Povolit přehrávání na tomto zařízení",
+    "nearbyHint": "Na druhém zařízení otevřete nabídku zařízení a povolte tam přehrávání.",
+    "receiverHint": "Pro příjem hudby nechte Pleazyng otevřený. Jednou spárujte pomocí tohoto kódu.",
+    "moveFailed": "Přehrávání se nepodařilo přesunout. Ověřte, že je zařízení zapnuté, spárované a má přístup k hudebnímu serveru.",
+    "uncertain": "Spojení bylo přerušeno. Pro kontrolu přehrávání se znovu připojte k vybranému zařízení."
   }
 }

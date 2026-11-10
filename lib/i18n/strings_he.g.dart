@@ -116,6 +116,7 @@ class TranslationsHe extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$he subtitleCapture = _Translations$subtitleCapture$he._(_root);
 	@override late final _Translations$musicExperience$he musicExperience = _Translations$musicExperience$he._(_root);
 	@override late final _Translations$musicTools$he musicTools = _Translations$musicTools$he._(_root);
+	@override late final _Translations$musicDevices$he musicDevices = _Translations$musicDevices$he._(_root);
 }
 
 // Path: app
@@ -4343,6 +4344,25 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$he extends Translations$musicDevices$en {
+	_Translations$musicDevices$he._(TranslationsHe root) : this._root = root, super.internal(root);
+
+	final TranslationsHe _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'ניגון באמצעות';
+	@override String get thisDevice => 'מכשיר זה';
+	@override String playingOn({required Object device}) => 'מתנגן באמצעות ${device}';
+	@override String get remembered => 'מכשירים שמורים';
+	@override String get forget => 'שכח מכשיר';
+	@override String get receive => 'אפשר ניגון במכשיר זה';
+	@override String get nearbyHint => 'פתח את בורר מכשירי הניגון במכשיר האחר ואפשר בו ניגון.';
+	@override String get receiverHint => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.';
+	@override String get moveFailed => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.';
+	@override String get uncertain => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.';
 }
 
 // Path: appIcon.names
@@ -9511,6 +9531,16 @@ extension on TranslationsHe {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'ניגון באמצעות',
+			'musicDevices.thisDevice' => 'מכשיר זה',
+			'musicDevices.playingOn' => ({required Object device}) => 'מתנגן באמצעות ${device}',
+			'musicDevices.remembered' => 'מכשירים שמורים',
+			'musicDevices.forget' => 'שכח מכשיר',
+			'musicDevices.receive' => 'אפשר ניגון במכשיר זה',
+			'musicDevices.nearbyHint' => 'פתח את בורר מכשירי הניגון במכשיר האחר ואפשר בו ניגון.',
+			'musicDevices.receiverHint' => 'השאר את Pleazyng פתוח לקבלת מוזיקה. בצע התאמה פעם אחת באמצעות קוד זה.',
+			'musicDevices.moveFailed' => 'לא ניתן להעביר את הניגון. ודא שהמכשיר פעיל, מותאם ויכול לגשת לשרת המוזיקה.',
+			'musicDevices.uncertain' => 'החיבור נקטע. התחבר מחדש למכשיר שנבחר כדי לבדוק את הניגון.',
 			_ => null,
 		};
 	}

@@ -5569,5 +5569,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Riproduci su",
+    "thisDevice": "Questo dispositivo",
+    "playingOn": "In riproduzione su ${device}",
+    "remembered": "Dispositivi salvati",
+    "forget": "Dimentica dispositivo",
+    "receive": "Consenti la riproduzione su questo dispositivo",
+    "nearbyHint": "Apri il selettore dei dispositivi sull’altro dispositivo e consenti la riproduzione.",
+    "receiverHint": "Tieni Pleazyng aperto per ricevere musica. Associa una volta con questo codice.",
+    "moveFailed": "Impossibile spostare la riproduzione. Controlla che il dispositivo sia attivo, associato e possa accedere al server musicale.",
+    "uncertain": "Connessione interrotta. Riconnettiti al dispositivo selezionato per verificare la riproduzione."
   }
 }

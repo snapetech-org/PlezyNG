@@ -5668,5 +5668,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "التشغيل على",
+    "thisDevice": "هذا الجهاز",
+    "playingOn": "يتم التشغيل على ${device}",
+    "remembered": "الأجهزة المحفوظة",
+    "forget": "نسيان الجهاز",
+    "receive": "السماح بالتشغيل على هذا الجهاز",
+    "nearbyHint": "افتح «التشغيل على» على الجهاز الآخر واسمح بالتشغيل عليه.",
+    "receiverHint": "أبقِ Pleazyng مفتوحًا لاستقبال الموسيقى. اقترن مرة واحدة بهذا الرمز.",
+    "moveFailed": "تعذر نقل التشغيل. تأكد من أن الجهاز نشط ومقترن ويمكنه الوصول إلى خادم الموسيقى.",
+    "uncertain": "انقطع الاتصال. أعد الاتصال بالجهاز المحدد للتحقق من التشغيل."
   }
 }

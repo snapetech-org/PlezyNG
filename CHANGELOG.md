@@ -4,6 +4,12 @@
 
 - Preserve the explicitly selected tvOS runner pool when recovering signed Apple packages, without adding a candidate source reference.
 
+- Refresh music rating conflicts when another device changes the server value during resolution. Choices from the older conflict cannot overwrite or discard the updated decision.
+
+- Release a returned or stopped Chromecast queue as soon as the same receiver acknowledges its stop, so another queue can be transferred immediately.
+
+- Keep album titles out of track performer credits. Music details distinguish explicit release editions from audio versions and show the versions' audio codecs and channel layouts.
+
 - Evaluate release build jobs after intentionally skipped capture/CI ancestors, while requiring successful source validation. Permit retrying an audited validation-only recovery run that produced no build, artifact or publication side effects.
 
 - Return a standalone Chromecast music queue to this device from Now Playing. Playback resumes at the receiver's current occurrence and position, keeping shuffle order and duplicate tracks.

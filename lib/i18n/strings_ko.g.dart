@@ -116,6 +116,7 @@ class TranslationsKo extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$ko subtitleCapture = _Translations$subtitleCapture$ko._(_root);
 	@override late final _Translations$musicExperience$ko musicExperience = _Translations$musicExperience$ko._(_root);
 	@override late final _Translations$musicTools$ko musicTools = _Translations$musicTools$ko._(_root);
+	@override late final _Translations$musicDevices$ko musicDevices = _Translations$musicDevices$ko._(_root);
 }
 
 // Path: app
@@ -4330,6 +4331,25 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$ko extends Translations$musicDevices$en {
+	_Translations$musicDevices$ko._(TranslationsKo root) : this._root = root, super.internal(root);
+
+	final TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => '재생 기기';
+	@override String get thisDevice => '이 기기';
+	@override String playingOn({required Object device}) => '${device}에서 재생 중';
+	@override String get remembered => '저장된 기기';
+	@override String get forget => '기기 삭제';
+	@override String get receive => '이 기기에서 재생 허용';
+	@override String get nearbyHint => '다른 기기에서 재생 기기 메뉴를 열고 재생을 허용하세요.';
+	@override String get receiverHint => '음악을 받으려면 Pleazyng을 열어 두세요. 이 코드로 한 번 페어링하세요.';
+	@override String get moveFailed => '재생을 옮기지 못했습니다. 기기가 켜져 있고 페어링되어 있으며 음악 서버에 접근할 수 있는지 확인하세요.';
+	@override String get uncertain => '연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요.';
 }
 
 // Path: appIcon.names
@@ -9498,6 +9518,16 @@ extension on TranslationsKo {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => '재생 기기',
+			'musicDevices.thisDevice' => '이 기기',
+			'musicDevices.playingOn' => ({required Object device}) => '${device}에서 재생 중',
+			'musicDevices.remembered' => '저장된 기기',
+			'musicDevices.forget' => '기기 삭제',
+			'musicDevices.receive' => '이 기기에서 재생 허용',
+			'musicDevices.nearbyHint' => '다른 기기에서 재생 기기 메뉴를 열고 재생을 허용하세요.',
+			'musicDevices.receiverHint' => '음악을 받으려면 Pleazyng을 열어 두세요. 이 코드로 한 번 페어링하세요.',
+			'musicDevices.moveFailed' => '재생을 옮기지 못했습니다. 기기가 켜져 있고 페어링되어 있으며 음악 서버에 접근할 수 있는지 확인하세요.',
+			'musicDevices.uncertain' => '연결이 끊겼습니다. 선택한 기기에 다시 연결하여 재생 상태를 확인하세요.',
 			_ => null,
 		};
 	}

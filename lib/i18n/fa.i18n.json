@@ -5560,5 +5560,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "پخش در",
+    "thisDevice": "این دستگاه",
+    "playingOn": "در حال پخش در ${device}",
+    "remembered": "دستگاه‌های ذخیره‌شده",
+    "forget": "فراموش کردن دستگاه",
+    "receive": "اجازه پخش در این دستگاه",
+    "nearbyHint": "در دستگاه دیگر منوی دستگاه‌های پخش را باز کنید و پخش را مجاز کنید.",
+    "receiverHint": "برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.",
+    "moveFailed": "پخش منتقل نشد. بررسی کنید دستگاه روشن و جفت‌شده باشد و به سرور موسیقی دسترسی داشته باشد.",
+    "uncertain": "ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید."
   }
 }

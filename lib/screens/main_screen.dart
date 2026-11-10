@@ -1140,7 +1140,7 @@ class _MainScreenState extends State<MainScreen>
     }
 
     // Wire up Companion Remote command routing (host devices only, once)
-    if (!_companionRemoteSetup && PlatformDetector.shouldActAsRemoteHost(context)) {
+    if (!_companionRemoteSetup) {
       _companionRemoteSetup = true;
       _setupCompanionRemote();
     }

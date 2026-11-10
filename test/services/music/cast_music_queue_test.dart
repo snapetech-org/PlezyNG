@@ -250,6 +250,20 @@ void main() {
       );
       expect(returned, outcome == 'adopt');
       expect(actions, ['prepare', 'freeze', 'adopt', if (outcome == 'reject') 'resume Cast']);
+      if (returned) {
+        GoggleCastMediaStatus idle(int session, GoogleCastMediaIdleReason reason) => GoggleCastMediaStatus(
+          mediaSessionID: session,
+          playerState: CastMediaPlayerState.idle,
+          idleReason: reason,
+          playbackRate: 1,
+          volume: 1,
+          isMuted: false,
+          repeatMode: GoogleCastMediaRepeatMode.off,
+        );
+        expect(queue.stopAcknowledged(idle(12, GoogleCastMediaIdleReason.cancelled)), isTrue);
+        expect(queue.stopAcknowledged(idle(12, GoogleCastMediaIdleReason.finished)), isFalse);
+        expect(queue.stopAcknowledged(idle(13, GoogleCastMediaIdleReason.cancelled)), isFalse);
+      }
     });
   }
 }

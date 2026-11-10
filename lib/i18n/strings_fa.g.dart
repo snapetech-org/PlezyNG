@@ -116,6 +116,7 @@ class TranslationsFa extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$fa subtitleCapture = _Translations$subtitleCapture$fa._(_root);
 	@override late final _Translations$musicExperience$fa musicExperience = _Translations$musicExperience$fa._(_root);
 	@override late final _Translations$musicTools$fa musicTools = _Translations$musicTools$fa._(_root);
+	@override late final _Translations$musicDevices$fa musicDevices = _Translations$musicDevices$fa._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$fa extends Translations$musicDevices$en {
+	_Translations$musicDevices$fa._(TranslationsFa root) : this._root = root, super.internal(root);
+
+	final TranslationsFa _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'پخش در';
+	@override String get thisDevice => 'این دستگاه';
+	@override String playingOn({required Object device}) => 'در حال پخش در ${device}';
+	@override String get remembered => 'دستگاه‌های ذخیره‌شده';
+	@override String get forget => 'فراموش کردن دستگاه';
+	@override String get receive => 'اجازه پخش در این دستگاه';
+	@override String get nearbyHint => 'در دستگاه دیگر منوی دستگاه‌های پخش را باز کنید و پخش را مجاز کنید.';
+	@override String get receiverHint => 'برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.';
+	@override String get moveFailed => 'پخش منتقل نشد. بررسی کنید دستگاه روشن و جفت‌شده باشد و به سرور موسیقی دسترسی داشته باشد.';
+	@override String get uncertain => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsFa {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'پخش در',
+			'musicDevices.thisDevice' => 'این دستگاه',
+			'musicDevices.playingOn' => ({required Object device}) => 'در حال پخش در ${device}',
+			'musicDevices.remembered' => 'دستگاه‌های ذخیره‌شده',
+			'musicDevices.forget' => 'فراموش کردن دستگاه',
+			'musicDevices.receive' => 'اجازه پخش در این دستگاه',
+			'musicDevices.nearbyHint' => 'در دستگاه دیگر منوی دستگاه‌های پخش را باز کنید و پخش را مجاز کنید.',
+			'musicDevices.receiverHint' => 'برای دریافت موسیقی Pleazyng را باز نگه دارید. با این کد یک بار جفت‌سازی کنید.',
+			'musicDevices.moveFailed' => 'پخش منتقل نشد. بررسی کنید دستگاه روشن و جفت‌شده باشد و به سرور موسیقی دسترسی داشته باشد.',
+			'musicDevices.uncertain' => 'ارتباط قطع شد. برای بررسی پخش دوباره به دستگاه انتخاب‌شده وصل شوید.',
 			_ => null,
 		};
 	}

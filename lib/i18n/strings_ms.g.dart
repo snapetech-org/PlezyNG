@@ -116,6 +116,7 @@ class TranslationsMs extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$ms subtitleCapture = _Translations$subtitleCapture$ms._(_root);
 	@override late final _Translations$musicExperience$ms musicExperience = _Translations$musicExperience$ms._(_root);
 	@override late final _Translations$musicTools$ms musicTools = _Translations$musicTools$ms._(_root);
+	@override late final _Translations$musicDevices$ms musicDevices = _Translations$musicDevices$ms._(_root);
 }
 
 // Path: app
@@ -4312,6 +4313,25 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$ms extends Translations$musicDevices$en {
+	_Translations$musicDevices$ms._(TranslationsMs root) : this._root = root, super.internal(root);
+
+	final TranslationsMs _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Mainkan pada';
+	@override String get thisDevice => 'Peranti ini';
+	@override String playingOn({required Object device}) => 'Dimainkan pada ${device}';
+	@override String get remembered => 'Peranti disimpan';
+	@override String get forget => 'Lupakan peranti';
+	@override String get receive => 'Benarkan main balik pada peranti ini';
+	@override String get nearbyHint => 'Buka pemilih peranti pada peranti lain dan benarkan main balik di sana.';
+	@override String get receiverHint => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.';
+	@override String get moveFailed => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.';
+	@override String get uncertain => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.';
 }
 
 // Path: appIcon.names
@@ -9478,6 +9498,16 @@ extension on TranslationsMs {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Mainkan pada',
+			'musicDevices.thisDevice' => 'Peranti ini',
+			'musicDevices.playingOn' => ({required Object device}) => 'Dimainkan pada ${device}',
+			'musicDevices.remembered' => 'Peranti disimpan',
+			'musicDevices.forget' => 'Lupakan peranti',
+			'musicDevices.receive' => 'Benarkan main balik pada peranti ini',
+			'musicDevices.nearbyHint' => 'Buka pemilih peranti pada peranti lain dan benarkan main balik di sana.',
+			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima muzik. Pasangkan sekali dengan kod ini.',
+			'musicDevices.moveFailed' => 'Main balik tidak dapat dipindahkan. Pastikan peranti aktif, berpasangan dan boleh mengakses pelayan muzik.',
+			'musicDevices.uncertain' => 'Sambungan terputus. Sambung semula ke peranti yang dipilih untuk menyemak main balik.',
 			_ => null,
 		};
 	}

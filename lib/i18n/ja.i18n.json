@@ -5555,5 +5555,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "再生先",
+    "thisDevice": "このデバイス",
+    "playingOn": "${device} で再生中",
+    "remembered": "保存済みデバイス",
+    "forget": "デバイスを削除",
+    "receive": "このデバイスでの再生を許可",
+    "nearbyHint": "もう一方のデバイスで再生先を開き、再生を許可してください。",
+    "receiverHint": "音楽を受信するには Pleazyng を開いたままにしてください。このコードで一度ペアリングします。",
+    "moveFailed": "再生を移せませんでした。デバイスが起動し、ペアリング済みで、音楽サーバーにアクセスできることを確認してください。",
+    "uncertain": "接続が切れました。選択したデバイスに再接続して再生状態を確認してください。"
   }
 }

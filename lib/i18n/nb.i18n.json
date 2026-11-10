@@ -5560,5 +5560,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Spill av på",
+    "thisDevice": "Denne enheten",
+    "playingOn": "Spiller av på ${device}",
+    "remembered": "Lagrede enheter",
+    "forget": "Glem enhet",
+    "receive": "Tillat avspilling på denne enheten",
+    "nearbyHint": "Åpne enhetsvelgeren på den andre enheten og tillat avspilling der.",
+    "receiverHint": "Hold Pleazyng åpen for å motta musikk. Koble sammen én gang med denne koden.",
+    "moveFailed": "Kunne ikke flytte avspillingen. Kontroller at enheten er våken, paret og har tilgang til musikkserveren.",
+    "uncertain": "Tilkoblingen ble brutt. Koble til den valgte enheten igjen for å kontrollere avspillingen."
   }
 }

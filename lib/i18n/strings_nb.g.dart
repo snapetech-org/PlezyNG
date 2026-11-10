@@ -116,6 +116,7 @@ class TranslationsNb extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$nb subtitleCapture = _Translations$subtitleCapture$nb._(_root);
 	@override late final _Translations$musicExperience$nb musicExperience = _Translations$musicExperience$nb._(_root);
 	@override late final _Translations$musicTools$nb musicTools = _Translations$musicTools$nb._(_root);
+	@override late final _Translations$musicDevices$nb musicDevices = _Translations$musicDevices$nb._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$nb extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$nb extends Translations$musicDevices$en {
+	_Translations$musicDevices$nb._(TranslationsNb root) : this._root = root, super.internal(root);
+
+	final TranslationsNb _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Spill av på';
+	@override String get thisDevice => 'Denne enheten';
+	@override String playingOn({required Object device}) => 'Spiller av på ${device}';
+	@override String get remembered => 'Lagrede enheter';
+	@override String get forget => 'Glem enhet';
+	@override String get receive => 'Tillat avspilling på denne enheten';
+	@override String get nearbyHint => 'Åpne enhetsvelgeren på den andre enheten og tillat avspilling der.';
+	@override String get receiverHint => 'Hold Pleazyng åpen for å motta musikk. Koble sammen én gang med denne koden.';
+	@override String get moveFailed => 'Kunne ikke flytte avspillingen. Kontroller at enheten er våken, paret og har tilgang til musikkserveren.';
+	@override String get uncertain => 'Tilkoblingen ble brutt. Koble til den valgte enheten igjen for å kontrollere avspillingen.';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsNb {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Spill av på',
+			'musicDevices.thisDevice' => 'Denne enheten',
+			'musicDevices.playingOn' => ({required Object device}) => 'Spiller av på ${device}',
+			'musicDevices.remembered' => 'Lagrede enheter',
+			'musicDevices.forget' => 'Glem enhet',
+			'musicDevices.receive' => 'Tillat avspilling på denne enheten',
+			'musicDevices.nearbyHint' => 'Åpne enhetsvelgeren på den andre enheten og tillat avspilling der.',
+			'musicDevices.receiverHint' => 'Hold Pleazyng åpen for å motta musikk. Koble sammen én gang med denne koden.',
+			'musicDevices.moveFailed' => 'Kunne ikke flytte avspillingen. Kontroller at enheten er våken, paret og har tilgang til musikkserveren.',
+			'musicDevices.uncertain' => 'Tilkoblingen ble brutt. Koble til den valgte enheten igjen for å kontrollere avspillingen.',
 			_ => null,
 		};
 	}

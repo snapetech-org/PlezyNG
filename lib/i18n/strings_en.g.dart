@@ -126,6 +126,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$bonusExtras$en bonusExtras = Translations$bonusExtras$en.internal(_root);
 	late final Translations$musicExperience$en musicExperience = Translations$musicExperience$en.internal(_root);
 	late final Translations$musicTools$en musicTools = Translations$musicTools$en.internal(_root);
+	late final Translations$musicDevices$en musicDevices = Translations$musicDevices$en.internal(_root);
 }
 
 // Path: app
@@ -14802,6 +14803,45 @@ class Translations$musicTools$en {
 	String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
+// Path: musicDevices
+class Translations$musicDevices$en {
+	Translations$musicDevices$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Play on'
+	String get playOn => 'Play on';
+
+	/// en: 'This device'
+	String get thisDevice => 'This device';
+
+	/// en: 'Playing on ${device}'
+	String playingOn({required Object device}) => 'Playing on ${device}';
+
+	/// en: 'Remembered devices'
+	String get remembered => 'Remembered devices';
+
+	/// en: 'Forget device'
+	String get forget => 'Forget device';
+
+	/// en: 'Allow playback on this device'
+	String get receive => 'Allow playback on this device';
+
+	/// en: 'Open Play on on the other device and allow playback there.'
+	String get nearbyHint => 'Open Play on on the other device and allow playback there.';
+
+	/// en: 'Keep Pleazyng open to receive music. Pair once using this code.'
+	String get receiverHint => 'Keep Pleazyng open to receive music. Pair once using this code.';
+
+	/// en: 'Could not move playback. Check that the device is awake, paired, and can access your music server.'
+	String get moveFailed => 'Could not move playback. Check that the device is awake, paired, and can access your music server.';
+
+	/// en: 'Connection interrupted. Reconnect to the selected device to check playback.'
+	String get uncertain => 'Connection interrupted. Reconnect to the selected device to check playback.';
+}
+
 // Path: appIcon.names
 class Translations$appIcon$names$en {
 	Translations$appIcon$names$en.internal(this._root);
@@ -22698,6 +22738,16 @@ extension on Translations {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Play on',
+			'musicDevices.thisDevice' => 'This device',
+			'musicDevices.playingOn' => ({required Object device}) => 'Playing on ${device}',
+			'musicDevices.remembered' => 'Remembered devices',
+			'musicDevices.forget' => 'Forget device',
+			'musicDevices.receive' => 'Allow playback on this device',
+			'musicDevices.nearbyHint' => 'Open Play on on the other device and allow playback there.',
+			'musicDevices.receiverHint' => 'Keep Pleazyng open to receive music. Pair once using this code.',
+			'musicDevices.moveFailed' => 'Could not move playback. Check that the device is awake, paired, and can access your music server.',
+			'musicDevices.uncertain' => 'Connection interrupted. Reconnect to the selected device to check playback.',
 			_ => null,
 		};
 	}

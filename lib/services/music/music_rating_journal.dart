@@ -139,7 +139,12 @@ class MusicRatingJournal {
     if (_disposed || !store.active) return false;
     final conflict = await store.document('ratingConflict', id);
     final pending = await store.document('ratingPending', id);
-    if (conflict == null || pending == null || conflict['revision'] != revision || pending['revision'] != revision) {
+    if (_disposed ||
+        !store.active ||
+        conflict == null ||
+        pending == null ||
+        conflict['revision'] != revision ||
+        pending['revision'] != revision) {
       return false;
     }
     final item = MediaItem.fromJson(Map<String, dynamic>.from(pending['item'] as Map));
@@ -150,7 +155,7 @@ class MusicRatingJournal {
       await store.deleteDocument('ratingConflict', id);
       return true;
     }
-    final updated = {...pending, 'version': 3, 'base': conflict['remote']};
+    final updated = {...pending, 'version': 3, 'revision': const Uuid().v4(), 'base': conflict['remote']};
     await store.saveDocument('ratingPending', id, updated);
     await store.deleteDocument('ratingConflict', id);
     return _send(updated, verifyRemote: true);

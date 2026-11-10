@@ -1,3 +1,5 @@
+import 'music_device_picker.dart';
+import '../../providers/companion_remote_provider.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -295,6 +297,10 @@ class _MiniPlayerCardState extends State<_MiniPlayerCard> with ContextMenuTapMix
     final isPlaying = context.select<MusicPlaybackService, bool>((s) => s.isPlaying);
     final client = context.tryGetMediaClientWithFallback(serverIdOrNull(widget.track.serverId));
     final artist = widget.track.trackArtistTitle;
+    final companion = context.watch<CompanionRemoteProvider?>();
+    final device = companion?.musicDevices?.active?.name;
+    final subtitle = device == null ? artist : t.musicDevices.playingOn(device: device);
+    final wideControls = widget.desktop && MediaQuery.sizeOf(context).width >= 480;
 
     Widget card = Material(
       color: tk.surface,
@@ -355,9 +361,9 @@ class _MiniPlayerCardState extends State<_MiniPlayerCard> with ContextMenuTapMix
                                     overflow: .ellipsis,
                                     style: TextStyle(fontSize: 14, fontWeight: .w600, color: tk.text),
                                   ),
-                                  if (artist != null && artist.isNotEmpty)
+                                  if (subtitle != null && subtitle.isNotEmpty)
                                     Text(
-                                      artist,
+                                      subtitle,
                                       maxLines: 1,
                                       overflow: .ellipsis,
                                       style: TextStyle(fontSize: 12, color: tk.textMuted),
@@ -373,7 +379,14 @@ class _MiniPlayerCardState extends State<_MiniPlayerCard> with ContextMenuTapMix
                       key: _transportKey,
                       onNavigateLeft: _detailsFocusNode.requestFocus,
                       actions: [
-                        if (widget.desktop)
+                        if (companion != null)
+                          FocusableAction(
+                            icon: Symbols.speaker_group_rounded,
+                            iconColor: device == null ? tk.text : Theme.of(context).colorScheme.primary,
+                            tooltip: device == null ? t.musicDevices.playOn : t.musicDevices.playingOn(device: device),
+                            onPressed: () => unawaited(showMusicDevicePicker(context)),
+                          ),
+                        if (wideControls)
                           FocusableAction(
                             icon: Symbols.skip_previous_rounded,
                             iconColor: tk.text,
@@ -392,7 +405,7 @@ class _MiniPlayerCardState extends State<_MiniPlayerCard> with ContextMenuTapMix
                           tooltip: t.music.nextTrack,
                           onPressed: () => unawaited(service.next()),
                         ),
-                        if (widget.desktop)
+                        if (wideControls)
                           FocusableAction(
                             icon: Symbols.close_rounded,
                             iconColor: tk.textMuted,

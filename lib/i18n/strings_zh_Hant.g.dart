@@ -117,6 +117,7 @@ class TranslationsZhHant extends TranslationsZh with BaseTranslations<AppLocale,
 	@override late final _Translations$subtitleCapture$zh_Hant subtitleCapture = _Translations$subtitleCapture$zh_Hant._(_root);
 	@override late final _Translations$musicExperience$zh_Hant musicExperience = _Translations$musicExperience$zh_Hant._(_root);
 	@override late final _Translations$musicTools$zh_Hant musicTools = _Translations$musicTools$zh_Hant._(_root);
+	@override late final _Translations$musicDevices$zh_Hant musicDevices = _Translations$musicDevices$zh_Hant._(_root);
 }
 
 // Path: app
@@ -4331,6 +4332,25 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$zh_Hant extends Translations$musicDevices$zh {
+	_Translations$musicDevices$zh_Hant._(TranslationsZhHant root) : this._root = root, super.internal(root);
+
+	final TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => '播放裝置';
+	@override String get thisDevice => '此裝置';
+	@override String playingOn({required Object device}) => '正在 ${device} 上播放';
+	@override String get remembered => '已儲存的裝置';
+	@override String get forget => '忘記裝置';
+	@override String get receive => '允許在此裝置上播放';
+	@override String get nearbyHint => '在另一台裝置上開啟播放裝置選單，並允許播放。';
+	@override String get receiverHint => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。';
+	@override String get moveFailed => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。';
+	@override String get uncertain => '連線中斷。請重新連線所選裝置以檢查播放狀態。';
 }
 
 // Path: appIcon.names
@@ -9499,6 +9519,16 @@ extension on TranslationsZhHant {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => '播放裝置',
+			'musicDevices.thisDevice' => '此裝置',
+			'musicDevices.playingOn' => ({required Object device}) => '正在 ${device} 上播放',
+			'musicDevices.remembered' => '已儲存的裝置',
+			'musicDevices.forget' => '忘記裝置',
+			'musicDevices.receive' => '允許在此裝置上播放',
+			'musicDevices.nearbyHint' => '在另一台裝置上開啟播放裝置選單，並允許播放。',
+			'musicDevices.receiverHint' => '保持 Pleazyng 開啟以接收音樂。使用此代碼配對一次。',
+			'musicDevices.moveFailed' => '無法轉移播放。請檢查裝置已喚醒、已配對且能存取音樂伺服器。',
+			'musicDevices.uncertain' => '連線中斷。請重新連線所選裝置以檢查播放狀態。',
 			_ => null,
 		};
 	}

@@ -78,6 +78,28 @@ void main() {
     expect(await store.documents('ratingPending'), isEmpty);
   });
 
+  test('a second remote edit invalidates both choices shown for the original conflict', () async {
+    client.isOfflineMode = true;
+    await journal.rate(musicTrack('a').copyWith(userRating: 4), 8);
+    final ratingClient = client as _RatingClient;
+    ratingClient.remote = musicTrack('a').copyWith(userRating: 9);
+    ratingClient.isOfflineMode = false;
+    await journal.sync();
+    final first = (await store.documents('ratingConflict')).single;
+    final id = first['id'] as String;
+    final oldRevision = first['revision'] as String;
+    ratingClient.remote = musicTrack('a').copyWith(userRating: 7);
+
+    expect(await journal.resolveConflict(id, oldRevision, keepLocal: true), isFalse);
+    expect(await journal.resolveConflict(id, oldRevision, keepLocal: false), isFalse);
+    final newer = (await store.documents('ratingConflict')).single;
+    expect(newer['remote'], 7);
+    expect(newer['revision'], isNot(oldRevision));
+    expect(client.mutations, isEmpty);
+    expect(await journal.resolveConflict(id, newer['revision'] as String, keepLocal: true), isTrue);
+    expect(client.mutations, [('s:a', 8.0)]);
+  });
+
   test('a lost acknowledgement that already reached the server is not replayed', () async {
     client.isOfflineMode = true;
     await journal.rate(musicTrack('a'), 8);

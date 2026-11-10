@@ -116,6 +116,7 @@ class TranslationsPl extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$pl subtitleCapture = _Translations$subtitleCapture$pl._(_root);
 	@override late final _Translations$musicExperience$pl musicExperience = _Translations$musicExperience$pl._(_root);
 	@override late final _Translations$musicTools$pl musicTools = _Translations$musicTools$pl._(_root);
+	@override late final _Translations$musicDevices$pl musicDevices = _Translations$musicDevices$pl._(_root);
 }
 
 // Path: app
@@ -4381,6 +4382,25 @@ class _Translations$musicTools$pl extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$pl extends Translations$musicDevices$en {
+	_Translations$musicDevices$pl._(TranslationsPl root) : this._root = root, super.internal(root);
+
+	final TranslationsPl _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Odtwarzaj na';
+	@override String get thisDevice => 'To urządzenie';
+	@override String playingOn({required Object device}) => 'Odtwarzanie na ${device}';
+	@override String get remembered => 'Zapamiętane urządzenia';
+	@override String get forget => 'Zapomnij urządzenie';
+	@override String get receive => 'Zezwól na odtwarzanie na tym urządzeniu';
+	@override String get nearbyHint => 'Otwórz wybór urządzeń na drugim urządzeniu i zezwól tam na odtwarzanie.';
+	@override String get receiverHint => 'Pozostaw Pleazyng otwarte, aby odbierać muzykę. Sparuj raz przy użyciu tego kodu.';
+	@override String get moveFailed => 'Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.';
+	@override String get uncertain => 'Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie.';
 }
 
 // Path: appIcon.names
@@ -9553,6 +9573,16 @@ extension on TranslationsPl {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Odtwarzaj na',
+			'musicDevices.thisDevice' => 'To urządzenie',
+			'musicDevices.playingOn' => ({required Object device}) => 'Odtwarzanie na ${device}',
+			'musicDevices.remembered' => 'Zapamiętane urządzenia',
+			'musicDevices.forget' => 'Zapomnij urządzenie',
+			'musicDevices.receive' => 'Zezwól na odtwarzanie na tym urządzeniu',
+			'musicDevices.nearbyHint' => 'Otwórz wybór urządzeń na drugim urządzeniu i zezwól tam na odtwarzanie.',
+			'musicDevices.receiverHint' => 'Pozostaw Pleazyng otwarte, aby odbierać muzykę. Sparuj raz przy użyciu tego kodu.',
+			'musicDevices.moveFailed' => 'Nie udało się przenieść odtwarzania. Sprawdź, czy urządzenie jest aktywne, sparowane i ma dostęp do serwera muzyki.',
+			'musicDevices.uncertain' => 'Połączenie przerwane. Połącz się ponownie z wybranym urządzeniem, aby sprawdzić odtwarzanie.',
 			_ => null,
 		};
 	}

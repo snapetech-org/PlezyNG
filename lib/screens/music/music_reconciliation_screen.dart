@@ -25,14 +25,14 @@ class _MusicReconciliationScreenState extends State<MusicReconciliationScreen> {
     _load();
   }
 
-  Future<void> _load({bool more = false}) async {
+  Future<void> _load({bool more = false, bool synchronize = true}) async {
     if (_busy) return;
     setState(() {
       _busy = true;
       _failed = false;
     });
     try {
-      if (!more) await _experience.ratings.sync();
+      if (!more && synchronize) await _experience.ratings.sync();
       final page = await _experience.store.documentPage('ratingConflict', limit: 50, after: more ? _cursor : null);
       if (!mounted || !_experience.store.active) return;
       setState(() {
@@ -47,23 +47,26 @@ class _MusicReconciliationScreenState extends State<MusicReconciliationScreen> {
   }
 
   Future<void> _resolve(Map<String, dynamic> conflict, bool keepLocal) async {
+    if (_busy) return;
     setState(() {
       _busy = true;
       _failed = false;
     });
+    var resolved = false;
     try {
-      final resolved = await _experience.ratings.resolveConflict(
+      resolved = await _experience.ratings.resolveConflict(
         conflict['id'] as String,
         conflict['revision'] as String,
         keepLocal: keepLocal,
       );
-      if (mounted && !resolved) setState(() => _failed = true);
     } catch (_) {
-      if (mounted) setState(() => _failed = true);
+      resolved = false;
     } finally {
       if (mounted) setState(() => _busy = false);
     }
-    if (mounted && !_failed) await _load();
+    if (!mounted) return;
+    await _load(synchronize: false);
+    if (mounted && !resolved) setState(() => _failed = true);
   }
 
   String _value(Object? value) => switch (value) {

@@ -5639,5 +5639,17 @@
     "autoEqGraphicEq": "AutoEq GraphicEQ",
     "autoEq": "AutoEq",
     "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
+  },
+  "musicDevices": {
+    "playOn": "Play on",
+    "thisDevice": "This device",
+    "playingOn": "Playing on ${device}",
+    "remembered": "Remembered devices",
+    "forget": "Forget device",
+    "receive": "Allow playback on this device",
+    "nearbyHint": "Open Play on on the other device and allow playback there.",
+    "receiverHint": "Keep Pleazyng open to receive music. Pair once using this code.",
+    "moveFailed": "Could not move playback. Check that the device is awake, paired, and can access your music server.",
+    "uncertain": "Connection interrupted. Reconnect to the selected device to check playback."
   }
 }

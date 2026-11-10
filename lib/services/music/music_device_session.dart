@@ -74,6 +74,7 @@ abstract interface class MusicDeviceSession implements MusicTransferSession {
   Future<PreparedMusicDeviceTransfer?> prepareMusicDeviceTransfer(
     MusicTransferSnapshot snapshot, {
     required bool Function() current,
+    bool allowRemoteOutput = false,
   });
   Future<void> resumeFrozenMusicDevice();
 }

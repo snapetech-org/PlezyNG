@@ -1,4 +1,5 @@
 import '../../media/media_item.dart';
+import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
 import 'music_account_scope.dart';
 
@@ -21,7 +22,11 @@ List<MusicCredit> musicCredits(MediaItem item) {
     if (seen.add((kind, value, creditRole))) result.add(MusicCredit(kind, value, creditRole));
   }
 
-  add(MusicCreditKind.artist, item.trackArtistTitle ?? item.parentTitle);
+  add(MusicCreditKind.artist, switch (item.kind) {
+    MediaKind.track => item.trackArtistTitle,
+    MediaKind.album => item.albumArtistTitle,
+    _ => null,
+  });
   for (final name in item.writers ?? const <String>[]) {
     add(MusicCreditKind.writer, name);
   }

@@ -199,8 +199,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<PreparedMusicDeviceTransfer?> prepareMusicDeviceTransfer(
     MusicTransferSnapshot snapshot, {
     required bool Function() current,
+    bool allowRemoteOutput = false,
   }) async {
-    if (_disposed || !current() || _musicDeviceOutput != null) return null;
+    final previousOutput = _musicDeviceOutput;
+    if (_disposed || !current() || (previousOutput != null && !allowRemoteOutput)) return null;
     try {
       snapshot.toJson(itemLimit: MusicTransferSnapshot.maxTransferItems);
     } on StateError {
@@ -226,7 +228,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         current() &&
         revision == groupControlRevision &&
         intent == _playIntentGeneration &&
-        _musicDeviceOutput == null &&
+        identical(_musicDeviceOutput, previousOutput) &&
         clients.entries.every(
           (entry) =>
               identical(entry.key.authenticationSessionId, entry.value) &&

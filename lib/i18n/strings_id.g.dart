@@ -116,6 +116,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$id subtitleCapture = _Translations$subtitleCapture$id._(_root);
 	@override late final _Translations$musicExperience$id musicExperience = _Translations$musicExperience$id._(_root);
 	@override late final _Translations$musicTools$id musicTools = _Translations$musicTools$id._(_root);
+	@override late final _Translations$musicDevices$id musicDevices = _Translations$musicDevices$id._(_root);
 }
 
 // Path: app
@@ -4312,6 +4313,25 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$id extends Translations$musicDevices$en {
+	_Translations$musicDevices$id._(TranslationsId root) : this._root = root, super.internal(root);
+
+	final TranslationsId _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'Putar di';
+	@override String get thisDevice => 'Perangkat ini';
+	@override String playingOn({required Object device}) => 'Diputar di ${device}';
+	@override String get remembered => 'Perangkat tersimpan';
+	@override String get forget => 'Lupakan perangkat';
+	@override String get receive => 'Izinkan pemutaran di perangkat ini';
+	@override String get nearbyHint => 'Buka pemilih perangkat di perangkat lain dan izinkan pemutaran di sana.';
+	@override String get receiverHint => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.';
+	@override String get moveFailed => 'Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.';
+	@override String get uncertain => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.';
 }
 
 // Path: appIcon.names
@@ -9478,6 +9498,16 @@ extension on TranslationsId {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'Putar di',
+			'musicDevices.thisDevice' => 'Perangkat ini',
+			'musicDevices.playingOn' => ({required Object device}) => 'Diputar di ${device}',
+			'musicDevices.remembered' => 'Perangkat tersimpan',
+			'musicDevices.forget' => 'Lupakan perangkat',
+			'musicDevices.receive' => 'Izinkan pemutaran di perangkat ini',
+			'musicDevices.nearbyHint' => 'Buka pemilih perangkat di perangkat lain dan izinkan pemutaran di sana.',
+			'musicDevices.receiverHint' => 'Biarkan Pleazyng terbuka untuk menerima musik. Pasangkan sekali dengan kode ini.',
+			'musicDevices.moveFailed' => 'Pemutaran tidak dapat dipindahkan. Pastikan perangkat aktif, sudah dipasangkan, dan dapat mengakses server musik.',
+			'musicDevices.uncertain' => 'Koneksi terputus. Sambungkan kembali ke perangkat terpilih untuk memeriksa pemutaran.',
 			_ => null,
 		};
 	}

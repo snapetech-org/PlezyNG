@@ -43,9 +43,8 @@ class MusicDeviceController extends ChangeNotifier {
     final source = _active;
     await source?.hold();
     await target?.hold();
-    final from = source?.request ?? local.handle;
-    final to = target?.request ?? local.handle;
-    var detached = false;
+    final from = source?.request ?? local.handleLocal;
+    final to = target?.request ?? local.handleLocal;
     try {
       final state = await from({'op': 'state'});
       if (_closed || state?['ok'] != true) return MusicDeviceMoveResult.rejected;
@@ -53,12 +52,6 @@ class MusicDeviceController extends ChangeNotifier {
         if (target != null && !await target.refresh(full: true)) return MusicDeviceMoveResult.rejected;
         _activate(target);
         return MusicDeviceMoveResult.completed;
-      }
-      // Bringing playback here prepares the local receiver, while the source
-      // continues playing and remains available for rollback.
-      if (target == null && source != null) {
-        session.setMusicDeviceOutput(null);
-        detached = true;
       }
       final ready = await to({'op': 'prepare', 'queue': state?['queue']});
       final ticket = ready?['ticket'];
@@ -84,14 +77,12 @@ class MusicDeviceController extends ChangeNotifier {
       // With an unknown commit result the source stays paused. Reconnecting
       // the target reconciles its independently owned state without starting
       // a second output during a network partition.
-      _activate(target);
-      detached = false;
       await target?.refresh(full: true);
+      _activate(target);
       return accepted?['ok'] == true ? MusicDeviceMoveResult.completed : MusicDeviceMoveResult.uncertain;
     } catch (_) {
       return MusicDeviceMoveResult.rejected;
     } finally {
-      if (detached && !_closed) session.setMusicDeviceOutput(source);
       source?.release();
       target?.release();
       if (!_closed) {

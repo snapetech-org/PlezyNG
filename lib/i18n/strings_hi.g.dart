@@ -116,6 +116,7 @@ class TranslationsHi extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$subtitleCapture$hi subtitleCapture = _Translations$subtitleCapture$hi._(_root);
 	@override late final _Translations$musicExperience$hi musicExperience = _Translations$musicExperience$hi._(_root);
 	@override late final _Translations$musicTools$hi musicTools = _Translations$musicTools$hi._(_root);
+	@override late final _Translations$musicDevices$hi musicDevices = _Translations$musicDevices$hi._(_root);
 }
 
 // Path: app
@@ -4335,6 +4336,25 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
 	@override String get autoEq => 'AutoEq';
 	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
+}
+
+// Path: musicDevices
+class _Translations$musicDevices$hi extends Translations$musicDevices$en {
+	_Translations$musicDevices$hi._(TranslationsHi root) : this._root = root, super.internal(root);
+
+	final TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get playOn => 'इस पर चलाएँ';
+	@override String get thisDevice => 'यह डिवाइस';
+	@override String playingOn({required Object device}) => '${device} पर चल रहा है';
+	@override String get remembered => 'सहेजे गए डिवाइस';
+	@override String get forget => 'डिवाइस भूलें';
+	@override String get receive => 'इस डिवाइस पर प्लेबैक की अनुमति दें';
+	@override String get nearbyHint => 'दूसरे डिवाइस पर प्लेबैक डिवाइस का मेनू खोलें और वहाँ प्लेबैक की अनुमति दें।';
+	@override String get receiverHint => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।';
+	@override String get moveFailed => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।';
+	@override String get uncertain => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।';
 }
 
 // Path: appIcon.names
@@ -9503,6 +9523,16 @@ extension on TranslationsHi {
 			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
 			'musicTools.autoEq' => 'AutoEq',
 			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
+			'musicDevices.playOn' => 'इस पर चलाएँ',
+			'musicDevices.thisDevice' => 'यह डिवाइस',
+			'musicDevices.playingOn' => ({required Object device}) => '${device} पर चल रहा है',
+			'musicDevices.remembered' => 'सहेजे गए डिवाइस',
+			'musicDevices.forget' => 'डिवाइस भूलें',
+			'musicDevices.receive' => 'इस डिवाइस पर प्लेबैक की अनुमति दें',
+			'musicDevices.nearbyHint' => 'दूसरे डिवाइस पर प्लेबैक डिवाइस का मेनू खोलें और वहाँ प्लेबैक की अनुमति दें।',
+			'musicDevices.receiverHint' => 'संगीत पाने के लिए Pleazyng खुला रखें। इस कोड से एक बार पेयर करें।',
+			'musicDevices.moveFailed' => 'प्लेबैक स्थानांतरित नहीं हुआ। जाँचें कि डिवाइस सक्रिय और पेयर है तथा संगीत सर्वर तक पहुँच सकता है।',
+			'musicDevices.uncertain' => 'कनेक्शन टूट गया। प्लेबैक जाँचने के लिए चुने हुए डिवाइस से फिर कनेक्ट करें।',
 			_ => null,
 		};
 	}

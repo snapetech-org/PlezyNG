@@ -85,6 +85,77 @@ void main() {
     expect(replies.last['accepted'], isTrue);
   });
 
+  test('negotiated chunks carry a long queue without dropping occurrences', () async {
+    final items = List.filled(400, track.copyWith(title: 'Long track title with unicode 音楽'));
+    final large = MusicTransferSnapshot(
+      queue: MusicQueueState(
+        items: items,
+        order: List.generate(items.length, (i) => items.length - i - 1),
+        cursor: 200,
+        shuffled: true,
+        repeatMode: MusicRepeatMode.all,
+      ),
+      position: snapshot.position,
+      playing: true,
+    );
+    final sent = <Map<String, dynamic>>[];
+    late MusicTransferExchange sender;
+    late MusicTransferExchange receiver;
+    sender = MusicTransferExchange(
+      allowed: () => true,
+      accept: (_, _) async => false,
+      send: (frame) {
+        sent.add(frame);
+        receiver.receive(frame);
+      },
+    );
+    receiver = MusicTransferExchange(
+      allowed: () => true,
+      accept: (received, _) async {
+        expect(received.queue.items.length, 400);
+        expect(received.queue.cursor, 200);
+        expect(received.queue.order[200], 199);
+        expect(received.queue.repeatMode, MusicRepeatMode.all);
+        expect(received.queue.items.last.title, items.last.title);
+        return true;
+      },
+      send: sender.receive,
+    );
+    addTearDown(sender.close);
+    addTearDown(receiver.close);
+    expect(await sender.request(large), isFalse);
+    expect(sent, isEmpty);
+    expect(await sender.request(large, version: 2), isTrue);
+    expect(sent.length, greaterThan(1));
+    expect(sent.every((frame) => frame['op'] == 'chunk'), isTrue);
+  });
+
+  test('a missing chunk or reconnect cannot open an assembled queue', () async {
+    var opens = 0;
+    final frames = <Map<String, dynamic>>[];
+    final replies = <Map<String, dynamic>>[];
+    final sender = MusicTransferExchange(allowed: () => true, accept: (_, _) async => false, send: frames.add);
+    final receiver = MusicTransferExchange(
+      allowed: () => true,
+      accept: (_, _) async {
+        opens++;
+        return true;
+      },
+      send: replies.add,
+    );
+    addTearDown(sender.close);
+    addTearDown(receiver.close);
+    final pending = sender.request(snapshot, version: 2);
+    final frame = frames.single;
+    receiver.receive({...frame, 'index': 1, 'count': 2});
+    expect(replies.single['accepted'], isFalse);
+    receiver.reset();
+    receiver.receive({...frame, 'index': 1, 'count': 2});
+    expect(opens, 0);
+    sender.receive(replies.last);
+    expect(await pending, isFalse);
+  });
+
   test('a reset invalidates a pending acknowledgement and its receiver lifetime', () async {
     final gate = Completer<bool>();
     late bool Function() current;

@@ -733,7 +733,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       playContext: _playContext,
     );
     try {
-      snapshot.toJson();
+      snapshot.toJson(itemLimit: MusicTransferSnapshot.maxTransferItems);
       return snapshot;
     } on StateError {
       return null;
@@ -840,7 +840,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<bool> _acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current, bool group = false}) async {
     bool active() => current?.call() ?? true;
     try {
-      snapshot.toJson();
+      snapshot.toJson(itemLimit: group ? MusicTransferSnapshot.maxItems : MusicTransferSnapshot.maxTransferItems);
     } on StateError {
       return false;
     }

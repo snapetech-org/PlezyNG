@@ -9,7 +9,9 @@ import '../games/steam_cloud_settings.dart';
 import '../games/game_session_exchange.dart';
 import '../games/workspace_game_session_controls.dart';
 import '../multiview/workspace_controller.dart';
+
 import 'package:url_launcher/url_launcher.dart';
+
 import '../games/steam_local_inventory.dart';
 import '../services/settings_service.dart';
 
@@ -254,7 +256,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   bool get isRemote => _session?.isRemote ?? false;
   bool get isConnected => _session?.isConnected ?? false;
   bool get supportsMusicTransfer =>
-      isConnected && _musicTransferVersion == 1 && _musicTransfer != null && _musicSession != null;
+      isConnected && _musicTransferVersion > 0 && _musicTransfer != null && _musicSession != null;
 
   bool get supportsMusicGroup =>
       isConnected && _musicGroupVersion == 1 && _musicGroup != null && _musicGroupPlayback != null;
@@ -297,7 +299,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     }
     final offer = session.offerTransfer();
     if (offer == null) return MusicTransferResult.unavailable;
-    if (!await exchange.request(offer.snapshot)) return MusicTransferResult.rejected;
+    if (!await exchange.request(offer.snapshot, version: _musicTransferVersion)) return MusicTransferResult.rejected;
     if (!identical(_musicSession, session) || !isConnected) return MusicTransferResult.superseded;
     return await session.finishTransfer(offer) ? MusicTransferResult.completed : MusicTransferResult.superseded;
   }
@@ -1364,7 +1366,11 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   void _handleDeviceInfo(RemoteCommand command) {
     _musicGroupVersion = command.data?['musicGroupVersion'] == 1 ? 1 : 0;
     if (_musicGroupVersion == 0) _musicGroup?.leave(notifyPeer: false);
-    _musicTransferVersion = command.data?['musicTransferVersion'] == 1 ? 1 : 0;
+    _musicTransferVersion = command.data?['musicTransferChunkVersion'] == 2
+        ? 2
+        : command.data?['musicTransferVersion'] == 1
+        ? 1
+        : 0;
     _gameSessionVersion = command.data?['gameSessionVersion'] == 1 ? 1 : 0;
     _cloudSettingsSupported = command.data?['gameCloudSettingVersion'] == 1;
     _gameActionVersion = command.data?['gameActionVersion'] == 1 ? 1 : 0;

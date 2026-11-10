@@ -26,13 +26,14 @@ class MusicTransferSnapshot {
   const MusicTransferSnapshot({required this.queue, required this.position, required this.playing, this.playContext});
 
   static const maxItems = 128;
+  static const maxTransferItems = 4096;
   final MusicQueueState queue;
   final Duration position;
   final bool playing;
   final MusicPlayContext? playContext;
 
-  Map<String, dynamic> toJson() {
-    if (!_validQueue(queue) ||
+  Map<String, dynamic> toJson({int itemLimit = maxItems}) {
+    if (!_validQueue(queue, itemLimit) ||
         position < Duration.zero ||
         position > const Duration(hours: 24) ||
         (playContext != null && !_bounded(playContext!.title, 160))) {
@@ -64,7 +65,7 @@ class MusicTransferSnapshot {
 
   /// Reject malformed and oversized peer data as a whole. Never accept a
   /// stream URL, path, auth header, arbitrary raw backend object or video ID.
-  static MusicTransferSnapshot? tryParse(Object? value) {
+  static MusicTransferSnapshot? tryParse(Object? value, {int itemLimit = maxItems}) {
     if (value is! Map ||
         value['version'] != 1 ||
         value.keys.any(
@@ -91,7 +92,7 @@ class MusicTransferSnapshot {
     final playing = value['playing'];
     if (rawItems is! List ||
         rawItems.isEmpty ||
-        rawItems.length > maxItems ||
+        rawItems.length > itemLimit ||
         rawOrder is! List ||
         rawOrder.length != rawItems.length ||
         cursor is! int ||
@@ -158,7 +159,7 @@ class MusicTransferSnapshot {
       shuffled: shuffled,
       repeatMode: mode,
     );
-    if (!_validQueue(queue)) return null;
+    if (!_validQueue(queue, itemLimit)) return null;
     return MusicTransferSnapshot(
       queue: queue,
       position: Duration(milliseconds: position),
@@ -169,9 +170,9 @@ class MusicTransferSnapshot {
 
   static bool _bounded(Object? value, int limit) => value is String && value.isNotEmpty && value.length <= limit;
 
-  static bool _validQueue(MusicQueueState queue) =>
+  static bool _validQueue(MusicQueueState queue, int itemLimit) =>
       queue.items.isNotEmpty &&
-      queue.items.length <= maxItems &&
+      queue.items.length <= itemLimit &&
       queue.items.every(
         (item) =>
             item.kind == MediaKind.track &&

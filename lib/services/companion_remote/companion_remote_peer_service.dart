@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import '../../utils/bounded_web_socket.dart';
+
 import 'dart:math';
 
 import 'package:web_socket_channel/io.dart';
+
 import '../../utils/future_extensions.dart';
 
 import '../../i18n/strings.g.dart';
@@ -1290,50 +1293,55 @@ class CompanionRemotePeerService with KeepaliveMixin {
   final SerialFutureQueue _decryptQueue = SerialFutureQueue();
   final SerialFutureQueue _sendQueue = SerialFutureQueue();
 
-  Future<List<int>> _encryptOutgoing(String plaintext) {
+  Future<List<int>?> _encryptOutgoing(String plaintext, List<int> key) {
     return _encryptQueue.run(() async {
+      if (!identical(_sessionEncKey, key)) return null;
       final encrypted = await RemoteAuthService.instance.encrypt(
-        _sessionEncKey!,
+        key,
         utf8.encode(plaintext),
         isHost: _role == RemoteSessionRole.host,
         counter: _sendCounter,
       );
+      if (!identical(_sessionEncKey, key)) return null;
       _sendCounter++;
       return encrypted;
     });
   }
 
   Future<void> _sendEncryptedToSocket(WebSocket socket, String plaintext) async {
-    if (_sessionEncKey == null) return;
-    final encrypted = await _encryptOutgoing(plaintext);
-    socket.add(encrypted);
+    final key = _sessionEncKey;
+    if (key == null) return;
+    final encrypted = await _encryptOutgoing(plaintext, key);
+    if (encrypted != null && identical(_sessionEncKey, key)) socket.add(encrypted);
   }
 
   Future<String?> _decryptIncoming(dynamic data) {
-    if (_sessionEncKey == null) return Future<String?>.value();
-    return _decryptQueue.run(() => _decryptIncomingNow(data));
-  }
-
-  Future<String?> _decryptIncomingNow(dynamic data) async {
-    try {
-      final bytes = data is List<int> ? data : utf8.encode(data as String);
-      final decrypted = await RemoteAuthService.instance.decrypt(
-        bytes,
-        _sessionEncKey!,
-        fromHost: _role == RemoteSessionRole.remote,
-        expectedCounter: _recvCounter,
-      );
-      _recvCounter++;
-      return utf8.decode(decrypted);
-    } catch (e) {
-      appLogger.e('CompanionRemote: Decryption failed (counter=$_recvCounter)', error: e);
-      return null;
-    }
+    final key = _sessionEncKey;
+    if (key == null) return Future<String?>.value();
+    return _decryptQueue.run(() async {
+      if (!identical(_sessionEncKey, key)) return null;
+      try {
+        final bytes = data is List<int> ? data : utf8.encode(data as String);
+        final decrypted = await RemoteAuthService.instance.decrypt(
+          bytes,
+          key,
+          fromHost: _role == RemoteSessionRole.remote,
+          expectedCounter: _recvCounter,
+        );
+        if (!identical(_sessionEncKey, key)) return null;
+        _recvCounter++;
+        return utf8.decode(decrypted);
+      } catch (e) {
+        appLogger.e('CompanionRemote: Decryption failed (counter=$_recvCounter)', error: e);
+        return null;
+      }
+    });
   }
 
   Future<void> _handleEncryptedCommand(dynamic data) async {
+    final key = _sessionEncKey;
     final decrypted = await _decryptIncoming(data);
-    if (decrypted == null) return;
+    if (decrypted == null || !identical(_sessionEncKey, key)) return;
 
     final command = RemoteCommand.fromJson(jsonDecode(decrypted) as Map<String, dynamic>);
     appLogger.d('CompanionRemote: Received command: ${command.type}');
@@ -1391,6 +1399,7 @@ class CompanionRemotePeerService with KeepaliveMixin {
           'gameActionKinds': SteamHostAction.values.map((action) => action.name).toList(growable: false),
           'gameSessionVersion': 1,
           'musicTransferVersion': 1,
+          'musicTransferChunkVersion': 2,
           'musicGroupVersion': 1,
           if (supportsLocalSteamCloudSettings) 'gameCloudSettingVersion': 1,
         },
@@ -1399,21 +1408,28 @@ class CompanionRemotePeerService with KeepaliveMixin {
   }
 
   void sendCommand(RemoteCommand command) {
-    if (_sessionEncKey == null || !_isAuthenticated) {
+    final key = _sessionEncKey;
+    if (key == null || !_isAuthenticated) {
       appLogger.w('CompanionRemote: No connection to send command');
       return;
     }
 
-    // Chain sends to prevent counter interleaving from concurrent async encrypts
+    final role = _role;
+    final socket = _clientSocket;
+    final channel = _channel;
+    bool current() => identical(_sessionEncKey, key) && _isAuthenticated;
+    // Queue and playback snapshots belong to the authenticated peer that was
+    // current at enqueue time, even when the socket changes during encryption.
     _sendQueue.run(() async {
+      if (!current()) return;
       try {
         final json = jsonEncode(command.toJson());
-        final encrypted = await _encryptOutgoing(json);
-
-        if (_role == RemoteSessionRole.host && _clientSocket != null) {
-          _clientSocket!.add(encrypted);
-        } else if (_role == RemoteSessionRole.remote && _channel != null) {
-          _channel!.sink.add(encrypted);
+        final encrypted = await _encryptOutgoing(json, key);
+        if (encrypted == null || !current()) return;
+        if (role == RemoteSessionRole.host) {
+          socket?.add(encrypted);
+        } else if (role == RemoteSessionRole.remote) {
+          channel?.sink.add(encrypted);
         }
         appLogger.d('CompanionRemote: Sent command: ${command.type}');
       } catch (e) {

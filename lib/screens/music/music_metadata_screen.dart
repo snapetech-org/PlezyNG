@@ -8,6 +8,7 @@ import '../../i18n/strings.g.dart';
 import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
+import '../../media/media_stream.dart';
 import '../../profiles/active_profile_provider.dart';
 import '../../providers/hidden_libraries_provider.dart';
 import '../../providers/multi_server_provider.dart';
@@ -16,6 +17,7 @@ import '../../services/music/music_experience.dart';
 import '../../services/music/music_metadata.dart';
 import '../../services/music/music_nfc_writer.dart';
 import '../../services/plex_client.dart';
+import '../../utils/codec_utils.dart';
 import '../../utils/formatters.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
@@ -215,6 +217,7 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
           final item = snapshot.data;
           if (item == null) return const Center(child: CircularProgressIndicator());
           final client = _client;
+          final versions = item.mediaVersions ?? [];
           return ListView(
             children: [
               ListTile(title: Text(item.displayTitle), subtitle: item.summary == null ? null : Text(item.summary!)),
@@ -239,19 +242,28 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
                           },
                   ),
                 ),
-              if (item.mediaVersions?.isNotEmpty == true)
+              if (versions.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Text(t.fileSources.editions, style: Theme.of(context).textTheme.titleMedium),
+                  child: Text(t.videoControls.versionColumnHeader, style: Theme.of(context).textTheme.titleMedium),
                 ),
-              for (final version in item.mediaVersions ?? [])
+              for (final (index, version) in versions.indexed)
                 ListTile(
-                  title: Text(version.name ?? version.id),
+                  title: Text(
+                    version.name?.trim().isNotEmpty == true
+                        ? version.name!.trim()
+                        : t.fileInfo.versionCounter(index: index + 1, count: versions.length),
+                  ),
                   subtitle: Text(
                     [
-                      version.container,
-                      if (version.bitrate != null) ByteFormatter.formatBitrate(version.bitrate!),
-                      ...version.parts.expand((part) => part.streams).map((stream) => stream.codec),
+                      version.container?.toUpperCase(),
+                      if ((version.bitrate ?? 0) > 0) ByteFormatter.formatBitrate(version.bitrate!),
+                      for (final stream in version.parts.expand((part) => part.streams))
+                        if (stream.kind == MediaStreamKind.audio) ...[
+                          if (stream.codec case final String codec when codec.isNotEmpty)
+                            CodecUtils.formatAudioCodec(codec),
+                          CodecUtils.formatAudioChannels(stream.channels),
+                        ],
                     ].whereType<String>().where((text) => text.isNotEmpty).toSet().join(' · '),
                   ),
                 ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_item.dart';
+import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/services/music/music_metadata.dart';
 
 import '../../test_helpers/music_experience_fakes.dart';
@@ -66,8 +67,15 @@ void main() {
       ...musicTrack('one').toJson(),
       'originalTitle': null,
       'grandparentTitle': null,
-      'parentTitle': null,
+      'parentTitle': 'The album is not the performer',
     });
     expect(musicCredits(item), isEmpty);
+  });
+
+  test('the album parent is still a valid artist credit for an album', () {
+    final album = musicTrack('one').copyWith(kind: MediaKind.album, parentTitle: 'Album artist');
+    final credit = musicCredits(album).single;
+    expect(credit.kind, MusicCreditKind.artist);
+    expect(credit.name, 'Album artist');
   });
 }

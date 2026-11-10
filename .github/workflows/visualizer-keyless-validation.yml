@@ -8,20 +8,13 @@ on:
       - test/services/visualization/visualizer_sigstore_verifier_test.dart
       - test/fixtures/visualizer/authenticated-catalog.json
       - .github/workflows/visualizer-keyless-validation.yml
-  workflow_run:
-    workflows: [Authenticated visualizer catalog]
-    types: [completed]
+      - content/visualizer-catalog.json
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   verify:
-    if: >-
-      github.repository == 'snapetech-org/pleazyng' &&
-      (github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.head_repository.full_name == 'snapetech-org/pleazyng'))
+    if: github.repository == 'snapetech-org/pleazyng'
     runs-on: macos-26-intel
     timeout-minutes: 30
     env:

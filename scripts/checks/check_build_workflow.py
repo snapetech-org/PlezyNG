@@ -1190,6 +1190,12 @@ require(
     "Apple tests must select the intended SDK runtime instead of an older installed simulator",
 )
 require(
+    "-parallel-testing-enabled NO" in named_step(apple_native, "Run Apple native reliability tests")
+    and "scripts/apple/select_test_destination.py --cleanup" in apple_native
+    and "Retain Apple simulator ownership receipt" in apple_native,
+    "Apple native tests must use and clean their owned simulator without untracked parallel clones",
+)
+require(
     "ruby scripts/check_podspec_locks.rb"
     in named_step(apple_native, "Check local CocoaPods lock checksums")
     and 0 <= apple_native.find("      - name: Install CocoaPods")

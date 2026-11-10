@@ -1025,6 +1025,7 @@ jobs:
             -scheme Runner \
             -configuration Debug \
             -destination "$APPLE_TEST_DESTINATION" \
+            -parallel-testing-enabled NO \
             -derivedDataPath "$APPLE_DERIVED_DATA_PATH" \
             -clonedSourcePackagesDirPath "$APPLE_SOURCE_PACKAGES_DIR" \
             -disableAutomaticPackageResolution \
@@ -1075,6 +1076,21 @@ jobs:
           APPLE_JIT_JOB_STATUS: ${{ job.status }}
           APPLE_SCRATCH_JOB: ${{ matrix.source_packages_directory }}
         run: bash scripts/cleanup_apple_jit_scratch.sh "$APPLE_SCRATCH_JOB"
+
+      - name: Remove job-owned Apple test simulator
+        if: always() && matrix.platform != 'macOS'
+        env:
+          SIMULATOR_RUNTIME: ${{ matrix.simulator_runtime }}
+          APPLE_JIT_JOB_STATUS: ${{ job.status }}
+        run: python3 scripts/apple/select_test_destination.py --cleanup
+
+      - name: Retain Apple simulator ownership receipt
+        if: always() && env.APPLE_SIMULATOR_RECEIPT != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: apple-simulator-${{ matrix.platform }}-${{ github.run_id }}
+          path: ${{ env.APPLE_SIMULATOR_RECEIPT }}
+          retention-days: 7
 
   # packer-windows-jit-v1
   windows-native-test:

@@ -20,11 +20,15 @@ repeat publication; failed deliveries back off for thirty minutes.
    its certificate-bound final assembler run completed successfully. Match the
    published Linux archive against those checksums and GitHub's asset digest.
 2. Verify the Linux archive's own attestation to identify its original compiler
-   source and run. These may differ from the final assembler for recovered core
-   releases. Keep both identities. `aerynos-from-core.yml` copies and verifies
-   the original `linux-x64` artifact, requiring a successful original Linux job,
-   trusted repository/workflow, exact source and certificate-bound invocation.
-   No Flutter setup or application recompilation occurs.
+   source and run. Resolve the remote version tag, including annotated tags,
+   and require compiler and assembler source to equal that frozen commit. Their
+   run IDs remain separate. Different-source recovery requires an independently
+   verified unchanged-product rule; no such exception is enabled downstream.
+   The consumer anonymously downloads the published Linux archive, matches its
+   attested digest, then uses `from_core.py` to verify the successful original
+   Linux job, retained artifact identity, trusted repository/workflow and exact
+   certificate-bound source/invocation. No cross-repository Actions archive
+   credential, Flutter setup or application recompilation is needed.
 3. `aerynos-qualify.yml` boots a disposable KVM guest from the checksum-pinned
    official aerynOS image, builds the Stone, and upgrades the last-good package.
    Dependency checks, fresh sign-in, default settings, visible H.264 and authored
@@ -36,7 +40,13 @@ repeat publication; failed deliveries back off for thirty minutes.
    and still-published successful core. Attach `core-release.json` with original
    compiler and final assembler identities. Publish immutable package assets,
    verify their remote digests, then atomically commit the recipe, index and
-   release receipt. Failure preserves the last-good feed.
+   release receipt. Failure before promotion preserves the last-good feed.
+5. A second fresh official guest anonymously installs from the live public feed,
+   removes and reinstalls from the pinned release feed, then launches the ordinary
+   app. It checks index digests, installed version and runtime source/version.
+   Record the public-install receipt and retain screenshots/logs. A failed public
+   check holds newer deliveries and retries only this check after thirty minutes;
+   it does not recompile, repackage or repeat the preceding native qualification.
 
 Every package retains its matching original source archive. Native QA evidence
 includes screenshots, clock/audio measurements, runtime logs and audio capture.
@@ -49,7 +59,7 @@ source promotion. Published assets are never overwritten or force-pushed.
 
 ## Feed layout
 
-The stable channel index is committed at:
+After the first qualified promotion, the stable channel index is committed at:
 
 ```
 https://github.com/snapetech-org/pleazyng-aerynos/raw/refs/heads/main/feed/stone.index
@@ -86,14 +96,19 @@ The coordinator may stage and qualify exact existing Linux bytes before the core
 release finishes. This establishes native evidence only; it does not permit
 publication or represent an overall failed original run as a successful release.
 
-After core publication, normal automatic delivery performs all checks. A manual
-`sync.yml` dispatch may provide `qualified_run_id` to reuse a successful canonical
-`aerynos-qualify.yml` run for those exact bytes. The consumer verifies the trusted
-native workflow run and repeats the source/version/digest/core checks. An old or
-unrelated qualification cannot authorize a different release artifact.
+After core publication, normal automatic delivery performs all checks. Native
+qualification artifacts are produced and consumed in the same delivery run.
+Cross-repository `qualified_run_id` reuse is unsupported; preflight evidence
+cannot bypass the current delivery's native qualification. Manual `sync.yml`
+dispatch with `retry_now=true` retries a repaired delivery immediately. A pending
+post-publication installation check retries that check alone.
 
 The downstream `promotion-hold.json` stops staging and promotion while retaining
-source metadata tracking. Scheduled workflow activation is explicit; neither
+source metadata tracking. Use the serialized `hold.yml` maintenance protocol in
+the downstream README: disable scheduled polling first, dispatch the hold and
+wait for success. An active publication may finish before a queued hold takes
+effect. The publisher refreshes hold/feed state after uploads immediately before
+making a release public. Scheduled workflow activation is explicit; neither
 controller re-enables schedules automatically. The legacy unreleased-source
 compilation lane has been removed. A weekly health commit keeps release polling
 active without building an app. No cross-repository secret, deployment key, App

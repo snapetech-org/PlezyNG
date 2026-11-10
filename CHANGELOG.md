@@ -4,6 +4,8 @@
 
 - Dispatch Cast media loads before awaiting receiver acknowledgement, retaining synchronous status events and cleaning up failed or timed-out handshakes.
 
+- Qualify Apple simulator startup on fresh, SDK-matched job-owned devices. Preserve existing simulator saves and real tvOS database recovery checks, and retain ownership receipts for cleanup.
+
 - Preserve local listening/report ownership when a paired music group fails source preflight, and correct smart-playlist integration lints found by the whole-repository analyzer.
 
 - Harden group departure against replayed invitations/acknowledgements and transport failures; prevent delayed Cast status/report callbacks from retiring or reporting a replacement receiver session.

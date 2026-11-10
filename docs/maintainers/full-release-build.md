@@ -69,8 +69,14 @@ requirement. This uses the existing private ARM lane for native CI and tvOS;
 other compatible jobs retain their hosted routes. Check live architecture,
 Xcode, simulator runtimes, free APFS/NFS space and active consumers first.
 Private images use their installed compatible toolchain and must qualify it.
-The test selector requires an available simulator matching the selected SDK's
-major/minor version; it does not select the first installed older runtime.
+The test selector creates a fresh job-owned simulator using an available device
+type and runtime matching the selected SDK's major/minor version. It never
+reuses or erases an existing simulator's app data. An ownership receipt binds
+the new UUID to the run, attempt, job and source. After test consumers exit,
+cleanup checks the receipt and device identity before deleting that device;
+cancelled jobs retain it for inspected cleanup. Retain the receipt with CI
+evidence. Reused simulator recovery markers can correctly block normal database
+startup, so they cannot establish a fresh-install qualification result.
 Every native test, genuine tvOS framework and real database startup gate remains
 required. Record the actual host/runtime qualification; software checks do not
 establish physical HDR, hardware decoding, NPU or FEL reference accuracy.

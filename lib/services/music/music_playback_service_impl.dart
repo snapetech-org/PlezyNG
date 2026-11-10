@@ -785,11 +785,28 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         unawaited(subscription.cancel());
       }
       _playerSubs.clear();
-      await previous.stop();
-      await previous.dispose();
+      var resumeLocal = wasPlaying;
+      try {
+        await previous.stop();
+      } catch (error) {
+        resumeLocal = false;
+        appLogger.d('Music output stop failed (${error.runtimeType})');
+      }
+      try {
+        await previous.dispose();
+      } catch (error) {
+        resumeLocal = false;
+        appLogger.d('Music output disposal failed (${error.runtimeType})');
+      }
       if (_disposed || request != _outputRequest || generation != _generation) return false;
-      await _openCurrent(generation, play: wasPlaying, initialPosition: playhead, newOccurrence: false);
-      return !_disposed && generation == _generation;
+      await _openCurrent(
+        generation,
+        play: resumeLocal,
+        initialPosition: playhead,
+        newOccurrence: false,
+        recoverFailures: resumeLocal,
+      );
+      return !_disposed && generation == _generation && _status != MusicPlaybackStatus.error;
     }
     final candidate = output.player;
     var committed = false;
@@ -1508,6 +1525,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     bool offline = false,
     MusicSource? preparedSource,
     bool newOccurrence = true,
+    bool recoverFailures = true,
   }) async {
     final track = _queue.current;
     if (track == null) {
@@ -1516,6 +1534,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _openingGeneration = generation;
     final observer = _observedGeneration == generation ? _launchObserver : null;
     bool launchCurrent() => generation == _generation && (observer?.isCurrent ?? true);
+    void failed(Object error) {
+      if (!launchCurrent()) return;
+      if (recoverFailures) {
+        _handlePlaybackFailure(error);
+      } else {
+        _currentSource = null;
+        _pendingRestoreResume = _PendingResume(globalKey: track.globalKey, position: initialPosition ?? Duration.zero);
+        _errorsController.add(error);
+        _setStatus(MusicPlaybackStatus.error, forceNotify: true);
+      }
+    }
+
     Player? committedPlayer;
     try {
       _currentTrack = track;
@@ -1586,9 +1616,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
                 : await output.resolve(track));
       } catch (e, st) {
         appLogger.w('Music source resolve failed for ${track.id}', error: e, stackTrace: st);
-        if (launchCurrent()) {
-          _handlePlaybackFailure(e);
-        }
+        failed(e);
         return;
       }
       if (!launchCurrent() || _player != player) {
@@ -1620,9 +1648,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         );
       } catch (e, st) {
         appLogger.w('Music open failed for ${track.id}', error: e, stackTrace: st);
-        if (launchCurrent()) {
-          _handlePlaybackFailure(e);
-        }
+        failed(e);
         return;
       }
       if (!launchCurrent() || _player != player) {
@@ -2968,12 +2994,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       return;
     }
     final player = _player;
-    if (player == null) {
-      // Parked restored session (#2148): no player exists yet — the first
-      // play performs the deferred open, resuming at the persisted offset.
+    final retryPausedOutput = _status == MusicPlaybackStatus.error && _currentSource == null;
+    if (player == null || retryPausedOutput) {
       final generation = ++_generation;
       _invalidateArmRequests();
-      await _openCurrent(generation, play: true);
+      await _openCurrent(generation, play: true, newOccurrence: !retryPausedOutput);
       return;
     }
     final generation = _generation;

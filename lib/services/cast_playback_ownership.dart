@@ -8,6 +8,7 @@ Future<void> loadAcknowledgedCastMedia<Status>({
   Duration timeout = const Duration(seconds: 15),
 }) async {
   final accepted = Completer<void>();
+  final interrupted = Completer<void>();
   final subscription = statuses.listen(
     (status) {
       if (accepted.isCompleted) return;
@@ -25,13 +26,16 @@ Future<void> loadAcknowledgedCastMedia<Status>({
     },
   );
   final cancellation = invalidated?.listen((_) {
-    if (!accepted.isCompleted) accepted.completeError(StateError('Cast load was invalidated'));
+    if (!interrupted.isCompleted) interrupted.completeError(StateError('Cast load was invalidated'));
   });
   final deadline = Timer(timeout, () {
-    if (!accepted.isCompleted) accepted.completeError(TimeoutException('Cast load was not acknowledged', timeout));
+    if (!interrupted.isCompleted) interrupted.completeError(TimeoutException('Cast load did not complete', timeout));
   });
   try {
-    await Future.wait<void>([Future.sync(load), accepted.future], eagerError: true);
+    await Future.any<void>([
+      Future.wait<void>([Future.sync(load), accepted.future], eagerError: true).then((_) {}),
+      interrupted.future,
+    ]);
   } finally {
     deadline.cancel();
     await subscription.cancel();

@@ -58,25 +58,36 @@ class CastMusicOutput implements MusicPlaybackOutput {
   }
 }
 
+typedef CastReceiverKey = ({String session, String device});
+
+CastReceiverKey? castReceiverKey(GoogleCastSession? session) {
+  if (session?.connectionState != GoogleCastConnectState.connected) return null;
+  final id = session?.sessionID;
+  final device = session?.device?.deviceID;
+  return id == null || id.isEmpty || device == null || device.isEmpty ? null : (session: id, device: device);
+}
+
 class GoogleMusicCastReceiver implements CastMusicReceiver {
+  GoogleMusicCastReceiver() : _connection = castReceiverKey(GoogleCastSessionManager.instance.currentSession);
   final _remote = GoogleCastRemoteMediaClient.instance;
   final _sessions = GoogleCastSessionManager.instance;
+  final CastReceiverKey? _connection;
 
   @override
-  bool get connected => _sessions.hasConnectedSession;
+  bool get connected => _connection != null && castReceiverKey(_sessions.currentSession) == _connection;
   @override
   Stream<bool> get connections =>
-      _sessions.currentSessionStream.map((session) => session?.connectionState == GoogleCastConnectState.connected);
+      _sessions.currentSessionStream.map((session) => _connection != null && castReceiverKey(session) == _connection);
   @override
   CastMusicStatus? get status => _status(_remote.mediaStatus);
   @override
   Stream<CastMusicStatus> get statuses =>
       _remote.mediaStatusStream.map(_status).where((status) => status != null).cast<CastMusicStatus>();
   @override
-  Stream<Duration> get positions => _remote.playerPositionStream;
+  Stream<Duration> get positions => _remote.playerPositionStream.where((_) => connected);
 
   CastMusicStatus? _status(GoggleCastMediaStatus? status) {
-    if (status == null) return null;
+    if (!connected || status == null) return null;
     final token = status.mediaInformation?.customData?['pleazyngOwner'];
     return CastMusicStatus(
       session: status.mediaSessionID,
@@ -103,6 +114,7 @@ class GoogleMusicCastReceiver implements CastMusicReceiver {
 
   @override
   Future<void> load(MediaItem track, MusicSource source, Media media, String token) async {
+    if (!connected) throw StateError('Cast receiver connection changed');
     final uri = Uri.parse(source.url);
     await _remote.loadMedia(
       GoogleCastMediaInformation(

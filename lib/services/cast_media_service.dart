@@ -53,6 +53,7 @@ class CastMediaService extends ChangeNotifier {
   bool? _lastPausedState;
   final _loads = SerialFutureQueue();
   final _ownership = CastPlaybackOwnership();
+  CastReceiverKey? _receiverKey;
   int _loadIntent = 0;
   int _profileRevision = 0;
   String? _profileId;
@@ -60,10 +61,12 @@ class CastMediaService extends ChangeNotifier {
 
   void bindProfile(String? profileId) {
     if (_profileId == profileId) return;
+    unawaited(_stopMatchedReceiver());
     _profileId = profileId;
     _profileRevision++;
     _loadIntent++;
     _ownership.clear();
+    _receiverKey = null;
     _progressTimer?.cancel();
     _retirePlayback();
   }
@@ -79,9 +82,21 @@ class CastMediaService extends ChangeNotifier {
     );
   }
 
-  bool _ownsReceiver() {
+  bool _matchesReceiver() {
+    if (_receiverKey == null || _receiverKey != castReceiverKey(_sessions.currentSession)) return false;
     final status = _remote.mediaStatus;
-    return status != null && _ownership.owns(_ownerToken(status), status.mediaSessionID);
+    return status != null && _ownership.matches(_ownerToken(status), status.mediaSessionID);
+  }
+
+  bool _ownsReceiver() => _ownership.authorized && _matchesReceiver();
+
+  Future<void> _stopMatchedReceiver() async {
+    if (!_matchesReceiver() || _remote.mediaStatus?.playerState == CastMediaPlayerState.idle) return;
+    try {
+      await _remote.stop().timeout(const Duration(seconds: 5));
+    } catch (error) {
+      appLogger.d('Google Cast stop failed (${error.runtimeType})');
+    }
   }
 
   String? _ownerToken(GoggleCastMediaStatus status) {
@@ -173,11 +188,14 @@ class CastMediaService extends ChangeNotifier {
         await _waitForConnection();
       }
       if (!current() || !_sessions.hasConnectedSession) return null;
+      if (device != null && _sessions.currentSession?.device?.deviceID != device.deviceID) return null;
+      final receiver = GoogleMusicCastReceiver();
+      if (!receiver.connected) return null;
       return CastMusicOutput(
         name: device?.friendlyName ?? _sessions.currentSession?.device?.friendlyName ?? t.cast.chooseDevice,
         serverManager: serverManager,
         authorized: current,
-        receiver: GoogleMusicCastReceiver(),
+        receiver: receiver,
       );
     });
   }
@@ -292,6 +310,11 @@ class CastMediaService extends ChangeNotifier {
     try {
       if (device != null) await _waitForConnection();
       if (!current()) return;
+      final connection = castReceiverKey(_sessions.currentSession);
+      if (connection == null || (device != null && device.deviceID != connection.device)) {
+        throw const CastPlaybackException('The Cast device is no longer connected.');
+      }
+      bool authorized() => current() && castReceiverKey(_sessions.currentSession) == connection;
       final resume = item.viewOffsetMs != null && item.viewOffsetMs! > 0
           ? Duration(milliseconds: item.viewOffsetMs!)
           : null;
@@ -301,7 +324,7 @@ class CastMediaService extends ChangeNotifier {
         mediaSourceId: mediaSourceId,
         position: resume,
       );
-      if (!current()) return;
+      if (!authorized()) return;
       if (target == null || target.url.isEmpty) {
         throw const CastPlaybackException('This item is not available for casting.');
       }
@@ -323,7 +346,8 @@ class CastMediaService extends ChangeNotifier {
       final textTracks = _castTracks(target.subtitles);
       final streamType = CastMediaStreamType.buffered;
       final token = generateSessionIdentifier();
-      _ownership.begin(token, current);
+      _receiverKey = connection;
+      _ownership.begin(token, authorized);
       final information = GoogleCastMediaInformation(
         contentId: uri.toString(),
         contentUrl: uri,
@@ -340,14 +364,25 @@ class CastMediaService extends ChangeNotifier {
       await loadAcknowledgedCastMedia(
         statuses: _remote.mediaStatusStream,
         acknowledge: acknowledged,
+        invalidated: _sessions.currentSessionStream
+            .where((session) => castReceiverKey(session) != connection)
+            .map<void>((_) {}),
         load: () => _remote.loadMedia(
           information,
-          autoPlay: true,
+          autoPlay: false,
           playPosition: filePosition,
           activeTrackIds: textTracks.defaultTrackIds.isEmpty ? null : textTracks.defaultTrackIds,
         ),
       );
-      if (!current() || !_ownsReceiver()) return;
+      if (!_ownsReceiver()) {
+        await _stopMatchedReceiver();
+        return;
+      }
+      await _remote.play().timeout(const Duration(seconds: 10));
+      if (!_ownsReceiver()) {
+        await _stopMatchedReceiver();
+        return;
+      }
 
       _deviceName = device?.friendlyName ?? _sessions.currentSession?.device?.friendlyName ?? _deviceName;
       _activeItem = item;
@@ -361,10 +396,17 @@ class CastMediaService extends ChangeNotifier {
       notifyListeners();
     } catch (error) {
       if (createdSession && current() && _ownsReceiver()) await _sessions.endSessionAndStopCasting();
+      await _stopMatchedReceiver();
       _ownership.clear();
+      _receiverKey = null;
       if (error is CastPlaybackException) rethrow;
       appLogger.w('Google Cast could not load media (${error.runtimeType})');
       throw const CastPlaybackException('Could not start playback on this Cast device.');
+    } finally {
+      if (_activeItem == null) {
+        _ownership.clear();
+        _receiverKey = null;
+      }
     }
   }
 
@@ -437,7 +479,12 @@ class CastMediaService extends ChangeNotifier {
     unawaited(TrackerCoordinator.instance.startPlayback(item, client));
     _progressTimer?.cancel();
     _progressTimer = Timer.periodic(const Duration(seconds: 15), (_) {
-      if (_ownsReceiver()) unawaited(_reportPosition(_currentItemPosition(), isStopped: false));
+      if (_ownsReceiver()) {
+        unawaited(_reportPosition(_currentItemPosition(), isStopped: false));
+      } else {
+        unawaited(_stopMatchedReceiver());
+        _retirePlayback();
+      }
     });
   }
 
@@ -515,7 +562,7 @@ class CastMediaService extends ChangeNotifier {
   }
 
   void _onSessionChanged(GoogleCastSession? session) {
-    if (session == null && _activeItem != null && !_finishingPlayback) {
+    if (castReceiverKey(session) != _receiverKey && _activeItem != null && !_finishingPlayback) {
       _retirePlayback();
     }
     if (session?.device?.friendlyName case final String name) _deviceName = name;
@@ -526,6 +573,7 @@ class CastMediaService extends ChangeNotifier {
     if (_activeItem != null) {
       if (!_ownsReceiver()) {
         _progressTimer?.cancel();
+        unawaited(_stopMatchedReceiver());
         _retirePlayback();
         return;
       }
@@ -562,6 +610,7 @@ class CastMediaService extends ChangeNotifier {
       _duration = null;
       _lastPausedState = null;
       _ownership.clear();
+      _receiverKey = null;
       notifyListeners();
     } finally {
       _finishingPlayback = false;

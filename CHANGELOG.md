@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bind Cast ownership to both the receiver connection and media session, prepare loads paused before authorized playback, and time out stalled native acknowledgements. A failed local return after receiver revocation keeps the selected occurrence without advancing or autoplaying.
+
 - Add an iOS music widget with expiring Now Playing metadata and profile/queue-checked transport on iOS 17+. The widget never restores playback from stale data and is embedded in signed archives when its separate App Group provisioning profile is configured.
 
 - Read and write credential-free music NFC links on supported iPhones from Music home and Music details. NFC-capable signed builds use the existing profile authorization path; builds without the reader capability keep NFC controls hidden.

@@ -998,6 +998,30 @@ void main() {
     expect(h.service.currentTrack?.id, 't1');
   });
 
+  test('a failed paused return from a revoked output never advances or autoplays', () async {
+    await h.playTracks([t1, t2]);
+    final output = _RemoteOutput(FakeMusicSourceResolver(client: h.client));
+    addTearDown(output.close);
+    expect(await h.service.selectOutput(output), isTrue);
+    final occurrence = h.service.playbackOccurrenceRevision;
+    output.player.setPosition(const Duration(seconds: 50));
+    h.resolver.failingIds.add('t1');
+    output.available = false;
+    output.lost.add(null);
+    await pumpEventQueue();
+    expect(h.service.remoteOutputName, isNull);
+    expect(h.service.currentTrack?.id, 't1');
+    expect(h.service.currentIndex, 0);
+    expect(h.service.status, MusicPlaybackStatus.error);
+    expect(h.service.isPlaying, isFalse);
+    h.resolver.failingIds.clear();
+    await h.service.play();
+    expect(h.service.currentTrack?.id, 't1');
+    expect(h.service.position, const Duration(seconds: 50));
+    expect(h.service.playbackOccurrenceRevision, occurrence);
+    expect(h.service.isPlaying, isTrue);
+  });
+
   test('continuation cannot append into a replacement session', () async {
     await h.playTracks([t1]);
     final gate = Completer<List<MediaItem>>();

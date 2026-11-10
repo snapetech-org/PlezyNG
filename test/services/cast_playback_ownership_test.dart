@@ -63,6 +63,49 @@ void main() {
     expect(owner.acknowledge('one', 2), isFalse);
   });
 
+  test('a stuck load remains bounded after its receiver acknowledgement', () async {
+    final statuses = StreamController<String>.broadcast(sync: true);
+    final pending = Completer<void>();
+    await expectLater(
+      loadAcknowledgedCastMedia(
+        statuses: statuses.stream,
+        acknowledge: (status) => status == 'owned',
+        load: () {
+          statuses.add('owned');
+          return pending.future;
+        },
+        timeout: const Duration(milliseconds: 5),
+      ),
+      throwsA(isA<TimeoutException>()),
+    );
+    expect(statuses.hasListener, isFalse);
+    pending.complete();
+    await statuses.close();
+  });
+
+  test('connection invalidation cancels an acknowledged load still waiting for native completion', () async {
+    final statuses = StreamController<String>.broadcast(sync: true);
+    final invalidated = StreamController<void>.broadcast(sync: true);
+    final pending = Completer<void>();
+    final loading = loadAcknowledgedCastMedia(
+      statuses: statuses.stream,
+      invalidated: invalidated.stream,
+      acknowledge: (status) => status == 'owned',
+      load: () {
+        statuses.add('owned');
+        return pending.future;
+      },
+    );
+    final failure = expectLater(loading, throwsStateError);
+    invalidated.add(null);
+    await failure;
+    expect(statuses.hasListener, isFalse);
+    expect(invalidated.hasListener, isFalse);
+    pending.complete();
+    await statuses.close();
+    await invalidated.close();
+  });
+
   test('profile and authentication revocation immediately deny old status', () {
     var authorized = true;
     final owner = CastPlaybackOwnership()..begin('one', () => authorized);

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
@@ -12,6 +13,27 @@ import 'package:plezy/services/playback_initialization_service.dart';
 
 import '../../test_helpers/media_items.dart';
 import '../../test_helpers/music_experience_fakes.dart';
+
+class _CastConnection extends GoogleCastSession {
+  _CastConnection(String? session, String device, {GoogleCastConnectState state = GoogleCastConnectState.connected})
+    : super(
+        sessionID: session,
+        connectionState: state,
+        currentDeviceMuted: false,
+        currentDeviceVolume: 1,
+        deviceStatusText: '',
+        device: GoogleCastDevice(
+          deviceID: device,
+          friendlyName: 'Speaker',
+          modelName: null,
+          statusText: null,
+          deviceVersion: '',
+          isOnLocalNetwork: true,
+          category: '',
+          uniqueID: device,
+        ),
+      );
+}
 
 class _SourceClient extends ExperienceClient {
   Completer<ExternalPlaybackTarget?>? target;
@@ -96,6 +118,15 @@ class _Receiver implements CastMusicReceiver {
 }
 
 void main() {
+  test('Cast ownership keys distinguish receiver changes and new connections', () {
+    final key = castReceiverKey(_CastConnection('session', 'speaker'));
+    expect(key, (session: 'session', device: 'speaker'));
+    expect(castReceiverKey(_CastConnection('session', 'speaker')), key);
+    expect(castReceiverKey(_CastConnection('session', 'different')), isNot(key));
+    expect(castReceiverKey(_CastConnection('new-session', 'speaker')), isNot(key));
+    expect(castReceiverKey(_CastConnection(null, 'speaker')), isNull);
+    expect(castReceiverKey(_CastConnection('session', 'speaker', state: GoogleCastConnectState.connecting)), isNull);
+  });
   TestWidgetsFlutterBinding.ensureInitialized();
   final track = testMediaItem(id: 'track', kind: MediaKind.track, serverId: 'server', durationMs: 180000);
   const source = MusicSource(url: 'https://server/audio.flac?token=secret');

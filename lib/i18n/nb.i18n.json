@@ -3580,6 +3580,7 @@
     "httpsRequired": "Bruk HTTPS eller uttrykkelig tillate en ukryptert tilkobling."
   },
   "cast": {
+    "transferQueue": "Overfør køen til Chromecast",
     "chooseDevice": "Stikk til en enhet",
     "searching": "Søk etter Cast-enheter",
     "connectedTo": "Tilkoblet til ${device}",

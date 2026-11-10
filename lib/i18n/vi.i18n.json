@@ -3559,6 +3559,7 @@
     "httpsRequired": "Sử dụng HTTPS hoặc rõ ràng cho phép kết nối không mã hóa."
   },
   "cast": {
+    "transferQueue": "Chuyển hàng đợi sang Chromecast",
     "chooseDevice": "Truyền đến thiết bị",
     "searching": "Tìm kiếm các thiết bị Cast...",
     "connectedTo": "Kết nối với ${device}",

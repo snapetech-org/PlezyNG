@@ -3622,6 +3622,7 @@
     "httpsRequired": "Użyj HTTPS lub wyraźnie zezwala na nie szyfrowaną łączność."
   },
   "cast": {
+    "transferQueue": "Przenieś kolejkę na Chromecasta",
     "chooseDevice": "Wskaż na urządzenie",
     "searching": "W poszukiwaniu urządzeń do odbioru...",
     "connectedTo": "Źródło: ${device}",

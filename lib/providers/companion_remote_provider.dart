@@ -54,13 +54,12 @@ import '../utils/serial_future_queue.dart';
 import '../mixins/disposable_change_notifier_mixin.dart';
 
 export '../services/companion_remote/lan_discovery_service.dart' show DiscoveredHost;
+export '../services/music/music_transfer_snapshot.dart' show MusicTransferResult;
 
 typedef CommandReceivedCallback = void Function(RemoteCommand command);
 typedef PlexHomeResolver = Future<PlexHome?> Function(String connectionId);
 typedef CompanionRemotePeerServiceFactory = CompanionRemotePeerService Function();
 typedef LanDiscoveryServiceFactory = LanDiscoveryService Function();
-
-enum MusicTransferResult { completed, unavailable, rejected, superseded }
 
 String _localizedRemoteError(Object error, String Function(String details) fallback) {
   if (error is RemotePeerError) {

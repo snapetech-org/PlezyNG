@@ -3559,6 +3559,7 @@
     "httpsRequired": "Menggunakan HTTPS atau secara eksplisit membenarkan sambungan yang tidak disulitkan."
   },
   "cast": {
+    "transferQueue": "Pindahkan baris gilir ke Chromecast",
     "chooseDevice": "Hantar ke peranti",
     "searching": "Mencari peranti yang dikeluarkan...",
     "connectedTo": "Menghubungkan ke ${device}",

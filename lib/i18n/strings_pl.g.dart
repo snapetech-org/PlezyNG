@@ -3046,6 +3046,7 @@ class _Translations$cast$pl extends Translations$cast$en {
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Przenieś kolejkę na Chromecasta';
 	@override String get chooseDevice => 'Wskaż na urządzenie';
 	@override String get searching => 'W poszukiwaniu urządzeń do odbioru...';
 	@override String connectedTo({required Object device}) => 'Źródło: ${device}';
@@ -8418,6 +8419,7 @@ extension on TranslationsPl {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} używa HTTP. Inne osoby w sieci mogą odczytać lub zmienić Twoje hasło, tokeny i multimedia. Korzystaj z HTTPS, jeśli jest dostępny. Kontynuuj tylko wtedy, gdy ufasz tej sieci i akceptujesz ryzyko.',
 			'addServer.allowHttp' => 'Zezwól na HTTP',
 			'addServer.httpsRequired' => 'Użyj HTTPS lub wyraźnie zezwala na nie szyfrowaną łączność.',
+			'cast.transferQueue' => 'Przenieś kolejkę na Chromecasta',
 			'cast.chooseDevice' => 'Wskaż na urządzenie',
 			'cast.searching' => 'W poszukiwaniu urządzeń do odbioru...',
 			'cast.connectedTo' => ({required Object device}) => 'Źródło: ${device}',
@@ -8578,9 +8580,9 @@ extension on TranslationsPl {
 			'universalMedia.files' => 'Archiwum urządzeń',
 			'universalMedia.favorites' => 'Zbawiony strumień ulubionych',
 			'universalMedia.address' => 'Adres medialny',
-			'universalMedia.addressHelp' => 'URL z rozpoznawalnymi parametrami uwierzytelniania lub podpisów są używane tylko do tej sesji i nie mogą być przechowywane jako ulubione.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'URL z rozpoznawalnymi parametrami uwierzytelniania lub podpisów są używane tylko do tej sesji i nie mogą być przechowywane jako ulubione.',
 			'universalMedia.displayName' => 'Nazwa wyświetlacza (opcjonalnie)',
 			'universalMedia.displayNameHelp' => 'Wybierz krótką nazwę dla odtwarzacza i kontrolerów mediów systemu.',
 			'universalMedia.allowHttp' => 'Pozwolenie na nie szyfrowane połączenie HTTP',
@@ -9092,9 +9094,9 @@ extension on TranslationsPl {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS używa standardowych portów NFS i usługi montowania oraz wymaga obsługi RFC 9289 przez NAS. Wymagany jest TLS 1.3. Nazwa hosta lub adres IP musi odpowiadać certyfikatowi. UID/GID AUTH_SYS nadal obowiązują wewnątrz szyfrowanego kanału.',
 			'sourceSetup.clientCertificate' => 'Certyfikat klienta (opcjonalnie)',
 			'sourceSetup.clientCertificateHelp' => 'Pozwala NAS uwierzytelnić tego klienta; ID AUTH_SYS nadal zależą od zasad eksportu NFS na NAS.',
-			'sourceSetup.savedIdentity' => 'Zostanie użyta zapisana tożsamość klienta.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'Zostanie użyta zapisana tożsamość klienta.',
 			'sourceSetup.replaceIdentity' => 'Zastąp zapisaną tożsamość klienta',
 			'sourceSetup.chooseIdentity' => 'Wybierz tożsamość klienta PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Hasło tożsamości klienta',

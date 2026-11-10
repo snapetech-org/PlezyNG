@@ -36,6 +36,8 @@ import '../../mpv/mpv.dart';
 import '../../services/device_performance.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../services/music/music_playback_output.dart';
+import '../../services/music/cast_music_queue.dart';
+import '../../services/music/music_transfer_snapshot.dart' show MusicTransferSession;
 import '../../services/cast_media_service.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../theme/mono_motion.dart';
@@ -842,7 +844,55 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
     }
   }
 
-  Widget _buildOverflowButton(MediaItem track, {bool focusable = false}) {
+  bool _canTransferToCast(
+    MusicPlaybackService session,
+    CompanionRemoteProvider companion,
+    MusicOutputControls output,
+  ) =>
+      !companion.musicGroupActive &&
+      output.remoteOutputName == null &&
+      session.repeatMode == MusicRepeatMode.off &&
+      session.queue.length <= CastMusicQueue.maxTracks &&
+      (session is! MusicDiscoveryControls || !(session as MusicDiscoveryControls).continuationEnabled) &&
+      (session is! MusicSignalPathService || (session as MusicSignalPathService).signalPath?.offline != true);
+
+  Future<void> _transferCastQueue(
+    MusicTransferSession transfer,
+    MusicPlaybackService session,
+    CompanionRemoteProvider companion,
+    MusicOutputControls output,
+  ) async {
+    final cast = CastMediaService.instance;
+    final manager = context.read<MultiServerProvider>().serverManager;
+    try {
+      final result = await cast.transferMusicQueue(
+        context,
+        session: transfer,
+        manager: manager,
+        available: () => mounted && identical(_service, session) && _canTransferToCast(session, companion, output),
+      );
+      if (!mounted) return;
+      switch (result) {
+        case MusicTransferResult.completed:
+          await cast.showControls(context);
+        case MusicTransferResult.rejected:
+          showErrorSnackBar(context, t.cast.startFailed);
+        case MusicTransferResult.unavailable || MusicTransferResult.superseded:
+          break;
+      }
+    } catch (_) {
+      if (mounted) showErrorSnackBar(context, t.cast.startFailed);
+    }
+  }
+
+  Widget _buildOverflowButton(MediaItem track, {bool focusable = false}) => CastMediaService.isSupportedPlatform
+      ? ListenableBuilder(
+          listenable: CastMediaService.instance,
+          builder: (context, _) => _buildOverflowMenu(track, focusable: focusable),
+        )
+      : _buildOverflowMenu(track, focusable: focusable);
+
+  Widget _buildOverflowMenu(MediaItem track, {required bool focusable}) {
     final tk = tokens(context);
     final companion = context.watch<CompanionRemoteProvider>();
     final session = context.read<MusicPlaybackService>();
@@ -853,7 +903,13 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
       key: contextMenuKey,
       item: track,
       extraEntries: [
-        if (output != null && CastMediaService.isSupportedPlatform)
+        if (CastMediaService.isSupportedPlatform && CastMediaService.instance.hasDetachedMusicQueue)
+          MediaMenuExtraEntry(
+            icon: Symbols.cast_connected_rounded,
+            label: t.cast.connectedTo(device: CastMediaService.instance.deviceName ?? t.cast.device),
+            onSelected: () => CastMediaService.instance.showControls(context),
+          )
+        else if (output != null && CastMediaService.isSupportedPlatform) ...[
           MediaMenuExtraEntry(
             icon: Symbols.cast_rounded,
             label: output.remoteOutputName == null
@@ -880,6 +936,13 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
               }
             },
           ),
+          if (session is MusicTransferSession && _canTransferToCast(session, companion, output))
+            MediaMenuExtraEntry(
+              icon: Symbols.cast_rounded,
+              label: t.cast.transferQueue,
+              onSelected: () => _transferCastQueue(session as MusicTransferSession, session, companion, output),
+            ),
+        ],
         if (companion.canManageMusicGroups && output?.remoteOutputName == null)
           MediaMenuExtraEntry(
             icon: Symbols.speaker_group_rounded,

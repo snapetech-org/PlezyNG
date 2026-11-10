@@ -17,6 +17,8 @@ import '../utils/serial_future_queue.dart';
 import '../utils/session_identifier.dart';
 import 'cast_playback_ownership.dart';
 import 'music/cast_music_output.dart';
+import 'music/cast_music_queue.dart';
+import 'music/music_transfer_snapshot.dart';
 import 'multi_server_manager.dart';
 import 'playback_report_session.dart';
 import 'trackers/tracker_coordinator.dart';
@@ -58,6 +60,8 @@ class CastMediaService extends ChangeNotifier {
   int _profileRevision = 0;
   String? _profileId;
   Duration _lastOwnedPosition = Duration.zero;
+  _DetachedMusicQueue? _detached;
+  Timer? _detachedTimer;
 
   void bindProfile(String? profileId) {
     if (_profileId == profileId) return;
@@ -65,6 +69,8 @@ class CastMediaService extends ChangeNotifier {
     _profileId = profileId;
     _profileRevision++;
     _loadIntent++;
+    _detached?.retire();
+    _checkDetached();
     _ownership.clear();
     _receiverKey = null;
     _progressTimer?.cancel();
@@ -89,6 +95,64 @@ class CastMediaService extends ChangeNotifier {
   }
 
   bool _ownsReceiver() => _ownership.authorized && _matchesReceiver();
+
+  bool get hasDetachedMusicQueue {
+    final detached = _detached;
+    return detached != null &&
+        detached.committed &&
+        detached.retiredAt == null &&
+        detached.queue.authorized() &&
+        _matchesDetached(detached);
+  }
+
+  bool _matchesDetached(_DetachedMusicQueue detached) =>
+      detached.queue.matches(detached.connection, castReceiverKey(_sessions.currentSession), _remote.mediaStatus);
+
+  void _clearDetached(_DetachedMusicQueue detached) {
+    if (!identical(_detached, detached)) return;
+    _detached = null;
+    _detachedTimer?.cancel();
+    _detachedTimer = null;
+  }
+
+  void _checkDetached() {
+    final detached = _detached;
+    if (detached == null) return;
+    if (!detached.queue.authorized()) detached.retire();
+    final status = _remote.mediaStatus;
+    final connection = castReceiverKey(_sessions.currentSession);
+    final matches = _matchesDetached(detached);
+    if (detached.retiredAt case final retired?) {
+      if (DateTime.now().difference(retired) >= const Duration(minutes: 1)) {
+        _clearDetached(detached);
+      } else if (matches && status?.playerState != CastMediaPlayerState.idle && !detached.stopping) {
+        unawaited(_stopDetached(detached));
+      }
+    } else if (detached.committed &&
+        connection != null &&
+        (connection != detached.connection ||
+            (status?.playerState == CastMediaPlayerState.idle &&
+                status?.idleReason != null &&
+                status?.idleReason != GoogleCastMediaIdleReason.none &&
+                (status?.idleReason != GoogleCastMediaIdleReason.finished ||
+                    !matches ||
+                    detached.queue.isFinalOccurrence(status))) ||
+            (!matches && status?.mediaInformation != null && status?.playerState != CastMediaPlayerState.idle))) {
+      _clearDetached(detached);
+    }
+  }
+
+  Future<void> _stopDetached(_DetachedMusicQueue detached) async {
+    if (!_matchesDetached(detached) || detached.stopping) return;
+    detached.stopping = true;
+    try {
+      await _remote.stop().timeout(const Duration(seconds: 5));
+    } catch (error) {
+      appLogger.d('Google Cast queue stop failed (${error.runtimeType})');
+    } finally {
+      detached.stopping = false;
+    }
+  }
 
   Future<void> _stopMatchedReceiver() async {
     if (!_matchesReceiver() || _remote.mediaStatus?.playerState == CastMediaPlayerState.idle) return;
@@ -197,6 +261,102 @@ class CastMediaService extends ChangeNotifier {
         authorized: current,
         receiver: receiver,
       );
+    });
+  }
+
+  Future<MusicTransferResult> transferMusicQueue(
+    BuildContext context, {
+    required MusicTransferSession session,
+    required MultiServerManager manager,
+    required bool Function() available,
+  }) async {
+    final profile = _profileRevision;
+    await initialize();
+    if (!context.mounted || !isSupportedPlatform || profile != _profileRevision || _profileId == null || !available()) {
+      return MusicTransferResult.unavailable;
+    }
+    final intent = _loadIntent;
+    bool selected() => profile == _profileRevision && intent == _loadIntent && available();
+    final device = _sessions.hasConnectedSession ? null : await _pickDevice(context);
+    if (!selected() || !context.mounted || (device == null && !_sessions.hasConnectedSession)) {
+      return MusicTransferResult.unavailable;
+    }
+    return _loads.run(() async {
+      _checkDetached();
+      if (!selected() || _detached != null || _activeItem != null) return MusicTransferResult.unavailable;
+      _DetachedMusicQueue? binding;
+      var admitted = false;
+      var abandoned = false;
+      try {
+        if (device != null) {
+          if (!await _sessions.startSessionWithDevice(device).timeout(const Duration(seconds: 10))) {
+            return MusicTransferResult.rejected;
+          }
+          await _waitForConnection();
+        }
+        final connection = castReceiverKey(_sessions.currentSession);
+        if (!selected() || connection == null || (device != null && device.deviceID != connection.device)) {
+          return MusicTransferResult.superseded;
+        }
+        bool idle() => _remote.mediaStatus == null || _remote.mediaStatus?.playerState == CastMediaPlayerState.idle;
+        bool connected() => connection == castReceiverKey(_sessions.currentSession);
+        final original = session.offerTransfer();
+        if (!idle() || original == null) return MusicTransferResult.unavailable;
+
+        MusicTransferOffer? latest() {
+          if (abandoned || !selected() || !connected()) return null;
+          final offer = session.offerTransfer();
+          return offer != null &&
+                  offer.session == original.session &&
+                  offer.generation == original.generation &&
+                  offer.edit == original.edit &&
+                  offer.transport == original.transport &&
+                  offer.snapshot.playing == original.snapshot.playing
+              ? offer
+              : null;
+        }
+
+        final queue = await CastMusicQueue.prepare(
+          original.snapshot,
+          manager: manager,
+          token: generateSessionIdentifier(),
+          current: () => latest() != null && idle(),
+        ).timeout(const Duration(seconds: 25));
+        final offer = latest();
+        if (offer == null || !idle()) return MusicTransferResult.superseded;
+        final prepared = _DetachedMusicQueue(queue, connection);
+        binding = prepared;
+        _detached = prepared;
+        _detachedTimer = Timer.periodic(const Duration(seconds: 2), (_) => _checkDetached());
+        admitted = await queue.handoff(
+          offer: offer,
+          current: () => prepared.retiredAt == null && latest() != null,
+          status: () => _remote.mediaStatus,
+          statuses: _remote.mediaStatusStream,
+          invalidated: _sessions.currentSessionStream
+              .where((value) => castReceiverKey(value) != connection)
+              .map<void>((_) {}),
+          load: (items, options) => dispatchCastMusicQueue(items, options, android: Platform.isAndroid),
+          play: _remote.play,
+          finish: session.finishTransfer,
+        );
+        if (!admitted || prepared.retiredAt != null || !queue.authorized() || !_matchesDetached(prepared)) {
+          admitted = false;
+          return MusicTransferResult.superseded;
+        }
+        prepared.committed = true;
+        notifyListeners();
+        return MusicTransferResult.completed;
+      } catch (error) {
+        appLogger.d('Google Cast music queue handoff failed (${error.runtimeType})');
+        return MusicTransferResult.rejected;
+      } finally {
+        abandoned = true;
+        if (!admitted && binding != null) {
+          binding.retire();
+          _checkDetached();
+        }
+      }
     });
   }
 
@@ -562,6 +722,7 @@ class CastMediaService extends ChangeNotifier {
   }
 
   void _onSessionChanged(GoogleCastSession? session) {
+    _checkDetached();
     if (castReceiverKey(session) != _receiverKey && _activeItem != null && !_finishingPlayback) {
       _retirePlayback();
     }
@@ -570,6 +731,7 @@ class CastMediaService extends ChangeNotifier {
   }
 
   void _onMediaStatusChanged(GoggleCastMediaStatus? status) {
+    _checkDetached();
     if (_activeItem != null) {
       if (!_ownsReceiver()) {
         _progressTimer?.cancel();
@@ -625,6 +787,8 @@ class CastMediaService extends ChangeNotifier {
         animation: this,
         builder: (context, _) {
           final status = _remote.mediaStatus;
+          final detached = hasDetachedMusicQueue;
+          final metadata = status?.mediaInformation?.metadata;
           final isPaused = status?.playerState == CastMediaPlayerState.paused;
           final isPlaying =
               status?.playerState == CastMediaPlayerState.playing ||
@@ -641,14 +805,19 @@ class CastMediaService extends ChangeNotifier {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 12),
-                  Text(_activeItem?.displayTitle ?? t.cast.readyToCast, style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    _activeItem?.displayTitle ??
+                        (detached && metadata is GoogleCastGenericMediaMetadata ? metadata.title : null) ??
+                        t.cast.readyToCast,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: 18),
                   StreamBuilder<Duration>(
                     stream: _remote.playerPositionStream,
                     initialData: _remote.playerPosition,
                     builder: (context, snapshot) {
                       final position = _partStart + (snapshot.data ?? Duration.zero);
-                      final duration = _duration;
+                      final duration = detached ? status?.mediaInformation?.duration : _duration;
                       return Text(
                         duration == null
                             ? _formatDuration(position)
@@ -661,10 +830,12 @@ class CastMediaService extends ChangeNotifier {
                     children: [
                       IconButton.filledTonal(
                         tooltip: isPaused ? t.common.resume : t.common.pause,
-                        onPressed: !_ownsReceiver() || !isPaused && !isPlaying
+                        onPressed: !(_ownsReceiver() || detached) || !isPaused && !isPlaying
                             ? null
                             : () {
-                                if (_ownsReceiver()) unawaited(isPaused ? _remote.play() : _remote.pause());
+                                if (_ownsReceiver() || hasDetachedMusicQueue) {
+                                  unawaited(isPaused ? _remote.play() : _remote.pause());
+                                }
                               },
                         icon: AppIcon(isPaused ? Symbols.play_arrow_rounded : Symbols.pause_rounded),
                       ),
@@ -672,6 +843,13 @@ class CastMediaService extends ChangeNotifier {
                       IconButton.filledTonal(
                         tooltip: t.cast.stopCasting,
                         onPressed: () async {
+                          final queue = _detached;
+                          if (hasDetachedMusicQueue && queue != null) {
+                            queue.retire();
+                            await _stopDetached(queue);
+                            if (sheetContext.mounted) Navigator.of(sheetContext).pop();
+                            return;
+                          }
                           if (!_ownsReceiver()) return;
                           final status = _remote.mediaStatus!;
                           final token = _ownerToken(status);
@@ -712,11 +890,25 @@ class CastMediaService extends ChangeNotifier {
     _loadIntent++;
     _ownership.clear();
     _progressTimer?.cancel();
+    _detachedTimer?.cancel();
+    _detached = null;
     unawaited(_sessionSubscription?.cancel());
     unawaited(_statusSubscription?.cancel());
     unawaited(_positionSubscription?.cancel());
     super.dispose();
   }
+}
+
+class _DetachedMusicQueue {
+  _DetachedMusicQueue(this.queue, this.connection);
+
+  final CastMusicQueue queue;
+  final CastReceiverKey connection;
+  DateTime? retiredAt;
+  bool committed = false;
+  bool stopping = false;
+
+  void retire() => retiredAt ??= DateTime.now();
 }
 
 class CastPlaybackException implements Exception {

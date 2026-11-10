@@ -3004,6 +3004,7 @@ class _Translations$cast$ja extends Translations$cast$en {
 	final TranslationsJa _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'キューを Chromecast に転送';
 	@override String get chooseDevice => 'デバイスに押し付ける';
 	@override String get searching => 'キャストデバイスを探す...';
 	@override String connectedTo({required Object device}) => '接続番号: ${device}';
@@ -8363,6 +8364,7 @@ extension on TranslationsJa {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} は HTTP を使用しています。ネットワーク上の第三者がパスワード、トークン、メディアを読み取ったり改ざんしたりする可能性があります。利用できる場合は HTTPS を使用してください。このネットワークを信頼し、リスクを受け入れる場合のみ続行してください。',
 			'addServer.allowHttp' => 'HTTPを許可',
 			'addServer.httpsRequired' => 'HTTPS を使用するか、暗号化されていない接続を明示的に許可するか。',
+			'cast.transferQueue' => 'キューを Chromecast に転送',
 			'cast.chooseDevice' => 'デバイスに押し付ける',
 			'cast.searching' => 'キャストデバイスを探す...',
 			'cast.connectedTo' => ({required Object device}) => '接続番号: ${device}',
@@ -8523,9 +8525,9 @@ extension on TranslationsJa {
 			'universalMedia.files' => 'デバイスファイル',
 			'universalMedia.favorites' => 'お気に入りのSave Stream',
 			'universalMedia.address' => 'メディアアドレス',
-			'universalMedia.addressHelp' => '認定認証またはサインパラメーターを持つURLは、このセッションのみに使用され、お気に入りとして保存することはできません。',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => '認定認証またはサインパラメーターを持つURLは、このセッションのみに使用され、お気に入りとして保存することはできません。',
 			'universalMedia.displayName' => 'ディスプレイ名(オプション)',
 			'universalMedia.displayNameHelp' => 'プレイヤーとシステムメディアコントロールのための短い名前を選択します。',
 			'universalMedia.allowHttp' => '暗号化されていないHTTP接続を許可する',
@@ -9037,9 +9039,9 @@ extension on TranslationsJa {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS は通常の NFS およびマウントサービスのポートを使用し、NAS の RFC 9289 対応が必要です。TLS 1.3 が必須です。ホスト名または IP アドレスは証明書と一致する必要があります。暗号化された通信でも AUTH_SYS UID/GID は引き続き適用されます。',
 			'sourceSetup.clientCertificate' => 'クライアント証明書（任意）',
 			'sourceSetup.clientCertificateHelp' => 'NAS がこのクライアントを認証できるようにします。AUTH_SYS ID は引き続き NAS のエクスポートポリシーに従います。',
-			'sourceSetup.savedIdentity' => '保存済みのクライアント認証情報を使用します。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => '保存済みのクライアント認証情報を使用します。',
 			'sourceSetup.replaceIdentity' => '保存済みのクライアント認証情報を置き換え',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 クライアント認証情報を選択',
 			'sourceSetup.identityPassphrase' => 'クライアント認証情報のパスフレーズ',

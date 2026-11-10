@@ -3622,6 +3622,7 @@
     "httpsRequired": "Используйте HTTPS или прямо разрешаете нешифрованное соединение."
   },
   "cast": {
+    "transferQueue": "Перенести очередь на Chromecast",
     "chooseDevice": "Сталкивать на устройство",
     "searching": "Ищут кастрюлевые устройства...",
     "connectedTo": "Подключен к ${device}",

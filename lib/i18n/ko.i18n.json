@@ -3576,6 +3576,7 @@
     "httpsRequired": "HTTPS 또는 명시적으로 암호화되지 않은 연결을 허용합니다."
   },
   "cast": {
+    "transferQueue": "대기열을 Chromecast로 전송",
     "chooseDevice": "장치에 던져",
     "searching": "기계를 찾는 것에 대한 검색...",
     "connectedTo": "${device}에 연결된",

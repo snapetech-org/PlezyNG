@@ -3008,6 +3008,7 @@ class _Translations$cast$hi extends Translations$cast$en {
 	final TranslationsHi _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'कतार को Chromecast पर भेजें';
 	@override String get chooseDevice => 'किसी डिवाइस पर कास्ट करें';
 	@override String get searching => 'कस्टम उपकरणों की तलाश में ...';
 	@override String connectedTo({required Object device}) => '${device} पर कनेक्ट करें';
@@ -8368,6 +8369,7 @@ extension on TranslationsHi {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} HTTP का उपयोग करता है। नेटवर्क पर मौजूद लोग आपका पासवर्ड, टोकन और मीडिया पढ़ या बदल सकते हैं। उपलब्ध होने पर HTTPS का उपयोग करें। केवल तभी जारी रखें जब आपको इस नेटवर्क पर भरोसा हो और आप जोखिम स्वीकार करते हों।',
 			'addServer.allowHttp' => 'HTTP की अनुमति दें',
 			'addServer.httpsRequired' => 'HTTPS का उपयोग करें या स्पष्ट रूप से एक अज्ञात कनेक्शन की अनुमति दें।',
+			'cast.transferQueue' => 'कतार को Chromecast पर भेजें',
 			'cast.chooseDevice' => 'किसी डिवाइस पर कास्ट करें',
 			'cast.searching' => 'कस्टम उपकरणों की तलाश में ...',
 			'cast.connectedTo' => ({required Object device}) => '${device} पर कनेक्ट करें',
@@ -8528,9 +8530,9 @@ extension on TranslationsHi {
 			'universalMedia.files' => 'डिवाइस फ़ाइल',
 			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
-			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
 			'universalMedia.displayName' => 'डिस्प्ले नाम (वैकल्पिक)',
 			'universalMedia.displayNameHelp' => 'प्लेयर और सिस्टम मीडिया नियंत्रण के लिए एक संक्षिप्त नाम चुनें।',
 			'universalMedia.allowHttp' => 'एक अज्ञात HTTP कनेक्शन की अनुमति दें',
@@ -9042,9 +9044,9 @@ extension on TranslationsHi {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS सामान्य NFS और माउंट सेवा पोर्ट इस्तेमाल करता है और NAS में RFC 9289 का समर्थन होना ज़रूरी है। TLS 1.3 अनिवार्य है। होस्ट का नाम या IP प्रमाणपत्र से मेल खाना चाहिए। एन्क्रिप्टेड चैनल में भी AUTH_SYS UID/GID लागू रहते हैं।',
 			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
-			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',
 			'sourceSetup.replaceIdentity' => 'सहेजी गई क्लाइंट पहचान बदलें',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 क्लाइंट पहचान चुनें',
 			'sourceSetup.identityPassphrase' => 'क्लाइंट पहचान का पासफ़्रेज़',

@@ -3581,6 +3581,7 @@
     "httpsRequired": "Use HTTPS or explicitly allow an unencrypted connection."
   },
   "cast": {
+    "transferQueue": "Transfer queue to Chromecast",
     "chooseDevice": "Cast to a device",
     "searching": "Searching for Cast devices…",
     "connectedTo": "Connected to ${device}",

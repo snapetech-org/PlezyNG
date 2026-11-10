@@ -166,7 +166,19 @@ returns locally paused and never stops the foreign media.
 Cast resolves receiver-accessible HTTP streams using the current server account;
 downloaded files, prefetch paths and native request-header sources are not sent.
 Local EQ, normalization and two-decoder fades are not applied to remote PCM and
-are reported absent. Receiver playback beyond the current track requires the
-sender process to remain active; receiver-side durable autonomous queues, live
-codec qualification and Google Cast speaker-group management remain separate.
-Paired synchronization is app-to-app, not a Cast speaker-group controller.
+are reported absent. The ordinary Cast output needs the sender to advance the
+queue.
+
+**Transfer queue to Chromecast** is a separate Now Playing action. It prepares
+up to 32 online tracks with repeat and rolling continuation off on an idle
+receiver, subject to the Cast request size limit. Shuffle order, duplicates and
+the current position in whole seconds are carried over. The receiver loads
+paused, and for a playing queue the phone waits for matching receiver playback
+before pausing its own queue. Unavailable sources or oversized requests fail as
+a whole. The [Cast receiver owns the resulting queue](https://developers.google.com/cast/docs/android_sender/queueing)
+and can advance it without the sender as long as the stream URLs remain valid.
+Use the Cast controls in Now Playing to pause, resume or stop the owned queue.
+Detached playback does not produce local listening history. Restoring detached
+control after app restart, receiver codec/device qualification and Google Cast
+speaker-group management remain separate. Paired synchronization uses Pleazyng
+endpoints.

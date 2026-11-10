@@ -3300,6 +3300,7 @@
   "addServer.insecureDescription": "7d83f697bc48ca55",
   "addServer.allowHttp": "8e7ea5571d7a5324",
   "addServer.httpsRequired": "21d27dc56a04b4b5",
+  "cast.transferQueue": "d197b5f14bfb9f69",
   "cast.chooseDevice": "7102380c512e8c90",
   "cast.searching": "26b04bf675ea4735",
   "cast.connectedTo": "8c10656d65b66c99",

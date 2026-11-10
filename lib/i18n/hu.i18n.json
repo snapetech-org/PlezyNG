@@ -3580,6 +3580,7 @@
     "httpsRequired": "Használja a HTTPS vagy kifejezetten engedélyezi a titkosított kapcsolatot."
   },
   "cast": {
+    "transferQueue": "Várólista átvitele Chromecastra",
     "chooseDevice": "A készülékre kattintva",
     "searching": "A Cast eszközök keresése...",
     "connectedTo": "Kapcsolódó oldalak ${device}",

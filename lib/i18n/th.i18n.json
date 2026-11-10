@@ -3559,6 +3559,7 @@
     "httpsRequired": "ใช้ HTTPS หรืออนุญาตให้มีการเชื่อมต่อที่ไม่ได้เข้ารหัส"
   },
   "cast": {
+    "transferQueue": "ย้ายคิวไปยัง Chromecast",
     "chooseDevice": "แคสต์ไปยังอุปกรณ์",
     "searching": "ค้นหาอุปกรณ์ Cast ...",
     "connectedTo": "เชื่อมต่อ ${device}",

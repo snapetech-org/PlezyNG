@@ -4,6 +4,8 @@ import '../../media/media_kind.dart';
 import 'music_playback_service.dart';
 import 'music_queue_controller.dart';
 
+enum MusicTransferResult { completed, unavailable, rejected, superseded }
+
 /// A sender's queue and intent when the user requested handoff. Only the
 /// snapshot travels over the peer channel; the revisions stay local.
 class MusicTransferOffer {

@@ -2989,6 +2989,7 @@ class _Translations$cast$ms extends Translations$cast$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Pindahkan baris gilir ke Chromecast';
 	@override String get chooseDevice => 'Hantar ke peranti';
 	@override String get searching => 'Mencari peranti yang dikeluarkan...';
 	@override String connectedTo({required Object device}) => 'Menghubungkan ke ${device}';
@@ -8343,6 +8344,7 @@ extension on TranslationsMs {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} menggunakan HTTP. Orang lain dalam rangkaian boleh membaca atau mengubah kata laluan, token dan media anda. Gunakan HTTPS jika tersedia. Teruskan hanya jika anda mempercayai rangkaian ini dan menerima risikonya.',
 			'addServer.allowHttp' => 'Benarkan HTTP',
 			'addServer.httpsRequired' => 'Menggunakan HTTPS atau secara eksplisit membenarkan sambungan yang tidak disulitkan.',
+			'cast.transferQueue' => 'Pindahkan baris gilir ke Chromecast',
 			'cast.chooseDevice' => 'Hantar ke peranti',
 			'cast.searching' => 'Mencari peranti yang dikeluarkan...',
 			'cast.connectedTo' => ({required Object device}) => 'Menghubungkan ke ${device}',
@@ -8503,9 +8505,9 @@ extension on TranslationsMs {
 			'universalMedia.files' => 'Peranti fail',
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
-			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diiktiraf hanya digunakan untuk sesi ini dan tidak boleh disimpan sebagai kegemaran.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diiktiraf hanya digunakan untuk sesi ini dan tidak boleh disimpan sebagai kegemaran.',
 			'universalMedia.displayName' => 'Nama Pameran ( opsional )',
 			'universalMedia.displayNameHelp' => 'Pilih nama pendek untuk pemutar dan kawalan media sistem.',
 			'universalMedia.allowHttp' => 'Membolehkan sambungan HTTP yang tidak disulitkan',
@@ -9017,9 +9019,9 @@ extension on TranslationsMs {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS menggunakan port NFS dan perkhidmatan lekap yang biasa serta memerlukan sokongan RFC 9289 pada NAS. TLS 1.3 diwajibkan. Nama hos atau IP mesti sepadan dengan sijil. AUTH_SYS UID/GID masih terpakai dalam saluran yang disulitkan.',
 			'sourceSetup.clientCertificate' => 'Sijil klien (pilihan)',
 			'sourceSetup.clientCertificateHelp' => 'Membolehkan NAS mengesahkan klien ini; ID AUTH_SYS masih bergantung pada dasar perkongsian NFS pada NAS.',
-			'sourceSetup.savedIdentity' => 'Identiti klien yang disimpan akan digunakan.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'Identiti klien yang disimpan akan digunakan.',
 			'sourceSetup.replaceIdentity' => 'Gantikan identiti klien yang disimpan',
 			'sourceSetup.chooseIdentity' => 'Pilih identiti klien PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Frasa laluan identiti klien',

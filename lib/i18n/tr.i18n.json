@@ -3580,6 +3580,7 @@
     "httpsRequired": "HTTPS veya açıkça şifrelenmemiş bir bağlantı sağlar."
   },
   "cast": {
+    "transferQueue": "Kuyruğu Chromecast’e aktar",
     "chooseDevice": "Bir cihazı vurmak",
     "searching": "Arama cihazları için...",
     "connectedTo": "${device} ile bağlantılı",

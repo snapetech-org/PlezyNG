@@ -3042,6 +3042,7 @@ class _Translations$cast$uk extends Translations$cast$en {
 	final TranslationsUk _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Перенести чергу на Chromecast';
 	@override String get chooseDevice => 'Транслювати на пристрій';
 	@override String get searching => 'Пошук пристроїв для вишивки...';
 	@override String connectedTo({required Object device}) => 'Підключений до ${device}';
@@ -8412,6 +8413,7 @@ extension on TranslationsUk {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} використовує HTTP. Інші користувачі мережі можуть прочитати або змінити ваш пароль, токени та медіа. За можливості використовуйте HTTPS. Продовжуйте лише тоді, коли довіряєте цій мережі та приймаєте ризик.',
 			'addServer.allowHttp' => 'Дозвіл HTTP',
 			'addServer.httpsRequired' => 'Використовуйте HTTPS або експлицитно дозволяйте нешифрований зв\'язок.',
+			'cast.transferQueue' => 'Перенести чергу на Chromecast',
 			'cast.chooseDevice' => 'Транслювати на пристрій',
 			'cast.searching' => 'Пошук пристроїв для вишивки...',
 			'cast.connectedTo' => ({required Object device}) => 'Підключений до ${device}',
@@ -8572,9 +8574,9 @@ extension on TranslationsUk {
 			'universalMedia.files' => 'Файли пристроїв',
 			'universalMedia.favorites' => 'Збережений потік улюблених',
 			'universalMedia.address' => 'Медіа адреса',
-			'universalMedia.addressHelp' => 'URL-адреси з визнаними параметрами акредитації або підпису використовуються тільки для цієї сесії і не можуть бути збережені як улюблені.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'URL-адреси з визнаними параметрами акредитації або підпису використовуються тільки для цієї сесії і не можуть бути збережені як улюблені.',
 			'universalMedia.displayName' => 'Показати назву (опціонально)',
 			'universalMedia.displayNameHelp' => 'Виберіть коротке ім\'я для гравця і системних медіа-контролів.',
 			'universalMedia.allowHttp' => 'Дозволити нешифровану HTTP-зв\'язок',
@@ -9086,9 +9088,9 @@ extension on TranslationsUk {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS використовує звичайні порти NFS і служби монтування та потребує підтримки RFC 9289 на NAS. Потрібен TLS 1.3. Ім’я хоста або IP-адреса мають відповідати сертифікату. UID/GID AUTH_SYS і далі застосовуються в зашифрованому каналі.',
 			'sourceSetup.clientCertificate' => 'Сертифікат клієнта (необов’язково)',
 			'sourceSetup.clientCertificateHelp' => 'Дає змогу NAS автентифікувати цього клієнта; ID AUTH_SYS і далі залежать від правил експорту NFS на NAS.',
-			'sourceSetup.savedIdentity' => 'Буде використано збережені ідентифікаційні дані клієнта.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'Буде використано збережені ідентифікаційні дані клієнта.',
 			'sourceSetup.replaceIdentity' => 'Замінити збережені ідентифікаційні дані клієнта',
 			'sourceSetup.chooseIdentity' => 'Вибрати ідентифікаційні дані клієнта PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Парольна фраза ідентифікаційних даних клієнта',

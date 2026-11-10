@@ -3004,6 +3004,7 @@ class _Translations$cast$ko extends Translations$cast$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => '대기열을 Chromecast로 전송';
 	@override String get chooseDevice => '장치에 던져';
 	@override String get searching => '기계를 찾는 것에 대한 검색...';
 	@override String connectedTo({required Object device}) => '${device}에 연결된';
@@ -8363,6 +8364,7 @@ extension on TranslationsKo {
 			'addServer.insecureDescription' => ({required Object url}) => '${url}은(는) HTTP를 사용합니다. 네트워크의 다른 사용자가 비밀번호, 토큰 및 미디어를 읽거나 변경할 수 있습니다. 가능하면 HTTPS를 사용하세요. 이 네트워크를 신뢰하고 위험을 감수하는 경우에만 계속하세요.',
 			'addServer.allowHttp' => 'HTTP 허용',
 			'addServer.httpsRequired' => 'HTTPS 또는 명시적으로 암호화되지 않은 연결을 허용합니다.',
+			'cast.transferQueue' => '대기열을 Chromecast로 전송',
 			'cast.chooseDevice' => '장치에 던져',
 			'cast.searching' => '기계를 찾는 것에 대한 검색...',
 			'cast.connectedTo' => ({required Object device}) => '${device}에 연결된',
@@ -8523,9 +8525,9 @@ extension on TranslationsKo {
 			'universalMedia.files' => '장치 파일',
 			'universalMedia.favorites' => '저장된 스트림 좋아하는',
 			'universalMedia.address' => '미디어 주소',
-			'universalMedia.addressHelp' => '인증 또는 서명 매개 변수를 가진 URL은 이 세션에만 사용되며 좋아하는 것으로 저장될 수 없습니다.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => '인증 또는 서명 매개 변수를 가진 URL은 이 세션에만 사용되며 좋아하는 것으로 저장될 수 없습니다.',
 			'universalMedia.displayName' => '디스플레이 이름 (선택)',
 			'universalMedia.displayNameHelp' => '플레이어 및 시스템 미디어 컨트롤에 대한 짧은 이름을 선택합니다.',
 			'universalMedia.allowHttp' => '암호화되지 않은 HTTP 연결을 허용',
@@ -9037,9 +9039,9 @@ extension on TranslationsKo {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS는 일반 NFS 및 마운트 서비스 포트를 사용하며, NAS가 RFC 9289를 지원해야 합니다. TLS 1.3이 필수입니다. 호스트 이름 또는 IP가 인증서와 일치해야 합니다. 암호화된 채널에서도 AUTH_SYS UID/GID가 적용됩니다.',
 			'sourceSetup.clientCertificate' => '클라이언트 인증서(선택 사항)',
 			'sourceSetup.clientCertificateHelp' => 'NAS가 이 클라이언트를 인증하도록 합니다. AUTH_SYS ID에는 여전히 NAS 내보내기 정책이 적용됩니다.',
-			'sourceSetup.savedIdentity' => '저장된 클라이언트 인증 정보를 사용합니다.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => '저장된 클라이언트 인증 정보를 사용합니다.',
 			'sourceSetup.replaceIdentity' => '저장된 클라이언트 인증 정보 교체',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 클라이언트 인증 정보 선택',
 			'sourceSetup.identityPassphrase' => '클라이언트 인증 정보 암호 구문',

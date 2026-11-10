@@ -967,6 +967,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     return !_disposed &&
         _queueSessionRevision == offer.session &&
         _generation == offer.generation &&
+        _queueEditRevision == offer.edit &&
+        _continuationResumeRevision == offer.transport + (offer.snapshot.playing ? 1 : 0) &&
         _status == MusicPlaybackStatus.paused;
   }
 

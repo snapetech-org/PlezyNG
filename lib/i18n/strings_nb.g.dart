@@ -3008,6 +3008,7 @@ class _Translations$cast$nb extends Translations$cast$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Overfør køen til Chromecast';
 	@override String get chooseDevice => 'Stikk til en enhet';
 	@override String get searching => 'Søk etter Cast-enheter';
 	@override String connectedTo({required Object device}) => 'Tilkoblet til ${device}';
@@ -8368,6 +8369,7 @@ extension on TranslationsNb {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} bruker HTTP. Andre på nettverket kan lese eller endre passordet, tokenene og mediene dine. Bruk HTTPS når det er tilgjengelig. Fortsett bare hvis du stoler på dette nettverket og godtar risikoen.',
 			'addServer.allowHttp' => 'Tillat HTTP',
 			'addServer.httpsRequired' => 'Bruk HTTPS eller uttrykkelig tillate en ukryptert tilkobling.',
+			'cast.transferQueue' => 'Overfør køen til Chromecast',
 			'cast.chooseDevice' => 'Stikk til en enhet',
 			'cast.searching' => 'Søk etter Cast-enheter',
 			'cast.connectedTo' => ({required Object device}) => 'Tilkoblet til ${device}',
@@ -8528,9 +8530,9 @@ extension on TranslationsNb {
 			'universalMedia.files' => 'Device filer',
 			'universalMedia.favorites' => 'Saved stream favoritter',
 			'universalMedia.address' => 'Media adresser',
-			'universalMedia.addressHelp' => 'URLer med anerkjente akkrediterings- eller signaturparameter brukes kun for denne sesjonen og kan ikke lagres som favoritter.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'URLer med anerkjente akkrediterings- eller signaturparameter brukes kun for denne sesjonen og kan ikke lagres som favoritter.',
 			'universalMedia.displayName' => 'Visningsnavnet (alternativt)',
 			'universalMedia.displayNameHelp' => 'Velg et kort navn for spilleren og systemmediakontrollene.',
 			'universalMedia.allowHttp' => 'Tillat en ukryptert HTTP-tilkobling',
@@ -9042,9 +9044,9 @@ extension on TranslationsNb {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS bruker de vanlige portene for NFS og monteringstjenesten og krever RFC 9289-støtte på NAS-enheten. TLS 1.3 er påkrevd. Vertsnavnet eller IP-adressen må samsvare med sertifikatet. AUTH_SYS UID/GID gjelder fortsatt i den krypterte kanalen.',
 			'sourceSetup.clientCertificate' => 'Klientsertifikat (valgfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Lar NAS-enheten autentisere denne klienten; AUTH_SYS-ID-er avhenger fortsatt av reglene for NAS-enhetens NFS-deling.',
-			'sourceSetup.savedIdentity' => 'En lagret klientidentitet vil bli brukt.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'En lagret klientidentitet vil bli brukt.',
 			'sourceSetup.replaceIdentity' => 'Erstatt lagret klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Velg PKCS#12-klientidentitet',
 			'sourceSetup.identityPassphrase' => 'Passfrase for klientidentitet',

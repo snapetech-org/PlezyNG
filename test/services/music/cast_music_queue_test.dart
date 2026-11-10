@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_item.dart';
@@ -54,6 +55,7 @@ GoggleCastMediaStatus _status(CastMusicQueue queue, int index, CastMediaPlayerSt
     );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late _Client client;
   late MultiServerManager manager;
 
@@ -102,8 +104,8 @@ void main() {
       prepare(
         MusicTransferSnapshot(
           queue: MusicQueueState(
-            items: List.generate(4, (index) => musicTrack('track$index')),
-            order: [0, 1, 2, 3],
+            items: List.generate(8, (index) => musicTrack('track$index')),
+            order: List.generate(8, (index) => index),
             cursor: 0,
             shuffled: false,
             repeatMode: MusicRepeatMode.off,
@@ -115,6 +117,39 @@ void main() {
       throwsStateError,
     );
   });
+
+  for (final android in [true, false]) {
+    test('sends the paused queue item through the ${android ? 'Android' : 'iOS'} bridge', () async {
+      final queue = await prepare(_snapshot());
+      final channel = MethodChannel(
+        android ? 'com.felnanuke.google_cast.remote_media_client' : 'google_cast.remote_media_client',
+      );
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      final pending = Completer<Object?>();
+      final received = Completer<MethodCall>();
+      messenger.setMockMethodCallHandler(channel, (call) {
+        received.complete(call);
+        return pending.future;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+      var completed = false;
+      final dispatch = dispatchCastMusicQueue(
+        queue.items,
+        queue.options(_snapshot().position),
+        android: android,
+      ).then((_) => completed = true);
+      final call = await received.future;
+      expect(call.method, 'queueLoadItems');
+      final items = call.arguments[android ? 'queueItems' : 'items'] as List;
+      expect(items[1][android ? 'autoPlay' : 'autoplay'], false);
+      expect(items[2][android ? 'autoPlay' : 'autoplay'], true);
+      expect(items[2]['media']['contentID'], 'pleazyng:test-owner:2');
+      expect(call.arguments['options']['startIndex'], 1);
+      expect(completed, isFalse);
+      pending.complete(true);
+      await dispatch;
+    });
+  }
 
   for (final revoke in [false, true]) {
     test('handoff ${revoke ? 'rejects a newer local intent' : 'waits for actual receiver playback'}', () async {

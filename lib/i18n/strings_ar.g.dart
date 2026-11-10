@@ -3084,6 +3084,7 @@ class _Translations$cast$ar extends Translations$cast$en {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'نقل قائمة التشغيل إلى Chromecast';
 	@override String get chooseDevice => 'البث إلى جهاز';
 	@override String get searching => 'جارٍ البحث عن أجهزة البث…';
 	@override String connectedTo({required Object device}) => 'متصل بـ ${device}';
@@ -8468,6 +8469,7 @@ extension on TranslationsAr {
 			'addServer.insecureDescription' => ({required Object url}) => 'يستخدم ${url} بروتوكول HTTP. قد يتمكن أشخاص على الشبكة من قراءة كلمة مرورك ورموز الوصول والوسائط أو تغييرها. استخدم HTTPS عند توفره. لا تتابع إلا إذا كنت تثق بهذه الشبكة وتقبل هذه المخاطرة.',
 			'addServer.allowHttp' => 'السماح باستخدام HTTP',
 			'addServer.httpsRequired' => 'استخدام HTTPS أو يسمح صراحة بتوصيل غير مشفر.',
+			'cast.transferQueue' => 'نقل قائمة التشغيل إلى Chromecast',
 			'cast.chooseDevice' => 'البث إلى جهاز',
 			'cast.searching' => 'جارٍ البحث عن أجهزة البث…',
 			'cast.connectedTo' => ({required Object device}) => 'متصل بـ ${device}',
@@ -8628,9 +8630,9 @@ extension on TranslationsAr {
 			'universalMedia.files' => 'أجهزة الملفات',
 			'universalMedia.favorites' => 'المفضلة التي تم إنقاذها',
 			'universalMedia.address' => 'عناوين وسائل الإعلام',
-			'universalMedia.addressHelp' => 'يتم استخدام عناوين URL مع المعلمات الاعتمادية أو التوقيع المعترف بها فقط لهذا الجلسة ولا يمكن حفظها على أنها المفضلة.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'يتم استخدام عناوين URL مع المعلمات الاعتمادية أو التوقيع المعترف بها فقط لهذا الجلسة ولا يمكن حفظها على أنها المفضلة.',
 			'universalMedia.displayName' => 'اسم العرض (اختياري )',
 			'universalMedia.displayNameHelp' => 'اختر اسمًا قصيرًا لللاعب ومراقب وسائل الإعلام في النظام.',
 			'universalMedia.allowHttp' => 'إمكانية اتصال HTTP غير المشفر',
@@ -9142,9 +9144,9 @@ extension on TranslationsAr {
 			'sourceSetup.nfsTlsHelp' => 'يستخدم RPC-with-TLS منافذ NFS وخدمة التركيب المعتادة، ويتطلب دعم NAS للمعيار RFC 9289. يلزم TLS 1.3. يجب أن يطابق اسم المضيف أو عنوان IP الشهادة. تظل معرّفات AUTH_SYS UID/GID سارية داخل القناة المشفّرة.',
 			'sourceSetup.clientCertificate' => 'شهادة العميل (اختيارية)',
 			'sourceSetup.clientCertificateHelp' => 'تتيح لـ NAS التحقّق من هوية هذا العميل؛ تظل معرّفات AUTH_SYS خاضعة لسياسة تصدير NAS.',
-			'sourceSetup.savedIdentity' => 'ستُستخدم هوية العميل المحفوظة.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'ستُستخدم هوية العميل المحفوظة.',
 			'sourceSetup.replaceIdentity' => 'استبدال هوية العميل المحفوظة',
 			'sourceSetup.chooseIdentity' => 'اختيار هوية عميل PKCS#12',
 			'sourceSetup.identityPassphrase' => 'عبارة مرور هوية العميل',

@@ -3580,6 +3580,7 @@
     "httpsRequired": "Gebruik HTTPS of toelaat uitdrukkelijk een niet-encrypt verbinding."
   },
   "cast": {
+    "transferQueue": "Wachtrij overdragen naar Chromecast",
     "chooseDevice": "Gestoord naar een apparaat",
     "searching": "Op zoek naar de Cast-apparaten...",
     "connectedTo": "Geleid naar ${device}",

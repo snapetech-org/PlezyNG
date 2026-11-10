@@ -3004,6 +3004,7 @@ class Translations$cast$zh extends Translations$cast$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => '将播放队列转移到 Chromecast';
 	@override String get chooseDevice => '点击一个设备';
 	@override String get searching => '寻找卡片设备';
 	@override String connectedTo({required Object device}) => '连接到 ${device}';
@@ -8363,6 +8364,7 @@ extension on TranslationsZh {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} 使用 HTTP。网络中的其他人可能读取或篡改您的密码、令牌和媒体内容。请尽可能使用 HTTPS。只有在您信任此网络并接受风险时才继续。',
 			'addServer.allowHttp' => '允许 HTTP',
 			'addServer.httpsRequired' => '使用 HTTPS 或明确允许未加密的连接。',
+			'cast.transferQueue' => '将播放队列转移到 Chromecast',
 			'cast.chooseDevice' => '点击一个设备',
 			'cast.searching' => '寻找卡片设备',
 			'cast.connectedTo' => ({required Object device}) => '连接到 ${device}',
@@ -8523,9 +8525,9 @@ extension on TranslationsZh {
 			'universalMedia.files' => '设备文件',
 			'universalMedia.favorites' => '保存流喜爱',
 			'universalMedia.address' => '媒體地址',
-			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'HTTPS 是优先的. 有认可或签名参数的 URL 仅用于此会议,并且不能保存为喜爱。',
 			'universalMedia.displayName' => '显示名称(可选)',
 			'universalMedia.displayNameHelp' => '选择玩家和系统媒体控制器的简称。',
 			'universalMedia.allowHttp' => '允许未加密的 HTTP 连接',
@@ -9037,9 +9039,9 @@ extension on TranslationsZh {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS 使用常规 NFS 和挂载服务端口，并要求 NAS 支持 RFC 9289。必须使用 TLS 1.3。主机名或 IP 地址必须与证书匹配。加密通道内仍需使用 AUTH_SYS UID/GID。',
 			'sourceSetup.clientCertificate' => '客户端证书（可选）',
 			'sourceSetup.clientCertificateHelp' => '允许 NAS 验证此客户端的身份；AUTH_SYS ID 仍受 NAS 导出策略约束。',
-			'sourceSetup.savedIdentity' => '将使用已保存的客户端身份凭据。',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => '将使用已保存的客户端身份凭据。',
 			'sourceSetup.replaceIdentity' => '替换已保存的客户端身份凭据',
 			'sourceSetup.chooseIdentity' => '选择 PKCS#12 客户端身份凭据',
 			'sourceSetup.identityPassphrase' => '客户端身份凭据口令',

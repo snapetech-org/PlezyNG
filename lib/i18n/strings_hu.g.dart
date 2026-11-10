@@ -3008,6 +3008,7 @@ class _Translations$cast$hu extends Translations$cast$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Várólista átvitele Chromecastra';
 	@override String get chooseDevice => 'A készülékre kattintva';
 	@override String get searching => 'A Cast eszközök keresése...';
 	@override String connectedTo({required Object device}) => 'Kapcsolódó oldalak ${device}';
@@ -8368,6 +8369,7 @@ extension on TranslationsHu {
 			'addServer.insecureDescription' => ({required Object url}) => 'A(z) ${url} HTTP-t használ. A hálózaton mások elolvashatják vagy módosíthatják a jelszavát, a tokenjeit és a médiatartalmait. Ha elérhető, használjon HTTPS-t. Csak akkor folytassa, ha megbízik ebben a hálózatban és elfogadja a kockázatot.',
 			'addServer.allowHttp' => 'HTTP engedélyezése',
 			'addServer.httpsRequired' => 'Használja a HTTPS vagy kifejezetten engedélyezi a titkosított kapcsolatot.',
+			'cast.transferQueue' => 'Várólista átvitele Chromecastra',
 			'cast.chooseDevice' => 'A készülékre kattintva',
 			'cast.searching' => 'A Cast eszközök keresése...',
 			'cast.connectedTo' => ({required Object device}) => 'Kapcsolódó oldalak ${device}',
@@ -8528,9 +8530,9 @@ extension on TranslationsHu {
 			'universalMedia.files' => 'készülék fájl',
 			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
-			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
 			'universalMedia.displayName' => 'A kijelző neve (opcionális)',
 			'universalMedia.displayNameHelp' => 'Válasszon egy rövid nevét a játékos és a rendszer média vezérlők.',
 			'universalMedia.allowHttp' => 'A titkosítás nélküli HTTP-kapcsolat engedélyezése',
@@ -9042,9 +9044,9 @@ extension on TranslationsHu {
 			'sourceSetup.nfsTlsHelp' => 'Az RPC-with-TLS a szokásos NFS- és csatolásiszolgáltatás-portokat használja, és RFC 9289-támogatást igényel a NAS-on. TLS 1.3 szükséges. A gépnévnek vagy IP-címnek egyeznie kell a tanúsítvánnyal. Az AUTH_SYS UID/GID a titkosított csatornán belül is érvényes.',
 			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
-			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',
 			'sourceSetup.replaceIdentity' => 'Mentett kliensazonosság cseréje',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-kliensazonosság kiválasztása',
 			'sourceSetup.identityPassphrase' => 'A kliensazonosság jelmondata',

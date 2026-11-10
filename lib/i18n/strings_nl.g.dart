@@ -3008,6 +3008,7 @@ class _Translations$cast$nl extends Translations$cast$en {
 	final TranslationsNl _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Wachtrij overdragen naar Chromecast';
 	@override String get chooseDevice => 'Gestoord naar een apparaat';
 	@override String get searching => 'Op zoek naar de Cast-apparaten...';
 	@override String connectedTo({required Object device}) => 'Geleid naar ${device}';
@@ -8368,6 +8369,7 @@ extension on TranslationsNl {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} gebruikt HTTP. Anderen op het netwerk kunnen je wachtwoord, tokens en media lezen of wijzigen. Gebruik HTTPS als dat beschikbaar is. Ga alleen verder als je dit netwerk vertrouwt en het risico accepteert.',
 			'addServer.allowHttp' => 'HTTP toestaan',
 			'addServer.httpsRequired' => 'Gebruik HTTPS of toelaat uitdrukkelijk een niet-encrypt verbinding.',
+			'cast.transferQueue' => 'Wachtrij overdragen naar Chromecast',
 			'cast.chooseDevice' => 'Gestoord naar een apparaat',
 			'cast.searching' => 'Op zoek naar de Cast-apparaten...',
 			'cast.connectedTo' => ({required Object device}) => 'Geleid naar ${device}',
@@ -8528,9 +8530,9 @@ extension on TranslationsNl {
 			'universalMedia.files' => 'Gerelateerde bestanden',
 			'universalMedia.favorites' => 'Save Stream favorieten',
 			'universalMedia.address' => 'Media adres',
-			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'URL\'s met geïdentificeerde credentiale of signature parameters worden alleen gebruikt voor deze sessie en kunnen niet als favorieten worden opgeslagen.',
 			'universalMedia.displayName' => 'Display naam (optional)',
 			'universalMedia.displayNameHelp' => 'Kies een korte naam voor de speler en system media controles.',
 			'universalMedia.allowHttp' => 'Een niet-encrypt HTTP verbinding mogelijk maken',
@@ -9042,9 +9044,9 @@ extension on TranslationsNl {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS gebruikt de gebruikelijke poorten van NFS en de mountservice en vereist RFC 9289-ondersteuning op de NAS. TLS 1.3 is verplicht. De hostnaam of het IP-adres moet overeenkomen met het certificaat. AUTH_SYS-UID/GID blijven ook binnen het versleutelde kanaal gelden.',
 			'sourceSetup.clientCertificate' => 'Clientcertificaat (optioneel)',
 			'sourceSetup.clientCertificateHelp' => 'Hiermee kan de NAS deze client authenticeren; AUTH_SYS-ID’s blijven afhankelijk van het beleid van de NFS-share op de NAS.',
-			'sourceSetup.savedIdentity' => 'Er wordt een opgeslagen clientidentiteit gebruikt.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'Er wordt een opgeslagen clientidentiteit gebruikt.',
 			'sourceSetup.replaceIdentity' => 'Opgeslagen clientidentiteit vervangen',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-clientidentiteit kiezen',
 			'sourceSetup.identityPassphrase' => 'Wachtwoordzin van de clientidentiteit',

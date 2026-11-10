@@ -3580,6 +3580,7 @@
     "httpsRequired": "Verwenden Sie HTTPS oder erlauben Sie ausdrücklich eine unschlüsselte Verbindung."
   },
   "cast": {
+    "transferQueue": "Warteschlange an Chromecast übergeben",
     "chooseDevice": "Kasten auf ein Gerät",
     "searching": "Suche nach Kastengeräten...",
     "connectedTo": "Anschluss an ${device}",

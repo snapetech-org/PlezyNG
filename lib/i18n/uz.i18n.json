@@ -3580,6 +3580,7 @@
     "httpsRequired": "HTTPS ya qizizga qizga qifififiyizga qihga qifida qifida."
   },
   "cast": {
+    "transferQueue": "Navbatni Chromecast qurilmasiga o‘tkazish",
     "chooseDevice": "Bir cihazda qurtlar",
     "searching": "Tadiqlarga xiyimni xiyimlarga...",
     "connectedTo": "${device} qizga qizga",

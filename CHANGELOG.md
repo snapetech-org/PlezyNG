@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Transfer an eligible music queue to Chromecast from Now Playing. The receiver can advance the prepared queue after the sender disconnects, and the phone retains its queue paused after an acknowledged handoff.
+
 - Prepare bounded standalone Cast music queues in playback order, with separately identified repeats, paused receiver acknowledgement, and authorization checks on every source.
 
 - Browse paged Plex server playback history from Recently Played for music libraries owned by the active Plex account. Keep provider plays separate from local listening charts and paired imports.

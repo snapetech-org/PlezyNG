@@ -3016,6 +3016,7 @@ class Translations$cast$es extends Translations$cast$en {
 	final TranslationsEs _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Transferir la cola a Chromecast';
 	@override String get chooseDevice => 'Casta a un dispositivo';
 	@override String get searching => 'Buscando los dispositivos de casting...';
 	@override String connectedTo({required Object device}) => 'Conectado a ${device}';
@@ -8511,6 +8512,7 @@ extension on TranslationsEs {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} usa HTTP. Otras personas de la red pueden leer o modificar tu contraseña, tus tokens y tus archivos multimedia. Usa HTTPS cuando esté disponible. Continúa solo si confías en esta red y aceptas el riesgo.',
 			'addServer.allowHttp' => 'Permitir HTTP',
 			'addServer.httpsRequired' => 'Uso de HTTPS o permita expresamente una conexión no cifrada.',
+			'cast.transferQueue' => 'Transferir la cola a Chromecast',
 			'cast.chooseDevice' => 'Casta a un dispositivo',
 			'cast.searching' => 'Buscando los dispositivos de casting...',
 			'cast.connectedTo' => ({required Object device}) => 'Conectado a ${device}',
@@ -8652,9 +8654,9 @@ extension on TranslationsEs {
 			'homeLayout.reorderingLocked' => 'Reorganización localizada',
 			'homeLayout.rowsCanBeDragged' => 'Las rayas pueden ser atraídas — tapar el cierre para evitar que',
 			'homeLayout.tapLockToDrag' => 'Toma el cierre para sacar líneas',
-			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
 			_ => null,
 		} ?? switch (path) {
+			'homeLayout.customRowLabel' => ({required Object title}) => 'Cálculo: ${title}',
 			'homeLayout.libraryHubLabel' => ({required Object library, required Object hub}) => '${library}: ${hub}',
 			'homeLayout.hide' => 'Ocultar',
 			'homeLayout.remove' => 'Eliminar',
@@ -9166,9 +9168,9 @@ extension on TranslationsEs {
 			'sourceSetup.dlnaUnavailable' => 'La detección DLNA no está disponible en esta red. Introduce manualmente la URL de descripción del dispositivo.',
 			'sourceSetup.dlnaSearching' => 'Buscando servidores DLNA en la red local',
 			'sourceSetup.networkSearching' => 'Buscando en la red local…',
-			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.dlnaDiscover' => 'Detectar servidores DLNA',
 			'sourceSetup.dlnaHelp' => 'La detección depende de la multidifusión de la red local. Si no aparece ningún servidor, introduce arriba su URL de descripción del dispositivo.',
 			'sourceSetup.dlnaRoot' => 'ID de objeto DLNA; déjalo en blanco para usar la raíz del dispositivo.',
 			'sourceSetup.passwordOrKey' => 'Introduce una contraseña o añade una clave privada abajo.',
@@ -9680,9 +9682,9 @@ extension on TranslationsEs {
 			'musicExperience.off' => 'Desactivado',
 			'musicExperience.unknown' => 'Desconocido',
 			'musicExperience.routeLost' => 'Salida de audio desconectada. Reproducción pausada.',
-			'musicExperience.autoDriving' => 'Abrir la vista de conducción al conectar con un coche',
 			_ => null,
 		} ?? switch (path) {
+			'musicExperience.autoDriving' => 'Abrir la vista de conducción al conectar con un coche',
 			'musicExperience.routeHint' => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.',
 			'musicTools.serverHistory' => 'Historial de reproducción del servidor',
 			'musicTools.nfcWrite' => 'Escribir etiqueta NFC',

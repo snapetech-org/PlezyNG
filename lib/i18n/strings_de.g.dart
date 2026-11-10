@@ -3008,6 +3008,7 @@ class _Translations$cast$de extends Translations$cast$en {
 	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Warteschlange an Chromecast übergeben';
 	@override String get chooseDevice => 'Kasten auf ein Gerät';
 	@override String get searching => 'Suche nach Kastengeräten...';
 	@override String connectedTo({required Object device}) => 'Anschluss an ${device}';
@@ -8368,6 +8369,7 @@ extension on TranslationsDe {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} verwendet HTTP. Personen im Netzwerk können dein Passwort, deine Tokens und deine Medien lesen oder verändern. Verwende nach Möglichkeit HTTPS. Fahre nur fort, wenn du diesem Netzwerk vertraust und das Risiko akzeptierst.',
 			'addServer.allowHttp' => 'HTTP erlauben',
 			'addServer.httpsRequired' => 'Verwenden Sie HTTPS oder erlauben Sie ausdrücklich eine unschlüsselte Verbindung.',
+			'cast.transferQueue' => 'Warteschlange an Chromecast übergeben',
 			'cast.chooseDevice' => 'Kasten auf ein Gerät',
 			'cast.searching' => 'Suche nach Kastengeräten...',
 			'cast.connectedTo' => ({required Object device}) => 'Anschluss an ${device}',
@@ -8528,9 +8530,9 @@ extension on TranslationsDe {
 			'universalMedia.files' => 'Geräte Datei',
 			'universalMedia.favorites' => 'Sparen Stream Favoriten',
 			'universalMedia.address' => 'Medienadresse',
-			'universalMedia.addressHelp' => 'URLs mit anerkannten Kennzeichnungs- oder Signaturparameter werden nur für diese Sitzung verwendet und können nicht als Favoriten gespeichert werden.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'URLs mit anerkannten Kennzeichnungs- oder Signaturparameter werden nur für diese Sitzung verwendet und können nicht als Favoriten gespeichert werden.',
 			'universalMedia.displayName' => 'Anzeige Name (optional)',
 			'universalMedia.displayNameHelp' => 'Wählen Sie einen kurzen Namen für den Spieler und System-Media-Controls aus.',
 			'universalMedia.allowHttp' => 'Erlauben Sie eine unschlüsselte HTTP-Verbindung',
@@ -9042,9 +9044,9 @@ extension on TranslationsDe {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS verwendet die üblichen NFS- und Mount-Dienst-Ports und benötigt RFC 9289-Unterstützung auf dem NAS. TLS 1.3 ist erforderlich. Hostname oder IP-Adresse müssen zum Zertifikat passen. AUTH_SYS-UID/GID gelten auch im verschlüsselten Kanal.',
 			'sourceSetup.clientCertificate' => 'Clientzertifikat (optional)',
 			'sourceSetup.clientCertificateHelp' => 'Damit kann das NAS diesen Client authentifizieren; AUTH_SYS-IDs unterliegen weiterhin den Regeln der NFS-Freigabe des NAS.',
-			'sourceSetup.savedIdentity' => 'Eine gespeicherte Clientidentität wird verwendet.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'Eine gespeicherte Clientidentität wird verwendet.',
 			'sourceSetup.replaceIdentity' => 'Gespeicherte Clientidentität ersetzen',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-Clientidentität auswählen',
 			'sourceSetup.identityPassphrase' => 'Passphrase der Clientidentität',

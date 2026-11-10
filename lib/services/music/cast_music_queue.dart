@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_chrome_cast/flutter_chrome_cast.dart';
 
 import '../../media/ids.dart';
@@ -47,6 +48,9 @@ class CastMusicQueue {
       matchesMedia(status) &&
       status!.mediaInformation!.customData![occurrenceKey] == cursor.toString() &&
       status.playerState == state;
+
+  bool isFinalOccurrence(GoggleCastMediaStatus? status) =>
+      status?.mediaInformation?.customData?[occurrenceKey] == (items.length - 1).toString();
 
   Future<bool> handoff({
     required MusicTransferOffer offer,
@@ -121,7 +125,7 @@ class CastMusicQueue {
         GoogleCastQueueItem(
           autoPlay: index != queue.cursor,
           mediaInformation: GoogleCastMediaInformation(
-            contentId: uri.toString(),
+            contentId: 'pleazyng:$token:$index',
             contentUrl: uri,
             contentType: castMusicContentType(uri, container: track.mediaVersions?.firstOrNull?.container),
             streamType: CastMediaStreamType.buffered,
@@ -160,4 +164,20 @@ class CastMusicQueue {
     }
     return uri;
   }
+}
+
+Future<void> dispatchCastMusicQueue(
+  List<GoogleCastQueueItem> items,
+  GoogleCastQueueLoadOptions options, {
+  required bool android,
+}) async {
+  final channel = MethodChannel(
+    android ? 'com.felnanuke.google_cast.remote_media_client' : 'google_cast.remote_media_client',
+  );
+  await channel.invokeMethod<Object?>('queueLoadItems', {
+    (android ? 'queueItems' : 'items'): [
+      for (final item in items) {...item.toMap(), if (android) 'autoPlay': item.autoPlay},
+    ],
+    'options': options.toMap(android: android),
+  });
 }

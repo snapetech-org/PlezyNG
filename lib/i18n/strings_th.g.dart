@@ -2989,6 +2989,7 @@ class _Translations$cast$th extends Translations$cast$en {
 	final TranslationsTh _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'ย้ายคิวไปยัง Chromecast';
 	@override String get chooseDevice => 'แคสต์ไปยังอุปกรณ์';
 	@override String get searching => 'ค้นหาอุปกรณ์ Cast ...';
 	@override String connectedTo({required Object device}) => 'เชื่อมต่อ ${device}';
@@ -8343,6 +8344,7 @@ extension on TranslationsTh {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} ใช้ HTTP บุคคลอื่นในเครือข่ายอาจอ่านหรือแก้ไขรหัสผ่าน โทเค็น และสื่อของคุณได้ โปรดใช้ HTTPS หากมีให้ใช้ ดำเนินการต่อเฉพาะเมื่อคุณเชื่อถือเครือข่ายนี้และยอมรับความเสี่ยง',
 			'addServer.allowHttp' => 'อนุญาต HTTP',
 			'addServer.httpsRequired' => 'ใช้ HTTPS หรืออนุญาตให้มีการเชื่อมต่อที่ไม่ได้เข้ารหัส',
+			'cast.transferQueue' => 'ย้ายคิวไปยัง Chromecast',
 			'cast.chooseDevice' => 'แคสต์ไปยังอุปกรณ์',
 			'cast.searching' => 'ค้นหาอุปกรณ์ Cast ...',
 			'cast.connectedTo' => ({required Object device}) => 'เชื่อมต่อ ${device}',
@@ -8503,9 +8505,9 @@ extension on TranslationsTh {
 			'universalMedia.files' => 'ไฟล์อุปกรณ์',
 			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
-			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
 			'universalMedia.displayName' => 'ชื่อแสดงผล (ตัวเลือก)',
 			'universalMedia.displayNameHelp' => 'เลือกชื่อสั้นสําหรับผู้เล่นและระบบการควบคุมสื่อ',
 			'universalMedia.allowHttp' => 'อนุญาตให้มีการเชื่อมต่อ HTTP ไม่เข้ารหัส',
@@ -9017,9 +9019,9 @@ extension on TranslationsTh {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS ใช้พอร์ต NFS และบริการเมานต์ตามปกติ และ NAS ต้องรองรับ RFC 9289 ต้องใช้ TLS 1.3 ชื่อโฮสต์หรือ IP ต้องตรงกับใบรับรอง AUTH_SYS UID/GID ยังคงมีผลภายในช่องทางที่เข้ารหัส',
 			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
-			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.replaceIdentity' => 'แทนที่ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.chooseIdentity' => 'เลือกข้อมูลประจำตัวไคลเอนต์ PKCS#12',
 			'sourceSetup.identityPassphrase' => 'วลีรหัสผ่านของข้อมูลประจำตัวไคลเอนต์',

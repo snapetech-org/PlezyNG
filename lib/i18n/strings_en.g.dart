@@ -8607,6 +8607,9 @@ class Translations$cast$en {
 
 	// Translations
 
+	/// en: 'Transfer queue to Chromecast'
+	String get transferQueue => 'Transfer queue to Chromecast';
+
 	/// en: 'Cast to a device'
 	String get chooseDevice => 'Cast to a device';
 
@@ -20697,6 +20700,7 @@ extension on Translations {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} uses HTTP. People on the network may read or change your password, tokens and media. Use HTTPS when available. Only continue if you trust this network and accept the risk.',
 			'addServer.allowHttp' => 'Allow HTTP',
 			'addServer.httpsRequired' => 'Use HTTPS or explicitly allow an unencrypted connection.',
+			'cast.transferQueue' => 'Transfer queue to Chromecast',
 			'cast.chooseDevice' => 'Cast to a device',
 			'cast.searching' => 'Searching for Cast devices…',
 			'cast.connectedTo' => ({required Object device}) => 'Connected to ${device}',
@@ -20979,9 +20983,9 @@ extension on Translations {
 			'universalMedia.mediaToolsAccessibility' => 'Tool choices and controls work with touch, pointer, keyboard, and D-pad focus. Recording, sharing, and search status changes are announced.',
 			'universalMedia.mediaTool' => 'Media tool',
 			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
-			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
 			'universalMedia.captureSource' => 'Screen or camera',
 			'universalMedia.captureScreen' => 'Screen',
 			'universalMedia.captureAudioSource' => 'Audio input (optional)',
@@ -21493,9 +21497,9 @@ extension on Translations {
 			'games.play' => 'Play',
 			'games.recent' => 'Recently played',
 			'games.favorites' => 'Favorites',
-			'games.allGames' => 'All games',
 			_ => null,
 		} ?? switch (path) {
+			'games.allGames' => 'All games',
 			'games.search' => 'Find a game',
 			'games.noMatches' => 'No games match this search.',
 			'games.favorite' => 'Save favorite',
@@ -22007,9 +22011,9 @@ extension on Translations {
 			'subtitleAiUi.restoreExportOrDeleteReviewedVersion_e84dffb9' => 'Restore, export, or delete reviewed versions stored on this device',
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
 			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
-			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
 			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
 			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
 			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
@@ -22521,9 +22525,9 @@ extension on Translations {
 			'karaokeUi.unlock' => 'Unlock',
 			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
 			'karaokeUi.requestASong' => 'Request a song',
-			'karaokeUi.hostUnlock' => 'Host unlock',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.hostUnlock' => 'Host unlock',
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
 			'karaokeUi.searchSongs' => 'Search songs',
 			'bonusExtras.title' => 'Extras',

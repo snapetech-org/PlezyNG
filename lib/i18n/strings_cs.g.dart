@@ -3042,6 +3042,7 @@ class _Translations$cast$cs extends Translations$cast$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
+	@override String get transferQueue => 'Přenést frontu do Chromecastu';
 	@override String get chooseDevice => 'Odeslat do zařízení';
 	@override String get searching => 'Hledání zařízení pro výkresy...';
 	@override String connectedTo({required Object device}) => 'Připojení k číslu ${device}';
@@ -8412,6 +8413,7 @@ extension on TranslationsCs {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} používá HTTP. Lidé v síti mohou číst nebo měnit vaše heslo, tokeny a média. Je-li to možné, použijte HTTPS. Pokračujte pouze v případě, že této síti důvěřujete a přijímáte toto riziko.',
 			'addServer.allowHttp' => 'Přijmout HTTP',
 			'addServer.httpsRequired' => 'Použití HTTPS nebo výslovně umožnit nekryptované připojení.',
+			'cast.transferQueue' => 'Přenést frontu do Chromecastu',
 			'cast.chooseDevice' => 'Odeslat do zařízení',
 			'cast.searching' => 'Hledání zařízení pro výkresy...',
 			'cast.connectedTo' => ({required Object device}) => 'Připojení k číslu ${device}',
@@ -8572,9 +8574,9 @@ extension on TranslationsCs {
 			'universalMedia.files' => 'Přístrojové soubory',
 			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
-			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
 			'universalMedia.displayName' => 'Název zobrazení (volitelné)',
 			'universalMedia.displayNameHelp' => 'Vyberte krátký název pro hráče a systémové médií ovládacích prvků.',
 			'universalMedia.allowHttp' => 'Umožňuje nekryptované připojení HTTP',
@@ -9086,9 +9088,9 @@ extension on TranslationsCs {
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS používá běžné porty NFS a služby připojení a vyžaduje podporu RFC 9289 na NAS. Je nutné TLS 1.3. Název hostitele nebo IP adresa musí odpovídat certifikátu. UID/GID AUTH_SYS nadále platí i v šifrovaném kanálu.',
 			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
-			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',
 			'sourceSetup.replaceIdentity' => 'Nahradit uloženou identitu klienta',
 			'sourceSetup.chooseIdentity' => 'Vybrat identitu klienta PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Heslová fráze identity klienta',

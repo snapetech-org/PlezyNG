@@ -3664,6 +3664,7 @@
     "httpsRequired": "استخدام HTTPS أو يسمح صراحة بتوصيل غير مشفر."
   },
   "cast": {
+    "transferQueue": "نقل قائمة التشغيل إلى Chromecast",
     "chooseDevice": "البث إلى جهاز",
     "searching": "جارٍ البحث عن أجهزة البث…",
     "connectedTo": "متصل بـ ${device}",

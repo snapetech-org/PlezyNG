@@ -9,6 +9,7 @@ on:
       - test/fixtures/visualizer/authenticated-catalog.json
       - .github/workflows/visualizer-keyless-validation.yml
       - content/visualizer-catalog.json
+      - scripts/format_dart.sh
   workflow_call:
   workflow_dispatch:
 permissions:
@@ -23,7 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: main
           persist-credentials: false
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:

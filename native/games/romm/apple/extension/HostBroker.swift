@@ -59,7 +59,7 @@ private final class RommExtensionLease: @unchecked Sendable {
     }
     if state.1 >= 0 { Darwin.close(state.1) }
     if let session = state.0 {
-      let message = XPCDictionary()
+      var message = XPCDictionary()
       message["operation"] = "stop"
       try? session.send(message: message)
     }
@@ -129,7 +129,7 @@ private final class RommExtensionLease: @unchecked Sendable {
         }
       }
     }
-    let message = XPCDictionary()
+    var message = XPCDictionary()
     message["operation"] = "start"
     message["core"] = name
     message["count"] = Int64(inputs.count)
@@ -178,12 +178,25 @@ private final class RommExtensionLease: @unchecked Sendable {
         let process = try await AppExtensionProcess(configuration: .init(
           appExtensionIdentity: identity, onInterruption: { [self] in didExit() }))
         launched = true
-        locked { self.process = process }
+        let attached = locked {
+          guard !exited else { return false }
+          self.process = process
+          return true
+        }
+        guard attached else {
+          process.invalidate()
+          finished.signal()
+          return
+        }
         let session = try process.makeXPCSession()
         session.setTargetQueue(DispatchQueue.global(qos: .userInitiated))
         try session.activate()
-        locked { self.session = session }
-        if locked({ cancelled }) {
+        let shouldStop = locked {
+          guard !exited else { return true }
+          self.session = session
+          return cancelled
+        }
+        if shouldStop {
           stop()
           return
         }

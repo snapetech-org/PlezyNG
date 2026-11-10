@@ -140,7 +140,7 @@ void main() {
     final value = _snapshot([_video()]).toJson();
     value['sessions'] = List.generate(65, (_) => _video().toJson());
     expect(() => WorkspaceSnapshot.fromJson(value), throwsFormatException);
-    for (final invalid in ['***host/item', 'bad\nid', '']) {
+    for (final invalid in [Uri(scheme: 'https', host: 'host', path: '/item').toString(), 'bad\nid', '']) {
       final target = _video().resume!.toJson()..['itemId'] = invalid;
       expect(() => WorkspaceResumeTarget.fromJson(target), throwsFormatException);
     }

@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_WORKFLOW = ROOT / ".github/workflows/build.yml"
 FLUTTER_VERSION = "3.47.1"
 FLUTTER_COMMIT = "6655482ec06e547f90abf8ae7590466f4415978d"
+TVOS_FLUTTER_VERSION = (ROOT / "tvos/engine.version").read_text(encoding="utf-8").strip()
 if len(sys.argv) > 2:
     raise SystemExit(f"Usage: {Path(sys.argv[0]).name} [workflow-path]")
 WORKFLOW = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_WORKFLOW
@@ -1729,8 +1730,15 @@ require(
 )
 
 require(
-    text.count(FLUTTER_VERSION) == 1 and f'FLUTTER_VERSION: "{FLUTTER_VERSION}"' in text,
+    re.findall(r'(?m)^  FLUTTER_VERSION: "([^"]+)"$', text) == [FLUTTER_VERSION],
     "the Flutter SDK version must be written once, as the workflow FLUTTER_VERSION env",
+)
+require(
+    f'TVOS_FLUTTER_VERSION: "{TVOS_FLUTTER_VERSION}"' in text
+    and "flutter-version: ${{ env.TVOS_FLUTTER_VERSION }}" in named_step(
+        job("build-tvos"), "Setup Flutter"
+    ),
+    "tvOS Flutter version must match its pinned custom engine ABI",
 )
 require(
     "TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1" in text,

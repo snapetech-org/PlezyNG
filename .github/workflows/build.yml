@@ -118,6 +118,7 @@ env:
   FLUTTER_SUPPRESS_ANALYTICS: "true"
   # Only place this workflow names the SDK; .github/actions/setup-flutter-git pins the same release.
   FLUTTER_VERSION: "3.47.1"
+  TVOS_FLUTTER_VERSION: "3.47.1" # Pinned custom tvOS engine has this ABI.
   # Shared by every release build command.
   RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true --dart-define=GIT_COMMIT=${{ github.sha }}
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
@@ -1271,7 +1272,7 @@ jobs:
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version: ${{ env.TVOS_FLUTTER_VERSION }}
 
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

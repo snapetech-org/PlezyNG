@@ -1,10 +1,10 @@
 {
   "release_tag": "v3.0.7",
-  "checked_at_utc": "2026-11-09T23:14:14.193390+00:00",
+  "checked_at_utc": "2026-11-10T01:10:41.818583+00:00",
   "application_artifacts_rebuilt": false,
   "original_release_assets_modified": false,
   "aerynos": {
-    "state": "restored as an actual downstream publication target; fixed source-snapshot feed preparing",
+    "state": "published fixed source-snapshot downstream preview; public native Moss installation verified",
     "immutable_v3_0_7": "native package installation passed; visible video retained stale artwork, so not qualified for publication",
     "fixed_snapshot": {
       "version": "3.0.22+181",
@@ -12,11 +12,15 @@
       "native_qa": "passed: native Stone/Moss installation, ELF dependencies, visible video/audio, FEL routing and injected render-startup fallback",
       "channel_repository": "https://github.com/snapetech-org/pleazyng-aerynos",
       "release_tag": "snapshot-3.0.22-181-r1",
-      "publication": "draft upload; public feed reinstall pending",
+      "publication": "published GitHub prerelease; public native Moss fetch/remove/reinstall/relaunch passed",
       "core_release_artifacts_modified": false,
-      "attestation": "not claimed"
+      "attestation": "not claimed",
+      "feed_url": "https://github.com/snapetech-org/pleazyng-aerynos/releases/download/snapshot-3.0.22-181-r1/stone.index",
+      "stone_sha256": "25c58285a200c9c078ecb8b97f583d3cc0b1730df61dc9a7ed4cc16f99a1b886",
+      "public_receipt": "https://github.com/snapetech-org/pleazyng-aerynos/blob/main/publication-receipt.json"
     },
-    "official_aerynos_repository_acceptance": "not claimed; independent downstream feed"
+    "official_aerynos_repository_acceptance": "not claimed; independent downstream feed",
+    "continuous_main_sync": "owner requested; automation implementation and activation in progress in owning aerynOS session"
   },
   "channels": {
     "aur": {
@@ -81,7 +85,7 @@
       "install_command": "brew install --cask snapetech-org/pleazyng/snapetech-pleazyng"
     },
     "google_play": {
-      "state": "Existing166 retained in the bundle explorer; internal qualification draft preparing; closed Alpha release configuration must be recreated before review",
+      "state": "Original166 permanently reserved and unavailable for track assignment; verified store-only167 repack queued for CI signing/internal draft; no review or activation",
       "package": "org.snapetech.pleazyng",
       "version_code": 166,
       "upload_run": 42700083317,
@@ -128,10 +132,22 @@
         "result": "Google404: archived166 cannot be referenced in track edit; uncommitted edit discarded"
       },
       "review_grant_qualification_run": {
-        "run": 42728882845,
-        "result": "emulator boot/install passed; startup accessibility tree unavailable; retry/safe pre-grant diagnostics added"
+        "run": 42731105096,
+        "result": "expired-trial gate and restore control observed; stopped locating review input before any grant entry; focused editable dialog detection added"
       },
-      "original_aab_redelivery_run": 42730459200
+      "original_aab_redelivery_run": {
+        "run": 42730459200,
+        "result": "Google rejected: Version code166 has already been used"
+      },
+      "store_only_repack": {
+        "original_version_code": 166,
+        "pending_store_version_code": 167,
+        "version_name": "3.0.7",
+        "run": 42733775175,
+        "local_validation": "bundletool validation passed; all1667payload entries checked; only manifest version code changed",
+        "application_code_rebuilt": false,
+        "original_release_modified": false
+      }
     }
   }
 }

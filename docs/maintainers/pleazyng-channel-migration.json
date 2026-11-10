@@ -296,8 +296,10 @@
       "tester_list": "Pleazyng Alpha testers; five members preserved",
       "staging_run": 42728878763,
       "review_grant_run": 42728882845,
-      "state": "Google404 rejects archived166 track reference; exact original AAB redelivery into internal draft pending. Emulator boots/installs; accessibility startup retry added. No review or rollout submitted.",
-      "original_aab_redelivery_run": 42730459200
+      "state": "Google permanently reserves archived166 but rejects track assignment and reupload. Exact-source store167repack queued for CI signing/internal draft. Original signed166 expired-trial gate observed; grant entry/persistence and actual licensed purchase/restore remain unqualified.",
+      "original_aab_redelivery_run": 42730459200,
+      "store_only_repack_run": 42733775175,
+      "pending_store_version_code": 167
     }
   },
   "copr": {

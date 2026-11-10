@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 require 'xcodeproj'
 require 'fileutils'
+require 'json'
 
 root = File.expand_path('../..', __dir__)
 scratch = File.join(root, 'build/romm-extension-package')
@@ -45,6 +46,7 @@ worker.frameworks_build_phase.add_file_reference(reference, true)
 worker.build_configurations.each do |config|
   config.base_configuration_reference = nil
   config.build_settings['FRAMEWORK_SEARCH_PATHS'] = [native]
+  config.build_settings['OTHER_LDFLAGS'] = ['$(inherited)', '-lc++']
   config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
   config.build_settings['FLUTTER_BUILD_NAME'] = '1.0'
   config.build_settings['FLUTTER_BUILD_NUMBER'] = '1'
@@ -53,10 +55,14 @@ project.save
 raise 'Extension link failed' unless system(
   'xcodebuild', '-project', project_path, '-target', 'RommWorker',
   '-configuration', 'Release', '-sdk', 'iphonesimulator',
-  'CODE_SIGNING_ALLOWED=NO', "SYMROOT=#{scratch}/products", "OBJROOT=#{scratch}/objects")
+  'ARCHS=x86_64', 'ONLY_ACTIVE_ARCH=YES', 'CODE_SIGNING_ALLOWED=NO',
+  "SYMROOT=#{scratch}/products", "OBJROOT=#{scratch}/objects")
 packages = Dir.glob(File.join(scratch, 'products/Release-iphonesimulator/*.appex'))
 raise 'Expected a built extension package' unless packages.size == 1
-info = Xcodeproj::Plist.read_from_path(File.join(packages.first, 'Info.plist'))
+# Xcode writes a binary plist. xcodeproj's conflict-marker text scan does not
+# accept its arbitrary bytes; ask the platform plist tool to decode it first.
+info = JSON.parse(IO.popen(['plutil', '-convert', 'json', '-o', '-', File.join(packages.first, 'Info.plist')], &:read))
+raise 'Could not decode extension metadata' unless $?.success?
 raise 'Wrong worker identity' unless info['CFBundleIdentifier'] == 'org.snapetech.pleazyng.RommWorker'
 raise 'Worker deployment boundary changed' unless info['MinimumOSVersion'].to_f >= 26
 puts "ROMM_EXTENSION_INFO #{info.inspect}"

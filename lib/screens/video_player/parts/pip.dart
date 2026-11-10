@@ -23,8 +23,10 @@ extension _VideoPlayerPipMethods on VideoPlayerScreenState {
   Future<void> _initVideoFilterAndPip() async {
     final currentPlayer = player;
     if (!mounted || currentPlayer == null) return;
-    _recoveryWorkspace ??= context.read<MultiviewWorkspaceController>();
-    _recoveryWorkspace!.watchRecovery(this, () {
+    // Recovery is optional when this route is hosted outside a profile
+    // workspace. Its absence must not abort an otherwise valid player open.
+    _recoveryWorkspace ??= context.read<MultiviewWorkspaceController?>();
+    _recoveryWorkspace?.watchRecovery(this, () {
       final metadata = _currentMetadata;
       final serverId = metadata.serverId;
       if (!mounted ||

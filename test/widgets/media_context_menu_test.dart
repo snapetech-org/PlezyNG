@@ -841,7 +841,14 @@ void main() {
       );
     });
 
-    for (final kind in [MediaKind.movie, MediaKind.show, MediaKind.episode]) {
+    for (final kind in [
+      MediaKind.movie,
+      MediaKind.show,
+      MediaKind.episode,
+      MediaKind.album,
+      MediaKind.track,
+      MediaKind.artist,
+    ]) {
       testWidgets('is offered on a Plex ${kind.name}', (tester) async {
         await openPlexMenu(tester, kind);
 
@@ -865,7 +872,23 @@ void main() {
       }
     }
 
-    for (final kind in [MediaKind.album, MediaKind.track, MediaKind.collection]) {
+    for (final kind in [MediaKind.album, MediaKind.track, MediaKind.artist]) {
+      testWidgets('opens a server-qualified link for a Plex ${kind.name}', (tester) async {
+        await openPlexMenu(tester, kind);
+        await tester.tap(find.text(t.deepLinks.showLink));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ItemLinkDialog), findsOneWidget);
+        const link = 'pleazyng://play?server=plex-1&id=item-1';
+        expect(find.text(link), findsOneWidget);
+        expect(
+          (DeepLink.tryParse(link)! as PlayLink).target,
+          ItemPlayTarget(serverId: ServerId('plex-1'), itemId: 'item-1'),
+        );
+      });
+    }
+
+    for (final kind in [MediaKind.collection, MediaKind.season]) {
       testWidgets('is not offered on a Plex ${kind.name}', (tester) async {
         await openPlexMenu(tester, kind);
 

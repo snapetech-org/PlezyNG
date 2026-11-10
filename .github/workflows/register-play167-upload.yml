@@ -1,0 +1,55 @@
+name: Complete accepted Play167 draft
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Protected-main repack workflow run with accepted167 and pending edit receipt
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: play-v307-store-repack167
+  cancel-in-progress: false
+jobs:
+  register:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Authenticate the existing repack receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$SOURCE_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+          mkdir -p "$RUNNER_TEMP/play-registration"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > "$RUNNER_TEMP/play-registration/source-run.json"
+          python3 - "$RUNNER_TEMP/play-registration/source-run.json" <<'PY'
+          import json,sys
+          from pathlib import Path
+          run=json.loads(Path(sys.argv[1]).read_text())
+          assert run['head_branch']=='main' and run['event']=='workflow_dispatch'
+          assert run['path']=='.github/workflows/repack-play-v307.yml' and run['status']=='completed'
+          PY
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name play-v307-store167-receipt --dir "$RUNNER_TEMP/play-registration"
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Commit only the existing accepted internal draft
+        env:
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          PLAY_REPACK_RECEIPT: ${{ runner.temp }}/play-registration/receipt.json
+        run: bundle exec ruby scripts/stores/register_repacked_play_bundle.rb
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: play167-registration-receipt
+          path: ${{ runner.temp }}/play-registration
+          retention-days: 30

@@ -20,7 +20,7 @@ credentials = Google::Auth::ServiceAccountCredentials.make_creds(
 )
 token = credentials.fetch_access_token!.fetch('access_token')
 base = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/#{package}"
-request = lambda do |path, destination = nil|
+request = lambda do |path, destination = nil, allow_unavailable: false|
   uri = URI(base + path)
   connection = Net::HTTP.new(uri.host, uri.port)
   connection.use_ssl = true
@@ -31,6 +31,10 @@ request = lambda do |path, destination = nil|
   response_data = nil
   connection.start do |http|
     http.request(get) do |response|
+      if allow_unavailable && !response.is_a?(Net::HTTPSuccess)
+        response_data = { 'unavailable' => true, 'http_status' => response.code.to_i }
+        next
+      end
       abort "Play API request failed with HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
       if destination
         File.open(destination, 'wb') { |file| response.read_body { |chunk| file.write(chunk) } }
@@ -41,6 +45,10 @@ request = lambda do |path, destination = nil|
   end
   response_data
 end
+lifecycle = %w[internal alpha].to_h do |track|
+  [track, request.call("/tracks/#{track}/releases", nil, allow_unavailable: true)]
+end
+File.write(File.join(output, 'play-release-lifecycle.json'), JSON.pretty_generate(lifecycle) + "\n")
 catalog = request.call("/generatedApks/#{version}")
 File.write(File.join(output, 'generated-apks.json'), JSON.pretty_generate(catalog) + "\n")
 receipt = {

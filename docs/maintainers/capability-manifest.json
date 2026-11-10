@@ -120,7 +120,7 @@
         "docs/games/ARCHITECTURE.md",
         "docs/games/VALIDATION.md"
       ],
-      "open": "Steam receiver/cloud/family/internet/controller/capture sources and RomM exact-copy/browser/stream/native/save workflows are integrated. Native RomM play requires an OS-isolated worker: desktop and Android have adapters, while iOS/tvOS/webOS/Tizen report native play unavailable pending containment. SDK helper checks pass; native SDK app builds, deployed optional services and real account/network/device acceptance remain open."
+      "open": "Steam receiver/cloud/family/internet/controller/capture sources and RomM exact-copy/browser/stream/native/save workflows are integrated. Native RomM requires isolation ABI 1: desktop and Android adapters are verified, and the webOS/Tizen descriptor-only worker passed x64/ARM64 containment and ARMv7 compilation. The iOS 26 Enhanced Security worker and packaging source are implemented, with simulator extension linkage/packaging verified and signed-device acceptance still open. tvOS lacks the required supported containment API and native cores remain disabled. Actual cores, native SDK app builds, deployed optional services and real account/network/device acceptance remain open."
     },
     {
       "area": "Multiview",
@@ -129,7 +129,7 @@
         "docs/plezyng/multiview/README.md",
         "docs/plezyng/multiview/DELIVERY.md"
       ],
-      "open": "The in-app workspace and detached desktop video windows are implemented on macOS, Windows and Linux. Native builds, concurrent decoder limits, audio/input ownership, accessibility and physical-device acceptance remain open. Non-video detached surfaces and automatic playback restart after an application crash are not implemented."
+      "open": "The in-app workspace, detached desktop video and shared-engine non-video windows are implemented on macOS, Windows and Linux. Profile-scoped recovery checkpoints support explicit resume through existing library/source/reader owners after restart; they never deserialize credentials or launch games automatically. Local recovery/profile/source/catalog and player-startup regressions pass. Native builds, concurrent decoder limits, audio/input ownership, crash injection, accessibility and physical-device acceptance remain open."
     },
     {
       "area": "MilkDrop-compatible music visualizer",
@@ -142,7 +142,7 @@
         "native/visualizer/sources.lock.json",
         "docs/plezyng/visualizations/IMPLEMENTATION_STATUS.md"
       ],
-      "open": "ABI v2 native host/process helpers and runtime/source/notice packaging hooks are integrated for desktop, Android, Apple and TV routes. Receipt and native lifecycle/process checks pass; actual runtime/app builds, patched mpv promotion, driver/render fidelity, device qualification and signing-catalog provisioning remain open."
+      "open": "ABI v2 native host/process helpers and runtime/source/notice packaging hooks are integrated for desktop, Android, Apple and TV routes. The canonical catalog is published with authentic GitHub OIDC/Sigstore identity and verified client-side, with rollback and expiry enforcement. The separate upstream MilkRust Ed25519 root remains unprovisioned and its route fails closed. Actual runtime/app builds, patched mpv promotion, driver/render fidelity, licensed catalog assets and device qualification remain open."
     },
     {
       "area": "Dolby Vision and FEL",
@@ -151,7 +151,7 @@
         "docs/maintainers/dv-platform-buildout.md",
         "docs/maintainers/dv-engine-luna-handoff.md"
       ],
-      "open": "Keep experiments identified as experimental and default-off where configured. Reference-output, signaling, seek/sync, and platform evidence are still required."
+      "open": "Implemented DV/FEL routing is automatic by default in ordinary builds, with persisted explicit Off/manual controls and compatibility fallback, under the 2026-11-09 owner directive. Experiments remain accurately identified as experimental. Reference-output, signaling, seek/sync and platform evidence remain required; packaging alone is not image-quality qualification."
     },
     {
       "area": "OverDrive lending",

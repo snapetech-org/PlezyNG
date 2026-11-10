@@ -20,7 +20,9 @@ environment, and unrelated handles/descriptors are not inherited.
 | Windows | An AppContainer with no network capabilities receives a private read-only stage containing the worker, selected core, ROM, firmware and any app-local CRT dependencies. A job allows one process, limits memory to 768 MiB and kills the worker when its owner closes. Native code verifies that its token is an AppContainer. A non-delete-sharing lease protects live stages; later starts remove abandoned, marked stages without following reparse points. |
 | macOS | The separately signed helper enters a deny-by-default Seatbelt policy before loading a core. Only selected inputs and system libraries are readable; networking and file writes are not allowed. A parent-side resident-memory watchdog terminates workers exceeding 768 MiB. Core frameworks are copied and signed for the worker without linking them into the app; the build checks the app's dynamic dependencies. The worker receives no JIT or unsigned-executable-memory entitlement. |
 | Android and Android TV | A private `isolatedProcess` service runs under an Android isolated UID, without app permissions or private-storage access. Only bundled core names are accepted. The parent passes read-only descriptors for the selected ROM (128 MiB) and up to 64 firmware files (256 MiB total); a read-only libretro VFS supplies those inputs. Audio and durable saves remain in the app. Unbinding requests termination; the lease is held until Android reports process death. Further data mappings are capped at 512 MiB above the runtime's existing mappings; this is not a resident-memory cgroup limit. Runtime qualification is recorded in the audit ledger. |
-| iOS, tvOS, webOS and Tizen | Native emulation is unavailable until a supported OS-isolated worker is implemented. Builds without a worker link an unavailable ABI that never loads a core, even during probing. The Dart layer independently requires isolation ABI 1 on every platform. Existing browser and streaming routes retain their capability checks. A Dart isolate is not an OS sandbox. |
+| webOS and Tizen | A separate descriptor-only worker supports older Linux TV kernels without Landlock. Only bundled cores are admitted. The worker preloads the core, supplies read-only ROM/firmware descriptors through the libretro VFS, and installs a default-deny syscall filter before parsing the game. Filesystem opens, networking and process creation are blocked. Audio and durable saves remain parent-owned. Hosted containment passed on x64 and ARM64; ARMv7 cross-compilation passed. Signed TV packages and physical models still require qualification. |
+| iOS 26 and later | The bundled Enhanced Security extension uses ExtensionFoundation/XPC to receive only the selected core identity and read-only input descriptors. The app embeds a separate extension and keeps saves and audio parent-owned. Broker/worker compilation, real simulator-extension linkage, embedding/idempotency and bundle metadata passed [hosted packaging validation](https://github.com/snapetech-org/pleazyng/actions/runs/42735407265). Signed-device containment remains separately tracked in the audit ledger. Earlier iOS versions expose the unavailable host. |
+| tvOS | The required Enhanced Security extension API is unavailable on tvOS 26. Native cores remain disabled. Builds without a supported worker link an unavailable ABI that never loads a core, including probing. Existing browser and streaming routes retain their capability checks. |
 
 Some Linux systems disable Landlock or ship an older ABI. On those systems native
 desktop cores are unavailable; existing alternative game routes remain subject
@@ -80,6 +82,13 @@ restrictions. It can run without Landlock and is only syscall-policy evidence,
 not a substitute for the complete filesystem sandbox tests.
 Actual bundled-core, signed-package, audio-device and game compatibility checks
 remain part of platform release qualification.
+
+`python3 scripts/games/verify_romm_descriptor_worker.py --libretro-include PATH`
+exercises the production TV worker and its read-only VFS, including denied file
+and network access, save-state round trips, crashes, hangs and restart. The
+separate [TV containment run](https://github.com/snapetech-org/pleazyng/actions/runs/42728573759)
+passed x64 and ARM64 tests and the ARMv7 build. This is worker evidence, not
+physical-TV or store acceptance.
 
 The Android workflow builds all four application ABIs and runs the actual
 isolated service on an Android emulator. The fixture checks private-file and

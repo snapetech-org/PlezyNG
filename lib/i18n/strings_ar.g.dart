@@ -4400,7 +4400,7 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	@override String get consent => 'إرسال وصفي إلى هذا المزود';
 	@override String get promptHint => 'صف الموسيقى التي تريدها';
 	@override String get noHistory => 'لا توجد موسيقى لعرضها بعد';
-	@override String get historyHint => 'مرات التشغيل المسجلة على هذا الجهاز';
+	@override String get historyHint => 'سجل التشغيل لهذا الملف الشخصي';
 	@override String get days => 'أيام';
 	@override String get albumBlocks => 'إبقاء الألبومات كاملة معًا';
 	@override String get home => 'الموسيقى';
@@ -9569,7 +9569,7 @@ extension on TranslationsAr {
 			'musicTools.consent' => 'إرسال وصفي إلى هذا المزود',
 			'musicTools.promptHint' => 'صف الموسيقى التي تريدها',
 			'musicTools.noHistory' => 'لا توجد موسيقى لعرضها بعد',
-			'musicTools.historyHint' => 'مرات التشغيل المسجلة على هذا الجهاز',
+			'musicTools.historyHint' => 'سجل التشغيل لهذا الملف الشخصي',
 			'musicTools.days' => 'أيام',
 			'musicTools.albumBlocks' => 'إبقاء الألبومات كاملة معًا',
 			'musicTools.home' => 'الموسيقى',

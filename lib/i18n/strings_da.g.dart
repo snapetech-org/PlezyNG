@@ -4308,7 +4308,7 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	@override String get consent => 'Send min beskrivelse til denne udbyder';
 	@override String get promptHint => 'Beskriv den ønskede musik';
 	@override String get noHistory => 'Ingen musik at vise endnu';
-	@override String get historyHint => 'Afspilninger registreret på denne enhed';
+	@override String get historyHint => 'Afspilningshistorik for denne profil';
 	@override String get days => 'Dage';
 	@override String get albumBlocks => 'Hold hele album samlet';
 	@override String get home => 'Musik';
@@ -9469,7 +9469,7 @@ extension on TranslationsDa {
 			'musicTools.consent' => 'Send min beskrivelse til denne udbyder',
 			'musicTools.promptHint' => 'Beskriv den ønskede musik',
 			'musicTools.noHistory' => 'Ingen musik at vise endnu',
-			'musicTools.historyHint' => 'Afspilninger registreret på denne enhed',
+			'musicTools.historyHint' => 'Afspilningshistorik for denne profil',
 			'musicTools.days' => 'Dage',
 			'musicTools.albumBlocks' => 'Hold hele album samlet',
 			'musicTools.home' => 'Musik',

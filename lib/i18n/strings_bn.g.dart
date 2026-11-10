@@ -4308,7 +4308,7 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	@override String get consent => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান';
 	@override String get promptHint => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন';
 	@override String get noHistory => 'এখনও দেখানোর মতো সঙ্গীত নেই';
-	@override String get historyHint => 'এই ডিভাইসে রেকর্ড করা প্লে';
+	@override String get historyHint => 'এই প্রোফাইলের প্লেব্যাক ইতিহাস';
 	@override String get days => 'দিন';
 	@override String get albumBlocks => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন';
 	@override String get home => 'সঙ্গীত';
@@ -9469,7 +9469,7 @@ extension on TranslationsBn {
 			'musicTools.consent' => 'এই প্রদানকারীকে আমার বর্ণনা পাঠান',
 			'musicTools.promptHint' => 'আপনার পছন্দের সঙ্গীত বর্ণনা করুন',
 			'musicTools.noHistory' => 'এখনও দেখানোর মতো সঙ্গীত নেই',
-			'musicTools.historyHint' => 'এই ডিভাইসে রেকর্ড করা প্লে',
+			'musicTools.historyHint' => 'এই প্রোফাইলের প্লেব্যাক ইতিহাস',
 			'musicTools.days' => 'দিন',
 			'musicTools.albumBlocks' => 'সম্পূর্ণ অ্যালবাম একসাথে রাখুন',
 			'musicTools.home' => 'সঙ্গীত',

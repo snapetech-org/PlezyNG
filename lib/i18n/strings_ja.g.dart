@@ -4303,7 +4303,7 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	@override String get consent => 'このプロバイダーに説明を送信';
 	@override String get promptHint => '聴きたい音楽を説明してください';
 	@override String get noHistory => '表示する音楽はまだありません';
-	@override String get historyHint => 'この端末で記録した再生';
+	@override String get historyHint => 'このプロフィールの再生履歴';
 	@override String get days => '日';
 	@override String get albumBlocks => 'アルバム全体をまとめる';
 	@override String get home => '音楽';
@@ -9464,7 +9464,7 @@ extension on TranslationsJa {
 			'musicTools.consent' => 'このプロバイダーに説明を送信',
 			'musicTools.promptHint' => '聴きたい音楽を説明してください',
 			'musicTools.noHistory' => '表示する音楽はまだありません',
-			'musicTools.historyHint' => 'この端末で記録した再生',
+			'musicTools.historyHint' => 'このプロフィールの再生履歴',
 			'musicTools.days' => '日',
 			'musicTools.albumBlocks' => 'アルバム全体をまとめる',
 			'musicTools.home' => '音楽',

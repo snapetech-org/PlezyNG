@@ -4285,7 +4285,7 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get consent => 'Gửi mô tả của tôi đến nhà cung cấp này';
 	@override String get promptHint => 'Mô tả âm nhạc bạn muốn';
 	@override String get noHistory => 'Chưa có nhạc để hiển thị';
-	@override String get historyHint => 'Lượt phát được ghi trên thiết bị này';
+	@override String get historyHint => 'Lịch sử phát của hồ sơ này';
 	@override String get days => 'Ngày';
 	@override String get albumBlocks => 'Giữ nguyên album';
 	@override String get home => 'Nhạc';
@@ -9444,7 +9444,7 @@ extension on TranslationsVi {
 			'musicTools.consent' => 'Gửi mô tả của tôi đến nhà cung cấp này',
 			'musicTools.promptHint' => 'Mô tả âm nhạc bạn muốn',
 			'musicTools.noHistory' => 'Chưa có nhạc để hiển thị',
-			'musicTools.historyHint' => 'Lượt phát được ghi trên thiết bị này',
+			'musicTools.historyHint' => 'Lịch sử phát của hồ sơ này',
 			'musicTools.days' => 'Ngày',
 			'musicTools.albumBlocks' => 'Giữ nguyên album',
 			'musicTools.home' => 'Nhạc',

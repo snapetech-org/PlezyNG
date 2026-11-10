@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/services/music/music_account_scope.dart';
 import 'package:plezy/services/plex_api_cache.dart';
+import 'package:plezy/utils/active_client_scope.dart';
 
 import '../../test_helpers/backend_client_fixtures.dart';
 
@@ -53,5 +54,23 @@ void main() {
     expect(musicAccountScope(first), musicAccountScope(rotated));
     expect(musicAccountScope(first), isNot(musicAccountScope(sibling)));
     expect(musicAccountScope(first), isNot(contains('home-user-a')));
+  });
+
+  test('portable history identity survives local profile and token changes but not Home users', () {
+    final first = testPlexClient(token: 'old-secret')
+      ..plexAccountId = 'account-a'
+      ..plexMusicUserIdentifier = 'home-a';
+    final otherDevice = testPlexClient(token: 'rotated-secret')
+      ..profileScopeId = PlexProfileScopeId(serverId: first.serverId, profileId: 'another-local-profile')
+      ..plexAccountId = 'account-a'
+      ..plexMusicUserIdentifier = 'home-a';
+    addTearDown(first.close);
+    addTearDown(otherDevice.close);
+    expect(musicHistoryAccountScope(first), musicHistoryAccountScope(otherDevice));
+    expect(musicHistoryAccountScope(first), isNot(contains('secret')));
+    otherDevice.plexMusicUserIdentifier = 'home-b';
+    expect(musicHistoryAccountScope(first), isNot(musicHistoryAccountScope(otherDevice)));
+    otherDevice.plexMusicUserIdentifier = null;
+    expect(musicHistoryAccountScope(otherDevice), isNull);
   });
 }

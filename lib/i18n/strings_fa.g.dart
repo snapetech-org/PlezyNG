@@ -4308,7 +4308,7 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get consent => 'توضیح من را به این ارائه‌دهنده بفرست';
 	@override String get promptHint => 'موسیقی دلخواهتان را توصیف کنید';
 	@override String get noHistory => 'هنوز موسیقی‌ای برای نمایش نیست';
-	@override String get historyHint => 'پخش‌های ثبت‌شده در این دستگاه';
+	@override String get historyHint => 'سابقهٔ پخش این نمایه';
 	@override String get days => 'روزها';
 	@override String get albumBlocks => 'آلبوم‌ها را کامل نگه دار';
 	@override String get home => 'موسیقی‌ها';
@@ -9469,7 +9469,7 @@ extension on TranslationsFa {
 			'musicTools.consent' => 'توضیح من را به این ارائه‌دهنده بفرست',
 			'musicTools.promptHint' => 'موسیقی دلخواهتان را توصیف کنید',
 			'musicTools.noHistory' => 'هنوز موسیقی‌ای برای نمایش نیست',
-			'musicTools.historyHint' => 'پخش‌های ثبت‌شده در این دستگاه',
+			'musicTools.historyHint' => 'سابقهٔ پخش این نمایه',
 			'musicTools.days' => 'روزها',
 			'musicTools.albumBlocks' => 'آلبوم‌ها را کامل نگه دار',
 			'musicTools.home' => 'موسیقی‌ها',

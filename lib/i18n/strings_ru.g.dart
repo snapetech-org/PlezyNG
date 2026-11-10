@@ -4354,7 +4354,7 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	@override String get consent => 'Отправить мой запрос этому провайдеру';
 	@override String get promptHint => 'Опишите желаемую музыку';
 	@override String get noHistory => 'Пока нет музыки для отображения';
-	@override String get historyHint => 'Прослушивания, записанные на этом устройстве';
+	@override String get historyHint => 'История прослушиваний этого профиля';
 	@override String get days => 'Дни';
 	@override String get albumBlocks => 'Сохранять альбомы целиком';
 	@override String get home => 'Музыка';
@@ -9519,7 +9519,7 @@ extension on TranslationsRu {
 			'musicTools.consent' => 'Отправить мой запрос этому провайдеру',
 			'musicTools.promptHint' => 'Опишите желаемую музыку',
 			'musicTools.noHistory' => 'Пока нет музыки для отображения',
-			'musicTools.historyHint' => 'Прослушивания, записанные на этом устройстве',
+			'musicTools.historyHint' => 'История прослушиваний этого профиля',
 			'musicTools.days' => 'Дни',
 			'musicTools.albumBlocks' => 'Сохранять альбомы целиком',
 			'musicTools.home' => 'Музыка',

@@ -4308,7 +4308,7 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	@override String get consent => 'Сипаттамамды осы провайдерге жіберу';
 	@override String get promptHint => 'Қалаған музыкаңызды сипаттаңыз';
 	@override String get noHistory => 'Әзірге көрсетілетін музыка жоқ';
-	@override String get historyHint => 'Осы құрылғыда жазылған тыңдаулар';
+	@override String get historyHint => 'Осы профильдің тыңдау тарихы';
 	@override String get days => 'Күндер';
 	@override String get albumBlocks => 'Альбомдарды тұтас сақтау';
 	@override String get home => 'Музыка';
@@ -9469,7 +9469,7 @@ extension on TranslationsKk {
 			'musicTools.consent' => 'Сипаттамамды осы провайдерге жіберу',
 			'musicTools.promptHint' => 'Қалаған музыкаңызды сипаттаңыз',
 			'musicTools.noHistory' => 'Әзірге көрсетілетін музыка жоқ',
-			'musicTools.historyHint' => 'Осы құрылғыда жазылған тыңдаулар',
+			'musicTools.historyHint' => 'Осы профильдің тыңдау тарихы',
 			'musicTools.days' => 'Күндер',
 			'musicTools.albumBlocks' => 'Альбомдарды тұтас сақтау',
 			'musicTools.home' => 'Музыка',

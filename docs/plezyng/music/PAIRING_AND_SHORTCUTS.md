@@ -79,6 +79,24 @@ identity against the currently authorized profile. A tag is not an access grant.
 Tags are not permanently locked by the writer. Physical tag qualification and
 other platforms' NFC writing remain separate work.
 
+## Paired listening history
+
+Open Recent playback history and select Sync when a compatible paired device is
+connected. This explicitly imports that peer's account-matching occurrences into
+the current profile, in eight-event cursor pages. Repeat the operation from the
+other device for a two-way merge. Original occurrence UUIDs are retained and
+listened-time/finished fields merge monotonically, so replay does not add plays.
+Imported history feeds local charts but never replays server scrobbles.
+
+Newly recorded events carry a hashed portable server/account identity. Plex
+requires a verified Plex account and Home-user identity; Jellyfin/Emby use the
+server and user identity. Direct Plex connections without verified user identity
+and old unscoped events remain local instead of being guessed into an account.
+Profile/account changes invalidate in-flight pages. Conflicting IDs roll back the
+whole page. The operation has bounded pages, message sizes and deadlines; retry
+after an interruption safely merges again. Clearing history is local, not a
+cross-device deletion command, and a later import can restore the peer's copies.
+
 ## Cast music output
 
 On Android and iOS, use the Now Playing device action to select a Cast receiver.

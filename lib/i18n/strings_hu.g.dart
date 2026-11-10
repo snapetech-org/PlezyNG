@@ -4308,7 +4308,7 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get consent => 'Leírásom elküldése ennek a szolgáltatónak';
 	@override String get promptHint => 'Írd le a kívánt zenét';
 	@override String get noHistory => 'Még nincs megjeleníthető zene';
-	@override String get historyHint => 'Ezen az eszközön rögzített lejátszások';
+	@override String get historyHint => 'A profil lejátszási előzményei';
 	@override String get days => 'Napok';
 	@override String get albumBlocks => 'Teljes albumok együtt tartása';
 	@override String get home => 'Zene';
@@ -9469,7 +9469,7 @@ extension on TranslationsHu {
 			'musicTools.consent' => 'Leírásom elküldése ennek a szolgáltatónak',
 			'musicTools.promptHint' => 'Írd le a kívánt zenét',
 			'musicTools.noHistory' => 'Még nincs megjeleníthető zene',
-			'musicTools.historyHint' => 'Ezen az eszközön rögzített lejátszások',
+			'musicTools.historyHint' => 'A profil lejátszási előzményei',
 			'musicTools.days' => 'Napok',
 			'musicTools.albumBlocks' => 'Teljes albumok együtt tartása',
 			'musicTools.home' => 'Zene',

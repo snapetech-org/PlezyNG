@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:drift/native.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/connection/connection.dart';
+import 'package:plezy/database/app_database.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/models/plex/plex_home.dart';
 import 'package:plezy/models/plex/plex_home_user.dart';
@@ -21,6 +23,9 @@ import 'package:plezy/services/companion_remote/remote_auth_service.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/services/music/music_queue_controller.dart';
 import 'package:plezy/services/music/music_transfer_snapshot.dart';
+import 'package:plezy/services/music/music_history_reconciliation.dart';
+import 'package:plezy/services/music/music_library_store.dart';
+import 'package:plezy/services/plex_api_cache.dart';
 
 import '../test_helpers/backend_client_fixtures.dart';
 import '../test_helpers/prefs.dart';
@@ -158,6 +163,49 @@ void main() {
   });
 
   group('CompanionRemoteProvider — music transfer', () {
+    test('history import requires negotiation and is cancelled by profile-store rebinding', () async {
+      final peer = _FakeCompanionRemotePeerService();
+      final harness = await _RemoteHarness.create(_FakePeerFactory([peer]).call);
+      addTearDown(harness.close);
+      final database = AppDatabase.forTesting(NativeDatabase.memory());
+      PlexApiCache.initialize(database);
+      addTearDown(database.close);
+      final client = testPlexClient()
+        ..plexAccountId = 'account'
+        ..plexMusicUserIdentifier = 'home-user';
+      addTearDown(client.close);
+      final history = MusicHistoryReconciliation(
+        store: MusicLibraryStore(database, 'history-profile'),
+        clients: () => [client],
+      );
+      harness.provider.bindMusicHistory(history);
+      await harness.provider.connectToManualHost('192.0.2.30:48634', pairingCode: '0123456789abcdef0123456789abcdef');
+      expect(harness.provider.supportsMusicHistory, isFalse);
+      peer.emitCommand(const RemoteCommand(type: RemoteCommandType.deviceInfo, data: {'musicHistoryVersion': 1}));
+      expect(harness.provider.supportsMusicHistory, isTrue);
+      final imported = harness.provider.synchronizeMusicHistory();
+      final request = peer.sentCommands.last;
+      expect(request.type, RemoteCommandType.musicHistory);
+      peer.emitCommand(
+        RemoteCommand(
+          type: RemoteCommandType.musicHistory,
+          data: {
+            'version': 1,
+            'op': 'page',
+            'request': request.data!['request'],
+            'sequence': 0,
+            'entries': [],
+            'cursor': null,
+          },
+        ),
+      );
+      expect(await imported, isTrue);
+      final cancelled = harness.provider.synchronizeMusicHistory();
+      harness.provider.unbindMusicHistory(history);
+      expect(await cancelled, isFalse);
+      expect(harness.provider.supportsMusicHistory, isFalse);
+    });
+
     test('a compatible paired peer acknowledges before the sender finishes its session', () async {
       final peer = _FakeCompanionRemotePeerService();
       final harness = await _RemoteHarness.create(_FakePeerFactory([peer]).call);

@@ -4350,7 +4350,7 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get consent => 'Odeslat můj popis tomuto poskytovateli';
 	@override String get promptHint => 'Popište požadovanou hudbu';
 	@override String get noHistory => 'Zatím není co zobrazit';
-	@override String get historyHint => 'Přehrání zaznamenaná v tomto zařízení';
+	@override String get historyHint => 'Historie přehrávání tohoto profilu';
 	@override String get days => 'Dny';
 	@override String get albumBlocks => 'Ponechat celá alba pohromadě';
 	@override String get home => 'Hudba';
@@ -9513,7 +9513,7 @@ extension on TranslationsCs {
 			'musicTools.consent' => 'Odeslat můj popis tomuto poskytovateli',
 			'musicTools.promptHint' => 'Popište požadovanou hudbu',
 			'musicTools.noHistory' => 'Zatím není co zobrazit',
-			'musicTools.historyHint' => 'Přehrání zaznamenaná v tomto zařízení',
+			'musicTools.historyHint' => 'Historie přehrávání tohoto profilu',
 			'musicTools.days' => 'Dny',
 			'musicTools.albumBlocks' => 'Ponechat celá alba pohromadě',
 			'musicTools.home' => 'Hudba',

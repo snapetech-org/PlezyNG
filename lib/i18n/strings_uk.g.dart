@@ -4350,7 +4350,7 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	@override String get consent => 'Надіслати мій опис цьому постачальнику';
 	@override String get promptHint => 'Опишіть бажану музику';
 	@override String get noHistory => 'Поки немає музики для показу';
-	@override String get historyHint => 'Прослуховування, записані на цьому пристрої';
+	@override String get historyHint => 'Історія прослуховувань цього профілю';
 	@override String get days => 'Дні';
 	@override String get albumBlocks => 'Зберігати альбоми цілими';
 	@override String get home => 'Музика';
@@ -9513,7 +9513,7 @@ extension on TranslationsUk {
 			'musicTools.consent' => 'Надіслати мій опис цьому постачальнику',
 			'musicTools.promptHint' => 'Опишіть бажану музику',
 			'musicTools.noHistory' => 'Поки немає музики для показу',
-			'musicTools.historyHint' => 'Прослуховування, записані на цьому пристрої',
+			'musicTools.historyHint' => 'Історія прослуховувань цього профілю',
 			'musicTools.days' => 'Дні',
 			'musicTools.albumBlocks' => 'Зберігати альбоми цілими',
 			'musicTools.home' => 'Музика',

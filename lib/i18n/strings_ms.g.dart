@@ -4285,7 +4285,7 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get consent => 'Hantar penerangan saya kepada penyedia ini';
 	@override String get promptHint => 'Terangkan muzik yang anda inginkan';
 	@override String get noHistory => 'Belum ada muzik untuk dipaparkan';
-	@override String get historyHint => 'Main balik yang direkodkan pada peranti ini';
+	@override String get historyHint => 'Sejarah main balik profil ini';
 	@override String get days => 'Hari';
 	@override String get albumBlocks => 'Kekalkan album penuh bersama';
 	@override String get home => 'Muzik';
@@ -9444,7 +9444,7 @@ extension on TranslationsMs {
 			'musicTools.consent' => 'Hantar penerangan saya kepada penyedia ini',
 			'musicTools.promptHint' => 'Terangkan muzik yang anda inginkan',
 			'musicTools.noHistory' => 'Belum ada muzik untuk dipaparkan',
-			'musicTools.historyHint' => 'Main balik yang direkodkan pada peranti ini',
+			'musicTools.historyHint' => 'Sejarah main balik profil ini',
 			'musicTools.days' => 'Hari',
 			'musicTools.albumBlocks' => 'Kekalkan album penuh bersama',
 			'musicTools.home' => 'Muzik',

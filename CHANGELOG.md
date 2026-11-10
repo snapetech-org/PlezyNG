@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Import paired-device listening history through bounded cursor pages, portable account matching and cumulative occurrence-ID reconciliation. Legacy unscoped events stay private, replay cannot add plays, and imported events never send server scrobbles.
+
 - Bind newly recorded listening occurrences to portable account identities, keep legacy unscoped history private, and reject conflicting occurrence IDs before cross-device reconciliation.
 
 - Route Chromecast music through the existing shared queue and controls, with receiver-only stream resolution, paused load acknowledgement, repeat/shuffle/duplicate preservation, and receiver-takeover fallback without local DSP claims.

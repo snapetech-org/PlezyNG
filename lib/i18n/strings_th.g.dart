@@ -4285,7 +4285,7 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	@override String get consent => 'ส่งคำอธิบายของฉันให้ผู้ให้บริการนี้';
 	@override String get promptHint => 'อธิบายเพลงที่ต้องการ';
 	@override String get noHistory => 'ยังไม่มีเพลงให้แสดง';
-	@override String get historyHint => 'การเล่นที่บันทึกบนอุปกรณ์นี้';
+	@override String get historyHint => 'ประวัติการเล่นของโปรไฟล์นี้';
 	@override String get days => 'วัน';
 	@override String get albumBlocks => 'เก็บอัลบั้มทั้งชุดไว้ด้วยกัน';
 	@override String get home => 'เพลง';
@@ -9444,7 +9444,7 @@ extension on TranslationsTh {
 			'musicTools.consent' => 'ส่งคำอธิบายของฉันให้ผู้ให้บริการนี้',
 			'musicTools.promptHint' => 'อธิบายเพลงที่ต้องการ',
 			'musicTools.noHistory' => 'ยังไม่มีเพลงให้แสดง',
-			'musicTools.historyHint' => 'การเล่นที่บันทึกบนอุปกรณ์นี้',
+			'musicTools.historyHint' => 'ประวัติการเล่นของโปรไฟล์นี้',
 			'musicTools.days' => 'วัน',
 			'musicTools.albumBlocks' => 'เก็บอัลบั้มทั้งชุดไว้ด้วยกัน',
 			'musicTools.home' => 'เพลง',

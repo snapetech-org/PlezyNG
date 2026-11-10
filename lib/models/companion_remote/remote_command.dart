@@ -61,6 +61,7 @@ enum RemoteCommandType {
   gameCloudSetting,
   musicTransfer,
   musicGroup,
+  musicHistory,
 }
 
 class _RemoteCommandTypeConverter extends IndexedEnumConverter<RemoteCommandType> {

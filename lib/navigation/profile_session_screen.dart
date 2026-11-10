@@ -388,10 +388,13 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                     final manager = context.read<MultiServerProvider>().serverManager;
                     final libraries = context.read<LibrariesProvider>();
                     final hidden = context.read<HiddenLibrariesProvider>();
-                    return MusicExperience(
+                    final companion = context.read<CompanionRemoteProvider>();
+                    final experience = MusicExperience(
                       music: context.read<MusicPlaybackService>(),
                       store: MusicLibraryStore(context.read<AppDatabase>(), activeId),
                       connectionChanges: manager.statusStream,
+                      syncClients: () => manager.visibleOnlineClients.values,
+                      onDispose: (value) => companion.unbindMusicHistory(value.history),
                       sharedSources: () async {
                         await hidden.ensureInitialized();
                         return [
@@ -422,6 +425,8 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                           ? null
                           : manager.getClient(ServerId(item.serverId!)),
                     );
+                    companion.bindMusicHistory(experience.history);
+                    return experience;
                   },
                 ),
               // Per profile: a profile switch disposes of it, which leaves the

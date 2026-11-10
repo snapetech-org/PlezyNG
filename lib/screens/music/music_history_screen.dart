@@ -7,6 +7,8 @@ import '../../i18n/strings.g.dart';
 import '../../services/music/music_experience.dart';
 import '../../services/music/music_library_store.dart';
 import '../../utils/music_navigation.dart';
+import '../../providers/companion_remote_provider.dart';
+import '../../utils/snackbar_helper.dart';
 
 class MusicHistoryScreen extends StatefulWidget {
   const MusicHistoryScreen({super.key});
@@ -22,6 +24,7 @@ class _MusicHistoryScreenState extends State<MusicHistoryScreen> {
   int _revision = 0;
   bool _loading = false;
   bool _failed = false;
+  bool _syncing = false;
 
   @override
   void initState() {
@@ -59,40 +62,65 @@ class _MusicHistoryScreenState extends State<MusicHistoryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(t.musicTools.recent)),
-    body: RefreshIndicator(
-      onRefresh: () => _load(refresh: true),
-      child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _entries.length + 2,
-        itemBuilder: (context, index) {
-          if (index == 0) return Padding(padding: const EdgeInsets.all(16), child: Text(t.musicTools.historyHint));
-          if (index > _entries.length) {
-            if (_loading) return const Center(child: CircularProgressIndicator());
-            if (_failed) {
-              return TextButton(
-                onPressed: () => _load(refresh: _entries.isEmpty),
-                child: Text(t.common.retry),
-              );
-            }
-            if (_cursor != null) return TextButton(onPressed: _load, child: Text(t.fileSources.loadMore));
-            return _entries.isEmpty
-                ? Padding(padding: const EdgeInsets.all(16), child: Text(t.musicTools.noHistory))
-                : const SizedBox.shrink();
-          }
-          final entry = _entries[index - 1];
-          return ListTile(
-            key: ValueKey(entry.id),
-            title: Text(entry.item.displayTitle),
-            subtitle: Text(
-              '${entry.item.trackArtistTitle ?? ''}\n${MaterialLocalizations.of(context).formatFullDate(entry.startedAt.toLocal())} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(entry.startedAt.toLocal()))}',
+  Widget build(BuildContext context) {
+    final companion = context.watch<CompanionRemoteProvider?>();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(t.musicTools.recent),
+        actions: [
+          if (companion?.supportsMusicHistory == true)
+            IconButton(
+              tooltip: '${t.homeLayout.sync}: ${companion!.connectedDevice?.name ?? t.companionRemote.unknownDevice}',
+              icon: _syncing
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.sync),
+              onPressed: _syncing
+                  ? null
+                  : () async {
+                      setState(() => _syncing = true);
+                      try {
+                        final result = await companion.synchronizeMusicHistory();
+                        if (context.mounted && !result) showErrorSnackBar(context, t.musicExperience.error);
+                      } finally {
+                        if (mounted) setState(() => _syncing = false);
+                      }
+                    },
             ),
-            isThreeLine: true,
-            onTap: () => playTrackWithAlbumContext(context, entry.item),
-          );
-        },
+        ],
       ),
-    ),
-  );
+      body: RefreshIndicator(
+        onRefresh: () => _load(refresh: true),
+        child: ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: _entries.length + 2,
+          itemBuilder: (context, index) {
+            if (index == 0) return Padding(padding: const EdgeInsets.all(16), child: Text(t.musicTools.historyHint));
+            if (index > _entries.length) {
+              if (_loading) return const Center(child: CircularProgressIndicator());
+              if (_failed) {
+                return TextButton(
+                  onPressed: () => _load(refresh: _entries.isEmpty),
+                  child: Text(t.common.retry),
+                );
+              }
+              if (_cursor != null) return TextButton(onPressed: _load, child: Text(t.fileSources.loadMore));
+              return _entries.isEmpty
+                  ? Padding(padding: const EdgeInsets.all(16), child: Text(t.musicTools.noHistory))
+                  : const SizedBox.shrink();
+            }
+            final entry = _entries[index - 1];
+            return ListTile(
+              key: ValueKey(entry.id),
+              title: Text(entry.item.displayTitle),
+              subtitle: Text(
+                '${entry.item.trackArtistTitle ?? ''}\n${MaterialLocalizations.of(context).formatFullDate(entry.startedAt.toLocal())} ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(entry.startedAt.toLocal()))}',
+              ),
+              isThreeLine: true,
+              onTap: () => playTrackWithAlbumContext(context, entry.item),
+            );
+          },
+        ),
+      ),
+    );
+  }
 }

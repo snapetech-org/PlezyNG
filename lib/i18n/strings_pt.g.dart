@@ -4315,7 +4315,7 @@ class Translations$musicTools$pt extends Translations$musicTools$en {
 	@override String get consent => 'Enviar minha descrição a este fornecedor';
 	@override String get promptHint => 'Descreva a música que deseja';
 	@override String get noHistory => 'Ainda não há música para mostrar';
-	@override String get historyHint => 'Reproduções registradas neste dispositivo';
+	@override String get historyHint => 'Histórico de reprodução deste perfil';
 	@override String get days => 'Dias';
 	@override String get albumBlocks => 'Manter álbuns completos juntos';
 	@override String get home => 'Música';
@@ -9476,7 +9476,7 @@ extension on TranslationsPt {
 			'musicTools.consent' => 'Enviar minha descrição a este fornecedor',
 			'musicTools.promptHint' => 'Descreva a música que deseja',
 			'musicTools.noHistory' => 'Ainda não há música para mostrar',
-			'musicTools.historyHint' => 'Reproduções registradas neste dispositivo',
+			'musicTools.historyHint' => 'Histórico de reprodução deste perfil',
 			'musicTools.days' => 'Dias',
 			'musicTools.albumBlocks' => 'Manter álbuns completos juntos',
 			'musicTools.home' => 'Música',

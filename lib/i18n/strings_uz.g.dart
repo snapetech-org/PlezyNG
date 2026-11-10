@@ -4308,7 +4308,7 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	@override String get consent => 'Tavsifimni ushbu provayderga yuborish';
 	@override String get promptHint => 'Kerakli musiqani tasvirlang';
 	@override String get noHistory => 'Hozircha ko‘rsatiladigan musiqa yo‘q';
-	@override String get historyHint => 'Ushbu qurilmada yozilgan ijrolar';
+	@override String get historyHint => 'Ushbu profilning tinglash tarixi';
 	@override String get days => 'Kunlar';
 	@override String get albumBlocks => 'Albomlarni butun saqlash';
 	@override String get home => 'Musiqa';
@@ -9469,7 +9469,7 @@ extension on TranslationsUz {
 			'musicTools.consent' => 'Tavsifimni ushbu provayderga yuborish',
 			'musicTools.promptHint' => 'Kerakli musiqani tasvirlang',
 			'musicTools.noHistory' => 'Hozircha ko‘rsatiladigan musiqa yo‘q',
-			'musicTools.historyHint' => 'Ushbu qurilmada yozilgan ijrolar',
+			'musicTools.historyHint' => 'Ushbu profilning tinglash tarixi',
 			'musicTools.days' => 'Kunlar',
 			'musicTools.albumBlocks' => 'Albomlarni butun saqlash',
 			'musicTools.home' => 'Musiqa',

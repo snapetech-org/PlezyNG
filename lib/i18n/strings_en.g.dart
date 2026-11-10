@@ -14720,8 +14720,8 @@ class Translations$musicTools$en {
 	/// en: 'No music to show yet'
 	String get noHistory => 'No music to show yet';
 
-	/// en: 'Plays recorded on this device'
-	String get historyHint => 'Plays recorded on this device';
+	/// en: 'Playback history for this profile'
+	String get historyHint => 'Playback history for this profile';
 
 	/// en: 'Days'
 	String get days => 'Days';
@@ -22650,7 +22650,7 @@ extension on Translations {
 			'musicTools.consent' => 'Send my prompt to this provider',
 			'musicTools.promptHint' => 'Describe the music you want',
 			'musicTools.noHistory' => 'No music to show yet',
-			'musicTools.historyHint' => 'Plays recorded on this device',
+			'musicTools.historyHint' => 'Playback history for this profile',
 			'musicTools.days' => 'Days',
 			'musicTools.albumBlocks' => 'Keep whole albums together',
 			'musicTools.home' => 'Music',

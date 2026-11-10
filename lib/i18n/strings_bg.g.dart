@@ -4308,7 +4308,7 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	@override String get consent => 'Изпрати описанието ми на този доставчик';
 	@override String get promptHint => 'Опишете желаната музика';
 	@override String get noHistory => 'Все още няма музика за показване';
-	@override String get historyHint => 'Възпроизвеждания, записани на това устройство';
+	@override String get historyHint => 'История на възпроизвеждане за този профил';
 	@override String get days => 'Дни';
 	@override String get albumBlocks => 'Запазване на целите албуми заедно';
 	@override String get home => 'Музика';
@@ -9469,7 +9469,7 @@ extension on TranslationsBg {
 			'musicTools.consent' => 'Изпрати описанието ми на този доставчик',
 			'musicTools.promptHint' => 'Опишете желаната музика',
 			'musicTools.noHistory' => 'Все още няма музика за показване',
-			'musicTools.historyHint' => 'Възпроизвеждания, записани на това устройство',
+			'musicTools.historyHint' => 'История на възпроизвеждане за този профил',
 			'musicTools.days' => 'Дни',
 			'musicTools.albumBlocks' => 'Запазване на целите албуми заедно',
 			'musicTools.home' => 'Музика',

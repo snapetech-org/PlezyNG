@@ -38,6 +38,8 @@ import '../services/music/music_transfer_snapshot.dart';
 import '../services/music/music_group_exchange.dart';
 import '../services/music/music_group_playback.dart';
 import '../services/music/music_playback_service.dart';
+import '../services/music/music_history_exchange.dart';
+import '../services/music/music_history_reconciliation.dart';
 import '../utils/app_logger.dart';
 import '../utils/device_identity.dart';
 import '../utils/error_message_utils.dart';
@@ -87,6 +89,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   MusicTransferExchange? _musicTransfer;
   int _musicTransferVersion = 0;
   int _musicGroupVersion = 0;
+  int _musicHistoryVersion = 0;
+  MusicHistoryExchange? _musicHistory;
+  MusicHistoryReconciliation? _historyReconciliation;
   MusicGroupExchange? _musicGroup;
   MusicGroupPlayback? _musicGroupPlayback;
   LanDiscoveryService? _discoveryService;
@@ -274,6 +279,23 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void leaveMusicGroup() => _musicGroup?.leave();
+
+  bool get supportsMusicHistory =>
+      isConnected && _musicHistoryVersion == 1 && _musicHistory != null && _historyReconciliation != null;
+
+  Future<bool> synchronizeMusicHistory() => supportsMusicHistory ? _musicHistory!.request() : Future.value(false);
+
+  void bindMusicHistory(MusicHistoryReconciliation history) {
+    if (identical(history, _historyReconciliation)) return;
+    _musicHistory?.reset();
+    _historyReconciliation = history;
+  }
+
+  void unbindMusicHistory(MusicHistoryReconciliation history) {
+    if (!identical(history, _historyReconciliation)) return;
+    _musicHistory?.reset();
+    _historyReconciliation = null;
+  }
 
   void bindMusicSession(MusicTransferSession session) {
     if (identical(_musicSession, session)) return;
@@ -1127,6 +1149,31 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     // synchronously cancels these subscriptions.
     _cleanupSubscriptions();
     final profileId = _cryptoProfileId;
+    _musicHistory = MusicHistoryExchange(
+      allowed: () =>
+          _ownsPeer(peer, generation) &&
+          isConnected &&
+          _musicHistoryVersion == 1 &&
+          profileId != null &&
+          profileId == _cryptoProfileId &&
+          _historyReconciliation != null,
+      accounts: () => _historyReconciliation?.accounts ?? {},
+      exportPage: (accounts, before, current) async {
+        final history = _historyReconciliation;
+        if (history == null) throw StateError('Music history is unavailable');
+        return history.exportPage(accounts, before, () => current() && identical(history, _historyReconciliation));
+      },
+      merge: (entries, current) async {
+        final history = _historyReconciliation;
+        if (history == null) return false;
+        return history.merge(entries, () => current() && identical(history, _historyReconciliation));
+      },
+      send: (data) {
+        if (_ownsPeer(peer, generation)) {
+          peer.sendCommand(RemoteCommand(type: RemoteCommandType.musicHistory, data: data));
+        }
+      },
+    );
     _musicGroup = MusicGroupExchange(
       allowed: () =>
           _ownsPeer(peer, generation) &&
@@ -1263,6 +1310,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
           _musicTransfer?.receive(command.data);
         } else if (command.type == RemoteCommandType.musicGroup) {
           _musicGroup?.receive(command.data);
+        } else if (command.type == RemoteCommandType.musicHistory) {
+          _musicHistory?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameCloudSetting) {
           _cloudSettings?.receive(command.data);
         } else if (command.type == RemoteCommandType.gameAction) {
@@ -1305,6 +1354,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       _musicTransferVersion = 0;
       _musicGroup?.leave(notifyPeer: false);
       _musicGroupVersion = 0;
+      _musicHistory?.reset();
+      _musicHistoryVersion = 0;
       _gameInventory?.reset();
       _cloudSettings?.reset();
       _gameActions?.reset();
@@ -1364,6 +1415,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _handleDeviceInfo(RemoteCommand command) {
+    _musicHistoryVersion = command.data?['musicHistoryVersion'] == 1 ? 1 : 0;
+    if (_musicHistoryVersion == 0) _musicHistory?.reset();
     _musicGroupVersion = command.data?['musicGroupVersion'] == 1 ? 1 : 0;
     if (_musicGroupVersion == 0) _musicGroup?.leave(notifyPeer: false);
     _musicTransferVersion = command.data?['musicTransferChunkVersion'] == 2
@@ -1400,6 +1453,9 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _cleanupSubscriptions() {
+    _musicHistory?.close();
+    _musicHistory = null;
+    _musicHistoryVersion = 0;
     _musicGroup?.close();
     _musicGroup = null;
     _musicGroupVersion = 0;

@@ -4303,7 +4303,7 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	@override String get consent => '将我的描述发送给此提供商';
 	@override String get promptHint => '描述想听的音乐';
 	@override String get noHistory => '暂无可显示的音乐';
-	@override String get historyHint => '此设备记录的播放';
+	@override String get historyHint => '此个人资料的播放历史';
 	@override String get days => '天';
 	@override String get albumBlocks => '保持专辑完整';
 	@override String get home => '音乐';
@@ -9464,7 +9464,7 @@ extension on TranslationsZh {
 			'musicTools.consent' => '将我的描述发送给此提供商',
 			'musicTools.promptHint' => '描述想听的音乐',
 			'musicTools.noHistory' => '暂无可显示的音乐',
-			'musicTools.historyHint' => '此设备记录的播放',
+			'musicTools.historyHint' => '此个人资料的播放历史',
 			'musicTools.days' => '天',
 			'musicTools.albumBlocks' => '保持专辑完整',
 			'musicTools.home' => '音乐',

@@ -4316,7 +4316,7 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get consent => 'שליחת התיאור שלי לספק הזה';
 	@override String get promptHint => 'תיאור המוזיקה הרצויה';
 	@override String get noHistory => 'עדיין אין מוזיקה להצגה';
-	@override String get historyHint => 'השמעות שנרשמו במכשיר הזה';
+	@override String get historyHint => 'היסטוריית ההשמעה של הפרופיל הזה';
 	@override String get days => 'ימים';
 	@override String get albumBlocks => 'שמירה על אלבומים שלמים ביחד';
 	@override String get home => 'מוסיקה';
@@ -9477,7 +9477,7 @@ extension on TranslationsHe {
 			'musicTools.consent' => 'שליחת התיאור שלי לספק הזה',
 			'musicTools.promptHint' => 'תיאור המוזיקה הרצויה',
 			'musicTools.noHistory' => 'עדיין אין מוזיקה להצגה',
-			'musicTools.historyHint' => 'השמעות שנרשמו במכשיר הזה',
+			'musicTools.historyHint' => 'היסטוריית ההשמעה של הפרופיל הזה',
 			'musicTools.days' => 'ימים',
 			'musicTools.albumBlocks' => 'שמירה על אלבומים שלמים ביחד',
 			'musicTools.home' => 'מוסיקה',

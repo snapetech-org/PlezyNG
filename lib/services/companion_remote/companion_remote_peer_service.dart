@@ -1401,6 +1401,7 @@ class CompanionRemotePeerService with KeepaliveMixin {
           'musicTransferVersion': 1,
           'musicTransferChunkVersion': 2,
           'musicGroupVersion': 1,
+          'musicHistoryVersion': 1,
           if (supportsLocalSteamCloudSettings) 'gameCloudSettingVersion': 1,
         },
       ),

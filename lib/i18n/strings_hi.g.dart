@@ -4308,7 +4308,7 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get consent => 'मेरा विवरण इस प्रदाता को भेजें';
 	@override String get promptHint => 'अपना पसंदीदा संगीत बताएं';
 	@override String get noHistory => 'अभी दिखाने के लिए संगीत नहीं है';
-	@override String get historyHint => 'इस डिवाइस पर दर्ज प्ले';
+	@override String get historyHint => 'इस प्रोफ़ाइल का प्लेबैक इतिहास';
 	@override String get days => 'दिन';
 	@override String get albumBlocks => 'पूरे एल्बम साथ रखें';
 	@override String get home => 'संगीत';
@@ -9469,7 +9469,7 @@ extension on TranslationsHi {
 			'musicTools.consent' => 'मेरा विवरण इस प्रदाता को भेजें',
 			'musicTools.promptHint' => 'अपना पसंदीदा संगीत बताएं',
 			'musicTools.noHistory' => 'अभी दिखाने के लिए संगीत नहीं है',
-			'musicTools.historyHint' => 'इस डिवाइस पर दर्ज प्ले',
+			'musicTools.historyHint' => 'इस प्रोफ़ाइल का प्लेबैक इतिहास',
 			'musicTools.days' => 'दिन',
 			'musicTools.albumBlocks' => 'पूरे एल्बम साथ रखें',
 			'musicTools.home' => 'संगीत',

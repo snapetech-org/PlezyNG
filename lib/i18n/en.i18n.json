@@ -5612,7 +5612,7 @@
     "consent": "Send my prompt to this provider",
     "promptHint": "Describe the music you want",
     "noHistory": "No music to show yet",
-    "historyHint": "Plays recorded on this device",
+    "historyHint": "Playback history for this profile",
     "days": "Days",
     "albumBlocks": "Keep whole albums together",
     "home": "Music",

@@ -4304,7 +4304,7 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	@override String get consent => '將我的描述傳送給此供應商';
 	@override String get promptHint => '描述想聽的音樂';
 	@override String get noHistory => '尚無可顯示的音樂';
-	@override String get historyHint => '此裝置記錄的播放';
+	@override String get historyHint => '此個人檔案的播放記錄';
 	@override String get days => '天';
 	@override String get albumBlocks => '保持專輯完整';
 	@override String get home => '音樂';
@@ -9465,7 +9465,7 @@ extension on TranslationsZhHant {
 			'musicTools.consent' => '將我的描述傳送給此供應商',
 			'musicTools.promptHint' => '描述想聽的音樂',
 			'musicTools.noHistory' => '尚無可顯示的音樂',
-			'musicTools.historyHint' => '此裝置記錄的播放',
+			'musicTools.historyHint' => '此個人檔案的播放記錄',
 			'musicTools.days' => '天',
 			'musicTools.albumBlocks' => '保持專輯完整',
 			'musicTools.home' => '音樂',

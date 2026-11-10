@@ -5542,7 +5542,7 @@
     "consent": "Envoyer ma description à ce fournisseur",
     "promptHint": "Décrivez la musique souhaitée",
     "noHistory": "Aucune musique à afficher",
-    "historyHint": "Écoutes enregistrées sur cet appareil",
+    "historyHint": "Historique d’écoute de ce profil",
     "days": "Jours",
     "albumBlocks": "Garder les albums entiers",
     "home": "Musique",

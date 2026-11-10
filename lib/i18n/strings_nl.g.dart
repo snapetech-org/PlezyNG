@@ -4308,7 +4308,7 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	@override String get consent => 'Mijn beschrijving naar deze aanbieder sturen';
 	@override String get promptHint => 'Beschrijf de gewenste muziek';
 	@override String get noHistory => 'Nog geen muziek om te tonen';
-	@override String get historyHint => 'Op dit apparaat vastgelegde afspeelbeurten';
+	@override String get historyHint => 'Afspeelgeschiedenis voor dit profiel';
 	@override String get days => 'Dagen';
 	@override String get albumBlocks => 'Volledige albums bij elkaar houden';
 	@override String get home => 'Muziek';
@@ -9469,7 +9469,7 @@ extension on TranslationsNl {
 			'musicTools.consent' => 'Mijn beschrijving naar deze aanbieder sturen',
 			'musicTools.promptHint' => 'Beschrijf de gewenste muziek',
 			'musicTools.noHistory' => 'Nog geen muziek om te tonen',
-			'musicTools.historyHint' => 'Op dit apparaat vastgelegde afspeelbeurten',
+			'musicTools.historyHint' => 'Afspeelgeschiedenis voor dit profiel',
 			'musicTools.days' => 'Dagen',
 			'musicTools.albumBlocks' => 'Volledige albums bij elkaar houden',
 			'musicTools.home' => 'Muziek',

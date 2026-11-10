@@ -4303,7 +4303,7 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	@override String get consent => '이 공급자에게 내 설명 보내기';
 	@override String get promptHint => '원하는 음악을 설명하세요';
 	@override String get noHistory => '아직 표시할 음악이 없습니다';
-	@override String get historyHint => '이 기기에 기록된 재생';
+	@override String get historyHint => '이 프로필의 재생 기록';
 	@override String get days => '일';
 	@override String get albumBlocks => '앨범 전체를 함께 유지';
 	@override String get home => '음악';
@@ -9464,7 +9464,7 @@ extension on TranslationsKo {
 			'musicTools.consent' => '이 공급자에게 내 설명 보내기',
 			'musicTools.promptHint' => '원하는 음악을 설명하세요',
 			'musicTools.noHistory' => '아직 표시할 음악이 없습니다',
-			'musicTools.historyHint' => '이 기기에 기록된 재생',
+			'musicTools.historyHint' => '이 프로필의 재생 기록',
 			'musicTools.days' => '일',
 			'musicTools.albumBlocks' => '앨범 전체를 함께 유지',
 			'musicTools.home' => '음악',

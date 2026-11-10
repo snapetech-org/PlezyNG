@@ -10,6 +10,7 @@ import 'music_listening_recorder.dart';
 import 'music_playback_service.dart';
 import 'music_rating_journal.dart';
 import 'music_account_scope.dart';
+import 'music_history_reconciliation.dart';
 
 /// Created eagerly with the profile session, independent of music screens.
 class MusicExperience extends ChangeNotifier {
@@ -19,6 +20,8 @@ class MusicExperience extends ChangeNotifier {
     required this.clientFor,
     Future<List<MusicDjSource>> Function()? sharedSources,
     Stream<Object?>? connectionChanges,
+    Iterable<MediaServerClient> Function()? syncClients,
+    this.onDispose,
   }) {
     dj = MusicGuestDj(music, clientFor, sharedSources: sharedSources)..addListener(notifyListeners);
     recorder = MusicListeningRecorder(
@@ -30,6 +33,7 @@ class MusicExperience extends ChangeNotifier {
       },
     );
     ratings = MusicRatingJournal(store, clientFor);
+    history = MusicHistoryReconciliation(store: store, clients: syncClients ?? () => []);
     _connections = connectionChanges?.listen((_) => _syncRatings());
     _syncRatings();
   }
@@ -39,6 +43,8 @@ class MusicExperience extends ChangeNotifier {
   late final MusicGuestDj dj;
   late final MusicListeningRecorder recorder;
   late final MusicRatingJournal ratings;
+  late final MusicHistoryReconciliation history;
+  final void Function(MusicExperience)? onDispose;
   StreamSubscription<Object?>? _connections;
   void _syncRatings() {
     unawaited(
@@ -50,6 +56,7 @@ class MusicExperience extends ChangeNotifier {
 
   @override
   void dispose() {
+    onDispose?.call(this);
     dj.removeListener(notifyListeners);
     dj.dispose();
     recorder.dispose();

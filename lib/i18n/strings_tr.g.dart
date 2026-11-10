@@ -4308,7 +4308,7 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get consent => 'Açıklamamı bu sağlayıcıya gönder';
 	@override String get promptHint => 'İstediğiniz müziği açıklayın';
 	@override String get noHistory => 'Henüz gösterilecek müzik yok';
-	@override String get historyHint => 'Bu cihazda kaydedilen dinlemeler';
+	@override String get historyHint => 'Bu profilin dinleme geçmişi';
 	@override String get days => 'Günler';
 	@override String get albumBlocks => 'Albümleri bütün olarak tut';
 	@override String get home => 'Müzik';
@@ -9469,7 +9469,7 @@ extension on TranslationsTr {
 			'musicTools.consent' => 'Açıklamamı bu sağlayıcıya gönder',
 			'musicTools.promptHint' => 'İstediğiniz müziği açıklayın',
 			'musicTools.noHistory' => 'Henüz gösterilecek müzik yok',
-			'musicTools.historyHint' => 'Bu cihazda kaydedilen dinlemeler',
+			'musicTools.historyHint' => 'Bu profilin dinleme geçmişi',
 			'musicTools.days' => 'Günler',
 			'musicTools.albumBlocks' => 'Albümleri bütün olarak tut',
 			'musicTools.home' => 'Müzik',

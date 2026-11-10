@@ -4295,6 +4295,7 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'Taxminiy yuklab olish chegarasi';
 	@override String get guestDj => 'Mehmon DJ';
 	@override String get charts => 'Tinglash reytingi';
 	@override String get rediscover => 'Qayta kashf etish';
@@ -9453,6 +9454,7 @@ extension on TranslationsUz {
 			'musicExperience.routeLost' => 'Audio chiqishi uzildi. Ijro to‘xtatildi.',
 			'musicExperience.autoDriving' => 'Avtomobilga ulanganda haydash ko‘rinishini ochish',
 			'musicExperience.routeHint' => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.',
+			'musicTools.storageBudget' => 'Taxminiy yuklab olish chegarasi',
 			'musicTools.guestDj' => 'Mehmon DJ',
 			'musicTools.charts' => 'Tinglash reytingi',
 			'musicTools.rediscover' => 'Qayta kashf etish',

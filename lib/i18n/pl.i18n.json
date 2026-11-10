@@ -5574,6 +5574,7 @@
     "routeHint": "System samochodu decyduje, czy aplikacja może pojawić się automatycznie."
   },
   "musicTools": {
+    "storageBudget": "Szacowany limit pobierania",
     "guestDj": "Gościnny DJ",
     "charts": "Statystyki słuchania",
     "rediscover": "Odkryj ponownie",

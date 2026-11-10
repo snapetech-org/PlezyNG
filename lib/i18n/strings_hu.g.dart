@@ -4295,6 +4295,7 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'Becsült letöltési keret';
 	@override String get guestDj => 'Vendég DJ';
 	@override String get charts => 'Hallgatási toplisták';
 	@override String get rediscover => 'Újrafelfedezés';
@@ -9453,6 +9454,7 @@ extension on TranslationsHu {
 			'musicExperience.routeLost' => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.',
 			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
 			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
+			'musicTools.storageBudget' => 'Becsült letöltési keret',
 			'musicTools.guestDj' => 'Vendég DJ',
 			'musicTools.charts' => 'Hallgatási toplisták',
 			'musicTools.rediscover' => 'Újrafelfedezés',

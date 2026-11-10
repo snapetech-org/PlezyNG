@@ -4341,6 +4341,7 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'Расчётный лимит загрузки';
 	@override String get guestDj => 'Приглашённый диджей';
 	@override String get charts => 'Статистика прослушиваний';
 	@override String get rediscover => 'Открыть заново';
@@ -9503,6 +9504,7 @@ extension on TranslationsRu {
 			'musicExperience.routeLost' => 'Аудиовыход отключён. Воспроизведение приостановлено.',
 			'musicExperience.autoDriving' => 'Открывать режим вождения при подключении к машине',
 			'musicExperience.routeHint' => 'Система автомобиля определяет, может ли приложение появляться автоматически.',
+			'musicTools.storageBudget' => 'Расчётный лимит загрузки',
 			'musicTools.guestDj' => 'Приглашённый диджей',
 			'musicTools.charts' => 'Статистика прослушиваний',
 			'musicTools.rediscover' => 'Открыть заново',

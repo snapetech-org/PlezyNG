@@ -14678,6 +14678,9 @@ class Translations$musicTools$en {
 
 	// Translations
 
+	/// en: 'Estimated download budget'
+	String get storageBudget => 'Estimated download budget';
+
 	/// en: 'Transfer music to ${device}'
 	String transferToDevice({required Object device}) => 'Transfer music to ${device}';
 
@@ -22627,6 +22630,7 @@ extension on Translations {
 			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
+			'musicTools.storageBudget' => 'Estimated download budget',
 			'musicTools.transferToDevice' => ({required Object device}) => 'Transfer music to ${device}',
 			'musicTools.guestDj' => 'Guest DJ',
 			'musicTools.charts' => 'Listening charts',

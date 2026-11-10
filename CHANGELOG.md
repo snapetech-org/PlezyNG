@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add estimated per-station download storage budgets with whole-album preservation, retry validation, and accounting for already linked download bytes during scheduled refreshes.
+
 - Remember the last 20 explicitly submitted searches per profile, with one-tap replay, individual removal, and clearing. Typing alone does not save partial queries.
 
 - Keep failed station download batches separate from bounded offline snapshots. Migrate older retries without losing their candidates, prune only snapshot metadata, and reject saved tracks from a different library or account.

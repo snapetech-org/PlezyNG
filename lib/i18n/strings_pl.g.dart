@@ -4341,6 +4341,7 @@ class _Translations$musicTools$pl extends Translations$musicTools$en {
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'Szacowany limit pobierania';
 	@override String get guestDj => 'Gościnny DJ';
 	@override String get charts => 'Statystyki słuchania';
 	@override String get rediscover => 'Odkryj ponownie';
@@ -9503,6 +9504,7 @@ extension on TranslationsPl {
 			'musicExperience.routeLost' => 'Wyjście audio odłączone. Odtwarzanie wstrzymane.',
 			'musicExperience.autoDriving' => 'Otwórz widok samochodowy po połączeniu z autem',
 			'musicExperience.routeHint' => 'System samochodu decyduje, czy aplikacja może pojawić się automatycznie.',
+			'musicTools.storageBudget' => 'Szacowany limit pobierania',
 			'musicTools.guestDj' => 'Gościnny DJ',
 			'musicTools.charts' => 'Statystyki słuchania',
 			'musicTools.rediscover' => 'Odkryj ponownie',

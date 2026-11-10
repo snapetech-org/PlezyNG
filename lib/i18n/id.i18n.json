@@ -5493,6 +5493,7 @@
     "routeHint": "Sistem mobil menentukan apakah aplikasi dapat muncul otomatis."
   },
   "musicTools": {
+    "storageBudget": "Perkiraan batas unduhan",
     "guestDj": "DJ tamu",
     "charts": "Peringkat pendengaran",
     "rediscover": "Temukan kembali",

@@ -5602,6 +5602,7 @@
     "routeHint": "El sistema del coche decide si la aplicación puede aparecer automáticamente."
   },
   "musicTools": {
+    "storageBudget": "Presupuesto estimado de descarga",
     "guestDj": "DJ invitado",
     "charts": "Estadísticas de escucha",
     "rediscover": "Redescubrir",

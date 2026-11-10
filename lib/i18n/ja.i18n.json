@@ -5515,6 +5515,7 @@
     "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。"
   },
   "musicTools": {
+    "storageBudget": "ダウンロード容量の推定上限",
     "guestDj": "ゲストDJ",
     "charts": "再生ランキング",
     "rediscover": "再発見",

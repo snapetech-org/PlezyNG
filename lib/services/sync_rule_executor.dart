@@ -389,10 +389,22 @@ class SyncRuleExecutor {
     }
 
     if (!await current()) return null;
+    final owned = <String>{};
+    var remainingBytes = station.storageLimitBytes;
+    if (remainingBytes != null) {
+      for (final link in await _database.getSyncRuleDownloadLinks(rule.id)) {
+        final progress = downloads[link.downloadGlobalKey];
+        if (!_isActiveDownload(progress)) continue;
+        owned.add(link.downloadGlobalKey);
+        final bytes = max(progress!.downloadedBytes, progress.totalBytes);
+        remainingBytes = bytes <= 0 ? 0 : max(0, remainingBytes! - bytes);
+      }
+    }
     final previous = await store.pendingStationSnapshot(station.id);
     // Retain the exact candidate batch across queueing failures. A retry must
     // not keep choosing new random tracks and expanding the download budget.
     List<MediaItem>? tracks;
+    Map<String, int>? trackEstimates;
     if (previous?['pending'] == true &&
         previous?['signature'] == signature &&
         previous?['accountScope'] == accountScope &&
@@ -401,14 +413,36 @@ class SyncRuleExecutor {
         final rows = previous!['tracks'] as List;
         if (rows.length <= station.trackLimit) {
           final saved = rows.map((row) => MediaItem.fromJson(Map<String, dynamic>.from(row as Map))).toList();
-          if (station.acceptsBatch(saved)) tracks = saved;
+          final estimates = previous['estimatedBytes'];
+          Map<String, int>? sizes;
+          if (estimates is Map &&
+              estimates.entries.every(
+                (entry) => entry.key is String && entry.value is int && (entry.value as int) > 0,
+              )) {
+            sizes = Map<String, int>.from(estimates);
+          }
+          if (station.storageLimitBytes == null || sizes != null) {
+            if (station.acceptsBatch(
+              saved,
+              storageBudgetBytes: remainingBytes,
+              estimatedBytes: sizes,
+              alreadyOwned: owned,
+            )) {
+              tracks = saved;
+              trackEstimates = sizes;
+            }
+          }
         }
       } catch (_) {
         tracks = null;
       }
     }
-    tracks ??= await station.materialize(client);
+    tracks ??= await station.materialize(client, storageBudgetBytes: remainingBytes, alreadyOwned: owned);
     if (!await current()) return null;
+    if (tracks.isEmpty) {
+      await _completeRuleExecution(rule.globalKey);
+      return SyncRuleResult(globalKey: rule.globalKey, title: station.title);
+    }
     final snapshot = <String, dynamic>{
       'version': 1,
       'id': station.id,
@@ -416,6 +450,8 @@ class SyncRuleExecutor {
       'signature': signature,
       'accountScope': accountScope,
       'tracks': tracks.map((track) => musicIdentity(track).toJson()).toList(),
+      'estimatedBytes':
+          trackEstimates ?? {for (final track in tracks) track.globalKey: ?musicTrackEstimatedBytes(track)},
       'pending': true,
       'createdAt': now.toUtc().toIso8601String(),
     };

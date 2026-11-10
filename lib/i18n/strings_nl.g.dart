@@ -4295,6 +4295,7 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	final TranslationsNl _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'Geschat downloadbudget';
 	@override String get guestDj => 'Gast-dj';
 	@override String get charts => 'Luisterlijsten';
 	@override String get rediscover => 'Herontdekken';
@@ -9453,6 +9454,7 @@ extension on TranslationsNl {
 			'musicExperience.routeLost' => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.',
 			'musicExperience.autoDriving' => 'Rijweergave openen bij verbinding met een auto',
 			'musicExperience.routeHint' => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.',
+			'musicTools.storageBudget' => 'Geschat downloadbudget',
 			'musicTools.guestDj' => 'Gast-dj',
 			'musicTools.charts' => 'Luisterlijsten',
 			'musicTools.rediscover' => 'Herontdekken',

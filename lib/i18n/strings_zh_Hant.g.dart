@@ -4291,6 +4291,7 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => '預估下載容量上限';
 	@override String get guestDj => '客座 DJ';
 	@override String get charts => '聆聽排行';
 	@override String get rediscover => '重新發現';
@@ -9449,6 +9450,7 @@ extension on TranslationsZhHant {
 			'musicExperience.routeLost' => '音訊輸出已中斷。播放已暫停。',
 			'musicExperience.autoDriving' => '連接汽車時開啟駕駛畫面',
 			'musicExperience.routeHint' => '是否允許自動顯示應用程式由汽車系統決定。',
+			'musicTools.storageBudget' => '預估下載容量上限',
 			'musicTools.guestDj' => '客座 DJ',
 			'musicTools.charts' => '聆聽排行',
 			'musicTools.rediscover' => '重新發現',

@@ -5529,6 +5529,7 @@
     "routeHint": "Le système de la voiture décide si l’application peut s’afficher automatiquement."
   },
   "musicTools": {
+    "storageBudget": "Budget de téléchargement estimé",
     "guestDj": "DJ invité",
     "charts": "Classements d’écoute",
     "rediscover": "Redécouvrir",

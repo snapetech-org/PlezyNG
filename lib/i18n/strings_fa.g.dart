@@ -4295,6 +4295,7 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'سقف تخمینی دانلود';
 	@override String get guestDj => 'دی‌جی مهمان';
 	@override String get charts => 'آمار شنیدن';
 	@override String get rediscover => 'کشف دوباره';
@@ -9453,6 +9454,7 @@ extension on TranslationsFa {
 			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
 			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
 			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
+			'musicTools.storageBudget' => 'سقف تخمینی دانلود',
 			'musicTools.guestDj' => 'دی‌جی مهمان',
 			'musicTools.charts' => 'آمار شنیدن',
 			'musicTools.rediscover' => 'کشف دوباره',

@@ -5520,6 +5520,7 @@
     "routeHint": "Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e."
   },
   "musicTools": {
+    "storageBudget": "Becsült letöltési keret",
     "guestDj": "Vendég DJ",
     "charts": "Hallgatási toplisták",
     "rediscover": "Újrafelfedezés",

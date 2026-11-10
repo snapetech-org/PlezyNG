@@ -35,6 +35,7 @@ class MusicStationScreen extends StatefulWidget {
 
 class _MusicStationScreenState extends State<MusicStationScreen> {
   final _title = TextEditingController(), _limit = TextEditingController(), _minutes = TextEditingController();
+  final _storage = TextEditingController();
   late final MusicExperience _experience = context.read<MusicExperience>();
   late final String _id = widget.station?.id ?? const Uuid().v4();
   String? _libraryKey;
@@ -57,6 +58,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     _title.text = rule?.title ?? '';
     _limit.text = '${rule?.trackLimit ?? 100}';
     _minutes.text = '${rule?.durationMinutes ?? 0}';
+    _storage.text = '${rule?.storageLimitMiB ?? 0}';
     _libraryKey = rule == null ? null : '${rule.serverId}:${rule.libraryId}';
     _refreshHours = rule?.refreshHours ?? 0;
     _wifiOnly = rule?.wifiOnly ?? true;
@@ -73,6 +75,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     _title.dispose();
     _limit.dispose();
     _minutes.dispose();
+    _storage.dispose();
     super.dispose();
   }
 
@@ -104,6 +107,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
       wifiOnly: _wifiOnly,
       trackLimit: int.parse(_limit.text),
       durationMinutes: int.parse(_minutes.text),
+      storageLimitMiB: int.parse(_storage.text),
     );
   }
 
@@ -341,6 +345,13 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
             enabled: !_busy,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(labelText: '${t.musicTools.minutes} (0–4320)'),
+          ),
+          TextField(
+            controller: _storage,
+            onChanged: (_) => setState(() => _preview = []),
+            enabled: !_busy,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: '${t.musicTools.storageBudget} · MiB (0 = ∞)'),
           ),
           DropdownButtonFormField<int>(
             initialValue: _refreshHours,

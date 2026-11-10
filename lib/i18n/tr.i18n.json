@@ -5520,6 +5520,7 @@
     "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
   },
   "musicTools": {
+    "storageBudget": "Tahmini indirme sınırı",
     "guestDj": "Konuk DJ",
     "charts": "Dinleme listeleri",
     "rediscover": "Yeniden keşfet",

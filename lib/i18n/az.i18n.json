@@ -5520,6 +5520,7 @@
     "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir."
   },
   "musicTools": {
+    "storageBudget": "Təxmini endirmə büdcəsi",
     "guestDj": "Qonaq DJ",
     "charts": "Dinləmə reytinqləri",
     "rediscover": "Yenidən kəşf et",

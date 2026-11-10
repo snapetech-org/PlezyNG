@@ -5520,6 +5520,7 @@
     "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen."
   },
   "musicTools": {
+    "storageBudget": "Geschat downloadbudget",
     "guestDj": "Gast-dj",
     "charts": "Luisterlijsten",
     "rediscover": "Herontdekken",

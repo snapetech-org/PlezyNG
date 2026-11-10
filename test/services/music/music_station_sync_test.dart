@@ -126,6 +126,49 @@ void main() {
     });
     expect(queued, ['fresh']);
   });
+  test('completed download bytes count toward a station budget across refreshes', () async {
+    final station = (await store.document('station', 'station'))!..['storageLimitMiB'] = 1;
+    await store.saveDocument('station', 'station', station);
+    final rule = (await db.getSyncRule(key))!;
+    await db.associateSyncRuleDownload(rule, 's:owned');
+    await store.completeStationSnapshot('station', {
+      'version': 1,
+      'id': 'station',
+      'tracks': ['keep'],
+    });
+    client.rows = [musicTrack('new', durationMs: 1000)];
+    final result = await run(
+      (_) async {
+        fail('Existing copies exhaust the budget');
+      },
+      downloads: {
+        's:owned': const DownloadProgress(
+          globalKey: 's:owned',
+          status: DownloadStatus.completed,
+          downloadedBytes: 1048576,
+          totalBytes: 1048576,
+        ),
+      },
+    );
+    expect(result!.queuedCount, 0);
+    expect((await store.document('stationSnapshot', 'station'))!['tracks'], ['keep']);
+  });
+  test('tampered retry byte estimates cannot bypass a station budget', () async {
+    final station = (await store.document('station', 'station'))!..['storageLimitMiB'] = 1;
+    await store.saveDocument('station', 'station', station);
+    client.rows = [musicTrack('first', durationMs: 1000)];
+    await run((_) async => false);
+    final pending = (await store.pendingStationSnapshot('station'))!;
+    pending['estimatedBytes'] = {'s:first': -1};
+    await store.saveDocument('stationPending', 'station', pending);
+    client.rows = [musicTrack('regenerated', durationMs: 1000)];
+    final queued = <String>[];
+    await run((track) async {
+      queued.add(track.id);
+      return true;
+    });
+    expect(queued, ['regenerated']);
+  });
   test('editing a rule during generation invalidates the batch', () async {
     final pending = Completer<LibraryPage<MediaItem>>();
     client.page = (_) => pending.future;

@@ -1,13 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/library_query.dart';
 import 'package:plezy/media/media_kind.dart';
+import 'package:plezy/media/media_part.dart';
+import 'package:plezy/media/media_version.dart';
 import 'package:plezy/services/music/music_station.dart';
 import 'package:plezy/utils/media_server_http_client.dart';
 
 import '../../test_helpers/music_experience_fakes.dart';
 
 void main() {
-  MusicStation station({bool albums = false, int tracks = 100, int minutes = 0}) => MusicStation(
+  MusicStation station({bool albums = false, int tracks = 100, int minutes = 0, int storageMiB = 0}) => MusicStation(
     id: 'rule',
     title: 'Station',
     serverId: 's',
@@ -15,6 +17,7 @@ void main() {
     albums: albums,
     trackLimit: tracks,
     durationMinutes: minutes,
+    storageLimitMiB: storageMiB,
   );
   test('time and count budgets stop generation without splitting album blocks', () async {
     final client = ExperienceClient()
@@ -95,5 +98,55 @@ void main() {
     expect(station().acceptsBatch([musicTrack('foreign').copyWith(libraryId: 'other')]), isFalse);
     expect(station().acceptsBatch([musicTrack('duplicate'), musicTrack('duplicate')]), isFalse);
     expect(station(minutes: 1).acceptsBatch([musicTrack('long', durationMs: 120000)]), isFalse);
+  });
+  test('storage estimates use complete source parts, then bitrate, then duration', () {
+    final exact = musicTrack('exact').copyWith(
+      mediaVersions: [
+        const MediaVersion(
+          id: 'version',
+          parts: [
+            MediaPart(id: 'one', sizeBytes: 100),
+            MediaPart(id: 'two', sizeBytes: 200),
+          ],
+        ),
+      ],
+    );
+    expect(musicTrackEstimatedBytes(exact), 300);
+    final bitrate = musicTrack(
+      'bitrate',
+      durationMs: 1000,
+    ).copyWith(mediaVersions: [const MediaVersion(id: 'version', bitrate: 320)]);
+    expect(musicTrackEstimatedBytes(bitrate), 40000);
+    expect(musicTrackEstimatedBytes(musicTrack('fallback', durationMs: 1000)), 192000);
+    expect(musicTrackEstimatedBytes(musicTrack('unknown', durationMs: null)), isNull);
+  });
+  test('storage budgets skip large tracks and preserve album blocks', () async {
+    final large = musicTrack('large').copyWith(
+      mediaVersions: [
+        const MediaVersion(
+          id: 'v',
+          parts: [MediaPart(id: 'p', sizeBytes: 2000000)],
+        ),
+      ],
+    );
+    final small = musicTrack('small', durationMs: 1000);
+    final client = ExperienceClient()..rows = [large, small, musicTrack('unknown', durationMs: null)];
+    expect((await station(storageMiB: 1).materialize(client)).map((track) => track.id), ['small']);
+    client.rows = [musicTrack('album').copyWith(kind: MediaKind.album)];
+    client.albums = {
+      'album': [small, large],
+    };
+    expect(await station(storageMiB: 1, albums: true).materialize(client), isEmpty);
+  });
+  test('retry estimates are required to be positive and fit the remaining budget', () {
+    final rule = station(storageMiB: 1);
+    final track = musicTrack('short', durationMs: 1000);
+    expect(rule.acceptsBatch([track], estimatedBytes: {track.globalKey: 2000000}), isFalse);
+    expect(rule.acceptsBatch([track], estimatedBytes: {track.globalKey: -1}), isFalse);
+    expect(rule.acceptsBatch([track], estimatedBytes: {}), isFalse);
+    expect(rule.acceptsBatch([track], storageBudgetBytes: 0, alreadyOwned: {track.globalKey}), isTrue);
+    final legacy = rule.toJson()..remove('storageLimitMiB');
+    expect(MusicStation.fromJson(legacy).storageLimitMiB, 0);
+    expect(() => station(storageMiB: -1), throwsArgumentError);
   });
 }

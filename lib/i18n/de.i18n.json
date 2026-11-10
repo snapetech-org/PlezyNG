@@ -5520,6 +5520,7 @@
     "routeHint": "Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann."
   },
   "musicTools": {
+    "storageBudget": "Geschätztes Downloadbudget",
     "guestDj": "Gast-DJ",
     "charts": "Hörstatistiken",
     "rediscover": "Wiederentdecken",

@@ -4295,6 +4295,7 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'আনুমানিক ডাউনলোডের সীমা';
 	@override String get guestDj => 'অতিথি ডিজে';
 	@override String get charts => 'শোনার তালিকা';
 	@override String get rediscover => 'আবার আবিষ্কার করুন';
@@ -9453,6 +9454,7 @@ extension on TranslationsBn {
 			'musicExperience.routeLost' => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।',
 			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
 			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
+			'musicTools.storageBudget' => 'আনুমানিক ডাউনলোডের সীমা',
 			'musicTools.guestDj' => 'অতিথি ডিজে',
 			'musicTools.charts' => 'শোনার তালিকা',
 			'musicTools.rediscover' => 'আবার আবিষ্কার করুন',

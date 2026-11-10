@@ -19,6 +19,7 @@ class MusicStation {
     this.albums = false,
     this.trackLimit = 100,
     this.durationMinutes = 0,
+    this.storageLimitMiB = 0,
     this.refreshHours = 0,
     this.wifiOnly = true,
   }) {
@@ -27,6 +28,8 @@ class MusicStation {
         trackLimit > 5000 ||
         durationMinutes < 0 ||
         durationMinutes > 4320 ||
+        storageLimitMiB < 0 ||
+        storageLimitMiB > 65536 ||
         refreshHours < 0 ||
         refreshHours > 720 ||
         filters.length > 50 ||
@@ -45,7 +48,8 @@ class MusicStation {
   final String id, title, serverId, libraryId, sort;
   final List<LibraryFilter> filters;
   final bool descending, albums, wifiOnly;
-  final int trackLimit, durationMinutes, refreshHours;
+  final int trackLimit, durationMinutes, refreshHours, storageLimitMiB;
+  int? get storageLimitBytes => storageLimitMiB == 0 ? null : storageLimitMiB * 1024 * 1024;
   Map<String, dynamic> toJson() => {
     'version': 1,
     'id': id,
@@ -58,6 +62,7 @@ class MusicStation {
     'albums': albums,
     'trackLimit': trackLimit,
     'durationMinutes': durationMinutes,
+    'storageLimitMiB': storageLimitMiB,
     'refreshHours': refreshHours,
     'wifiOnly': wifiOnly,
   };
@@ -78,15 +83,22 @@ class MusicStation {
       albums: json['albums'] as bool,
       trackLimit: json['trackLimit'] as int,
       durationMinutes: json['durationMinutes'] as int,
+      storageLimitMiB: (json['storageLimitMiB'] ?? 0) as int,
       refreshHours: json['refreshHours'] as int,
       wifiOnly: json['wifiOnly'] as bool,
     );
   }
 
-  bool acceptsBatch(List<MediaItem> tracks) {
+  bool acceptsBatch(
+    List<MediaItem> tracks, {
+    int? storageBudgetBytes,
+    Map<String, int>? estimatedBytes,
+    Set<String> alreadyOwned = const {},
+  }) {
     if (tracks.length > trackLimit) return false;
     final seen = <String>{};
-    var duration = 0;
+    var duration = 0, bytes = 0;
+    final budget = storageBudgetBytes ?? storageLimitBytes;
     for (final track in tracks) {
       if (track.kind != MediaKind.track ||
           track.serverId != serverId ||
@@ -99,11 +111,22 @@ class MusicStation {
         duration += track.durationMs!;
         if (duration > durationMinutes * 60000) return false;
       }
+      if (budget != null && !alreadyOwned.contains(track.globalKey)) {
+        final size = estimatedBytes == null ? musicTrackEstimatedBytes(track) : estimatedBytes[track.globalKey];
+        if (size == null || size <= 0) return false;
+        bytes += size;
+        if (bytes > budget) return false;
+      }
     }
     return true;
   }
 
-  Future<List<MediaItem>> materialize(MediaServerClient client, {AbortController? abort}) async {
+  Future<List<MediaItem>> materialize(
+    MediaServerClient client, {
+    AbortController? abort,
+    int? storageBudgetBytes,
+    Set<String> alreadyOwned = const {},
+  }) async {
     if (client.serverId.value != serverId) throw StateError('Station server changed');
     final authentication = client.authenticationSessionId;
     final accountScope = musicAccountScope(client);
@@ -115,7 +138,8 @@ class MusicStation {
     }
 
     final result = <MediaItem>[], seen = <String>{}, seenContainers = <String>{};
-    var offset = 0, duration = 0;
+    var offset = 0, duration = 0, bytes = 0;
+    final storageBudget = storageBudgetBytes ?? storageLimitBytes;
     final durationLimit = durationMinutes * 60000;
     // Randomly ordered pages can repeat; bound work and dedupe rather than loop
     // forever on providers that ignore offsets or re-randomize each response.
@@ -163,6 +187,20 @@ class MusicStation {
           });
         }
         final blockDuration = tracks.fold<int>(0, (total, t) => total + (t.durationMs ?? 0));
+        var blockBytes = 0;
+        var knownSize = true;
+        if (storageBudget != null) {
+          for (final track in tracks) {
+            if (alreadyOwned.contains(track.globalKey)) continue;
+            final size = musicTrackEstimatedBytes(track);
+            if (size == null) {
+              knownSize = false;
+              break;
+            }
+            blockBytes += size;
+          }
+        }
+        if (!knownSize || storageBudget != null && bytes + blockBytes > storageBudget) continue;
         if (durationLimit > 0 && tracks.any((t) => t.durationMs == null || t.durationMs! <= 0)) continue;
         if (result.length + tracks.length > trackLimit ||
             durationLimit > 0 && duration + blockDuration > durationLimit) {
@@ -174,10 +212,22 @@ class MusicStation {
           if (seen.add(track.globalKey)) result.add(track);
         }
         duration += blockDuration;
+        bytes += blockBytes;
       }
       offset += page.items.length;
       if (!fresh || page.items.isEmpty || offset >= page.totalCount) break;
     }
     return result;
   }
+}
+
+int? musicTrackEstimatedBytes(MediaItem track) {
+  final version = track.mediaVersions?.firstOrNull;
+  if (version != null && version.parts.isNotEmpty && version.parts.every((part) => (part.sizeBytes ?? 0) > 0)) {
+    return version.parts.fold<int>(0, (total, part) => total + part.sizeBytes!);
+  }
+  final duration = track.durationMs;
+  if (duration == null || duration <= 0) return null;
+  final bitrate = version?.bitrate;
+  return (duration * (bitrate != null && bitrate > 0 ? bitrate : 1536) + 7) ~/ 8;
 }

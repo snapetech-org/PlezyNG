@@ -4385,6 +4385,7 @@ class Translations$musicTools$es extends Translations$musicTools$en {
 	final TranslationsEs _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'Presupuesto estimado de descarga';
 	@override String get guestDj => 'DJ invitado';
 	@override String get charts => 'Estadísticas de escucha';
 	@override String get rediscover => 'Redescubrir';
@@ -9679,6 +9680,7 @@ extension on TranslationsEs {
 			_ => null,
 		} ?? switch (path) {
 			'musicExperience.routeHint' => 'El sistema del coche decide si la aplicación puede aparecer automáticamente.',
+			'musicTools.storageBudget' => 'Presupuesto estimado de descarga',
 			'musicTools.guestDj' => 'DJ invitado',
 			'musicTools.charts' => 'Estadísticas de escucha',
 			'musicTools.rediscover' => 'Redescubrir',

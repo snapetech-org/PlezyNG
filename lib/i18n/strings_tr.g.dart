@@ -4295,6 +4295,7 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	final TranslationsTr _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'Tahmini indirme sınırı';
 	@override String get guestDj => 'Konuk DJ';
 	@override String get charts => 'Dinleme listeleri';
 	@override String get rediscover => 'Yeniden keşfet';
@@ -9453,6 +9454,7 @@ extension on TranslationsTr {
 			'musicExperience.routeLost' => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.',
 			'musicExperience.autoDriving' => 'Arabaya bağlanınca sürüş görünümünü aç',
 			'musicExperience.routeHint' => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.',
+			'musicTools.storageBudget' => 'Tahmini indirme sınırı',
 			'musicTools.guestDj' => 'Konuk DJ',
 			'musicTools.charts' => 'Dinleme listeleri',
 			'musicTools.rediscover' => 'Yeniden keşfet',

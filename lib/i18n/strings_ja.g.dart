@@ -4290,6 +4290,7 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	final TranslationsJa _root; // ignore: unused_field
 
 	// Translations
+	@override String get storageBudget => 'ダウンロード容量の推定上限';
 	@override String get guestDj => 'ゲストDJ';
 	@override String get charts => '再生ランキング';
 	@override String get rediscover => '再発見';
@@ -9448,6 +9449,7 @@ extension on TranslationsJa {
 			'musicExperience.routeLost' => '音声出力が切断されました。再生を一時停止しました。',
 			'musicExperience.autoDriving' => '車に接続したら運転用画面を開く',
 			'musicExperience.routeHint' => 'アプリを自動表示できるかどうかは車のシステムによって決まります。',
+			'musicTools.storageBudget' => 'ダウンロード容量の推定上限',
 			'musicTools.guestDj' => 'ゲストDJ',
 			'musicTools.charts' => '再生ランキング',
 			'musicTools.rediscover' => '再発見',

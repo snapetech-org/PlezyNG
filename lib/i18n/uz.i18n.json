@@ -5520,6 +5520,7 @@
     "routeHint": "Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi."
   },
   "musicTools": {
+    "storageBudget": "Taxminiy yuklab olish chegarasi",
     "guestDj": "Mehmon DJ",
     "charts": "Tinglash reytingi",
     "rediscover": "Qayta kashf etish",

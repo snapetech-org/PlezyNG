@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "repairs": [
+    {
+      "product_source_sha": "1f2f77f8b6ace65286140d3eaeb207b1c1d5accc",
+      "packaging_source_sha": "f1b614110133fdb006da0fc886fd469fab2936a6",
+      "files": {
+        ".github/workflows/build.yml": "cf3db1f1299101c6b87426a4923afbc0d08d7695",
+        "CHANGELOG.md": "b125f401152299719d3324deaca5e6dd05bdecbe",
+        "docs/maintainers/full-release-build.md": "e9d0379f1fe70c1f18f47055c6b633ea5cb1f96e",
+        "scripts/build_apple_store_archive.py": "81e63ec5b30aa396552fca0861568a416f87a5df",
+        "scripts/checks/check_build_workflow.py": "c5128e3a91f916ab7e81d9a6bacb30570d7c2295",
+        "scripts/checks/test_apple_packaging_repair_controller.py": "d8f70e47ed08eb2d16ab5bc57754e3a3c24ea2e0",
+        "scripts/checks/test_check_build_workflow.py": "f1da011a9d04ca5f4aa11f8d032c289ea092aae1",
+        "scripts/checks/test_recover_release_platforms.py": "2a764eb566f4b4ea3fa981394ca2e5d9c06e3861",
+        "scripts/checks/test_verify_frozen_packaging_repair.py": "e530282e1eb79900bf1b98ed51e828414bdc9de0",
+        "scripts/recover_release_platforms.py": "98e131dd586e53480a2689f22ea417175484bec0",
+        "scripts/release_all_platforms.py": "7e1aa6b933e78852f67ed34c50fbc657d2c758dd",
+        "scripts/verify_frozen_packaging_repair.py": "761390c43445a6e63b1df32d53fea41976d709c2",
+        "tools/dv-engine/build_apple_runtime.py": "3fe644fa9f7f25f869208100233944560ab1637f",
+        "tools/dv-engine/test_apple_runtime.py": "79ebf789bf155047f18e58592960e24f44ca839b"
+      }
+    }
+  ]
+}

@@ -706,3 +706,30 @@ an import smoke check before downloading artifacts. The regression suite creates
 the actual Git sparse checkout in an isolated repository and imports its recovery
 helpers with Python isolation enabled; adding a helper must not create another
 late assembly failure after successful platform builds.
+
+
+### Frozen Apple packaging recovery
+
+When only Apple packaging fails after source qualification, preserve the stable
+product tag and successful platform artifacts. Create one reviewed packaging
+commit whose sole parent is the qualified product commit; it may change only the
+explicit metadata paths in `scripts/verify_frozen_packaging_repair.py`. Merge that
+commit into main, then record its exact changed Git blob inventory in
+`.github/release-packaging-repairs.json` on main. Application sources, dependency
+pins, native binaries and version numbers cannot change in this exception.
+
+The trusted main workflow independently verifies the approval, complete Git trees,
+and ancestry before checking out the packaging revision. `GIT_COMMIT` retains the
+qualified product identity. Build-source copying uses the packaging identity;
+workflow authorization retains the dispatched main identity. Request only the
+failed Apple rebuilds, with signed Store archives enabled, and reuse Android,
+webOS and other successful jobs from the original release run. Do not dispatch a
+second all-platform build. Native-fork HEAD movement does not invalidate unchanged
+pins in an explicitly approved frozen repair.
+
+The assembly publishes a schema-2 `platform-reuse-provenance.json` bound by the
+attested SHA256SUMS manifest. It identifies product, packaging and workflow SHAs,
+original and assembly run IDs, exact reused artifact IDs/digests and Linux archive
+hash. The controller verifies the attestation and receipt before publication.
+Signed Store steps, notarization, Gatekeeper acceptance and full platform coverage
+remain required. Public release notes include the full upstream attribution ledger.

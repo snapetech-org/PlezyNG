@@ -1275,7 +1275,7 @@ for apple_job_name, workspace_label in (
     )
     stage_step = named_step(apple_release_job, stage_step_name)
     require(
-        'python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$GITHUB_SHA"'
+        'python3 scripts/copy_apple_jit_sources.py "$GITHUB_WORKSPACE" "$short_root" "$COMPILE_SOURCE_SHA"'
         in stage_step and 'ditto "$GITHUB_WORKSPACE/."' not in stage_step,
         f"{workspace_label} release must stage tracked sources without copying ignored caches or APFS attributes",
     )
@@ -1664,7 +1664,32 @@ require(
     "draft release notes must be rendered from CHANGELOG.md",
 )
 
+
+require(
+    'UPSTREAM_ATTRIBUTION.md' in release
+    and 'cat UPSTREAM_ATTRIBUTION.md >> release-notes.md' in release
+    and 'blob/v%s/UPSTREAM_ATTRIBUTION.md' in release,
+    "public release notes must include the upstream people/source ledger and tag-pinned link",
+)
+ios_arch = named_step(job("build-ios"), "Pin iOS device builds to the packaged native ABI")
+require(
+    r'ARCHS = arm64\nONLY_ACTIVE_ARCH = NO\n' in ios_arch and 'ONLY_ACTIVE_ARCH = NO' in ios_arch
+    and 'XCODE_XCCONFIG_FILE=$override' in ios_arch,
+    "iOS device compilation must use the packaged arm64 ABI",
+)
+require(
+    all('"$(git -C "$short_root" rev-parse HEAD)" == "$COMPILE_SOURCE_SHA"' in job(name)
+        for name in ('build-ios', 'build-macos')),
+    "Apple source staging must verify the actual packaging checkout identity",
+)
+
 trusted_ref = job("validate-trusted-ref")
+native_freshness = named_step(trusted_ref, "Require current verified fork native dependency")
+require(
+    "if: steps.frozen-repair.outputs.approved != 'true'" in native_freshness
+    and trusted_ref.index('Verify approved frozen packaging checkout') < trusted_ref.index('Require current verified fork native dependency'),
+    "only independently approved frozen packaging may preserve pins instead of checking moving native HEAD",
+)
 recovery_gate = named_step(trusted_ref, "Verify reusable platform source")
 recovery_download = named_step(release, "Recover verified platform artifacts")
 ios_worker_stage = named_step(job("build-ios"), "Stage locked iOS worker frameworks for Release")

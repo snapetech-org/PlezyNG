@@ -1,0 +1,267 @@
+"""Product, packaging, and main workflow identities stay distinct on recovery."""
+import contextlib
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import release_all_platforms as release
+
+
+class PackagingRepairControllerTests(unittest.TestCase):
+    product, repair, workflow = 'a' * 40, 'b' * 40, 'c' * 40
+    tag = 'v3.0.31'
+
+    def proof(self):
+        return {'schema_version': 2, 'recovery_policy': 'frozen-apple-packaging-v1',
+                'product_source_sha': self.product, 'packaging_source_sha': self.repair,
+                'workflow_source_sha': self.workflow, 'ci_source_sha': self.product, 'ci_run_id': 42,
+                'source_run_id': 42, 'source_sha': self.product, 'packaging_approval': {'reviewed': True}}
+
+    def options(self):
+        return dict(include_webos_release=True, reuse_platform_run_id=42, reuse_android_run_id=42, reuse_webos_run_id=42,
+                    rebuild_ios=True, rebuild_tvos=True, include_apple_store_build=True,
+                    prepare_homebrew_cask=True, packaging_source_sha=self.repair,
+                    workflow_source_sha=self.workflow)
+
+    def test_new_repair_dispatches_workflow_main_but_builds_only_approved_packaging_source(self):
+        with patch.object(release, 'matching_packaging_repair_run', return_value=None), \
+                patch.object(release, 'verify_platform_recovery', return_value=self.proof()) as verify, \
+                patch.object(release, 'ensure_frozen_release_source') as frozen, \
+                patch.object(release, 'ensure_remote_main_sha') as main, \
+                patch.object(release, 'run_has_successful_step', return_value=True), \
+                patch.object(release, 'dispatch', return_value={'databaseId': 99}) as dispatch:
+            release.ensure_release(self.tag, self.repair, **self.options())
+        self.assertEqual(verify.call_args.kwargs['workflow_source_sha'], self.workflow)
+        self.assertTrue(verify.call_args.kwargs['include_apple_store_build'])
+        frozen.assert_called_once_with(self.tag, self.product)
+        self.assertEqual(main.call_args.args[0], self.workflow)
+        fields = dispatch.call_args.args[3]
+        self.assertEqual(fields['recovery_source_sha'], self.repair)
+        self.assertEqual(fields['recovery_product_sha'], self.product)
+        self.assertEqual(fields['include_apple_store_build'], 'true')
+        self.assertEqual(dispatch.call_args.kwargs['expected_sha'], self.workflow)
+        self.assertTrue(dispatch.call_args.kwargs['expected_title'].endswith(':repair:' + self.repair))
+        self.assertEqual(dispatch.call_args.args[2], 'main')
+
+    def test_completed_repair_is_reused_after_main_advances_and_all_signed_steps_are_required(self):
+        existing = {'databaseId': 99, 'headSha': self.workflow, 'status': 'completed', 'conclusion': 'success'}
+        for missing in (None, 'Build signed iOS App Store IPA', 'Build signed tvOS App Store IPA',
+                        'Generate Homebrew Cask candidate', 'Attest Homebrew Cask candidate'):
+            with self.subTest(missing=missing), \
+                    patch.object(release, 'matching_packaging_repair_run', return_value=existing), \
+                    patch.object(release, 'verify_platform_recovery', return_value=self.proof()) as verify, \
+                    patch.object(release, 'ensure_frozen_release_source'), \
+                    patch.object(release, 'run_has_successful_step', side_effect=lambda repo, run, job, step: step != missing), \
+                    patch.object(release, 'ensure_remote_main_sha') as main, \
+                    patch.object(release, 'dispatch') as dispatch:
+                options = {**self.options(), 'workflow_source_sha': 'd' * 40}
+                if missing:
+                    with self.assertRaisesRegex(release.ReleaseError, 'duplicate'):
+                        release.ensure_release(self.tag, self.repair, **options)
+                else:
+                    self.assertEqual(release.ensure_release(self.tag, self.repair, **options), existing)
+                self.assertEqual(verify.call_args.kwargs['workflow_source_sha'], self.workflow)
+                dispatch.assert_not_called()
+                main.assert_not_called()
+
+    def test_failed_repair_is_not_automatically_dispatched_again(self):
+        with patch.object(release, 'matching_packaging_repair_run', return_value={
+                'databaseId': 99, 'headSha': self.workflow, 'status': 'completed', 'conclusion': 'failure'}), \
+                patch.object(release, 'verify_platform_recovery', return_value=self.proof()), \
+                patch.object(release, 'ensure_frozen_release_source'), patch.object(release, 'dispatch') as dispatch:
+            with self.assertRaisesRegex(release.ReleaseError, 'not re-run'):
+                release.ensure_release(self.tag, self.repair, **self.options())
+        dispatch.assert_not_called()
+
+    def test_new_successful_run_still_requires_the_requested_signed_steps(self):
+        with patch.object(release, 'matching_packaging_repair_run', return_value=None), \
+                patch.object(release, 'verify_platform_recovery', return_value=self.proof()), \
+                patch.object(release, 'ensure_frozen_release_source'), \
+                patch.object(release, 'ensure_remote_main_sha'), \
+                patch.object(release, 'run_has_successful_step', return_value=False), \
+                patch.object(release, 'dispatch', return_value={'databaseId': 99}) as dispatch:
+            with self.assertRaisesRegex(release.ReleaseError, 'every requested signing'):
+                release.ensure_release(self.tag, self.repair, **self.options())
+        dispatch.assert_called_once()
+
+    def test_explicit_mac_rebuild_requires_notarization_and_gatekeeper(self):
+        existing = {'databaseId': 99, 'headSha': self.workflow, 'status': 'completed', 'conclusion': 'success'}
+        for missing in (None, 'Notarize Application', 'Verify Gatekeeper acceptance for Homebrew Cask'):
+            with self.subTest(missing=missing), \
+                    patch.object(release, 'matching_packaging_repair_run', return_value=existing), \
+                    patch.object(release, 'verify_platform_recovery', return_value=self.proof()) as verify, \
+                    patch.object(release, 'ensure_frozen_release_source'), \
+                    patch.object(release, 'run_has_successful_step', side_effect=lambda repo, run, job, step: step != missing), \
+                    patch.object(release, 'dispatch') as dispatch:
+                if missing:
+                    with self.assertRaisesRegex(release.ReleaseError, 'duplicate'):
+                        release.ensure_release(self.tag, self.repair, **{**self.options(), 'rebuild_macos': True})
+                else:
+                    self.assertEqual(release.ensure_release(self.tag, self.repair,
+                        **{**self.options(), 'rebuild_macos': True}), existing)
+                self.assertTrue(verify.call_args.kwargs['rebuild_macos'])
+                self.assertTrue(verify.call_args.kwargs['require_homebrew_cask'])
+                dispatch.assert_not_called()
+
+    def test_incomplete_or_mismatched_recovery_proof_cannot_dispatch(self):
+        for key, value in [('schema_version', 1), ('recovery_policy', 'generic'),
+                           ('product_source_sha', 'main'), ('packaging_source_sha', self.product),
+                           ('workflow_source_sha', 'd' * 40)]:
+            with self.subTest(key=key), \
+                    patch.object(release, 'matching_packaging_repair_run', return_value=None), \
+                    patch.object(release, 'verify_platform_recovery', return_value={**self.proof(), key: value}), \
+                    patch.object(release, 'dispatch') as dispatch:
+                with self.assertRaises(release.ReleaseError):
+                    release.ensure_release(self.tag, self.repair, **self.options())
+                dispatch.assert_not_called()
+
+    def test_dedupe_inventory_must_be_complete_and_unique(self):
+        for pages in ([{'workflow_runs': [], 'total_count': 101}],
+                      [{'workflow_runs': [{'display_title': 'repair'}, {'display_title': 'repair'}]}]):
+            with patch.object(release, 'gh_json', return_value=pages), self.assertRaises(release.ReleaseError):
+                release.matching_packaging_repair_run('repair')
+
+    def test_dedupe_reads_the_original_workflow_identity_and_refuses_foreign_runs(self):
+        run = {'id': 99, 'display_title': 'repair', 'head_sha': self.workflow, 'head_branch': 'main',
+               'event': 'workflow_dispatch', 'path': '.github/workflows/build.yml',
+               'head_repository': {'full_name': release.PLEZY_REPO}, 'status': 'queued'}
+        with patch.object(release, 'gh_json', return_value=[{'workflow_runs': [run], 'total_count': 1}]):
+            self.assertEqual(release.matching_packaging_repair_run('repair')['headSha'], self.workflow)
+        for changed in ({'head_repository': {'full_name': 'other/repository'}}, {'head_branch': 'untrusted'},
+                        {'path': '.github/workflows/other.yml'}, {'event': 'push'}):
+            with self.subTest(changed=changed), patch.object(release, 'gh_json', return_value=[{
+                    'workflow_runs': [{**run, **changed}]}]), self.assertRaises(release.ReleaseError):
+                release.matching_packaging_repair_run('repair')
+
+    def test_reused_signed_platform_is_validated_by_the_source_proof_not_a_skipped_repair_job(self):
+        existing = {'databaseId': 99, 'headSha': self.workflow, 'status': 'completed', 'conclusion': 'success'}
+        with patch.object(release, 'matching_packaging_repair_run', return_value=existing), \
+                patch.object(release, 'verify_platform_recovery', return_value=self.proof()), \
+                patch.object(release, 'ensure_frozen_release_source'), \
+                patch.object(release, 'run_has_successful_step', side_effect=lambda repo, run, job, step: job != 'build-ios'), \
+                patch.object(release, 'dispatch') as dispatch:
+            self.assertEqual(release.ensure_release(self.tag, self.repair,
+                **{**self.options(), 'rebuild_ios': False}), existing)
+        dispatch.assert_not_called()
+
+    def test_approval_options_reach_the_independent_source_verifier(self):
+        import recover_release_platforms as recovery
+        with patch.object(recovery, 'verify_source_run', return_value=self.proof()) as verify, \
+                patch.object(recovery, 'compose_proof', side_effect=lambda proof, *args: proof):
+            release.verify_platform_recovery(42, self.repair, '3.0.31', rebuild_ios=True,
+                packaging_source_sha=self.repair, workflow_source_sha=self.workflow,
+                include_apple_store_build=True)
+        self.assertEqual(verify.call_args.args, (42, self.repair, '3.0.31'))
+        self.assertEqual(verify.call_args.kwargs['packaging_source_sha'], self.repair)
+        self.assertEqual(verify.call_args.kwargs['workflow_source_sha'], self.workflow)
+        self.assertTrue(verify.call_args.kwargs['include_apple_store_build'])
+
+    def test_assembly_receipt_requires_checksum_certificate_and_exact_approved_run_sources(self):
+        for invalid in (None, 'checksum', 'certificate', 'assembly', 'checkout', 'artifact', 'linux'):
+            with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as temp:
+                receipt = {**self.proof(), 'assembly_run_id': 99, 'actual_checkout_sha': self.repair,
+                           'linux_archive_sha256': 'e' * 64,
+                           'artifacts': [{'name': 'linux-x64', 'artifact_id': 123, 'source_run_id': 42,
+                                          'source_sha': self.product, 'digest': 'sha256:' + 'f' * 64}]}
+                if invalid == 'assembly': receipt['assembly_run_id'] = 100
+                if invalid == 'checkout': receipt['actual_checkout_sha'] = self.workflow
+                if invalid == 'artifact': receipt['artifacts'][0]['source_sha'] = self.workflow
+                certificate = {'sourceRepositoryIdentifier': '1433487464', 'sourceRepositoryDigest': self.workflow,
+                               'runInvocationURI': f'https://github.com/{release.PLEZY_REPO}/actions/runs/99'}
+                if invalid == 'certificate': certificate['runInvocationURI'] += '0'
+                def command(args, **kwargs):
+                    if args[:3] == ['gh', 'release', 'download']:
+                        directory = Path(args[args.index('--dir') + 1])
+                        content = json.dumps(receipt).encode()
+                        (directory / 'platform-reuse-provenance.json').write_bytes(content)
+                        checksum = '0' * 64 if invalid == 'checksum' else hashlib.sha256(content).hexdigest()
+                        (directory / 'SHA256SUMS.txt').write_text(checksum + '  platform-reuse-provenance.json\n')
+                        return subprocess.CompletedProcess(args, 0, '', '')
+                    return subprocess.CompletedProcess(args, 0, json.dumps([{
+                        'verificationResult': {'signature': {'certificate': certificate}}}]), '')
+                metadata = {'assets': [{'name': 'pleazyng-linux-x64.tar.gz',
+                                       'digest': 'sha256:' + ('0' if invalid == 'linux' else 'e') * 64}]}
+                with patch.object(release, 'command', side_effect=command), \
+                        patch.object(release, 'ensure_frozen_release_source'), \
+                        patch.object(release, 'release_metadata', return_value=metadata):
+                    if invalid:
+                        with self.assertRaises(release.ReleaseError):
+                            release.verify_packaging_repair_assembly(Path(temp), self.tag, self.proof(), {'databaseId': 99})
+                    else:
+                        self.assertEqual(release.verify_packaging_repair_assembly(
+                            Path(temp), self.tag, self.proof(), {'databaseId': 99}), receipt)
+
+    def test_signed_publication_cli_keeps_product_and_packaging_sources_separate(self):
+        with tempfile.TemporaryDirectory() as temp, contextlib.ExitStack() as stack:
+            scratch = Path(temp) / 'release'
+            args = ['release', '--version', '3.0.31', '--source-commit', self.repair,
+                    '--reuse-platform-run', '42', '--reuse-android-run', '42', '--reuse-webos-run', '42',
+                    '--rebuild-ios', '--rebuild-tvos', '--include-apple-store-build',
+                    '--prepare-homebrew-cask', '--publish', '--scratch', str(scratch)]
+            stack.enter_context(patch.object(sys, 'argv', args))
+            command = stack.enter_context(patch.object(release, 'command', return_value=subprocess.CompletedProcess([], 0, self.repair, '')))
+            create = stack.enter_context(patch.object(release, 'create_plezy_worktree', return_value=Path(temp) / 'checkout'))
+            stack.enter_context(patch.object(release, 'existing_release_tag_commit', return_value=self.product))
+            for name in ('validate_source_metadata', 'ensure_main_ancestor', 'ensure_frozen_release_source',
+                         'validate_release_outputs', 'publish_github_release', 'refresh_latest_published_facts'):
+                stack.enter_context(patch.object(release, name, return_value=self.workflow))
+            stack.enter_context(patch.object(release, 'gh_json', return_value={'commit': {'sha': self.workflow}}))
+            stack.enter_context(patch.object(release, 'matching_packaging_repair_run', return_value=None))
+            stack.enter_context(patch.object(release, 'verify_platform_recovery', return_value=self.proof()))
+            stack.enter_context(patch.object(release, 'verify_packaging_repair_assembly', return_value=self.proof()))
+            native = stack.enter_context(patch.object(release, 'prepare_native_checkout'))
+            build = stack.enter_context(patch.object(release, 'ensure_release', return_value={'databaseId': 99}))
+            stack.enter_context(patch.object(release, 'post_release_actions', return_value={
+                'published_channels': [], 'skipped_channels': [], 'channel_failures': [], 'notification_failures': []}))
+            self.assertEqual(release.main(), 0)
+            native.assert_not_called()
+            create.assert_called_once_with(scratch, source_ref=self.repair)
+            self.assertEqual(build.call_args.args[1], self.repair)
+            self.assertEqual(build.call_args.kwargs['workflow_source_sha'], self.workflow)
+            self.assertTrue(build.call_args.kwargs['include_apple_store_build'])
+            self.assertFalse(build.call_args.kwargs.get('rebuild_macos', False))
+            self.assertFalse(any('scripts/sync_native_revision.py' in call.args[0] for call in command.call_args_list))
+            report = json.loads((scratch / 'release-summary.json').read_text())
+            self.assertEqual(report['plezyng_commit'], self.product)
+            self.assertEqual(report['packaging_source_commit'], self.repair)
+            self.assertEqual(report['workflow_source_commit'], self.workflow)
+            self.assertTrue(report['release_published'])
+            progress = json.loads((scratch / 'release-progress.json').read_text())
+            self.assertEqual(progress['native_pin_policy'], 'preserved-approved-product-pins')
+
+    def test_unapproved_repair_cannot_dispatch_and_ordinary_resume_retains_native_freshness(self):
+        for ordinary in (False, True):
+            with self.subTest(ordinary=ordinary), tempfile.TemporaryDirectory() as temp, contextlib.ExitStack() as stack:
+                args = ['release', '--version', '3.0.31', '--scratch', str(Path(temp) / 'release')]
+                if not ordinary:
+                    args += ['--source-commit', self.repair, '--reuse-platform-run', '42', '--rebuild-ios']
+                stack.enter_context(patch.object(sys, 'argv', args))
+                native_checks = []
+                def command(args, **kwargs):
+                    if 'scripts/sync_native_revision.py' in args:
+                        native_checks.append(args)
+                        raise release.ReleaseError('Native main advanced')
+                    return subprocess.CompletedProcess(args, 0, self.repair, '')
+                stack.enter_context(patch.object(release, 'command', side_effect=command))
+                stack.enter_context(patch.object(release, 'create_plezy_worktree', return_value=Path(temp) / 'checkout'))
+                stack.enter_context(patch.object(release, 'existing_release_tag_commit', return_value=self.repair if ordinary else self.product))
+                for name in ('validate_source_metadata', 'ensure_main_ancestor', 'ensure_frozen_release_source'):
+                    stack.enter_context(patch.object(release, name))
+                stack.enter_context(patch.object(release, 'gh_json', return_value={'commit': {'sha': self.workflow}}))
+                stack.enter_context(patch.object(release, 'matching_packaging_repair_run', return_value=None))
+                stack.enter_context(patch.object(release, 'verify_platform_recovery', return_value={**self.proof(), 'schema_version': 1}))
+                build = stack.enter_context(patch.object(release, 'ensure_release'))
+                with self.assertRaisesRegex(release.ReleaseError, 'Native main advanced' if ordinary else 'proof is incomplete'):
+                    release.main()
+                self.assertEqual(bool(native_checks), ordinary)
+                build.assert_not_called()
+
+
+if __name__ == '__main__':
+    unittest.main()

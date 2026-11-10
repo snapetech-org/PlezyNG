@@ -94,6 +94,21 @@ class SourceProofTests(unittest.TestCase):
         with self.assertRaises(recovery.RecoveryError):
             self.prove(rebuild_tvos=True)
 
+    def test_failed_ios_requires_explicit_rebuild_and_keeps_tvos_strict(self):
+        next(job for job in self.jobs if job["name"] == "build-ios")["conclusion"] = "failure"
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+        proof = self.prove(rebuild_ios=True)
+        self.assertTrue(proof["rebuild_ios"])
+        self.assertNotIn("build-ios", proof["reused_jobs"])
+        self.assertIn("build-ios", proof["rebuilt_jobs"])
+        next(job for job in self.jobs if job["name"] == "Build tvOS developer package (arm64)")["conclusion"] = "failure"
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove(rebuild_ios=True)
+        proof = self.prove(rebuild_ios=True, rebuild_tvos=True)
+        self.assertIn("build-ios", proof["rebuilt_jobs"])
+        self.assertIn("Build tvOS developer package (arm64)", proof["rebuilt_jobs"])
+
     def test_tvos_rebuild_rejects_product_drift_and_repaired_substitution(self):
         self.compare["files"] = [{"filename": "lib/main.dart"}]
         with self.assertRaises(recovery.RecoveryError):
@@ -301,6 +316,20 @@ class ArtifactTests(unittest.TestCase):
             self.assertEqual(result["artifacts"], [])
         proof["rebuild_tvos"] = False
         with patch.object(recovery, "ARTIFACTS", {"tvos-ipa": "tvos-ipa"}), \
+             patch.object(recovery, "collection", return_value=[]):
+            with self.assertRaises(recovery.RecoveryError):
+                recovery.download_platforms(proof, self.root)
+
+    def test_ios_is_not_downloaded_from_failed_original_when_rebuilt(self):
+        proof = {"source_run_id": 42, "source_sha": "a" * 40, "rebuild_ios": True}
+        with patch.object(recovery, "ARTIFACTS", {"ios-ipa": "ios-ipa"}), \
+             patch.object(recovery, "collection", return_value=[]), \
+             patch.object(recovery.subprocess, "run") as download:
+            result = recovery.download_platforms(proof, self.root)
+            download.assert_not_called()
+            self.assertEqual(result["artifacts"], [])
+        proof["rebuild_ios"] = False
+        with patch.object(recovery, "ARTIFACTS", {"ios-ipa": "ios-ipa"}), \
              patch.object(recovery, "collection", return_value=[]):
             with self.assertRaises(recovery.RecoveryError):
                 recovery.download_platforms(proof, self.root)

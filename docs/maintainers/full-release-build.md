@@ -40,6 +40,13 @@ The hosted tvOS release job uses an ARM macOS host, matching the pinned
 ARM-host `gen_snapshot_arm64` cross-compiler. Simulator Debug/JIT tests do not
 prove that Release AOT compilation can execute its host tool.
 
+iOS Release packaging configures Flutter first, installs locked Pods, and
+prebuilds `Pods-RommWorker` for device ARM64 using Flutter's same absolute
+`BUILD_DIR`. Before app linking it resolves the worker's framework search
+paths, verifies the staged native binary and records its digest. Keep the
+verbose device link output: simulator success alone cannot establish the
+device framework's availability.
+
 The iOS and macOS mpv contract suites use a ten-second
 `nativeCompletionTimeout` for eventual native replies and scheduler barriers.
 This bounds the test harness while allowing simulator startup work; it does
@@ -564,6 +571,15 @@ Application sources and native pins must remain unchanged; the existing tag
 and version stay immutable. `--publish-github-only` publishes the complete
 validated core release; configured channel delivery then uses those same
 artifacts. Never treat the original missing tvOS artifact as reusable.
+
+Use `--rebuild-ios` for a failed iOS package, independently or alongside the
+other explicit rebuild flags. Fresh iOS and tvOS artifacts must come from
+successful jobs in the recovery run. A failed original webOS job remains a
+fresh build; do not pass it as `--reuse-webos-run`. The webOS-only static
+atomic link repair is accepted solely as exact additive CMake statements on
+the existing worker targets; arbitrary flags, source edits and native pin
+changes still reject reuse. Static linkage introduces no new shared runtime
+library requirement in the TV package.
 
 Add `--rebuild-linux` to the recovery driver when a Linux job failed: both native
 Linux matrix entries build again, their old artifacts are excluded, and every

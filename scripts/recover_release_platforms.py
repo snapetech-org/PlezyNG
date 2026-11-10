@@ -79,7 +79,7 @@ def verify_webos_link_patch(repository, source_sha, head_sha, files):
     from verify_webos_link_patch import CMAKE_PATH, equivalent
     if any(entry.get("filename") == CMAKE_PATH for entry in files):
         if not equivalent(immutable_content(repository, source_sha, CMAKE_PATH), immutable_content(repository, head_sha, CMAKE_PATH)):
-            raise RecoveryError("webOS link changes exceed the direct pinned common-library link repair")
+            raise RecoveryError("webOS link changes exceed the pinned Flutter/static atomic link repairs")
 
 
 def api(path):
@@ -244,9 +244,9 @@ def verify_repaired_run(run_id, head_sha, version, repository, *, allow_pending=
             "platforms_complete": run.get("status") == "completed", "pending_jobs": pending_jobs}
 
 
-def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False, rebuild_linux=False, rebuild_macos=False, rebuild_tvos=False, repaired_run=None, require_homebrew_cask=False):
-    if rebuild_tvos and repaired_run:
-        raise RecoveryError("tvOS rebuilding cannot substitute repaired Linux/Mac outputs")
+def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow_pending=False, rebuild_linux=False, rebuild_macos=False, rebuild_tvos=False, rebuild_ios=False, repaired_run=None, require_homebrew_cask=False):
+    if (rebuild_tvos or rebuild_ios) and repaired_run:
+        raise RecoveryError("Apple device rebuilding cannot substitute repaired Linux/Mac outputs")
     if repository != REPOSITORY or not str(run_id).isdigit() or not re.fullmatch(r"[0-9a-f]{40}", head_sha):
         raise RecoveryError("Recovery requires the Pleazyng repository and exact run/commit identities.")
     source = api(f"repos/{repository}/actions/runs/{run_id}")
@@ -277,8 +277,8 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
     repaired = verify_repaired_run(repaired_run, head_sha, version, repository, allow_pending=allow_pending, require_homebrew_cask=require_homebrew_cask) if repaired_run else None
     jobs = collection(f"repos/{repository}/actions/runs/{run_id}/jobs", "jobs")
     pending_jobs = []
-    required_jobs = tuple(name for name in REQUIRED_JOBS if not ((rebuild_linux or repaired) and name.startswith("Build Linux (")) and not ((rebuild_macos or repaired) and name == "build-macos") and not (rebuild_tvos and name == "Build tvOS developer package (arm64)"))
-    rebuilt_jobs = set(REBUILT_JOBS) | ({"Build Linux (x64)", "Build Linux (arm64)"} if rebuild_linux else set()) | ({"build-macos"} if rebuild_macos else set()) | ({"Build tvOS developer package (arm64)"} if rebuild_tvos else set())
+    required_jobs = tuple(name for name in REQUIRED_JOBS if not ((rebuild_linux or repaired) and name.startswith("Build Linux (")) and not ((rebuild_macos or repaired) and name == "build-macos") and not (rebuild_tvos and name == "Build tvOS developer package (arm64)") and not (rebuild_ios and name == "build-ios"))
+    rebuilt_jobs = set(REBUILT_JOBS) | ({"Build Linux (x64)", "Build Linux (arm64)"} if rebuild_linux else set()) | ({"build-macos"} if rebuild_macos else set()) | ({"Build tvOS developer package (arm64)"} if rebuild_tvos else set()) | ({"build-ios"} if rebuild_ios else set())
     for name in required_jobs:
         matches = [job for job in jobs if job.get("name") == name]
         if len(matches) == 1 and pending and matches[0].get("status") in {"queued", "in_progress", "waiting", "pending", "requested"} and not matches[0].get("conclusion"):
@@ -308,7 +308,7 @@ def verify_source_run(run_id, head_sha, version, repository=REPOSITORY, *, allow
         raise RecoveryError("Reusable Mac build lacks successful notarization and Homebrew Gatekeeper qualification")
     return {"source_run_id": int(run_id), "source_sha": source_sha, "head_sha": head_sha,
             "version": version, "reused_jobs": list(required_jobs),
-            "rebuilt_jobs": sorted(rebuilt_jobs), "rebuild_linux": rebuild_linux, "rebuild_macos": rebuild_macos, "rebuild_tvos": rebuild_tvos,
+            "rebuilt_jobs": sorted(rebuilt_jobs), "rebuild_linux": rebuild_linux, "rebuild_macos": rebuild_macos, "rebuild_tvos": rebuild_tvos, "rebuild_ios": rebuild_ios,
             "macos_cask_qualified": repaired["macos_cask_qualified"] if repaired else cask_qualified,
             "webos_link_compatibility_repaired": any(entry.get("filename") == "webos/CMakeLists.txt" for entry in changed),
             "platforms_complete": source.get("status") == "completed" and (not repaired or repaired["platforms_complete"]),
@@ -498,7 +498,7 @@ def extract_verified(archive, destination):
 def download_platforms(proof, destination, repository=REPOSITORY):
     run_id = proof["source_run_id"]
     inventory = collection(f"repos/{repository}/actions/runs/{run_id}/artifacts", "artifacts")
-    wanted = {name: folder for name, folder in ARTIFACTS.items() if not (proof.get("rebuild_linux") and name.startswith("linux-")) and not (proof.get("rebuild_macos") and name == "macos-dmg") and not (proof.get("rebuild_tvos") and name == "tvos-ipa")}
+    wanted = {name: folder for name, folder in ARTIFACTS.items() if not (proof.get("rebuild_linux") and name.startswith("linux-")) and not (proof.get("rebuild_macos") and name == "macos-dmg") and not (proof.get("rebuild_tvos") and name == "tvos-ipa") and not (proof.get("rebuild_ios") and name == "ios-ipa")}
     if any(item.get("name") == "windows-msix" for item in inventory):
         wanted["windows-msix"] = "windows-msix"
     inventories = {run_id: inventory}
@@ -564,6 +564,7 @@ def main():
     parser.add_argument("--download", type=Path)
     parser.add_argument("--macos-run", help="Reuse a qualified signing-only Mac recovery after every original platform succeeds.")
     parser.add_argument("--rebuild-linux", action="store_true", help="Rebuild both Linux architectures instead of reusing their artifacts")
+    parser.add_argument("--rebuild-ios", action="store_true", help="Rebuild the iOS developer package instead of reusing its original artifact")
     parser.add_argument("--rebuild-tvos", action="store_true", help="Rebuild tvOS instead of reusing its original artifact")
     parser.add_argument("--rebuild-macos", action="store_true", help="Build and qualify a fresh Mac package instead of reusing a failed Mac job")
     parser.add_argument("--repaired-run", help="Reuse verified Linux and fully qualified Mac jobs from a prior repair run")
@@ -574,9 +575,9 @@ def main():
     parser.add_argument("--allow-building", action="store_true", help="Preflight only: native jobs may still be running.")
     parser.add_argument("--wait-for-source", type=int, default=0, help="Wait up to this many seconds before recovering completed outputs.")
     args = parser.parse_args()
-    if args.macos_run and (args.rebuild_macos or args.rebuild_linux or args.rebuild_tvos):
+    if args.macos_run and (args.rebuild_macos or args.rebuild_linux or args.rebuild_tvos or args.rebuild_ios):
         parser.error("Signing-only Mac recovery cannot be combined with fresh platform rebuilding")
-    if args.repaired_run and (args.macos_run or args.rebuild_macos or args.rebuild_linux or args.rebuild_tvos):
+    if args.repaired_run and (args.macos_run or args.rebuild_macos or args.rebuild_linux or args.rebuild_tvos or args.rebuild_ios):
         parser.error("Repaired Linux/Mac reuse cannot be combined with rebuilding or signing-only recovery")
     if args.webos_run and (args.macos_run or args.skip_webos_build):
         parser.error("WebOS reuse must remain included and cannot substitute signing-only recovery")
@@ -586,9 +587,9 @@ def main():
         parser.error("--wait-for-source must be between 0 and 10800 seconds")
     proof = (verify_macos_packaging_recovery(args.source_run, args.macos_run, args.head_sha, args.version)
              if args.macos_run else
-             wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask)
+             wait_for_source_run(args.source_run, args.head_sha, args.version, args.wait_for_source, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, rebuild_ios=args.rebuild_ios, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask)
              if args.wait_for_source else
-             verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask))
+             verify_source_run(args.source_run, args.head_sha, args.version, allow_pending=args.allow_building, rebuild_linux=args.rebuild_linux, rebuild_macos=args.rebuild_macos, rebuild_tvos=args.rebuild_tvos, rebuild_ios=args.rebuild_ios, repaired_run=args.repaired_run, require_homebrew_cask=args.require_homebrew_cask))
     proof = compose_proof(proof, args.android_run, not args.skip_webos_build, args.webos_run)
     if args.download:
         proof = download_platforms(proof, args.download)

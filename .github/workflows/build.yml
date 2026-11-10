@@ -59,6 +59,11 @@ on:
         type: boolean
         required: false
         default: false
+      rebuild_ios:
+        description: Rebuild the iOS developer package during verified platform recovery
+        type: boolean
+        required: false
+        default: false
       rebuild_tvos:
         description: Rebuild tvOS on a compatible ARM host during verified platform recovery
         type: boolean
@@ -490,6 +495,7 @@ jobs:
           REBUILD_LINUX: ${{ inputs.rebuild_linux }}
           REBUILD_MACOS: ${{ inputs.rebuild_macos }}
           REBUILD_TVOS: ${{ inputs.rebuild_tvos }}
+          REBUILD_IOS: ${{ inputs.rebuild_ios }}
           REPAIRED_RUN: ${{ inputs.reuse_repaired_run_id }}
           WEBOS_RUN: ${{ inputs.reuse_webos_run_id }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
@@ -516,6 +522,7 @@ jobs:
           if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
+          if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
           if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
@@ -1038,7 +1045,7 @@ jobs:
       include_seller_office_handoff: false
 
   build-ios:
-    if: ${{ inputs.reuse_platform_run_id == '' && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
+    if: ${{ (inputs.reuse_platform_run_id == '' || inputs.rebuild_ios) && inputs.runner_pool == 'private' && (inputs.action == 'build' || inputs.action == 'release') && needs.validate-trusted-ref.outputs.runner_pool == 'private' && (needs.validate-trusted-ref.outputs.action == 'build' || needs.validate-trusted-ref.outputs.action == 'release') && needs.validate-trusted-ref.outputs.mode == 'release' }}
     needs: validate-trusted-ref
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'macos-26-intel' || fromJSON(format('{{"group":"private-apple-builds","labels":["self-hosted","macOS","ARM64","private-apple","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-build-ios"]}}', github.run_id)) }}
     permissions:
@@ -1168,9 +1175,43 @@ jobs:
           done
           echo "configured=true" >> "$GITHUB_OUTPUT"
 
+      - name: Stage locked iOS worker frameworks for Release
+        working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
+        run: |
+          set -euo pipefail
+          flutter build ios --release --no-codesign --config-only ${{ env.RELEASE_DART_DEFINES }} --split-debug-info=debug-info/ios
+          (cd ios && pod install --deployment)
+          products_root="$PWD/build/ios"
+          xcodebuild build -project ios/Pods/Pods.xcodeproj -scheme Pods-RommWorker \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath "$APPLE_DERIVED_DATA_PATH" BUILD_DIR="$products_root" \
+            CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO ARCHS=arm64
+          settings="$RUNNER_TEMP/ios-worker-release-settings.json"
+          xcodebuild -project ios/Runner.xcodeproj -target RommWorker \
+            -configuration Release -sdk iphoneos -showBuildSettings -json \
+            BUILD_DIR="$products_root" CODE_SIGNING_ALLOWED=NO > "$settings"
+          python3 - "$settings" <<'PYSETTINGS'
+          import hashlib, json, pathlib, shlex, subprocess, sys
+          records = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          matches = [item['buildSettings'] for item in records if item.get('target') == 'RommWorker']
+          if len(matches) != 1:
+              raise SystemExit('Expected exactly one resolved RommWorker configuration')
+          settings = matches[0]
+          keys = ('CONFIGURATION_BUILD_DIR', 'PODS_CONFIGURATION_BUILD_DIR', 'PODS_XCFRAMEWORKS_BUILD_DIR', 'FRAMEWORK_SEARCH_PATHS')
+          print(json.dumps({key: settings.get(key) for key in keys}, indent=2))
+          roots = shlex.split(settings.get('FRAMEWORK_SEARCH_PATHS', ''))
+          binaries = [pathlib.Path(root) / 'PlezyRetroWorker.framework/PlezyRetroWorker' for root in roots]
+          binaries = sorted({path.resolve() for path in binaries if path.is_file()})
+          if len(binaries) != 1:
+              raise SystemExit(f'Expected one staged worker framework in resolved search paths, found {binaries}')
+          binary = binaries[0]
+          subprocess.run(['xcrun', 'lipo', '-verify_arch', 'arm64', str(binary)], check=True)
+          print('Verified staged ARM64 worker:', binary, hashlib.file_digest(binary.open('rb'), 'sha256').hexdigest())
+          PYSETTINGS
+
       - name: Build iOS (no codesign)
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
-        run: flutter build ios --release --no-codesign ${{ env.RELEASE_DART_DEFINES }} --split-debug-info=debug-info/ios
+        run: flutter build ios --release --no-codesign --no-pub --verbose ${{ env.RELEASE_DART_DEFINES }} --split-debug-info=debug-info/ios
 
       - name: Create unsigned developer IPA
         working-directory: ${{ env.PLEZYNG_APPLE_WORKSPACE }}
@@ -2902,7 +2943,7 @@ jobs:
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
-    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-ios.result == 'skipped' && ((inputs.rebuild_tvos && needs.build-tvos.result == 'success') || (!inputs.rebuild_tvos && needs.build-tvos.result == 'skipped')) && ((inputs.rebuild_macos && needs.build-macos.result == 'success') || (!inputs.rebuild_macos && needs.build-macos.result == 'skipped')) && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && ((inputs.rebuild_linux && needs.build-linux.result == 'success') || (!inputs.rebuild_linux && needs.build-linux.result == 'skipped')) && (needs.build-webos.result == 'success' || (inputs.reuse_webos_run_id != '' && needs.validate-trusted-ref.outputs.webos_source_sha != '' && needs.build-webos.result == 'skipped') || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    if: ${{ always() && inputs.runner_pool == 'private' && inputs.action == 'release' && needs.validate-trusted-ref.outputs.runner_pool == 'private' && needs.validate-trusted-ref.outputs.action == 'release' && needs.validate-trusted-ref.outputs.mode == 'release' && needs.validate-trusted-ref.result == 'success' && (needs.build-android.result == 'success' || (inputs.reuse_android_run_id != '' && needs.validate-trusted-ref.outputs.android_source_sha != '' && needs.build-android.result == 'skipped')) && ((inputs.reuse_platform_run_id == '' && needs.build-ios.result == 'success' && needs.build-tvos.result == 'success' && needs.build-macos.result == 'success' && needs.build-windows.result == 'success' && needs.package-windows.result == 'success' && needs.build-linux.result == 'success' && (needs.build-webos.result == 'success' || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && (needs.build-tizen.result == 'success' || (needs.validate-trusted-ref.outputs.include_tizen_build != 'true' && needs.build-tizen.result == 'skipped'))) || (inputs.reuse_platform_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && ((inputs.rebuild_ios && needs.build-ios.result == 'success') || (!inputs.rebuild_ios && needs.build-ios.result == 'skipped')) && ((inputs.rebuild_tvos && needs.build-tvos.result == 'success') || (!inputs.rebuild_tvos && needs.build-tvos.result == 'skipped')) && ((inputs.rebuild_macos && needs.build-macos.result == 'success') || (!inputs.rebuild_macos && needs.build-macos.result == 'skipped')) && needs.build-windows.result == 'skipped' && needs.package-windows.result == 'skipped' && ((inputs.rebuild_linux && needs.build-linux.result == 'success') || (!inputs.rebuild_linux && needs.build-linux.result == 'skipped')) && (needs.build-webos.result == 'success' || (inputs.reuse_webos_run_id != '' && needs.validate-trusted-ref.outputs.webos_source_sha != '' && needs.build-webos.result == 'skipped') || (inputs.reuse_macos_package_run_id != '' && needs.validate-trusted-ref.outputs.reuse_source_sha != '' && needs.build-webos.result == 'skipped') || (needs.validate-trusted-ref.outputs.include_webos_build != 'true' && needs.validate-trusted-ref.outputs.include_webos_release != 'true' && needs.build-webos.result == 'skipped')) && needs.build-tizen.result == 'skipped')) && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     runs-on: ${{ needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-create-release"]}}', github.run_id)) }}
     permissions:
       contents: write
@@ -2946,6 +2987,7 @@ jobs:
           REBUILD_LINUX: ${{ inputs.rebuild_linux }}
           REBUILD_MACOS: ${{ inputs.rebuild_macos }}
           REBUILD_TVOS: ${{ inputs.rebuild_tvos }}
+          REBUILD_IOS: ${{ inputs.rebuild_ios }}
           REPAIRED_RUN: ${{ inputs.reuse_repaired_run_id }}
           WEBOS_RUN: ${{ inputs.reuse_webos_run_id }}
           SOURCE_RUN: ${{ inputs.reuse_platform_run_id }}
@@ -2960,6 +3002,7 @@ jobs:
           if [[ "$REBUILD_LINUX" == true ]]; then options+=(--rebuild-linux); fi
           if [[ "$REBUILD_MACOS" == true ]]; then options+=(--rebuild-macos); fi
           if [[ "$REBUILD_TVOS" == true ]]; then options+=(--rebuild-tvos); fi
+          if [[ "$REBUILD_IOS" == true ]]; then options+=(--rebuild-ios); fi
           if [[ -n "$REPAIRED_RUN" ]]; then options+=(--repaired-run "$REPAIRED_RUN"); fi
           if [[ -n "$WEBOS_RUN" ]]; then options+=(--webos-run "$WEBOS_RUN"); fi
           if [[ "$HOMEBREW" == true ]]; then options+=(--require-homebrew-cask); fi
@@ -3046,7 +3089,7 @@ jobs:
           PY
 
       - name: Download iOS artifact
-        if: ${{ inputs.reuse_platform_run_id == '' }}
+        if: ${{ inputs.reuse_platform_run_id == '' || inputs.rebuild_ios }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: ios-ipa

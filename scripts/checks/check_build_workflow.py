@@ -1612,6 +1612,20 @@ require(
 trusted_ref = job("validate-trusted-ref")
 recovery_gate = named_step(trusted_ref, "Verify reusable platform source")
 recovery_download = named_step(release, "Recover verified platform artifacts")
+ios_worker_stage = named_step(job("build-ios"), "Stage locked iOS worker frameworks for Release")
+require(
+    "(inputs.reuse_platform_run_id == '' || inputs.rebuild_ios)" in job("build-ios")
+    and "--rebuild-ios" in recovery_gate and "--rebuild-ios" in recovery_download
+    and "inputs.rebuild_ios && needs.build-ios.result == 'success'" in release_condition
+    and "!inputs.rebuild_ios && needs.build-ios.result == 'skipped'" in release_condition
+    and "inputs.rebuild_ios" in named_step(release, "Download iOS artifact")
+    and all(value in ios_worker_stage for value in (
+        "--config-only", "pod install --deployment", "-scheme Pods-RommWorker",
+        '-configuration Release -sdk iphoneos', 'BUILD_DIR="$products_root"',
+        "PODS_XCFRAMEWORKS_BUILD_DIR", "PlezyRetroWorker.framework/PlezyRetroWorker",
+        "'-verify_arch', 'arm64'")),
+    "iOS recovery must stage the locked device worker and require a successful fresh artifact",
+)
 require(
     "&& 'macos-26' ||" in job("build-tvos").split("permissions:", 1)[0]
     and "(inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos)" in job("build-tvos")

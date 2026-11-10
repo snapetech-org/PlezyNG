@@ -10,6 +10,8 @@ install(TARGETS plezy_torrent LIBRARY DESTINATION lib)
 # Older TV kernels use a descriptor-only, default-deny worker.
 set(PLEZY_ROMM_DESCRIPTOR_SANDBOX ON CACHE BOOL "Isolate webOS bundled cores" FORCE)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native/games/romm" "${CMAKE_CURRENT_BINARY_DIR}/romm_native")
+target_link_libraries(plezy_retro PRIVATE "-Wl,-Bstatic" atomic "-Wl,-Bdynamic")
+target_link_libraries(plezy_retro_worker PRIVATE "-Wl,-Bstatic" atomic "-Wl,-Bdynamic")
 install(TARGETS plezy_retro LIBRARY DESTINATION lib)
 install(TARGETS plezy_retro_worker RUNTIME DESTINATION lib)
 if(PLEZY_ROMM_BUILD_CORES)

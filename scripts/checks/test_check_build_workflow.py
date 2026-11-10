@@ -34,6 +34,17 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_ios_recovery_cannot_skip_fresh_success_or_locked_worker_prebuild(self):
+        original = self._workflow()
+        skipped = original.replace("inputs.rebuild_ios && needs.build-ios.result == 'success'",
+                                   "inputs.rebuild_ios && needs.build-ios.result == 'skipped'")
+        unstaged = original.replace('-scheme Pods-RommWorker', '-scheme Pods-Runner')
+        for workflow in (skipped, unstaged):
+            with self.subTest(skipped=workflow is skipped):
+                result = self._run(workflow)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("iOS recovery must stage", result.stderr)
+
     def test_tvos_recovery_rejects_incompatible_host_and_missing_fresh_success(self):
         original = self._workflow()
         start = original.index("  build-tvos:\n")

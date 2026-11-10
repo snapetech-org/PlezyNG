@@ -52,6 +52,25 @@ void main() {
     expect(calls.where((call) => call.method == 'create'), isEmpty);
   });
 
+  testWidgets('an unresponsive native availability probe releases the operation', (tester) async {
+    native = (call) async {
+      if (call.method == 'available') return Completer<Object?>().future;
+      return null;
+    };
+    bool? opened;
+    final pending = views.open('reader', geometryKey: geometry, title: 'Reader').then((value) => opened = value);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    await pending;
+    expect(opened, isFalse);
+    expect(calls.map((call) => call.method), ['available', 'close']);
+
+    native = (call) async => call.method == 'available' ? true : null;
+    expect(await views.open('reader', geometryKey: geometry, title: 'Reader'), isFalse);
+    expect(calls.where((call) => call.method == 'create'), hasLength(1));
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   test('duplicate requests cannot create two windows and close cancels a pending create', () async {
     final requested = Completer<void>();
     final reply = Completer<Object?>();

@@ -4272,7 +4272,7 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Anggaran had muat turun';
+	@override String get storageBudget => 'Anggaran had muat turun (MiB; 0 = ∞)';
 	@override String get guestDj => 'DJ jemputan';
 	@override String get charts => 'Carta pendengaran';
 	@override String get rediscover => 'Temui semula';
@@ -9429,7 +9429,7 @@ extension on TranslationsMs {
 			'musicExperience.routeLost' => 'Output audio terputus. Main balik dijeda.',
 			'musicExperience.autoDriving' => 'Buka paparan pemanduan apabila disambungkan ke kereta',
 			'musicExperience.routeHint' => 'Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.',
-			'musicTools.storageBudget' => 'Anggaran had muat turun',
+			'musicTools.storageBudget' => 'Anggaran had muat turun (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'DJ jemputan',
 			'musicTools.charts' => 'Carta pendengaran',
 			'musicTools.rediscover' => 'Temui semula',

@@ -4295,7 +4295,7 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	final TranslationsBg _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Приблизителен бюджет за изтегляне';
+	@override String get storageBudget => 'Приблизителен бюджет за изтегляне (MiB; 0 = ∞)';
 	@override String get guestDj => 'Гостуващ диджей';
 	@override String get charts => 'Класации на слушане';
 	@override String get rediscover => 'Преоткрийте';
@@ -9454,7 +9454,7 @@ extension on TranslationsBg {
 			'musicExperience.routeLost' => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.',
 			'musicExperience.autoDriving' => 'Отваряне на изгледа за шофиране при свързване с кола',
 			'musicExperience.routeHint' => 'Системата на колата определя дали приложението може да се показва автоматично.',
-			'musicTools.storageBudget' => 'Приблизителен бюджет за изтегляне',
+			'musicTools.storageBudget' => 'Приблизителен бюджет за изтегляне (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Гостуващ диджей',
 			'musicTools.charts' => 'Класации на слушане',
 			'musicTools.rediscover' => 'Преоткрийте',

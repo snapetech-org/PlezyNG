@@ -4272,7 +4272,7 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	final TranslationsId _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Perkiraan batas unduhan';
+	@override String get storageBudget => 'Perkiraan batas unduhan (MiB; 0 = ∞)';
 	@override String get guestDj => 'DJ tamu';
 	@override String get charts => 'Peringkat pendengaran';
 	@override String get rediscover => 'Temukan kembali';
@@ -9429,7 +9429,7 @@ extension on TranslationsId {
 			'musicExperience.routeLost' => 'Keluaran audio terputus. Pemutaran dijeda.',
 			'musicExperience.autoDriving' => 'Buka tampilan berkendara saat terhubung ke mobil',
 			'musicExperience.routeHint' => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.',
-			'musicTools.storageBudget' => 'Perkiraan batas unduhan',
+			'musicTools.storageBudget' => 'Perkiraan batas unduhan (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'DJ tamu',
 			'musicTools.charts' => 'Peringkat pendengaran',
 			'musicTools.rediscover' => 'Temukan kembali',

@@ -351,7 +351,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
             onChanged: (_) => setState(() => _preview = []),
             enabled: !_busy,
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: '${t.musicTools.storageBudget} · MiB (0 = ∞)'),
+            decoration: InputDecoration(labelText: t.musicTools.storageBudget),
           ),
           DropdownButtonFormField<int>(
             initialValue: _refreshHours,

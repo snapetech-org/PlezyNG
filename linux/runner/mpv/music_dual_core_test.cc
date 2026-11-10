@@ -71,7 +71,8 @@ template <typename Predicate>
 void Await(Predicate predicate, const char* message) {
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
   while (std::chrono::steady_clock::now() < deadline) {
-    while (g_main_context_iteration(nullptr, false)) {}
+    while (g_main_context_iteration(nullptr, false)) {
+    }
     if (predicate()) return;
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
@@ -98,15 +99,17 @@ int main() {
     Check(first != second, "music decoders share a native handle");
     Open(first, fixture.path, "25");
     Open(second, fixture.path, "75");
-    Await([&]() { return Property(first, "time-pos") > 0.25 && Property(second, "time-pos") > 0.25; },
-          "both music decoders must advance concurrently");
+    Await(
+        [&]() { return Property(first, "time-pos") > 0.25 && Property(second, "time-pos") > 0.25; },
+        "both music decoders must advance concurrently");
     Check(std::abs(Property(first, "volume") - 25) < 0.01, "outgoing volume changed across cores");
     Check(std::abs(Property(second, "volume") - 75) < 0.01, "incoming volume changed across cores");
     Check(mpv_set_property_string(first, "pause", "yes") >= 0, "outgoing pause failed");
     const double incoming_position = Property(second, "time-pos");
     outgoing.Dispose();
-    Await([&]() { return Property(second, "time-pos") > incoming_position + 0.2; },
-          "disposing the outgoing decoder stopped the incoming decoder");
+    Await(
+        [&]() { return Property(second, "time-pos") > incoming_position + 0.2; },
+        "disposing the outgoing decoder stopped the incoming decoder");
     Check(incoming.IsInitialized(), "surviving music decoder lost initialization");
     incoming.Dispose();
     std::cout << "music_dual_core_test: PASS (null output; no acoustic/device qualification)\n";

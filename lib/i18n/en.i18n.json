@@ -5598,7 +5598,7 @@
     "routeHint": "The car system controls whether the app can appear automatically."
   },
   "musicTools": {
-    "storageBudget": "Estimated download budget",
+    "storageBudget": "Estimated download budget (MiB; 0 = ∞)",
     "transferToDevice": "Transfer music to ${device}",
     "guestDj": "Guest DJ",
     "charts": "Listening charts",

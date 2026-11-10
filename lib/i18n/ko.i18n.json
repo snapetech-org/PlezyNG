@@ -5515,7 +5515,7 @@
     "routeHint": "앱 자동 표시 여부는 차량 시스템에서 결정합니다."
   },
   "musicTools": {
-    "storageBudget": "예상 다운로드 용량 한도",
+    "storageBudget": "예상 다운로드 용량 한도 (MiB; 0 = ∞)",
     "guestDj": "게스트 DJ",
     "charts": "청취 순위",
     "rediscover": "다시 발견",

@@ -5493,7 +5493,7 @@
     "routeHint": "Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik."
   },
   "musicTools": {
-    "storageBudget": "Anggaran had muat turun",
+    "storageBudget": "Anggaran had muat turun (MiB; 0 = ∞)",
     "guestDj": "DJ jemputan",
     "charts": "Carta pendengaran",
     "rediscover": "Temui semula",

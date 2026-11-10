@@ -4295,7 +4295,7 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Uppskattad nedladdningsgräns';
+	@override String get storageBudget => 'Uppskattad nedladdningsgräns (MiB; 0 = ∞)';
 	@override String get guestDj => 'Gäst-DJ';
 	@override String get charts => 'Lyssningslistor';
 	@override String get rediscover => 'Återupptäck';
@@ -9454,7 +9454,7 @@ extension on TranslationsSv {
 			'musicExperience.routeLost' => 'Ljudutgången kopplades från. Uppspelningen pausades.',
 			'musicExperience.autoDriving' => 'Öppna körvyn vid anslutning till en bil',
 			'musicExperience.routeHint' => 'Bilens system avgör om appen kan visas automatiskt.',
-			'musicTools.storageBudget' => 'Uppskattad nedladdningsgräns',
+			'musicTools.storageBudget' => 'Uppskattad nedladdningsgräns (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Gäst-DJ',
 			'musicTools.charts' => 'Lyssningslistor',
 			'musicTools.rediscover' => 'Återupptäck',

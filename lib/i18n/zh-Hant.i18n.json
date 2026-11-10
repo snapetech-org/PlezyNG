@@ -5515,7 +5515,7 @@
     "routeHint": "是否允許自動顯示應用程式由汽車系統決定。"
   },
   "musicTools": {
-    "storageBudget": "預估下載容量上限",
+    "storageBudget": "預估下載容量上限 (MiB; 0 = ∞)",
     "guestDj": "客座 DJ",
     "charts": "聆聽排行",
     "rediscover": "重新發現",

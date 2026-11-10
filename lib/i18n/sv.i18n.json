@@ -5520,7 +5520,7 @@
     "routeHint": "Bilens system avgör om appen kan visas automatiskt."
   },
   "musicTools": {
-    "storageBudget": "Uppskattad nedladdningsgräns",
+    "storageBudget": "Uppskattad nedladdningsgräns (MiB; 0 = ∞)",
     "guestDj": "Gäst-DJ",
     "charts": "Lyssningslistor",
     "rediscover": "Återupptäck",

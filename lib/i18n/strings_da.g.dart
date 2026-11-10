@@ -4295,7 +4295,7 @@ class _Translations$musicTools$da extends Translations$musicTools$en {
 	final TranslationsDa _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Anslået downloadgrænse';
+	@override String get storageBudget => 'Anslået downloadgrænse (MiB; 0 = ∞)';
 	@override String get guestDj => 'Gæste-DJ';
 	@override String get charts => 'Lyttestatistik';
 	@override String get rediscover => 'Genopdag';
@@ -9454,7 +9454,7 @@ extension on TranslationsDa {
 			'musicExperience.routeLost' => 'Lydudgang afbrudt. Afspilning sat på pause.',
 			'musicExperience.autoDriving' => 'Åbn kørselsvisning ved forbindelse til en bil',
 			'musicExperience.routeHint' => 'Bilens system bestemmer, om appen kan vises automatisk.',
-			'musicTools.storageBudget' => 'Anslået downloadgrænse',
+			'musicTools.storageBudget' => 'Anslået downloadgrænse (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Gæste-DJ',
 			'musicTools.charts' => 'Lyttestatistik',
 			'musicTools.rediscover' => 'Genopdag',

@@ -4295,7 +4295,7 @@ class _Translations$musicTools$de extends Translations$musicTools$en {
 	final TranslationsDe _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Geschätztes Downloadbudget';
+	@override String get storageBudget => 'Geschätztes Downloadbudget (MiB; 0 = ∞)';
 	@override String get guestDj => 'Gast-DJ';
 	@override String get charts => 'Hörstatistiken';
 	@override String get rediscover => 'Wiederentdecken';
@@ -9454,7 +9454,7 @@ extension on TranslationsDe {
 			'musicExperience.routeLost' => 'Audioausgabe getrennt. Wiedergabe pausiert.',
 			'musicExperience.autoDriving' => 'Fahransicht bei Verbindung mit einem Auto öffnen',
 			'musicExperience.routeHint' => 'Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann.',
-			'musicTools.storageBudget' => 'Geschätztes Downloadbudget',
+			'musicTools.storageBudget' => 'Geschätztes Downloadbudget (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Gast-DJ',
 			'musicTools.charts' => 'Hörstatistiken',
 			'musicTools.rediscover' => 'Wiederentdecken',

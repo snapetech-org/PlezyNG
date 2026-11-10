@@ -4295,7 +4295,7 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	final TranslationsAz _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Təxmini endirmə büdcəsi';
+	@override String get storageBudget => 'Təxmini endirmə büdcəsi (MiB; 0 = ∞)';
 	@override String get guestDj => 'Qonaq DJ';
 	@override String get charts => 'Dinləmə reytinqləri';
 	@override String get rediscover => 'Yenidən kəşf et';
@@ -9454,7 +9454,7 @@ extension on TranslationsAz {
 			'musicExperience.routeLost' => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.',
 			'musicExperience.autoDriving' => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç',
 			'musicExperience.routeHint' => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.',
-			'musicTools.storageBudget' => 'Təxmini endirmə büdcəsi',
+			'musicTools.storageBudget' => 'Təxmini endirmə büdcəsi (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Qonaq DJ',
 			'musicTools.charts' => 'Dinləmə reytinqləri',
 			'musicTools.rediscover' => 'Yenidən kəşf et',

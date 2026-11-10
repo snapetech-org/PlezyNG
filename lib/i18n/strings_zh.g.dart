@@ -4290,7 +4290,7 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => '预计下载容量上限';
+	@override String get storageBudget => '预计下载容量上限 (MiB; 0 = ∞)';
 	@override String get guestDj => '客座 DJ';
 	@override String get charts => '收听排行';
 	@override String get rediscover => '重新发现';
@@ -9449,7 +9449,7 @@ extension on TranslationsZh {
 			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
 			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
 			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
-			'musicTools.storageBudget' => '预计下载容量上限',
+			'musicTools.storageBudget' => '预计下载容量上限 (MiB; 0 = ∞)',
 			'musicTools.guestDj' => '客座 DJ',
 			'musicTools.charts' => '收听排行',
 			'musicTools.rediscover' => '重新发现',

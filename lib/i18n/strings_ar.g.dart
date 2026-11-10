@@ -4387,7 +4387,7 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'ميزانية التنزيل التقديرية';
+	@override String get storageBudget => 'ميزانية التنزيل التقديرية (MiB; 0 = ∞)';
 	@override String get guestDj => 'منسق موسيقى ضيف';
 	@override String get charts => 'إحصاءات الاستماع';
 	@override String get rediscover => 'إعادة الاكتشاف';
@@ -9554,7 +9554,7 @@ extension on TranslationsAr {
 			'musicExperience.routeLost' => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.',
 			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
 			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
-			'musicTools.storageBudget' => 'ميزانية التنزيل التقديرية',
+			'musicTools.storageBudget' => 'ميزانية التنزيل التقديرية (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'منسق موسيقى ضيف',
 			'musicTools.charts' => 'إحصاءات الاستماع',
 			'musicTools.rediscover' => 'إعادة الاكتشاف',

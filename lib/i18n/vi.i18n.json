@@ -5493,7 +5493,7 @@
     "routeHint": "Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không."
   },
   "musicTools": {
-    "storageBudget": "Giới hạn tải xuống ước tính",
+    "storageBudget": "Giới hạn tải xuống ước tính (MiB; 0 = ∞)",
     "guestDj": "DJ khách mời",
     "charts": "Bảng xếp hạng nghe",
     "rediscover": "Khám phá lại",

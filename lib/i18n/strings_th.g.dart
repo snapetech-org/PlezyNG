@@ -4272,7 +4272,7 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	final TranslationsTh _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'ขีดจำกัดการดาวน์โหลดโดยประมาณ';
+	@override String get storageBudget => 'ขีดจำกัดการดาวน์โหลดโดยประมาณ (MiB; 0 = ∞)';
 	@override String get guestDj => 'ดีเจรับเชิญ';
 	@override String get charts => 'อันดับการฟัง';
 	@override String get rediscover => 'ค้นพบอีกครั้ง';
@@ -9429,7 +9429,7 @@ extension on TranslationsTh {
 			'musicExperience.routeLost' => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว',
 			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
 			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
-			'musicTools.storageBudget' => 'ขีดจำกัดการดาวน์โหลดโดยประมาณ',
+			'musicTools.storageBudget' => 'ขีดจำกัดการดาวน์โหลดโดยประมาณ (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'ดีเจรับเชิญ',
 			'musicTools.charts' => 'อันดับการฟัง',
 			'musicTools.rediscover' => 'ค้นพบอีกครั้ง',

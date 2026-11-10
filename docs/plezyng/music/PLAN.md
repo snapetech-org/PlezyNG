@@ -1,7 +1,8 @@
 # Integrated music and car experience
 
 Requested 2026-11-09. Build the complete Plexamp feature-parity scope into
-Pleazyng on one PR branch. Music capabilities remain integrated into normal
+Pleazyng. The current continuation lands tested, independently pushed checkpoints
+directly on main as requested; earlier PR references are historical. Music capabilities remain integrated into normal
 Discover, Libraries, Search, details, playlists, Downloads, Now Playing and
 Settings on every supported platform. Native car surfaces use the same catalog,
 queue and playback session. This is one implementation worklist, not a staged

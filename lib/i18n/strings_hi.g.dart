@@ -4295,7 +4295,7 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	final TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'अनुमानित डाउनलोड सीमा';
+	@override String get storageBudget => 'अनुमानित डाउनलोड सीमा (MiB; 0 = ∞)';
 	@override String get guestDj => 'अतिथि डीजे';
 	@override String get charts => 'सुनने की रैंकिंग';
 	@override String get rediscover => 'फिर खोजें';
@@ -9454,7 +9454,7 @@ extension on TranslationsHi {
 			'musicExperience.routeLost' => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।',
 			'musicExperience.autoDriving' => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें',
 			'musicExperience.routeHint' => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।',
-			'musicTools.storageBudget' => 'अनुमानित डाउनलोड सीमा',
+			'musicTools.storageBudget' => 'अनुमानित डाउनलोड सीमा (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'अतिथि डीजे',
 			'musicTools.charts' => 'सुनने की रैंकिंग',
 			'musicTools.rediscover' => 'फिर खोजें',

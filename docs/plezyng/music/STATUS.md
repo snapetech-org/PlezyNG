@@ -6,6 +6,49 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 “Existing” means retained application behavior, not a new reference comparison.
 “Partial” identifies concrete remaining implementation, not just testing.
 
+## Current continuation, 2026-11-10
+
+Confidence is **high** for the automated results described here and **unknown**
+for unperformed physical-device comparisons. Older dated verification sections
+below describe their own source checkpoints, not new qualification evidence.
+
+- Recovered main already contains acknowledged paired-device queue transfer,
+  native secondary music channels, overlapping playback, and the profile-owned
+  headless Linux endpoint package. These are no longer missing implementations.
+- Restored Friendgänger across authorized shared music libraries; completed
+  downloads can now supply revision-checked loudness analysis for offline fades.
+  Duplicate playlist entries start at the selected occurrence.
+- Added bounded per-profile explicit search history, separate cellular/remote
+  streaming quality overrides, Favorites on the customizable home, and explicit
+  Favorites/owned-download driving pickers using the same playback session.
+  Numeric-only sources contribute tracks rated at least 8/10 to Favorites;
+  this does not convert a favorite write into a numeric rating.
+- Station retries are account/rule-qualified and separate from completed
+  snapshots. Completed metadata has count/byte pruning; retry candidates survive
+  pruning. Estimated storage admission budgets preserve whole albums, validate
+  saved estimates, and count existing rule-linked download bytes on refresh.
+  See [OFFLINE_POLICY.md](OFFLINE_POLICY.md) for admission versus final file size.
+- Endpoint installation now restarts the service, propagates failed status,
+  validates service paths, and preserves service files if stopping fails.
+- The selected music services/screens, paired provider, search and quality suite
+  passed 386 tests; an additional station retry regression passed in its nine-test
+  suite. Two endpoint installer tests pass, including reinstall and failure paths.
+- Another 108 migration, provider-mapping, Plex audio/discovery, profile-lifecycle
+  and native-player bridge tests passed. These are automated regressions, not
+  reference-client or physical-device evidence.
+- Focused Linux compilation of the application registration unit and the native
+  mpv lifecycle suite passed. A separate real-libmpv test passed concurrent PCM
+  decoding, separate gains, and surviving outgoing-core disposal with null audio
+  output. Null output does not prove acoustic continuity or DAC behavior, and
+  these focused compiles are not a full application or ARM64 package build.
+
+Remaining implementation includes full recording/credits and smart-playlist
+semantics, remaining discovery/reference controls, paged live queue history,
+cross-device reconciliation, widgets/NFC writing, music Chromecast receiver
+ownership, and synchronized groups. Native car artwork/provisioning and physical
+Pi/car/DAC/codec/reference qualification also remain. No complete-parity claim is
+made. Existing capability limitations are not replaced with placeholder success.
+
 ## Added and connected on main
 
 - Music discovery from existing artist, album and Now Playing actions: multi-seed
@@ -47,30 +90,30 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
   catalog of 6,029 AutoEq profiles and profile-owned output EQ assignments;
   [AUTOEQ.md](AUTOEQ.md) records the pinned source, license and approximation.
 - This is additional implemented scope, **not all code-level work completed**.
-  True overlapping fades, remaining discovery families,
-  music storage quotas, widgets/NFC,
-  remote transfer/group synchronization, a Pi endpoint
-  remain code work, in addition to platform provisioning and device qualification.
+  Remaining discovery families, widgets/NFC and group synchronization remain
+  code work, in addition to the more detailed scope ledger and platform/device
+  qualification. The current continuation above supersedes older missing-code
+  statements about overlapping fades, transfer, storage budgets and the endpoint.
 
 ## Scope ledger
 
 | ID | Feature | Implementation and remaining work | Verification |
 | --- | --- | --- | --- |
 | B01 | Libraries, artists, albums and tracks | Existing routes retained; discovery added to artist/album actions. Full reference comparison and huge-library device checks remain. | Artist/album screen tests pass. |
-| B02 | Global and in-library search | Existing search retained; native search combines owned downloads and authorized online results. Native playlists browse by server with bounded pages. Full recent-query/reference parity remains. | Search/voice reject ambiguous names and stale account results; native assistant qualification pending. |
+| B02 | Global and in-library search | Existing search retained; native search combines owned downloads and authorized online results. Bounded explicit recent queries are profile-owned with replay/remove/clear. Native playlists browse by server with bounded pages. Full reference parity remains. | Search/voice/history regressions pass; native assistant qualification pending. |
 | B03 | Discography and album categories | Existing album/disc rendering retained; complete reference category comparison remains. | Multi-disc album regression passes. |
 | B04 | Track detail, credits and editions | Source/DSP information added; complete credits, editions and recording distinctions remain. | Static analysis; live metadata comparison pending. |
 | B05 | Ratings, favorites and listening state | Profile/account-scoped idempotent rating/favorite journal, reconnect retry and pending-write feedback added to the existing action sheet. Cold-offline rating without an account client and cross-device conflict reconciliation remain. | Journal ordering, acknowledgement, revocation and profile-isolation tests pass. |
-| B06 | Regular playlist management | Mix previews reuse existing playlist creation. Full duplicate-aware editing, sharing and artwork parity remains. | Discovery generation tests; live playlist write pending. |
+| B06 | Regular playlist management | Mix previews reuse existing playlist creation. Playback starts prefer playlist occurrence IDs over media IDs. Full duplicate-aware editing, sharing and artwork parity remains. | Selected repeated-entry playback regressions pass; live playlist write pending. |
 | B07 | Smart playlists and filter editing | Saved dynamic station rules reuse the existing filter editor, sort, count/time budgets, whole albums and preview. These remain explicit local rules, not falsely advertised server smart playlists. Full server smart-playlist write/share semantics remain. | Rule serialization, cancellation, unknown-filter rejection, deduplication and album-budget tests pass. |
 | B08 | Collections, sharing and artwork | Existing mechanisms retained; music-specific authorization and artwork completeness remain. | Not newly qualified. |
-| B09 | Customizable music home | Music home is linked from Discover and Now Playing, with ordered/hidden recent, rediscovery, charts, recipes, stations and download shelves. Additional reference shelf families and pins remain. | Profile persistence and 320px/200% text layout tests pass. |
+| B09 | Customizable music home | Music home is linked from Discover and Now Playing, with ordered/hidden recent, Favorites, rediscovery, anniversaries, charts, recipes, stations and download shelves. Additional reference shelf families and pins remain. | Profile persistence, Favorites source guards and 320px/200% text layout tests pass. |
 | B10 | Anniversaries and rediscovery | Listening-based rediscovery and full-library album anniversaries are integrated into Music home. Anniversary scans reject incomplete/invalid dates, preserve calendar dates across timezones, page with bounded work, and cache by day/account/library revision. | History, precise-date/leap-year, pagination, cache, authorization-revocation and corrupt-pagination tests pass. |
 | P01 | Gapless playback | Existing arming/transition engine retained. PCM continuity and encoder-delay fixture evidence remain. | Playback transition regressions pass; no acoustic proof. |
-| P02 | Sweet Fades behavior | Existing volume envelopes retained. True overlapping native playback and reference timing/album equivalence are not implemented. | Existing fade tests pass; not Sweet Fades parity. |
+| P02 | Sweet Fades behavior | Two independent native decoders overlap with equal-power envelopes and session-owned handoff. Saved revision-checked analysis supports offline overlap; missing analysis keeps fallback behavior. Album exceptions remain. Reference timing/equivalence is not established. | Session handoff/cancellation/offline tests and real Linux null-output dual-core regression pass; acoustic/platform comparisons remain. |
 | P03 | Loudness leveling | Music policy now selects ReplayGain track/album/automatic, disables video compression, prevents tag-based clipping and applies conservative EQ/preamp headroom. Missing tags use zero fallback. Analysis-derived absolute loudness and measured equivalence remain. | Policy/gain tests pass; acoustic measurement pending. |
 | P04 | Advanced pre-caching | Complete DirectPlay files can be prefetched into a separate profile cache, with a 0–2048 MiB quota, Wi-Fi policy, total request deadline, atomic promotion, hashed credential-qualified keys and LRU eviction. Current account visibility is rechecked before promotion/use; pinned downloads are separate. Transcodes and playlists retain streaming. | Quota/LRU, malformed/partial/oversized responses, network policy, authorization revocation and clear tests pass. |
-| P05 | Streaming and conversion quality | Existing source resolver/settings retained. All network/download policy distinctions and output equivalence remain. | No new format/device matrix. |
+| P05 | Streaming and conversion quality | Music streaming has general, remote and cellular settings, with cellular override precedence. Music downloads retain original representation; settings and offline policy explain that distinction. Output equivalence remains. | Precedence/persistence tests pass; no new format/device matrix. |
 | P06 | Queue edits, shuffle and repeat | Existing edits retained; continuation respects manual inserts, removals and clear-upcoming. Full reference gesture/Back To inventory remains. | Queue and playback tests pass. |
 | P07 | Persistent large queues | Full queue, order, cursor and continuation metadata persist; no 1,000-track truncation. Live queue still resides in RAM and shape edits rewrite its rows. Paged live history remains. | 10,000-track round trip, duplicate occurrences, serialized writes, legacy restore, corrupt-state rejection and v35→v36 migration pass. |
 | P08 | Album-aware playback | Album-block shuffle/skip retained; station generation orders whole albums by disc and track, skipping blocks that exceed count/time budgets. | Album queue and station boundary tests pass. |
@@ -89,16 +132,16 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 | D04 | Artist/album mix builders | Multi-seed editor, round-robin dedupe, preview, save/edit recipe, play-next, playlist and download added. Reference tuning controls and algorithm equivalence remain. | Recipe/generation tests pass. |
 | D05 | Personalized mixes | Device-local recent, rediscovery and period chart shelves added alongside existing server mixes. Complete personalized/reference mix families remain. | History/profile/layout tests pass. |
 | D06 | Sonic Adventure | Ordered track waypoints, reorder controls and server computePath composition added. Shared endpoints are joined once; track-budget overflow fails instead of dropping destination. Full path constraints/equivalence remain. | Path and bounds tests pass; live server pending. |
-| D07 | Guest DJ modes | Session-owned Stretch, Gemini, Freeze, Twofer, Groupie and Contempo generation added, with generated labels, mode-off cleanup, queue-edit cancellation and authenticated source guards. Friendgänger and exact reference tuning remain. | Mode, disabled/edited/replaced queue, stale response and server-scope tests pass. |
+| D07 | Guest DJ modes | Session-owned Stretch, Gemini, Freeze, Twofer, Groupie, Contempo and Friendgänger generation added. Friendgänger interleaves bounded pools from active visible shared libraries and rechecks every source after fetching. Exact reference tuning remains. | Mode, disabled/edited/replaced queue, shared-library revocation and account/session tests pass. |
 | D08 | Sonic Sage / prompt playlists | Opt-in configurable HTTPS Chat Completions provider, protected credential storage, prompt-only disclosure, strict bounded response parser, authorized exact title/artist resolution, ambiguity selection, reorder/remove, playback and playlist saving added. | Consent, redirect/size rejection, ambiguity, source-revocation and large-text tests pass; live provider interoperability pending. |
 | D09 | Aural Fixations / charts | Cumulative occurrence-based listening events, seek/pause exclusion, qualification threshold and local track/album/artist charts for 7/30/365/all days added. Counts are explicitly device-local. Server-wide/device history import and full Aural Fixations parity remain. | Occurrence, idempotence, seek exclusion, chart grouping and time-window tests pass. |
 | D10 | Server analysis readiness | Unsupported backend, empty results and request failure are distinct; analysis job readiness/admin controls are not implemented. | Unsupported/error contract tests pass. |
 | O01 | Music downloads | Preview tracks reuse existing profile-owned download flow; existing album/playlist downloads retained. Full offline representation qualification remains. | Existing implementation reused; new live download pending. |
-| O02 | Mix/station/rule downloads | Finite stations have count/time budgets, whole-album mode, refresh cadence and Wi-Fi policy through existing sync rules. Failed queue batches retain the same pending snapshot. Offline playback intersects snapshots with current owned downloads. Space quotas and automatic snapshot pruning remain. | Station scheduler, cooldown, profile/rule change and owned-snapshot tests pass. Refresh intentionally does not silently delete existing downloads. |
+| O02 | Mix/station/rule downloads | Finite stations have count/time/estimated-storage budgets, whole-album mode, refresh cadence and Wi-Fi policy. Account/rule-qualified failed batches retain their original candidates and estimates outside pruned completed snapshots. Offline playback intersects current owned downloads. | Scheduler, repeated retries, account/rule revocation, storage admission and owned-snapshot tests pass. Refresh does not silently delete existing downloads or promise a hard final-size cap. |
 | O03 | Full offline music experience | Existing metadata/artwork downloads are enriched with authorized lyrics and bounded analysis. Native offline search and saved-station playback reuse completed owned files. Car cold-start source added; full representation/device qualification remains. | Offline bundle/snapshot and profile tests pass. Physical no-network startup unverified. |
 | O04 | Offline play/rating reconciliation | New local music history and serialized idempotent rating/favorite setters coexist with existing progress reconciliation. Cross-device conflict resolution and cold-offline edits without a client remain. | Journal revision, auth-scope, retry and stale-acknowledgement tests pass. |
-| O05 | Cache/download lifecycle | History, documents, recipes, snapshots and pending edits are deleted on permanent profile teardown; epochs reject late resurrection. Existing download ownership/storage retained. Disposable precache quotas and music snapshot eviction remain. | Schema 37 migration, teardown/late-write and download-ownership regressions pass. |
-| U01 | Visualizers | Existing visualizer engine retained in normal UI; driving view has transport only. Reference controls/visual inventory remains. | Visualizer rendering/motion tests pass. |
+| O05 | Cache/download lifecycle | Profile teardown removes owned music documents and rejects late resurrection. Disposable precache has separate quotas/LRU; completed station snapshot metadata has bounded eviction, preserving pending retries and audio files. | Migration, teardown, snapshot migration/pruning, retry preservation and download ownership regressions pass. |
+| U01 | Visualizers | Existing visualizer engine retained in normal UI; driving view intentionally avoids visualizers and exposes transport plus explicit Favorites/download shortcuts. Reference controls/visual inventory remains. | Visualizer rendering/motion and driving selection/ownership tests pass. |
 | U02 | Artwork backgrounds/themes | Existing styling retained; full reference reactive-theme comparison remains. | Existing Now Playing tests pass. |
 | U03 | Responsive layouts | Music tools extend ordinary app routes; home, prompt and audio forms were corrected for 320px/200% text. Full desktop/tablet/TV D-pad and native packaging matrix remains. | Large-text music tools/driving tests and retained music UI regressions pass. |
 | U04 | Accessibility/localization | All 23 new music-tools strings have explicit base-locale text and the existing regional inheritance; native fallback strings and human language/screen-reader review remain. | Localization/placeholder/source checks and 320px/200% text tests pass after correcting an empty reused recent-label translation. |
@@ -106,8 +149,8 @@ car adapters, but full 1:1 parity and native qualification remain incomplete.
 | U06 | Links/NFC | Durable server-qualified music links now resolve track/album/artist selections through existing deep links and profile authorization, including owned offline copies. NFC writing remains. | Music deep-link parsing/launching regressions pass. |
 | R01 | Chromecast music | Existing casting retained; complete music receiver queue/ownership work remains. | No new receiver qualification. |
 | R02 | AirPlay/system routes | Existing native routing retained; no general cross-platform sender added. New output diagnostics/recovery parity remains. | No new route hardware evidence. |
-| R03 | Control/transfer distinction | No new atomic acknowledged playback transfer. | Pending. |
-| R04 | Headless Raspberry Pi | No endpoint package/installer added. | Pending. |
+| R03 | Control/transfer distinction | Version-negotiated paired transfer sends a bounded credential-free queue snapshot; receivers validate their own source access. Matching acknowledgement pauses the unchanged sender queue only after receiver acceptance. No synchronized grouping claimed. | Snapshot/protocol/receiver/provider/Now Playing regressions pass; live paired-device qualification remains. |
+| R04 | Headless Raspberry Pi | Linux ARM64 endpoint packaging, explicit headless launch mode and a managed user-service installer are present. Configure and authorize the profile normally first; virtual X11 dependencies remain. | Mode/profile and installer regressions pass; focused Linux x64 checks are not physical Pi or ARM64 package qualification. |
 | R05 | Interoperability/grouping | No new synchronized grouping/protocol equivalence. | Pending. |
 | C01 | Apple CarPlay | CarPlay lists/Now Playing share the explicit phone/headless engine; pagination updates the current template. Siri media intents use the same catalog. Entitlement activation, native artwork, native compilation and physical qualification remain. | Plist parses; Dart catalog/voice loaders pass. No new Xcode/device result claimed. |
 | C02 | Android Auto | Native media browser/session retained; cold engine adds platform identity and vehicle restrictions. Warm phone engines can continue rebuilding profile state while attached to the car in background. | Dart bridge/bootstrap tests pass. New Kotlin compile and trusted-host/process-recreation qualification pending. |

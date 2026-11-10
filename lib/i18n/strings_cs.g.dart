@@ -4337,7 +4337,7 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Odhadovaný limit stahování';
+	@override String get storageBudget => 'Odhadovaný limit stahování (MiB; 0 = ∞)';
 	@override String get guestDj => 'Hostující DJ';
 	@override String get charts => 'Žebříčky poslechu';
 	@override String get rediscover => 'Znovu objevit';
@@ -9498,7 +9498,7 @@ extension on TranslationsCs {
 			'musicExperience.routeLost' => 'Zvukový výstup odpojen. Přehrávání pozastaveno.',
 			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
 			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
-			'musicTools.storageBudget' => 'Odhadovaný limit stahování',
+			'musicTools.storageBudget' => 'Odhadovaný limit stahování (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Hostující DJ',
 			'musicTools.charts' => 'Žebříčky poslechu',
 			'musicTools.rediscover' => 'Znovu objevit',

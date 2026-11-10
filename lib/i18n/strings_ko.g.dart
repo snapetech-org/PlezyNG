@@ -4290,7 +4290,7 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => '예상 다운로드 용량 한도';
+	@override String get storageBudget => '예상 다운로드 용량 한도 (MiB; 0 = ∞)';
 	@override String get guestDj => '게스트 DJ';
 	@override String get charts => '청취 순위';
 	@override String get rediscover => '다시 발견';
@@ -9449,7 +9449,7 @@ extension on TranslationsKo {
 			'musicExperience.routeLost' => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.',
 			'musicExperience.autoDriving' => '차에 연결하면 운전 화면 열기',
 			'musicExperience.routeHint' => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.',
-			'musicTools.storageBudget' => '예상 다운로드 용량 한도',
+			'musicTools.storageBudget' => '예상 다운로드 용량 한도 (MiB; 0 = ∞)',
 			'musicTools.guestDj' => '게스트 DJ',
 			'musicTools.charts' => '청취 순위',
 			'musicTools.rediscover' => '다시 발견',

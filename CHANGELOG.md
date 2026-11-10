@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep station storage-budget units and the unlimited marker inside the translated label on every base locale.
+
 - Exercise independent concurrent music decoders against real Linux libmpv with generated PCM and null output, including separate gain and outgoing-core teardown. This is not acoustic or physical-device qualification.
 
 - Restart the paired Linux music endpoint when reinstalling its service, preserve service files if stopping fails, and expose failed service status to diagnostic callers.

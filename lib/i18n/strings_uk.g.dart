@@ -4337,7 +4337,7 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	final TranslationsUk _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Орієнтовний ліміт завантаження';
+	@override String get storageBudget => 'Орієнтовний ліміт завантаження (MiB; 0 = ∞)';
 	@override String get guestDj => 'Запрошений діджей';
 	@override String get charts => 'Статистика прослуховувань';
 	@override String get rediscover => 'Відкрити знову';
@@ -9498,7 +9498,7 @@ extension on TranslationsUk {
 			'musicExperience.routeLost' => 'Аудіовихід від’єднано. Відтворення призупинено.',
 			'musicExperience.autoDriving' => 'Відкривати режим водіння при підключенні до авто',
 			'musicExperience.routeHint' => 'Система автомобіля визначає, чи може застосунок з’являтися автоматично.',
-			'musicTools.storageBudget' => 'Орієнтовний ліміт завантаження',
+			'musicTools.storageBudget' => 'Орієнтовний ліміт завантаження (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Запрошений діджей',
 			'musicTools.charts' => 'Статистика прослуховувань',
 			'musicTools.rediscover' => 'Відкрити знову',

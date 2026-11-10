@@ -4295,7 +4295,7 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
-	@override String get storageBudget => 'Жүктеп алудың болжалды шегі';
+	@override String get storageBudget => 'Жүктеп алудың болжалды шегі (MiB; 0 = ∞)';
 	@override String get guestDj => 'Қонақ диджей';
 	@override String get charts => 'Тыңдау рейтингі';
 	@override String get rediscover => 'Қайта ашу';
@@ -9454,7 +9454,7 @@ extension on TranslationsKk {
 			'musicExperience.routeLost' => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.',
 			'musicExperience.autoDriving' => 'Көлікке қосылғанда жүргізу көрінісін ашу',
 			'musicExperience.routeHint' => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.',
-			'musicTools.storageBudget' => 'Жүктеп алудың болжалды шегі',
+			'musicTools.storageBudget' => 'Жүктеп алудың болжалды шегі (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Қонақ диджей',
 			'musicTools.charts' => 'Тыңдау рейтингі',
 			'musicTools.rediscover' => 'Қайта ашу',

@@ -5529,7 +5529,7 @@
     "routeHint": "Il sistema dell’auto decide se l’app può apparire automaticamente."
   },
   "musicTools": {
-    "storageBudget": "Limite stimato di download",
+    "storageBudget": "Limite stimato di download (MiB; 0 = ∞)",
     "guestDj": "DJ ospite",
     "charts": "Classifiche di ascolto",
     "rediscover": "Riscopri",

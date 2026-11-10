@@ -1,4 +1,4 @@
-name: Register accepted Play167 upload
+name: Complete accepted Play167 draft
 on:
   workflow_dispatch:
     inputs:
@@ -42,7 +42,7 @@ jobs:
         with:
           ruby-version: '3.3'
           bundler-cache: true
-      - name: Commit only the accepted unassigned bundle
+      - name: Commit only the existing accepted internal draft
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           PLAY_REPACK_RECEIPT: ${{ runner.temp }}/play-registration/receipt.json

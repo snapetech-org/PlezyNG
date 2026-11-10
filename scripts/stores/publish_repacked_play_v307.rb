@@ -77,7 +77,6 @@ begin
       'versionCodes' => ['167'], 'releaseNotes' => [{ 'language' => 'en-US',
         'text' => 'First Pleazyng test. Original v3.0.7 application code; store-only version-code correction.' }] }]
   })
-  api.call('post', "/edits/#{edit}:validate")
   api.call('post', "/edits/#{edit}:commit?changesNotSentForReview=true&changesInReviewBehavior=ERROR_IF_IN_REVIEW")
   committed = true
   receipt.delete('pending_play_edit')

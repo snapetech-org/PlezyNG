@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Resolve an accepted first upload without assigning it to any testing/live track.
+# Complete only the accepted internal draft; no new edit/upload/rollout.
 require 'googleauth'
 require 'json'
 require 'net/http'
@@ -37,11 +37,15 @@ bundles = api.call('get', '/bundles').fetch('bundles', [])
 bundle = bundles.find { |item| item['versionCode'] == 167 }
 abort 'Accepted167 missing or changed in original edit' unless bundle && bundle['sha256'] == receipt.fetch('signed_upload_sha256')
 tracks = api.call('get', '/tracks').fetch('tracks', [])
-abort 'Refusing artifact-only commit with a live release or assigned167' unless tracks.all? { |track| track.fetch('releases', []).all? { |release| release['status'] == 'draft' && !release.fetch('versionCodes', []).map(&:to_i).include?(167) } }
 receipt['registration_preflight'] = { 'original_edit_verified' => true, 'accepted_bundle_sha256_verified' => true,
-  'no_track_contains_167' => true, 'all_existing_releases_draft' => true, 'tracks' => tracks }
+  'tracks' => tracks }
 File.write(path, JSON.pretty_generate(receipt) + "\n")
-api.call('post', ':validate')
+internal = tracks.find { |track| track['track'] == 'internal' }
+releases = internal&.fetch('releases', []) || []
+abort 'Expected exactly the existing167 internal draft' unless releases.length == 1 && releases[0]['status'] == 'draft' && releases[0].fetch('versionCodes', []).map(&:to_i) == [167]
+abort 'Refusing to commit with another live or assigned167 release' unless tracks.all? { |track| track['track'] == 'internal' || track.fetch('releases', []).all? { |release| release['status'] == 'draft' && !release.fetch('versionCodes', []).map(&:to_i).include?(167) } }
+# edits.validate returned403 for this first draft although upload and track PUT
+# succeeded. Commit performs server validation too; use the normal commit path.
 without_flag = false
 begin
   api.call('post', ':commit?changesNotSentForReview=true&changesInReviewBehavior=ERROR_IF_IN_REVIEW')
@@ -53,9 +57,10 @@ rescue PlayRegistrationError => error
   api.call('post', ':commit?changesInReviewBehavior=ERROR_IF_IN_REVIEW')
 end
 receipt.delete('pending_play_edit')
-receipt['play_delivery'] = { 'version_code' => 167, 'bundle_registered' => true, 'track_assignment' => nil,
-  'review_requested_by_client' => false, 'distributed' => false,
+receipt['play_delivery'] = { 'version_code' => 167, 'bundle_registered' => true, 'track_assignment' => 'internal', 'status' => 'draft',
+  'distributed' => false, 'changes_not_sent_for_review_flag_applied' => !without_flag,
+  'actual_console_review_state' => 'unverified; inspect separately before claiming submission state',
   'google_rejected_changes_not_sent_flag' => without_flag,
-  'next' => 'Create the first internal release through Play Console using registered167' }
+  'next' => 'Qualify Google-generated167 and inspect Console before activation' }
 File.write(path, JSON.pretty_generate(receipt) + "\n")
-puts 'Registered the exact accepted167 bundle only; no track assignment, review request or distribution'
+puts 'Committed the exact existing167 internal draft; no rollout; verify Console review state separately'

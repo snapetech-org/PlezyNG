@@ -127,7 +127,8 @@ class CastMediaService extends ChangeNotifier {
     final connection = castReceiverKey(_sessions.currentSession);
     final matches = _matchesDetached(detached);
     if (detached.retiredAt case final retired?) {
-      if (DateTime.now().difference(retired) >= const Duration(minutes: 1)) {
+      if ((connection == detached.connection && detached.queue.stopAcknowledged(status)) ||
+          DateTime.now().difference(retired) >= const Duration(minutes: 1)) {
         _clearDetached(detached);
       } else if (matches && status?.playerState != CastMediaPlayerState.idle && !detached.stopping) {
         unawaited(_stopDetached(detached));

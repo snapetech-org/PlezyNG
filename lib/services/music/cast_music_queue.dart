@@ -61,6 +61,12 @@ class CastMusicQueue {
 
   bool isFinalOccurrence(GoggleCastMediaStatus? status) => _occurrence(status) == items.length - 1;
 
+  bool stopAcknowledged(GoggleCastMediaStatus? status) =>
+      _mediaSessionId != null &&
+      status?.mediaSessionID == _mediaSessionId &&
+      status?.playerState == CastMediaPlayerState.idle &&
+      status?.idleReason == GoogleCastMediaIdleReason.cancelled;
+
   Future<bool> handoff({
     required MusicTransferOffer offer,
     required bool Function() current,

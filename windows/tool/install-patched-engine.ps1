@@ -23,16 +23,24 @@
 #   flutter precache --windows
 #   windows/tool/install-patched-engine.ps1
 param(
-    # Engine zip published at flutter-plezy release windows-v3.47.1+2 - x64 + arm64
-    # (cache dirs windows-{x64,arm64}{,-release}). The asset name is the same across
-    # tags, so a version bump only changes the tag segment of the URL.
-    [string]$Url = 'https://github.com/edde746/flutter-plezy/releases/download/windows-v3.47.1%2B2/flutter-plezy-windows-3.47.1.zip',
-    [string]$Sha256 = '95ec830738a43eb2f3433db778efc1997b3270e912ce7ed9ba9b11a13a90feb2',
-    # Engine revision the artifacts were built from. Must match the SDK's
-    # engine.stamp (gen_snapshot/dart in the SDK must come from the same
-    # checkout), or the swapped binaries are ABI-incompatible with the build.
-    [string]$ExpectedEngine = '5d531788691ec3404cac0cee66ead4007b177363'
+    [ValidateSet('x64', 'arm64')]
+    [string]$Architecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString().ToLowerInvariant(),
+    [string]$Url = '',
+    [string]$Sha256 = '',
+    [string]$ExpectedEngine = 'cf636b1dfb818dd6a3ff16e390e93b1a036969c8'
 )
+
+if ([string]::IsNullOrWhiteSpace($Url)) {
+    $Url = "https://github.com/snapetech-org/pleazyng/releases/download/flutter-security-3.47.8/flutter-pleazyng-windows-3.47.8-$Architecture.zip"
+    if ([string]::IsNullOrWhiteSpace($Sha256)) {
+        $Sha256 = @{
+            x64 = '409ec2ffd14f5d9c0de7964a43ec8cdcb6d9530775b909a6e973f4c7431f9126'
+            arm64 = '7c0d3a3679a05956c5c48ac5d04ceab83ad875a4bf2c5ed4fe760b1a806e86e9'
+        }[$Architecture]
+    }
+} elseif ([string]::IsNullOrWhiteSpace($Sha256)) {
+    throw 'A custom engine URL requires an explicit SHA-256 digest'
+}
 
 $ErrorActionPreference = 'Stop'
 
@@ -76,4 +84,4 @@ Write-Output "Extracting patched engine into $engineDir ..."
 Expand-Archive -Path $zip -DestinationPath $engineDir -Force
 Remove-Item $zip -Force
 
-Write-Output "Installed patched DComp engine (windows-x64, windows-x64-release)."
+Write-Output "Installed patched DComp engine ($Architecture debug and release)."

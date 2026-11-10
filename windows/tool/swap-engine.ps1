@@ -16,7 +16,7 @@ param(
     [switch]$Restore,
     # Engine revision these artifacts were built from. Guards against swapping
     # into a mismatched SDK (gen_snapshot/dart must come from the same checkout).
-    [string]$ExpectedEngine = '5d531788691ec3404cac0cee66ead4007b177363'
+    [string]$ExpectedEngine = 'cf636b1dfb818dd6a3ff16e390e93b1a036969c8'
 )
 
 $ErrorActionPreference = 'Stop'

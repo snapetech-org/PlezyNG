@@ -78,7 +78,12 @@ def select_artifacts(data, run_id, sha):
 
 
 def source_blob(data):
-    return hashlib.sha1(b'blob ' + str(len(data)).encode('ascii') + b'\0' + data).hexdigest()
+    # GitHub reports the committed LF blob. Git for Windows may check out the
+    # same two text sources as CRLF; reverse only that transport conversion.
+    if b'\r' in data.replace(b'\r\n', b''):
+        raise ValueError('Unexpected producer source line endings')
+    canonical = data.replace(b'\r\n', b'\n')
+    return hashlib.sha1(b'blob ' + str(len(canonical)).encode('ascii') + b'\0' + canonical).hexdigest()
 
 
 def download_artifact(artifact, output):

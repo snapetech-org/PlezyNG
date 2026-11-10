@@ -27,6 +27,13 @@ class ProducerQualificationTest(unittest.TestCase):
              'workflow_run': {'id': 42, 'head_sha': self.sha}}
             for index, arch in enumerate(('x64', 'arm64'))]}
 
+    def test_source_blob_identity_survives_windows_crlf_checkout(self):
+        committed = b'first\nsecond\n'
+        checkout = b'first\r\nsecond\r\n'
+        self.assertEqual(subject.source_blob(committed), subject.source_blob(checkout))
+        with self.assertRaisesRegex(ValueError, 'line endings'):
+            subject.source_blob(b'first\rsecond\n')
+
     def test_canonical_run_and_complete_pair_are_required(self):
         self.assertEqual(subject.validate_run(self.run, 42), self.sha)
         subject.validate_jobs(self.jobs, 42)

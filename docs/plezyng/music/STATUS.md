@@ -71,6 +71,12 @@ acoustic qualification remain. No complete-parity claim is made.
   compilation and an isolated Robolectric cancellation regression. Separate
   checks cover iOS archive configuration, portable Swift widget snapshots and
   NFC bridge syntax, not signed Apple SDK builds or physical devices.
+- The next integrated run passed **554 tests** at `222d97ae8`, including verified
+  Plex owner history, scoped rolling mixes, album-aware fades, station presets,
+  and Cast queue handoff and return. The canonical repository checks passed at
+  that checkpoint. The subsequent metadata and Cast stop changes passed their
+  focused regressions; 19 reconciliation tests passed after the rating conflict
+  revision fix. These results do not add live server or device qualification.
 
 ## Added and connected on main
 
@@ -126,7 +132,7 @@ acoustic qualification remain. No complete-parity claim is made.
 | B02 | Global and in-library search | Existing search retained; native search combines owned downloads and authorized online results. Bounded explicit recent queries are profile-owned with replay/remove/clear. Native playlists browse by server with bounded pages. Full reference parity remains. | Search/voice/history regressions pass; native assistant qualification pending. |
 | B03 | Discography and album categories | Existing album/disc rendering retained; complete reference category comparison remains. | Multi-disc album regression passes. |
 | B04 | Track detail, credits and editions | Account-bound metadata details expose performer/writer/producer/composer/contributor roles, labels, release dates, explicit editions and audio versions with codec and channel layouts. Album titles are never treated as a track's performer; similarly titled recordings stay separate. Provider/reference field completeness remains. | Role/provenance/authentication tests pass; live metadata comparison pending. |
-| B05 | Ratings, favorites and listening state | Profile/account-scoped rating/favorite journal detects remote divergence before retry, acknowledges already-applied decisions, and offers explicit local/remote conflict resolution. Cold-offline rating without an account client remains. | Journal ordering, conflict revisions, already-applied retry, revocation and profile-isolation tests pass. |
+| B05 | Ratings, favorites and listening state | Profile/account-scoped rating/favorite journal detects remote divergence before retry, acknowledges already-applied decisions, and offers explicit local/remote conflict resolution. A further remote change during resolution replaces the displayed conflict and rejects either choice from the older revision. Cold-offline rating without an account client remains. | Journal ordering, repeated remote changes, conflict revisions, already-applied retry, revocation and profile-isolation tests pass. |
 | B06 | Regular playlist management | Mix previews reuse existing playlist creation. Playback starts prefer playlist occurrence IDs over media IDs. Full duplicate-aware editing, sharing and artwork parity remains. | Selected repeated-entry playback regressions pass; live playlist write pending. |
 | B07 | Smart playlists and filter editing | Plex smart-playlist editor decodes native directory and server-owned rules, preserving ordered repeated parameters, exact operators, nested groups, source/result types, grouping, sort and limits. The filter form uses the rule's source kind. Server preview, create/update and save-as run under the owning account. Local station rules remain distinct. Non-Plex equivalence and live server qualification remain. | Native URI, Boolean grammar, ordered wire query and playlist regressions pass; no live permission/share claim. |
 | B08 | Collections, sharing and artwork | Existing mechanisms retained; music-specific authorization and artwork completeness remain. | Not newly qualified. |

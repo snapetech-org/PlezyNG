@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Refresh music rating conflicts when another device changes the server value during resolution. Choices from the older conflict cannot overwrite or discard the updated decision.
+
 - Release a returned or stopped Chromecast queue as soon as the same receiver acknowledges its stop, so another queue can be transferred immediately.
 
 - Keep album titles out of track performer credits. Music details distinguish explicit release editions from audio versions and show the versions' audio codecs and channel layouts.

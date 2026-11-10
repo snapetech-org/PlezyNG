@@ -132,19 +132,21 @@ void main() {
     expect(await store().load(), isNotNull);
   });
 
-  test('continuation seed and exclusions survive restart within their profile', () async {
+  test('continuation seed, account and exclusions survive restart within their profile', () async {
     await store().save(
       MusicSessionSnapshot(
         queue: state(items: [track('a')]),
         playContext: null,
         position: Duration.zero,
         continuationSeed: track('seed'),
+        continuationAccount: 'srv:account',
         continuationExcluded: {'srv:removed'},
       ),
     );
     final restored = await store().load();
     expect(restored!.continuationSeed!.id, 'seed');
     expect(restored.continuationSeed!.serverId, 'srv');
+    expect(restored.continuationAccount, 'srv:account');
     expect(restored.continuationExcluded, {'srv:removed'});
     expect(await store(profileId: 'other').load(), isNull);
   });

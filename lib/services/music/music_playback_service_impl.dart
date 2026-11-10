@@ -1,4 +1,5 @@
 import 'music_discovery.dart';
+import 'music_account_scope.dart';
 import 'music_audio_policy.dart';
 import 'music_byte_cache.dart';
 import 'music_library_store.dart';
@@ -498,6 +499,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   MediaItem? _continuationSeed;
+  String? _continuationAccount;
   int _continuationEpoch = 0;
   bool _continuationLoading = false;
   Future<void>? _continuationTask;
@@ -514,12 +516,19 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _continuationEpoch++;
     _continuationLoading = false;
     _continuationTask = null;
-    _continuationSeed = enabled ? _currentTrack : null;
+    final seed = enabled ? _currentTrack : null;
+    final client = seed == null ? null : _clientFor(seed);
+    _continuationSeed = client == null || client.isOfflineMode ? null : seed;
+    _continuationAccount = _continuationSeed == null ? null : musicAccountScope(client!);
     _continuationExcluded.clear();
     _persistSessionSnapshot();
     notifyListeners();
-    if (enabled) unawaited(_extendStation());
+    if (continuationEnabled) unawaited(_extendStation());
   }
+
+  Future<MusicDiscoveryBatch> _generateInstantMix(MediaItem seed, {bool Function()? current}) => MusicDiscovery(
+    (item) => current?.call() == false ? null : _clientFor(item),
+  ).generate(MusicRecipe(id: 'instant', title: seed.displayTitle, kind: MusicRecipeKind.mix, seeds: [seed]));
 
   Future<void> _extendStation() {
     if (_musicGroupFollower) return Future.value();
@@ -530,21 +539,35 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
     final client = _clientFor(seed);
     if (client == null || client.isOfflineMode) return Future.value();
+    final account = _continuationAccount;
+    if (account == null || account != musicAccountScope(client)) {
+      setContinuationEnabled(false);
+      return Future.value();
+    }
+    final authentication = client.authenticationSessionId;
     final epoch = _continuationEpoch;
     final revision = _queueSessionRevision;
     _continuationLoading = true;
     notifyListeners();
-    return _continuationTask = _fetchContinuation(client, seed, epoch, revision);
+    return _continuationTask = _fetchContinuation(
+      seed,
+      epoch,
+      revision,
+      () =>
+          identical(client, _clientFor(seed)) &&
+          identical(client.authenticationSessionId, authentication) &&
+          account == musicAccountScope(client),
+    );
   }
 
-  Future<void> _fetchContinuation(MediaServerClient client, MediaItem seed, int epoch, int revision) async {
+  Future<void> _fetchContinuation(MediaItem seed, int epoch, int revision, bool Function() authorized) async {
+    bool current() => !_disposed && epoch == _continuationEpoch && revision == _queueSessionRevision;
     try {
-      final candidates = await client.fetchInstantMix(seed.id, limit: 100);
-      if (_disposed || epoch != _continuationEpoch || revision != _queueSessionRevision) {
-        return;
-      }
+      final batch = await _generateInstantMix(seed, current: () => current() && authorized());
+      if (!current() || _musicGroupFollower) return;
+      if (!batch.isCurrent()) throw StateError('Music continuation source changed');
       final tracks = MusicDiscovery.interleave(
-        [candidates],
+        [batch.tracks],
         limit: 100,
         exclude: {..._queue.queue.map((t) => t.globalKey), ..._continuationExcluded},
       );
@@ -555,10 +578,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         // Finite libraries terminate instead of repeating the same request on
         // every position tick or silently recycling excluded tracks.
         _continuationSeed = null;
+        _continuationAccount = null;
       }
     } catch (error) {
-      if (!_disposed && epoch == _continuationEpoch && revision == _queueSessionRevision) {
+      if (current()) {
         _continuationSeed = null;
+        _continuationAccount = null;
         _errorsController.add(error);
       }
     } finally {
@@ -1392,15 +1417,16 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<InstantMixOutcome> playInstantMix(MediaItem seed) async {
     final intent = beginPlayIntent();
     final client = _clientFor(seed);
-    if (client == null) {
+    if (client == null || client.isOfflineMode) {
       if (!isPlayIntentCurrent(intent)) {
         return InstantMixOutcome.superseded;
       }
       throw PlaybackException(t.music.instantMixNoServer, reason: PlaybackFailureReason.serverUnavailable);
     }
-    List<MediaItem> tracks;
+    final account = musicAccountScope(client);
+    MusicDiscoveryBatch batch;
     try {
-      tracks = await client.fetchInstantMix(seed.id);
+      batch = await _generateInstantMix(seed);
     } catch (e, st) {
       if (!isPlayIntentCurrent(intent)) {
         return InstantMixOutcome.superseded;
@@ -1408,21 +1434,24 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       appLogger.w('Instant mix fetch failed for ${seed.id}', error: e, stackTrace: st);
       rethrow;
     }
-    if (!isPlayIntentCurrent(intent)) {
+    if (!isPlayIntentCurrent(intent) || !batch.isCurrent()) {
       return InstantMixOutcome.superseded;
     }
-    if (tracks.isEmpty) {
+    if (batch.tracks.isEmpty) {
       return InstantMixOutcome.empty;
     }
     final expectedRevision = _queueSessionRevision + 1;
     await _startQueue(
-      tracks: tracks,
+      tracks: batch.tracks,
       playContext: MusicPlayContext(title: seed.displayTitle, kind: MusicPlayContextKind.mix),
     );
     if (_disposed || _queueSessionRevision != expectedRevision) return InstantMixOutcome.superseded;
-    _continuationSeed = seed;
-    _persistSessionSnapshot();
-    unawaited(_extendStation());
+    if (batch.isCurrent()) {
+      _continuationSeed = seed;
+      _continuationAccount = account;
+      _persistSessionSnapshot();
+      unawaited(_extendStation());
+    }
     return InstantMixOutcome.started;
   }
 
@@ -1448,6 +1477,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _queueSessionRevision++;
     _continuationEpoch++;
     _continuationSeed = null;
+    _continuationAccount = null;
     _continuationLoading = false;
     _continuationTask = null;
     _continuationExcluded.clear();
@@ -3685,6 +3715,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _cancelOverlap();
     _continuationEpoch++;
     _continuationSeed = null;
+    _continuationAccount = null;
     _continuationLoading = false;
     _continuationTask = null;
     beginPlayIntent();
@@ -3912,7 +3943,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     }
     _queueSessionRevision++;
     _playContext = snapshot.playContext;
-    _continuationSeed = snapshot.continuationSeed;
+    _continuationAccount = snapshot.continuationAccount;
+    _continuationSeed = _continuationAccount == null ? null : snapshot.continuationSeed;
     _continuationExcluded
       ..clear()
       ..addAll(snapshot.continuationExcluded);
@@ -3951,6 +3983,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       playContext: _playContext,
       position: positionOverride ?? position,
       continuationSeed: _continuationSeed,
+      continuationAccount: _continuationAccount,
       continuationExcluded: Set.unmodifiable(_continuationExcluded),
     );
     unawaited(

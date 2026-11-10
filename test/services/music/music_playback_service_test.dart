@@ -1059,6 +1059,19 @@ void main() {
     expect(h.service.queue.map((t) => t.id), ['t1', 't3', 't2']);
   });
 
+  test('continuation drops results from a retired authentication session', () async {
+    await h.playTracks([t1]);
+    final gate = Completer<List<MediaItem>>();
+    h.client.instantMixGate = gate;
+    h.service.setContinuationEnabled(true);
+    h.client._authenticationSession = Object();
+    gate.complete([t2]);
+    await pumpEventQueue();
+    expect(h.service.queue.map((track) => track.id), ['t1']);
+    expect(h.service.currentTrack?.id, 't1');
+    expect(h.service.continuationEnabled, isFalse);
+  });
+
   test('a slow continuation advances after the last track finishes', () async {
     await h.playTracks([t1]);
     final gate = Completer<List<MediaItem>>();

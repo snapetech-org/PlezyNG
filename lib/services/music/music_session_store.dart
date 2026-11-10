@@ -19,6 +19,7 @@ class MusicSessionSnapshot {
   final MusicPlayContext? playContext;
   final Duration position;
   final MediaItem? continuationSeed;
+  final String? continuationAccount;
   final Set<String> continuationExcluded;
 
   const MusicSessionSnapshot({
@@ -26,6 +27,7 @@ class MusicSessionSnapshot {
     required this.playContext,
     required this.position,
     this.continuationSeed,
+    this.continuationAccount,
     this.continuationExcluded = const {},
   });
 }
@@ -72,6 +74,7 @@ class MusicSessionStore {
                   serverId: seed.serverId,
                   libraryId: seed.libraryId,
                 ).toJson(),
+                'account': ?snapshot.continuationAccount,
                 'excluded': snapshot.continuationExcluded.toList(),
               },
           }),
@@ -124,6 +127,7 @@ class MusicSessionStore {
         final items = <MediaItem>[];
         final order = <int>[];
         MediaItem? continuationSeed;
+        String? continuationAccount;
         var continuationExcluded = <String>{};
         if (payload is List) {
           // Read v1 rows until their next save; upgrading never loses the old session.
@@ -135,6 +139,8 @@ class MusicSessionStore {
             if (seed.serverId != null &&
                 const [MediaKind.track, MediaKind.album, MediaKind.artist].contains(seed.kind)) {
               continuationSeed = seed;
+              final account = continuation['account'];
+              if (account is String && account.isNotEmpty && account.length <= 1024) continuationAccount = account;
               continuationExcluded = (continuation['excluded'] as List).cast<String>().toSet();
             }
           }
@@ -184,6 +190,7 @@ class MusicSessionStore {
         return MusicSessionSnapshot(
           queue: queue,
           continuationSeed: continuationSeed,
+          continuationAccount: continuationAccount,
           continuationExcluded: Set.unmodifiable(continuationExcluded),
           playContext: row.contextTitle != null && contextKind != null
               ? MusicPlayContext(title: row.contextTitle!, kind: contextKind)

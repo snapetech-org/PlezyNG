@@ -120,7 +120,7 @@
         "docs/games/ARCHITECTURE.md",
         "docs/games/VALIDATION.md"
       ],
-      "open": "Steam receiver/cloud/family/internet/controller/capture sources and RomM exact-copy/browser/stream/native/save workflows are integrated. Native RomM requires isolation ABI 1: desktop and Android adapters are verified, and the webOS/Tizen descriptor-only worker passed x64/ARM64 containment and ARMv7 compilation. The iOS 26 Enhanced Security worker and packaging source are implemented, with linkage and signed-device acceptance still open. tvOS lacks the required supported containment API and native cores remain disabled. Actual cores, native SDK app builds, deployed optional services and real account/network/device acceptance remain open."
+      "open": "Steam receiver/cloud/family/internet/controller/capture sources and RomM exact-copy/browser/stream/native/save workflows are integrated. Native RomM requires isolation ABI 1: desktop and Android adapters are verified, and the webOS/Tizen descriptor-only worker passed x64/ARM64 containment and ARMv7 compilation. The iOS 26 Enhanced Security worker and packaging source are implemented, with simulator extension linkage/packaging verified and signed-device acceptance still open. tvOS lacks the required supported containment API and native cores remain disabled. Actual cores, native SDK app builds, deployed optional services and real account/network/device acceptance remain open."
     },
     {
       "area": "Multiview",

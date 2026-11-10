@@ -742,7 +742,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "حجم البوفر: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "بناء في",
@@ -3196,7 +3197,8 @@
     "decoderHardware": "الأجهزة",
     "tunnelingActive": "نشطة",
     "dvRpuFailed": "${converted} (${failures} فاشلة)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "الحد الأدنى للكاش: ${size} MiB"
   },
   "externalPlayer": {
     "title": "اللاعب الخارجي",
@@ -3367,13 +3369,24 @@
     "request": "طلب",
     "request4k": "طلب في 4K",
     "requestSeasons": "اطلب المواسم المفقودة",
+    "requestHint": "اختر خيارات الطلب في Seerr",
+    "quickRequestHint": "اطلب الآن عبر Seerr باستخدام الإعدادات الافتراضية",
+    "chooseSeasonsHint": "اختر المواسم المطلوب طلبها في Seerr",
+    "request4kHint": "اختر طلب نسخة 4K في Seerr",
+    "only4kAvailable": "يمكن لهذا الحساب طلب نسخة 4K فقط.",
+    "cardActionHint": "افتح قائمة البطاقة لعرض خيارات الطلب في Seerr",
+    "requestInProgress": "الطلب قيد التنفيذ",
     "notifyMe": "أخبرني عند التوفر",
     "notifyMe4k": "أخبرني عند توفر 4K",
     "notificationsOn": "تنبيه التوفر مفعّل",
+    "turnOffAlert": "إيقاف تنبيه التوفر",
     "notificationsEnabled": "سنخطرك عند توفره",
+    "notificationsEnabled4k": "سنخطرك عند توفر نسخة 4K",
+    "notificationsEnabledSeason": "سنخطرك عند توفر الموسم ${season}",
     "notificationsDisabled": "تم إيقاف تنبيه التوفر",
     "notificationFailed": "تعذّر تحديث تنبيه التوفر",
     "seasons": "المواسم",
+    "requestSheetHint": "يتولى Seerr الموافقة على طلبك ومتابعته.",
     "allSeasons": "جميع الموسم",
     "advancedOptions": "متقدم",
     "destinationServer": "مستخدم الوجهة",
@@ -4346,6 +4359,9 @@
     "recoveryImported": "استرداد البيانات مترابطة."
   },
   "sourceSetup": {
+    "bookorbitHelp": "سجّل الدخول باستخدام حساب BookOrbit الخاص بك لتصفح كتبه وتشغيلها. تظل طلبات العناوين غير المتوفرة تمر عبر مثيل SeerrNG المتصل بك.",
+    "bookorbitOpen": "افتح في BookOrbit",
+    "bookorbitDetailHelp": "اعرض هذا العنوان في BookOrbit لإدارة تفاصيله في مكتبتك وأي تنسيقات لا يستطيع Pleazyng فتحها. تتم مزامنة تقدم الاستماع مع حسابك في BookOrbit.",
     "savedCertificate": "شهادة الخادم المحفوظة",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "أدخل عنوان NFS مثل nfs://nas:2049/export.",
@@ -5610,5 +5626,37 @@
     "routeLost": "تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.",
     "autoDriving": "فتح واجهة القيادة عند الاتصال بسيارة",
     "routeHint": "يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا."
+  },
+  "musicTools": {
+    "guestDj": "منسق موسيقى ضيف",
+    "charts": "إحصاءات الاستماع",
+    "rediscover": "إعادة الاكتشاف",
+    "stations": "محطات موسيقية",
+    "prompt": "قائمة من وصف",
+    "provider": "رابط التوليد لدى المزود",
+    "model": "اسم النموذج",
+    "consent": "إرسال وصفي إلى هذا المزود",
+    "promptHint": "صف الموسيقى التي تريدها",
+    "noHistory": "لا توجد موسيقى لعرضها بعد",
+    "historyHint": "مرات التشغيل المسجلة على هذا الجهاز",
+    "days": "أيام",
+    "albumBlocks": "إبقاء الألبومات كاملة معًا",
+    "home": "الموسيقى",
+    "recent": "تم تشغيلها مؤخرًا",
+    "apiKey": "مفتاح API",
+    "missing": "N / A",
+    "minutes": "دقائق",
+    "rules": "الفلاتر",
+    "exclusiveOutput": "إخراج صوت حصري",
+    "preamp": "التضخيم المسبق",
+    "ratingPending": "حُفظ على هذا الجهاز؛ بانتظار المزامنة",
+    "lyricsOffset": "إزاحة توقيت الكلمات",
+    "anniversaries": "ذكرى إصدار الألبومات",
+    "outputPreset": "معادل الصوت لهذا المخرج",
+    "outputPresetHint": "استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.",
+    "eqApproximation": "ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

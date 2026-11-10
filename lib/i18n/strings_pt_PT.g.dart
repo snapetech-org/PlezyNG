@@ -829,6 +829,8 @@ class Translations$sourceSetup$pt_PT extends Translations$sourceSetup$pt {
 	// Translations
 	@override String get subtitleApplyFailed => 'Não foi possível descarregar ou aplicar esta legenda. Verifique a ligação e tente outro resultado.';
 	@override String get subtitleSearching => 'A pesquisar no OpenSubtitles';
+	@override String get bookorbitOpen => 'Abrir no BookOrbit';
+	@override String get bookorbitDetailHelp => 'Consulte este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.';
 }
 
 // Path: householdSetup
@@ -1759,6 +1761,8 @@ extension on TranslationsPtPt {
 			'lending.cancel' => 'Cancelar',
 			'sourceSetup.subtitleApplyFailed' => 'Não foi possível descarregar ou aplicar esta legenda. Verifique a ligação e tente outro resultado.',
 			'sourceSetup.subtitleSearching' => 'A pesquisar no OpenSubtitles',
+			'sourceSetup.bookorbitOpen' => 'Abrir no BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Consulte este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.',
 			'householdSetup.title' => 'Configuração do agregado familiar',
 			'issueReport.title' => 'Comunicar um problema',
 			'issueReport.instructions' => 'Leia o código QR para abrir um rascunho do GitHub já preenchido. Reveja-o e envie-o quando estiver pronto.',
@@ -1863,10 +1867,10 @@ extension on TranslationsPtPt {
 			'romm.slot' => 'Save slot',
 			'romm.core' => 'Core identity',
 			'romm.compatibilityHelp' => 'Save states require the same emulator and compatible core version. Choose the exact game copy before importing.',
-			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
-			'romm.keepBoth' => 'Keep both',
 			_ => null,
 		} ?? switch (path) {
+			'romm.saveConflict' => 'Both copies changed. Keep both versions, use the server copy, or explicitly replace it.',
+			'romm.keepBoth' => 'Keep both',
 			'romm.useServer' => 'Use server copy',
 			'romm.replaceServer' => 'Replace server copy',
 			'romm.pendingSaves' => 'Saves waiting to sync',

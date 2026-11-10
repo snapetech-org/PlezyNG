@@ -736,7 +736,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Baixão de tamanho: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Integrados",
@@ -3115,7 +3116,8 @@
     "decoderHardware": "Hardware",
     "tunnelingActive": "Ativo",
     "dvRpuFailed": "${converted} (${failures} com falha)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Limite do cache: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Reprodutor externo",
@@ -3286,13 +3288,24 @@
     "request": "Solicitar",
     "request4k": "Solicitar em 4K",
     "requestSeasons": "Solicitar temporadas em falta",
+    "requestHint": "Escolha as opções do pedido no Seerr",
+    "quickRequestHint": "Solicitar agora no Seerr com as opções padrão",
+    "chooseSeasonsHint": "Escolha as temporadas para solicitar no Seerr",
+    "request4kHint": "Escolha um pedido em 4K no Seerr",
+    "only4kAvailable": "Esta conta só pode solicitar a versão em 4K.",
+    "cardActionHint": "Abra o menu do cartão para ver as opções de pedido do Seerr",
+    "requestInProgress": "Pedido em andamento",
     "notifyMe": "Avise-me quando estiver disponível",
     "notifyMe4k": "Avise-me quando 4K estiver disponível",
     "notificationsOn": "Alerta de disponibilidade ativado",
+    "turnOffAlert": "Desativar alerta de disponibilidade",
     "notificationsEnabled": "Avisaremos quando estiver disponível",
+    "notificationsEnabled4k": "Avisaremos quando a versão em 4K estiver disponível",
+    "notificationsEnabledSeason": "Avisaremos quando a temporada ${season} estiver disponível",
     "notificationsDisabled": "Alerta de disponibilidade desativado",
     "notificationFailed": "Não foi possível atualizar o alerta de disponibilidade",
     "seasons": "Temporadas",
+    "requestSheetHint": "O Seerr gerencia a aprovação e acompanha seu pedido.",
     "allSeasons": "Todas as temporadas",
     "advancedOptions": "Avançado",
     "destinationServer": "Servidor de destino",
@@ -4253,6 +4266,9 @@
     "recoveryImported": "Dados de recuperação combinados."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Entre com sua própria conta BookOrbit para navegar e reproduzir seus livros. Pedidos de títulos ausentes continuam passando pela sua instância SeerrNG conectada.",
+    "bookorbitOpen": "Abrir no BookOrbit",
+    "bookorbitDetailHelp": "Veja este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.",
     "savedCertificate": "Certificado do servidor salvo",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Digite uma URL NFS, como nfs://nas:2049/export.",
@@ -5511,5 +5527,37 @@
     "routeLost": "Saída áudio desligada. Reprodução em pausa.",
     "autoDriving": "Abrir a vista de condução ao ligar a um carro",
     "routeHint": "O sistema do carro decide se a aplicação pode aparecer automaticamente."
+  },
+  "musicTools": {
+    "guestDj": "DJ convidado",
+    "charts": "Estatísticas de escuta",
+    "rediscover": "Redescobrir",
+    "stations": "Estações musicais",
+    "prompt": "Playlist por descrição",
+    "provider": "URL de geração do fornecedor",
+    "model": "Nome do modelo",
+    "consent": "Enviar minha descrição a este fornecedor",
+    "promptHint": "Descreva a música que deseja",
+    "noHistory": "Ainda não há música para mostrar",
+    "historyHint": "Reproduções registradas neste dispositivo",
+    "days": "Dias",
+    "albumBlocks": "Manter álbuns completos juntos",
+    "home": "Música",
+    "recent": "Reproduzidas recentemente",
+    "apiKey": "Chave API",
+    "missing": "N/D",
+    "minutes": "Minutos",
+    "rules": "Filtros",
+    "exclusiveOutput": "Saída de áudio exclusiva",
+    "preamp": "Pré-amplificação",
+    "ratingPending": "Salvo neste dispositivo; aguardando sincronização",
+    "lyricsOffset": "Deslocamento da letra",
+    "anniversaries": "Aniversários de álbuns",
+    "outputPreset": "Equalizador desta saída",
+    "outputPresetHint": "Usar automaticamente este equalizador quando esta saída for selecionada.",
+    "eqApproximation": "Os perfis de auscultadores são aproximados para o equalizador de dez bandas.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
 import '../../services/music/music_playback_service.dart';
+import '../../services/music/music_audio_policy.dart';
 
 /// Simplified presentation only. It never creates a second player, changes
 /// the queue, starts playback on entry, or overrides vehicle restrictions.
@@ -84,6 +85,9 @@ Future<void> openMusicDriving(BuildContext context) =>
 Future<void> showMusicSignalPath(BuildContext context) async {
   final music = context.read<MusicPlaybackService>();
   final path = music is MusicSignalPathService ? (music as MusicSignalPathService).signalPath : null;
+  final output = music is MusicAudioControls
+      ? (music as MusicAudioControls).inspectAudioOutput()
+      : Future.value(<String, String>{});
   final s = t.musicExperience;
   await showModalBottomSheet<void>(
     context: context,
@@ -114,6 +118,29 @@ Future<void> showMusicSignalPath(BuildContext context) async {
               ),
             ],
             Text(s.outputUnknown),
+            FutureBuilder<Map<String, String>>(
+              future: output,
+              builder: (context, snapshot) {
+                final values = snapshot.data ?? const <String, String>{};
+                return Column(
+                  children: [
+                    if (values['audio-params/samplerate'] case final rate?)
+                      ListTile(title: Text('${s.source} · ${t.fileInfo.sampleRate}'), subtitle: Text('$rate Hz')),
+                    if (values['audio-out-params/samplerate'] case final rate?)
+                      ListTile(
+                        title: Text('${t.videoSettings.audioOutput} · ${t.fileInfo.sampleRate}'),
+                        subtitle: Text('$rate Hz'),
+                      ),
+                    if (values['audio-out-params/channel-count'] case final count?)
+                      ListTile(title: Text('${t.videoSettings.audioOutput} · ${s.channels}'), subtitle: Text(count)),
+                    if (values['audio-out-params/format'] case final format?)
+                      ListTile(title: Text(t.fileInfo.codec), subtitle: Text(format)),
+                    if (values['audio-device'] case final device?)
+                      ListTile(title: Text(t.videoSettings.audioOutput), subtitle: Text(device)),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),

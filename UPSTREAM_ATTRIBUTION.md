@@ -1,10 +1,14 @@
 # Upstream source attribution
 
-This ledger publicly credits 89 source records from [edde746/plezy](https://github.com/edde746/plezy) that informed, supplied, or were reconciled with behavior, documentation, maintained plans, or feature context in this fork.
+This ledger publicly credits 90 source records: 89 from [edde746/plezy](https://github.com/edde746/plezy) and one compatibility fix from [superuser404notfound/AetherEngine](https://github.com/superuser404notfound/AetherEngine). They informed, supplied, or were reconciled with behavior, documentation, maintained plans, or feature context in this fork.
 
 The linked people made their reports, suggestions, discussions, or code contributions to the upstream project. This is source credit only: it does not claim that they contributed directly to this fork, endorsed it, or participated in the fork integration. Fork maintainers adapted, integrated, or verified the resulting behavior separately.
 
 The PR list comes from explicit “Squash of upstream” commit records and the selected November follow-up. The commit list covers follow-up changes that were sourced from upstream commits rather than PR records.
+
+## Credited dependency compatibility fix
+
+- [AetherEngine commit `fa8cc48b`](https://github.com/superuser404notfound/AetherEngine/commit/fa8cc48b93a5b9c83367bf4fb3d731fb3862a177) / [issue #883](https://github.com/superuser404notfound/AetherEngine/issues/883) — “fix(build): the package compiles on Xcode 26.3 (Swift 6.2) again,” authored and contributed to AetherEngine upstream by [@superuser404notfound](https://github.com/superuser404notfound). Pleazyng independently backports the three upstream compatibility changes to its older pinned AetherEngine source during the locked Apple runtime build; this credit does not claim a direct contribution to Pleazyng.
 
 ## Credited Plezy pull requests
 

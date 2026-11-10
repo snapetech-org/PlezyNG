@@ -14,6 +14,7 @@ import 'package:plezy/models/download_models.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/providers/download_provider.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
+import 'package:plezy/providers/offline_mode_provider.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
@@ -160,12 +161,14 @@ void main() {
   }) {
     addTearDown(service.dispose);
     addTearDown(observer.suppress.dispose);
-    final multiServerProvider = testMultiServer().provider;
+    final fixture = testMultiServer();
+    final multiServerProvider = fixture.provider;
 
     return TranslationProvider(
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider<MultiServerProvider>.value(value: multiServerProvider),
+          ChangeNotifierProvider<OfflineModeProvider>(create: (_) => OfflineModeProvider(fixture.manager)),
           ChangeNotifierProvider<MusicPlaybackService>.value(value: service),
           if (insets != null)
             ChangeNotifierProvider<MiniPlayerInsetController>.value(value: insets)

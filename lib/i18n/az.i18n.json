@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer ölçüsü: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Daxili",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Aparat təminatı",
     "tunnelingActive": "Aktiv",
     "dvRpuFailed": "${converted} (${failures} uğursuz)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Keş limiti: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Xarici oynadıcı",
@@ -3283,13 +3285,24 @@
     "request": "Sorğu göndər",
     "request4k": "4K sorğu göndər",
     "requestSeasons": "Çatışmayan mövsümlər üçün sorğu göndər",
+    "requestHint": "Seerr-də sorğu seçimlərini seçin",
+    "quickRequestHint": "Standart ayarlarla indi Seerr-də sorğu göndərin",
+    "chooseSeasonsHint": "Seerr-də sorğu üçün mövsümləri seçin",
+    "request4kHint": "Seerr-də 4K sorğusunu seçin",
+    "only4kAvailable": "Bu hesab yalnız 4K versiyasını sorğu edə bilər.",
+    "cardActionHint": "Seerr sorğu seçimləri üçün kart menyusunu açın",
+    "requestInProgress": "Sorğu icra olunur",
     "notifyMe": "Əlçatan olduqda mənə bildir",
     "notifyMe4k": "4K əlçatan olduqda mənə bildir",
     "notificationsOn": "Əlçatanlıq bildirişi aktivdir",
+    "turnOffAlert": "Əlçatanlıq bildirişini söndür",
     "notificationsEnabled": "Əlçatan olduqda sizə xəbər verəcəyik",
+    "notificationsEnabled4k": "4K versiyası əlçatan olduqda sizə xəbər verəcəyik",
+    "notificationsEnabledSeason": "${season} mövsümü əlçatan olduqda sizə xəbər verəcəyik",
     "notificationsDisabled": "Əlçatanlıq bildirişi söndürüldü",
     "notificationFailed": "Əlçatanlıq bildirişini yeniləmək mümkün olmadı",
     "seasons": "Mövsümlər",
+    "requestSheetHint": "Seerr sorğunuzun təsdiqini və izlənməsini idarə edir.",
     "allSeasons": "Bütün mövsümlər",
     "advancedOptions": "Təkmilləşdirilmiş",
     "destinationServer": "Hədəf server",
@@ -4246,6 +4259,9 @@
     "recoveryImported": "İtraf verileri birləşmişdir."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Kitablarına baxmaq və onları oxutmaq üçün öz BookOrbit hesabınızla daxil olun. Çatışmayan başlıqlar üçün sorğular yenə də qoşulmuş SeerrNG instansiyanız vasitəsilə göndərilir.",
+    "bookorbitOpen": "BookOrbit-də aç",
+    "bookorbitDetailHelp": "Kitabxana təfərrüatlarını və Pleazyng-in aça bilmədiyi formatları idarə etmək üçün bu başlığı BookOrbit-də açın. Dinləmə irəliləyişi BookOrbit hesabınızla sinxronlaşdırılır.",
     "savedCertificate": "Yadda saxlanmış server sertifikatı",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export kimi NFS URL-i daxil edin.",
@@ -5502,5 +5518,37 @@
     "routeLost": "Səs çıxışı ayrıldı. Oynatma dayandırıldı.",
     "autoDriving": "Avtomobilə qoşulduqda sürücülük görünüşünü aç",
     "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir."
+  },
+  "musicTools": {
+    "guestDj": "Qonaq DJ",
+    "charts": "Dinləmə reytinqləri",
+    "rediscover": "Yenidən kəşf et",
+    "stations": "Musiqi stansiyaları",
+    "prompt": "Təsvirdən pleylist",
+    "provider": "Provayderin generasiya URL-i",
+    "model": "Modelin adı",
+    "consent": "Təsvirimi bu provayderə göndər",
+    "promptHint": "İstədiyiniz musiqini təsvir edin",
+    "noHistory": "Hələ göstəriləcək musiqi yoxdur",
+    "historyHint": "Bu cihazda qeydə alınan dinləmələr",
+    "days": "Günlər",
+    "albumBlocks": "Albomları bütöv saxla",
+    "home": "Musiqi",
+    "recent": "Son dinlənilənlər",
+    "apiKey": "API açarı",
+    "missing": "Yoxdur",
+    "minutes": "Dəqiqə",
+    "rules": "Filtrlər",
+    "exclusiveOutput": "Eksklüziv səs çıxışı",
+    "preamp": "Ön gücləndirmə",
+    "ratingPending": "Bu cihazda saxlanıldı; sinxronizasiya gözlənilir",
+    "lyricsOffset": "Mahnı sözlərinin vaxt fərqi",
+    "anniversaries": "Albomların ildönümləri",
+    "outputPreset": "Bu çıxış üçün ekvalayzer",
+    "outputPresetHint": "Bu çıxış seçildikdə bu ekvalayzeri avtomatik tətbiq et.",
+    "eqApproximation": "Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

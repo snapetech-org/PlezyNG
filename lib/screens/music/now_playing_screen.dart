@@ -1,6 +1,7 @@
 import '../../widgets/music/music_seek_print.dart';
 import 'music_discovery_screen.dart';
 import 'music_driving_screen.dart';
+import 'music_home_screen.dart';
 import '../../karaoke/karaoke_screen.dart';
 import '../../karaoke/karaoke_strings.dart';
 import 'dart:async';
@@ -829,6 +830,11 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
       key: contextMenuKey,
       item: track,
       extraEntries: [
+        MediaMenuExtraEntry(
+          icon: Symbols.library_music_rounded,
+          label: t.musicTools.home,
+          onSelected: () => openMusicHome(context),
+        ),
         MediaMenuExtraEntry(
           icon: Symbols.explore_rounded,
           label: t.musicExperience.title,

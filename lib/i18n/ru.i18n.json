@@ -738,7 +738,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Буфер размер: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Встроенные",
@@ -3154,7 +3155,8 @@
     "decoderHardware": "Аппаратный",
     "tunnelingActive": "Активно",
     "dvRpuFailed": "${converted} (ошибок: ${failures})",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Лимит кэша: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Внешний плеер",
@@ -3325,13 +3327,24 @@
     "request": "Запросить",
     "request4k": "Запросить в 4K",
     "requestSeasons": "Запросить недостающие сезоны",
+    "requestHint": "Выберите параметры запроса в Seerr",
+    "quickRequestHint": "Запросить сейчас через Seerr с настройками по умолчанию",
+    "chooseSeasonsHint": "Выберите сезоны для запроса в Seerr",
+    "request4kHint": "Выберите запрос версии 4K в Seerr",
+    "only4kAvailable": "Для этой учётной записи можно запросить только версию 4K.",
+    "cardActionHint": "Откройте меню карточки, чтобы увидеть параметры запроса Seerr",
+    "requestInProgress": "Запрос выполняется",
     "notifyMe": "Уведомить меня о появлении",
     "notifyMe4k": "Уведомить меня о появлении в 4K",
     "notificationsOn": "Оповещение о доступности включено",
+    "turnOffAlert": "Отключить оповещение о доступности",
     "notificationsEnabled": "Мы сообщим, когда станет доступно",
+    "notificationsEnabled4k": "Мы сообщим, когда станет доступна версия 4K",
+    "notificationsEnabledSeason": "Мы сообщим, когда станет доступен сезон ${season}",
     "notificationsDisabled": "Оповещение о доступности выключено",
     "notificationFailed": "Не удалось обновить оповещение о доступности",
     "seasons": "Сезоны",
+    "requestSheetHint": "Seerr обрабатывает одобрение и отслеживает ваш запрос.",
     "allSeasons": "Все сезоны",
     "advancedOptions": "Дополнительно",
     "destinationServer": "Целевой сервер",
@@ -4296,6 +4309,9 @@
     "recoveryImported": "Данные о восстановлении объединены."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Войдите в собственную учётную запись BookOrbit, чтобы просматривать и воспроизводить книги. Запросы отсутствующих книг по-прежнему отправляются через подключённый экземпляр SeerrNG.",
+    "bookorbitOpen": "Открыть в BookOrbit",
+    "bookorbitDetailHelp": "Откройте эту книгу в BookOrbit, чтобы управлять сведениями библиотеки и форматами, которые Pleazyng не может открыть. Прогресс прослушивания синхронизируется с вашей учётной записью BookOrbit.",
     "savedCertificate": "Сохранённый сертификат сервера",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Введите URL NFS, например nfs://nas:2049/export.",
@@ -5556,5 +5572,37 @@
     "routeLost": "Аудиовыход отключён. Воспроизведение приостановлено.",
     "autoDriving": "Открывать режим вождения при подключении к машине",
     "routeHint": "Система автомобиля определяет, может ли приложение появляться автоматически."
+  },
+  "musicTools": {
+    "guestDj": "Приглашённый диджей",
+    "charts": "Статистика прослушиваний",
+    "rediscover": "Открыть заново",
+    "stations": "Музыкальные станции",
+    "prompt": "Плейлист по описанию",
+    "provider": "Адрес генерации провайдера",
+    "model": "Название модели",
+    "consent": "Отправить мой запрос этому провайдеру",
+    "promptHint": "Опишите желаемую музыку",
+    "noHistory": "Пока нет музыки для отображения",
+    "historyHint": "Прослушивания, записанные на этом устройстве",
+    "days": "Дни",
+    "albumBlocks": "Сохранять альбомы целиком",
+    "home": "Музыка",
+    "recent": "Недавно прослушанные",
+    "apiKey": "Ключ API",
+    "missing": "Н/Д",
+    "minutes": "Минуты",
+    "rules": "Фильтры",
+    "exclusiveOutput": "Монопольный аудиовыход",
+    "preamp": "Предусиление",
+    "ratingPending": "Сохранено на устройстве; ожидает синхронизации",
+    "lyricsOffset": "Смещение текста песни",
+    "anniversaries": "Годовщины альбомов",
+    "outputPreset": "Эквалайзер для этого выхода",
+    "outputPresetHint": "Автоматически применять этот эквалайзер при выборе этого выхода.",
+    "eqApproximation": "Профили наушников приближённо адаптированы к десятиполосному эквалайзеру.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

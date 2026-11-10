@@ -738,7 +738,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Буффер розмір: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Будівництво",
@@ -3148,7 +3149,8 @@
     "decoderHardware": "Хардкор",
     "tunnelingActive": "Активний",
     "dvRpuFailed": "${converted} (${failures} не вдалося)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Cache обмеження: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Зовнішній гравець",
@@ -3319,13 +3321,24 @@
     "request": "Запрошення",
     "request4k": "Заявка в 4K",
     "requestSeasons": "Замовити відсутні сезони",
+    "requestHint": "Виберіть параметри запиту в Seerr",
+    "quickRequestHint": "Надіслати запит у Seerr зараз із типовими налаштуваннями",
+    "chooseSeasonsHint": "Виберіть сезони для запиту в Seerr",
+    "request4kHint": "Виберіть запит версії 4K у Seerr",
+    "only4kAvailable": "Цей обліковий запис може запитувати лише версію 4K.",
+    "cardActionHint": "Відкрийте меню картки, щоб переглянути параметри запиту Seerr",
+    "requestInProgress": "Запит виконується",
     "notifyMe": "Повідомити, коли стане доступним",
     "notifyMe4k": "Повідомити, коли стане доступним у 4K",
     "notificationsOn": "Сповіщення про доступність увімкнено",
+    "turnOffAlert": "Вимкнути сповіщення про доступність",
     "notificationsEnabled": "Ми повідомимо, коли стане доступним",
+    "notificationsEnabled4k": "Ми повідомимо, коли стане доступною версія 4K",
+    "notificationsEnabledSeason": "Ми повідомимо, коли стане доступним сезон ${season}",
     "notificationsDisabled": "Сповіщення про доступність вимкнено",
     "notificationFailed": "Не вдалося оновити сповіщення про доступність",
     "seasons": "Сезони",
+    "requestSheetHint": "Seerr керує схваленням і відстежує ваш запит.",
     "allSeasons": "Всі сезони",
     "advancedOptions": "Розширені",
     "destinationServer": "Сервіс призначення",
@@ -4290,6 +4303,9 @@
     "recoveryImported": "Відновлення даних поєднуються."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Увійдіть у власний обліковий запис BookOrbit, щоб переглядати й відтворювати свої книжки. Запити на відсутні книжки й надалі надсилатимуться через підключений екземпляр SeerrNG.",
+    "bookorbitOpen": "Відкрити в BookOrbit",
+    "bookorbitDetailHelp": "Перегляньте цю книжку в BookOrbit, щоб керувати відомостями бібліотеки та форматами, які Pleazyng не може відкрити. Прогрес прослуховування синхронізується з вашим обліковим записом BookOrbit.",
     "savedCertificate": "Збережений сертифікат сервера",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Введіть URL NFS, наприклад nfs://nas:2049/export.",
@@ -5550,5 +5566,37 @@
     "routeLost": "Аудіовихід від’єднано. Відтворення призупинено.",
     "autoDriving": "Відкривати режим водіння при підключенні до авто",
     "routeHint": "Система автомобіля визначає, чи може застосунок з’являтися автоматично."
+  },
+  "musicTools": {
+    "guestDj": "Запрошений діджей",
+    "charts": "Статистика прослуховувань",
+    "rediscover": "Відкрити знову",
+    "stations": "Музичні станції",
+    "prompt": "Плейлист за описом",
+    "provider": "Адреса генерації постачальника",
+    "model": "Назва моделі",
+    "consent": "Надіслати мій опис цьому постачальнику",
+    "promptHint": "Опишіть бажану музику",
+    "noHistory": "Поки немає музики для показу",
+    "historyHint": "Прослуховування, записані на цьому пристрої",
+    "days": "Дні",
+    "albumBlocks": "Зберігати альбоми цілими",
+    "home": "Музика",
+    "recent": "Нещодавно прослухані",
+    "apiKey": "Ключ API",
+    "missing": "Н / А",
+    "minutes": "хвилин",
+    "rules": "Фільтри",
+    "exclusiveOutput": "Монопольний аудіовихід",
+    "preamp": "Попереднє підсилення",
+    "ratingPending": "Збережено на пристрої; очікує синхронізації",
+    "lyricsOffset": "Зсув тексту пісні",
+    "anniversaries": "Річниці альбомів",
+    "outputPreset": "Еквалайзер для цього виходу",
+    "outputPresetHint": "Автоматично застосовувати цей еквалайзер, коли вибрано цей вихід.",
+    "eqApproximation": "Профілі навушників наближено адаптовані до десятисмугового еквалайзера.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

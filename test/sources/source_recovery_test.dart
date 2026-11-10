@@ -13,7 +13,8 @@ import 'package:plezy/sources/source_database.dart';
 import 'package:plezy/sources/source_models.dart';
 import 'package:plezy/sources/source_playback.dart';
 
-import '../services/music/music_playback_service_test.dart' show FakePlayer, FakeMediaControlsManager;
+import '../services/music/music_playback_service_test.dart'
+    show FakePlayer, FakeMediaControlsManager;
 import 'fixtures/memory_sources.dart';
 
 class _Controls extends FakeMediaControlsManager {
@@ -40,8 +41,12 @@ class _RecoverySources extends MemorySources {
   var hydrationCount = 0;
 
   @override
-  Future<bool> hasOfflineContent(SourceEntry entry, PublicationFile file) async =>
-      pendingLocal == null ? localFiles.contains(file.fingerprint) : await pendingLocal!.future;
+  Future<bool> hasOfflineContent(
+    SourceEntry entry,
+    PublicationFile file,
+  ) async => pendingLocal == null
+      ? localFiles.contains(file.fingerprint)
+      : await pendingLocal!.future;
 
   @override
   Future<SourceEntry> hydrate(SourceEntry entry) async {
@@ -68,8 +73,18 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late SourceDatabase database;
   late SourceRepository repository;
-  const first = PublicationFile(id: 'one', name: '01.m4b', mimeType: 'audio/mp4', durationMs: 180000);
-  const second = PublicationFile(id: 'two', name: '02.m4b', mimeType: 'audio/mp4', durationMs: 180000);
+  const first = PublicationFile(
+    id: 'one',
+    name: '01.m4b',
+    mimeType: 'audio/mp4',
+    durationMs: 180000,
+  );
+  const second = PublicationFile(
+    id: 'two',
+    name: '02.m4b',
+    mimeType: 'audio/mp4',
+    durationMs: 180000,
+  );
   const entry = SourceEntry(
     sourceId: 'files',
     id: 'https://provider.example/book',
@@ -88,14 +103,32 @@ void main() {
     final identity = (await repository.recoveryIdentity('alice', entry))!;
     expect(identity, isNot(contains('://')));
     expect(identity, isNot(contains('provider')));
-    expect((await repository.entryForRecovery('alice', 'files', identity))?.id, entry.id);
+    expect(
+      (await repository.entryForRecovery('alice', 'files', identity))?.id,
+      entry.id,
+    );
     expect(await repository.entryForRecovery('bob', 'files', identity), isNull);
-    expect(await repository.entryForRecovery('alice', 'another-source', identity), isNull);
+    expect(
+      await repository.entryForRecovery('alice', 'another-source', identity),
+      isNull,
+    );
     await repository.cacheEntries('alice', [entry.copyWith(title: 'Updated')]);
     expect(await repository.recoveryIdentity('alice', entry), identity);
-    expect((await repository.entryForRecovery('alice', 'files', identity))?.title, 'Updated');
-    for (final invalid in ['', '1', '-1:abc', '1 OR 1=1', "999999999999999999999:${'a' * 64}"]) {
-      expect(await repository.entryForRecovery('alice', 'files', invalid), isNull);
+    expect(
+      (await repository.entryForRecovery('alice', 'files', identity))?.title,
+      'Updated',
+    );
+    for (final invalid in [
+      '',
+      '1',
+      '-1:abc',
+      '1 OR 1=1',
+      "999999999999999999999:${'a' * 64}",
+    ]) {
+      expect(
+        await repository.entryForRecovery('alice', 'files', invalid),
+        isNull,
+      );
     }
   });
 
@@ -103,21 +136,47 @@ void main() {
     await repository.cacheEntries('alice', [entry]);
     final identity = (await repository.recoveryIdentity('alice', entry))!;
     await database.customStatement('DELETE FROM entries');
-    const other = SourceEntry(sourceId: 'files', id: 'other', title: 'Other', kind: SourceItemKind.audiobook);
+    const other = SourceEntry(
+      sourceId: 'files',
+      id: 'other',
+      title: 'Other',
+      kind: SourceItemKind.audiobook,
+    );
     await repository.cacheEntries('alice', [other]);
-    expect(await repository.entryForRecovery('alice', 'files', identity), isNull);
+    expect(
+      await repository.entryForRecovery('alice', 'files', identity),
+      isNull,
+    );
   });
 
   test('recovery resolves the exact edition order and rejects replacement or samples', () {
-    WorkspaceResumeTarget target(List<String> files) =>
-        WorkspaceResumeTarget(kind: WorkspaceResumeKind.source, providerId: 'files', itemId: 'opaque', fileIds: files);
-    expect(recoverySourceFiles(entry, target([second.fingerprint, first.fingerprint]))!.map((f) => f.id), [
-      'two',
-      'one',
-    ]);
-    expect(recoverySourceFiles(entry, target([first.fingerprint, first.fingerprint])), isNull);
+    WorkspaceResumeTarget target(List<String> files) => WorkspaceResumeTarget(
+      kind: WorkspaceResumeKind.source,
+      providerId: 'files',
+      itemId: 'opaque',
+      fileIds: files,
+    );
+    expect(
+      recoverySourceFiles(
+        entry,
+        target([second.fingerprint, first.fingerprint]),
+      )!.map((f) => f.id),
+      ['two', 'one'],
+    );
+    expect(
+      recoverySourceFiles(
+        entry,
+        target([first.fingerprint, first.fingerprint]),
+      ),
+      isNull,
+    );
     expect(recoverySourceFiles(entry, target(['0' * 64])), isNull);
-    const sample = PublicationFile(id: 'sample', name: 'sample.m4b', mimeType: 'audio/mp4', sampleOnly: true);
+    const sample = PublicationFile(
+      id: 'sample',
+      name: 'sample.m4b',
+      mimeType: 'audio/mp4',
+      sampleOnly: true,
+    );
     const sampleEntry = SourceEntry(
       sourceId: 'files',
       id: 'sample',
@@ -125,17 +184,30 @@ void main() {
       kind: SourceItemKind.audiobook,
       files: [sample],
     );
-    expect(recoverySourceFiles(sampleEntry, target([sample.fingerprint])), isNull);
+    expect(
+      recoverySourceFiles(sampleEntry, target([sample.fingerprint])),
+      isNull,
+    );
     final encoded = target([first.fingerprint]).toJson();
-    expect(WorkspaceResumeTarget.fromJson(encoded).fileIds, [first.fingerprint]);
+    expect(WorkspaceResumeTarget.fromJson(encoded).fileIds, [
+      first.fingerprint,
+    ]);
     encoded['fileIds'] = List.filled(257, first.fingerprint);
-    expect(() => WorkspaceResumeTarget.fromJson(encoded), throwsFormatException);
+    expect(
+      () => WorkspaceResumeTarget.fromJson(encoded),
+      throwsFormatException,
+    );
     encoded['fileIds'] = ['https://provider.example/secret'];
-    expect(() => WorkspaceResumeTarget.fromJson(encoded), throwsFormatException);
+    expect(
+      () => WorkspaceResumeTarget.fromJson(encoded),
+      throwsFormatException,
+    );
   });
 
   test('offline recovery verifies every selected file before bypassing the provider', () async {
-    final directory = await Directory.systemTemp.createTemp('pleazyng-offline-recovery-');
+    final directory = await Directory.systemTemp.createTemp(
+      'pleazyng-offline-recovery-',
+    );
     final sources = _RecoverySources(repository, directory);
     final target = WorkspaceResumeTarget(
       kind: WorkspaceResumeKind.source,
@@ -145,15 +217,30 @@ void main() {
     );
     try {
       sources.localFiles.addAll(target.fileIds);
-      expect(await resolveRecoverySourceEntry(
-        sources: sources, cached: entry, target: target, isCurrent: () => true,
-      ), same(entry));
+      expect(
+        await resolveRecoverySourceEntry(
+          sources: sources,
+          cached: entry,
+          target: target,
+          isCurrent: () => true,
+        ),
+        same(entry),
+      );
       expect(sources.hydrationCount, 0);
 
       sources.localFiles.remove(second.fingerprint);
-      sources.refreshed = entry.copyWith(files: [first]);
+      sources.refreshed = const SourceEntry(
+        sourceId: 'files',
+        id: 'https://provider.example/book',
+        title: 'Book',
+        kind: SourceItemKind.audiobook,
+        files: [first],
+      );
       final refreshed = await resolveRecoverySourceEntry(
-        sources: sources, cached: entry, target: target, isCurrent: () => true,
+        sources: sources,
+        cached: entry,
+        target: target,
+        isCurrent: () => true,
       );
       expect(sources.hydrationCount, 1);
       expect(recoverySourceFiles(refreshed!, target), isNull);
@@ -161,7 +248,10 @@ void main() {
       sources.pendingLocal = Completer<bool>();
       var current = true;
       final pending = resolveRecoverySourceEntry(
-        sources: sources, cached: entry, target: target, isCurrent: () => current,
+        sources: sources,
+        cached: entry,
+        target: target,
+        isCurrent: () => current,
       );
       current = false;
       sources.pendingLocal!.complete(true);
@@ -174,9 +264,18 @@ void main() {
   });
 
   Future<void> exercise(
-    Future<void> Function(SourcePlayback, _GatedPlayer, MemorySources, MultiviewWorkspaceController, Directory) run,
+    Future<void> Function(
+      SourcePlayback,
+      _GatedPlayer,
+      MemorySources,
+      MultiviewWorkspaceController,
+      Directory,
+    )
+    run,
   ) async {
-    final directory = await Directory.systemTemp.createTemp('pleazyng-source-recovery-');
+    final directory = await Directory.systemTemp.createTemp(
+      'pleazyng-source-recovery-',
+    );
     final sources = MemorySources(repository, directory);
     final native = _GatedPlayer();
     final controls = _Controls();
@@ -187,7 +286,11 @@ void main() {
       wakelockToggle: (_) async {},
     );
     final workspace = MultiviewWorkspaceController();
-    final binder = SourceRecoveryBinder(workspace: workspace, playback: playback, profileId: 'alice');
+    final binder = SourceRecoveryBinder(
+      workspace: workspace,
+      playback: playback,
+      profileId: 'alice',
+    );
     try {
       await repository.cacheEntries('alice', [entry]);
       await run(playback, native, sources, workspace, directory);
@@ -209,14 +312,20 @@ void main() {
       await playback.start(
         entry,
         entry.audio,
-        localOverrides: {for (final file in entry.audio) file.id: Uri.file('${directory.path}/${file.name}')},
+        localOverrides: {
+          for (final file in entry.audio)
+            file.id: Uri.file('${directory.path}/${file.name}'),
+        },
       );
       for (var i = 0; i < 30 && workspace.snapshot().sessions.isEmpty; i++) {
         await Future<void>.delayed(const Duration(milliseconds: 10));
       }
       final snapshot = workspace.snapshot();
       expect(snapshot.sessions, hasLength(1));
-      expect(snapshot.sessions.single.resume!.fileIds, entry.audio.map((f) => f.fingerprint));
+      expect(
+        snapshot.sessions.single.resume!.fileIds,
+        entry.audio.map((f) => f.fingerprint),
+      );
       expect(jsonEncode(snapshot.toJson()), isNot(contains('https://')));
       expect(workspace.sessions, isEmpty);
       await playback.stop();
@@ -235,7 +344,10 @@ void main() {
         entry.audio,
         onlyIfIdle: true,
         isStartCurrent: () => current,
-        localOverrides: {for (final file in entry.audio) file.id: Uri.file('${directory.path}/${file.name}')},
+        localOverrides: {
+          for (final file in entry.audio)
+            file.id: Uri.file('${directory.path}/${file.name}'),
+        },
       );
       await native.requestedFocus.future;
       current = false;
@@ -252,7 +364,10 @@ void main() {
       await playback.start(
         entry,
         entry.audio,
-        localOverrides: {for (final file in entry.audio) file.id: Uri.file('${directory.path}/${file.name}')},
+        localOverrides: {
+          for (final file in entry.audio)
+            file.id: Uri.file('${directory.path}/${file.name}'),
+        },
       );
       final count = native.openedUris.length;
       const other = SourceEntry(
@@ -262,7 +377,12 @@ void main() {
         kind: SourceItemKind.audiobook,
         files: [first],
       );
-      await playback.start(other, other.audio, onlyIfIdle: true, isStartCurrent: () => true);
+      await playback.start(
+        other,
+        other.audio,
+        onlyIfIdle: true,
+        isStartCurrent: () => true,
+      );
       expect(native.openedUris, hasLength(count));
       expect(playback.entry?.key, entry.key);
     }),

@@ -10,6 +10,9 @@ import '../focus/input_mode_tracker.dart';
 import '../i18n/strings.g.dart';
 import '../media/media_backend.dart';
 import '../media/media_item.dart';
+import '../media/media_kind.dart';
+import '../services/music/music_experience.dart';
+import '../services/music/music_rating_journal.dart';
 import '../media/media_server_client.dart';
 import '../models/catalog/catalog_item.dart';
 import '../providers/trackers_provider.dart';
@@ -44,6 +47,34 @@ class RatingBottomSheet extends StatefulWidget {
 }
 
 class _RatingBottomSheetState extends State<RatingBottomSheet> {
+  MusicRatingJournal? _musicRatings;
+  bool _serverPending = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (const [MediaKind.track, MediaKind.album, MediaKind.artist].contains(widget.item.kind)) {
+      _musicRatings = context.read<MusicExperience?>()?.ratings;
+    }
+  }
+
+  Future<void> _rateMusicOrServer(double value) async {
+    final journal = _musicRatings;
+    if (journal == null) {
+      await widget.serverClient!.rate(widget.item, value);
+    } else {
+      _serverPending = !await journal.rate(widget.item, value);
+    }
+  }
+
+  Future<void> _favoriteMusicOrServer(bool value) async {
+    final journal = _musicRatings;
+    if (journal == null) {
+      await widget.serverClient!.setFavorite(widget.item, value);
+    } else {
+      _serverPending = !await journal.favorite(widget.item, value);
+    }
+  }
+
   static const _autoSaveDelay = Duration(milliseconds: 600);
 
   late double _serverStars;
@@ -381,7 +412,7 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
 
     final rating = value * 2.0;
     await _run(_serverKey, () async {
-      await widget.serverClient!.rate(widget.item, rating);
+      await _rateMusicOrServer(rating);
       _serverRating = rating;
       _serverStars = value;
       widget.onServerRatingChanged?.call(rating);
@@ -391,7 +422,7 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
   Future<void> _clearServerRating() async {
     _cancelAutoSave(_serverKey);
     await _run(_serverKey, () async {
-      await widget.serverClient!.rate(widget.item, -1);
+      await _rateMusicOrServer(-1);
       _serverRating = 0;
       _serverStars = 0;
       widget.onServerRatingChanged?.call(0);
@@ -402,7 +433,7 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
     _cancelAutoSave(_serverKey);
     final selected = value ?? _serverFavorite;
     await _run(_serverKey, () async {
-      await widget.serverClient!.setFavorite(widget.item, selected);
+      await _favoriteMusicOrServer(selected);
       _serverFavorite = selected;
       widget.onServerFavoriteChanged?.call(selected);
     });
@@ -450,7 +481,9 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
       await action();
       if (!mounted) return;
       setState(() {
-        _statuses[key] = _SectionStatus(t.rateSheet.saved);
+        _statuses[key] = _SectionStatus(
+          key == _serverKey && _serverPending ? t.musicTools.ratingPending : t.rateSheet.saved,
+        );
       });
     } on TrackerRatingUnavailableException catch (e) {
       appLogger.d('Rating unavailable', error: e);
@@ -513,12 +546,12 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
     try {
       if (client.capabilities.numericUserRating) {
         final rating = _serverStars <= 0 ? -1.0 : _serverStars * 2.0;
-        await client.rate(widget.item, rating);
+        await _rateMusicOrServer(rating);
         widget.onServerRatingChanged?.call(rating < 0 ? 0 : rating);
         return;
       }
 
-      await client.setFavorite(widget.item, _serverFavorite);
+      await _favoriteMusicOrServer(_serverFavorite);
       widget.onServerFavoriteChanged?.call(_serverFavorite);
     } catch (e) {
       appLogger.w('Failed to update rating after sheet close', error: e);

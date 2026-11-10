@@ -25,6 +25,7 @@ object MusicCarApi {
             pipe.setMethodCallHandler { call, result ->
                 when (call.method) {
                     "ready" -> { epoch++; ready = true; if (hasCarHost) connection(true); listeners.toList().forEach { it() }; result.success(null) }
+                    "catalogChanged" -> { listeners.toList().forEach { it() }; result.success(null) }
                     "snapshot" -> { snapshot = call.arguments as? Map<*, *> ?: emptyMap<Any, Any>(); listeners.toList().forEach { it() }; result.success(null) }
                     "close" -> { epoch++; ready = false; snapshot = emptyMap<Any, Any>(); listeners.toList().forEach { it() }; result.success(null) }
                     else -> result.notImplemented()

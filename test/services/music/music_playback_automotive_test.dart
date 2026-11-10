@@ -1,3 +1,4 @@
+import 'package:plezy/services/driver_distraction.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -215,6 +216,24 @@ void main() {
     expect(harness.player.state.playing, isTrue);
     expect(harness.service.status, MusicPlaybackStatus.playing);
     expect(harness.controls.backgroundModeCalls, contains(true));
+  });
+
+  test('the separate AAOS media target plays and advances while moving without relaxing video restrictions', () async {
+    TvDetectionService.debugSetAutomotiveOverride(true);
+    TvDetectionService.debugSetAutomotiveMediaOverride(true);
+    CarUxRestrictionsService.debugSetOverride(CarUxRestrictionState.restricted);
+    binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    final harness = _Harness.create();
+    addTearDown(harness.dispose);
+    await harness.start([_track('one'), _track('two')]);
+    expect(harness.player.state.playing, isTrue);
+    expect(automotivePlaybackAllowedNow(), isFalse);
+    expect(automotiveMusicPlaybackAllowedNow(), isTrue);
+    await harness.service.next();
+    expect(harness.service.currentTrack?.id, 'two');
+    expect(harness.player.state.playing, isTrue);
+    await harness.service.pause();
+    expect(harness.player.state.playing, isFalse);
   });
 
   test('a driving vehicle stops music and parking again resumes it', () async {

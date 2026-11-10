@@ -115,6 +115,7 @@ class TranslationsKk extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$kk romm = _Translations$romm$kk._(_root);
 	@override late final _Translations$subtitleCapture$kk subtitleCapture = _Translations$subtitleCapture$kk._(_root);
 	@override late final _Translations$musicExperience$kk musicExperience = _Translations$musicExperience$kk._(_root);
+	@override late final _Translations$musicTools$kk musicTools = _Translations$musicTools$kk._(_root);
 }
 
 // Path: app
@@ -808,6 +809,7 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Осылайша «Жеңізде» киносы көреп отырды.';
 	@override String get contentScreensaverDelayOptionDescription => 'Қазіргі таңда бүкіл әлемде өте көп айтылады.';
 	@override String get videoCodecOptionDescription => 'Қазіргі уақытта бұл кодектеріне жүктеуге болады.Некеккен кодектер мен медиа сервердер арқылы транскриптуды.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Баукерлік: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2546,6 +2548,7 @@ class _Translations$performanceOverlay$kk extends Translations$performanceOverla
 	@override String get decoderHardware => 'Аппараттық';
 	@override String get tunnelingActive => 'Белсенді';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} сәтсіз аяқталды)';
+	@override String cacheLimitMiB({required Object size}) => 'Кэш шегі: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2740,13 +2743,24 @@ class _Translations$seerr$kk extends Translations$seerr$en {
 	@override String get request => 'Сұрау салу';
 	@override String get request4k => '4K сұрау салу';
 	@override String get requestSeasons => 'Жетіспейтін маусымдарға сұрау жіберу';
+	@override String get requestHint => 'Seerr ішінен сұрау параметрлерін таңдаңыз';
+	@override String get quickRequestHint => 'Seerr ішінде әдепкі параметрлермен қазір сұрау салыңыз';
+	@override String get chooseSeasonsHint => 'Seerr ішінде сұралатын маусымдарды таңдаңыз';
+	@override String get request4kHint => 'Seerr ішінде 4K сұрауын таңдаңыз';
+	@override String get only4kAvailable => 'Бұл тіркелгі арқылы тек 4K нұсқасын сұрауға болады.';
+	@override String get cardActionHint => 'Seerr сұрау параметрлері үшін карта мәзірін ашыңыз';
+	@override String get requestInProgress => 'Сұрау орындалып жатыр';
 	@override String get notifyMe => 'Қолжетімді болғанда маған хабарлаңыз';
 	@override String get notifyMe4k => '4K форматында қолжетімді болғанда маған хабарлаңыз';
 	@override String get notificationsOn => 'Қолжетімділік туралы ескерту қосулы';
+	@override String get turnOffAlert => 'Қолжетімділік ескертуін өшіру';
 	@override String get notificationsEnabled => 'Қолжетімді болғанда сізге хабарлаймыз';
+	@override String get notificationsEnabled4k => '4K нұсқасы қолжетімді болғанда сізге хабарлаймыз';
+	@override String notificationsEnabledSeason({required Object season}) => '${season}-маусымы қолжетімді болғанда сізге хабарлаймыз';
 	@override String get notificationsDisabled => 'Қолжетімділік туралы ескерту өшірілді';
 	@override String get notificationFailed => 'Қолжетімділік туралы ескертуді жаңарту мүмкін болмады';
 	@override String get seasons => 'Маусымдар';
+	@override String get requestSheetHint => 'Мақұлдауды Seerr өңдейді және сұрауыңызды бақылайды.';
 	@override String get allSeasons => 'Барлық маусымдар';
 	@override String get advancedOptions => 'Кеңейтілген';
 	@override String get destinationServer => 'Нысаналы сервер';
@@ -3749,6 +3763,9 @@ class _Translations$sourceSetup$kk extends Translations$sourceSetup$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Кітаптарды қарау және ойнату үшін өз BookOrbit тіркелгіңізге кіріңіз. Жоқ тақырыптарға арналған сұраулар әлі де қосылған SeerrNG данасы арқылы жіберіледі.';
+	@override String get bookorbitOpen => 'BookOrbit ішінде ашу';
+	@override String get bookorbitDetailHelp => 'Кітапхана мәліметтерін және Pleazyng аша алмайтын пішімдерді басқару үшін бұл тақырыпты BookOrbit ішінде қараңыз. Тыңдау барысы BookOrbit тіркелгісімен синхрондалады.';
 	@override String get savedCertificate => 'Сақталған сервер сертификаты';
 	@override String get nfsEndpointInvalid => 'nfs://nas:2049/export сияқты NFS URL мекенжайын енгізіңіз.';
 	@override String get dlnaNone => 'DLNA серверлері табылмады. Құрылғы сипаттамасының URL мекенжайын қолмен енгізіңіз.';
@@ -4269,6 +4286,45 @@ class _Translations$musicExperience$kk extends Translations$musicExperience$en {
 	@override String get routeLost => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.';
 	@override String get autoDriving => 'Көлікке қосылғанда жүргізу көрінісін ашу';
 	@override String get routeHint => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$kk extends Translations$musicTools$en {
+	_Translations$musicTools$kk._(TranslationsKk root) : this._root = root, super.internal(root);
+
+	final TranslationsKk _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Қонақ диджей';
+	@override String get charts => 'Тыңдау рейтингі';
+	@override String get rediscover => 'Қайта ашу';
+	@override String get stations => 'Музыка станциялары';
+	@override String get prompt => 'Сипаттамадан ойнату тізімі';
+	@override String get provider => 'Провайдердің жасау мекенжайы';
+	@override String get model => 'Модель атауы';
+	@override String get consent => 'Сипаттамамды осы провайдерге жіберу';
+	@override String get promptHint => 'Қалаған музыкаңызды сипаттаңыз';
+	@override String get noHistory => 'Әзірге көрсетілетін музыка жоқ';
+	@override String get historyHint => 'Осы құрылғыда жазылған тыңдаулар';
+	@override String get days => 'Күндер';
+	@override String get albumBlocks => 'Альбомдарды тұтас сақтау';
+	@override String get home => 'Музыка';
+	@override String get recent => 'Жақында тыңдалған';
+	@override String get apiKey => 'API кілті';
+	@override String get missing => 'N/A';
+	@override String get minutes => 'Минут';
+	@override String get rules => 'Фильтрлер';
+	@override String get exclusiveOutput => 'Эксклюзивті аудио шығыс';
+	@override String get preamp => 'Алдын ала күшейту';
+	@override String get ratingPending => 'Осы құрылғыда сақталды; синхрондау күтілуде';
+	@override String get lyricsOffset => 'Ән мәтінінің уақыт ығысуы';
+	@override String get anniversaries => 'Альбом мерейтойлары';
+	@override String get outputPreset => 'Осы шығысқа арналған эквалайзер';
+	@override String get outputPresetHint => 'Осы шығыс таңдалғанда осы эквалайзерді автоматты түрде қолдану.';
+	@override String get eqApproximation => 'Құлаққап профильдері он жолақты эквалайзерге жуықтап бейімделген.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6060,6 +6116,7 @@ extension on TranslationsKk {
 			'settings.prerollSelectionDescription' => 'Осылайша «Жеңізде» киносы көреп отырды.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Қазіргі таңда бүкіл әлемде өте көп айтылады.',
 			'settings.videoCodecOptionDescription' => 'Қазіргі уақытта бұл кодектеріне жүктеуге болады.Некеккен кодектер мен медиа сервердер арқылы транскриптуды.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Баукерлік: ${size} MiB',
 			'themeEditor.builtIn' => 'Кірістірілген',
 			'themeEditor.presets' => 'Дайын тақырыптар',
 			'themeEditor.custom' => 'Жеке',
@@ -6411,9 +6468,9 @@ extension on TranslationsKk {
 			'videoControls.chaptersAndBookmarks' => 'Тараулар мен бетбелгілер',
 			'videoControls.segmentLoop' => 'Бөлімді қайталау',
 			'videoControls.addBookmark' => 'Бетбелгі қосу',
-			'videoControls.bookmarkName' => 'Бетбелгі атауы',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Бетбелгі атауы',
 			'videoControls.bookmarkNameHint' => 'Мысалы, кіріспе көрінісі',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Бетбелгі ${n}',
 			'videoControls.bookmarkNameRequired' => 'Бұл бетбелгіге атау енгізіңіз.',
@@ -6925,9 +6982,9 @@ extension on TranslationsKk {
 			'libraries.hideLibrary' => 'Кітапхананы жасыру',
 			'libraries.libraryOptions' => 'Кітапхана параметрлері',
 			'libraries.content' => 'кітапхана мазмұны',
-			'libraries.selectLibrary' => 'Кітапхананы таңдау',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Кітапхананы таңдау',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
 			'libraries.noRecommendations' => 'Ұсыныстар жоқ',
 			'libraries.noCollections' => 'Бұл кітапханада топтамалар жоқ',
@@ -7439,9 +7496,9 @@ extension on TranslationsKk {
 			'watchTogether.paste' => 'Қою',
 			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
 			'watchTogether.copyCode' => 'Кодты көшіру',
-			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
 			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
@@ -7905,6 +7962,7 @@ extension on TranslationsKk {
 			'performanceOverlay.decoderHardware' => 'Аппараттық',
 			'performanceOverlay.tunnelingActive' => 'Белсенді',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} сәтсіз аяқталды)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Кэш шегі: ${size} MiB',
 			'externalPlayer.title' => 'Сыртқы ойнатқыш',
 			'externalPlayer.useExternalPlayer' => 'Сыртқы ойнатқышты пайдалану',
 			'externalPlayer.useExternalPlayerDescription' => 'Видеоларды басқа қолданбада ашу',
@@ -7952,10 +8010,10 @@ extension on TranslationsKk {
 			'metadataEdit.fromUrl' => 'URL арқылы',
 			'metadataEdit.uploadFile' => 'Файлды жүктеу',
 			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
-			'metadataEdit.imageUrl' => 'Сурет URL-і',
-			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Сурет URL-і',
+			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
 			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
 			'metadataEdit.artworkUpdated' => 'Суреттер жаңартылды',
 			'metadataEdit.artworkUpdateFailed' => 'Суреттерді жаңарту мүмкін болмады',
@@ -8047,13 +8105,24 @@ extension on TranslationsKk {
 			'seerr.request' => 'Сұрау салу',
 			'seerr.request4k' => '4K сұрау салу',
 			'seerr.requestSeasons' => 'Жетіспейтін маусымдарға сұрау жіберу',
+			'seerr.requestHint' => 'Seerr ішінен сұрау параметрлерін таңдаңыз',
+			'seerr.quickRequestHint' => 'Seerr ішінде әдепкі параметрлермен қазір сұрау салыңыз',
+			'seerr.chooseSeasonsHint' => 'Seerr ішінде сұралатын маусымдарды таңдаңыз',
+			'seerr.request4kHint' => 'Seerr ішінде 4K сұрауын таңдаңыз',
+			'seerr.only4kAvailable' => 'Бұл тіркелгі арқылы тек 4K нұсқасын сұрауға болады.',
+			'seerr.cardActionHint' => 'Seerr сұрау параметрлері үшін карта мәзірін ашыңыз',
+			'seerr.requestInProgress' => 'Сұрау орындалып жатыр',
 			'seerr.notifyMe' => 'Қолжетімді болғанда маған хабарлаңыз',
 			'seerr.notifyMe4k' => '4K форматында қолжетімді болғанда маған хабарлаңыз',
 			'seerr.notificationsOn' => 'Қолжетімділік туралы ескерту қосулы',
+			'seerr.turnOffAlert' => 'Қолжетімділік ескертуін өшіру',
 			'seerr.notificationsEnabled' => 'Қолжетімді болғанда сізге хабарлаймыз',
+			'seerr.notificationsEnabled4k' => '4K нұсқасы қолжетімді болғанда сізге хабарлаймыз',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '${season}-маусымы қолжетімді болғанда сізге хабарлаймыз',
 			'seerr.notificationsDisabled' => 'Қолжетімділік туралы ескерту өшірілді',
 			'seerr.notificationFailed' => 'Қолжетімділік туралы ескертуді жаңарту мүмкін болмады',
 			'seerr.seasons' => 'Маусымдар',
+			'seerr.requestSheetHint' => 'Мақұлдауды Seerr өңдейді және сұрауыңызды бақылайды.',
 			'seerr.allSeasons' => 'Барлық маусымдар',
 			'seerr.advancedOptions' => 'Кеңейтілген',
 			'seerr.destinationServer' => 'Нысаналы сервер',
@@ -8455,6 +8524,8 @@ extension on TranslationsKk {
 			'universalMedia.favorites' => 'Алдыңғы ең айқын көргенде',
 			'universalMedia.address' => 'Медыялық адресы',
 			'universalMedia.addressHelp' => 'Өзі сүйікті жабдықтардан тұрып қара сөздерін, аудармаларын жазды.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'Алдыңғы қағидалар (опциональ)',
 			'universalMedia.displayNameHelp' => 'Қаланың ең айқын көрмесі ержеткен балалардың бір-бірімен танымал.',
 			'universalMedia.allowHttp' => 'Қандай-ақ HTTP қосылды',
@@ -8468,8 +8539,6 @@ extension on TranslationsKk {
 			'universalMedia.favoriteSaved' => 'Бұл профильде көшіру керек.',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
 			'universalMedia.playlistAddress' => 'Жабдықтау адресы',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Қаланың тұрақты тұрғындарының саны 3 адамды құрайды, 1 адамды қағидасы, 2 адамды жабдықтар, 4 адамды салыстырды.',
 			'universalMedia.choosePlaylist' => 'Серіктің қағидалары',
 			'universalMedia.openPlaylist' => 'Ауыз Playlist',
@@ -8931,6 +9000,9 @@ extension on TranslationsKk {
 			'audiobook.recoveryImportConfirm' => 'Бұл криптовалюталық дағдарыстағы қанағаттанды және жабдықтармен көруге болады? іс-әрекеттің историю бар. Жабдықтау библиотекасы және элементтік ID-дер не пайдаланылады; екеуінде импортируға дейін әртүрлі айналысатын идентификатордан қабылдайды.',
 			'audiobook.recoveryExported' => 'Қазіргі уақытта өңдеуге кеңінен танымал.',
 			'audiobook.recoveryImported' => 'Ауыздан дағдарыста.',
+			'sourceSetup.bookorbitHelp' => 'Кітаптарды қарау және ойнату үшін өз BookOrbit тіркелгіңізге кіріңіз. Жоқ тақырыптарға арналған сұраулар әлі де қосылған SeerrNG данасы арқылы жіберіледі.',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit ішінде ашу',
+			'sourceSetup.bookorbitDetailHelp' => 'Кітапхана мәліметтерін және Pleazyng аша алмайтын пішімдерді басқару үшін бұл тақырыпты BookOrbit ішінде қараңыз. Тыңдау барысы BookOrbit тіркелгісімен синхрондалады.',
 			'sourceSetup.savedCertificate' => 'Сақталған сервер сертификаты',
 			'sourceSetup.nfsEndpointInvalid' => 'nfs://nas:2049/export сияқты NFS URL мекенжайын енгізіңіз.',
 			'sourceSetup.dlnaNone' => 'DLNA серверлері табылмады. Құрылғы сипаттамасының URL мекенжайын қолмен енгізіңіз.',
@@ -8966,6 +9038,8 @@ extension on TranslationsKk {
 			'sourceSetup.clientCertificate' => 'Клиент сертификаты (міндетті емес)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-қа осы клиентті аутентификациялауға мүмкіндік береді; AUTH_SYS ID мәндері әлі де NAS-тағы NFS ортақ ресурсының ережелеріне тәуелді.',
 			'sourceSetup.savedIdentity' => 'Сақталған клиенттің сәйкестендіру деректері пайдаланылады.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Сақталған клиенттің сәйкестендіру деректерін ауыстыру',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 клиент сәйкестендіру деректерін таңдау',
 			'sourceSetup.identityPassphrase' => 'Клиент сәйкестендіру деректерінің құпиясөз тіркесі',
@@ -8982,8 +9056,6 @@ extension on TranslationsKk {
 			'sourceSetup.apiKey' => 'API кілті',
 			'sourceSetup.optionalUsername' => 'Тіркелгінің пайдаланушы аты (міндетті емес)',
 			'sourceSetup.optionalPassword' => 'Тіркелгі құпиясөзі (міндетті емес)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com сайтынан API кілтін алыңыз. Іздеу бейне атауын және қолжетімді IMDb/TMDB ID мәндерін жібереді, бірақ бейнефайлды ешқашан жібермейді. Кілт пен қосымша тіркелгі деректері осы дереккөзбен бірге шифрланады.',
 			'sourceSetup.automaticMetadata' => 'Бейненің автоматты онлайн метадеректері',
 			'sourceSetup.metadataPrivacy' => 'Тек файл атауындағы атауды/жылды және эпизод нөмірлерін немесе NFO ID мәнін жібереді; медиа файлдар мен кіру деректерін ешқашан жібермейді. NFO өрістері басымдығын сақтайды.',
@@ -9381,6 +9453,36 @@ extension on TranslationsKk {
 			'musicExperience.routeLost' => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.',
 			'musicExperience.autoDriving' => 'Көлікке қосылғанда жүргізу көрінісін ашу',
 			'musicExperience.routeHint' => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.',
+			'musicTools.guestDj' => 'Қонақ диджей',
+			'musicTools.charts' => 'Тыңдау рейтингі',
+			'musicTools.rediscover' => 'Қайта ашу',
+			'musicTools.stations' => 'Музыка станциялары',
+			'musicTools.prompt' => 'Сипаттамадан ойнату тізімі',
+			'musicTools.provider' => 'Провайдердің жасау мекенжайы',
+			'musicTools.model' => 'Модель атауы',
+			'musicTools.consent' => 'Сипаттамамды осы провайдерге жіберу',
+			'musicTools.promptHint' => 'Қалаған музыкаңызды сипаттаңыз',
+			'musicTools.noHistory' => 'Әзірге көрсетілетін музыка жоқ',
+			'musicTools.historyHint' => 'Осы құрылғыда жазылған тыңдаулар',
+			'musicTools.days' => 'Күндер',
+			'musicTools.albumBlocks' => 'Альбомдарды тұтас сақтау',
+			'musicTools.home' => 'Музыка',
+			'musicTools.recent' => 'Жақында тыңдалған',
+			'musicTools.apiKey' => 'API кілті',
+			'musicTools.missing' => 'N/A',
+			'musicTools.minutes' => 'Минут',
+			'musicTools.rules' => 'Фильтрлер',
+			'musicTools.exclusiveOutput' => 'Эксклюзивті аудио шығыс',
+			'musicTools.preamp' => 'Алдын ала күшейту',
+			'musicTools.ratingPending' => 'Осы құрылғыда сақталды; синхрондау күтілуде',
+			'musicTools.lyricsOffset' => 'Ән мәтінінің уақыт ығысуы',
+			'musicTools.anniversaries' => 'Альбом мерейтойлары',
+			'musicTools.outputPreset' => 'Осы шығысқа арналған эквалайзер',
+			'musicTools.outputPresetHint' => 'Осы шығыс таңдалғанда осы эквалайзерді автоматты түрде қолдану.',
+			'musicTools.eqApproximation' => 'Құлаққап профильдері он жолақты эквалайзерге жуықтап бейімделген.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

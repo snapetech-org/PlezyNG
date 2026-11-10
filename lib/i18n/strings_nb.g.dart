@@ -115,6 +115,7 @@ class TranslationsNb extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$nb romm = _Translations$romm$nb._(_root);
 	@override late final _Translations$subtitleCapture$nb subtitleCapture = _Translations$subtitleCapture$nb._(_root);
 	@override late final _Translations$musicExperience$nb musicExperience = _Translations$musicExperience$nb._(_root);
+	@override late final _Translations$musicTools$nb musicTools = _Translations$musicTools$nb._(_root);
 }
 
 // Path: app
@@ -808,6 +809,7 @@ class _Translations$settings$nb extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Velg hvilke klipp fra det valgte biblioteket kan spilles før filmer.';
 	@override String get contentScreensaverDelayOptionDescription => 'Vent dette mange minutter uten inngang før du viser skjermbeskyttelse kunstverk.';
 	@override String get videoCodecOptionDescription => 'Tillat direkte spill for denne kodeksen når den støttes. Unchecked codecs transcodes av media serveren.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer størrelse: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2546,6 +2548,7 @@ class _Translations$performanceOverlay$nb extends Translations$performanceOverla
 	@override String get decoderHardware => 'Maskinvare';
 	@override String get tunnelingActive => 'Aktiv';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} mislyktes)';
+	@override String cacheLimitMiB({required Object size}) => 'Grense for hurtigbuffer: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2740,13 +2743,24 @@ class _Translations$seerr$nb extends Translations$seerr$en {
 	@override String get request => 'Be om';
 	@override String get request4k => 'Be om i 4K';
 	@override String get requestSeasons => 'Be om manglende sesonger';
+	@override String get requestHint => 'Velg forespørselsalternativer i Seerr';
+	@override String get quickRequestHint => 'Send forespørsel nå i Seerr med standardinnstillingene';
+	@override String get chooseSeasonsHint => 'Velg sesongene du vil be om i Seerr';
+	@override String get request4kHint => 'Velg en 4K-forespørsel i Seerr';
+	@override String get only4kAvailable => 'Denne kontoen kan bare be om 4K-versjonen.';
+	@override String get cardActionHint => 'Åpne kortmenyen for Seerr-forespørselsalternativer';
+	@override String get requestInProgress => 'Forespørsel pågår';
 	@override String get notifyMe => 'Varsle meg når tilgjengelig';
 	@override String get notifyMe4k => 'Varsle meg når tilgjengelig i 4K';
 	@override String get notificationsOn => 'Tilgjengelighetsvarsel er på';
+	@override String get turnOffAlert => 'Slå av tilgjengelighetsvarsel';
 	@override String get notificationsEnabled => 'Vi varsler deg når det blir tilgjengelig';
+	@override String get notificationsEnabled4k => 'Vi varsler deg når 4K-versjonen er tilgjengelig';
+	@override String notificationsEnabledSeason({required Object season}) => 'Vi varsler deg når sesong ${season} er tilgjengelig';
 	@override String get notificationsDisabled => 'Tilgjengelighetsvarselet er slått av';
 	@override String get notificationFailed => 'Kunne ikke oppdatere tilgjengelighetsvarselet';
 	@override String get seasons => 'Sesonger';
+	@override String get requestSheetHint => 'Seerr håndterer godkjenningen og følger forespørselen din.';
 	@override String get allSeasons => 'Alle sesonger';
 	@override String get advancedOptions => 'Avansert';
 	@override String get destinationServer => 'Målserver';
@@ -3749,6 +3763,9 @@ class _Translations$sourceSetup$nb extends Translations$sourceSetup$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Logg på med din egen BookOrbit-konto for å bla gjennom og spille av bøkene der. Forespørsler om titler som mangler, sendes fortsatt via den tilkoblede SeerrNG-instansen.';
+	@override String get bookorbitOpen => 'Åpne i BookOrbit';
+	@override String get bookorbitDetailHelp => 'Vis denne tittelen i BookOrbit for å administrere bibliotekdetaljer og formater Pleazyng ikke kan åpne. Lyttefremdriften synkroniseres med BookOrbit-kontoen din.';
 	@override String get savedCertificate => 'Lagret serversertifikat';
 	@override String get nfsEndpointInvalid => 'Angi en NFS-URL, for eksempel nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Ingen DLNA-servere funnet. Angi URL-en til enhetsbeskrivelsen manuelt.';
@@ -4269,6 +4286,45 @@ class _Translations$musicExperience$nb extends Translations$musicExperience$en {
 	@override String get routeLost => 'Lydutgangen ble koblet fra. Avspillingen er pauset.';
 	@override String get autoDriving => 'Åpne kjørevisning ved tilkobling til en bil';
 	@override String get routeHint => 'Bilens system bestemmer om appen kan vises automatisk.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$nb extends Translations$musicTools$en {
+	_Translations$musicTools$nb._(TranslationsNb root) : this._root = root, super.internal(root);
+
+	final TranslationsNb _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Gjeste-DJ';
+	@override String get charts => 'Lyttestatistikk';
+	@override String get rediscover => 'Gjenoppdag';
+	@override String get stations => 'Musikkstasjoner';
+	@override String get prompt => 'Spilleliste fra beskrivelse';
+	@override String get provider => 'Leverandørens genererings-URL';
+	@override String get model => 'Modellnavn';
+	@override String get consent => 'Send beskrivelsen min til denne leverandøren';
+	@override String get promptHint => 'Beskriv musikken du ønsker';
+	@override String get noHistory => 'Ingen musikk å vise ennå';
+	@override String get historyHint => 'Avspillinger registrert på denne enheten';
+	@override String get days => 'Dager';
+	@override String get albumBlocks => 'Hold hele album samlet';
+	@override String get home => 'Musikk';
+	@override String get recent => 'Nylig spilt';
+	@override String get apiKey => 'API-nøkkel';
+	@override String get missing => 'I/T';
+	@override String get minutes => 'Minutter';
+	@override String get rules => 'Filtre';
+	@override String get exclusiveOutput => 'Eksklusiv lydutgang';
+	@override String get preamp => 'Forforsterkning';
+	@override String get ratingPending => 'Lagret på denne enheten; venter på synkronisering';
+	@override String get lyricsOffset => 'Tidsforskyvning for sangtekst';
+	@override String get anniversaries => 'Albumjubileer';
+	@override String get outputPreset => 'EQ for denne utgangen';
+	@override String get outputPresetHint => 'Bruk denne EQ-en automatisk når denne utgangen velges.';
+	@override String get eqApproximation => 'Hodetelefonprofiler er tilnærmet for EQ med ti bånd.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6060,6 +6116,7 @@ extension on TranslationsNb {
 			'settings.prerollSelectionDescription' => 'Velg hvilke klipp fra det valgte biblioteket kan spilles før filmer.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Vent dette mange minutter uten inngang før du viser skjermbeskyttelse kunstverk.',
 			'settings.videoCodecOptionDescription' => 'Tillat direkte spill for denne kodeksen når den støttes. Unchecked codecs transcodes av media serveren.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer størrelse: ${size} MiB',
 			'themeEditor.builtIn' => 'Innebygde',
 			'themeEditor.presets' => 'Forhåndsinnstillinger',
 			'themeEditor.custom' => 'Egendefinert',
@@ -6411,9 +6468,9 @@ extension on TranslationsNb {
 			'videoControls.chaptersAndBookmarks' => 'Kapittel og bokmerker',
 			'videoControls.segmentLoop' => 'Segmentløp',
 			'videoControls.addBookmark' => 'Legg til bookmark',
-			'videoControls.bookmarkName' => 'Bookmark navn',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark navn',
 			'videoControls.bookmarkNameHint' => 'For eksempel åpne scenen',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmerke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Skriv inn et navn for dette bokmerket.',
@@ -6925,9 +6982,9 @@ extension on TranslationsNb {
 			'libraries.hideLibrary' => 'Skjul bibliotek',
 			'libraries.libraryOptions' => 'Bibliotekalternativer',
 			'libraries.content' => 'bibliotekinnhold',
-			'libraries.selectLibrary' => 'Velg bibliotek',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Velg bibliotek',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtre (${count})',
 			'libraries.noRecommendations' => 'Ingen anbefalinger tilgjengelig',
 			'libraries.noCollections' => 'Ingen samlinger i dette biblioteket',
@@ -7439,9 +7496,9 @@ extension on TranslationsNb {
 			'watchTogether.paste' => 'Lim inn',
 			'watchTogether.noCodeInClipboard' => 'Utklippstavlen inneholder ingen romkode',
 			'watchTogether.copyCode' => 'Kopier kode',
-			'watchTogether.codeCopied' => 'Romkode kopiert',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Romkode kopiert',
 			'watchTogether.shareInvite' => 'Del invitasjon',
 			'watchTogether.inviteCopied' => 'Invitasjon kopiert. Lim den inn i en melding.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bli med i Se sammen-rommet mitt i Pleazyng: åpne Se sammen, velg «Bli med i rom» og skriv inn ${code}.',
@@ -7905,6 +7962,7 @@ extension on TranslationsNb {
 			'performanceOverlay.decoderHardware' => 'Maskinvare',
 			'performanceOverlay.tunnelingActive' => 'Aktiv',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} mislyktes)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Grense for hurtigbuffer: ${size} MiB',
 			'externalPlayer.title' => 'Ekstern spiller',
 			'externalPlayer.useExternalPlayer' => 'Bruk ekstern spiller',
 			'externalPlayer.useExternalPlayerDescription' => 'Åpne videoer i en annen app',
@@ -7952,10 +8010,10 @@ extension on TranslationsNb {
 			'metadataEdit.fromUrl' => 'Fra URL',
 			'metadataEdit.uploadFile' => 'Last opp fil',
 			'metadataEdit.enterImageUrl' => 'Skriv inn bilde-URL',
-			'metadataEdit.imageUrl' => 'Bilde-URL',
-			'metadataEdit.metadataUpdated' => 'Metadata oppdatert',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Bilde-URL',
+			'metadataEdit.metadataUpdated' => 'Metadata oppdatert',
 			'metadataEdit.metadataUpdateFailed' => 'Kunne ikke oppdatere metadata',
 			'metadataEdit.artworkUpdated' => 'Grafikk oppdatert',
 			'metadataEdit.artworkUpdateFailed' => 'Kunne ikke oppdatere grafikken',
@@ -8047,13 +8105,24 @@ extension on TranslationsNb {
 			'seerr.request' => 'Be om',
 			'seerr.request4k' => 'Be om i 4K',
 			'seerr.requestSeasons' => 'Be om manglende sesonger',
+			'seerr.requestHint' => 'Velg forespørselsalternativer i Seerr',
+			'seerr.quickRequestHint' => 'Send forespørsel nå i Seerr med standardinnstillingene',
+			'seerr.chooseSeasonsHint' => 'Velg sesongene du vil be om i Seerr',
+			'seerr.request4kHint' => 'Velg en 4K-forespørsel i Seerr',
+			'seerr.only4kAvailable' => 'Denne kontoen kan bare be om 4K-versjonen.',
+			'seerr.cardActionHint' => 'Åpne kortmenyen for Seerr-forespørselsalternativer',
+			'seerr.requestInProgress' => 'Forespørsel pågår',
 			'seerr.notifyMe' => 'Varsle meg når tilgjengelig',
 			'seerr.notifyMe4k' => 'Varsle meg når tilgjengelig i 4K',
 			'seerr.notificationsOn' => 'Tilgjengelighetsvarsel er på',
+			'seerr.turnOffAlert' => 'Slå av tilgjengelighetsvarsel',
 			'seerr.notificationsEnabled' => 'Vi varsler deg når det blir tilgjengelig',
+			'seerr.notificationsEnabled4k' => 'Vi varsler deg når 4K-versjonen er tilgjengelig',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Vi varsler deg når sesong ${season} er tilgjengelig',
 			'seerr.notificationsDisabled' => 'Tilgjengelighetsvarselet er slått av',
 			'seerr.notificationFailed' => 'Kunne ikke oppdatere tilgjengelighetsvarselet',
 			'seerr.seasons' => 'Sesonger',
+			'seerr.requestSheetHint' => 'Seerr håndterer godkjenningen og følger forespørselen din.',
 			'seerr.allSeasons' => 'Alle sesonger',
 			'seerr.advancedOptions' => 'Avansert',
 			'seerr.destinationServer' => 'Målserver',
@@ -8455,6 +8524,8 @@ extension on TranslationsNb {
 			'universalMedia.favorites' => 'Saved stream favoritter',
 			'universalMedia.address' => 'Media adresser',
 			'universalMedia.addressHelp' => 'URLer med anerkjente akkrediterings- eller signaturparameter brukes kun for denne sesjonen og kan ikke lagres som favoritter.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'Visningsnavnet (alternativt)',
 			'universalMedia.displayNameHelp' => 'Velg et kort navn for spilleren og systemmediakontrollene.',
 			'universalMedia.allowHttp' => 'Tillat en ukryptert HTTP-tilkobling',
@@ -8468,8 +8539,6 @@ extension on TranslationsNb {
 			'universalMedia.favoriteSaved' => 'Stream favoritt lagret til denne profilen',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nb'))(n, one: 'Skipet ${count} ustøttet eller usikkert playlist inngang.', other: 'Skipede ${count} ustøttet eller usikre playlist-inntekter.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'Åpne en M3U, M3u8, eller PLS-spillliste fra en nettadresse. direkte strømlinjer sparer ikke spilllisten.',
 			'universalMedia.choosePlaylist' => 'Velg Playlist filer',
 			'universalMedia.openPlaylist' => 'Åpne playlist',
@@ -8931,6 +9000,9 @@ extension on TranslationsNb {
 			'audiobook.recoveryImportConfirm' => 'Kombiner denne krypterte gjenoppretting filen med aktuelle lesing posisjoner og notater? eksisterende historie vil bli bevaret. delt bibliotek og element IDs er ikke inkludert; sette matching IDs på hver enhet før import.',
 			'audiobook.recoveryExported' => 'Kryptert gjenoppretting fil lagret.',
 			'audiobook.recoveryImported' => 'Data om gjenoppretting sammensatt.',
+			'sourceSetup.bookorbitHelp' => 'Logg på med din egen BookOrbit-konto for å bla gjennom og spille av bøkene der. Forespørsler om titler som mangler, sendes fortsatt via den tilkoblede SeerrNG-instansen.',
+			'sourceSetup.bookorbitOpen' => 'Åpne i BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Vis denne tittelen i BookOrbit for å administrere bibliotekdetaljer og formater Pleazyng ikke kan åpne. Lyttefremdriften synkroniseres med BookOrbit-kontoen din.',
 			'sourceSetup.savedCertificate' => 'Lagret serversertifikat',
 			'sourceSetup.nfsEndpointInvalid' => 'Angi en NFS-URL, for eksempel nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Ingen DLNA-servere funnet. Angi URL-en til enhetsbeskrivelsen manuelt.',
@@ -8966,6 +9038,8 @@ extension on TranslationsNb {
 			'sourceSetup.clientCertificate' => 'Klientsertifikat (valgfritt)',
 			'sourceSetup.clientCertificateHelp' => 'Lar NAS-enheten autentisere denne klienten; AUTH_SYS-ID-er avhenger fortsatt av reglene for NAS-enhetens NFS-deling.',
 			'sourceSetup.savedIdentity' => 'En lagret klientidentitet vil bli brukt.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Erstatt lagret klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Velg PKCS#12-klientidentitet',
 			'sourceSetup.identityPassphrase' => 'Passfrase for klientidentitet',
@@ -8982,8 +9056,6 @@ extension on TranslationsNb {
 			'sourceSetup.apiKey' => 'API-nøkkel',
 			'sourceSetup.optionalUsername' => 'Kontoens brukernavn (valgfritt)',
 			'sourceSetup.optionalPassword' => 'Kontoens passord (valgfritt)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'Hent en API-nøkkel fra opensubtitles.com. Søk sender videotittelen og tilgjengelige IMDb/TMDB-ID-er, aldri videofilen. Nøkkelen og valgfri kontoinformasjon krypteres sammen med denne kilden.',
 			'sourceSetup.automaticMetadata' => 'Automatiske videometadata fra nettet',
 			'sourceSetup.metadataPrivacy' => 'Sender bare tittel/år fra filnavnet og episodenumre eller en NFO-ID, aldri medier eller påloggingsinformasjon. NFO-feltene beholder forrang.',
@@ -9381,6 +9453,36 @@ extension on TranslationsNb {
 			'musicExperience.routeLost' => 'Lydutgangen ble koblet fra. Avspillingen er pauset.',
 			'musicExperience.autoDriving' => 'Åpne kjørevisning ved tilkobling til en bil',
 			'musicExperience.routeHint' => 'Bilens system bestemmer om appen kan vises automatisk.',
+			'musicTools.guestDj' => 'Gjeste-DJ',
+			'musicTools.charts' => 'Lyttestatistikk',
+			'musicTools.rediscover' => 'Gjenoppdag',
+			'musicTools.stations' => 'Musikkstasjoner',
+			'musicTools.prompt' => 'Spilleliste fra beskrivelse',
+			'musicTools.provider' => 'Leverandørens genererings-URL',
+			'musicTools.model' => 'Modellnavn',
+			'musicTools.consent' => 'Send beskrivelsen min til denne leverandøren',
+			'musicTools.promptHint' => 'Beskriv musikken du ønsker',
+			'musicTools.noHistory' => 'Ingen musikk å vise ennå',
+			'musicTools.historyHint' => 'Avspillinger registrert på denne enheten',
+			'musicTools.days' => 'Dager',
+			'musicTools.albumBlocks' => 'Hold hele album samlet',
+			'musicTools.home' => 'Musikk',
+			'musicTools.recent' => 'Nylig spilt',
+			'musicTools.apiKey' => 'API-nøkkel',
+			'musicTools.missing' => 'I/T',
+			'musicTools.minutes' => 'Minutter',
+			'musicTools.rules' => 'Filtre',
+			'musicTools.exclusiveOutput' => 'Eksklusiv lydutgang',
+			'musicTools.preamp' => 'Forforsterkning',
+			'musicTools.ratingPending' => 'Lagret på denne enheten; venter på synkronisering',
+			'musicTools.lyricsOffset' => 'Tidsforskyvning for sangtekst',
+			'musicTools.anniversaries' => 'Albumjubileer',
+			'musicTools.outputPreset' => 'EQ for denne utgangen',
+			'musicTools.outputPresetHint' => 'Bruk denne EQ-en automatisk når denne utgangen velges.',
+			'musicTools.eqApproximation' => 'Hodetelefonprofiler er tilnærmet for EQ med ti bånd.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

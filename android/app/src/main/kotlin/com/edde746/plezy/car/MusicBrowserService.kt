@@ -9,6 +9,7 @@ import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaSessionManager
 import com.edde746.os_media_controls.MediaSessionHolder
 import com.edde746.os_media_controls.MusicCarApi
+import com.edde746.plezy.BuildConfig
 import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
@@ -26,9 +27,13 @@ class MusicBrowserService : MediaBrowserServiceCompat() {
     // Boot the ordinary app/profile binder without opening an Activity.
     // PIN/account gates still decide whether Dart publishes a catalog.
     val engine = FlutterEngine(applicationContext)
+    engine.plugins.add(MusicBackgroundPlatformPlugin())
     engine.plugins.add(MpvAudioPlayerPlugin())
     FlutterEngineCache.getInstance().put(ENGINE_ID, engine)
-    engine.dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
+    engine.dartExecutor.executeDartEntrypoint(
+      DartExecutor.DartEntrypoint.createDefault(),
+      listOf("--pleazyng-car-host")
+    )
   }
   private val changed: () -> Unit = {
     MediaSessionHolder.sessionToken?.let { if (sessionToken == null) setSessionToken(it) }
@@ -45,9 +50,12 @@ class MusicBrowserService : MediaBrowserServiceCompat() {
   override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
     val user = MediaSessionManager.RemoteUserInfo(clientPackageName, -1, clientUid)
     if (clientUid != Process.myUid() && !MediaSessionManager.getSessionManager(this).isTrustedForMediaControl(user)) return null
-    acceptedHost = acceptedHost ||
-      clientPackageName == "com.google.android.projection.gearhead" ||
-      packageManager.hasSystemFeature("android.hardware.type.automotive")
+    acceptedHost = !BuildConfig.AUTOMOTIVE_MEDIA &&
+      (
+        acceptedHost ||
+          clientPackageName == "com.google.android.projection.gearhead" ||
+          packageManager.hasSystemFeature("android.hardware.type.automotive")
+        )
     ensureMusicEngine()
     MediaSessionHolder.sessionToken?.let { if (sessionToken == null) setSessionToken(it) }
     if (acceptedHost) MusicCarApi.connection(true)

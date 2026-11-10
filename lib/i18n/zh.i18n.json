@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "布格大小: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "内置",
@@ -3108,7 +3109,8 @@
     "decoderHardware": "硬件",
     "tunnelingActive": "已启用",
     "dvRpuFailed": "${converted}（${failures} 个失败）",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "缓存限制: ${size} MiB"
   },
   "externalPlayer": {
     "title": "外部播放器",
@@ -3279,13 +3281,24 @@
     "request": "请求",
     "request4k": "请求 4K",
     "requestSeasons": "请求缺少的季",
+    "requestHint": "在 Seerr 中选择请求选项",
+    "quickRequestHint": "使用默认设置立即通过 Seerr 请求",
+    "chooseSeasonsHint": "选择要在 Seerr 中请求的季",
+    "request4kHint": "在 Seerr 中选择 4K 请求",
+    "only4kAvailable": "此账户只能请求 4K 版本。",
+    "cardActionHint": "打开卡片菜单以查看 Seerr 请求选项",
+    "requestInProgress": "请求处理中",
     "notifyMe": "有资源时通知我",
     "notifyMe4k": "有 4K 资源时通知我",
     "notificationsOn": "可用性提醒已开启",
+    "turnOffAlert": "关闭可用性提醒",
     "notificationsEnabled": "有资源时我们会通知你",
+    "notificationsEnabled4k": "4K 版本可用时我们会通知你",
+    "notificationsEnabledSeason": "第 ${season} 季可用时我们会通知你",
     "notificationsDisabled": "可用性提醒已关闭",
     "notificationFailed": "无法更新可用性提醒",
     "seasons": "季",
+    "requestSheetHint": "Seerr 负责审批并跟踪你的请求。",
     "allSeasons": "全部季",
     "advancedOptions": "高级",
     "destinationServer": "目标服务器",
@@ -4241,6 +4254,9 @@
     "recoveryImported": "恢复数据合并。"
   },
   "sourceSetup": {
+    "bookorbitHelp": "使用你自己的 BookOrbit 账户登录，即可浏览和播放书籍。缺少的书名仍会通过已连接的 SeerrNG 实例提交请求。",
+    "bookorbitOpen": "在 BookOrbit 中打开",
+    "bookorbitDetailHelp": "在 BookOrbit 中查看此书，以管理书库详情和 Pleazyng 无法打开的格式。收听进度会与您的 BookOrbit 账户同步。",
     "savedCertificate": "已保存的服务器证书",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "请输入 NFS 地址，例如 nfs://nas:2049/export。",
@@ -5497,5 +5513,37 @@
     "routeLost": "音频输出已断开。播放已暂停。",
     "autoDriving": "连接汽车时打开驾驶界面",
     "routeHint": "是否允许自动显示应用由汽车系统决定。"
+  },
+  "musicTools": {
+    "guestDj": "客座 DJ",
+    "charts": "收听排行",
+    "rediscover": "重新发现",
+    "stations": "音乐电台",
+    "prompt": "描述生成歌单",
+    "provider": "提供商生成地址",
+    "model": "模型名称",
+    "consent": "将我的描述发送给此提供商",
+    "promptHint": "描述想听的音乐",
+    "noHistory": "暂无可显示的音乐",
+    "historyHint": "此设备记录的播放",
+    "days": "天",
+    "albumBlocks": "保持专辑完整",
+    "home": "音乐",
+    "recent": "最近播放",
+    "apiKey": "API 密钥",
+    "missing": "N/A",
+    "minutes": "分钟",
+    "rules": "筛选",
+    "exclusiveOutput": "独占音频输出",
+    "preamp": "前置放大",
+    "ratingPending": "已保存在此设备；等待同步",
+    "lyricsOffset": "歌词时间偏移",
+    "anniversaries": "专辑发行纪念日",
+    "outputPreset": "此输出的均衡器",
+    "outputPresetHint": "选择此输出时自动使用此均衡器。",
+    "eqApproximation": "耳机配置已近似转换为十段均衡器设置。",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

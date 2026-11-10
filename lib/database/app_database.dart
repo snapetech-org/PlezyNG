@@ -801,7 +801,7 @@ class AppDatabase extends _$AppDatabase {
   static const FormatException _invalidRecoveryImage = FormatException('Invalid tvOS database recovery image');
 
   @override
-  int get schemaVersion => 36;
+  int get schemaVersion => 37;
 
   @override
   MigrationStrategy get migration {
@@ -822,6 +822,7 @@ class AppDatabase extends _$AppDatabase {
         await _createIptvParentalTables();
         await _createIptvRecordingSchedules();
         await _createMusicCatalogTables();
+        await _createMusicExperienceTables();
       },
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 7) {
@@ -978,6 +979,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 36) {
           await _createMusicCatalogTables();
+        }
+        if (from < 37) {
+          await _createMusicExperienceTables();
         }
         if (from < 35) {
           appLogger.i('Adding protected IPTV playback headers (v35 migration)');
@@ -1880,8 +1884,38 @@ class AppDatabase extends _$AppDatabase {
     await (delete(musicSessions)..where((t) => t.profileId.equals(profileId))).go();
   }
 
-  Future<void> deleteMusicRecipesForProfile(String profileId) =>
-      customStatement('DELETE FROM music_recipes WHERE profile_id = ?', [profileId]);
+  // Virtual Plex Home profiles have no row in profiles. A generation guard
+  // fences their in-flight writes without imposing an invalid foreign key.
+  final Map<String, int> _musicDataEpochs = {};
+  int musicDataEpoch(String profileId) => _musicDataEpochs[profileId] ?? 0;
+  Future<void> deleteMusicRecipesForProfile(String profileId) {
+    _musicDataEpochs[profileId] = musicDataEpoch(profileId) + 1;
+    return transaction(() async {
+      for (final table in ['music_recipes', 'music_listens', 'music_documents']) {
+        await customStatement('DELETE FROM $table WHERE profile_id = ?', [profileId]);
+      }
+    });
+  }
+
+  Future<void> _createMusicExperienceTables() async {
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS music_listens (
+        profile_id TEXT NOT NULL, id TEXT NOT NULL, track_key TEXT NOT NULL,
+        artist_key TEXT NOT NULL, album_key TEXT NOT NULL, metadata TEXT NOT NULL,
+        started_at INTEGER NOT NULL, listened_ms INTEGER NOT NULL DEFAULT 0,
+        qualified INTEGER NOT NULL DEFAULT 0, finished INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (profile_id, id)
+      )
+    ''');
+    await customStatement('CREATE INDEX IF NOT EXISTS music_listens_period ON music_listens(profile_id, started_at)');
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS music_documents (
+        profile_id TEXT NOT NULL, kind TEXT NOT NULL, id TEXT NOT NULL,
+        document TEXT NOT NULL, updated_at INTEGER NOT NULL,
+        PRIMARY KEY (profile_id, kind, id)
+      )
+    ''');
+  }
 
   Future<List<SyncRuleItem>> getSyncRules({String? profileId}) {
     final query = select(syncRules);

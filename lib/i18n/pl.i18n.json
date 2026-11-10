@@ -738,7 +738,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "rozmiar buffer: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Wbudowane",
@@ -3154,7 +3155,8 @@
     "decoderHardware": "Sprzętowy",
     "tunnelingActive": "Aktywne",
     "dvRpuFailed": "${converted} (niepowodzenia: ${failures})",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Limit pamięci podręcznej: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Zewnętrzny odtwarzacz",
@@ -3325,13 +3327,24 @@
     "request": "Zamów",
     "request4k": "Zamów w 4K",
     "requestSeasons": "Poproś o brakujące sezony",
+    "requestHint": "Wybierz opcje zamówienia w Seerr",
+    "quickRequestHint": "Zamów teraz w Seerr, używając ustawień domyślnych",
+    "chooseSeasonsHint": "Wybierz sezony do zamówienia w Seerr",
+    "request4kHint": "Wybierz zamówienie w 4K w Seerr",
+    "only4kAvailable": "Na tym koncie można zamówić tylko wersję 4K.",
+    "cardActionHint": "Otwórz menu karty, aby wyświetlić opcje zamówienia w Seerr",
+    "requestInProgress": "Zamówienie w toku",
     "notifyMe": "Powiadom mnie, gdy będzie dostępne",
     "notifyMe4k": "Powiadom mnie, gdy będzie dostępne w 4K",
     "notificationsOn": "Powiadomienie o dostępności włączone",
+    "turnOffAlert": "Wyłącz powiadomienie o dostępności",
     "notificationsEnabled": "Powiadomimy Cię, gdy będzie dostępne",
+    "notificationsEnabled4k": "Powiadomimy Cię, gdy wersja 4K będzie dostępna",
+    "notificationsEnabledSeason": "Powiadomimy Cię, gdy będzie dostępny sezon ${season}",
     "notificationsDisabled": "Powiadomienie o dostępności wyłączone",
     "notificationFailed": "Nie udało się zaktualizować powiadomienia o dostępności",
     "seasons": "Sezony",
+    "requestSheetHint": "Seerr obsługuje zatwierdzanie i śledzi Twoje zamówienie.",
     "allSeasons": "Wszystkie sezony",
     "advancedOptions": "Zaawansowane",
     "destinationServer": "Serwer docelowy",
@@ -4296,6 +4309,9 @@
     "recoveryImported": "Dane odzyskiwania połączenia."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Zaloguj się na własne konto BookOrbit, aby przeglądać i odtwarzać zawarte w nim książki. Zamówienia niedostępnych tytułów nadal są wysyłane przez połączoną instancję SeerrNG.",
+    "bookorbitOpen": "Otwórz w BookOrbit",
+    "bookorbitDetailHelp": "Wyświetl ten tytuł w BookOrbit, aby zarządzać szczegółami biblioteki i formatami, których Pleazyng nie może otworzyć. Postęp słuchania synchronizuje się z kontem BookOrbit.",
     "savedCertificate": "Zapisany certyfikat serwera",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Wprowadź adres NFS, np. nfs://nas:2049/export.",
@@ -5556,5 +5572,37 @@
     "routeLost": "Wyjście audio odłączone. Odtwarzanie wstrzymane.",
     "autoDriving": "Otwórz widok samochodowy po połączeniu z autem",
     "routeHint": "System samochodu decyduje, czy aplikacja może pojawić się automatycznie."
+  },
+  "musicTools": {
+    "guestDj": "Gościnny DJ",
+    "charts": "Statystyki słuchania",
+    "rediscover": "Odkryj ponownie",
+    "stations": "Stacje muzyczne",
+    "prompt": "Playlista z opisu",
+    "provider": "Adres generowania dostawcy",
+    "model": "Nazwa modelu",
+    "consent": "Wyślij mój opis do tego dostawcy",
+    "promptHint": "Opisz muzykę, której szukasz",
+    "noHistory": "Brak muzyki do wyświetlenia",
+    "historyHint": "Odtworzenia zapisane na tym urządzeniu",
+    "days": "Dni",
+    "albumBlocks": "Zachowuj całe albumy",
+    "home": "Muzyka",
+    "recent": "Ostatnio odtwarzane",
+    "apiKey": "Klucz API",
+    "missing": "N/D",
+    "minutes": "Minuty",
+    "rules": "Filtry",
+    "exclusiveOutput": "Wyłączne wyjście audio",
+    "preamp": "Wzmocnienie wstępne",
+    "ratingPending": "Zapisano na tym urządzeniu; oczekuje na synchronizację",
+    "lyricsOffset": "Przesunięcie czasu tekstu",
+    "anniversaries": "Rocznice albumów",
+    "outputPreset": "Korektor dla tego wyjścia",
+    "outputPresetHint": "Automatycznie używaj tego korektora po wybraniu tego wyjścia.",
+    "eqApproximation": "Profile słuchawek są przybliżone dla dziesięciopasmowego korektora.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer méret: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Beépített",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Hardveres",
     "tunnelingActive": "Aktív",
     "dvRpuFailed": "${converted} (${failures} sikertelen)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Gyorsítótár korlátja: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Külső lejátszó",
@@ -3283,13 +3285,24 @@
     "request": "Igénylés",
     "request4k": "Igénylés 4K-ban",
     "requestSeasons": "Hiányzó évadok igénylése",
+    "requestHint": "Válassz igénylési lehetőségeket a Seerrben",
+    "quickRequestHint": "Igénylés most az alapértelmezett beállításokkal a Seerrben",
+    "chooseSeasonsHint": "Válaszd ki a Seerrben igényelni kívánt évadokat",
+    "request4kHint": "Válassz 4K-igénylést a Seerrben",
+    "only4kAvailable": "Ezzel a fiókkal csak a 4K-s verzió igényelhető.",
+    "cardActionHint": "Nyisd meg a kártya menüjét az igénylési lehetőségekhez",
+    "requestInProgress": "Az igénylés folyamatban van",
     "notifyMe": "Értesíts, amikor elérhető",
     "notifyMe4k": "Értesíts, amikor 4K-ban elérhető",
     "notificationsOn": "Elérhetőségi értesítés bekapcsolva",
+    "turnOffAlert": "Elérhetőségi értesítés kikapcsolása",
     "notificationsEnabled": "Értesítünk, amint elérhető",
+    "notificationsEnabled4k": "Értesítünk, amikor elérhető a 4K-s verzió",
+    "notificationsEnabledSeason": "Értesítünk, amikor elérhető a(z) ${season}. évad",
     "notificationsDisabled": "Elérhetőségi értesítés kikapcsolva",
     "notificationFailed": "Nem sikerült frissíteni az elérhetőségi értesítést",
     "seasons": "Évadok",
+    "requestSheetHint": "A Seerr kezeli a jóváhagyást és követi az igénylésedet.",
     "allSeasons": "Minden évad",
     "advancedOptions": "Haladó",
     "destinationServer": "Célszerver",
@@ -4246,6 +4259,9 @@
     "recoveryImported": "A helyreállítási adatok összegyűltek."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Jelentkezz be a saját BookOrbit-fiókoddal a könyvek böngészéséhez és lejátszásához. A hiányzó címek igénylései továbbra is a csatlakoztatott SeerrNG-példányodon keresztül történnek.",
+    "bookorbitOpen": "Megnyitás a BookOrbitban",
+    "bookorbitDetailHelp": "A könyvtár adatainak és a Pleazyng által meg nem nyitható formátumok kezeléséhez tekintsd meg ezt a címet a BookOrbitban. A hallgatási folyamat szinkronizálódik a BookOrbit-fiókoddal.",
     "savedCertificate": "Mentett szervertanúsítvány",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Adj meg egy NFS URL-t, például: nfs://nas:2049/export.",
@@ -5502,5 +5518,37 @@
     "routeLost": "A hangkimenet megszakadt. Lejátszás szüneteltetve.",
     "autoDriving": "Vezetési nézet megnyitása autóhoz csatlakozáskor",
     "routeHint": "Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e."
+  },
+  "musicTools": {
+    "guestDj": "Vendég DJ",
+    "charts": "Hallgatási toplisták",
+    "rediscover": "Újrafelfedezés",
+    "stations": "Zenei állomások",
+    "prompt": "Lejátszási lista leírásból",
+    "provider": "Szolgáltató generálási URL-je",
+    "model": "Modell neve",
+    "consent": "Leírásom elküldése ennek a szolgáltatónak",
+    "promptHint": "Írd le a kívánt zenét",
+    "noHistory": "Még nincs megjeleníthető zene",
+    "historyHint": "Ezen az eszközön rögzített lejátszások",
+    "days": "Napok",
+    "albumBlocks": "Teljes albumok együtt tartása",
+    "home": "Zene",
+    "recent": "Legutóbb lejátszott",
+    "apiKey": "API-kulcs",
+    "missing": "N/A",
+    "minutes": "Perc",
+    "rules": "Szűrők",
+    "exclusiveOutput": "Kizárólagos hangkimenet",
+    "preamp": "Előerősítés",
+    "ratingPending": "Ezen az eszközön mentve; szinkronizálásra vár",
+    "lyricsOffset": "Dalszöveg időeltolása",
+    "anniversaries": "Albumévfordulók",
+    "outputPreset": "EQ ehhez a kimenethez",
+    "outputPresetHint": "A kimenet kiválasztásakor automatikusan ezt az EQ-t használja.",
+    "eqApproximation": "A fejhallgatóprofilok a tízsávos EQ-hoz igazított közelítések.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

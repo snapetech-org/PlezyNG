@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Ukuran Buffer: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "dibangun",
@@ -3091,7 +3092,8 @@
     "decoderHardware": "Perangkat keras",
     "tunnelingActive": "aktif",
     "dvRpuFailed": "${converted} (${failures} gagal)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Cache batas: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Pemain eksternal",
@@ -3262,13 +3264,24 @@
     "request": "Permintaan",
     "request4k": "Permintaan dalam 4K",
     "requestSeasons": "Minta musim yang belum tersedia",
+    "requestHint": "Pilih opsi permintaan di Seerr",
+    "quickRequestHint": "Ajukan permintaan sekarang di Seerr dengan pengaturan bawaan",
+    "chooseSeasonsHint": "Pilih musim yang ingin diminta di Seerr",
+    "request4kHint": "Pilih permintaan 4K di Seerr",
+    "only4kAvailable": "Akun ini hanya dapat meminta versi 4K.",
+    "cardActionHint": "Buka menu kartu untuk opsi permintaan Seerr",
+    "requestInProgress": "Permintaan sedang diproses",
     "notifyMe": "Beri tahu saya saat tersedia",
     "notifyMe4k": "Beri tahu saya saat tersedia dalam 4K",
     "notificationsOn": "Peringatan ketersediaan aktif",
+    "turnOffAlert": "Matikan pemberitahuan ketersediaan",
     "notificationsEnabled": "Kami akan memberi tahu Anda saat tersedia",
+    "notificationsEnabled4k": "Kami akan memberi tahu Anda saat versi 4K tersedia",
+    "notificationsEnabledSeason": "Kami akan memberi tahu Anda saat musim ${season} tersedia",
     "notificationsDisabled": "Peringatan ketersediaan dinonaktifkan",
     "notificationFailed": "Gagal memperbarui peringatan ketersediaan",
     "seasons": "Musim",
+    "requestSheetHint": "Seerr menangani persetujuan dan melacak permintaan Anda.",
     "allSeasons": "Semua Musim",
     "advancedOptions": "Canggih",
     "destinationServer": "Destinasi server",
@@ -4221,6 +4234,9 @@
     "recoveryImported": "Data pemulihan digabungkan."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Masuk dengan akun BookOrbit Anda sendiri untuk menelusuri dan memutar buku. Permintaan untuk judul yang tidak tersedia tetap dikirim melalui instans SeerrNG yang terhubung.",
+    "bookorbitOpen": "Buka di BookOrbit",
+    "bookorbitDetailHelp": "Lihat judul ini di BookOrbit untuk mengelola detail pustaka dan format yang tidak dapat dibuka Pleazyng. Progres mendengarkan disinkronkan dengan akun BookOrbit Anda.",
     "savedCertificate": "Sertifikat server tersimpan",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Masukkan URL NFS, misalnya nfs://nas:2049/export.",
@@ -5475,5 +5491,37 @@
     "routeLost": "Keluaran audio terputus. Pemutaran dijeda.",
     "autoDriving": "Buka tampilan berkendara saat terhubung ke mobil",
     "routeHint": "Sistem mobil menentukan apakah aplikasi dapat muncul otomatis."
+  },
+  "musicTools": {
+    "guestDj": "DJ tamu",
+    "charts": "Peringkat pendengaran",
+    "rediscover": "Temukan kembali",
+    "stations": "Stasiun musik",
+    "prompt": "Daftar putar dari deskripsi",
+    "provider": "URL pembuatan penyedia",
+    "model": "Nama model",
+    "consent": "Kirim deskripsi saya ke penyedia ini",
+    "promptHint": "Jelaskan musik yang diinginkan",
+    "noHistory": "Belum ada musik untuk ditampilkan",
+    "historyHint": "Pemutaran yang dicatat di perangkat ini",
+    "days": "Hari",
+    "albumBlocks": "Satukan album utuh",
+    "home": "Musik",
+    "recent": "Baru diputar",
+    "apiKey": "Kunci API",
+    "missing": "N / A",
+    "minutes": "Minit",
+    "rules": "Filter",
+    "exclusiveOutput": "Keluaran audio eksklusif",
+    "preamp": "Prapenguatan",
+    "ratingPending": "Disimpan di perangkat ini; menunggu sinkronisasi",
+    "lyricsOffset": "Pergeseran waktu lirik",
+    "anniversaries": "Ulang tahun album",
+    "outputPreset": "EQ untuk keluaran ini",
+    "outputPresetHint": "Gunakan EQ ini secara otomatis saat keluaran ini dipilih.",
+    "eqApproximation": "Profil headphone diperkirakan untuk EQ sepuluh pita.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

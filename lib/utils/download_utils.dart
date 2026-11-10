@@ -577,7 +577,10 @@ Future<SyncRuleRemovalResult?> confirmAndRemoveSyncRule(
 /// show/season). Shared by detail screens, the sync rules screen, and the
 /// context menu to dispatch between count vs. filter editing.
 extension SyncRuleItemDispatch on SyncRuleItem {
-  bool get isListRule => targetType == ContentTypes.collection || targetType == ContentTypes.playlist;
+  bool get isListRule =>
+      targetType == ContentTypes.collection ||
+      targetType == ContentTypes.playlist ||
+      targetType == ContentTypes.musicStation;
 }
 
 /// Open the right sync-rule edit dialog for [globalKey] and show a success

@@ -4,12 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
+import 'package:plezy/providers/download_provider.dart';
 import 'package:plezy/profiles/active_profile_provider.dart';
 import 'package:plezy/services/music/music_car_host.dart';
 import 'package:plezy/services/music/music_playback_service.dart';
+import 'package:plezy/screens/music/music_driving_screen.dart';
+import 'package:plezy/services/settings_service.dart';
 import 'package:provider/provider.dart';
 import '../../test_helpers/media_items.dart';
 import '../../test_helpers/stub_music_playback_service.dart';
+import '../../test_helpers/prefs.dart';
 
 class Profiles extends ChangeNotifier implements ActiveProfileProvider {
   String id = 'one';
@@ -46,6 +50,19 @@ class Music extends StubMusicPlaybackService {
   }
 }
 
+class CatalogDownloads extends ChangeNotifier implements DownloadProvider {
+  List<MediaItem> tracks = [];
+  @override
+  List<MediaItem> get downloadedTracks => tracks;
+  void publish(List<MediaItem> value) {
+    tracks = value;
+    notifyListeners();
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 void main() {
   const codec = StandardMethodCodec();
   const channel = MethodChannel('com.pleazyng/music_car');
@@ -67,7 +84,8 @@ void main() {
     return result.future;
   }
 
-  Future<void> mount(WidgetTester tester, Music music, Profiles profiles) async {
+  Future<void> mount(WidgetTester tester, Music music, Profiles profiles, {CatalogDownloads? downloads}) async {
+    final navigator = GlobalKey<NavigatorState>();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       channel,
       (_) async => null,
@@ -77,14 +95,41 @@ void main() {
         providers: [
           ChangeNotifierProvider<MusicPlaybackService>.value(value: music),
           ChangeNotifierProvider<ActiveProfileProvider>.value(value: profiles),
+          if (downloads != null) ChangeNotifierProvider<DownloadProvider>.value(value: downloads),
         ],
         child: MaterialApp(
-          home: MusicCarHost(navigatorKey: GlobalKey<NavigatorState>(), child: const SizedBox()),
+          navigatorKey: navigator,
+          home: MusicCarHost(navigatorKey: navigator, child: const SizedBox()),
         ),
       ),
     );
     await tester.pump();
   }
+
+  testWidgets('projection enters driving by default, respects opt-out and never starts audio', (tester) async {
+    resetSharedPreferencesForTest();
+    SettingsService.resetForTesting();
+    final settings = await SettingsService.getInstance();
+    final music = Music(), profiles = Profiles();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await mount(tester, music, profiles);
+    await native('connection', {'connected': true});
+    await tester.pumpAndSettle();
+    expect(find.byType(MusicDrivingScreen), findsOneWidget);
+    expect(music.jumped, isNull);
+    await native('connection', {'connected': false});
+    await tester.pumpAndSettle();
+    expect(find.byType(MusicDrivingScreen), findsNothing);
+    expect(music.pauses, 1);
+    await settings.write(SettingsService.musicAutoDriving, false);
+    await native('connection', {'connected': true});
+    await tester.pumpAndSettle();
+    expect(find.byType(MusicDrivingScreen), findsNothing);
+    expect(music.jumped, isNull);
+    await tester.pumpWidget(const SizedBox());
+    music.dispose();
+    profiles.dispose();
+  });
 
   testWidgets('native queue rows contain no URLs and reject edits that changed their indices', (tester) async {
     final music = Music(), profiles = Profiles();
@@ -138,5 +183,29 @@ void main() {
     }
     expect(seen.toSet(), hasLength(207));
     expect(seen, hasLength(207));
+  });
+  testWidgets('native catalogs refresh for membership changes, not download progress', (tester) async {
+    final music = Music(), profiles = Profiles(), downloads = CatalogDownloads();
+    await mount(tester, music, profiles, downloads: downloads);
+    final calls = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call.method);
+      return null;
+    });
+    downloads.publish(music.tracks);
+    await tester.pump();
+    expect(calls.where((call) => call == 'catalogChanged'), hasLength(1));
+    calls.clear();
+    downloads.publish(music.tracks);
+    await tester.pump();
+    expect(calls, isEmpty);
+    profiles.id = 'other';
+    downloads.publish([]);
+    await tester.pump();
+    expect(calls, isEmpty);
+    await tester.pumpWidget(const SizedBox());
+    downloads.dispose();
+    music.dispose();
+    profiles.dispose();
   });
 }

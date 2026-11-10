@@ -1,4 +1,7 @@
+import '../utils/platform_detector.dart';
 import '../services/music/music_car_host.dart';
+import '../services/music/music_experience.dart';
+import '../services/music/music_library_store.dart';
 import '../karaoke/karaoke_session.dart';
 import 'dart:async';
 
@@ -36,6 +39,7 @@ import '../multiview/workspace_controller.dart';
 import '../multiview/workspace_overlay.dart';
 import '../multiview/workspace_persistence.dart';
 import '../screens/main_screen.dart';
+import '../screens/music/music_home_screen.dart';
 import '../screens/sources/source_player_screen.dart';
 import '../screens/video_player_screen.dart';
 import '../services/api_cache.dart';
@@ -324,6 +328,7 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                   serverManager: context.read<MultiServerProvider>().serverManager,
                   database: context.read<AppDatabase>(),
                   offlineWatchService: context.read<OfflineWatchSyncService>(),
+                  libraryStore: activeId == null ? null : MusicLibraryStore(context.read<AppDatabase>(), activeId),
                   // Last-session restore (#2148) is per profile; no profile,
                   // nothing to restore.
                   sessionStore: activeId == null
@@ -335,6 +340,21 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                 create: (context) =>
                     KaraokeSession(music: context.read<MusicPlaybackService>(), profileId: activeId ?? 'local'),
               ),
+              if (activeId != null)
+                ChangeNotifierProvider<MusicExperience>(
+                  lazy: false,
+                  create: (context) {
+                    final manager = context.read<MultiServerProvider>().serverManager;
+                    return MusicExperience(
+                      music: context.read<MusicPlaybackService>(),
+                      store: MusicLibraryStore(context.read<AppDatabase>(), activeId),
+                      connectionChanges: manager.statusStream,
+                      clientFor: (item) => item.serverId == null || !manager.isServerVisible(ServerId(item.serverId!))
+                          ? null
+                          : manager.getClient(ServerId(item.serverId!)),
+                    );
+                  },
+                ),
               // Per profile: a profile switch disposes of it, which leaves the
               // room and closes the party.
               ChangeNotifierProvider(
@@ -538,11 +558,13 @@ class _ProfileSessionNavigatorState extends State<_ProfileSessionNavigator> {
       settings: settings,
       builder: (context) =>
           widget.profileShellBuilder?.call(context) ??
-          MainScreen(
-            isOfflineMode: widget.isOfflineMode,
-            initialPromptHandled: widget.initialPromptHandled,
-            initialSourceLibrary: widget.initialSourceLibrary,
-          ),
+          (PlatformDetector.isAutomotiveMedia()
+              ? const MusicHomeScreen()
+              : MainScreen(
+                  isOfflineMode: widget.isOfflineMode,
+                  initialPromptHandled: widget.initialPromptHandled,
+                  initialSourceLibrary: widget.initialSourceLibrary,
+                )),
     );
   }
 }

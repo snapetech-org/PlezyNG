@@ -115,6 +115,7 @@ class TranslationsAz extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$az romm = _Translations$romm$az._(_root);
 	@override late final _Translations$subtitleCapture$az subtitleCapture = _Translations$subtitleCapture$az._(_root);
 	@override late final _Translations$musicExperience$az musicExperience = _Translations$musicExperience$az._(_root);
+	@override late final _Translations$musicTools$az musicTools = _Translations$musicTools$az._(_root);
 }
 
 // Path: app
@@ -808,6 +809,7 @@ class _Translations$settings$az extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Seçin ki, seçilmiş kütüphanadan hangi klipləri filmlər öncə oynayabilir.';
 	@override String get contentScreensaverDelayOptionDescription => 'Bu, ekranda aparılmadan əvvəl çox dakikalar bekləyin.';
 	@override String get videoCodecOptionDescription => 'Bu codec üçün doğrudan oynamaq sağlanır. kontrolsüz codeclar medya sunucu tarafından transkod edilir.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer ölçüsü: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2546,6 +2548,7 @@ class _Translations$performanceOverlay$az extends Translations$performanceOverla
 	@override String get decoderHardware => 'Aparat təminatı';
 	@override String get tunnelingActive => 'Aktiv';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} uğursuz)';
+	@override String cacheLimitMiB({required Object size}) => 'Keş limiti: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2740,13 +2743,24 @@ class _Translations$seerr$az extends Translations$seerr$en {
 	@override String get request => 'Sorğu göndər';
 	@override String get request4k => '4K sorğu göndər';
 	@override String get requestSeasons => 'Çatışmayan mövsümlər üçün sorğu göndər';
+	@override String get requestHint => 'Seerr-də sorğu seçimlərini seçin';
+	@override String get quickRequestHint => 'Standart ayarlarla indi Seerr-də sorğu göndərin';
+	@override String get chooseSeasonsHint => 'Seerr-də sorğu üçün mövsümləri seçin';
+	@override String get request4kHint => 'Seerr-də 4K sorğusunu seçin';
+	@override String get only4kAvailable => 'Bu hesab yalnız 4K versiyasını sorğu edə bilər.';
+	@override String get cardActionHint => 'Seerr sorğu seçimləri üçün kart menyusunu açın';
+	@override String get requestInProgress => 'Sorğu icra olunur';
 	@override String get notifyMe => 'Əlçatan olduqda mənə bildir';
 	@override String get notifyMe4k => '4K əlçatan olduqda mənə bildir';
 	@override String get notificationsOn => 'Əlçatanlıq bildirişi aktivdir';
+	@override String get turnOffAlert => 'Əlçatanlıq bildirişini söndür';
 	@override String get notificationsEnabled => 'Əlçatan olduqda sizə xəbər verəcəyik';
+	@override String get notificationsEnabled4k => '4K versiyası əlçatan olduqda sizə xəbər verəcəyik';
+	@override String notificationsEnabledSeason({required Object season}) => '${season} mövsümü əlçatan olduqda sizə xəbər verəcəyik';
 	@override String get notificationsDisabled => 'Əlçatanlıq bildirişi söndürüldü';
 	@override String get notificationFailed => 'Əlçatanlıq bildirişini yeniləmək mümkün olmadı';
 	@override String get seasons => 'Mövsümlər';
+	@override String get requestSheetHint => 'Seerr sorğunuzun təsdiqini və izlənməsini idarə edir.';
 	@override String get allSeasons => 'Bütün mövsümlər';
 	@override String get advancedOptions => 'Təkmilləşdirilmiş';
 	@override String get destinationServer => 'Hədəf server';
@@ -3749,6 +3763,9 @@ class _Translations$sourceSetup$az extends Translations$sourceSetup$en {
 	final TranslationsAz _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Kitablarına baxmaq və onları oxutmaq üçün öz BookOrbit hesabınızla daxil olun. Çatışmayan başlıqlar üçün sorğular yenə də qoşulmuş SeerrNG instansiyanız vasitəsilə göndərilir.';
+	@override String get bookorbitOpen => 'BookOrbit-də aç';
+	@override String get bookorbitDetailHelp => 'Kitabxana təfərrüatlarını və Pleazyng-in aça bilmədiyi formatları idarə etmək üçün bu başlığı BookOrbit-də açın. Dinləmə irəliləyişi BookOrbit hesabınızla sinxronlaşdırılır.';
 	@override String get savedCertificate => 'Yadda saxlanmış server sertifikatı';
 	@override String get nfsEndpointInvalid => 'nfs://nas:2049/export kimi NFS URL-i daxil edin.';
 	@override String get dlnaNone => 'DLNA serveri tapılmadı. Cihazın təsvir URL-ini əl ilə daxil edin.';
@@ -4269,6 +4286,45 @@ class _Translations$musicExperience$az extends Translations$musicExperience$en {
 	@override String get routeLost => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.';
 	@override String get autoDriving => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç';
 	@override String get routeHint => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.';
+}
+
+// Path: musicTools
+class _Translations$musicTools$az extends Translations$musicTools$en {
+	_Translations$musicTools$az._(TranslationsAz root) : this._root = root, super.internal(root);
+
+	final TranslationsAz _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'Qonaq DJ';
+	@override String get charts => 'Dinləmə reytinqləri';
+	@override String get rediscover => 'Yenidən kəşf et';
+	@override String get stations => 'Musiqi stansiyaları';
+	@override String get prompt => 'Təsvirdən pleylist';
+	@override String get provider => 'Provayderin generasiya URL-i';
+	@override String get model => 'Modelin adı';
+	@override String get consent => 'Təsvirimi bu provayderə göndər';
+	@override String get promptHint => 'İstədiyiniz musiqini təsvir edin';
+	@override String get noHistory => 'Hələ göstəriləcək musiqi yoxdur';
+	@override String get historyHint => 'Bu cihazda qeydə alınan dinləmələr';
+	@override String get days => 'Günlər';
+	@override String get albumBlocks => 'Albomları bütöv saxla';
+	@override String get home => 'Musiqi';
+	@override String get recent => 'Son dinlənilənlər';
+	@override String get apiKey => 'API açarı';
+	@override String get missing => 'Yoxdur';
+	@override String get minutes => 'Dəqiqə';
+	@override String get rules => 'Filtrlər';
+	@override String get exclusiveOutput => 'Eksklüziv səs çıxışı';
+	@override String get preamp => 'Ön gücləndirmə';
+	@override String get ratingPending => 'Bu cihazda saxlanıldı; sinxronizasiya gözlənilir';
+	@override String get lyricsOffset => 'Mahnı sözlərinin vaxt fərqi';
+	@override String get anniversaries => 'Albomların ildönümləri';
+	@override String get outputPreset => 'Bu çıxış üçün ekvalayzer';
+	@override String get outputPresetHint => 'Bu çıxış seçildikdə bu ekvalayzeri avtomatik tətbiq et.';
+	@override String get eqApproximation => 'Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6060,6 +6116,7 @@ extension on TranslationsAz {
 			'settings.prerollSelectionDescription' => 'Seçin ki, seçilmiş kütüphanadan hangi klipləri filmlər öncə oynayabilir.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Bu, ekranda aparılmadan əvvəl çox dakikalar bekləyin.',
 			'settings.videoCodecOptionDescription' => 'Bu codec üçün doğrudan oynamaq sağlanır. kontrolsüz codeclar medya sunucu tarafından transkod edilir.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer ölçüsü: ${size} MiB',
 			'themeEditor.builtIn' => 'Daxili',
 			'themeEditor.presets' => 'Hazır mövzular',
 			'themeEditor.custom' => 'Xüsusi',
@@ -6411,9 +6468,9 @@ extension on TranslationsAz {
 			'videoControls.chaptersAndBookmarks' => 'Fəsillər və əlfəcinlər',
 			'videoControls.segmentLoop' => 'Bölmə təkrarı',
 			'videoControls.addBookmark' => 'Əlfəcin əlavə et',
-			'videoControls.bookmarkName' => 'Əlfəcin adı',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Əlfəcin adı',
 			'videoControls.bookmarkNameHint' => 'Məsələn, açılış səhnəsi',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Əlfəcin ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu əlfəcin üçün ad daxil edin.',
@@ -6925,9 +6982,9 @@ extension on TranslationsAz {
 			'libraries.hideLibrary' => 'Kitabxananı gizlət',
 			'libraries.libraryOptions' => 'Kitabxana seçimləri',
 			'libraries.content' => 'kitabxana məzmunu',
-			'libraries.selectLibrary' => 'Kitabxana seç',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Kitabxana seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
 			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			'libraries.noCollections' => 'Bu kitabxanada kolleksiya yoxdur',
@@ -7439,9 +7496,9 @@ extension on TranslationsAz {
 			'watchTogether.paste' => 'Yapışdır',
 			'watchTogether.noCodeInClipboard' => 'Buferdə otaq kodu yoxdur',
 			'watchTogether.copyCode' => 'Kodu kopyala',
-			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Dəvəti paylaş',
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
@@ -7905,6 +7962,7 @@ extension on TranslationsAz {
 			'performanceOverlay.decoderHardware' => 'Aparat təminatı',
 			'performanceOverlay.tunnelingActive' => 'Aktiv',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} uğursuz)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Keş limiti: ${size} MiB',
 			'externalPlayer.title' => 'Xarici oynadıcı',
 			'externalPlayer.useExternalPlayer' => 'Xarici oynadıcı istifadə et',
 			'externalPlayer.useExternalPlayerDescription' => 'Videoları başqa tətbiqdə açın',
@@ -7952,10 +8010,10 @@ extension on TranslationsAz {
 			'metadataEdit.fromUrl' => 'URL-dən',
 			'metadataEdit.uploadFile' => 'Fayl yüklə',
 			'metadataEdit.enterImageUrl' => 'Şəkil URL-i daxil edin',
-			'metadataEdit.imageUrl' => 'Şəkil URL-i',
-			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Şəkil URL-i',
+			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
 			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
 			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
@@ -8047,13 +8105,24 @@ extension on TranslationsAz {
 			'seerr.request' => 'Sorğu göndər',
 			'seerr.request4k' => '4K sorğu göndər',
 			'seerr.requestSeasons' => 'Çatışmayan mövsümlər üçün sorğu göndər',
+			'seerr.requestHint' => 'Seerr-də sorğu seçimlərini seçin',
+			'seerr.quickRequestHint' => 'Standart ayarlarla indi Seerr-də sorğu göndərin',
+			'seerr.chooseSeasonsHint' => 'Seerr-də sorğu üçün mövsümləri seçin',
+			'seerr.request4kHint' => 'Seerr-də 4K sorğusunu seçin',
+			'seerr.only4kAvailable' => 'Bu hesab yalnız 4K versiyasını sorğu edə bilər.',
+			'seerr.cardActionHint' => 'Seerr sorğu seçimləri üçün kart menyusunu açın',
+			'seerr.requestInProgress' => 'Sorğu icra olunur',
 			'seerr.notifyMe' => 'Əlçatan olduqda mənə bildir',
 			'seerr.notifyMe4k' => '4K əlçatan olduqda mənə bildir',
 			'seerr.notificationsOn' => 'Əlçatanlıq bildirişi aktivdir',
+			'seerr.turnOffAlert' => 'Əlçatanlıq bildirişini söndür',
 			'seerr.notificationsEnabled' => 'Əlçatan olduqda sizə xəbər verəcəyik',
+			'seerr.notificationsEnabled4k' => '4K versiyası əlçatan olduqda sizə xəbər verəcəyik',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '${season} mövsümü əlçatan olduqda sizə xəbər verəcəyik',
 			'seerr.notificationsDisabled' => 'Əlçatanlıq bildirişi söndürüldü',
 			'seerr.notificationFailed' => 'Əlçatanlıq bildirişini yeniləmək mümkün olmadı',
 			'seerr.seasons' => 'Mövsümlər',
+			'seerr.requestSheetHint' => 'Seerr sorğunuzun təsdiqini və izlənməsini idarə edir.',
 			'seerr.allSeasons' => 'Bütün mövsümlər',
 			'seerr.advancedOptions' => 'Təkmilləşdirilmiş',
 			'seerr.destinationServer' => 'Hədəf server',
@@ -8455,6 +8524,8 @@ extension on TranslationsAz {
 			'universalMedia.favorites' => 'Sürücüsüz favoritlər',
 			'universalMedia.address' => 'Medyanın adresi',
 			'universalMedia.addressHelp' => 'HTTPS-i tercih edilir. tanınmış kimlik və ya imza parametrləri olan URL-lər yalnız bu oturum üçün istifadə edilir və favori olarak saklanamaz.',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'Görüntülər adı (optional)',
 			'universalMedia.displayNameHelp' => 'Bir oyuncu və sistem medya kontrolləri üçün kısa adı seçin.',
 			'universalMedia.allowHttp' => 'HTTP bağlantısı qapılmamışdır',
@@ -8468,8 +8539,6 @@ extension on TranslationsAz {
 			'universalMedia.favoriteSaved' => 'Bu profillə saldığın sevgilisi',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '${count}-in düzgün və ya güvenli olmayan oynay listə girişini atıb.', other: '${count}-in kömək etmədik və ya güvenli olmayan oynatma listəsi girişləri atıldı.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresləri',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'M3U, M3u8 və ya PLS oynatma listasını bir web adresindən açın.',
 			'universalMedia.choosePlaylist' => 'Playlist filləri seçin',
 			'universalMedia.openPlaylist' => 'Açıklandı Playlist',
@@ -8931,6 +9000,9 @@ extension on TranslationsAz {
 			'audiobook.recoveryImportConfirm' => 'Bu şifrə edilmiş qaytarma dosyasını günümüzdeki okuma pozisyonları və notlarla birleştirir? mevcut geçmişi tutulur. Paylaşılmış kütüphane və element kimlikləri içermez; ithal etmeden əvvəl hər cihazda eşitsiz kimliklər ayarlayın.',
 			'audiobook.recoveryExported' => 'Şifrelə qayıtma dosyası qurulmuşdur.',
 			'audiobook.recoveryImported' => 'İtraf verileri birləşmişdir.',
+			'sourceSetup.bookorbitHelp' => 'Kitablarına baxmaq və onları oxutmaq üçün öz BookOrbit hesabınızla daxil olun. Çatışmayan başlıqlar üçün sorğular yenə də qoşulmuş SeerrNG instansiyanız vasitəsilə göndərilir.',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit-də aç',
+			'sourceSetup.bookorbitDetailHelp' => 'Kitabxana təfərrüatlarını və Pleazyng-in aça bilmədiyi formatları idarə etmək üçün bu başlığı BookOrbit-də açın. Dinləmə irəliləyişi BookOrbit hesabınızla sinxronlaşdırılır.',
 			'sourceSetup.savedCertificate' => 'Yadda saxlanmış server sertifikatı',
 			'sourceSetup.nfsEndpointInvalid' => 'nfs://nas:2049/export kimi NFS URL-i daxil edin.',
 			'sourceSetup.dlnaNone' => 'DLNA serveri tapılmadı. Cihazın təsvir URL-ini əl ilə daxil edin.',
@@ -8966,6 +9038,8 @@ extension on TranslationsAz {
 			'sourceSetup.clientCertificate' => 'Klient sertifikatı (istəyə bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS-a bu klientin kimliyini təsdiqləməyə imkan verir; AUTH_SYS ID-ləri yenə NAS-ın NFS paylaşım qaydalarından asılıdır.',
 			'sourceSetup.savedIdentity' => 'Yadda saxlanmış klient kimlik məlumatları istifadə olunacaq.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Yadda saxlanmış klient kimlik məlumatlarını əvəz et',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 klient kimlik məlumatlarını seç',
 			'sourceSetup.identityPassphrase' => 'Klient kimlik məlumatlarının parol ifadəsi',
@@ -8982,8 +9056,6 @@ extension on TranslationsAz {
 			'sourceSetup.apiKey' => 'API açarı',
 			'sourceSetup.optionalUsername' => 'Hesabın istifadəçi adı (istəyə bağlı)',
 			'sourceSetup.optionalPassword' => 'Hesabın şifrəsi (istəyə bağlı)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytından API açarı alın. Axtarış videonun adını və mövcud IMDb/TMDB ID-lərini göndərir, video faylını isə heç vaxt göndərmir. Açar və istəyə bağlı hesab giriş məlumatları bu mənbə ilə birlikdə şifrələnir.',
 			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metadatası',
 			'sourceSetup.metadataPrivacy' => 'Yalnız fayl adındakı adı/ili və epizod nömrələrini və ya NFO ID-sini göndərir; media və giriş məlumatlarını heç vaxt göndərmir. NFO sahələri üstünlüyünü saxlayır.',
@@ -9381,6 +9453,36 @@ extension on TranslationsAz {
 			'musicExperience.routeLost' => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.',
 			'musicExperience.autoDriving' => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç',
 			'musicExperience.routeHint' => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.',
+			'musicTools.guestDj' => 'Qonaq DJ',
+			'musicTools.charts' => 'Dinləmə reytinqləri',
+			'musicTools.rediscover' => 'Yenidən kəşf et',
+			'musicTools.stations' => 'Musiqi stansiyaları',
+			'musicTools.prompt' => 'Təsvirdən pleylist',
+			'musicTools.provider' => 'Provayderin generasiya URL-i',
+			'musicTools.model' => 'Modelin adı',
+			'musicTools.consent' => 'Təsvirimi bu provayderə göndər',
+			'musicTools.promptHint' => 'İstədiyiniz musiqini təsvir edin',
+			'musicTools.noHistory' => 'Hələ göstəriləcək musiqi yoxdur',
+			'musicTools.historyHint' => 'Bu cihazda qeydə alınan dinləmələr',
+			'musicTools.days' => 'Günlər',
+			'musicTools.albumBlocks' => 'Albomları bütöv saxla',
+			'musicTools.home' => 'Musiqi',
+			'musicTools.recent' => 'Son dinlənilənlər',
+			'musicTools.apiKey' => 'API açarı',
+			'musicTools.missing' => 'Yoxdur',
+			'musicTools.minutes' => 'Dəqiqə',
+			'musicTools.rules' => 'Filtrlər',
+			'musicTools.exclusiveOutput' => 'Eksklüziv səs çıxışı',
+			'musicTools.preamp' => 'Ön gücləndirmə',
+			'musicTools.ratingPending' => 'Bu cihazda saxlanıldı; sinxronizasiya gözlənilir',
+			'musicTools.lyricsOffset' => 'Mahnı sözlərinin vaxt fərqi',
+			'musicTools.anniversaries' => 'Albomların ildönümləri',
+			'musicTools.outputPreset' => 'Bu çıxış üçün ekvalayzer',
+			'musicTools.outputPresetHint' => 'Bu çıxış seçildikdə bu ekvalayzeri avtomatik tətbiq et.',
+			'musicTools.eqApproximation' => 'Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

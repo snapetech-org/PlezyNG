@@ -115,6 +115,7 @@ class TranslationsTh extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$romm$th romm = _Translations$romm$th._(_root);
 	@override late final _Translations$subtitleCapture$th subtitleCapture = _Translations$subtitleCapture$th._(_root);
 	@override late final _Translations$musicExperience$th musicExperience = _Translations$musicExperience$th._(_root);
+	@override late final _Translations$musicTools$th musicTools = _Translations$musicTools$th._(_root);
 }
 
 // Path: app
@@ -806,6 +807,7 @@ class _Translations$settings$th extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'เลือกคลิปจากห้องสมุดที่เลือกที่จะเล่นก่อนภาพยนตร์';
 	@override String get contentScreensaverDelayOptionDescription => 'รอนี้หลายนาทีโดยไม่มีการเข้าสู่ระบบก่อนที่จะแสดงงานศิลปะ screensaver';
 	@override String get videoCodecOptionDescription => 'ให้การเล่นโดยตรงสําหรับโค้ดนี้เมื่อได้รับการสนับสนุน การเข้ารหัสที่ไม่ได้ตรวจสอบจะถูกรหัสผ่านจากเซิร์ฟเวอร์สื่อ';
+	@override String streamBufferSizeMiB({required Object size}) => 'ขนาด Buffer: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2527,6 +2529,7 @@ class _Translations$performanceOverlay$th extends Translations$performanceOverla
 	@override String get decoderHardware => 'ฮาร์ดแวร์';
 	@override String get tunnelingActive => 'การใช้งาน';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} ไม่สําเร็จ)';
+	@override String cacheLimitMiB({required Object size}) => 'หมายเลขรุ่น: Cache Limit: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2721,13 +2724,24 @@ class _Translations$seerr$th extends Translations$seerr$en {
 	@override String get request => 'คําขอ';
 	@override String get request4k => 'คําขอใน 4K';
 	@override String get requestSeasons => 'ขอซีซันที่ขาดหายไป';
+	@override String get requestHint => 'เลือกตัวเลือกคำขอใน Seerr';
+	@override String get quickRequestHint => 'ส่งคำขอใน Seerr ทันทีโดยใช้การตั้งค่าเริ่มต้น';
+	@override String get chooseSeasonsHint => 'เลือกซีซันที่จะขอใน Seerr';
+	@override String get request4kHint => 'เลือกคำขอ 4K ใน Seerr';
+	@override String get only4kAvailable => 'บัญชีนี้ขอได้เฉพาะเวอร์ชัน 4K เท่านั้น';
+	@override String get cardActionHint => 'เปิดเมนูการ์ดเพื่อดูตัวเลือกคำขอของ Seerr';
+	@override String get requestInProgress => 'กำลังดำเนินการคำขอ';
 	@override String get notifyMe => 'แจ้งเตือนเมื่อพร้อมใช้งาน';
 	@override String get notifyMe4k => 'แจ้งเตือนเมื่อมีเวอร์ชัน 4K';
 	@override String get notificationsOn => 'เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน';
+	@override String get turnOffAlert => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน';
 	@override String get notificationsEnabled => 'เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน';
+	@override String get notificationsEnabled4k => 'เราจะแจ้งให้ทราบเมื่อเวอร์ชัน 4K พร้อมใช้งาน';
+	@override String notificationsEnabledSeason({required Object season}) => 'เราจะแจ้งให้ทราบเมื่อซีซัน ${season} พร้อมใช้งาน';
 	@override String get notificationsDisabled => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน';
 	@override String get notificationFailed => 'อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ';
 	@override String get seasons => 'ฤดูกาล';
+	@override String get requestSheetHint => 'Seerr จัดการการอนุมัติและติดตามคำขอของคุณ';
 	@override String get allSeasons => 'ทุกฤดูกาล';
 	@override String get advancedOptions => 'ขั้นสูง';
 	@override String get destinationServer => 'เซิร์ฟเวอร์ปลายทาง';
@@ -3726,6 +3740,9 @@ class _Translations$sourceSetup$th extends Translations$sourceSetup$en {
 	final TranslationsTh _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'ลงชื่อเข้าใช้บัญชี BookOrbit ของคุณเพื่อเรียกดูและเล่นหนังสือ คำขอสำหรับเรื่องที่ไม่มีให้บริการยังคงส่งผ่าน SeerrNG ที่เชื่อมต่อไว้';
+	@override String get bookorbitOpen => 'เปิดใน BookOrbit';
+	@override String get bookorbitDetailHelp => 'ดูเรื่องนี้ใน BookOrbit เพื่อจัดการรายละเอียดในคลังและรูปแบบไฟล์ที่ Pleazyng เปิดไม่ได้ ความคืบหน้าในการฟังจะซิงค์กับบัญชี BookOrbit ของคุณ';
 	@override String get savedCertificate => 'ใบรับรองเซิร์ฟเวอร์ที่บันทึกไว้';
 	@override String get nfsEndpointInvalid => 'ป้อน URL ของ NFS เช่น nfs://nas:2049/export.';
 	@override String get dlnaNone => 'ไม่พบเซิร์ฟเวอร์ DLNA ป้อน URL คำอธิบายอุปกรณ์ด้วยตนเอง';
@@ -4246,6 +4263,45 @@ class _Translations$musicExperience$th extends Translations$musicExperience$en {
 	@override String get routeLost => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว';
 	@override String get autoDriving => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ';
 	@override String get routeHint => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่';
+}
+
+// Path: musicTools
+class _Translations$musicTools$th extends Translations$musicTools$en {
+	_Translations$musicTools$th._(TranslationsTh root) : this._root = root, super.internal(root);
+
+	final TranslationsTh _root; // ignore: unused_field
+
+	// Translations
+	@override String get guestDj => 'ดีเจรับเชิญ';
+	@override String get charts => 'อันดับการฟัง';
+	@override String get rediscover => 'ค้นพบอีกครั้ง';
+	@override String get stations => 'สถานีเพลง';
+	@override String get prompt => 'เพลย์ลิสต์จากคำอธิบาย';
+	@override String get provider => 'URL สร้างรายการของผู้ให้บริการ';
+	@override String get model => 'ชื่อโมเดล';
+	@override String get consent => 'ส่งคำอธิบายของฉันให้ผู้ให้บริการนี้';
+	@override String get promptHint => 'อธิบายเพลงที่ต้องการ';
+	@override String get noHistory => 'ยังไม่มีเพลงให้แสดง';
+	@override String get historyHint => 'การเล่นที่บันทึกบนอุปกรณ์นี้';
+	@override String get days => 'วัน';
+	@override String get albumBlocks => 'เก็บอัลบั้มทั้งชุดไว้ด้วยกัน';
+	@override String get home => 'เพลง';
+	@override String get recent => 'เล่นล่าสุด';
+	@override String get apiKey => 'คีย์ API';
+	@override String get missing => 'หมายเลขรุ่น: A';
+	@override String get minutes => 'นาที';
+	@override String get rules => 'ฟิล์ม';
+	@override String get exclusiveOutput => 'เอาต์พุตเสียงแบบเอกสิทธิ์';
+	@override String get preamp => 'ปรีแอมป์';
+	@override String get ratingPending => 'บันทึกบนอุปกรณ์นี้แล้ว รอซิงค์';
+	@override String get lyricsOffset => 'ปรับเวลาเนื้อเพลง';
+	@override String get anniversaries => 'ครบรอบการออกอัลบั้ม';
+	@override String get outputPreset => 'EQ สำหรับเอาต์พุตนี้';
+	@override String get outputPresetHint => 'ใช้ EQ นี้โดยอัตโนมัติเมื่อเลือกเอาต์พุตนี้';
+	@override String get eqApproximation => 'โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6035,6 +6091,7 @@ extension on TranslationsTh {
 			'settings.prerollSelectionDescription' => 'เลือกคลิปจากห้องสมุดที่เลือกที่จะเล่นก่อนภาพยนตร์',
 			'settings.contentScreensaverDelayOptionDescription' => 'รอนี้หลายนาทีโดยไม่มีการเข้าสู่ระบบก่อนที่จะแสดงงานศิลปะ screensaver',
 			'settings.videoCodecOptionDescription' => 'ให้การเล่นโดยตรงสําหรับโค้ดนี้เมื่อได้รับการสนับสนุน การเข้ารหัสที่ไม่ได้ตรวจสอบจะถูกรหัสผ่านจากเซิร์ฟเวอร์สื่อ',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'ขนาด Buffer: ${size} MiB',
 			'themeEditor.builtIn' => 'โครงสร้าง',
 			'themeEditor.presets' => 'โพสต์',
 			'themeEditor.custom' => 'คู่มือ',
@@ -6386,9 +6443,9 @@ extension on TranslationsTh {
 			'videoControls.chaptersAndBookmarks' => 'ประเภทและ bookmarks',
 			'videoControls.segmentLoop' => 'ชิ้นส่วน',
 			'videoControls.addBookmark' => 'เพิ่ม Bookmark',
-			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'ชื่อ Bookmark',
 			'videoControls.bookmarkNameHint' => 'ตัวอย่างเช่น ฉากเปิด',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'บัญชี ${n}',
 			'videoControls.bookmarkNameRequired' => 'ใส่ชื่อสําหรับจดหมายนี้',
@@ -6900,9 +6957,9 @@ extension on TranslationsTh {
 			'libraries.hideLibrary' => 'ซ่อนห้องสมุด',
 			'libraries.libraryOptions' => 'ตัวเลือกห้องสมุด',
 			'libraries.content' => 'วัสดุห้องสมุด',
-			'libraries.selectLibrary' => 'เลือกห้องสมุด',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'เลือกห้องสมุด',
 			'libraries.filtersWithCount' => ({required Object count}) => 'ตัวกรอง (${count})',
 			'libraries.noRecommendations' => 'ไม่มีคําแนะนําที่มีอยู่',
 			'libraries.noCollections' => 'ไม่มีคอลเลกชันในห้องสมุดนี้',
@@ -7414,9 +7471,9 @@ extension on TranslationsTh {
 			'watchTogether.paste' => 'แพสติ้ง',
 			'watchTogether.noCodeInClipboard' => 'แผ่นคลิปไม่ได้มีรหัสห้อง',
 			'watchTogether.copyCode' => 'รหัสคัดลอก',
-			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'รหัสห้องคัดลอก',
 			'watchTogether.shareInvite' => 'คู่มือ',
 			'watchTogether.inviteCopied' => 'ขออธิบายการคัดลอก เขียนลงในข้อความ',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'เข้าร่วมห้องของ Watch Together ที่ Pleazyng: เปิดห้องของ Watch Together, เลือกห้องของ Join และเข้าสู่ระบบ ${code}.',
@@ -7880,6 +7937,7 @@ extension on TranslationsTh {
 			'performanceOverlay.decoderHardware' => 'ฮาร์ดแวร์',
 			'performanceOverlay.tunnelingActive' => 'การใช้งาน',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} ไม่สําเร็จ)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'หมายเลขรุ่น: Cache Limit: ${size} MiB',
 			'externalPlayer.title' => 'ผู้เล่นภายนอก',
 			'externalPlayer.useExternalPlayer' => 'ใช้ผู้เล่นภายนอก',
 			'externalPlayer.useExternalPlayerDescription' => 'เปิดวิดีโอในแอปอื่น ๆ',
@@ -7927,10 +7985,10 @@ extension on TranslationsTh {
 			'metadataEdit.fromUrl' => 'จาก URL',
 			'metadataEdit.uploadFile' => 'ดาวน์โหลดไฟล์',
 			'metadataEdit.enterImageUrl' => 'หมายเลข URL',
-			'metadataEdit.imageUrl' => 'ภาพ URL',
-			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'ภาพ URL',
+			'metadataEdit.metadataUpdated' => 'ข้อมูลอัปเดต',
 			'metadataEdit.metadataUpdateFailed' => 'ไม่สามารถปรับปรุงข้อมูล metadata',
 			'metadataEdit.artworkUpdated' => 'อัพเดทศิลปะ',
 			'metadataEdit.artworkUpdateFailed' => 'ไม่สามารถปรับปรุงงานศิลปะได้',
@@ -8022,13 +8080,24 @@ extension on TranslationsTh {
 			'seerr.request' => 'คําขอ',
 			'seerr.request4k' => 'คําขอใน 4K',
 			'seerr.requestSeasons' => 'ขอซีซันที่ขาดหายไป',
+			'seerr.requestHint' => 'เลือกตัวเลือกคำขอใน Seerr',
+			'seerr.quickRequestHint' => 'ส่งคำขอใน Seerr ทันทีโดยใช้การตั้งค่าเริ่มต้น',
+			'seerr.chooseSeasonsHint' => 'เลือกซีซันที่จะขอใน Seerr',
+			'seerr.request4kHint' => 'เลือกคำขอ 4K ใน Seerr',
+			'seerr.only4kAvailable' => 'บัญชีนี้ขอได้เฉพาะเวอร์ชัน 4K เท่านั้น',
+			'seerr.cardActionHint' => 'เปิดเมนูการ์ดเพื่อดูตัวเลือกคำขอของ Seerr',
+			'seerr.requestInProgress' => 'กำลังดำเนินการคำขอ',
 			'seerr.notifyMe' => 'แจ้งเตือนเมื่อพร้อมใช้งาน',
 			'seerr.notifyMe4k' => 'แจ้งเตือนเมื่อมีเวอร์ชัน 4K',
 			'seerr.notificationsOn' => 'เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน',
+			'seerr.turnOffAlert' => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน',
 			'seerr.notificationsEnabled' => 'เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน',
+			'seerr.notificationsEnabled4k' => 'เราจะแจ้งให้ทราบเมื่อเวอร์ชัน 4K พร้อมใช้งาน',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'เราจะแจ้งให้ทราบเมื่อซีซัน ${season} พร้อมใช้งาน',
 			'seerr.notificationsDisabled' => 'ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน',
 			'seerr.notificationFailed' => 'อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ',
 			'seerr.seasons' => 'ฤดูกาล',
+			'seerr.requestSheetHint' => 'Seerr จัดการการอนุมัติและติดตามคำขอของคุณ',
 			'seerr.allSeasons' => 'ทุกฤดูกาล',
 			'seerr.advancedOptions' => 'ขั้นสูง',
 			'seerr.destinationServer' => 'เซิร์ฟเวอร์ปลายทาง',
@@ -8430,6 +8499,8 @@ extension on TranslationsTh {
 			'universalMedia.favorites' => 'เก็บ Stream มือสมัครเล่น',
 			'universalMedia.address' => 'อ้างอิงสื่อ',
 			'universalMedia.addressHelp' => 'HTTPS เป็นความต้องการ URL ที่มีพารามิเตอร์การรับรองหรือสัญญาที่ได้รับการยอมรับจะใช้เฉพาะสําหรับเซสชั่นนี้และไม่สามารถบันทึกเป็นโปรด',
+			_ => null,
+		} ?? switch (path) {
 			'universalMedia.displayName' => 'ชื่อแสดงผล (ตัวเลือก)',
 			'universalMedia.displayNameHelp' => 'เลือกชื่อสั้นสําหรับผู้เล่นและระบบการควบคุมสื่อ',
 			'universalMedia.allowHttp' => 'อนุญาตให้มีการเชื่อมต่อ HTTP ไม่เข้ารหัส',
@@ -8443,8 +8514,6 @@ extension on TranslationsTh {
 			'universalMedia.favoriteSaved' => 'Stream Favorite ที่บันทึกไว้ในโปรไฟล์นี้',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('th'))(n, other: '${count} เข้าสู่ระบบรายการเล่นที่ไม่ได้สนับสนุนหรือไม่ปลอดภัย', ), 
 			'universalMedia.playlistAddress' => 'ที่อยู่ Playlist',
-			_ => null,
-		} ?? switch (path) {
 			'universalMedia.playlistAddressHelp' => 'เปิดรายการเล่น M3U, M3u8 หรือ PLS จากที่อยู่อาศัยเว็บ เชื่อมโยง Stream Direct ไม่บันทึกรายการเล่น',
 			'universalMedia.choosePlaylist' => 'เลือกไฟล์ Playlist',
 			'universalMedia.openPlaylist' => 'รายการเล่นเปิด',
@@ -8906,6 +8975,9 @@ extension on TranslationsTh {
 			'audiobook.recoveryImportConfirm' => 'ผสมไฟล์การกู้คืนที่เข้ารหัสนี้กับตําแหน่งอ่านปัจจุบันและบันทึก? ประวัติศาสตร์ที่มีอยู่จะถูกเก็บไว้. หมายเลขห้องสมุดร่วมกันและรายการไม่รวม; การตั้งค่าหมายเลขที่เกี่ยวข้องในแต่ละอุปกรณ์ก่อนที่จะนําเข้า',
 			'audiobook.recoveryExported' => 'ไฟล์การกู้คืนที่เข้ารหัสถูกบันทึก',
 			'audiobook.recoveryImported' => 'ข้อมูลการกู้คืนรวม',
+			'sourceSetup.bookorbitHelp' => 'ลงชื่อเข้าใช้บัญชี BookOrbit ของคุณเพื่อเรียกดูและเล่นหนังสือ คำขอสำหรับเรื่องที่ไม่มีให้บริการยังคงส่งผ่าน SeerrNG ที่เชื่อมต่อไว้',
+			'sourceSetup.bookorbitOpen' => 'เปิดใน BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'ดูเรื่องนี้ใน BookOrbit เพื่อจัดการรายละเอียดในคลังและรูปแบบไฟล์ที่ Pleazyng เปิดไม่ได้ ความคืบหน้าในการฟังจะซิงค์กับบัญชี BookOrbit ของคุณ',
 			'sourceSetup.savedCertificate' => 'ใบรับรองเซิร์ฟเวอร์ที่บันทึกไว้',
 			'sourceSetup.nfsEndpointInvalid' => 'ป้อน URL ของ NFS เช่น nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'ไม่พบเซิร์ฟเวอร์ DLNA ป้อน URL คำอธิบายอุปกรณ์ด้วยตนเอง',
@@ -8941,6 +9013,8 @@ extension on TranslationsTh {
 			'sourceSetup.clientCertificate' => 'ใบรับรองไคลเอนต์ (ไม่บังคับ)',
 			'sourceSetup.clientCertificateHelp' => 'ช่วยให้ NAS ยืนยันตัวตนของไคลเอนต์นี้ได้ โดย ID ของ AUTH_SYS ยังขึ้นอยู่กับนโยบายส่วนแบ่งปัน NFS ของ NAS',
 			'sourceSetup.savedIdentity' => 'จะใช้ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'แทนที่ข้อมูลประจำตัวไคลเอนต์ที่บันทึกไว้',
 			'sourceSetup.chooseIdentity' => 'เลือกข้อมูลประจำตัวไคลเอนต์ PKCS#12',
 			'sourceSetup.identityPassphrase' => 'วลีรหัสผ่านของข้อมูลประจำตัวไคลเอนต์',
@@ -8957,8 +9031,6 @@ extension on TranslationsTh {
 			'sourceSetup.apiKey' => 'คีย์ API',
 			'sourceSetup.optionalUsername' => 'ชื่อผู้ใช้ของบัญชี (ไม่บังคับ)',
 			'sourceSetup.optionalPassword' => 'รหัสผ่านบัญชี (ไม่บังคับ)',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.subtitlePrivacy' => 'รับคีย์ API จาก opensubtitles.com การค้นหาจะส่งชื่อวิดีโอและ ID ของ IMDb/TMDB ที่มี แต่จะไม่ส่งไฟล์วิดีโอ คีย์และข้อมูลรับรองบัญชีที่ระบุเพิ่มเติมจะเข้ารหัสพร้อมกับแหล่งข้อมูลนี้',
 			'sourceSetup.automaticMetadata' => 'ข้อมูลกำกับวิดีโอออนไลน์อัตโนมัติ',
 			'sourceSetup.metadataPrivacy' => 'ส่งเฉพาะชื่อเรื่อง/ปีจากชื่อไฟล์และหมายเลขตอน หรือ ID ของ NFO โดยไม่ส่งสื่อหรือข้อมูลรับรอง ช่องข้อมูล NFO ยังคงมีลำดับความสำคัญสูงสุด',
@@ -9356,6 +9428,36 @@ extension on TranslationsTh {
 			'musicExperience.routeLost' => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว',
 			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
 			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
+			'musicTools.guestDj' => 'ดีเจรับเชิญ',
+			'musicTools.charts' => 'อันดับการฟัง',
+			'musicTools.rediscover' => 'ค้นพบอีกครั้ง',
+			'musicTools.stations' => 'สถานีเพลง',
+			'musicTools.prompt' => 'เพลย์ลิสต์จากคำอธิบาย',
+			'musicTools.provider' => 'URL สร้างรายการของผู้ให้บริการ',
+			'musicTools.model' => 'ชื่อโมเดล',
+			'musicTools.consent' => 'ส่งคำอธิบายของฉันให้ผู้ให้บริการนี้',
+			'musicTools.promptHint' => 'อธิบายเพลงที่ต้องการ',
+			'musicTools.noHistory' => 'ยังไม่มีเพลงให้แสดง',
+			'musicTools.historyHint' => 'การเล่นที่บันทึกบนอุปกรณ์นี้',
+			'musicTools.days' => 'วัน',
+			'musicTools.albumBlocks' => 'เก็บอัลบั้มทั้งชุดไว้ด้วยกัน',
+			'musicTools.home' => 'เพลง',
+			'musicTools.recent' => 'เล่นล่าสุด',
+			'musicTools.apiKey' => 'คีย์ API',
+			'musicTools.missing' => 'หมายเลขรุ่น: A',
+			'musicTools.minutes' => 'นาที',
+			'musicTools.rules' => 'ฟิล์ม',
+			'musicTools.exclusiveOutput' => 'เอาต์พุตเสียงแบบเอกสิทธิ์',
+			'musicTools.preamp' => 'ปรีแอมป์',
+			'musicTools.ratingPending' => 'บันทึกบนอุปกรณ์นี้แล้ว รอซิงค์',
+			'musicTools.lyricsOffset' => 'ปรับเวลาเนื้อเพลง',
+			'musicTools.anniversaries' => 'ครบรอบการออกอัลบั้ม',
+			'musicTools.outputPreset' => 'EQ สำหรับเอาต์พุตนี้',
+			'musicTools.outputPresetHint' => 'ใช้ EQ นี้โดยอัตโนมัติเมื่อเลือกเอาต์พุตนี้',
+			'musicTools.eqApproximation' => 'โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

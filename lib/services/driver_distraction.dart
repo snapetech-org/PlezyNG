@@ -54,3 +54,8 @@ bool automotivePlaybackAllowedNow() {
     restrictions: restrictions,
   );
 }
+
+/// Only the separately packaged, host-rendered AAOS audio target may keep music
+/// active while driving. Phone/TV/video distributions retain their existing
+/// vehicle restriction predicate, including its unknown-state fail-closed rule.
+bool automotiveMusicPlaybackAllowedNow() => PlatformDetector.isAutomotiveMedia() || automotivePlaybackAllowedNow();

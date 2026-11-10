@@ -131,8 +131,6 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -170,11 +168,9 @@
 					<key>UISceneClassName</key>
 					<string>UIWindowScene</string>
 					<key>UISceneDelegateClassName</key>
-					<string>FlutterSceneDelegate</string>
+					<string>MusicPhoneSceneDelegate</string>
 					<key>UISceneConfigurationName</key>
 					<string>flutter</string>
-					<key>UISceneStoryboardFile</key>
-					<string>Main</string>
 				</dict>
 			</array>
 			<key>UIWindowSceneSessionRoleExternalDisplay</key>
@@ -201,6 +197,8 @@
 			</array>
 		</dict>
 	</dict>
+	<key>INIntentsSupported</key>
+	<array><string>INPlayMediaIntent</string></array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>org.plezy.preparation</string>

@@ -23,14 +23,15 @@ Future<void> openMusicDiscovery(BuildContext context, MediaItem seed) =>
 /// Seed editor, sonic paths, related tracks and saved recipes all use existing
 /// server clients, track menus, download ownership and the one music session.
 class MusicDiscoveryScreen extends StatefulWidget {
-  const MusicDiscoveryScreen({super.key, required this.seed});
+  const MusicDiscoveryScreen({super.key, required this.seed, this.recipe});
   final MediaItem seed;
+  final MusicRecipe? recipe;
   @override
   State<MusicDiscoveryScreen> createState() => _MusicDiscoveryScreenState();
 }
 
 class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
-  late final List<MediaItem> _seeds = [widget.seed];
+  late final List<MediaItem> _seeds = List.of(widget.recipe?.seeds ?? [widget.seed]);
   final _query = TextEditingController();
   final _name = TextEditingController();
   List<MediaItem> _results = [], _preview = [];
@@ -52,7 +53,11 @@ class _MusicDiscoveryScreenState extends State<MusicDiscoveryScreen> {
   @override
   void initState() {
     super.initState();
-    _name.text = widget.seed.displayTitle;
+    final recipe = widget.recipe;
+    _name.text = recipe?.title ?? widget.seed.displayTitle;
+    _kind = recipe?.kind ?? MusicRecipeKind.mix;
+    _limit = recipe?.limit ?? 100;
+    _recipeId = recipe?.id;
   }
 
   @override

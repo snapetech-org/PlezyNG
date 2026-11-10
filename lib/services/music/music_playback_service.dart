@@ -142,6 +142,10 @@ abstract class MusicPlaybackService extends ChangeNotifier {
   /// actions use this to avoid appending fetched tracks to a newer session.
   int get queueSessionRevision;
 
+  /// Changes for every actual track occurrence, including repeat-one and
+  /// identical adjacent entries. History must never key a play by track ID.
+  int get playbackOccurrenceRevision => queueSessionRevision * 1000000 + currentIndex;
+
   /// Start a new queue from [tracks], optionally at [startTrack] (defaults
   /// to the first track). [shuffle] anchors [startTrack] first and shuffles
   /// the rest after it; with no [startTrack] the whole list shuffles, so the

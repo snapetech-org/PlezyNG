@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Localize the new music audio and headphone controls across supported languages.
+- Complete translations for the new Seerr request actions and source setup guidance.
+- Backport the Swift 6.2 compatibility fix from [AetherEngine commit fa8cc48b](https://github.com/superuser404notfound/AetherEngine/commit/fa8cc48b93a5b9c83367bf4fb3d731fb3862a177), contributed upstream by [@superuser404notfound](https://github.com/superuser404notfound). This credits the upstream contribution, not a direct contribution to Pleazyng.
 - Qualify and publish an independent aerynOS preview from source 3.0.22+181: native install, visible video, automatic Profile 7 routing and renderer-startup fallback pass in the VM. Keep physical HDR/FEL accuracy unqualified and preserve the immutable v3.0.7 failure record.
 
 - Prepare aerynOS recipes independently from x64 checksums, and restore aerynOS as a downstream publication target subject to native qualification.
@@ -18,6 +21,12 @@
 
 - Enable automatic Dolby Vision/Profile 7 FEL routing and compatibility fallback by default. Preserve explicit Off and manual conversion choices, try implemented local Android/Apple/desktop paths before server conversion, and retain ordinary Apple playback when the bundled DV runtime cannot initialize. Keep qualification and actual layer use explicit; neural motion smoothing remains separately opt-in.
 
+- Add a quota-bounded, authorization-scoped music prefetch cache with Wi-Fi policy and partial-file cleanup. Separate the AAOS host-rendered media build from parked video restrictions, retain one player session, and make headphone search usable with large text and a keyboard.
+
+- Add full-library album anniversaries, per-output music EQ assignments, and 6,029 offline-searchable headphone profiles derived from [AutoEq](https://github.com/jaakkopasanen/AutoEq) by Jaakko Pasanen and contributors under the MIT license. Explicitly identify ten-band approximations, retain source provenance and display the license in-app. Preserve station sort direction and clarify sort labels.
+- Integrate a configurable Music home, device-local listening history/charts, six Guest DJ modes, saved filter-based stations with scheduled downloads, opt-in prompt playlists, music ReplayGain/EQ/preamp/output controls and named presets. Reuse existing profiles, library filters, playlists, downloads and Now Playing; protect pending work across account changes.
+- Retain authorized lyrics and bounded seek-print analysis with downloaded music, add per-track lyric timing, durable music links and queued rating/favorite edits. Keep offline station playback limited to the active profile's completed downloads.
+- Add shared iOS phone/CarPlay engine startup, Siri media intents, Android headless device/restriction handling and background profile-frame scheduling; expand native playlist browsing and prevent pagination from consuming CarPlay navigation levels. Native signing/build/device qualification and remaining parity code are tracked in `docs/plezyng/music/STATUS.md`.
 - More reliable iOS speed-change qualification: test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage. Independently adapted from [upstream 48926474](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 
 - Keep the descriptor-worker integration check in its dedicated native isolation lane, using its required verified headers, instead of accidentally invoking it as an argument-free Python unit test.

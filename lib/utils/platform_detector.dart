@@ -24,12 +24,18 @@ class AndroidTvFeatureDetection {
   /// True on Android Automotive OS head units. Never true together with
   /// [isTv]: `FEATURE_AUTOMOTIVE` is authoritative for the car form factor.
   final bool isAutomotive;
+  final bool isAutomotiveMedia;
 
   /// Diagnostic TV signals, surfaced in the log export only while TV mode is
   /// active. Non-empty with [isTv] false when automotive vetoed the verdict.
   final List<String> reasons;
 
-  const AndroidTvFeatureDetection({required this.isTv, required this.isAutomotive, required this.reasons});
+  const AndroidTvFeatureDetection({
+    required this.isTv,
+    required this.isAutomotive,
+    this.isAutomotiveMedia = false,
+    required this.reasons,
+  });
 }
 
 AndroidTvFeatureDetection detectAndroidTvFromSystemFeatures(Iterable<String> features) {
@@ -90,6 +96,8 @@ class TvDetectionService {
   bool _forceTv = false;
   bool _isAppleTV = false;
   bool _isAutomotive = false;
+  bool _isAutomotiveMedia = false;
+  static bool? _debugAutomotiveMediaOverride;
   bool _initialized = false;
   List<String> _detectionReasons = const [];
 
@@ -120,6 +128,7 @@ class TvDetectionService {
           nativeDetection ?? detectAndroidTvFromSystemFeatures((await deviceInfo.androidInfo).systemFeatures);
       _detected = detection.isTv;
       _isAutomotive = detection.isAutomotive;
+      _isAutomotiveMedia = detection.isAutomotiveMedia;
       _detectionReasons = detection.reasons;
     } else if (Platform.isIOS) {
       if (_tvosBuild) {
@@ -173,7 +182,12 @@ class TvDetectionService {
       if (isTv && reasons.isEmpty) {
         reasons.add('native');
       }
-      return AndroidTvFeatureDetection(isTv: isTv && !isAutomotive, isAutomotive: isAutomotive, reasons: reasons);
+      return AndroidTvFeatureDetection(
+        isTv: isTv && !isAutomotive,
+        isAutomotive: isAutomotive,
+        isAutomotiveMedia: isAutomotive && result['isAutomotiveMedia'] == true,
+        reasons: reasons,
+      );
     } on MissingPluginException {
       return null;
     } on PlatformException {
@@ -218,6 +232,14 @@ class TvDetectionService {
   static bool isAppleTVSync() => _debugAppleTVOverride ?? (_tvosBuild || _singleton.instance?._isAppleTV == true);
 
   /// Synchronous Android Automotive OS check (false before initialization).
+  static bool isAutomotiveMediaSync() =>
+      _debugAutomotiveMediaOverride ?? _singleton.instance?._isAutomotiveMedia ?? false;
+
+  @visibleForTesting
+  static void debugSetAutomotiveMediaOverride(bool? value) {
+    _debugAutomotiveMediaOverride = value;
+  }
+
   static bool isAutomotiveSync() => _debugAutomotiveOverride ?? _singleton.instance?._isAutomotive ?? false;
 
   @visibleForTesting
@@ -232,6 +254,7 @@ class TvDetectionService {
 
   @visibleForTesting
   static void debugReset() {
+    _debugAutomotiveMediaOverride = null;
     _singleton.debugReset();
     _debugAppleTVOverride = null;
     _debugAutomotiveOverride = null;
@@ -274,6 +297,8 @@ class PlatformDetector {
   }
 
   /// True on Android Automotive OS head units.
+  static bool isAutomotiveMedia() => isAutomotive() && TvDetectionService.isAutomotiveMediaSync();
+
   static bool isAutomotive() {
     return TvDetectionService.isAutomotiveSync();
   }

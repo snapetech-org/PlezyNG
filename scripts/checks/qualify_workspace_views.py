@@ -158,8 +158,12 @@ def qualify(platform):
                 "class MainFlutterWindow: NSWindow {\n"
                 "  private var workspaceWindows: WorkspaceDesktopWindows?")
         replace(source, "let flutterViewController = FlutterViewController()",
-                "let flutterViewController = FlutterViewController()\n"
-                "    workspaceWindows = WorkspaceDesktopWindows(engine: flutterViewController.engine, parent: self)")
+                "let engine = FlutterEngine(name: \"WorkspaceProbe\", project: nil, allowHeadlessExecution: false)\n"
+                "    let selector = NSSelectorFromString(\"enableMultiView\")\n"
+                "    guard engine.responds(to: selector) else { fatalError(\"SDK lacks multiview\") }\n"
+                "    _ = engine.perform(selector)\n"
+                "    let flutterViewController = FlutterViewController(engine: engine, nibName: nil, bundle: nil)\n"
+                "    workspaceWindows = WorkspaceDesktopWindows(engine: engine, parent: self, available: true)")
     run(flutter, "build", platform, "--debug", cwd=directory)
     if platform == "linux":
         binary = directory / "build/linux/x64/debug/bundle/workspace_probe"

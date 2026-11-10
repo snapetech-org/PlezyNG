@@ -9,8 +9,15 @@ class MainFlutterWindow: NSWindow {
   override func awakeFromNib() {
     let project = FlutterDartProject()
     project.dartEntrypointArguments = Array(CommandLine.arguments.dropFirst())
-    let flutterViewController = FlutterViewController(project: project)
-    workspaceViews = WorkspaceDesktopWindows(engine: flutterViewController.engine, parent: self)
+    let engine = FlutterEngine(name: "Pleazyng", project: project, allowHeadlessExecution: false)
+    // This Flutter SDK exposes multiview setup on the engine before any view
+    // controller is attached. Keep the ordinary main view available if it
+    // disappears in a future SDK and disable detached views in that case.
+    let enableMultiView = NSSelectorFromString("enableMultiView")
+    let supportsMultiView = engine.responds(to: enableMultiView)
+    if supportsMultiView { _ = engine.perform(enableMultiView) }
+    let flutterViewController = FlutterViewController(engine: engine, nibName: nil, bundle: nil)
+    workspaceViews = WorkspaceDesktopWindows(engine: engine, parent: self, available: supportsMultiView)
     DownloadBackupPolicy.refreshExistingRoots()
     let storageChannel = FlutterMethodChannel(
       name: "com.pleazyng/download_storage", binaryMessenger: flutterViewController.engine.binaryMessenger)
@@ -91,12 +98,14 @@ class MainFlutterWindow: NSWindow {
 /// Additional Flutter views share the existing engine, isolate and session owners.
 private final class WorkspaceDesktopWindows: NSObject {
   private let engine: FlutterEngine
+  private let available: Bool
   private let channel: FlutterMethodChannel
   private var windows: [String: WorkspaceDesktopWindow] = [:]
   private var closingObserver: NSObjectProtocol?
 
-  init(engine: FlutterEngine, parent: NSWindow) {
+  init(engine: FlutterEngine, parent: NSWindow, available: Bool) {
     self.engine = engine
+    self.available = available
     channel = FlutterMethodChannel(name: "com.pleazyng/workspace_views", binaryMessenger: engine.binaryMessenger)
     super.init()
     channel.setMethodCallHandler { [weak self] call, result in
@@ -121,7 +130,7 @@ private final class WorkspaceDesktopWindows: NSObject {
   }
 
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    if call.method == "available" { result(true); return }
+    if call.method == "available" { result(available); return }
     guard let args = call.arguments as? [String: Any],
           let token = args["token"] as? String,
           token.range(of: "^[A-Za-z0-9_-]{32}$", options: .regularExpression) != nil else {
@@ -130,7 +139,7 @@ private final class WorkspaceDesktopWindows: NSObject {
     }
     switch call.method {
     case "create":
-      guard windows.count < 8, windows[token] == nil,
+      guard available, windows.count < 8, windows[token] == nil,
             let geometry = args["geometryKey"] as? String,
             geometry.range(of: "^[a-f0-9]{64}$", options: .regularExpression) != nil,
             let title = args["title"] as? String, title.utf8.count <= 1024 else {

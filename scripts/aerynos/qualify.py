@@ -516,6 +516,12 @@ def qualify(args):
     for name, expected in build['assets'].items():
         if digest(candidate / name) != expected:
             raise RuntimeError('Candidate checksum mismatch: ' + name)
+    provenance = build.get('provenance', {})
+    if provenance.get('kind') == 'attested-core-linux-artifact':
+        verification = candidate / 'attestation-verification.json'
+        if digest(verification) != provenance.get('verification_sha256'):
+            raise RuntimeError('Core attestation verification handoff changed')
+        shutil.copyfile(verification, evidence / verification.name)
     version = build['version'].split('+')[0]
     if not re.fullmatch(r'\d+\.\d+\.\d+', version) or not re.fullmatch(r'[0-9a-f]{40}', build['source_sha']):
         raise ValueError('Invalid source version or SHA')

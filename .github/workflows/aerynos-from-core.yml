@@ -1,0 +1,67 @@
+name: Stage attested core Linux for aerynOS
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact approved canonical source of the completed Linux core job
+        type: string
+        required: true
+      producer_run_id:
+        description: Existing canonical core build run; this workflow never compiles the app
+        type: string
+        required: true
+  workflow_call:
+    inputs:
+      source_sha:
+        type: string
+        required: true
+      producer_run_id:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+  attestations: read
+jobs:
+  stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: snapetech-org/pleazyng
+          ref: ${{ inputs.source_sha }}
+          path: source
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: snapetech-org/pleazyng
+          ref: main
+          path: tooling
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: linux-x64
+          repository: snapetech-org/pleazyng
+          run-id: ${{ inputs.producer_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/core-linux
+      - name: Verify exact source attestation and stage existing bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          PRODUCER_RUN_ID: ${{ inputs.producer_run_id }}
+        run: |
+          python3 tooling/scripts/aerynos/from_core.py \
+            --source source --source-sha "$SOURCE_SHA" \
+            --producer-run-id "$PRODUCER_RUN_ID" \
+            --bundle "$RUNNER_TEMP/core-linux/pleazyng-linux-x64.tar.gz" \
+            --output "$RUNNER_TEMP/candidate"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: aerynos-candidate-${{ inputs.source_sha }}
+          path: ${{ runner.temp }}/candidate/
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0

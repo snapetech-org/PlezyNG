@@ -81,6 +81,29 @@ The native recipe generates and relocates every shipped GTK input module's cache
 The shared bundle generator also discovers Ubuntu's query tool outside `PATH`;
 the launcher relocates moved portable caches without dropping locale records.
 
+## Reuse the coordinated core build
+
+When the release coordinator supplies an approved source/run checkpoint, use
+`aerynos-from-core.yml` to stage the existing `linux-x64` artifact. This is a
+copy/verification job; it never configures Flutter or compiles the app. It
+requires a successful Linux x64 job, canonical-main ancestry and repository ID,
+and verifies the tarball's GitHub attestation against the trusted core workflow,
+exact source digest and certificate-bound producer run. It preserves the binary
+bytes and creates the matching source archive and standard candidate handoff.
+
+The staging run's candidate artifact can then be selected through `sync.yml`'s
+`producer_run_id`, with the approved source SHA. Native Boulder packaging and
+all normal qualification gates still apply. This does not assert that the
+other platform jobs or store deliveries completed; the coordinator owns that
+release checkpoint. Never dispatch a replacement source build merely to stage
+already compiled immutable artifacts.
+
+An active `sync-state/promotion-hold.json` stops downstream source planning
+before schedule re-enabling and stops public promotion. The first-transition
+baseline marker also rejects older handoffs loaded by an already running
+controller. Keep the hold and disabled schedule until the coordinator explicitly
+resumes this lane with its final checkpoint.
+
 ## Recovery and evidence
 
 Inspect the failed job and retained diagnostics first. The source and native QA

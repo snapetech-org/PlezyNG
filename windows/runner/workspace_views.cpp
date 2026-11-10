@@ -3,6 +3,7 @@
 
 #include <flutter/method_channel.h>
 #include <flutter/standard_method_codec.h>
+#include <flutter_windows.h>
 #include <windows.h>
 
 #include <map>
@@ -90,7 +91,7 @@ class WorkspaceViews::Impl {
     }
     if (message == WM_GETMINMAXINFO) {
       auto* limits = reinterpret_cast<MINMAXINFO*>(lparam);
-      const UINT dpi = GetDpiForWindow(hwnd);
+      const UINT dpi = FlutterDesktopGetDpiForMonitor(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST));
       limits->ptMinTrackSize = {MulDiv(320, static_cast<int>(dpi), 96), MulDiv(240, static_cast<int>(dpi), 96)};
       return 0;
     }

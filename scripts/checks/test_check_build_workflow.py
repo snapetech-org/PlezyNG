@@ -377,6 +377,14 @@ class BuildWorkflowGuardTest(unittest.TestCase):
             result.stderr,
         )
 
+    def test_sdk_manifest_loader_cannot_be_removed(self) -> None:
+        workflow = self._workflow().replace(
+            'run: python3 scripts/flutter/load_sdk_pin.py --github-env',
+            'run: echo skipped', 1)
+        result = self._run(workflow)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('single immutable SDK manifest', result.stderr)
+
     def test_windows_arm_flutter_without_release_tag_is_rejected(self) -> None:
         action = self._action().replace(
             'git -C $root fetch --depth 1 origin "refs/tags/${version}:refs/tags/${version}"',

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Integrate all three previously deferred native playback changes into normal packages: [Amlogic Dolby Vision letterboxing](https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4), [Apple GLSL presets and ambient lighting](https://github.com/edde746/plezy/commit/2e1654b316150f59cbc4774602ed4f02a3515527), and [Amlogic/MediaTek TV subtitle timing](https://github.com/edde746/plezy/commit/6cc283a7da3d75ed90ec232dd7f5da1f25681b4f). Independently adapted from changes contributed upstream by [@edde746](https://github.com/edde746), preserving Pleazyng's FEL/HDR/neural components and Android ExoPlayer Lanczos support. See [behavior and qualification](docs/plezyng/playback-compositor.md) and [source credit](UPSTREAM_ATTRIBUTION.md#native-compatibility-integration--packaged-and-verified).
+- Fix an embedded macOS startup deadlock found by real headless playback: skip PCM-tap teardown for temporary Cocoa clients that never owned a tap. Verify shader implementations in every packaged Apple architecture and retain a real GPU playback regression probe.
+- Fix Windows workspace-window compilation with the supported Windows SDK target while retaining monitor-aware sizing.
 - Prepare v3.0.24 from the corrected desktop workspace integration and current main, retaining the upstream source credits and Apple runtime compatibility backport.
 - Recover Google Play first publication from a permanently reserved archived version code by preparing a signed store-only repack of the existing v3.0.7 bundle. Preserve compiled application files, verify every payload and upload signer, and retain explicit draft/review and native qualification gates.
 
@@ -14,7 +17,7 @@
 - Qualify and publish an independent aerynOS preview from source 3.0.22+181: native install, visible video, automatic Profile 7 routing and renderer-startup fallback pass in the VM. Keep physical HDR/FEL accuracy unqualified and preserve the immutable v3.0.7 failure record.
 
 - Prepare aerynOS recipes independently from x64 checksums, and restore aerynOS as a downstream publication target subject to native qualification.
-- Record the complete review of 64 upstream commits through Plezy 2.26, with originating commit and contributor links, retained fork behavior and explicit unshipped native dependencies. Pleazyng keeps its name, logo, native components and GPL license file; the upstream trademark policy is excluded. See the [review and source credits](docs/maintainers/upstream-sync-2026-11-09.md).
+- Record the complete review of 64 upstream commits through Plezy 2.26, with originating commit and contributor links, retained fork behavior and packaged native integrations. Pleazyng keeps its name, logo, native components and GPL license file; the upstream trademark policy is excluded. See the [review and source credits](docs/maintainers/upstream-sync-2026-11-09.md).
 
 - Run post-publication catalog verification through a read-only reusable workflow, preserving automatic validation while removing the privileged workflow-run trigger rejected by repository policy.
 

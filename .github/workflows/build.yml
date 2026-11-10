@@ -116,8 +116,8 @@ env:
   # Keep SDK analytics failures separate from build and analysis diagnostics.
   DASH__SUPPRESS_ANALYTICS: "true"
   FLUTTER_SUPPRESS_ANALYTICS: "true"
-  # Only place this workflow names the SDK; .github/actions/setup-flutter-git pins the same release.
-  FLUTTER_VERSION: "3.47.1"
+  # Each setup step loads the immutable SDK manifest after checkout.
+  TVOS_FLUTTER_VERSION: "3.47.1" # Pinned custom tvOS engine has this ABI.
   # Shared by every release build command.
   RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true --dart-define=GIT_COMMIT=${{ github.sha }}
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
@@ -612,6 +612,11 @@ jobs:
         if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') && needs.validate-trusted-ref.outputs.execution_profile == 'hybrid' }}
         run: python3 scripts/prepare_android_sdk.py install --direct-egress
 
+      - name: Load pinned Flutter SDK
+        if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         if: ${{ (needs.validate-trusted-ref.outputs.mode == 'release' || needs.validate-trusted-ref.outputs.mode == 'android-validation') }}
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
@@ -1037,6 +1042,10 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
         with:
@@ -1268,10 +1277,14 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version: ${{ env.TVOS_FLUTTER_VERSION }}
 
       - name: Cache Pub dependencies
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -1606,6 +1619,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           COMPILED_JOB_ID: ${{ inputs.macos_compilation_job_id }}
         run: python3 scripts/recover_macos_app.py --job-id "$COMPILED_JOB_ID"
+
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
 
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-apple
@@ -2002,6 +2019,10 @@ jobs:
           path: ${{ matrix.native_cache_path }}
           key: ${{ env.TRUSTED_BUILD_CACHE_VERSION }}-windows-native-${{ github.event.repository.name }}-${{ matrix.arch }}-${{ hashFiles('windows/CMakeLists.txt', 'mpv-build.lock.json', 'windows/tool/build-toolchain.lock.json') }}
 
+      - name: Load pinned Flutter SDK
+        shell: pwsh
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         id: setup_flutter_windows
         if: matrix.flutter_setup == 'action'
@@ -2275,6 +2296,10 @@ jobs:
           .\windows\tool\prepare-build-toolchain.ps1 -IncludeInstaller
           .\windows\tool\prepare-build-toolchain.ps1 -IncludeInstaller -VerifyOnly
 
+      - name: Load pinned Flutter SDK
+        shell: pwsh
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
+
       - name: Setup Flutter
         uses: ./.github/actions/setup-flutter-windows
         with:
@@ -2513,6 +2538,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+
+      - name: Load pinned Flutter SDK
+        shell: bash
+        run: python3 scripts/flutter/load_sdk_pin.py --github-env
 
       - name: Setup Flutter
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2

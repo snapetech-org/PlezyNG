@@ -2,32 +2,36 @@
 
 Reviewed every commit after `1fc16b6c11b2f154c80484f95ba08074d2433e41`
 through upstream Plezy `738e18fdc552ace910dedabf6e689ab74e1dae58` (2.26).
-The 64 records below have explicit dispositions: 23 independently adapted,
-24 already covered, eight retained fork implementations/pins, six excluded,
-and three native-dependent changes recorded as not yet shipped.
+The 64 records below have explicit dispositions: 26 independently adapted,
+24 already covered, eight retained fork implementations/pins and six excluded.
+The three native-dependent changes are now implemented and packaged.
 
 Pleazyng keeps its name and logo. The upstream trademark-policy file and its
 README policy changes are excluded. The code LICENSE blob is identical between
 the reviewed upstream snapshot and the fork: `f288702d2fa16d3cdf0035b15a9fcbc552cd88e7`.
 This is a source comparison, not a claim about unrelated third-party services.
 
-## Retained native differences — planned, not yet shipped
+## Native compatibility integration
 
-The fork retains its normal FEL/HDR/NPU components and checksum/capability-locked
-native packages. Upstream package replacements require a compatible engine
-migration. App controls must follow the implementation actually packaged.
+The fork preserves its normal FEL/HDR/NPU components and checksum/capability
+locks. Android AAR `82ace919fd97` and Apple Libmpv `93fdd133cea1` include the
+three integrations; app controls follow these packaged implementations.
 
-- Amlogic transparent letterboxing needs `vo-mediacodec-letterbox-fill`, which
-  is absent from the active fork engine patch.
-- Apple GLSL/ambient lighting needs the AVFoundation shader stage, which is
-  absent from the active fork patch despite upstream commits being ancestors
-  in native repository history.
-- Android TV subtitle timing needs the per-video-frame repeat implementation
-  before enabling the existing delay option; enabling the option alone risks
-  reintroducing Amlogic judder.
+- Amlogic transparent letterboxing excludes Amazon devices and retains opaque
+  margins on other hardware.
+- Apple GLSL and ambient lighting use the AVFoundation libplacebo/MoltenVK
+  stage, including stretched output. The runtime's documented Dolby Vision,
+  Core Image and composited-frame exclusions remain explicit.
+- Android TV subtitle delay is enabled with early queueing and per-frame
+  repetition, preserving unchanged subtitle content without disturbing cadence.
 
-These three behaviors remain unshipped. Their source records and authors are
-credited below. Existing engine and experiment packaging is preserved.
+[Android build](https://github.com/snapetech-org/mpv-build/actions/runs/42728730494),
+[Apple builds](https://github.com/snapetech-org/mpv-build/actions/runs/42731121521)
+and [Apple assembly/consumer links](https://github.com/snapetech-org/mpv-build/actions/runs/42735647569)
+passed. Real Mac M4 headless playback and Android TV API-36 JNI/playback checks
+also passed. The Mac initialization deadlock found by that playback probe was
+fixed before promotion. Physical TV black levels, scanout timing and heavy
+shader performance remain hardware-specific qualification.
 
 The consolidated upstream-maintainer anime feed is also intentionally declined:
 the fork keeps its independent source feeds and cache format. Upstream version,
@@ -91,7 +95,7 @@ or endorsement of this fork, or claim unfinished behavior has shipped.
 | [90b7ccca68](https://github.com/edde746/plezy/commit/90b7ccca68cffcfe51fc8994c3463fcbf769ec18) | [@edde746](https://github.com/edde746) | build(windows): bump patched engine to windows-v3.47.1+2 | adapted | 19666675a: pin Windows engine +2 for pending-resize correction, preserve the Flutter ABI stamp and checksum checks. Published digest and source delta verified; Windows execution qualification is separate. |
 | [5cb4dc8aa1](https://github.com/edde746/plezy/commit/5cb4dc8aa15586f7555715a90425e41b5f5561c9) | [@edde746](https://github.com/edde746) | build: pin mpv-build assets from the release each run uploaded them to | covered | The fork’s native revision resolver already records full per-asset provenance/URLs and capability pins; retain that stronger lock format. |
 | [f7ab4e6183](https://github.com/edde746/plezy/commit/f7ab4e6183ca20019c8f3faeaa7aa39f8a5535e0) | [@edde746](https://github.com/edde746) | build: pin mpv-build with the optional letterbox fill on the Android OSD plane | retained | Retain the fork’s checksum/capability-locked native assets. This upstream pin is not a drop-in replacement for its normal FEL/NPU components. |
-| [63f8cd5a05](https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4) | [@edde746](https://github.com/edde746) | fix(player): keep Dolby Vision letterbox bars black on Amlogic boxes with mpv | native-pending | Not shipped: Amlogic transparent letterbox control needs vo-mediacodec-letterbox-fill, absent from the active fork engine patch. Keep existing output behavior until its engine implementation is integrated. |
+| [63f8cd5a05](https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4) | [@edde746](https://github.com/edde746) | fix(player): keep Dolby Vision letterbox bars black on Amlogic boxes with mpv | adapted | Independently adapted Amlogic transparent letterboxing with the Amazon exception. Normal Android engine 6168c50b5c17 and AAR 82ace919fd97 include the native option; all four ABIs were built and inspected, and API-36 Android TV JNI read/write and playback lifecycle checks passed. Physical Dolby Vision black levels remain hardware-specific qualification. |
 | [4eabc30c80](https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb) | [@edde746](https://github.com/edde746) | fix(focus): tint the background focus fill from the theme so it shows in light mode | adapted | eab1f98a4: theme-derived focus fills, retaining Mono palettes and custom player chrome; focused theme tests passed. |
 | [e871d09517](https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce) | [@edde746](https://github.com/edde746) | fix(remote): keep the selected tab across a companion remote reconnect | adapted | 366cd4965: preserve companion-remote control and scroll state through reconnect; focused remote tests passed. |
 | [13426a00c0](https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598) | [@edde746](https://github.com/edde746) | fix(ui): fade light-theme scrims to a clear surface instead of clear black | adapted | eab1f98a4: correct light-theme scrim interpolation while preserving the fork’s rasterized gradients and RTL behavior. |
@@ -99,7 +103,7 @@ or endorsement of this fork, or claim unfinished behavior has shipped.
 | [b4192d6f35](https://github.com/edde746/plezy/commit/b4192d6f355921aa9dbdd89b000012e7c4496fa7) | [@v-vincere](https://github.com/v-vincere) | feat(ios): adapt the mobile shell to iPhone Duo's vertical bar and fold (#2922) | adapted | f8849ad49: fold/vertical-bar shell and native bridge with SDK availability guards; preserve scrollable rails, system styling, keyboard and back handling. Geometry is headlessly tested; Apple SDK/device qualification is separate. |
 | [c7f86ab85f](https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7) | [@edde746](https://github.com/edde746) | fix(ui): keep the status bar clear on screens without an app bar (#2934) | adapted | eab1f98a4: transparent root status-bar styling, retaining the fork’s form-factor scaling and theme behavior. |
 | [268c072b40](https://github.com/edde746/plezy/commit/268c072b40b0ca23ab15a98ba55a5e292517b253) | [@edde746](https://github.com/edde746) | build: pin mpv-build with user shaders on the AVFoundation video output | retained | Retain fork Apple native package pins; the upstream shader-bearing package cannot replace the fork’s ordered PCM, motion and experimental components wholesale. |
-| [2e1654b316](https://github.com/edde746/plezy/commit/2e1654b316150f59cbc4774602ed4f02a3515527) | [@edde746](https://github.com/edde746) | feat(player): enable shaders and ambient lighting on iOS, tvOS and macOS | native-pending | Not shipped: the active fork AVFoundation patch lacks the GLSL stage. Keep the platform capability gate until that native implementation is packaged and validated. |
+| [2e1654b316](https://github.com/edde746/plezy/commit/2e1654b316150f59cbc4774602ed4f02a3515527) | [@edde746](https://github.com/edde746) | feat(player): enable shaders and ambient lighting on iOS, tvOS and macOS | adapted | Independently enabled Apple MPV shader presets and ambient lighting with normal Libmpv 93fdd133cea1. All six Apple platform groups were built, every packaged architecture passed the real-stage check, and iOS/tvOS consumers linked. Real Mac M4 playback exercised hardware decoding, GLSL, stretched output and shutdown; the discovered embedded Cocoa initialization deadlock was fixed. Dolby Vision and other documented runtime exclusions remain explicit. |
 | [178441bff8](https://github.com/edde746/plezy/commit/178441bff816425d549fd295801bff0868d16afb) | [@edde746](https://github.com/edde746) | feat(trackers): load anime mappings from the edde746/anime-mappings release | retained | Keep independent Fribb/Anime-Lists source feeds and their caches. The consolidated upstream-maintainer binary feed changes the data authority and cache format, uses unbounded inflation and writes before decode validation. |
 | [04ec8506c7](https://github.com/edde746/plezy/commit/04ec8506c78dc29b4dfc18f751943fb6ecb89eec) | [@edde746](https://github.com/edde746) | fix(sheets): keep hosted sheets clear of iPhone Duo's status bar and vertical bar | adapted | f8849ad49: sheet safe areas and vertical-bar alignment, preserving keyboard insets and existing focus/back behavior. |
 | [ae63adbc8f](https://github.com/edde746/plezy/commit/ae63adbc8fd82bbcb8070be95066bdf1dd04febf) | [@edde746](https://github.com/edde746) | fix(server): build the relay with Go 1.27.3 for the crypto/x509 advisory | covered | The relay already uses Go 1.27.3 in go.mod and its checksum-pinned container image. |
@@ -113,7 +117,7 @@ or endorsement of this fork, or claim unfinished behavior has shipped.
 | [5076836a5d](https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01) | [@edde746](https://github.com/edde746) | fix(focus): give a page opened over the main screen focus when it claims none | adapted | 366cd4965: pass remote navigation to a newly covered route that has not claimed focus; adapted fork-specific focus harness passed. |
 | [e90973fba9](https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8) | [@edde746](https://github.com/edde746) | feat(player): remember zoom per show, library, or everywhere | adapted | 1108a174d: optional global/title/library zoom persistence, session-only by default; retain profile resets, finite bounds and agent validation. Focused zoom tests passed. |
 | [f9eef589ad](https://github.com/edde746/plezy/commit/f9eef589ad5fbbf4f65d37fb68aadb9dd9fb0952) | [@edde746](https://github.com/edde746) | build: pin mpv-build with every-frame presentation of a delayed Android subtitle plane | retained | Retain fork native package pins and normal experimental components; evaluate its subtitle-plane repeat patch with the native timing migration below. |
-| [6cc283a7da](https://github.com/edde746/plezy/commit/6cc283a7da3d75ed90ec232dd7f5da1f25681b4f) | [@edde746](https://github.com/edde746) | fix(subtitles): line mpv subtitles up with their picture on Amlogic and MediaTek TV boxes | native-pending | Not shipped: the fork exposes the delay option but lacks the active per-video-frame repeat patch required to avoid Amlogic judder. Do not enable the delay from app code alone. |
+| [6cc283a7da](https://github.com/edde746/plezy/commit/6cc283a7da3d75ed90ec232dd7f5da1f25681b4f) | [@edde746](https://github.com/edde746) | fix(subtitles): line mpv subtitles up with their picture on Amlogic and MediaTek TV boxes | adapted | Independently adapted the one-refresh subtitle offset for Amlogic and MediaTek TV devices after integrating early queueing and per-video-frame repetition into the normal Android/FEL engine. Scheduler, unchanged-content, rebind and runtime JNI range checks passed. Phones and unknown SoCs retain zero delay; physical TV scanout timing remains hardware-specific qualification. |
 | [119ce59def](https://github.com/edde746/plezy/commit/119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4) | [@edde746](https://github.com/edde746) | fix(discover): keep version copies when a server comes online after the first load | adapted | 215032961: retain newly-online Continue Watching version copies; preserve profile, transport and synthetic hub behavior. |
 | [ddcfda3c4e](https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997) | [@edde746](https://github.com/edde746) | fix(player): undo a display switch that lands after fullscreen or playback ended | adapted | 215032961: restore display switches completing after fullscreen closes; preserve failed-restore retries and fork lifecycle guards. |
 | [cbd9205f2c](https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787) | [@edde746](https://github.com/edde746) | fix(android): verify the anime mappings download against system authorities only | adapted | 19666675a: system-only certificate trust through GitHub asset redirects in Android and dart:io. Ten TLS/domain tests passed. |

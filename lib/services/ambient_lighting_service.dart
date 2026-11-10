@@ -41,7 +41,7 @@ class AmbientLightingService {
   /// Ambient lighting remains the final pass.
   String? get shaderPathForRebuild => _enabled ? _shaderPath : null;
 
-  /// A GLSL shader effect, so unavailable where shaders are (vo=avfoundation).
+  /// Uses the MPV GLSL stage, including the packaged AVFoundation renderer.
   bool get isSupported => _player.playerType == 'mpv' && ShaderService.isPlatformSupported;
 
   /// Enable ambient lighting effect.

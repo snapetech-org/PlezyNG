@@ -237,11 +237,11 @@ Those people contributed to upstream Plezy; Pleazyng independently adapted or
 verified the scope recorded there. Excluded and retained records remain review
 sources, without claims of direct contribution to or endorsement of this fork.
 
-### Planned native compatibility work — not yet shipped
+### Native compatibility integration — packaged and verified
 
-- [Upstream 63f8cd5a05](https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4) by [@edde746](https://github.com/edde746): Not shipped: Amlogic transparent letterbox control needs vo-mediacodec-letterbox-fill, absent from the active fork engine patch. Keep existing output behavior until its engine implementation is integrated.
-- [Upstream 2e1654b316](https://github.com/edde746/plezy/commit/2e1654b316150f59cbc4774602ed4f02a3515527) by [@edde746](https://github.com/edde746): Not shipped: the active fork AVFoundation patch lacks the GLSL stage. Keep the platform capability gate until that native implementation is packaged and validated.
-- [Upstream 6cc283a7da](https://github.com/edde746/plezy/commit/6cc283a7da3d75ed90ec232dd7f5da1f25681b4f) by [@edde746](https://github.com/edde746): Not shipped: the fork exposes the delay option but lacks the active per-video-frame repeat patch required to avoid Amlogic judder. Do not enable the delay from app code alone.
+- [Upstream 63f8cd5a05](https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4) by [@edde746](https://github.com/edde746): Independently adapted Amlogic transparent letterboxing with the Amazon exception. Normal Android engine 6168c50b5c17 and AAR 82ace919fd97 include the native option; all four ABIs were built and inspected, and API-36 Android TV JNI read/write and playback lifecycle checks passed. Physical Dolby Vision black levels remain hardware-specific qualification.
+- [Upstream 2e1654b316](https://github.com/edde746/plezy/commit/2e1654b316150f59cbc4774602ed4f02a3515527) by [@edde746](https://github.com/edde746): Independently enabled Apple MPV shader presets and ambient lighting with normal Libmpv 93fdd133cea1. All six Apple platform groups were built, every packaged architecture passed the real-stage check, and iOS/tvOS consumers linked. Real Mac M4 playback exercised hardware decoding, GLSL, stretched output and shutdown; the discovered embedded Cocoa initialization deadlock was fixed. Dolby Vision and other documented runtime exclusions remain explicit.
+- [Upstream 6cc283a7da](https://github.com/edde746/plezy/commit/6cc283a7da3d75ed90ec232dd7f5da1f25681b4f) by [@edde746](https://github.com/edde746): Independently adapted the one-refresh subtitle offset for Amlogic and MediaTek TV devices after integrating early queueing and per-video-frame repetition into the normal Android/FEL engine. Scheduler, unchanged-content, rebind and runtime JNI range checks passed. Phones and unknown SoCs retain zero delay; physical TV scanout timing remains hardware-specific qualification.
 
 The fork's native asset pins, normal FEL/HDR/NPU components and runtime opt-ins
 remain intact. Upstream ancestry alone is not proof that an implementation is
@@ -252,3 +252,14 @@ The Windows patch-source/build-driver record above originates at
 contributed to the upstream engine project by [@edde746](https://github.com/edde746).
 Pleazyng independently reuses that source in its security-engine orchestration;
 artifact verification remains distinct from source credit.
+
+The corresponding native changes were contributed to upstream mpv-build by
+[@edde746](https://github.com/edde746):
+[Apple GLSL stage](https://github.com/edde746/mpv-build/commit/2b23527),
+[stretch geometry](https://github.com/edde746/mpv-build/commit/9929c5e),
+[letterbox option](https://github.com/edde746/mpv-build/commit/bc87af7),
+[early subtitle queue](https://github.com/edde746/mpv-build/commit/98452a9)
+and [per-frame subtitle repetition](https://github.com/edde746/mpv-build/commit/8958474).
+Pleazyng independently integrated and verified them with its existing normal
+FEL/HDR/neural packages. This does not imply participation in or endorsement
+of this fork. See the [playback compositor guide](docs/plezyng/playback-compositor.md).

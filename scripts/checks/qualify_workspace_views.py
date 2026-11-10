@@ -2,6 +2,7 @@
 """Compile production workspace hosts and exercise same-engine view lifetimes."""
 import argparse
 import os
+import platform as host_platform
 from pathlib import Path
 import shutil
 import subprocess
@@ -100,7 +101,10 @@ def replace(path, before, after):
     path.write_text(content.replace(before, after))
 
 
-def qualify(platform):
+def qualify(platform, arch=None):
+    if arch is not None and platform != "windows":
+        raise ValueError("Architecture overrides apply only to Windows")
+    arch = arch or ("arm64" if host_platform.machine().lower() in {"arm64", "aarch64"} else "x64")
     directory = ROOT / "build" / f"workspace-native-{platform}"
     if directory.exists():
         raise RuntimeError("Use a fresh qualification output directory")
@@ -166,12 +170,13 @@ def qualify(platform):
                 "    _ = engine.perform(selector)\n"
                 "    let flutterViewController = FlutterViewController(engine: engine, nibName: nil, bundle: nil)\n"
                 "    workspaceWindows = WorkspaceDesktopWindows(engine: engine, parent: self, available: true)")
-    run(flutter, "build", platform, "--debug", cwd=directory)
+    target = ["--target-platform", f"windows-{arch}"] if platform == "windows" else []
+    run(flutter, "build", platform, "--debug", *target, cwd=directory)
     if platform == "linux":
         binary = directory / "build/linux/x64/debug/bundle/workspace_probe"
         command = [str(binary)]
     elif platform == "windows":
-        binary = directory / "build/windows/x64/runner/Debug/workspace_probe.exe"
+        binary = directory / f"build/windows/{arch}/runner/Debug/workspace_probe.exe"
         command = [str(binary)]
     else:
         apps = list((directory / "build/macos/Build/Products/Debug").glob("*.app"))
@@ -215,5 +220,7 @@ def qualify(platform):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("platform", choices=["linux", "windows", "macos"])
-    qualify(parser.parse_args().platform)
+    parser.add_argument("--arch", choices=["x64", "arm64"])
+    args = parser.parse_args()
+    qualify(args.platform, args.arch)
 

@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import date
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts/checks'))
-from check_localizations import messages  # noqa: E402
+from check_localizations import messages, validate_message  # noqa: E402
 
 
 def verify(root: Path = ROOT) -> list[str]:
@@ -21,9 +23,25 @@ def verify(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     for path in sorted(reviews.glob('security-completion-*.json')):
         record = json.loads(path.read_text(encoding='utf-8'))
+        if not isinstance(record, dict):
+            errors.append(f'{path.name}: invalid review records')
+            continue
         locale = record.get('locale')
-        if not isinstance(locale, str) or '/' in locale or '\\' in locale:
+        if not isinstance(locale, str) or not re.fullmatch(r'[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*', locale):
             errors.append(f'{path.name}: invalid locale')
+            continue
+        reviewed_on = record.get('reviewedOn')
+        try:
+            if not isinstance(reviewed_on, str) or date.fromisoformat(reviewed_on).isoformat() != reviewed_on:
+                raise ValueError('Invalid review date')
+        except ValueError:
+            errors.append(f'{path.name}: invalid review date')
+            continue
+        if (record.get('nativeSpeakerReviewed') is not False
+                or not isinstance(record.get('reviewMethod'), str) or not record['reviewMethod'].strip()
+                or not isinstance(record.get('sourceCommit'), str)
+                or not re.fullmatch(r'[0-9a-f]{40}', record['sourceCommit'])):
+            errors.append(f'{path.name}: assistant review requires explicit provenance without a native-speaker claim')
             continue
         target_path = catalogs / f'{locale}.i18n.json'
         provenance_path = root / f'docs/localization/provenance/{locale}.json'
@@ -45,7 +63,13 @@ def verify(root: Path = ROOT) -> list[str]:
                 errors.append(f'{path.name}:{key}: English source changed after review')
             if entry.get('translation') != translated.get(key):
                 errors.append(f'{path.name}:{key}: translation changed after review')
-            if entry.get('review') != 'assistant-authored-and-semantically-reviewed' or provenance.get(key) != 'assistant-semantic-review-2026-11-09':
+            translation = entry.get('translation')
+            if not isinstance(translation, str) or not translation.strip():
+                errors.append(f'{path.name}:{key}: an empty fallback is not a reviewed translation')
+            else:
+                errors.extend(validate_message(f'{path.name}:{key}', source, translation))
+            if (entry.get('review') != 'assistant-authored-and-semantically-reviewed'
+                    or provenance.get(key) != f'assistant-semantic-review-{reviewed_on}'):
                 errors.append(f'{path.name}:{key}: provenance does not match review')
     return errors
 

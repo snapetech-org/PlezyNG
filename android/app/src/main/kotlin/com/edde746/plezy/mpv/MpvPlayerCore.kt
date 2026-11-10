@@ -19,8 +19,10 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import com.edde746.mpv.*
 import com.edde746.plezy.NativeModuleCache
+import com.edde746.plezy.TvDetection
 import com.edde746.plezy.exoplayer.DoviBridge
 import com.edde746.plezy.shared.AudioFocusManager
+import com.edde746.plezy.shared.DeviceQuirks
 import com.edde746.plezy.shared.FrameRateManager
 import com.edde746.plezy.shared.GlCapabilities
 import com.edde746.plezy.shared.MediaCodecQuery
@@ -1106,6 +1108,15 @@ class MpvPlayerCore private constructor(
                   setOption("vo", initialVideoOutput(hardwareDecoding))
                   setOption("gpu-context", "android")
                   setOption("opengl-es", "yes")
+                  // Select the compositor's black level without adding a graphics layer.
+                  if (DeviceQuirks.raisesGraphicsBlackInDolbyVision) {
+                    setOption("vo-mediacodec-letterbox-fill", "no")
+                  }
+                  // The native ahead pipeline repeats unchanged subtitles on every video
+                  // frame, so this hardware-plane offset does not introduce judder.
+                  if (DeviceQuirks.videoPlaneLagsGraphics(TvDetection.isTv(context))) {
+                    setOption("vo-mediacodec-osd-vsync-delay", "1")
+                  }
                   // The Java MediaCodec wrapper, driven asynchronously where
                   // the platform is trusted to (rationale on
                   // initialDecoderEntries). This belongs to every video core,

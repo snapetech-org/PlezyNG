@@ -11,8 +11,10 @@ from workflow_yaml import iter_uses_references, job_block
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_WORKFLOW = ROOT / ".github/workflows/build.yml"
-FLUTTER_VERSION = "3.47.1"
-FLUTTER_COMMIT = "6655482ec06e547f90abf8ae7590466f4415978d"
+SDK_PIN = json.loads((ROOT / "scripts/flutter/sdk-pin.json").read_text())
+FLUTTER_VERSION = SDK_PIN["version"]
+FLUTTER_COMMIT = SDK_PIN["frameworkRevision"]
+TVOS_FLUTTER_VERSION = (ROOT / "tvos/engine.version").read_text(encoding="utf-8").strip()
 if len(sys.argv) > 2:
     raise SystemExit(f"Usage: {Path(sys.argv[0]).name} [workflow-path]")
 WORKFLOW = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_WORKFLOW
@@ -652,8 +654,9 @@ setup_flutter_git = (
 )
 require(bool(setup_flutter_git), "missing .github/actions/setup-flutter-git/action.yml")
 for expected in (
-    f'$version = "{FLUTTER_VERSION}"',
-    f'$expectedCommit = "{FLUTTER_COMMIT}"',
+    '$pin = Get-Content "$env:GITHUB_WORKSPACE/scripts/flutter/sdk-pin.json" -Raw | ConvertFrom-Json',
+    '$version = $pin.version',
+    '$expectedCommit = $pin.frameworkRevision',
     # Fetch and verify the release tag so moved tags cannot change the SDK.
     'git -C $root fetch --depth 1 origin "refs/tags/${version}:refs/tags/${version}"',
     'git -C $root checkout --detach "refs/tags/$version"',
@@ -1729,8 +1732,16 @@ require(
 )
 
 require(
-    text.count(FLUTTER_VERSION) == 1 and f'FLUTTER_VERSION: "{FLUTTER_VERSION}"' in text,
-    "the Flutter SDK version must be written once, as the workflow FLUTTER_VERSION env",
+    re.search(r'(?m)^  FLUTTER_VERSION:', text) is None
+    and text.count('run: python3 scripts/flutter/load_sdk_pin.py --github-env') == text.count('- name: Setup Flutter'),
+    "every Flutter setup must load the single immutable SDK manifest",
+)
+require(
+    f'TVOS_FLUTTER_VERSION: "{TVOS_FLUTTER_VERSION}"' in text
+    and "flutter-version: ${{ env.TVOS_FLUTTER_VERSION }}" in named_step(
+        job("build-tvos"), "Setup Flutter"
+    ),
+    "tvOS Flutter version must match its pinned custom engine ABI",
 )
 require(
     "TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1" in text,

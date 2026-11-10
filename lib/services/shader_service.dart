@@ -37,10 +37,10 @@ class ShaderService {
   @visibleForTesting
   static bool? debugPlatformSupported;
 
-  /// GLSL shaders need mpv's gpu VOs; iOS/tvOS and macOS render through
-  /// vo=avfoundation, which has no shader stage. Android ExoPlayer has a
-  /// separate Media3 GL effect path for the Lanczos spatial resampler.
-  static bool get isPlatformSupported => debugPlatformSupported ?? (!Platform.isIOS && !Platform.isMacOS);
+  /// MPV builds include GLSL rendering on every platform, including the
+  /// AVFoundation libplacebo/MoltenVK stage. Android ExoPlayer separately
+  /// supports the Media3 Lanczos resampler.
+  static bool get isPlatformSupported => debugPlatformSupported ?? true;
 
   /// Whether this player has any video-processing controls.
   bool get isSupported => supportsCustomPresets || (Platform.isAndroid && _player.playerType == 'exoplayer');

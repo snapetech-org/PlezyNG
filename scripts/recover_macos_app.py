@@ -51,6 +51,12 @@ def build_contract(text):
     contract = {}
     for key in keys:
         values = re.findall(r'^\s+' + key + r': (.+)$', text, re.MULTILINE)
+        if (key == 'FLUTTER_VERSION' and not values
+                and 'run: python3 scripts/flutter/load_sdk_pin.py --github-env' in text):
+            # The manifest and its loader are compilation inputs, deliberately
+            # absent from PACKAGING_FILES/RECOVERY_FILES. Source comparison
+            # rejects any change to them before comparing these contracts.
+            values = ['manifest:scripts/flutter/sdk-pin.json']
         if len(values) != 1:
             raise ValueError('Missing or ambiguous Mac build configuration')
         contract[key] = values[0]

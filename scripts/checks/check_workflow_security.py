@@ -2,6 +2,7 @@
 """Enforce trust-boundary invariants across GitHub Actions workflows."""
 
 from pathlib import Path
+import hashlib
 import re
 import sys
 
@@ -11,6 +12,10 @@ from workflow_yaml import iter_uses_references, iter_workflow_files, scalar
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = ROOT / ".github" / "workflows"
 CI_WORKFLOW = Path(".github/workflows/ci.yml")
+SECURITY_ENGINE_PUBLISHER = Path(".github/workflows/publish-security-engine.yml")
+# The owner authorized this exact main-only, provenance-checked binary publisher.
+# Any workflow edit must be reviewed alongside an explicit digest update.
+SECURITY_ENGINE_PUBLISHER_SHA256 = 'b83b9dfd7ef222448ab9dc3cf5e51e2c048eb3f8f62c95e9ee1aacd4c0c693f5'
 FULL_SHA = re.compile(r"[0-9a-f]{40}")
 
 
@@ -98,7 +103,13 @@ def check_workflow(path: Path, text: str) -> list[str]:
 
     for dangerous_trigger in ("pull_request_target", "workflow_run"):
         if _has_trigger(active, dangerous_trigger):
-            errors.append(f"{path}: unaudited privileged trigger {dangerous_trigger}")
+            audited_publisher = (
+                dangerous_trigger == 'workflow_run'
+                and path.as_posix() == SECURITY_ENGINE_PUBLISHER.as_posix()
+                and hashlib.sha256(text.encode('utf-8')).hexdigest() == SECURITY_ENGINE_PUBLISHER_SHA256
+            )
+            if not audited_publisher:
+                errors.append(f"{path}: unaudited privileged trigger {dangerous_trigger}")
 
     pull_request = _has_trigger(active, "pull_request")
     lines = active.splitlines()

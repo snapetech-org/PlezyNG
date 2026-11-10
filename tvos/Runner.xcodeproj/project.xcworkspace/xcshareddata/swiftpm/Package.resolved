@@ -15,7 +15,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/snapetech-org/mpv-build",
       "state" : {
-        "revision" : "6b0c227cb484a705dd9797d798d6f319b7377cfa"
+        "revision" : "d74e7a4a720317b2567530e4bbaeeecba905423e"
       }
     }
   ],

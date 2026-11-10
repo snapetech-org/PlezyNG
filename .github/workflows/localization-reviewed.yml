@@ -5,6 +5,10 @@ on:
     paths:
       - 'lib/i18n/*.i18n.json'
       - 'docs/localization/reviews/**'
+      - 'docs/localization/provenance/**'
+      - docs/localization/translation-provenance.json
+      - scripts/localization/verify_review_records.py
+      - scripts/localization/test_verify_review_records.py
       - scripts/localization/publish_generated.py
       - .github/workflows/localization-reviewed.yml
   workflow_dispatch:

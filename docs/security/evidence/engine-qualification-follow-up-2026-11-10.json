@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-10T02:42:42Z",
+  "sourceRevision": "1194b5785e3ce253c42af83139d205a3bedcb2f6",
+  "codeChanges": {
+    "enginePromotion": "f4890131207e87a9729eea23639c3857c8afc699",
+    "sdkManifest": "c1676804ab2fde7a1d4cc7d608eca4749763ab66",
+    "macosRecovery": "1194b5785e3ce253c42af83139d205a3bedcb2f6",
+    "translationReviewGate": "0b9242916269bc8b9917cf5be9958d09cf57676d"
+  },
+  "localValidation": {
+    "repositoryCheckers": {
+      "cases": 609,
+      "passed": 590,
+      "skipped": 19,
+      "failed": 0,
+      "note": "Two Dart icon checks initially lacked compiler configuration; both passed when rerun with the existing local Clang and Flutter paths. Counts include those reruns only once."
+    },
+    "engineArtifactProducerNativePromotionAndSDKManifestTests": {
+      "passed": 26,
+      "note": "Static PE fixtures and mocked API regression tests do not qualify real Windows artifacts."
+    },
+    "macosRecovery": {
+      "passed": 5
+    },
+    "reviewProvenance": {
+      "passed": 7
+    },
+    "workflowSecurity": "passed",
+    "buildContract": "passed",
+    "actionPins": {
+      "passed": true,
+      "workflowFiles": 40
+    },
+    "localization": {
+      "locales": 37,
+      "messages": 5268,
+      "explicitFallbackEntries": 44422,
+      "result": "passed placeholders and source hashes"
+    }
+  },
+  "hostedEvidence": {
+    "desktopNativeWindowProbe": {
+      "run": 42734123451,
+      "windows": "passed",
+      "macos": "passed",
+      "linux": "passed"
+    },
+    "fixedWindowsEngineProducer": {
+      "run": 42726273235,
+      "x64": "in_progress",
+      "arm64": "in_progress",
+      "artifactQualification": "not yet run",
+      "nativePatchedRuntimeQualification": "not yet run"
+    }
+  },
+  "promotionBoundary": "Application SDK manifest remains 3.47.1 until both real architecture artifacts pass provenance/static checks and both native patched-runtime probes. Promotion atomically writes the SDK manifest and architecture SHA-256 pins, then explicitly dispatches CI. tvOS retains its separate custom-engine ABI.",
+  "externalAcceptance": "Native-speaker review, signed iOS devices, supported tvOS containment, device/provider/deployment and image-quality acceptance remain open."
+}

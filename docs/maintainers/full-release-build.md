@@ -48,6 +48,11 @@ runs are reused; later main changes are not incorporated. Record `ci_mode`,
 qualification and artifact evidence. Embedded CI is reported as children of the
 build run, not as a standalone `ci.yml` run.
 
+Use `--skip-discord-notification` when manual announcement dispatch is outside
+the operator's authorization. Package and store delivery still runs. This flag
+does not change release-event workflow activation; control that separately and
+restore any temporarily changed activation state after the operation.
+
 If a later platform fails, recovery verifies the original build's current-attempt
 embedded CI records, successful source freeze, immutable tag and source-bound
 job contract. The platform failure does not invalidate passing CI, but failed or
@@ -105,6 +110,9 @@ Kernel mmap-entropy inspection and tuning are best effort; the tests still run
 and any runtime startup failure blocks qualification. A successful compilation
 with skipped execution is not runtime qualification. Provision a compatible
 runner if actual execution establishes a capacity or kernel requirement.
+The real dual-decoder test waits for each `mpv_terminate_destroy` to return
+before measuring survivor progress or ending the process. Application teardown
+stays asynchronous; the test's bounded completion checks preserve leak detection.
 
 CI's Android, Linux native and server checks own their checkouts and setup and
 consume no artifacts from the other suites. They start independently rather

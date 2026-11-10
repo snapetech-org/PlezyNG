@@ -79,6 +79,22 @@ class CorePublicationTests(unittest.TestCase):
                 self.assertEqual(result["notification_failures"], ["notice offline"])
                 self.assertTrue(result["channel_failures"])
 
+    def test_skipping_manual_notification_preserves_package_and_store_delivery(self):
+        with patch.object(release, 'command') as command, \
+                patch.object(release, 'publish_configured_channels',
+                             return_value=([{'channel': 'COPR'}], [], [])) as channels:
+            result = release.post_release_actions('v3.0.31', '3.0.31', release_sha='a' * 40,
+                include_webos_release=True, publish_channels=True, notify_discord=False)
+        command.assert_not_called()
+        channels.assert_called_once()
+        self.assertEqual(result['published_channels'], [{'channel': 'COPR'}])
+        self.assertFalse(result['discord_notification_requested'])
+        self.assertEqual(result['notification_failures'], [])
+
+    def test_manual_notification_skip_is_explicit_in_release_cli(self):
+        with patch.object(sys, 'argv', ['release', '--version', '3.0.31', '--skip-discord-notification']):
+            self.assertTrue(release.parse_args().skip_discord_notification)
+
     def test_published_core_stays_successful_when_followups_fail(self):
         for publish, invalid_core in ((False, False), (True, False), (False, True)):
             with self.subTest(channels=publish, invalid_core=invalid_core), tempfile.TemporaryDirectory() as scratch, contextlib.ExitStack() as stack:

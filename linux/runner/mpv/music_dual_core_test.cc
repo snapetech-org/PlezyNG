@@ -1,14 +1,17 @@
 #include <flutter_linux/flutter_linux.h>
 #include <unistd.h>
 
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <utility>
 
 #include "mpv_player.h"
 
@@ -90,6 +93,15 @@ void Open(mpv_handle* handle, const std::string& path, const char* volume) {
 
 int main() {
   try {
+    // Disposal transfers ownership to a process-lifetime worker. Observe real
+    // handle destruction rather than exiting while its Lua clients still run.
+    const auto destroyed = std::make_shared<std::atomic<unsigned>>(0);
+    mpv::NativeRenderTeardownOperations teardown;
+    teardown.terminate_handle = [destroyed](mpv_handle* handle) {
+      mpv_terminate_destroy(handle);
+      destroyed->fetch_add(1, std::memory_order_release);
+    };
+    mpv::ConfigureNativeRenderTeardownQueueForTesting(std::move(teardown));
     AudioFixture fixture;
     mpv::MpvPlayer outgoing(true);
     mpv::MpvPlayer incoming(true);
@@ -105,13 +117,19 @@ int main() {
     Check(std::abs(Property(first, "volume") - 25) < 0.01, "outgoing volume changed across cores");
     Check(std::abs(Property(second, "volume") - 75) < 0.01, "incoming volume changed across cores");
     Check(mpv_set_property_string(first, "pause", "yes") >= 0, "outgoing pause failed");
-    const double incoming_position = Property(second, "time-pos");
     outgoing.Dispose();
+    Await(
+        [&]() { return destroyed->load(std::memory_order_acquire) == 1; },
+        "outgoing native decoder did not finish teardown");
+    const double incoming_position = Property(second, "time-pos");
     Await(
         [&]() { return Property(second, "time-pos") > incoming_position + 0.2; },
         "disposing the outgoing decoder stopped the incoming decoder");
     Check(incoming.IsInitialized(), "surviving music decoder lost initialization");
     incoming.Dispose();
+    Await(
+        [&]() { return destroyed->load(std::memory_order_acquire) == 2; },
+        "incoming native decoder did not finish teardown");
     std::cout << "music_dual_core_test: PASS (null output; no acoustic/device qualification)\n";
     return 0;
   } catch (const std::exception& error) {

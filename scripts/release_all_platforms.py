@@ -1371,11 +1371,12 @@ def dispatch_aerynos_delivery(tag: str) -> dict:
 
 
 def post_release_actions(tag: str, version: str, *, release_sha: str,
-                         include_webos_release: bool, publish_channels: bool) -> dict:
+                         include_webos_release: bool, publish_channels: bool,
+                         notify_discord: bool = True) -> dict:
     """Retryable delivery follows the already verified GitHub publication."""
     result = {"published_channels": [], "skipped_channels": [],
               "channel_failures": [], "notification_failures": [], "google_play_automation": [],
-              "aerynos_automation": []}
+              "aerynos_automation": [], "discord_notification_requested": notify_discord}
     try:
         play = dispatch_automatic_play(tag)
         if play:
@@ -1388,12 +1389,13 @@ def post_release_actions(tag: str, version: str, *, release_sha: str,
         result["channel_failures"].append(f"Automatic aerynOS delivery: {error}")
     # GITHUB_TOKEN publication does not emit another workflow's release event.
     # Tag serialization and persisted receipts make a repeated dispatch safe.
-    try:
-        command(["gh", "workflow", "run", "discord-release.yml", "--repo", PLEZY_REPO,
-                 "--ref", "main", "-f", "action=announce-release", "-f", "runner_pool=hosted",
-                 "-f", f"release_tag={tag}"])
-    except Exception as error:
-        result["notification_failures"].append(str(error))
+    if notify_discord:
+        try:
+            command(["gh", "workflow", "run", "discord-release.yml", "--repo", PLEZY_REPO,
+                     "--ref", "main", "-f", "action=announce-release", "-f", "runner_pool=hosted",
+                     "-f", f"release_tag={tag}"])
+        except Exception as error:
+            result["notification_failures"].append(str(error))
     if publish_channels:
         try:
             completed, skipped, failures = publish_configured_channels(
@@ -1782,6 +1784,8 @@ def parse_args() -> argparse.Namespace:
         help="Notarize macOS and prepare/attest its Homebrew Cask candidate; does not publish to a tap.",
     )
     publication = parser.add_mutually_exclusive_group()
+    parser.add_argument("--skip-discord-notification", action="store_true",
+                        help="Skip this controller's manual Discord dispatch; release-event workflows are controlled separately.")
     publication.add_argument(
         "--publish",
         action="store_true",
@@ -2087,6 +2091,7 @@ def main() -> int:
                     tag, args.version, release_sha=delivery_sha,
                     include_webos_release=args.include_webos_release,
                     publish_channels=args.publish,
+                    notify_discord=not args.skip_discord_notification,
                 )
             except Exception as error:
                 followups = {"published_channels": [], "skipped_channels": [],
@@ -2132,6 +2137,7 @@ def main() -> int:
             "skipped_channels": skipped_channels,
             "channel_failures": channel_failures,
             "notification_failures": notification_failures,
+            "discord_notification_requested": not args.skip_discord_notification,
             "aerynos_automation": aerynos_automation,
             "publication_facts_commit": publication_facts_commit,
             "publication_facts_failures": publication_facts_failures,

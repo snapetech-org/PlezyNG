@@ -66,8 +66,8 @@ struct NativeRenderTeardownOperations {
 bool TryReleaseNativeRenderTeardown(NativeRenderTeardownBatch& batch, const NativeRenderTeardownOperations& operations);
 
 #ifdef PLEZY_MPV_PLAYER_LIFECYCLE_TEST
-// Focused-test boundary for exercising the process-lifetime teardown queue
-// without invoking real EGL or libmpv resources.
+// Focused-test boundary for controlling and observing process-lifetime teardown.
+// Tests can substitute resources or wrap real destruction with completion proof.
 void ConfigureNativeRenderTeardownQueueForTesting(NativeRenderTeardownOperations operations);
 void EnqueueNativeRenderTeardownForTesting(NativeRenderTeardownBatch batch);
 #endif

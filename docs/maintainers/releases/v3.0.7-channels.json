@@ -1,6 +1,6 @@
 {
   "release_tag": "v3.0.7",
-  "checked_at_utc": "2026-11-10T01:10:41.818583+00:00",
+  "checked_at_utc": "2026-11-10T03:10:56.056938+00:00",
   "application_artifacts_rebuilt": false,
   "original_release_assets_modified": false,
   "aerynos": {
@@ -20,7 +20,9 @@
       "public_receipt": "https://github.com/snapetech-org/pleazyng-aerynos/blob/main/publication-receipt.json"
     },
     "official_aerynos_repository_acceptance": "not claimed; independent downstream feed",
-    "continuous_main_sync": "owner requested; automation implementation and activation in progress in owning aerynOS session"
+    "continuous_main_sync": "Active five-minute reconcile and manual recovery workflows; first fully qualified automatic promotion pending",
+    "continuous_main_sync_run": "https://github.com/snapetech-org/pleazyng-aerynos/actions/runs/42746523450",
+    "automation_acceptance": "Fresh default sign-in, playback and upgrade gates must pass before feed promotion; existing seed feed preserved"
   },
   "channels": {
     "aur": {
@@ -85,9 +87,9 @@
       "install_command": "brew install --cask snapetech-org/pleazyng/snapetech-pleazyng"
     },
     "google_play": {
-      "state": "Original166 permanently reserved and unavailable for track assignment; verified store-only167 repack queued for CI signing/internal draft; no review or activation",
+      "state": "Internal testing167 Active and Available to internal testers in Play Console; closed Alpha review/activation and device billing qualification pending",
       "package": "org.snapetech.pleazyng",
-      "version_code": 166,
+      "version_code": 167,
       "upload_run": 42700083317,
       "foreground_service_declaration": "saved: data sync/network processing and media playback",
       "release_notes": "Previously saved Alpha configuration discarded to prepare internal qualification; reapply before submission",
@@ -132,8 +134,8 @@
         "result": "Google404: archived166 cannot be referenced in track edit; uncommitted edit discarded"
       },
       "review_grant_qualification_run": {
-        "run": 42731105096,
-        "result": "expired-trial gate and restore control observed; stopped locating review input before any grant entry; focused editable dialog detection added"
+        "run": 42747294937,
+        "result": "pending: signed167 native expired-trial/reviewer test with bounded visible gate retry"
       },
       "original_aab_redelivery_run": {
         "run": 42730459200,
@@ -146,8 +148,19 @@
         "run": 42733775175,
         "local_validation": "bundletool validation passed; all1667payload entries checked; only manifest version code changed",
         "application_code_rebuilt": false,
-        "original_release_modified": false
-      }
+        "original_release_modified": false,
+        "signed_aab_sha256": "143c18c488118e91740bc2d662308ec79cd044200f3b263d7f45959ae6a58fbc",
+        "signed_payload_authentication": "all1667 payload entries authenticated against original upload certificate; passed",
+        "attestation_verification": "passed: repository, main source ref, repack workflow and GitHub-hosted execution",
+        "api_upload": "passed",
+        "internal_draft_assignment": "passed in uncommitted edit",
+        "api_commit": "403: This app has no APKs; edit expired2026-11-10T02:15:32Z",
+        "recovery_run": 42737436827,
+        "console_registration": "accepted and published: internal167(3.0.7), Active, Available to internal testers; temporary unreviewed app name"
+      },
+      "internal_release_published_at_utc": "2026-11-10T03:01:00Z",
+      "internal_test_opt_in": "https://play.google.com/apps/internaltest/4700337529230881881",
+      "internal_testers_evidence": "Persisted pool artifactead2f706-f013-4a1f-8354-615de4e56aa6"
     }
   }
 }

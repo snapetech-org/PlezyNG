@@ -20,7 +20,7 @@ the live producer again. Published releases retain their original provenance.
 
 ## Release procedure
 
-Set a new version with `python3 scripts/set_release_version.py 3.0.29+188`.
+Set a new version with `python3 scripts/set_release_version.py 3.0.30+189`.
 This updates both `pubspec.yaml` and `webos/meta/appinfo.json`, preserving the
 native app identity, permissions, and other metadata. Use the next unused
 version and build number; never move an existing tag. The shared commit/CI

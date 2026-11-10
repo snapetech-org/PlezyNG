@@ -241,18 +241,24 @@ class AppQA:
         self.key('esc')
         self.key('esc')
 
-    def open_movie(self, name):
-        # A nonempty search field no longer exposes its placeholder as a label.
-        def ready():
+    def open_search(self, timeout=15):
+        # Floating desktop headers can be offscreen. Navigate explicitly and
+        # require the unique editable field, including when it already has text.
+        self.ui('click', 'Search')
+        deadline = time.monotonic() + timeout
+        while True:
             nodes = self.ui()
-            return any(n['role'] == 'header' and n['name'] == 'Search' for n in nodes) and any(n['role'] == 'text' for n in nodes)
-        for _ in range(3):
-            if ready():
-                break
-            self.ui('click', 'Search')
-            time.sleep(1)
-        if not ready():
-            raise RuntimeError('Search did not expose its editable field')
+            if sum(node['role'] == 'text' for node in nodes) == 1:
+                (self.evidence / 'search-ready.json').write_text(json.dumps(nodes, indent=2) + '\n')
+                return
+            if time.monotonic() >= deadline:
+                (self.evidence / 'search-timeout.json').write_text(json.dumps(nodes, indent=2) + '\n')
+                self.guest.screenshot(self.evidence / 'search-timeout.png')
+                raise RuntimeError('Search did not expose exactly one editable field')
+            time.sleep(0.25)
+
+    def open_movie(self, name):
+        self.open_search()
         self.ui('fill-role', 'text', name)
         self.wait(name)
         self.ui('click', name)

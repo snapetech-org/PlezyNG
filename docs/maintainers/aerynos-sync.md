@@ -1,52 +1,50 @@
-# Continuous aerynOS channel
+# Automatic aerynOS release delivery
 
-The downstream channel is [snapetech-org/pleazyng-aerynos](https://github.com/snapetech-org/pleazyng-aerynos).
-Its reconciliation workflow resolves canonical Pleazyng `main`; it does not wait
-for a version tag or change an all-platform release. Consult its Actions runs and
-`sync-state/last-good.json` for live publication status.
+The independent downstream channel is
+[snapetech-org/pleazyng-aerynos](https://github.com/snapetech-org/pleazyng-aerynos).
+Canonical `main` metadata is tracked independently in `sync-state/canonical-main.json`.
+Tracking an unreleased source commit never compiles the app or advances the feed.
+Published core releases from 3.0.29 onward enter the package delivery queue.
+Consult downstream Actions and `sync-state/last-good.json` for actual status.
 
 ## Pipeline
 
-The channel schedules reconciliation every five minutes, subject to GitHub
-Actions scheduling and capacity. Manual dispatch is also supported. One shared
-concurrency group preserves the active build and coalesces pending runs. A new
-source commit is eligible immediately; a failed commit backs off for 30 minutes.
-An already published SHA does not rebuild.
+The channel polls every five minutes, subject to GitHub scheduling and compatible
+runner availability. Manual dispatch is supported. A shared concurrency group
+preserves active work and coalesces pending polls. Release receipts prevent
+repeat publication; failed deliveries back off for thirty minutes.
 
-1. `aerynos-candidate.yml` builds the ordinary Linux x64 release bundle from an
-   immutable canonical-main commit. Its handoff includes exact source, binary
-   checksums and `build.json`, including the resolved build-tooling SHA. The
-   reusable workflow wrappers are pinned; source and tooling revisions resolve
-   independently and the native receipt records its recipe-tooling SHA.
-2. `aerynos-qualify.yml` boots a disposable KVM guest from the checksum-pinned
-   official aerynOS 2026.11 image. It installs the last-good public package, builds
-   a new Stone with Boulder, and upgrades with Moss. It verifies installed ELF
-   dependencies, ordinary app launch, fresh fixture sign-in, DV/fallback defaults,
-   visible H.264, pause, seek and fullscreen. Playing/paused OS background
-   return, route reopen and a named bookmark jump additionally require visible
-   authored frames, appropriate UI clock behavior and the authored 440 Hz audio.
-   Paused return must retain identical pixels and a fixed clock with no audio. Only authored fixture accounts are
-   used; no personal media or credentials enter the guest.
-3. The channel controller checks the qualified handoff, publishes immutable
-   prerelease assets, verifies GitHub's asset digests, then commits the recipe,
-   live index and last-good receipt together. Each snapshot carries a durable
-   `qa-evidence.tar.gz` with screenshots, measurements, logs and original audio
-   capture. Its playable audio copy repairs only QEMU placeholder WAV lengths;
-   sample bytes are unchanged. Native failures retain app cores and audio in
-   the diagnostic artifact. Failed builds, tests, uploads or
-   pushes leave the live index unchanged.
+1. Resolve the oldest pending published semantic-version release. Verify its
+   attested `SHA256SUMS.txt` against the canonical core workflow and require that
+   its certificate-bound final assembler run completed successfully. Match the
+   published Linux archive against those checksums and GitHub's asset digest.
+2. Verify the Linux archive's own attestation to identify its original compiler
+   source and run. These may differ from the final assembler for recovered core
+   releases. Keep both identities. `aerynos-from-core.yml` copies and verifies
+   the original `linux-x64` artifact, requiring a successful original Linux job,
+   trusted repository/workflow, exact source and certificate-bound invocation.
+   No Flutter setup or application recompilation occurs.
+3. `aerynos-qualify.yml` boots a disposable KVM guest from the checksum-pinned
+   official aerynOS image, builds the Stone, and upgrades the last-good package.
+   Dependency checks, fresh sign-in, default settings, visible H.264 and authored
+   audio, pause/seek/fullscreen, playing and paused background return, route
+   resume and bookmark resume must pass. Playing phases require moving authored
+   frames and advancing clocks; paused return requires fixed pixels and clock
+   with no audio. Only authored fixtures and accounts are used.
+4. Revalidate the qualified binary digest, source, app version, original producer
+   and still-published successful core. Attach `core-release.json` with original
+   compiler and final assembler identities. Publish immutable package assets,
+   verify their remote digests, then atomically commit the recipe, index and
+   release receipt. Failure preserves the last-good feed.
 
-The package release counter advances even when the app version stays the same.
-An ancestor may finish after `main` advances and still publish; the next poll
-catches up. An older or divergent source cannot replace an already newer feed. The first
-promotion additionally checks the reviewed bootstrap floor and exact legacy
-seed identity/native upgrade; no canonical ancestry is invented for that seed.
-The controller never force-pushes or replaces published release assets.
+Every package retains its matching original source archive. Native QA evidence
+includes screenshots, clock/audio measurements, runtime logs and audio capture.
+These software-rendered VM checks do not establish physical HDR output, hardware
+GPU/NPU execution or FEL reference-picture accuracy.
 
-These checks cover a software-rendered VM. They do not establish physical HDR
-output, hardware decoding, NPU execution or FEL reference-picture accuracy.
-Read each snapshot's qualification receipt; historical manual checks do not
-transfer automatically to a new source revision.
+The package release counter advances monotonically. Canonical ancestry and the
+reviewed first-transition seed/bootstrap contract prevent stale or divergent
+source promotion. Published assets are never overwritten or force-pushed.
 
 ## Feed layout
 
@@ -81,52 +79,30 @@ The native recipe generates and relocates every shipped GTK input module's cache
 The shared bundle generator also discovers Ubuntu's query tool outside `PATH`;
 the launcher relocates moved portable caches without dropping locale records.
 
-## Reuse the coordinated core build
+## Preflight and recovery
 
-When the release coordinator supplies an approved source/run checkpoint, use
-`aerynos-from-core.yml` to stage the existing `linux-x64` artifact. This is a
-copy/verification job; it never configures Flutter or compiles the app. It
-requires a successful Linux x64 job, canonical-main ancestry and repository ID,
-and verifies the tarball's GitHub attestation against the trusted core workflow,
-exact source digest and certificate-bound producer run. It preserves the binary
-bytes and creates the matching source archive and standard candidate handoff.
+The coordinator may stage and qualify exact existing Linux bytes before the core
+release finishes. This establishes native evidence only; it does not permit
+publication or represent an overall failed original run as a successful release.
 
-The staging run's candidate artifact can then be selected through `sync.yml`'s
-`producer_run_id`, with the approved source SHA. Native Boulder packaging and
-all normal qualification gates still apply. This does not assert that the
-other platform jobs or store deliveries completed; the coordinator owns that
-release checkpoint. Never dispatch a replacement source build merely to stage
-already compiled immutable artifacts.
+After core publication, normal automatic delivery performs all checks. A manual
+`sync.yml` dispatch may provide `qualified_run_id` to reuse a successful canonical
+`aerynos-qualify.yml` run for those exact bytes. The consumer verifies the trusted
+native workflow run and repeats the source/version/digest/core checks. An old or
+unrelated qualification cannot authorize a different release artifact.
 
-An active `sync-state/promotion-hold.json` stops downstream source planning
-before schedule re-enabling and stops public promotion. The first-transition
-baseline marker also rejects older handoffs loaded by an already running
-controller. Keep the hold and disabled schedule until the coordinator explicitly
-resumes this lane with its final checkpoint.
+The downstream `promotion-hold.json` stops staging and promotion while retaining
+source metadata tracking. Scheduled workflow activation is explicit; neither
+controller re-enables schedules automatically. The legacy unreleased-source
+compilation lane has been removed. A weekly health commit keeps release polling
+active without building an app. No cross-repository secret, deployment key, App
+grant or canonical push hook is required.
 
-## Recovery and evidence
+A native or channel delivery failure is separate from core success. Repair or
+retry delivery with existing immutable artifacts; do not rebuild all platforms,
+change core assets, weaken native gates or fabricate qualification metadata.
+Use the current workflow revision; reruns retain the original workflow revision.
 
-Inspect the failed job and retained diagnostics first. The source and native QA
-workflows use compatible GitHub-hosted Ubuntu 24.04 runners; native QA requires
-KVM. Missing compatible capacity is a blocker, not grounds to weaken the gate.
-
-For bootstrap or recovery, `sync.yml` accepts an exact canonical-main SHA and an
-existing canonical candidate build run ID. The qualifier checks that artifact's
-recorded SHA and hashes before using it. Leave both inputs empty for normal
-automatic synchronization. Retry changes in the current workflow revision;
-rerunning an old run uses its old workflow.
-
-A release upload failure is channel delivery work, separate from core release
-success. Reuse the existing candidate artifact where available. Do not rebuild
-all platforms, alter core release assets, overwrite a published snapshot or
-manually fabricate qualification metadata.
-
-The scheduled reconciler makes a meaningful weekly health commit recording
-canonical-main and last-good release availability. A separate manual/reusable
-sync workflow can re-enable the schedule with its own scoped Actions token.
-No cross-repository deployment key, organization secret or App installation
-grant is required. No canonical push hook is required for correctness.
-
-Local QA outputs belong in task scratch. Preserve diagnostics before removing
-stopped task-owned VM disks and containers; retain the official ISO/build caches.
-Never clean another agent's VM, desktop, browser profile or active build.
+Native QA requires compatible Ubuntu KVM capacity. Preserve diagnostics before
+cleaning stopped task-owned guests. Retain shared ISO/build caches and never
+clean another agent's VM, desktop, browser profile or active build.

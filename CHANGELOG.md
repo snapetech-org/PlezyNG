@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Deliver aerynOS packages automatically from complete published Pleazyng releases, retaining the original Linux artifacts and requiring native qualification before feed promotion. Retire the separate unreleased-source build lane and repair Search navigation in its native playback harness.
+
+- Keep queued music ratings and station retries bound to the correct account. Older pending rating records remain stored but no longer replay automatically.
+
 - Stage the locked iOS device worker framework before Release linking and verify its resolved search path and ARM64 slice. Link the webOS worker's existing atomic operations against the SDK's shared runtime and support explicit iOS recovery without rebuilding successful platforms.
 
 - Run tvOS release AOT compilation on a compatible ARM host and support verified tvOS-only recovery while retaining successful immutable artifacts from every other platform.
@@ -24,7 +28,7 @@
 
 - Fix Tizen ARM sandbox compilation by declaring the ELF architecture constants required by its older audit headers; retain the existing fail-closed syscall policy.
 
-- Prepare 3.0.29+188 as a fresh all-platform release from current source, including the shared native-video aperture clear and expired-trial review navigation repair. Supersede the v3.0.7 channel bootstrap for usable publication; preserve its original artifacts and failure evidence.
+- Prepare 3.0.30+189 as a fresh all-platform release from current source, including the shared native-video aperture clear and expired-trial review navigation repair. Supersede the v3.0.7 channel bootstrap for usable publication; preserve its original artifacts and failure evidence.
 
 - Fix store-review access after trial expiry: retain dialog navigation on the locked screen, dismiss the review dialog with Back, and restore normal application navigation after a valid grant.
 

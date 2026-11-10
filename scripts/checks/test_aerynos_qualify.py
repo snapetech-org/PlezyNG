@@ -13,6 +13,32 @@ from qualify import AppQA, capture_audio
 
 
 class PlaybackMeasurementsTests(unittest.TestCase):
+    def test_search_navigation_does_not_require_an_offscreen_floating_header(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = AppQA.__new__(AppQA)
+            app.evidence = Path(directory)
+            calls = []
+            def ui(*args):
+                calls.append(args)
+                return [{'name': 'Search', 'role': 'push button'},
+                        {'name': 'Maestro Movie', 'role': 'text'}]
+            app.ui = ui
+            app.open_search()
+            self.assertEqual(calls[0], ('click', 'Search'))
+            self.assertTrue((app.evidence / 'search-ready.json').exists())
+
+    def test_search_requires_one_editable_field_and_retains_failure_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = AppQA.__new__(AppQA)
+            app.evidence = Path(directory)
+            app.guest = SimpleNamespace(screenshot=lambda path: path.write_bytes(b'fixture screenshot'))
+            for fields in ([], [{'name': '', 'role': 'text'}] * 2):
+                app.ui = lambda *args: [{'name': 'Search', 'role': 'header'}, *fields]
+                with self.subTest(fields=fields), self.assertRaises(RuntimeError):
+                    app.open_search(timeout=0)
+            self.assertTrue((app.evidence / 'search-timeout.json').exists())
+            self.assertTrue((app.evidence / 'search-timeout.png').exists())
+
     def test_clock_reads_elapsed_time_from_merged_semantics(self):
         with tempfile.TemporaryDirectory() as directory:
             app = AppQA.__new__(AppQA)

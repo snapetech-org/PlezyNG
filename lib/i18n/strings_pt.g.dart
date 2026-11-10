@@ -3011,6 +3011,7 @@ class Translations$cast$pt extends Translations$cast$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Voltar a reproduzir neste dispositivo';
 	@override String get transferQueue => 'Transferir a fila para o Chromecast';
 	@override String get chooseDevice => 'Caminhar para um dispositivo';
 	@override String get searching => 'Buscando por dispositivos de cast...';
@@ -8379,6 +8380,7 @@ extension on TranslationsPt {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} utiliza HTTP. Outras pessoas na rede podem ler ou alterar a sua palavra-passe, os seus tokens e os seus conteúdos multimédia. Utilize HTTPS quando estiver disponível. Continue apenas se confiar nesta rede e aceitar o risco.',
 			'addServer.allowHttp' => 'Permitir HTTP',
 			'addServer.httpsRequired' => 'Use HTTPS ou permita expressamente uma conexão não criptografada.',
+			'cast.returnPlayback' => 'Voltar a reproduzir neste dispositivo',
 			'cast.transferQueue' => 'Transferir a fila para o Chromecast',
 			'cast.chooseDevice' => 'Caminhar para um dispositivo',
 			'cast.searching' => 'Buscando por dispositivos de cast...',
@@ -8539,9 +8541,9 @@ extension on TranslationsPt {
 			'universalMedia.playlist' => 'Playlist',
 			'universalMedia.files' => 'Arquivos de dispositivos',
 			'universalMedia.favorites' => 'Redução dos favoritos',
-			'universalMedia.address' => 'Endereço de mídia',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Endereço de mídia',
 			'universalMedia.addressHelp' => 'URLs com parâmetros de autenticação ou assinatura reconhecidos são usados apenas para esta sessão e não podem ser salvos como favoritos.',
 			'universalMedia.displayName' => 'Nome de exibição (opcional)',
 			'universalMedia.displayNameHelp' => 'Escolha um nome curto para o jogador e controles de mídia do sistema.',
@@ -9053,9 +9055,9 @@ extension on TranslationsPt {
 			'sourceSetup.replaceTrustCertificate' => 'Substituir o certificado personalizado salvo',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS usa as portas habituais de NFS e do serviço de montagem e exige que o NAS ofereça suporte a RFC 9289. TLS 1.3 é obrigatório. O nome do host ou o IP deve corresponder ao certificado. Os UID/GID de AUTH_SYS continuam valendo no canal criptografado.',
 			'sourceSetup.clientCertificate' => 'Certificado do cliente (opcional)',
-			'sourceSetup.clientCertificateHelp' => 'Permite que o NAS autentique este cliente; os IDs de AUTH_SYS continuam sujeitos à política do compartilhamento NFS do NAS.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'Permite que o NAS autentique este cliente; os IDs de AUTH_SYS continuam sujeitos à política do compartilhamento NFS do NAS.',
 			'sourceSetup.savedIdentity' => 'Será usada uma identidade de cliente salva.',
 			'sourceSetup.replaceIdentity' => 'Substituir a identidade de cliente salva',
 			'sourceSetup.chooseIdentity' => 'Escolher identidade de cliente PKCS#12',

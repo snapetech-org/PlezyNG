@@ -3559,6 +3559,7 @@
     "httpsRequired": "Menggunakan HTTPS atau secara eksplisit memungkinkan koneksi yang tidak terenkripsi."
   },
   "cast": {
+    "returnPlayback": "Kembalikan pemutaran ke perangkat ini",
     "transferQueue": "Pindahkan antrean ke Chromecast",
     "chooseDevice": "Transmisikan ke perangkat",
     "searching": "Mencari alat-alat yang terbuat dari ...",

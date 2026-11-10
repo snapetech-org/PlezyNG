@@ -18,6 +18,7 @@ import '../utils/session_identifier.dart';
 import 'cast_playback_ownership.dart';
 import 'music/cast_music_output.dart';
 import 'music/cast_music_queue.dart';
+import 'music/music_device_session.dart';
 import 'music/music_transfer_snapshot.dart';
 import 'multi_server_manager.dart';
 import 'playback_report_session.dart';
@@ -62,6 +63,7 @@ class CastMediaService extends ChangeNotifier {
   Duration _lastOwnedPosition = Duration.zero;
   _DetachedMusicQueue? _detached;
   Timer? _detachedTimer;
+  bool _returningDetached = false;
 
   void bindProfile(String? profileId) {
     if (_profileId == profileId) return;
@@ -104,6 +106,8 @@ class CastMediaService extends ChangeNotifier {
         detached.queue.authorized() &&
         _matchesDetached(detached);
   }
+
+  bool get canReturnDetachedMusicQueue => !_returningDetached && hasDetachedMusicQueue;
 
   bool _matchesDetached(_DetachedMusicQueue detached) =>
       detached.queue.matches(detached.connection, castReceiverKey(_sessions.currentSession), _remote.mediaStatus);
@@ -359,6 +363,49 @@ class CastMediaService extends ChangeNotifier {
       }
     });
   }
+
+  Future<MusicTransferResult> returnDetachedMusicQueue({
+    required MusicDeviceSession session,
+    required bool Function() available,
+  }) => _loads.run(() async {
+    final detached = _detached;
+    if (detached == null || !canReturnDetachedMusicQueue || !available() || session.playback.isPlaying) {
+      return MusicTransferResult.unavailable;
+    }
+    _returningDetached = true;
+    notifyListeners();
+    bool current() =>
+        identical(_detached, detached) &&
+        detached.retiredAt == null &&
+        castReceiverKey(_sessions.currentSession) == detached.connection &&
+        available();
+    try {
+      final accepted = await detached.queue.returnToLocal(
+        current: current,
+        status: () => _remote.mediaStatus,
+        statuses: _remote.mediaStatusStream,
+        invalidated: _sessions.currentSessionStream
+            .where((value) => castReceiverKey(value) != detached.connection)
+            .map<void>((_) {}),
+        position: () => _remote.playerPosition,
+        pause: _remote.pause,
+        resume: () async {
+          if (!session.playback.isPlaying) await _remote.play();
+        },
+        prepare: (snapshot, current) => session.prepareMusicDeviceTransfer(snapshot, current: current),
+      );
+      if (!accepted) return MusicTransferResult.rejected;
+      detached.retire();
+      _checkDetached();
+      return MusicTransferResult.completed;
+    } catch (error) {
+      appLogger.d('Google Cast queue return failed (${error.runtimeType})');
+      return MusicTransferResult.rejected;
+    } finally {
+      _returningDetached = false;
+      notifyListeners();
+    }
+  });
 
   Future<GoogleCastDevice?> _pickDevice(BuildContext context) async {
     await _discovery.startDiscovery(activeScan: Platform.isAndroid);
@@ -830,10 +877,10 @@ class CastMediaService extends ChangeNotifier {
                     children: [
                       IconButton.filledTonal(
                         tooltip: isPaused ? t.common.resume : t.common.pause,
-                        onPressed: !(_ownsReceiver() || detached) || !isPaused && !isPlaying
+                        onPressed: !(_ownsReceiver() || detached && !_returningDetached) || !isPaused && !isPlaying
                             ? null
                             : () {
-                                if (_ownsReceiver() || hasDetachedMusicQueue) {
+                                if (_ownsReceiver() || canReturnDetachedMusicQueue) {
                                   unawaited(isPaused ? _remote.play() : _remote.pause());
                                 }
                               },
@@ -844,7 +891,7 @@ class CastMediaService extends ChangeNotifier {
                         tooltip: t.cast.stopCasting,
                         onPressed: () async {
                           final queue = _detached;
-                          if (hasDetachedMusicQueue && queue != null) {
+                          if (canReturnDetachedMusicQueue && queue != null) {
                             queue.retire();
                             await _stopDetached(queue);
                             if (sheetContext.mounted) Navigator.of(sheetContext).pop();

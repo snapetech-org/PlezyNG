@@ -3584,6 +3584,7 @@
     "httpsRequired": "שימוש ב- HTTPS או מאפשר באופן מפורש חיבור לא מוצפן."
   },
   "cast": {
+    "returnPlayback": "החזרת הניגון למכשיר הזה",
     "transferQueue": "העברת התור ל-Chromecast",
     "chooseDevice": "שידור למכשיר",
     "searching": "מחפשים מכשירים לגידול...",

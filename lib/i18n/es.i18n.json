@@ -3584,6 +3584,7 @@
     "httpsRequired": "Uso de HTTPS o permita expresamente una conexión no cifrada."
   },
   "cast": {
+    "returnPlayback": "Devolver la reproducción a este dispositivo",
     "transferQueue": "Transferir la cola a Chromecast",
     "chooseDevice": "Casta a un dispositivo",
     "searching": "Buscando los dispositivos de casting...",

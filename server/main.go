@@ -2690,6 +2690,8 @@ func main() {
 	registerOAuthRoutes(mux, srv.oauth)
 	registerComicCommerceRoutes(mux, clientIPs)
 	registerWatchmodeAvailabilityRoutes(mux, clientIPs)
+	musicRelay := registerMusicConnectRelay(mux, clientIPs)
+	defer musicRelay.close()
 	steamRelay := registerSteamRelay(mux, clientIPs, srv.oauth)
 	defer steamRelay.close()
 	if err := validateSteamStartup(srv.oauth, steamRelay); err != nil {

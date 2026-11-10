@@ -3616,6 +3616,7 @@
     "httpsRequired": "Použití HTTPS nebo výslovně umožnit nekryptované připojení."
   },
   "cast": {
+    "returnPlayback": "Vrátit přehrávání na toto zařízení",
     "transferQueue": "Přenést frontu do Chromecastu",
     "chooseDevice": "Odeslat do zařízení",
     "searching": "Hledání zařízení pro výkresy...",

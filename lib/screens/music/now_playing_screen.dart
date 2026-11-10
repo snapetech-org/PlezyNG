@@ -37,6 +37,7 @@ import '../../services/device_performance.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../services/music/music_playback_output.dart';
 import '../../services/music/cast_music_queue.dart';
+import '../../services/music/music_device_session.dart';
 import '../../services/music/music_transfer_snapshot.dart' show MusicTransferSession;
 import '../../services/cast_media_service.dart';
 import '../../providers/multi_server_provider.dart';
@@ -892,6 +893,26 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
         )
       : _buildOverflowMenu(track, focusable: focusable);
 
+  Future<void> _returnCastQueue(
+    MusicDeviceSession device,
+    MusicPlaybackService session,
+    CompanionRemoteProvider companion,
+    MusicOutputControls? output,
+  ) async {
+    final result = await CastMediaService.instance.returnDetachedMusicQueue(
+      session: device,
+      available: () =>
+          mounted &&
+          identical(_service, session) &&
+          !companion.musicGroupActive &&
+          output?.remoteOutputName == null &&
+          device.musicDeviceOutput == null,
+    );
+    if (mounted && result == MusicTransferResult.rejected) {
+      showErrorSnackBar(context, t.musicExperience.error);
+    }
+  }
+
   Widget _buildOverflowMenu(MediaItem track, {required bool focusable}) {
     final tk = tokens(context);
     final companion = context.watch<CompanionRemoteProvider>();
@@ -903,13 +924,24 @@ class _NowPlayingScreenState extends State<NowPlayingScreen>
       key: contextMenuKey,
       item: track,
       extraEntries: [
-        if (CastMediaService.isSupportedPlatform && CastMediaService.instance.hasDetachedMusicQueue)
+        if (CastMediaService.isSupportedPlatform && CastMediaService.instance.hasDetachedMusicQueue) ...[
           MediaMenuExtraEntry(
             icon: Symbols.cast_connected_rounded,
             label: t.cast.connectedTo(device: CastMediaService.instance.deviceName ?? t.cast.device),
             onSelected: () => CastMediaService.instance.showControls(context),
-          )
-        else if (output != null && CastMediaService.isSupportedPlatform) ...[
+          ),
+          if (session is MusicDeviceSession &&
+              CastMediaService.instance.canReturnDetachedMusicQueue &&
+              !companion.musicGroupActive &&
+              !session.isPlaying &&
+              output?.remoteOutputName == null &&
+              (session as MusicDeviceSession).musicDeviceOutput == null)
+            MediaMenuExtraEntry(
+              icon: Symbols.phone_android_rounded,
+              label: t.cast.returnPlayback,
+              onSelected: () => _returnCastQueue(session as MusicDeviceSession, session, companion, output),
+            ),
+        ] else if (output != null && CastMediaService.isSupportedPlatform) ...[
           MediaMenuExtraEntry(
             icon: Symbols.cast_rounded,
             label: output.remoteOutputName == null

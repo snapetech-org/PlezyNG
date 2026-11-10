@@ -3008,6 +3008,7 @@ class _Translations$cast$bn extends Translations$cast$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'এই ডিভাইসে প্লেব্যাক ফিরিয়ে আনুন';
 	@override String get transferQueue => 'Chromecast-এ প্লেব্যাকের সারি স্থানান্তর করুন';
 	@override String get chooseDevice => 'কোনো ডিভাইসে কাস্ট করুন';
 	@override String get searching => 'খুঁজে বের করতে গিয়েছে ক্যাস্ট ডিভাইস...';
@@ -8372,6 +8373,7 @@ extension on TranslationsBn {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} HTTP ব্যবহার করে। নেটওয়ার্কের অন্যরা আপনার পাসওয়ার্ড, টোকেন ও মিডিয়া পড়তে বা পরিবর্তন করতে পারে। সম্ভব হলে HTTPS ব্যবহার করুন। এই নেটওয়ার্ককে বিশ্বাস করলে এবং ঝুঁকি মেনে নিলেই কেবল এগিয়ে যান।',
 			'addServer.allowHttp' => 'HTTP-এর অনুমতি দিন',
 			'addServer.httpsRequired' => 'HTTPS ব্যবহার করুন বা স্পষ্টভাবে একটি অক্রিপ্ট সংযোগ অনুমতি দেয়।',
+			'cast.returnPlayback' => 'এই ডিভাইসে প্লেব্যাক ফিরিয়ে আনুন',
 			'cast.transferQueue' => 'Chromecast-এ প্লেব্যাকের সারি স্থানান্তর করুন',
 			'cast.chooseDevice' => 'কোনো ডিভাইসে কাস্ট করুন',
 			'cast.searching' => 'খুঁজে বের করতে গিয়েছে ক্যাস্ট ডিভাইস...',
@@ -8532,9 +8534,9 @@ extension on TranslationsBn {
 			'universalMedia.playlist' => 'Playlist খেলা',
 			'universalMedia.files' => 'ডিভাইস ফাইল',
 			'universalMedia.favorites' => 'সুরক্ষিত প্রদর্শন পছন্দ',
-			'universalMedia.address' => 'মিডিয়া ঠিকানা',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'মিডিয়া ঠিকানা',
 			'universalMedia.addressHelp' => 'HTTPS preferred. recognized credential বা signature parameters সঙ্গে URLs শুধুমাত্র এই session জন্য ব্যবহার করা হয় এবং পছন্দ হিসাবে সংরক্ষণ করা যাবে না।',
 			'universalMedia.displayName' => 'ডাউনলোড নাম (অ্যাপ্লিকেশন)',
 			'universalMedia.displayNameHelp' => 'খেলোয়াড় এবং সিস্টেম মিডিয়া কন্ট্রোলগুলির জন্য একটি ছোট নাম নির্বাচন করুন।',
@@ -9046,9 +9048,9 @@ extension on TranslationsBn {
 			'sourceSetup.replaceTrustCertificate' => 'সংরক্ষিত কাস্টম সার্টিফিকেট প্রতিস্থাপন করুন',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS সাধারণ NFS ও মাউন্ট সেবার পোর্ট ব্যবহার করে এবং NAS-এ RFC 9289 সমর্থন থাকা প্রয়োজন। TLS 1.3 বাধ্যতামূলক। হোস্টের নাম বা IP সার্টিফিকেটের সঙ্গে মিলতে হবে। এনক্রিপ্ট করা চ্যানেলের ভেতরেও AUTH_SYS UID/GID প্রযোজ্য থাকে।',
 			'sourceSetup.clientCertificate' => 'ক্লায়েন্ট সার্টিফিকেট (ঐচ্ছিক)',
-			'sourceSetup.clientCertificateHelp' => 'NAS-কে এই ক্লায়েন্টের পরিচয় যাচাই করতে দেয়; AUTH_SYS ID এখনো NAS এক্সপোর্টের নীতির ওপর নির্ভর করে।',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'NAS-কে এই ক্লায়েন্টের পরিচয় যাচাই করতে দেয়; AUTH_SYS ID এখনো NAS এক্সপোর্টের নীতির ওপর নির্ভর করে।',
 			'sourceSetup.savedIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র ব্যবহার করা হবে।',
 			'sourceSetup.replaceIdentity' => 'ক্লায়েন্টের সংরক্ষিত পরিচয়পত্র প্রতিস্থাপন করুন',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 ক্লায়েন্ট পরিচয়পত্র বেছে নিন',

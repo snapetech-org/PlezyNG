@@ -3046,6 +3046,7 @@ class _Translations$cast$ru extends Translations$cast$en {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Вернуть воспроизведение на это устройство';
 	@override String get transferQueue => 'Перенести очередь на Chromecast';
 	@override String get chooseDevice => 'Сталкивать на устройство';
 	@override String get searching => 'Ищут кастрюлевые устройства...';
@@ -8422,6 +8423,7 @@ extension on TranslationsRu {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} использует HTTP. Другие участники сети могут прочитать или изменить ваш пароль, токены и медиафайлы. По возможности используйте HTTPS. Продолжайте, только если доверяете этой сети и принимаете риск.',
 			'addServer.allowHttp' => 'Разрешить HTTP',
 			'addServer.httpsRequired' => 'Используйте HTTPS или прямо разрешаете нешифрованное соединение.',
+			'cast.returnPlayback' => 'Вернуть воспроизведение на это устройство',
 			'cast.transferQueue' => 'Перенести очередь на Chromecast',
 			'cast.chooseDevice' => 'Сталкивать на устройство',
 			'cast.searching' => 'Ищут кастрюлевые устройства...',
@@ -8582,9 +8584,9 @@ extension on TranslationsRu {
 			'universalMedia.playlist' => 'Playlist →',
 			'universalMedia.files' => 'Устройство файлы',
 			'universalMedia.favorites' => 'Спасенные потоки любимцы',
-			'universalMedia.address' => 'Медийный адрес',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Медийный адрес',
 			'universalMedia.addressHelp' => 'URL-адреса с признанными параметрами аккредитации или подписки используются только для этой сессии и не могут быть сохранены в качестве любимых.',
 			'universalMedia.displayName' => 'Название изображения (опционально)',
 			'universalMedia.displayNameHelp' => 'Выберите короткое название для игрока и системных медиа-контролей.',
@@ -9096,9 +9098,9 @@ extension on TranslationsRu {
 			'sourceSetup.replaceTrustCertificate' => 'Заменить сохранённый собственный сертификат',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS использует обычные порты NFS и службы монтирования и требует поддержки RFC 9289 на NAS. Требуется TLS 1.3. Имя хоста или IP-адрес должны соответствовать сертификату. UID/GID AUTH_SYS по-прежнему применяются внутри зашифрованного канала.',
 			'sourceSetup.clientCertificate' => 'Сертификат клиента (необязательно)',
-			'sourceSetup.clientCertificateHelp' => 'Позволяет NAS аутентифицировать этого клиента; ID AUTH_SYS по-прежнему зависят от правил экспорта NFS на NAS.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'Позволяет NAS аутентифицировать этого клиента; ID AUTH_SYS по-прежнему зависят от правил экспорта NFS на NAS.',
 			'sourceSetup.savedIdentity' => 'Будут использованы сохранённые данные идентификации клиента.',
 			'sourceSetup.replaceIdentity' => 'Заменить сохранённые данные идентификации клиента',
 			'sourceSetup.chooseIdentity' => 'Выбрать данные идентификации клиента PKCS#12',

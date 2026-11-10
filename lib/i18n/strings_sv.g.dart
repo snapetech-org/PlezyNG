@@ -3008,6 +3008,7 @@ class _Translations$cast$sv extends Translations$cast$en {
 	final TranslationsSv _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Flytta uppspelningen tillbaka till den här enheten';
 	@override String get transferQueue => 'Flytta kön till Chromecast';
 	@override String get chooseDevice => 'Hämta en enhet';
 	@override String get searching => 'Sök efter enheter för att ...';
@@ -8372,6 +8373,7 @@ extension on TranslationsSv {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} använder HTTP. Andra på nätverket kan läsa eller ändra ditt lösenord, dina token och dina medier. Använd HTTPS när det är tillgängligt. Fortsätt bara om du litar på nätverket och accepterar risken.',
 			'addServer.allowHttp' => 'Tillåt HTTP',
 			'addServer.httpsRequired' => 'Använd HTTPS eller uttryckligen tillåter en icke krypterad anslutning.',
+			'cast.returnPlayback' => 'Flytta uppspelningen tillbaka till den här enheten',
 			'cast.transferQueue' => 'Flytta kön till Chromecast',
 			'cast.chooseDevice' => 'Hämta en enhet',
 			'cast.searching' => 'Sök efter enheter för att ...',
@@ -8532,9 +8534,9 @@ extension on TranslationsSv {
 			'universalMedia.playlist' => 'Spellista',
 			'universalMedia.files' => 'Device filer',
 			'universalMedia.favorites' => 'Spara ström favoriter',
-			'universalMedia.address' => 'Media adresser',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Media adresser',
 			'universalMedia.addressHelp' => 'URL-adresser med erkända verifierings- eller signaturparametrar används endast för den här sessionen och kan inte sparas som favorit.',
 			'universalMedia.displayName' => 'Visningsnamn (alternativt)',
 			'universalMedia.displayNameHelp' => 'Välj ett kortnamn för spelaren och systemmediakontroller.',
@@ -9046,9 +9048,9 @@ extension on TranslationsSv {
 			'sourceSetup.replaceTrustCertificate' => 'Ersätt sparat anpassat certifikat',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS använder de vanliga portarna för NFS och monteringstjänsten och kräver stöd för RFC 9289 i NAS-enheten. TLS 1.3 krävs. Värdnamnet eller IP-adressen måste stämma överens med certifikatet. AUTH_SYS UID/GID gäller fortfarande i den krypterade kanalen.',
 			'sourceSetup.clientCertificate' => 'Klientcertifikat (valfritt)',
-			'sourceSetup.clientCertificateHelp' => 'Låter NAS-enheten autentisera den här klienten; AUTH_SYS-ID:n styrs fortfarande av reglerna för NAS-enhetens NFS-delning.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'Låter NAS-enheten autentisera den här klienten; AUTH_SYS-ID:n styrs fortfarande av reglerna för NAS-enhetens NFS-delning.',
 			'sourceSetup.savedIdentity' => 'En sparad klientidentitet kommer att användas.',
 			'sourceSetup.replaceIdentity' => 'Ersätt sparad klientidentitet',
 			'sourceSetup.chooseIdentity' => 'Välj PKCS#12-klientidentitet',

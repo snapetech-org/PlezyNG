@@ -3580,6 +3580,7 @@
     "httpsRequired": "HTTPS və ya şifrə olmayan bir bağlantı üçün açıq-aydın izin verir."
   },
   "cast": {
+    "returnPlayback": "Oxutmanı bu cihaza qaytar",
     "transferQueue": "Növbəni Chromecast-a köçür",
     "chooseDevice": "Bir cihazın qapısı",
     "searching": "Xatırma aparaturları aradan...",

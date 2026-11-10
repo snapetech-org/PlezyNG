@@ -3008,6 +3008,7 @@ class _Translations$cast$tr extends Translations$cast$en {
 	final TranslationsTr _root; // ignore: unused_field
 
 	// Translations
+	@override String get returnPlayback => 'Oynatmayı bu cihaza geri al';
 	@override String get transferQueue => 'Kuyruğu Chromecast’e aktar';
 	@override String get chooseDevice => 'Bir cihazı vurmak';
 	@override String get searching => 'Arama cihazları için...';
@@ -8372,6 +8373,7 @@ extension on TranslationsTr {
 			'addServer.insecureDescription' => ({required Object url}) => '${url} HTTP kullanıyor. Ağdaki kişiler parolanızı, belirteçlerinizi ve medya içeriklerinizi okuyabilir veya değiştirebilir. Mümkün olduğunda HTTPS kullanın. Yalnızca bu ağa güveniyorsanız ve riski kabul ediyorsanız devam edin.',
 			'addServer.allowHttp' => 'HTTP\'ye izin ver',
 			'addServer.httpsRequired' => 'HTTPS veya açıkça şifrelenmemiş bir bağlantı sağlar.',
+			'cast.returnPlayback' => 'Oynatmayı bu cihaza geri al',
 			'cast.transferQueue' => 'Kuyruğu Chromecast’e aktar',
 			'cast.chooseDevice' => 'Bir cihazı vurmak',
 			'cast.searching' => 'Arama cihazları için...',
@@ -8532,9 +8534,9 @@ extension on TranslationsTr {
 			'universalMedia.playlist' => 'Oyun Listesi',
 			'universalMedia.files' => 'cihaz dosyaları',
 			'universalMedia.favorites' => 'Saved Stream Favori',
-			'universalMedia.address' => 'Medya Adresi',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.address' => 'Medya Adresi',
 			'universalMedia.addressHelp' => 'HTTPS tercih edilir. tanınmış kimlik veya imza parametreleri olan URL\'ler yalnızca bu oturum için kullanılır ve favori olarak kaydedilemez.',
 			'universalMedia.displayName' => 'Gösterim Adı (Seçmeli)',
 			'universalMedia.displayNameHelp' => 'Oyuncu ve sistem medya kontrolü için kısa bir isim seçin.',
@@ -9046,9 +9048,9 @@ extension on TranslationsTr {
 			'sourceSetup.replaceTrustCertificate' => 'Kaydedilmiş özel sertifikayı değiştir',
 			'sourceSetup.nfsTlsHelp' => 'RPC-with-TLS normal NFS ve bağlama hizmeti bağlantı noktalarını kullanır ve NAS’ta RFC 9289 desteği gerektirir. TLS 1.3 zorunludur. Ana makine adı veya IP adresi sertifikayla eşleşmelidir. Şifreli kanal içinde de AUTH_SYS UID/GID geçerlidir.',
 			'sourceSetup.clientCertificate' => 'İstemci sertifikası (isteğe bağlı)',
-			'sourceSetup.clientCertificateHelp' => 'NAS’ın bu istemcinin kimliğini doğrulamasını sağlar; AUTH_SYS kimlikleri hâlâ NAS’ın NFS paylaşım ilkesine bağlıdır.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.clientCertificateHelp' => 'NAS’ın bu istemcinin kimliğini doğrulamasını sağlar; AUTH_SYS kimlikleri hâlâ NAS’ın NFS paylaşım ilkesine bağlıdır.',
 			'sourceSetup.savedIdentity' => 'Kaydedilmiş bir istemci kimliği kullanılacak.',
 			'sourceSetup.replaceIdentity' => 'Kaydedilmiş istemci kimliğini değiştir',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 istemci kimliği seç',

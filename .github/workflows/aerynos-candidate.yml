@@ -53,7 +53,7 @@ jobs:
           workflow=(root/'.github/workflows/build.yml').read_text()
           version=re.search(r'^  FLUTTER_VERSION: "([^"]+)"',workflow,re.M).group(1)
           packages=re.search(r'^  LINUX_APT_PACKAGES: >\n((?:    .+\n)+)',workflow,re.M).group(1)
-          pathlib.Path('apt-packages.txt').write_text(' '.join(packages.split()))
+          pathlib.Path('apt-packages.txt').write_text(' '.join(packages.split())+'\n')
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f'flutter={version}\nsha={sha}\n')
           PY
           df -h .

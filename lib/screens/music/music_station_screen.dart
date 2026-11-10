@@ -43,12 +43,16 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
   String _sort = 'random';
   bool _albums = false, _busy = false, _wifiOnly = true, _descending = true;
   int _refreshHours = 0;
-  bool get _current => mounted && context.read<ActiveProfileProvider>().activeId == _experience.store.profileId;
+  bool get _current =>
+      mounted &&
+      _experience.store.active &&
+      context.read<ActiveProfileProvider>().activeId == _experience.store.profileId;
   String? _error;
   List<MediaItem> _preview = [];
   MediaServerClient? _previewClient;
   Object? _previewAuthentication;
   String? _previewAccountScope;
+  bool _previewOffline = false;
   AbortController? _abort;
   int _revision = 0;
   @override
@@ -85,7 +89,11 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
         .read<LibrariesProvider>()
         .libraries
         .where(
-          (l) => l.kind == MediaKind.artist && l.serverId != null && !hidden.hiddenLibraryKeys.contains(l.globalKey),
+          (l) =>
+              l.kind == MediaKind.artist &&
+              l.serverId != null &&
+              !l.hidden &&
+              !hidden.hiddenLibraryKeys.contains(l.globalKey),
         )
         .toList();
   }
@@ -160,6 +168,7 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
       _previewClient = null;
       _previewAuthentication = null;
       _previewAccountScope = null;
+      _previewOffline = false;
     });
     final station = _station();
     final client = context.tryGetMediaClientForServer(ServerId(station.serverId));
@@ -167,13 +176,14 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
       final downloads = context.read<DownloadProvider>().downloadedTracks;
       final snapshot = await _experience.store.document('stationSnapshot', station.id);
       if (mounted && revision == _revision && _current) {
-        setState(
-          () => _preview = musicSnapshotTracks(
+        setState(() {
+          _previewOffline = true;
+          _preview = musicSnapshotTracks(
             snapshot,
             downloads,
             accountScope: client == null ? null : musicAccountScope(client),
-          ),
-        );
+          ).where((track) => track.serverId == station.serverId && track.libraryId == station.libraryId).toList();
+        });
       }
       return;
     }
@@ -228,16 +238,49 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
     }
     if (mounted && _current) showAppSnackBar(context, t.musicExperience.ready);
   });
+  bool get _previewSourceCurrent {
+    final client = _previewClient;
+    return _current &&
+        _library != null &&
+        !_previewOffline &&
+        _preview.isNotEmpty &&
+        client != null &&
+        !client.isOfflineMode &&
+        identical(client, _experience.clientFor(_preview.first)) &&
+        identical(_previewAuthentication, client.authenticationSessionId) &&
+        _previewAccountScope == musicAccountScope(client);
+  }
+
+  Future<void> _playPreview({MediaItem? startTrack}) => _run((_) async {
+    if (!_current || _library == null) throw StateError('Station preview source changed');
+    final candidates = _previewOffline
+        ? musicSnapshotTracks({
+            'version': 1,
+            'tracks': _preview.map((track) => musicIdentity(track).toJson()).toList(),
+          }, context.read<DownloadProvider>().downloadedTracks)
+        : _previewSourceCurrent
+        ? List<MediaItem>.of(_preview)
+        : <MediaItem>[];
+    final library = _library!;
+    final tracks = candidates
+        .where((track) => track.serverId == library.serverId && track.libraryId == library.id)
+        .toList();
+    if (tracks.isEmpty || startTrack != null && !tracks.any((track) => track.globalKey == startTrack.globalKey)) {
+      throw StateError('Station preview is no longer playable');
+    }
+    await _experience.music.playFromList(
+      tracks: tracks,
+      startTrack: startTrack,
+      offline: _previewOffline,
+      playContext: MusicPlayContext(title: _title.text, kind: MusicPlayContextKind.mix),
+    );
+  });
+
   Future<void> _download() => _run((_) async {
     if (_preview.isEmpty) return;
     final tracks = List<MediaItem>.of(_preview);
     final client = _previewClient;
-    bool sourceCurrent() =>
-        _current &&
-        client != null &&
-        identical(client, _experience.clientFor(tracks.first)) &&
-        identical(_previewAuthentication, client.authenticationSessionId) &&
-        _previewAccountScope == musicAccountScope(client);
+    bool sourceCurrent() => _previewSourceCurrent;
     if (!sourceCurrent()) throw StateError('Station preview source changed');
     await context.read<DownloadProvider>().queueListDownload(tracks, client!, sourceCurrent: sourceCurrent);
     if (!sourceCurrent()) return;
@@ -410,25 +453,18 @@ class _MusicStationScreenState extends State<MusicStationScreen> {
             Wrap(
               spacing: 12,
               children: [
-                FilledButton(
-                  onPressed: () => _experience.music.playFromList(
-                    tracks: _preview,
-                    playContext: MusicPlayContext(title: _title.text, kind: MusicPlayContextKind.mix),
-                  ),
-                  child: Text(t.common.play),
+                FilledButton(onPressed: _busy ? null : _playPreview, child: Text(t.common.play)),
+                OutlinedButton(
+                  onPressed: _busy || _previewOffline ? null : _download,
+                  child: Text(t.musicExperience.download),
                 ),
-                OutlinedButton(onPressed: _busy ? null : _download, child: Text(t.musicExperience.download)),
               ],
             ),
           for (final track in _preview)
             ListTile(
               title: Text(track.displayTitle),
               subtitle: Text(track.trackArtistTitle ?? ''),
-              onTap: () => _experience.music.playFromList(
-                tracks: _preview,
-                startTrack: track,
-                playContext: MusicPlayContext(title: _title.text, kind: MusicPlayContextKind.mix),
-              ),
+              onTap: _busy ? null : () => _playPreview(startTrack: track),
             ),
         ],
       ),

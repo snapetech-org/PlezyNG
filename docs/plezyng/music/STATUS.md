@@ -30,12 +30,22 @@ below describe their own source checkpoints, not new qualification evidence.
   See [OFFLINE_POLICY.md](OFFLINE_POLICY.md) for admission versus final file size.
 - Endpoint installation now restarts the service, propagates failed status,
   validates service paths, and preserves service files if stopping fails.
+- Manual station playback now has the same source guards as downloading.
+  Both Play and individual track actions reject changed authentication/accounts
+  and hidden libraries. Offline previews recheck completed ownership and exact
+  library identity and explicitly request offline playback, never online fallback.
 - The selected music services/screens, paired provider, search and quality suite
   passed 386 tests; an additional station retry regression passed in its nine-test
   suite. Two endpoint installer tests pass, including reinstall and failure paths.
 - Another 108 migration, provider-mapping, Plex audio/discovery, profile-lifecycle
   and native-player bridge tests passed. These are automated regressions, not
   reference-client or physical-device evidence.
+- Seven station-preview widget regressions pass for normal online/offline
+  playback and authentication, account, visibility, ownership and provenance
+  changes. The canonical repository checks passed after the localization/native
+  formatting corrections; those checks include isolated generation freshness,
+  localization, script guards, native format, static analysis and unused-code
+  scans, not hardware qualification.
 - Focused Linux compilation of the application registration unit and the native
   mpv lifecycle suite passed. A separate real-libmpv test passed concurrent PCM
   decoding, separate gains, and surviving outgoing-core disposal with null audio

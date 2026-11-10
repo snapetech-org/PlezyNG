@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Revalidate station previews before both Play and individual track selection. Reject account, hidden-library and download-ownership changes; play owned offline previews without an online fallback.
+
 - Keep station storage-budget units and the unlimited marker inside the translated label on every base locale.
 
 - Exercise independent concurrent music decoders against real Linux libmpv with generated PCM and null output, including separate gain and outgoing-core teardown. This is not acoustic or physical-device qualification.

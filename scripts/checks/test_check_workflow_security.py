@@ -98,6 +98,15 @@ jobs:
         self.assertTrue(any("pull_request_target" in error for error in target_errors))
         self.assertTrue(any("workflow_run" in error for error in run_errors))
 
+    def test_approved_binary_publisher_is_pinned_and_edits_require_review(self) -> None:
+        publisher = Path('.github/workflows/publish-security-engine.yml')
+        content = (ROOT / publisher).read_text(encoding='utf-8')
+        self.assertEqual(self.check(content, publisher), [])
+        self.assertTrue(any('unaudited privileged trigger' in error for error in
+                            self.check(content.replace('contents: write', 'contents: read'), publisher)))
+        self.assertTrue(any('unaudited privileged trigger' in error for error in
+                            self.check(content.replace('head_branch == \'main\'', 'head_branch != \'main\''), publisher)))
+
     def test_rejects_mutable_raw_github_download(self) -> None:
         errors = self.check(
             "jobs:\n  test:\n    steps:\n      - run: curl https://raw.githubusercontent.com/o/r/main/tool.sh\n"

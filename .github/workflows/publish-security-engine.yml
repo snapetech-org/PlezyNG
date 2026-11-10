@@ -1,0 +1,58 @@
+name: Publish fixed Windows engine
+on:
+  workflow_run:
+    workflows: ['Flutter security engine']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  publish:
+    if: >-
+      github.repository == 'snapetech-org/pleazyng' &&
+      github.event.workflow_run.repository.id == 1433487464 &&
+      github.event.workflow_run.head_repository.id == 1433487464 &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: flutter-security-engine-x64
+          path: build/security-engine/flutter-security-engine-x64
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: flutter-security-engine-arm64
+          path: build/security-engine/flutter-security-engine-arm64
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Validate revisions, digests, Windows paths and architecture
+        run: python3 scripts/flutter/verify_security_engine_artifacts.py build/security-engine
+      - name: Publish verified assets without replacing an existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_HEAD: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          tag=flutter-security-3.47.8
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Immutable fixed engine release already exists; refusing replacement." >&2
+            exit 1
+          fi
+          gh release create "$tag" \
+            build/security-engine/flutter-security-engine-x64/* \
+            build/security-engine/flutter-security-engine-arm64/* \
+            --target "$RUN_HEAD" --title "Patched Windows Flutter 3.47.8 engine" \
+            --notes "Pinned Flutter 3.47.8/Dart 3.13.7 with DComp and resize patches. Verify SHA-256 sidecars and embedded provenance."

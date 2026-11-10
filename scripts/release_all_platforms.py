@@ -1034,6 +1034,7 @@ def ensure_release(
     include_webos_build: bool = True,
     rebuild_linux: bool = False,
     rebuild_macos: bool = False,
+    rebuild_tvos: bool = False,
     reuse_repaired_run_id: int | None = None,
     reuse_webos_run_id: int | None = None,
 ) -> dict:
@@ -1050,6 +1051,8 @@ def ensure_release(
             options["rebuild_linux"] = True
         if rebuild_macos:
             options["rebuild_macos"] = True
+        if rebuild_tvos:
+            options["rebuild_tvos"] = True
         if reuse_repaired_run_id:
             options["repaired_run"] = reuse_repaired_run_id
         if reuse_webos_run_id:
@@ -1124,6 +1127,8 @@ def ensure_release(
         fields["rebuild_linux"] = "true"
     if rebuild_macos:
         fields["rebuild_macos"] = "true"
+    if rebuild_tvos:
+        fields["rebuild_tvos"] = "true"
     if reuse_repaired_run_id:
         fields["reuse_repaired_run_id"] = str(reuse_repaired_run_id)
     if reuse_webos_run_id:
@@ -1147,14 +1152,18 @@ def ensure_release(
 
 def verify_platform_recovery(run_id: int, commit_sha: str, version: str, *,
                              android_run=None, macos_run=None, webos_run=None, include_webos_build=True, wait_complete=False,
-                             rebuild_linux=False, rebuild_macos=False, repaired_run=None, require_homebrew_cask=False) -> dict:
+                             rebuild_linux=False, rebuild_macos=False, rebuild_tvos=False, repaired_run=None, require_homebrew_cask=False) -> dict:
     from recover_release_platforms import RecoveryError, compose_proof, verify_source_run, wait_for_source_run, verify_macos_packaging_recovery
 
+    if rebuild_tvos and (macos_run or repaired_run):
+        raise ReleaseError("tvOS rebuilding requires ordinary verified platform recovery")
     options = {}
     if rebuild_linux:
         options["rebuild_linux"] = True
     if rebuild_macos:
         options["rebuild_macos"] = True
+    if rebuild_tvos:
+        options["rebuild_tvos"] = True
     if repaired_run:
         options["repaired_run"] = repaired_run
     if require_homebrew_cask:
@@ -1597,6 +1606,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rebuild-linux", action="store_true", help="Rebuild Linux during verified platform recovery")
     parser.add_argument("--reuse-webos-run", type=int, help="Reuse a verified webOS package and wait locally for completed source outputs before assembly")
     parser.add_argument("--reuse-repaired-run", type=int, help="Reuse successful Linux and fully qualified Mac jobs from a prior repair run")
+    parser.add_argument("--rebuild-tvos", action="store_true", help="Rebuild only tvOS during verified platform recovery")
     parser.add_argument("--rebuild-macos", action="store_true", help="Build and qualify macOS during verified platform recovery")
     parser.add_argument("--reuse-android-run", type=int, help="Reuse a separately successful Android release artifact.")
     parser.add_argument("--skip-webos-build", action="store_true", help=argparse.SUPPRESS)
@@ -1675,6 +1685,8 @@ def main() -> int:
         raise ReleaseError("WebOS reuse requires verified platform recovery without signing-only substitution")
     if args.reuse_repaired_run and (args.reuse_repaired_run < 1 or not args.reuse_platform_run or args.reuse_macos_run or args.rebuild_linux or args.rebuild_macos):
         raise ReleaseError("Repaired Linux/Mac reuse requires original platform recovery without rebuilding those platforms")
+    if args.rebuild_tvos and (not args.reuse_platform_run or args.reuse_macos_run or args.reuse_repaired_run):
+        raise ReleaseError("tvOS rebuilding requires ordinary verified platform recovery")
     if args.rebuild_macos and (not args.reuse_platform_run or args.reuse_macos_run):
         raise ReleaseError("Fresh Mac rebuilding requires ordinary verified platform recovery")
     if args.rebuild_linux and (not args.reuse_platform_run or args.reuse_macos_run):
@@ -1775,6 +1787,7 @@ def main() -> int:
                 android_run=args.reuse_android_run, include_webos_build=not args.skip_webos_build,
                 **({"rebuild_linux": True} if args.rebuild_linux else {}),
                 **({"rebuild_macos": True} if args.rebuild_macos else {}),
+                **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
                 **({"repaired_run": args.reuse_repaired_run} if args.reuse_repaired_run else {}),
                 **({"webos_run": args.reuse_webos_run} if args.reuse_webos_run else {}),
                 **({"require_homebrew_cask": True} if args.prepare_homebrew_cask and not args.reuse_macos_run else {}),
@@ -1814,6 +1827,7 @@ def main() -> int:
             prepare_homebrew_cask=args.prepare_homebrew_cask,
             **({"rebuild_linux": True} if args.rebuild_linux else {}),
             **({"rebuild_macos": True} if args.rebuild_macos else {}),
+            **({"rebuild_tvos": True} if args.rebuild_tvos else {}),
             **({"reuse_repaired_run_id": args.reuse_repaired_run} if args.reuse_repaired_run else {}),
             **({"reuse_webos_run_id": args.reuse_webos_run} if args.reuse_webos_run else {}),
             **({"reuse_platform_run_id": args.reuse_platform_run} if args.reuse_platform_run else {}),

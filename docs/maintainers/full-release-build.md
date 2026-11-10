@@ -36,6 +36,10 @@ the broker pool remains available for jobs that need private capacity.
 
 ## Apple native qualification
 
+The hosted tvOS release job uses an ARM macOS host, matching the pinned
+ARM-host `gen_snapshot_arm64` cross-compiler. Simulator Debug/JIT tests do not
+prove that Release AOT compilation can execute its host tool.
+
 The iOS and macOS mpv contract suites use a ten-second
 `nativeCompletionTimeout` for eventual native replies and scheduler barriers.
 This bounds the test harness while allowing simulator startup work; it does
@@ -549,6 +553,17 @@ transport/compiler input rejects recovery. The pinned Python installer and
 cache checks use the destination's `lib` directory in `LD_LIBRARY_PATH`, as
 setup-python normally does. Fresh installation and completed-cache reuse were
 both verified in an isolated Ubuntu 24.04 container.
+
+Add `--rebuild-tvos` when only the tvOS release job failed. Once the original
+run finishes, explicitly pass `--reuse-android-run SOURCE_RUN_ID` and
+`--reuse-webos-run SOURCE_RUN_ID` alongside `--reuse-platform-run SOURCE_RUN_ID`
+to retain those successful artifacts too. This rebuilds only tvOS on the ARM
+host, requires its fresh job to succeed, and downloads the other platforms
+only after verifying their completed jobs, immutable source and digests.
+Application sources and native pins must remain unchanged; the existing tag
+and version stay immutable. `--publish-github-only` publishes the complete
+validated core release; configured channel delivery then uses those same
+artifacts. Never treat the original missing tvOS artifact as reusable.
 
 Add `--rebuild-linux` to the recovery driver when a Linux job failed: both native
 Linux matrix entries build again, their old artifacts are excluded, and every

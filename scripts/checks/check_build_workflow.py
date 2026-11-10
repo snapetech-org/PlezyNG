@@ -1613,6 +1613,15 @@ trusted_ref = job("validate-trusted-ref")
 recovery_gate = named_step(trusted_ref, "Verify reusable platform source")
 recovery_download = named_step(release, "Recover verified platform artifacts")
 require(
+    "&& 'macos-26' ||" in job("build-tvos").split("permissions:", 1)[0]
+    and "(inputs.reuse_platform_run_id == '' || inputs.rebuild_tvos)" in job("build-tvos")
+    and "--rebuild-tvos" in recovery_gate and "--rebuild-tvos" in recovery_download
+    and "inputs.rebuild_tvos && needs.build-tvos.result == 'success'" in release_condition
+    and "!inputs.rebuild_tvos && needs.build-tvos.result == 'skipped'" in release_condition
+    and "inputs.rebuild_tvos" in named_step(release, "Download tvOS artifact"),
+    "tvOS AOT recovery requires a compatible ARM host and a successful fresh artifact",
+)
+require(
     "scripts/recover_release_platforms.py" in recovery_gate
     and "scripts/recover_release_platforms.py" in recovery_download
     and "--download artifacts" in recovery_download

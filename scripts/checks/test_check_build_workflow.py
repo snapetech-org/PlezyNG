@@ -34,6 +34,21 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_tvos_recovery_rejects_incompatible_host_and_missing_fresh_success(self):
+        original = self._workflow()
+        start = original.index("  build-tvos:\n")
+        end = original.index("  build-macos:\n", start)
+        incompatible = (original[:start] + original[start:end].replace("&& 'macos-26' ||", "&& 'macos-26-intel' ||")
+                        + original[end:])
+        skipped = original.replace("inputs.rebuild_tvos && needs.build-tvos.result == 'success'",
+                                   "inputs.rebuild_tvos && needs.build-tvos.result == 'skipped'")
+        for workflow in (incompatible, skipped):
+            with self.subTest(workflow=workflow is incompatible):
+                self.assertNotEqual(workflow, original)
+                result = self._run(workflow)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("tvOS AOT recovery", result.stderr)
+
     def _run(
         self,
         workflow: str,

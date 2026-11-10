@@ -80,6 +80,38 @@ class SourceProofTests(unittest.TestCase):
         self.assertIn("Build Linux (x64)", proof["rebuilt_jobs"])
         self.assertIn("Build Linux (arm64)", proof["rebuilt_jobs"])
 
+    def test_failed_tvos_requires_explicit_rebuild_and_keeps_other_jobs_strict(self):
+        name = "Build tvOS developer package (arm64)"
+        next(job for job in self.jobs if job["name"] == name)["conclusion"] = "failure"
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove()
+        proof = self.prove(rebuild_tvos=True)
+        self.assertTrue(proof["rebuild_tvos"])
+        self.assertNotIn(name, proof["reused_jobs"])
+        self.assertIn(name, proof["rebuilt_jobs"])
+        self.assertIn("build-ios", proof["reused_jobs"])
+        next(job for job in self.jobs if job["name"] == "build-ios")["conclusion"] = "failure"
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove(rebuild_tvos=True)
+
+    def test_tvos_rebuild_rejects_product_drift_and_repaired_substitution(self):
+        self.compare["files"] = [{"filename": "lib/main.dart"}]
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove(rebuild_tvos=True)
+        with self.assertRaises(recovery.RecoveryError):
+            self.prove(rebuild_tvos=True, repaired_run=84)
+
+    def test_successful_android_and_webos_reuse_leaves_only_tvos_to_build(self):
+        name = "Build tvOS developer package (arm64)"
+        next(job for job in self.jobs if job["name"] == name)["conclusion"] = "failure"
+        next(job for job in self.jobs if job["name"] == "build-android")["conclusion"] = "success"
+        proof = self.prove(rebuild_tvos=True)
+        source = {"source_run_id": 42, "source_sha": "a" * 40, "platforms_complete": True}
+        with patch.object(recovery, "verify_android_run", return_value=source), \
+             patch.object(recovery, "verify_repaired_run", return_value=source):
+            final = recovery.compose_proof(proof, android_run=42, webos_run=42)
+        self.assertEqual(final["rebuilt_jobs"], [name])
+
     def test_cask_recovery_requires_the_reused_mac_qualification(self):
         with self.assertRaisesRegex(recovery.RecoveryError, "qualification"):
             self.prove(require_homebrew_cask=True)
@@ -259,6 +291,20 @@ class ArtifactTests(unittest.TestCase):
         self.assertEqual(result["artifacts"][0]["source_run_id"], 84)
         self.assertEqual((self.root / "android-apk/payload.exe").read_bytes(), b"binary")
 
+    def test_tvos_is_not_downloaded_from_failed_original_when_rebuilt(self):
+        proof = {"source_run_id": 42, "source_sha": "a" * 40, "rebuild_tvos": True}
+        with patch.object(recovery, "ARTIFACTS", {"tvos-ipa": "tvos-ipa"}), \
+             patch.object(recovery, "collection", return_value=[]), \
+             patch.object(recovery.subprocess, "run") as download:
+            result = recovery.download_platforms(proof, self.root)
+            download.assert_not_called()
+            self.assertEqual(result["artifacts"], [])
+        proof["rebuild_tvos"] = False
+        with patch.object(recovery, "ARTIFACTS", {"tvos-ipa": "tvos-ipa"}), \
+             patch.object(recovery, "collection", return_value=[]):
+            with self.assertRaises(recovery.RecoveryError):
+                recovery.download_platforms(proof, self.root)
+
     def test_repaired_linux_and_mac_artifacts_use_the_repaired_run_and_digest(self):
         archive = self.archive()
         names = ("linux-x64", "macos-dmg")
@@ -330,6 +376,23 @@ class ArtifactTests(unittest.TestCase):
 
 
 class ControllerTests(unittest.TestCase):
+    @patch.object(controller, "verify_platform_recovery")
+    @patch.object(controller, "matching_run", return_value=None)
+    @patch.object(controller, "ensure_remote_main_sha")
+    @patch.object(controller, "dispatch")
+    def test_tvos_only_recovery_explicitly_reuses_android_and_webos(self, dispatch, _main, _matching, verify):
+        controller.ensure_release("v3.0.0", "b" * 40, include_webos_release=True,
+                                  reuse_platform_run_id=42, reuse_android_run_id=42,
+                                  reuse_webos_run_id=42, rebuild_tvos=True)
+        verify.assert_called_once_with(42, "b" * 40, "3.0.0", rebuild_tvos=True,
+                                       webos_run=42, android_run=42)
+        fields = dispatch.call_args.args[3]
+        self.assertEqual(fields["rebuild_tvos"], "true")
+        self.assertEqual(fields["reuse_android_run_id"], "42")
+        self.assertEqual(fields["reuse_webos_run_id"], "42")
+        self.assertNotIn("rebuild_macos", fields)
+        self.assertNotIn("rebuild_linux", fields)
+
     @patch.object(controller, "verify_platform_recovery")
     @patch.object(controller, "matching_run", return_value=None)
     @patch.object(controller, "ensure_remote_main_sha")

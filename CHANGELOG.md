@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Run tvOS release AOT compilation on a compatible ARM host and support verified tvOS-only recovery while retaining successful immutable artifacts from every other platform.
+
 - Keep the main run loop available during real Apple H.264 pixel qualification, distinguish pause event-queue recovery from immediate intent updates, and retain failed native test results for diagnosis. Use a consistent bounded completion budget for Apple native callbacks and scheduler barriers while preserving playback timing and PiP timeout assertions.
 
 - Make tvOS native qualification await the real Dart database startup and verify its SQLite version against the embedded source receipt before the XCTest host exits.

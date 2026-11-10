@@ -15,7 +15,13 @@ def verify(root):
         sidecar = archive.with_name(archive.name + '.sha256')
         if not archive.is_file() or not sidecar.is_file():
             raise ValueError(f'Missing {arch} engine archive or digest')
-        digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+        if archive.stat().st_size > 4 * 1024 * 1024 * 1024:
+            raise ValueError(f'{arch}: archive exceeds 4 GiB')
+        hash_state = hashlib.sha256()
+        with archive.open('rb') as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+                hash_state.update(chunk)
+        digest = hash_state.hexdigest()
         if sidecar.read_text().strip() != f'{digest}  {archive.name}':
             raise ValueError(f'{arch}: digest mismatch')
         with zipfile.ZipFile(archive) as built:

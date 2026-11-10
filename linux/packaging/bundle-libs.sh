@@ -151,9 +151,10 @@ if [[ -n "$GTK_LIBDIR" ]]; then
     IM_DEST="$LIB_DIR/gtk-3.0/3.0.0/immodules"
     bundle_module_dir "$IM_MODULE_DIR" "$IM_DEST"
 
-    # Regenerate IM modules cache
-    if [[ -d "$IM_DEST" ]] && command -v gtk-query-immodules-3.0 &>/dev/null; then
-        gtk-query-immodules-3.0 "$IM_DEST"/*.so > "$IM_DEST/../immodules.cache" 2>/dev/null || true
+    # Ubuntu installs this tool outside PATH. Query every shipped module with
+    # the bundled libraries and fail if the cache would be incomplete.
+    if [[ -d "$IM_DEST" ]]; then
+        python3 "$(dirname "${BASH_SOURCE[0]}")/rebuild-im-cache.py" "$BUNDLE_DIR"
     fi
 
     PRINT_MODULE_DIR="$GTK_LIBDIR/gtk-3.0/3.0.0/printbackends"

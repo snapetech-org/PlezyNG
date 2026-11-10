@@ -20,6 +20,15 @@ def rebuild(bundle, query_tool=None, runtime_prefix=None):
         raise ValueError('Bundle has no GTK input-method modules')
     if query_tool is None:
         query_tool = shutil.which('gtk-query-immodules-3.0')
+    if not query_tool and shutil.which('pkg-config'):
+        result = subprocess.run(['pkg-config', '--variable=libdir', 'gtk+-3.0'],
+                                check=True, capture_output=True, text=True)
+        libdir = Path(result.stdout.strip())
+        for directory in ('libgtk-3-0t64', 'libgtk-3-0', 'gtk-3.0'):
+            candidate = libdir / directory / 'gtk-query-immodules-3.0'
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                query_tool = candidate
+                break
     if not query_tool:
         raise ValueError('Native gtk-query-immodules-3.0 is required')
     env = dict(os.environ)
@@ -29,7 +38,7 @@ def rebuild(bundle, query_tool=None, runtime_prefix=None):
                             env=env, check=True, capture_output=True, text=True)
     if result.stderr.strip():
         raise ValueError('GTK query reported module errors: ' + result.stderr.strip())
-    entries = re.findall(r'^"(?:[^"\\]|\\.)+\.so"$', result.stdout, flags=re.MULTILINE)
+    entries = re.findall(r'^("(?:[^"\\]|\\.)+\.so")[ \t]*$', result.stdout, flags=re.MULTILINE)
     found = [ast.literal_eval(entry) for entry in entries]
     if sorted(found) != sorted(str(path) for path in modules):
         raise ValueError('Generated cache does not describe every bundled input module exactly once')

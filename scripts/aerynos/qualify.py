@@ -31,6 +31,26 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def capture_audio(root, evidence):
+    """Retain original PCM and a playable copy; only RIFF length fields change."""
+    import struct
+    source = root / 'audio.wav'
+    if not source.exists():
+        return None
+    raw = source.read_bytes()
+    (evidence / 'audio-original.wav').write_bytes(raw)
+    if len(raw) < 44 or raw[:4] != b'RIFF' or raw[8:16] != b'WAVEfmt ' or raw[36:40] != b'data':
+        raise RuntimeError('Cannot retain a playable copy of the unexpected audio format')
+    playable = bytearray(raw)
+    struct.pack_into('<I', playable, 4, len(playable) - 8)
+    struct.pack_into('<I', playable, 40, len(playable) - 44)
+    (evidence / 'audio-playable.wav').write_bytes(playable)
+    result = {'pcm_sha256': hashlib.sha256(memoryview(raw)[44:]).hexdigest(),
+              'note': 'Playable copy fills RIFF/data lengths from file size; original capture and PCM payload remain unchanged'}
+    (evidence / 'audio-capture.json').write_text(json.dumps(result, indent=2) + '\n')
+    return result
+
+
 def command(guest, text, log):
     try:
         result = guest.ssh("set -euo pipefail; " + text)
@@ -318,7 +338,7 @@ class AppQA:
         import numpy as np
         import struct
         audio = (self.guest.root / 'audio.wav').read_bytes()
-        if audio[:4] != b'RIFF' or audio[8:16] != b'WAVEfmt ' or audio[36:40] != b'data':
+        if len(audio) < 44 or audio[:4] != b'RIFF' or audio[8:16] != b'WAVEfmt ' or audio[36:40] != b'data':
             raise RuntimeError('Unexpected QEMU PCM capture format')
         format_id, channels, rate, _, align, bits = struct.unpack_from('<HHIIHH', audio, 20)
         if (format_id, channels, align, bits) != (1, 2, 4, 16):
@@ -337,6 +357,7 @@ class AppQA:
             spectrum = abs(np.fft.rfft(window * np.hanning(len(window))))
             frequency = float(np.argmax(spectrum[1:]) + 1) * rate / len(window)
         return {'frames': len(mono), 'sample_rate': rate, 'rms': rms, 'peak_frequency_hz': frequency,
+                'start_byte': start, 'end_byte': end, 'channels': channels, 'bits_per_sample': bits,
                 'note': 'PCM payload read without relying on QEMU placeholder RIFF/data lengths'}
 
     def observe_playback(self, label, paused=False):
@@ -554,10 +575,16 @@ def qualify(args):
         app.stop()
         guest.screenshot(evidence / 'after-playback.png')
         command(guest, 'journalctl _COMM=pleazyng --no-pager', evidence / 'runtime.log')
+        guest.close()
+        audio_capture = capture_audio(guest.root, evidence)
+        with tarfile.open(output / 'qa-evidence.tar.gz', 'w:gz') as archive:
+            archive.add(evidence, arcname='evidence')
         # All publication claims must correspond to checks actually executed above.
         qualification = {'source_sha': build['source_sha'], 'version': build['version'], 'release': args.release, 'tag': tag,
                          'iso_sha256': ISO_SHA256, 'status': 'qualified',
                          'recipe_tooling_sha': tooling_sha,
+                         'evidence_archive': 'qa-evidence.tar.gz', 'evidence_sha256': digest(output / 'qa-evidence.tar.gz'),
+                         'audio_capture': audio_capture,
                          'checks': ['native_boulder_build', 'native_moss_install', 'native_moss_upgrade', 'installed_elf', 'bundled_im_cache', 'ordinary_release_launch',
                                     'background_return_playing', 'background_return_paused', 'route_resume', 'bookmark_resume', 'audio_clock',
                                     'jellyfin_sign_in', 'dv_default_on', 'fallback_default_on', 'visible_h264', 'pause', 'seek', 'fullscreen'],
@@ -571,7 +598,7 @@ def qualify(args):
             t.add(recipe, arcname='recipe')
         for name in ('pleazyng-linux-x64.tar.gz', 'pleazyng-source.tar.gz'):
             shutil.copyfile(candidate / name, output / name)
-        public_assets = [names[0], 'stone.index', 'feed.index', 'qualification.json', 'recipe.tar.gz', 'pleazyng-linux-x64.tar.gz', 'pleazyng-source.tar.gz']
+        public_assets = [names[0], 'stone.index', 'feed.index', 'qualification.json', 'qa-evidence.tar.gz', 'recipe.tar.gz', 'pleazyng-linux-x64.tar.gz', 'pleazyng-source.tar.gz']
         (output / 'SHA256SUMS.txt').write_text(''.join(f'{digest(output / name)}  {name}\n' for name in public_assets))
         print('Native qualification passed', flush=True)
     finally:
@@ -583,9 +610,24 @@ def qualify(args):
                         (evidence / name).write_bytes(guest.user(query).stdout)
                     except subprocess.SubprocessError:
                         pass
+                if sys.exc_info()[0] is not None:
+                    try:
+                        cores = guest.ssh("find /var/lib/systemd/coredump -maxdepth 1 -type f -name 'core.pleazyng.*.zst' -print").stdout.decode().splitlines()
+                        for core in cores:
+                            name = Path(core).name
+                            if not re.fullmatch(r'core\.pleazyng\.[A-Za-z0-9._-]+\.zst', name):
+                                raise ValueError('Unexpected task app coredump name')
+                            (evidence / name).write_bytes(guest.ssh('cat ' + shlex.quote(core)).stdout)
+                    except (subprocess.SubprocessError, ValueError) as error:
+                        (evidence / 'core-capture-error.txt').write_text(str(error) + '\n')
                 guest.screenshot(evidence / 'final.png')
         finally:
             guest.close()
+            if not (evidence / 'audio-original.wav').exists():
+                try:
+                    capture_audio(guest.root, evidence)
+                except (OSError, RuntimeError) as error:
+                    (evidence / 'audio-capture-error.txt').write_text(str(error) + '\n')
             if container:
                 run(['docker', 'rm', '-f', container])
 

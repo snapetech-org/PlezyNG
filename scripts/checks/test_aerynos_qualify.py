@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'aerynos'))
-from qualify import AppQA
+from qualify import AppQA, capture_audio
 
 
 class PlaybackMeasurementsTests(unittest.TestCase):
@@ -34,10 +34,20 @@ class PlaybackMeasurementsTests(unittest.TestCase):
             app.guest = SimpleNamespace(root=Path(directory))
             path = app.guest.root / 'audio.wav'
             path.write_bytes(header + signal + silence)
+            evidence = Path(directory) / 'evidence'
+            evidence.mkdir()
+            capture_audio(app.guest.root, evidence)
+            import wave
+            with wave.open(str(evidence / 'audio-playable.wav')) as playable:
+                self.assertEqual(playable.getnframes(), rate * 2)
+                self.assertEqual(playable.readframes(rate * 2), signal + silence)
+            self.assertEqual((evidence / 'audio-original.wav').read_bytes(), header + signal + silence)
             measured = app.audio_since(44)
             self.assertAlmostEqual(measured['peak_frequency_hz'], 440, delta=1)
             self.assertGreater(measured['rms'], 900)
             paused = app.audio_since(44 + len(signal))
+            self.assertEqual(paused['start_byte'], 44 + len(signal))
+            self.assertEqual(paused['end_byte'], 44 + len(signal) + len(silence))
             self.assertEqual(paused['frames'], rate)
             self.assertEqual(paused['rms'], 0)
             self.assertIsNone(paused['peak_frequency_hz'])

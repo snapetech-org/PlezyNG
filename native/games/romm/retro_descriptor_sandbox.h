@@ -5,6 +5,7 @@
 // before any ROM or firmware reaches the core. No path access follows admission.
 #include <dirent.h>
 #include <dlfcn.h>
+#include <elf.h>
 #include <linux/audit.h>
 #include <linux/capability.h>
 #include <linux/filter.h>

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fix Tizen ARM sandbox compilation by declaring the ELF architecture constants required by its older audit headers; retain the existing fail-closed syscall policy.
+
 - Prepare 3.0.29+188 as a fresh all-platform release from current source, including the shared native-video aperture clear and expired-trial review navigation repair. Supersede the v3.0.7 channel bootstrap for usable publication; preserve its original artifacts and failure evidence.
 
 - Fix store-review access after trial expiry: retain dialog navigation on the locked screen, dismiss the review dialog with Back, and restore normal application navigation after a valid grant.

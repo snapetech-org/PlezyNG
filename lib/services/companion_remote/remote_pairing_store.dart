@@ -51,6 +51,11 @@ abstract final class RemotePairingStore {
   static Future<String?> remoteCode(String profileId, String peer) =>
       _queue.run(() => _read(_key(profileId, 'remote:$peer')));
 
+  static Future<void> forgetRemote(String profileId, String peer) => _queue.run(() async {
+    final prefs = await BaseSharedPreferencesService.sharedCache();
+    await prefs.remove(_key(profileId, 'remote:$peer'));
+  });
+
   /// Called only after the peer proves possession through encrypted authSuccess.
   static Future<void> rememberRemote(String profileId, String peer, String code) => _queue.run(() async {
     final normalized = normalizeCode(code);

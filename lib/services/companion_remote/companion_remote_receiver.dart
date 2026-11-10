@@ -148,6 +148,7 @@ class CompanionRemoteReceiver {
       case RemoteCommandType.gameAction:
       case RemoteCommandType.gameCloudSetting:
       case RemoteCommandType.gameSession:
+      case RemoteCommandType.musicConnect:
       case RemoteCommandType.musicTransfer:
       case RemoteCommandType.musicGroup:
       case RemoteCommandType.musicHistory:
@@ -184,7 +185,10 @@ bool _isViewerInput(RemoteCommandType type) => switch (type) {
   RemoteCommandType.gameAction ||
   RemoteCommandType.gameSession ||
   RemoteCommandType.gameCloudSetting => false,
-  RemoteCommandType.musicTransfer || RemoteCommandType.musicGroup || RemoteCommandType.musicHistory => false,
+  RemoteCommandType.musicConnect ||
+  RemoteCommandType.musicTransfer ||
+  RemoteCommandType.musicGroup ||
+  RemoteCommandType.musicHistory => false,
   RemoteCommandType.dpadUp ||
   RemoteCommandType.dpadDown ||
   RemoteCommandType.dpadLeft ||

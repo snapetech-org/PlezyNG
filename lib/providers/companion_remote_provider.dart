@@ -35,6 +35,12 @@ import '../services/companion_remote/remote_auth_service.dart';
 import '../services/companion_remote/remote_pairing_store.dart';
 import '../services/music/music_transfer_exchange.dart';
 import '../services/music/music_transfer_snapshot.dart';
+import '../services/music/music_device_session.dart';
+import '../services/music/music_device_controller.dart';
+import '../services/music/music_device_endpoint.dart';
+import '../services/music/music_device_peer.dart';
+import '../services/music/music_device_link.dart';
+import '../services/music/music_device_store.dart';
 import '../services/music/music_group_exchange.dart';
 import '../services/music/music_group_endpoint.dart';
 import '../services/music/music_group_playback.dart';
@@ -87,6 +93,187 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   CompanionRemotePeerService? _peerService;
   CompanionRemotePeerService? _pendingRemotePeer;
   MusicTransferSession? _musicSession;
+  MusicDeviceEndpoint? _musicDeviceEndpoint;
+  MusicDeviceController? _musicDevices;
+  MusicDevicePeer? _pairedMusicDevice;
+  final _musicPeers = <String, MusicDevicePeer>{};
+  LanDiscoveryService? _musicDiscovery;
+  int _musicPeerGeneration = 0;
+
+  MusicDeviceController? get musicDevices => _musicDevices;
+  MusicDeviceLink? get pairedMusicDevice => _pairedMusicDevice?.output;
+  bool get musicDeviceBusy => _musicDevices?.busy ?? false;
+
+  Stream<List<DiscoveredHost>>? discoverMusicDevices() {
+    if (!isCryptoReady) return null;
+    final localIds = _authContexts.map((context) => context.clientIdentifier).toSet();
+    _musicDiscovery ??= _discoveryServiceFactory();
+    return _musicDiscovery!
+        .startListeningForContexts(_authContexts)
+        .map((hosts) => hosts.where((host) => !localIds.contains(host.clientId)).toList());
+  }
+
+  void stopMusicDiscovery() => _musicDiscovery?.stopListening();
+
+  Future<MusicDeviceLink> connectMusicDevice(DiscoveredHost host, {String? pairingCode}) async {
+    final endpoint = _musicDeviceEndpoint;
+    final profileId = _cryptoProfileId;
+    final context = _authContextForId(host.authContextId);
+    if (endpoint == null || profileId == null || context == null) throw const RemotePairingRequired();
+    final key = '${context.id}:${host.clientId}';
+    final previous = _musicPeers[key];
+    if (previous?.output.connected == true) return previous!.output;
+    final code = await _remotePairingCode(profileId, key, pairingCode);
+    final contexts = await _pairedContexts(code);
+    final generation = _musicPeerGeneration;
+    bool current() => !isDisposed && generation == _musicPeerGeneration && profileId == _cryptoProfileId;
+    if (!current()) throw StateError('Music profile changed');
+    final transport = _peerServiceFactory();
+    final candidate = MusicDevicePeer(
+      transport: transport,
+      endpoint: endpoint,
+      current: current,
+      ownsTransport: true,
+      name: host.name,
+      changed: safeNotifyListeners,
+    );
+    try {
+      await transport.joinSessionRacingWithContexts(
+        _deviceName,
+        _platform,
+        host.addresses,
+        contexts,
+        authContextId: host.authContextId,
+        expectedHostClientId: host.clientId,
+      );
+      if (!current() || !await candidate.ready()) throw StateError('Update Pleazyng on the receiving device');
+      if (pairingCode != null) await RemotePairingStore.rememberRemote(profileId, key, code);
+      if (!current()) throw StateError('Music profile changed');
+      await MusicDeviceStore.remember(profileId, host);
+      if (!current()) throw StateError('Music profile changed');
+      _musicPeers[key] = candidate;
+      if (identical(_musicDevices?.active, previous?.output) && await candidate.output.refresh(full: true)) {
+        _musicDevices?.adopt(candidate.output);
+      }
+      await previous?.close();
+      safeNotifyListeners();
+      return candidate.output;
+    } catch (_) {
+      await candidate.close();
+      rethrow;
+    }
+  }
+
+  Future<List<DiscoveredHost>> rememberedMusicDevices() async {
+    final profile = _cryptoProfileId;
+    if (profile == null) return [];
+    final devices = await MusicDeviceStore.read(profile);
+    if (profile != _cryptoProfileId || isDisposed) return [];
+    final contexts = _authContexts.map((context) => context.id).toSet();
+    return devices.where((device) => contexts.contains(device.authContextId)).toList();
+  }
+
+  Future<void> forgetMusicDevice(DiscoveredHost host) async {
+    final profile = _cryptoProfileId;
+    if (profile == null || musicDeviceBusy) return;
+    final key = '${host.authContextId}:${host.clientId}';
+    final peer = _musicPeers.remove(key);
+    if (peer != null) {
+      if (identical(_musicDevices?.active, peer.output)) _musicDevices?.disconnect();
+      await peer.close();
+    }
+    await RemotePairingStore.forgetRemote(profile, key);
+    await MusicDeviceStore.forget(profile, host);
+    safeNotifyListeners();
+  }
+
+  Future<MusicDeviceLink> connectMusicAddress(String address, {String? pairingCode}) async {
+    final uri = Uri.tryParse('ws://${address.trim()}/ws');
+    if (uri == null ||
+        uri.host.isEmpty ||
+        !uri.hasPort ||
+        uri.userInfo.isNotEmpty ||
+        uri.path != '/ws' ||
+        uri.hasQuery ||
+        uri.hasFragment ||
+        uri.port < 1 ||
+        uri.port > 65535) {
+      throw const FormatException('Invalid music device address');
+    }
+    final profile = _cryptoProfileId;
+    final endpoint = _musicDeviceEndpoint;
+    if (profile == null || endpoint == null) throw const RemotePairingRequired();
+    final addressKey = 'address:${address.trim().toLowerCase()}';
+    final code = await _remotePairingCode(profile, addressKey, pairingCode);
+    final contexts = await _pairedContexts(code);
+    final generation = _musicPeerGeneration;
+    bool current() => !isDisposed && profile == _cryptoProfileId && generation == _musicPeerGeneration;
+    final transport = _peerServiceFactory();
+    final candidate = MusicDevicePeer(
+      transport: transport,
+      endpoint: endpoint,
+      current: current,
+      ownsTransport: true,
+      name: uri.host,
+      changed: safeNotifyListeners,
+    );
+    try {
+      await transport.joinSessionWithContexts(_deviceName, _platform, address.trim(), contexts);
+      if (!current() || !await candidate.ready()) throw StateError('Update the receiving device');
+      final context = transport.selectedAuthContextId;
+      final client = transport.selectedHostClientId;
+      if (context == null || client == null) throw StateError('Missing authenticated music device');
+      final key = '$context:$client';
+      if (pairingCode != null) {
+        await RemotePairingStore.rememberRemote(profile, addressKey, code);
+        await RemotePairingStore.rememberRemote(profile, key, code);
+      }
+      final host = DiscoveredHost(
+        authContextId: context,
+        clientId: client,
+        name: uri.host,
+        platform: '',
+        ips: [uri.host],
+        port: uri.port,
+      );
+      await MusicDeviceStore.remember(profile, host);
+      if (!current()) throw StateError('Music profile changed');
+      final previous = _musicPeers[key];
+      _musicPeers[key] = candidate;
+      if (identical(_musicDevices?.active, previous?.output) && await candidate.output.refresh(full: true)) {
+        _musicDevices?.adopt(candidate.output);
+      }
+      await previous?.close();
+      safeNotifyListeners();
+      return candidate.output;
+    } catch (_) {
+      await candidate.close();
+      rethrow;
+    }
+  }
+
+  Future<MusicDeviceMoveResult> playMusicOn(MusicDeviceLink? device) async {
+    final controller = _musicDevices;
+    if (controller == null) return MusicDeviceMoveResult.rejected;
+    leaveMusicGroup();
+    return controller.moveTo(device);
+  }
+
+  void _resetMusicDevices() {
+    _musicPeerGeneration++;
+    _musicDevices?.disconnect();
+    _musicDeviceEndpoint?.reset();
+    final paired = _pairedMusicDevice;
+    _pairedMusicDevice = null;
+    if (paired != null) unawaited(paired.close());
+    for (final peer in _musicPeers.values) {
+      unawaited(peer.close());
+    }
+    _musicPeers.clear();
+    _musicDiscovery?.dispose();
+    _musicDiscovery = null;
+  }
+
   MusicTransferExchange? _musicTransfer;
   int _musicTransferVersion = 0;
   int _musicGroupVersion = 0;
@@ -406,7 +593,16 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
     if (identical(_musicSession, session)) return;
     _closeMusicEndpoints();
     _musicGroup?.leave();
+    _musicDevices?.dispose();
     _musicSession = session;
+    if (session is MusicDeviceSession) {
+      final endpoint = MusicDeviceEndpoint(
+        session,
+        allowed: () => !isDisposed && identical(_musicSession, session) && isCryptoReady,
+      );
+      _musicDeviceEndpoint = endpoint;
+      _musicDevices = MusicDeviceController(endpoint, session)..addListener(safeNotifyListeners);
+    }
     _musicGroupPlayback = session is MusicGroupSession && session is MusicPlaybackService
         ? MusicGroupPlayback(session as MusicPlaybackService, session)
         : null;
@@ -421,6 +617,14 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   Future<MusicTransferResult> transferMusicToPeer() async {
+    final paired = _pairedMusicDevice?.output;
+    if (paired != null && paired.connected && _musicDevices != null) {
+      return switch (await playMusicOn(paired)) {
+        MusicDeviceMoveResult.completed => MusicTransferResult.completed,
+        MusicDeviceMoveResult.rejected => MusicTransferResult.rejected,
+        MusicDeviceMoveResult.uncertain => MusicTransferResult.superseded,
+      };
+    }
     final session = _musicSession;
     final exchange = _musicTransfer;
     if (!supportsMusicTransfer || musicGroupActive || session == null || exchange == null) {
@@ -790,6 +994,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
   void _clearCryptoContext() {
     _closeMusicEndpoints();
+    _resetMusicDevices();
     _closeSteamInternet();
     _authContexts = const [];
     _cryptoProfileId = null;
@@ -1434,6 +1639,8 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
 
         if (command.type == RemoteCommandType.gameSession) {
           _gameSessions?.receive(command.data);
+        } else if (command.type == RemoteCommandType.musicConnect) {
+          // MusicDevicePeer owns this extension.
         } else if (command.type == RemoteCommandType.musicTransfer) {
           _musicTransfer?.receive(command.data);
         } else if (command.type == RemoteCommandType.musicGroup) {
@@ -1543,6 +1750,24 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   }
 
   void _handleDeviceInfo(RemoteCommand command) {
+    final endpoint = _musicDeviceEndpoint;
+    final transport = _peerService ?? _pendingRemotePeer;
+    if (command.data?['musicConnectVersion'] == 1 && endpoint != null && transport != null) {
+      final previous = _pairedMusicDevice;
+      final generation = _remoteGeneration;
+      final paired = MusicDevicePeer(
+        transport: transport,
+        endpoint: endpoint,
+        current: () => _ownsPeer(transport, generation),
+        ownsTransport: false,
+        name: command.data?['name'] as String?,
+        negotiated: true,
+        changed: safeNotifyListeners,
+      );
+      _pairedMusicDevice = paired;
+      if (previous != null) unawaited(previous.close());
+    }
+
     _musicHistoryVersion = command.data?['musicHistoryVersion'] == 1 ? 1 : 0;
     if (_musicHistoryVersion == 0) _musicHistory?.reset();
     _musicGroupVersion = command.data?['musicGroupVersion'] == 1 ? 1 : 0;
@@ -1830,6 +2055,10 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
   @override
   void dispose() {
     _closeMusicEndpoints();
+    _resetMusicDevices();
+    _musicDevices?.dispose();
+    _musicDevices = null;
+    _musicDeviceEndpoint = null;
     _closeSteamInternet();
     WidgetsBinding.instance.removeObserver(this);
     _remoteGeneration++;

@@ -49,6 +49,7 @@ import 'music_queue_controller.dart';
 import 'music_session_store.dart';
 import 'music_source_resolver.dart';
 import 'music_transfer_snapshot.dart';
+import 'music_device_session.dart';
 import 'music_group_playback.dart';
 import 'music_playback_output.dart';
 
@@ -117,7 +118,131 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicSignalPathService,
         MusicTransferSession,
         MusicGroupSession,
-        MusicOutputControls {
+        MusicOutputControls,
+        MusicDeviceSession {
+  MusicDevicePlayback? _musicDeviceOutput;
+  int _musicDeviceRevision = 0;
+  String? _remoteQueueSession;
+  Object? _musicDeviceDiscrete;
+  String? _musicDeviceMetadata;
+
+  @override
+  MusicPlaybackService get playback => this;
+  @override
+  MusicDevicePlayback? get musicDeviceOutput => _musicDeviceOutput;
+
+  @override
+  void setMusicDeviceOutput(MusicDevicePlayback? output) {
+    if (identical(output, _musicDeviceOutput)) return;
+    _musicDeviceOutput?.removeListener(_onMusicDeviceChanged);
+    _musicDeviceOutput = output;
+    if (output != null) _finalizeCurrentTrack();
+    _musicDeviceDiscrete = null;
+    _musicDeviceMetadata = null;
+    _musicDeviceRevision++;
+    _remoteQueueSession = null;
+    beginPlayIntent();
+    output?.addListener(_onMusicDeviceChanged);
+    _onMusicDeviceChanged();
+  }
+
+  void _onMusicDeviceChanged() {
+    if (_disposed) return;
+    final state = _musicDeviceOutput?.state;
+    final session = state?.revision.split('.').first;
+    if (_remoteQueueSession != session) {
+      _remoteQueueSession = session;
+      _musicDeviceRevision++;
+    }
+    _volumeNotifier.value = state?.volume ?? _volume;
+    _positionController.add(state?.snapshot?.position ?? position);
+    final output = _musicDeviceOutput;
+    final discrete = (output, state?.revision, state?.snapshot?.playing, output?.connected);
+    final track = state?.track;
+    if (track != null) {
+      _ensureMediaControls();
+      final metadata = '${state?.revision}:${track.globalKey}';
+      if (_musicDeviceMetadata != metadata) {
+        _musicDeviceMetadata = metadata;
+        unawaited(_mediaControls?.updateMetadata(metadata: track, client: _clientFor(track), duration: duration));
+      }
+      unawaited(
+        _mediaControls?.updatePlaybackState(
+          isPlaying: state?.snapshot?.playing ?? false,
+          position: position,
+          speed: 1.0,
+        ),
+      );
+      _syncControlsAvailability();
+    }
+    if (_musicDeviceDiscrete != discrete) {
+      _musicDeviceDiscrete = discrete;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _controlMusicDevice(String action, [Map<String, dynamic> args = const {}]) async {
+    final output = _musicDeviceOutput;
+    if (output == null) return;
+    try {
+      await output.control(action, args);
+    } catch (error) {
+      if (!_disposed && identical(output, _musicDeviceOutput)) _errorsController.add(error);
+    }
+  }
+
+  @override
+  Future<void> resumeFrozenMusicDevice() => play();
+
+  @override
+  Future<PreparedMusicDeviceTransfer?> prepareMusicDeviceTransfer(
+    MusicTransferSnapshot snapshot, {
+    required bool Function() current,
+  }) async {
+    if (_disposed || !current() || _musicDeviceOutput != null) return null;
+    try {
+      snapshot.toJson(itemLimit: MusicTransferSnapshot.maxTransferItems);
+    } on StateError {
+      return null;
+    }
+    final revision = groupControlRevision;
+    final intent = _playIntentGeneration;
+    final clients = <MediaServerClient, Object?>{};
+    for (final item in snapshot.queue.items) {
+      final client = _clientFor(item);
+      if (client == null || client.isOfflineMode || client.backend != item.backend) return null;
+      clients[client] = client.authenticationSessionId;
+    }
+    final track = snapshot.queue.items[snapshot.queue.order[snapshot.queue.cursor]];
+    final MusicSource source;
+    try {
+      source = await _cachedSource(await _resolver.resolve(track));
+    } catch (_) {
+      return null;
+    }
+    bool valid() =>
+        !_disposed &&
+        current() &&
+        revision == groupControlRevision &&
+        intent == _playIntentGeneration &&
+        _musicDeviceOutput == null &&
+        clients.entries.every(
+          (entry) =>
+              identical(entry.key.authenticationSessionId, entry.value) &&
+              identical(_serverManager.getClient(entry.key.serverId), entry.key) &&
+              _serverManager.isServerVisible(entry.key.serverId),
+        );
+    if (!valid()) return null;
+    return (position, play) async {
+      if (!valid() || (play && !automotiveMusicPlaybackAllowedNow())) return false;
+      return _acceptTransfer(
+        snapshot.at(position, playing: play),
+        current: current,
+        preparedSource: source,
+      );
+    };
+  }
+
   final MusicLibraryStore? _libraryStore;
   late final MusicByteCache? _byteCache = _libraryStore == null ? null : MusicByteCache(scope: _libraryStore.profileId);
 
@@ -627,10 +752,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   int _outputRequest = 0;
 
   @override
-  String? get remoteOutputName => _playbackOutput?.name;
+  String? get remoteOutputName => _musicDeviceOutput?.name ?? _playbackOutput?.name;
 
   @override
   Future<bool> selectOutput(MusicPlaybackOutput? output, {bool resume = true}) async {
+    if (_musicDeviceOutput != null) return false;
     final request = ++_outputRequest;
     if (_disposed || _currentTrack == null || _player == null) {
       if (output != null) await output.player.dispose();
@@ -722,6 +848,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// transfer. A selection alone never changes playback or output routing.
   MusicTransferSnapshot? captureTransfer() {
     if (_disposed ||
+        _musicDeviceOutput != null ||
         _currentTrack == null ||
         (_status != MusicPlaybackStatus.playing && _status != MusicPlaybackStatus.paused)) {
       return null;
@@ -785,7 +912,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   bool Function() captureGroupAuthority() {
-    if (_playbackOutput != null) return () => false;
+    if (_playbackOutput != null || _musicDeviceOutput != null) return () => false;
     return _captureOutputAuthority();
   }
 
@@ -837,7 +964,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<bool> prepareGroupTransfer(MusicTransferSnapshot snapshot, {required bool Function() current}) =>
       _acceptTransfer(snapshot, current: current, group: true);
 
-  Future<bool> _acceptTransfer(MusicTransferSnapshot snapshot, {bool Function()? current, bool group = false}) async {
+  Future<bool> _acceptTransfer(
+    MusicTransferSnapshot snapshot, {
+    bool Function()? current,
+    bool group = false,
+    MusicSource? preparedSource,
+  }) async {
     bool active() => current?.call() ?? true;
     try {
       snapshot.toJson(itemLimit: group ? MusicTransferSnapshot.maxItems : MusicTransferSnapshot.maxTransferItems);
@@ -860,7 +992,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     final transport = _continuationResumeRevision;
     MusicSource source;
     try {
-      source = await _cachedSource(await _resolver.resolve(track));
+      source = preparedSource ?? await _cachedSource(await _resolver.resolve(track));
     } catch (error, stackTrace) {
       appLogger.w('Music transfer source could not be prepared', error: error, stackTrace: stackTrace);
       return false;
@@ -899,10 +1031,19 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       if (!_disposed && _queueSessionRevision == expectedRevision && _generation == generation + 1) await stop();
       return false;
     }
-    return !_disposed &&
+    final accepted =
+        !_disposed &&
         _queueSessionRevision == expectedRevision &&
         _queue.current?.globalKey == track.globalKey &&
         _status == (snapshot.playing ? MusicPlaybackStatus.playing : MusicPlaybackStatus.paused);
+    if (!accepted &&
+        !_disposed &&
+        _queueSessionRevision == expectedRevision &&
+        _queueEditRevision == edit &&
+        _continuationResumeRevision == transport) {
+      await _stopSession(endStatus: MusicPlaybackStatus.idle);
+    }
+    return accepted;
   }
 
   /// Bounded per-service cache. The endpoint is optional and profiles are
@@ -1089,13 +1230,27 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   // ---------------------------------------------------------------------
 
   @override
-  MediaItem? get currentTrack => _currentTrack;
+  MediaItem? get currentTrack => _musicDeviceOutput == null ? _currentTrack : _musicDeviceOutput?.state?.track;
 
   @override
-  MusicPlaybackStatus get status => _status;
+  MusicPlaybackStatus get status {
+    final output = _musicDeviceOutput;
+    if (output == null) return _status;
+    final snapshot = output.state?.snapshot;
+    return snapshot == null
+        ? MusicPlaybackStatus.idle
+        : snapshot.playing
+        ? MusicPlaybackStatus.playing
+        : MusicPlaybackStatus.paused;
+  }
 
   @override
   Duration? get duration {
+    final output = _musicDeviceOutput;
+    if (output != null) {
+      final millis = output.state?.track?.durationMs;
+      return millis == null ? null : Duration(milliseconds: millis);
+    }
     if (_currentTrack == null) {
       return null;
     }
@@ -1108,7 +1263,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
-  Duration get position => _player?.currentPosition ?? _pendingRestoreResume?.position ?? Duration.zero;
+  Duration get position => _musicDeviceOutput == null
+      ? _player?.currentPosition ?? _pendingRestoreResume?.position ?? Duration.zero
+      : _musicDeviceOutput?.state?.snapshot?.position ?? Duration.zero;
 
   @override
   Stream<Duration> get positionStream => _positionController.stream;
@@ -1117,19 +1274,23 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Stream<Duration?> get playheadJumpStream => _playheadJumpController.stream;
 
   @override
-  List<MediaItem> get queue => _queue.queue;
+  List<MediaItem> get queue => _musicDeviceOutput == null ? _queue.queue : _musicDeviceOutput?.state?.queue ?? const [];
 
   @override
-  int get currentIndex => _queue.cursor;
+  int get currentIndex => _musicDeviceOutput == null ? _queue.cursor : _musicDeviceOutput?.state?.index ?? -1;
 
   @override
-  MusicPlayContext? get playContext => _playContext;
+  MusicPlayContext? get playContext =>
+      _musicDeviceOutput == null ? _playContext : _musicDeviceOutput?.state?.snapshot?.playContext;
 
   @override
-  bool get shuffled => _queue.shuffled;
+  bool get shuffled =>
+      _musicDeviceOutput == null ? _queue.shuffled : _musicDeviceOutput?.state?.snapshot?.queue.shuffled ?? false;
 
   @override
-  MusicRepeatMode get repeatMode => _queue.repeatMode;
+  MusicRepeatMode get repeatMode => _musicDeviceOutput == null
+      ? _queue.repeatMode
+      : _musicDeviceOutput?.state?.snapshot?.queue.repeatMode ?? MusicRepeatMode.off;
 
   @override
   Stream<Object> get errors => _errorsController.stream;
@@ -1150,7 +1311,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   bool isPlayIntentCurrent(int intent) => !_disposed && intent == _playIntentGeneration;
 
   @override
-  int get queueSessionRevision => _queueSessionRevision;
+  int get queueSessionRevision => _musicDeviceOutput == null ? _queueSessionRevision : -_musicDeviceRevision;
 
   // ---------------------------------------------------------------------
   // Session start
@@ -1166,6 +1327,34 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     bool offline = false,
     PlaybackLaunchObserver? launchObserver,
   }) {
+    final output = _musicDeviceOutput;
+    if (output != null) {
+      beginPlayIntent();
+      if (offline || launchObserver != null) {
+        _errorsController.add(StateError('This playback source requires this device'));
+        return Future.value();
+      }
+      final queue = MusicQueueController()..load(tracks, shuffle: shuffle);
+      if (startTrack != null) {
+        final index = tracks.indexWhere((item) => identical(item, startTrack));
+        final fallback = tracks.indexWhere((item) => item.globalKey == startTrack.globalKey);
+        queue.load(tracks, startIndex: index < 0 ? (fallback < 0 ? null : fallback) : index, shuffle: shuffle);
+      }
+      return output
+          .playSnapshot(
+            MusicTransferSnapshot(
+              queue: queue.captureState(),
+              position: initialPosition ?? Duration.zero,
+              playing: true,
+              playContext: playContext,
+            ),
+          )
+          .then((accepted) {
+            if (!accepted && !_disposed && identical(output, _musicDeviceOutput)) {
+              _errorsController.add(StateError('Music device could not start this queue'));
+            }
+          });
+    }
     beginPlayIntent();
     return _startQueue(
       tracks: tracks,
@@ -1790,6 +1979,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _onPosition(Duration position) {
+    if (_musicDeviceOutput != null) return;
     final reportingPlayer = _player;
     _positionController.add(position);
     _updateSweetFade(position);
@@ -1817,6 +2007,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   void _onPlayingChanged(bool isPlaying) {
+    if (_musicDeviceOutput != null) return;
     final playbackAllowed = automotiveMusicPlaybackAllowedNow();
     final shouldBePlaying = isPlaying && playbackAllowed;
     if (isPlaying && !playbackAllowed) {
@@ -1850,6 +2041,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// The backend auto-advanced into the pre-armed item: authoritative
   /// track change.
   void _onTrackTransition(String uri) {
+    if (_musicDeviceOutput != null) return;
     _cancelOverlap();
     var armed = _armed;
     if ((armed == null || armed.source.url != uri) &&
@@ -2195,7 +2387,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     _mediaControls = controls;
     _controlEventsSub = controls.controlEvents.listen(_onControlEvent);
     _hardwareTransport ??= MusicHardwareTransportHandler(
-      hasActiveSession: () => !_disposed && _currentTrack != null,
+      hasActiveSession: () => !_disposed && currentTrack != null,
       onPlay: () => unawaited(play()),
       onPause: () => unawaited(pause()),
       onTogglePlayPause: () => unawaited(togglePlayPause()),
@@ -2667,7 +2859,9 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     unawaited(
       _mediaControls?.setControlsEnabled(
         canPlayPause: true,
-        canGoNext: _queue.nextIndex(manual: true) != null,
+        canGoNext: _musicDeviceOutput == null
+            ? _queue.nextIndex(manual: true) != null
+            : currentIndex + 1 < queue.length || repeatMode == MusicRepeatMode.all,
         // Previous always restarts the track even at queue head.
         canGoPrevious: true,
         canSeek: true,
@@ -2763,6 +2957,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> play() async {
+    if (_musicDeviceOutput != null) return _controlMusicDevice('play');
     _cancelOverlap();
     _continuationResumeRevision++;
     if (!automotiveMusicPlaybackAllowedNow()) {
@@ -2822,7 +3017,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
-  Future<void> pause() => _pause(byCar: false);
+  Future<void> pause() => _musicDeviceOutput == null ? _pause(byCar: false) : _controlMusicDevice('pause');
 
   /// [byCar] marks the pause the vehicle's restrictions own, which is the only
   /// one resumed when they lift. Any other pause — the user, a media-session
@@ -2852,6 +3047,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> togglePlayPause() {
+    if (_musicDeviceOutput != null) return _controlMusicDevice('toggle');
     final player = _player;
     if (player == null) {
       return _currentTrack != null ? play() : Future.value();
@@ -3061,6 +3257,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> next() async {
+    if (_musicDeviceOutput != null) return _controlMusicDevice('next');
     _continuationResumeRevision++;
     final nextCursor = _queue.nextIndex(manual: true);
     if (nextCursor == null) {
@@ -3071,6 +3268,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> previous() async {
+    if (_musicDeviceOutput != null) return _controlMusicDevice('previous');
     _continuationResumeRevision++;
     _cancelOverlap();
     final player = _player;
@@ -3097,6 +3295,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> seek(Duration position) async {
+    if (_musicDeviceOutput != null) return _controlMusicDevice('seek', {'position': position.inMilliseconds});
     _cancelOverlap();
     _continuationResumeRevision++;
     final pending = _pendingRestoreResume;
@@ -3116,12 +3315,18 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   }
 
   @override
-  double get volume => _volume;
+  double get volume => _musicDeviceOutput?.state?.volume ?? _volume;
   @override
   ValueListenable<double> get volumeListenable => _volumeNotifier;
 
   @override
   Future<void> setVolume(double volume, {bool persist = true}) async {
+    if (_musicDeviceOutput != null) {
+      if (!volume.isFinite) return;
+      _volumeNotifier.value = volume.clamp(0.0, 100.0);
+      if (persist) await _controlMusicDevice('volume', {'volume': volume.clamp(0.0, 100.0)});
+      return;
+    }
     final clamped = volume.clamp(0.0, 100.0);
     Future<void>? playerUpdate;
     if (clamped != _volume) {
@@ -3229,6 +3434,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> jumpTo(int index) async {
+    if (_musicDeviceOutput != null) return _controlMusicDevice('jump', {'index': index});
     if (index < 0 || index >= _queue.length || index == _queue.cursor) {
       return;
     }
@@ -3242,6 +3448,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void setRepeatMode(MusicRepeatMode mode) {
+    if (_musicDeviceOutput != null) {
+      unawaited(_controlMusicDevice('repeat', {'mode': mode.name}));
+      return;
+    }
     if (_queue.repeatMode == mode) {
       return;
     }
@@ -3251,6 +3461,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void toggleShuffle() {
+    if (_musicDeviceOutput != null) {
+      unawaited(_controlMusicDevice('shuffle', const {}));
+      return;
+    }
     if (_queue.isEmpty) {
       return;
     }
@@ -3260,6 +3474,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void removeAt(int index) {
+    if (_musicDeviceOutput != null) {
+      unawaited(_controlMusicDevice('remove', {'index': index}));
+      return;
+    }
     final excluded = _queue.trackAt(index);
     if (excluded != null) _continuationExcluded.add(excluded.globalKey);
     if (index < 0 || index >= _queue.length) {
@@ -3281,6 +3499,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void reorder(int from, int to) {
+    if (_musicDeviceOutput != null) {
+      unawaited(_controlMusicDevice('reorder', {'index': from, 'to': to}));
+      return;
+    }
     if (from == to) {
       return;
     }
@@ -3298,6 +3520,21 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// (mini-player appears paused) instead of silently dropping the action
   /// or surprising the user with audio.
   void _enqueue(List<MediaItem> tracks, {required bool next}) {
+    if (_musicDeviceOutput != null) {
+      if (tracks.isEmpty) return;
+      final queue = MusicQueueController()..load(tracks);
+      final snapshot = MusicTransferSnapshot(queue: queue.captureState(), position: Duration.zero, playing: false);
+      try {
+        unawaited(
+          _controlMusicDevice(next ? 'addNext' : 'addToEnd', {
+            'tracks': snapshot.toJson(itemLimit: MusicTransferSnapshot.maxTransferItems),
+          }),
+        );
+      } on StateError catch (error) {
+        if (!_disposed) _errorsController.add(error);
+      }
+      return;
+    }
     if (tracks.isEmpty) {
       return;
     }
@@ -3325,6 +3562,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void clearUpcoming() {
+    if (_musicDeviceOutput != null) {
+      unawaited(_controlMusicDevice('clear', const {}));
+      return;
+    }
     setContinuationEnabled(false);
     if (_queue.isEmpty) {
       return;
@@ -3386,6 +3627,12 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   Future<void> stop() async {
+    final output = _musicDeviceOutput;
+    if (output != null) {
+      await _controlMusicDevice('stop');
+      if (!identical(output, _musicDeviceOutput)) return;
+      setMusicDeviceOutput(null);
+    }
     await _stopSession(endStatus: MusicPlaybackStatus.idle);
     _workspaceAudioEnabled = true;
   }
@@ -3731,6 +3978,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   void dispose() {
+    _musicDeviceOutput?.removeListener(_onMusicDeviceChanged);
+    _musicDeviceOutput = null;
     if (_disposed) {
       return;
     }

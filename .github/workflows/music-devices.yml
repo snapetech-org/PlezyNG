@@ -1,0 +1,56 @@
+name: Music device handoff
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/services/music/**'
+      - 'lib/services/companion_remote/**'
+      - 'lib/providers/companion_remote_provider.dart'
+      - 'lib/models/companion_remote/**'
+      - 'lib/widgets/music/**'
+      - 'lib/screens/music/**'
+      - 'test/services/music/**'
+      - 'test/providers/companion_remote_provider_test.dart'
+      - 'test/screens/music/**'
+      - 'test/widgets/music/**'
+      - '.github/workflows/music-devices.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: music-devices-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  handoff:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: stable
+          flutter-version: '3.47.8'
+          cache: false
+      - name: Prepare native test tooling and locked packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang build-essential cmake ffmpeg
+          flutter pub get --enforce-lockfile
+      - name: Prepare pinned native test libraries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/prepare_native_downloads.py --sqlite-platform linux --arch x64
+      - name: Analyze music device integration
+        run: |
+          dart analyze lib/services/music lib/providers/companion_remote_provider.dart lib/services/companion_remote lib/widgets/music lib/screens/music
+      - name: Test music ownership, handoff, controls and player surfaces
+        run: |
+          flutter test --no-pub -j 2 --timeout=180s             test/services/music             test/providers/companion_remote_provider_test.dart             test/services/companion_remote_peer_service_test.dart             test/screens/music             test/widgets/music

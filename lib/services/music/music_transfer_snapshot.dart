@@ -32,6 +32,9 @@ class MusicTransferSnapshot {
   final bool playing;
   final MusicPlayContext? playContext;
 
+  MusicTransferSnapshot at(Duration position, {required bool playing}) =>
+      MusicTransferSnapshot(queue: queue, position: position, playing: playing, playContext: playContext);
+
   Map<String, dynamic> toJson({int itemLimit = maxItems}) {
     if (!_validQueue(queue, itemLimit) ||
         position < Duration.zero ||

@@ -62,6 +62,7 @@ enum RemoteCommandType {
   musicTransfer,
   musicGroup,
   musicHistory,
+  musicConnect,
 }
 
 class _RemoteCommandTypeConverter extends IndexedEnumConverter<RemoteCommandType> {

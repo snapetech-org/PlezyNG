@@ -28,7 +28,7 @@ class DiscoveredHost {
     DateTime? lastSeen,
   }) : lastSeen = lastSeen ?? DateTime.now();
 
-  List<String> get addresses => ips.map((ip) => '$ip:$port').toList();
+  List<String> get addresses => ips.map((ip) => ip.contains(':') ? '[$ip]:$port' : '$ip:$port').toList();
 }
 
 /// UDP-based LAN discovery for companion remote.

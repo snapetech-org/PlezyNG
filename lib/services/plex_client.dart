@@ -98,6 +98,7 @@ import 'video_decode_capabilities.dart';
 
 part 'plex_client/parts/live_tv.dart';
 part 'plex_client/parts/playlists.dart';
+part 'plex_client/parts/music_history.dart';
 part 'plex_client/parts/collections.dart';
 part 'plex_client/parts/play_queues.dart';
 part 'plex_client/parts/metadata_edit.dart';
@@ -498,6 +499,8 @@ class PlexClient
   /// binding. Null for direct connections or when user identity is unknown.
   /// Music writes use this stable value across server-token rotation.
   String? plexMusicUserIdentifier;
+
+  ({Object authentication, String user})? _musicHistoryOwner;
 
   /// plex.tv token of the [plexAccountId] account, set alongside it.
   /// Plex's cloud Discover service ([fetchPersonDetails]) takes only plex.tv

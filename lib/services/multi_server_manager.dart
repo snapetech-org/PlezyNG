@@ -172,7 +172,8 @@ class MultiServerManager {
       client
         ..plexAccountId = accountId
         ..plexAccountToken = accountToken
-        ..plexMusicUserIdentifier = musicUserIdentifier;
+        ..plexMusicUserIdentifier = musicUserIdentifier
+        ..bindMusicHistoryResource(owned: server.owned);
     }
   }
 
@@ -579,7 +580,8 @@ class MultiServerManager {
     client
       ..plexAccountId = account?.id
       ..plexAccountToken = account?.token
-      ..plexMusicUserIdentifier = account?.musicUserIdentifier;
+      ..plexMusicUserIdentifier = account?.musicUserIdentifier
+      ..bindMusicHistoryResource(owned: server.owned);
 
     // Save the initial endpoint (relay is refused — see _savePreferredEndpoint)
     await _savePreferredEndpoint(ServerId(serverId), storage, baseUrl, capturedServer: server);

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add bounded Plex music-history requests that validate each event against the verified server owner and requested library.
+
 - Use the app's rounded transport and speaker icons in listening history and synchronized groups.
 
 - Scan authorized music NFC links from Music home on Android. Cancelling or replacing a scan invalidates its tag callback without consuming the next scan.

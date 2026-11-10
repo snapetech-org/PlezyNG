@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Scan authorized music NFC links from Music home on Android. Cancelling or replacing a scan invalidates its tag callback without consuming the next scan.
+
 - Keep loaded listening history pages visible while local playback and paired-device imports refresh the list. Coalesce database notifications and rebuild the current window with cursor pages from one snapshot.
 
 - Edit native Plex smart-playlist directory rules without losing repeated clauses, exact operators, relative dates, source types, grouping, sort or limits. Track, album and artist rules keep their server query semantics during preview and save.

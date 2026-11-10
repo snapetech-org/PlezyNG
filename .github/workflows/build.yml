@@ -1205,7 +1205,7 @@ jobs:
           if len(binaries) != 1:
               raise SystemExit(f'Expected one staged worker framework in resolved search paths, found {binaries}')
           binary = binaries[0]
-          subprocess.run(['xcrun', 'lipo', '-verify_arch', 'arm64', str(binary)], check=True)
+          subprocess.run(['xcrun', 'lipo', str(binary), '-verify_arch', 'arm64'], check=True)
           print('Verified staged ARM64 worker:', binary, hashlib.file_digest(binary.open('rb'), 'sha256').hexdigest())
           PYSETTINGS
 

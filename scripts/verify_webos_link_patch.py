@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Permit only pinned Flutter interface and static worker atomic link repairs."""
+"""Permit only pinned Flutter interface and SDK shared atomic link repairs."""
 import argparse
 import re
 import subprocess
@@ -9,8 +9,8 @@ CMAKE_PATH = "webos/CMakeLists.txt"
 ANCHOR = 'include(${CMAKE_CURRENT_SOURCE_DIR}/flutter/ephemeral/webos_build.cmake)\n'
 LINK = 'target_link_libraries(${BINARY_NAME} PRIVATE flutter)\n'
 WORKER_ANCHOR = 'add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../native/games/romm" "${CMAKE_CURRENT_BINARY_DIR}/romm_native")\n'
-ATOMIC_LINKS = ('target_link_libraries(plezy_retro PRIVATE "-Wl,-Bstatic" atomic "-Wl,-Bdynamic")\n'
-                'target_link_libraries(plezy_retro_worker PRIVATE "-Wl,-Bstatic" atomic "-Wl,-Bdynamic")\n')
+ATOMIC_LINKS = ('target_link_libraries(plezy_retro PRIVATE atomic)\n'
+                'target_link_libraries(plezy_retro_worker PRIVATE atomic)\n')
 
 
 def equivalent(before, after):
@@ -31,7 +31,7 @@ def verify_local(root, source, target):
     contents = [subprocess.check_output(["git", "show", f"{revision}:{CMAKE_PATH}"], cwd=root).decode()
                 for revision in (source, target)]
     if not equivalent(*contents):
-        raise ValueError("webOS CMake changed beyond the pinned Flutter/static atomic link repairs")
+        raise ValueError("webOS CMake changed beyond the pinned Flutter/SDK atomic link repairs")
 
 
 if __name__ == "__main__":

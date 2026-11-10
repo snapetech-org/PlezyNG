@@ -3,13 +3,13 @@ from verify_webos_link_patch import ANCHOR, LINK, WORKER_ANCHOR, ATOMIC_LINKS, e
 
 
 class WebosLinkProofTests(unittest.TestCase):
-    def test_only_exact_static_atomic_links_can_be_added_at_worker_targets(self):
+    def test_only_exact_shared_sdk_atomic_links_can_be_added_at_worker_targets(self):
         before = ANCHOR + LINK + WORKER_ANCHOR + 'install(TARGETS plezy_retro LIBRARY DESTINATION lib)\n'
         after = before.replace(WORKER_ANCHOR, WORKER_ANCHOR + ATOMIC_LINKS)
         self.assertTrue(equivalent(before, after))
         self.assertTrue(equivalent(after, after))
         for changed in (after.replace('atomic', 'other'), after + ATOMIC_LINKS,
-                        after.replace('PRIVATE "-Wl,-Bstatic" atomic', 'PRIVATE atomic'),
+                        after.replace('PRIVATE atomic', 'PRIVATE "-Wl,-Bstatic" atomic "-Wl,-Bdynamic"'),
                         after + 'add_compile_options(-march=armv6)\n', before):
             with self.subTest(changed=changed):
                 self.assertFalse(equivalent(after, changed))

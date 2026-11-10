@@ -39,7 +39,11 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         skipped = original.replace("inputs.rebuild_ios && needs.build-ios.result == 'success'",
                                    "inputs.rebuild_ios && needs.build-ios.result == 'skipped'")
         unstaged = original.replace('-scheme Pods-RommWorker', '-scheme Pods-Runner')
-        for workflow in (skipped, unstaged):
+        wrong_lipo_order = original.replace(
+            "['xcrun', 'lipo', str(binary), '-verify_arch', 'arm64']",
+            "['xcrun', 'lipo', '-verify_arch', 'arm64', str(binary)]",
+        )
+        for workflow in (skipped, unstaged, wrong_lipo_order):
             with self.subTest(skipped=workflow is skipped):
                 result = self._run(workflow)
                 self.assertNotEqual(result.returncode, 0)

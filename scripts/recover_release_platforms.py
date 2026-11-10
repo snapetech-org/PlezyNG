@@ -79,7 +79,7 @@ def verify_webos_link_patch(repository, source_sha, head_sha, files):
     from verify_webos_link_patch import CMAKE_PATH, equivalent
     if any(entry.get("filename") == CMAKE_PATH for entry in files):
         if not equivalent(immutable_content(repository, source_sha, CMAKE_PATH), immutable_content(repository, head_sha, CMAKE_PATH)):
-            raise RecoveryError("webOS link changes exceed the pinned Flutter/static atomic link repairs")
+            raise RecoveryError("webOS link changes exceed the pinned Flutter/SDK atomic link repairs")
 
 
 def api(path):

@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Stage the locked iOS device worker framework before Release linking and verify its resolved search path and ARM64 slice. Link the webOS worker's existing atomic operations statically and support explicit iOS recovery without rebuilding successful platforms.
+- Stage the locked iOS device worker framework before Release linking and verify its resolved search path and ARM64 slice. Link the webOS worker's existing atomic operations against the SDK's shared runtime and support explicit iOS recovery without rebuilding successful platforms.
 
 - Run tvOS release AOT compilation on a compatible ARM host and support verified tvOS-only recovery while retaining successful immutable artifacts from every other platform.
 

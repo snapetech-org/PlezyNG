@@ -1623,7 +1623,7 @@ require(
         "--config-only", "pod install --deployment", "-scheme Pods-RommWorker",
         '-configuration Release -sdk iphoneos', 'BUILD_DIR="$products_root"',
         "PODS_XCFRAMEWORKS_BUILD_DIR", "PlezyRetroWorker.framework/PlezyRetroWorker",
-        "'-verify_arch', 'arm64'")),
+        "['xcrun', 'lipo', str(binary), '-verify_arch', 'arm64']")),
     "iOS recovery must stage the locked device worker and require a successful fresh artifact",
 )
 require(

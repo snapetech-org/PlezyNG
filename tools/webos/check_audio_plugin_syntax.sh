@@ -70,6 +70,31 @@ if [[ ! -x "$clang" ]]; then
 fi
 compiler=("$clang" --target=arm-webosmllib32-linux-gnueabi "--sysroot=$SDKTARGETSYSROOT"
           -mfpu=neon -mfloat-abi=softfp)
+# The release Clang emits these atomic ABI calls for the worker. LG's SDK
+# provides shared libatomic (also linked by its generated runner), not a
+# static archive. Check this dependency before compiling the whole app.
+cat > "$scratch_dir/atomic_link_probe.cc" <<'CPP'
+int atomic_add(int* p) { return __atomic_fetch_add(p, 1, __ATOMIC_SEQ_CST); }
+bool atomic_load(bool* p) { return __atomic_load_n(p, __ATOMIC_SEQ_CST); }
+void atomic_store(bool* p) { __atomic_store_n(p, true, __ATOMIC_SEQ_CST); }
+bool atomic_swap(bool* p, bool* expected) {
+  return __atomic_compare_exchange_n(p, expected, true, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+}
+int main() {
+  int count = 7;
+  bool value = false, expected = false;
+  if (atomic_add(&count) != 7 || count != 8) return 1;
+  atomic_store(&value);
+  if (!atomic_load(&value)) return 2;
+  if (atomic_swap(&value, &expected) || !expected) return 3;
+  value = false;
+  expected = false;
+  return atomic_swap(&value, &expected) && value ? 0 : 4;
+}
+CPP
+"${compiler[@]}" -std=c++17 -Wl,-z,defs "$scratch_dir/atomic_link_probe.cc" \
+  -latomic -o "$scratch_dir/atomic_link_probe"
+echo 'Worker atomic operations link against the pinned ARM SDK shared runtime.'
 read -r -a flags <<< "$(pkg-config --cflags PmLogLib pbnjson_cpp glib-2.0 ndlmedia alsa ogg opus libcurl)"
 plugin="$ROOT/packages/webos_plugins/audioplayers_soloud/webos"
 includes=(-I "$scratch_dir/include" -iquote "$plugin" -I "$plugin/include"

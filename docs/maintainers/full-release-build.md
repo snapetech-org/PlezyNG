@@ -575,11 +575,12 @@ artifacts. Never treat the original missing tvOS artifact as reusable.
 Use `--rebuild-ios` for a failed iOS package, independently or alongside the
 other explicit rebuild flags. Fresh iOS and tvOS artifacts must come from
 successful jobs in the recovery run. A failed original webOS job remains a
-fresh build; do not pass it as `--reuse-webos-run`. The webOS-only static
+fresh build; do not pass it as `--reuse-webos-run`. The webOS-only SDK
 atomic link repair is accepted solely as exact additive CMake statements on
 the existing worker targets; arbitrary flags, source edits and native pin
-changes still reject reuse. Static linkage introduces no new shared runtime
-library requirement in the TV package.
+changes still reject reuse. Both worker targets use the SDK's shared `libatomic` ABI, which LG's
+generated runner already links. The SDK contains no static atomic archive;
+the native preflight verifies the shared ABI before the full build.
 
 Add `--rebuild-linux` to the recovery driver when a Linux job failed: both native
 Linux matrix entries build again, their old artifacts are excluded, and every

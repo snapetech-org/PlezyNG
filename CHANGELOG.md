@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bind Cast loads to profile/authentication and matching receiver media-session acknowledgements, serialize competing loads, and retire progress/control ownership when another sender replaces the media.
+
 - Write durable music links to writable Android NFC tags from music details, with explicit scanning/cancellation, tag-capacity checks, optional hardware support, and credential-free NDEF records resolved through normal profile authorization when scanned.
 
 - Add an Android home-screen music widget with live metadata and localized transport accessibility labels. Controls use the shared profile-scoped session, reject stale widget intents, and never persist stream credentials; internal app installation is required.

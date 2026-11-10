@@ -56,6 +56,7 @@ import '../services/offline_watch_sync_service.dart';
 import '../services/remote_streams/remote_streaming_provider.dart';
 import '../services/storage_service.dart';
 import '../services/system_shelf_service.dart';
+import '../services/cast_media_service.dart';
 import '../utils/app_logger.dart';
 import '../watch_together/providers/watch_together_provider.dart';
 import '../watch_together/watch_together.dart' show WatchNoticeListener;
@@ -144,6 +145,7 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
   /// doing it from inside MainScreen can't work, the remount unmounts it
   /// before any settle-await completes.
   void _onSessionProfileChanged(String? activeId) {
+    CastMediaService.instance.bindProfile(activeId);
     final shelf = SystemShelfService();
     if (!_seenFirstActiveId) {
       _seenFirstActiveId = true;

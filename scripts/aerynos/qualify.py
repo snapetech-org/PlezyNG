@@ -320,19 +320,27 @@ class AppQA:
             self.ui('click', 'Show playback controls')
         return {n['name'] for n in self.ui()}
 
-    def clock(self):
-        self.controls()
-        times = []
-        for node in self.ui():
-            for label in (node['name'] or '').splitlines():
-                if re.fullmatch(r'\d{1,2}:\d{2}(?::\d{2})?', label):
-                    value = 0
-                    for part in label.split(':'):
-                        value = value * 60 + int(part)
-                    times.append(value)
-        if not times:
-            raise RuntimeError('No visible playback clock')
-        return min(times)
+    def clock(self, timeout=5):
+        deadline = time.monotonic() + timeout
+        while True:
+            self.controls()
+            nodes = self.ui()
+            times = []
+            for node in nodes:
+                for label in (node['name'] or '').splitlines():
+                    if re.fullmatch(r'\d{1,2}:\d{2}(?::\d{2})?', label):
+                        value = 0
+                        for part in label.split(':'):
+                            value = value * 60 + int(part)
+                        times.append(value)
+            if times:
+                return min(times)
+            if time.monotonic() >= deadline:
+                (self.evidence / 'clock-timeout.json').write_text(json.dumps(nodes, indent=2) + '\n')
+                raise RuntimeError('No visible playback clock after controls settled')
+            # Seek and overlay dismissal update the accessibility tree on a
+            # later frame, particularly in software-rendered hosted guests.
+            time.sleep(0.2)
 
     def audio_since(self, offset):
         import numpy as np

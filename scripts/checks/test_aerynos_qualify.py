@@ -6,6 +6,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'aerynos'))
 from qualify import AppQA, capture_audio
@@ -13,12 +14,27 @@ from qualify import AppQA, capture_audio
 
 class PlaybackMeasurementsTests(unittest.TestCase):
     def test_clock_reads_elapsed_time_from_merged_semantics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = AppQA.__new__(AppQA)
+            app.evidence = Path(directory)
+            app.ui = lambda *args: [{'name': 'Maestro Movie\n3m\n4:30 AM\n0:15\n-2:45'}]
+            self.assertEqual(app.clock(), 15)
+            app.ui = lambda *args: [{'name': 'Maestro Movie\n4:30 AM\n-2:45'}]
+            with self.assertRaises(RuntimeError):
+                app.clock(timeout=0)
+            self.assertTrue((app.evidence / 'clock-timeout.json').exists())
+
+    def test_clock_waits_for_elapsed_text_after_seek_overlay_transition(self):
         app = AppQA.__new__(AppQA)
-        app.ui = lambda *args: [{'name': 'Maestro Movie\n3m\n4:30 AM\n0:15\n-2:45'}]
-        self.assertEqual(app.clock(), 15)
-        app.ui = lambda *args: [{'name': 'Maestro Movie\n4:30 AM\n-2:45'}]
-        with self.assertRaises(RuntimeError):
-            app.clock()
+        calls = 0
+        def nodes(*args):
+            nonlocal calls
+            calls += 1
+            return [{'name': '0:15\n-2:45'}] if calls > 6 else [{'name': 'Hide playback controls'}]
+        app.ui = nodes
+        with patch('qualify.time.sleep') as sleep:
+            self.assertEqual(app.clock(), 15)
+        self.assertGreaterEqual(sleep.call_count, 2)
 
     @unittest.skipUnless(importlib.util.find_spec('numpy'), 'numpy required for PCM measurement')
     def test_live_capture_ignores_placeholder_lengths_and_respects_audio_offset(self):

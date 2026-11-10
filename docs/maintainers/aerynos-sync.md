@@ -21,9 +21,18 @@ repeat publication; failed deliveries back off for thirty minutes.
    published Linux archive against those checksums and GitHub's asset digest.
 2. Verify the Linux archive's own attestation to identify its original compiler
    source and run. Resolve the remote version tag, including annotated tags,
-   and require compiler and assembler source to equal that frozen commit. Their
-   run IDs remain separate. Different-source recovery requires an independently
-   verified unchanged-product rule; no such exception is enabled downstream.
+   and require the Linux compiler source to equal that frozen commit. Ordinary
+   assemblers use the same source. The closed `frozen-apple-packaging-v1` contract
+   in [the release runbook](full-release-build.md) permits an explicitly approved
+   Apple packaging repair while retaining the original Linux bytes/certificate.
+   The consumer independently checks the exact repair commit, full Git trees,
+   approved file/blob inventory and canonical ancestry. Attested core checksums
+   must bind the public recovery receipt to the actual workflow/assembler, approved
+   checkout, original embedded CI/freeze and artifact identities. The consumer also
+   checks signed Apple archive steps and repeats verification after native QA.
+   Product, packaging and workflow sources and compiler/assembler runs remain
+   distinct in the delivery receipt. Other source substitutions and self-asserted
+   equivalence claims are rejected.
    The consumer anonymously downloads the published Linux archive, matches its
    attested digest, then uses `from_core.py` to verify the successful original
    Linux job, retained artifact identity, trusted repository/workflow and exact

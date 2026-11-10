@@ -290,6 +290,7 @@ class PackagingRepairControllerTests(unittest.TestCase):
             args = ['release', '--version', '3.0.31', '--source-commit', self.repair,
                     '--reuse-platform-run', '42', '--reuse-android-run', '42', '--reuse-webos-run', '42',
                     '--rebuild-ios', '--rebuild-tvos', '--include-apple-store-build',
+                    '--apple-arm-runner-pool', 'private',
                     '--prepare-homebrew-cask', '--publish', '--scratch', str(scratch)]
             stack.enter_context(patch.object(sys, 'argv', args))
             command = stack.enter_context(patch.object(release, 'command', return_value=subprocess.CompletedProcess([], 0, self.repair, '')))
@@ -312,6 +313,8 @@ class PackagingRepairControllerTests(unittest.TestCase):
             self.assertEqual(build.call_args.args[1], self.repair)
             self.assertEqual(build.call_args.kwargs['workflow_source_sha'], self.workflow)
             self.assertTrue(build.call_args.kwargs['include_apple_store_build'])
+            self.assertEqual(build.call_args.kwargs['tvos_runner_pool'], 'private')
+            self.assertNotIn('candidate_ref', build.call_args.kwargs)
             self.assertFalse(build.call_args.kwargs.get('rebuild_macos', False))
             self.assertFalse(any('scripts/sync_native_revision.py' in call.args[0] for call in command.call_args_list))
             report = json.loads((scratch / 'release-summary.json').read_text())

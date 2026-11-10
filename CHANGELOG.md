@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Preserve the explicitly selected tvOS runner pool when recovering signed Apple packages, without adding a candidate source reference.
+
 - Evaluate release build jobs after intentionally skipped capture/CI ancestors, while requiring successful source validation. Permit retrying an audited validation-only recovery run that produced no build, artifact or publication side effects.
 
 - Return a standalone Chromecast music queue to this device from Now Playing. Playback resumes at the receiver's current occurrence and position, keeping shuffle order and duplicate tracks.

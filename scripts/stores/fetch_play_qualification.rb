@@ -39,7 +39,12 @@ request = lambda do |path, destination = nil, allow_unavailable: false|
       if destination
         File.open(destination, 'wb') { |file| response.read_body { |chunk| file.write(chunk) } }
       else
-        response_data = JSON.parse(response.body)
+        body = response.body.to_s
+        if allow_unavailable && body.strip.empty?
+          response_data = { 'unavailable' => true, 'http_status' => response.code.to_i, 'reason' => 'empty_response' }
+        else
+          response_data = JSON.parse(body)
+        end
       end
     end
   end

@@ -36,6 +36,8 @@ import '../services/catalog/catalog_source.dart';
 import '../services/catalog/seerr_catalog_source.dart';
 import '../services/data_aggregation_service.dart';
 import '../services/settings_service.dart';
+import '../services/music/music_experience.dart';
+import '../services/music/music_search_history.dart';
 import '../sources/source_controller.dart';
 import '../sources/source_models.dart';
 import '../theme/mono_tokens.dart';
@@ -136,6 +138,8 @@ class _SearchScreenState extends State<SearchScreen>
   static const int _catalogSearchCacheLimit = 96;
 
   HiddenLibrariesProvider? _hiddenLibraries;
+  MusicSearchHistory? _searchHistory;
+  List<String> _recentQueries = [];
   Set<String> _lastSeenHiddenKeys = const {};
 
   @override
@@ -148,6 +152,12 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final store = context.watch<MusicExperience?>()?.store;
+    if (!identical(store, _searchHistory?.store)) {
+      _searchHistory = store == null ? null : MusicSearchHistory(store);
+      _recentQueries = [];
+      unawaited(_updateSearchHistory());
+    }
     final sources = context.read<SourceController?>();
     if (!identical(sources, _sourceController)) {
       _sourceController?.removeListener(_onSourceScopeChanged);
@@ -832,11 +842,49 @@ class _SearchScreenState extends State<SearchScreen>
     if (query.isEmpty) {
       return;
     }
+    unawaited(_updateSearchHistory(record: query));
     if (searchResults.isEmpty || isSearching || query != lastSearchedQuery) {
       _focusResultsForQuery = query;
     }
     super.handleSearchSubmit();
   }
+
+  Future<void> _updateSearchHistory({String? record, String? remove, bool clear = false}) async {
+    final history = _searchHistory;
+    if (history == null) return;
+    try {
+      if (record != null) await history.record(record);
+      if (remove != null) await history.remove(remove);
+      if (clear) await history.clear();
+      final queries = await history.load();
+      if (mounted && identical(history, _searchHistory)) setState(() => _recentQueries = queries);
+    } catch (error, stack) {
+      appLogger.w('Search history unavailable', error: error, stackTrace: stack);
+    }
+  }
+
+  Widget _buildSearchHistory() => SliverList.list(
+    children: [
+      Align(
+        alignment: AlignmentDirectional.centerEnd,
+        child: TextButton(onPressed: () => _updateSearchHistory(clear: true), child: Text(t.common.clear)),
+      ),
+      for (final query in _recentQueries)
+        ListTile(
+          leading: const AppIcon(Symbols.history_rounded),
+          title: Text(query),
+          onTap: () {
+            searchController.text = query;
+            handleSearchSubmit();
+          },
+          trailing: IconButton(
+            tooltip: t.common.delete,
+            icon: const AppIcon(Symbols.close_rounded),
+            onPressed: () => _updateSearchHistory(remove: query),
+          ),
+        ),
+    ],
+  );
 
   @override
   void refresh() {
@@ -1574,6 +1622,8 @@ class _SearchScreenState extends State<SearchScreen>
             ),
             if (isSearching && searchResults.isEmpty && _iptvVodResults.isEmpty)
               LoadingIndicatorBox.sliver
+            else if (!hasSearched && _recentQueries.isNotEmpty)
+              _buildSearchHistory()
             else if (!hasSearched)
               SliverFillRemaining(
                 child: StateMessageWidget(

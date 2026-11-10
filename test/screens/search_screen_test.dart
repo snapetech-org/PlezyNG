@@ -33,6 +33,10 @@ import 'package:plezy/providers/libraries_provider.dart';
 import 'package:plezy/providers/multi_server_provider.dart';
 import 'package:plezy/screens/actor_media_screen.dart';
 import 'package:plezy/screens/search_screen.dart';
+import 'package:plezy/database/app_database.dart';
+import 'package:plezy/services/music/music_experience.dart';
+import 'package:plezy/services/music/music_library_store.dart';
+import 'package:plezy/services/music/music_search_history.dart';
 import 'package:plezy/screens/sources/source_widgets.dart';
 import 'package:plezy/sources/source_controller.dart';
 import 'package:plezy/sources/source_models.dart';
@@ -56,12 +60,46 @@ import 'package:provider/provider.dart';
 
 import '../test_helpers/prefs.dart';
 import '../test_helpers/media_items.dart';
+import '../test_helpers/music_experience_fakes.dart';
 import '../test_helpers/multi_server_fixtures.dart';
 import '../sources/fixtures/memory_sources.dart';
 import '../test_helpers/media_server_client_test_defaults.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('profile search history saves explicit submissions, reruns and clears queries', (tester) async {
+    final database = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(database.close);
+    final music = ExperienceMusic();
+    addTearDown(music.dispose);
+    final store = MusicLibraryStore(database, 'search-profile');
+    final history = MusicSearchHistory(store);
+    await history.record('Earlier query');
+    final experience = MusicExperience(music: music, store: store, clientFor: (_) => null);
+    addTearDown(experience.dispose);
+    final (client, key) = await _pumpTvSearchScreen(tester, tv: false, musicExperience: experience);
+    await tester.pumpAndSettle();
+    expect(find.text('Earlier query'), findsOneWidget);
+    await tester.tap(find.text('Earlier query'));
+    await tester.pumpAndSettle();
+    expect(client.queries, contains('Earlier query'));
+    await tester.enterText(find.byType(TextField), 'Unsubmitted typing');
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+    expect(await history.load(), ['Earlier query']);
+    (key.currentState! as SearchInputFocusable).submitSearchQuery('Explicit query');
+    await tester.pumpAndSettle();
+    expect((await history.load()).first, 'Explicit query');
+    await tester.enterText(find.byType(TextField), '');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(t.common.delete).first);
+    await tester.pumpAndSettle();
+    expect(await history.load(), ['Earlier query']);
+    await tester.tap(find.text(t.common.clear));
+    await tester.pumpAndSettle();
+    expect(await history.load(), isEmpty);
+  });
 
   setUpAll(() {
     LocaleSettings.setLocaleSync(AppLocale.en);
@@ -1066,6 +1104,7 @@ Future<(_FakeMediaServerClient, GlobalKey<State<SearchScreen>>)> _pumpTvSearchSc
   SeerrCatalogSource? seerr,
   SourceController? sourceController,
   SourceController? sources,
+  MusicExperience? musicExperience,
 }) async {
   TvDetectionService.debugSetAppleTVOverride(tv);
   tester.view.devicePixelRatio = 1.0;
@@ -1114,6 +1153,7 @@ Future<(_FakeMediaServerClient, GlobalKey<State<SearchScreen>>)> _pumpTvSearchSc
     TranslationProvider(
       child: MultiProvider(
         providers: [
+          if (musicExperience != null) ChangeNotifierProvider<MusicExperience>.value(value: musicExperience),
           ChangeNotifierProvider<MultiServerProvider>.value(value: provider),
           if (sources != null || sourceController != null)
             ChangeNotifierProvider<SourceController>.value(value: sources ?? sourceController!),

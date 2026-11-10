@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Remember the last 20 explicitly submitted searches per profile, with one-tap replay, individual removal, and clearing. Typing alone does not save partial queries.
+
 - Keep failed station download batches separate from bounded offline snapshots. Migrate older retries without losing their candidates, prune only snapshot metadata, and reject saved tracks from a different library or account.
 
 - Use revision-checked downloaded loudness analysis for offline fades and overlapping playback. Start repeated playlist tracks at the selected occurrence instead of the first matching song.

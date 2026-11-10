@@ -641,6 +641,7 @@ class _Translations$settings$nl extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dwing directe RPU-conversie naar Dolby Vision-profiel 8.1 af';
 	@override String get dvConversionHevcStripDescription => 'Verwijder Dolby Vision RPU/EL-lagen en bied gewone HEVC aan';
 	@override String get experimentalDolbyVision => 'Experimentele Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Probeert Dolby Vision/FEL automatisch en schakelt over op compatibele weergave als dit niet beschikbaar is. Standaard ingeschakeld; de werkelijke uitvoer hangt af van het apparaat.';
 	@override String get dvCompatibilityFallback => 'Compatibiliteitsterugval';
 	@override String get dvCompatibilityFallbackDescription => 'Gebruik de standaardrenderer als het experiment niet kan starten. FEL-gegevens kunnen verloren gaan.';
 	@override String get dvExperimentDiagnostics => 'Logboek voor video-experiment';
@@ -5887,6 +5888,7 @@ extension on TranslationsNl {
 			'settings.dvConversionDv81Description' => 'Dwing directe RPU-conversie naar Dolby Vision-profiel 8.1 af',
 			'settings.dvConversionHevcStripDescription' => 'Verwijder Dolby Vision RPU/EL-lagen en bied gewone HEVC aan',
 			'settings.experimentalDolbyVision' => 'Experimentele Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Probeert Dolby Vision/FEL automatisch en schakelt over op compatibele weergave als dit niet beschikbaar is. Standaard ingeschakeld; de werkelijke uitvoer hangt af van het apparaat.',
 			'settings.dvCompatibilityFallback' => 'Compatibiliteitsterugval',
 			'settings.dvCompatibilityFallbackDescription' => 'Gebruik de standaardrenderer als het experiment niet kan starten. FEL-gegevens kunnen verloren gaan.',
 			'settings.dvExperimentDiagnostics' => 'Logboek voor video-experiment',
@@ -5896,9 +5898,9 @@ extension on TranslationsNl {
 			'settings.hdrSdrConversion' => 'HDR-naar-SDR-conversie',
 			'settings.hdrSdrConversionDescription' => 'Kies wat HDR-video omzet als het scherm geen HDR kan weergeven.',
 			'settings.hdrSdrConversionAuto' => 'Automatisch',
-			'settings.hdrSdrConversionAutoDescription' => 'Apparaat vanaf Android 9, speler op oudere versies',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Apparaat vanaf Android 9, speler op oudere versies',
 			'settings.hdrSdrConversionDevice' => 'Apparaat',
 			'settings.hdrSdrConversionDeviceDescription' => 'De videohardware van het apparaat zet het om. Het snelst, maar de kleuren hangen af van het apparaat',
 			'settings.hdrSdrConversionPlayer' => 'Speler',
@@ -6410,9 +6412,9 @@ extension on TranslationsNl {
 			'videoControls.segmentLoop' => 'Fragment herhalen',
 			'videoControls.addBookmark' => 'Voeg Bookmark toe',
 			'videoControls.bookmarkName' => 'Bookmark naam',
-			'videoControls.bookmarkNameHint' => 'Bijvoorbeeld de openingsscène',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Bijvoorbeeld de openingsscène',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Boekmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Voer een naam in voor dit boekmerk.',
 			'videoControls.deleteBookmark' => 'Verwijder Bookmark',
@@ -6924,9 +6926,9 @@ extension on TranslationsNl {
 			'libraries.libraryOptions' => 'Bibliotheekopties',
 			'libraries.content' => 'bibliotheekinhoud',
 			'libraries.selectLibrary' => 'Bibliotheek kiezen',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filters (${count})',
 			'libraries.noRecommendations' => 'Geen aanbevelingen beschikbaar',
 			'libraries.noCollections' => 'Geen collecties in deze bibliotheek',
 			'libraries.noFoldersFound' => 'Geen mappen gevonden',
@@ -7438,9 +7440,9 @@ extension on TranslationsNl {
 			'watchTogether.noCodeInClipboard' => 'Het klembord bevat geen kamercode',
 			'watchTogether.copyCode' => 'Code kopiëren',
 			'watchTogether.codeCopied' => 'Kamercode gekopieerd',
-			'watchTogether.shareInvite' => 'Uitnodiging delen',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Uitnodiging delen',
 			'watchTogether.inviteCopied' => 'Uitnodiging gekopieerd. Plak deze in een bericht.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Neem deel aan mijn Samen kijken-kamer in Pleazyng: open Samen kijken, kies "Deelnemen aan kamer" en voer ${code} in.',
 			'watchTogether.openSessionControls' => 'Bediening voor Samen kijken openen',
@@ -7952,9 +7954,9 @@ extension on TranslationsNl {
 			'metadataEdit.enterImageUrl' => 'Voer de afbeeldings-URL in',
 			'metadataEdit.imageUrl' => 'Afbeeldings-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata bijgewerkt',
-			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Metadata bijwerken mislukt',
 			'metadataEdit.artworkUpdated' => 'Illustraties bijgewerkt',
 			'metadataEdit.artworkUpdateFailed' => 'Illustraties bijwerken mislukt',
 			'metadataEdit.noArtworkAvailable' => 'Geen illustraties beschikbaar',
@@ -8466,9 +8468,9 @@ extension on TranslationsNl {
 			'universalMedia.favoriteSaved' => 'Stream favoriete bewaard naar dit profiel',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('nl'))(n, one: 'Skipped ${count} niet ondersteund of onveilig playlist ingang.', other: 'Skipped ${count} niet ondersteunde of onveilige playlist-inputs.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adres',
-			'universalMedia.playlistAddressHelp' => 'Open een M3U, M3u8 of PLS playlist vanuit een webadres. Direct stream links slaan de playlist niet op.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Open een M3U, M3u8 of PLS playlist vanuit een webadres. Direct stream links slaan de playlist niet op.',
 			'universalMedia.choosePlaylist' => 'Kies een playlist bestand',
 			'universalMedia.openPlaylist' => 'Open playlist',
 			'universalMedia.playlistFormatsHelp' => 'Een playlist kan maximaal 1.000 items en 2 MB bevatten.HLS manifesteert open als stromen zodat de speler een kwaliteit kan kiezen.',
@@ -8980,9 +8982,9 @@ extension on TranslationsNl {
 			'sourceSetup.apiKey' => 'API-sleutel',
 			'sourceSetup.optionalUsername' => 'Gebruikersnaam van het account (optioneel)',
 			'sourceSetup.optionalPassword' => 'Wachtwoord van het account (optioneel)',
-			'sourceSetup.subtitlePrivacy' => 'Vraag een API-sleutel aan op opensubtitles.com. Zoeken verstuurt de videotitel en beschikbare IMDb/TMDB-ID’s, nooit het videobestand. De sleutel en optionele accountgegevens worden samen met deze bron versleuteld.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Vraag een API-sleutel aan op opensubtitles.com. Zoeken verstuurt de videotitel en beschikbare IMDb/TMDB-ID’s, nooit het videobestand. De sleutel en optionele accountgegevens worden samen met deze bron versleuteld.',
 			'sourceSetup.automaticMetadata' => 'Automatische online videometadata',
 			'sourceSetup.metadataPrivacy' => 'Verstuurt alleen titel/jaar uit de bestandsnaam en afleveringsnummers, of een NFO-ID; nooit media of toegangsgegevens. NFO-velden blijven leidend.',
 			'sourceSetup.nfsEncryptionFailure' => 'Controleer voor versleutelde NFS de ondersteuning van RFC 9289 en TLS 1.3 bij beide NAS-services, de certificaatnaam en de UID/GID van de share. Pleazyng probeert deze verbinding niet opnieuw zonder versleuteling.',

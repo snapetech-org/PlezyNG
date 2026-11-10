@@ -1,0 +1,1471 @@
+{
+  "schema_version": 1,
+  "upstream_repository": "edde746/plezy",
+  "fork_repository": "snapetech-org/pleazyng",
+  "merge_base": "1fc16b6c11b2f154c80484f95ba08074d2433e41",
+  "reviewed_snapshot": "738e18fdc552ace910dedabf6e689ab74e1dae58",
+  "license_blob": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+  "disposition_counts": {
+    "excluded": 6,
+    "covered": 24,
+    "retained": 8,
+    "adapted": 23,
+    "native-pending": 3
+  },
+  "entries": [
+    {
+      "sha": "43ae7da7b6ab7fa526cb14063dfb7f1427dc6a4d",
+      "source_url": "https://github.com/edde746/plezy/commit/43ae7da7b6ab7fa526cb14063dfb7f1427dc6a4d",
+      "author": {
+        "login": "K1ngfish3r",
+        "url": "https://github.com/K1ngfish3r"
+      },
+      "subject": "docs: update aerynOS installation instruction (#2864)",
+      "disposition": "retained",
+      "evidence": "Retain the fork’s separately maintained package identity and distribution instructions instead of copying the upstream package command verbatim.",
+      "files": [
+        "README.md"
+      ]
+    },
+    {
+      "sha": "fa7fadece1ab87d07a144a25549fedf3c056dcf9",
+      "source_url": "https://github.com/edde746/plezy/commit/fa7fadece1ab87d07a144a25549fedf3c056dcf9",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(watch-together): make the participant count badge clickable (#2846)",
+      "disposition": "covered",
+      "evidence": "The participant badge is already interactive; the existing implementation and regression coverage match the upstream behavior.",
+      "files": [
+        "lib/screens/discover_screen.dart",
+        "test/screens/discover_screen_test.dart"
+      ]
+    },
+    {
+      "sha": "43d8e8562b8272e2d339efb38828e9fb1f2d03c9",
+      "source_url": "https://github.com/edde746/plezy/commit/43d8e8562b8272e2d339efb38828e9fb1f2d03c9",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(player): apply swipe brightness to the active display on iPhone Duo",
+      "disposition": "covered",
+      "evidence": "The iPhone brightness path already uses the active display and retains the fork’s native lifecycle handling.",
+      "files": [
+        "ios/Runner/AppDelegate.swift"
+      ]
+    },
+    {
+      "sha": "ffe7d792d865750880e6fc3369c7ec2ff08b37dc",
+      "source_url": "https://github.com/edde746/plezy/commit/ffe7d792d865750880e6fc3369c7ec2ff08b37dc",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "feat(libraries): add a Genres tab that opens Browse filtered to one genre",
+      "disposition": "covered",
+      "evidence": "Genre browsing already exists through backend-neutral library tabs; retain the fork’s query and source adapters.",
+      "files": [
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/media/library_genre.dart",
+        "lib/media/media_server_client.dart",
+        "lib/screens/libraries/libraries_screen.dart",
+        "lib/screens/libraries/tabs/library_browse_tab.dart",
+        "lib/screens/libraries/tabs/library_genres_tab.dart",
+        "lib/services/jellyfin_client.dart",
+        "lib/services/jellyfin_client/parts/browse.dart",
+        "lib/services/plex_client.dart",
+        "test/screens/libraries/libraries_screen_test.dart",
+        "test/services/jellyfin_client_emby_dialect_test.dart",
+        "test/services/plex_library_details_test.dart"
+      ]
+    },
+    {
+      "sha": "1f357ec0a6cef67ffe2b5eaf5d7cab5b9948f69f",
+      "source_url": "https://github.com/edde746/plezy/commit/1f357ec0a6cef67ffe2b5eaf5d7cab5b9948f69f",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "chore(android): route the mpv core with mpv-android's playback helpers (#2872)",
+      "disposition": "retained",
+      "evidence": "Keep fork-local routing and Media3 EGLSurfaceTexture consumption, preserving custom motion/HDR paths instead of replacing the native AAR and helpers wholesale.",
+      "files": [
+        "android/app/build.gradle.kts",
+        "android/app/src/androidTestDebug/kotlin/com/edde746/plezy/mpv/MpvLifecycleDeviceTest.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/PlezyActivity.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/exoplayer/ExoPlayerCore.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/DecoderOptions.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/GpuVoPolicy.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlaceholderSurface.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlayerCore.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/VideoRectPolicy.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/shared/GlCapabilities.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/shared/MediaCodecQuery.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/mpv/GpuVoPolicyTest.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/mpv/MpvPlayerCoreRoutingTest.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/mpv/MpvPlayerPluginTest.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/mpv/VideoRectPolicyTest.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/shared/MediaCodecQueryTest.kt",
+        "android/gradle/verification-metadata.xml",
+        "ios/Runner.xcodeproj/project.pbxproj",
+        "ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "lib/widgets/video_controls/widgets/performance_overlay/performance_stats.dart",
+        "macos/Runner.xcodeproj/project.pbxproj",
+        "macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "mpv-build.lock.json",
+        "tvos/Runner.xcodeproj/project.pbxproj",
+        "tvos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "tvos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+      ]
+    },
+    {
+      "sha": "1dd75b3e5e95913cdaa5b8c22911490e72dfb7c5",
+      "source_url": "https://github.com/edde746/plezy/commit/1dd75b3e5e95913cdaa5b8c22911490e72dfb7c5",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "ci(packages): skip package updates for pre-releases",
+      "disposition": "adapted",
+      "evidence": "19666675a: reject GitHub pre-release metadata even for stable-looking tags; preserve manual publication. Six resolver behavior tests passed.",
+      "files": [
+        ".github/workflows/update-packages.yml",
+        "scripts/checks/check_update_packages_workflow.py"
+      ]
+    },
+    {
+      "sha": "d8e991d30d66ca0e1c7b4f098bf4915c3e23d1f8",
+      "source_url": "https://github.com/edde746/plezy/commit/d8e991d30d66ca0e1c7b4f098bf4915c3e23d1f8",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(watch-together): log why a relay connection or room attempt fails",
+      "disposition": "covered",
+      "evidence": "Watch Together diagnostic behavior is present; retain the fork’s log redaction and session guards.",
+      "files": [
+        "lib/watch_together/providers/watch_together_provider.dart",
+        "lib/watch_together/services/watch_party_relays.dart",
+        "pubspec.lock",
+        "pubspec.yaml"
+      ]
+    },
+    {
+      "sha": "0a4fdd179f82e89aea2b61b3f45df5938ca28d6e",
+      "source_url": "https://github.com/edde746/plezy/commit/0a4fdd179f82e89aea2b61b3f45df5938ca28d6e",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "chore: exclude nested git worktrees from analysis",
+      "disposition": "covered",
+      "evidence": "Exact patch equivalence: nested worktrees are already excluded from analysis.",
+      "files": [
+        "analysis_options.yaml"
+      ]
+    },
+    {
+      "sha": "b5bae49493fe4a28bd19f209a7331e134f928f87",
+      "source_url": "https://github.com/edde746/plezy/commit/b5bae49493fe4a28bd19f209a7331e134f928f87",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "feat(libraries): shuffle a whole movie or TV library",
+      "disposition": "covered",
+      "evidence": "Whole-library shuffle and queue launch are already implemented through the fork’s backend-neutral client APIs.",
+      "files": [
+        "README.md",
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/screens/libraries/libraries_screen.dart",
+        "lib/services/jellyfin_client/parts/browse.dart",
+        "lib/services/jellyfin_sequential_launcher.dart",
+        "lib/services/media_list_playback_launcher.dart",
+        "lib/services/play_queue_launcher.dart",
+        "lib/services/plex_client.dart",
+        "test/services/jellyfin_sequential_launcher_test.dart",
+        "test/services/play_queue_launcher_test.dart"
+      ]
+    },
+    {
+      "sha": "caf76b9589ba67e26e6f1820603c20ef8a5a9cb1",
+      "source_url": "https://github.com/edde746/plezy/commit/caf76b9589ba67e26e6f1820603c20ef8a5a9cb1",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "feat(discover): ask which copy to play when Continue Watching merged several",
+      "disposition": "covered",
+      "evidence": "Continue Watching version selection already exists; newer copy and artwork corrections were independently adapted below.",
+      "files": [
+        "README.md",
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/media/media_item_merge.dart",
+        "lib/providers/discover_provider.dart",
+        "lib/screens/catalog_item_detail_screen.dart",
+        "lib/services/data_aggregation_service.dart",
+        "lib/utils/media_navigation_helper.dart",
+        "test/providers/discover_provider_test.dart",
+        "test/services/data_aggregation_bridge_test.dart"
+      ]
+    },
+    {
+      "sha": "9829d247f5fc142aeefe7bce09bf712d24e48e1a",
+      "source_url": "https://github.com/edde746/plezy/commit/9829d247f5fc142aeefe7bce09bf712d24e48e1a",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "feat(player): match the display refresh rate in fullscreen on macOS",
+      "disposition": "covered",
+      "evidence": "macOS decoded-display matching and its Swift regression coverage are already present.",
+      "files": [
+        "lib/screens/settings/playback_settings_screen.dart",
+        "lib/screens/video_player/parts/display_matching.dart",
+        "lib/screens/video_player/parts/playback_services.dart",
+        "lib/screens/video_player_screen.dart",
+        "lib/services/display_mode_service.dart",
+        "macos/Runner.xcodeproj/project.pbxproj",
+        "macos/Runner/MpvPlayer/DisplayModeManager.swift",
+        "macos/Runner/MpvPlayer/MpvPlayerPlugin.swift",
+        "test/services/display_mode_service_test.dart"
+      ]
+    },
+    {
+      "sha": "4f2a4f25a78525fca196c79a3fbcc70be3c1c2db",
+      "source_url": "https://github.com/edde746/plezy/commit/4f2a4f25a78525fca196c79a3fbcc70be3c1c2db",
+      "author": {
+        "login": "jucor",
+        "url": "https://github.com/jucor"
+      },
+      "subject": "fix(jellyfin): keep the picked subtitle among identical same-language files (#2880)",
+      "disposition": "covered",
+      "evidence": "Jellyfin identical-subtitle choice is already implemented with matching production and regression behavior.",
+      "files": [
+        "lib/services/jellyfin_client/parts/playback.dart",
+        "test/services/jellyfin_client_urls_test.dart"
+      ]
+    },
+    {
+      "sha": "0a9ad36e27bfff7e45d4eb9dd363a4ad7d47b47a",
+      "source_url": "https://github.com/edde746/plezy/commit/0a9ad36e27bfff7e45d4eb9dd363a4ad7d47b47a",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(profiles): prompt re-auth when plex.tv rejects the account token (#2904)",
+      "disposition": "covered",
+      "evidence": "Plex profile reauthentication is present; preserve scoped client, transport and permission state.",
+      "files": [
+        "lib/profiles/active_profile_binder.dart",
+        "lib/profiles/plex_home_switch.dart",
+        "lib/screens/profile/borrow_connection_screen.dart",
+        "lib/screens/settings/add_plex_account_screen.dart",
+        "test/profiles/active_profile_binder_test.dart"
+      ]
+    },
+    {
+      "sha": "ff2a02b7936ecc68f9d4444b3e83459825af0a8d",
+      "source_url": "https://github.com/edde746/plezy/commit/ff2a02b7936ecc68f9d4444b3e83459825af0a8d",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(android): keep remote OK releases whose scan code is a modifier (#2883)",
+      "disposition": "covered",
+      "evidence": "Remote OK modifier/scan handling is present; retain the fork’s additional Android back-key handling.",
+      "files": [
+        "android/app/src/main/kotlin/com/edde746/plezy/ModifierScanCode.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/PlezyActivity.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/ModifierScanCodeTest.kt"
+      ]
+    },
+    {
+      "sha": "9bb6ab5f32980bce749ad05ad56e36317a7cd9c6",
+      "source_url": "https://github.com/edde746/plezy/commit/9bb6ab5f32980bce749ad05ad56e36317a7cd9c6",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "chore: bump build number to 159",
+      "disposition": "excluded",
+      "evidence": "Retain the fork’s release version and build numbering; upstream build 159 is upstream-only metadata.",
+      "files": [
+        "pubspec.yaml"
+      ]
+    },
+    {
+      "sha": "d832b4212ceabc68bfee6785177f40bd2a724723",
+      "source_url": "https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723",
+      "author": {
+        "login": "nataloko",
+        "url": "https://github.com/nataloko"
+      },
+      "subject": "feat(linux): ship an AppImage with zsync update information (#2910)",
+      "disposition": "adapted",
+      "evidence": "Shared x64 AppImage packager, fork-specific update metadata, verified zsync sidecar, SHA-256/provenance for both files, legacy-safe assembly and hosted smoke coverage.",
+      "files": [
+        ".github/workflows/build.yml",
+        ".github/workflows/ci.yml",
+        "README.md",
+        "linux/packaging/build-appimage.sh",
+        "linux/packaging/fetch-appimage-tools.sh"
+      ]
+    },
+    {
+      "sha": "7b999fb0f4b7ccf4dfb85ee9cc38883b06978a76",
+      "source_url": "https://github.com/edde746/plezy/commit/7b999fb0f4b7ccf4dfb85ee9cc38883b06978a76",
+      "author": {
+        "login": "jucor",
+        "url": "https://github.com/jucor"
+      },
+      "subject": "fix(player): say a subtitle download may have failed when it never appears (#2874)",
+      "disposition": "covered",
+      "evidence": "Subtitle download failures already produce user-facing feedback; keep the fork’s download/session architecture.",
+      "files": [
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings.g.dart",
+        "lib/i18n/strings_az.g.dart",
+        "lib/i18n/strings_bg.g.dart",
+        "lib/i18n/strings_da.g.dart",
+        "lib/i18n/strings_de.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/strings_es.g.dart",
+        "lib/i18n/strings_fr.g.dart",
+        "lib/i18n/strings_hu.g.dart",
+        "lib/i18n/strings_it.g.dart",
+        "lib/i18n/strings_ja.g.dart",
+        "lib/i18n/strings_kk.g.dart",
+        "lib/i18n/strings_ko.g.dart",
+        "lib/i18n/strings_nb.g.dart",
+        "lib/i18n/strings_nl.g.dart",
+        "lib/i18n/strings_pl.g.dart",
+        "lib/i18n/strings_pt.g.dart",
+        "lib/i18n/strings_ru.g.dart",
+        "lib/i18n/strings_sv.g.dart",
+        "lib/i18n/strings_tr.g.dart",
+        "lib/i18n/strings_uz.g.dart",
+        "lib/i18n/strings_zh.g.dart",
+        "lib/i18n/strings_zh_Hant.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/widgets/video_controls/sheets/subtitle_search_sheet.dart",
+        "test/widgets/subtitle_search_sheet_test.dart"
+      ]
+    },
+    {
+      "sha": "63f8cd84c78d684b6ed2d19cf989ec61dade8417",
+      "source_url": "https://github.com/edde746/plezy/commit/63f8cd84c78d684b6ed2d19cf989ec61dade8417",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(tv): keep the library header still while moving along the top row",
+      "disposition": "covered",
+      "evidence": "The TV library header already remains stationary under content scrolling.",
+      "files": [
+        "lib/focus/focusable_wrapper.dart",
+        "test/focus/focusable_wrapper_test.dart"
+      ]
+    },
+    {
+      "sha": "e68af60f58ef6d14a1d7c55c4d163a7da4c94652",
+      "source_url": "https://github.com/edde746/plezy/commit/e68af60f58ef6d14a1d7c55c4d163a7da4c94652",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(focus): keep the remote on a detail page when the main screen under it refocuses",
+      "disposition": "covered",
+      "evidence": "Covered-route focus boundaries are present; the later unclaimed-focus handoff correction was adapted below.",
+      "files": [
+        "lib/focus/covered_route_focus_boundary.dart",
+        "lib/screens/main_screen.dart",
+        "test/focus/covered_route_focus_boundary_test.dart"
+      ]
+    },
+    {
+      "sha": "41c8aa0768e9e21a1ad2b37a170daf149bf13ffe",
+      "source_url": "https://github.com/edde746/plezy/commit/41c8aa0768e9e21a1ad2b37a170daf149bf13ffe",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(servers): keep a reachable server online when its health probe hits a dead socket",
+      "disposition": "covered",
+      "evidence": "Dead-socket server probing/failover behavior is already present, with additional fork transport hardening retained.",
+      "files": [
+        "lib/services/jellyfin_client.dart",
+        "lib/services/plex_client.dart",
+        "lib/utils/failover_http_client.dart",
+        "test/services/plex_client_http_contract_test.dart",
+        "test/utils/failover_http_client_test.dart"
+      ]
+    },
+    {
+      "sha": "9b514179d34970496eb557f3fb425a034a9e6e17",
+      "source_url": "https://github.com/edde746/plezy/commit/9b514179d34970496eb557f3fb425a034a9e6e17",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "docs: restrict the Plezy name and logo for distributed forks",
+      "disposition": "excluded",
+      "evidence": "Owner-directed exclusion of the trademark policy and associated README changes. Pleazyng’s name and logo remain unchanged; LICENSE is unchanged.",
+      "files": [
+        "README.md",
+        "TRADEMARKS.md"
+      ]
+    },
+    {
+      "sha": "ba1bd03f5bdf04897ad3aa88112fd30746e7dc08",
+      "source_url": "https://github.com/edde746/plezy/commit/ba1bd03f5bdf04897ad3aa88112fd30746e7dc08",
+      "author": {
+        "login": "yellowleadarr",
+        "url": "https://github.com/yellowleadarr"
+      },
+      "subject": "feat(player): offer a server transcode from the HTTP 500 server-limit dialog (#2911)",
+      "disposition": "covered",
+      "evidence": "Forced transcode after server-limit HTTP 500 is already present; retain the fork’s capability and authorization checks.",
+      "files": [
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/screens/video_player/parts/errors.dart",
+        "lib/screens/video_player/parts/playback_reload.dart",
+        "lib/screens/video_player/playback_failure_action.dart",
+        "lib/screens/video_player_screen.dart",
+        "lib/services/playback_initialization_types.dart",
+        "lib/services/plex_client.dart",
+        "lib/utils/dialogs.dart",
+        "test/screens/video_player/server_limit_capped_preset_no_offer_test.dart",
+        "test/screens/video_player/server_limit_transcode_offer_test.dart",
+        "test/screens/video_player/server_limit_transcode_refused_test.dart",
+        "test/screens/video_player/server_limit_transcode_test.dart",
+        "test/services/plex_playback_data_request_test.dart",
+        "test/test_helpers/server_limit_harness.dart",
+        "test/utils/dialogs_test.dart"
+      ]
+    },
+    {
+      "sha": "90b7ccca68cffcfe51fc8994c3463fcbf769ec18",
+      "source_url": "https://github.com/edde746/plezy/commit/90b7ccca68cffcfe51fc8994c3463fcbf769ec18",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build(windows): bump patched engine to windows-v3.47.1+2",
+      "disposition": "adapted",
+      "evidence": "19666675a: pin Windows engine +2 for pending-resize correction, preserve the Flutter ABI stamp and checksum checks. Published digest and source delta verified; Windows execution qualification is separate.",
+      "files": [
+        "windows/tool/install-patched-engine.ps1"
+      ]
+    },
+    {
+      "sha": "5cb4dc8aa15586f7555715a90425e41b5f5561c9",
+      "source_url": "https://github.com/edde746/plezy/commit/5cb4dc8aa15586f7555715a90425e41b5f5561c9",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build: pin mpv-build assets from the release each run uploaded them to",
+      "disposition": "covered",
+      "evidence": "The fork’s native revision resolver already records full per-asset provenance/URLs and capability pins; retain that stronger lock format.",
+      "files": [
+        "scripts/set_native_revision.sh",
+        "scripts/test_set_native_revision.py"
+      ]
+    },
+    {
+      "sha": "f7ab4e6183ca20019c8f3faeaa7aa39f8a5535e0",
+      "source_url": "https://github.com/edde746/plezy/commit/f7ab4e6183ca20019c8f3faeaa7aa39f8a5535e0",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build: pin mpv-build with the optional letterbox fill on the Android OSD plane",
+      "disposition": "retained",
+      "evidence": "Retain the fork’s checksum/capability-locked native assets. This upstream pin is not a drop-in replacement for its normal FEL/NPU components.",
+      "files": [
+        "android/gradle/verification-metadata.xml",
+        "ios/Runner.xcodeproj/project.pbxproj",
+        "ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcodeproj/project.pbxproj",
+        "macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "mpv-build.lock.json",
+        "tvos/Runner.xcodeproj/project.pbxproj",
+        "tvos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "tvos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+      ]
+    },
+    {
+      "sha": "63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4",
+      "source_url": "https://github.com/edde746/plezy/commit/63f8cd5a054e2ecc5c28dd30fe8066f4356a10c4",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(player): keep Dolby Vision letterbox bars black on Amlogic boxes with mpv",
+      "disposition": "native-pending",
+      "evidence": "Not shipped: Amlogic transparent letterbox control needs vo-mediacodec-letterbox-fill, absent from the active fork engine patch. Keep existing output behavior until its engine implementation is integrated.",
+      "files": [
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlayerCore.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/shared/DeviceQuirks.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/shared/PlayerSurfaceHost.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/shared/DeviceQuirksTest.kt"
+      ]
+    },
+    {
+      "sha": "4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb",
+      "source_url": "https://github.com/edde746/plezy/commit/4eabc30c804c9e6869a8c48fa1d6d174f7d36fbb",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(focus): tint the background focus fill from the theme so it shows in light mode",
+      "disposition": "adapted",
+      "evidence": "eab1f98a4: theme-derived focus fills, retaining Mono palettes and custom player chrome; focused theme tests passed.",
+      "files": [
+        "lib/focus/focus_chrome.dart",
+        "lib/focus/focus_theme.dart",
+        "lib/focus/focusable_action_bar.dart",
+        "lib/focus/focusable_wrapper.dart",
+        "lib/screens/livetv/reorder_favorites_sheet.dart",
+        "lib/screens/music/album_detail_screen.dart",
+        "lib/watch_together/widgets/watch_together_overlay.dart",
+        "lib/widgets/library_management_sheet.dart",
+        "lib/widgets/video_controls/widgets/content_strip.dart",
+        "lib/widgets/video_controls/widgets/skip_marker_button.dart",
+        "test/focus/focusable_wrapper_test.dart"
+      ]
+    },
+    {
+      "sha": "e871d095171855914d8f0634b3507a80e67bedce",
+      "source_url": "https://github.com/edde746/plezy/commit/e871d095171855914d8f0634b3507a80e67bedce",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(remote): keep the selected tab across a companion remote reconnect",
+      "disposition": "adapted",
+      "evidence": "366cd4965: preserve companion-remote control and scroll state through reconnect; focused remote tests passed.",
+      "files": [
+        "lib/screens/companion_remote/mobile_remote_screen.dart",
+        "test/screens/companion_remote/mobile_remote_screen_test.dart"
+      ]
+    },
+    {
+      "sha": "13426a00c034097b2301967f281adbfd58381598",
+      "source_url": "https://github.com/edde746/plezy/commit/13426a00c034097b2301967f281adbfd58381598",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(ui): fade light-theme scrims to a clear surface instead of clear black",
+      "disposition": "adapted",
+      "evidence": "eab1f98a4: correct light-theme scrim interpolation while preserving the fork’s rasterized gradients and RTL behavior.",
+      "files": [
+        "lib/screens/discover_screen.dart",
+        "lib/widgets/toolbar_scrim.dart",
+        "lib/widgets/tv_browse_rail.dart",
+        "lib/widgets/tv_spotlight_background.dart",
+        "test/widgets/toolbar_scrim_test.dart"
+      ]
+    },
+    {
+      "sha": "16d5b404cb14163a776b701265e55b6f66cdfc34",
+      "source_url": "https://github.com/edde746/plezy/commit/16d5b404cb14163a776b701265e55b6f66cdfc34",
+      "author": {
+        "login": "moust4ki",
+        "url": "https://github.com/moust4ki"
+      },
+      "subject": "fix(tvos): stop offering Explore actions tvOS cannot open (#2939)",
+      "disposition": "adapted",
+      "evidence": "f8849ad49: internal library trailers, capability-checked YouTube handoff and actionable errors, retaining Seerr/preview UI and rejecting unsafe provider URI schemes.",
+      "files": [
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings.g.dart",
+        "lib/i18n/strings_az.g.dart",
+        "lib/i18n/strings_bg.g.dart",
+        "lib/i18n/strings_da.g.dart",
+        "lib/i18n/strings_de.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/strings_es.g.dart",
+        "lib/i18n/strings_fr.g.dart",
+        "lib/i18n/strings_hu.g.dart",
+        "lib/i18n/strings_it.g.dart",
+        "lib/i18n/strings_ja.g.dart",
+        "lib/i18n/strings_kk.g.dart",
+        "lib/i18n/strings_ko.g.dart",
+        "lib/i18n/strings_nb.g.dart",
+        "lib/i18n/strings_nl.g.dart",
+        "lib/i18n/strings_pl.g.dart",
+        "lib/i18n/strings_pt.g.dart",
+        "lib/i18n/strings_ru.g.dart",
+        "lib/i18n/strings_sv.g.dart",
+        "lib/i18n/strings_tr.g.dart",
+        "lib/i18n/strings_uz.g.dart",
+        "lib/i18n/strings_zh.g.dart",
+        "lib/i18n/strings_zh_Hant.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/media/primary_trailer.dart",
+        "lib/models/external_player_models.dart",
+        "lib/screens/catalog_item_detail_screen.dart",
+        "lib/screens/media_detail_screen.dart",
+        "lib/utils/external_url.dart",
+        "lib/utils/trailer_urls.dart",
+        "lib/widgets/catalog_context_menu.dart",
+        "test/media/primary_trailer_test.dart",
+        "test/screens/catalog_item_detail_screen_test.dart",
+        "test/utils/trailer_urls_test.dart",
+        "test/widgets/catalog_context_menu_test.dart",
+        "tvos/Runner/Info.plist"
+      ]
+    },
+    {
+      "sha": "b4192d6f355921aa9dbdd89b000012e7c4496fa7",
+      "source_url": "https://github.com/edde746/plezy/commit/b4192d6f355921aa9dbdd89b000012e7c4496fa7",
+      "author": {
+        "login": "v-vincere",
+        "url": "https://github.com/v-vincere"
+      },
+      "subject": "feat(ios): adapt the mobile shell to iPhone Duo's vertical bar and fold (#2922)",
+      "disposition": "adapted",
+      "evidence": "f8849ad49: fold/vertical-bar shell and native bridge with SDK availability guards; preserve scrollable rails, system styling, keyboard and back handling. Geometry is headlessly tested; Apple SDK/device qualification is separate.",
+      "files": [
+        "ios/Runner.xcodeproj/project.pbxproj",
+        "ios/Runner/Base.lproj/Main.storyboard",
+        "ios/Runner/MpvPlayer/MpvPlayerCore.swift",
+        "ios/Runner/PlezyFlutterViewController.swift",
+        "lib/main.dart",
+        "lib/screens/main_screen.dart",
+        "lib/screens/video_player_screen.dart",
+        "lib/utils/iphone_duo.dart",
+        "lib/widgets/mobile_navigation_rail.dart",
+        "lib/widgets/overlay_sheet.dart",
+        "lib/widgets/vertical_bar_shell.dart",
+        "test/widgets/overlay_sheet_test.dart",
+        "test/widgets/vertical_bar_shell_test.dart"
+      ]
+    },
+    {
+      "sha": "c7f86ab85fbc2c3497676744b6b5b0b6907887d7",
+      "source_url": "https://github.com/edde746/plezy/commit/c7f86ab85fbc2c3497676744b6b5b0b6907887d7",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(ui): keep the status bar clear on screens without an app bar (#2934)",
+      "disposition": "adapted",
+      "evidence": "eab1f98a4: transparent root status-bar styling, retaining the fork’s form-factor scaling and theme behavior.",
+      "files": [
+        "lib/main.dart",
+        "lib/widgets/app_system_ui_style.dart",
+        "test/widgets/app_system_ui_style_test.dart"
+      ]
+    },
+    {
+      "sha": "268c072b40b0ca23ab15a98ba55a5e292517b253",
+      "source_url": "https://github.com/edde746/plezy/commit/268c072b40b0ca23ab15a98ba55a5e292517b253",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build: pin mpv-build with user shaders on the AVFoundation video output",
+      "disposition": "retained",
+      "evidence": "Retain fork Apple native package pins; the upstream shader-bearing package cannot replace the fork’s ordered PCM, motion and experimental components wholesale.",
+      "files": [
+        "ios/Runner.xcodeproj/project.pbxproj",
+        "ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcodeproj/project.pbxproj",
+        "macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "mpv-build.lock.json",
+        "tvos/Runner.xcodeproj/project.pbxproj",
+        "tvos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "tvos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+      ]
+    },
+    {
+      "sha": "2e1654b316150f59cbc4774602ed4f02a3515527",
+      "source_url": "https://github.com/edde746/plezy/commit/2e1654b316150f59cbc4774602ed4f02a3515527",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "feat(player): enable shaders and ambient lighting on iOS, tvOS and macOS",
+      "disposition": "native-pending",
+      "evidence": "Not shipped: the active fork AVFoundation patch lacks the GLSL stage. Keep the platform capability gate until that native implementation is packaged and validated.",
+      "files": [
+        "README.md",
+        "lib/screens/settings/keyboard_shortcuts_screen.dart",
+        "lib/services/agent_scoped_settings_commands.dart",
+        "lib/services/agent_settings_commands.dart",
+        "lib/services/ambient_lighting_service.dart",
+        "lib/services/shader_service.dart",
+        "lib/services/shortcut_action.dart",
+        "test/screens/video_player/ambient_lighting_startup_restore_test.dart",
+        "test/screens/video_player/visual_effects_controller_test.dart",
+        "test/services/ambient_lighting_service_test.dart",
+        "test/services/shader_service_test.dart"
+      ]
+    },
+    {
+      "sha": "178441bff816425d549fd295801bff0868d16afb",
+      "source_url": "https://github.com/edde746/plezy/commit/178441bff816425d549fd295801bff0868d16afb",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "feat(trackers): load anime mappings from the edde746/anime-mappings release",
+      "disposition": "retained",
+      "evidence": "Keep independent Fribb/Anime-Lists source feeds and their caches. The consolidated upstream-maintainer binary feed changes the data authority and cache format, uses unbounded inflation and writes before decode validation.",
+      "files": [
+        "android/app/src/main/res/xml/network_security_config.xml",
+        "lib/models/trackers/fribb_mapping_row.dart",
+        "lib/models/trackers/fribb_mapping_row.g.dart",
+        "lib/services/catalog/anilist_catalog_source.dart",
+        "lib/services/catalog/mal_catalog_source.dart",
+        "lib/services/trackers/anime_lists_index.dart",
+        "lib/services/trackers/anime_lists_mapping_store.dart",
+        "lib/services/trackers/anime_mappings_decoder.dart",
+        "lib/services/trackers/anime_mappings_store.dart",
+        "lib/services/trackers/etag_cached_remote_store.dart",
+        "lib/services/trackers/fribb_index.dart",
+        "lib/services/trackers/fribb_mapping_store.dart",
+        "lib/services/trackers/tracker_coordinator.dart",
+        "lib/services/trackers/tracker_id_resolver.dart",
+        "lib/utils/certificate_trust.dart",
+        "test/android/network_security_config_test.dart",
+        "test/services/catalog/anilist_catalog_source_test.dart",
+        "test/services/catalog/mal_catalog_source_test.dart",
+        "test/services/trackers/anime_lists_index_test.dart",
+        "test/services/trackers/anime_lists_mapping_store_test.dart",
+        "test/services/trackers/anime_mappings_decoder_test.dart",
+        "test/services/trackers/fribb_index_test.dart",
+        "test/services/trackers/fribb_mapping_store_test.dart",
+        "test/services/trackers/tracker_coordinator_manual_test.dart",
+        "test/services/trackers/tracker_id_resolver_test.dart",
+        "test/services/trackers/tracker_write_retry_test.dart"
+      ]
+    },
+    {
+      "sha": "04ec8506c78dc29b4dfc18f751943fb6ecb89eec",
+      "source_url": "https://github.com/edde746/plezy/commit/04ec8506c78dc29b4dfc18f751943fb6ecb89eec",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(sheets): keep hosted sheets clear of iPhone Duo's status bar and vertical bar",
+      "disposition": "adapted",
+      "evidence": "f8849ad49: sheet safe areas and vertical-bar alignment, preserving keyboard insets and existing focus/back behavior.",
+      "files": [
+        "lib/widgets/overlay_sheet.dart",
+        "test/widgets/overlay_sheet_test.dart"
+      ]
+    },
+    {
+      "sha": "ae63adbc8fd82bbcb8070be95066bdf1dd04febf",
+      "source_url": "https://github.com/edde746/plezy/commit/ae63adbc8fd82bbcb8070be95066bdf1dd04febf",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(server): build the relay with Go 1.27.3 for the crypto/x509 advisory",
+      "disposition": "covered",
+      "evidence": "The relay already uses Go 1.27.3 in go.mod and its checksum-pinned container image.",
+      "files": [
+        "server/Dockerfile",
+        "server/go.mod"
+      ]
+    },
+    {
+      "sha": "6a2304497b59c58acbd1149efe2bd11494501414",
+      "source_url": "https://github.com/edde746/plezy/commit/6a2304497b59c58acbd1149efe2bd11494501414",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build(website): update vite and undici past open advisories",
+      "disposition": "excluded",
+      "evidence": "Upstream website dependency update does not apply to the fork’s separately maintained website. Do not restore the removed upstream website tree.",
+      "files": [
+        "website/bun.lock",
+        "website/bun_audit_baseline.json",
+        "website/package.json"
+      ]
+    },
+    {
+      "sha": "52e34acc7b5c2153bedd427b759efb2886c19514",
+      "source_url": "https://github.com/edde746/plezy/commit/52e34acc7b5c2153bedd427b759efb2886c19514",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "test(ios): expect ao_spatial first on iOS 26 and allow the speed flush's restart",
+      "disposition": "covered",
+      "evidence": "The fork’s audio-output order test already tolerates the spatial output before AVFoundation. Use the later jump/rate regression below instead of broadly loosening timing tolerance.",
+      "files": [
+        "ios/RunnerTests/RunnerTests.swift"
+      ]
+    },
+    {
+      "sha": "d2424018297a00fe1f8bc97ef2bb207f6a515499",
+      "source_url": "https://github.com/edde746/plezy/commit/d2424018297a00fe1f8bc97ef2bb207f6a515499",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(android): use Skia on phones and tablets without Vulkan 1.1",
+      "disposition": "adapted",
+      "evidence": "d43a1cf6e: select Skia without Vulkan 1.1; seven standalone Kotlin renderer tests passed.",
+      "files": [
+        "android/app/src/main/kotlin/com/edde746/plezy/FlutterRendererPolicy.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/PlezyActivity.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/FlutterRendererPolicyTest.kt"
+      ]
+    },
+    {
+      "sha": "38c48f14ac4107cc94b2ab2f41444f0448d64da0",
+      "source_url": "https://github.com/edde746/plezy/commit/38c48f14ac4107cc94b2ab2f41444f0448d64da0",
+      "author": {
+        "login": "strata-scribe",
+        "url": "https://github.com/strata-scribe"
+      },
+      "subject": "fix(artwork): debounce resize upgrades and retain resolution on shrink to avoid server churn (#2924)",
+      "disposition": "adapted",
+      "evidence": "d43a1cf6e: debounce artwork resizing and retain resolution on shrink, preserving the fork’s fallback artwork behavior.",
+      "files": [
+        "lib/widgets/optimized_media_image.dart",
+        "test/widgets/optimized_media_image_test.dart"
+      ]
+    },
+    {
+      "sha": "d192a726b8a8dd512d648f5cce9d568508d3ecd3",
+      "source_url": "https://github.com/edde746/plezy/commit/d192a726b8a8dd512d648f5cce9d568508d3ecd3",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(downloads): exclude downloaded media from iCloud Backup on iOS",
+      "disposition": "covered",
+      "evidence": "Managed download/artwork roots are already excluded from iCloud backup, including existing legacy roots and recreated folders; preserve unrelated documents.",
+      "files": [
+        "ios/Runner/AppDelegate.swift",
+        "lib/services/download_storage_service.dart",
+        "test/services/download_storage_service_test.dart"
+      ]
+    },
+    {
+      "sha": "80c562ff06db237b48592a89efb0f0b7baeb0e10",
+      "source_url": "https://github.com/edde746/plezy/commit/80c562ff06db237b48592a89efb0f0b7baeb0e10",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(downloads): stop the free-space guard capping desktop download speed (#2967)",
+      "disposition": "covered",
+      "evidence": "The fork’s vendored downloader already bounds desktop write capacity and accounts for drained packets; existing recovery/credential behavior remains intact.",
+      "files": [
+        "pubspec.lock",
+        "pubspec.yaml"
+      ]
+    },
+    {
+      "sha": "0ef47f2711ecb5ff30089831410b6f29b580cdcb",
+      "source_url": "https://github.com/edde746/plezy/commit/0ef47f2711ecb5ff30089831410b6f29b580cdcb",
+      "author": {
+        "login": "adamsparsons",
+        "url": "https://github.com/adamsparsons"
+      },
+      "subject": "fix(tv): trigger list tile long-press from D-pad hold-select (#2964)",
+      "disposition": "covered",
+      "evidence": "Shared D-pad select/hold controller already handles rows; retain fork switch/list behavior and cancellation across focus changes.",
+      "files": [
+        "lib/widgets/focusable_list_tile.dart",
+        "test/widgets/focusable_list_tile_test.dart"
+      ]
+    },
+    {
+      "sha": "5076836a5dbb2f54b8316fdcb9d94330c1ddbf01",
+      "source_url": "https://github.com/edde746/plezy/commit/5076836a5dbb2f54b8316fdcb9d94330c1ddbf01",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(focus): give a page opened over the main screen focus when it claims none",
+      "disposition": "adapted",
+      "evidence": "366cd4965: pass remote navigation to a newly covered route that has not claimed focus; adapted fork-specific focus harness passed.",
+      "files": [
+        "lib/focus/covered_route_focus_boundary.dart",
+        "test/focus/covered_route_focus_boundary_test.dart"
+      ]
+    },
+    {
+      "sha": "e90973fba999838fbeb9d14b8aa8226130918be8",
+      "source_url": "https://github.com/edde746/plezy/commit/e90973fba999838fbeb9d14b8aa8226130918be8",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "feat(player): remember zoom per show, library, or everywhere",
+      "disposition": "adapted",
+      "evidence": "1108a174d: optional global/title/library zoom persistence, session-only by default; retain profile resets, finite bounds and agent validation. Focused zoom tests passed.",
+      "files": [
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings.g.dart",
+        "lib/i18n/strings_az.g.dart",
+        "lib/i18n/strings_bg.g.dart",
+        "lib/i18n/strings_da.g.dart",
+        "lib/i18n/strings_de.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/strings_es.g.dart",
+        "lib/i18n/strings_fr.g.dart",
+        "lib/i18n/strings_hu.g.dart",
+        "lib/i18n/strings_it.g.dart",
+        "lib/i18n/strings_ja.g.dart",
+        "lib/i18n/strings_kk.g.dart",
+        "lib/i18n/strings_ko.g.dart",
+        "lib/i18n/strings_nb.g.dart",
+        "lib/i18n/strings_nl.g.dart",
+        "lib/i18n/strings_pl.g.dart",
+        "lib/i18n/strings_pt.g.dart",
+        "lib/i18n/strings_ru.g.dart",
+        "lib/i18n/strings_sv.g.dart",
+        "lib/i18n/strings_tr.g.dart",
+        "lib/i18n/strings_uz.g.dart",
+        "lib/i18n/strings_zh.g.dart",
+        "lib/i18n/strings_zh_Hant.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/media/video_zoom.dart",
+        "lib/models/player_setting_scope.dart",
+        "lib/screens/settings/playback_settings_screen.dart",
+        "lib/screens/video_player/parts/build.dart",
+        "lib/screens/video_player/parts/pip.dart",
+        "lib/screens/video_player/parts/playback_reload.dart",
+        "lib/screens/video_player/visual_effects_controller.dart",
+        "lib/services/agent_scoped_settings_commands.dart",
+        "lib/services/agent_settings_commands.dart",
+        "lib/services/scoped_player_prefs.dart",
+        "lib/services/settings_service.dart",
+        "lib/services/video_filter_manager.dart",
+        "test/services/scoped_player_prefs_test.dart"
+      ]
+    },
+    {
+      "sha": "f9eef589ad5fbbf4f65d37fb68aadb9dd9fb0952",
+      "source_url": "https://github.com/edde746/plezy/commit/f9eef589ad5fbbf4f65d37fb68aadb9dd9fb0952",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build: pin mpv-build with every-frame presentation of a delayed Android subtitle plane",
+      "disposition": "retained",
+      "evidence": "Retain fork native package pins and normal experimental components; evaluate its subtitle-plane repeat patch with the native timing migration below.",
+      "files": [
+        "android/gradle/verification-metadata.xml",
+        "ios/Runner.xcodeproj/project.pbxproj",
+        "ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcodeproj/project.pbxproj",
+        "macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "mpv-build.lock.json",
+        "tvos/Runner.xcodeproj/project.pbxproj",
+        "tvos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "tvos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+      ]
+    },
+    {
+      "sha": "6cc283a7da3d75ed90ec232dd7f5da1f25681b4f",
+      "source_url": "https://github.com/edde746/plezy/commit/6cc283a7da3d75ed90ec232dd7f5da1f25681b4f",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(subtitles): line mpv subtitles up with their picture on Amlogic and MediaTek TV boxes",
+      "disposition": "native-pending",
+      "evidence": "Not shipped: the fork exposes the delay option but lacks the active per-video-frame repeat patch required to avoid Amlogic judder. Do not enable the delay from app code alone.",
+      "files": [
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlayerCore.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/shared/DeviceQuirks.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/shared/DeviceQuirksTest.kt",
+        "lib/mpv/player/player_native.dart"
+      ]
+    },
+    {
+      "sha": "119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4",
+      "source_url": "https://github.com/edde746/plezy/commit/119ce59def9eacef8ac70e2b8c0d7fdfe771e0a4",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(discover): keep version copies when a server comes online after the first load",
+      "disposition": "adapted",
+      "evidence": "215032961: retain newly-online Continue Watching version copies; preserve profile, transport and synthetic hub behavior.",
+      "files": [
+        "lib/providers/discover_provider.dart",
+        "lib/services/data_aggregation_service.dart",
+        "test/services/data_aggregation_bridge_test.dart"
+      ]
+    },
+    {
+      "sha": "ddcfda3c4e349ec315f1c5496a5a0e95128b6997",
+      "source_url": "https://github.com/edde746/plezy/commit/ddcfda3c4e349ec315f1c5496a5a0e95128b6997",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(player): undo a display switch that lands after fullscreen or playback ended",
+      "disposition": "adapted",
+      "evidence": "215032961: restore display switches completing after fullscreen closes; preserve failed-restore retries and fork lifecycle guards.",
+      "files": [
+        "lib/screens/video_player_screen.dart",
+        "lib/services/display_mode_service.dart",
+        "test/services/display_mode_service_test.dart"
+      ]
+    },
+    {
+      "sha": "cbd9205f2cef71973dd7cadf568477c448cb3787",
+      "source_url": "https://github.com/edde746/plezy/commit/cbd9205f2cef71973dd7cadf568477c448cb3787",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(android): verify the anime mappings download against system authorities only",
+      "disposition": "adapted",
+      "evidence": "19666675a: system-only certificate trust through GitHub asset redirects in Android and dart:io. Ten TLS/domain tests passed.",
+      "files": [
+        "android/app/src/main/res/xml/network_security_config.xml",
+        "lib/utils/certificate_trust.dart",
+        "test/android/network_security_config_test.dart"
+      ]
+    },
+    {
+      "sha": "fa8acc3eedc015e8381f6acdcbefaf448798552a",
+      "source_url": "https://github.com/edde746/plezy/commit/fa8acc3eedc015e8381f6acdcbefaf448798552a",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "test(artwork): wait for local file resolution instead of a fixed delay",
+      "disposition": "covered",
+      "evidence": "The fork already waits for artwork files using a bounded five-second monotonic stopwatch loop.",
+      "files": [
+        "test/widgets/optimized_media_image_test.dart"
+      ]
+    },
+    {
+      "sha": "9fe138aba39414e38099cc17cfd4296f47059778",
+      "source_url": "https://github.com/edde746/plezy/commit/9fe138aba39414e38099cc17cfd4296f47059778",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(profiles): ask for a profile on resume over an open player",
+      "disposition": "adapted",
+      "evidence": "31e20ddd7: hold playback under the resume profile picker across media keys, native resume, room control and Play Next; preserve Automotive and active PiP behavior. 67 focused tests passed.",
+      "files": [
+        "lib/screens/main_screen.dart",
+        "lib/screens/video_player/media_controls_screen_controller.dart",
+        "lib/screens/video_player/parts/lifecycle.dart",
+        "lib/screens/video_player/parts/playback_open.dart",
+        "lib/screens/video_player/parts/playback_prompts.dart",
+        "lib/screens/video_player/parts/playback_services.dart",
+        "lib/screens/video_player/parts/watch_together.dart",
+        "lib/screens/video_player_screen.dart",
+        "lib/utils/video_player_navigation.dart",
+        "lib/watch_together/providers/watch_together_provider.dart",
+        "test/screens/main_screen_layout_test.dart",
+        "test/screens/video_player/live_media_session_test.dart",
+        "test/screens/video_player/media_controls_screen_controller_test.dart",
+        "test/screens/video_player/playback_reload_failure_test.dart",
+        "test/screens/video_player/profile_selection_hold_test.dart"
+      ]
+    },
+    {
+      "sha": "6c87210c6162ecaf5e9a77560353a7948e1e93bd",
+      "source_url": "https://github.com/edde746/plezy/commit/6c87210c6162ecaf5e9a77560353a7948e1e93bd",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(watch-together): keep a guest synced after switching to another version of the room's file",
+      "disposition": "adapted",
+      "evidence": "d43a1cf6e: synchronize Watch Together guests after version changes, using the fork’s existing localized failure feedback.",
+      "files": [
+        "lib/watch_together/models/watch_notice.dart",
+        "lib/watch_together/providers/watch_together_provider.dart",
+        "lib/watch_together/widgets/watch_labels.dart",
+        "test/watch_together/watch_together_provider_test.dart"
+      ]
+    },
+    {
+      "sha": "f2985a7b06b1190507946cde824779880d7d2af8",
+      "source_url": "https://github.com/edde746/plezy/commit/f2985a7b06b1190507946cde824779880d7d2af8",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(discover): stop Continue Watching posters flipping after playback",
+      "disposition": "adapted",
+      "evidence": "215032961: reconcile artwork through authoritative on-deck data; preserve synthetic Continue Watching/Next Up hubs and reject stale client responses. Discover/display suite passed 124 tests.",
+      "files": [
+        "lib/providers/discover_provider.dart",
+        "test/providers/discover_provider_test.dart"
+      ]
+    },
+    {
+      "sha": "f993f9a145158950e5a6ab67a22570a277c9520d",
+      "source_url": "https://github.com/edde746/plezy/commit/f993f9a145158950e5a6ab67a22570a277c9520d",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(supporter): name the cosmetic purchase Theme & Icon Pack",
+      "disposition": "excluded",
+      "evidence": "Upstream Theme & Icon Pack purchase copy is product-specific. Retain the fork’s commerce model, product identifiers and wording.",
+      "files": [
+        "lib/i18n/az.i18n.json",
+        "lib/i18n/bg.i18n.json",
+        "lib/i18n/da.i18n.json",
+        "lib/i18n/de.i18n.json",
+        "lib/i18n/en.i18n.json",
+        "lib/i18n/es.i18n.json",
+        "lib/i18n/fr.i18n.json",
+        "lib/i18n/hu.i18n.json",
+        "lib/i18n/it.i18n.json",
+        "lib/i18n/ja.i18n.json",
+        "lib/i18n/kk.i18n.json",
+        "lib/i18n/ko.i18n.json",
+        "lib/i18n/nb.i18n.json",
+        "lib/i18n/nl.i18n.json",
+        "lib/i18n/pl.i18n.json",
+        "lib/i18n/pt.i18n.json",
+        "lib/i18n/ru.i18n.json",
+        "lib/i18n/strings_az.g.dart",
+        "lib/i18n/strings_bg.g.dart",
+        "lib/i18n/strings_da.g.dart",
+        "lib/i18n/strings_de.g.dart",
+        "lib/i18n/strings_en.g.dart",
+        "lib/i18n/strings_es.g.dart",
+        "lib/i18n/strings_fr.g.dart",
+        "lib/i18n/strings_hu.g.dart",
+        "lib/i18n/strings_it.g.dart",
+        "lib/i18n/strings_ja.g.dart",
+        "lib/i18n/strings_kk.g.dart",
+        "lib/i18n/strings_ko.g.dart",
+        "lib/i18n/strings_nb.g.dart",
+        "lib/i18n/strings_nl.g.dart",
+        "lib/i18n/strings_pl.g.dart",
+        "lib/i18n/strings_pt.g.dart",
+        "lib/i18n/strings_ru.g.dart",
+        "lib/i18n/strings_sv.g.dart",
+        "lib/i18n/strings_tr.g.dart",
+        "lib/i18n/strings_uz.g.dart",
+        "lib/i18n/strings_zh.g.dart",
+        "lib/i18n/strings_zh_Hant.g.dart",
+        "lib/i18n/sv.i18n.json",
+        "lib/i18n/tr.i18n.json",
+        "lib/i18n/uz.i18n.json",
+        "lib/i18n/zh-Hant.i18n.json",
+        "lib/i18n/zh.i18n.json",
+        "lib/screens/settings/supporter_settings_tile.dart",
+        "lib/widgets/supporter_sheet.dart",
+        "test/widgets/supporter_sheet_test.dart",
+        "website/src/lib/content/faqs.ts"
+      ]
+    },
+    {
+      "sha": "c577edda5cdf4b0a0c3d5dd0d543e432c5bed0d8",
+      "source_url": "https://github.com/edde746/plezy/commit/c577edda5cdf4b0a0c3d5dd0d543e432c5bed0d8",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(player): switch the display before the Android mpv decoder opens",
+      "disposition": "adapted",
+      "evidence": "0bc258ca3: hold Android VOD decoding at demux preload for display matching; preserve motion cadence and Dolby/FEL routing, add player-instance ownership guards. 89 playback tests and eight Gradle tests passed; native bridge compiled against the fork engine.",
+      "files": [
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/DecoderHold.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlayerCore.kt",
+        "android/app/src/main/kotlin/com/edde746/plezy/mpv/MpvPlayerPlugin.kt",
+        "android/app/src/test/kotlin/com/edde746/plezy/mpv/DecoderHoldTest.kt",
+        "lib/media/media_display_criteria.dart",
+        "lib/mpv/player/player.dart",
+        "lib/mpv/player/player_base.dart",
+        "lib/mpv/player/player_native.dart",
+        "lib/mpv/player/video_decoder_hold.dart",
+        "lib/screens/video_player/parts/display_matching.dart",
+        "lib/screens/video_player/parts/playback_open.dart",
+        "lib/screens/video_player/parts/playback_services.dart",
+        "test/screens/video_player/display_switch_before_decoder_test.dart",
+        "test/services/music/music_playback_service_test.dart"
+      ]
+    },
+    {
+      "sha": "b0e5919fdbd33a32e50acc5a7c4ae533be2d57d8",
+      "source_url": "https://github.com/edde746/plezy/commit/b0e5919fdbd33a32e50acc5a7c4ae533be2d57d8",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build: pin mpv-build with the paused frame on a repointed Android Surface",
+      "disposition": "retained",
+      "evidence": "Retain the fork’s native package revisions and FFmpeg 9.0.2/runtime contracts; qualify the upstream paused-frame/performance package refresh as a separate engine migration.",
+      "files": [
+        "android/gradle/verification-metadata.xml",
+        "ios/Runner.xcodeproj/project.pbxproj",
+        "ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcodeproj/project.pbxproj",
+        "macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "macos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "mpv-build.lock.json",
+        "tvos/Runner.xcodeproj/project.pbxproj",
+        "tvos/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+        "tvos/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+      ]
+    },
+    {
+      "sha": "55ef954e23bbcb6fac81b15a84ff7442c87c6d58",
+      "source_url": "https://github.com/edde746/plezy/commit/55ef954e23bbcb6fac81b15a84ff7442c87c6d58",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "test(diagnostics): let the RSS peak trail current RSS in the memory-pressure test",
+      "disposition": "adapted",
+      "evidence": "366cd4965: remove unsupported ordering assumptions between non-atomic OS RSS counters; retain positive independent-counter assertions.",
+      "files": [
+        "test/utils/memory_pressure_breadcrumbs_test.dart"
+      ]
+    },
+    {
+      "sha": "cb74c6968d81bcc94aca27498e1ab19e607a17ba",
+      "source_url": "https://github.com/edde746/plezy/commit/cb74c6968d81bcc94aca27498e1ab19e607a17ba",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "build(android): fetch the Media3 adapter's FFmpeg headers from GitHub",
+      "disposition": "retained",
+      "evidence": "Keep checksum-pinned FFmpeg 9.0.2 headers and the fork’s bounded official-source prefetch. The upstream change pins an 8.0.1 archive and must not downgrade this ABI.",
+      "files": [
+        "android/app/build.gradle.kts"
+      ]
+    },
+    {
+      "sha": "48926474e863b8079558e41cb1d4776439ed1555",
+      "source_url": "https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "test(ios): check a speed write by its position jump and the rate after restart",
+      "disposition": "adapted",
+      "evidence": "f8849ad49: check speed-write position jump separately from steady rate after restart; preserve simulator limitations and deterministic flush ordering tests. Swift parsing passed; Apple execution qualification remains separate.",
+      "files": [
+        "ios/RunnerTests/RunnerTests.swift"
+      ]
+    },
+    {
+      "sha": "671a0d7b7bf7dacf37dc4a6086b6a9c0734904f7",
+      "source_url": "https://github.com/edde746/plezy/commit/671a0d7b7bf7dacf37dc4a6086b6a9c0734904f7",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "chore: bump version to 2.26.0",
+      "disposition": "excluded",
+      "evidence": "Retain the fork’s 3.x release version; upstream 2.26 numbering is upstream-only release metadata.",
+      "files": [
+        "pubspec.yaml"
+      ]
+    },
+    {
+      "sha": "d4ec916550527b1bb4dc29fca223e1d2ed4c24fe",
+      "source_url": "https://github.com/edde746/plezy/commit/d4ec916550527b1bb4dc29fca223e1d2ed4c24fe",
+      "author": {
+        "login": "github-actions[bot]",
+        "url": "https://github.com/apps/github-actions"
+      },
+      "subject": "chore: update cask to 2.26.0",
+      "disposition": "excluded",
+      "evidence": "Retain the fork’s own Homebrew publisher, names and immutable artifacts instead of upstream 2.26 cask URLs/hashes.",
+      "files": [
+        "Casks/plezy.rb"
+      ]
+    },
+    {
+      "sha": "738e18fdc552ace910dedabf6e689ab74e1dae58",
+      "source_url": "https://github.com/edde746/plezy/commit/738e18fdc552ace910dedabf6e689ab74e1dae58",
+      "author": {
+        "login": "edde746",
+        "url": "https://github.com/edde746"
+      },
+      "subject": "fix(release): expect the Linux AppImage assets in the draft release",
+      "disposition": "covered",
+      "evidence": "The fork already accepts additive Linux assets and requires its x64 AppImage. New advertised update pairs are verified before publication, while historical immutable artifacts retain their original contract.",
+      "files": [
+        "scripts/release/deploy.py"
+      ]
+    }
+  ]
+}

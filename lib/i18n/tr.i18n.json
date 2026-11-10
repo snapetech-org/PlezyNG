@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Dolby Vision profile 8.1'e satır içi RPU dönüştürmeyi zorla",
     "dvConversionHevcStripDescription": "Dolby Vision RPU/EL katmanlarını soy ve düz HEVC olarak sun",
     "experimentalDolbyVision": "Deneysel Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Dolby Vision/FEL otomatik olarak denenir, kullanılamıyorsa uyumlu oynatmaya geçilir. Varsayılan olarak açıktır; gerçek çıkış cihaza bağlıdır.",
     "dvCompatibilityFallback": "Uyumluluk yedeği",
     "dvCompatibilityFallbackDescription": "Deney başlatılamazsa standart işleyiciyi kullanın. FEL verileri kaybolabilir.",
     "dvExperimentDiagnostics": "Video deneyi günlükleri",

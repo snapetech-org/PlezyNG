@@ -641,6 +641,7 @@ class _Translations$settings$kk extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision profile 8.1 форматына түрлендіру';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision қабаттарын алып тастап, HEVC ретінде көрсету';
 	@override String get experimentalDolbyVision => 'Тәжірибелік Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Dolby Vision/FEL автоматты түрде сыналады, қолжетімсіз болса, үйлесімді ойнатуға ауысады. Әдепкіде қосулы; нақты шығыс құрылғыға байланысты.';
 	@override String get dvCompatibilityFallback => 'Үйлесімді қосалқы режим';
 	@override String get dvCompatibilityFallbackDescription => 'Тәжірибе басталмаса, стандартты рендерерді пайдалану. FEL деректері жоғалуы мүмкін.';
 	@override String get dvExperimentDiagnostics => 'Бейне тәжірибесін журналға жазу';
@@ -5887,6 +5888,7 @@ extension on TranslationsKk {
 			'settings.dvConversionDv81Description' => 'Dolby Vision profile 8.1 форматына түрлендіру',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision қабаттарын алып тастап, HEVC ретінде көрсету',
 			'settings.experimentalDolbyVision' => 'Тәжірибелік Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Dolby Vision/FEL автоматты түрде сыналады, қолжетімсіз болса, үйлесімді ойнатуға ауысады. Әдепкіде қосулы; нақты шығыс құрылғыға байланысты.',
 			'settings.dvCompatibilityFallback' => 'Үйлесімді қосалқы режим',
 			'settings.dvCompatibilityFallbackDescription' => 'Тәжірибе басталмаса, стандартты рендерерді пайдалану. FEL деректері жоғалуы мүмкін.',
 			'settings.dvExperimentDiagnostics' => 'Бейне тәжірибесін журналға жазу',
@@ -5896,9 +5898,9 @@ extension on TranslationsKk {
 			'settings.hdrSdrConversion' => 'HDR-ды SDR-ға түрлендіру',
 			'settings.hdrSdrConversionDescription' => 'Дисплей HDR көрсете алмаған кезде HDR бейнесін не түрлендіретінін таңдаңыз.',
 			'settings.hdrSdrConversionAuto' => 'Автоматты',
-			'settings.hdrSdrConversionAutoDescription' => 'Android 9 және жаңарақ нұсқаларда құрылғы, ескі нұсқаларда ойнатқыш',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Android 9 және жаңарақ нұсқаларда құрылғы, ескі нұсқаларда ойнатқыш',
 			'settings.hdrSdrConversionDevice' => 'Құрылғы',
 			'settings.hdrSdrConversionDeviceDescription' => 'Түрлендіруді құрылғының бейне жабдығы орындайды. Ең жылдамы, бірақ түстер құрылғыға байланысты',
 			'settings.hdrSdrConversionPlayer' => 'Ойнатқыш',
@@ -6410,9 +6412,9 @@ extension on TranslationsKk {
 			'videoControls.segmentLoop' => 'Бөлімді қайталау',
 			'videoControls.addBookmark' => 'Бетбелгі қосу',
 			'videoControls.bookmarkName' => 'Бетбелгі атауы',
-			'videoControls.bookmarkNameHint' => 'Мысалы, кіріспе көрінісі',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Мысалы, кіріспе көрінісі',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Бетбелгі ${n}',
 			'videoControls.bookmarkNameRequired' => 'Бұл бетбелгіге атау енгізіңіз.',
 			'videoControls.deleteBookmark' => 'Бетбелгіні өшіру',
@@ -6924,9 +6926,9 @@ extension on TranslationsKk {
 			'libraries.libraryOptions' => 'Кітапхана параметрлері',
 			'libraries.content' => 'кітапхана мазмұны',
 			'libraries.selectLibrary' => 'Кітапхананы таңдау',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Фильтрлер (${count})',
 			'libraries.noRecommendations' => 'Ұсыныстар жоқ',
 			'libraries.noCollections' => 'Бұл кітапханада топтамалар жоқ',
 			'libraries.noFoldersFound' => 'Қапшықтар табылмады',
@@ -7438,9 +7440,9 @@ extension on TranslationsKk {
 			'watchTogether.noCodeInClipboard' => 'Алмасу буферінде бөлме коды жоқ',
 			'watchTogether.copyCode' => 'Кодты көшіру',
 			'watchTogether.codeCopied' => 'Бөлме коды көшірілді',
-			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Шақыру жіберу',
 			'watchTogether.inviteCopied' => 'Шақыру көшірілді. Оны хабарламаға қойыңыз.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-дегі «Бірге көру» бөлмеме қосылыңыз: «Бірге көру» бөлімін ашып, «Бөлмеге қосылу» түймесін таңдаңыз да, ${code} кодын енгізіңіз.',
 			'watchTogether.openSessionControls' => 'Басқару элементтерін ашу',
@@ -7952,9 +7954,9 @@ extension on TranslationsKk {
 			'metadataEdit.enterImageUrl' => 'Сурет URL-ін енгізіңіз',
 			'metadataEdit.imageUrl' => 'Сурет URL-і',
 			'metadataEdit.metadataUpdated' => 'Метадеректер жаңартылды',
-			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Метадеректерді жаңарту мүмкін болмады',
 			'metadataEdit.artworkUpdated' => 'Суреттер жаңартылды',
 			'metadataEdit.artworkUpdateFailed' => 'Суреттерді жаңарту мүмкін болмады',
 			'metadataEdit.noArtworkAvailable' => 'Сурет қолжетімсіз',
@@ -8466,9 +8468,9 @@ extension on TranslationsKk {
 			'universalMedia.favoriteSaved' => 'Бұл профильде көшіру керек.',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('kk'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
 			'universalMedia.playlistAddress' => 'Жабдықтау адресы',
-			'universalMedia.playlistAddressHelp' => 'Қаланың тұрақты тұрғындарының саны 3 адамды құрайды, 1 адамды қағидасы, 2 адамды жабдықтар, 4 адамды салыстырды.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Қаланың тұрақты тұрғындарының саны 3 адамды құрайды, 1 адамды қағидасы, 2 адамды жабдықтар, 4 адамды салыстырды.',
 			'universalMedia.choosePlaylist' => 'Серіктің қағидалары',
 			'universalMedia.openPlaylist' => 'Ауыз Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Өмірінің соңына дейін 1 тыс. нәрсе бар және 2 Мб. HLS-дер көшірмеген, оның ішінде жүктеуге ұсынады.',
@@ -8980,9 +8982,9 @@ extension on TranslationsKk {
 			'sourceSetup.apiKey' => 'API кілті',
 			'sourceSetup.optionalUsername' => 'Тіркелгінің пайдаланушы аты (міндетті емес)',
 			'sourceSetup.optionalPassword' => 'Тіркелгі құпиясөзі (міндетті емес)',
-			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com сайтынан API кілтін алыңыз. Іздеу бейне атауын және қолжетімді IMDb/TMDB ID мәндерін жібереді, бірақ бейнефайлды ешқашан жібермейді. Кілт пен қосымша тіркелгі деректері осы дереккөзбен бірге шифрланады.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com сайтынан API кілтін алыңыз. Іздеу бейне атауын және қолжетімді IMDb/TMDB ID мәндерін жібереді, бірақ бейнефайлды ешқашан жібермейді. Кілт пен қосымша тіркелгі деректері осы дереккөзбен бірге шифрланады.',
 			'sourceSetup.automaticMetadata' => 'Бейненің автоматты онлайн метадеректері',
 			'sourceSetup.metadataPrivacy' => 'Тек файл атауындағы атауды/жылды және эпизод нөмірлерін немесе NFO ID мәнін жібереді; медиа файлдар мен кіру деректерін ешқашан жібермейді. NFO өрістері басымдығын сақтайды.',
 			'sourceSetup.nfsEncryptionFailure' => 'Шифрланған NFS үшін NAS-тың екі қызметінде де RFC 9289 және TLS 1.3 қолдауын, сертификат атауын және ортақ ресурстың UID/GID мәндерін тексеріңіз. Pleazyng бұл қосылымды шифрлаусыз қайта жасамайды.',

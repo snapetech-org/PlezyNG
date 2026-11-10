@@ -1641,8 +1641,8 @@ class Translations$settings$en {
 	/// en: 'Experimental Dolby Vision'
 	String get experimentalDolbyVision => 'Experimental Dolby Vision';
 
-	/// en: 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.'
-	String get experimentalDolbyVisionDescription => 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.';
+	/// en: 'Try Dolby Vision/FEL automatically and fall back to compatible playback when unavailable. On by default; actual output depends on the device.'
+	String get experimentalDolbyVisionDescription => 'Try Dolby Vision/FEL automatically and fall back to compatible playback when unavailable. On by default; actual output depends on the device.';
 
 	/// en: 'Compatibility fallback'
 	String get dvCompatibilityFallback => 'Compatibility fallback';
@@ -17790,7 +17790,7 @@ extension on Translations {
 			'settings.dvConversionDv81Description' => 'Force inline RPU conversion to Dolby Vision profile 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision RPU/EL layers and present plain HEVC',
 			'settings.experimentalDolbyVision' => 'Experimental Dolby Vision',
-			'settings.experimentalDolbyVisionDescription' => 'Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.',
+			'settings.experimentalDolbyVisionDescription' => 'Try Dolby Vision/FEL automatically and fall back to compatible playback when unavailable. On by default; actual output depends on the device.',
 			'settings.dvCompatibilityFallback' => 'Compatibility fallback',
 			'settings.dvCompatibilityFallbackDescription' => 'Use the standard renderer if the experiment cannot start. FEL data may be lost.',
 			'settings.dvExperimentDiagnostics' => 'Video experiment logging',

@@ -62,8 +62,9 @@ private final class WorkerHandler: @unchecked Sendable {
       }
     }
     guard accepted == 1 else { _exit(2) }
-    DispatchQueue.global(qos: .userInitiated).async { runWorker(pipe) }
-    let reply = XPCDictionary()
+    let descriptor = pipe
+    DispatchQueue.global(qos: .userInitiated).async { runWorker(descriptor) }
+    var reply = XPCDictionary()
     reply["accepted"] = Int64(1)
     return reply
   }
@@ -71,12 +72,13 @@ private final class WorkerHandler: @unchecked Sendable {
 
 @main
 struct RommWorkerExtension: AppExtension {
+  private static let handler = WorkerHandler()
   @AppExtensionPoint.Bind var boundExtensionPoint: AppExtensionPoint {
     AppExtensionPoint.Identifier(host: "org.snapetech.pleazyng", name: "RommWorker")
   }
 
   var configuration: some AppExtensionConfiguration {
-    let handler = WorkerHandler()
+    let handler = Self.handler
     return ConnectionHandler(onSessionRequest: { request in
       request.accept(incomingMessageHandler: { (message: XPCDictionary) -> XPCDictionary? in
         handler.receive(message)

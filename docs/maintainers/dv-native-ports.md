@@ -8,7 +8,9 @@ native Dolby Vision display signaling are separate capabilities.
 ## Runtime inclusion in normal builds
 
 The owner directive of 2026-11-05 requires implemented experiments in ordinary
-release packages. A persisted Settings switch, off by default, controls playback.
+release packages. The 2026-11-09 owner directive enables automatic DV/FEL routing
+and compatibility fallback by default. A persisted Settings switch retains an
+explicit Off override; conversion-mode overrides remain authoritative.
 Device qualification describes evidence; it does not gate inclusion or require
 a separate application, compiler flag, or manually replaced native library.
 

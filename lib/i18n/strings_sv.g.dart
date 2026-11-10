@@ -641,6 +641,7 @@ class _Translations$settings$sv extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Tvinga direkt RPU-konvertering till Dolby Vision-profil 8.1';
 	@override String get dvConversionHevcStripDescription => 'Ta bort Dolby Visions RPU-/EL-lager och använd vanlig HEVC';
 	@override String get experimentalDolbyVision => 'Experimentell Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Provar Dolby Vision/FEL automatiskt och använder kompatibel uppspelning när det inte är tillgängligt. På som standard; den faktiska utmatningen beror på enheten.';
 	@override String get dvCompatibilityFallback => 'Kompatibilitetsreserv';
 	@override String get dvCompatibilityFallbackDescription => 'Använd standardrenderaren om experimentet inte kan starta. FEL-data kan gå förlorade.';
 	@override String get dvExperimentDiagnostics => 'Loggning av videoexperiment';
@@ -5887,6 +5888,7 @@ extension on TranslationsSv {
 			'settings.dvConversionDv81Description' => 'Tvinga direkt RPU-konvertering till Dolby Vision-profil 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Ta bort Dolby Visions RPU-/EL-lager och använd vanlig HEVC',
 			'settings.experimentalDolbyVision' => 'Experimentell Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Provar Dolby Vision/FEL automatiskt och använder kompatibel uppspelning när det inte är tillgängligt. På som standard; den faktiska utmatningen beror på enheten.',
 			'settings.dvCompatibilityFallback' => 'Kompatibilitetsreserv',
 			'settings.dvCompatibilityFallbackDescription' => 'Använd standardrenderaren om experimentet inte kan starta. FEL-data kan gå förlorade.',
 			'settings.dvExperimentDiagnostics' => 'Loggning av videoexperiment',
@@ -5896,9 +5898,9 @@ extension on TranslationsSv {
 			'settings.hdrSdrConversion' => 'HDR till SDR-konvertering',
 			'settings.hdrSdrConversionDescription' => 'Välj vad som konverterar HDR-video när skärmen inte kan visa HDR.',
 			'settings.hdrSdrConversionAuto' => 'Auto',
-			'settings.hdrSdrConversionAutoDescription' => 'Enhet på Android 9 och senare, spelare på äldre versioner',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Enhet på Android 9 och senare, spelare på äldre versioner',
 			'settings.hdrSdrConversionDevice' => 'Enhet',
 			'settings.hdrSdrConversionDeviceDescription' => 'Enhetens videohårdvara konverterar. Snabbast, men färgerna beror på enheten',
 			'settings.hdrSdrConversionPlayer' => 'Spelare',
@@ -6410,9 +6412,9 @@ extension on TranslationsSv {
 			'videoControls.segmentLoop' => 'Segment Lås',
 			'videoControls.addBookmark' => 'Lägg till bookmark',
 			'videoControls.bookmarkName' => 'Bookmark namn',
-			'videoControls.bookmarkNameHint' => 'Till exempel öppna scenen',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Till exempel öppna scenen',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bokmärke ${n}',
 			'videoControls.bookmarkNameRequired' => 'Skriv in ett namn för denna bokmärke.',
 			'videoControls.deleteBookmark' => 'Ta bort bokmärke',
@@ -6924,9 +6926,9 @@ extension on TranslationsSv {
 			'libraries.libraryOptions' => 'Biblioteksalternativ',
 			'libraries.content' => 'bibliotekets innehåll',
 			'libraries.selectLibrary' => 'Välj bibliotek',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Inga rekommendationer tillgängliga',
 			'libraries.noCollections' => 'Inga samlingar i det här biblioteket',
 			'libraries.noFoldersFound' => 'Inga mappar hittades',
@@ -7438,9 +7440,9 @@ extension on TranslationsSv {
 			'watchTogether.noCodeInClipboard' => 'Urklippet innehåller ingen rumskod',
 			'watchTogether.copyCode' => 'Kopiera kod',
 			'watchTogether.codeCopied' => 'Rumskod kopierad',
-			'watchTogether.shareInvite' => 'Dela inbjudan',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Dela inbjudan',
 			'watchTogether.inviteCopied' => 'Inbjudan kopierad. Klistra in den i ett meddelande.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Gå med i mitt Titta tillsammans-rum i Pleazyng: öppna Titta tillsammans, välj Gå med i rum och ange ${code}.',
 			'watchTogether.openSessionControls' => 'Öppna sessionskontroller för Titta tillsammans',
@@ -7952,9 +7954,9 @@ extension on TranslationsSv {
 			'metadataEdit.enterImageUrl' => 'Ange bild-URL',
 			'metadataEdit.imageUrl' => 'Bild-URL',
 			'metadataEdit.metadataUpdated' => 'Metadata har uppdaterats',
-			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Det gick inte att uppdatera metadata',
 			'metadataEdit.artworkUpdated' => 'Bildmaterialet har uppdaterats',
 			'metadataEdit.artworkUpdateFailed' => 'Det gick inte att uppdatera bildmaterialet',
 			'metadataEdit.noArtworkAvailable' => 'Inget bildmaterial är tillgängligt',
@@ -8466,9 +8468,9 @@ extension on TranslationsSv {
 			'universalMedia.favoriteSaved' => 'Stream favorit sparas till denna profil',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('sv'))(n, one: 'Skipped ${count} understödda eller osäkra spellistan ingång.', other: 'Skipped ${count} ounderstödda eller osäkra spellistor entréer.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresser',
-			'universalMedia.playlistAddressHelp' => 'Öppna en M3U, M3u8 eller PLS-spellista från en webbadress. Direct stream länkar sparar inte spellistan.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Öppna en M3U, M3u8 eller PLS-spellista från en webbadress. Direct stream länkar sparar inte spellistan.',
 			'universalMedia.choosePlaylist' => 'Välj Playlist fil',
 			'universalMedia.openPlaylist' => 'Öppna Playlist',
 			'universalMedia.playlistFormatsHelp' => 'En spellista kan innehålla upp till 1000 objekt och 2 MB. HLS manifesterar sig öppen som strömmar så att spelaren kan välja en kvalitet.',
@@ -8980,9 +8982,9 @@ extension on TranslationsSv {
 			'sourceSetup.apiKey' => 'API-nyckel',
 			'sourceSetup.optionalUsername' => 'Kontots användarnamn (valfritt)',
 			'sourceSetup.optionalPassword' => 'Kontots lösenord (valfritt)',
-			'sourceSetup.subtitlePrivacy' => 'Hämta en API-nyckel från opensubtitles.com. Sökningen skickar videons titel och tillgängliga IMDb/TMDB-ID:n, aldrig videofilen. Nyckeln och valfria kontouppgifter krypteras tillsammans med den här källan.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Hämta en API-nyckel från opensubtitles.com. Sökningen skickar videons titel och tillgängliga IMDb/TMDB-ID:n, aldrig videofilen. Nyckeln och valfria kontouppgifter krypteras tillsammans med den här källan.',
 			'sourceSetup.automaticMetadata' => 'Automatiska videometadata från nätet',
 			'sourceSetup.metadataPrivacy' => 'Skickar endast titel/år från filnamnet och avsnittsnummer eller ett NFO-ID, aldrig medier eller inloggningsuppgifter. NFO-fälten behåller företräde.',
 			'sourceSetup.nfsEncryptionFailure' => 'För krypterad NFS: kontrollera stöd för RFC 9289 och TLS 1.3 i båda NAS-tjänsterna, certifikatnamnet och delningens UID/GID. Pleazyng försöker inte ansluta igen utan kryptering.',

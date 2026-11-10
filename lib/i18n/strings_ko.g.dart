@@ -639,6 +639,7 @@ class _Translations$settings$ko extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision 프로필 8.1로 인라인 RPU 변환을 강제합니다';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision RPU/EL 레이어를 제거하고 일반 HEVC로 제공합니다';
 	@override String get experimentalDolbyVision => '실험적 Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Dolby Vision/FEL을 자동으로 시도하고 사용할 수 없으면 호환 재생으로 전환합니다. 기본적으로 켜져 있으며 실제 출력은 기기에 따라 다릅니다.';
 	@override String get dvCompatibilityFallback => '호환성 대체 모드';
 	@override String get dvCompatibilityFallbackDescription => '실험을 시작할 수 없으면 기본 렌더러를 사용합니다. FEL 데이터가 손실될 수 있습니다.';
 	@override String get dvExperimentDiagnostics => '비디오 실험 로그';
@@ -5882,6 +5883,7 @@ extension on TranslationsKo {
 			'settings.dvConversionDv81Description' => 'Dolby Vision 프로필 8.1로 인라인 RPU 변환을 강제합니다',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision RPU/EL 레이어를 제거하고 일반 HEVC로 제공합니다',
 			'settings.experimentalDolbyVision' => '실험적 Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Dolby Vision/FEL을 자동으로 시도하고 사용할 수 없으면 호환 재생으로 전환합니다. 기본적으로 켜져 있으며 실제 출력은 기기에 따라 다릅니다.',
 			'settings.dvCompatibilityFallback' => '호환성 대체 모드',
 			'settings.dvCompatibilityFallbackDescription' => '실험을 시작할 수 없으면 기본 렌더러를 사용합니다. FEL 데이터가 손실될 수 있습니다.',
 			'settings.dvExperimentDiagnostics' => '비디오 실험 로그',
@@ -5891,9 +5893,9 @@ extension on TranslationsKo {
 			'settings.hdrSdrConversion' => 'HDR을 SDR로 변환',
 			'settings.hdrSdrConversionDescription' => '디스플레이가 HDR을 표시할 수 없을 때 HDR 동영상을 무엇으로 변환할지 선택합니다.',
 			'settings.hdrSdrConversionAuto' => '자동',
-			'settings.hdrSdrConversionAutoDescription' => 'Android 9 이상에서는 기기, 이전 버전에서는 플레이어',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Android 9 이상에서는 기기, 이전 버전에서는 플레이어',
 			'settings.hdrSdrConversionDevice' => '기기',
 			'settings.hdrSdrConversionDeviceDescription' => '기기의 비디오 하드웨어가 변환합니다. 가장 빠르지만 색상은 기기에 따라 다릅니다',
 			'settings.hdrSdrConversionPlayer' => '플레이어',
@@ -6405,9 +6407,9 @@ extension on TranslationsKo {
 			'videoControls.segmentLoop' => '세그먼트 루프',
 			'videoControls.addBookmark' => 'Bookmark 추가하기',
 			'videoControls.bookmarkName' => 'Bookmark 이름',
-			'videoControls.bookmarkNameHint' => '예를 들어, 개방 장면',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => '예를 들어, 개방 장면',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => '책표 ${n}',
 			'videoControls.bookmarkNameRequired' => '이 책자에 대한 이름을 입력합니다.',
 			'videoControls.deleteBookmark' => 'Bookmark 삭제',
@@ -6919,9 +6921,9 @@ extension on TranslationsKo {
 			'libraries.libraryOptions' => '미디어 라이브러리 옵션',
 			'libraries.content' => '미디어 라이브러리 콘텐츠',
 			'libraries.selectLibrary' => '미디어 라이브러리 선택',
-			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => '필터 (${count})',
 			'libraries.noRecommendations' => '추천 없음',
 			'libraries.noCollections' => '이 미디어 라이브러리에는 컬렉션이 없습니다',
 			'libraries.noFoldersFound' => '폴더를 찾을 수 없습니다',
@@ -7433,9 +7435,9 @@ extension on TranslationsKo {
 			'watchTogether.noCodeInClipboard' => '클립보드에 방 코드가 없습니다',
 			'watchTogether.copyCode' => '코드 복사',
 			'watchTogether.codeCopied' => '방 코드가 복사되었습니다',
-			'watchTogether.shareInvite' => '초대 공유',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => '초대 공유',
 			'watchTogether.inviteCopied' => '초대 메시지가 복사되었습니다. 메시지에 붙여넣으세요.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng 함께 보기 방에 초대합니다. \'함께 보기\'를 열고 \'방 참여\'를 선택한 다음 ${code} 코드를 입력하세요.',
 			'watchTogether.openSessionControls' => '함께 보기 세션 제어 열기',
@@ -7947,9 +7949,9 @@ extension on TranslationsKo {
 			'metadataEdit.enterImageUrl' => '이미지 URL 입력',
 			'metadataEdit.imageUrl' => '이미지 URL',
 			'metadataEdit.metadataUpdated' => '메타데이터가 업데이트되었습니다',
-			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => '메타데이터 업데이트 실패',
 			'metadataEdit.artworkUpdated' => '아트워크가 업데이트되었습니다',
 			'metadataEdit.artworkUpdateFailed' => '아트워크 업데이트 실패',
 			'metadataEdit.noArtworkAvailable' => '사용 가능한 아트워크 없음',
@@ -8461,9 +8463,9 @@ extension on TranslationsKo {
 			'universalMedia.favoriteSaved' => 'Stream Favorite 이 프로필에 저장',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n, one: '스키피드 ${count} 지원되지 않거나 불안정한 플레이리스트 입력.', other: '${count} 지원되지 않거나 불안정한 플레이리스트 입력을 벗어났습니다.', ), 
 			'universalMedia.playlistAddress' => '플레이리스트 주소',
-			'universalMedia.playlistAddressHelp' => '웹 주소에서 M3U, M3u8 또는 PLS 플레이리스트를 열 수 있습니다.Direct stream 링크는 플레이 리스트를 저장하지 않습니다.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => '웹 주소에서 M3U, M3u8 또는 PLS 플레이리스트를 열 수 있습니다.Direct stream 링크는 플레이 리스트를 저장하지 않습니다.',
 			'universalMedia.choosePlaylist' => '플레이리스트 파일 선택',
 			'universalMedia.openPlaylist' => '오픈 플레이리스트',
 			'universalMedia.playlistFormatsHelp' => '플레이리스트는 최대 1,000 개의 항목과 2 MB를 포함할 수 있습니다.HLS는 스트림으로 열려 있으므로 플레이어가 품질을 선택할 수 있도록합니다.',
@@ -8975,9 +8977,9 @@ extension on TranslationsKo {
 			'sourceSetup.apiKey' => 'API 키',
 			'sourceSetup.optionalUsername' => '계정 사용자 이름(선택 사항)',
 			'sourceSetup.optionalPassword' => '계정 비밀번호(선택 사항)',
-			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com에서 API 키를 받으세요. 검색 시 동영상 제목과 사용 가능한 IMDb/TMDB ID만 전송하며, 동영상 파일은 절대 전송하지 않습니다. 키와 선택적 계정 자격 증명은 이 소스와 함께 암호화하여 저장합니다.',
 			'sourceSetup.automaticMetadata' => '온라인 동영상 메타데이터 자동 조회',
 			'sourceSetup.metadataPrivacy' => '파일명의 제목·연도·에피소드 번호 또는 NFO ID만 전송하며, 미디어나 자격 증명은 절대 전송하지 않습니다. NFO 필드가 항상 우선합니다.',
 			'sourceSetup.nfsEncryptionFailure' => '암호화된 NFS 연결에서는 NAS의 두 서비스가 RFC 9289와 TLS 1.3을 지원하는지, 인증서 이름과 내보내기 UID/GID가 올바른지 확인하세요. Pleazyng는 암호화 없이 이 연결을 다시 시도하지 않습니다.',

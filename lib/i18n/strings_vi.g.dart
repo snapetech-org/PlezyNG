@@ -639,6 +639,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Chuyển đổi RPU mạnh vào hồ sơ Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'Dây Dolby Vision lớp RPU/EL và mặt bằng hiện tại HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision thử nghiệm';
+	@override String get experimentalDolbyVisionDescription => 'Tự động thử Dolby Vision/FEL và chuyển sang phát tương thích khi không khả dụng. Bật theo mặc định; đầu ra thực tế tùy thuộc thiết bị.';
 	@override String get dvCompatibilityFallback => 'Phương án tương thích dự phòng';
 	@override String get dvCompatibilityFallbackDescription => 'Dùng bộ kết xuất tiêu chuẩn nếu không thể bắt đầu thử nghiệm. Dữ liệu FEL có thể bị mất.';
 	@override String get dvExperimentDiagnostics => 'Nhật ký thử nghiệm video';
@@ -5862,6 +5863,7 @@ extension on TranslationsVi {
 			'settings.dvConversionDv81Description' => 'Chuyển đổi RPU mạnh vào hồ sơ Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Dây Dolby Vision lớp RPU/EL và mặt bằng hiện tại HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision thử nghiệm',
+			'settings.experimentalDolbyVisionDescription' => 'Tự động thử Dolby Vision/FEL và chuyển sang phát tương thích khi không khả dụng. Bật theo mặc định; đầu ra thực tế tùy thuộc thiết bị.',
 			'settings.dvCompatibilityFallback' => 'Phương án tương thích dự phòng',
 			'settings.dvCompatibilityFallbackDescription' => 'Dùng bộ kết xuất tiêu chuẩn nếu không thể bắt đầu thử nghiệm. Dữ liệu FEL có thể bị mất.',
 			'settings.dvExperimentDiagnostics' => 'Nhật ký thử nghiệm video',
@@ -5871,9 +5873,9 @@ extension on TranslationsVi {
 			'settings.hdrSdrConversion' => 'HDR sang SDR chuyển đổi',
 			'settings.hdrSdrConversionDescription' => 'Chọn những gì chuyển đổi video HDR khi màn hình không thể hiển thị HDR.',
 			'settings.hdrSdrConversionAuto' => 'Tự động',
-			'settings.hdrSdrConversionAutoDescription' => 'Thiết bị trên Android 9 và sau, người chơi trên các phiên bản cũ hơn',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Thiết bị trên Android 9 và sau, người chơi trên các phiên bản cũ hơn',
 			'settings.hdrSdrConversionDevice' => 'Thiết bị',
 			'settings.hdrSdrConversionDeviceDescription' => 'Phần cứng video của thiết bị của bạn chuyển đổi nó. nhanh nhất, nhưng màu sắc phụ thuộc vào thiết bị',
 			'settings.hdrSdrConversionPlayer' => 'Trình Phát',
@@ -6385,9 +6387,9 @@ extension on TranslationsVi {
 			'videoControls.segmentLoop' => 'phân đoạn loop',
 			'videoControls.addBookmark' => 'Thêm Bookmark',
 			'videoControls.bookmarkName' => 'Bookmark tên',
-			'videoControls.bookmarkNameHint' => 'Ví dụ: Mở cảnh',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Ví dụ: Mở cảnh',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Đề ${n}',
 			'videoControls.bookmarkNameRequired' => 'Nhập tên cho bookmark này.',
 			'videoControls.deleteBookmark' => 'xóa bookmark',
@@ -6899,9 +6901,9 @@ extension on TranslationsVi {
 			'libraries.libraryOptions' => 'Tùy chọn thư viện',
 			'libraries.content' => 'Thư viện Content',
 			'libraries.selectLibrary' => 'Chọn thư viện',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
 			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			'libraries.noCollections' => 'Không có tập hợp trong thư viện này',
 			'libraries.noFoldersFound' => 'Không tìm thấy thư mục',
@@ -7413,9 +7415,9 @@ extension on TranslationsVi {
 			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
 			'watchTogether.copyCode' => 'Copy mã',
 			'watchTogether.codeCopied' => 'Mã phòng copy',
-			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch Cùng kiểm soát phiên',
@@ -7927,9 +7929,9 @@ extension on TranslationsVi {
 			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
 			'metadataEdit.imageUrl' => 'Ảnh URL',
 			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
-			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
 			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
 			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
 			'metadataEdit.noArtworkAvailable' => 'Không có tác phẩm nghệ thuật',
@@ -8441,9 +8443,9 @@ extension on TranslationsVi {
 			'universalMedia.favoriteSaved' => 'Stream Favorite được tiết kiệm đến hồ sơ này',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n, other: 'Tắt ${count} không được hỗ trợ hoặc không an toàn danh sách đăng nhập.', ), 
 			'universalMedia.playlistAddress' => 'Địa chỉ Playlist',
-			'universalMedia.playlistAddressHelp' => 'Mở một danh sách chơi M3U, M3u8, hoặc PLS từ địa chỉ web. liên kết trực tiếp không lưu danh sách playlist.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Mở một danh sách chơi M3U, M3u8, hoặc PLS từ địa chỉ web. liên kết trực tiếp không lưu danh sách playlist.',
 			'universalMedia.choosePlaylist' => 'Chọn playlist file',
 			'universalMedia.openPlaylist' => 'playlist mở',
 			'universalMedia.playlistFormatsHelp' => 'Một danh sách phát có thể chứa tối đa 1.000 mục và 2 MB. HLS hiển thị mở như dòng để người chơi có thể chọn một chất lượng.',
@@ -8955,9 +8957,9 @@ extension on TranslationsVi {
 			'sourceSetup.apiKey' => 'Khóa API',
 			'sourceSetup.optionalUsername' => 'Tên người dùng của tài khoản (không bắt buộc)',
 			'sourceSetup.optionalPassword' => 'Mật khẩu tài khoản (không bắt buộc)',
-			'sourceSetup.subtitlePrivacy' => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Lấy khóa API từ opensubtitles.com. Tìm kiếm gửi tiêu đề video và các ID IMDb/TMDB có sẵn, không bao giờ gửi tệp video. Khóa và thông tin xác thực tài khoản tùy chọn được mã hóa cùng nguồn này.',
 			'sourceSetup.automaticMetadata' => 'Siêu dữ liệu video trực tuyến tự động',
 			'sourceSetup.metadataPrivacy' => 'Chỉ gửi tiêu đề/năm từ tên tệp và số tập hoặc một ID NFO, không bao giờ gửi nội dung đa phương tiện hay thông tin xác thực. Các trường NFO vẫn được ưu tiên.',
 			'sourceSetup.nfsEncryptionFailure' => 'Với NFS được mã hóa, kiểm tra hỗ trợ RFC 9289 và TLS 1.3 trên cả hai dịch vụ NAS, tên trong chứng chỉ và UID/GID của vùng chia sẻ. Pleazyng sẽ không thử lại kết nối này khi không mã hóa.',

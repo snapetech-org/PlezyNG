@@ -152,7 +152,7 @@ class MpvPlayer {
   mpv_handle* mpv_ = nullptr;
   std::mutex visualization_mutex_;
   std::atomic<double> visualization_pts_{std::numeric_limits<double>::quiet_NaN()};
-  bool experimental_dv_ = false;
+  bool experimental_dv_ = true;
   bool p7_fel_filter_active_ = false;
   bool p7_fel_hwdec_overridden_ = false;
   std::string p7_fel_restore_hwdec_;

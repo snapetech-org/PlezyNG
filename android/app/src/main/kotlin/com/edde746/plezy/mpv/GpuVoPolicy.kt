@@ -29,18 +29,18 @@ internal object GpuVoPolicy {
   fun hasFelEngine(identity: String?): Boolean = identity == FEL_ENGINE_ID
 
   /**
-   * Whether the user opted into the P7 FEL graph. With opt-in, every P7 file
-   * in `auto` mode is forced through software decode and gpu-next, even when a
+   * Automatic P7 FEL selection unless explicitly disabled. Every P7 file
+   * in `auto` mode requests software decode and gpu-next, even when a
    * device advertises native DV; the caller still confirms that mpv accepts
    * the filter before switching away from its existing route.
    */
   fun wantsP7FelReconstruction(
     dvProfile: Long?,
     conversionMode: String,
-    experimentalEnabled: Boolean = false
+    experimentalEnabled: Boolean = true
   ): Boolean = experimentalEnabled && dvProfile == 7L && conversionMode == "auto"
 
-  /** Bundling the engine does not opt the user into reconstruction. */
+  /** Reconstruction still requires an accepted filter; bundling proves no output quality. */
   fun p7FelRouteActive(
     dvProfile: Long?,
     conversionMode: String,

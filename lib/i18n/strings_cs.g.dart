@@ -645,6 +645,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Konverze RPU na profil Dolby Vision 8.1';
 	@override String get dvConversionHevcStripDescription => 'Strip Dolby Vision RPU/EL vrstvy a současná rovina HEVC';
 	@override String get experimentalDolbyVision => 'Experimentální Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Automaticky zkusí Dolby Vision/FEL a při nedostupnosti přejde na kompatibilní přehrávání. Ve výchozím stavu zapnuto; skutečný výstup závisí na zařízení.';
 	@override String get dvCompatibilityFallback => 'Záložní režim kompatibility';
 	@override String get dvCompatibilityFallbackDescription => 'Pokud experiment nelze spustit, použít standardní renderer. Data FEL mohou být ztracena.';
 	@override String get dvExperimentDiagnostics => 'Protokolování videoexperimentu';
@@ -5931,6 +5932,7 @@ extension on TranslationsCs {
 			'settings.dvConversionDv81Description' => 'Konverze RPU na profil Dolby Vision 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Strip Dolby Vision RPU/EL vrstvy a současná rovina HEVC',
 			'settings.experimentalDolbyVision' => 'Experimentální Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Automaticky zkusí Dolby Vision/FEL a při nedostupnosti přejde na kompatibilní přehrávání. Ve výchozím stavu zapnuto; skutečný výstup závisí na zařízení.',
 			'settings.dvCompatibilityFallback' => 'Záložní režim kompatibility',
 			'settings.dvCompatibilityFallbackDescription' => 'Pokud experiment nelze spustit, použít standardní renderer. Data FEL mohou být ztracena.',
 			'settings.dvExperimentDiagnostics' => 'Protokolování videoexperimentu',
@@ -5940,9 +5942,9 @@ extension on TranslationsCs {
 			'settings.hdrSdrConversion' => 'HDR na SDR konverze',
 			'settings.hdrSdrConversionDescription' => 'Vyberte, co konvertuje HDR video, když displej nedokáže zobrazit HDR.',
 			'settings.hdrSdrConversionAuto' => 'Automaticky',
-			'settings.hdrSdrConversionAutoDescription' => 'Přístroj na Android 9 a novější, hráč na starších verzích',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Přístroj na Android 9 a novější, hráč na starších verzích',
 			'settings.hdrSdrConversionDevice' => 'Zařízení',
 			'settings.hdrSdrConversionDeviceDescription' => 'Video hardware vašeho zařízení to konvertuje. nejrychlejší, ale barvy závisí na zařízení',
 			'settings.hdrSdrConversionPlayer' => 'Přehrávač',
@@ -6454,9 +6456,9 @@ extension on TranslationsCs {
 			'videoControls.segmentLoop' => 'Segmentový loop',
 			'videoControls.addBookmark' => 'Přidat bookmark',
 			'videoControls.bookmarkName' => 'Bookmark jméno',
-			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
 			'videoControls.bookmarkNameRequired' => 'Zadejte jméno pro tuto knižní značku.',
 			'videoControls.deleteBookmark' => 'Odstranit bookmark',
@@ -6968,9 +6970,9 @@ extension on TranslationsCs {
 			'libraries.libraryOptions' => 'Možnosti knihovny',
 			'libraries.content' => 'Obsah knihovny',
 			'libraries.selectLibrary' => 'Vyberte knihovnu',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
 			'libraries.noFoldersFound' => 'Žádné složky nenajdete',
@@ -7482,9 +7484,9 @@ extension on TranslationsCs {
 			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
 			'watchTogether.copyCode' => 'Kopírování kódu',
 			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
-			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
 			'watchTogether.openSessionControls' => 'Otevřete sledování Session Controls',
@@ -7996,9 +7998,9 @@ extension on TranslationsCs {
 			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
 			'metadataEdit.imageUrl' => 'obrázek URL',
 			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
-			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
 			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
 			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
 			'metadataEdit.noArtworkAvailable' => 'K dispozici žádné umělecké dílo',
@@ -8510,9 +8512,9 @@ extension on TranslationsCs {
 			'universalMedia.favoriteSaved' => 'Stream oblíbené uložené do tohoto profilu',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('cs'))(n, one: 'Přepadl ${count} nepodporovaný nebo nebezpečný playlist vstup.', few: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', many: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', other: 'Zkracené ${count} nepodporované nebo nebezpečné playlist vstupy.', ), 
 			'universalMedia.playlistAddress' => 'Playlistová adresa',
-			'universalMedia.playlistAddressHelp' => 'Otevřete playlist M3U, M3u8 nebo PLS z webové adresy. Přímé streamovací odkazy nezachovávají playlist.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Otevřete playlist M3U, M3u8 nebo PLS z webové adresy. Přímé streamovací odkazy nezachovávají playlist.',
 			'universalMedia.choosePlaylist' => 'Vyberte soubor playlist',
 			'universalMedia.openPlaylist' => 'Otevřená playlist',
 			'universalMedia.playlistFormatsHelp' => 'Přehrávač může obsahovat až 1000 položek a 2 MB. HLS se otevírají jako toky, takže hráč si může vybrat kvalitu.',
@@ -9024,9 +9026,9 @@ extension on TranslationsCs {
 			'sourceSetup.apiKey' => 'Klíč API',
 			'sourceSetup.optionalUsername' => 'Uživatelské jméno účtu (nepovinné)',
 			'sourceSetup.optionalPassword' => 'Heslo účtu (nepovinné)',
-			'sourceSetup.subtitlePrivacy' => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Získejte klíč API na opensubtitles.com. Hledání odesílá název videa a dostupná ID IMDb/TMDB, nikdy videosoubor. Klíč a volitelné přihlašovací údaje účtu jsou šifrovány spolu s tímto zdrojem.',
 			'sourceSetup.automaticMetadata' => 'Automatická online metadata videa',
 			'sourceSetup.metadataPrivacy' => 'Odesílá pouze název/rok z názvu souboru a čísla epizod nebo ID NFO, nikdy média ani přihlašovací údaje. Pole NFO mají nadále přednost.',
 			'sourceSetup.nfsEncryptionFailure' => 'U šifrovaného NFS ověřte podporu RFC 9289 a TLS 1.3 u obou služeb NAS, název v certifikátu a UID/GID exportu. Pleazyng se nepokusí toto spojení zopakovat bez šifrování.',

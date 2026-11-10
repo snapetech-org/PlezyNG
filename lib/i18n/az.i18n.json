@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Dolby Vision profile 8.1-ə çevrilməni məcburi et",
     "dvConversionHevcStripDescription": "Dolby Vision təbəqələrini sil və sadə HEVC kimi təqdim et",
     "experimentalDolbyVision": "Eksperimental Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Dolby Vision/FEL avtomatik sınanır, əlçatan olmadıqda uyğun oxutmaya keçilir. Standart olaraq aktivdir; faktiki çıxış cihazdan asılıdır.",
     "dvCompatibilityFallback": "Uyğunluq üçün ehtiyat rejim",
     "dvCompatibilityFallbackDescription": "Sınaq başlaya bilməsə, standart renderdən istifadə edin. FEL məlumatları itə bilər.",
     "dvExperimentDiagnostics": "Video sınağının jurnalı",

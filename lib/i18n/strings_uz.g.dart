@@ -641,6 +641,7 @@ class _Translations$settings$uz extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision profile 8.1 formatiga oʻtkazish';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision qatlamlarini olib tashlash va HEVC sifatida koʻrsatish';
 	@override String get experimentalDolbyVision => 'Tajribaviy Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Dolby Vision/FEL avtomatik sinab ko‘riladi, mavjud bo‘lmasa mos ijroga o‘tiladi. Standart holatda yoqilgan; haqiqiy chiqish qurilmaga bog‘liq.';
 	@override String get dvCompatibilityFallback => 'Moslik uchun zaxira rejim';
 	@override String get dvCompatibilityFallbackDescription => 'Tajriba boshlanmasa, standart renderdan foydalaning. FEL ma’lumotlari yo‘qolishi mumkin.';
 	@override String get dvExperimentDiagnostics => 'Video tajribasi jurnali';
@@ -5887,6 +5888,7 @@ extension on TranslationsUz {
 			'settings.dvConversionDv81Description' => 'Dolby Vision profile 8.1 formatiga oʻtkazish',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision qatlamlarini olib tashlash va HEVC sifatida koʻrsatish',
 			'settings.experimentalDolbyVision' => 'Tajribaviy Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Dolby Vision/FEL avtomatik sinab ko‘riladi, mavjud bo‘lmasa mos ijroga o‘tiladi. Standart holatda yoqilgan; haqiqiy chiqish qurilmaga bog‘liq.',
 			'settings.dvCompatibilityFallback' => 'Moslik uchun zaxira rejim',
 			'settings.dvCompatibilityFallbackDescription' => 'Tajriba boshlanmasa, standart renderdan foydalaning. FEL ma’lumotlari yo‘qolishi mumkin.',
 			'settings.dvExperimentDiagnostics' => 'Video tajribasi jurnali',
@@ -5896,9 +5898,9 @@ extension on TranslationsUz {
 			'settings.hdrSdrConversion' => 'HDR\'ni SDR\'ga aylantirish',
 			'settings.hdrSdrConversionDescription' => 'Displey HDR\'ni ko‘rsata olmaganda HDR videoni nima aylantirishini tanlang.',
 			'settings.hdrSdrConversionAuto' => 'Avtomatik',
-			'settings.hdrSdrConversionAutoDescription' => 'Android 9 va undan keyingi versiyalarda qurilma, eskiroq versiyalarda pleyer',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Android 9 va undan keyingi versiyalarda qurilma, eskiroq versiyalarda pleyer',
 			'settings.hdrSdrConversionDevice' => 'Qurilma',
 			'settings.hdrSdrConversionDeviceDescription' => 'Aylantirishni qurilmaning video apparati bajaradi. Eng tezi, lekin ranglar qurilmaga bog‘liq',
 			'settings.hdrSdrConversionPlayer' => 'Pleyer',
@@ -6410,9 +6412,9 @@ extension on TranslationsUz {
 			'videoControls.segmentLoop' => 'Bo‘limni takrorlash',
 			'videoControls.addBookmark' => 'Xatcho‘p qo‘shish',
 			'videoControls.bookmarkName' => 'Xatcho‘p nomi',
-			'videoControls.bookmarkNameHint' => 'Masalan, kirish sahnasi',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Masalan, kirish sahnasi',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Xatcho‘p ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu xatcho‘p uchun nom kiriting.',
 			'videoControls.deleteBookmark' => 'Xatcho‘pni o‘chirish',
@@ -6924,9 +6926,9 @@ extension on TranslationsUz {
 			'libraries.libraryOptions' => 'Kutubxona parametrlari',
 			'libraries.content' => 'kutubxona tarkibi',
 			'libraries.selectLibrary' => 'Kutubxonani tanlash',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlar (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlar (${count})',
 			'libraries.noRecommendations' => 'Tavsiyalar yoʻq',
 			'libraries.noCollections' => 'Ushbu kutubxonada toʻplamlar yoʻq',
 			'libraries.noFoldersFound' => 'Jildlar topilmadi',
@@ -7438,9 +7440,9 @@ extension on TranslationsUz {
 			'watchTogether.noCodeInClipboard' => 'Almashish buferida xona kodi yoʻq',
 			'watchTogether.copyCode' => 'Kodni nusxalash',
 			'watchTogether.codeCopied' => 'Xona kodi nusxalandi',
-			'watchTogether.shareInvite' => 'Taklifni ulashish',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Taklifni ulashish',
 			'watchTogether.inviteCopied' => 'Taklif nusxalandi. Uni xabarga joylashtiring.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-dagi "Birgalikda tomosha qilish" xonamga qoʻshiling: "Birgalikda tomosha qilish" boʻlimini oching, "Xonaga qoʻshilish" tugmasini tanlang va ${code} kodini kiriting.',
 			'watchTogether.openSessionControls' => 'Boshqaruv elementlarini ochish',
@@ -7952,9 +7954,9 @@ extension on TranslationsUz {
 			'metadataEdit.enterImageUrl' => 'Rasm URL-manzilini kiriting',
 			'metadataEdit.imageUrl' => 'Rasm URL-manzili',
 			'metadataEdit.metadataUpdated' => 'Metamaʼlumotlar yangilandi',
-			'metadataEdit.metadataUpdateFailed' => 'Metamaʼlumotlarni yangilab boʻlmadi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Metamaʼlumotlarni yangilab boʻlmadi',
 			'metadataEdit.artworkUpdated' => 'Rasmlar yangilandi',
 			'metadataEdit.artworkUpdateFailed' => 'Rasmlarni yangilab boʻlmadi',
 			'metadataEdit.noArtworkAvailable' => 'Rasm mavjud emas',
@@ -8466,9 +8468,9 @@ extension on TranslationsUz {
 			'universalMedia.favoriteSaved' => 'Bu profili yo‘zadi bu profilga salaydi.',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uz'))(n, one: '${count}\'dan kaygan oʻshayni oʻsayni playlist entry.', other: '${count}\'dan kaygan oʻshaydi oʻsayan playlist entradi.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresi',
-			'universalMedia.playlistAddressHelp' => 'M3U, m3U8 ya PLS playlist o‘z web adresi. Direct stream link ko‘z bu playlist.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'M3U, m3U8 ya PLS playlist o‘z web adresi. Direct stream link ko‘z bu playlist.',
 			'universalMedia.choosePlaylist' => 'Playlist fildi seçin',
 			'universalMedia.openPlaylist' => 'Open Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Bir playlist 1000\'dan fazla o‘yadi, 2 MB. HLS-i qaytarlar olarak açılır, bu yüzden oyungan bir kalite seçib.',
@@ -8980,9 +8982,9 @@ extension on TranslationsUz {
 			'sourceSetup.apiKey' => 'API kaliti',
 			'sourceSetup.optionalUsername' => 'Hisob foydalanuvchi nomi (ixtiyoriy)',
 			'sourceSetup.optionalPassword' => 'Hisob paroli (ixtiyoriy)',
-			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytidan API kalitini oling. Qidiruv video nomi va mavjud IMDb/TMDB ID-larini yuboradi, video faylini esa hech qachon yubormaydi. Kalit va ixtiyoriy hisobga kirish ma’lumotlari ushbu manba bilan birga shifrlanadi.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytidan API kalitini oling. Qidiruv video nomi va mavjud IMDb/TMDB ID-larini yuboradi, video faylini esa hech qachon yubormaydi. Kalit va ixtiyoriy hisobga kirish ma’lumotlari ushbu manba bilan birga shifrlanadi.',
 			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metama’lumotlari',
 			'sourceSetup.metadataPrivacy' => 'Faqat fayl nomidagi nom/yil va qism raqamlari yoki NFO ID-sini yuboradi; media fayllari yoki kirish ma’lumotlarini hech qachon yubormaydi. NFO maydonlari ustuvor bo‘lib qoladi.',
 			'sourceSetup.nfsEncryptionFailure' => 'Shifrlangan NFS uchun NAS ning ikkala xizmatida RFC 9289 va TLS 1.3 qo‘llanishini, sertifikat nomini hamda umumiy katalogning UID/GID qiymatlarini tekshiring. Pleazyng bu ulanishni shifrlashsiz qayta sinamaydi.',

@@ -130,7 +130,7 @@ final class MpvWakeupCallbackContext {
 class MpvPlayerCoreBase: NSObject {
   weak var delegate: MpvPlayerDelegate?
 
-  var experimentalDolbyVisionRequested = false
+  var experimentalDolbyVisionRequested = true
   private(set) var dvBackend: DVRuntimeBackend?
 
   var videoLayer: MpvVideoLayer?
@@ -582,32 +582,32 @@ class MpvPlayerCoreBase: NSObject {
   func setupMpv() -> Bool {
     if experimentalDolbyVisionRequested {
       if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
-        guard let backend = BundledDVRuntime.make(), backend.prepare() else {
-          MpvLog.error("Bundled experimental Dolby Vision runtime could not initialize")
-          return false
-        }
-        backend.onProperty = { [weak self] name, value, sourceID in
-          guard let self, self.isLifecycleActive else { return }
-          self.cacheLock.lock()
-          switch name {
-          case "time-pos": self.cachedTimePos = (value as? NSNumber)?.doubleValue ?? 0
-          case "duration": self.cachedDuration = (value as? NSNumber)?.doubleValue ?? 0
-          case "pause": self.cachedPaused = value as? Bool ?? true
-          case "width": self.cachedWidth = (value as? NSNumber)?.doubleValue ?? 0
-          case "height": self.cachedHeight = (value as? NSNumber)?.doubleValue ?? 0
-          default: break
+        if let backend = DVRuntimeBackend.preparedForPlayback(make: BundledDVRuntime.make) {
+          backend.onProperty = { [weak self] name, value, sourceID in
+            guard let self, self.isLifecycleActive else { return }
+            self.cacheLock.lock()
+            switch name {
+            case "time-pos": self.cachedTimePos = (value as? NSNumber)?.doubleValue ?? 0
+            case "duration": self.cachedDuration = (value as? NSNumber)?.doubleValue ?? 0
+            case "pause": self.cachedPaused = value as? Bool ?? true
+            case "width": self.cachedWidth = (value as? NSNumber)?.doubleValue ?? 0
+            case "height": self.cachedHeight = (value as? NSNumber)?.doubleValue ?? 0
+            default: break
+            }
+            self.cacheLock.unlock()
+            self.dispatchDelegateProperty(name: name, value: value, sourceId: sourceID)
           }
-          self.cacheLock.unlock()
-          self.dispatchDelegateProperty(name: name, value: value, sourceId: sourceID)
+          backend.onEvent = { [weak self] name, data, sourceID in
+            self?.dispatchDelegateEvent(name: name, data: data, sourceId: sourceID)
+          }
+          dvBackend = backend
+          videoLayer?.removeFromSuperlayer()
+          return true
         }
-        backend.onEvent = { [weak self] name, data, sourceID in
-          self?.dispatchDelegateEvent(name: name, data: data, sourceId: sourceID)
-        }
-        dvBackend = backend
-        videoLayer?.removeFromSuperlayer()
-        return true
+        MpvLog.error("Bundled Dolby Vision runtime unavailable; using compatibility playback")
+      } else {
+        MpvLog.error("Dolby Vision runtime needs iOS/tvOS 18 or macOS 15; using compatibility playback")
       }
-      MpvLog.error("Experimental Dolby Vision needs iOS/tvOS 18 or macOS 15; using compatibility playback")
     }
     guard let renderLayer = videoLayer else { return false }
 

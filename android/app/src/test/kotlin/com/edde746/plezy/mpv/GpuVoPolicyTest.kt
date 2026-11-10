@@ -43,8 +43,9 @@ class GpuVoPolicyTest {
   }
 
   @Test
-  fun `P7 experiment forces the FEL graph regardless of advertised native support`() {
-    assertFalse(GpuVoPolicy.wantsP7FelReconstruction(7L, "auto"))
+  fun `P7 automatically requests FEL regardless of advertised native support`() {
+    assertTrue(GpuVoPolicy.wantsP7FelReconstruction(7L, "auto"))
+    assertFalse(GpuVoPolicy.wantsP7FelReconstruction(7L, "auto", experimentalEnabled = false))
     assertTrue(GpuVoPolicy.wantsP7FelReconstruction(7L, "auto", experimentalEnabled = true))
     assertFalse(GpuVoPolicy.wantsP7FelReconstruction(7L, "dv81", experimentalEnabled = true))
     assertFalse(GpuVoPolicy.wantsP7FelReconstruction(8L, "auto", experimentalEnabled = true))
@@ -57,7 +58,7 @@ class GpuVoPolicyTest {
   }
 
   @Test
-  fun `a bundled FEL engine still requires runtime opt-in and an accepted filter`() {
+  fun `an explicitly disabled route or rejected filter cannot activate FEL`() {
     for (accepted in listOf(false, true)) {
       assertFalse(GpuVoPolicy.p7FelRouteActive(7L, "auto", experimentalEnabled = false, filterAccepted = accepted))
     }

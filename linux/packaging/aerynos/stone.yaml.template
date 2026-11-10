@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: GPL-3.0-only
+name        : pleazyng
+version     : "@@VERSION@@"
+release     : 1
+homepage    : https://github.com/snapetech-org/pleazyng
+upstreams   :
+    - https://github.com/snapetech-org/pleazyng/releases/download/@@TAG@@/pleazyng-linux-x64.tar.gz:
+        hash: @@X64_SHA256@@
+        stripdirs: 0
+        unpackdir: pleazyng
+    - @@WEBKIT_URL@@:
+        hash: @@WEBKIT_SHA256@@
+        rename: webkit-x64.deb
+        unpack: false
+summary     : Media client for Plex, Jellyfin and Emby
+description : |
+    Browse and play media from Plex, Jellyfin and Emby servers, with
+    offline downloads and configurable playback tools.
+license     : GPL-3.0-only
+architectures:
+    - x86_64
+strip       : false
+debug       : false
+paths       :
+    - /usr/lib/pleazyng
+    - /usr/lib/x86_64-linux-gnu/webkit2gtk-4.1
+provides-exclude:
+    - '^(cmake|pkgconfig|python)\('
+builddeps   :
+    - binary(ar)
+    - binary(patchelf)
+    - binary(python3)
+    - binary(tar)
+    - binary(zstd)
+    - pkgconfig(gdk-pixbuf-2.0)
+rundeps     :
+    - binary(bash)
+    - binary(bwrap)
+    - binary(xdg-dbus-proxy)
+install     : |
+    bundle="%(installroot)%(libdir)/pleazyng"
+    install -d "$bundle"
+    cp -a ./. "$bundle/"
+    test -x "$bundle/pleazyng"
+    chmod 0755 "$bundle/pleazyng.sh"
+
+    # WebKit looks for helpers at the path compiled into the released library.
+    python3 %(pkgdir)/install-webkit-helpers.py --bundle "$bundle" \
+        --deb %(sourcedir)/webkit-x64.deb --root %(installroot) --arch x64 \
+        --metadata %(pkgdir)/webkit-runtime.json
+    python3 %(pkgdir)/normalize-bundle-rpaths.py "$bundle"
+    for helper in %(installroot)%(libdir)/x86_64-linux-gnu/webkit2gtk-4.1/*Process \
+                  %(installroot)%(libdir)/x86_64-linux-gnu/webkit2gtk-4.1/MiniBrowser \
+                  %(installroot)%(libdir)/x86_64-linux-gnu/webkit2gtk-4.1/injected-bundle/*.so; do
+        patchelf --set-rpath %(libdir)/pleazyng/lib "$helper"
+    done
+    python3 %(pkgdir)/rebuild-pixbuf-cache.py "$bundle" \
+        --runtime-prefix %(libdir)/pleazyng
+    python3 %(pkgdir)/relocate-caches.py "$bundle" \
+        --runtime-prefix %(libdir)/pleazyng
+
+    install -d %(installroot)%(bindir)
+    cat > %(installroot)%(bindir)/pleazyng <<'EOF'
+    #!/bin/sh
+    exec %(libdir)/pleazyng/pleazyng.sh "$@"
+    EOF
+    chmod 0755 %(installroot)%(bindir)/pleazyng
+    install -Dm644 %(pkgdir)/org.snapetech.pleazyng.desktop %(installroot)%(datadir)/applications/org.snapetech.pleazyng.desktop
+    install -Dm644 pleazyng.png %(installroot)%(datadir)/icons/hicolor/512x512/apps/pleazyng.png
+    install -Dm644 %(pkgdir)/LICENSE %(installroot)%(datadir)/licenses/pleazyng/LICENSE

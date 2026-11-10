@@ -224,9 +224,11 @@ extension _VideoPlayerPlaybackStartMethods on VideoPlayerScreenState {
             requestCompatibleDolbyVisionRendition: true,
             supportedNativeDolbyVisionProfiles: VideoDecodeCapabilities.supportedNativeDolbyVisionProfiles,
             allowExperimentalDolbyVisionProfile7:
-                (Platform.isWindows || Platform.isLinux) &&
-                !PlatformDetector.isWebOSBuild() &&
-                (SettingsService.instanceOrNull?.read(SettingsService.experimentalDolbyVision) ?? false),
+                (!Platform.isAndroid || !SettingsService.instance.read(SettingsService.useExoPlayer)) &&
+                !PlatformDetector.usesNativeTvMedia() &&
+                !SettingsService.instance.read(SettingsService.disableDolbyVision) &&
+                (SettingsService.instanceOrNull?.read(SettingsService.experimentalDolbyVision) ??
+                    SettingsService.experimentalDolbyVision.defaultValue),
           ),
           offlineLibraryMode: true,
         );

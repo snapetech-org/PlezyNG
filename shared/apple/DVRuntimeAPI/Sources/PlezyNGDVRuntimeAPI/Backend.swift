@@ -4,6 +4,17 @@ import Foundation
 /// The interface keeps the app's existing deployment floor. The implementation
 /// is included in every Apple build and loaded on a compatible OS at runtime.
 open class DVRuntimeBackend: NSObject {
+  /// A missing or unusable optional runtime leaves the compatibility player
+  /// available. Close a failed candidate before the caller creates that player.
+  public static func preparedForPlayback(make: () -> DVRuntimeBackend?) -> DVRuntimeBackend? {
+    guard let candidate = make() else { return nil }
+    guard candidate.prepare() else {
+      candidate.close()
+      return nil
+    }
+    return candidate
+  }
+
   public var onProperty: ((String, Any?, Int64?) -> Void)?
   public var onEvent: ((String, [String: Any]?, Int64?) -> Void)?
 

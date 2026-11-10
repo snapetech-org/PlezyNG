@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Record the complete review of 64 upstream commits through Plezy 2.26, with originating commit and contributor links, retained fork behavior and explicit unshipped native dependencies. Pleazyng keeps its name, logo, native components and GPL license file; the upstream trademark policy is excluded. See the [review and source credits](docs/maintainers/upstream-sync-2026-11-09.md).
+
 - Run post-publication catalog verification through a read-only reusable workflow, preserving automatic validation while removing the privileged workflow-run trigger rejected by repository policy.
 
 - AppImage update metadata and verified zsync sidecars: build x64 AppImages with fork-specific update information, verify control-file names, blocks and digests, checksum and attest both artifacts, and preserve immutable legacy images without update metadata. Independently adapted from [upstream d832b421](https://github.com/edde746/plezy/commit/d832b4212ceabc68bfee6785177f40bd2a724723), contributed upstream by [@nataloko](https://github.com/nataloko); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
@@ -9,7 +11,9 @@
 - Repair the TV containment workflow after its integration script was renamed.
 - Prepare the Flutter 3.47.8 security engine while retaining the Windows presentation fixes independently adapted from [@edde746's upstream patch series](https://github.com/edde746/flutter-plezy/commit/06654fe6ff3fff67fdaa74e2a7c41ecbbc90bee2). Build validation and release SDK migration are pending; see [source credit](UPSTREAM_ATTRIBUTION.md).
 
-- Remove aerynOS release-channel recipes, generator output and installation documentation under the owner’s channel decision.
+- Restore downstream aerynOS recipe preparation and isolated native qualification under the owner’s subsequent explicit restore-and-continue instruction. Public availability remains conditional on qualified artifacts; no official repository entry is implied.
+
+- Enable automatic Dolby Vision/Profile 7 FEL routing and compatibility fallback by default. Preserve explicit Off and manual conversion choices, try implemented local Android/Apple/desktop paths before server conversion, and retain ordinary Apple playback when the bundled DV runtime cannot initialize. Keep qualification and actual layer use explicit; neural motion smoothing remains separately opt-in.
 
 - More reliable iOS speed-change qualification: test the immediate position jump and the steady rate after output restarts, retaining the fork’s simulator limitation and deterministic flush-order coverage. Independently adapted from [upstream 48926474](https://github.com/edde746/plezy/commit/48926474e863b8079558e41cb1d4776439ed1555), contributed upstream by [@edde746](https://github.com/edde746); see [source credit](UPSTREAM_ATTRIBUTION.md#reviewed-upstream-synchronization--2026-11-09).
 

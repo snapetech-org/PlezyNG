@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Force inline RPU conversion to Dolby Vision profile 8.1",
     "dvConversionHevcStripDescription": "Strip Dolby Vision RPU/EL layers and present plain HEVC",
     "experimentalDolbyVision": "Experimental Dolby Vision",
-    "experimentalDolbyVisionDescription": "Use the bundled experimental Dolby Vision/FEL playback path on the next playback. Off by default; output depends on your device. Apple requires iOS/tvOS 18 or macOS 15.",
+    "experimentalDolbyVisionDescription": "Try Dolby Vision/FEL automatically and fall back to compatible playback when unavailable. On by default; actual output depends on the device.",
     "dvCompatibilityFallback": "Compatibility fallback",
     "dvCompatibilityFallbackDescription": "Use the standard renderer if the experiment cannot start. FEL data may be lost.",
     "dvExperimentDiagnostics": "Video experiment logging",

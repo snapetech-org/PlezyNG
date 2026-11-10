@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Принуждава директно преобразуване на RPU към Dolby Vision Profile 8.1",
     "dvConversionHevcStripDescription": "Премахва слоевете Dolby Vision RPU/EL и подава обикновен HEVC поток",
     "experimentalDolbyVision": "Експериментален Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Автоматично опитва Dolby Vision/FEL и преминава към съвместимо възпроизвеждане, ако не е налично. Включено по подразбиране; изходът зависи от устройството.",
     "dvCompatibilityFallback": "Резервен режим за съвместимост",
     "dvCompatibilityFallbackDescription": "Използвайте стандартния рендерер, ако експериментът не може да стартира. Данните FEL може да се загубят.",
     "dvExperimentDiagnostics": "Дневник на видео експеримента",

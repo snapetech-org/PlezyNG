@@ -1,3 +1,34 @@
+import 'dart:async';
+
+Future<void> loadAcknowledgedCastMedia<Status>({
+  required Stream<Status> statuses,
+  required bool Function(Status) acknowledge,
+  required Future<void> Function() load,
+  Duration timeout = const Duration(seconds: 15),
+}) async {
+  final accepted = Completer<void>();
+  final subscription = statuses.listen(
+    (status) {
+      if (!accepted.isCompleted && acknowledge(status)) accepted.complete();
+    },
+    onError: (Object error, StackTrace stack) {
+      if (!accepted.isCompleted) accepted.completeError(error, stack);
+    },
+    onDone: () {
+      if (!accepted.isCompleted) accepted.completeError(StateError('Cast status stream closed'));
+    },
+  );
+  final deadline = Timer(timeout, () {
+    if (!accepted.isCompleted) accepted.completeError(TimeoutException('Cast load was not acknowledged', timeout));
+  });
+  try {
+    await Future.wait<void>([Future.sync(load), accepted.future], eagerError: true);
+  } finally {
+    deadline.cancel();
+    await subscription.cancel();
+  }
+}
+
 class CastPlaybackOwnership {
   String? _token;
   int? _session;

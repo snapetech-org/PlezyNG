@@ -308,16 +308,17 @@ class CastMediaService extends ChangeNotifier {
 
       bool acknowledged(GoggleCastMediaStatus? status) =>
           status != null && _ownership.acknowledge(_ownerToken(status), status.mediaSessionID);
-      if (!acknowledged(_remote.mediaStatus)) {
-        await _remote.mediaStatusStream.firstWhere(acknowledged).timeout(const Duration(seconds: 15));
-      }
-      if (!current() || !_ownsReceiver()) return;
-      await _remote.loadMedia(
-        information,
-        autoPlay: true,
-        playPosition: filePosition,
-        activeTrackIds: textTracks.defaultTrackIds.isEmpty ? null : textTracks.defaultTrackIds,
+      await loadAcknowledgedCastMedia(
+        statuses: _remote.mediaStatusStream,
+        acknowledge: acknowledged,
+        load: () => _remote.loadMedia(
+          information,
+          autoPlay: true,
+          playPosition: filePosition,
+          activeTrackIds: textTracks.defaultTrackIds.isEmpty ? null : textTracks.defaultTrackIds,
+        ),
       );
+      if (!current() || !_ownsReceiver()) return;
 
       _deviceName = device?.friendlyName ?? _sessions.currentSession?.device?.friendlyName ?? _deviceName;
       _activeItem = item;

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Dispatch Cast media loads before awaiting receiver acknowledgement, retaining synchronous status events and cleaning up failed or timed-out handshakes.
+
 - Preserve local listening/report ownership when a paired music group fails source preflight, and correct smart-playlist integration lints found by the whole-repository analyzer.
 
 - Harden group departure against replayed invitations/acknowledgements and transport failures; prevent delayed Cast status/report callbacks from retiring or reporting a replacement receiver session.

@@ -1,7 +1,55 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/services/cast_playback_ownership.dart';
 
 void main() {
+  test('dispatches load before waiting and catches synchronous acknowledgement', () async {
+    final statuses = StreamController<String>.broadcast(sync: true);
+    var loaded = false;
+    await loadAcknowledgedCastMedia(
+      statuses: statuses.stream,
+      acknowledge: (status) => status == 'owned',
+      load: () async {
+        loaded = true;
+        statuses.add('foreign');
+        statuses.add('owned');
+      },
+    );
+    expect(loaded, isTrue);
+    expect(statuses.hasListener, isFalse);
+    await statuses.close();
+  });
+
+  test('load failures cancel the acknowledgement listener immediately', () async {
+    final statuses = StreamController<String>.broadcast();
+    await expectLater(
+      loadAcknowledgedCastMedia(
+        statuses: statuses.stream,
+        acknowledge: (_) => true,
+        load: () async => throw StateError('load failed'),
+      ),
+      throwsStateError,
+    );
+    expect(statuses.hasListener, isFalse);
+    await statuses.close();
+  });
+
+  test('foreign status cannot acknowledge a timed-out load', () async {
+    final statuses = StreamController<String>.broadcast(sync: true);
+    await expectLater(
+      loadAcknowledgedCastMedia(
+        statuses: statuses.stream,
+        acknowledge: (status) => status == 'owned',
+        load: () async => statuses.add('foreign'),
+        timeout: const Duration(milliseconds: 5),
+      ),
+      throwsA(isA<TimeoutException>()),
+    );
+    expect(statuses.hasListener, isFalse);
+    await statuses.close();
+  });
+
   test('requires matching receiver acknowledgement before accepting status', () {
     final owner = CastPlaybackOwnership()..begin('one', () => true);
     expect(owner.owns('one', 1), isFalse);

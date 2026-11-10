@@ -9,7 +9,12 @@ import 'music_device_link.dart';
 /// A music link shares the established pairing and encryption protocol. An
 /// outbound link is independent of the app's general remote-control session,
 /// so preparing another device does not tear down the currently playing one.
-class MusicDevicePeer {
+abstract interface class MusicDeviceConnection {
+  MusicDeviceLink get output;
+  Future<void> close();
+}
+
+class MusicDevicePeer implements MusicDeviceConnection {
   MusicDevicePeer({
     required this.transport,
     required this.endpoint,
@@ -19,15 +24,16 @@ class MusicDevicePeer {
     String? name,
     bool negotiated = false,
   }) {
+    _authentication = transport.authenticationGeneration;
     channel = MusicConnectChannel(
       send: (message) => transport.sendCommand(RemoteCommand(type: RemoteCommandType.musicConnect, data: message)),
       handle: endpoint.handle,
-      allowed: () => !_closed && current() && transport.isConnected,
+      allowed: _currentAuthentication,
     );
     output = MusicDeviceLink(
       name: name ?? 'Pleazyng',
       request: channel.request,
-      isConnected: () => !_closed && current() && transport.isConnected && _negotiated,
+      isConnected: () => _currentAuthentication() && _negotiated,
     );
     _negotiated = negotiated;
     if (negotiated) _ready.complete(true);
@@ -37,6 +43,7 @@ class MusicDevicePeer {
         if (command.type == RemoteCommandType.musicConnect && _negotiated) {
           channel.receive(command.data);
         } else if (command.type == RemoteCommandType.deviceInfo && !_ready.isCompleted) {
+          _authentication = transport.authenticationGeneration;
           _negotiated = command.data?['musicConnectVersion'] == 1;
           _ready.complete(_negotiated);
         }
@@ -67,12 +74,21 @@ class MusicDevicePeer {
   final _subscriptions = <StreamSubscription<dynamic>>[];
   final _ready = Completer<bool>();
   late final MusicConnectChannel channel;
+  @override
   late final MusicDeviceLink output;
+  int _authentication = -1;
+  bool _currentAuthentication() =>
+      !_closed &&
+      current() &&
+      transport.isConnected &&
+      transport.isAuthenticated &&
+      _authentication == transport.authenticationGeneration;
   bool _negotiated = false;
   bool _closed = false;
 
   Future<bool> ready() => _ready.future.timeout(const Duration(seconds: 5), onTimeout: () => false);
 
+  @override
   Future<void> close() async {
     if (_closed) return;
     _closed = true;

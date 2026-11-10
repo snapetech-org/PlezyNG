@@ -1,4 +1,5 @@
 import '../extras/extras_store.dart';
+import 'music/music_relay_configuration.dart';
 import 'dart:convert';
 import '../media/ids.dart';
 import '../media/library_filter_selection.dart';
@@ -608,12 +609,14 @@ class StorageService extends BaseSharedPreferencesService {
   /// of the same home user — only call when that user's access is being torn
   /// down entirely (profile delete / account sign-out).
   Future<void> clearUserScopedPreferencesForProfile(String profileId) async {
+    await MusicRelayStore.removeProfile(profileId);
     await ExtrasStore(profileId).clear();
     await _clearKeysWithPrefix(_userPrefixForProfileId(profileId));
   }
 
   /// Remove user-scoped prefs for every scope (full logout).
   Future<void> clearAllUserScopedPreferences() async {
+    await _clearKeysWithPrefix('music_pairing_relay_');
     await ExtrasStore.clearAll();
     await _clearKeysWithPrefix('user_');
   }

@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'lib/services/music/**'
+      - 'lib/utils/web_socket_connect.dart'
+      - 'test/utils/web_socket_connect_test.dart'
+      - 'server/music_connect_relay*'
       - 'lib/services/companion_remote/**'
       - 'lib/providers/companion_remote_provider.dart'
       - 'lib/models/companion_remote/**'
@@ -53,4 +56,12 @@ jobs:
           dart analyze lib/services/music lib/providers/companion_remote_provider.dart lib/services/companion_remote lib/widgets/music lib/screens/music
       - name: Test music ownership, handoff, controls and player surfaces
         run: |
-          flutter test --no-pub -j 2 --timeout=180s             test/services/music             test/providers/companion_remote_provider_test.dart             test/services/companion_remote_peer_service_test.dart             test/screens/music             test/widgets/music
+          flutter test --no-pub -j 2 --timeout=180s \
+            test/services/music \
+            test/providers/companion_remote_provider_test.dart \
+            test/services/companion_remote_peer_service_test.dart \
+            test/services/companion_remote_receiver_test.dart \
+            test/services/companion_remote_lan_discovery_service_test.dart \
+            test/services/remote_pairing_store_test.dart \
+            test/utils/web_socket_connect_test.dart \
+            test/screens/music test/widgets/music

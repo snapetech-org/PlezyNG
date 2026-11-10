@@ -89,4 +89,5 @@ bool isSensitivePrefKey(String key) =>
     key == credentialVaultKeyPref ||
     key == legacyPlexTokenPref ||
     key.startsWith('companion_remote_pairing_') ||
+    key.startsWith('music_pairing_relay_') ||
     profileScopedCredentialBaseKey(key) != null;

@@ -200,6 +200,8 @@ class CompanionRemotePeerService with KeepaliveMixin {
   RemoteSessionRole? get role => _role;
   String? get selectedAuthContextId => _selectedAuthContextId;
   String? get selectedHostClientId => _selectedHostClientId;
+  bool get isAuthenticated => _isAuthenticated;
+  int get authenticationGeneration => _authenticationCommitGeneration;
   bool get isHost => _role == RemoteSessionRole.host;
   bool get isConnected => _clientSocket != null || (_channel != null && _channel?.closeCode == null);
 
@@ -888,6 +890,7 @@ class CompanionRemotePeerService with KeepaliveMixin {
 
               final json = jsonDecode(decrypted) as Map<String, dynamic>;
               if (json['type'] == 'authSuccess') {
+                _authenticationCommitGeneration++;
                 _isAuthenticated = true;
                 appLogger.d('CompanionRemote: Authentication successful');
 

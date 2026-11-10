@@ -20,8 +20,20 @@ import 'happy_eyeballs.dart';
 ///
 /// [headers] are sent with the upgrade request.
 class WebSocketConnectAttempt {
-  WebSocketConnectAttempt(Uri uri, {required Duration connectTimeout, Map<String, String>? headers})
-    : this._(uri, connectTimeout: connectTimeout, headers: headers, connectionFactory: happyEyeballsConnectionFactory);
+  WebSocketConnectAttempt(
+    Uri uri, {
+    required Duration connectTimeout,
+    Map<String, String>? headers,
+    int? maxPayloadLength,
+    bool followRedirects = true,
+  }) : this._(
+         uri,
+         connectTimeout: connectTimeout,
+         headers: headers,
+         maxPayloadLength: maxPayloadLength,
+         followRedirects: followRedirects,
+         connectionFactory: happyEyeballsConnectionFactory,
+       );
 
   /// Injects only transport creation; the real HTTP/WebSocket upgrade and
   /// attempt ownership remain in use.
@@ -37,6 +49,8 @@ class WebSocketConnectAttempt {
     required Duration connectTimeout,
     required Future<ConnectionTask<Socket>> Function(Uri, String?, int?) connectionFactory,
     this.headers,
+    this.maxPayloadLength,
+    this.followRedirects = true,
   }) : _client = HttpClient() {
     _client.connectionFactory = (url, proxyHost, proxyPort) async {
       if (_released) throw _cancelledError();
@@ -56,6 +70,8 @@ class WebSocketConnectAttempt {
 
   final Uri uri;
   final Map<String, String>? headers;
+  final int? maxPayloadLength;
+  final bool followRedirects;
   final HttpClient _client;
   final _result = Completer<WebSocket>();
   final _tasks = <ConnectionTask<Socket>>[];
@@ -102,7 +118,17 @@ class WebSocketConnectAttempt {
   Future<void> _run() async {
     final WebSocket webSocket;
     try {
-      webSocket = await WebSocket.connect(uri.toString(), headers: headers, customClient: _client);
+      final client = followRedirects ? _client : _NoRedirectWebSocketClient(_client);
+      final limit = maxPayloadLength;
+      webSocket = limit == null
+          ? await WebSocket.connect(uri.toString(), headers: headers, customClient: client)
+          : await WebSocket.connect(
+              uri.toString(),
+              headers: headers,
+              customClient: client,
+              compression: CompressionOptions.compressionOff,
+              maxPayloadLength: limit,
+            );
     } catch (error, stackTrace) {
       _fail(error, stackTrace);
       return;
@@ -118,4 +144,24 @@ class WebSocketConnectAttempt {
     _release(force: false);
     _result.complete(webSocket);
   }
+}
+
+/// WebSocket.connect only uses openUrl on its supplied HTTP client. Scope the
+/// redirect policy to this attempt before any authorization header is sent.
+class _NoRedirectWebSocketClient implements HttpClient {
+  _NoRedirectWebSocketClient(this.delegate);
+  final HttpClient delegate;
+
+  @override
+  Future<HttpClientRequest> openUrl(String method, Uri url) async {
+    final request = await delegate.openUrl(method, url);
+    request.followRedirects = false;
+    return request;
+  }
+
+  @override
+  void close({bool force = false}) => delegate.close(force: force);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

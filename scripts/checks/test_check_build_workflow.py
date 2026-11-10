@@ -34,6 +34,26 @@ STEAM_CMAKE = ROOT / "native/games/steam/CMakeLists.txt"
 
 
 class BuildWorkflowGuardTest(unittest.TestCase):
+    def test_linux_runtime_cannot_skip_registered_tests_or_unavailable_entropy(self):
+        ci_path = ROOT / '.github/workflows/ci.yml'
+        original = Path.read_text
+        ci = original(ci_path, encoding='utf-8')
+        variants = [ci.replace('            music_dual_core_test \\\n', ''),
+                    ci.replace('      - name: Run Linux native reliability tests\n',
+                               '      - name: Run Linux native reliability tests\n        if: false\n')]
+        for invalid in variants:
+            self.assertNotEqual(invalid, ci)
+
+            def read(path, *args, **kwargs):
+                return invalid if path == ci_path else original(path, *args, **kwargs)
+
+            errors = io.StringIO()
+            with patch.object(Path, 'read_text', read), patch.object(sys, 'argv', [str(CHECKER)]), \
+                    redirect_stderr(errors), self.assertRaises(SystemExit) as result:
+                runpy.run_path(str(CHECKER), run_name='__main__')
+            self.assertEqual(result.exception.code, 1)
+            self.assertIn('Linux native', errors.getvalue())
+
     def test_captured_release_cannot_skip_qualified_source_or_inherit_ci_secrets(self):
         original = self._workflow()
         variants = [original.replace("needs.release-ci.result == 'success'", "needs.release-ci.result == 'skipped'"),

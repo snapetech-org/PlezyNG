@@ -2,6 +2,7 @@ part of '../../plex_client.dart';
 
 mixin _PlexPlaylistMethods on _PlexClientInternals {
   static const int _defaultPlaylistContainerSize = 100;
+  @override
   Object get authenticationSessionId;
 
   Future<LibraryPage<MediaItem>> previewSmartMusicPlaylist(MusicSmartPlaylistRules rules) async {
@@ -22,8 +23,9 @@ mixin _PlexPlaylistMethods on _PlexClientInternals {
   }) async {
     if (title.trim().isEmpty ||
         title.length > 255 ||
-        (playlist != null && (!playlist.smart || playlist.serverId != serverId || playlist.playlistType != 'audio')))
+        (playlist != null && (!playlist.smart || playlist.serverId != serverId || playlist.playlistType != 'audio'))) {
       throw ArgumentError('Invalid smart playlist');
+    }
     final authentication = authenticationSessionId;
     bool current() => identical(authentication, authenticationSessionId) && (isCurrent?.call() ?? true);
     if (!current()) throw StateError('Smart playlist source changed');

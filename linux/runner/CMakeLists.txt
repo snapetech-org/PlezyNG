@@ -215,17 +215,21 @@ if(PLEZY_BUILD_MPV_PLAYER_LIFECYCLE_TESTS)
 
   option(PLEZY_MPV_LIFECYCLE_SANITIZERS
     "Enable ASan and UBSan for the focused mpv_player.cc tests" ON)
-  if(PLEZY_MPV_LIFECYCLE_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  if(PLEZY_MPV_LIFECYCLE_SANITIZERS)
+    if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+      message(FATAL_ERROR "Requested lifecycle sanitizers require Clang or GNU")
+    endif()
     check_mpv_sanitizer_support(
       "-fsanitize=address,undefined" MPV_LIFECYCLE_SANITIZERS_SUPPORTED)
-    if(MPV_LIFECYCLE_SANITIZERS_SUPPORTED)
-      target_compile_options(mpv_player_lifecycle_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
-      target_link_options(mpv_player_lifecycle_test PRIVATE -fsanitize=address,undefined)
-      target_compile_options(mpv_player_hdr_output_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
-      target_link_options(mpv_player_hdr_output_test PRIVATE -fsanitize=address,undefined)
-      target_compile_options(music_dual_core_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
-      target_link_options(music_dual_core_test PRIVATE -fsanitize=address,undefined)
+    if(NOT MPV_LIFECYCLE_SANITIZERS_SUPPORTED)
+      message(FATAL_ERROR "Requested lifecycle sanitizers are unavailable")
     endif()
+    target_compile_options(mpv_player_lifecycle_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
+    target_link_options(mpv_player_lifecycle_test PRIVATE -fsanitize=address,undefined)
+    target_compile_options(mpv_player_hdr_output_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
+    target_link_options(mpv_player_hdr_output_test PRIVATE -fsanitize=address,undefined)
+    target_compile_options(music_dual_core_test PRIVATE -fno-omit-frame-pointer -fsanitize=address,undefined)
+    target_link_options(music_dual_core_test PRIVATE -fsanitize=address,undefined)
   endif()
 
   add_test(NAME mpv_player_lifecycle_test COMMAND mpv_player_lifecycle_test)
@@ -245,9 +249,11 @@ set(PLEZY_MPV_RELIABILITY_SANITIZER "none" CACHE STRING
 set_property(CACHE PLEZY_MPV_RELIABILITY_SANITIZER PROPERTY STRINGS none address thread)
 
 function(apply_mpv_reliability_sanitizer TARGET)
-  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU" OR
-     PLEZY_MPV_RELIABILITY_SANITIZER STREQUAL "none")
+  if(PLEZY_MPV_RELIABILITY_SANITIZER STREQUAL "none")
     return()
+  endif()
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    message(FATAL_ERROR "Requested reliability sanitizer requires Clang or GNU")
   endif()
   if(PLEZY_MPV_RELIABILITY_SANITIZER STREQUAL "address")
     set(SANITIZER_FLAG "-fsanitize=address,undefined")
@@ -260,9 +266,8 @@ function(apply_mpv_reliability_sanitizer TARGET)
   endif()
   check_mpv_sanitizer_support("${SANITIZER_FLAG}" ${SANITIZER_SUPPORT_VARIABLE})
   if(NOT ${SANITIZER_SUPPORT_VARIABLE})
-    message(WARNING
-      "${PLEZY_MPV_RELIABILITY_SANITIZER} sanitizer is unavailable; focused tests will be unsanitized")
-    return()
+    message(FATAL_ERROR
+      "Requested ${PLEZY_MPV_RELIABILITY_SANITIZER} sanitizer is unavailable")
   endif()
   target_compile_options(${TARGET} PRIVATE -fno-omit-frame-pointer ${SANITIZER_FLAG})
   target_link_options(${TARGET} PRIVATE ${SANITIZER_FLAG})
@@ -341,8 +346,7 @@ if(PLEZY_BUILD_MPV_RELIABILITY_TESTS)
   add_test(NAME plane_render_executor_test COMMAND plane_render_executor_test)
   if(PLEZY_MPV_RELIABILITY_SANITIZER STREQUAL "thread")
     # GLib's futex-based GMutex is invisible to TSan; suppress reports that
-    # originate inside libglib. Inert when the sanitizer probe fell back to an
-    # unsanitized build. See mpv/tsan_suppressions.txt.
+    # originate inside libglib. See mpv/tsan_suppressions.txt.
     set_tests_properties(plane_render_executor_test PROPERTIES ENVIRONMENT
       "TSAN_OPTIONS=suppressions=${CMAKE_CURRENT_SOURCE_DIR}/mpv/tsan_suppressions.txt")
   endif()

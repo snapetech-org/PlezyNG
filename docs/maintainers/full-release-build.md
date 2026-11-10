@@ -99,6 +99,13 @@ store qualification.
 
 ## Release job concurrency
 
+Linux native qualification builds every registered focused test before CTest.
+Explicitly requested ASan/UBSan and TSan instrumentation must be available.
+Kernel mmap-entropy inspection and tuning are best effort; the tests still run
+and any runtime startup failure blocks qualification. A successful compilation
+with skipped execution is not runtime qualification. Provision a compatible
+runner if actual execution establishes a capacity or kernel requirement.
+
 CI's Android, Linux native and server checks own their checkouts and setup and
 consume no artifacts from the other suites. They start independently rather
 than waiting for the application tests or for one another. The release gate

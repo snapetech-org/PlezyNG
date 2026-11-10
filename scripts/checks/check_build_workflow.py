@@ -1141,6 +1141,20 @@ require(
 )
 
 apple_native = job_block(ci_text, "apple-native-test")
+linux_native = job_block(ci_text, "linux-native-test")
+linux_tests = (ROOT / "linux/runner/CMakeLists.txt").read_text(encoding="utf-8")
+registered_tests = re.findall(r"add_test\(NAME\s+(\w+)\s+COMMAND\s+\1\)", linux_tests)
+linux_build = named_step(linux_native, "Build Linux native reliability tests")
+linux_run = named_step(linux_native, "Run Linux native reliability tests")
+require(
+    bool(registered_tests) and all(re.search(rf"\b{re.escape(name)}\b", linux_build) for name in registered_tests),
+    "Linux native CI must build every registered focused test before CTest",
+)
+require(
+    "      if:" not in linux_run and "PLEZY_TSAN_RUNNABLE" not in linux_native
+    and "--output-on-failure --no-tests=error" in linux_run,
+    "Linux native runtime qualification must execute rather than skip unavailable sanitizer tuning",
+)
 captured_ci = job("release-ci")
 freeze_source = job("freeze-qualified-source")
 capture_request = job("capture-candidate")

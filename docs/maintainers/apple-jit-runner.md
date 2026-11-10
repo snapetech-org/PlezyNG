@@ -1,10 +1,31 @@
-# PlezyNG Apple JIT runner
+# Pleazyng Apple JIT runner
 
-The iOS, tvOS, and macOS release jobs target the `private-apple-builds` runner
-group. This lane has one private Mac slot, so only one of these jobs can run at
-a time. A queued Apple job is waiting for that slot; it is not blocked by the
-other platform builds. Linux, Android, Tizen, and Windows jobs remain eligible
-to run concurrently on their selected hosted runners.
+Compatible Apple jobs default to GitHub-hosted runners. Select the existing
+`private-apple-builds` ARM lane when a job requires its hardware or hosted ARM
+capacity cannot meet qualification and tvOS AOT requirements. This lane has one
+private Mac slot, so only one selected job can run at a time. Other compatible
+platform jobs remain eligible to run concurrently on their hosted runners.
+
+## Pinned tvOS host tools on Apple silicon
+
+The current tvOS engine bundle (`v3.47.1`) contains an Intel-only Dart 3.13.1
+host runtime alongside ARM host AOT tools. The private ARM Mac needs Rosetta to
+execute that pinned runtime. Keep its Dart version check; Flutter 3.47.8's Dart
+3.13.7 cannot replace the older runtime or its frontend-server snapshot.
+
+After confirming the lane is idle, install the compatibility component using
+[Apple's documented method](https://support.apple.com/en-us/102527):
+
+```sh
+sudo softwareupdate --install-rosetta
+sudo -u gha-jit-macos /Users/gha-jit-macos/.cache/flutter-tvos-engine/v3.47.1/out/host_release/dart-sdk/bin/dartaotruntime --version
+```
+
+The version probe must succeed as the runner service user. This is a build-host
+dependency; the produced app and simulator frameworks remain ARM64 and require
+their native tests. A successful host-tool probe does not establish tvOS app
+qualification. Recheck the prerequisite after an OS upgrade or fresh builder
+provisioning, and reassess it when the pinned engine's host tools change.
 
 ## Automatic queue handling
 

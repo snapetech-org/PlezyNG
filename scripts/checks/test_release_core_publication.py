@@ -19,6 +19,9 @@ class CorePublicationTests(unittest.TestCase):
         automatic = patch.object(release, 'dispatch_automatic_play', return_value=None)
         automatic.start()
         self.addCleanup(automatic.stop)
+        aerynos = patch.object(release, 'dispatch_aerynos_delivery', return_value={})
+        aerynos.start()
+        self.addCleanup(aerynos.stop)
 
     def test_only_channel_metadata_is_optional_and_collected_when_present(self):
         workflow = yaml.safe_load((Path(__file__).resolve().parents[2] / ".github/workflows/build.yml").read_text())
@@ -109,6 +112,7 @@ class CorePublicationTests(unittest.TestCase):
                 self.assertEqual(channels.call_count, int(publish))
                 report = json.loads((Path(scratch) / "release-summary.json").read_text())
                 self.assertTrue(report["release_published"])
+                self.assertEqual(report["aerynos_automation"], [{}])
                 self.assertTrue(report["notification_failures"])
                 self.assertEqual(bool(report["channel_failures"]), publish)
                 progress = json.loads((Path(scratch) / "release-progress.json").read_text())

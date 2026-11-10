@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- Deliver aerynOS packages automatically from complete published Pleazyng releases, retaining the original Linux artifacts and requiring native qualification before feed promotion. Retire the separate unreleased-source build lane and repair Search navigation in its native playback harness.
+- Deliver aerynOS packages automatically from complete published Pleazyng releases, retaining the original Linux artifacts and requiring native qualification before feed promotion. Wake delivery directly after core publication, with retries separate from core success. Retire the separate unreleased-source build lane and repair Search navigation in its native playback harness.
 
 - Keep queued music ratings and station retries bound to the correct account. Older pending rating records remain stored but no longer replay automatically.
 

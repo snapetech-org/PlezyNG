@@ -1236,17 +1236,30 @@ def dispatch_automatic_play(tag: str) -> dict | None:
     return {"tag": tag, "workflow": "deliver-google-play.yml", "state": "dispatched"}
 
 
+def dispatch_aerynos_delivery(tag: str) -> dict:
+    """Wake the independent qualified package consumer after core publication."""
+    command(["gh", "workflow", "run", "reconcile.yml", "--repo", "snapetech-org/pleazyng-aerynos",
+             "--ref", "main"])
+    return {"tag": tag, "workflow": "reconcile.yml", "repository": "snapetech-org/pleazyng-aerynos",
+            "state": "dispatched"}
+
+
 def post_release_actions(tag: str, version: str, *, release_sha: str,
                          include_webos_release: bool, publish_channels: bool) -> dict:
     """Retryable delivery follows the already verified GitHub publication."""
     result = {"published_channels": [], "skipped_channels": [],
-              "channel_failures": [], "notification_failures": [], "google_play_automation": []}
+              "channel_failures": [], "notification_failures": [], "google_play_automation": [],
+              "aerynos_automation": []}
     try:
         play = dispatch_automatic_play(tag)
         if play:
             result["google_play_automation"].append(play)
     except Exception as error:
         result["channel_failures"].append(f"Automatic Google Play delivery: {error}")
+    try:
+        result["aerynos_automation"].append(dispatch_aerynos_delivery(tag))
+    except Exception as error:
+        result["channel_failures"].append(f"Automatic aerynOS delivery: {error}")
     # GITHUB_TOKEN publication does not emit another workflow's release event.
     # Tag serialization and persisted receipts make a repeated dispatch safe.
     try:
@@ -1866,6 +1879,7 @@ def main() -> int:
         skipped_channels: list[dict] = []
         channel_failures: list[str] = []
         notification_failures: list[str] = []
+        aerynos_automation: list[dict] = []
         publication_facts_commit = None
         publication_facts_failures: list[str] = []
         release_published = False
@@ -1890,6 +1904,7 @@ def main() -> int:
             skipped_channels = followups["skipped_channels"]
             channel_failures = followups["channel_failures"]
             notification_failures = followups["notification_failures"]
+            aerynos_automation = followups.get("aerynos_automation", [])
             progress.update(followups)
             save_progress()
             if channel_failures or notification_failures:
@@ -1922,6 +1937,7 @@ def main() -> int:
             "skipped_channels": skipped_channels,
             "channel_failures": channel_failures,
             "notification_failures": notification_failures,
+            "aerynos_automation": aerynos_automation,
             "publication_facts_commit": publication_facts_commit,
             "publication_facts_failures": publication_facts_failures,
             "webos_built": True,

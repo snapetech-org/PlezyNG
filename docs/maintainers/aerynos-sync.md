@@ -9,8 +9,9 @@ Consult downstream Actions and `sync-state/last-good.json` for actual status.
 
 ## Pipeline
 
-The channel polls every five minutes, subject to GitHub scheduling and compatible
-runner availability. Manual dispatch is supported. A shared concurrency group
+The release controller wakes downstream reconciliation after core publication.
+The channel also polls every five minutes, subject to GitHub scheduling and
+compatible runner availability. Manual dispatch is supported. A shared concurrency group
 preserves active work and coalesces pending polls. Release receipts prevent
 repeat publication; failed deliveries back off for thirty minutes.
 

@@ -344,7 +344,7 @@ class MpvPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPluginS
 
       let core = MpvPlayerCore()
       core.experimentalDolbyVisionRequested =
-        (call.arguments as? [String: Any])?["experimentalDolbyVision"] as? Bool ?? false
+        (call.arguments as? [String: Any])?["experimentalDolbyVision"] as? Bool ?? true
       core.delegate = self
 
       guard core.initialize(in: window) else {

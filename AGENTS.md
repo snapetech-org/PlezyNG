@@ -38,17 +38,22 @@ notification, store and package-channel delivery failures as separate follow-up
 work. Repair or retry those lanes against the existing immutable artifacts;
 preserve core success and avoid another all-platform build for a delivery error.
 
-## Experimental features — owner directive, 2026-11-05
+## Dolby Vision/FEL and experimental features — owner directive, 2026-11-09
 
 Include implemented experimental Dolby Vision/FEL paths and HDR/SDR tools in
-normal builds for compatible platforms. Users opt in through persisted runtime
-Settings controls. Do not require a separate app build, compiler flag, manual
+normal builds for compatible platforms. Dolby Vision/Profile 7 FEL playback is
+automatic and enabled by default, with persisted runtime Settings overrides and
+automatic fallback to the best supported native, compatible base-layer or server
+route when the preferred path is unavailable or fails. Do not require a separate app build, compiler flag, manual
 engine replacement, or prior device qualification to make an implemented
 experiment available. Ship the required native components and verify packaging;
 a toggle without its implementation does not satisfy this requirement.
-Keep experiments off by default and report qualification status accurately.
+A missing preference must enable automatic DV/FEL; preserve explicit Off and
+manual conversion choices. Keep compatibility fallback enabled by default and
+report actual layer use, output and qualification status accurately. This
+supersedes the earlier default-off Dolby Vision directive.
 
-The same rule applies to implemented NPU/neural experiments: include their
+The normal-build inclusion rule also applies to implemented NPU/neural experiments: include their
 native filters, compatible provider runtimes and models in normal releases.
 Playback → Motion smoothing → Neural is the persisted opt-in; Off remains the
 default. Runtime hardware/stream availability and accurate provider diagnostics

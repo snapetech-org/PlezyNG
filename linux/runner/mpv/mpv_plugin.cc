@@ -1577,7 +1577,7 @@ static void mpv_plugin_handle_method_call(FlMethodChannel* channel, FlMethodCall
                                                                        : default_value;
       };
       self->player->ConfigureDolbyVisionExperiment(
-          bool_arg("experimentalDolbyVision", false), bool_arg("dvCompatibilityFallback", true));
+          bool_arg("experimentalDolbyVision", true), bool_arg("dvCompatibilityFallback", true));
       std::string error;
       if (!self->player->Initialize()) {
         release_video_resources(self);

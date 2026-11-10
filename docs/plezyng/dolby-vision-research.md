@@ -325,7 +325,7 @@ and EL, including separate tracks. Test local files, downloads and cloud range
 reads, seek/retry, segmented playback and changes of source rendition. Include
 MKV, MP4/fMP4, TS/M2TS and supported playlist/disc paths as separate cases.
 
-Keep the ordinary UI to Auto, compatibility and opt-in experimental choices in
+Keep the ordinary UI to automatic DV/FEL with compatibility fallback and explicit overrides in
 the current PlezyNG style. A compact playback detail view should show source,
 layers actually used, output format and fallback reason. Engineering diagnostics
 can expose the detailed pipeline. Remember an override by device/source scope,

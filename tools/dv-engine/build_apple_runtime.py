@@ -163,7 +163,7 @@ def build(work: Path, sdk: str, configuration: str, architectures: list[str]) ->
     provenance = {
         "schema_version": 1, "abi_version": 1, "sdk": sdk,
         "architectures": architectures, "aether_commit": aether["commit"],
-        "traits": ["DualLayerDolbyVision"], "activation": "runtime-settings-default-off",
+        "traits": ["DualLayerDolbyVision"], "activation": "runtime-settings-automatic-with-fallback",
         "qualification": "unqualified", "pins": pins,
         "lock_sha256": hashlib.sha256((ROOT / "tools/dv-engine/adapters.lock.json").read_bytes()).hexdigest(),
     }

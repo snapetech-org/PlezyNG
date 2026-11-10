@@ -550,7 +550,7 @@
     "dvConversionDv81Description": "แปลง RPU ในร่องรัดไป Dolby Vision โปรไฟล์ 8.1",
     "dvConversionHevcStripDescription": "เกรด Dolby Vision ชั้น RPU/EL และแบนปัจจุบัน HEVC",
     "experimentalDolbyVision": "Dolby Vision แบบทดลอง",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "ลองใช้ Dolby Vision/FEL โดยอัตโนมัติ และเปลี่ยนไปใช้การเล่นที่เข้ากันได้เมื่อไม่พร้อมใช้งาน เปิดไว้ตามค่าเริ่มต้น ผลลัพธ์จริงขึ้นอยู่กับอุปกรณ์",
     "dvCompatibilityFallback": "ทางเลือกเพื่อความเข้ากันได้",
     "dvCompatibilityFallbackDescription": "ใช้ตัวเรนเดอร์มาตรฐานหากเริ่มการทดลองไม่ได้ ข้อมูล FEL อาจสูญหาย",
     "dvExperimentDiagnostics": "บันทึกการทดลองวิดีโอ",

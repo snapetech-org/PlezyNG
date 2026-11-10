@@ -311,7 +311,7 @@ class MpvPlayer {
   static void RetryPendingNativeTeardown();
 
  private:
-  bool experimental_dv_ = false;
+  bool experimental_dv_ = true;
   bool dv_compatibility_fallback_ = true;
   std::string dv_renderer_status_ = "not-initialized";
 

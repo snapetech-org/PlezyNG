@@ -641,6 +641,7 @@ class _Translations$settings$az extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Dolby Vision profile 8.1-ə çevrilməni məcburi et';
 	@override String get dvConversionHevcStripDescription => 'Dolby Vision təbəqələrini sil və sadə HEVC kimi təqdim et';
 	@override String get experimentalDolbyVision => 'Eksperimental Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Dolby Vision/FEL avtomatik sınanır, əlçatan olmadıqda uyğun oxutmaya keçilir. Standart olaraq aktivdir; faktiki çıxış cihazdan asılıdır.';
 	@override String get dvCompatibilityFallback => 'Uyğunluq üçün ehtiyat rejim';
 	@override String get dvCompatibilityFallbackDescription => 'Sınaq başlaya bilməsə, standart renderdən istifadə edin. FEL məlumatları itə bilər.';
 	@override String get dvExperimentDiagnostics => 'Video sınağının jurnalı';
@@ -5887,6 +5888,7 @@ extension on TranslationsAz {
 			'settings.dvConversionDv81Description' => 'Dolby Vision profile 8.1-ə çevrilməni məcburi et',
 			'settings.dvConversionHevcStripDescription' => 'Dolby Vision təbəqələrini sil və sadə HEVC kimi təqdim et',
 			'settings.experimentalDolbyVision' => 'Eksperimental Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Dolby Vision/FEL avtomatik sınanır, əlçatan olmadıqda uyğun oxutmaya keçilir. Standart olaraq aktivdir; faktiki çıxış cihazdan asılıdır.',
 			'settings.dvCompatibilityFallback' => 'Uyğunluq üçün ehtiyat rejim',
 			'settings.dvCompatibilityFallbackDescription' => 'Sınaq başlaya bilməsə, standart renderdən istifadə edin. FEL məlumatları itə bilər.',
 			'settings.dvExperimentDiagnostics' => 'Video sınağının jurnalı',
@@ -5896,9 +5898,9 @@ extension on TranslationsAz {
 			'settings.hdrSdrConversion' => 'HDR-dən SDR-ə çevirmə',
 			'settings.hdrSdrConversionDescription' => 'Ekran HDR göstərə bilmədikdə HDR videonu nəyin çevirəcəyini seçin.',
 			'settings.hdrSdrConversionAuto' => 'Avtomatik',
-			'settings.hdrSdrConversionAutoDescription' => 'Android 9 və sonrakı versiyalarda cihaz, köhnə versiyalarda oynadıcı',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Android 9 və sonrakı versiyalarda cihaz, köhnə versiyalarda oynadıcı',
 			'settings.hdrSdrConversionDevice' => 'Cihaz',
 			'settings.hdrSdrConversionDeviceDescription' => 'Çevirməni cihazın video avadanlığı edir. Ən sürətlisi, lakin rənglər cihazdan asılıdır',
 			'settings.hdrSdrConversionPlayer' => 'Oynadıcı',
@@ -6410,9 +6412,9 @@ extension on TranslationsAz {
 			'videoControls.segmentLoop' => 'Bölmə təkrarı',
 			'videoControls.addBookmark' => 'Əlfəcin əlavə et',
 			'videoControls.bookmarkName' => 'Əlfəcin adı',
-			'videoControls.bookmarkNameHint' => 'Məsələn, açılış səhnəsi',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Məsələn, açılış səhnəsi',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Əlfəcin ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu əlfəcin üçün ad daxil edin.',
 			'videoControls.deleteBookmark' => 'Əlfəcini sil',
@@ -6924,9 +6926,9 @@ extension on TranslationsAz {
 			'libraries.libraryOptions' => 'Kitabxana seçimləri',
 			'libraries.content' => 'kitabxana məzmunu',
 			'libraries.selectLibrary' => 'Kitabxana seç',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtrlər (${count})',
 			'libraries.noRecommendations' => 'Tövsiyə yoxdur',
 			'libraries.noCollections' => 'Bu kitabxanada kolleksiya yoxdur',
 			'libraries.noFoldersFound' => 'Qovluq tapılmadı',
@@ -7438,9 +7440,9 @@ extension on TranslationsAz {
 			'watchTogether.noCodeInClipboard' => 'Buferdə otaq kodu yoxdur',
 			'watchTogether.copyCode' => 'Kodu kopyala',
 			'watchTogether.codeCopied' => 'Otaq kodu kopyalandı',
-			'watchTogether.shareInvite' => 'Dəvəti paylaş',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Dəvəti paylaş',
 			'watchTogether.inviteCopied' => 'Dəvət kopyalandı. Onu mesaja yapışdırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng-də Birlikdə İzlə otağıma qoşul: Birlikdə İzlə bölməsini aç, "Otağa qoşul" düyməsinə bas və ${code} kodunu daxil et.',
 			'watchTogether.openSessionControls' => 'Birlikdə İzlə seans idarəetmələrini aç',
@@ -7952,9 +7954,9 @@ extension on TranslationsAz {
 			'metadataEdit.enterImageUrl' => 'Şəkil URL-i daxil edin',
 			'metadataEdit.imageUrl' => 'Şəkil URL-i',
 			'metadataEdit.metadataUpdated' => 'Meta-məlumatlar yeniləndi',
-			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Meta-məlumatlar yenilənə bilmədi',
 			'metadataEdit.artworkUpdated' => 'Şəkillər yeniləndi',
 			'metadataEdit.artworkUpdateFailed' => 'Şəkillər yenilənə bilmədi',
 			'metadataEdit.noArtworkAvailable' => 'Şəkil əlçatan deyil',
@@ -8466,9 +8468,9 @@ extension on TranslationsAz {
 			'universalMedia.favoriteSaved' => 'Bu profillə saldığın sevgilisi',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('az'))(n, one: '${count}-in düzgün və ya güvenli olmayan oynay listə girişini atıb.', other: '${count}-in kömək etmədik və ya güvenli olmayan oynatma listəsi girişləri atıldı.', ), 
 			'universalMedia.playlistAddress' => 'Playlist adresləri',
-			'universalMedia.playlistAddressHelp' => 'M3U, M3u8 və ya PLS oynatma listasını bir web adresindən açın.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'M3U, M3u8 və ya PLS oynatma listasını bir web adresindən açın.',
 			'universalMedia.choosePlaylist' => 'Playlist filləri seçin',
 			'universalMedia.openPlaylist' => 'Açıklandı Playlist',
 			'universalMedia.playlistFormatsHelp' => 'Bir oyun listəsi 1000-dən çox element və 2 MB içerir. HLS akışlar kimi açılır, bu yüzden oyuncu bir kalitə seçebilir.',
@@ -8980,9 +8982,9 @@ extension on TranslationsAz {
 			'sourceSetup.apiKey' => 'API açarı',
 			'sourceSetup.optionalUsername' => 'Hesabın istifadəçi adı (istəyə bağlı)',
 			'sourceSetup.optionalPassword' => 'Hesabın şifrəsi (istəyə bağlı)',
-			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytından API açarı alın. Axtarış videonun adını və mövcud IMDb/TMDB ID-lərini göndərir, video faylını isə heç vaxt göndərmir. Açar və istəyə bağlı hesab giriş məlumatları bu mənbə ilə birlikdə şifrələnir.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'opensubtitles.com saytından API açarı alın. Axtarış videonun adını və mövcud IMDb/TMDB ID-lərini göndərir, video faylını isə heç vaxt göndərmir. Açar və istəyə bağlı hesab giriş məlumatları bu mənbə ilə birlikdə şifrələnir.',
 			'sourceSetup.automaticMetadata' => 'Avtomatik onlayn video metadatası',
 			'sourceSetup.metadataPrivacy' => 'Yalnız fayl adındakı adı/ili və epizod nömrələrini və ya NFO ID-sini göndərir; media və giriş məlumatlarını heç vaxt göndərmir. NFO sahələri üstünlüyünü saxlayır.',
 			'sourceSetup.nfsEncryptionFailure' => 'Şifrələnmiş NFS üçün hər iki NAS xidmətində RFC 9289 və TLS 1.3 dəstəyini, sertifikat adını və paylaşımın UID/GID dəyərlərini yoxlayın. Pleazyng bu bağlantını şifrələmə olmadan yenidən sınamayacaq.',

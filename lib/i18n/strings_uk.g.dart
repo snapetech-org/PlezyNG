@@ -645,6 +645,7 @@ class _Translations$settings$uk extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Конвертація силового RPU на Dolby Vision профіль 8.1';
 	@override String get dvConversionHevcStripDescription => 'Стрип Dolby Vision РПУ/ЕЛ шари і нинішня плоска HEVC';
 	@override String get experimentalDolbyVision => 'Експериментальний Dolby Vision';
+	@override String get experimentalDolbyVisionDescription => 'Автоматично пробує Dolby Vision/FEL і переходить до сумісного відтворення, якщо воно недоступне. Типово ввімкнено; фактичний вивід залежить від пристрою.';
 	@override String get dvCompatibilityFallback => 'Резервний режим сумісності';
 	@override String get dvCompatibilityFallbackDescription => 'Використовувати стандартний рендерер, якщо експеримент не запускається. Дані FEL можуть бути втрачені.';
 	@override String get dvExperimentDiagnostics => 'Журнал відеоексперименту';
@@ -5931,6 +5932,7 @@ extension on TranslationsUk {
 			'settings.dvConversionDv81Description' => 'Конвертація силового RPU на Dolby Vision профіль 8.1',
 			'settings.dvConversionHevcStripDescription' => 'Стрип Dolby Vision РПУ/ЕЛ шари і нинішня плоска HEVC',
 			'settings.experimentalDolbyVision' => 'Експериментальний Dolby Vision',
+			'settings.experimentalDolbyVisionDescription' => 'Автоматично пробує Dolby Vision/FEL і переходить до сумісного відтворення, якщо воно недоступне. Типово ввімкнено; фактичний вивід залежить від пристрою.',
 			'settings.dvCompatibilityFallback' => 'Резервний режим сумісності',
 			'settings.dvCompatibilityFallbackDescription' => 'Використовувати стандартний рендерер, якщо експеримент не запускається. Дані FEL можуть бути втрачені.',
 			'settings.dvExperimentDiagnostics' => 'Журнал відеоексперименту',
@@ -5940,9 +5942,9 @@ extension on TranslationsUk {
 			'settings.hdrSdrConversion' => 'Конвертація HDR до SDR',
 			'settings.hdrSdrConversionDescription' => 'Виберіть, що конвертує HDR відео, коли дисплей не може показати HDR.',
 			'settings.hdrSdrConversionAuto' => 'Авто',
-			'settings.hdrSdrConversionAutoDescription' => 'Пристрій на Android 9 і пізніше, гравець на попередніх версіях',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Пристрій на Android 9 і пізніше, гравець на попередніх версіях',
 			'settings.hdrSdrConversionDevice' => 'Пристрій',
 			'settings.hdrSdrConversionDeviceDescription' => 'Найшвидше, але кольори залежить від пристрою',
 			'settings.hdrSdrConversionPlayer' => 'Програвач',
@@ -6454,9 +6456,9 @@ extension on TranslationsUk {
 			'videoControls.segmentLoop' => 'сегмент лоуп',
 			'videoControls.addBookmark' => 'Додати книжковий знак',
 			'videoControls.bookmarkName' => 'Bookmark ім\'я',
-			'videoControls.bookmarkNameHint' => 'Наприклад, відкриття сцені',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Наприклад, відкриття сцені',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Книжковий знак ${n}',
 			'videoControls.bookmarkNameRequired' => 'Введіть ім\'я для цієї книжкової марки.',
 			'videoControls.deleteBookmark' => 'Зняти книжковий знак',
@@ -6968,9 +6970,9 @@ extension on TranslationsUk {
 			'libraries.libraryOptions' => 'Бібліотечні варіанти',
 			'libraries.content' => 'Бібліотека контент',
 			'libraries.selectLibrary' => 'Вибір бібліотеки',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Фільтри (${count})',
 			'libraries.noRecommendations' => 'Немає доступних рекомендацій',
 			'libraries.noCollections' => 'Ніяких колекцій в цій бібліотеці',
 			'libraries.noFoldersFound' => 'Не знайдено жодних паперів',
@@ -7482,9 +7484,9 @@ extension on TranslationsUk {
 			'watchTogether.noCodeInClipboard' => 'Кліпборд не містить коду кімнати',
 			'watchTogether.copyCode' => 'Копіювати код',
 			'watchTogether.codeCopied' => 'Код кімнати копіюється',
-			'watchTogether.shareInvite' => 'Поділимо запрошення',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Поділимо запрошення',
 			'watchTogether.inviteCopied' => 'Запрошуємо копіювати. вставити її в повідомлення.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Приєднуйтесь до моєї кімнати Watch Together в Pleazyng: відкрийте Watch Together, виберіть Приєднуйтесь до кімнати і введіть ${code}.',
 			'watchTogether.openSessionControls' => 'Відкритий час спільно контрольні сесії',
@@ -7996,9 +7998,9 @@ extension on TranslationsUk {
 			'metadataEdit.enterImageUrl' => 'Введіть URL',
 			'metadataEdit.imageUrl' => 'Зображення URL',
 			'metadataEdit.metadataUpdated' => 'Актуальні метастази',
-			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Не вдалося оновити метаданни',
 			'metadataEdit.artworkUpdated' => 'Актуальна художня робота',
 			'metadataEdit.artworkUpdateFailed' => 'Не вдалося оновити художню роботу',
 			'metadataEdit.noArtworkAvailable' => 'Немає художніх творів',
@@ -8510,9 +8512,9 @@ extension on TranslationsUk {
 			'universalMedia.favoriteSaved' => 'Попередня статтяПопулярні потоки збереглися до цього профілю',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('uk'))(n, one: 'Завантажити ${count} непідтримлений або небезпечний вхід списку переглядів.', few: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', many: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', other: 'Завантажити ${count} непідтримлені або небезпечні входи до списку переглядів.', ), 
 			'universalMedia.playlistAddress' => 'Адреса Playlist',
-			'universalMedia.playlistAddressHelp' => 'Відкрийте перелік M3U, M3u8 або PLS з веб-адреси. прямий потік посилань не зберігає перелік.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Відкрийте перелік M3U, M3u8 або PLS з веб-адреси. прямий потік посилань не зберігає перелік.',
 			'universalMedia.choosePlaylist' => 'Вибір файлу Playlist',
 			'universalMedia.openPlaylist' => 'Відкритий playlist',
 			'universalMedia.playlistFormatsHelp' => 'Список перегляду може містити до 1000 елементів і 2 Мб. HLS відкривається як потоки, так що гравець може вибрати якість.',
@@ -9024,9 +9026,9 @@ extension on TranslationsUk {
 			'sourceSetup.apiKey' => 'Ключ API',
 			'sourceSetup.optionalUsername' => 'Ім’я користувача облікового запису (необов’язково)',
 			'sourceSetup.optionalPassword' => 'Пароль облікового запису (необов’язково)',
-			'sourceSetup.subtitlePrivacy' => 'Отримайте ключ API на opensubtitles.com. Пошук надсилає назву відео й доступні ID IMDb/TMDB, але ніколи не надсилає відеофайл. Ключ і необов’язкові облікові дані шифруються разом із цим джерелом.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Отримайте ключ API на opensubtitles.com. Пошук надсилає назву відео й доступні ID IMDb/TMDB, але ніколи не надсилає відеофайл. Ключ і необов’язкові облікові дані шифруються разом із цим джерелом.',
 			'sourceSetup.automaticMetadata' => 'Автоматичні метадані відео з інтернету',
 			'sourceSetup.metadataPrivacy' => 'Надсилає лише назву/рік з імені файлу та номери епізодів або ID NFO, але ніколи не надсилає медіафайли чи облікові дані. Поля NFO зберігають пріоритет.',
 			'sourceSetup.nfsEncryptionFailure' => 'Для зашифрованого NFS перевірте підтримку RFC 9289 і TLS 1.3 обома службами NAS, ім’я в сертифікаті та UID/GID експорту. Pleazyng не повторюватиме це з’єднання без шифрування.',

@@ -1,15 +1,16 @@
 # Dolby Vision platform buildout and testing handoff
 
-Availability changed on 2026-11-05: implemented experiments belong in ordinary
-compatible builds behind a persisted, default-off Settings switch. Qualification
-does not gate inclusion. [Normal-build integration](dv-native-ports.md) records
+The 2026-11-09 owner directive enables automatic Dolby Vision/Profile 7 FEL
+routing by default in ordinary compatible builds, with compatibility fallback
+and persisted explicit Off/manual-conversion overrides. This supersedes the
+2026-11-05 default-off behavior. Qualification does not gate inclusion. [Normal-build integration](dv-native-ports.md) records
 the rebased Android/Linux/Windows producer, bundled Apple runtime and offline
 tools. The dated standalone experiments below retain their historical evidence;
 references to unchanged production pins describe those earlier runs.
 
 Updated 2026-10-26. This is the implementation and testing entry point. Read the
 [Linux evidence](dv-engine-luna-handoff.md) and [platform research](../plezyng/dolby-vision-platform-research.md)
-alongside it. Experimental playback remains opt-in; no release engine, system
+alongside it. Automatic DV/FEL routing uses the bundled implementation; no system
 driver, EDID, kernel module or TV firmware is replaced automatically.
 
 The runner inventory below records the checks from October 26, 2026. Current
@@ -117,7 +118,7 @@ adb install -r ../build/app/outputs/flutter-apk/app-debug.apk
 ```
 
 Both Gradle properties are required together. The app then uses the normal
-Playback setting to opt into the FEL filter. Keep the AAR and APK out of source
+Playback setting to explicitly disable or restore automatic FEL selection. Keep the AAR and APK out of source
 control; the override is for local integration testing, not a release path.
 
 See [native FEL ports](dv-native-ports.md) for the Windows engine build, Apple device-SDK build matrix and production patch audit. These preparations do not enable full FEL on Android or webOS.
@@ -126,12 +127,15 @@ See [native FEL ports](dv-native-ports.md) for the Windows engine build, Apple d
 
 Use **Settings → Playback → Video and display** (the existing settings tiles):
 
-1. **Experimental Dolby Vision** defaults off. On native Linux, it requests
+1. **Experimental Dolby Vision** defaults on and requests the best available
+   implemented path automatically. Explicit Off remains a persisted override. On native Linux, it requests
    `opengl-next` for the next video-player initialization. Android mpv and
    Windows mpv force P7 `auto` playback through software decode and request
    the FEL filter before the decoder starts. They keep the existing route if
-   the engine rejects it. The shipping Android AAR lacks the filter, so its
-   route currently falls back. ExoPlayer and webOS do not show the control.
+   the engine rejects it. ExoPlayer and native TV backends do not acquire a FEL
+   implementation from this switch; their supported compatibility paths remain.
+   Apple tries its bundled runtime on supported OS versions and retains the
+   ordinary player if runtime initialization fails.
 2. **Compatibility fallback** defaults on and appears when the Linux experiment
    is enabled. It retries `opengl` once if experimental render-context creation
    fails. It is **not** a retry for arbitrary mid-stream decode, pairing or shader
@@ -204,8 +208,9 @@ toolchain versions, build status and untested pixel/output claims in
 inspect skips. A successful source build does not qualify any device.
 
 Enter a local `file:///...` or HTTPS media URL without embedded credentials.
-**Reconstruct FEL (experimental)** defaults off. Enable it before Load; try the
-same clip with it off as a compatibility control. Active route/decoder labels come
+The standalone research host's **Reconstruct FEL (experimental)** control starts
+Off to provide a compatibility control; this does not describe the normal app's
+automatic-on default. Enable it before Load, then compare the same clip with it Off. Active route/decoder labels come
 from the engine. Test load cancellation, repeated seeks, stop/reload and background
 transitions as well as steady playback.
 
@@ -385,7 +390,7 @@ tool/media/GPU skip into a playback qualification.
 Priority testing handoff:
 
 1. **Linux app:** run the exact app/engine revisions through the Wayland plane;
-   test opt-in off/on, fallback on/off, strict env override, repeated sessions,
+   test automatic-on defaults, persisted Off/on, fallback on/off, strict env override, repeated sessions,
    resizing/fullscreen, seeking, pause/resume, subtitles and A/V sync. Confirm both
    `[el_pair]` and the composer, then the visible FEL control pattern.
 2. **Linux decode:** trace the two pending-RPU replacement warnings on the local

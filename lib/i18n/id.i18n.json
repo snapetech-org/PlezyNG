@@ -550,7 +550,7 @@
     "dvConversionDv81Description": "Konversi RPU Inline Kekuatan ke Dolby Vision Profil 8.1",
     "dvConversionHevcStripDescription": "Strip Dolby Vision lapisan RPU/EL dan rata saat ini HEVC",
     "experimentalDolbyVision": "Dolby Vision eksperimental",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Mencoba Dolby Vision/FEL secara otomatis dan beralih ke pemutaran yang kompatibel jika tidak tersedia. Aktif secara default; keluaran sebenarnya bergantung pada perangkat.",
     "dvCompatibilityFallback": "Cadangan kompatibilitas",
     "dvCompatibilityFallbackDescription": "Gunakan perender standar jika eksperimen tidak dapat dimulai. Data FEL mungkin hilang.",
     "dvExperimentDiagnostics": "Pencatatan eksperimen video",

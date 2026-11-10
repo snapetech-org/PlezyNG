@@ -613,7 +613,7 @@ void MpvPlayerPlugin::HandleMethodCall(
     // core is windowless, so it gets no view at all.
     HWND view = audio_only_ ? nullptr : GetChildWindow();
 
-    bool experimental_dolby_vision = false;
+    bool experimental_dolby_vision = true;
     const auto* initialization_arguments = method_call.arguments();
     if (initialization_arguments && std::holds_alternative<flutter::EncodableMap>(*initialization_arguments)) {
       const auto& arguments = std::get<flutter::EncodableMap>(*initialization_arguments);

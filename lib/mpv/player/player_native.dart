@@ -496,7 +496,9 @@ class PlayerNative extends PlayerBase
         if (!audioOnly) 'hardwareDecoding': _hardwareDecoding,
         if (!audioOnly)
           'experimentalDolbyVision':
-              SettingsService.instanceOrNull?.read(SettingsService.experimentalDolbyVision) ?? false,
+              (SettingsService.instanceOrNull?.read(SettingsService.experimentalDolbyVision) ??
+                  SettingsService.experimentalDolbyVision.defaultValue) &&
+              !(SettingsService.instanceOrNull?.read(SettingsService.disableDolbyVision) ?? false),
         if (!audioOnly && usesLinuxVideoPlane)
           'dvCompatibilityFallback':
               SettingsService.instanceOrNull?.read(SettingsService.dvCompatibilityFallback) ?? true,

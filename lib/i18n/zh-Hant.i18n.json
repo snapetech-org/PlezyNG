@@ -550,7 +550,7 @@
     "dvConversionDv81Description": "強制將內嵌的 RPU 轉換為 Dolby Vision Profile 8.1",
     "dvConversionHevcStripDescription": "移除 Dolby Vision RPU/EL 層，並以一般 HEVC 呈現",
     "experimentalDolbyVision": "實驗性 Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "自動嘗試 Dolby Vision/FEL，無法使用時退回相容播放。預設開啟；實際輸出取決於裝置。",
     "dvCompatibilityFallback": "相容性備援",
     "dvCompatibilityFallbackDescription": "如果實驗無法啟動，則使用標準算繪器。FEL 資料可能會遺失。",
     "dvExperimentDiagnostics": "影片實驗記錄",

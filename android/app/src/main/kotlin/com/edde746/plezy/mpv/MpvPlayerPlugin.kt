@@ -1466,7 +1466,7 @@ open class MpvPlayerPlugin(
     // Absent from older callers and the audio-only core; full is the default.
     val subtitleRenderScale = call.argument<Double>("subtitleRenderScale")?.toFloat() ?: 1f
     val logLevel = call.argument<String>("logLevel") ?: "warn"
-    val experimentalDolbyVision = call.argument<Boolean>("experimentalDolbyVision") ?: false
+    val experimentalDolbyVision = call.argument<Boolean>("experimentalDolbyVision") ?: true
     // Video cores need the Activity (surface/view hierarchy); the audio-only
     // core is built on the application context so it can outlive it.
     val coreContext: Context? = if (audioOnly) applicationContext else activity

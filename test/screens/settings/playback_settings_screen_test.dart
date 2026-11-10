@@ -71,7 +71,7 @@ void main() {
     expect(restored.read(SettingsService.neuralInterpolationPreset), NeuralInterpolationPreset.quality);
   });
 
-  testWidgets('DV experiments use persisted opt-in switches with a conditional fallback', (tester) async {
+  testWidgets('automatic DV defaults on and retains explicit Off with compatibility fallback', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1000, 1400);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -79,26 +79,34 @@ void main() {
     await _pumpPlaybackSettings(tester);
     await tester.pumpAndSettle();
     final settings = SettingsService.instance;
-    expect(settings.read(SettingsService.experimentalDolbyVision), isFalse);
-    expect(find.text(t.settings.dvOfflineTitle), findsNothing);
+    expect(settings.read(SettingsService.experimentalDolbyVision), isTrue);
+    expect(settings.read(SettingsService.dvCompatibilityFallback), isTrue);
+    expect(find.text(t.settings.dvOfflineTitle), findsOneWidget);
     expect(settings.read(SettingsService.dvExperimentDiagnostics), isFalse);
     final toggle = find.text(t.settings.experimentalDolbyVision);
     await tester.scrollUntilVisible(toggle, 300, scrollable: find.byType(Scrollable).first);
     await tester.ensureVisible(toggle);
     await tester.tap(toggle);
     await tester.pumpAndSettle();
-    expect(settings.read(SettingsService.experimentalDolbyVision), isTrue);
-    expect(find.text(t.settings.dvOfflineTitle), findsOneWidget);
+    expect(settings.read(SettingsService.experimentalDolbyVision), isFalse);
+    expect(find.text(t.settings.dvOfflineTitle), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+    SettingsService.resetForTesting();
+    final restored = await SettingsService.getInstance();
+    expect(restored.read(SettingsService.experimentalDolbyVision), isFalse);
+    await restored.write(SettingsService.experimentalDolbyVision, true);
+    await _pumpPlaybackSettings(tester);
+    await tester.pumpAndSettle();
     final fallback = find.text(t.settings.dvCompatibilityFallback);
     await tester.ensureVisible(fallback);
     await tester.tap(fallback);
     await tester.pumpAndSettle();
-    expect(settings.read(SettingsService.dvCompatibilityFallback), isFalse);
+    expect(restored.read(SettingsService.dvCompatibilityFallback), isFalse);
     final diagnostics = find.text(t.settings.dvExperimentDiagnostics);
     await tester.ensureVisible(diagnostics);
     await tester.tap(diagnostics);
     await tester.pumpAndSettle();
-    expect(settings.read(SettingsService.dvExperimentDiagnostics), isTrue);
+    expect(restored.read(SettingsService.dvExperimentDiagnostics), isTrue);
   }, skip: !Platform.isLinux);
 
   testWidgets('shows and changes the persisted music quality', (tester) async {

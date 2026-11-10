@@ -70,7 +70,37 @@ Future<void> _sendPlatformEvent(Object? event) async {
 }
 
 void main() {
-  test('Linux experiment preferences reach native initialization and stay device-local', () async {
+  test('automatic DV initializes on by default and preserves explicit Off', () async {
+    for (final stored in <bool?>[null, false, true]) {
+      resetSharedPreferencesForTest();
+      SettingsService.resetForTesting();
+      final settings = await SettingsService.getInstance();
+      if (stored != null) await settings.write(SettingsService.experimentalDolbyVision, stored);
+      Map? initArgs;
+      await withMockPlayerChannels(
+        methodChannelName: 'com.plezy/mpv_player',
+        eventChannelName: 'com.plezy/mpv_player/events',
+        methodHandler: (call) async {
+          if (call.method == 'initialize') {
+            initArgs = call.arguments as Map;
+            return true;
+          }
+          return null;
+        },
+        testBody: () async {
+          final player = PlayerNative();
+          try {
+            await player.open(Media('https://example.test/media.mkv'));
+            expect(initArgs?['experimentalDolbyVision'], stored ?? true);
+          } finally {
+            await player.dispose();
+          }
+        },
+      );
+    }
+  });
+
+  test('automatic DV preferences reach native initialization and stay device-local', () async {
     resetSharedPreferencesForTest();
     final settings = await SettingsService.getInstance();
     await settings.write(SettingsService.experimentalDolbyVision, true);
@@ -102,7 +132,7 @@ void main() {
       },
     );
     await settings.resetAllSettings();
-    expect(settings.read(SettingsService.experimentalDolbyVision), isFalse);
+    expect(settings.read(SettingsService.experimentalDolbyVision), isTrue);
     expect(settings.read(SettingsService.dvCompatibilityFallback), isTrue);
   });
 
@@ -272,7 +302,7 @@ void main() {
             expect(init.arguments, {
               'hardwareDecoding': hardwareDecoding,
               if (PlayerNative.usesLinuxVideoPlane) ...{
-                'experimentalDolbyVision': false,
+                'experimentalDolbyVision': true,
                 'dvCompatibilityFallback': true,
               },
               'instanceId': player.nativeInstanceId,

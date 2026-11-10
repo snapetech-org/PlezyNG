@@ -552,7 +552,7 @@
     "dvConversionDv81Description": "Dolby Vision profile 8.1 formatiga oʻtkazish",
     "dvConversionHevcStripDescription": "Dolby Vision qatlamlarini olib tashlash va HEVC sifatida koʻrsatish",
     "experimentalDolbyVision": "Tajribaviy Dolby Vision",
-    "experimentalDolbyVisionDescription": "",
+    "experimentalDolbyVisionDescription": "Dolby Vision/FEL avtomatik sinab ko‘riladi, mavjud bo‘lmasa mos ijroga o‘tiladi. Standart holatda yoqilgan; haqiqiy chiqish qurilmaga bog‘liq.",
     "dvCompatibilityFallback": "Moslik uchun zaxira rejim",
     "dvCompatibilityFallbackDescription": "Tajriba boshlanmasa, standart renderdan foydalaning. FEL ma’lumotlari yo‘qolishi mumkin.",
     "dvExperimentDiagnostics": "Video tajribasi jurnali",

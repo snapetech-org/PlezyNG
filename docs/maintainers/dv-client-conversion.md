@@ -95,7 +95,7 @@ physical DV signaling. Failed/stale adapters remain ineligible.
 | Android mpv/ExoPlayer | Output-preference and P5 fallback changes are connected to the app. Device transition/throughput qualification remains required. |
 | Windows | Existing `gpu-next` automatic HDR/SDR output retained, including Adreno safeguards. No new FEL hardware adapter. |
 | Linux production app | Existing Wayland HDR/SDR surface negotiation retained. Legacy OpenGL embedding is not promoted to a P5/FEL-capable renderer. |
-| Linux experimental app | Existing opt-in `opengl-next`/FEL integration retained. Standalone launcher gains explicit output targets. |
+| Linux experimental app | Automatic default-on `opengl-next`/FEL selection with compatibility fallback; explicit Off retained. Standalone launcher gains explicit output targets. |
 | Apple | Existing native output path and separate experimental host retained. No production integration of the experimental dual-layer engine is claimed. |
 | webOS | Existing native/compatible-base support retained. No portable GPU composer exposed by this change. |
 

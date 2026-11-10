@@ -643,6 +643,7 @@ class Translations$settings$fr extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'Forcer la conversion RPU intégrée vers le profil 8.1 de Dolby Vision';
 	@override String get dvConversionHevcStripDescription => 'Supprimer les couches RPU/EL Dolby Vision et présenter du HEVC simple';
 	@override String get experimentalDolbyVision => 'Dolby Vision expérimental';
+	@override String get experimentalDolbyVisionDescription => 'Essaie automatiquement Dolby Vision/FEL et utilise une lecture compatible si nécessaire. Activé par défaut ; la sortie réelle dépend de l’appareil.';
 	@override String get dvCompatibilityFallback => 'Repli de compatibilité';
 	@override String get dvCompatibilityFallbackDescription => 'Utiliser le rendu standard si l’expérimentation ne démarre pas. Les données FEL peuvent être perdues.';
 	@override String get dvExperimentDiagnostics => 'Journalisation de l’expérimentation vidéo';
@@ -5894,6 +5895,7 @@ extension on TranslationsFr {
 			'settings.dvConversionDv81Description' => 'Forcer la conversion RPU intégrée vers le profil 8.1 de Dolby Vision',
 			'settings.dvConversionHevcStripDescription' => 'Supprimer les couches RPU/EL Dolby Vision et présenter du HEVC simple',
 			'settings.experimentalDolbyVision' => 'Dolby Vision expérimental',
+			'settings.experimentalDolbyVisionDescription' => 'Essaie automatiquement Dolby Vision/FEL et utilise une lecture compatible si nécessaire. Activé par défaut ; la sortie réelle dépend de l’appareil.',
 			'settings.dvCompatibilityFallback' => 'Repli de compatibilité',
 			'settings.dvCompatibilityFallbackDescription' => 'Utiliser le rendu standard si l’expérimentation ne démarre pas. Les données FEL peuvent être perdues.',
 			'settings.dvExperimentDiagnostics' => 'Journalisation de l’expérimentation vidéo',
@@ -5903,9 +5905,9 @@ extension on TranslationsFr {
 			'settings.hdrSdrConversion' => 'Conversion HDR vers SDR',
 			'settings.hdrSdrConversionDescription' => 'Choisir ce qui convertit les vidéos HDR lorsque l’écran ne peut pas afficher le HDR.',
 			'settings.hdrSdrConversionAuto' => 'Auto',
-			'settings.hdrSdrConversionAutoDescription' => 'Appareil à partir d’Android 9, lecteur sur les versions antérieures',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'Appareil à partir d’Android 9, lecteur sur les versions antérieures',
 			'settings.hdrSdrConversionDevice' => 'Appareil',
 			'settings.hdrSdrConversionDeviceDescription' => 'Le matériel vidéo de l’appareil effectue la conversion. Le plus rapide, mais les couleurs dépendent de l’appareil',
 			'settings.hdrSdrConversionPlayer' => 'Lecteur',
@@ -6417,9 +6419,9 @@ extension on TranslationsFr {
 			'videoControls.segmentLoop' => 'Le Segment Loop',
 			'videoControls.addBookmark' => 'Ajoutez le bookmark',
 			'videoControls.bookmarkName' => 'Nom de Bookmark',
-			'videoControls.bookmarkNameHint' => 'Par exemple, la scène d’ouverture',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'Par exemple, la scène d’ouverture',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Le Bookmark ${n}',
 			'videoControls.bookmarkNameRequired' => 'Entrez un nom pour ce livre.',
 			'videoControls.deleteBookmark' => 'Supprimer le bookmark',
@@ -6931,9 +6933,9 @@ extension on TranslationsFr {
 			'libraries.libraryOptions' => 'Options de bibliothèque',
 			'libraries.content' => 'contenu de la bibliothèque',
 			'libraries.selectLibrary' => 'Sélectionner la bibliothèque',
-			'libraries.filtersWithCount' => ({required Object count}) => 'Filtres (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'Filtres (${count})',
 			'libraries.noRecommendations' => 'Aucune recommandation disponible',
 			'libraries.noCollections' => 'Aucune collection dans cette bibliothèque',
 			'libraries.noFoldersFound' => 'Aucun dossier trouvé',
@@ -7445,9 +7447,9 @@ extension on TranslationsFr {
 			'watchTogether.noCodeInClipboard' => 'Le presse-papiers ne contient pas de code de salon',
 			'watchTogether.copyCode' => 'Copier le code',
 			'watchTogether.codeCopied' => 'Code du salon copié',
-			'watchTogether.shareInvite' => 'Partager l’invitation',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'Partager l’invitation',
 			'watchTogether.inviteCopied' => 'Invitation copiée. Collez-la dans un message.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Rejoignez mon salon Regarder ensemble dans Pleazyng : ouvrez « Regarder ensemble », choisissez « Rejoindre un salon » et saisissez ${code}.',
 			'watchTogether.openSessionControls' => 'Ouvrir les commandes de la session Regarder ensemble',
@@ -7959,9 +7961,9 @@ extension on TranslationsFr {
 			'metadataEdit.enterImageUrl' => 'Entrer l\'URL de l\'image',
 			'metadataEdit.imageUrl' => 'URL de l\'image',
 			'metadataEdit.metadataUpdated' => 'Métadonnées mises à jour',
-			'metadataEdit.metadataUpdateFailed' => 'Échec de la mise à jour des métadonnées',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'Échec de la mise à jour des métadonnées',
 			'metadataEdit.artworkUpdated' => 'Illustrations mises à jour',
 			'metadataEdit.artworkUpdateFailed' => 'Échec de la mise à jour des illustrations',
 			'metadataEdit.noArtworkAvailable' => 'Aucune illustration disponible',
@@ -8473,9 +8475,9 @@ extension on TranslationsFr {
 			'universalMedia.favoriteSaved' => 'Stream favorite a été sauvé à ce profil',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('fr'))(n, one: 'Skipped ${count} unsupported or unsafe playlist entry.', many: 'Skipped ${count} unsupported or unsafe playlist entries.', other: 'Skipped ${count} unsupported or unsafe playlist entries.', ), 
 			'universalMedia.playlistAddress' => 'L’adresse de la playlist',
-			'universalMedia.playlistAddressHelp' => 'Ouvrez une liste de lecture M3U, M3u8 ou PLS à partir d\'une adresse Web. Les liens en streaming directs ne sauvent pas la liste de jeu.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'Ouvrez une liste de lecture M3U, M3u8 ou PLS à partir d\'une adresse Web. Les liens en streaming directs ne sauvent pas la liste de jeu.',
 			'universalMedia.choosePlaylist' => 'Choisissez le fichier playlist',
 			'universalMedia.openPlaylist' => 'Ouverture playlist',
 			'universalMedia.playlistFormatsHelp' => 'Une liste de lecture peut contenir jusqu\'à 1000 articles et 2 MB. HLS se manifeste comme des courants afin que le joueur puisse choisir une qualité.',
@@ -8987,9 +8989,9 @@ extension on TranslationsFr {
 			'sourceSetup.apiKey' => 'Clé API',
 			'sourceSetup.optionalUsername' => 'Nom d’utilisateur du compte (facultatif)',
 			'sourceSetup.optionalPassword' => 'Mot de passe du compte (facultatif)',
-			'sourceSetup.subtitlePrivacy' => 'Obtenez une clé API sur opensubtitles.com. La recherche envoie le titre de la vidéo et les identifiants IMDb/TMDB disponibles, jamais le fichier vidéo. La clé et les identifiants facultatifs du compte sont chiffrés avec cette source.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'Obtenez une clé API sur opensubtitles.com. La recherche envoie le titre de la vidéo et les identifiants IMDb/TMDB disponibles, jamais le fichier vidéo. La clé et les identifiants facultatifs du compte sont chiffrés avec cette source.',
 			'sourceSetup.automaticMetadata' => 'Métadonnées vidéo automatiques en ligne',
 			'sourceSetup.metadataPrivacy' => 'Envoie uniquement le titre/l’année du nom de fichier et les numéros d’épisode, ou un identifiant NFO ; jamais les médias ni les identifiants de connexion. Les champs NFO restent prioritaires.',
 			'sourceSetup.nfsEncryptionFailure' => 'Pour NFS chiffré, vérifiez la prise en charge de RFC 9289 et TLS 1.3 par les deux services du NAS, le nom du certificat et les UID/GID du partage. Pleazyng ne réessaiera pas cette connexion sans chiffrement.',

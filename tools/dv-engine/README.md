@@ -1,8 +1,9 @@
 # Experimental Dolby Vision engine
 
 The tools here support development and qualification of the Dolby Vision engine.
-Normal compatible releases bundle the implementation and expose a default-off
-Settings switch; users do not need to run these builders. See
+Normal compatible releases bundle the implementation and enable automatic
+DV/FEL routing with compatibility fallback by default. Settings retains an
+explicit Off override; users do not need to run these builders. See
 [normal-build runtime integration](../../docs/maintainers/dv-native-ports.md).
 
 The standalone Linux recipe below produces a diagnostic engine.
@@ -82,7 +83,8 @@ python3 /path/to/plezyng-dv-experimental/run.py --app /path/to/experimental-app/
 
 The app must include this branch's Linux selector. The launcher selects the
 library only for that process. In **Settings → Playback → Video and display**,
-enable **Experimental Dolby Vision** before starting the next playback.
+**Experimental Dolby Vision** is on by default for automatic routing. An
+explicit Off choice applies to the next playback.
 **Compatibility fallback** retries the standard renderer once if experimental
 renderer creation fails; disable it for strict qualification runs. Alternatively,
 pass `--render-api opengl-next` to the launcher: explicit overrides always fail

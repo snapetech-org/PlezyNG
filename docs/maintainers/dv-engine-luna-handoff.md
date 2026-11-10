@@ -2,6 +2,12 @@
 
 Updated 2026-10-26. Repository: [snapetech-org/pleazyng](https://github.com/snapetech-org/pleazyng). Follow-up work is tracked in [PR #16](https://github.com/snapetech-org/pleazyng/pull/16) and `tools/dv-engine/`. This brief records the validated engine revision; later documentation or main-sync commits do not change the engine test result.
 
+Current policy, 2026-11-09: normal compatible builds request implemented DV/FEL
+paths automatically by default, with compatibility fallback and explicit Off
+controls. Opt-in and separate-engine statements below describe the dated
+experimental checkpoint; use [normal-build integration](dv-native-ports.md) for
+current activation and packaging behavior.
+
 ## Goal and guardrails
 
 Build bleeding-edge Dolby Vision playback, prioritizing genuine Profile 7 FEL: decode base layer (BL) and enhancement layer (EL), synchronize them, apply the FEL residual, preserve RPU and color metadata, then present through a verified platform path. Build missing integration ourselves where practical.

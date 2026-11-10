@@ -649,6 +649,7 @@ class _Translations$settings$ar extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'تحويل قوة RPU إلى Dolby Vision ملف تعريف 8.1';
 	@override String get dvConversionHevcStripDescription => 'شريط Dolby Vision طبقات RPU/EL والطابق الحالي HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision التجريبي';
+	@override String get experimentalDolbyVisionDescription => 'جرّب Dolby Vision/FEL تلقائيًا وارجع إلى تشغيل متوافق عند عدم توفره. مفعّل افتراضيًا؛ يعتمد الإخراج الفعلي على الجهاز.';
 	@override String get dvCompatibilityFallback => 'الرجوع للتوافق';
 	@override String get dvCompatibilityFallbackDescription => 'استخدم العارض القياسي إذا تعذر بدء التجربة. قد تُفقد بيانات FEL.';
 	@override String get dvExperimentDiagnostics => 'تسجيل تجربة الفيديو';
@@ -5987,6 +5988,7 @@ extension on TranslationsAr {
 			'settings.dvConversionDv81Description' => 'تحويل قوة RPU إلى Dolby Vision ملف تعريف 8.1',
 			'settings.dvConversionHevcStripDescription' => 'شريط Dolby Vision طبقات RPU/EL والطابق الحالي HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision التجريبي',
+			'settings.experimentalDolbyVisionDescription' => 'جرّب Dolby Vision/FEL تلقائيًا وارجع إلى تشغيل متوافق عند عدم توفره. مفعّل افتراضيًا؛ يعتمد الإخراج الفعلي على الجهاز.',
 			'settings.dvCompatibilityFallback' => 'الرجوع للتوافق',
 			'settings.dvCompatibilityFallbackDescription' => 'استخدم العارض القياسي إذا تعذر بدء التجربة. قد تُفقد بيانات FEL.',
 			'settings.dvExperimentDiagnostics' => 'تسجيل تجربة الفيديو',
@@ -5996,9 +5998,9 @@ extension on TranslationsAr {
 			'settings.hdrSdrConversion' => 'تحويل HDR إلى SDR',
 			'settings.hdrSdrConversionDescription' => 'اختر ما الذي يحول فيديو HDR عندما لا يمكن لعرض الشاشة عرض HDR.',
 			'settings.hdrSdrConversionAuto' => 'تلقائي',
-			'settings.hdrSdrConversionAutoDescription' => 'الأجهزة على Android 9 وما بعدها، اللاعب على الإصدارات القديمة',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'الأجهزة على Android 9 وما بعدها، اللاعب على الإصدارات القديمة',
 			'settings.hdrSdrConversionDevice' => 'الجهاز',
 			'settings.hdrSdrConversionDeviceDescription' => 'أجهزة الفيديو في جهازك تحولها.أسرع، ولكن الألوان تعتمد على الجهاز',
 			'settings.hdrSdrConversionPlayer' => 'المشغّل',
@@ -6510,9 +6512,9 @@ extension on TranslationsAr {
 			'videoControls.segmentLoop' => 'القسم القصير',
 			'videoControls.addBookmark' => 'إضافة bookmark',
 			'videoControls.bookmarkName' => 'Bookmark الاسم',
-			'videoControls.bookmarkNameHint' => 'على سبيل المثال، فتح المشهد',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'على سبيل المثال، فتح المشهد',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'الكتابة ${n}',
 			'videoControls.bookmarkNameRequired' => 'أدخل اسمًا لهذا الكتاب.',
 			'videoControls.deleteBookmark' => 'إلغاء Bookmark',
@@ -7024,9 +7026,9 @@ extension on TranslationsAr {
 			'libraries.libraryOptions' => 'خيارات المكتبة',
 			'libraries.content' => 'مكتبة المحتوى',
 			'libraries.selectLibrary' => 'اختيار المكتبة',
-			'libraries.filtersWithCount' => ({required Object count}) => 'الفلاتر (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'الفلاتر (${count})',
 			'libraries.noRecommendations' => 'لا توجد توصيات متاحة',
 			'libraries.noCollections' => 'لا توجد مجموعات في هذه المكتبة',
 			'libraries.noFoldersFound' => 'لا توجد ملفات',
@@ -7538,9 +7540,9 @@ extension on TranslationsAr {
 			'watchTogether.noCodeInClipboard' => 'لا يحتوي الكليب على رمز غرفة',
 			'watchTogether.copyCode' => 'نسخ الرمز',
 			'watchTogether.codeCopied' => 'رمز الغرفة نسخة',
-			'watchTogether.shareInvite' => 'مشاركة دعوة',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'مشاركة دعوة',
 			'watchTogether.inviteCopied' => 'إرسال الرسالة - إرسال الرسالة إلى الرسالة',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'انضم إلى غرفة Watch Together في Pleazyng: افتح غرفة Watch Together واختر انضم إلى غرفة وانضم إلى ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch معا مراقبة الجلسة',
@@ -8052,9 +8054,9 @@ extension on TranslationsAr {
 			'metadataEdit.enterImageUrl' => 'إدخال صورة URL',
 			'metadataEdit.imageUrl' => 'صورة URL',
 			'metadataEdit.metadataUpdated' => 'متاجدات تحديثات',
-			'metadataEdit.metadataUpdateFailed' => 'فشل في تحديث البيانات الميتا',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'فشل في تحديث البيانات الميتا',
 			'metadataEdit.artworkUpdated' => 'الفنون المحدثة',
 			'metadataEdit.artworkUpdateFailed' => 'فشل في تحديث أعمال الفن',
 			'metadataEdit.noArtworkAvailable' => 'لا توجد أعمال فنية متاحة',
@@ -8566,9 +8568,9 @@ extension on TranslationsAr {
 			'universalMedia.favoriteSaved' => 'Stream Favorite تم حفظه إلى هذا الملف الشخصي',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', one: 'إدخال ${count} غير مدعوم أو غير آمن.', two: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', few: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', many: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', other: 'إدخال ${count} غير مدعوم أو غير آمن في قائمة التشغيل.', ), 
 			'universalMedia.playlistAddress' => 'العنوان Playlist',
-			'universalMedia.playlistAddressHelp' => 'افتح قائمة تشغيل M3U أو M3 U8 أو PLS من عنوان ويب. لنقرات البث المباشر لا تخزن قائمة التشغيل.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'افتح قائمة تشغيل M3U أو M3 U8 أو PLS من عنوان ويب. لنقرات البث المباشر لا تخزن قائمة التشغيل.',
 			'universalMedia.choosePlaylist' => 'اختيار ملف Playlist',
 			'universalMedia.openPlaylist' => 'قائمة ألعاب مفتوحة',
 			'universalMedia.playlistFormatsHelp' => 'يمكن أن يحتوي قائمة التشغيل على ما يصل إلى 1000 عنصر و 2 ميغابايت.HLS يظهر مفتوحا مثل التدفقات بحيث يمكن للاعب اختيار نوعية.',
@@ -9080,9 +9082,9 @@ extension on TranslationsAr {
 			'sourceSetup.apiKey' => 'مفتاح API',
 			'sourceSetup.optionalUsername' => 'اسم مستخدم الحساب (اختياري)',
 			'sourceSetup.optionalPassword' => 'كلمة مرور الحساب (اختيارية)',
-			'sourceSetup.subtitlePrivacy' => 'احصل على مفتاح API من opensubtitles.com. يرسل البحث عنوان الفيديو ومعرّفات IMDb/TMDB المتاحة، ولا يرسل ملف الفيديو مطلقًا. يُحفظ المفتاح وبيانات الحساب الاختيارية بشكل مشفّر مع هذا المصدر.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'احصل على مفتاح API من opensubtitles.com. يرسل البحث عنوان الفيديو ومعرّفات IMDb/TMDB المتاحة، ولا يرسل ملف الفيديو مطلقًا. يُحفظ المفتاح وبيانات الحساب الاختيارية بشكل مشفّر مع هذا المصدر.',
 			'sourceSetup.automaticMetadata' => 'جلب بيانات الفيديو الوصفية من الإنترنت تلقائيًا',
 			'sourceSetup.metadataPrivacy' => 'يُرسل فقط العنوان والسنة وأرقام الحلقات المستخرجة من اسم الملف، أو معرّف NFO، ولا يرسل الوسائط أو بيانات الاعتماد مطلقًا. تظل الأولوية لحقول NFO.',
 			'sourceSetup.nfsEncryptionFailure' => 'لاتصال NFS المشفّر، تحقّق من دعم RFC 9289 وTLS 1.3 في خدمتي NAS، ومن اسم الشهادة ومعرّفات UID/GID للتصدير. لن يعيد Pleazyng محاولة هذا الاتصال دون تشفير.',

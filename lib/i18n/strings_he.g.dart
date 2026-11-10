@@ -643,6 +643,7 @@ class _Translations$settings$he extends Translations$settings$en {
 	@override String get dvConversionDv81Description => 'כוח רצועה RPU הפוך ל Dolby Vision פרופיל 8.1';
 	@override String get dvConversionHevcStripDescription => 'רצועה Dolby Vision שכבות RPU/EL ושטח הנוכחי HEVC';
 	@override String get experimentalDolbyVision => 'Dolby Vision ניסיוני';
+	@override String get experimentalDolbyVisionDescription => 'מנסה Dolby Vision/FEL אוטומטית ועובר לניגון תואם כשהאפשרות אינה זמינה. מופעל כברירת מחדל; הפלט בפועל תלוי במכשיר.';
 	@override String get dvCompatibilityFallback => 'חלופת תאימות';
 	@override String get dvCompatibilityFallbackDescription => 'שימוש במנוע הרינדור הרגיל אם הניסוי לא מצליח להתחיל. נתוני FEL עלולים ללכת לאיבוד.';
 	@override String get dvExperimentDiagnostics => 'רישום יומן לניסוי הווידאו';
@@ -5895,6 +5896,7 @@ extension on TranslationsHe {
 			'settings.dvConversionDv81Description' => 'כוח רצועה RPU הפוך ל Dolby Vision פרופיל 8.1',
 			'settings.dvConversionHevcStripDescription' => 'רצועה Dolby Vision שכבות RPU/EL ושטח הנוכחי HEVC',
 			'settings.experimentalDolbyVision' => 'Dolby Vision ניסיוני',
+			'settings.experimentalDolbyVisionDescription' => 'מנסה Dolby Vision/FEL אוטומטית ועובר לניגון תואם כשהאפשרות אינה זמינה. מופעל כברירת מחדל; הפלט בפועל תלוי במכשיר.',
 			'settings.dvCompatibilityFallback' => 'חלופת תאימות',
 			'settings.dvCompatibilityFallbackDescription' => 'שימוש במנוע הרינדור הרגיל אם הניסוי לא מצליח להתחיל. נתוני FEL עלולים ללכת לאיבוד.',
 			'settings.dvExperimentDiagnostics' => 'רישום יומן לניסוי הווידאו',
@@ -5904,9 +5906,9 @@ extension on TranslationsHe {
 			'settings.hdrSdrConversion' => 'HDR ל- SDR Conversion',
 			'settings.hdrSdrConversionDescription' => 'בחר מה מחליף וידאו HDR כאשר המסך לא יכול להציג HDR.',
 			'settings.hdrSdrConversionAuto' => 'אוטומטי',
-			'settings.hdrSdrConversionAutoDescription' => 'מכשיר ב- Android 9 ומאוחר יותר, שחקן בגרסאות ישנות יותר',
 			_ => null,
 		} ?? switch (path) {
+			'settings.hdrSdrConversionAutoDescription' => 'מכשיר ב- Android 9 ומאוחר יותר, שחקן בגרסאות ישנות יותר',
 			'settings.hdrSdrConversionDevice' => 'מכשיר',
 			'settings.hdrSdrConversionDeviceDescription' => 'חומרה וידאו של המכשיר שלך מחליפה אותו מהיר ביותר, אבל הצבעים תלויים במכשיר',
 			'settings.hdrSdrConversionPlayer' => 'נגן',
@@ -6418,9 +6420,9 @@ extension on TranslationsHe {
 			'videoControls.segmentLoop' => 'סגמנט לואי',
 			'videoControls.addBookmark' => 'להוסיף bookmark',
 			'videoControls.bookmarkName' => 'Bookmark שם',
-			'videoControls.bookmarkNameHint' => 'לדוגמה, פתיחת סצנה',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkNameHint' => 'לדוגמה, פתיחת סצנה',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'סימנייה ${n}',
 			'videoControls.bookmarkNameRequired' => 'הקלד שם עבור ספר זה.',
 			'videoControls.deleteBookmark' => 'הסרת ספרייה',
@@ -6932,9 +6934,9 @@ extension on TranslationsHe {
 			'libraries.libraryOptions' => 'אפשרויות ספרייה',
 			'libraries.content' => 'ספרייה תוכן',
 			'libraries.selectLibrary' => 'בחר ספרייה',
-			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
 			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			'libraries.noCollections' => 'אין אוסף בספריה זו',
 			'libraries.noFoldersFound' => 'לא נמצאו קבצים',
@@ -7446,9 +7448,9 @@ extension on TranslationsHe {
 			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
 			'watchTogether.copyCode' => 'עותק קוד',
 			'watchTogether.codeCopied' => 'קוד חדר עותק',
-			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- Pleazyng: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
 			'watchTogether.openSessionControls' => 'Open Watch יחד בדיקת ישיבה',
@@ -7960,9 +7962,9 @@ extension on TranslationsHe {
 			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
 			'metadataEdit.imageUrl' => 'תמונה URL',
 			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
-			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
 			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
 			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
 			'metadataEdit.noArtworkAvailable' => 'אין יצירות אמנות זמינות',
@@ -8474,9 +8476,9 @@ extension on TranslationsHe {
 			'universalMedia.favoriteSaved' => 'זרם אהוב נשמר לפרופיל זה',
 			'universalMedia.skippedEntries' => ({required num n, required Object count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('he'))(n, one: 'כניסה לא תומכת או לא בטוחה של רשימת המשחקים של ${count}.', two: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', other: 'הפסד ${count} כניסות רשימת משחקים לא נתמכים או לא בטוחים.', ), 
 			'universalMedia.playlistAddress' => 'כתובת Playlist',
-			'universalMedia.playlistAddressHelp' => 'פתח רשימת משחקים M3U, M3u8 או PLS מכתובת אינטרנט.קישורים זרימה ישירה אינם מאוחסנים את רשימת המשחקים.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.playlistAddressHelp' => 'פתח רשימת משחקים M3U, M3u8 או PLS מכתובת אינטרנט.קישורים זרימה ישירה אינם מאוחסנים את רשימת המשחקים.',
 			'universalMedia.choosePlaylist' => 'בחר קובץ playlist',
 			'universalMedia.openPlaylist' => 'פתיחת Playlist',
 			'universalMedia.playlistFormatsHelp' => 'רשימת משחקים יכולה להכיל עד 1,000 פריטים ו 2 MB. HLS מופיע פתוח כמו זרמים כך שהשחקן יכול לבחור איכות.',
@@ -8988,9 +8990,9 @@ extension on TranslationsHe {
 			'sourceSetup.apiKey' => 'מפתח API',
 			'sourceSetup.optionalUsername' => 'שם המשתמש בחשבון (רשות)',
 			'sourceSetup.optionalPassword' => 'סיסמת החשבון (רשות)',
-			'sourceSetup.subtitlePrivacy' => 'אפשר לקבל מפתח API מ־opensubtitles.com. החיפוש שולח את שם הווידאו ואת מזהי IMDb/TMDB הזמינים, ולעולם לא את קובץ הווידאו. המפתח ופרטי החשבון האופציונליים נשמרים בהצפנה עם המקור הזה.',
 			_ => null,
 		} ?? switch (path) {
+			'sourceSetup.subtitlePrivacy' => 'אפשר לקבל מפתח API מ־opensubtitles.com. החיפוש שולח את שם הווידאו ואת מזהי IMDb/TMDB הזמינים, ולעולם לא את קובץ הווידאו. המפתח ופרטי החשבון האופציונליים נשמרים בהצפנה עם המקור הזה.',
 			'sourceSetup.automaticMetadata' => 'אחזור אוטומטי של מטא־נתוני וידאו מקוונים',
 			'sourceSetup.metadataPrivacy' => 'נשלחים רק שם היצירה, השנה ומספרי הפרקים מתוך שם הקובץ, או מזהה NFO. מדיה ופרטי גישה לעולם אינם נשלחים. לשדות NFO נשמרת עדיפות.',
 			'sourceSetup.nfsEncryptionFailure' => 'עבור NFS מוצפן, יש לבדוק תמיכה ב־RFC 9289 וב־TLS 1.3 בשני שירותי ה־NAS, את שם האישור ואת מזהי UID/GID של הייצוא. Pleazyng לא ינסה שוב את החיבור הזה ללא הצפנה.',

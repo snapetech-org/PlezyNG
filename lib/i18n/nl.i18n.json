@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer grootte: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Ingebouwd",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Hardware",
     "tunnelingActive": "Actief",
     "dvRpuFailed": "${converted} (${failures} mislukt)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Cachelimiet: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Externe speler",
@@ -3283,13 +3285,24 @@
     "request": "Aanvragen",
     "request4k": "Aanvragen in 4K",
     "requestSeasons": "Ontbrekende seizoenen aanvragen",
+    "requestHint": "Kies aanvraagopties in Seerr",
+    "quickRequestHint": "Plaats nu een aanvraag in Seerr met de standaardinstellingen",
+    "chooseSeasonsHint": "Kies de seizoenen die je in Seerr wilt aanvragen",
+    "request4kHint": "Kies een 4K-aanvraag in Seerr",
+    "only4kAvailable": "Met dit account kun je alleen de 4K-versie aanvragen.",
+    "cardActionHint": "Open het kaartmenu voor Seerr-aanvraagopties",
+    "requestInProgress": "Aanvraag wordt verwerkt",
     "notifyMe": "Meld me wanneer beschikbaar",
     "notifyMe4k": "Meld me wanneer beschikbaar in 4K",
     "notificationsOn": "Beschikbaarheidsmelding staat aan",
+    "turnOffAlert": "Beschikbaarheidsmelding uitschakelen",
     "notificationsEnabled": "We laten je weten wanneer het beschikbaar is",
+    "notificationsEnabled4k": "We laten het je weten zodra de 4K-versie beschikbaar is",
+    "notificationsEnabledSeason": "We laten het je weten zodra seizoen ${season} beschikbaar is",
     "notificationsDisabled": "Beschikbaarheidsmelding is uitgeschakeld",
     "notificationFailed": "De beschikbaarheidsmelding kon niet worden bijgewerkt",
     "seasons": "Seizoenen",
+    "requestSheetHint": "Seerr regelt de goedkeuring en houdt je aanvraag bij.",
     "allSeasons": "Alle seizoenen",
     "advancedOptions": "Geavanceerd",
     "destinationServer": "Doelserver",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr heeft geen gebruikersgegevens geretourneerd",
     "sessionRejectedAfterReauth": "De sessie is na het opnieuw inloggen geweigerd",
     "permissionDenied": "Seerr heeft deze actie geweigerd: je account heeft niet langer de vereiste machtiging",
-    "permissionRevoked": "Je hebt geen toestemming meer om dit aan te vragen",
-    "requestHint": "Kies aanvraagopties in Seerr",
-    "quickRequestHint": "Plaats nu een aanvraag in Seerr met de standaardinstellingen",
-    "chooseSeasonsHint": "Kies de seizoenen die je in Seerr wilt aanvragen",
-    "request4kHint": "Kies een 4K-aanvraag in Seerr",
-    "only4kAvailable": "Met dit account kun je alleen de 4K-versie aanvragen.",
-    "cardActionHint": "Open het kaartmenu voor Seerr-aanvraagopties",
-    "requestInProgress": "Aanvraag wordt verwerkt",
-    "turnOffAlert": "Beschikbaarheidsmelding uitschakelen",
-    "notificationsEnabled4k": "We laten het je weten zodra de 4K-versie beschikbaar is",
-    "notificationsEnabledSeason": "We laten het je weten zodra seizoen ${season} beschikbaar is",
-    "requestSheetHint": "Seerr regelt de goedkeuring en houdt je aanvraag bij."
+    "permissionRevoked": "Je hebt geen toestemming meer om dit aan te vragen"
   },
   "services": {
     "title": "Diensten",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "Recovery data samengesteld."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Meld je aan met je eigen BookOrbit-account om de boeken daar te bekijken en af te spelen. Aanvragen voor ontbrekende titels worden nog steeds via je gekoppelde SeerrNG-instantie verstuurd.",
+    "bookorbitOpen": "Openen in BookOrbit",
+    "bookorbitDetailHelp": "Bekijk deze titel in BookOrbit om bibliotheekgegevens en indelingen te beheren die Pleazyng niet kan openen. Je luistervoortgang wordt gesynchroniseerd met je BookOrbit-account.",
     "savedCertificate": "Opgeslagen servercertificaat",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Voer een NFS-URL in, zoals nfs://nas:2049/export.",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "Data lezen",
     "nfsReadSpeed": "gemeten snelheid",
     "nfsReadRequests": "Lees verzoeken",
-    "sharedEntryConflict": "Deze gedeelde item ID is al gepaard met een ander item in deze bibliotheek.",
-    "bookorbitHelp": "Meld je aan met je eigen BookOrbit-account om de boeken daar te bekijken en af te spelen. Aanvragen voor ontbrekende titels worden nog steeds via je gekoppelde SeerrNG-instantie verstuurd.",
-    "bookorbitOpen": "Openen in BookOrbit",
-    "bookorbitDetailHelp": "Bekijk deze titel in BookOrbit om bibliotheekgegevens en indelingen te beheren die Pleazyng niet kan openen. Je luistervoortgang wordt gesynchroniseerd met je BookOrbit-account."
+    "sharedEntryConflict": "Deze gedeelde item ID is al gepaard met een ander item in deze bibliotheek."
   },
   "comics": {
     "fitHeight": "Aan hoogte aanpassen",
@@ -5544,6 +5546,9 @@
     "anniversaries": "Albumjubilea",
     "outputPreset": "EQ voor deze uitgang",
     "outputPresetHint": "Gebruik deze EQ automatisch wanneer deze uitgang is geselecteerd.",
-    "eqApproximation": "Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ."
+    "eqApproximation": "Hoofdtelefoonprofielen worden benaderd voor de tienbands-EQ.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

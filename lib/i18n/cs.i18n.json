@@ -738,7 +738,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer velikost: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "stavět-in",
@@ -3148,7 +3149,8 @@
     "decoderHardware": "hardwarové",
     "tunnelingActive": "aktivní",
     "dvRpuFailed": "${converted} (${failures} selhalo)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Cache limity: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Vnější hráč",
@@ -3319,13 +3321,24 @@
     "request": "Žádost",
     "request4k": "Vyžádání v 4K",
     "requestSeasons": "Vyžádat chybějící sezóny",
+    "requestHint": "Vyberte možnosti žádosti v Seerr",
+    "quickRequestHint": "Požádat nyní v Seerr s výchozím nastavením",
+    "chooseSeasonsHint": "Vyberte série, o které chcete v Seerr požádat",
+    "request4kHint": "Vyberte žádost o 4K v Seerr",
+    "only4kAvailable": "Tento účet může požádat pouze o 4K verzi.",
+    "cardActionHint": "Otevřete nabídku karty s možnostmi žádosti v Seerr",
+    "requestInProgress": "Žádost se zpracovává",
     "notifyMe": "Upozornit, až bude dostupné",
     "notifyMe4k": "Upozornit, až bude dostupné ve 4K",
     "notificationsOn": "Upozornění na dostupnost je zapnuté",
+    "turnOffAlert": "Vypnout upozornění na dostupnost",
     "notificationsEnabled": "Upozorníme vás, až bude dostupné",
+    "notificationsEnabled4k": "Upozorníme vás, až bude dostupná 4K verze",
+    "notificationsEnabledSeason": "Upozorníme vás, až bude dostupná série ${season}",
     "notificationsDisabled": "Upozornění na dostupnost bylo vypnuto",
     "notificationFailed": "Upozornění na dostupnost se nepodařilo aktualizovat",
     "seasons": "Série",
+    "requestSheetHint": "Seerr zajišťuje schválení a sledování vaší žádosti.",
     "allSeasons": "Všechny sezóny",
     "advancedOptions": "Pokročilé",
     "destinationServer": "Destinace server",
@@ -3359,18 +3372,7 @@
     "noUserInformation": "Seerr nevrátil uživatelské informace",
     "sessionRejectedAfterReauth": "Zasedání bylo po opětovném podepsání zamítnuto.",
     "permissionDenied": "Seerr tuto akci odmítl: Váš účet již nemá požadované povolení",
-    "permissionRevoked": "Už nemáte právo na to požádat",
-    "requestHint": "Vyberte možnosti žádosti v Seerr",
-    "quickRequestHint": "Požádat nyní v Seerr s výchozím nastavením",
-    "chooseSeasonsHint": "Vyberte série, o které chcete v Seerr požádat",
-    "request4kHint": "Vyberte žádost o 4K v Seerr",
-    "only4kAvailable": "Tento účet může požádat pouze o 4K verzi.",
-    "cardActionHint": "Otevřete nabídku karty s možnostmi žádosti v Seerr",
-    "requestInProgress": "Žádost se zpracovává",
-    "turnOffAlert": "Vypnout upozornění na dostupnost",
-    "notificationsEnabled4k": "Upozorníme vás, až bude dostupná 4K verze",
-    "notificationsEnabledSeason": "Upozorníme vás, až bude dostupná série ${season}",
-    "requestSheetHint": "Seerr zajišťuje schválení a sledování vaší žádosti."
+    "permissionRevoked": "Už nemáte právo na to požádat"
   },
   "services": {
     "title": "Služby",
@@ -4301,6 +4303,9 @@
     "recoveryImported": "Údaje o obnově se smítají."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.",
+    "bookorbitOpen": "Otevřít v BookOrbit",
+    "bookorbitDetailHelp": "Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit.",
     "savedCertificate": "Uložený certifikát serveru",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Zadejte adresu NFS, například nfs://nas:2049/export.",
@@ -4412,10 +4417,7 @@
     "nfsReadBytes": "Data čtení",
     "nfsReadSpeed": "měřená rychlost",
     "nfsReadRequests": "Čtěte žádosti",
-    "sharedEntryConflict": "Tento sdílený ID položky je již připojen k dalším položkám v této knihovně.",
-    "bookorbitHelp": "Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.",
-    "bookorbitOpen": "Otevřít v BookOrbit",
-    "bookorbitDetailHelp": "Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit."
+    "sharedEntryConflict": "Tento sdílený ID položky je již připojen k dalším položkám v této knihovně."
   },
   "comics": {
     "fitHeight": "Přizpůsobit výšce",
@@ -5592,6 +5594,9 @@
     "anniversaries": "Výročí alb",
     "outputPreset": "Ekvalizér pro tento výstup",
     "outputPresetHint": "Při výběru tohoto výstupu automaticky použít tento ekvalizér.",
-    "eqApproximation": "Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér."
+    "eqApproximation": "Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

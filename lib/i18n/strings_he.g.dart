@@ -811,6 +811,7 @@ class _Translations$settings$he extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'בחר איזה קליפים מהספרייה הנבחרת ניתן לשחק לפני הסרטים.';
 	@override String get contentScreensaverDelayOptionDescription => 'לחכות הרבה דקות ללא כניסה לפני הצגת מסך אחסון אמנות.';
 	@override String get videoCodecOptionDescription => 'תאפשר שידור ישיר עבור קודק זה כאשר תומך. codecs Unchecked are transcoded by the media server.';
+	@override String streamBufferSizeMiB({required Object size}) => 'גודל בופר: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2551,6 +2552,7 @@ class _Translations$performanceOverlay$he extends Translations$performanceOverla
 	@override String get decoderHardware => 'חומרה';
 	@override String get tunnelingActive => 'פעיל';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} נכשל)';
+	@override String cacheLimitMiB({required Object size}) => 'הגבלת Cache: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2745,13 +2747,24 @@ class _Translations$seerr$he extends Translations$seerr$en {
 	@override String get request => 'בקשה';
 	@override String get request4k => 'בקשה 4K';
 	@override String get requestSeasons => 'בקשת העונות החסרות';
+	@override String get requestHint => 'בחירת אפשרויות הבקשה ב-Seerr';
+	@override String get quickRequestHint => 'שליחת בקשה עכשיו ב-Seerr עם הגדרות ברירת המחדל';
+	@override String get chooseSeasonsHint => 'בחירת העונות לבקשה ב-Seerr';
+	@override String get request4kHint => 'בחירת בקשת 4K ב-Seerr';
+	@override String get only4kAvailable => 'בחשבון הזה אפשר לבקש רק את גרסת ה-4K.';
+	@override String get cardActionHint => 'פתיחת תפריט הכרטיס לאפשרויות בקשה ב-Seerr';
+	@override String get requestInProgress => 'הבקשה בתהליך';
 	@override String get notifyMe => 'עדכנו אותי כשהתוכן יהיה זמין';
 	@override String get notifyMe4k => 'עדכנו אותי כשהתוכן יהיה זמין ב־4K';
 	@override String get notificationsOn => 'התראת זמינות מופעלת';
+	@override String get turnOffAlert => 'כיבוי התראת הזמינות';
 	@override String get notificationsEnabled => 'נעדכן אותך כשהתוכן יהיה זמין';
+	@override String get notificationsEnabled4k => 'נעדכן אותך כשהגרסה ב-4K תהיה זמינה';
+	@override String notificationsEnabledSeason({required Object season}) => 'נעדכן אותך כשהעונה ${season} תהיה זמינה';
 	@override String get notificationsDisabled => 'התראת הזמינות כובתה';
 	@override String get notificationFailed => 'עדכון התראת הזמינות נכשל';
 	@override String get seasons => 'עונות';
+	@override String get requestSheetHint => 'Seerr מטפלת באישור הבקשה שלך ובמעקב אחריה.';
 	@override String get allSeasons => 'כל העונות';
 	@override String get advancedOptions => 'מתקדם';
 	@override String get destinationServer => 'שרת היעד';
@@ -2786,17 +2799,6 @@ class _Translations$seerr$he extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'ההרשמה נדחתה לאחר חתימה נוספת.';
 	@override String get permissionDenied => 'Seerr הכחישה את הפעולה הזאת: החשבון שלך כבר אין את הרשאה הנדרשת';
 	@override String get permissionRevoked => 'אין לך יותר רשות לבקש זאת.';
-	@override String get requestHint => 'בחירת אפשרויות הבקשה ב-Seerr';
-	@override String get quickRequestHint => 'שליחת בקשה עכשיו ב-Seerr עם הגדרות ברירת המחדל';
-	@override String get chooseSeasonsHint => 'בחירת העונות לבקשה ב-Seerr';
-	@override String get request4kHint => 'בחירת בקשת 4K ב-Seerr';
-	@override String get only4kAvailable => 'בחשבון הזה אפשר לבקש רק את גרסת ה-4K.';
-	@override String get cardActionHint => 'פתיחת תפריט הכרטיס לאפשרויות בקשה ב-Seerr';
-	@override String get requestInProgress => 'הבקשה בתהליך';
-	@override String get turnOffAlert => 'כיבוי התראת הזמינות';
-	@override String get notificationsEnabled4k => 'נעדכן אותך כשהגרסה ב-4K תהיה זמינה';
-	@override String notificationsEnabledSeason({required Object season}) => 'נעדכן אותך כשהעונה ${season} תהיה זמינה';
-	@override String get requestSheetHint => 'Seerr מטפלת באישור הבקשה שלך ובמעקב אחריה.';
 }
 
 // Path: services
@@ -3769,6 +3771,9 @@ class _Translations$sourceSetup$he extends Translations$sourceSetup$en {
 	final TranslationsHe _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'יש להתחבר לחשבון BookOrbit האישי שלך כדי לעיין בספרים ולנגן אותם. בקשות לכותרות חסרות עדיין עוברות דרך מופע SeerrNG המחובר שלך.';
+	@override String get bookorbitOpen => 'פתיחה ב-BookOrbit';
+	@override String get bookorbitDetailHelp => 'אפשר לצפות בכותר הזה ב-BookOrbit כדי לנהל את פרטי הספרייה ואת הפורמטים ש-Pleazyng לא יכול לפתוח. התקדמות ההאזנה מסתנכרנת עם חשבון BookOrbit שלך.';
 	@override String get savedCertificate => 'אישור השרת השמור';
 	@override String get nfsEndpointInvalid => 'יש להזין כתובת NFS, למשל nfs://nas:2049/export.';
 	@override String get dlnaNone => 'לא נמצאו שרתי DLNA. יש להזין ידנית את כתובת תיאור ההתקן.';
@@ -3880,9 +3885,6 @@ class _Translations$sourceSetup$he extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'מהירות מדידה';
 	@override String get nfsReadRequests => 'קרא בקשות';
 	@override String get sharedEntryConflict => 'זיהוי פריט משותף זה כבר מחולק עם פריט אחר בספריה זו.';
-	@override String get bookorbitHelp => 'יש להתחבר לחשבון BookOrbit האישי שלך כדי לעיין בספרים ולנגן אותם. בקשות לכותרות חסרות עדיין עוברות דרך מופע SeerrNG המחובר שלך.';
-	@override String get bookorbitOpen => 'פתיחה ב-BookOrbit';
-	@override String get bookorbitDetailHelp => 'אפשר לצפות בכותר הזה ב-BookOrbit כדי לנהל את פרטי הספרייה ואת הפורמטים ש-Pleazyng לא יכול לפתוח. התקדמות ההאזנה מסתנכרנת עם חשבון BookOrbit שלך.';
 }
 
 // Path: comics
@@ -4328,6 +4330,9 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	@override String get outputPreset => 'אקולייזר לפלט הזה';
 	@override String get outputPresetHint => 'החלה אוטומטית של האקולייזר הזה כשבוחרים בפלט הזה.';
 	@override String get eqApproximation => 'פרופילי האוזניות מותאמים בקירוב לאקולייזר בעל עשרה תחומים.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6119,6 +6124,7 @@ extension on TranslationsHe {
 			'settings.prerollSelectionDescription' => 'בחר איזה קליפים מהספרייה הנבחרת ניתן לשחק לפני הסרטים.',
 			'settings.contentScreensaverDelayOptionDescription' => 'לחכות הרבה דקות ללא כניסה לפני הצגת מסך אחסון אמנות.',
 			'settings.videoCodecOptionDescription' => 'תאפשר שידור ישיר עבור קודק זה כאשר תומך. codecs Unchecked are transcoded by the media server.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'גודל בופר: ${size} MiB',
 			'themeEditor.builtIn' => 'בנוי',
 			'themeEditor.presets' => 'נציגים',
 			'themeEditor.custom' => 'מותאם אישית',
@@ -6470,9 +6476,9 @@ extension on TranslationsHe {
 			'videoControls.chaptersAndBookmarks' => 'פרקים וספריות',
 			'videoControls.segmentLoop' => 'סגמנט לואי',
 			'videoControls.addBookmark' => 'להוסיף bookmark',
-			'videoControls.bookmarkName' => 'Bookmark שם',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark שם',
 			'videoControls.bookmarkNameHint' => 'לדוגמה, פתיחת סצנה',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'סימנייה ${n}',
 			'videoControls.bookmarkNameRequired' => 'הקלד שם עבור ספר זה.',
@@ -6984,9 +6990,9 @@ extension on TranslationsHe {
 			'libraries.hideLibrary' => 'להסתיר את הספרייה',
 			'libraries.libraryOptions' => 'אפשרויות ספרייה',
 			'libraries.content' => 'ספרייה תוכן',
-			'libraries.selectLibrary' => 'בחר ספרייה',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'בחר ספרייה',
 			'libraries.filtersWithCount' => ({required Object count}) => 'מסננים (${count})',
 			'libraries.noRecommendations' => 'אין המלצות זמינות',
 			'libraries.noCollections' => 'אין אוסף בספריה זו',
@@ -7498,9 +7504,9 @@ extension on TranslationsHe {
 			'watchTogether.paste' => 'פסטה',
 			'watchTogether.noCodeInClipboard' => 'הקליפ לא מכיל קוד חדר',
 			'watchTogether.copyCode' => 'עותק קוד',
-			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'קוד חדר עותק',
 			'watchTogether.shareInvite' => 'שיתוף הזמנה',
 			'watchTogether.inviteCopied' => 'תנו לו להוסיף את ההודעה, תנו לו להוסיף הודעה.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'הצטרף לחדר השעון שלי ב- Pleazyng: פתח את השעון יחד, בחר לחדר השעון הצטרף והכנס ל- ${code}.',
@@ -7964,6 +7970,7 @@ extension on TranslationsHe {
 			'performanceOverlay.decoderHardware' => 'חומרה',
 			'performanceOverlay.tunnelingActive' => 'פעיל',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} נכשל)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'הגבלת Cache: ${size} MiB',
 			'externalPlayer.title' => 'שחקן חיצוני',
 			'externalPlayer.useExternalPlayer' => 'שימוש ב-Player חיצוני',
 			'externalPlayer.useExternalPlayerDescription' => 'פתח וידאו באפליקציה אחרת',
@@ -8011,10 +8018,10 @@ extension on TranslationsHe {
 			'metadataEdit.fromUrl' => 'מתוך URL',
 			'metadataEdit.uploadFile' => 'להעלות קובץ',
 			'metadataEdit.enterImageUrl' => 'כניסת תמונה URL',
-			'metadataEdit.imageUrl' => 'תמונה URL',
-			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'תמונה URL',
+			'metadataEdit.metadataUpdated' => 'נתונים מתעדכנים',
 			'metadataEdit.metadataUpdateFailed' => 'לא הצלחתי לעדכן את הנתונים',
 			'metadataEdit.artworkUpdated' => 'ארכיון עדכונים',
 			'metadataEdit.artworkUpdateFailed' => 'לא הצלחתי לעדכן את האמנות',
@@ -8106,13 +8113,24 @@ extension on TranslationsHe {
 			'seerr.request' => 'בקשה',
 			'seerr.request4k' => 'בקשה 4K',
 			'seerr.requestSeasons' => 'בקשת העונות החסרות',
+			'seerr.requestHint' => 'בחירת אפשרויות הבקשה ב-Seerr',
+			'seerr.quickRequestHint' => 'שליחת בקשה עכשיו ב-Seerr עם הגדרות ברירת המחדל',
+			'seerr.chooseSeasonsHint' => 'בחירת העונות לבקשה ב-Seerr',
+			'seerr.request4kHint' => 'בחירת בקשת 4K ב-Seerr',
+			'seerr.only4kAvailable' => 'בחשבון הזה אפשר לבקש רק את גרסת ה-4K.',
+			'seerr.cardActionHint' => 'פתיחת תפריט הכרטיס לאפשרויות בקשה ב-Seerr',
+			'seerr.requestInProgress' => 'הבקשה בתהליך',
 			'seerr.notifyMe' => 'עדכנו אותי כשהתוכן יהיה זמין',
 			'seerr.notifyMe4k' => 'עדכנו אותי כשהתוכן יהיה זמין ב־4K',
 			'seerr.notificationsOn' => 'התראת זמינות מופעלת',
+			'seerr.turnOffAlert' => 'כיבוי התראת הזמינות',
 			'seerr.notificationsEnabled' => 'נעדכן אותך כשהתוכן יהיה זמין',
+			'seerr.notificationsEnabled4k' => 'נעדכן אותך כשהגרסה ב-4K תהיה זמינה',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'נעדכן אותך כשהעונה ${season} תהיה זמינה',
 			'seerr.notificationsDisabled' => 'התראת הזמינות כובתה',
 			'seerr.notificationFailed' => 'עדכון התראת הזמינות נכשל',
 			'seerr.seasons' => 'עונות',
+			'seerr.requestSheetHint' => 'Seerr מטפלת באישור הבקשה שלך ובמעקב אחריה.',
 			'seerr.allSeasons' => 'כל העונות',
 			'seerr.advancedOptions' => 'מתקדם',
 			'seerr.destinationServer' => 'שרת היעד',
@@ -8147,17 +8165,6 @@ extension on TranslationsHe {
 			'seerr.sessionRejectedAfterReauth' => 'ההרשמה נדחתה לאחר חתימה נוספת.',
 			'seerr.permissionDenied' => 'Seerr הכחישה את הפעולה הזאת: החשבון שלך כבר אין את הרשאה הנדרשת',
 			'seerr.permissionRevoked' => 'אין לך יותר רשות לבקש זאת.',
-			'seerr.requestHint' => 'בחירת אפשרויות הבקשה ב-Seerr',
-			'seerr.quickRequestHint' => 'שליחת בקשה עכשיו ב-Seerr עם הגדרות ברירת המחדל',
-			'seerr.chooseSeasonsHint' => 'בחירת העונות לבקשה ב-Seerr',
-			'seerr.request4kHint' => 'בחירת בקשת 4K ב-Seerr',
-			'seerr.only4kAvailable' => 'בחשבון הזה אפשר לבקש רק את גרסת ה-4K.',
-			'seerr.cardActionHint' => 'פתיחת תפריט הכרטיס לאפשרויות בקשה ב-Seerr',
-			'seerr.requestInProgress' => 'הבקשה בתהליך',
-			'seerr.turnOffAlert' => 'כיבוי התראת הזמינות',
-			'seerr.notificationsEnabled4k' => 'נעדכן אותך כשהגרסה ב-4K תהיה זמינה',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'נעדכן אותך כשהעונה ${season} תהיה זמינה',
-			'seerr.requestSheetHint' => 'Seerr מטפלת באישור הבקשה שלך ובמעקב אחריה.',
 			'services.title' => 'שירותים',
 			'services.hubSubtitle' => 'סינכרון עוקב אחר ההתקדמות ולבקש כותרות חדשות.',
 			'services.integrations' => 'אינטגרציה',
@@ -8525,10 +8532,10 @@ extension on TranslationsHe {
 			'universalMedia.favorites' => 'זרם אחסון האהובים',
 			'universalMedia.address' => 'כתובת התקשורת',
 			'universalMedia.addressHelp' => 'כתובות URL עם פרמטרים של זיהוי או חתימה מוכרים משמשים רק עבור הפגישה הזו ולא ניתן לשמור אותם כפופולריים.',
-			'universalMedia.displayName' => 'שם התצוגה (אופציונלי)',
-			'universalMedia.displayNameHelp' => 'בחר שם קצר עבור השחקן ואת בקרת מדיה המערכת.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'שם התצוגה (אופציונלי)',
+			'universalMedia.displayNameHelp' => 'בחר שם קצר עבור השחקן ואת בקרת מדיה המערכת.',
 			'universalMedia.allowHttp' => 'מאפשר חיבור HTTP לא מוצפן',
 			'universalMedia.allowHttpHelp' => 'HTTP אינו מצפנת את החיבור.אפשר רק ברשת מאובטחת.שימוש ב-HTTPS כאשר אפשרי.',
 			'universalMedia.advancedProtocols' => 'MPV בלבד: הקלד כתובת RTSP, RTMP/RTMPS, UDP או RTP.',
@@ -9001,6 +9008,9 @@ extension on TranslationsHe {
 			'audiobook.recoveryImportConfirm' => 'שילוב זה קובץ ההחזרה מוצפן עם עמדות הקריאה הנוכחיות והערות? ההיסטוריה הקיימת תישמר. ספרייה משותפת ו- פריטים מזהים אינם נכללים; הגדרת מזהים מתאימים על כל מכשיר לפני ייבוא.',
 			'audiobook.recoveryExported' => 'קובץ ההחזרה מוצפן נשמר.',
 			'audiobook.recoveryImported' => 'נתוני ההחזרה מתמזגים.',
+			'sourceSetup.bookorbitHelp' => 'יש להתחבר לחשבון BookOrbit האישי שלך כדי לעיין בספרים ולנגן אותם. בקשות לכותרות חסרות עדיין עוברות דרך מופע SeerrNG המחובר שלך.',
+			'sourceSetup.bookorbitOpen' => 'פתיחה ב-BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'אפשר לצפות בכותר הזה ב-BookOrbit כדי לנהל את פרטי הספרייה ואת הפורמטים ש-Pleazyng לא יכול לפתוח. התקדמות ההאזנה מסתנכרנת עם חשבון BookOrbit שלך.',
 			'sourceSetup.savedCertificate' => 'אישור השרת השמור',
 			'sourceSetup.nfsEndpointInvalid' => 'יש להזין כתובת NFS, למשל nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'לא נמצאו שרתי DLNA. יש להזין ידנית את כתובת תיאור ההתקן.',
@@ -9036,13 +9046,13 @@ extension on TranslationsHe {
 			'sourceSetup.clientCertificate' => 'אישור לקוח (רשות)',
 			'sourceSetup.clientCertificateHelp' => 'מאפשר ל־NAS לאמת את הלקוח הזה; מזהי AUTH_SYS עדיין כפופים למדיניות הייצוא של ה־NAS.',
 			'sourceSetup.savedIdentity' => 'ייעשה שימוש בפרטי הזיהוי השמורים של הלקוח.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'החלפת פרטי הזיהוי השמורים של הלקוח',
 			'sourceSetup.chooseIdentity' => 'בחירת פרטי זיהוי לקוח בפורמט PKCS#12',
 			'sourceSetup.identityPassphrase' => 'סיסמה להגנת פרטי הזיהוי של הלקוח',
 			'sourceSetup.identityPassphraseHelp' => 'יש להשאיר ריק אם לקובץ אין סיסמה.',
 			'sourceSetup.removeIdentity' => 'הסרת פרטי זיהוי לקוח שמורים',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'פרטי הזיהוי של הלקוחות נשמרים במאגר המוצפן של פרטי הגישה למקורות. כדי לשמור על פרטי הזיהוי הקיימים, יש להשאיר את הסעיף הזה ללא שינוי.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 לקריאה בלבד דרך TCP. ללא RPC-with-TLS, תעבורת NFS אינה מוצפנת. ה־NAS חייב לאפשר את מזהי AUTH_SYS שנבחרו ואת יציאות הלקוח שאינן דורשות הרשאות מיוחדות (אפשרות ייצוא שנקראת בדרך כלל “insecure”). אין תמיכה ב־NFSv4 וב־UDP.',
 			'sourceSetup.nfsSetupHelp' => 'עזרה בהגדרת NFS',
@@ -9114,9 +9124,6 @@ extension on TranslationsHe {
 			'sourceSetup.nfsReadSpeed' => 'מהירות מדידה',
 			'sourceSetup.nfsReadRequests' => 'קרא בקשות',
 			'sourceSetup.sharedEntryConflict' => 'זיהוי פריט משותף זה כבר מחולק עם פריט אחר בספריה זו.',
-			'sourceSetup.bookorbitHelp' => 'יש להתחבר לחשבון BookOrbit האישי שלך כדי לעיין בספרים ולנגן אותם. בקשות לכותרות חסרות עדיין עוברות דרך מופע SeerrNG המחובר שלך.',
-			'sourceSetup.bookorbitOpen' => 'פתיחה ב-BookOrbit',
-			'sourceSetup.bookorbitDetailHelp' => 'אפשר לצפות בכותר הזה ב-BookOrbit כדי לנהל את פרטי הספרייה ואת הפורמטים ש-Pleazyng לא יכול לפתוח. התקדמות ההאזנה מסתנכרנת עם חשבון BookOrbit שלך.',
 			'comics.fitHeight' => 'התאמה לגובה',
 			'comics.readingMode' => 'מצב קריאה',
 			'comics.paged' => 'עמודים',
@@ -9481,6 +9488,9 @@ extension on TranslationsHe {
 			'musicTools.outputPreset' => 'אקולייזר לפלט הזה',
 			'musicTools.outputPresetHint' => 'החלה אוטומטית של האקולייזר הזה כשבוחרים בפלט הזה.',
 			'musicTools.eqApproximation' => 'פרופילי האוזניות מותאמים בקירוב לאקולייזר בעל עשרה תחומים.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

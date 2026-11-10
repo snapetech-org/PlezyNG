@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Баукерлік: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Кірістірілген",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Аппараттық",
     "tunnelingActive": "Белсенді",
     "dvRpuFailed": "${converted} (${failures} сәтсіз аяқталды)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Кэш шегі: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Сыртқы ойнатқыш",
@@ -3283,13 +3285,24 @@
     "request": "Сұрау салу",
     "request4k": "4K сұрау салу",
     "requestSeasons": "Жетіспейтін маусымдарға сұрау жіберу",
+    "requestHint": "Seerr ішінен сұрау параметрлерін таңдаңыз",
+    "quickRequestHint": "Seerr ішінде әдепкі параметрлермен қазір сұрау салыңыз",
+    "chooseSeasonsHint": "Seerr ішінде сұралатын маусымдарды таңдаңыз",
+    "request4kHint": "Seerr ішінде 4K сұрауын таңдаңыз",
+    "only4kAvailable": "Бұл тіркелгі арқылы тек 4K нұсқасын сұрауға болады.",
+    "cardActionHint": "Seerr сұрау параметрлері үшін карта мәзірін ашыңыз",
+    "requestInProgress": "Сұрау орындалып жатыр",
     "notifyMe": "Қолжетімді болғанда маған хабарлаңыз",
     "notifyMe4k": "4K форматында қолжетімді болғанда маған хабарлаңыз",
     "notificationsOn": "Қолжетімділік туралы ескерту қосулы",
+    "turnOffAlert": "Қолжетімділік ескертуін өшіру",
     "notificationsEnabled": "Қолжетімді болғанда сізге хабарлаймыз",
+    "notificationsEnabled4k": "4K нұсқасы қолжетімді болғанда сізге хабарлаймыз",
+    "notificationsEnabledSeason": "${season}-маусымы қолжетімді болғанда сізге хабарлаймыз",
     "notificationsDisabled": "Қолжетімділік туралы ескерту өшірілді",
     "notificationFailed": "Қолжетімділік туралы ескертуді жаңарту мүмкін болмады",
     "seasons": "Маусымдар",
+    "requestSheetHint": "Мақұлдауды Seerr өңдейді және сұрауыңызды бақылайды.",
     "allSeasons": "Барлық маусымдар",
     "advancedOptions": "Кеңейтілген",
     "destinationServer": "Нысаналы сервер",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr пайдаланушы туралы мәліметтерді қайтармады",
     "sessionRejectedAfterReauth": "Қайта кіргеннен кейін сеанс қабылданбады",
     "permissionDenied": "Seerr бұл әрекетті қабылдамады: тіркелгіңізде енді қажетті рұқсат жоқ",
-    "permissionRevoked": "Мұны сұрауға енді рұқсатыңыз жоқ",
-    "requestHint": "Seerr ішінен сұрау параметрлерін таңдаңыз",
-    "quickRequestHint": "Seerr ішінде әдепкі параметрлермен қазір сұрау салыңыз",
-    "chooseSeasonsHint": "Seerr ішінде сұралатын маусымдарды таңдаңыз",
-    "request4kHint": "Seerr ішінде 4K сұрауын таңдаңыз",
-    "only4kAvailable": "Бұл тіркелгі арқылы тек 4K нұсқасын сұрауға болады.",
-    "cardActionHint": "Seerr сұрау параметрлері үшін карта мәзірін ашыңыз",
-    "requestInProgress": "Сұрау орындалып жатыр",
-    "turnOffAlert": "Қолжетімділік ескертуін өшіру",
-    "notificationsEnabled4k": "4K нұсқасы қолжетімді болғанда сізге хабарлаймыз",
-    "notificationsEnabledSeason": "${season}-маусымы қолжетімді болғанда сізге хабарлаймыз",
-    "requestSheetHint": "Мақұлдауды Seerr өңдейді және сұрауыңызды бақылайды."
+    "permissionRevoked": "Мұны сұрауға енді рұқсатыңыз жоқ"
   },
   "services": {
     "title": "Қызметтер",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "Ауыздан дағдарыста."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Кітаптарды қарау және ойнату үшін өз BookOrbit тіркелгіңізге кіріңіз. Жоқ тақырыптарға арналған сұраулар әлі де қосылған SeerrNG данасы арқылы жіберіледі.",
+    "bookorbitOpen": "BookOrbit ішінде ашу",
+    "bookorbitDetailHelp": "Кітапхана мәліметтерін және Pleazyng аша алмайтын пішімдерді басқару үшін бұл тақырыпты BookOrbit ішінде қараңыз. Тыңдау барысы BookOrbit тіркелгісімен синхрондалады.",
     "savedCertificate": "Сақталған сервер сертификаты",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export сияқты NFS URL мекенжайын енгізіңіз.",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "Өнімдер мен материалдар",
     "nfsReadSpeed": "Өнімдер",
     "nfsReadRequests": "Жақсы туралы",
-    "sharedEntryConflict": "Біздің өнімдер мен электрондық пошталар мен электрондылық пошталары бар, бізге сіздің электронды және электронды қамтамасыз етеді.",
-    "bookorbitHelp": "Кітаптарды қарау және ойнату үшін өз BookOrbit тіркелгіңізге кіріңіз. Жоқ тақырыптарға арналған сұраулар әлі де қосылған SeerrNG данасы арқылы жіберіледі.",
-    "bookorbitOpen": "BookOrbit ішінде ашу",
-    "bookorbitDetailHelp": "Кітапхана мәліметтерін және Pleazyng аша алмайтын пішімдерді басқару үшін бұл тақырыпты BookOrbit ішінде қараңыз. Тыңдау барысы BookOrbit тіркелгісімен синхрондалады."
+    "sharedEntryConflict": "Біздің өнімдер мен электрондық пошталар мен электрондылық пошталары бар, бізге сіздің электронды және электронды қамтамасыз етеді."
   },
   "comics": {
     "fitHeight": "Биіктікке сәйкестендіру",
@@ -5544,6 +5546,9 @@
     "anniversaries": "Альбом мерейтойлары",
     "outputPreset": "Осы шығысқа арналған эквалайзер",
     "outputPresetHint": "Осы шығыс таңдалғанда осы эквалайзерді автоматты түрде қолдану.",
-    "eqApproximation": "Құлаққап профильдері он жолақты эквалайзерге жуықтап бейімделген."
+    "eqApproximation": "Құлаққап профильдері он жолақты эквалайзерге жуықтап бейімделген.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

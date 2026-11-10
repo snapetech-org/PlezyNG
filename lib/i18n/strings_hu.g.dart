@@ -809,6 +809,7 @@ class _Translations$settings$hu extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Válassza ki, hogy mely klipek a kiválasztott könyvtár játszhat előtt filmek.';
 	@override String get contentScreensaverDelayOptionDescription => 'Várjon sok percet bejutás nélkül, mielőtt a screensaver műalkotást mutatja.';
 	@override String get videoCodecOptionDescription => 'Engedje meg a közvetlen lejátszást erre a kódolóra, amikor támogatásra kerül. A nem ellenőrzött kódokat a média szerver átruházza.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer méret: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2547,6 +2548,7 @@ class _Translations$performanceOverlay$hu extends Translations$performanceOverla
 	@override String get decoderHardware => 'Hardveres';
 	@override String get tunnelingActive => 'Aktív';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} sikertelen)';
+	@override String cacheLimitMiB({required Object size}) => 'Gyorsítótár korlátja: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2741,13 +2743,24 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	@override String get request => 'Igénylés';
 	@override String get request4k => 'Igénylés 4K-ban';
 	@override String get requestSeasons => 'Hiányzó évadok igénylése';
+	@override String get requestHint => 'Válassz igénylési lehetőségeket a Seerrben';
+	@override String get quickRequestHint => 'Igénylés most az alapértelmezett beállításokkal a Seerrben';
+	@override String get chooseSeasonsHint => 'Válaszd ki a Seerrben igényelni kívánt évadokat';
+	@override String get request4kHint => 'Válassz 4K-igénylést a Seerrben';
+	@override String get only4kAvailable => 'Ezzel a fiókkal csak a 4K-s verzió igényelhető.';
+	@override String get cardActionHint => 'Nyisd meg a kártya menüjét az igénylési lehetőségekhez';
+	@override String get requestInProgress => 'Az igénylés folyamatban van';
 	@override String get notifyMe => 'Értesíts, amikor elérhető';
 	@override String get notifyMe4k => 'Értesíts, amikor 4K-ban elérhető';
 	@override String get notificationsOn => 'Elérhetőségi értesítés bekapcsolva';
+	@override String get turnOffAlert => 'Elérhetőségi értesítés kikapcsolása';
 	@override String get notificationsEnabled => 'Értesítünk, amint elérhető';
+	@override String get notificationsEnabled4k => 'Értesítünk, amikor elérhető a 4K-s verzió';
+	@override String notificationsEnabledSeason({required Object season}) => 'Értesítünk, amikor elérhető a(z) ${season}. évad';
 	@override String get notificationsDisabled => 'Elérhetőségi értesítés kikapcsolva';
 	@override String get notificationFailed => 'Nem sikerült frissíteni az elérhetőségi értesítést';
 	@override String get seasons => 'Évadok';
+	@override String get requestSheetHint => 'A Seerr kezeli a jóváhagyást és követi az igénylésedet.';
 	@override String get allSeasons => 'Minden évad';
 	@override String get advancedOptions => 'Haladó';
 	@override String get destinationServer => 'Célszerver';
@@ -2782,17 +2795,6 @@ class _Translations$seerr$hu extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'A munkamenetet az újbóli bejelentkezés után elutasították';
 	@override String get permissionDenied => 'A Seerr elutasította ezt a műveletet: a fiókod már nem rendelkezik a szükséges jogosultsággal';
 	@override String get permissionRevoked => 'Már nincs jogosultságod ennek az igényléséhez';
-	@override String get requestHint => 'Válassz igénylési lehetőségeket a Seerrben';
-	@override String get quickRequestHint => 'Igénylés most az alapértelmezett beállításokkal a Seerrben';
-	@override String get chooseSeasonsHint => 'Válaszd ki a Seerrben igényelni kívánt évadokat';
-	@override String get request4kHint => 'Válassz 4K-igénylést a Seerrben';
-	@override String get only4kAvailable => 'Ezzel a fiókkal csak a 4K-s verzió igényelhető.';
-	@override String get cardActionHint => 'Nyisd meg a kártya menüjét az igénylési lehetőségekhez';
-	@override String get requestInProgress => 'Az igénylés folyamatban van';
-	@override String get turnOffAlert => 'Elérhetőségi értesítés kikapcsolása';
-	@override String get notificationsEnabled4k => 'Értesítünk, amikor elérhető a 4K-s verzió';
-	@override String notificationsEnabledSeason({required Object season}) => 'Értesítünk, amikor elérhető a(z) ${season}. évad';
-	@override String get requestSheetHint => 'A Seerr kezeli a jóváhagyást és követi az igénylésedet.';
 }
 
 // Path: services
@@ -3761,6 +3763,9 @@ class _Translations$sourceSetup$hu extends Translations$sourceSetup$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Jelentkezz be a saját BookOrbit-fiókoddal a könyvek böngészéséhez és lejátszásához. A hiányzó címek igénylései továbbra is a csatlakoztatott SeerrNG-példányodon keresztül történnek.';
+	@override String get bookorbitOpen => 'Megnyitás a BookOrbitban';
+	@override String get bookorbitDetailHelp => 'A könyvtár adatainak és a Pleazyng által meg nem nyitható formátumok kezeléséhez tekintsd meg ezt a címet a BookOrbitban. A hallgatási folyamat szinkronizálódik a BookOrbit-fiókoddal.';
 	@override String get savedCertificate => 'Mentett szervertanúsítvány';
 	@override String get nfsEndpointInvalid => 'Adj meg egy NFS URL-t, például: nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Nem található DLNA-kiszolgáló. Add meg kézzel az eszközleírás URL-jét.';
@@ -3872,9 +3877,6 @@ class _Translations$sourceSetup$hu extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Mérhető sebesség';
 	@override String get nfsReadRequests => 'Olvassa el a kéréseket';
 	@override String get sharedEntryConflict => 'Ez a megosztott elem azonosító már párosított egy másik elem ebben a könyvtárban.';
-	@override String get bookorbitHelp => 'Jelentkezz be a saját BookOrbit-fiókoddal a könyvek böngészéséhez és lejátszásához. A hiányzó címek igénylései továbbra is a csatlakoztatott SeerrNG-példányodon keresztül történnek.';
-	@override String get bookorbitOpen => 'Megnyitás a BookOrbitban';
-	@override String get bookorbitDetailHelp => 'A könyvtár adatainak és a Pleazyng által meg nem nyitható formátumok kezeléséhez tekintsd meg ezt a címet a BookOrbitban. A hallgatási folyamat szinkronizálódik a BookOrbit-fiókoddal.';
 }
 
 // Path: comics
@@ -4320,6 +4322,9 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	@override String get outputPreset => 'EQ ehhez a kimenethez';
 	@override String get outputPresetHint => 'A kimenet kiválasztásakor automatikusan ezt az EQ-t használja.';
 	@override String get eqApproximation => 'A fejhallgatóprofilok a tízsávos EQ-hoz igazított közelítések.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6111,6 +6116,7 @@ extension on TranslationsHu {
 			'settings.prerollSelectionDescription' => 'Válassza ki, hogy mely klipek a kiválasztott könyvtár játszhat előtt filmek.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Várjon sok percet bejutás nélkül, mielőtt a screensaver műalkotást mutatja.',
 			'settings.videoCodecOptionDescription' => 'Engedje meg a közvetlen lejátszást erre a kódolóra, amikor támogatásra kerül. A nem ellenőrzött kódokat a média szerver átruházza.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer méret: ${size} MiB',
 			'themeEditor.builtIn' => 'Beépített',
 			'themeEditor.presets' => 'Előre beállított',
 			'themeEditor.custom' => 'Egyéni',
@@ -6462,9 +6468,9 @@ extension on TranslationsHu {
 			'videoControls.chaptersAndBookmarks' => 'fejezetek és könyvjelzők',
 			'videoControls.segmentLoop' => 'Segmentális lejátszás',
 			'videoControls.addBookmark' => 'Hozzáadása Bookmark',
-			'videoControls.bookmarkName' => 'Bookmark név',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark név',
 			'videoControls.bookmarkNameHint' => 'Például a színpad megnyitása',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'könyvjelző ${n}',
 			'videoControls.bookmarkNameRequired' => 'Írjon be egy nevet erre a könyvjelzőre.',
@@ -6976,9 +6982,9 @@ extension on TranslationsHu {
 			'libraries.hideLibrary' => 'Könyvtár elrejtése',
 			'libraries.libraryOptions' => 'Könyvtár beállításai',
 			'libraries.content' => 'könyvtár tartalma',
-			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Könyvtár kiválasztása',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Szűrők (${count})',
 			'libraries.noRecommendations' => 'Nincsenek elérhető ajánlások',
 			'libraries.noCollections' => 'Nincsenek gyűjtemények ebben a könyvtárban',
@@ -7490,9 +7496,9 @@ extension on TranslationsHu {
 			'watchTogether.paste' => 'Beillesztés',
 			'watchTogether.noCodeInClipboard' => 'A vágólapon nincs szobakód',
 			'watchTogether.copyCode' => 'Kód másolása',
-			'watchTogether.codeCopied' => 'Szobakód másolva',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Szobakód másolva',
 			'watchTogether.shareInvite' => 'Meghívó megosztása',
 			'watchTogether.inviteCopied' => 'Meghívó másolva. Illeszd be egy üzenetbe.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Csatlakozz a Watch Together-szobámhoz a Plezyben: nyisd meg a Watch Together (Közös nézés) menüt, válaszd a Csatlakozás szobához lehetőséget, és írd be ezt a kódot: ${code}.',
@@ -7956,6 +7962,7 @@ extension on TranslationsHu {
 			'performanceOverlay.decoderHardware' => 'Hardveres',
 			'performanceOverlay.tunnelingActive' => 'Aktív',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} sikertelen)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Gyorsítótár korlátja: ${size} MiB',
 			'externalPlayer.title' => 'Külső lejátszó',
 			'externalPlayer.useExternalPlayer' => 'Külső lejátszó használata',
 			'externalPlayer.useExternalPlayerDescription' => 'Videók megnyitása egy másik alkalmazásban',
@@ -8003,10 +8010,10 @@ extension on TranslationsHu {
 			'metadataEdit.fromUrl' => 'URL-ről',
 			'metadataEdit.uploadFile' => 'Fájl feltöltése',
 			'metadataEdit.enterImageUrl' => 'Add meg a kép URL-címét',
-			'metadataEdit.imageUrl' => 'Kép URL-címe',
-			'metadataEdit.metadataUpdated' => 'Metaadatok frissítve',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Kép URL-címe',
+			'metadataEdit.metadataUpdated' => 'Metaadatok frissítve',
 			'metadataEdit.metadataUpdateFailed' => 'Nem sikerült a metaadatok frissítése',
 			'metadataEdit.artworkUpdated' => 'Képek frissítve',
 			'metadataEdit.artworkUpdateFailed' => 'Nem sikerült a képek frissítése',
@@ -8098,13 +8105,24 @@ extension on TranslationsHu {
 			'seerr.request' => 'Igénylés',
 			'seerr.request4k' => 'Igénylés 4K-ban',
 			'seerr.requestSeasons' => 'Hiányzó évadok igénylése',
+			'seerr.requestHint' => 'Válassz igénylési lehetőségeket a Seerrben',
+			'seerr.quickRequestHint' => 'Igénylés most az alapértelmezett beállításokkal a Seerrben',
+			'seerr.chooseSeasonsHint' => 'Válaszd ki a Seerrben igényelni kívánt évadokat',
+			'seerr.request4kHint' => 'Válassz 4K-igénylést a Seerrben',
+			'seerr.only4kAvailable' => 'Ezzel a fiókkal csak a 4K-s verzió igényelhető.',
+			'seerr.cardActionHint' => 'Nyisd meg a kártya menüjét az igénylési lehetőségekhez',
+			'seerr.requestInProgress' => 'Az igénylés folyamatban van',
 			'seerr.notifyMe' => 'Értesíts, amikor elérhető',
 			'seerr.notifyMe4k' => 'Értesíts, amikor 4K-ban elérhető',
 			'seerr.notificationsOn' => 'Elérhetőségi értesítés bekapcsolva',
+			'seerr.turnOffAlert' => 'Elérhetőségi értesítés kikapcsolása',
 			'seerr.notificationsEnabled' => 'Értesítünk, amint elérhető',
+			'seerr.notificationsEnabled4k' => 'Értesítünk, amikor elérhető a 4K-s verzió',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Értesítünk, amikor elérhető a(z) ${season}. évad',
 			'seerr.notificationsDisabled' => 'Elérhetőségi értesítés kikapcsolva',
 			'seerr.notificationFailed' => 'Nem sikerült frissíteni az elérhetőségi értesítést',
 			'seerr.seasons' => 'Évadok',
+			'seerr.requestSheetHint' => 'A Seerr kezeli a jóváhagyást és követi az igénylésedet.',
 			'seerr.allSeasons' => 'Minden évad',
 			'seerr.advancedOptions' => 'Haladó',
 			'seerr.destinationServer' => 'Célszerver',
@@ -8139,17 +8157,6 @@ extension on TranslationsHu {
 			'seerr.sessionRejectedAfterReauth' => 'A munkamenetet az újbóli bejelentkezés után elutasították',
 			'seerr.permissionDenied' => 'A Seerr elutasította ezt a műveletet: a fiókod már nem rendelkezik a szükséges jogosultsággal',
 			'seerr.permissionRevoked' => 'Már nincs jogosultságod ennek az igényléséhez',
-			'seerr.requestHint' => 'Válassz igénylési lehetőségeket a Seerrben',
-			'seerr.quickRequestHint' => 'Igénylés most az alapértelmezett beállításokkal a Seerrben',
-			'seerr.chooseSeasonsHint' => 'Válaszd ki a Seerrben igényelni kívánt évadokat',
-			'seerr.request4kHint' => 'Válassz 4K-igénylést a Seerrben',
-			'seerr.only4kAvailable' => 'Ezzel a fiókkal csak a 4K-s verzió igényelhető.',
-			'seerr.cardActionHint' => 'Nyisd meg a kártya menüjét az igénylési lehetőségekhez',
-			'seerr.requestInProgress' => 'Az igénylés folyamatban van',
-			'seerr.turnOffAlert' => 'Elérhetőségi értesítés kikapcsolása',
-			'seerr.notificationsEnabled4k' => 'Értesítünk, amikor elérhető a 4K-s verzió',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Értesítünk, amikor elérhető a(z) ${season}. évad',
-			'seerr.requestSheetHint' => 'A Seerr kezeli a jóváhagyást és követi az igénylésedet.',
 			'services.title' => 'Szolgáltatások',
 			'services.hubSubtitle' => 'Megtekintési haladás szinkronizálása és új tartalmak igénylése.',
 			'services.integrations' => 'Integrációk',
@@ -8517,10 +8524,10 @@ extension on TranslationsHu {
 			'universalMedia.favorites' => 'Megtakarított stream kedvencek',
 			'universalMedia.address' => 'média cím',
 			'universalMedia.addressHelp' => 'Az elismert hitelesítési vagy aláírási paraméterekkel rendelkező URL-k csak ebben az ülésen használhatók, és nem menthetők kedvencként.',
-			'universalMedia.displayName' => 'A kijelző neve (opcionális)',
-			'universalMedia.displayNameHelp' => 'Válasszon egy rövid nevét a játékos és a rendszer média vezérlők.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'A kijelző neve (opcionális)',
+			'universalMedia.displayNameHelp' => 'Válasszon egy rövid nevét a játékos és a rendszer média vezérlők.',
 			'universalMedia.allowHttp' => 'A titkosítás nélküli HTTP-kapcsolat engedélyezése',
 			'universalMedia.allowHttpHelp' => 'A HTTP nem titkosítja a kapcsolatot. csak megbízható hálózaton engedélyezheti. ha lehetséges, használja a HTTPS-t.',
 			'universalMedia.advancedProtocols' => 'Csak MPV: adjon meg egy RTSP, RTMP/RTMPS, UDP vagy RTP címet.',
@@ -8993,6 +9000,9 @@ extension on TranslationsHu {
 			'audiobook.recoveryImportConfirm' => 'Ez a titkosított helyreállítási fájl összekapcsolja az aktuális olvasási pozíciókkal és jegyzetekkel? A meglévő történelem megmarad. Megosztott könyvtár és elem azonosítók nem szerepelnek; beállítja az egyes eszközök megfelelő azonosítóját az import előtt.',
 			'audiobook.recoveryExported' => 'A titkosított helyreállítási fájl mentett.',
 			'audiobook.recoveryImported' => 'A helyreállítási adatok összegyűltek.',
+			'sourceSetup.bookorbitHelp' => 'Jelentkezz be a saját BookOrbit-fiókoddal a könyvek böngészéséhez és lejátszásához. A hiányzó címek igénylései továbbra is a csatlakoztatott SeerrNG-példányodon keresztül történnek.',
+			'sourceSetup.bookorbitOpen' => 'Megnyitás a BookOrbitban',
+			'sourceSetup.bookorbitDetailHelp' => 'A könyvtár adatainak és a Pleazyng által meg nem nyitható formátumok kezeléséhez tekintsd meg ezt a címet a BookOrbitban. A hallgatási folyamat szinkronizálódik a BookOrbit-fiókoddal.',
 			'sourceSetup.savedCertificate' => 'Mentett szervertanúsítvány',
 			'sourceSetup.nfsEndpointInvalid' => 'Adj meg egy NFS URL-t, például: nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Nem található DLNA-kiszolgáló. Add meg kézzel az eszközleírás URL-jét.',
@@ -9028,13 +9038,13 @@ extension on TranslationsHu {
 			'sourceSetup.clientCertificate' => 'Kliens tanúsítványa (nem kötelező)',
 			'sourceSetup.clientCertificateHelp' => 'Lehetővé teszi, hogy a NAS hitelesítse ezt a klienst; az AUTH_SYS-azonosítók továbbra is a NAS NFS-megosztásának szabályaitól függenek.',
 			'sourceSetup.savedIdentity' => 'A mentett kliensazonosság lesz használva.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Mentett kliensazonosság cseréje',
 			'sourceSetup.chooseIdentity' => 'PKCS#12-kliensazonosság kiválasztása',
 			'sourceSetup.identityPassphrase' => 'A kliensazonosság jelmondata',
 			'sourceSetup.identityPassphraseHelp' => 'Hagyd üresen, ha a fájlnak nincs jelmondata.',
 			'sourceSetup.removeIdentity' => 'Mentett kliensazonosság eltávolítása',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'A kliensazonosságok a forrás titkosított hitelesítőadat-tárába kerülnek. A mentett azonosság megőrzéséhez hagyd változatlanul ezt a részt.',
 			'sourceSetup.nfsLimitations' => 'Csak olvasható NFSv3 TCP felett. RPC-with-TLS nélkül az NFS-forgalom titkosítatlan. A NAS-nak engedélyeznie kell a választott AUTH_SYS-azonosítókat és a nem privilegizált kliensportokat (ez gyakran az „insecure” exportbeállítás). Az NFSv4 és az UDP nem támogatott.',
 			'sourceSetup.nfsSetupHelp' => 'NFS-beállítási súgó',
@@ -9106,9 +9116,6 @@ extension on TranslationsHu {
 			'sourceSetup.nfsReadSpeed' => 'Mérhető sebesség',
 			'sourceSetup.nfsReadRequests' => 'Olvassa el a kéréseket',
 			'sourceSetup.sharedEntryConflict' => 'Ez a megosztott elem azonosító már párosított egy másik elem ebben a könyvtárban.',
-			'sourceSetup.bookorbitHelp' => 'Jelentkezz be a saját BookOrbit-fiókoddal a könyvek böngészéséhez és lejátszásához. A hiányzó címek igénylései továbbra is a csatlakoztatott SeerrNG-példányodon keresztül történnek.',
-			'sourceSetup.bookorbitOpen' => 'Megnyitás a BookOrbitban',
-			'sourceSetup.bookorbitDetailHelp' => 'A könyvtár adatainak és a Pleazyng által meg nem nyitható formátumok kezeléséhez tekintsd meg ezt a címet a BookOrbitban. A hallgatási folyamat szinkronizálódik a BookOrbit-fiókoddal.',
 			'comics.fitHeight' => 'Magassághoz igazítás',
 			'comics.readingMode' => 'Olvasási mód',
 			'comics.paged' => 'Oldalak',
@@ -9473,6 +9480,9 @@ extension on TranslationsHu {
 			'musicTools.outputPreset' => 'EQ ehhez a kimenethez',
 			'musicTools.outputPresetHint' => 'A kimenet kiválasztásakor automatikusan ezt az EQ-t használja.',
 			'musicTools.eqApproximation' => 'A fejhallgatóprofilok a tízsávos EQ-hoz igazított közelítések.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

@@ -742,7 +742,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "حجم البوفر: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "بناء في",
@@ -3196,7 +3197,8 @@
     "decoderHardware": "الأجهزة",
     "tunnelingActive": "نشطة",
     "dvRpuFailed": "${converted} (${failures} فاشلة)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "الحد الأدنى للكاش: ${size} MiB"
   },
   "externalPlayer": {
     "title": "اللاعب الخارجي",
@@ -3367,13 +3369,24 @@
     "request": "طلب",
     "request4k": "طلب في 4K",
     "requestSeasons": "اطلب المواسم المفقودة",
+    "requestHint": "اختر خيارات الطلب في Seerr",
+    "quickRequestHint": "اطلب الآن عبر Seerr باستخدام الإعدادات الافتراضية",
+    "chooseSeasonsHint": "اختر المواسم المطلوب طلبها في Seerr",
+    "request4kHint": "اختر طلب نسخة 4K في Seerr",
+    "only4kAvailable": "يمكن لهذا الحساب طلب نسخة 4K فقط.",
+    "cardActionHint": "افتح قائمة البطاقة لعرض خيارات الطلب في Seerr",
+    "requestInProgress": "الطلب قيد التنفيذ",
     "notifyMe": "أخبرني عند التوفر",
     "notifyMe4k": "أخبرني عند توفر 4K",
     "notificationsOn": "تنبيه التوفر مفعّل",
+    "turnOffAlert": "إيقاف تنبيه التوفر",
     "notificationsEnabled": "سنخطرك عند توفره",
+    "notificationsEnabled4k": "سنخطرك عند توفر نسخة 4K",
+    "notificationsEnabledSeason": "سنخطرك عند توفر الموسم ${season}",
     "notificationsDisabled": "تم إيقاف تنبيه التوفر",
     "notificationFailed": "تعذّر تحديث تنبيه التوفر",
     "seasons": "المواسم",
+    "requestSheetHint": "يتولى Seerr الموافقة على طلبك ومتابعته.",
     "allSeasons": "جميع الموسم",
     "advancedOptions": "متقدم",
     "destinationServer": "مستخدم الوجهة",
@@ -3407,18 +3420,7 @@
     "noUserInformation": "لم تعيد شركة Seerr معلومات المستخدم",
     "sessionRejectedAfterReauth": "تم رفض الجلسة بعد التوقيع مرة أخرى",
     "permissionDenied": "رفضت شركة Seerr هذا الإجراء: لم يعد حسابك لديه إذن مطلوب",
-    "permissionRevoked": "لم يعد لديك إذن لطلب هذا",
-    "requestHint": "اختر خيارات الطلب في Seerr",
-    "quickRequestHint": "اطلب الآن عبر Seerr باستخدام الإعدادات الافتراضية",
-    "chooseSeasonsHint": "اختر المواسم المطلوب طلبها في Seerr",
-    "request4kHint": "اختر طلب نسخة 4K في Seerr",
-    "only4kAvailable": "يمكن لهذا الحساب طلب نسخة 4K فقط.",
-    "cardActionHint": "افتح قائمة البطاقة لعرض خيارات الطلب في Seerr",
-    "requestInProgress": "الطلب قيد التنفيذ",
-    "turnOffAlert": "إيقاف تنبيه التوفر",
-    "notificationsEnabled4k": "سنخطرك عند توفر نسخة 4K",
-    "notificationsEnabledSeason": "سنخطرك عند توفر الموسم ${season}",
-    "requestSheetHint": "يتولى Seerr الموافقة على طلبك ومتابعته."
+    "permissionRevoked": "لم يعد لديك إذن لطلب هذا"
   },
   "services": {
     "title": "الخدمات",
@@ -4357,6 +4359,9 @@
     "recoveryImported": "استرداد البيانات مترابطة."
   },
   "sourceSetup": {
+    "bookorbitHelp": "سجّل الدخول باستخدام حساب BookOrbit الخاص بك لتصفح كتبه وتشغيلها. تظل طلبات العناوين غير المتوفرة تمر عبر مثيل SeerrNG المتصل بك.",
+    "bookorbitOpen": "افتح في BookOrbit",
+    "bookorbitDetailHelp": "اعرض هذا العنوان في BookOrbit لإدارة تفاصيله في مكتبتك وأي تنسيقات لا يستطيع Pleazyng فتحها. تتم مزامنة تقدم الاستماع مع حسابك في BookOrbit.",
     "savedCertificate": "شهادة الخادم المحفوظة",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "أدخل عنوان NFS مثل nfs://nas:2049/export.",
@@ -4468,10 +4473,7 @@
     "nfsReadBytes": "بيانات قراءة",
     "nfsReadSpeed": "سرعة قياس",
     "nfsReadRequests": "اقرأ الطلبات",
-    "sharedEntryConflict": "هذا العنصر المشترك الهوية قد تم ربطها بالفعل مع عنصر آخر في هذه المكتبة.",
-    "bookorbitHelp": "سجّل الدخول باستخدام حساب BookOrbit الخاص بك لتصفح كتبه وتشغيلها. تظل طلبات العناوين غير المتوفرة تمر عبر مثيل SeerrNG المتصل بك.",
-    "bookorbitOpen": "افتح في BookOrbit",
-    "bookorbitDetailHelp": "اعرض هذا العنوان في BookOrbit لإدارة تفاصيله في مكتبتك وأي تنسيقات لا يستطيع Pleazyng فتحها. تتم مزامنة تقدم الاستماع مع حسابك في BookOrbit."
+    "sharedEntryConflict": "هذا العنصر المشترك الهوية قد تم ربطها بالفعل مع عنصر آخر في هذه المكتبة."
   },
   "comics": {
     "fitHeight": "ملاءمة الارتفاع",
@@ -5652,6 +5654,9 @@
     "anniversaries": "ذكرى إصدار الألبومات",
     "outputPreset": "معادل الصوت لهذا المخرج",
     "outputPresetHint": "استخدم معادل الصوت هذا تلقائيًا عند اختيار هذا المخرج.",
-    "eqApproximation": "ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات."
+    "eqApproximation": "ملفات سماعات الرأس تقريبية لتناسب معادل الصوت ذي عشرة نطاقات.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

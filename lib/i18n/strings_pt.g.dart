@@ -811,6 +811,7 @@ class Translations$settings$pt extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Escolha quais clipes da biblioteca selecionada podem ser jogados antes dos filmes.';
 	@override String get contentScreensaverDelayOptionDescription => 'Aguarde muitos minutos sem entrada antes de mostrar o trabalho artístico do monitor.';
 	@override String get videoCodecOptionDescription => 'Permitir reprodução direta para este codec quando suportado. codecs não verificados são transcodados pelo servidor de mídia.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Baixão de tamanho: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2550,6 +2551,7 @@ class Translations$performanceOverlay$pt extends Translations$performanceOverlay
 	@override String get decoderHardware => 'Hardware';
 	@override String get tunnelingActive => 'Ativo';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} com falha)';
+	@override String cacheLimitMiB({required Object size}) => 'Limite do cache: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2744,13 +2746,24 @@ class Translations$seerr$pt extends Translations$seerr$en {
 	@override String get request => 'Solicitar';
 	@override String get request4k => 'Solicitar em 4K';
 	@override String get requestSeasons => 'Solicitar temporadas em falta';
+	@override String get requestHint => 'Escolha as opções do pedido no Seerr';
+	@override String get quickRequestHint => 'Solicitar agora no Seerr com as opções padrão';
+	@override String get chooseSeasonsHint => 'Escolha as temporadas para solicitar no Seerr';
+	@override String get request4kHint => 'Escolha um pedido em 4K no Seerr';
+	@override String get only4kAvailable => 'Esta conta só pode solicitar a versão em 4K.';
+	@override String get cardActionHint => 'Abra o menu do cartão para ver as opções de pedido do Seerr';
+	@override String get requestInProgress => 'Pedido em andamento';
 	@override String get notifyMe => 'Avise-me quando estiver disponível';
 	@override String get notifyMe4k => 'Avise-me quando 4K estiver disponível';
 	@override String get notificationsOn => 'Alerta de disponibilidade ativado';
+	@override String get turnOffAlert => 'Desativar alerta de disponibilidade';
 	@override String get notificationsEnabled => 'Avisaremos quando estiver disponível';
+	@override String get notificationsEnabled4k => 'Avisaremos quando a versão em 4K estiver disponível';
+	@override String notificationsEnabledSeason({required Object season}) => 'Avisaremos quando a temporada ${season} estiver disponível';
 	@override String get notificationsDisabled => 'Alerta de disponibilidade desativado';
 	@override String get notificationFailed => 'Não foi possível atualizar o alerta de disponibilidade';
 	@override String get seasons => 'Temporadas';
+	@override String get requestSheetHint => 'O Seerr gerencia a aprovação e acompanha seu pedido.';
 	@override String get allSeasons => 'Todas as temporadas';
 	@override String get advancedOptions => 'Avançado';
 	@override String get destinationServer => 'Servidor de destino';
@@ -2785,17 +2798,6 @@ class Translations$seerr$pt extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'A sessão foi rejeitada após entrar novamente';
 	@override String get permissionDenied => 'O Seerr negou esta ação: sua conta não tem mais a permissão necessária';
 	@override String get permissionRevoked => 'Você não tem mais permissão para solicitar isso';
-	@override String get requestHint => 'Escolha as opções do pedido no Seerr';
-	@override String get quickRequestHint => 'Solicitar agora no Seerr com as opções padrão';
-	@override String get chooseSeasonsHint => 'Escolha as temporadas para solicitar no Seerr';
-	@override String get request4kHint => 'Escolha um pedido em 4K no Seerr';
-	@override String get only4kAvailable => 'Esta conta só pode solicitar a versão em 4K.';
-	@override String get cardActionHint => 'Abra o menu do cartão para ver as opções de pedido do Seerr';
-	@override String get requestInProgress => 'Pedido em andamento';
-	@override String get turnOffAlert => 'Desativar alerta de disponibilidade';
-	@override String get notificationsEnabled4k => 'Avisaremos quando a versão em 4K estiver disponível';
-	@override String notificationsEnabledSeason({required Object season}) => 'Avisaremos quando a temporada ${season} estiver disponível';
-	@override String get requestSheetHint => 'O Seerr gerencia a aprovação e acompanha seu pedido.';
 }
 
 // Path: services
@@ -3768,6 +3770,9 @@ class Translations$sourceSetup$pt extends Translations$sourceSetup$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Entre com sua própria conta BookOrbit para navegar e reproduzir seus livros. Pedidos de títulos ausentes continuam passando pela sua instância SeerrNG conectada.';
+	@override String get bookorbitOpen => 'Abrir no BookOrbit';
+	@override String get bookorbitDetailHelp => 'Veja este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.';
 	@override String get savedCertificate => 'Certificado do servidor salvo';
 	@override String get nfsEndpointInvalid => 'Digite uma URL NFS, como nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Nenhum servidor DLNA encontrado. Digite manualmente a URL de descrição do dispositivo.';
@@ -3879,9 +3884,6 @@ class Translations$sourceSetup$pt extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Velocidade Medida';
 	@override String get nfsReadRequests => 'Leia pedidos';
 	@override String get sharedEntryConflict => 'Este ID de item compartilhado já está em parceria com outro item nesta biblioteca.';
-	@override String get bookorbitHelp => 'Entre com sua própria conta BookOrbit para navegar e reproduzir seus livros. Pedidos de títulos ausentes continuam passando pela sua instância SeerrNG conectada.';
-	@override String get bookorbitOpen => 'Abrir no BookOrbit';
-	@override String get bookorbitDetailHelp => 'Veja este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.';
 }
 
 // Path: comics
@@ -4327,6 +4329,9 @@ class Translations$musicTools$pt extends Translations$musicTools$en {
 	@override String get outputPreset => 'Equalizador desta saída';
 	@override String get outputPresetHint => 'Usar automaticamente este equalizador quando esta saída for selecionada.';
 	@override String get eqApproximation => 'Os perfis de auscultadores são aproximados para o equalizador de dez bandas.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6118,6 +6123,7 @@ extension on TranslationsPt {
 			'settings.prerollSelectionDescription' => 'Escolha quais clipes da biblioteca selecionada podem ser jogados antes dos filmes.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Aguarde muitos minutos sem entrada antes de mostrar o trabalho artístico do monitor.',
 			'settings.videoCodecOptionDescription' => 'Permitir reprodução direta para este codec quando suportado. codecs não verificados são transcodados pelo servidor de mídia.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Baixão de tamanho: ${size} MiB',
 			'themeEditor.builtIn' => 'Integrados',
 			'themeEditor.presets' => 'Predefinidos',
 			'themeEditor.custom' => 'Personalizado',
@@ -6469,9 +6475,9 @@ extension on TranslationsPt {
 			'videoControls.chaptersAndBookmarks' => 'Capítulos e Bookmarks',
 			'videoControls.segmentLoop' => 'Segmentação Loop',
 			'videoControls.addBookmark' => 'Adicionar Bookmark',
-			'videoControls.bookmarkName' => 'Nome do Bookmark',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Nome do Bookmark',
 			'videoControls.bookmarkNameHint' => 'Por exemplo, a cena de abertura',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarcação ${n}',
 			'videoControls.bookmarkNameRequired' => 'Digite um nome para este livro.',
@@ -6983,9 +6989,9 @@ extension on TranslationsPt {
 			'libraries.hideLibrary' => 'Ocultar biblioteca',
 			'libraries.libraryOptions' => 'Opções da biblioteca',
 			'libraries.content' => 'conteúdo da biblioteca',
-			'libraries.selectLibrary' => 'Selecionar biblioteca',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Selecionar biblioteca',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtros (${count})',
 			'libraries.noRecommendations' => 'Nenhuma recomendação disponível',
 			'libraries.noCollections' => 'Nenhuma coleção nesta biblioteca',
@@ -7497,9 +7503,9 @@ extension on TranslationsPt {
 			'watchTogether.paste' => 'Colar',
 			'watchTogether.noCodeInClipboard' => 'A área de transferência não contém um código de sala',
 			'watchTogether.copyCode' => 'Copiar código',
-			'watchTogether.codeCopied' => 'Código da sala copiado',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Código da sala copiado',
 			'watchTogether.shareInvite' => 'Compartilhar convite',
 			'watchTogether.inviteCopied' => 'Convite copiado. Cole-o em uma mensagem.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Entre na minha sala do Assistir Juntos no Pleazyng: abra "Assistir Juntos", escolha "Entrar na sala" e insira ${code}.',
@@ -7963,6 +7969,7 @@ extension on TranslationsPt {
 			'performanceOverlay.decoderHardware' => 'Hardware',
 			'performanceOverlay.tunnelingActive' => 'Ativo',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} com falha)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Limite do cache: ${size} MiB',
 			'externalPlayer.title' => 'Reprodutor externo',
 			'externalPlayer.useExternalPlayer' => 'Usar reprodutor externo',
 			'externalPlayer.useExternalPlayerDescription' => 'Abrir vídeos em outro app',
@@ -8010,10 +8017,10 @@ extension on TranslationsPt {
 			'metadataEdit.fromUrl' => 'Da URL',
 			'metadataEdit.uploadFile' => 'Enviar Arquivo',
 			'metadataEdit.enterImageUrl' => 'Insira a URL da imagem',
-			'metadataEdit.imageUrl' => 'URL da Imagem',
-			'metadataEdit.metadataUpdated' => 'Metadados atualizados',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'URL da Imagem',
+			'metadataEdit.metadataUpdated' => 'Metadados atualizados',
 			'metadataEdit.metadataUpdateFailed' => 'Falha ao atualizar metadados',
 			'metadataEdit.artworkUpdated' => 'Arte atualizada',
 			'metadataEdit.artworkUpdateFailed' => 'Falha ao atualizar arte',
@@ -8105,13 +8112,24 @@ extension on TranslationsPt {
 			'seerr.request' => 'Solicitar',
 			'seerr.request4k' => 'Solicitar em 4K',
 			'seerr.requestSeasons' => 'Solicitar temporadas em falta',
+			'seerr.requestHint' => 'Escolha as opções do pedido no Seerr',
+			'seerr.quickRequestHint' => 'Solicitar agora no Seerr com as opções padrão',
+			'seerr.chooseSeasonsHint' => 'Escolha as temporadas para solicitar no Seerr',
+			'seerr.request4kHint' => 'Escolha um pedido em 4K no Seerr',
+			'seerr.only4kAvailable' => 'Esta conta só pode solicitar a versão em 4K.',
+			'seerr.cardActionHint' => 'Abra o menu do cartão para ver as opções de pedido do Seerr',
+			'seerr.requestInProgress' => 'Pedido em andamento',
 			'seerr.notifyMe' => 'Avise-me quando estiver disponível',
 			'seerr.notifyMe4k' => 'Avise-me quando 4K estiver disponível',
 			'seerr.notificationsOn' => 'Alerta de disponibilidade ativado',
+			'seerr.turnOffAlert' => 'Desativar alerta de disponibilidade',
 			'seerr.notificationsEnabled' => 'Avisaremos quando estiver disponível',
+			'seerr.notificationsEnabled4k' => 'Avisaremos quando a versão em 4K estiver disponível',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Avisaremos quando a temporada ${season} estiver disponível',
 			'seerr.notificationsDisabled' => 'Alerta de disponibilidade desativado',
 			'seerr.notificationFailed' => 'Não foi possível atualizar o alerta de disponibilidade',
 			'seerr.seasons' => 'Temporadas',
+			'seerr.requestSheetHint' => 'O Seerr gerencia a aprovação e acompanha seu pedido.',
 			'seerr.allSeasons' => 'Todas as temporadas',
 			'seerr.advancedOptions' => 'Avançado',
 			'seerr.destinationServer' => 'Servidor de destino',
@@ -8146,17 +8164,6 @@ extension on TranslationsPt {
 			'seerr.sessionRejectedAfterReauth' => 'A sessão foi rejeitada após entrar novamente',
 			'seerr.permissionDenied' => 'O Seerr negou esta ação: sua conta não tem mais a permissão necessária',
 			'seerr.permissionRevoked' => 'Você não tem mais permissão para solicitar isso',
-			'seerr.requestHint' => 'Escolha as opções do pedido no Seerr',
-			'seerr.quickRequestHint' => 'Solicitar agora no Seerr com as opções padrão',
-			'seerr.chooseSeasonsHint' => 'Escolha as temporadas para solicitar no Seerr',
-			'seerr.request4kHint' => 'Escolha um pedido em 4K no Seerr',
-			'seerr.only4kAvailable' => 'Esta conta só pode solicitar a versão em 4K.',
-			'seerr.cardActionHint' => 'Abra o menu do cartão para ver as opções de pedido do Seerr',
-			'seerr.requestInProgress' => 'Pedido em andamento',
-			'seerr.turnOffAlert' => 'Desativar alerta de disponibilidade',
-			'seerr.notificationsEnabled4k' => 'Avisaremos quando a versão em 4K estiver disponível',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Avisaremos quando a temporada ${season} estiver disponível',
-			'seerr.requestSheetHint' => 'O Seerr gerencia a aprovação e acompanha seu pedido.',
 			'services.title' => 'Serviços',
 			'services.hubSubtitle' => 'Sincronize o progresso de exibição e solicite novos títulos.',
 			'services.integrations' => 'Integrações',
@@ -8524,10 +8531,10 @@ extension on TranslationsPt {
 			'universalMedia.favorites' => 'Redução dos favoritos',
 			'universalMedia.address' => 'Endereço de mídia',
 			'universalMedia.addressHelp' => 'URLs com parâmetros de autenticação ou assinatura reconhecidos são usados apenas para esta sessão e não podem ser salvos como favoritos.',
-			'universalMedia.displayName' => 'Nome de exibição (opcional)',
-			'universalMedia.displayNameHelp' => 'Escolha um nome curto para o jogador e controles de mídia do sistema.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'Nome de exibição (opcional)',
+			'universalMedia.displayNameHelp' => 'Escolha um nome curto para o jogador e controles de mídia do sistema.',
 			'universalMedia.allowHttp' => 'Permitir uma conexão HTTP não criptografada',
 			'universalMedia.allowHttpHelp' => 'O HTTP não criptografará a conexão. permita-a apenas em uma rede confiável. Use o HTTPS quando possível.',
 			'universalMedia.advancedProtocols' => 'MPV somente: introduza um endereço RTSP, RTMP/RTMPS, UDP ou RTP. Esses endereços não podem ser salvos como favoritos.',
@@ -9000,6 +9007,9 @@ extension on TranslationsPt {
 			'audiobook.recoveryImportConfirm' => 'Combine este arquivo de recuperação criptografado com as posições e notas de leitura atuais? História existente será mantida. bibliotecas compartilhadas e IDs de itens não são incluídos; definir IDs correspondentes em cada dispositivo antes da importação.',
 			'audiobook.recoveryExported' => 'arquivo de recuperação criptografado salvo.',
 			'audiobook.recoveryImported' => 'Dados de recuperação combinados.',
+			'sourceSetup.bookorbitHelp' => 'Entre com sua própria conta BookOrbit para navegar e reproduzir seus livros. Pedidos de títulos ausentes continuam passando pela sua instância SeerrNG conectada.',
+			'sourceSetup.bookorbitOpen' => 'Abrir no BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Veja este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.',
 			'sourceSetup.savedCertificate' => 'Certificado do servidor salvo',
 			'sourceSetup.nfsEndpointInvalid' => 'Digite uma URL NFS, como nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Nenhum servidor DLNA encontrado. Digite manualmente a URL de descrição do dispositivo.',
@@ -9035,13 +9045,13 @@ extension on TranslationsPt {
 			'sourceSetup.clientCertificate' => 'Certificado do cliente (opcional)',
 			'sourceSetup.clientCertificateHelp' => 'Permite que o NAS autentique este cliente; os IDs de AUTH_SYS continuam sujeitos à política do compartilhamento NFS do NAS.',
 			'sourceSetup.savedIdentity' => 'Será usada uma identidade de cliente salva.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Substituir a identidade de cliente salva',
 			'sourceSetup.chooseIdentity' => 'Escolher identidade de cliente PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Frase secreta da identidade de cliente',
 			'sourceSetup.identityPassphraseHelp' => 'Deixe em branco se o arquivo não tiver uma frase secreta.',
 			'sourceSetup.removeIdentity' => 'Remover qualquer identidade de cliente salva',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'As identidades de cliente são salvas no armazenamento criptografado de credenciais da fonte. Mantenha esta seção inalterada para conservar a identidade salva.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 somente leitura sobre TCP. Sem RPC-with-TLS, o tráfego NFS não é criptografado. O NAS deve permitir os IDs de AUTH_SYS selecionados e portas de cliente não privilegiadas (geralmente pela opção de exportação “insecure”). NFSv4 e UDP não são compatíveis.',
 			'sourceSetup.nfsSetupHelp' => 'Ajuda para configurar NFS',
@@ -9113,9 +9123,6 @@ extension on TranslationsPt {
 			'sourceSetup.nfsReadSpeed' => 'Velocidade Medida',
 			'sourceSetup.nfsReadRequests' => 'Leia pedidos',
 			'sourceSetup.sharedEntryConflict' => 'Este ID de item compartilhado já está em parceria com outro item nesta biblioteca.',
-			'sourceSetup.bookorbitHelp' => 'Entre com sua própria conta BookOrbit para navegar e reproduzir seus livros. Pedidos de títulos ausentes continuam passando pela sua instância SeerrNG conectada.',
-			'sourceSetup.bookorbitOpen' => 'Abrir no BookOrbit',
-			'sourceSetup.bookorbitDetailHelp' => 'Veja este título no BookOrbit para gerir os detalhes da biblioteca e os formatos que o Pleazyng não consegue abrir. O progresso de audição é sincronizado com a sua conta BookOrbit.',
 			'comics.fitHeight' => 'Ajustar à altura',
 			'comics.readingMode' => 'Modo de leitura',
 			'comics.paged' => 'Páginas',
@@ -9480,6 +9487,9 @@ extension on TranslationsPt {
 			'musicTools.outputPreset' => 'Equalizador desta saída',
 			'musicTools.outputPresetHint' => 'Usar automaticamente este equalizador quando esta saída for selecionada.',
 			'musicTools.eqApproximation' => 'Os perfis de auscultadores são aproximados para o equalizador de dez bandas.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

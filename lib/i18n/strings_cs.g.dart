@@ -813,6 +813,7 @@ class _Translations$settings$cs extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Vyberte, které klipy z vybrané knihovny můžete hrát před filmy.';
 	@override String get contentScreensaverDelayOptionDescription => 'Počkejte na to mnoho minut bez vstupu, než se zobrazí obrazovkový záložní umělecké dílo.';
 	@override String get videoCodecOptionDescription => 'Umožňujte přímé přehrávání pro tento kodek, když je podporován. nekontrolované kodeky jsou transkódovány mediálním serverem.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer velikost: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2581,6 +2582,7 @@ class _Translations$performanceOverlay$cs extends Translations$performanceOverla
 	@override String get decoderHardware => 'hardwarové';
 	@override String get tunnelingActive => 'aktivní';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} selhalo)';
+	@override String cacheLimitMiB({required Object size}) => 'Cache limity: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2775,13 +2777,24 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get request => 'Žádost';
 	@override String get request4k => 'Vyžádání v 4K';
 	@override String get requestSeasons => 'Vyžádat chybějící sezóny';
+	@override String get requestHint => 'Vyberte možnosti žádosti v Seerr';
+	@override String get quickRequestHint => 'Požádat nyní v Seerr s výchozím nastavením';
+	@override String get chooseSeasonsHint => 'Vyberte série, o které chcete v Seerr požádat';
+	@override String get request4kHint => 'Vyberte žádost o 4K v Seerr';
+	@override String get only4kAvailable => 'Tento účet může požádat pouze o 4K verzi.';
+	@override String get cardActionHint => 'Otevřete nabídku karty s možnostmi žádosti v Seerr';
+	@override String get requestInProgress => 'Žádost se zpracovává';
 	@override String get notifyMe => 'Upozornit, až bude dostupné';
 	@override String get notifyMe4k => 'Upozornit, až bude dostupné ve 4K';
 	@override String get notificationsOn => 'Upozornění na dostupnost je zapnuté';
+	@override String get turnOffAlert => 'Vypnout upozornění na dostupnost';
 	@override String get notificationsEnabled => 'Upozorníme vás, až bude dostupné';
+	@override String get notificationsEnabled4k => 'Upozorníme vás, až bude dostupná 4K verze';
+	@override String notificationsEnabledSeason({required Object season}) => 'Upozorníme vás, až bude dostupná série ${season}';
 	@override String get notificationsDisabled => 'Upozornění na dostupnost bylo vypnuto';
 	@override String get notificationFailed => 'Upozornění na dostupnost se nepodařilo aktualizovat';
 	@override String get seasons => 'Série';
+	@override String get requestSheetHint => 'Seerr zajišťuje schválení a sledování vaší žádosti.';
 	@override String get allSeasons => 'Všechny sezóny';
 	@override String get advancedOptions => 'Pokročilé';
 	@override String get destinationServer => 'Destinace server';
@@ -2816,17 +2829,6 @@ class _Translations$seerr$cs extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Zasedání bylo po opětovném podepsání zamítnuto.';
 	@override String get permissionDenied => 'Seerr tuto akci odmítl: Váš účet již nemá požadované povolení';
 	@override String get permissionRevoked => 'Už nemáte právo na to požádat';
-	@override String get requestHint => 'Vyberte možnosti žádosti v Seerr';
-	@override String get quickRequestHint => 'Požádat nyní v Seerr s výchozím nastavením';
-	@override String get chooseSeasonsHint => 'Vyberte série, o které chcete v Seerr požádat';
-	@override String get request4kHint => 'Vyberte žádost o 4K v Seerr';
-	@override String get only4kAvailable => 'Tento účet může požádat pouze o 4K verzi.';
-	@override String get cardActionHint => 'Otevřete nabídku karty s možnostmi žádosti v Seerr';
-	@override String get requestInProgress => 'Žádost se zpracovává';
-	@override String get turnOffAlert => 'Vypnout upozornění na dostupnost';
-	@override String get notificationsEnabled4k => 'Upozorníme vás, až bude dostupná 4K verze';
-	@override String notificationsEnabledSeason({required Object season}) => 'Upozorníme vás, až bude dostupná série ${season}';
-	@override String get requestSheetHint => 'Seerr zajišťuje schválení a sledování vaší žádosti.';
 }
 
 // Path: services
@@ -3803,6 +3805,9 @@ class _Translations$sourceSetup$cs extends Translations$sourceSetup$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.';
+	@override String get bookorbitOpen => 'Otevřít v BookOrbit';
+	@override String get bookorbitDetailHelp => 'Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit.';
 	@override String get savedCertificate => 'Uložený certifikát serveru';
 	@override String get nfsEndpointInvalid => 'Zadejte adresu NFS, například nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Nenalezen žádný server DLNA. Zadejte adresu popisu zařízení ručně.';
@@ -3914,9 +3919,6 @@ class _Translations$sourceSetup$cs extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'měřená rychlost';
 	@override String get nfsReadRequests => 'Čtěte žádosti';
 	@override String get sharedEntryConflict => 'Tento sdílený ID položky je již připojen k dalším položkám v této knihovně.';
-	@override String get bookorbitHelp => 'Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.';
-	@override String get bookorbitOpen => 'Otevřít v BookOrbit';
-	@override String get bookorbitDetailHelp => 'Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit.';
 }
 
 // Path: comics
@@ -4362,6 +4364,9 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	@override String get outputPreset => 'Ekvalizér pro tento výstup';
 	@override String get outputPresetHint => 'Při výběru tohoto výstupu automaticky použít tento ekvalizér.';
 	@override String get eqApproximation => 'Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6155,6 +6160,7 @@ extension on TranslationsCs {
 			'settings.prerollSelectionDescription' => 'Vyberte, které klipy z vybrané knihovny můžete hrát před filmy.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Počkejte na to mnoho minut bez vstupu, než se zobrazí obrazovkový záložní umělecké dílo.',
 			'settings.videoCodecOptionDescription' => 'Umožňujte přímé přehrávání pro tento kodek, když je podporován. nekontrolované kodeky jsou transkódovány mediálním serverem.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer velikost: ${size} MiB',
 			'themeEditor.builtIn' => 'stavět-in',
 			'themeEditor.presets' => 'přednášky',
 			'themeEditor.custom' => 'Vlastní',
@@ -6506,9 +6512,9 @@ extension on TranslationsCs {
 			'videoControls.chaptersAndBookmarks' => 'Kapitoly a bookmarks',
 			'videoControls.segmentLoop' => 'Segmentový loop',
 			'videoControls.addBookmark' => 'Přidat bookmark',
-			'videoControls.bookmarkName' => 'Bookmark jméno',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark jméno',
 			'videoControls.bookmarkNameHint' => 'Například otevírací scény',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmarková ${n}',
 			'videoControls.bookmarkNameRequired' => 'Zadejte jméno pro tuto knižní značku.',
@@ -7020,9 +7026,9 @@ extension on TranslationsCs {
 			'libraries.hideLibrary' => 'Skryté knihovny',
 			'libraries.libraryOptions' => 'Možnosti knihovny',
 			'libraries.content' => 'Obsah knihovny',
-			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Vyberte knihovnu',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtry (${count})',
 			'libraries.noRecommendations' => 'Žádné doporučení k dispozici',
 			'libraries.noCollections' => 'Žádné sbírky v této knihovně',
@@ -7534,9 +7540,9 @@ extension on TranslationsCs {
 			'watchTogether.paste' => 'Vložit',
 			'watchTogether.noCodeInClipboard' => 'Klipboard neobsahuje kód místnosti',
 			'watchTogether.copyCode' => 'Kopírování kódu',
-			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Kód pokoje kopírovaný',
 			'watchTogether.shareInvite' => 'Sdílejte pozvání',
 			'watchTogether.inviteCopied' => 'Zkuste kopírovat. vložte ji do zprávy.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Připojte se k mým hodinám společně v místnosti Pleazyng: otevřete hodinám společně, vyberte Připojte se k místnosti a zadejte ${code}.',
@@ -8000,6 +8006,7 @@ extension on TranslationsCs {
 			'performanceOverlay.decoderHardware' => 'hardwarové',
 			'performanceOverlay.tunnelingActive' => 'aktivní',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} selhalo)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Cache limity: ${size} MiB',
 			'externalPlayer.title' => 'Vnější hráč',
 			'externalPlayer.useExternalPlayer' => 'Použijte externí hráče',
 			'externalPlayer.useExternalPlayerDescription' => 'Otevřete videa v jiné aplikaci',
@@ -8047,10 +8054,10 @@ extension on TranslationsCs {
 			'metadataEdit.fromUrl' => 'Od URL',
 			'metadataEdit.uploadFile' => 'Upload souborů',
 			'metadataEdit.enterImageUrl' => 'Vložte obrázek URL',
-			'metadataEdit.imageUrl' => 'obrázek URL',
-			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'obrázek URL',
+			'metadataEdit.metadataUpdated' => 'Aktualizované metadata',
 			'metadataEdit.metadataUpdateFailed' => 'Nedokázal aktualizovat metadata',
 			'metadataEdit.artworkUpdated' => 'Umělecká aktualizace',
 			'metadataEdit.artworkUpdateFailed' => 'Nedokázal aktualizovat umělecké dílo',
@@ -8142,13 +8149,24 @@ extension on TranslationsCs {
 			'seerr.request' => 'Žádost',
 			'seerr.request4k' => 'Vyžádání v 4K',
 			'seerr.requestSeasons' => 'Vyžádat chybějící sezóny',
+			'seerr.requestHint' => 'Vyberte možnosti žádosti v Seerr',
+			'seerr.quickRequestHint' => 'Požádat nyní v Seerr s výchozím nastavením',
+			'seerr.chooseSeasonsHint' => 'Vyberte série, o které chcete v Seerr požádat',
+			'seerr.request4kHint' => 'Vyberte žádost o 4K v Seerr',
+			'seerr.only4kAvailable' => 'Tento účet může požádat pouze o 4K verzi.',
+			'seerr.cardActionHint' => 'Otevřete nabídku karty s možnostmi žádosti v Seerr',
+			'seerr.requestInProgress' => 'Žádost se zpracovává',
 			'seerr.notifyMe' => 'Upozornit, až bude dostupné',
 			'seerr.notifyMe4k' => 'Upozornit, až bude dostupné ve 4K',
 			'seerr.notificationsOn' => 'Upozornění na dostupnost je zapnuté',
+			'seerr.turnOffAlert' => 'Vypnout upozornění na dostupnost',
 			'seerr.notificationsEnabled' => 'Upozorníme vás, až bude dostupné',
+			'seerr.notificationsEnabled4k' => 'Upozorníme vás, až bude dostupná 4K verze',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Upozorníme vás, až bude dostupná série ${season}',
 			'seerr.notificationsDisabled' => 'Upozornění na dostupnost bylo vypnuto',
 			'seerr.notificationFailed' => 'Upozornění na dostupnost se nepodařilo aktualizovat',
 			'seerr.seasons' => 'Série',
+			'seerr.requestSheetHint' => 'Seerr zajišťuje schválení a sledování vaší žádosti.',
 			'seerr.allSeasons' => 'Všechny sezóny',
 			'seerr.advancedOptions' => 'Pokročilé',
 			'seerr.destinationServer' => 'Destinace server',
@@ -8183,17 +8201,6 @@ extension on TranslationsCs {
 			'seerr.sessionRejectedAfterReauth' => 'Zasedání bylo po opětovném podepsání zamítnuto.',
 			'seerr.permissionDenied' => 'Seerr tuto akci odmítl: Váš účet již nemá požadované povolení',
 			'seerr.permissionRevoked' => 'Už nemáte právo na to požádat',
-			'seerr.requestHint' => 'Vyberte možnosti žádosti v Seerr',
-			'seerr.quickRequestHint' => 'Požádat nyní v Seerr s výchozím nastavením',
-			'seerr.chooseSeasonsHint' => 'Vyberte série, o které chcete v Seerr požádat',
-			'seerr.request4kHint' => 'Vyberte žádost o 4K v Seerr',
-			'seerr.only4kAvailable' => 'Tento účet může požádat pouze o 4K verzi.',
-			'seerr.cardActionHint' => 'Otevřete nabídku karty s možnostmi žádosti v Seerr',
-			'seerr.requestInProgress' => 'Žádost se zpracovává',
-			'seerr.turnOffAlert' => 'Vypnout upozornění na dostupnost',
-			'seerr.notificationsEnabled4k' => 'Upozorníme vás, až bude dostupná 4K verze',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Upozorníme vás, až bude dostupná série ${season}',
-			'seerr.requestSheetHint' => 'Seerr zajišťuje schválení a sledování vaší žádosti.',
 			'services.title' => 'Služby',
 			'services.hubSubtitle' => 'Sync sleduje pokrok a žádá o nové tituly.',
 			'services.integrations' => 'integrace',
@@ -8561,10 +8568,10 @@ extension on TranslationsCs {
 			'universalMedia.favorites' => 'Úsporný stream oblíbené',
 			'universalMedia.address' => 'Mediální adresa',
 			'universalMedia.addressHelp' => 'URL s uznanými parametry ověřování nebo podpisů se používají pouze pro tuto schůzku a nelze je uložit jako oblíbené.',
-			'universalMedia.displayName' => 'Název zobrazení (volitelné)',
-			'universalMedia.displayNameHelp' => 'Vyberte krátký název pro hráče a systémové médií ovládacích prvků.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'Název zobrazení (volitelné)',
+			'universalMedia.displayNameHelp' => 'Vyberte krátký název pro hráče a systémové médií ovládacích prvků.',
 			'universalMedia.allowHttp' => 'Umožňuje nekryptované připojení HTTP',
 			'universalMedia.allowHttpHelp' => 'HTTP nešifruje připojení. dovolte ho pouze na důvěryhodné síti. použijte HTTPS kdykoli je to možné.',
 			'universalMedia.advancedProtocols' => 'MPV pouze: zadejte adresu RTSP, RTMP/RTMPS, UDP nebo RTP. Tyto adresy nelze uložit jako oblíbené.',
@@ -9037,6 +9044,9 @@ extension on TranslationsCs {
 			'audiobook.recoveryImportConfirm' => 'Spojte tento šifrovaný obnovení soubor s aktuálními čtení pozic a poznámky? existující historie bude zachována. sdílená knihovna a ID položky nejsou zahrnuty; nastavit odpovídající ID na každém zařízení před dovozem.',
 			'audiobook.recoveryExported' => 'Šifrované obnovení souboru je uloženo.',
 			'audiobook.recoveryImported' => 'Údaje o obnově se smítají.',
+			'sourceSetup.bookorbitHelp' => 'Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.',
+			'sourceSetup.bookorbitOpen' => 'Otevřít v BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit.',
 			'sourceSetup.savedCertificate' => 'Uložený certifikát serveru',
 			'sourceSetup.nfsEndpointInvalid' => 'Zadejte adresu NFS, například nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Nenalezen žádný server DLNA. Zadejte adresu popisu zařízení ručně.',
@@ -9072,13 +9082,13 @@ extension on TranslationsCs {
 			'sourceSetup.clientCertificate' => 'Klientský certifikát (nepovinné)',
 			'sourceSetup.clientCertificateHelp' => 'Umožňuje NAS ověřit tohoto klienta; ID AUTH_SYS stále podléhají pravidlům exportu NFS na NAS.',
 			'sourceSetup.savedIdentity' => 'Bude použita uložená identita klienta.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Nahradit uloženou identitu klienta',
 			'sourceSetup.chooseIdentity' => 'Vybrat identitu klienta PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Heslová fráze identity klienta',
 			'sourceSetup.identityPassphraseHelp' => 'Ponechte prázdné, pokud soubor nemá heslovou frázi.',
 			'sourceSetup.removeIdentity' => 'Odebrat případnou uloženou identitu klienta',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'Identity klienta se ukládají do šifrovaného úložiště přihlašovacích údajů zdroje. Pokud chcete uloženou identitu zachovat, tuto část neměňte.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 přes TCP, pouze pro čtení. Bez RPC-with-TLS není provoz NFS šifrovaný. NAS musí povolit vybraná ID AUTH_SYS a neprivilegované klientské porty (často volba exportu „insecure“). NFSv4 ani UDP nejsou podporovány.',
 			'sourceSetup.nfsSetupHelp' => 'Nápověda k nastavení NFS',
@@ -9150,9 +9160,6 @@ extension on TranslationsCs {
 			'sourceSetup.nfsReadSpeed' => 'měřená rychlost',
 			'sourceSetup.nfsReadRequests' => 'Čtěte žádosti',
 			'sourceSetup.sharedEntryConflict' => 'Tento sdílený ID položky je již připojen k dalším položkám v této knihovně.',
-			'sourceSetup.bookorbitHelp' => 'Přihlaste se ke svému účtu BookOrbit a procházejte jeho knihy nebo je přehrávejte. Žádosti o chybějící tituly nadále zpracovává vaše připojená instance SeerrNG.',
-			'sourceSetup.bookorbitOpen' => 'Otevřít v BookOrbit',
-			'sourceSetup.bookorbitDetailHelp' => 'Zobrazte tento titul v BookOrbit a spravujte podrobnosti knihovny i formáty, které Pleazyng nedokáže otevřít. Průběh poslechu se synchronizuje s vaším účtem BookOrbit.',
 			'comics.fitHeight' => 'Přizpůsobit výšce',
 			'comics.readingMode' => 'Režim čtení',
 			'comics.paged' => 'Stránky',
@@ -9517,6 +9524,9 @@ extension on TranslationsCs {
 			'musicTools.outputPreset' => 'Ekvalizér pro tento výstup',
 			'musicTools.outputPresetHint' => 'Při výběru tohoto výstupu automaticky použít tento ekvalizér.',
 			'musicTools.eqApproximation' => 'Profily sluchátek jsou přibližně převedeny pro desetipásmový ekvalizér.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

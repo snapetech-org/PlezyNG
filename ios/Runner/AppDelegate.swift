@@ -54,8 +54,11 @@ enum DownloadBackupPolicy {
     if let engine = musicEngine { return engine }
     let engine = FlutterEngine(name: "pleazyng_shared_music", project: nil, allowHeadlessExecution: true)
     musicEngine = engine
-    guard engine.run(withEntrypoint: "main", libraryURI: nil, initialRoute: nil,
-                     entrypointArgs: ["--pleazyng-car-host"]) else {
+    guard
+      engine.run(
+        withEntrypoint: "main", libraryURI: nil, initialRoute: nil,
+        entrypointArgs: ["--pleazyng-car-host"])
+    else {
       musicEngine = nil
       return engine
     }
@@ -412,7 +415,6 @@ final class AppleMusicKitPlugin: NSObject, FlutterPlugin {
   }
 }
 
-
 /// The phone attaches to the same engine a CarPlay-only launch prewarmed.
 /// Forward every scene callback through Flutter's lifecycle adapter so URL,
 /// authentication and background-download plugins retain their existing hooks.
@@ -421,10 +423,13 @@ final class MusicPhoneSceneDelegate: UIResponder, UIWindowSceneDelegate, Flutter
   var sceneLifeCycleDelegate = FlutterPluginSceneLifeCycleDelegate()
   var window: UIWindow?
 
-  func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
-             options connectionOptions: UIScene.ConnectionOptions) {
+  func scene(
+    _ scene: UIScene, willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
     guard let windowScene = scene as? UIWindowScene,
-          let app = UIApplication.shared.delegate as? AppDelegate else { return }
+      let app = UIApplication.shared.delegate as? AppDelegate
+    else { return }
     let engine = app.ensureMusicEngine()
     if let existing = engine.viewController?.viewIfLoaded?.window?.windowScene, existing != windowScene {
       // CarPlay and external video scenes are independent native surfaces;
@@ -442,8 +447,9 @@ final class MusicPhoneSceneDelegate: UIResponder, UIWindowSceneDelegate, Flutter
   func sceneDidDisconnect(_ scene: UIScene) {
     sceneLifeCycleDelegate.sceneDidDisconnect(scene)
     if let controller = window?.rootViewController as? FlutterViewController,
-       let app = UIApplication.shared.delegate as? AppDelegate,
-       app.musicEngine?.viewController === controller {
+      let app = UIApplication.shared.delegate as? AppDelegate,
+      app.musicEngine?.viewController === controller
+    {
       app.musicEngine?.viewController = nil
     }
     window = nil
@@ -458,9 +464,12 @@ final class MusicPhoneSceneDelegate: UIResponder, UIWindowSceneDelegate, Flutter
   func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     sceneLifeCycleDelegate.scene(scene, continue: userActivity)
   }
-  func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem,
-                   completionHandler: @escaping (Bool) -> Void) {
-    sceneLifeCycleDelegate.windowScene(windowScene, performActionFor: shortcutItem, completionHandler: completionHandler)
+  func windowScene(
+    _ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
+    sceneLifeCycleDelegate.windowScene(
+      windowScene, performActionFor: shortcutItem, completionHandler: completionHandler)
   }
 }
 
@@ -523,8 +532,10 @@ final class MusicCarBridge {
 final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
   private var controller: CPInterfaceController?
 
-  func templateApplicationScene(_ templateApplicationScene: CPTemplateApplicationScene,
-                                didConnect interfaceController: CPInterfaceController) {
+  func templateApplicationScene(
+    _ templateApplicationScene: CPTemplateApplicationScene,
+    didConnect interfaceController: CPInterfaceController
+  ) {
     _ = (UIApplication.shared.delegate as? AppDelegate)?.ensureMusicEngine()
     controller = interfaceController
     MusicCarBridge.shared.scene = self
@@ -592,13 +603,14 @@ final class MusicCarSceneDelegate: UIResponder, CPTemplateApplicationSceneDelega
   }
 }
 
-
 /// Siri resolves through the unlocked profile's catalog. Identifiers are
 /// ephemeral, profile-qualified catalog references, never server credentials.
 /// A cold/locked session reports that the app must open; it cannot bypass PINs.
 final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
-  func resolveMediaItems(for intent: INPlayMediaIntent,
-                        with completion: @escaping ([INPlayMediaMediaItemResolutionResult]) -> Void) {
+  func resolveMediaItems(
+    for intent: INPlayMediaIntent,
+    with completion: @escaping ([INPlayMediaMediaItemResolutionResult]) -> Void
+  ) {
     DispatchQueue.main.async {
       guard MusicCarBridge.shared.ready else {
         completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .unsupported())])
@@ -608,12 +620,16 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
         completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .notRequired())])
         return
       }
-      if let selected = intent.mediaItems?.first, (selected.identifier?.hasPrefix("item:") == true || selected.identifier?.hasPrefix("station:") == true || selected.identifier?.hasPrefix("recipe:") == true) {
+      if let selected = intent.mediaItems?.first,
+        (selected.identifier?.hasPrefix("item:") == true || selected.identifier?.hasPrefix("station:") == true
+          || selected.identifier?.hasPrefix("recipe:") == true)
+      {
         // The play command revalidates this identifier against the active map.
         completion(INPlayMediaMediaItemResolutionResult.successes(with: [selected]))
         return
       }
-      guard let name = intent.mediaSearch?.mediaName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+      guard let name = intent.mediaSearch?.mediaName, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+      else {
         completion([INPlayMediaMediaItemResolutionResult(mediaItemResolutionResult: .needsValue())])
         return
       }
@@ -631,12 +647,16 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
       MusicCarBridge.shared.request("resolveVoice", args) { value in
         let items: [INMediaItem] = (value as? [[String: Any]] ?? []).compactMap { row in
           guard let id = row["id"] as? String, let title = row["title"] as? String else { return nil }
-          let type: INMediaItemType = row["kind"] as? String == "album" ? .album :
-            row["kind"] as? String == "artist" ? .artist :
-            row["kind"] as? String == "station" ? .radioStation :
-            row["kind"] as? String == "playlist" ? .playlist : .song
-          return INMediaItem(identifier: id, title: title, type: type, artwork: nil,
-                             artist: row["subtitle"] as? String)
+          let type: INMediaItemType =
+            row["kind"] as? String == "album"
+            ? .album
+            : row["kind"] as? String == "artist"
+              ? .artist
+              : row["kind"] as? String == "station"
+                ? .radioStation : row["kind"] as? String == "playlist" ? .playlist : .song
+          return INMediaItem(
+            identifier: id, title: title, type: type, artwork: nil,
+            artist: row["subtitle"] as? String)
         }
         if items.count == 1 {
           completion(INPlayMediaMediaItemResolutionResult.successes(with: items))
@@ -651,8 +671,10 @@ final class MusicPlayIntentHandler: NSObject, INPlayMediaIntentHandling {
 
   func confirm(intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
     DispatchQueue.main.async {
-      completion(INPlayMediaIntentResponse(code: MusicCarBridge.shared.ready ? .ready : .failureRequiringAppLaunch,
-                                            userActivity: nil))
+      completion(
+        INPlayMediaIntentResponse(
+          code: MusicCarBridge.shared.ready ? .ready : .failureRequiringAppLaunch,
+          userActivity: nil))
     }
   }
 

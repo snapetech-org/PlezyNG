@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "부퍼 크기: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "기본 제공",
@@ -3108,7 +3109,8 @@
     "decoderHardware": "하드웨어",
     "tunnelingActive": "활성",
     "dvRpuFailed": "${converted} (${failures}개 실패)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "캐시 제한: ${size} MiB"
   },
   "externalPlayer": {
     "title": "외부 플레이어",
@@ -3279,13 +3281,24 @@
     "request": "요청",
     "request4k": "4K로 요청",
     "requestSeasons": "누락된 시즌 요청",
+    "requestHint": "Seerr 요청 옵션 선택",
+    "quickRequestHint": "Seerr에서 기본 설정으로 지금 요청",
+    "chooseSeasonsHint": "Seerr에서 요청할 시즌 선택",
+    "request4kHint": "Seerr에서 4K 요청 선택",
+    "only4kAvailable": "이 계정에서는 4K 버전만 요청할 수 있습니다.",
+    "cardActionHint": "Seerr 요청 옵션을 보려면 카드 메뉴 열기",
+    "requestInProgress": "요청 진행 중",
     "notifyMe": "이용 가능해지면 알림 받기",
     "notifyMe4k": "4K로 이용 가능해지면 알림 받기",
     "notificationsOn": "이용 가능 알림 켜짐",
+    "turnOffAlert": "이용 가능 알림 끄기",
     "notificationsEnabled": "이용 가능해지면 알려드릴게요",
+    "notificationsEnabled4k": "4K 버전을 이용할 수 있게 되면 알려드릴게요",
+    "notificationsEnabledSeason": "시즌 ${season}을 이용할 수 있게 되면 알려드릴게요",
     "notificationsDisabled": "이용 가능 알림이 꺼졌습니다",
     "notificationFailed": "이용 가능 알림을 업데이트하지 못했습니다",
     "seasons": "시즌",
+    "requestSheetHint": "승인 처리와 요청 추적은 Seerr에서 담당합니다.",
     "allSeasons": "모든 시즌",
     "advancedOptions": "고급",
     "destinationServer": "대상 서버",
@@ -3319,18 +3332,7 @@
     "noUserInformation": "Seerr에서 사용자 정보를 반환하지 않았습니다",
     "sessionRejectedAfterReauth": "다시 로그인한 후 세션이 거부되었습니다",
     "permissionDenied": "Seerr가 이 작업을 거부했습니다: 계정에 필요한 권한이 더 이상 없습니다",
-    "permissionRevoked": "이 항목을 요청할 권한이 더 이상 없습니다",
-    "requestHint": "Seerr 요청 옵션 선택",
-    "quickRequestHint": "Seerr에서 기본 설정으로 지금 요청",
-    "chooseSeasonsHint": "Seerr에서 요청할 시즌 선택",
-    "request4kHint": "Seerr에서 4K 요청 선택",
-    "only4kAvailable": "이 계정에서는 4K 버전만 요청할 수 있습니다.",
-    "cardActionHint": "Seerr 요청 옵션을 보려면 카드 메뉴 열기",
-    "requestInProgress": "요청 진행 중",
-    "turnOffAlert": "이용 가능 알림 끄기",
-    "notificationsEnabled4k": "4K 버전을 이용할 수 있게 되면 알려드릴게요",
-    "notificationsEnabledSeason": "시즌 ${season}을 이용할 수 있게 되면 알려드릴게요",
-    "requestSheetHint": "승인 처리와 요청 추적은 Seerr에서 담당합니다."
+    "permissionRevoked": "이 항목을 요청할 권한이 더 이상 없습니다"
   },
   "services": {
     "title": "서비스",
@@ -4252,6 +4254,9 @@
     "recoveryImported": "복구 데이터가 합쳐졌습니다."
   },
   "sourceSetup": {
+    "bookorbitHelp": "BookOrbit 도서를 둘러보고 재생하려면 본인 BookOrbit 계정으로 로그인하세요. 없는 작품의 요청은 계속 연결된 SeerrNG 인스턴스를 통해 전송됩니다.",
+    "bookorbitOpen": "BookOrbit에서 열기",
+    "bookorbitDetailHelp": "라이브러리 세부 정보와 Pleazyng에서 열 수 없는 형식을 관리하려면 BookOrbit에서 이 작품을 확인하세요. 청취 진행 상황은 BookOrbit 계정과 동기화됩니다.",
     "savedCertificate": "저장된 서버 인증서",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export와 같은 NFS URL을 입력하세요.",
@@ -4363,10 +4368,7 @@
     "nfsReadBytes": "데이터 읽기",
     "nfsReadSpeed": "속도 측정",
     "nfsReadRequests": "요청 읽기",
-    "sharedEntryConflict": "이 공유 항목 ID는 이미 이 도서관의 다른 항목과 조화되어 있습니다.",
-    "bookorbitHelp": "BookOrbit 도서를 둘러보고 재생하려면 본인 BookOrbit 계정으로 로그인하세요. 없는 작품의 요청은 계속 연결된 SeerrNG 인스턴스를 통해 전송됩니다.",
-    "bookorbitOpen": "BookOrbit에서 열기",
-    "bookorbitDetailHelp": "라이브러리 세부 정보와 Pleazyng에서 열 수 없는 형식을 관리하려면 BookOrbit에서 이 작품을 확인하세요. 청취 진행 상황은 BookOrbit 계정과 동기화됩니다."
+    "sharedEntryConflict": "이 공유 항목 ID는 이미 이 도서관의 다른 항목과 조화되어 있습니다."
   },
   "comics": {
     "fitHeight": "높이에 맞춤",
@@ -5539,6 +5541,9 @@
     "anniversaries": "앨범 발매 기념일",
     "outputPreset": "이 출력의 EQ",
     "outputPresetHint": "이 출력이 선택되면 이 EQ를 자동으로 사용합니다.",
-    "eqApproximation": "헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다."
+    "eqApproximation": "헤드폰 프로필은 10밴드 EQ에 맞게 근사치로 변환됩니다.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

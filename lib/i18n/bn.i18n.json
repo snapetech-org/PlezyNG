@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "বাফার আকার: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "ভিত্তিতে",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "হার্ডওয়ার্ক",
     "tunnelingActive": "আক্রমণ",
     "dvRpuFailed": "${converted} (${failures} অসম্ভব)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "ক্যাশি সীমা: ${size} MiB"
   },
   "externalPlayer": {
     "title": "বিদেশী খেলোয়াড়",
@@ -3283,13 +3285,24 @@
     "request": "অনুরোধ",
     "request4k": "4K অনুসন্ধান",
     "requestSeasons": "অনুপস্থিত মৌসুমগুলোর জন্য অনুরোধ করুন",
+    "requestHint": "Seerr-এ অনুরোধের বিকল্প বেছে নিন",
+    "quickRequestHint": "ডিফল্ট সেটিংস ব্যবহার করে এখনই Seerr-এ অনুরোধ করুন",
+    "chooseSeasonsHint": "Seerr-এ অনুরোধ করার জন্য মৌসুম বেছে নিন",
+    "request4kHint": "Seerr-এ 4K অনুরোধ বেছে নিন",
+    "only4kAvailable": "এই অ্যাকাউন্ট থেকে শুধু 4K সংস্করণের অনুরোধ করা যায়।",
+    "cardActionHint": "Seerr-এর অনুরোধের বিকল্প দেখতে কার্ড মেনু খুলুন",
+    "requestInProgress": "অনুরোধ প্রক্রিয়াধীন",
     "notifyMe": "পাওয়া গেলে আমাকে জানান",
     "notifyMe4k": "4K-তে পাওয়া গেলে আমাকে জানান",
     "notificationsOn": "পাওয়ার বিজ্ঞপ্তি চালু আছে",
+    "turnOffAlert": "পাওয়ার বিজ্ঞপ্তি বন্ধ করুন",
     "notificationsEnabled": "পাওয়া গেলে আমরা আপনাকে জানাব",
+    "notificationsEnabled4k": "4K সংস্করণ পাওয়া গেলে আমরা আপনাকে জানাব",
+    "notificationsEnabledSeason": "${season} নম্বর মৌসুম পাওয়া গেলে আমরা আপনাকে জানাব",
     "notificationsDisabled": "পাওয়ার বিজ্ঞপ্তি বন্ধ করা হয়েছে",
     "notificationFailed": "পাওয়ার বিজ্ঞপ্তি আপডেট করা যায়নি",
     "seasons": "সপ্তাহ",
+    "requestSheetHint": "Seerr আপনার অনুরোধের অনুমোদন ও অগ্রগতি সামলায়।",
     "allSeasons": "সব সপ্তাহ",
     "advancedOptions": "উন্নত",
     "destinationServer": "ডিজিটাল সার্ভার",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr ব্যবহারকারীর তথ্য ফিরিয়ে দেয়নি",
     "sessionRejectedAfterReauth": "পুনরাবৃত্তি পরে চিঠি বাতিল করা হয়।",
     "permissionDenied": "Seerr এই পদক্ষেপটি প্রত্যাখ্যান করেছে: আপনার অ্যাকাউন্টের প্রয়োজনীয় অনুমতি নেই",
-    "permissionRevoked": "আপনি এখন আর এ ব্যাপারে অনুরোধ করার অনুমতি নেই।",
-    "requestHint": "Seerr-এ অনুরোধের বিকল্প বেছে নিন",
-    "quickRequestHint": "ডিফল্ট সেটিংস ব্যবহার করে এখনই Seerr-এ অনুরোধ করুন",
-    "chooseSeasonsHint": "Seerr-এ অনুরোধ করার জন্য মৌসুম বেছে নিন",
-    "request4kHint": "Seerr-এ 4K অনুরোধ বেছে নিন",
-    "only4kAvailable": "এই অ্যাকাউন্ট থেকে শুধু 4K সংস্করণের অনুরোধ করা যায়।",
-    "cardActionHint": "Seerr-এর অনুরোধের বিকল্প দেখতে কার্ড মেনু খুলুন",
-    "requestInProgress": "অনুরোধ প্রক্রিয়াধীন",
-    "turnOffAlert": "পাওয়ার বিজ্ঞপ্তি বন্ধ করুন",
-    "notificationsEnabled4k": "4K সংস্করণ পাওয়া গেলে আমরা আপনাকে জানাব",
-    "notificationsEnabledSeason": "${season} নম্বর মৌসুম পাওয়া গেলে আমরা আপনাকে জানাব",
-    "requestSheetHint": "Seerr আপনার অনুরোধের অনুমোদন ও অগ্রগতি সামলায়।"
+    "permissionRevoked": "আপনি এখন আর এ ব্যাপারে অনুরোধ করার অনুমতি নেই।"
   },
   "services": {
     "title": "পরিষেবা",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "রেকর্ড ডেটা একত্রিত।"
   },
   "sourceSetup": {
+    "bookorbitHelp": "বইগুলো দেখতে ও পড়তে আপনার নিজের BookOrbit অ্যাকাউন্টে সাইন ইন করুন। অনুপস্থিত শিরোনামের অনুরোধ এখনও আপনার সংযুক্ত SeerrNG ইনস্ট্যান্সের মাধ্যমেই যাবে।",
+    "bookorbitOpen": "BookOrbit-এ খুলুন",
+    "bookorbitDetailHelp": "লাইব্রেরির বিবরণ এবং Pleazyng যে ফরম্যাট খুলতে পারে না সেগুলো পরিচালনা করতে BookOrbit-এ এই শিরোনামটি দেখুন। শোনার অগ্রগতি আপনার BookOrbit অ্যাকাউন্টের সঙ্গে সিঙ্ক হয়।",
     "savedCertificate": "সংরক্ষিত সার্ভার সার্টিফিকেট",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export-এর মতো একটি NFS URL লিখুন।",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "ডাটা পড়ুন",
     "nfsReadSpeed": "গতি মাত্রা",
     "nfsReadRequests": "অনুরোধ পড়ুন",
-    "sharedEntryConflict": "এই শেয়ার করা আইটেম ID ইতিমধ্যে এই লাইব্রেরির অন্য আইটেমের সঙ্গে যুক্ত। অন্য ID বেছে নিন।",
-    "bookorbitHelp": "বইগুলো দেখতে ও পড়তে আপনার নিজের BookOrbit অ্যাকাউন্টে সাইন ইন করুন। অনুপস্থিত শিরোনামের অনুরোধ এখনও আপনার সংযুক্ত SeerrNG ইনস্ট্যান্সের মাধ্যমেই যাবে।",
-    "bookorbitOpen": "BookOrbit-এ খুলুন",
-    "bookorbitDetailHelp": "লাইব্রেরির বিবরণ এবং Pleazyng যে ফরম্যাট খুলতে পারে না সেগুলো পরিচালনা করতে BookOrbit-এ এই শিরোনামটি দেখুন। শোনার অগ্রগতি আপনার BookOrbit অ্যাকাউন্টের সঙ্গে সিঙ্ক হয়।"
+    "sharedEntryConflict": "এই শেয়ার করা আইটেম ID ইতিমধ্যে এই লাইব্রেরির অন্য আইটেমের সঙ্গে যুক্ত। অন্য ID বেছে নিন।"
   },
   "comics": {
     "fitHeight": "উচ্চতা অনুযায়ী মানানসই",
@@ -5544,6 +5546,9 @@
     "anniversaries": "অ্যালবামের বর্ষপূর্তি",
     "outputPreset": "এই আউটপুটের ইকুয়ালাইজার",
     "outputPresetHint": "এই আউটপুট বেছে নিলে স্বয়ংক্রিয়ভাবে এই ইকুয়ালাইজার ব্যবহার করুন।",
-    "eqApproximation": "হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।"
+    "eqApproximation": "হেডফোন প্রোফাইলগুলো দশ-ব্যান্ড ইকুয়ালাইজারের জন্য আনুমানিকভাবে রূপান্তরিত।",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

@@ -2174,6 +2174,9 @@ class Translations$settings$en {
 
 	/// en: 'SDR · H.264'
 	String get dvOfflineSdr => 'SDR · H.264';
+
+	/// en: 'Buffer Size: ${size} MiB'
+	String streamBufferSizeMiB({required Object size}) => 'Buffer Size: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -7316,6 +7319,9 @@ class Translations$performanceOverlay$en {
 
 	/// en: '${request} · initializing${fallback}'
 	String neuralProviderInitializing({required Object request, required Object fallback}) => '${request} · initializing${fallback}';
+
+	/// en: 'Cache Limit: ${size} MiB'
+	String cacheLimitMiB({required Object size}) => 'Cache Limit: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -14752,6 +14758,15 @@ class Translations$musicTools$en {
 
 	/// en: 'Headphone profiles are approximated for the ten-band EQ.'
 	String get eqApproximation => 'Headphone profiles are approximated for the ten-band EQ.';
+
+	/// en: 'AutoEq GraphicEQ'
+	String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+
+	/// en: 'AutoEq'
+	String get autoEq => 'AutoEq';
+
+	/// en: 'AutoEq — Jaakko Pasanen'
+	String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -18062,6 +18077,7 @@ extension on Translations {
 			'settings.dvOfflineNewOutput' => 'Choose a new .mkv filename. Existing media and reports are preserved.',
 			'settings.dvOfflineHdr10' => 'HDR10 · 10-bit HEVC',
 			'settings.dvOfflineSdr' => 'SDR · H.264',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer Size: ${size} MiB',
 			'themeEditor.builtIn' => 'Built-in',
 			'themeEditor.presets' => 'Presets',
 			'themeEditor.custom' => 'Custom',
@@ -18376,9 +18392,9 @@ extension on Translations {
 			'videoControls.playbackWillPauseIn' => ({required Object duration}) => 'Playback will pause in ${duration}',
 			'videoControls.sleepTimerEndOfVideo' => 'End of current video',
 			'videoControls.sleepTimerStopAtHeader' => 'Stop at',
-			'videoControls.sleepTimerDurationHeader' => 'Timer',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.sleepTimerDurationHeader' => 'Timer',
 			'videoControls.playbackWillPauseAtEnd' => 'Playback will pause at the end of this video',
 			'videoControls.stillWatching' => 'Still watching?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausing in ${seconds}s',
@@ -18890,9 +18906,9 @@ extension on Translations {
 			'accountPreferences.subtitleAccessibilityOptions.preferSdhDescription' => 'Prefer SDH subtitles when available, but allow standard subtitles as a fallback.',
 			'accountPreferences.subtitleAccessibilityOptions.onlySdhDescription' => 'Use SDH subtitles only; do not fall back to standard subtitles.',
 			'accountPreferences.subtitleAccessibilityOptions.onlyNonSdhDescription' => 'Use standard subtitles only; exclude SDH subtitles.',
-			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
 			_ => null,
 		} ?? switch (path) {
+			'accountPreferences.forcedSubtitles' => 'Forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferNonForced' => 'Prefer non-forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.preferForced' => 'Prefer forced subtitles',
 			'accountPreferences.forcedSubtitleOptions.onlyForced' => 'Only forced subtitles',
@@ -19404,9 +19420,9 @@ extension on Translations {
 			'explore.creditRole.director' => 'Director',
 			'explore.creditRole.writer' => 'Writer',
 			'explore.creditRole.producer' => 'Producer',
-			'explore.creditRole.creator' => 'Creator',
 			_ => null,
 		} ?? switch (path) {
+			'explore.creditRole.creator' => 'Creator',
 			'explore.creditRole.composer' => 'Composer',
 			'explore.relation.prequel' => 'Prequel',
 			'explore.relation.sequel' => 'Sequel',
@@ -19918,9 +19934,9 @@ extension on Translations {
 			'downloads.showCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} show', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} shows', ), 
 			'downloads.movieCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movie', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} movies', ), 
 			'downloads.albumCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} album', other: '${NumberFormat.decimalPattern(LocalePreferences.formattingLocaleName).format(n)} albums', ), 
-			'downloads.errorFileNotFound' => 'File not found (404)',
 			_ => null,
 		} ?? switch (path) {
+			'downloads.errorFileNotFound' => 'File not found (404)',
 			'downloads.errorDownloadNotAllowed' => 'Download not allowed by the server (403)',
 			'downloads.errorDownloadFailed' => 'Download failed',
 			'downloads.errorDownloadFailedWithReason' => ({required Object reason}) => 'Download failed: ${reason}',
@@ -20229,6 +20245,7 @@ extension on Translations {
 			'performanceOverlay.tunnelingActive' => 'Active',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} failed)',
 			'performanceOverlay.neuralProviderInitializing' => ({required Object request, required Object fallback}) => '${request} · initializing${fallback}',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Cache Limit: ${size} MiB',
 			'externalPlayer.title' => 'External Player',
 			'externalPlayer.useExternalPlayer' => 'Use External Player',
 			'externalPlayer.useExternalPlayerDescription' => 'Open videos in another app',
@@ -20431,10 +20448,10 @@ extension on Translations {
 			'seerr.quickConnectUnsupported' => 'This Seerr instance does not support Quick Connect. It needs Seerr 3.4 or newer.',
 			'seerr.notInitialized' => 'This Seerr instance has not completed first-run setup',
 			'seerr.noPlexTokenForReauth' => 'No Plex token is available to sign in again',
-			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
-			'seerr.signInRejected' => 'Sign-in was rejected',
 			_ => null,
 		} ?? switch (path) {
+			'seerr.noStoredCredentials' => 'No stored credentials are available to sign in again',
+			'seerr.signInRejected' => 'Sign-in was rejected',
 			'seerr.noSessionCookie' => 'Seerr did not issue a session cookie',
 			'seerr.freshCookieRejected' => 'Seerr rejected the new session cookie',
 			'seerr.noUserInformation' => 'Seerr did not return user information',
@@ -20945,10 +20962,10 @@ extension on Translations {
 			'universalMedia.mediaTool' => 'Media tool',
 			'universalMedia.captureIntro' => 'Record your screen or a camera to an MP4 file, or preview a live input in the player. FFmpeg must be installed and include the H.264 encoder for recording.',
 			'universalMedia.captureNoDevices' => 'No screen or camera was found. Check FFmpeg capture support and operating-system privacy permissions.',
-			'universalMedia.captureSource' => 'Screen or camera',
-			'universalMedia.captureScreen' => 'Screen',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.captureSource' => 'Screen or camera',
+			'universalMedia.captureScreen' => 'Screen',
 			'universalMedia.captureAudioSource' => 'Audio input (optional)',
 			'universalMedia.captureAudioHelp' => 'Add audio from a microphone or available input. Device choices depend on FFmpeg and system permissions.',
 			'universalMedia.captureAudioNone' => 'No audio',
@@ -21459,10 +21476,10 @@ extension on Translations {
 			'games.recent' => 'Recently played',
 			'games.favorites' => 'Favorites',
 			'games.allGames' => 'All games',
-			'games.search' => 'Find a game',
-			'games.noMatches' => 'No games match this search.',
 			_ => null,
 		} ?? switch (path) {
+			'games.search' => 'Find a game',
+			'games.noMatches' => 'No games match this search.',
 			'games.favorite' => 'Save favorite',
 			'games.unfavorite' => 'Remove favorite',
 			'games.forget' => 'Forget computer',
@@ -21973,10 +21990,10 @@ extension on Translations {
 			'subtitleAiUi.liveCaptionsFromPlayback' => 'Live captions from playback',
 			'subtitleAiUi.theActivePlayerCopiesBoundedDecodedP_1bef0371' => 'The active player copies bounded decoded PCM with media timestamps. The local Whisper model runs on CPU. Audio is not saved; captions arrive with a short delay and may be unavailable on unsupported audio routes.',
 			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
-			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
-			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
+			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
 			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
 			'subtitleAiUi.repairCutsFromCapturedPlayback' => 'Repair cuts from captured playback',
 			'subtitleAiUi.preservesCueTimingOutsideSpeechMatchedEvidence' => 'Preserves cue timing outside speech-matched evidence',
@@ -22487,10 +22504,10 @@ extension on Translations {
 			'karaokeUi.requestSentToTheHost' => 'Request sent to the host',
 			'karaokeUi.requestASong' => 'Request a song',
 			'karaokeUi.hostUnlock' => 'Host unlock',
-			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
-			'karaokeUi.searchSongs' => 'Search songs',
 			_ => null,
 		} ?? switch (path) {
+			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
+			'karaokeUi.searchSongs' => 'Search songs',
 			'bonusExtras.title' => 'Extras',
 			'bonusExtras.seeAll' => 'See all extras',
 			'bonusExtras.findMore' => 'Find more',
@@ -22634,6 +22651,9 @@ extension on Translations {
 			'musicTools.outputPreset' => 'EQ for this output',
 			'musicTools.outputPresetHint' => 'Automatically use this EQ when this output is selected.',
 			'musicTools.eqApproximation' => 'Headphone profiles are approximated for the ten-band EQ.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

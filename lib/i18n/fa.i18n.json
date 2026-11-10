@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "حجم بوفری: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "ساخته شده",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "سخت افزار",
     "tunnelingActive": "فعال",
     "dvRpuFailed": "${converted} (${failures} شکست خورده)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "محدودیت کاسه: ${size} MiB"
   },
   "externalPlayer": {
     "title": "بازیکن خارجی",
@@ -3283,13 +3285,24 @@
     "request": "درخواست",
     "request4k": "درخواست در 4K",
     "requestSeasons": "درخواست فصل‌های جاافتاده",
+    "requestHint": "گزینه‌های درخواست را در Seerr انتخاب کنید",
+    "quickRequestHint": "اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید",
+    "chooseSeasonsHint": "فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید",
+    "request4kHint": "درخواست نسخهٔ 4K را در Seerr انتخاب کنید",
+    "only4kAvailable": "این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.",
+    "cardActionHint": "برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید",
+    "requestInProgress": "درخواست در حال انجام است",
     "notifyMe": "هنگام در دسترس بودن به من اطلاع بده",
     "notifyMe4k": "هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده",
     "notificationsOn": "هشدار در دسترس شدن روشن است",
+    "turnOffAlert": "خاموش کردن هشدار در دسترس بودن",
     "notificationsEnabled": "وقتی در دسترس باشد به شما اطلاع می‌دهیم",
+    "notificationsEnabled4k": "وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم",
+    "notificationsEnabledSeason": "وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم",
     "notificationsDisabled": "هشدار در دسترس شدن خاموش شد",
     "notificationFailed": "به‌روزرسانی هشدار در دسترس شدن انجام نشد",
     "seasons": "فصل ها",
+    "requestSheetHint": "Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند.",
     "allSeasons": "همه فصل ها",
     "advancedOptions": "پیشرفته",
     "destinationServer": "سرور مقصد",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr اطلاعات کاربر را بازگرداند",
     "sessionRejectedAfterReauth": "جلسه پس از امضای مجدد رد شد.",
     "permissionDenied": "Seerr این اقدام را رد کرد: حساب شما دیگر مجوز مورد نیاز را ندارد",
-    "permissionRevoked": "شما دیگر اجازه درخواست این کار را ندارید.",
-    "requestHint": "گزینه‌های درخواست را در Seerr انتخاب کنید",
-    "quickRequestHint": "اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید",
-    "chooseSeasonsHint": "فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید",
-    "request4kHint": "درخواست نسخهٔ 4K را در Seerr انتخاب کنید",
-    "only4kAvailable": "این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.",
-    "cardActionHint": "برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید",
-    "requestInProgress": "درخواست در حال انجام است",
-    "turnOffAlert": "خاموش کردن هشدار در دسترس بودن",
-    "notificationsEnabled4k": "وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم",
-    "notificationsEnabledSeason": "وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم",
-    "requestSheetHint": "Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند."
+    "permissionRevoked": "شما دیگر اجازه درخواست این کار را ندارید."
   },
   "services": {
     "title": "خدمات",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "بازگرداندن اطلاعات جمع آوری شده است."
   },
   "sourceSetup": {
+    "bookorbitHelp": "برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.",
+    "bookorbitOpen": "باز کردن در BookOrbit",
+    "bookorbitDetailHelp": "برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود.",
     "savedCertificate": "گواهی ذخیره‌شدهٔ سرور",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "یک نشانی NFS مانند nfs://nas:2049/export وارد کنید.",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "اطلاعات خواندن",
     "nfsReadSpeed": "سرعت اندازه گیری",
     "nfsReadRequests": "خواندن درخواست ها",
-    "sharedEntryConflict": "این ID آیتم به اشتراک گذاشته شده در حال حاضر با یک آیتم دیگر در این کتابخانه ترکیب شده است.",
-    "bookorbitHelp": "برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.",
-    "bookorbitOpen": "باز کردن در BookOrbit",
-    "bookorbitDetailHelp": "برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود."
+    "sharedEntryConflict": "این ID آیتم به اشتراک گذاشته شده در حال حاضر با یک آیتم دیگر در این کتابخانه ترکیب شده است."
   },
   "comics": {
     "fitHeight": "اندازه بر اساس ارتفاع",
@@ -5544,6 +5546,9 @@
     "anniversaries": "سالگرد انتشار آلبوم‌ها",
     "outputPreset": "اکولایزر این خروجی",
     "outputPresetHint": "هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.",
-    "eqApproximation": "پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند."
+    "eqApproximation": "پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

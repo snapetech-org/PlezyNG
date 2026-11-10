@@ -26,7 +26,7 @@ class _HeadphonePickerState extends State<_HeadphonePicker> {
           builder: (context, constraints) => Column(
             children: [
               if (constraints.maxHeight >= 400) ...[
-                const Text('AutoEq — Jaakko Pasanen'),
+                Text(t.musicTools.autoEqByJaakkoPasanen),
                 const SizedBox(height: 8),
                 Text(t.musicTools.eqApproximation),
               ],

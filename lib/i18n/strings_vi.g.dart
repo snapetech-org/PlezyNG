@@ -807,6 +807,7 @@ class _Translations$settings$vi extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Chọn clip nào từ thư viện được chọn có thể chơi trước khi xem phim.';
 	@override String get contentScreensaverDelayOptionDescription => 'Đợi nhiều phút này mà không cần nhập trước khi hiển thị màn hình bảo vệ nghệ thuật.';
 	@override String get videoCodecOptionDescription => 'Cho phép phát trực tiếp cho codec này khi được hỗ trợ. codec không kiểm tra được chuyển mã bởi máy chủ truyền thông.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer kích thước: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2528,6 +2529,7 @@ class _Translations$performanceOverlay$vi extends Translations$performanceOverla
 	@override String get decoderHardware => 'Phần cứng';
 	@override String get tunnelingActive => 'hoạt động';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} thất bại)';
+	@override String cacheLimitMiB({required Object size}) => 'Cache giới hạn: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2722,13 +2724,24 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	@override String get request => 'yêu cầu';
 	@override String get request4k => 'yêu cầu 4K';
 	@override String get requestSeasons => 'Yêu cầu các mùa còn thiếu';
+	@override String get requestHint => 'Chọn tùy chọn yêu cầu trong Seerr';
+	@override String get quickRequestHint => 'Yêu cầu ngay qua Seerr bằng cài đặt mặc định';
+	@override String get chooseSeasonsHint => 'Chọn các mùa cần yêu cầu trong Seerr';
+	@override String get request4kHint => 'Chọn yêu cầu bản 4K trong Seerr';
+	@override String get only4kAvailable => 'Tài khoản này chỉ có thể yêu cầu phiên bản 4K.';
+	@override String get cardActionHint => 'Mở menu thẻ để xem các tùy chọn yêu cầu Seerr';
+	@override String get requestInProgress => 'Đang xử lý yêu cầu';
 	@override String get notifyMe => 'Thông báo cho tôi khi có sẵn';
 	@override String get notifyMe4k => 'Thông báo cho tôi khi có bản 4K';
 	@override String get notificationsOn => 'Đã bật thông báo tình trạng khả dụng';
+	@override String get turnOffAlert => 'Tắt thông báo tình trạng khả dụng';
 	@override String get notificationsEnabled => 'Chúng tôi sẽ thông báo khi có sẵn';
+	@override String get notificationsEnabled4k => 'Chúng tôi sẽ thông báo khi có phiên bản 4K';
+	@override String notificationsEnabledSeason({required Object season}) => 'Chúng tôi sẽ thông báo khi có mùa ${season}';
 	@override String get notificationsDisabled => 'Đã tắt thông báo tình trạng khả dụng';
 	@override String get notificationFailed => 'Không thể cập nhật thông báo tình trạng khả dụng';
 	@override String get seasons => 'Phần';
+	@override String get requestSheetHint => 'Seerr xử lý phê duyệt và theo dõi yêu cầu của bạn.';
 	@override String get allSeasons => 'Tất cả mùa';
 	@override String get advancedOptions => 'Nâng cao';
 	@override String get destinationServer => 'Destination Server Khách sạn';
@@ -2763,17 +2776,6 @@ class _Translations$seerr$vi extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Cuộc họp đã bị từ chối sau khi ký lại';
 	@override String get permissionDenied => 'Seerr từ chối hành động này: Tài khoản của bạn không còn được phép yêu cầu';
 	@override String get permissionRevoked => 'Bạn không còn được phép yêu cầu điều này';
-	@override String get requestHint => 'Chọn tùy chọn yêu cầu trong Seerr';
-	@override String get quickRequestHint => 'Yêu cầu ngay qua Seerr bằng cài đặt mặc định';
-	@override String get chooseSeasonsHint => 'Chọn các mùa cần yêu cầu trong Seerr';
-	@override String get request4kHint => 'Chọn yêu cầu bản 4K trong Seerr';
-	@override String get only4kAvailable => 'Tài khoản này chỉ có thể yêu cầu phiên bản 4K.';
-	@override String get cardActionHint => 'Mở menu thẻ để xem các tùy chọn yêu cầu Seerr';
-	@override String get requestInProgress => 'Đang xử lý yêu cầu';
-	@override String get turnOffAlert => 'Tắt thông báo tình trạng khả dụng';
-	@override String get notificationsEnabled4k => 'Chúng tôi sẽ thông báo khi có phiên bản 4K';
-	@override String notificationsEnabledSeason({required Object season}) => 'Chúng tôi sẽ thông báo khi có mùa ${season}';
-	@override String get requestSheetHint => 'Seerr xử lý phê duyệt và theo dõi yêu cầu của bạn.';
 }
 
 // Path: services
@@ -3738,6 +3740,9 @@ class _Translations$sourceSetup$vi extends Translations$sourceSetup$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Đăng nhập bằng tài khoản BookOrbit của riêng bạn để duyệt và phát sách. Yêu cầu các tựa sách còn thiếu vẫn được gửi qua phiên bản SeerrNG đã kết nối.';
+	@override String get bookorbitOpen => 'Mở trong BookOrbit';
+	@override String get bookorbitDetailHelp => 'Xem tựa sách này trong BookOrbit để quản lý thông tin thư viện và các định dạng Pleazyng không thể mở. Tiến độ nghe được đồng bộ với tài khoản BookOrbit của bạn.';
 	@override String get savedCertificate => 'Chứng chỉ máy chủ đã lưu';
 	@override String get nfsEndpointInvalid => 'Nhập URL NFS, chẳng hạn nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Không tìm thấy máy chủ DLNA. Hãy nhập thủ công URL mô tả thiết bị.';
@@ -3849,9 +3854,6 @@ class _Translations$sourceSetup$vi extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Tốc độ đo';
 	@override String get nfsReadRequests => 'Đọc yêu cầu';
 	@override String get sharedEntryConflict => 'ID mục được chia sẻ này đã được kết hợp với một mục khác trong thư viện này.';
-	@override String get bookorbitHelp => 'Đăng nhập bằng tài khoản BookOrbit của riêng bạn để duyệt và phát sách. Yêu cầu các tựa sách còn thiếu vẫn được gửi qua phiên bản SeerrNG đã kết nối.';
-	@override String get bookorbitOpen => 'Mở trong BookOrbit';
-	@override String get bookorbitDetailHelp => 'Xem tựa sách này trong BookOrbit để quản lý thông tin thư viện và các định dạng Pleazyng không thể mở. Tiến độ nghe được đồng bộ với tài khoản BookOrbit của bạn.';
 }
 
 // Path: comics
@@ -4297,6 +4299,9 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	@override String get outputPreset => 'EQ cho đầu ra này';
 	@override String get outputPresetHint => 'Tự động dùng EQ này khi đầu ra này được chọn.';
 	@override String get eqApproximation => 'Hồ sơ tai nghe được xấp xỉ cho EQ mười dải.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6086,6 +6091,7 @@ extension on TranslationsVi {
 			'settings.prerollSelectionDescription' => 'Chọn clip nào từ thư viện được chọn có thể chơi trước khi xem phim.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Đợi nhiều phút này mà không cần nhập trước khi hiển thị màn hình bảo vệ nghệ thuật.',
 			'settings.videoCodecOptionDescription' => 'Cho phép phát trực tiếp cho codec này khi được hỗ trợ. codec không kiểm tra được chuyển mã bởi máy chủ truyền thông.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer kích thước: ${size} MiB',
 			'themeEditor.builtIn' => 'xây dựng',
 			'themeEditor.presets' => 'Lời bài hát',
 			'themeEditor.custom' => 'Tùy chọn',
@@ -6437,9 +6443,9 @@ extension on TranslationsVi {
 			'videoControls.chaptersAndBookmarks' => 'Chương và Bookmark',
 			'videoControls.segmentLoop' => 'phân đoạn loop',
 			'videoControls.addBookmark' => 'Thêm Bookmark',
-			'videoControls.bookmarkName' => 'Bookmark tên',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark tên',
 			'videoControls.bookmarkNameHint' => 'Ví dụ: Mở cảnh',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Đề ${n}',
 			'videoControls.bookmarkNameRequired' => 'Nhập tên cho bookmark này.',
@@ -6951,9 +6957,9 @@ extension on TranslationsVi {
 			'libraries.hideLibrary' => 'ẩn thư viện',
 			'libraries.libraryOptions' => 'Tùy chọn thư viện',
 			'libraries.content' => 'Thư viện Content',
-			'libraries.selectLibrary' => 'Chọn thư viện',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Chọn thư viện',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Bộ lọc (${count})',
 			'libraries.noRecommendations' => 'Không có khuyến nghị có sẵn',
 			'libraries.noCollections' => 'Không có tập hợp trong thư viện này',
@@ -7465,9 +7471,9 @@ extension on TranslationsVi {
 			'watchTogether.paste' => 'Ăn bánh',
 			'watchTogether.noCodeInClipboard' => 'Clipboard không chứa mã phòng',
 			'watchTogether.copyCode' => 'Copy mã',
-			'watchTogether.codeCopied' => 'Mã phòng copy',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Mã phòng copy',
 			'watchTogether.shareInvite' => 'Chia sẻ mời',
 			'watchTogether.inviteCopied' => 'Gửi tin nhắn, gửi nó vào một tin nhắn.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Tham gia phòng đồng hồ của tôi tại Pleazyng: mở phòng đồng hồ, chọn phòng đồng hồ và nhập phòng đồng hồ ${code}.',
@@ -7931,6 +7937,7 @@ extension on TranslationsVi {
 			'performanceOverlay.decoderHardware' => 'Phần cứng',
 			'performanceOverlay.tunnelingActive' => 'hoạt động',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} thất bại)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Cache giới hạn: ${size} MiB',
 			'externalPlayer.title' => 'Người chơi bên ngoài',
 			'externalPlayer.useExternalPlayer' => 'Sử dụng Player External',
 			'externalPlayer.useExternalPlayerDescription' => 'Mở video trong ứng dụng khác',
@@ -7978,10 +7985,10 @@ extension on TranslationsVi {
 			'metadataEdit.fromUrl' => 'Từ URL',
 			'metadataEdit.uploadFile' => 'tải file',
 			'metadataEdit.enterImageUrl' => 'Nhập hình ảnh URL',
-			'metadataEdit.imageUrl' => 'Ảnh URL',
-			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Ảnh URL',
+			'metadataEdit.metadataUpdated' => 'Metadata cập nhật',
 			'metadataEdit.metadataUpdateFailed' => 'Không cập nhật metadata',
 			'metadataEdit.artworkUpdated' => 'Artwork cập nhật',
 			'metadataEdit.artworkUpdateFailed' => 'Không cập nhật tác phẩm nghệ thuật',
@@ -8073,13 +8080,24 @@ extension on TranslationsVi {
 			'seerr.request' => 'yêu cầu',
 			'seerr.request4k' => 'yêu cầu 4K',
 			'seerr.requestSeasons' => 'Yêu cầu các mùa còn thiếu',
+			'seerr.requestHint' => 'Chọn tùy chọn yêu cầu trong Seerr',
+			'seerr.quickRequestHint' => 'Yêu cầu ngay qua Seerr bằng cài đặt mặc định',
+			'seerr.chooseSeasonsHint' => 'Chọn các mùa cần yêu cầu trong Seerr',
+			'seerr.request4kHint' => 'Chọn yêu cầu bản 4K trong Seerr',
+			'seerr.only4kAvailable' => 'Tài khoản này chỉ có thể yêu cầu phiên bản 4K.',
+			'seerr.cardActionHint' => 'Mở menu thẻ để xem các tùy chọn yêu cầu Seerr',
+			'seerr.requestInProgress' => 'Đang xử lý yêu cầu',
 			'seerr.notifyMe' => 'Thông báo cho tôi khi có sẵn',
 			'seerr.notifyMe4k' => 'Thông báo cho tôi khi có bản 4K',
 			'seerr.notificationsOn' => 'Đã bật thông báo tình trạng khả dụng',
+			'seerr.turnOffAlert' => 'Tắt thông báo tình trạng khả dụng',
 			'seerr.notificationsEnabled' => 'Chúng tôi sẽ thông báo khi có sẵn',
+			'seerr.notificationsEnabled4k' => 'Chúng tôi sẽ thông báo khi có phiên bản 4K',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Chúng tôi sẽ thông báo khi có mùa ${season}',
 			'seerr.notificationsDisabled' => 'Đã tắt thông báo tình trạng khả dụng',
 			'seerr.notificationFailed' => 'Không thể cập nhật thông báo tình trạng khả dụng',
 			'seerr.seasons' => 'Phần',
+			'seerr.requestSheetHint' => 'Seerr xử lý phê duyệt và theo dõi yêu cầu của bạn.',
 			'seerr.allSeasons' => 'Tất cả mùa',
 			'seerr.advancedOptions' => 'Nâng cao',
 			'seerr.destinationServer' => 'Destination Server Khách sạn',
@@ -8114,17 +8132,6 @@ extension on TranslationsVi {
 			'seerr.sessionRejectedAfterReauth' => 'Cuộc họp đã bị từ chối sau khi ký lại',
 			'seerr.permissionDenied' => 'Seerr từ chối hành động này: Tài khoản của bạn không còn được phép yêu cầu',
 			'seerr.permissionRevoked' => 'Bạn không còn được phép yêu cầu điều này',
-			'seerr.requestHint' => 'Chọn tùy chọn yêu cầu trong Seerr',
-			'seerr.quickRequestHint' => 'Yêu cầu ngay qua Seerr bằng cài đặt mặc định',
-			'seerr.chooseSeasonsHint' => 'Chọn các mùa cần yêu cầu trong Seerr',
-			'seerr.request4kHint' => 'Chọn yêu cầu bản 4K trong Seerr',
-			'seerr.only4kAvailable' => 'Tài khoản này chỉ có thể yêu cầu phiên bản 4K.',
-			'seerr.cardActionHint' => 'Mở menu thẻ để xem các tùy chọn yêu cầu Seerr',
-			'seerr.requestInProgress' => 'Đang xử lý yêu cầu',
-			'seerr.turnOffAlert' => 'Tắt thông báo tình trạng khả dụng',
-			'seerr.notificationsEnabled4k' => 'Chúng tôi sẽ thông báo khi có phiên bản 4K',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Chúng tôi sẽ thông báo khi có mùa ${season}',
-			'seerr.requestSheetHint' => 'Seerr xử lý phê duyệt và theo dõi yêu cầu của bạn.',
 			'services.title' => 'Dịch vụ',
 			'services.hubSubtitle' => 'Sync theo dõi tiến bộ và yêu cầu các tiêu đề mới.',
 			'services.integrations' => 'Integration',
@@ -8492,10 +8499,10 @@ extension on TranslationsVi {
 			'universalMedia.favorites' => 'Save Stream yêu thích',
 			'universalMedia.address' => 'Địa chỉ Media',
 			'universalMedia.addressHelp' => 'URL với các thông số xác nhận hoặc ký tự được công nhận chỉ được sử dụng cho phiên này và không thể được lưu như là yêu thích.',
-			'universalMedia.displayName' => 'Tên hiển thị (tùy chọn)',
-			'universalMedia.displayNameHelp' => 'Chọn tên ngắn cho người chơi và hệ thống điều khiển phương tiện truyền thông.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'Tên hiển thị (tùy chọn)',
+			'universalMedia.displayNameHelp' => 'Chọn tên ngắn cho người chơi và hệ thống điều khiển phương tiện truyền thông.',
 			'universalMedia.allowHttp' => 'Cho phép kết nối HTTP không được mã hóa',
 			'universalMedia.allowHttpHelp' => 'HTTP không mã hóa kết nối. Chỉ cho phép nó trên một mạng tin cậy. Sử dụng HTTPS khi có thể.',
 			'universalMedia.advancedProtocols' => 'Chỉ MPV: nhập một địa chỉ RTSP, RTMP/RTMPS, UDP hoặc RTP. Các địa chỉ này không thể được lưu như là yêu thích.',
@@ -8968,6 +8975,9 @@ extension on TranslationsVi {
 			'audiobook.recoveryImportConfirm' => 'Kết hợp tệp phục hồi mã hóa này với các vị trí đọc và ghi chú hiện tại? Lịch sử hiện có sẽ được giữ lại. Thư viện chia sẻ và ID mục không bao gồm; thiết lập ID phù hợp trên mỗi thiết bị trước khi nhập khẩu.',
 			'audiobook.recoveryExported' => 'Tệp phục hồi mã hóa đã được lưu.',
 			'audiobook.recoveryImported' => 'Dữ liệu phục hồi kết hợp.',
+			'sourceSetup.bookorbitHelp' => 'Đăng nhập bằng tài khoản BookOrbit của riêng bạn để duyệt và phát sách. Yêu cầu các tựa sách còn thiếu vẫn được gửi qua phiên bản SeerrNG đã kết nối.',
+			'sourceSetup.bookorbitOpen' => 'Mở trong BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Xem tựa sách này trong BookOrbit để quản lý thông tin thư viện và các định dạng Pleazyng không thể mở. Tiến độ nghe được đồng bộ với tài khoản BookOrbit của bạn.',
 			'sourceSetup.savedCertificate' => 'Chứng chỉ máy chủ đã lưu',
 			'sourceSetup.nfsEndpointInvalid' => 'Nhập URL NFS, chẳng hạn nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Không tìm thấy máy chủ DLNA. Hãy nhập thủ công URL mô tả thiết bị.',
@@ -9003,13 +9013,13 @@ extension on TranslationsVi {
 			'sourceSetup.clientCertificate' => 'Chứng chỉ máy khách (không bắt buộc)',
 			'sourceSetup.clientCertificateHelp' => 'Cho phép NAS xác thực máy khách này; ID AUTH_SYS vẫn phụ thuộc vào chính sách của vùng chia sẻ NFS trên NAS.',
 			'sourceSetup.savedIdentity' => 'Sẽ dùng danh tính máy khách đã lưu.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Thay danh tính máy khách đã lưu',
 			'sourceSetup.chooseIdentity' => 'Chọn danh tính máy khách PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Cụm mật khẩu của danh tính máy khách',
 			'sourceSetup.identityPassphraseHelp' => 'Để trống nếu tệp không có cụm mật khẩu.',
 			'sourceSetup.removeIdentity' => 'Xóa danh tính máy khách đã lưu nếu có',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'Danh tính máy khách được lưu trong kho thông tin xác thực đã mã hóa của nguồn. Giữ nguyên phần này để giữ lại danh tính đã lưu.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 chỉ đọc qua TCP. Không có RPC-with-TLS thì lưu lượng NFS không được mã hóa. NAS phải cho phép các ID AUTH_SYS đã chọn và các cổng máy khách không cần đặc quyền (thường gọi là tùy chọn xuất “insecure”). Không hỗ trợ NFSv4 và UDP.',
 			'sourceSetup.nfsSetupHelp' => 'Trợ giúp thiết lập NFS',
@@ -9081,9 +9091,6 @@ extension on TranslationsVi {
 			'sourceSetup.nfsReadSpeed' => 'Tốc độ đo',
 			'sourceSetup.nfsReadRequests' => 'Đọc yêu cầu',
 			'sourceSetup.sharedEntryConflict' => 'ID mục được chia sẻ này đã được kết hợp với một mục khác trong thư viện này.',
-			'sourceSetup.bookorbitHelp' => 'Đăng nhập bằng tài khoản BookOrbit của riêng bạn để duyệt và phát sách. Yêu cầu các tựa sách còn thiếu vẫn được gửi qua phiên bản SeerrNG đã kết nối.',
-			'sourceSetup.bookorbitOpen' => 'Mở trong BookOrbit',
-			'sourceSetup.bookorbitDetailHelp' => 'Xem tựa sách này trong BookOrbit để quản lý thông tin thư viện và các định dạng Pleazyng không thể mở. Tiến độ nghe được đồng bộ với tài khoản BookOrbit của bạn.',
 			'comics.fitHeight' => 'Vừa chiều cao',
 			'comics.readingMode' => 'Chế độ đọc',
 			'comics.paged' => 'Trang',
@@ -9448,6 +9455,9 @@ extension on TranslationsVi {
 			'musicTools.outputPreset' => 'EQ cho đầu ra này',
 			'musicTools.outputPresetHint' => 'Tự động dùng EQ này khi đầu ra này được chọn.',
 			'musicTools.eqApproximation' => 'Hồ sơ tai nghe được xấp xỉ cho EQ mười dải.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

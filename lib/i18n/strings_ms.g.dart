@@ -807,6 +807,7 @@ class _Translations$settings$ms extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Pilih klip mana daripada perpustakaan yang dipilih boleh dimainkan sebelum filem.';
 	@override String get contentScreensaverDelayOptionDescription => 'Tunggu ini banyak minit tanpa input sebelum menunjukkan screensaver artwork.';
 	@override String get videoCodecOptionDescription => 'Membolehkan pemutaran langsung untuk kodek ini apabila disokong. kodek yang tidak disemak disulitkan oleh pelayan media.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Saiz Buffer: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2528,6 +2529,7 @@ class _Translations$performanceOverlay$ms extends Translations$performanceOverla
 	@override String get decoderHardware => 'Perkakasan';
 	@override String get tunnelingActive => 'Aktiviti';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} gagal)';
+	@override String cacheLimitMiB({required Object size}) => 'Perbezaan Cache: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2722,13 +2724,24 @@ class _Translations$seerr$ms extends Translations$seerr$en {
 	@override String get request => 'Permintaan';
 	@override String get request4k => 'Permintaan dalam 4K';
 	@override String get requestSeasons => 'Minta musim yang belum tersedia';
+	@override String get requestHint => 'Pilih pilihan permintaan dalam Seerr';
+	@override String get quickRequestHint => 'Buat permintaan sekarang dalam Seerr menggunakan tetapan lalai';
+	@override String get chooseSeasonsHint => 'Pilih musim untuk diminta dalam Seerr';
+	@override String get request4kHint => 'Pilih permintaan 4K dalam Seerr';
+	@override String get only4kAvailable => 'Akaun ini hanya boleh meminta versi 4K.';
+	@override String get cardActionHint => 'Buka menu kad untuk pilihan permintaan Seerr';
+	@override String get requestInProgress => 'Permintaan sedang diproses';
 	@override String get notifyMe => 'Beritahu saya apabila tersedia';
 	@override String get notifyMe4k => 'Beritahu saya apabila tersedia dalam 4K';
 	@override String get notificationsOn => 'Amaran ketersediaan dihidupkan';
+	@override String get turnOffAlert => 'Matikan pemberitahuan ketersediaan';
 	@override String get notificationsEnabled => 'Kami akan memaklumkan anda apabila tersedia';
+	@override String get notificationsEnabled4k => 'Kami akan memaklumkan anda apabila versi 4K tersedia';
+	@override String notificationsEnabledSeason({required Object season}) => 'Kami akan memaklumkan anda apabila musim ${season} tersedia';
 	@override String get notificationsDisabled => 'Amaran ketersediaan dimatikan';
 	@override String get notificationFailed => 'Tidak dapat mengemas kini amaran ketersediaan';
 	@override String get seasons => 'Musim';
+	@override String get requestSheetHint => 'Seerr menguruskan kelulusan dan menjejaki permintaan anda.';
 	@override String get allSeasons => 'Semua musim';
 	@override String get advancedOptions => 'Kemajuan';
 	@override String get destinationServer => 'Pelayan Destinasi';
@@ -2763,17 +2776,6 @@ class _Translations$seerr$ms extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Mesyuarat itu ditolak selepas penandatanganan semula.';
 	@override String get permissionDenied => 'Seerr menafikan tindakan ini: akaun anda tidak lagi mempunyai kebenaran yang diperlukan';
 	@override String get permissionRevoked => 'Anda tidak lagi mempunyai keizinan untuk meminta ini';
-	@override String get requestHint => 'Pilih pilihan permintaan dalam Seerr';
-	@override String get quickRequestHint => 'Buat permintaan sekarang dalam Seerr menggunakan tetapan lalai';
-	@override String get chooseSeasonsHint => 'Pilih musim untuk diminta dalam Seerr';
-	@override String get request4kHint => 'Pilih permintaan 4K dalam Seerr';
-	@override String get only4kAvailable => 'Akaun ini hanya boleh meminta versi 4K.';
-	@override String get cardActionHint => 'Buka menu kad untuk pilihan permintaan Seerr';
-	@override String get requestInProgress => 'Permintaan sedang diproses';
-	@override String get turnOffAlert => 'Matikan pemberitahuan ketersediaan';
-	@override String get notificationsEnabled4k => 'Kami akan memaklumkan anda apabila versi 4K tersedia';
-	@override String notificationsEnabledSeason({required Object season}) => 'Kami akan memaklumkan anda apabila musim ${season} tersedia';
-	@override String get requestSheetHint => 'Seerr menguruskan kelulusan dan menjejaki permintaan anda.';
 }
 
 // Path: services
@@ -3738,6 +3740,9 @@ class _Translations$sourceSetup$ms extends Translations$sourceSetup$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Log masuk dengan akaun BookOrbit anda sendiri untuk melayari dan memainkan bukunya. Permintaan untuk judul yang tiada tetap dihantar melalui tika SeerrNG yang disambungkan.';
+	@override String get bookorbitOpen => 'Buka dalam BookOrbit';
+	@override String get bookorbitDetailHelp => 'Lihat judul ini dalam BookOrbit untuk mengurus butiran pustaka dan format yang tidak dapat dibuka oleh Pleazyng. Kemajuan pendengaran disegerakkan dengan akaun BookOrbit anda.';
 	@override String get savedCertificate => 'Sijil pelayan yang disimpan';
 	@override String get nfsEndpointInvalid => 'Masukkan URL NFS, contohnya nfs://nas:2049/export.';
 	@override String get dlnaNone => 'Tiada pelayan DLNA ditemukan. Masukkan URL perihalan peranti secara manual.';
@@ -3849,9 +3854,6 @@ class _Translations$sourceSetup$ms extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'Kelajuan yang diukur';
 	@override String get nfsReadRequests => 'Membaca Permintaan';
 	@override String get sharedEntryConflict => 'ID item yang dikongsi ini telah digabungkan dengan item lain dalam perpustakaan ini. pilih ID yang berbeza.';
-	@override String get bookorbitHelp => 'Log masuk dengan akaun BookOrbit anda sendiri untuk melayari dan memainkan bukunya. Permintaan untuk judul yang tiada tetap dihantar melalui tika SeerrNG yang disambungkan.';
-	@override String get bookorbitOpen => 'Buka dalam BookOrbit';
-	@override String get bookorbitDetailHelp => 'Lihat judul ini dalam BookOrbit untuk mengurus butiran pustaka dan format yang tidak dapat dibuka oleh Pleazyng. Kemajuan pendengaran disegerakkan dengan akaun BookOrbit anda.';
 }
 
 // Path: comics
@@ -4297,6 +4299,9 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	@override String get outputPreset => 'EQ untuk output ini';
 	@override String get outputPresetHint => 'Gunakan EQ ini secara automatik apabila output ini dipilih.';
 	@override String get eqApproximation => 'Profil fon kepala dianggarkan untuk EQ sepuluh jalur.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6086,6 +6091,7 @@ extension on TranslationsMs {
 			'settings.prerollSelectionDescription' => 'Pilih klip mana daripada perpustakaan yang dipilih boleh dimainkan sebelum filem.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Tunggu ini banyak minit tanpa input sebelum menunjukkan screensaver artwork.',
 			'settings.videoCodecOptionDescription' => 'Membolehkan pemutaran langsung untuk kodek ini apabila disokong. kodek yang tidak disemak disulitkan oleh pelayan media.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Saiz Buffer: ${size} MiB',
 			'themeEditor.builtIn' => 'dibina dalam',
 			'themeEditor.presets' => 'Persembahan',
 			'themeEditor.custom' => 'Khas',
@@ -6437,9 +6443,9 @@ extension on TranslationsMs {
 			'videoControls.chaptersAndBookmarks' => 'Bab dan Bookmark',
 			'videoControls.segmentLoop' => 'Perbezaan segmen',
 			'videoControls.addBookmark' => 'Menambah Bookmark',
-			'videoControls.bookmarkName' => 'Nama Bookmark',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Nama Bookmark',
 			'videoControls.bookmarkNameHint' => 'Sebagai contoh, adegan pembukaan',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Perpustakaan ${n}',
 			'videoControls.bookmarkNameRequired' => 'Masukkan nama untuk buku ini.',
@@ -6951,9 +6957,9 @@ extension on TranslationsMs {
 			'libraries.hideLibrary' => 'Perpustakaan tersembunyi',
 			'libraries.libraryOptions' => 'Pilihan Perpustakaan',
 			'libraries.content' => 'Perpustakaan kandungan',
-			'libraries.selectLibrary' => 'Pilih Perpustakaan',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Pilih Perpustakaan',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filter (${count})',
 			'libraries.noRecommendations' => 'Tiada cadangan yang tersedia',
 			'libraries.noCollections' => 'Tiada koleksi dalam perpustakaan ini',
@@ -7465,9 +7471,9 @@ extension on TranslationsMs {
 			'watchTogether.paste' => 'Paste yang',
 			'watchTogether.noCodeInClipboard' => 'Klipboard tidak mengandungi kod bilik',
 			'watchTogether.copyCode' => 'Kode salinan',
-			'watchTogether.codeCopied' => 'Kod bilik disalin',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Kod bilik disalin',
 			'watchTogether.shareInvite' => 'Memberi jemputan',
 			'watchTogether.inviteCopied' => 'Sila rujuk. masukkan ke dalam mesej.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Bergabunglah dengan Bilik Bersama saya di Pleazyng: buka Bilik Bersama, pilih Bilik Bersama dan masukkan ${code}.',
@@ -7931,6 +7937,7 @@ extension on TranslationsMs {
 			'performanceOverlay.decoderHardware' => 'Perkakasan',
 			'performanceOverlay.tunnelingActive' => 'Aktiviti',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} gagal)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Perbezaan Cache: ${size} MiB',
 			'externalPlayer.title' => 'Pemain luar',
 			'externalPlayer.useExternalPlayer' => 'Penggunaan Pemain Luar',
 			'externalPlayer.useExternalPlayerDescription' => 'Membuka video dalam aplikasi lain',
@@ -7978,10 +7985,10 @@ extension on TranslationsMs {
 			'metadataEdit.fromUrl' => 'Daripada URL',
 			'metadataEdit.uploadFile' => 'Muat naik fail',
 			'metadataEdit.enterImageUrl' => 'Masukkan URL imej',
-			'metadataEdit.imageUrl' => 'imej URL',
-			'metadataEdit.metadataUpdated' => 'Metadata dikemaskini',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'imej URL',
+			'metadataEdit.metadataUpdated' => 'Metadata dikemaskini',
 			'metadataEdit.metadataUpdateFailed' => 'Kegagalan Mengemas kini Metadata',
 			'metadataEdit.artworkUpdated' => 'Seni yang dikemaskini',
 			'metadataEdit.artworkUpdateFailed' => 'Kegagalan untuk mengemas kini karya seni',
@@ -8073,13 +8080,24 @@ extension on TranslationsMs {
 			'seerr.request' => 'Permintaan',
 			'seerr.request4k' => 'Permintaan dalam 4K',
 			'seerr.requestSeasons' => 'Minta musim yang belum tersedia',
+			'seerr.requestHint' => 'Pilih pilihan permintaan dalam Seerr',
+			'seerr.quickRequestHint' => 'Buat permintaan sekarang dalam Seerr menggunakan tetapan lalai',
+			'seerr.chooseSeasonsHint' => 'Pilih musim untuk diminta dalam Seerr',
+			'seerr.request4kHint' => 'Pilih permintaan 4K dalam Seerr',
+			'seerr.only4kAvailable' => 'Akaun ini hanya boleh meminta versi 4K.',
+			'seerr.cardActionHint' => 'Buka menu kad untuk pilihan permintaan Seerr',
+			'seerr.requestInProgress' => 'Permintaan sedang diproses',
 			'seerr.notifyMe' => 'Beritahu saya apabila tersedia',
 			'seerr.notifyMe4k' => 'Beritahu saya apabila tersedia dalam 4K',
 			'seerr.notificationsOn' => 'Amaran ketersediaan dihidupkan',
+			'seerr.turnOffAlert' => 'Matikan pemberitahuan ketersediaan',
 			'seerr.notificationsEnabled' => 'Kami akan memaklumkan anda apabila tersedia',
+			'seerr.notificationsEnabled4k' => 'Kami akan memaklumkan anda apabila versi 4K tersedia',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Kami akan memaklumkan anda apabila musim ${season} tersedia',
 			'seerr.notificationsDisabled' => 'Amaran ketersediaan dimatikan',
 			'seerr.notificationFailed' => 'Tidak dapat mengemas kini amaran ketersediaan',
 			'seerr.seasons' => 'Musim',
+			'seerr.requestSheetHint' => 'Seerr menguruskan kelulusan dan menjejaki permintaan anda.',
 			'seerr.allSeasons' => 'Semua musim',
 			'seerr.advancedOptions' => 'Kemajuan',
 			'seerr.destinationServer' => 'Pelayan Destinasi',
@@ -8114,17 +8132,6 @@ extension on TranslationsMs {
 			'seerr.sessionRejectedAfterReauth' => 'Mesyuarat itu ditolak selepas penandatanganan semula.',
 			'seerr.permissionDenied' => 'Seerr menafikan tindakan ini: akaun anda tidak lagi mempunyai kebenaran yang diperlukan',
 			'seerr.permissionRevoked' => 'Anda tidak lagi mempunyai keizinan untuk meminta ini',
-			'seerr.requestHint' => 'Pilih pilihan permintaan dalam Seerr',
-			'seerr.quickRequestHint' => 'Buat permintaan sekarang dalam Seerr menggunakan tetapan lalai',
-			'seerr.chooseSeasonsHint' => 'Pilih musim untuk diminta dalam Seerr',
-			'seerr.request4kHint' => 'Pilih permintaan 4K dalam Seerr',
-			'seerr.only4kAvailable' => 'Akaun ini hanya boleh meminta versi 4K.',
-			'seerr.cardActionHint' => 'Buka menu kad untuk pilihan permintaan Seerr',
-			'seerr.requestInProgress' => 'Permintaan sedang diproses',
-			'seerr.turnOffAlert' => 'Matikan pemberitahuan ketersediaan',
-			'seerr.notificationsEnabled4k' => 'Kami akan memaklumkan anda apabila versi 4K tersedia',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'Kami akan memaklumkan anda apabila musim ${season} tersedia',
-			'seerr.requestSheetHint' => 'Seerr menguruskan kelulusan dan menjejaki permintaan anda.',
 			'services.title' => 'Perkhidmatan',
 			'services.hubSubtitle' => 'Sync menonton kemajuan dan meminta tajuk baru.',
 			'services.integrations' => 'Integrasi',
@@ -8492,10 +8499,10 @@ extension on TranslationsMs {
 			'universalMedia.favorites' => 'Penyimpanan Stream Favorit',
 			'universalMedia.address' => 'Alamat Media',
 			'universalMedia.addressHelp' => 'URL dengan parameter pengesahan atau tandatangan yang diiktiraf hanya digunakan untuk sesi ini dan tidak boleh disimpan sebagai kegemaran.',
-			'universalMedia.displayName' => 'Nama Pameran ( opsional )',
-			'universalMedia.displayNameHelp' => 'Pilih nama pendek untuk pemutar dan kawalan media sistem.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'Nama Pameran ( opsional )',
+			'universalMedia.displayNameHelp' => 'Pilih nama pendek untuk pemutar dan kawalan media sistem.',
 			'universalMedia.allowHttp' => 'Membolehkan sambungan HTTP yang tidak disulitkan',
 			'universalMedia.allowHttpHelp' => 'HTTP tidak menyulitkan sambungan. membenarkan ia hanya pada rangkaian yang dipercayai. gunakan HTTPS apabila mungkin.',
 			'universalMedia.advancedProtocols' => 'MPV sahaja: masukkan alamat RTSP, RTMP/RTMPS, UDP, atau RTP. Alamat ini tidak boleh disimpan sebagai kegemaran.',
@@ -8968,6 +8975,9 @@ extension on TranslationsMs {
 			'audiobook.recoveryImportConfirm' => 'Menggabungkan fail pemulihan yang disulitkan ini dengan kedudukan bacaan semasa dan nota? sejarah yang sedia ada akan dikekalkan. perpustakaan berkongsi dan ID item tidak termasuk; tetapkan ID yang sepadan pada setiap peranti sebelum mengimport.',
 			'audiobook.recoveryExported' => 'Fail pemulihan yang disulitkan disimpan.',
 			'audiobook.recoveryImported' => 'Data pemulihan telah digabungkan.',
+			'sourceSetup.bookorbitHelp' => 'Log masuk dengan akaun BookOrbit anda sendiri untuk melayari dan memainkan bukunya. Permintaan untuk judul yang tiada tetap dihantar melalui tika SeerrNG yang disambungkan.',
+			'sourceSetup.bookorbitOpen' => 'Buka dalam BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'Lihat judul ini dalam BookOrbit untuk mengurus butiran pustaka dan format yang tidak dapat dibuka oleh Pleazyng. Kemajuan pendengaran disegerakkan dengan akaun BookOrbit anda.',
 			'sourceSetup.savedCertificate' => 'Sijil pelayan yang disimpan',
 			'sourceSetup.nfsEndpointInvalid' => 'Masukkan URL NFS, contohnya nfs://nas:2049/export.',
 			'sourceSetup.dlnaNone' => 'Tiada pelayan DLNA ditemukan. Masukkan URL perihalan peranti secara manual.',
@@ -9003,13 +9013,13 @@ extension on TranslationsMs {
 			'sourceSetup.clientCertificate' => 'Sijil klien (pilihan)',
 			'sourceSetup.clientCertificateHelp' => 'Membolehkan NAS mengesahkan klien ini; ID AUTH_SYS masih bergantung pada dasar perkongsian NFS pada NAS.',
 			'sourceSetup.savedIdentity' => 'Identiti klien yang disimpan akan digunakan.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Gantikan identiti klien yang disimpan',
 			'sourceSetup.chooseIdentity' => 'Pilih identiti klien PKCS#12',
 			'sourceSetup.identityPassphrase' => 'Frasa laluan identiti klien',
 			'sourceSetup.identityPassphraseHelp' => 'Biarkan kosong jika fail tiada frasa laluan.',
 			'sourceSetup.removeIdentity' => 'Alih keluar sebarang identiti klien yang disimpan',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'Identiti klien disimpan dalam stor bukti kelayakan sumber yang disulitkan. Biarkan bahagian ini tidak berubah untuk mengekalkan identiti yang disimpan.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 baca sahaja melalui TCP. Tanpa RPC-with-TLS, trafik NFS tidak disulitkan. NAS mesti membenarkan ID AUTH_SYS yang dipilih dan port klien tanpa keistimewaan (sering dipanggil pilihan eksport “insecure”). NFSv4 dan UDP tidak disokong.',
 			'sourceSetup.nfsSetupHelp' => 'Bantuan persediaan NFS',
@@ -9081,9 +9091,6 @@ extension on TranslationsMs {
 			'sourceSetup.nfsReadSpeed' => 'Kelajuan yang diukur',
 			'sourceSetup.nfsReadRequests' => 'Membaca Permintaan',
 			'sourceSetup.sharedEntryConflict' => 'ID item yang dikongsi ini telah digabungkan dengan item lain dalam perpustakaan ini. pilih ID yang berbeza.',
-			'sourceSetup.bookorbitHelp' => 'Log masuk dengan akaun BookOrbit anda sendiri untuk melayari dan memainkan bukunya. Permintaan untuk judul yang tiada tetap dihantar melalui tika SeerrNG yang disambungkan.',
-			'sourceSetup.bookorbitOpen' => 'Buka dalam BookOrbit',
-			'sourceSetup.bookorbitDetailHelp' => 'Lihat judul ini dalam BookOrbit untuk mengurus butiran pustaka dan format yang tidak dapat dibuka oleh Pleazyng. Kemajuan pendengaran disegerakkan dengan akaun BookOrbit anda.',
 			'comics.fitHeight' => 'Muatkan mengikut tinggi',
 			'comics.readingMode' => 'Mod bacaan',
 			'comics.paged' => 'Halaman',
@@ -9448,6 +9455,9 @@ extension on TranslationsMs {
 			'musicTools.outputPreset' => 'EQ untuk output ini',
 			'musicTools.outputPresetHint' => 'Gunakan EQ ini secara automatik apabila output ini dipilih.',
 			'musicTools.eqApproximation' => 'Profil fon kepala dianggarkan untuk EQ sepuluh jalur.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

@@ -809,6 +809,7 @@ class _Translations$settings$hi extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'चुनें कि चयनित पुस्तकालय से कौन सा क्लिप फिल्मों से पहले खेला जा सकता है।';
 	@override String get contentScreensaverDelayOptionDescription => 'स्क्रीन सहेजने से पहले इनमें प्रवेश के बिना कई मिनटों का इंतजार करें।';
 	@override String get videoCodecOptionDescription => 'समर्थित होने पर इस कोडेक के लिए सीधे प्लेबैक की अनुमति दें। बिना चेक किए गए कोडेक मीडिया सर्वर द्वारा ट्रांसकोड किए जाते हैं।';
+	@override String streamBufferSizeMiB({required Object size}) => 'बफर आकार: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2547,6 +2548,7 @@ class _Translations$performanceOverlay$hi extends Translations$performanceOverla
 	@override String get decoderHardware => 'हार्डवेयर';
 	@override String get tunnelingActive => 'सक्रिय';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} असफल)';
+	@override String cacheLimitMiB({required Object size}) => 'Cache सीमा: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2741,13 +2743,24 @@ class _Translations$seerr$hi extends Translations$seerr$en {
 	@override String get request => 'अनुरोध';
 	@override String get request4k => '4K में अनुरोध';
 	@override String get requestSeasons => 'छूटे हुए सीज़न का अनुरोध करें';
+	@override String get requestHint => 'Seerr में अनुरोध विकल्प चुनें';
+	@override String get quickRequestHint => 'Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें';
+	@override String get chooseSeasonsHint => 'Seerr में अनुरोध के लिए सीज़न चुनें';
+	@override String get request4kHint => 'Seerr में 4K अनुरोध चुनें';
+	@override String get only4kAvailable => 'इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।';
+	@override String get cardActionHint => 'अनुरोध विकल्पों के लिए कार्ड मेनू खोलें';
+	@override String get requestInProgress => 'अनुरोध जारी है';
 	@override String get notifyMe => 'उपलब्ध होने पर मुझे सूचित करें';
 	@override String get notifyMe4k => '4K में उपलब्ध होने पर मुझे सूचित करें';
 	@override String get notificationsOn => 'उपलब्धता अलर्ट चालू है';
+	@override String get turnOffAlert => 'उपलब्धता सूचना बंद करें';
 	@override String get notificationsEnabled => 'उपलब्ध होने पर हम आपको सूचित करेंगे';
+	@override String get notificationsEnabled4k => '4K उपलब्ध होने पर हम आपको सूचित करेंगे';
+	@override String notificationsEnabledSeason({required Object season}) => 'सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे';
 	@override String get notificationsDisabled => 'उपलब्धता अलर्ट बंद कर दिया गया';
 	@override String get notificationFailed => 'उपलब्धता अलर्ट अपडेट नहीं हो सका';
 	@override String get seasons => 'मौसम';
+	@override String get requestSheetHint => 'Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।';
 	@override String get allSeasons => 'सभी मौसम';
 	@override String get advancedOptions => 'उन्नत';
 	@override String get destinationServer => 'Destination सर्वर';
@@ -2782,17 +2795,6 @@ class _Translations$seerr$hi extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'फिर से हस्ताक्षर करने के बाद बैठक को अस्वीकार कर दिया गया';
 	@override String get permissionDenied => 'Seerr ने इस कार्रवाई को अस्वीकार कर दिया: आपके खाते में अब आवश्यक अनुमति नहीं है';
 	@override String get permissionRevoked => 'अब आपके पास यह अनुरोध करने की अनुमति नहीं है';
-	@override String get requestHint => 'Seerr में अनुरोध विकल्प चुनें';
-	@override String get quickRequestHint => 'Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें';
-	@override String get chooseSeasonsHint => 'Seerr में अनुरोध के लिए सीज़न चुनें';
-	@override String get request4kHint => 'Seerr में 4K अनुरोध चुनें';
-	@override String get only4kAvailable => 'इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।';
-	@override String get cardActionHint => 'अनुरोध विकल्पों के लिए कार्ड मेनू खोलें';
-	@override String get requestInProgress => 'अनुरोध जारी है';
-	@override String get turnOffAlert => 'उपलब्धता सूचना बंद करें';
-	@override String get notificationsEnabled4k => '4K उपलब्ध होने पर हम आपको सूचित करेंगे';
-	@override String notificationsEnabledSeason({required Object season}) => 'सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे';
-	@override String get requestSheetHint => 'Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।';
 }
 
 // Path: services
@@ -3761,6 +3763,9 @@ class _Translations$sourceSetup$hi extends Translations$sourceSetup$en {
 	final TranslationsHi _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।';
+	@override String get bookorbitOpen => 'BookOrbit में खोलें';
+	@override String get bookorbitDetailHelp => 'लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।';
 	@override String get savedCertificate => 'सहेजा गया सर्वर प्रमाणपत्र';
 	@override String get nfsEndpointInvalid => 'nfs://nas:2049/export जैसा NFS URL दर्ज करें।';
 	@override String get dlnaNone => 'कोई DLNA सर्वर नहीं मिला। डिवाइस विवरण का URL खुद दर्ज करें।';
@@ -3872,9 +3877,6 @@ class _Translations$sourceSetup$hi extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'गति का माप';
 	@override String get nfsReadRequests => 'अनुरोधों को पढ़ें';
 	@override String get sharedEntryConflict => 'यह साझा आइटम आईडी पहले से ही इस पुस्तकालय में एक और आइटमी के साथ जुड़ा हुआ है. एक अलग आईडी चुनें.';
-	@override String get bookorbitHelp => 'अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।';
-	@override String get bookorbitOpen => 'BookOrbit में खोलें';
-	@override String get bookorbitDetailHelp => 'लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।';
 }
 
 // Path: comics
@@ -4320,6 +4322,9 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	@override String get outputPreset => 'इस आउटपुट का इक्वलाइज़र';
 	@override String get outputPresetHint => 'यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।';
 	@override String get eqApproximation => 'हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6111,6 +6116,7 @@ extension on TranslationsHi {
 			'settings.prerollSelectionDescription' => 'चुनें कि चयनित पुस्तकालय से कौन सा क्लिप फिल्मों से पहले खेला जा सकता है।',
 			'settings.contentScreensaverDelayOptionDescription' => 'स्क्रीन सहेजने से पहले इनमें प्रवेश के बिना कई मिनटों का इंतजार करें।',
 			'settings.videoCodecOptionDescription' => 'समर्थित होने पर इस कोडेक के लिए सीधे प्लेबैक की अनुमति दें। बिना चेक किए गए कोडेक मीडिया सर्वर द्वारा ट्रांसकोड किए जाते हैं।',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'बफर आकार: ${size} MiB',
 			'themeEditor.builtIn' => 'इमारत में',
 			'themeEditor.presets' => 'उपन्यास',
 			'themeEditor.custom' => 'कस्टम',
@@ -6462,9 +6468,9 @@ extension on TranslationsHi {
 			'videoControls.chaptersAndBookmarks' => 'अध्याय और बुकमार्क',
 			'videoControls.segmentLoop' => 'सेगमेंट लॉक',
 			'videoControls.addBookmark' => 'Bookmark जोड़ें',
-			'videoControls.bookmarkName' => 'Bookmark नाम',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark नाम',
 			'videoControls.bookmarkNameHint' => 'उदाहरण के लिए, खोलने की दृश्य',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'बुकमार्क ${n}',
 			'videoControls.bookmarkNameRequired' => 'इस पुस्तक के लिए एक नाम दर्ज करें।',
@@ -6976,9 +6982,9 @@ extension on TranslationsHi {
 			'libraries.hideLibrary' => 'पुस्तकालय छिपाना',
 			'libraries.libraryOptions' => 'पुस्तकालय विकल्प',
 			'libraries.content' => 'पुस्तकालय सामग्री',
-			'libraries.selectLibrary' => 'पुस्तकालय चुनें',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'पुस्तकालय चुनें',
 			'libraries.filtersWithCount' => ({required Object count}) => 'फ़िल्टर (${count})',
 			'libraries.noRecommendations' => 'कोई प्रस्ताव उपलब्ध नहीं है',
 			'libraries.noCollections' => 'इस पुस्तकालय में कोई संग्रह नहीं',
@@ -7490,9 +7496,9 @@ extension on TranslationsHi {
 			'watchTogether.paste' => 'पास्ता',
 			'watchTogether.noCodeInClipboard' => 'क्लिपबोर्ड में कोई कमरे कोड नहीं है',
 			'watchTogether.copyCode' => 'कॉपी कोड',
-			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'कमरे का कोड कॉपी',
 			'watchTogether.shareInvite' => 'आमंत्रण साझा',
 			'watchTogether.inviteCopied' => 'इसे कॉपी करें. इसे एक संदेश में डालें.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng में मेरे घड़ी एक साथ कमरे में शामिल हों: घड़ी एक साथ खोलें, शामिल कमरे का चयन करें और ${code} में प्रवेश करें।',
@@ -7956,6 +7962,7 @@ extension on TranslationsHi {
 			'performanceOverlay.decoderHardware' => 'हार्डवेयर',
 			'performanceOverlay.tunnelingActive' => 'सक्रिय',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} असफल)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Cache सीमा: ${size} MiB',
 			'externalPlayer.title' => 'बाहरी खिलाड़ी',
 			'externalPlayer.useExternalPlayer' => 'बाहरी खिलाड़ी का उपयोग करें',
 			'externalPlayer.useExternalPlayerDescription' => 'एक और ऐप में वीडियो खोलना',
@@ -8003,10 +8010,10 @@ extension on TranslationsHi {
 			'metadataEdit.fromUrl' => 'URL से',
 			'metadataEdit.uploadFile' => 'फ़ाइल अपलोड करें',
 			'metadataEdit.enterImageUrl' => 'इमेज URL',
-			'metadataEdit.imageUrl' => 'इमेज URL',
-			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'इमेज URL',
+			'metadataEdit.metadataUpdated' => 'मेटाडेटा अपडेट',
 			'metadataEdit.metadataUpdateFailed' => 'मेटाडेटा अपडेट करने में असफल',
 			'metadataEdit.artworkUpdated' => 'Artwork अद्यतन',
 			'metadataEdit.artworkUpdateFailed' => 'कला के काम को अपडेट करने में विफलता',
@@ -8098,13 +8105,24 @@ extension on TranslationsHi {
 			'seerr.request' => 'अनुरोध',
 			'seerr.request4k' => '4K में अनुरोध',
 			'seerr.requestSeasons' => 'छूटे हुए सीज़न का अनुरोध करें',
+			'seerr.requestHint' => 'Seerr में अनुरोध विकल्प चुनें',
+			'seerr.quickRequestHint' => 'Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें',
+			'seerr.chooseSeasonsHint' => 'Seerr में अनुरोध के लिए सीज़न चुनें',
+			'seerr.request4kHint' => 'Seerr में 4K अनुरोध चुनें',
+			'seerr.only4kAvailable' => 'इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।',
+			'seerr.cardActionHint' => 'अनुरोध विकल्पों के लिए कार्ड मेनू खोलें',
+			'seerr.requestInProgress' => 'अनुरोध जारी है',
 			'seerr.notifyMe' => 'उपलब्ध होने पर मुझे सूचित करें',
 			'seerr.notifyMe4k' => '4K में उपलब्ध होने पर मुझे सूचित करें',
 			'seerr.notificationsOn' => 'उपलब्धता अलर्ट चालू है',
+			'seerr.turnOffAlert' => 'उपलब्धता सूचना बंद करें',
 			'seerr.notificationsEnabled' => 'उपलब्ध होने पर हम आपको सूचित करेंगे',
+			'seerr.notificationsEnabled4k' => '4K उपलब्ध होने पर हम आपको सूचित करेंगे',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे',
 			'seerr.notificationsDisabled' => 'उपलब्धता अलर्ट बंद कर दिया गया',
 			'seerr.notificationFailed' => 'उपलब्धता अलर्ट अपडेट नहीं हो सका',
 			'seerr.seasons' => 'मौसम',
+			'seerr.requestSheetHint' => 'Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।',
 			'seerr.allSeasons' => 'सभी मौसम',
 			'seerr.advancedOptions' => 'उन्नत',
 			'seerr.destinationServer' => 'Destination सर्वर',
@@ -8139,17 +8157,6 @@ extension on TranslationsHi {
 			'seerr.sessionRejectedAfterReauth' => 'फिर से हस्ताक्षर करने के बाद बैठक को अस्वीकार कर दिया गया',
 			'seerr.permissionDenied' => 'Seerr ने इस कार्रवाई को अस्वीकार कर दिया: आपके खाते में अब आवश्यक अनुमति नहीं है',
 			'seerr.permissionRevoked' => 'अब आपके पास यह अनुरोध करने की अनुमति नहीं है',
-			'seerr.requestHint' => 'Seerr में अनुरोध विकल्प चुनें',
-			'seerr.quickRequestHint' => 'Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें',
-			'seerr.chooseSeasonsHint' => 'Seerr में अनुरोध के लिए सीज़न चुनें',
-			'seerr.request4kHint' => 'Seerr में 4K अनुरोध चुनें',
-			'seerr.only4kAvailable' => 'इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।',
-			'seerr.cardActionHint' => 'अनुरोध विकल्पों के लिए कार्ड मेनू खोलें',
-			'seerr.requestInProgress' => 'अनुरोध जारी है',
-			'seerr.turnOffAlert' => 'उपलब्धता सूचना बंद करें',
-			'seerr.notificationsEnabled4k' => '4K उपलब्ध होने पर हम आपको सूचित करेंगे',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे',
-			'seerr.requestSheetHint' => 'Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।',
 			'services.title' => 'सेवाएं',
 			'services.hubSubtitle' => 'सिंक्रनाइज़ेशन प्रगति की निगरानी करता है और नए शीर्षकों की मांग करता है।',
 			'services.integrations' => 'एकीकरण',
@@ -8517,10 +8524,10 @@ extension on TranslationsHi {
 			'universalMedia.favorites' => 'बचाए गए स्ट्रीम पसंदीदा',
 			'universalMedia.address' => 'मीडिया संदेश',
 			'universalMedia.addressHelp' => 'मान्यता प्राप्त क्रेडिट या हस्ताक्षर पैरामीटर वाले URL का उपयोग केवल इस सत्र के लिए किया जाता है और पसंदीदा के रूप में संग्रहीत नहीं किया जा सकता है।',
-			'universalMedia.displayName' => 'डिस्प्ले नाम (वैकल्पिक)',
-			'universalMedia.displayNameHelp' => 'प्लेयर और सिस्टम मीडिया नियंत्रण के लिए एक संक्षिप्त नाम चुनें।',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'डिस्प्ले नाम (वैकल्पिक)',
+			'universalMedia.displayNameHelp' => 'प्लेयर और सिस्टम मीडिया नियंत्रण के लिए एक संक्षिप्त नाम चुनें।',
 			'universalMedia.allowHttp' => 'एक अज्ञात HTTP कनेक्शन की अनुमति दें',
 			'universalMedia.allowHttpHelp' => 'HTTP कनेक्शन को एन्क्रिप्ट नहीं करता. इसे केवल एक विश्वसनीय नेटवर्क पर अनुमति दें. जब संभव हो तो HTTPS का उपयोग करें.',
 			'universalMedia.advancedProtocols' => 'MPV केवल: एक RTSP, RTMP/RTMPS, UDP या RTP पता दर्ज करें. इन पते को पसंद के रूप में नहीं बचाया जा सकता है.',
@@ -8993,6 +9000,9 @@ extension on TranslationsHi {
 			'audiobook.recoveryImportConfirm' => 'मौजूदा इतिहास बनाए रखा जाएगा. साझा पुस्तकालय और आइटम आईडी शामिल नहीं हैं; आयात करने से पहले प्रत्येक डिवाइस पर फिट आईडी सेट करें.',
 			'audiobook.recoveryExported' => 'एन्क्रिप्टेड पुनर्प्राप्ति फ़ाइल बचाया गया है।',
 			'audiobook.recoveryImported' => 'पुनर्प्राप्ति डेटा मिश्रित है।',
+			'sourceSetup.bookorbitHelp' => 'अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit में खोलें',
+			'sourceSetup.bookorbitDetailHelp' => 'लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।',
 			'sourceSetup.savedCertificate' => 'सहेजा गया सर्वर प्रमाणपत्र',
 			'sourceSetup.nfsEndpointInvalid' => 'nfs://nas:2049/export जैसा NFS URL दर्ज करें।',
 			'sourceSetup.dlnaNone' => 'कोई DLNA सर्वर नहीं मिला। डिवाइस विवरण का URL खुद दर्ज करें।',
@@ -9028,13 +9038,13 @@ extension on TranslationsHi {
 			'sourceSetup.clientCertificate' => 'क्लाइंट प्रमाणपत्र (वैकल्पिक)',
 			'sourceSetup.clientCertificateHelp' => 'NAS को इस क्लाइंट की पहचान सत्यापित करने देता है; AUTH_SYS ID अब भी NAS की एक्सपोर्ट नीति पर निर्भर रहते हैं।',
 			'sourceSetup.savedIdentity' => 'सहेजी गई क्लाइंट पहचान इस्तेमाल की जाएगी।',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'सहेजी गई क्लाइंट पहचान बदलें',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 क्लाइंट पहचान चुनें',
 			'sourceSetup.identityPassphrase' => 'क्लाइंट पहचान का पासफ़्रेज़',
 			'sourceSetup.identityPassphraseHelp' => 'फ़ाइल में पासफ़्रेज़ न हो तो खाली छोड़ें।',
 			'sourceSetup.removeIdentity' => 'सहेजी गई क्लाइंट पहचान हटाएँ',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'क्लाइंट पहचानें स्रोत के एन्क्रिप्टेड क्रेडेंशियल स्टोर में सहेजी जाती हैं। सहेजी गई पहचान बनाए रखने के लिए इस अनुभाग में बदलाव न करें।',
 			'sourceSetup.nfsLimitations' => 'TCP पर केवल पढ़ने के लिए NFSv3। RPC-with-TLS के बिना NFS ट्रैफ़िक एन्क्रिप्ट नहीं होता। NAS को चुने गए AUTH_SYS ID और गैर-विशेषाधिकार प्राप्त क्लाइंट पोर्ट की अनुमति देनी होगी (एक्सपोर्ट में इसे अक्सर “insecure” विकल्प कहा जाता है)। NFSv4 और UDP समर्थित नहीं हैं।',
 			'sourceSetup.nfsSetupHelp' => 'NFS सेटअप सहायता',
@@ -9106,9 +9116,6 @@ extension on TranslationsHi {
 			'sourceSetup.nfsReadSpeed' => 'गति का माप',
 			'sourceSetup.nfsReadRequests' => 'अनुरोधों को पढ़ें',
 			'sourceSetup.sharedEntryConflict' => 'यह साझा आइटम आईडी पहले से ही इस पुस्तकालय में एक और आइटमी के साथ जुड़ा हुआ है. एक अलग आईडी चुनें.',
-			'sourceSetup.bookorbitHelp' => 'अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।',
-			'sourceSetup.bookorbitOpen' => 'BookOrbit में खोलें',
-			'sourceSetup.bookorbitDetailHelp' => 'लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।',
 			'comics.fitHeight' => 'ऊँचाई के अनुसार फ़िट करें',
 			'comics.readingMode' => 'पढ़ने का मोड',
 			'comics.paged' => 'पृष्ठ',
@@ -9473,6 +9480,9 @@ extension on TranslationsHi {
 			'musicTools.outputPreset' => 'इस आउटपुट का इक्वलाइज़र',
 			'musicTools.outputPresetHint' => 'यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।',
 			'musicTools.eqApproximation' => 'हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

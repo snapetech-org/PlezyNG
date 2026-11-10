@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "ขนาด Buffer: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "โครงสร้าง",
@@ -3091,7 +3092,8 @@
     "decoderHardware": "ฮาร์ดแวร์",
     "tunnelingActive": "การใช้งาน",
     "dvRpuFailed": "${converted} (${failures} ไม่สําเร็จ)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "หมายเลขรุ่น: Cache Limit: ${size} MiB"
   },
   "externalPlayer": {
     "title": "ผู้เล่นภายนอก",
@@ -3262,13 +3264,24 @@
     "request": "คําขอ",
     "request4k": "คําขอใน 4K",
     "requestSeasons": "ขอซีซันที่ขาดหายไป",
+    "requestHint": "เลือกตัวเลือกคำขอใน Seerr",
+    "quickRequestHint": "ส่งคำขอใน Seerr ทันทีโดยใช้การตั้งค่าเริ่มต้น",
+    "chooseSeasonsHint": "เลือกซีซันที่จะขอใน Seerr",
+    "request4kHint": "เลือกคำขอ 4K ใน Seerr",
+    "only4kAvailable": "บัญชีนี้ขอได้เฉพาะเวอร์ชัน 4K เท่านั้น",
+    "cardActionHint": "เปิดเมนูการ์ดเพื่อดูตัวเลือกคำขอของ Seerr",
+    "requestInProgress": "กำลังดำเนินการคำขอ",
     "notifyMe": "แจ้งเตือนเมื่อพร้อมใช้งาน",
     "notifyMe4k": "แจ้งเตือนเมื่อมีเวอร์ชัน 4K",
     "notificationsOn": "เปิดการแจ้งเตือนเมื่อพร้อมใช้งาน",
+    "turnOffAlert": "ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน",
     "notificationsEnabled": "เราจะแจ้งให้ทราบเมื่อพร้อมใช้งาน",
+    "notificationsEnabled4k": "เราจะแจ้งให้ทราบเมื่อเวอร์ชัน 4K พร้อมใช้งาน",
+    "notificationsEnabledSeason": "เราจะแจ้งให้ทราบเมื่อซีซัน ${season} พร้อมใช้งาน",
     "notificationsDisabled": "ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน",
     "notificationFailed": "อัปเดตการแจ้งเตือนเมื่อพร้อมใช้งานไม่สำเร็จ",
     "seasons": "ฤดูกาล",
+    "requestSheetHint": "Seerr จัดการการอนุมัติและติดตามคำขอของคุณ",
     "allSeasons": "ทุกฤดูกาล",
     "advancedOptions": "ขั้นสูง",
     "destinationServer": "เซิร์ฟเวอร์ปลายทาง",
@@ -3302,18 +3315,7 @@
     "noUserInformation": "Seerr ไม่ได้คืนข้อมูลผู้ใช้",
     "sessionRejectedAfterReauth": "การประชุมถูกปฏิเสธหลังจากการลงทะเบียนอีกครั้ง",
     "permissionDenied": "Seerr ไม่ยอมรับการกระทํานี้: บัญชีของคุณไม่ได้รับอนุญาตที่ต้องการ",
-    "permissionRevoked": "คุณไม่สามารถร้องขอได้อีกต่อไป",
-    "requestHint": "เลือกตัวเลือกคำขอใน Seerr",
-    "quickRequestHint": "ส่งคำขอใน Seerr ทันทีโดยใช้การตั้งค่าเริ่มต้น",
-    "chooseSeasonsHint": "เลือกซีซันที่จะขอใน Seerr",
-    "request4kHint": "เลือกคำขอ 4K ใน Seerr",
-    "only4kAvailable": "บัญชีนี้ขอได้เฉพาะเวอร์ชัน 4K เท่านั้น",
-    "cardActionHint": "เปิดเมนูการ์ดเพื่อดูตัวเลือกคำขอของ Seerr",
-    "requestInProgress": "กำลังดำเนินการคำขอ",
-    "turnOffAlert": "ปิดการแจ้งเตือนเมื่อพร้อมใช้งาน",
-    "notificationsEnabled4k": "เราจะแจ้งให้ทราบเมื่อเวอร์ชัน 4K พร้อมใช้งาน",
-    "notificationsEnabledSeason": "เราจะแจ้งให้ทราบเมื่อซีซัน ${season} พร้อมใช้งาน",
-    "requestSheetHint": "Seerr จัดการการอนุมัติและติดตามคำขอของคุณ"
+    "permissionRevoked": "คุณไม่สามารถร้องขอได้อีกต่อไป"
   },
   "services": {
     "title": "บริการ",
@@ -4232,6 +4234,9 @@
     "recoveryImported": "ข้อมูลการกู้คืนรวม"
   },
   "sourceSetup": {
+    "bookorbitHelp": "ลงชื่อเข้าใช้บัญชี BookOrbit ของคุณเพื่อเรียกดูและเล่นหนังสือ คำขอสำหรับเรื่องที่ไม่มีให้บริการยังคงส่งผ่าน SeerrNG ที่เชื่อมต่อไว้",
+    "bookorbitOpen": "เปิดใน BookOrbit",
+    "bookorbitDetailHelp": "ดูเรื่องนี้ใน BookOrbit เพื่อจัดการรายละเอียดในคลังและรูปแบบไฟล์ที่ Pleazyng เปิดไม่ได้ ความคืบหน้าในการฟังจะซิงค์กับบัญชี BookOrbit ของคุณ",
     "savedCertificate": "ใบรับรองเซิร์ฟเวอร์ที่บันทึกไว้",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "ป้อน URL ของ NFS เช่น nfs://nas:2049/export.",
@@ -4343,10 +4348,7 @@
     "nfsReadBytes": "ข้อมูลอ่าน",
     "nfsReadSpeed": "ความเร็วที่วัด",
     "nfsReadRequests": "อ่านคําขอ",
-    "sharedEntryConflict": "หมายเลขรายการที่แบ่งปันนี้ได้รับการจับคู่กับรายการอื่น ๆ ในห้องสมุดนี้ เลือก ID ที่แตกต่างกัน",
-    "bookorbitHelp": "ลงชื่อเข้าใช้บัญชี BookOrbit ของคุณเพื่อเรียกดูและเล่นหนังสือ คำขอสำหรับเรื่องที่ไม่มีให้บริการยังคงส่งผ่าน SeerrNG ที่เชื่อมต่อไว้",
-    "bookorbitOpen": "เปิดใน BookOrbit",
-    "bookorbitDetailHelp": "ดูเรื่องนี้ใน BookOrbit เพื่อจัดการรายละเอียดในคลังและรูปแบบไฟล์ที่ Pleazyng เปิดไม่ได้ ความคืบหน้าในการฟังจะซิงค์กับบัญชี BookOrbit ของคุณ"
+    "sharedEntryConflict": "หมายเลขรายการที่แบ่งปันนี้ได้รับการจับคู่กับรายการอื่น ๆ ในห้องสมุดนี้ เลือก ID ที่แตกต่างกัน"
   },
   "comics": {
     "fitHeight": "พอดีความสูง",
@@ -5517,6 +5519,9 @@
     "anniversaries": "ครบรอบการออกอัลบั้ม",
     "outputPreset": "EQ สำหรับเอาต์พุตนี้",
     "outputPresetHint": "ใช้ EQ นี้โดยอัตโนมัติเมื่อเลือกเอาต์พุตนี้",
-    "eqApproximation": "โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่"
+    "eqApproximation": "โปรไฟล์หูฟังถูกปรับโดยประมาณสำหรับ EQ สิบย่านความถี่",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

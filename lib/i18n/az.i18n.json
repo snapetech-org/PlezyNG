@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer ölçüsü: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Daxili",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Aparat təminatı",
     "tunnelingActive": "Aktiv",
     "dvRpuFailed": "${converted} (${failures} uğursuz)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Keş limiti: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Xarici oynadıcı",
@@ -3283,13 +3285,24 @@
     "request": "Sorğu göndər",
     "request4k": "4K sorğu göndər",
     "requestSeasons": "Çatışmayan mövsümlər üçün sorğu göndər",
+    "requestHint": "Seerr-də sorğu seçimlərini seçin",
+    "quickRequestHint": "Standart ayarlarla indi Seerr-də sorğu göndərin",
+    "chooseSeasonsHint": "Seerr-də sorğu üçün mövsümləri seçin",
+    "request4kHint": "Seerr-də 4K sorğusunu seçin",
+    "only4kAvailable": "Bu hesab yalnız 4K versiyasını sorğu edə bilər.",
+    "cardActionHint": "Seerr sorğu seçimləri üçün kart menyusunu açın",
+    "requestInProgress": "Sorğu icra olunur",
     "notifyMe": "Əlçatan olduqda mənə bildir",
     "notifyMe4k": "4K əlçatan olduqda mənə bildir",
     "notificationsOn": "Əlçatanlıq bildirişi aktivdir",
+    "turnOffAlert": "Əlçatanlıq bildirişini söndür",
     "notificationsEnabled": "Əlçatan olduqda sizə xəbər verəcəyik",
+    "notificationsEnabled4k": "4K versiyası əlçatan olduqda sizə xəbər verəcəyik",
+    "notificationsEnabledSeason": "${season} mövsümü əlçatan olduqda sizə xəbər verəcəyik",
     "notificationsDisabled": "Əlçatanlıq bildirişi söndürüldü",
     "notificationFailed": "Əlçatanlıq bildirişini yeniləmək mümkün olmadı",
     "seasons": "Mövsümlər",
+    "requestSheetHint": "Seerr sorğunuzun təsdiqini və izlənməsini idarə edir.",
     "allSeasons": "Bütün mövsümlər",
     "advancedOptions": "Təkmilləşdirilmiş",
     "destinationServer": "Hədəf server",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr istifadəçi məlumatlarını qaytarmadı",
     "sessionRejectedAfterReauth": "Yenidən daxil olduqdan sonra sessiya rədd edildi",
     "permissionDenied": "Seerr bu əməliyyatı rədd etdi: hesabınızda artıq tələb olunan icazə yoxdur",
-    "permissionRevoked": "Bunu sorğulamaq üçün artıq icazəniz yoxdur",
-    "requestHint": "Seerr-də sorğu seçimlərini seçin",
-    "quickRequestHint": "Standart ayarlarla indi Seerr-də sorğu göndərin",
-    "chooseSeasonsHint": "Seerr-də sorğu üçün mövsümləri seçin",
-    "request4kHint": "Seerr-də 4K sorğusunu seçin",
-    "only4kAvailable": "Bu hesab yalnız 4K versiyasını sorğu edə bilər.",
-    "cardActionHint": "Seerr sorğu seçimləri üçün kart menyusunu açın",
-    "requestInProgress": "Sorğu icra olunur",
-    "turnOffAlert": "Əlçatanlıq bildirişini söndür",
-    "notificationsEnabled4k": "4K versiyası əlçatan olduqda sizə xəbər verəcəyik",
-    "notificationsEnabledSeason": "${season} mövsümü əlçatan olduqda sizə xəbər verəcəyik",
-    "requestSheetHint": "Seerr sorğunuzun təsdiqini və izlənməsini idarə edir."
+    "permissionRevoked": "Bunu sorğulamaq üçün artıq icazəniz yoxdur"
   },
   "services": {
     "title": "Xidmətlər",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "İtraf verileri birləşmişdir."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Kitablarına baxmaq və onları oxutmaq üçün öz BookOrbit hesabınızla daxil olun. Çatışmayan başlıqlar üçün sorğular yenə də qoşulmuş SeerrNG instansiyanız vasitəsilə göndərilir.",
+    "bookorbitOpen": "BookOrbit-də aç",
+    "bookorbitDetailHelp": "Kitabxana təfərrüatlarını və Pleazyng-in aça bilmədiyi formatları idarə etmək üçün bu başlığı BookOrbit-də açın. Dinləmə irəliləyişi BookOrbit hesabınızla sinxronlaşdırılır.",
     "savedCertificate": "Yadda saxlanmış server sertifikatı",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export kimi NFS URL-i daxil edin.",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "Tarihlər Read",
     "nfsReadSpeed": "Hızın ölçülməsi",
     "nfsReadRequests": "İhtiyaçları okuyun",
-    "sharedEntryConflict": "Bu paylaşılan element kimliği bu kütüphanada başqa bir elementlə də parədir. farklı bir ID seçin.",
-    "bookorbitHelp": "Kitablarına baxmaq və onları oxutmaq üçün öz BookOrbit hesabınızla daxil olun. Çatışmayan başlıqlar üçün sorğular yenə də qoşulmuş SeerrNG instansiyanız vasitəsilə göndərilir.",
-    "bookorbitOpen": "BookOrbit-də aç",
-    "bookorbitDetailHelp": "Kitabxana təfərrüatlarını və Pleazyng-in aça bilmədiyi formatları idarə etmək üçün bu başlığı BookOrbit-də açın. Dinləmə irəliləyişi BookOrbit hesabınızla sinxronlaşdırılır."
+    "sharedEntryConflict": "Bu paylaşılan element kimliği bu kütüphanada başqa bir elementlə də parədir. farklı bir ID seçin."
   },
   "comics": {
     "fitHeight": "Hündürlüyə uyğunlaşdır",
@@ -5544,6 +5546,9 @@
     "anniversaries": "Albomların ildönümləri",
     "outputPreset": "Bu çıxış üçün ekvalayzer",
     "outputPresetHint": "Bu çıxış seçildikdə bu ekvalayzeri avtomatik tətbiq et.",
-    "eqApproximation": "Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb."
+    "eqApproximation": "Qulaqlıq profilləri onzolaqlı ekvalayzer üçün təxmini uyğunlaşdırılıb.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

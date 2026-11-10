@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer siz: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Oʻrnatilgan",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Apparat",
     "tunnelingActive": "Faol",
     "dvRpuFailed": "${converted} (${failures} ta muvaffaqiyatsiz)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Kesh chegarasi: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Tashqi pleyer",
@@ -3283,13 +3285,24 @@
     "request": "Soʻrov yuborish",
     "request4k": "4K soʻrov yuborish",
     "requestSeasons": "Yetishmayotgan fasllarni so‘rash",
+    "requestHint": "Seerr’da so‘rov parametrlarini tanlang",
+    "quickRequestHint": "Standart sozlamalar bilan hozir Seerr orqali so‘rang",
+    "chooseSeasonsHint": "Seerr’da so‘raladigan fasllarni tanlang",
+    "request4kHint": "Seerr’da 4K so‘rovini tanlang",
+    "only4kAvailable": "Bu hisob faqat 4K versiyasini so‘rashi mumkin.",
+    "cardActionHint": "Seerr so‘rov variantlarini ochish uchun karta menyusini oching",
+    "requestInProgress": "So‘rov bajarilmoqda",
     "notifyMe": "Mavjud bo‘lganda menga xabar bering",
     "notifyMe4k": "4K mavjud bo‘lganda menga xabar bering",
     "notificationsOn": "Mavjudlik ogohlantirishi yoqilgan",
+    "turnOffAlert": "Mavjudlik ogohlantirishini o‘chirish",
     "notificationsEnabled": "Mavjud bo‘lganda sizga xabar beramiz",
+    "notificationsEnabled4k": "4K versiyasi mavjud bo‘lganda sizga xabar beramiz",
+    "notificationsEnabledSeason": "${season}-fasl mavjud bo‘lganda sizga xabar beramiz",
     "notificationsDisabled": "Mavjudlik ogohlantirishi o‘chirilgan",
     "notificationFailed": "Mavjudlik ogohlantirishini yangilab bo‘lmadi",
     "seasons": "Mavsumlar",
+    "requestSheetHint": "Tasdiqlash jarayonini Seerr boshqaradi va so‘rovingizni kuzatadi.",
     "allSeasons": "Barcha mavsumlar",
     "advancedOptions": "Kengaytirilgan",
     "destinationServer": "Moʻljal server",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr foydalanuvchi maʼlumotlarini qaytarmadi",
     "sessionRejectedAfterReauth": "Qayta kirilgandan keyin seans rad etildi",
     "permissionDenied": "Seerr bu amalni rad etdi: hisobingizda endi kerakli ruxsat yoʻq",
-    "permissionRevoked": "Buni soʻrash uchun endi ruxsatingiz yoʻq",
-    "requestHint": "Seerr’da so‘rov parametrlarini tanlang",
-    "quickRequestHint": "Standart sozlamalar bilan hozir Seerr orqali so‘rang",
-    "chooseSeasonsHint": "Seerr’da so‘raladigan fasllarni tanlang",
-    "request4kHint": "Seerr’da 4K so‘rovini tanlang",
-    "only4kAvailable": "Bu hisob faqat 4K versiyasini so‘rashi mumkin.",
-    "cardActionHint": "Seerr so‘rov variantlarini ochish uchun karta menyusini oching",
-    "requestInProgress": "So‘rov bajarilmoqda",
-    "turnOffAlert": "Mavjudlik ogohlantirishini o‘chirish",
-    "notificationsEnabled4k": "4K versiyasi mavjud bo‘lganda sizga xabar beramiz",
-    "notificationsEnabledSeason": "${season}-fasl mavjud bo‘lganda sizga xabar beramiz",
-    "requestSheetHint": "Tasdiqlash jarayonini Seerr boshqaradi va so‘rovingizni kuzatadi."
+    "permissionRevoked": "Buni soʻrash uchun endi ruxsatingiz yoʻq"
   },
   "services": {
     "title": "Xizmatlar",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "Recovery data qaytadi."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Kitoblaringizni ko‘rish va tinglash uchun o‘z BookOrbit hisobingizga kiring. Mavjud bo‘lmagan nomlar uchun so‘rovlar ulangan SeerrNG nusxangiz orqali yuboriladi.",
+    "bookorbitOpen": "BookOrbit’da ochish",
+    "bookorbitDetailHelp": "Kutubxona tafsilotlari va Pleazyng ocholmaydigan formatlarni boshqarish uchun bu nomni BookOrbit’da ko‘ring. Tinglash jarayoni BookOrbit hisobingiz bilan sinxronlanadi.",
     "savedCertificate": "Saqlangan server sertifikati",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export kabi NFS URL manzilini kiriting.",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "Data lugay",
     "nfsReadSpeed": "Tadiqni ritmi",
     "nfsReadRequests": "Requirements koʻyadi",
-    "sharedEntryConflict": "This shared item ID is already paired with another item in this library. Bu paylaşt element ID'dir.",
-    "bookorbitHelp": "Kitoblaringizni ko‘rish va tinglash uchun o‘z BookOrbit hisobingizga kiring. Mavjud bo‘lmagan nomlar uchun so‘rovlar ulangan SeerrNG nusxangiz orqali yuboriladi.",
-    "bookorbitOpen": "BookOrbit’da ochish",
-    "bookorbitDetailHelp": "Kutubxona tafsilotlari va Pleazyng ocholmaydigan formatlarni boshqarish uchun bu nomni BookOrbit’da ko‘ring. Tinglash jarayoni BookOrbit hisobingiz bilan sinxronlanadi."
+    "sharedEntryConflict": "This shared item ID is already paired with another item in this library. Bu paylaşt element ID'dir."
   },
   "comics": {
     "fitHeight": "Balandlikka moslash",
@@ -5544,6 +5546,9 @@
     "anniversaries": "Albom yubileylari",
     "outputPreset": "Bu chiqish uchun ekvalayzer",
     "outputPresetHint": "Bu chiqish tanlanganda ushbu ekvalayzer avtomatik qoʻllanadi.",
-    "eqApproximation": "Quloqchin profillari oʻn diapazonli ekvalayzer uchun taxminan moslashtirilgan."
+    "eqApproximation": "Quloqchin profillari oʻn diapazonli ekvalayzer uchun taxminan moslashtirilgan.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

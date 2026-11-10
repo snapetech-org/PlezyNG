@@ -736,7 +736,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Dimensioni Buffer: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Integrati",
@@ -3115,7 +3116,8 @@
     "decoderHardware": "Hardware",
     "tunnelingActive": "Attivo",
     "dvRpuFailed": "${converted} (${failures} errori)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Limite cache: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Lettore esterno",
@@ -3286,13 +3288,24 @@
     "request": "Richiedi",
     "request4k": "Richiedi in 4K",
     "requestSeasons": "Richiedi le stagioni mancanti",
+    "requestHint": "Scegli le opzioni di richiesta in Seerr",
+    "quickRequestHint": "Invia subito la richiesta in Seerr con le impostazioni predefinite",
+    "chooseSeasonsHint": "Scegli le stagioni da richiedere in Seerr",
+    "request4kHint": "Scegli una richiesta 4K in Seerr",
+    "only4kAvailable": "Con questo account puoi richiedere solo la versione 4K.",
+    "cardActionHint": "Apri il menu della scheda per le opzioni di richiesta Seerr",
+    "requestInProgress": "Richiesta in corso",
     "notifyMe": "Avvisami quando disponibile",
     "notifyMe4k": "Avvisami quando disponibile in 4K",
     "notificationsOn": "Avviso di disponibilità attivo",
+    "turnOffAlert": "Disattiva l'avviso di disponibilità",
     "notificationsEnabled": "Ti avviseremo quando sarà disponibile",
+    "notificationsEnabled4k": "Ti avviseremo quando sarà disponibile la versione 4K",
+    "notificationsEnabledSeason": "Ti avviseremo quando sarà disponibile la stagione ${season}",
     "notificationsDisabled": "Avviso di disponibilità disattivato",
     "notificationFailed": "Impossibile aggiornare l’avviso di disponibilità",
     "seasons": "Stagioni",
+    "requestSheetHint": "Seerr gestisce l'approvazione e tiene traccia della tua richiesta.",
     "allSeasons": "Tutte le stagioni",
     "advancedOptions": "Avanzate",
     "destinationServer": "Server di destinazione",
@@ -3326,18 +3339,7 @@
     "noUserInformation": "Seerr non ha restituito le informazioni sull'utente",
     "sessionRejectedAfterReauth": "La sessione è stata rifiutata dopo aver effettuato nuovamente l'accesso",
     "permissionDenied": "Seerr ha negato questa azione: il tuo account non dispone più dell'autorizzazione richiesta",
-    "permissionRevoked": "Non hai più l'autorizzazione per richiederlo",
-    "requestHint": "Scegli le opzioni di richiesta in Seerr",
-    "quickRequestHint": "Invia subito la richiesta in Seerr con le impostazioni predefinite",
-    "chooseSeasonsHint": "Scegli le stagioni da richiedere in Seerr",
-    "request4kHint": "Scegli una richiesta 4K in Seerr",
-    "only4kAvailable": "Con questo account puoi richiedere solo la versione 4K.",
-    "cardActionHint": "Apri il menu della scheda per le opzioni di richiesta Seerr",
-    "requestInProgress": "Richiesta in corso",
-    "turnOffAlert": "Disattiva l'avviso di disponibilità",
-    "notificationsEnabled4k": "Ti avviseremo quando sarà disponibile la versione 4K",
-    "notificationsEnabledSeason": "Ti avviseremo quando sarà disponibile la stagione ${season}",
-    "requestSheetHint": "Seerr gestisce l'approvazione e tiene traccia della tua richiesta."
+    "permissionRevoked": "Non hai più l'autorizzazione per richiederlo"
   },
   "services": {
     "title": "Servizi",
@@ -4264,6 +4266,9 @@
     "recoveryImported": "I dati di recupero sono misti."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Accedi con il tuo account BookOrbit per sfogliare e riprodurre i suoi libri. Le richieste per i titoli mancanti passano comunque dall'istanza SeerrNG collegata.",
+    "bookorbitOpen": "Apri in BookOrbit",
+    "bookorbitDetailHelp": "Visualizza questo titolo in BookOrbit per gestire i dettagli della libreria e i formati che Pleazyng non può aprire. I progressi di ascolto si sincronizzano con il tuo account BookOrbit.",
     "savedCertificate": "Certificato del server salvato",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Inserisci un URL NFS, ad esempio nfs://nas:2049/export.",
@@ -4375,10 +4380,7 @@
     "nfsReadBytes": "Dati di lettura",
     "nfsReadSpeed": "velocità misurata",
     "nfsReadRequests": "Leggi le richieste",
-    "sharedEntryConflict": "Questo ID di oggetto condiviso è già associato ad un altro elemento in questa biblioteca.",
-    "bookorbitHelp": "Accedi con il tuo account BookOrbit per sfogliare e riprodurre i suoi libri. Le richieste per i titoli mancanti passano comunque dall'istanza SeerrNG collegata.",
-    "bookorbitOpen": "Apri in BookOrbit",
-    "bookorbitDetailHelp": "Visualizza questo titolo in BookOrbit per gestire i dettagli della libreria e i formati che Pleazyng non può aprire. I progressi di ascolto si sincronizzano con il tuo account BookOrbit."
+    "sharedEntryConflict": "Questo ID di oggetto condiviso è già associato ad un altro elemento in questa biblioteca."
   },
   "comics": {
     "fitHeight": "Adatta all’altezza",
@@ -5553,6 +5555,9 @@
     "anniversaries": "Anniversari degli album",
     "outputPreset": "Equalizzatore per questa uscita",
     "outputPresetHint": "Usa automaticamente questo equalizzatore quando viene selezionata questa uscita.",
-    "eqApproximation": "I profili delle cuffie sono approssimati per l’equalizzatore a dieci bande."
+    "eqApproximation": "I profili delle cuffie sono approssimati per l’equalizzatore a dieci bande.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

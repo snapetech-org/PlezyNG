@@ -176,7 +176,7 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
           controller: _graphicEq,
           maxLines: 4,
           maxLength: 64000,
-          decoration: const InputDecoration(labelText: 'AutoEq GraphicEQ'),
+          decoration: InputDecoration(labelText: t.musicTools.autoEqGraphicEq),
         ),
         TextButton(
           onPressed: _busy
@@ -190,7 +190,7 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
                     _name.text = preset.name;
                   });
                 },
-          child: const Text('AutoEq'),
+          child: Text(t.musicTools.autoEq),
         ),
         TextButton(
           onPressed: _busy
@@ -272,7 +272,7 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
           value: _exclusive,
           onChanged: _busy ? null : (v) => setState(() => _exclusive = v),
         ),
-        Text('${t.settings.streamBufferSize}: $_cache MiB'),
+        Text(t.settings.streamBufferSizeMiB(size: _cache)),
         Slider(
           value: _cache.toDouble(),
           min: 8,
@@ -280,7 +280,7 @@ class _MusicAudioScreenState extends State<MusicAudioScreen> {
           divisions: 63,
           onChanged: _busy ? null : (v) => setState(() => _cache = v.round()),
         ),
-        Text('${t.performanceOverlay.cacheLimit}: $_prefetch MiB'),
+        Text(t.performanceOverlay.cacheLimitMiB(size: _prefetch)),
         Slider(
           value: _prefetch.toDouble(),
           min: 0,

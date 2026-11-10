@@ -708,6 +708,7 @@
   "settings.dvOfflineNewOutput": "dff1e5885e25fc7d",
   "settings.dvOfflineHdr10": "2ebf28209e11db3e",
   "settings.dvOfflineSdr": "c3232311daf873a4",
+  "settings.streamBufferSizeMiB": "e40e5ce657da1b41",
   "themeEditor.builtIn": "caaeda9d02d381cc",
   "themeEditor.presets": "c87892627e37b582",
   "themeEditor.custom": "9e9715d52410c86f",
@@ -2867,6 +2868,7 @@
   "performanceOverlay.tunnelingActive": "f030108f5a0822ae",
   "performanceOverlay.dvRpuFailed": "c48be7f78769eaf3",
   "performanceOverlay.neuralProviderInitializing": "1dd592e98bf830d0",
+  "performanceOverlay.cacheLimitMiB": "e78ba359b5549d76",
   "externalPlayer.title": "32868cfcdf1219ba",
   "externalPlayer.useExternalPlayer": "c3f359a38a979301",
   "externalPlayer.useExternalPlayerDescription": "74624607c3f0460e",
@@ -5261,5 +5263,8 @@
   "musicTools.anniversaries": "f678d1ff8ff03949",
   "musicTools.outputPreset": "eb53964f4f2b9021",
   "musicTools.outputPresetHint": "e5921bb3b78b87ea",
-  "musicTools.eqApproximation": "de1c0a50c3bef04f"
+  "musicTools.eqApproximation": "de1c0a50c3bef04f",
+  "musicTools.autoEqGraphicEq": "37f45e64b2ca187f",
+  "musicTools.autoEq": "9a97252c6018b34a",
+  "musicTools.autoEqByJaakkoPasanen": "df5e4ed3c9ad50e4"
 }

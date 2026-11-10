@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "बफर आकार: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "इमारत में",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "हार्डवेयर",
     "tunnelingActive": "सक्रिय",
     "dvRpuFailed": "${converted} (${failures} असफल)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Cache सीमा: ${size} MiB"
   },
   "externalPlayer": {
     "title": "बाहरी खिलाड़ी",
@@ -3283,13 +3285,24 @@
     "request": "अनुरोध",
     "request4k": "4K में अनुरोध",
     "requestSeasons": "छूटे हुए सीज़न का अनुरोध करें",
+    "requestHint": "Seerr में अनुरोध विकल्प चुनें",
+    "quickRequestHint": "Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें",
+    "chooseSeasonsHint": "Seerr में अनुरोध के लिए सीज़न चुनें",
+    "request4kHint": "Seerr में 4K अनुरोध चुनें",
+    "only4kAvailable": "इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।",
+    "cardActionHint": "अनुरोध विकल्पों के लिए कार्ड मेनू खोलें",
+    "requestInProgress": "अनुरोध जारी है",
     "notifyMe": "उपलब्ध होने पर मुझे सूचित करें",
     "notifyMe4k": "4K में उपलब्ध होने पर मुझे सूचित करें",
     "notificationsOn": "उपलब्धता अलर्ट चालू है",
+    "turnOffAlert": "उपलब्धता सूचना बंद करें",
     "notificationsEnabled": "उपलब्ध होने पर हम आपको सूचित करेंगे",
+    "notificationsEnabled4k": "4K उपलब्ध होने पर हम आपको सूचित करेंगे",
+    "notificationsEnabledSeason": "सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे",
     "notificationsDisabled": "उपलब्धता अलर्ट बंद कर दिया गया",
     "notificationFailed": "उपलब्धता अलर्ट अपडेट नहीं हो सका",
     "seasons": "मौसम",
+    "requestSheetHint": "Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।",
     "allSeasons": "सभी मौसम",
     "advancedOptions": "उन्नत",
     "destinationServer": "Destination सर्वर",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr ने उपयोगकर्ता जानकारी वापस नहीं की",
     "sessionRejectedAfterReauth": "फिर से हस्ताक्षर करने के बाद बैठक को अस्वीकार कर दिया गया",
     "permissionDenied": "Seerr ने इस कार्रवाई को अस्वीकार कर दिया: आपके खाते में अब आवश्यक अनुमति नहीं है",
-    "permissionRevoked": "अब आपके पास यह अनुरोध करने की अनुमति नहीं है",
-    "requestHint": "Seerr में अनुरोध विकल्प चुनें",
-    "quickRequestHint": "Seerr में डिफ़ॉल्ट सेटिंग्स के साथ अभी अनुरोध करें",
-    "chooseSeasonsHint": "Seerr में अनुरोध के लिए सीज़न चुनें",
-    "request4kHint": "Seerr में 4K अनुरोध चुनें",
-    "only4kAvailable": "इस खाते से केवल 4K संस्करण का अनुरोध किया जा सकता है।",
-    "cardActionHint": "अनुरोध विकल्पों के लिए कार्ड मेनू खोलें",
-    "requestInProgress": "अनुरोध जारी है",
-    "turnOffAlert": "उपलब्धता सूचना बंद करें",
-    "notificationsEnabled4k": "4K उपलब्ध होने पर हम आपको सूचित करेंगे",
-    "notificationsEnabledSeason": "सीज़न ${season} उपलब्ध होने पर हम आपको सूचित करेंगे",
-    "requestSheetHint": "Seerr अनुरोध को स्वीकृति देता है और उसकी स्थिति ट्रैक करता है।"
+    "permissionRevoked": "अब आपके पास यह अनुरोध करने की अनुमति नहीं है"
   },
   "services": {
     "title": "सेवाएं",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "पुनर्प्राप्ति डेटा मिश्रित है।"
   },
   "sourceSetup": {
+    "bookorbitHelp": "अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।",
+    "bookorbitOpen": "BookOrbit में खोलें",
+    "bookorbitDetailHelp": "लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।",
     "savedCertificate": "सहेजा गया सर्वर प्रमाणपत्र",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "nfs://nas:2049/export जैसा NFS URL दर्ज करें।",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "डेटा पढ़ें",
     "nfsReadSpeed": "गति का माप",
     "nfsReadRequests": "अनुरोधों को पढ़ें",
-    "sharedEntryConflict": "यह साझा आइटम आईडी पहले से ही इस पुस्तकालय में एक और आइटमी के साथ जुड़ा हुआ है. एक अलग आईडी चुनें.",
-    "bookorbitHelp": "अपनी BookOrbit पुस्तकों को ब्राउज़ करने और चलाने के लिए अपने BookOrbit खाते से साइन इन करें। अनुपलब्ध शीर्षकों के अनुरोध फिर भी आपके कनेक्ट किए गए SeerrNG इंस्टेंस से भेजे जाते हैं।",
-    "bookorbitOpen": "BookOrbit में खोलें",
-    "bookorbitDetailHelp": "लाइब्रेरी का विवरण और वे फ़ॉर्मैट प्रबंधित करने के लिए यह शीर्षक BookOrbit में देखें जिन्हें Pleazyng खोल नहीं सकता। सुनने की प्रगति आपके BookOrbit खाते के साथ सिंक होती है।"
+    "sharedEntryConflict": "यह साझा आइटम आईडी पहले से ही इस पुस्तकालय में एक और आइटमी के साथ जुड़ा हुआ है. एक अलग आईडी चुनें."
   },
   "comics": {
     "fitHeight": "ऊँचाई के अनुसार फ़िट करें",
@@ -5544,6 +5546,9 @@
     "anniversaries": "एल्बम की वर्षगाँठ",
     "outputPreset": "इस आउटपुट का इक्वलाइज़र",
     "outputPresetHint": "यह आउटपुट चुने जाने पर यह इक्वलाइज़र अपने आप इस्तेमाल करें।",
-    "eqApproximation": "हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।"
+    "eqApproximation": "हेडफ़ोन प्रोफ़ाइल दस-बैंड इक्वलाइज़र के लिए अनुमानित रूप में बदली गई हैं।",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

@@ -809,6 +809,7 @@ class _Translations$settings$tr extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'Seçilen kütüphaneden hangi klipleri filmlerden önce oynayabilirsiniz seçin.';
 	@override String get contentScreensaverDelayOptionDescription => 'Ekran koruyucu sanat eserini göstermeden önce giriş olmadan bu uzun dakikaları bekleyin.';
 	@override String get videoCodecOptionDescription => 'Desteklendiğinde bu kodek için doğrudan oynatma izin verin. kontrolsüz kodekler medya sunucusu tarafından şifrelenir.';
+	@override String streamBufferSizeMiB({required Object size}) => 'Buffer boyutu: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2547,6 +2548,7 @@ class _Translations$performanceOverlay$tr extends Translations$performanceOverla
 	@override String get decoderHardware => 'Donanım';
 	@override String get tunnelingActive => 'Etkin';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} başarısız)';
+	@override String cacheLimitMiB({required Object size}) => 'Önbellek Sınırı: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2741,13 +2743,24 @@ class _Translations$seerr$tr extends Translations$seerr$en {
 	@override String get request => 'İstek Gönder';
 	@override String get request4k => '4K İstek Gönder';
 	@override String get requestSeasons => 'Eksik sezonları iste';
+	@override String get requestHint => 'Seerr\'de istek seçeneklerini belirleyin';
+	@override String get quickRequestHint => 'Varsayılan ayarlarla şimdi Seerr\'den isteyin';
+	@override String get chooseSeasonsHint => 'Seerr\'den istenecek sezonları seçin';
+	@override String get request4kHint => 'Seerr\'de 4K isteği seçin';
+	@override String get only4kAvailable => 'Bu hesap yalnızca 4K sürümünü isteyebilir.';
+	@override String get cardActionHint => 'Seerr istek seçenekleri için kart menüsünü açın';
+	@override String get requestInProgress => 'İstek sürüyor';
 	@override String get notifyMe => 'Kullanılabilir olduğunda bildir';
 	@override String get notifyMe4k => '4K kullanılabilir olduğunda bildir';
 	@override String get notificationsOn => 'Kullanılabilirlik bildirimi açık';
+	@override String get turnOffAlert => 'Kullanılabilirlik bildirimini kapat';
 	@override String get notificationsEnabled => 'Kullanılabilir olduğunda sana bildireceğiz';
+	@override String get notificationsEnabled4k => '4K sürümü kullanılabilir olduğunda sana bildireceğiz';
+	@override String notificationsEnabledSeason({required Object season}) => '${season}. sezon kullanılabilir olduğunda sana bildireceğiz';
 	@override String get notificationsDisabled => 'Kullanılabilirlik bildirimi kapalı';
 	@override String get notificationFailed => 'Kullanılabilirlik bildirimi güncellenemedi';
 	@override String get seasons => 'Sezonlar';
+	@override String get requestSheetHint => 'Onay sürecini Seerr yönetir ve isteğinizi takip eder.';
 	@override String get allSeasons => 'Tüm sezonlar';
 	@override String get advancedOptions => 'Gelişmiş';
 	@override String get destinationServer => 'Hedef sunucu';
@@ -2782,17 +2795,6 @@ class _Translations$seerr$tr extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'Yeniden giriş yapıldıktan sonra oturum reddedildi';
 	@override String get permissionDenied => 'Seerr bu eylemi reddetti: hesabınız artık gerekli izne sahip değil';
 	@override String get permissionRevoked => 'Bunu isteme izniniz artık yok';
-	@override String get requestHint => 'Seerr\'de istek seçeneklerini belirleyin';
-	@override String get quickRequestHint => 'Varsayılan ayarlarla şimdi Seerr\'den isteyin';
-	@override String get chooseSeasonsHint => 'Seerr\'den istenecek sezonları seçin';
-	@override String get request4kHint => 'Seerr\'de 4K isteği seçin';
-	@override String get only4kAvailable => 'Bu hesap yalnızca 4K sürümünü isteyebilir.';
-	@override String get cardActionHint => 'Seerr istek seçenekleri için kart menüsünü açın';
-	@override String get requestInProgress => 'İstek sürüyor';
-	@override String get turnOffAlert => 'Kullanılabilirlik bildirimini kapat';
-	@override String get notificationsEnabled4k => '4K sürümü kullanılabilir olduğunda sana bildireceğiz';
-	@override String notificationsEnabledSeason({required Object season}) => '${season}. sezon kullanılabilir olduğunda sana bildireceğiz';
-	@override String get requestSheetHint => 'Onay sürecini Seerr yönetir ve isteğinizi takip eder.';
 }
 
 // Path: services
@@ -3761,6 +3763,9 @@ class _Translations$sourceSetup$tr extends Translations$sourceSetup$en {
 	final TranslationsTr _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.';
+	@override String get bookorbitOpen => 'BookOrbit’te aç';
+	@override String get bookorbitDetailHelp => 'Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir.';
 	@override String get savedCertificate => 'Kaydedilmiş sunucu sertifikası';
 	@override String get nfsEndpointInvalid => 'nfs://nas:2049/export gibi bir NFS URL’si girin.';
 	@override String get dlnaNone => 'DLNA sunucusu bulunamadı. Aygıt açıklamasının URL’sini elle girin.';
@@ -3872,9 +3877,6 @@ class _Translations$sourceSetup$tr extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'ölçülen hız';
 	@override String get nfsReadRequests => 'talepleri okuyun';
 	@override String get sharedEntryConflict => 'Bu paylaşılan öğe kimliği zaten bu kütüphanede başka bir öğe ile eşleştirilmiştir.';
-	@override String get bookorbitHelp => 'Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.';
-	@override String get bookorbitOpen => 'BookOrbit’te aç';
-	@override String get bookorbitDetailHelp => 'Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir.';
 }
 
 // Path: comics
@@ -4320,6 +4322,9 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	@override String get outputPreset => 'Bu çıkış için ekolayzer';
 	@override String get outputPresetHint => 'Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.';
 	@override String get eqApproximation => 'Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6111,6 +6116,7 @@ extension on TranslationsTr {
 			'settings.prerollSelectionDescription' => 'Seçilen kütüphaneden hangi klipleri filmlerden önce oynayabilirsiniz seçin.',
 			'settings.contentScreensaverDelayOptionDescription' => 'Ekran koruyucu sanat eserini göstermeden önce giriş olmadan bu uzun dakikaları bekleyin.',
 			'settings.videoCodecOptionDescription' => 'Desteklendiğinde bu kodek için doğrudan oynatma izin verin. kontrolsüz kodekler medya sunucusu tarafından şifrelenir.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'Buffer boyutu: ${size} MiB',
 			'themeEditor.builtIn' => 'Yerleşik',
 			'themeEditor.presets' => 'Hazır Temalar',
 			'themeEditor.custom' => 'Özel',
@@ -6462,9 +6468,9 @@ extension on TranslationsTr {
 			'videoControls.chaptersAndBookmarks' => 'Bölümler ve Bookmarks',
 			'videoControls.segmentLoop' => 'Segment Yürüyüşü',
 			'videoControls.addBookmark' => 'Bookmark ekleyin',
-			'videoControls.bookmarkName' => 'Bookmark Adı',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark Adı',
 			'videoControls.bookmarkNameHint' => 'Örneğin, açılan sahne',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'Bookmark Hakkında ${n}',
 			'videoControls.bookmarkNameRequired' => 'Bu kitaplık için bir isim girin.',
@@ -6976,9 +6982,9 @@ extension on TranslationsTr {
 			'libraries.hideLibrary' => 'Kitaplığı gizle',
 			'libraries.libraryOptions' => 'Kitaplık seçenekleri',
 			'libraries.content' => 'kitaplık içeriği',
-			'libraries.selectLibrary' => 'Kitaplık seç',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'Kitaplık seç',
 			'libraries.filtersWithCount' => ({required Object count}) => 'Filtreler (${count})',
 			'libraries.noRecommendations' => 'Öneri bulunmuyor',
 			'libraries.noCollections' => 'Bu kitaplıkta koleksiyon yok',
@@ -7490,9 +7496,9 @@ extension on TranslationsTr {
 			'watchTogether.paste' => 'Yapıştır',
 			'watchTogether.noCodeInClipboard' => 'Panoda oda kodu yok',
 			'watchTogether.copyCode' => 'Kodu Kopyala',
-			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'Oda kodu kopyalandı',
 			'watchTogether.shareInvite' => 'Daveti Paylaş',
 			'watchTogether.inviteCopied' => 'Davet kopyalandı. Bir mesaja yapıştırın.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'Pleazyng\'de Birlikte İzle odama katıl: Birlikte İzle\'yi aç, Odaya Katıl seçeneğini seç ve ${code} kodunu gir.',
@@ -7956,6 +7962,7 @@ extension on TranslationsTr {
 			'performanceOverlay.decoderHardware' => 'Donanım',
 			'performanceOverlay.tunnelingActive' => 'Etkin',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} başarısız)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'Önbellek Sınırı: ${size} MiB',
 			'externalPlayer.title' => 'Harici Oynatıcı',
 			'externalPlayer.useExternalPlayer' => 'Harici Oynatıcı Kullan',
 			'externalPlayer.useExternalPlayerDescription' => 'Videoları başka bir uygulamada açın',
@@ -8003,10 +8010,10 @@ extension on TranslationsTr {
 			'metadataEdit.fromUrl' => 'URL\'den',
 			'metadataEdit.uploadFile' => 'Dosya Yükle',
 			'metadataEdit.enterImageUrl' => 'Görsel URL\'si girin',
-			'metadataEdit.imageUrl' => 'Görsel URL\'si',
-			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'Görsel URL\'si',
+			'metadataEdit.metadataUpdated' => 'Meta veriler güncellendi',
 			'metadataEdit.metadataUpdateFailed' => 'Meta veriler güncellenemedi',
 			'metadataEdit.artworkUpdated' => 'Görseller güncellendi',
 			'metadataEdit.artworkUpdateFailed' => 'Görseller güncellenemedi',
@@ -8098,13 +8105,24 @@ extension on TranslationsTr {
 			'seerr.request' => 'İstek Gönder',
 			'seerr.request4k' => '4K İstek Gönder',
 			'seerr.requestSeasons' => 'Eksik sezonları iste',
+			'seerr.requestHint' => 'Seerr\'de istek seçeneklerini belirleyin',
+			'seerr.quickRequestHint' => 'Varsayılan ayarlarla şimdi Seerr\'den isteyin',
+			'seerr.chooseSeasonsHint' => 'Seerr\'den istenecek sezonları seçin',
+			'seerr.request4kHint' => 'Seerr\'de 4K isteği seçin',
+			'seerr.only4kAvailable' => 'Bu hesap yalnızca 4K sürümünü isteyebilir.',
+			'seerr.cardActionHint' => 'Seerr istek seçenekleri için kart menüsünü açın',
+			'seerr.requestInProgress' => 'İstek sürüyor',
 			'seerr.notifyMe' => 'Kullanılabilir olduğunda bildir',
 			'seerr.notifyMe4k' => '4K kullanılabilir olduğunda bildir',
 			'seerr.notificationsOn' => 'Kullanılabilirlik bildirimi açık',
+			'seerr.turnOffAlert' => 'Kullanılabilirlik bildirimini kapat',
 			'seerr.notificationsEnabled' => 'Kullanılabilir olduğunda sana bildireceğiz',
+			'seerr.notificationsEnabled4k' => '4K sürümü kullanılabilir olduğunda sana bildireceğiz',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => '${season}. sezon kullanılabilir olduğunda sana bildireceğiz',
 			'seerr.notificationsDisabled' => 'Kullanılabilirlik bildirimi kapalı',
 			'seerr.notificationFailed' => 'Kullanılabilirlik bildirimi güncellenemedi',
 			'seerr.seasons' => 'Sezonlar',
+			'seerr.requestSheetHint' => 'Onay sürecini Seerr yönetir ve isteğinizi takip eder.',
 			'seerr.allSeasons' => 'Tüm sezonlar',
 			'seerr.advancedOptions' => 'Gelişmiş',
 			'seerr.destinationServer' => 'Hedef sunucu',
@@ -8139,17 +8157,6 @@ extension on TranslationsTr {
 			'seerr.sessionRejectedAfterReauth' => 'Yeniden giriş yapıldıktan sonra oturum reddedildi',
 			'seerr.permissionDenied' => 'Seerr bu eylemi reddetti: hesabınız artık gerekli izne sahip değil',
 			'seerr.permissionRevoked' => 'Bunu isteme izniniz artık yok',
-			'seerr.requestHint' => 'Seerr\'de istek seçeneklerini belirleyin',
-			'seerr.quickRequestHint' => 'Varsayılan ayarlarla şimdi Seerr\'den isteyin',
-			'seerr.chooseSeasonsHint' => 'Seerr\'den istenecek sezonları seçin',
-			'seerr.request4kHint' => 'Seerr\'de 4K isteği seçin',
-			'seerr.only4kAvailable' => 'Bu hesap yalnızca 4K sürümünü isteyebilir.',
-			'seerr.cardActionHint' => 'Seerr istek seçenekleri için kart menüsünü açın',
-			'seerr.requestInProgress' => 'İstek sürüyor',
-			'seerr.turnOffAlert' => 'Kullanılabilirlik bildirimini kapat',
-			'seerr.notificationsEnabled4k' => '4K sürümü kullanılabilir olduğunda sana bildireceğiz',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => '${season}. sezon kullanılabilir olduğunda sana bildireceğiz',
-			'seerr.requestSheetHint' => 'Onay sürecini Seerr yönetir ve isteğinizi takip eder.',
 			'services.title' => 'Servisler',
 			'services.hubSubtitle' => 'İzleme ilerlemesini eşitleyin ve yeni başlıklar isteyin.',
 			'services.integrations' => 'Entegrasyonlar',
@@ -8517,10 +8524,10 @@ extension on TranslationsTr {
 			'universalMedia.favorites' => 'Saved Stream Favori',
 			'universalMedia.address' => 'Medya Adresi',
 			'universalMedia.addressHelp' => 'HTTPS tercih edilir. tanınmış kimlik veya imza parametreleri olan URL\'ler yalnızca bu oturum için kullanılır ve favori olarak kaydedilemez.',
-			'universalMedia.displayName' => 'Gösterim Adı (Seçmeli)',
-			'universalMedia.displayNameHelp' => 'Oyuncu ve sistem medya kontrolü için kısa bir isim seçin.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'Gösterim Adı (Seçmeli)',
+			'universalMedia.displayNameHelp' => 'Oyuncu ve sistem medya kontrolü için kısa bir isim seçin.',
 			'universalMedia.allowHttp' => 'Şifrelenmemiş bir HTTP bağlantısı sağlar',
 			'universalMedia.allowHttpHelp' => 'HTTP bağlantıyı şifrelemez. yalnızca güvenilir bir ağda izin verin. mümkün olduğunca HTTPS kullanın.',
 			'universalMedia.advancedProtocols' => 'Sadece MPV: bir RTSP, RTMP/RTMPS, UDP veya RTP adresi girin.',
@@ -8993,6 +9000,9 @@ extension on TranslationsTr {
 			'audiobook.recoveryImportConfirm' => 'Bu şifreli kurtarma dosyasını mevcut okuma pozisyonları ve notları ile birleştirin? Mevcut geçmişi muhafaza edilecektir. Paylaşılan kütüphane ve öğe kimlikleri dahil değildir; ithal etmeden önce her cihazda eşleşen kimlikler ayarlayın.',
 			'audiobook.recoveryExported' => 'Şifreli kurtarma dosyası kaydedildi.',
 			'audiobook.recoveryImported' => 'Kurtarma verileri birleşti.',
+			'sourceSetup.bookorbitHelp' => 'Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.',
+			'sourceSetup.bookorbitOpen' => 'BookOrbit’te aç',
+			'sourceSetup.bookorbitDetailHelp' => 'Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir.',
 			'sourceSetup.savedCertificate' => 'Kaydedilmiş sunucu sertifikası',
 			'sourceSetup.nfsEndpointInvalid' => 'nfs://nas:2049/export gibi bir NFS URL’si girin.',
 			'sourceSetup.dlnaNone' => 'DLNA sunucusu bulunamadı. Aygıt açıklamasının URL’sini elle girin.',
@@ -9028,13 +9038,13 @@ extension on TranslationsTr {
 			'sourceSetup.clientCertificate' => 'İstemci sertifikası (isteğe bağlı)',
 			'sourceSetup.clientCertificateHelp' => 'NAS’ın bu istemcinin kimliğini doğrulamasını sağlar; AUTH_SYS kimlikleri hâlâ NAS’ın NFS paylaşım ilkesine bağlıdır.',
 			'sourceSetup.savedIdentity' => 'Kaydedilmiş bir istemci kimliği kullanılacak.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'Kaydedilmiş istemci kimliğini değiştir',
 			'sourceSetup.chooseIdentity' => 'PKCS#12 istemci kimliği seç',
 			'sourceSetup.identityPassphrase' => 'İstemci kimliğinin parola ifadesi',
 			'sourceSetup.identityPassphraseHelp' => 'Dosyanın parola ifadesi yoksa boş bırakın.',
 			'sourceSetup.removeIdentity' => 'Kaydedilmiş istemci kimliğini kaldır',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'İstemci kimlikleri, kaynağın şifreli kimlik bilgileri deposunda saklanır. Kaydedilmiş kimliği korumak için bu bölümü değiştirmeyin.',
 			'sourceSetup.nfsLimitations' => 'TCP üzerinden salt okunur NFSv3. RPC-with-TLS olmadan NFS trafiği şifrelenmez. NAS, seçilen AUTH_SYS kimliklerine ve ayrıcalıksız istemci bağlantı noktalarına izin vermelidir (genellikle “insecure” dışa aktarım seçeneği olarak adlandırılır). NFSv4 ve UDP desteklenmez.',
 			'sourceSetup.nfsSetupHelp' => 'NFS kurulum yardımı',
@@ -9106,9 +9116,6 @@ extension on TranslationsTr {
 			'sourceSetup.nfsReadSpeed' => 'ölçülen hız',
 			'sourceSetup.nfsReadRequests' => 'talepleri okuyun',
 			'sourceSetup.sharedEntryConflict' => 'Bu paylaşılan öğe kimliği zaten bu kütüphanede başka bir öğe ile eşleştirilmiştir.',
-			'sourceSetup.bookorbitHelp' => 'Kitaplarınıza göz atmak ve oynatmak için kendi BookOrbit hesabınızla giriş yapın. Eksik içerik istekleri bağlı SeerrNG örneğiniz üzerinden gönderilmeye devam eder.',
-			'sourceSetup.bookorbitOpen' => 'BookOrbit’te aç',
-			'sourceSetup.bookorbitDetailHelp' => 'Kitaplık ayrıntılarını ve Pleazyng’in açamadığı biçimleri yönetmek için bu içeriği BookOrbit’te görüntüleyin. Dinleme ilerlemesi BookOrbit hesabınızla eşitlenir.',
 			'comics.fitHeight' => 'Yüksekliğe sığdır',
 			'comics.readingMode' => 'Okuma modu',
 			'comics.paged' => 'Sayfalar',
@@ -9473,6 +9480,9 @@ extension on TranslationsTr {
 			'musicTools.outputPreset' => 'Bu çıkış için ekolayzer',
 			'musicTools.outputPresetHint' => 'Bu çıkış seçildiğinde bu ekolayzeri otomatik olarak kullan.',
 			'musicTools.eqApproximation' => 'Kulaklık profilleri on bantlı ekolayzer için yaklaşık olarak uyarlanmıştır.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

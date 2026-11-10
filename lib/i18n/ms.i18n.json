@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Saiz Buffer: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "dibina dalam",
@@ -3091,7 +3092,8 @@
     "decoderHardware": "Perkakasan",
     "tunnelingActive": "Aktiviti",
     "dvRpuFailed": "${converted} (${failures} gagal)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Perbezaan Cache: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Pemain luar",
@@ -3262,13 +3264,24 @@
     "request": "Permintaan",
     "request4k": "Permintaan dalam 4K",
     "requestSeasons": "Minta musim yang belum tersedia",
+    "requestHint": "Pilih pilihan permintaan dalam Seerr",
+    "quickRequestHint": "Buat permintaan sekarang dalam Seerr menggunakan tetapan lalai",
+    "chooseSeasonsHint": "Pilih musim untuk diminta dalam Seerr",
+    "request4kHint": "Pilih permintaan 4K dalam Seerr",
+    "only4kAvailable": "Akaun ini hanya boleh meminta versi 4K.",
+    "cardActionHint": "Buka menu kad untuk pilihan permintaan Seerr",
+    "requestInProgress": "Permintaan sedang diproses",
     "notifyMe": "Beritahu saya apabila tersedia",
     "notifyMe4k": "Beritahu saya apabila tersedia dalam 4K",
     "notificationsOn": "Amaran ketersediaan dihidupkan",
+    "turnOffAlert": "Matikan pemberitahuan ketersediaan",
     "notificationsEnabled": "Kami akan memaklumkan anda apabila tersedia",
+    "notificationsEnabled4k": "Kami akan memaklumkan anda apabila versi 4K tersedia",
+    "notificationsEnabledSeason": "Kami akan memaklumkan anda apabila musim ${season} tersedia",
     "notificationsDisabled": "Amaran ketersediaan dimatikan",
     "notificationFailed": "Tidak dapat mengemas kini amaran ketersediaan",
     "seasons": "Musim",
+    "requestSheetHint": "Seerr menguruskan kelulusan dan menjejaki permintaan anda.",
     "allSeasons": "Semua musim",
     "advancedOptions": "Kemajuan",
     "destinationServer": "Pelayan Destinasi",
@@ -3302,18 +3315,7 @@
     "noUserInformation": "Seerr tidak mengembalikan maklumat pengguna",
     "sessionRejectedAfterReauth": "Mesyuarat itu ditolak selepas penandatanganan semula.",
     "permissionDenied": "Seerr menafikan tindakan ini: akaun anda tidak lagi mempunyai kebenaran yang diperlukan",
-    "permissionRevoked": "Anda tidak lagi mempunyai keizinan untuk meminta ini",
-    "requestHint": "Pilih pilihan permintaan dalam Seerr",
-    "quickRequestHint": "Buat permintaan sekarang dalam Seerr menggunakan tetapan lalai",
-    "chooseSeasonsHint": "Pilih musim untuk diminta dalam Seerr",
-    "request4kHint": "Pilih permintaan 4K dalam Seerr",
-    "only4kAvailable": "Akaun ini hanya boleh meminta versi 4K.",
-    "cardActionHint": "Buka menu kad untuk pilihan permintaan Seerr",
-    "requestInProgress": "Permintaan sedang diproses",
-    "turnOffAlert": "Matikan pemberitahuan ketersediaan",
-    "notificationsEnabled4k": "Kami akan memaklumkan anda apabila versi 4K tersedia",
-    "notificationsEnabledSeason": "Kami akan memaklumkan anda apabila musim ${season} tersedia",
-    "requestSheetHint": "Seerr menguruskan kelulusan dan menjejaki permintaan anda."
+    "permissionRevoked": "Anda tidak lagi mempunyai keizinan untuk meminta ini"
   },
   "services": {
     "title": "Perkhidmatan",
@@ -4232,6 +4234,9 @@
     "recoveryImported": "Data pemulihan telah digabungkan."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Log masuk dengan akaun BookOrbit anda sendiri untuk melayari dan memainkan bukunya. Permintaan untuk judul yang tiada tetap dihantar melalui tika SeerrNG yang disambungkan.",
+    "bookorbitOpen": "Buka dalam BookOrbit",
+    "bookorbitDetailHelp": "Lihat judul ini dalam BookOrbit untuk mengurus butiran pustaka dan format yang tidak dapat dibuka oleh Pleazyng. Kemajuan pendengaran disegerakkan dengan akaun BookOrbit anda.",
     "savedCertificate": "Sijil pelayan yang disimpan",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Masukkan URL NFS, contohnya nfs://nas:2049/export.",
@@ -4343,10 +4348,7 @@
     "nfsReadBytes": "Data bacaan",
     "nfsReadSpeed": "Kelajuan yang diukur",
     "nfsReadRequests": "Membaca Permintaan",
-    "sharedEntryConflict": "ID item yang dikongsi ini telah digabungkan dengan item lain dalam perpustakaan ini. pilih ID yang berbeza.",
-    "bookorbitHelp": "Log masuk dengan akaun BookOrbit anda sendiri untuk melayari dan memainkan bukunya. Permintaan untuk judul yang tiada tetap dihantar melalui tika SeerrNG yang disambungkan.",
-    "bookorbitOpen": "Buka dalam BookOrbit",
-    "bookorbitDetailHelp": "Lihat judul ini dalam BookOrbit untuk mengurus butiran pustaka dan format yang tidak dapat dibuka oleh Pleazyng. Kemajuan pendengaran disegerakkan dengan akaun BookOrbit anda."
+    "sharedEntryConflict": "ID item yang dikongsi ini telah digabungkan dengan item lain dalam perpustakaan ini. pilih ID yang berbeza."
   },
   "comics": {
     "fitHeight": "Muatkan mengikut tinggi",
@@ -5517,6 +5519,9 @@
     "anniversaries": "Ulang tahun album",
     "outputPreset": "EQ untuk output ini",
     "outputPresetHint": "Gunakan EQ ini secara automatik apabila output ini dipilih.",
-    "eqApproximation": "Profil fon kepala dianggarkan untuk EQ sepuluh jalur."
+    "eqApproximation": "Profil fon kepala dianggarkan untuk EQ sepuluh jalur.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

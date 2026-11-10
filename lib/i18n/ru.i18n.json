@@ -738,7 +738,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Буфер размер: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Встроенные",
@@ -3154,7 +3155,8 @@
     "decoderHardware": "Аппаратный",
     "tunnelingActive": "Активно",
     "dvRpuFailed": "${converted} (ошибок: ${failures})",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Лимит кэша: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Внешний плеер",
@@ -3325,13 +3327,24 @@
     "request": "Запросить",
     "request4k": "Запросить в 4K",
     "requestSeasons": "Запросить недостающие сезоны",
+    "requestHint": "Выберите параметры запроса в Seerr",
+    "quickRequestHint": "Запросить сейчас через Seerr с настройками по умолчанию",
+    "chooseSeasonsHint": "Выберите сезоны для запроса в Seerr",
+    "request4kHint": "Выберите запрос версии 4K в Seerr",
+    "only4kAvailable": "Для этой учётной записи можно запросить только версию 4K.",
+    "cardActionHint": "Откройте меню карточки, чтобы увидеть параметры запроса Seerr",
+    "requestInProgress": "Запрос выполняется",
     "notifyMe": "Уведомить меня о появлении",
     "notifyMe4k": "Уведомить меня о появлении в 4K",
     "notificationsOn": "Оповещение о доступности включено",
+    "turnOffAlert": "Отключить оповещение о доступности",
     "notificationsEnabled": "Мы сообщим, когда станет доступно",
+    "notificationsEnabled4k": "Мы сообщим, когда станет доступна версия 4K",
+    "notificationsEnabledSeason": "Мы сообщим, когда станет доступен сезон ${season}",
     "notificationsDisabled": "Оповещение о доступности выключено",
     "notificationFailed": "Не удалось обновить оповещение о доступности",
     "seasons": "Сезоны",
+    "requestSheetHint": "Seerr обрабатывает одобрение и отслеживает ваш запрос.",
     "allSeasons": "Все сезоны",
     "advancedOptions": "Дополнительно",
     "destinationServer": "Целевой сервер",
@@ -3365,18 +3378,7 @@
     "noUserInformation": "Seerr не вернул сведения о пользователе",
     "sessionRejectedAfterReauth": "Сеанс был отклонён после повторного входа",
     "permissionDenied": "Seerr отклонил это действие: у вашей учётной записи больше нет необходимого разрешения",
-    "permissionRevoked": "У вас больше нет разрешения запрашивать это",
-    "requestHint": "Выберите параметры запроса в Seerr",
-    "quickRequestHint": "Запросить сейчас через Seerr с настройками по умолчанию",
-    "chooseSeasonsHint": "Выберите сезоны для запроса в Seerr",
-    "request4kHint": "Выберите запрос версии 4K в Seerr",
-    "only4kAvailable": "Для этой учётной записи можно запросить только версию 4K.",
-    "cardActionHint": "Откройте меню карточки, чтобы увидеть параметры запроса Seerr",
-    "requestInProgress": "Запрос выполняется",
-    "turnOffAlert": "Отключить оповещение о доступности",
-    "notificationsEnabled4k": "Мы сообщим, когда станет доступна версия 4K",
-    "notificationsEnabledSeason": "Мы сообщим, когда станет доступен сезон ${season}",
-    "requestSheetHint": "Seerr обрабатывает одобрение и отслеживает ваш запрос."
+    "permissionRevoked": "У вас больше нет разрешения запрашивать это"
   },
   "services": {
     "title": "Сервисы",
@@ -4307,6 +4309,9 @@
     "recoveryImported": "Данные о восстановлении объединены."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Войдите в собственную учётную запись BookOrbit, чтобы просматривать и воспроизводить книги. Запросы отсутствующих книг по-прежнему отправляются через подключённый экземпляр SeerrNG.",
+    "bookorbitOpen": "Открыть в BookOrbit",
+    "bookorbitDetailHelp": "Откройте эту книгу в BookOrbit, чтобы управлять сведениями библиотеки и форматами, которые Pleazyng не может открыть. Прогресс прослушивания синхронизируется с вашей учётной записью BookOrbit.",
     "savedCertificate": "Сохранённый сертификат сервера",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Введите URL NFS, например nfs://nas:2049/export.",
@@ -4418,10 +4423,7 @@
     "nfsReadBytes": "Читать данные",
     "nfsReadSpeed": "Измеряемая скорость",
     "nfsReadRequests": "Читать просьбы",
-    "sharedEntryConflict": "Этот идентификатор совместного элемента уже параллелирован с другим элементом в этой библиотеке.",
-    "bookorbitHelp": "Войдите в собственную учётную запись BookOrbit, чтобы просматривать и воспроизводить книги. Запросы отсутствующих книг по-прежнему отправляются через подключённый экземпляр SeerrNG.",
-    "bookorbitOpen": "Открыть в BookOrbit",
-    "bookorbitDetailHelp": "Откройте эту книгу в BookOrbit, чтобы управлять сведениями библиотеки и форматами, которые Pleazyng не может открыть. Прогресс прослушивания синхронизируется с вашей учётной записью BookOrbit."
+    "sharedEntryConflict": "Этот идентификатор совместного элемента уже параллелирован с другим элементом в этой библиотеке."
   },
   "comics": {
     "fitHeight": "По высоте",
@@ -5598,6 +5600,9 @@
     "anniversaries": "Годовщины альбомов",
     "outputPreset": "Эквалайзер для этого выхода",
     "outputPresetHint": "Автоматически применять этот эквалайзер при выборе этого выхода.",
-    "eqApproximation": "Профили наушников приближённо адаптированы к десятиполосному эквалайзеру."
+    "eqApproximation": "Профили наушников приближённо адаптированы к десятиполосному эквалайзеру.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

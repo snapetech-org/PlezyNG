@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Buffer størrelse: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Innebygde",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Maskinvare",
     "tunnelingActive": "Aktiv",
     "dvRpuFailed": "${converted} (${failures} mislyktes)",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Grense for hurtigbuffer: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Ekstern spiller",
@@ -3283,13 +3285,24 @@
     "request": "Be om",
     "request4k": "Be om i 4K",
     "requestSeasons": "Be om manglende sesonger",
+    "requestHint": "Velg forespørselsalternativer i Seerr",
+    "quickRequestHint": "Send forespørsel nå i Seerr med standardinnstillingene",
+    "chooseSeasonsHint": "Velg sesongene du vil be om i Seerr",
+    "request4kHint": "Velg en 4K-forespørsel i Seerr",
+    "only4kAvailable": "Denne kontoen kan bare be om 4K-versjonen.",
+    "cardActionHint": "Åpne kortmenyen for Seerr-forespørselsalternativer",
+    "requestInProgress": "Forespørsel pågår",
     "notifyMe": "Varsle meg når tilgjengelig",
     "notifyMe4k": "Varsle meg når tilgjengelig i 4K",
     "notificationsOn": "Tilgjengelighetsvarsel er på",
+    "turnOffAlert": "Slå av tilgjengelighetsvarsel",
     "notificationsEnabled": "Vi varsler deg når det blir tilgjengelig",
+    "notificationsEnabled4k": "Vi varsler deg når 4K-versjonen er tilgjengelig",
+    "notificationsEnabledSeason": "Vi varsler deg når sesong ${season} er tilgjengelig",
     "notificationsDisabled": "Tilgjengelighetsvarselet er slått av",
     "notificationFailed": "Kunne ikke oppdatere tilgjengelighetsvarselet",
     "seasons": "Sesonger",
+    "requestSheetHint": "Seerr håndterer godkjenningen og følger forespørselen din.",
     "allSeasons": "Alle sesonger",
     "advancedOptions": "Avansert",
     "destinationServer": "Målserver",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr returnerte ingen brukerinformasjon",
     "sessionRejectedAfterReauth": "Økten ble avvist etter ny innlogging",
     "permissionDenied": "Seerr avviste denne handlingen: kontoen din har ikke lenger den nødvendige tillatelsen",
-    "permissionRevoked": "Du har ikke lenger tillatelse til å be om dette",
-    "requestHint": "Velg forespørselsalternativer i Seerr",
-    "quickRequestHint": "Send forespørsel nå i Seerr med standardinnstillingene",
-    "chooseSeasonsHint": "Velg sesongene du vil be om i Seerr",
-    "request4kHint": "Velg en 4K-forespørsel i Seerr",
-    "only4kAvailable": "Denne kontoen kan bare be om 4K-versjonen.",
-    "cardActionHint": "Åpne kortmenyen for Seerr-forespørselsalternativer",
-    "requestInProgress": "Forespørsel pågår",
-    "turnOffAlert": "Slå av tilgjengelighetsvarsel",
-    "notificationsEnabled4k": "Vi varsler deg når 4K-versjonen er tilgjengelig",
-    "notificationsEnabledSeason": "Vi varsler deg når sesong ${season} er tilgjengelig",
-    "requestSheetHint": "Seerr håndterer godkjenningen og følger forespørselen din."
+    "permissionRevoked": "Du har ikke lenger tillatelse til å be om dette"
   },
   "services": {
     "title": "Tjenester",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "Data om gjenoppretting sammensatt."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Logg på med din egen BookOrbit-konto for å bla gjennom og spille av bøkene der. Forespørsler om titler som mangler, sendes fortsatt via den tilkoblede SeerrNG-instansen.",
+    "bookorbitOpen": "Åpne i BookOrbit",
+    "bookorbitDetailHelp": "Vis denne tittelen i BookOrbit for å administrere bibliotekdetaljer og formater Pleazyng ikke kan åpne. Lyttefremdriften synkroniseres med BookOrbit-kontoen din.",
     "savedCertificate": "Lagret serversertifikat",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Angi en NFS-URL, for eksempel nfs://nas:2049/export.",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "Data leses",
     "nfsReadSpeed": "Målt hastighet",
     "nfsReadRequests": "Les forespørsler",
-    "sharedEntryConflict": "Denne delte element ID er allerede parert med et annet element i denne biblioteket.",
-    "bookorbitHelp": "Logg på med din egen BookOrbit-konto for å bla gjennom og spille av bøkene der. Forespørsler om titler som mangler, sendes fortsatt via den tilkoblede SeerrNG-instansen.",
-    "bookorbitOpen": "Åpne i BookOrbit",
-    "bookorbitDetailHelp": "Vis denne tittelen i BookOrbit for å administrere bibliotekdetaljer og formater Pleazyng ikke kan åpne. Lyttefremdriften synkroniseres med BookOrbit-kontoen din."
+    "sharedEntryConflict": "Denne delte element ID er allerede parert med et annet element i denne biblioteket."
   },
   "comics": {
     "fitHeight": "Tilpass høyden",
@@ -5544,6 +5546,9 @@
     "anniversaries": "Albumjubileer",
     "outputPreset": "EQ for denne utgangen",
     "outputPresetHint": "Bruk denne EQ-en automatisk når denne utgangen velges.",
-    "eqApproximation": "Hodetelefonprofiler er tilnærmet for EQ med ti bånd."
+    "eqApproximation": "Hodetelefonprofiler er tilnærmet for EQ med ti bånd.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

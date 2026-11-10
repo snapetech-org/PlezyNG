@@ -732,7 +732,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "布格大小: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "內建",
@@ -3108,7 +3109,8 @@
     "decoderHardware": "硬體",
     "tunnelingActive": "已啟用",
     "dvRpuFailed": "${converted}（${failures} 個失敗）",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "快取上限: ${size} MiB"
   },
   "externalPlayer": {
     "title": "外部播放器",
@@ -3279,13 +3281,24 @@
     "request": "請求",
     "request4k": "請求 4K 版本",
     "requestSeasons": "要求缺少的季度",
+    "requestHint": "在 Seerr 中選擇請求選項",
+    "quickRequestHint": "使用預設設定立即透過 Seerr 請求",
+    "chooseSeasonsHint": "選擇要在 Seerr 中請求的季度",
+    "request4kHint": "在 Seerr 中選擇 4K 請求",
+    "only4kAvailable": "此帳戶只能請求 4K 版本。",
+    "cardActionHint": "開啟卡片選單以查看 Seerr 請求選項",
+    "requestInProgress": "請求處理中",
     "notifyMe": "有片源時通知我",
     "notifyMe4k": "有 4K 片源時通知我",
     "notificationsOn": "可用性通知已開啟",
+    "turnOffAlert": "關閉可用性通知",
     "notificationsEnabled": "有片源時我們會通知你",
+    "notificationsEnabled4k": "4K 版本可用時我們會通知您",
+    "notificationsEnabledSeason": "第 ${season} 季可用時我們會通知您",
     "notificationsDisabled": "可用性通知已關閉",
     "notificationFailed": "無法更新可用性通知",
     "seasons": "季",
+    "requestSheetHint": "Seerr 會處理核准並追蹤您的請求。",
     "allSeasons": "所有季數",
     "advancedOptions": "進階設定",
     "destinationServer": "目標伺服器",
@@ -3319,18 +3332,7 @@
     "noUserInformation": "Seerr 未傳回使用者資訊",
     "sessionRejectedAfterReauth": "重新登入後，工作階段遭到拒絕",
     "permissionDenied": "Seerr 拒絕了此操作：您的帳戶不再具備所需權限",
-    "permissionRevoked": "您不再具有請求此內容的權限",
-    "requestHint": "在 Seerr 中選擇請求選項",
-    "quickRequestHint": "使用預設設定立即透過 Seerr 請求",
-    "chooseSeasonsHint": "選擇要在 Seerr 中請求的季度",
-    "request4kHint": "在 Seerr 中選擇 4K 請求",
-    "only4kAvailable": "此帳戶只能請求 4K 版本。",
-    "cardActionHint": "開啟卡片選單以查看 Seerr 請求選項",
-    "requestInProgress": "請求處理中",
-    "turnOffAlert": "關閉可用性通知",
-    "notificationsEnabled4k": "4K 版本可用時我們會通知您",
-    "notificationsEnabledSeason": "第 ${season} 季可用時我們會通知您",
-    "requestSheetHint": "Seerr 會處理核准並追蹤您的請求。"
+    "permissionRevoked": "您不再具有請求此內容的權限"
   },
   "services": {
     "title": "外部服務",
@@ -4252,6 +4254,9 @@
     "recoveryImported": "恢復資料合併。"
   },
   "sourceSetup": {
+    "bookorbitHelp": "使用您自己的 BookOrbit 帳戶登入，即可瀏覽及播放書籍。缺少的書名仍會透過已連線的 SeerrNG 執行個體提出請求。",
+    "bookorbitOpen": "在 BookOrbit 中開啟",
+    "bookorbitDetailHelp": "在 BookOrbit 中查看此書，以管理書庫詳細資料和 Pleazyng 無法開啟的格式。聆聽進度會與您的 BookOrbit 帳戶同步。",
     "savedCertificate": "已儲存的伺服器憑證",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "請輸入 NFS 網址，例如 nfs://nas:2049/export。",
@@ -4363,10 +4368,7 @@
     "nfsReadBytes": "資料閱讀",
     "nfsReadSpeed": "測量速度",
     "nfsReadRequests": "閱讀請求",
-    "sharedEntryConflict": "此共享專案 ID 已與本圖書館中的另一個專案相匹配. 選擇不同的 ID。",
-    "bookorbitHelp": "使用您自己的 BookOrbit 帳戶登入，即可瀏覽及播放書籍。缺少的書名仍會透過已連線的 SeerrNG 執行個體提出請求。",
-    "bookorbitOpen": "在 BookOrbit 中開啟",
-    "bookorbitDetailHelp": "在 BookOrbit 中查看此書，以管理書庫詳細資料和 Pleazyng 無法開啟的格式。聆聽進度會與您的 BookOrbit 帳戶同步。"
+    "sharedEntryConflict": "此共享專案 ID 已與本圖書館中的另一個專案相匹配. 選擇不同的 ID。"
   },
   "comics": {
     "fitHeight": "符合高度",
@@ -5539,6 +5541,9 @@
     "anniversaries": "專輯發行紀念日",
     "outputPreset": "此輸出的等化器",
     "outputPresetHint": "選取此輸出時自動使用此等化器。",
-    "eqApproximation": "耳機設定檔已近似轉換為十段等化器設定。"
+    "eqApproximation": "耳機設定檔已近似轉換為十段等化器設定。",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

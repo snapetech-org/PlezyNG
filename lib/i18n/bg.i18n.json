@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "",
     "dvOfflineNewOutput": "",
     "dvOfflineHdr10": "",
-    "dvOfflineSdr": ""
+    "dvOfflineSdr": "",
+    "streamBufferSizeMiB": "Буфер размер: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Вградени",
@@ -3112,7 +3113,8 @@
     "decoderHardware": "Хардуерен",
     "tunnelingActive": "Активно",
     "dvRpuFailed": "${converted} (неуспешни: ${failures})",
-    "neuralProviderInitializing": ""
+    "neuralProviderInitializing": "",
+    "cacheLimitMiB": "Лимит на кеша: ${size} MiB"
   },
   "externalPlayer": {
     "title": "Външен плеър",
@@ -3283,13 +3285,24 @@
     "request": "Заяви",
     "request4k": "Заяви в 4K",
     "requestSeasons": "Заяви липсващите сезони",
+    "requestHint": "Изберете опциите за заявката в Seerr",
+    "quickRequestHint": "Заявете сега в Seerr с настройките по подразбиране",
+    "chooseSeasonsHint": "Изберете сезони за заявка в Seerr",
+    "request4kHint": "Изберете заявка за 4K в Seerr",
+    "only4kAvailable": "Този акаунт може да заяви само 4K версията.",
+    "cardActionHint": "Отворете менюто на картата за опциите за заявка в Seerr",
+    "requestInProgress": "Заявката се обработва",
     "notifyMe": "Уведоми ме, когато е налично",
     "notifyMe4k": "Уведоми ме, когато е налично в 4K",
     "notificationsOn": "Известяването за наличност е включено",
+    "turnOffAlert": "Изключване на известяването за наличност",
     "notificationsEnabled": "Ще ви уведомим, когато е налично",
+    "notificationsEnabled4k": "Ще ви уведомим, когато 4K версията е налична",
+    "notificationsEnabledSeason": "Ще ви уведомим, когато сезон ${season} е наличен",
     "notificationsDisabled": "Известяването за наличност е изключено",
     "notificationFailed": "Неуспешно обновяване на известяването за наличност",
     "seasons": "Сезони",
+    "requestSheetHint": "Seerr обработва одобрението и следи заявката ви.",
     "allSeasons": "Всички сезони",
     "advancedOptions": "Разширени",
     "destinationServer": "Целеви сървър",
@@ -3323,18 +3336,7 @@
     "noUserInformation": "Seerr не върна информация за потребителя",
     "sessionRejectedAfterReauth": "Сесията беше отхвърлена след повторния вход",
     "permissionDenied": "Seerr отказа това действие: акаунтът ви вече няма необходимото разрешение",
-    "permissionRevoked": "Вече нямате разрешение да заявявате това",
-    "requestHint": "Изберете опциите за заявката в Seerr",
-    "quickRequestHint": "Заявете сега в Seerr с настройките по подразбиране",
-    "chooseSeasonsHint": "Изберете сезони за заявка в Seerr",
-    "request4kHint": "Изберете заявка за 4K в Seerr",
-    "only4kAvailable": "Този акаунт може да заяви само 4K версията.",
-    "cardActionHint": "Отворете менюто на картата за опциите за заявка в Seerr",
-    "requestInProgress": "Заявката се обработва",
-    "turnOffAlert": "Изключване на известяването за наличност",
-    "notificationsEnabled4k": "Ще ви уведомим, когато 4K версията е налична",
-    "notificationsEnabledSeason": "Ще ви уведомим, когато сезон ${season} е наличен",
-    "requestSheetHint": "Seerr обработва одобрението и следи заявката ви."
+    "permissionRevoked": "Вече нямате разрешение да заявявате това"
   },
   "services": {
     "title": "Услуги",
@@ -4257,6 +4259,9 @@
     "recoveryImported": "Данните за възстановяване се сливат."
   },
   "sourceSetup": {
+    "bookorbitHelp": "Влезте със собствения си акаунт в BookOrbit, за да разглеждате и четете книгите му. Заявките за липсващи заглавия продължават да минават през свързания ви екземпляр на SeerrNG.",
+    "bookorbitOpen": "Отвори в BookOrbit",
+    "bookorbitDetailHelp": "Прегледайте това заглавие в BookOrbit, за да управлявате подробностите за библиотеката и форматите, които Pleazyng не може да отвори. Напредъкът при слушане се синхронизира с акаунта ви в BookOrbit.",
     "savedCertificate": "Запазен сертификат на сървъра",
     "projectGutenberg": "",
     "nfsEndpointInvalid": "Въведете NFS URL, например nfs://nas:2049/export.",
@@ -4368,10 +4373,7 @@
     "nfsReadBytes": "Прочети данни",
     "nfsReadSpeed": "Измерване на скоростта",
     "nfsReadRequests": "Прочетете исканията",
-    "sharedEntryConflict": "Този идентификатор на споделен елемент вече е парализиран с друг елемент в тази библиотека.",
-    "bookorbitHelp": "Влезте със собствения си акаунт в BookOrbit, за да разглеждате и четете книгите му. Заявките за липсващи заглавия продължават да минават през свързания ви екземпляр на SeerrNG.",
-    "bookorbitOpen": "Отвори в BookOrbit",
-    "bookorbitDetailHelp": "Прегледайте това заглавие в BookOrbit, за да управлявате подробностите за библиотеката и форматите, които Pleazyng не може да отвори. Напредъкът при слушане се синхронизира с акаунта ви в BookOrbit."
+    "sharedEntryConflict": "Този идентификатор на споделен елемент вече е парализиран с друг елемент в тази библиотека."
   },
   "comics": {
     "fitHeight": "Побиране по височина",
@@ -5544,6 +5546,9 @@
     "anniversaries": "Годишнини на албуми",
     "outputPreset": "Еквалайзер за този изход",
     "outputPresetHint": "При избиране на този изход този еквалайзер се прилага автоматично.",
-    "eqApproximation": "Профилите за слушалки са приблизително адаптирани за десетлентовия еквалайзер."
+    "eqApproximation": "Профилите за слушалки са приблизително адаптирани за десетлентовия еквалайзер.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

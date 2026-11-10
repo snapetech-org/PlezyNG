@@ -734,7 +734,8 @@
     "dvOfflineInvalid": "Choose different synchronized layer files and a frame rate from 1 to 120 fps.",
     "dvOfflineNewOutput": "Choose a new .mkv filename. Existing media and reports are preserved.",
     "dvOfflineHdr10": "HDR10 · 10-bit HEVC",
-    "dvOfflineSdr": "SDR · H.264"
+    "dvOfflineSdr": "SDR · H.264",
+    "streamBufferSizeMiB": "Buffer Size: ${size} MiB"
   },
   "themeEditor": {
     "builtIn": "Built-in",
@@ -3113,7 +3114,8 @@
     "decoderHardware": "Hardware",
     "tunnelingActive": "Active",
     "dvRpuFailed": "${converted} (${failures} failed)",
-    "neuralProviderInitializing": "${request} · initializing${fallback}"
+    "neuralProviderInitializing": "${request} · initializing${fallback}",
+    "cacheLimitMiB": "Cache Limit: ${size} MiB"
   },
   "externalPlayer": {
     "title": "External Player",
@@ -5622,6 +5624,9 @@
     "anniversaries": "Album anniversaries",
     "outputPreset": "EQ for this output",
     "outputPresetHint": "Automatically use this EQ when this output is selected.",
-    "eqApproximation": "Headphone profiles are approximated for the ten-band EQ."
+    "eqApproximation": "Headphone profiles are approximated for the ten-band EQ.",
+    "autoEqGraphicEq": "AutoEq GraphicEQ",
+    "autoEq": "AutoEq",
+    "autoEqByJaakkoPasanen": "AutoEq — Jaakko Pasanen"
   }
 }

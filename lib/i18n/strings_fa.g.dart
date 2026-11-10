@@ -809,6 +809,7 @@ class _Translations$settings$fa extends Translations$settings$en {
 	@override String get prerollSelectionDescription => 'انتخاب کنید که کدام کلیپ ها از کتابخانه انتخاب شده می توانند قبل از فیلم بازی کنند.';
 	@override String get contentScreensaverDelayOptionDescription => 'منتظر این چند دقیقه بدون ورودی قبل از نمایش کار هنری ذخیره صفحه نمایش باشید.';
 	@override String get videoCodecOptionDescription => 'اجازه پخش مستقیم برای این کدک زمانی که پشتیبانی می شود. کدک های غیر چک شده توسط سرور رسانه ها رمزگذاری می شوند.';
+	@override String streamBufferSizeMiB({required Object size}) => 'حجم بوفری: ${size} MiB';
 }
 
 // Path: themeEditor
@@ -2547,6 +2548,7 @@ class _Translations$performanceOverlay$fa extends Translations$performanceOverla
 	@override String get decoderHardware => 'سخت افزار';
 	@override String get tunnelingActive => 'فعال';
 	@override String dvRpuFailed({required Object converted, required Object failures}) => '${converted} (${failures} شکست خورده)';
+	@override String cacheLimitMiB({required Object size}) => 'محدودیت کاسه: ${size} MiB';
 }
 
 // Path: externalPlayer
@@ -2741,13 +2743,24 @@ class _Translations$seerr$fa extends Translations$seerr$en {
 	@override String get request => 'درخواست';
 	@override String get request4k => 'درخواست در 4K';
 	@override String get requestSeasons => 'درخواست فصل‌های جاافتاده';
+	@override String get requestHint => 'گزینه‌های درخواست را در Seerr انتخاب کنید';
+	@override String get quickRequestHint => 'اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید';
+	@override String get chooseSeasonsHint => 'فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید';
+	@override String get request4kHint => 'درخواست نسخهٔ 4K را در Seerr انتخاب کنید';
+	@override String get only4kAvailable => 'این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.';
+	@override String get cardActionHint => 'برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید';
+	@override String get requestInProgress => 'درخواست در حال انجام است';
 	@override String get notifyMe => 'هنگام در دسترس بودن به من اطلاع بده';
 	@override String get notifyMe4k => 'هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده';
 	@override String get notificationsOn => 'هشدار در دسترس شدن روشن است';
+	@override String get turnOffAlert => 'خاموش کردن هشدار در دسترس بودن';
 	@override String get notificationsEnabled => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم';
+	@override String get notificationsEnabled4k => 'وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم';
+	@override String notificationsEnabledSeason({required Object season}) => 'وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم';
 	@override String get notificationsDisabled => 'هشدار در دسترس شدن خاموش شد';
 	@override String get notificationFailed => 'به‌روزرسانی هشدار در دسترس شدن انجام نشد';
 	@override String get seasons => 'فصل ها';
+	@override String get requestSheetHint => 'Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند.';
 	@override String get allSeasons => 'همه فصل ها';
 	@override String get advancedOptions => 'پیشرفته';
 	@override String get destinationServer => 'سرور مقصد';
@@ -2782,17 +2795,6 @@ class _Translations$seerr$fa extends Translations$seerr$en {
 	@override String get sessionRejectedAfterReauth => 'جلسه پس از امضای مجدد رد شد.';
 	@override String get permissionDenied => 'Seerr این اقدام را رد کرد: حساب شما دیگر مجوز مورد نیاز را ندارد';
 	@override String get permissionRevoked => 'شما دیگر اجازه درخواست این کار را ندارید.';
-	@override String get requestHint => 'گزینه‌های درخواست را در Seerr انتخاب کنید';
-	@override String get quickRequestHint => 'اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید';
-	@override String get chooseSeasonsHint => 'فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید';
-	@override String get request4kHint => 'درخواست نسخهٔ 4K را در Seerr انتخاب کنید';
-	@override String get only4kAvailable => 'این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.';
-	@override String get cardActionHint => 'برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید';
-	@override String get requestInProgress => 'درخواست در حال انجام است';
-	@override String get turnOffAlert => 'خاموش کردن هشدار در دسترس بودن';
-	@override String get notificationsEnabled4k => 'وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم';
-	@override String notificationsEnabledSeason({required Object season}) => 'وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم';
-	@override String get requestSheetHint => 'Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند.';
 }
 
 // Path: services
@@ -3761,6 +3763,9 @@ class _Translations$sourceSetup$fa extends Translations$sourceSetup$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get bookorbitHelp => 'برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.';
+	@override String get bookorbitOpen => 'باز کردن در BookOrbit';
+	@override String get bookorbitDetailHelp => 'برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود.';
 	@override String get savedCertificate => 'گواهی ذخیره‌شدهٔ سرور';
 	@override String get nfsEndpointInvalid => 'یک نشانی NFS مانند nfs://nas:2049/export وارد کنید.';
 	@override String get dlnaNone => 'سرور DLNA پیدا نشد. نشانی توضیحات دستگاه را دستی وارد کنید.';
@@ -3872,9 +3877,6 @@ class _Translations$sourceSetup$fa extends Translations$sourceSetup$en {
 	@override String get nfsReadSpeed => 'سرعت اندازه گیری';
 	@override String get nfsReadRequests => 'خواندن درخواست ها';
 	@override String get sharedEntryConflict => 'این ID آیتم به اشتراک گذاشته شده در حال حاضر با یک آیتم دیگر در این کتابخانه ترکیب شده است.';
-	@override String get bookorbitHelp => 'برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.';
-	@override String get bookorbitOpen => 'باز کردن در BookOrbit';
-	@override String get bookorbitDetailHelp => 'برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود.';
 }
 
 // Path: comics
@@ -4320,6 +4322,9 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	@override String get outputPreset => 'اکولایزر این خروجی';
 	@override String get outputPresetHint => 'هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.';
 	@override String get eqApproximation => 'پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.';
+	@override String get autoEqGraphicEq => 'AutoEq GraphicEQ';
+	@override String get autoEq => 'AutoEq';
+	@override String get autoEqByJaakkoPasanen => 'AutoEq — Jaakko Pasanen';
 }
 
 // Path: appIcon.names
@@ -6111,6 +6116,7 @@ extension on TranslationsFa {
 			'settings.prerollSelectionDescription' => 'انتخاب کنید که کدام کلیپ ها از کتابخانه انتخاب شده می توانند قبل از فیلم بازی کنند.',
 			'settings.contentScreensaverDelayOptionDescription' => 'منتظر این چند دقیقه بدون ورودی قبل از نمایش کار هنری ذخیره صفحه نمایش باشید.',
 			'settings.videoCodecOptionDescription' => 'اجازه پخش مستقیم برای این کدک زمانی که پشتیبانی می شود. کدک های غیر چک شده توسط سرور رسانه ها رمزگذاری می شوند.',
+			'settings.streamBufferSizeMiB' => ({required Object size}) => 'حجم بوفری: ${size} MiB',
 			'themeEditor.builtIn' => 'ساخته شده',
 			'themeEditor.presets' => 'پیشگویی',
 			'themeEditor.custom' => 'سفارشی',
@@ -6462,9 +6468,9 @@ extension on TranslationsFa {
 			'videoControls.chaptersAndBookmarks' => 'فصل ها و کتاب نشانه ها',
 			'videoControls.segmentLoop' => 'بخش لوله',
 			'videoControls.addBookmark' => 'اضافه کردن Bookmark',
-			'videoControls.bookmarkName' => 'Bookmark نام',
 			_ => null,
 		} ?? switch (path) {
+			'videoControls.bookmarkName' => 'Bookmark نام',
 			'videoControls.bookmarkNameHint' => 'به عنوان مثال، صحنه باز',
 			'videoControls.bookmarkDefaultName' => ({required Object n}) => 'برچسب ها ${n}',
 			'videoControls.bookmarkNameRequired' => 'نام این کتاب را وارد کنید.',
@@ -6976,9 +6982,9 @@ extension on TranslationsFa {
 			'libraries.hideLibrary' => 'کتابخانه پنهان',
 			'libraries.libraryOptions' => 'گزینه های کتابخانه',
 			'libraries.content' => 'محتوای کتابخانه',
-			'libraries.selectLibrary' => 'انتخاب کتابخانه',
 			_ => null,
 		} ?? switch (path) {
+			'libraries.selectLibrary' => 'انتخاب کتابخانه',
 			'libraries.filtersWithCount' => ({required Object count}) => 'فیلترها (${count})',
 			'libraries.noRecommendations' => 'بدون توصیه در دسترس',
 			'libraries.noCollections' => 'هیچ مجموعه ای در این کتابخانه وجود ندارد',
@@ -7490,9 +7496,9 @@ extension on TranslationsFa {
 			'watchTogether.paste' => 'پستی',
 			'watchTogether.noCodeInClipboard' => 'این صفحه شامل کد اتاق نیست.',
 			'watchTogether.copyCode' => 'کپی کد',
-			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.codeCopied' => 'کد اتاق کپی شده',
 			'watchTogether.shareInvite' => 'دعوت به اشتراک گذاری',
 			'watchTogether.inviteCopied' => 'کپی کنید، آن را در یک پیام قرار دهید.',
 			'watchTogether.inviteMessage' => ({required Object code}) => 'به اتاق Watch Together من در Pleazyng بپیوندید، اتاق Watch Together را انتخاب کنید و به اتاق Watch Together ${code} وارد شوید.',
@@ -7956,6 +7962,7 @@ extension on TranslationsFa {
 			'performanceOverlay.decoderHardware' => 'سخت افزار',
 			'performanceOverlay.tunnelingActive' => 'فعال',
 			'performanceOverlay.dvRpuFailed' => ({required Object converted, required Object failures}) => '${converted} (${failures} شکست خورده)',
+			'performanceOverlay.cacheLimitMiB' => ({required Object size}) => 'محدودیت کاسه: ${size} MiB',
 			'externalPlayer.title' => 'بازیکن خارجی',
 			'externalPlayer.useExternalPlayer' => 'استفاده از بازیکن خارجی',
 			'externalPlayer.useExternalPlayerDescription' => 'باز کردن ویدئوها در یک برنامه دیگر',
@@ -8003,10 +8010,10 @@ extension on TranslationsFa {
 			'metadataEdit.fromUrl' => 'از URL',
 			'metadataEdit.uploadFile' => 'دانلود فایل',
 			'metadataEdit.enterImageUrl' => 'URL تصویر را وارد کنید',
-			'metadataEdit.imageUrl' => 'تصویر URL',
-			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			_ => null,
 		} ?? switch (path) {
+			'metadataEdit.imageUrl' => 'تصویر URL',
+			'metadataEdit.metadataUpdated' => 'Metadata به روز شده',
 			'metadataEdit.metadataUpdateFailed' => 'عدم به روز رسانی متا',
 			'metadataEdit.artworkUpdated' => 'هنر به روز شده',
 			'metadataEdit.artworkUpdateFailed' => 'به روز رسانی هنرهای هنری',
@@ -8098,13 +8105,24 @@ extension on TranslationsFa {
 			'seerr.request' => 'درخواست',
 			'seerr.request4k' => 'درخواست در 4K',
 			'seerr.requestSeasons' => 'درخواست فصل‌های جاافتاده',
+			'seerr.requestHint' => 'گزینه‌های درخواست را در Seerr انتخاب کنید',
+			'seerr.quickRequestHint' => 'اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید',
+			'seerr.chooseSeasonsHint' => 'فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید',
+			'seerr.request4kHint' => 'درخواست نسخهٔ 4K را در Seerr انتخاب کنید',
+			'seerr.only4kAvailable' => 'این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.',
+			'seerr.cardActionHint' => 'برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید',
+			'seerr.requestInProgress' => 'درخواست در حال انجام است',
 			'seerr.notifyMe' => 'هنگام در دسترس بودن به من اطلاع بده',
 			'seerr.notifyMe4k' => 'هنگام در دسترس بودن نسخهٔ 4K به من اطلاع بده',
 			'seerr.notificationsOn' => 'هشدار در دسترس شدن روشن است',
+			'seerr.turnOffAlert' => 'خاموش کردن هشدار در دسترس بودن',
 			'seerr.notificationsEnabled' => 'وقتی در دسترس باشد به شما اطلاع می‌دهیم',
+			'seerr.notificationsEnabled4k' => 'وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم',
+			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم',
 			'seerr.notificationsDisabled' => 'هشدار در دسترس شدن خاموش شد',
 			'seerr.notificationFailed' => 'به‌روزرسانی هشدار در دسترس شدن انجام نشد',
 			'seerr.seasons' => 'فصل ها',
+			'seerr.requestSheetHint' => 'Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند.',
 			'seerr.allSeasons' => 'همه فصل ها',
 			'seerr.advancedOptions' => 'پیشرفته',
 			'seerr.destinationServer' => 'سرور مقصد',
@@ -8139,17 +8157,6 @@ extension on TranslationsFa {
 			'seerr.sessionRejectedAfterReauth' => 'جلسه پس از امضای مجدد رد شد.',
 			'seerr.permissionDenied' => 'Seerr این اقدام را رد کرد: حساب شما دیگر مجوز مورد نیاز را ندارد',
 			'seerr.permissionRevoked' => 'شما دیگر اجازه درخواست این کار را ندارید.',
-			'seerr.requestHint' => 'گزینه‌های درخواست را در Seerr انتخاب کنید',
-			'seerr.quickRequestHint' => 'اکنون با تنظیمات پیش‌فرض در Seerr درخواست کنید',
-			'seerr.chooseSeasonsHint' => 'فصل‌های موردنظر برای درخواست در Seerr را انتخاب کنید',
-			'seerr.request4kHint' => 'درخواست نسخهٔ 4K را در Seerr انتخاب کنید',
-			'seerr.only4kAvailable' => 'این حساب فقط می‌تواند نسخهٔ 4K را درخواست کند.',
-			'seerr.cardActionHint' => 'برای دیدن گزینه‌های درخواست Seerr، منوی کارت را باز کنید',
-			'seerr.requestInProgress' => 'درخواست در حال انجام است',
-			'seerr.turnOffAlert' => 'خاموش کردن هشدار در دسترس بودن',
-			'seerr.notificationsEnabled4k' => 'وقتی نسخهٔ 4K در دسترس باشد به شما اطلاع می‌دهیم',
-			'seerr.notificationsEnabledSeason' => ({required Object season}) => 'وقتی فصل ${season} در دسترس باشد به شما اطلاع می‌دهیم',
-			'seerr.requestSheetHint' => 'Seerr تأیید و پیگیری درخواست شما را مدیریت می‌کند.',
 			'services.title' => 'خدمات',
 			'services.hubSubtitle' => 'Sync پیشرفت را مشاهده می کند و از عنوان های جدید درخواست می کند.',
 			'services.integrations' => 'ادغام',
@@ -8517,10 +8524,10 @@ extension on TranslationsFa {
 			'universalMedia.favorites' => 'ذخیره جریان مورد علاقه',
 			'universalMedia.address' => 'آدرس رسانه ها',
 			'universalMedia.addressHelp' => 'URL ها با پارامترهای اعتباربخشی یا امضای شناخته شده تنها برای این جلسه مورد استفاده قرار می گیرند و نمی توانند به عنوان محبوب ذخیره شوند.',
-			'universalMedia.displayName' => 'نام نمایش (اختیاری)',
-			'universalMedia.displayNameHelp' => 'یک نام کوتاه برای بازیکن و کنترل های رسانه سیستم را انتخاب کنید.',
 			_ => null,
 		} ?? switch (path) {
+			'universalMedia.displayName' => 'نام نمایش (اختیاری)',
+			'universalMedia.displayNameHelp' => 'یک نام کوتاه برای بازیکن و کنترل های رسانه سیستم را انتخاب کنید.',
 			'universalMedia.allowHttp' => 'اجازه دادن به یک اتصال HTTP غیر رمزگذاری شده',
 			'universalMedia.allowHttpHelp' => 'HTTP اتصال را رمزگذاری نمی کند. فقط در یک شبکه قابل اعتماد اجازه دهید. هنگامی که ممکن است از HTTPS استفاده کنید.',
 			'universalMedia.advancedProtocols' => 'فقط MPV: یک آدرس RTSP، RTMP/RTMPS، UDP یا RTP را وارد کنید.این آدرس ها نمی توانند به عنوان محبوب ذخیره شوند.',
@@ -8993,6 +9000,9 @@ extension on TranslationsFa {
 			'audiobook.recoveryImportConfirm' => 'آیا این فایل بازگرداندن رمزگذاری شده با موقعیت های خواندن فعلی و یادداشت ها ترکیب می شود؟ تاریخچه موجود حفظ خواهد شد. کتابخانه به اشتراک گذاشته شده و شناسه آیتم شامل نمی شود؛ قبل از واردات، شناسه های مطابقت را بر روی هر دستگاه تنظیم کنید.',
 			'audiobook.recoveryExported' => 'فایل بازگرداندن رمزگذاری شده ذخیره شده است.',
 			'audiobook.recoveryImported' => 'بازگرداندن اطلاعات جمع آوری شده است.',
+			'sourceSetup.bookorbitHelp' => 'برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.',
+			'sourceSetup.bookorbitOpen' => 'باز کردن در BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود.',
 			'sourceSetup.savedCertificate' => 'گواهی ذخیره‌شدهٔ سرور',
 			'sourceSetup.nfsEndpointInvalid' => 'یک نشانی NFS مانند nfs://nas:2049/export وارد کنید.',
 			'sourceSetup.dlnaNone' => 'سرور DLNA پیدا نشد. نشانی توضیحات دستگاه را دستی وارد کنید.',
@@ -9028,13 +9038,13 @@ extension on TranslationsFa {
 			'sourceSetup.clientCertificate' => 'گواهی کارخواه (اختیاری)',
 			'sourceSetup.clientCertificateHelp' => 'به NAS اجازه می‌دهد هویت این کارخواه را تأیید کند؛ شناسه‌های AUTH_SYS همچنان تابع سیاست اشتراک‌گذاری NAS هستند.',
 			'sourceSetup.savedIdentity' => 'از هویت ذخیره‌شدهٔ کارخواه استفاده می‌شود.',
+			_ => null,
+		} ?? switch (path) {
 			'sourceSetup.replaceIdentity' => 'جایگزینی هویت ذخیره‌شدهٔ کارخواه',
 			'sourceSetup.chooseIdentity' => 'انتخاب هویت کارخواه PKCS#12',
 			'sourceSetup.identityPassphrase' => 'عبارت عبور هویت کارخواه',
 			'sourceSetup.identityPassphraseHelp' => 'اگر فایل عبارت عبور ندارد، خالی بگذارید.',
 			'sourceSetup.removeIdentity' => 'حذف هویت ذخیره‌شدهٔ کارخواه',
-			_ => null,
-		} ?? switch (path) {
 			'sourceSetup.identityStorageHelp' => 'هویت‌های کارخواه در مخزن رمزگذاری‌شدهٔ اطلاعات ورود منابع ذخیره می‌شوند. برای حفظ هویت ذخیره‌شده، این بخش را تغییر ندهید.',
 			'sourceSetup.nfsLimitations' => 'NFSv3 فقط‌خواندنی روی TCP. بدون RPC-with-TLS، ترافیک NFS رمزگذاری نمی‌شود. NAS باید شناسه‌های AUTH_SYS انتخاب‌شده و درگاه‌های بدون امتیاز ویژهٔ کارخواه را مجاز بداند (این گزینهٔ اشتراک‌گذاری معمولاً «insecure» نام دارد). NFSv4 و UDP پشتیبانی نمی‌شوند.',
 			'sourceSetup.nfsSetupHelp' => 'راهنمای تنظیم NFS',
@@ -9106,9 +9116,6 @@ extension on TranslationsFa {
 			'sourceSetup.nfsReadSpeed' => 'سرعت اندازه گیری',
 			'sourceSetup.nfsReadRequests' => 'خواندن درخواست ها',
 			'sourceSetup.sharedEntryConflict' => 'این ID آیتم به اشتراک گذاشته شده در حال حاضر با یک آیتم دیگر در این کتابخانه ترکیب شده است.',
-			'sourceSetup.bookorbitHelp' => 'برای مرور و پخش کتاب‌های BookOrbit، با حساب شخصی خود وارد شوید. درخواست عنوان‌های موجودنبود همچنان از نمونهٔ متصل SeerrNG شما انجام می‌شود.',
-			'sourceSetup.bookorbitOpen' => 'باز کردن در BookOrbit',
-			'sourceSetup.bookorbitDetailHelp' => 'برای مدیریت جزئیات کتابخانه و قالب‌هایی که Pleazyng نمی‌تواند باز کند، این عنوان را در BookOrbit ببینید. پیشرفت شنیدن با حساب BookOrbit شما همگام می‌شود.',
 			'comics.fitHeight' => 'اندازه بر اساس ارتفاع',
 			'comics.readingMode' => 'حالت مطالعه',
 			'comics.paged' => 'صفحه‌ها',
@@ -9473,6 +9480,9 @@ extension on TranslationsFa {
 			'musicTools.outputPreset' => 'اکولایزر این خروجی',
 			'musicTools.outputPresetHint' => 'هنگام انتخاب این خروجی، این اکولایزر به‌طور خودکار اعمال شود.',
 			'musicTools.eqApproximation' => 'پروفایل‌های هدفون برای اکولایزر ده‌باندی به‌صورت تقریبی تبدیل شده‌اند.',
+			'musicTools.autoEqGraphicEq' => 'AutoEq GraphicEQ',
+			'musicTools.autoEq' => 'AutoEq',
+			'musicTools.autoEqByJaakkoPasanen' => 'AutoEq — Jaakko Pasanen',
 			_ => null,
 		};
 	}

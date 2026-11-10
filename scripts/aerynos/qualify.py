@@ -473,6 +473,7 @@ def fixture(source, root):
     except BaseException:
         run(['docker', 'rm', '-f', name])
         raise
+    (root / 'fixture.json').write_text(json.dumps({'container': name, 'server_port': server_port, 'image': image}, indent=2) + '\n')
     return name, server_port
 
 

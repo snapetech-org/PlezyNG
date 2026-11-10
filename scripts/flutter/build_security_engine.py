@@ -99,7 +99,11 @@ def main():
     toolchain_file = monorepo / 'engine/src/build/vs_toolchain.py'
     spec = importlib.util.spec_from_file_location('pleazyng_vs_toolchain', toolchain_file)
     toolchain = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(toolchain)
+    sys.path.insert(0, str(toolchain_file.parent))
+    try:
+        spec.loader.exec_module(toolchain)
+    finally:
+        sys.path.pop(0)
     detected = toolchain.GetVisualStudioVersion()
     if detected not in toolchain.VC_VERSIONS:
         years = [year for year, directory in toolchain.MSVS_VERSIONS.items() if directory == detected]

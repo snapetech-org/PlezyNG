@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Distinguish missing Plex loudness data from failed or refused reads, and validate track provenance and server ownership before accepting a manual analysis request.
+
 - Keep mix and Sonic Adventure previews tied to their original source accounts and visible libraries. Playback, queueing, downloads and playlist saves reject a revoked preview.
 
 - Keep sequential albums gapless even when queued from a playlist. Sweet Fades follows edits to the actual queue and stays available for shuffled and mixed queues.

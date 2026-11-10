@@ -61,6 +61,7 @@ import '../media/media_file_info.dart';
 import '../media/media_filter.dart';
 import '../media/media_source_info.dart';
 import '../media/media_version.dart';
+import '../media/media_stream.dart';
 import '../models/subtitles/subtitle_search_result.dart';
 import '../models/plex/plex_managed_hub.dart';
 import '../models/plex/plex_match_result.dart';
@@ -99,6 +100,7 @@ import 'video_decode_capabilities.dart';
 part 'plex_client/parts/live_tv.dart';
 part 'plex_client/parts/playlists.dart';
 part 'plex_client/parts/music_history.dart';
+part 'plex_client/parts/music_analysis.dart';
 part 'plex_client/parts/collections.dart';
 part 'plex_client/parts/play_queues.dart';
 part 'plex_client/parts/metadata_edit.dart';
@@ -750,31 +752,7 @@ class PlexClient
   Future<AudioLoudnessProfile?> fetchAudioLoudnessProfile(int streamId) async {
     if (streamId <= 0 || isOfflineMode) return null;
     try {
-      final response = await _getWithFailover(
-        '/library/streams/$streamId/levels',
-        queryParameters: const {'subsample': 512},
-        timeout: const Duration(seconds: 8),
-      );
-      final data = response.data;
-      if (data is! Map) return null;
-      final container = data['MediaContainer'];
-      if (container is! Map) return null;
-      final rawLevels = container['Level'];
-      if (rawLevels is! List) return null;
-
-      final levels = <double>[];
-      final stride = (rawLevels.length + 511) ~/ 512;
-      for (var index = 0; index < rawLevels.length; index += stride) {
-        final entry = rawLevels[index];
-        if (entry is! Map) continue;
-        final value = entry['v'];
-        final level = value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
-        if (level != null && level.isFinite && level >= -120 && level <= 24) levels.add(level);
-      }
-      if (levels.isEmpty) return null;
-
-      final totalSamples = int.tryParse(container['totalSamples']?.toString() ?? '') ?? levels.length;
-      return AudioLoudnessProfile(levelsDb: levels, totalSamples: totalSamples);
+      return await _readAudioLoudnessProfile(streamId);
     } catch (_) {
       // This endpoint is an enhancement, not a playback dependency. Do not
       // expose request details or auth-bearing URIs in logs for a missing or
@@ -782,6 +760,31 @@ class PlexClient
       appLogger.d('Plex loudness profile unavailable');
       return null;
     }
+  }
+
+  Future<AudioLoudnessProfile?> _readAudioLoudnessProfile(int streamId) async {
+    final response = await _getWithFailover(
+      '/library/streams/$streamId/levels',
+      queryParameters: const {'subsample': 512},
+      timeout: const Duration(seconds: 8),
+    );
+    final container = _getMediaContainer(response);
+    if (container == null) throw const FormatException('Invalid Plex loudness response');
+    final rawLevels = container['Level'];
+    if (rawLevels == null || rawLevels is List && rawLevels.isEmpty) return null;
+    if (rawLevels is! List) throw const FormatException('Invalid Plex loudness levels');
+    final levels = <double>[];
+    final stride = (rawLevels.length + 511) ~/ 512;
+    for (var index = 0; index < rawLevels.length; index += stride) {
+      final entry = rawLevels[index];
+      if (entry is! Map) continue;
+      final value = entry['v'];
+      final level = value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
+      if (level != null && level.isFinite && level >= -120 && level <= 24) levels.add(level);
+    }
+    if (levels.isEmpty) throw const FormatException('Invalid Plex loudness samples');
+    final totalSamples = int.tryParse(container['totalSamples']?.toString() ?? '') ?? levels.length;
+    return AudioLoudnessProfile(levelsDb: levels, totalSamples: totalSamples);
   }
 
   /// POST twin of [_getWithFailover] for the rare replay-safe mutation (see

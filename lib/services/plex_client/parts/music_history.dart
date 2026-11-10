@@ -20,7 +20,9 @@ extension PlexMusicServerHistory on PlexClient {
         : null;
   }
 
-  bool get supportsMusicServerHistory {
+  bool get supportsMusicServerHistory => hasVerifiedMusicServerOwner;
+
+  bool get hasVerifiedMusicServerOwner {
     final owner = _musicHistoryOwner;
     return owner != null &&
         identical(owner.authentication, authenticationSessionId) &&

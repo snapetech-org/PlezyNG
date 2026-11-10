@@ -4292,6 +4292,9 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 	final TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => '未傳回響度資料';
+	@override String get loudnessRequested => '已送出分析要求';
+	@override String get loudnessUnsupported => '此伺服器版本不支援分析要求';
 	@override String get serverHistory => '伺服器播放記錄';
 	@override String get nfcWrite => '寫入 NFC 標籤';
 	@override String get nfcRead => '掃描 NFC 標籤';
@@ -9456,6 +9459,9 @@ extension on TranslationsZhHant {
 			'musicExperience.routeLost' => '音訊輸出已中斷。播放已暫停。',
 			'musicExperience.autoDriving' => '連接汽車時開啟駕駛畫面',
 			'musicExperience.routeHint' => '是否允許自動顯示應用程式由汽車系統決定。',
+			'musicTools.loudnessMissing' => '未傳回響度資料',
+			'musicTools.loudnessRequested' => '已送出分析要求',
+			'musicTools.loudnessUnsupported' => '此伺服器版本不支援分析要求',
 			'musicTools.serverHistory' => '伺服器播放記錄',
 			'musicTools.nfcWrite' => '寫入 NFC 標籤',
 			'musicTools.nfcRead' => '掃描 NFC 標籤',

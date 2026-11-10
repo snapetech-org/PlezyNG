@@ -4273,6 +4273,9 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Tiada data kelantangan diterima';
+	@override String get loudnessRequested => 'Permintaan analisis dihantar';
+	@override String get loudnessUnsupported => 'Versi pelayan ini tidak menyokong permintaan analisis';
 	@override String get serverHistory => 'Sejarah main balik pelayan';
 	@override String get nfcWrite => 'Tulis tag NFC';
 	@override String get nfcRead => 'Imbas tag NFC';
@@ -9435,6 +9438,9 @@ extension on TranslationsMs {
 			'musicExperience.routeLost' => 'Output audio terputus. Main balik dijeda.',
 			'musicExperience.autoDriving' => 'Buka paparan pemanduan apabila disambungkan ke kereta',
 			'musicExperience.routeHint' => 'Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.',
+			'musicTools.loudnessMissing' => 'Tiada data kelantangan diterima',
+			'musicTools.loudnessRequested' => 'Permintaan analisis dihantar',
+			'musicTools.loudnessUnsupported' => 'Versi pelayan ini tidak menyokong permintaan analisis',
 			'musicTools.serverHistory' => 'Sejarah main balik pelayan',
 			'musicTools.nfcWrite' => 'Tulis tag NFC',
 			'musicTools.nfcRead' => 'Imbas tag NFC',

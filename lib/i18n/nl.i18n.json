@@ -5521,6 +5521,9 @@
     "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen."
   },
   "musicTools": {
+    "loudnessMissing": "Geen luidheidsgegevens ontvangen",
+    "loudnessRequested": "Analyseverzoek verzonden",
+    "loudnessUnsupported": "Deze serverversie ondersteunt geen analyseverzoeken",
     "serverHistory": "Afspeelgeschiedenis van de server",
     "nfcWrite": "NFC-tag schrijven",
     "nfcRead": "NFC-tag scannen",

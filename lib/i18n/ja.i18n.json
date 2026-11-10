@@ -5516,6 +5516,9 @@
     "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。"
   },
   "musicTools": {
+    "loudnessMissing": "ラウドネスデータが返されませんでした",
+    "loudnessRequested": "解析リクエストを送信しました",
+    "loudnessUnsupported": "このサーバーバージョンは解析リクエストに対応していません",
     "serverHistory": "サーバーの再生履歴",
     "nfcWrite": "NFCタグに書き込む",
     "nfcRead": "NFCタグをスキャン",

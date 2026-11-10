@@ -5521,6 +5521,9 @@
     "routeHint": "Bilens system bestemmer om appen kan vises automatisk."
   },
   "musicTools": {
+    "loudnessMissing": "Ingen lydstyrkedata ble returnert",
+    "loudnessRequested": "Analyseforespørsel sendt",
+    "loudnessUnsupported": "Denne serverversjonen støtter ikke analyseforespørsler",
     "serverHistory": "Avspillingshistorikk på serveren",
     "nfcWrite": "Skriv NFC-brikke",
     "nfcRead": "Skann NFC-brikke",

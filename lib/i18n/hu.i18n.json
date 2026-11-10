@@ -5521,6 +5521,9 @@
     "routeHint": "Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e."
   },
   "musicTools": {
+    "loudnessMissing": "Nem érkeztek hangerőadatok",
+    "loudnessRequested": "Az elemzési kérés elküldve",
+    "loudnessUnsupported": "Ez a kiszolgálóverzió nem támogatja az elemzési kéréseket",
     "serverHistory": "Szerver lejátszási előzményei",
     "nfcWrite": "NFC-címke írása",
     "nfcRead": "NFC-címke beolvasása",

@@ -11,6 +11,13 @@ authorized server actually supplies: separate credited roles, release date,
 label, edition and media versions. Different recordings are not merged because
 their titles happen to match. Missing provider data is not fabricated.
 
+In Plex track details, **Refresh** under **Plex loudness** checks the selected
+audio stream of the first media version. **Analyze** is available to the
+verified server owner. The app checks server version and current track/library
+identity before sending the documented [Plex analysis request](https://developer.plex.tv/pms/).
+Request acceptance means Plex received the request; refresh later to see
+whether data is available. No library-wide job is started.
+
 Music home exposes a Plex smart-playlist editor. Existing playlists are refreshed
 from their owning server before editing, including
 [Plex directory URI rules](https://developer.plex.tv/pms/). The advanced query

@@ -5603,6 +5603,9 @@
     "routeHint": "El sistema del coche decide si la aplicación puede aparecer automáticamente."
   },
   "musicTools": {
+    "loudnessMissing": "El servidor no devolvió datos de sonoridad",
+    "loudnessRequested": "Solicitud de análisis enviada",
+    "loudnessUnsupported": "Esta versión del servidor no admite solicitudes de análisis",
     "serverHistory": "Historial de reproducción del servidor",
     "nfcWrite": "Escribir etiqueta NFC",
     "nfcRead": "Escanear etiqueta NFC",

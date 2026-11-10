@@ -4296,6 +4296,9 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'داده‌ای درباره بلندی صدا دریافت نشد';
+	@override String get loudnessRequested => 'درخواست تحلیل ارسال شد';
+	@override String get loudnessUnsupported => 'این نسخهٔ سرور از درخواست تحلیل پشتیبانی نمی‌کند';
 	@override String get serverHistory => 'سابقهٔ پخش سرور';
 	@override String get nfcWrite => 'نوشتن برچسب NFC';
 	@override String get nfcRead => 'اسکن برچسب NFC';
@@ -9460,6 +9463,9 @@ extension on TranslationsFa {
 			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
 			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
 			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
+			'musicTools.loudnessMissing' => 'داده‌ای درباره بلندی صدا دریافت نشد',
+			'musicTools.loudnessRequested' => 'درخواست تحلیل ارسال شد',
+			'musicTools.loudnessUnsupported' => 'این نسخهٔ سرور از درخواست تحلیل پشتیبانی نمی‌کند',
 			'musicTools.serverHistory' => 'سابقهٔ پخش سرور',
 			'musicTools.nfcWrite' => 'نوشتن برچسب NFC',
 			'musicTools.nfcRead' => 'اسکن برچسب NFC',

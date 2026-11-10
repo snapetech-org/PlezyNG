@@ -4296,6 +4296,9 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 	final TranslationsHi _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'ध्वनि की तीव्रता का डेटा नहीं मिला';
+	@override String get loudnessRequested => 'विश्लेषण का अनुरोध भेजा गया';
+	@override String get loudnessUnsupported => 'सर्वर का यह संस्करण विश्लेषण अनुरोधों का समर्थन नहीं करता';
 	@override String get serverHistory => 'सर्वर का प्लेबैक इतिहास';
 	@override String get nfcWrite => 'NFC टैग लिखें';
 	@override String get nfcRead => 'NFC टैग स्कैन करें';
@@ -9460,6 +9463,9 @@ extension on TranslationsHi {
 			'musicExperience.routeLost' => 'ऑडियो आउटपुट डिस्कनेक्ट हुआ। प्लेबैक रुका है।',
 			'musicExperience.autoDriving' => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें',
 			'musicExperience.routeHint' => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।',
+			'musicTools.loudnessMissing' => 'ध्वनि की तीव्रता का डेटा नहीं मिला',
+			'musicTools.loudnessRequested' => 'विश्लेषण का अनुरोध भेजा गया',
+			'musicTools.loudnessUnsupported' => 'सर्वर का यह संस्करण विश्लेषण अनुरोधों का समर्थन नहीं करता',
 			'musicTools.serverHistory' => 'सर्वर का प्लेबैक इतिहास',
 			'musicTools.nfcWrite' => 'NFC टैग लिखें',
 			'musicTools.nfcRead' => 'NFC टैग स्कैन करें',

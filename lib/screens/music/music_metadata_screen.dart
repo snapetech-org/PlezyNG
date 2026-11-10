@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../i18n/strings.g.dart';
 import '../../media/media_item.dart';
+import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
 import '../../profiles/active_profile_provider.dart';
 import '../../providers/hidden_libraries_provider.dart';
@@ -14,6 +15,7 @@ import '../../services/music/music_account_scope.dart';
 import '../../services/music/music_experience.dart';
 import '../../services/music/music_metadata.dart';
 import '../../services/music/music_nfc_writer.dart';
+import '../../services/plex_client.dart';
 import '../../utils/formatters.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
@@ -41,6 +43,82 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
   static const _nfc = MusicNfcWriter();
   late final Future<bool> _nfcAvailable = _nfc.available;
   bool _writing = false;
+  bool _analysisBusy = false;
+  bool _analysisRequested = false;
+  PlexMusicAnalysisStatus? _analysis;
+
+  Future<void> _updateAnalysis(PlexClient client, MediaItem item, {bool request = false}) async {
+    final authentication = _authentication;
+    bool current() => _sourceCurrent && identical(_client, client) && identical(_authentication, authentication);
+    if (_analysisBusy || !current()) return;
+    final hidden = context.read<HiddenLibrariesProvider>();
+    setState(() => _analysisBusy = true);
+    try {
+      await hidden.ensureInitialized();
+      if (!current()) return;
+      final result = request
+          ? await client.requestMusicAnalysis(item, current: current)
+          : await client.checkMusicAnalysis(item, current: current);
+      if (current()) {
+        setState(() {
+          _analysis = result;
+          if (result == PlexMusicAnalysisStatus.requested) _analysisRequested = true;
+        });
+      }
+    } catch (_) {
+      if (current()) setState(() => _analysis = PlexMusicAnalysisStatus.unavailable);
+    } finally {
+      if (mounted) setState(() => _analysisBusy = false);
+    }
+  }
+
+  Widget _analysisControls(PlexClient client, MediaItem item) {
+    final message = _analysisBusy
+        ? t.common.loading
+        : switch (_analysis) {
+            PlexMusicAnalysisStatus.ready => t.musicExperience.ready,
+            PlexMusicAnalysisStatus.missing => t.musicTools.loudnessMissing,
+            PlexMusicAnalysisStatus.requested => t.musicTools.loudnessRequested,
+            PlexMusicAnalysisStatus.forbidden => t.errors.reasonRefused,
+            PlexMusicAnalysisStatus.unsupported => t.musicTools.loudnessUnsupported,
+            PlexMusicAnalysisStatus.unavailable => t.musicExperience.error,
+            null => t.common.unknown,
+          };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          leading: const AppIcon(Symbols.graphic_eq_rounded),
+          title: Text(t.music.visualizerPlexLoudness),
+          subtitle: Text(message),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              OutlinedButton(
+                onPressed: _analysisBusy ? null : () => _updateAnalysis(client, item),
+                child: Text(t.common.refresh),
+              ),
+              if (client.hasVerifiedMusicServerOwner)
+                OutlinedButton(
+                  onPressed:
+                      _analysisBusy ||
+                          _analysisRequested ||
+                          _analysis == PlexMusicAnalysisStatus.unsupported ||
+                          _analysis == PlexMusicAnalysisStatus.ready
+                      ? null
+                      : () => _updateAnalysis(client, item, request: true),
+                  child: Text(t.libraries.analyze),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   Future<void> _writeNfc() async {
     if (_writing || !_sourceCurrent) return;
@@ -136,9 +214,11 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
           }
           final item = snapshot.data;
           if (item == null) return const Center(child: CircularProgressIndicator());
+          final client = _client;
           return ListView(
             children: [
               ListTile(title: Text(item.displayTitle), subtitle: item.summary == null ? null : Text(item.summary!)),
+              if (item.kind == MediaKind.track && client is PlexClient) _analysisControls(client, item),
               if (item.editionTitle case final edition?)
                 ListTile(title: Text(t.fileSources.editions), subtitle: Text(edition)),
               if (item.studio case final studio?) ListTile(title: Text(t.metadataEdit.label), subtitle: Text(studio)),

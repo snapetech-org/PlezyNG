@@ -4296,6 +4296,9 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Nem érkeztek hangerőadatok';
+	@override String get loudnessRequested => 'Az elemzési kérés elküldve';
+	@override String get loudnessUnsupported => 'Ez a kiszolgálóverzió nem támogatja az elemzési kéréseket';
 	@override String get serverHistory => 'Szerver lejátszási előzményei';
 	@override String get nfcWrite => 'NFC-címke írása';
 	@override String get nfcRead => 'NFC-címke beolvasása';
@@ -9460,6 +9463,9 @@ extension on TranslationsHu {
 			'musicExperience.routeLost' => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.',
 			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
 			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
+			'musicTools.loudnessMissing' => 'Nem érkeztek hangerőadatok',
+			'musicTools.loudnessRequested' => 'Az elemzési kérés elküldve',
+			'musicTools.loudnessUnsupported' => 'Ez a kiszolgálóverzió nem támogatja az elemzési kéréseket',
 			'musicTools.serverHistory' => 'Szerver lejátszási előzményei',
 			'musicTools.nfcWrite' => 'NFC-címke írása',
 			'musicTools.nfcRead' => 'NFC-címke beolvasása',

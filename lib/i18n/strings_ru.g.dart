@@ -4342,6 +4342,9 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 	final TranslationsRu _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Данные о громкости не получены';
+	@override String get loudnessRequested => 'Запрос на анализ отправлен';
+	@override String get loudnessUnsupported => 'Эта версия сервера не поддерживает запросы на анализ';
 	@override String get serverHistory => 'История воспроизведения на сервере';
 	@override String get nfcWrite => 'Записать NFC-метку';
 	@override String get nfcRead => 'Сканировать NFC-метку';
@@ -9510,6 +9513,9 @@ extension on TranslationsRu {
 			'musicExperience.routeLost' => 'Аудиовыход отключён. Воспроизведение приостановлено.',
 			'musicExperience.autoDriving' => 'Открывать режим вождения при подключении к машине',
 			'musicExperience.routeHint' => 'Система автомобиля определяет, может ли приложение появляться автоматически.',
+			'musicTools.loudnessMissing' => 'Данные о громкости не получены',
+			'musicTools.loudnessRequested' => 'Запрос на анализ отправлен',
+			'musicTools.loudnessUnsupported' => 'Эта версия сервера не поддерживает запросы на анализ',
 			'musicTools.serverHistory' => 'История воспроизведения на сервере',
 			'musicTools.nfcWrite' => 'Записать NFC-метку',
 			'musicTools.nfcRead' => 'Сканировать NFC-метку',

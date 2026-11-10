@@ -5516,6 +5516,9 @@
     "routeHint": "是否允许自动显示应用由汽车系统决定。"
   },
   "musicTools": {
+    "loudnessMissing": "未返回响度数据",
+    "loudnessRequested": "已发送分析请求",
+    "loudnessUnsupported": "此服务器版本不支持分析请求",
     "serverHistory": "服务器播放历史",
     "nfcWrite": "写入 NFC 标签",
     "nfcRead": "扫描 NFC 标签",

@@ -5530,6 +5530,9 @@
     "routeHint": "Le système de la voiture décide si l’application peut s’afficher automatiquement."
   },
   "musicTools": {
+    "loudnessMissing": "Aucune donnée de sonie renvoyée",
+    "loudnessRequested": "Demande d’analyse envoyée",
+    "loudnessUnsupported": "Cette version du serveur ne prend pas en charge les demandes d’analyse",
     "serverHistory": "Historique de lecture du serveur",
     "nfcWrite": "Écrire un tag NFC",
     "nfcRead": "Scanner une étiquette NFC",

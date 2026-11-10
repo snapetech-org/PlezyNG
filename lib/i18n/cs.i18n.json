@@ -5569,6 +5569,9 @@
     "routeHint": "Systém auta určuje, zda se aplikace může zobrazit automaticky."
   },
   "musicTools": {
+    "loudnessMissing": "Server nevrátil údaje o hlasitosti",
+    "loudnessRequested": "Požadavek na analýzu byl odeslán",
+    "loudnessUnsupported": "Tato verze serveru nepodporuje požadavky na analýzu",
     "serverHistory": "Historie přehrávání na serveru",
     "nfcWrite": "Zapsat NFC štítek",
     "nfcRead": "Naskenovat značku NFC",

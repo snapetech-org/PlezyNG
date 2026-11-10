@@ -5629,6 +5629,9 @@
     "routeHint": "يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا."
   },
   "musicTools": {
+    "loudnessMissing": "لم يُرجع الخادم بيانات مستوى الصوت",
+    "loudnessRequested": "تم إرسال طلب التحليل",
+    "loudnessUnsupported": "إصدار الخادم لا يدعم طلب التحليل",
     "serverHistory": "سجل التشغيل على الخادم",
     "nfcWrite": "كتابة علامة NFC",
     "nfcRead": "مسح علامة NFC",

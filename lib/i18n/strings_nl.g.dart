@@ -4296,6 +4296,9 @@ class _Translations$musicTools$nl extends Translations$musicTools$en {
 	final TranslationsNl _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Geen luidheidsgegevens ontvangen';
+	@override String get loudnessRequested => 'Analyseverzoek verzonden';
+	@override String get loudnessUnsupported => 'Deze serverversie ondersteunt geen analyseverzoeken';
 	@override String get serverHistory => 'Afspeelgeschiedenis van de server';
 	@override String get nfcWrite => 'NFC-tag schrijven';
 	@override String get nfcRead => 'NFC-tag scannen';
@@ -9460,6 +9463,9 @@ extension on TranslationsNl {
 			'musicExperience.routeLost' => 'Audio-uitvoer verbroken. Afspelen gepauzeerd.',
 			'musicExperience.autoDriving' => 'Rijweergave openen bij verbinding met een auto',
 			'musicExperience.routeHint' => 'Het autosysteem bepaalt of de app automatisch kan verschijnen.',
+			'musicTools.loudnessMissing' => 'Geen luidheidsgegevens ontvangen',
+			'musicTools.loudnessRequested' => 'Analyseverzoek verzonden',
+			'musicTools.loudnessUnsupported' => 'Deze serverversie ondersteunt geen analyseverzoeken',
 			'musicTools.serverHistory' => 'Afspeelgeschiedenis van de server',
 			'musicTools.nfcWrite' => 'NFC-tag schrijven',
 			'musicTools.nfcRead' => 'NFC-tag scannen',

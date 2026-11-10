@@ -5521,6 +5521,9 @@
     "routeHint": "Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir."
   },
   "musicTools": {
+    "loudnessMissing": "Səs ucalığı məlumatı qaytarılmadı",
+    "loudnessRequested": "Analiz sorğusu göndərildi",
+    "loudnessUnsupported": "Bu server versiyası analiz sorğusunu dəstəkləmir",
     "serverHistory": "Serverdə oxutma tarixçəsi",
     "nfcWrite": "NFC etiketinə yaz",
     "nfcRead": "NFC etiketini skan et",

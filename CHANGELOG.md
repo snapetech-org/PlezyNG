@@ -4,6 +4,8 @@
 
 - Repair Apple release packaging without changing the qualified application source: pin iOS device archives to the bundled arm64 ABI and make copied native frameworks writable before re-signing. Reuse successful platform artifacts with an exact reviewed packaging revision and publicly attested source identities. Include the complete upstream people/source ledger in public release notes.
 
+- Check Plex loudness data from Music details and request server analysis of a track when the current account owns a supported Plex server.
+
 - Distinguish missing Plex loudness data from failed or refused reads, and validate track provenance and server ownership before accepting a manual analysis request.
 
 - Keep mix and Sonic Adventure previews tied to their original source accounts and visible libraries. Playback, queueing, downloads and playlist saves reject a revoked preview.

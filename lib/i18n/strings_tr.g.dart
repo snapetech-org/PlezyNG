@@ -4296,6 +4296,9 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 	final TranslationsTr _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Ses yüksekliği verisi alınmadı';
+	@override String get loudnessRequested => 'Analiz isteği gönderildi';
+	@override String get loudnessUnsupported => 'Bu sunucu sürümü analiz isteklerini desteklemiyor';
 	@override String get serverHistory => 'Sunucudaki oynatma geçmişi';
 	@override String get nfcWrite => 'NFC etiketi yaz';
 	@override String get nfcRead => 'NFC etiketini tara';
@@ -9460,6 +9463,9 @@ extension on TranslationsTr {
 			'musicExperience.routeLost' => 'Ses çıkışı bağlantısı kesildi. Oynatma duraklatıldı.',
 			'musicExperience.autoDriving' => 'Arabaya bağlanınca sürüş görünümünü aç',
 			'musicExperience.routeHint' => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.',
+			'musicTools.loudnessMissing' => 'Ses yüksekliği verisi alınmadı',
+			'musicTools.loudnessRequested' => 'Analiz isteği gönderildi',
+			'musicTools.loudnessUnsupported' => 'Bu sunucu sürümü analiz isteklerini desteklemiyor',
 			'musicTools.serverHistory' => 'Sunucudaki oynatma geçmişi',
 			'musicTools.nfcWrite' => 'NFC etiketi yaz',
 			'musicTools.nfcRead' => 'NFC etiketini tara',

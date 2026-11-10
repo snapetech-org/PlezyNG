@@ -4296,6 +4296,9 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 	final TranslationsAz _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Səs ucalığı məlumatı qaytarılmadı';
+	@override String get loudnessRequested => 'Analiz sorğusu göndərildi';
+	@override String get loudnessUnsupported => 'Bu server versiyası analiz sorğusunu dəstəkləmir';
 	@override String get serverHistory => 'Serverdə oxutma tarixçəsi';
 	@override String get nfcWrite => 'NFC etiketinə yaz';
 	@override String get nfcRead => 'NFC etiketini skan et';
@@ -9460,6 +9463,9 @@ extension on TranslationsAz {
 			'musicExperience.routeLost' => 'Səs çıxışı ayrıldı. Oynatma dayandırıldı.',
 			'musicExperience.autoDriving' => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç',
 			'musicExperience.routeHint' => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.',
+			'musicTools.loudnessMissing' => 'Səs ucalığı məlumatı qaytarılmadı',
+			'musicTools.loudnessRequested' => 'Analiz sorğusu göndərildi',
+			'musicTools.loudnessUnsupported' => 'Bu server versiyası analiz sorğusunu dəstəkləmir',
 			'musicTools.serverHistory' => 'Serverdə oxutma tarixçəsi',
 			'musicTools.nfcWrite' => 'NFC etiketinə yaz',
 			'musicTools.nfcRead' => 'NFC etiketini skan et',

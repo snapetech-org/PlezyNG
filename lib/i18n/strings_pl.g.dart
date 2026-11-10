@@ -4342,6 +4342,9 @@ class _Translations$musicTools$pl extends Translations$musicTools$en {
 	final TranslationsPl _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Nie zwrócono danych o głośności';
+	@override String get loudnessRequested => 'Wysłano żądanie analizy';
+	@override String get loudnessUnsupported => 'Ta wersja serwera nie obsługuje żądań analizy';
 	@override String get serverHistory => 'Historia odtwarzania na serwerze';
 	@override String get nfcWrite => 'Zapisz tag NFC';
 	@override String get nfcRead => 'Skanuj tag NFC';
@@ -9510,6 +9513,9 @@ extension on TranslationsPl {
 			'musicExperience.routeLost' => 'Wyjście audio odłączone. Odtwarzanie wstrzymane.',
 			'musicExperience.autoDriving' => 'Otwórz widok samochodowy po połączeniu z autem',
 			'musicExperience.routeHint' => 'System samochodu decyduje, czy aplikacja może pojawić się automatycznie.',
+			'musicTools.loudnessMissing' => 'Nie zwrócono danych o głośności',
+			'musicTools.loudnessRequested' => 'Wysłano żądanie analizy',
+			'musicTools.loudnessUnsupported' => 'Ta wersja serwera nie obsługuje żądań analizy',
 			'musicTools.serverHistory' => 'Historia odtwarzania na serwerze',
 			'musicTools.nfcWrite' => 'Zapisz tag NFC',
 			'musicTools.nfcRead' => 'Skanuj tag NFC',

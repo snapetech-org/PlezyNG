@@ -5599,6 +5599,9 @@
     "routeHint": "The car system controls whether the app can appear automatically."
   },
   "musicTools": {
+    "loudnessMissing": "No loudness data returned",
+    "loudnessRequested": "Analysis request sent",
+    "loudnessUnsupported": "This server version does not support analysis requests",
     "serverHistory": "Server playback history",
     "nfcWrite": "Write NFC tag",
     "nfcRead": "Scan NFC tag",

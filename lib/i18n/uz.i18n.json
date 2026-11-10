@@ -5521,6 +5521,9 @@
     "routeHint": "Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi."
   },
   "musicTools": {
+    "loudnessMissing": "Ovoz balandligi ma’lumotlari qaytarilmadi",
+    "loudnessRequested": "Tahlil so‘rovi yuborildi",
+    "loudnessUnsupported": "Serverning bu versiyasi tahlil so‘rovlarini qo‘llamaydi",
     "serverHistory": "Serverdagi ijro tarixi",
     "nfcWrite": "NFC tegiga yozish",
     "nfcRead": "NFC tegini skanerlash",

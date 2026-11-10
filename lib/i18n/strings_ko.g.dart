@@ -4291,6 +4291,9 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 	final TranslationsKo _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => '음량 데이터가 반환되지 않았습니다';
+	@override String get loudnessRequested => '분석 요청을 보냈습니다';
+	@override String get loudnessUnsupported => '이 서버 버전은 분석 요청을 지원하지 않습니다';
 	@override String get serverHistory => '서버 재생 기록';
 	@override String get nfcWrite => 'NFC 태그 쓰기';
 	@override String get nfcRead => 'NFC 태그 스캔';
@@ -9455,6 +9458,9 @@ extension on TranslationsKo {
 			'musicExperience.routeLost' => '오디오 출력이 연결 해제되었습니다. 재생이 일시 정지되었습니다.',
 			'musicExperience.autoDriving' => '차에 연결하면 운전 화면 열기',
 			'musicExperience.routeHint' => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.',
+			'musicTools.loudnessMissing' => '음량 데이터가 반환되지 않았습니다',
+			'musicTools.loudnessRequested' => '분석 요청을 보냈습니다',
+			'musicTools.loudnessUnsupported' => '이 서버 버전은 분석 요청을 지원하지 않습니다',
 			'musicTools.serverHistory' => '서버 재생 기록',
 			'musicTools.nfcWrite' => 'NFC 태그 쓰기',
 			'musicTools.nfcRead' => 'NFC 태그 스캔',

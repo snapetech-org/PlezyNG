@@ -5494,6 +5494,9 @@
     "routeHint": "Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik."
   },
   "musicTools": {
+    "loudnessMissing": "Tiada data kelantangan diterima",
+    "loudnessRequested": "Permintaan analisis dihantar",
+    "loudnessUnsupported": "Versi pelayan ini tidak menyokong permintaan analisis",
     "serverHistory": "Sejarah main balik pelayan",
     "nfcWrite": "Tulis tag NFC",
     "nfcRead": "Imbas tag NFC",

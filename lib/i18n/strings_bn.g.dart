@@ -4296,6 +4296,9 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 	final TranslationsBn _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'শব্দের মাত্রার তথ্য ফেরত আসেনি';
+	@override String get loudnessRequested => 'বিশ্লেষণের অনুরোধ পাঠানো হয়েছে';
+	@override String get loudnessUnsupported => 'সার্ভারের এই সংস্করণ বিশ্লেষণের অনুরোধ সমর্থন করে না';
 	@override String get serverHistory => 'সার্ভারের প্লেব্যাক ইতিহাস';
 	@override String get nfcWrite => 'NFC ট্যাগে লিখুন';
 	@override String get nfcRead => 'NFC ট্যাগ স্ক্যান করুন';
@@ -9460,6 +9463,9 @@ extension on TranslationsBn {
 			'musicExperience.routeLost' => 'অডিও আউটপুট বিচ্ছিন্ন হয়েছে। প্লেব্যাক বিরত আছে।',
 			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
 			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
+			'musicTools.loudnessMissing' => 'শব্দের মাত্রার তথ্য ফেরত আসেনি',
+			'musicTools.loudnessRequested' => 'বিশ্লেষণের অনুরোধ পাঠানো হয়েছে',
+			'musicTools.loudnessUnsupported' => 'সার্ভারের এই সংস্করণ বিশ্লেষণের অনুরোধ সমর্থন করে না',
 			'musicTools.serverHistory' => 'সার্ভারের প্লেব্যাক ইতিহাস',
 			'musicTools.nfcWrite' => 'NFC ট্যাগে লিখুন',
 			'musicTools.nfcRead' => 'NFC ট্যাগ স্ক্যান করুন',

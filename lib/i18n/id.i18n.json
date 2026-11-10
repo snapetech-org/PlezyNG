@@ -5494,6 +5494,9 @@
     "routeHint": "Sistem mobil menentukan apakah aplikasi dapat muncul otomatis."
   },
   "musicTools": {
+    "loudnessMissing": "Tidak ada data kenyaringan yang dikembalikan",
+    "loudnessRequested": "Permintaan analisis dikirim",
+    "loudnessUnsupported": "Versi server ini tidak mendukung permintaan analisis",
     "serverHistory": "Riwayat pemutaran server",
     "nfcWrite": "Tulis tag NFC",
     "nfcRead": "Pindai tag NFC",

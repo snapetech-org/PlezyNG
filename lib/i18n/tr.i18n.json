@@ -5521,6 +5521,9 @@
     "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
   },
   "musicTools": {
+    "loudnessMissing": "Ses yüksekliği verisi alınmadı",
+    "loudnessRequested": "Analiz isteği gönderildi",
+    "loudnessUnsupported": "Bu sunucu sürümü analiz isteklerini desteklemiyor",
     "serverHistory": "Sunucudaki oynatma geçmişi",
     "nfcWrite": "NFC etiketi yaz",
     "nfcRead": "NFC etiketini tara",

@@ -4273,6 +4273,9 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	final TranslationsTh _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'ไม่ได้รับข้อมูลความดัง';
+	@override String get loudnessRequested => 'ส่งคำขอวิเคราะห์แล้ว';
+	@override String get loudnessUnsupported => 'เซิร์ฟเวอร์เวอร์ชันนี้ไม่รองรับคำขอวิเคราะห์';
 	@override String get serverHistory => 'ประวัติการเล่นบนเซิร์ฟเวอร์';
 	@override String get nfcWrite => 'เขียนแท็ก NFC';
 	@override String get nfcRead => 'สแกนแท็ก NFC';
@@ -9435,6 +9438,9 @@ extension on TranslationsTh {
 			'musicExperience.routeLost' => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว',
 			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
 			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
+			'musicTools.loudnessMissing' => 'ไม่ได้รับข้อมูลความดัง',
+			'musicTools.loudnessRequested' => 'ส่งคำขอวิเคราะห์แล้ว',
+			'musicTools.loudnessUnsupported' => 'เซิร์ฟเวอร์เวอร์ชันนี้ไม่รองรับคำขอวิเคราะห์',
 			'musicTools.serverHistory' => 'ประวัติการเล่นบนเซิร์ฟเวอร์',
 			'musicTools.nfcWrite' => 'เขียนแท็ก NFC',
 			'musicTools.nfcRead' => 'สแกนแท็ก NFC',

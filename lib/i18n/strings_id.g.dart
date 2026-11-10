@@ -4273,6 +4273,9 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 	final TranslationsId _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Tidak ada data kenyaringan yang dikembalikan';
+	@override String get loudnessRequested => 'Permintaan analisis dikirim';
+	@override String get loudnessUnsupported => 'Versi server ini tidak mendukung permintaan analisis';
 	@override String get serverHistory => 'Riwayat pemutaran server';
 	@override String get nfcWrite => 'Tulis tag NFC';
 	@override String get nfcRead => 'Pindai tag NFC';
@@ -9435,6 +9438,9 @@ extension on TranslationsId {
 			'musicExperience.routeLost' => 'Keluaran audio terputus. Pemutaran dijeda.',
 			'musicExperience.autoDriving' => 'Buka tampilan berkendara saat terhubung ke mobil',
 			'musicExperience.routeHint' => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.',
+			'musicTools.loudnessMissing' => 'Tidak ada data kenyaringan yang dikembalikan',
+			'musicTools.loudnessRequested' => 'Permintaan analisis dikirim',
+			'musicTools.loudnessUnsupported' => 'Versi server ini tidak mendukung permintaan analisis',
 			'musicTools.serverHistory' => 'Riwayat pemutaran server',
 			'musicTools.nfcWrite' => 'Tulis tag NFC',
 			'musicTools.nfcRead' => 'Pindai tag NFC',

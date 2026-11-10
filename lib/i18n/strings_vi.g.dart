@@ -4273,6 +4273,9 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Không nhận được dữ liệu độ lớn âm thanh';
+	@override String get loudnessRequested => 'Đã gửi yêu cầu phân tích';
+	@override String get loudnessUnsupported => 'Phiên bản máy chủ này không hỗ trợ yêu cầu phân tích';
 	@override String get serverHistory => 'Lịch sử phát trên máy chủ';
 	@override String get nfcWrite => 'Ghi thẻ NFC';
 	@override String get nfcRead => 'Quét thẻ NFC';
@@ -9435,6 +9438,9 @@ extension on TranslationsVi {
 			'musicExperience.routeLost' => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.',
 			'musicExperience.autoDriving' => 'Mở giao diện lái xe khi kết nối với ô tô',
 			'musicExperience.routeHint' => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.',
+			'musicTools.loudnessMissing' => 'Không nhận được dữ liệu độ lớn âm thanh',
+			'musicTools.loudnessRequested' => 'Đã gửi yêu cầu phân tích',
+			'musicTools.loudnessUnsupported' => 'Phiên bản máy chủ này không hỗ trợ yêu cầu phân tích',
 			'musicTools.serverHistory' => 'Lịch sử phát trên máy chủ',
 			'musicTools.nfcWrite' => 'Ghi thẻ NFC',
 			'musicTools.nfcRead' => 'Quét thẻ NFC',

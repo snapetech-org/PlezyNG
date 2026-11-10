@@ -4296,6 +4296,9 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 	final TranslationsBg _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Няма получени данни за силата на звука';
+	@override String get loudnessRequested => 'Заявката за анализ е изпратена';
+	@override String get loudnessUnsupported => 'Тази версия на сървъра не поддържа заявки за анализ';
 	@override String get serverHistory => 'История на възпроизвеждане от сървъра';
 	@override String get nfcWrite => 'Запис на NFC етикет';
 	@override String get nfcRead => 'Сканиране на NFC етикет';
@@ -9460,6 +9463,9 @@ extension on TranslationsBg {
 			'musicExperience.routeLost' => 'Аудиоизходът е прекъснат. Възпроизвеждането е на пауза.',
 			'musicExperience.autoDriving' => 'Отваряне на изгледа за шофиране при свързване с кола',
 			'musicExperience.routeHint' => 'Системата на колата определя дали приложението може да се показва автоматично.',
+			'musicTools.loudnessMissing' => 'Няма получени данни за силата на звука',
+			'musicTools.loudnessRequested' => 'Заявката за анализ е изпратена',
+			'musicTools.loudnessUnsupported' => 'Тази версия на сървъра не поддържа заявки за анализ',
 			'musicTools.serverHistory' => 'История на възпроизвеждане от сървъра',
 			'musicTools.nfcWrite' => 'Запис на NFC етикет',
 			'musicTools.nfcRead' => 'Сканиране на NFC етикет',

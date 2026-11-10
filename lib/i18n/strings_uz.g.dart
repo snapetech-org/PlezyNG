@@ -4296,6 +4296,9 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Ovoz balandligi ma’lumotlari qaytarilmadi';
+	@override String get loudnessRequested => 'Tahlil so‘rovi yuborildi';
+	@override String get loudnessUnsupported => 'Serverning bu versiyasi tahlil so‘rovlarini qo‘llamaydi';
 	@override String get serverHistory => 'Serverdagi ijro tarixi';
 	@override String get nfcWrite => 'NFC tegiga yozish';
 	@override String get nfcRead => 'NFC tegini skanerlash';
@@ -9460,6 +9463,9 @@ extension on TranslationsUz {
 			'musicExperience.routeLost' => 'Audio chiqishi uzildi. Ijro to‘xtatildi.',
 			'musicExperience.autoDriving' => 'Avtomobilga ulanganda haydash ko‘rinishini ochish',
 			'musicExperience.routeHint' => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.',
+			'musicTools.loudnessMissing' => 'Ovoz balandligi ma’lumotlari qaytarilmadi',
+			'musicTools.loudnessRequested' => 'Tahlil so‘rovi yuborildi',
+			'musicTools.loudnessUnsupported' => 'Serverning bu versiyasi tahlil so‘rovlarini qo‘llamaydi',
 			'musicTools.serverHistory' => 'Serverdagi ijro tarixi',
 			'musicTools.nfcWrite' => 'NFC tegiga yozish',
 			'musicTools.nfcRead' => 'NFC tegini skanerlash',

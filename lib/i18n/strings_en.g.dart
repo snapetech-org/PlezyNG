@@ -14681,6 +14681,15 @@ class Translations$musicTools$en {
 
 	// Translations
 
+	/// en: 'No loudness data returned'
+	String get loudnessMissing => 'No loudness data returned';
+
+	/// en: 'Analysis request sent'
+	String get loudnessRequested => 'Analysis request sent';
+
+	/// en: 'This server version does not support analysis requests'
+	String get loudnessUnsupported => 'This server version does not support analysis requests';
+
 	/// en: 'Server playback history'
 	String get serverHistory => 'Server playback history';
 
@@ -22646,6 +22655,9 @@ extension on Translations {
 			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
+			'musicTools.loudnessMissing' => 'No loudness data returned',
+			'musicTools.loudnessRequested' => 'Analysis request sent',
+			'musicTools.loudnessUnsupported' => 'This server version does not support analysis requests',
 			'musicTools.serverHistory' => 'Server playback history',
 			'musicTools.nfcWrite' => 'Write NFC tag',
 			'musicTools.nfcRead' => 'Scan NFC tag',

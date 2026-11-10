@@ -4388,6 +4388,9 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'لم يُرجع الخادم بيانات مستوى الصوت';
+	@override String get loudnessRequested => 'تم إرسال طلب التحليل';
+	@override String get loudnessUnsupported => 'إصدار الخادم لا يدعم طلب التحليل';
 	@override String get serverHistory => 'سجل التشغيل على الخادم';
 	@override String get nfcWrite => 'كتابة علامة NFC';
 	@override String get nfcRead => 'مسح علامة NFC';
@@ -9560,6 +9563,9 @@ extension on TranslationsAr {
 			'musicExperience.routeLost' => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.',
 			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
 			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
+			'musicTools.loudnessMissing' => 'لم يُرجع الخادم بيانات مستوى الصوت',
+			'musicTools.loudnessRequested' => 'تم إرسال طلب التحليل',
+			'musicTools.loudnessUnsupported' => 'إصدار الخادم لا يدعم طلب التحليل',
 			'musicTools.serverHistory' => 'سجل التشغيل على الخادم',
 			'musicTools.nfcWrite' => 'كتابة علامة NFC',
 			'musicTools.nfcRead' => 'مسح علامة NFC',

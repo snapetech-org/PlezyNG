@@ -4304,6 +4304,9 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	final TranslationsHe _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'לא התקבלו נתוני עוצמת קול';
+	@override String get loudnessRequested => 'בקשת ניתוח נשלחה';
+	@override String get loudnessUnsupported => 'גרסת השרת הזו אינה תומכת בבקשות ניתוח';
 	@override String get serverHistory => 'היסטוריית ניגון בשרת';
 	@override String get nfcWrite => 'כתיבה לתג NFC';
 	@override String get nfcRead => 'סריקת תג NFC';
@@ -9468,6 +9471,9 @@ extension on TranslationsHe {
 			'musicExperience.routeLost' => 'פלט השמע נותק. הניגון הושהה.',
 			'musicExperience.autoDriving' => 'פתיחת תצוגת נהיגה בחיבור לרכב',
 			'musicExperience.routeHint' => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.',
+			'musicTools.loudnessMissing' => 'לא התקבלו נתוני עוצמת קול',
+			'musicTools.loudnessRequested' => 'בקשת ניתוח נשלחה',
+			'musicTools.loudnessUnsupported' => 'גרסת השרת הזו אינה תומכת בבקשות ניתוח',
 			'musicTools.serverHistory' => 'היסטוריית ניגון בשרת',
 			'musicTools.nfcWrite' => 'כתיבה לתג NFC',
 			'musicTools.nfcRead' => 'סריקת תג NFC',

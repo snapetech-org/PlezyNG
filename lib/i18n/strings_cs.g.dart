@@ -4338,6 +4338,9 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Server nevrátil údaje o hlasitosti';
+	@override String get loudnessRequested => 'Požadavek na analýzu byl odeslán';
+	@override String get loudnessUnsupported => 'Tato verze serveru nepodporuje požadavky na analýzu';
 	@override String get serverHistory => 'Historie přehrávání na serveru';
 	@override String get nfcWrite => 'Zapsat NFC štítek';
 	@override String get nfcRead => 'Naskenovat značku NFC';
@@ -9504,6 +9507,9 @@ extension on TranslationsCs {
 			'musicExperience.routeLost' => 'Zvukový výstup odpojen. Přehrávání pozastaveno.',
 			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
 			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
+			'musicTools.loudnessMissing' => 'Server nevrátil údaje o hlasitosti',
+			'musicTools.loudnessRequested' => 'Požadavek na analýzu byl odeslán',
+			'musicTools.loudnessUnsupported' => 'Tato verze serveru nepodporuje požadavky na analýzu',
 			'musicTools.serverHistory' => 'Historie přehrávání na serveru',
 			'musicTools.nfcWrite' => 'Zapsat NFC štítek',
 			'musicTools.nfcRead' => 'Naskenovat značku NFC',

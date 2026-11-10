@@ -4291,6 +4291,9 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	final TranslationsJa _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'ラウドネスデータが返されませんでした';
+	@override String get loudnessRequested => '解析リクエストを送信しました';
+	@override String get loudnessUnsupported => 'このサーバーバージョンは解析リクエストに対応していません';
 	@override String get serverHistory => 'サーバーの再生履歴';
 	@override String get nfcWrite => 'NFCタグに書き込む';
 	@override String get nfcRead => 'NFCタグをスキャン';
@@ -9455,6 +9458,9 @@ extension on TranslationsJa {
 			'musicExperience.routeLost' => '音声出力が切断されました。再生を一時停止しました。',
 			'musicExperience.autoDriving' => '車に接続したら運転用画面を開く',
 			'musicExperience.routeHint' => 'アプリを自動表示できるかどうかは車のシステムによって決まります。',
+			'musicTools.loudnessMissing' => 'ラウドネスデータが返されませんでした',
+			'musicTools.loudnessRequested' => '解析リクエストを送信しました',
+			'musicTools.loudnessUnsupported' => 'このサーバーバージョンは解析リクエストに対応していません',
 			'musicTools.serverHistory' => 'サーバーの再生履歴',
 			'musicTools.nfcWrite' => 'NFCタグに書き込む',
 			'musicTools.nfcRead' => 'NFCタグをスキャン',

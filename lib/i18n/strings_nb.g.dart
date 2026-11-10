@@ -4296,6 +4296,9 @@ class _Translations$musicTools$nb extends Translations$musicTools$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
+	@override String get loudnessMissing => 'Ingen lydstyrkedata ble returnert';
+	@override String get loudnessRequested => 'Analyseforespørsel sendt';
+	@override String get loudnessUnsupported => 'Denne serverversjonen støtter ikke analyseforespørsler';
 	@override String get serverHistory => 'Avspillingshistorikk på serveren';
 	@override String get nfcWrite => 'Skriv NFC-brikke';
 	@override String get nfcRead => 'Skann NFC-brikke';
@@ -9460,6 +9463,9 @@ extension on TranslationsNb {
 			'musicExperience.routeLost' => 'Lydutgangen ble koblet fra. Avspillingen er pauset.',
 			'musicExperience.autoDriving' => 'Åpne kjørevisning ved tilkobling til en bil',
 			'musicExperience.routeHint' => 'Bilens system bestemmer om appen kan vises automatisk.',
+			'musicTools.loudnessMissing' => 'Ingen lydstyrkedata ble returnert',
+			'musicTools.loudnessRequested' => 'Analyseforespørsel sendt',
+			'musicTools.loudnessUnsupported' => 'Denne serverversjonen støtter ikke analyseforespørsler',
 			'musicTools.serverHistory' => 'Avspillingshistorikk på serveren',
 			'musicTools.nfcWrite' => 'Skriv NFC-brikke',
 			'musicTools.nfcRead' => 'Skann NFC-brikke',

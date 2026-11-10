@@ -5531,6 +5531,9 @@
     "routeHint": "מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית."
   },
   "musicTools": {
+    "loudnessMissing": "לא התקבלו נתוני עוצמת קול",
+    "loudnessRequested": "בקשת ניתוח נשלחה",
+    "loudnessUnsupported": "גרסת השרת הזו אינה תומכת בבקשות ניתוח",
     "serverHistory": "היסטוריית ניגון בשרת",
     "nfcWrite": "כתיבה לתג NFC",
     "nfcRead": "סריקת תג NFC",

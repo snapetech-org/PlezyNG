@@ -5521,6 +5521,9 @@
     "routeHint": "Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann."
   },
   "musicTools": {
+    "loudnessMissing": "Keine Lautheitsdaten erhalten",
+    "loudnessRequested": "Analyse angefordert",
+    "loudnessUnsupported": "Diese Serverversion unterstützt keine Analyseanfragen",
     "serverHistory": "Wiedergabeverlauf des Servers",
     "nfcWrite": "NFC-Tag beschreiben",
     "nfcRead": "NFC-Tag scannen",

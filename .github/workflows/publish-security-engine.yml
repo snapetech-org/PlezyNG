@@ -53,3 +53,65 @@ jobs:
             build/security-engine/flutter-security-engine-arm64/* \
             --target "$RUN_HEAD" --latest=false --title "Pleazyng Windows Flutter 3.47.8 engine components" \
             --notes "Build components for Pleazyng's Windows Flutter cache, not app installers. Pinned Flutter 3.47.8/Dart 3.13.7 with DComp and resize patches. Verify SHA-256 sidecars and embedded provenance."
+
+  native:
+    needs: publish
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: windows-2025
+          - arch: arm64
+            runner: windows-11-vs2026-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Select native ARM64 CMake generator
+        if: matrix.arch == 'arm64'
+        shell: pwsh
+        run: '"CMAKE_GENERATOR=Visual Studio 18 2026" >> $env:GITHUB_ENV'
+      - name: Exercise the actual patched engine in an isolated fixed SDK
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRODUCER_RUN_ID: ${{ github.event.workflow_run.id }}
+          ENGINE_ARCH: ${{ matrix.arch }}
+        run: python scripts/flutter/qualify_native_security_engine.py --run-id "$env:PRODUCER_RUN_ID" --arch "$env:ENGINE_ARCH" --workspace "$env:RUNNER_TEMP/security-engine-native" --output "build/native-$env:ENGINE_ARCH.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: security-engine-native-${{ matrix.arch }}
+          path: build/native-${{ matrix.arch }}.json
+          if-no-files-found: error
+          retention-days: 30
+
+  promote:
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          pattern: security-engine-native-*
+          path: build/native-receipts
+      - name: Adopt only this run's qualified architecture digests and dispatch CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          QUALIFICATION_RUN_ID: ${{ github.run_id }}
+          PRODUCER_RUN_ID: ${{ github.event.workflow_run.id }}
+          PRODUCER_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: python3 scripts/flutter/promote_security_engine.py --receipts build/native-receipts --qualification-run-id "$QUALIFICATION_RUN_ID" --producer-run-id "$PRODUCER_RUN_ID" --producer-sha "$PRODUCER_SHA"

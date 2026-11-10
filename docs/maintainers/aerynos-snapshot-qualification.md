@@ -51,7 +51,14 @@ remain recorded; tested text and video render.
 ## Install and review
 
 See the [channel README](https://github.com/snapetech-org/pleazyng-aerynos#install)
-for the pinned public Moss feed and installation commands. The channel is an
+for the pinned public Moss feed and installation commands. Native Moss fetched
+the package from that public feed without GitHub credentials; its SHA-256
+matches the qualified Stone. Removal/reinstallation and ordinary relaunch with
+the stored Jellyfin connection also pass. The installer reused the verified
+native cache after the independent public download. See the
+[publication receipt](https://github.com/snapetech-org/pleazyng-aerynos/blob/main/publication-receipt.json).
+
+The channel is an
 independent preview, with no official distribution acceptance claim. Its
 published recipe substitutes the public immutable application URL for the
 guest-only HTTP mirror used during the build; source bytes and hash are identical.

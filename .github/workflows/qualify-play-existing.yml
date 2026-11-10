@@ -108,6 +108,16 @@ jobs:
           fi
           python3 scripts/stores/qualify_review_access.py --serial emulator-5586 \
             --artifacts "$RUNNER_TEMP/play-qualification"
+      - name: Retain compact native qualification evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: play-existing-${{ inputs.version_code }}-native-evidence
+          path: |
+            ${{ runner.temp }}/play-qualification/*.json
+            ${{ runner.temp }}/play-qualification/*.png
+            ${{ runner.temp }}/play-qualification/*.signing.txt
+          retention-days: 14
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:

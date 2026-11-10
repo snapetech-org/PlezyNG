@@ -152,7 +152,13 @@ void main() {
       expect(sources.hydrationCount, 0);
 
       sources.localFiles.remove(second.fingerprint);
-      sources.refreshed = entry.copyWith(files: [first]);
+      sources.refreshed = const SourceEntry(
+        sourceId: 'files',
+        id: 'https://provider.example/book',
+        title: 'Book',
+        kind: SourceItemKind.audiobook,
+        files: [first],
+      );
       final refreshed = await resolveRecoverySourceEntry(
         sources: sources,
         cached: entry,

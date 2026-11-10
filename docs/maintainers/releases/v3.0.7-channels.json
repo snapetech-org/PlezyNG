@@ -3,7 +3,21 @@
   "checked_at_utc": "2026-11-09T23:14:14.193390+00:00",
   "application_artifacts_rebuilt": false,
   "original_release_assets_modified": false,
-  "aerynos": "removed from maintained channels and packaging",
+  "aerynos": {
+    "state": "restored as an actual downstream publication target; fixed source-snapshot feed preparing",
+    "immutable_v3_0_7": "native package installation passed; visible video retained stale artwork, so not qualified for publication",
+    "fixed_snapshot": {
+      "version": "3.0.22+181",
+      "source_commit": "a13b139cd",
+      "native_qa": "passed: native Stone/Moss installation, ELF dependencies, visible video/audio, FEL routing and injected render-startup fallback",
+      "channel_repository": "https://github.com/snapetech-org/pleazyng-aerynos",
+      "release_tag": "snapshot-3.0.22-181-r1",
+      "publication": "draft upload; public feed reinstall pending",
+      "core_release_artifacts_modified": false,
+      "attestation": "not claimed"
+    },
+    "official_aerynos_repository_acceptance": "not claimed; independent downstream feed"
+  },
   "channels": {
     "aur": {
       "state": "published",
@@ -67,13 +81,13 @@
       "install_command": "brew install --cask snapetech-org/pleazyng/snapetech-pleazyng"
     },
     "google_play": {
-      "state": "closed Alpha release saved; not submitted for review or activated",
+      "state": "Existing166 retained in the bundle explorer; internal qualification draft preparing; closed Alpha release configuration must be recreated before review",
       "package": "org.snapetech.pleazyng",
       "version_code": 166,
       "upload_run": 42700083317,
       "foreground_service_declaration": "saved: data sync/network processing and media playback",
-      "release_notes": "saved",
-      "publishing_overview": "16 changes ready for review",
+      "release_notes": "Previously saved Alpha configuration discarded to prepare internal qualification; reapply before submission",
+      "publishing_overview": "Metadata/declarations remain pending review; no review submitted",
       "lifetime_product": {
         "sku": "pleazyng_lifetime_unlock",
         "purchase_option": "lifetime",
@@ -96,7 +110,28 @@
         "Google review and actual closed Alpha activation",
         "Applicable 12 testers continuously opted in for 14 days before production application"
       ],
-      "desktop_evidence": "play-lifetime-active.jpg retained in owner QA evidence; pool artifact save rejected after maximum lease expiration"
+      "desktop_evidence": "Active lifetime-product screenshot persisted as pool artifact b2141e0c-b547-4b33-b330-b05c61d607c2; private owner QA copy retained",
+      "internal_testers": "Existing Pleazyng Alpha testers list selected; five members preserved",
+      "generated_apk": {
+        "sha256": "c42cb09ea81ac84ea113d461a10d87d9718f887b3c99a4ce4b0a1086ad19df7d",
+        "registered_certificate_sha256": "66eadd02162a81e1650bc62015bce8ff67729c0ddeb11a359a78d38799e80c22",
+        "signature_verification": "passed",
+        "original_aab_libapp_bytes_identical": [
+          "arm64-v8a",
+          "armeabi-v7a",
+          "x86_64"
+        ],
+        "physical_phone": "Pixel8 / Android36: task sideload succeeds; Play installer protection requires an actual Play install before app/billing qualification"
+      },
+      "internal_draft_staging_run": {
+        "run": 42728878763,
+        "result": "Google404: archived166 cannot be referenced in track edit; uncommitted edit discarded"
+      },
+      "review_grant_qualification_run": {
+        "run": 42728882845,
+        "result": "emulator boot/install passed; startup accessibility tree unavailable; retry/safe pre-grant diagnostics added"
+      },
+      "original_aab_redelivery_run": 42730459200
     }
   }
 }

@@ -107,3 +107,11 @@ add_custom_target(flutter_assemble DEPENDS
   ${CPP_WRAPPER_SOURCES_PLUGIN}
   ${CPP_WRAPPER_SOURCES_APP}
 )
+
+# Workspace views share the existing engine and isolate.
+add_custom_command(TARGET flutter_assemble POST_BUILD
+  COMMAND ${CMAKE_COMMAND}
+    "-DHEADER=${WRAPPER_ROOT}/include/flutter/flutter_engine.h"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/../tool/workspace_view_access.cmake"
+  VERBATIM
+)

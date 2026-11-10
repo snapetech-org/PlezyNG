@@ -1,0 +1,44 @@
+name: Desktop workspace views
+on:
+  push:
+    branches: [main]
+    paths:
+      - lib/multiview/desktop_workspace_views.dart
+      - linux/runner/workspace_views.*
+      - windows/runner/workspace_views.*
+      - windows/tool/workspace_view_access.cmake
+      - macos/Runner/MainFlutterWindow.swift
+      - scripts/checks/qualify_workspace_views.py
+      - .github/workflows/desktop-workspace-views.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            runner: ubuntu-24.04
+          - platform: windows
+            runner: windows-2025
+          - platform: macos
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: stable
+          flutter-version: '3.47.8'
+          cache: false
+      - name: Install Linux desktop build dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev xvfb
+      - name: Compile production hosts and verify same-engine window lifetimes
+        run: python scripts/checks/qualify_workspace_views.py ${{ matrix.platform }}
+

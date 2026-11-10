@@ -1,6 +1,6 @@
 # Public hosted runners by default; optional private routing preserves native OS/architecture.
 name: Publish Pleazyng store builds
-run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:channel:{3}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.channel) }}
+run-name: ${{ format('action:{0}:pool:{1}:tag:{2}:channel:{3}', inputs.action, inputs.runner_pool, inputs.release_tag, inputs.channel) }}${{ inputs.channel == 'google-play' && format(':track:{0}:status:{1}', inputs.play_track, inputs.play_release_status) || '' }}
 
 on:
   workflow_dispatch:
@@ -48,6 +48,10 @@ on:
           - draft
           - completed
           - inProgress
+      play_rollout_fraction:
+        description: Fraction for an explicitly selected inProgress rollout; automatic delivery uses completed
+        type: string
+        default: '0.1'
 
 # Publication gates run before any external store mutation.
 env:
@@ -58,7 +62,7 @@ permissions:
   attestations: read
 
 concurrency:
-  group: app-store-publish-${{ inputs.release_tag }}-${{ inputs.channel }}
+  group: app-store-publish-${{ inputs.channel }}-${{ inputs.channel == 'google-play' && 'org.snapetech.pleazyng' || inputs.release_tag }}
   cancel-in-progress: false
 
 jobs:
@@ -139,12 +143,17 @@ jobs:
     needs: validate-release
     if: ${{ inputs.channel == 'google-play' }}
     runs-on: ${{ inputs.runner_pool == 'public' && 'ubuntu-24.04' || fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-pleazyng","ng-main-run-{0}","gha-{0}-publish-google-play"]}}', github.run_id)) }}
+    permissions:
+      contents: read
+      attestations: read
+      actions: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
       - name: Download and verify the signed App Bundle
+        id: bundle
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
@@ -156,6 +165,22 @@ jobs:
             --dir "$RUNNER_TEMP/store-assets"
           cd "$RUNNER_TEMP/store-assets"
           sha256sum --check --ignore-missing SHA256SUMS.txt
+          python3 "$GITHUB_WORKSPACE/scripts/verify_release_attestation.py" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY"
+          python3 - <<'PY'
+          import base64, hashlib, json, os, subprocess, sys
+          sys.path.insert(0, os.path.join(os.environ['GITHUB_WORKSPACE'], 'scripts'))
+          from pubspec_version import parse_pubspec_version
+          tag = os.environ['RELEASE_TAG']
+          source = json.loads(subprocess.check_output(['gh', 'api',
+              f"repos/{os.environ['GITHUB_REPOSITORY']}/contents/pubspec.yaml?ref={tag}"], text=True))
+          version, code = parse_pubspec_version(base64.b64decode(source['content']).decode())
+          if tag.lstrip('v') != version.split('+')[0] or int(code) < 188:
+              raise ValueError('Expected a fresh release with matching immutable source metadata')
+          with open('pleazyng-android-play.aab', 'rb') as bundle:
+              digest = hashlib.file_digest(bundle, 'sha256').hexdigest()
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'version_code={code}\naab_sha256={digest}\n')
+          PY
 
       - name: Install native Ruby extension tools on public Linux
         if: inputs.runner_pool == 'public'
@@ -176,18 +201,46 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
-      - name: Upload to selected Play track
+      - name: Validate delivery transactions in the selected Ruby runtime
+        run: ruby scripts/checks/test_play_delivery_transactions.rb
+
+      - name: Recover a matching interrupted delivery transaction
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+          VERSION_CODE: ${{ steps.bundle.outputs.version_code }}
+          AAB_SHA256: ${{ steps.bundle.outputs.aab_sha256 }}
+          PLAY_TRACK: ${{ inputs.play_track }}
+        run: |
+          python3 scripts/stores/deliver_play_releases.py --restore --tag "$RELEASE_TAG" \
+            --version-code "$VERSION_CODE" --aab-sha256 "$AAB_SHA256" --track "$PLAY_TRACK" \
+            --receipt "$RUNNER_TEMP/play-delivery/receipt.json"
+
+      - name: Upload and verify the selected Play track
         env:
           PLAY_AAB_PATH: ${{ runner.temp }}/store-assets/pleazyng-android-play.aab
+          PLAY_DELIVERY_RECEIPT: ${{ runner.temp }}/play-delivery/receipt.json
+          PLAY_EXPECTED_VERSION_CODE: ${{ steps.bundle.outputs.version_code }}
+          PLAY_RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
           PLAY_TRACK: ${{ inputs.play_track }}
           PLAY_RELEASE_STATUS: ${{ inputs.play_release_status }}
+          PLAY_ROLLOUT_FRACTION: ${{ inputs.play_rollout_fraction || '0.1' }}
           SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         run: |
           if [[ -z "$SUPPLY_JSON_KEY_DATA" ]]; then
             echo "Configure GOOGLE_PLAY_SERVICE_ACCOUNT_JSON before publishing to Google Play." >&2
             exit 1
           fi
-          bundle exec fastlane android publish_play_store
+          mkdir -p "$RUNNER_TEMP/play-delivery"
+          bundle exec ruby scripts/stores/publish_play_release.rb
+
+      - name: Retain the non-secret delivery/recovery receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: google-play-delivery-receipt
+          path: ${{ runner.temp }}/play-delivery/receipt.json
+          retention-days: 30
 
   publish-amazon-appstore:
     name: Upload to Amazon Appstore

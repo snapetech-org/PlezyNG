@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Automatically deliver every complete fresh release to the configured Google Play testing track, verify the committed bundle, preserve interrupted uploads for retry, and serialize release builds and app-wide Play edits. Retire the old v3.0.7 store-repack workflows.
+
 - Support task-owned GitHub-hosted Apple source workspaces in AppleDouble cleanup while retaining exact run/source checks and the private NFS ownership fence.
 
 - Fix Tizen ARM sandbox compilation by declaring the ELF architecture constants required by its older audit headers; retain the existing fail-closed syscall policy.
@@ -17,7 +19,6 @@
 - Fix an embedded macOS startup deadlock found by real headless playback: skip PCM-tap teardown for temporary Cocoa clients that never owned a tap. Verify shader implementations in every packaged Apple architecture and retain a real GPU playback regression probe.
 - Fix Windows workspace-window compilation with the supported Windows SDK target while retaining monitor-aware sizing.
 - Prepare v3.0.24 from the corrected desktop workspace integration and current main, retaining the upstream source credits and Apple runtime compatibility backport.
-- Recover Google Play first publication from a permanently reserved archived version code by preparing a signed store-only repack of the existing v3.0.7 bundle. Preserve compiled application files, verify every payload and upload signer, and retain explicit draft/review and native qualification gates.
 - Build and relocate the bundled GTK input-method cache in Linux bundles and aerynOS packages so fresh password entry uses the matching shipped modules. Preserve locale-capable input methods and gate snapshots on ordinary fresh sign-in.
 
 - Add the ordinary Linux snapshot builder and fresh native aerynOS VM harness for continuous channel qualification; automatic feed promotion is being integrated separately.

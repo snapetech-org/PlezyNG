@@ -1,0 +1,54 @@
+name: Deliver releases to Google Play
+on:
+  release:
+    types: [published]
+  workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Optional published release tag; empty reconciles all new releases
+        type: string
+        default: ''
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: google-play-release-reconciliation
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    if: github.repository == 'snapetech-org/pleazyng'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Recover an inactive catch-up schedule
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/reconcile-google-play.yml" --jq .state)
+          if [[ "$state" == disabled_inactivity ]]; then
+            gh api --method PUT "repos/$GITHUB_REPOSITORY/actions/workflows/reconcile-google-play.yml/enable"
+          fi
+      - name: Deliver complete immutable releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GOOGLE_PLAY_AUTOMATIC_RELEASES: ${{ vars.GOOGLE_PLAY_AUTOMATIC_RELEASES }}
+          GOOGLE_PLAY_AUTO_TRACK: ${{ vars.GOOGLE_PLAY_AUTO_TRACK || 'internal' }}
+          GOOGLE_PLAY_MIN_VERSION_CODE: ${{ vars.GOOGLE_PLAY_MIN_VERSION_CODE || '188' }}
+          GOOGLE_PLAY_BOOTSTRAP_COMPLETE: ${{ vars.GOOGLE_PLAY_BOOTSTRAP_COMPLETE }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: python3 scripts/stores/deliver_play_releases.py --tag "$RELEASE_TAG" --dispatch --receipt "$RUNNER_TEMP/play-delivery.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: google-play-delivery
+          path: ${{ runner.temp }}/play-delivery.json
+          retention-days: 30

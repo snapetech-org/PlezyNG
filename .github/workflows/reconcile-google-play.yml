@@ -1,0 +1,14 @@
+name: Reconcile Google Play release delivery
+on:
+  schedule:
+    - cron: '7,17,27,37,47,57 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: google-play-scheduled-reconciliation
+  cancel-in-progress: false
+jobs:
+  deliver:
+    uses: ./.github/workflows/deliver-google-play.yml

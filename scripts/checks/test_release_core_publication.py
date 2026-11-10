@@ -15,6 +15,11 @@ import release_all_platforms as release
 
 
 class CorePublicationTests(unittest.TestCase):
+    def setUp(self):
+        automatic = patch.object(release, 'dispatch_automatic_play', return_value=None)
+        automatic.start()
+        self.addCleanup(automatic.stop)
+
     def test_only_channel_metadata_is_optional_and_collected_when_present(self):
         workflow = yaml.safe_load((Path(__file__).resolve().parents[2] / ".github/workflows/build.yml").read_text())
         jobs = workflow["jobs"]

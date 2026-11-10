@@ -1,4 +1,6 @@
-# Google Play first-publication recovery
+# Google Play first-publication recovery (historical)
+
+Superseded by the owner on 2026-11-10. Use the [automatic release delivery runbook](google-play-release-delivery.md). The v3.0.7 repack/recovery workflows and their store-mutating helpers have been removed. Preserve the original artifacts and evidence, but deliver fresh release builds starting with 3.0.29+188.
 
 The original immutable v3.0.7 AAB uses Android version code 166. Google retained
 its generated APKs after the unpublished Alpha configuration was discarded, but
@@ -8,7 +10,7 @@ the release library is empty, track assignment returns404, and reupload returns
 and [42730459200](https://github.com/snapetech-org/pleazyng/actions/runs/42730459200).
 The original GitHub release and binaries remain intact.
 
-`repack-play-v307.yml` prepares a store-only 167 variant of that exact AAB. It
+The retired `repack-play-v307.yml` prepared a store-only 167 variant of that exact AAB. It
 authenticates the published checksum manifest and pins the AAB and official
 bundletool 1.18.3 digests. Google's AAPT protobuf classes change only the manifest
 version code; package identity and version name 3.0.7 remain. All 1,667 payload entries are compared before and after signing; only that

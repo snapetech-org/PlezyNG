@@ -1211,11 +1211,26 @@ def publish_github_release(tag: str) -> dict:
     return published
 
 
+def dispatch_automatic_play(tag: str) -> dict | None:
+    """Wake the non-scheduled controller even for token-created releases."""
+    if configured_repo_variables().get("GOOGLE_PLAY_AUTOMATIC_RELEASES") != "true":
+        return None
+    command(["gh", "workflow", "run", "deliver-google-play.yml", "--repo", PLEZY_REPO,
+             "--ref", "main", "-f", f"release_tag={tag}"])
+    return {"tag": tag, "workflow": "deliver-google-play.yml", "state": "dispatched"}
+
+
 def post_release_actions(tag: str, version: str, *, release_sha: str,
                          include_webos_release: bool, publish_channels: bool) -> dict:
     """Retryable delivery follows the already verified GitHub publication."""
     result = {"published_channels": [], "skipped_channels": [],
-              "channel_failures": [], "notification_failures": []}
+              "channel_failures": [], "notification_failures": [], "google_play_automation": []}
+    try:
+        play = dispatch_automatic_play(tag)
+        if play:
+            result["google_play_automation"].append(play)
+    except Exception as error:
+        result["channel_failures"].append(f"Automatic Google Play delivery: {error}")
     # GITHUB_TOKEN publication does not emit another workflow's release event.
     # Tag serialization and persisted receipts make a repeated dispatch safe.
     try:
@@ -1230,8 +1245,9 @@ def post_release_actions(tag: str, version: str, *, release_sha: str,
                 tag, version, release_sha=release_sha,
                 include_webos_release=include_webos_release,
             )
-            result.update(published_channels=completed, skipped_channels=skipped,
-                          channel_failures=failures)
+            result["published_channels"].extend(completed)
+            result["skipped_channels"].extend(skipped)
+            result["channel_failures"].extend(failures)
         except Exception as error:
             result["channel_failures"].append(str(error))
     else:
@@ -1387,7 +1403,7 @@ def publish_configured_channels(
             "name": f"Google Play {play_track} {play_status}",
             "readiness_flag": "GOOGLE_PLAY_BOOTSTRAP_COMPLETE",
             "workflow": "publish-app-stores.yml",
-            "title": f"action:publish-app-stores:pool:public:tag:{tag}:channel:google-play",
+            "title": f"action:publish-app-stores:pool:public:tag:{tag}:channel:google-play:track:{play_track}:status:{play_status}",
             "fields": {"action": "publish-app-stores", "runner_pool": "public", "release_tag": tag,
                        "channel": "google-play", "play_track": play_track, "play_release_status": play_status},
             "secrets": {"GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"}, "variables": set(),
@@ -1524,6 +1540,9 @@ def publish_configured_channels(
             "reason": "the webOS IPK is built as a candidate; exact-artifact eligibility is not enabled.",
         })
     for spec in specs:
+        if spec["fields"].get("channel") == "google-play" and publication_settings.get("GOOGLE_PLAY_AUTOMATIC_RELEASES") == "true":
+            skipped.append({"channel": spec["name"], "reason": "Handled by the automatic Google Play release controller and its configured test track."})
+            continue
         if spec["fields"].get("channel") == "google-play" and play_error:
             failures.append(f"Google Play configuration: {play_error}")
             continue

@@ -6,9 +6,9 @@
   "reviewed_snapshot": "738e18fdc552ace910dedabf6e689ab74e1dae58",
   "license_blob": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
   "disposition_counts": {
-    "excluded": 7,
+    "excluded": 6,
     "covered": 24,
-    "retained": 7,
+    "retained": 8,
     "adapted": 23,
     "native-pending": 3
   },
@@ -21,8 +21,8 @@
         "url": "https://github.com/K1ngfish3r"
       },
       "subject": "docs: update aerynOS installation instruction (#2864)",
-      "disposition": "excluded",
-      "evidence": "The owner’s 2026-11-09 distribution directive excludes aerynOS. Do not restore its upstream installation instructions or packaging.",
+      "disposition": "retained",
+      "evidence": "Retain the fork’s separately maintained package identity and distribution instructions instead of copying the upstream package command verbatim.",
       "files": [
         "README.md"
       ]

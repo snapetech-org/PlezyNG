@@ -3,7 +3,7 @@
 Reviewed every commit after `1fc16b6c11b2f154c80484f95ba08074d2433e41`
 through upstream Plezy `738e18fdc552ace910dedabf6e689ab74e1dae58` (2.26).
 The 64 records below have explicit dispositions: 23 independently adapted,
-24 already covered, seven retained fork implementations/pins, seven excluded,
+24 already covered, eight retained fork implementations/pins, six excluded,
 and three native-dependent changes recorded as not yet shipped.
 
 Pleazyng keeps its name and logo. The upstream trademark-policy file and its
@@ -32,7 +32,8 @@ credited below. Existing engine and experiment packaging is preserved.
 The consolidated upstream-maintainer anime feed is also intentionally declined:
 the fork keeps its independent source feeds and cache format. Upstream version,
 purchase-copy and publisher changes retain the fork's own identities/contracts.
-aerynOS remains excluded under the owner's current distribution directive.
+Distribution commands retain the fork’s own package identity and maintained
+instructions.
 
 ## Validation and limits
 
@@ -65,7 +66,7 @@ or endorsement of this fork, or claim unfinished behavior has shipped.
 
 | Upstream commit | Contributor | Subject | Disposition | Fork evidence |
 | --- | --- | --- | --- | --- |
-| [43ae7da7b6](https://github.com/edde746/plezy/commit/43ae7da7b6ab7fa526cb14063dfb7f1427dc6a4d) | [@K1ngfish3r](https://github.com/K1ngfish3r) | docs: update aerynOS installation instruction (#2864) | excluded | The owner’s 2026-11-09 distribution directive excludes aerynOS. Do not restore its upstream installation instructions or packaging. |
+| [43ae7da7b6](https://github.com/edde746/plezy/commit/43ae7da7b6ab7fa526cb14063dfb7f1427dc6a4d) | [@K1ngfish3r](https://github.com/K1ngfish3r) | docs: update aerynOS installation instruction (#2864) | retained | Retain the fork’s separately maintained package identity and distribution instructions instead of copying the upstream package command verbatim. |
 | [fa7fadece1](https://github.com/edde746/plezy/commit/fa7fadece1ab87d07a144a25549fedf3c056dcf9) | [@edde746](https://github.com/edde746) | fix(watch-together): make the participant count badge clickable (#2846) | covered | The participant badge is already interactive; the existing implementation and regression coverage match the upstream behavior. |
 | [43d8e8562b](https://github.com/edde746/plezy/commit/43d8e8562b8272e2d339efb38828e9fb1f2d03c9) | [@edde746](https://github.com/edde746) | fix(player): apply swipe brightness to the active display on iPhone Duo | covered | The iPhone brightness path already uses the active display and retains the fork’s native lifecycle handling. |
 | [ffe7d792d8](https://github.com/edde746/plezy/commit/ffe7d792d865750880e6fc3369c7ec2ff08b37dc) | [@edde746](https://github.com/edde746) | feat(libraries): add a Genres tab that opens Browse filtered to one genre | covered | Genre browsing already exists through backend-neutral library tabs; retain the fork’s query and source adapters. |

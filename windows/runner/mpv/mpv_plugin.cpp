@@ -33,6 +33,12 @@ void MpvAudioPlayerPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef 
       "com.plezy/mpv_audio_player", /*audio_only=*/true);
 }
 
+void MpvAudioOverlapPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {
+  mpv::MpvPlayerPlugin::RegisterWithRegistrar(
+      flutter::PluginRegistrarManager::GetInstance()->GetRegistrar<flutter::PluginRegistrarWindows>(registrar),
+      "com.plezy/mpv_audio_player/overlap", /*audio_only=*/true, WM_APP + 0x04D3);
+}
+
 namespace mpv {
 
 namespace {

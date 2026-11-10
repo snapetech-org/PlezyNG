@@ -170,6 +170,31 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('overlap decoder uses a separate music core and event stream', () async {
+    await withMockPlayerChannels(
+      methodChannelName: 'com.plezy/mpv_audio_player',
+      eventChannelName: 'com.plezy/mpv_audio_player/events',
+      testBody: () async {
+        await withMockPlayerChannels(
+          methodChannelName: 'com.plezy/mpv_audio_player/overlap',
+          eventChannelName: 'com.plezy/mpv_audio_player/overlap/events',
+          testBody: () async {
+            final primary = PlayerNative.audio();
+            final overlap = PlayerNative.audio(overlap: true, exclusiveAudio: false);
+            try {
+              expect(primary.methodChannel.name, 'com.plezy/mpv_audio_player');
+              expect(overlap.methodChannel.name, 'com.plezy/mpv_audio_player/overlap');
+              expect(overlap.eventChannel.name, 'com.plezy/mpv_audio_player/overlap/events');
+            } finally {
+              await primary.dispose();
+              await overlap.dispose();
+            }
+          },
+        );
+      },
+    );
+  });
+
   setUp(() async {
     resetSharedPreferencesForTest();
     SettingsService.resetForTesting();

@@ -127,6 +127,10 @@ static void my_application_activate(GApplication* application) {
       fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "MpvAudioPlugin");
   mpv_audio_plugin_register_with_registrar(audio_registrar);
 
+  FlPluginRegistrar* overlap_registrar =
+      fl_plugin_registry_get_registrar_for_plugin(FL_PLUGIN_REGISTRY(self->flutter_view), "MpvAudioOverlapPlugin");
+  mpv_audio_overlap_plugin_register_with_registrar(overlap_registrar);
+
   bool preparation_worker = false;
   for (char** arg = self->dart_entrypoint_arguments; arg && *arg; ++arg) {
     if (g_strcmp0(*arg, "--plezy-preparation-worker") == 0) preparation_worker = true;

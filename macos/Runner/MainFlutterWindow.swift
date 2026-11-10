@@ -71,6 +71,9 @@ class MainFlutterWindow: NSWindow {
     MpvAudioPlayerPlugin.register(
       with: flutterViewController.registrar(forPlugin: "MpvAudioPlayerPlugin"))
 
+    MpvAudioPlayerPlugin.registerOverlap(
+      with: flutterViewController.registrar(forPlugin: "MpvAudioOverlapPlugin"))
+
     WindowUtilsPlugin.register(
       with: flutterViewController.registrar(forPlugin: "WindowUtilsPlugin"))
     WindowUtilsPlugin.setWindow(self)

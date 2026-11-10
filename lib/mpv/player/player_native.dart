@@ -236,9 +236,9 @@ class PlayerNative extends PlayerBase
   /// [Player.audio]). Skips every video concern: no render layer
   /// ([setVisible] no-ops via [audioOnly]), no subtitle plumbing, no
   /// display-mode handling.
-  PlayerNative.audio({this._exclusiveAudio = true})
-    : methodChannel = const MethodChannel('com.plezy/mpv_audio_player'),
-      eventChannel = const EventChannel('com.plezy/mpv_audio_player/events'),
+  PlayerNative.audio({this._exclusiveAudio = true, bool overlap = false})
+    : methodChannel = MethodChannel(overlap ? 'com.plezy/mpv_audio_player/overlap' : 'com.plezy/mpv_audio_player'),
+      eventChannel = EventChannel(overlap ? 'com.plezy/mpv_audio_player/overlap/events' : 'com.plezy/mpv_audio_player/events'),
       audioOnly = true,
       _hardwareDecoding = true;
 

@@ -37,6 +37,14 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
   // MARK: - FlutterPlugin Registration
 
   static func register(with registrar: FlutterPluginRegistrar) {
+    register(with: registrar, channelName: "com.plezy/mpv_audio_player")
+  }
+
+  static func registerOverlap(with registrar: FlutterPluginRegistrar) {
+    register(with: registrar, channelName: "com.plezy/mpv_audio_player/overlap")
+  }
+
+  private static func register(with registrar: FlutterPluginRegistrar, channelName: String) {
     #if os(macOS)
       let messenger = registrar.messenger
     #else
@@ -44,11 +52,11 @@ class MpvAudioPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, MpvPl
     #endif
 
     let methodChannel = FlutterMethodChannel(
-      name: "com.plezy/mpv_audio_player",
+      name: channelName,
       binaryMessenger: messenger
     )
     let eventChannel = FlutterEventChannel(
-      name: "com.plezy/mpv_audio_player/events",
+      name: "\(channelName)/events",
       binaryMessenger: messenger
     )
 

@@ -2004,5 +2004,8 @@ open class MpvPlayerPlugin(
  */
 class MpvAudioPlayerPlugin : MpvPlayerPlugin(channelBase = "com.plezy/mpv_audio_player", audioOnly = true)
 
+/** A second windowless decoder used only during overlapping music transitions. */
+class MpvAudioOverlapPlugin : MpvPlayerPlugin(channelBase = "com.plezy/mpv_audio_player/overlap", audioOnly = true)
+
 /** Independent MPV channel and core for the second retained workspace video. */
 class MpvWorkspacePlayerPlugin : MpvPlayerPlugin(channelBase = "com.plezy/mpv_player/workspace")

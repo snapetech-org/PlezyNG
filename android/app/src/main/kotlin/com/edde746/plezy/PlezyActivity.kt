@@ -35,6 +35,7 @@ import com.edde746.plezy.deeplink.DeepLinkPlugin
 import com.edde746.plezy.exoplayer.ExoPlayerPlugin
 import com.edde746.plezy.exoplayer.ExoWorkspacePlayerPlugin
 import com.edde746.plezy.mpv.MpvAudioPlayerPlugin
+import com.edde746.plezy.mpv.MpvAudioOverlapPlugin
 import com.edde746.plezy.mpv.MpvPlayerPlugin
 import com.edde746.plezy.mpv.MpvWorkspacePlayerPlugin
 import com.edde746.plezy.shared.AssistiveTechnologyMonitor
@@ -954,6 +955,7 @@ class PlezyActivity : FlutterActivity() {
     if (!flutterEngine.plugins.has(ExoPlayerPlugin::class.java)) flutterEngine.plugins.add(ExoPlayerPlugin())
     if (!flutterEngine.plugins.has(ExoWorkspacePlayerPlugin::class.java)) flutterEngine.plugins.add(ExoWorkspacePlayerPlugin())
     if (!flutterEngine.plugins.has(MpvAudioPlayerPlugin::class.java)) flutterEngine.plugins.add(MpvAudioPlayerPlugin())
+    if (!flutterEngine.plugins.has(MpvAudioOverlapPlugin::class.java)) flutterEngine.plugins.add(MpvAudioOverlapPlugin())
     if (runCatching {
         Class.forName("org.snapetech.plezyng.games.steam.SteamStreamView", false, classLoader)
       }.isSuccess

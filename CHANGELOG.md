@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Recover Google Play first publication from a permanently reserved archived version code by preparing a signed store-only repack of the existing v3.0.7 bundle. Preserve compiled application files, verify every payload and upload signer, and retain explicit draft/review and native qualification gates.
+
 - Localize the new music audio and headphone controls across supported languages.
 - Complete translations for the new Seerr request actions and source setup guidance.
 - Backport the Swift 6.2 compatibility fix from [AetherEngine commit fa8cc48b](https://github.com/superuser404notfound/AetherEngine/commit/fa8cc48b93a5b9c83367bf4fb3d731fb3862a177), contributed upstream by [@superuser404notfound](https://github.com/superuser404notfound). This credits the upstream contribution, not a direct contribution to Pleazyng.

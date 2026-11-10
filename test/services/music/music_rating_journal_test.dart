@@ -3,10 +3,17 @@ import 'dart:async';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/database/app_database.dart';
+import 'package:plezy/media/media_item.dart';
 import 'package:plezy/services/music/music_library_store.dart';
 import 'package:plezy/services/music/music_rating_journal.dart';
 
 import '../../test_helpers/music_experience_fakes.dart';
+
+class _RatingClient extends ExperienceClient {
+  MediaItem? remote;
+  @override
+  Future<MediaItem?> fetchItem(String id) async => remote ?? musicTrack(id);
+}
 
 void main() {
   late AppDatabase db;
@@ -16,7 +23,7 @@ void main() {
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     store = MusicLibraryStore(db, 'p');
-    client = ExperienceClient();
+    client = _RatingClient();
     journal = MusicRatingJournal(store, (_) => client);
   });
   tearDown(() async {
@@ -33,6 +40,51 @@ void main() {
     await journal.sync();
     await journal.sync();
     expect(client.mutations, [('s:a', 8.0)]);
+    expect(await store.documents('ratingPending'), isEmpty);
+  });
+
+  test('a different device rating requires explicit resolution before overwriting', () async {
+    client.isOfflineMode = true;
+    await journal.rate(musicTrack('a').copyWith(userRating: 4), 8);
+    (client as _RatingClient).remote = musicTrack('a').copyWith(userRating: 9);
+    client.isOfflineMode = false;
+    await journal.sync();
+    expect(client.mutations, isEmpty);
+    final conflict = (await store.documents('ratingConflict')).single;
+    expect(conflict['base'], 4);
+    expect(conflict['remote'], 9);
+    expect(await journal.resolveConflict(conflict['id'] as String, 'stale', keepLocal: true), isFalse);
+    expect(
+      await journal.resolveConflict(conflict['id'] as String, conflict['revision'] as String, keepLocal: true),
+      isTrue,
+    );
+    expect(client.mutations, [('s:a', 8.0)]);
+    expect(await store.documents('ratingConflict'), isEmpty);
+    expect(await store.documents('ratingPending'), isEmpty);
+  });
+
+  test('server choice discards only this revision without writing the server', () async {
+    client.isOfflineMode = true;
+    await journal.favorite(musicTrack('a').copyWith(isFavorite: false), true);
+    (client as _RatingClient).remote = musicTrack('a').copyWith(isFavorite: null);
+    client.isOfflineMode = false;
+    await journal.sync();
+    final conflict = (await store.documents('ratingConflict')).single;
+    expect(
+      await journal.resolveConflict(conflict['id'] as String, conflict['revision'] as String, keepLocal: false),
+      isTrue,
+    );
+    expect(client.mutations, isEmpty);
+    expect(await store.documents('ratingPending'), isEmpty);
+  });
+
+  test('a lost acknowledgement that already reached the server is not replayed', () async {
+    client.isOfflineMode = true;
+    await journal.rate(musicTrack('a'), 8);
+    (client as _RatingClient).remote = musicTrack('a').copyWith(userRating: 8);
+    client.isOfflineMode = false;
+    await journal.sync();
+    expect(client.mutations, isEmpty);
     expect(await store.documents('ratingPending'), isEmpty);
   });
   test('a changed account cannot receive a previous account pending rating', () async {

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Detect server-side rating/favorite changes before replaying offline music edits, retain conflicting decisions for explicit resolution, and recognize writes already acknowledged by another device.
+
 - Create, preview, edit and copy Plex music smart playlists with ordered nested expressions, sorting and limits. Filter-form additions preserve existing expressions and writes retain server-side rules rather than fixed track lists.
 
 - Expose music performers, writers, producers and available composer/contributor credits alongside exact edition and media-variant details, with account-bound metadata loading rather than title-based recording merges.

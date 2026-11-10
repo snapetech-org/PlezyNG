@@ -40,6 +40,7 @@ import 'package:plezy/services/music/music_session_store.dart';
 import 'package:plezy/services/music/music_source_resolver.dart';
 import 'package:plezy/services/music/music_transfer_snapshot.dart';
 import 'package:plezy/services/music/music_group_playback.dart';
+import 'package:plezy/services/music/music_playback_output.dart';
 import 'package:plezy/services/offline_watch_sync_service.dart';
 import 'package:plezy/services/playback_coordinator.dart';
 import 'package:plezy/services/settings_service.dart';
@@ -287,7 +288,12 @@ class FakePlayer implements Player, PlayerAudioFocusControl {
     _armedMedia = null;
     openedUris.add(media.uri);
     openStarts.add(media.start);
-    _state = _state.copyWith(playing: play, completed: false, position: Duration.zero, duration: _trackDuration);
+    _state = _state.copyWith(
+      playing: play,
+      completed: false,
+      position: media.start ?? Duration.zero,
+      duration: _trackDuration,
+    );
     if (play) playingCtrl.add(true);
   }
 
@@ -490,7 +496,7 @@ class FakeMediaServerClient extends Fake
     with PlaybackReportRecorder
     implements MediaServerClient, PlexLoudnessProfileClient {
   final List<RecordedReport> reports = [];
-  final Object _authenticationSession = Object();
+  Object _authenticationSession = Object();
 
   @override
   Object get authenticationSessionId => _authenticationSession;
@@ -590,6 +596,27 @@ class FakeMusicSourceResolver implements MusicSourceResolver {
 
 /// Keeps the OS media session out of the tests: overrides every platform
 /// touchpoint and feeds control events from a local controller.
+class _RemoteOutput implements MusicPlaybackOutput {
+  _RemoteOutput(this.resolver);
+  final FakeMusicSourceResolver resolver;
+  final lost = StreamController<void>.broadcast(sync: true);
+  @override
+  final FakePlayer player = FakePlayer();
+  @override
+  String get name => 'Test receiver';
+  @override
+  bool available = true;
+  @override
+  Stream<void> get revoked => lost.stream;
+  @override
+  Future<MusicSource> resolve(MediaItem track) => resolver.resolve(track);
+
+  void close() {
+    player.closeControllers();
+    unawaited(lost.close());
+  }
+}
+
 class FakeMediaControlsManager extends MediaControlsManager {
   final eventsCtrl = StreamController<MediaControlEvent>.broadcast(sync: true);
   final List<String> metadataTitles = [];
@@ -883,6 +910,93 @@ void main() {
   });
 
   tearDown(() => h.dispose());
+
+  test('remote output preserves the queue, playhead and listening occurrence', () async {
+    await h.playTracks([t1, t2, t1]);
+    h.player.setPosition(const Duration(seconds: 40));
+    final occurrence = h.service.playbackOccurrenceRevision;
+    final output = _RemoteOutput(FakeMusicSourceResolver(client: h.client));
+    addTearDown(output.close);
+    final previous = h.player;
+    expect(await h.service.selectOutput(output), isTrue);
+    expect(previous.disposed, isTrue);
+    expect(h.service.remoteOutputName, 'Test receiver');
+    expect(h.service.queue.map((track) => track.id), ['t1', 't2', 't1']);
+    expect(h.service.position, const Duration(seconds: 40));
+    expect(h.service.playbackOccurrenceRevision, occurrence);
+    expect(h.service.isPlaying, isTrue);
+    expect(output.player.armed, isNull);
+    await h.service.next();
+    expect(h.service.currentTrack?.id, 't2');
+    expect(output.player.openedUris.last, _urlFor(t2));
+    await h.service.seek(const Duration(seconds: 12));
+    expect(output.player.currentPosition, const Duration(seconds: 12));
+    await h.service.pause();
+    expect(output.player.state.playing, isFalse);
+  });
+
+  test('a queue edit during remote preflight leaves local playback untouched', () async {
+    await h.playTracks([t1, t2]);
+    final output = _RemoteOutput(FakeMusicSourceResolver(client: h.client));
+    addTearDown(output.close);
+    final gate = output.player._gateNextOpen();
+    final switching = h.service.selectOutput(output);
+    await gate.entered;
+    h.service.addNext([t3]);
+    gate.release();
+    expect(await switching, isFalse);
+    expect(output.player.disposed, isTrue);
+    expect(h.service.remoteOutputName, isNull);
+    expect(h.player.state.playing, isTrue);
+    expect(h.service.queue.map((track) => track.id), ['t1', 't3', 't2']);
+  });
+
+  test('account revocation during remote preflight cannot claim the output', () async {
+    await h.playTracks([t1, t2]);
+    final output = _RemoteOutput(FakeMusicSourceResolver(client: h.client));
+    addTearDown(output.close);
+    final gate = output.resolver._gateNextResolve(t1.id);
+    final switching = h.service.selectOutput(output);
+    await gate.entered;
+    h.client._authenticationSession = Object();
+    gate.release();
+    expect(await switching, isFalse);
+    expect(h.service.remoteOutputName, isNull);
+    expect(output.player.openedUris, isEmpty);
+  });
+
+  test('revoked remote output restores the same occurrence locally paused', () async {
+    await h.playTracks([t1, t2]);
+    final output = _RemoteOutput(FakeMusicSourceResolver(client: h.client));
+    addTearDown(output.close);
+    expect(await h.service.selectOutput(output), isTrue);
+    final occurrence = h.service.playbackOccurrenceRevision;
+    output.player.setPosition(const Duration(seconds: 50));
+    output.available = false;
+    output.lost.add(null);
+    await pumpEventQueue();
+    expect(h.service.remoteOutputName, isNull);
+    expect(h.service.currentTrack?.id, 't1');
+    expect(h.service.position, const Duration(seconds: 50));
+    expect(h.service.isPlaying, isFalse);
+    expect(h.service.playbackOccurrenceRevision, occurrence);
+    expect(output.player.disposed, isTrue);
+  });
+
+  test('remote EOF advances the shared queue including repeated entries', () async {
+    await h.playTracks([t1, t2, t1]);
+    final output = _RemoteOutput(FakeMusicSourceResolver(client: h.client));
+    addTearDown(output.close);
+    await h.service.selectOutput(output);
+    output.player.emitCompleted();
+    await pumpEventQueue();
+    expect(h.service.currentIndex, 1);
+    expect(h.service.currentTrack?.id, 't2');
+    output.player.emitCompleted();
+    await pumpEventQueue();
+    expect(h.service.currentIndex, 2);
+    expect(h.service.currentTrack?.id, 't1');
+  });
 
   test('continuation cannot append into a replacement session', () async {
     await h.playTracks([t1]);

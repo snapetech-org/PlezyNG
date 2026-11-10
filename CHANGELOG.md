@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add acknowledged remote music output switching inside the shared queue, preserving playback occurrences and playhead while rejecting stale preparation and returning locally paused after receiver revocation.
+
 - Dispatch Cast media loads before awaiting receiver acknowledgement, retaining synchronous status events and cleaning up failed or timed-out handshakes.
 
 - Qualify Apple simulator startup on fresh, SDK-matched job-owned devices. Preserve existing simulator saves and real tvOS database recovery checks, and retain ownership receipts for cleanup.

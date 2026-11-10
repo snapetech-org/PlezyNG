@@ -50,6 +50,7 @@ import 'music_session_store.dart';
 import 'music_source_resolver.dart';
 import 'music_transfer_snapshot.dart';
 import 'music_group_playback.dart';
+import 'music_playback_output.dart';
 
 /// A gapless-armed next track: what [Player.setNext] was fed, so the
 /// trackTransition event can be mapped back to a queue entry and its
@@ -115,7 +116,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         MusicCacheControls,
         MusicSignalPathService,
         MusicTransferSession,
-        MusicGroupSession {
+        MusicGroupSession,
+        MusicOutputControls {
   final MusicLibraryStore? _libraryStore;
   late final MusicByteCache? _byteCache = _libraryStore == null ? null : MusicByteCache(scope: _libraryStore.profileId);
 
@@ -616,6 +618,101 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   final MusicQueueController _queue;
   int _queueEditRevision = 0;
+  MusicPlaybackOutput? _playbackOutput;
+  StreamSubscription<void>? _outputRevoked;
+  int _outputRequest = 0;
+
+  @override
+  String? get remoteOutputName => _playbackOutput?.name;
+
+  @override
+  Future<bool> selectOutput(MusicPlaybackOutput? output, {bool resume = true}) async {
+    final request = ++_outputRequest;
+    if (_disposed || _currentTrack == null || _player == null) {
+      if (output != null) await output.player.dispose();
+      return false;
+    }
+    if (identical(output, _playbackOutput)) return true;
+    final revision = groupControlRevision;
+    final authority = _captureOutputAuthority();
+    final track = _currentTrack!;
+    final playhead = position;
+    final wasPlaying = resume && isPlaying;
+    bool current() => !_disposed && request == _outputRequest && revision == groupControlRevision;
+    if (output == null) {
+      _cancelOverlap();
+      _finalizeCurrentTrack();
+      final previous = _player!;
+      unawaited(_outputRevoked?.cancel());
+      _outputRevoked = null;
+      _playbackOutput = null;
+      _player = null;
+      final generation = ++_generation;
+      _invalidateArmRequests();
+      _armed = null;
+      _staleArm = null;
+      for (final subscription in _playerSubs) {
+        unawaited(subscription.cancel());
+      }
+      _playerSubs.clear();
+      await previous.stop();
+      await previous.dispose();
+      if (_disposed || request != _outputRequest || generation != _generation) return false;
+      await _openCurrent(generation, play: wasPlaying, initialPosition: playhead, newOccurrence: false);
+      return !_disposed && generation == _generation;
+    }
+    final candidate = output.player;
+    var committed = false;
+    try {
+      if (!authority() || !output.available) return false;
+      final source = await output.resolve(track);
+      if (!current() || !authority() || !output.available) return false;
+      await candidate.open(Media(source.url, headers: source.headers, start: playhead), play: false);
+      if (!current() || !authority() || !output.available) return false;
+      final previous = _player!;
+      _cancelOverlap();
+      _finalizeCurrentTrack();
+      final generation = ++_generation;
+      _invalidateArmRequests();
+      _armed = null;
+      _staleArm = null;
+      unawaited(_outputRevoked?.cancel());
+      _playbackOutput = output;
+      _player = candidate;
+      _currentSource = source;
+      _musicGain = 1;
+      _wirePlayerStreams(candidate);
+      _outputRevoked = output.revoked.listen((_) {
+        if (!_disposed && identical(_playbackOutput, output)) {
+          unawaited(
+            selectOutput(null, resume: false).catchError((Object error) {
+              if (!_disposed) _errorsController.add(error);
+              return false;
+            }),
+          );
+        }
+      });
+      committed = true;
+      _setStatus(MusicPlaybackStatus.paused, forceNotify: true);
+      _playheadJumpController.add(playhead);
+      _bindTrackServices(track, source, newOccurrence: false, initialPosition: playhead);
+      await previous.stop();
+      await previous.dispose();
+      if (_disposed || generation != _generation || !identical(_player, candidate)) return false;
+      if (!output.available || !authority()) {
+        await selectOutput(null, resume: false);
+        return false;
+      }
+      await candidate.setVolume(_volume);
+      if (wasPlaying && generation == _generation && request == _outputRequest) await play();
+      return !_disposed && identical(_playbackOutput, output);
+    } finally {
+      if (!committed) {
+        await candidate.stop();
+        await candidate.dispose();
+      }
+    }
+  }
 
   /// The peer protocol uses this only after the user explicitly requests a
   /// transfer. A selection alone never changes playback or output routing.
@@ -684,6 +781,11 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
   @override
   bool Function() captureGroupAuthority() {
+    if (_playbackOutput != null) return () => false;
+    return _captureOutputAuthority();
+  }
+
+  bool Function() _captureOutputAuthority() {
     final clients = <MediaServerClient, Object?>{};
     for (final item in _queue.queue) {
       final client = _clientFor(item);
@@ -1212,6 +1314,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     Duration? initialPosition,
     bool offline = false,
     MusicSource? preparedSource,
+    bool newOccurrence = true,
   }) async {
     final track = _queue.current;
     if (track == null) {
@@ -1281,7 +1384,13 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
 
       MusicSource source;
       try {
-        source = preparedSource ?? await _cachedSource(await _resolver.resolve(track, offline: offline));
+        final output = _playbackOutput;
+        if (output != null && !output.available) throw StateError('Music output is no longer available');
+        source =
+            preparedSource ??
+            (output == null
+                ? await _cachedSource(await _resolver.resolve(track, offline: offline))
+                : await output.resolve(track));
       } catch (e, st) {
         appLogger.w('Music source resolve failed for ${track.id}', error: e, stackTrace: st);
         if (launchCurrent()) {
@@ -1336,7 +1445,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       }
       committedPlayer = player;
       _setStatus(playbackStarted ? MusicPlaybackStatus.playing : MusicPlaybackStatus.paused);
-      _bindTrackServices(track, source);
+      _bindTrackServices(track, source, newOccurrence: newOccurrence, initialPosition: resumeAt ?? Duration.zero);
     } finally {
       // A stale open must never release a newer open's ownership. Only a
       // committed current open schedules its successor; an unsuccessful
@@ -1372,6 +1481,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// resolve round-trip when the desired target is already armed; repeat-one
   /// reuses the current track's resolved source.
   Future<void> _applyArmNext(int generation, int armRequest) async {
+    if (_playbackOutput != null) return;
     final player = _player;
     if (player == null || !_isCurrentArmRequest(player, generation, armRequest)) {
       return;
@@ -1529,6 +1639,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
       _outputEqualizer = null;
       _wirePlayerStreams(player);
     }
+    if (_playbackOutput != null) return player;
     if (Platform.isAndroid) {
       // Configure logging before volume/focus/open can create the native core,
       // and refresh it on later opens if the debug preference changed.
@@ -1579,7 +1690,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   Future<void> _applyMusicAudioSettings(Player player) => _audioChanges.run(() => _applyMusicAudioSettingsNow(player));
 
   Future<void> _applyMusicAudioSettingsNow(Player player) async {
-    if (_disposed || player.disposed) return;
+    if (_disposed || player.disposed || identical(_playbackOutput?.player, player)) return;
     final policy = _audioPolicy;
     if (policy != null) {
       await policy.apply(player, albumContext: !shuffled && _playContext?.kind == MusicPlayContextKind.album);
@@ -1944,9 +2055,15 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// Discord presence — the music mirror of the video screen's
   /// `_wirePerItemPlaybackServices`. The previous track must already be
   /// finalized.
-  void _bindTrackServices(MediaItem track, MusicSource source, {bool fadeIn = false}) {
+  void _bindTrackServices(
+    MediaItem track,
+    MusicSource source, {
+    bool fadeIn = false,
+    bool newOccurrence = true,
+    Duration initialPosition = Duration.zero,
+  }) {
     _resumeGroupTracking = false;
-    _playbackOccurrenceRevision++;
+    if (newOccurrence) _playbackOccurrenceRevision++;
     if (_audioPolicy != null) _onAudioSettingsChanged();
     unawaited(_extendStation());
     _tracker?.dispose();
@@ -2010,7 +2127,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         playMethod: source.playMethod ?? 'DirectPlay',
         playSessionId: source.playSessionId,
         mediaInfo: source.mediaInfo,
-      )..startTracking(initialPosition: Duration.zero, initialDuration: initialDuration);
+      )..startTracking(initialPosition: initialPosition, initialDuration: initialDuration);
     } else if (source.isOffline && _offlineWatchService != null && !_musicGroupFollower) {
       _tracker = PlaybackProgressTracker(
         client: null,
@@ -2018,7 +2135,7 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
         player: player,
         isOffline: true,
         offlineWatchService: _offlineWatchService,
-      )..startTracking(initialPosition: Duration.zero, initialDuration: initialDuration);
+      )..startTracking(initialPosition: initialPosition, initialDuration: initialDuration);
     }
 
     final metadataClient = client ?? _clientFor(track);
@@ -2199,7 +2316,8 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
     return request;
   }
 
-  bool get _sweetFadesEnabled => SettingsService.instanceOrNull?.read(SettingsService.musicSweetFades) ?? false;
+  bool get _sweetFadesEnabled =>
+      _playbackOutput == null && (SettingsService.instanceOrNull?.read(SettingsService.musicSweetFades) ?? false);
 
   bool _overlapCurrent(Player outgoing, _ArmedTrack incoming, int generation, int revision) =>
       !_disposed &&
@@ -3333,6 +3451,10 @@ class MusicPlaybackServiceImpl extends MusicPlaybackService
   /// to run in the caller's turn, before `super.dispose()`.
   Future<void> _teardownPlayerAndControls({required bool awaitStop}) async {
     _cancelOverlap();
+    _outputRequest++;
+    unawaited(_outputRevoked?.cancel());
+    _outputRevoked = null;
+    _playbackOutput = null;
     // Before any await: the session is already inert (guards check
     // [_currentTrack]/[_disposed]), and the handler must not outlive the turn
     // that tears the session down.

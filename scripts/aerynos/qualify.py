@@ -3,6 +3,8 @@
 from __future__ import annotations
 import argparse
 import contextlib
+import csv
+import io
 import functools
 import hashlib
 import http.server
@@ -143,6 +145,23 @@ class AppQA:
         self.guest.user('systemctl --user stop pleazyng-qa')
         time.sleep(1)
 
+    def pointer_field(self, label):
+        # A semantic Tap can focus Flutter without assigning Wayland keyboard
+        # focus to the native window. Click the observed field before typing.
+        image = self.evidence / 'keyboard-field.png'
+        self.guest.screenshot(image)
+        result = run(['tesseract', image, 'stdout', 'tsv'], capture_output=True, text=True)
+        rows = csv.DictReader(io.StringIO(result.stdout), delimiter='\t')
+        matches = [row for row in rows if row['text'].casefold() == label.casefold()]
+        if len(matches) != 1:
+            raise RuntimeError('Could not locate the native input field label: ' + label)
+        row = matches[0]
+        x = int(row['left']) + int(row['width']) // 2
+        y = int(row['top']) + int(row['height']) + 12
+        if not (0 <= x < 1280 and 0 <= y < 800):
+            raise RuntimeError('Input field is outside the observed guest display')
+        self.click(x, y)
+
     def sign_in(self, server_port):
         self.wait('Connect to Jellyfin')
         self.ui('click', 'Connect to Jellyfin')
@@ -154,6 +173,7 @@ class AppQA:
         self.wait('Password')
         # Use the exposed tap action; protected text has no usable geometry.
         self.ui('click', 'Password')
+        self.pointer_field('Password')
         time.sleep(0.3)
         self.text('maestro')
         time.sleep(0.3)
@@ -287,6 +307,7 @@ def qualify(args):
     output.mkdir(parents=True, exist_ok=False)
     evidence = output / 'evidence'
     evidence.mkdir()
+    tooling_sha = run(['git', '-C', HERE.parents[1], 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
     build = json.loads((candidate / 'build.json').read_text())
     for name, expected in build['assets'].items():
         if digest(candidate / name) != expected:
@@ -360,7 +381,7 @@ def qualify(args):
         # All publication claims must correspond to checks actually executed above.
         qualification = {'source_sha': build['source_sha'], 'version': build['version'], 'release': args.release, 'tag': tag,
                          'iso_sha256': ISO_SHA256, 'status': 'qualified',
-                         'recipe_tooling_sha': run(['git', '-C', HERE.parents[1], 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip(),
+                         'recipe_tooling_sha': tooling_sha,
                          'checks': ['native_boulder_build', 'native_moss_install', 'native_moss_upgrade', 'installed_elf', 'bundled_im_cache', 'ordinary_release_launch',
                                     'jellyfin_sign_in', 'dv_default_on', 'fallback_default_on', 'visible_h264', 'pause', 'seek', 'fullscreen'],
                          'not_qualified': ['physical HDR/Dolby Vision output', 'FEL reference picture accuracy', 'physical GPU/NPU execution'],

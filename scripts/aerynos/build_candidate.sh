@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Build the ordinary Linux release bundle; channel packaging happens after this.
 set -euo pipefail
+builder_tooling_sha=$(git -C "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" rev-parse HEAD)
 source_dir=$(realpath "$1")
 output_dir=$(realpath -m "$2")
 cd "$source_dir"
@@ -25,10 +26,10 @@ cp assets/pleazyng.png "$bundle/pleazyng.png"
 python3 linux/packaging/check-bundle-host-deps.py "$bundle"
 tar -czf "$output_dir/pleazyng-linux-x64.tar.gz" -C "$bundle" .
 git archive --format=tar.gz --prefix=pleazyng-source/ --output="$output_dir/pleazyng-source.tar.gz" HEAD
-python3 - "$output_dir" <<'PY'
+python3 - "$output_dir" "$builder_tooling_sha" <<'PY'
 import hashlib,json,pathlib,re,subprocess,sys
 out=pathlib.Path(sys.argv[1]); version=re.search(r'^version:\s*(\S+)',pathlib.Path('pubspec.yaml').read_text(),re.M).group(1)
 hashes={p.name:hashlib.file_digest(p.open('rb'),'sha256').hexdigest() for p in sorted(out.glob('*.tar.gz'))}
 (out/'SHA256SUMS.txt').write_text(''.join(f'{v}  {k}\n' for k,v in hashes.items()))
-(out/'build.json').write_text(json.dumps({'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'version':version,'assets':hashes},indent=2)+'\n')
+(out/'build.json').write_text(json.dumps({'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'version':version,'tooling_sha':sys.argv[2],'assets':hashes},indent=2)+'\n')
 PY

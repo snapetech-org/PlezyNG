@@ -65,6 +65,8 @@ class MusicChartEntry {
 /// Per-profile local history and small versioned feature documents. SQL reads
 /// are bounded; aggregations execute in SQLite rather than loading all events.
 class MusicLibraryStore {
+  static const historyPageSize = 50;
+
   MusicLibraryStore(this.database, this.profileId) : _epoch = database.musicDataEpoch(profileId);
   final AppDatabase database;
   final String profileId;
@@ -73,7 +75,7 @@ class MusicLibraryStore {
 
   Stream<void> get historyChanges => database.tableUpdates(TableUpdateQuery.onTableName('music_listens')).map((_) {});
 
-  Future<MusicHistoryPage> historyPage({int limit = 50, (int, String)? before}) async {
+  Future<MusicHistoryPage> historyPage({int limit = historyPageSize, (int, String)? before}) async {
     if (limit < 1 || limit > 100) throw ArgumentError('Invalid history page size');
     if (!active) return const MusicHistoryPage([], null);
     final rows = await database
@@ -103,6 +105,22 @@ class MusicLibraryStore {
         )
         .toList();
     return MusicHistoryPage(entries, rows.length > limit ? entries.last.cursor : null);
+  }
+
+  Future<MusicHistoryPage> historyWindow(int pages) {
+    if (pages < 1) throw ArgumentError('Invalid history window');
+    if (pages == 1) return historyPage();
+    return database.transaction(() async {
+      final entries = <MusicHistoryEntry>[];
+      (int, String)? cursor;
+      for (var index = 0; index < pages; index++) {
+        final page = await historyPage(before: cursor);
+        entries.addAll(page.entries);
+        cursor = page.cursor;
+        if (cursor == null) break;
+      }
+      return active ? MusicHistoryPage(entries, cursor) : const MusicHistoryPage([], null);
+    });
   }
 
   Future<MusicHistoryPage> historySyncPage({int limit = 8, (int, String)? before, Set<String>? accounts}) async {

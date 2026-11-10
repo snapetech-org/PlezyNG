@@ -19,44 +19,62 @@ class MusicHistoryScreen extends StatefulWidget {
 class _MusicHistoryScreenState extends State<MusicHistoryScreen> {
   late final MusicLibraryStore _store = context.read<MusicExperience>().store;
   StreamSubscription<void>? _changes;
+  Timer? _refreshTimer;
   List<MusicHistoryEntry> _entries = [];
   (int, String)? _cursor;
-  int _revision = 0;
+  int _pages = 1;
+  bool _refreshPending = false;
   bool _loading = false;
-  bool _failed = false;
+  bool? _failedRefresh;
   bool _syncing = false;
 
   @override
   void initState() {
     super.initState();
-    _changes = _store.historyChanges.listen((_) => _load(refresh: true));
+    _changes = _store.historyChanges.listen((_) {
+      _refreshTimer ??= Timer(const Duration(milliseconds: 150), () {
+        _refreshTimer = null;
+        unawaited(_load(refresh: true));
+      });
+    });
     unawaited(_load(refresh: true));
   }
 
   Future<void> _load({bool refresh = false}) async {
-    if (!refresh && (_loading || _cursor == null)) return;
-    final revision = ++_revision;
+    if (!mounted) return;
+    if (_loading) {
+      _refreshPending |= refresh;
+      return;
+    }
+    if (!refresh && _cursor == null) return;
     setState(() {
       _loading = true;
-      _failed = false;
+      _failedRefresh = null;
     });
     try {
-      final page = await _store.historyPage(before: refresh ? null : _cursor);
-      if (!mounted || revision != _revision) return;
+      final page = refresh ? await _store.historyWindow(_pages) : await _store.historyPage(before: _cursor);
+      if (!mounted) return;
       setState(() {
+        if (!refresh) _pages++;
         _entries = refresh ? page.entries : [..._entries, ...page.entries];
         _cursor = page.cursor;
       });
     } catch (_) {
-      if (mounted && revision == _revision) setState(() => _failed = true);
+      if (mounted) setState(() => _failedRefresh = refresh);
     } finally {
-      if (mounted && revision == _revision) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+        if (_refreshPending) {
+          _refreshPending = false;
+          unawaited(_load(refresh: true));
+        }
+      }
     }
   }
 
   @override
   void dispose() {
-    _revision++;
+    _refreshTimer?.cancel();
     unawaited(_changes?.cancel());
     super.dispose();
   }
@@ -97,9 +115,9 @@ class _MusicHistoryScreenState extends State<MusicHistoryScreen> {
             if (index == 0) return Padding(padding: const EdgeInsets.all(16), child: Text(t.musicTools.historyHint));
             if (index > _entries.length) {
               if (_loading) return const Center(child: CircularProgressIndicator());
-              if (_failed) {
+              if (_failedRefresh case final refresh?) {
                 return TextButton(
-                  onPressed: () => _load(refresh: _entries.isEmpty),
+                  onPressed: () => _load(refresh: refresh),
                   child: Text(t.common.retry),
                 );
               }

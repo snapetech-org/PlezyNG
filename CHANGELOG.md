@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Keep loaded listening history pages visible while local playback and paired-device imports refresh the list. Coalesce database notifications and rebuild the current window with cursor pages from one snapshot.
+
 - Edit native Plex smart-playlist directory rules without losing repeated clauses, exact operators, relative dates, source types, grouping, sort or limits. Track, album and artist rules keep their server query semantics during preview and save.
 
 - Bind Cast ownership to both the receiver connection and media session, prepare loads paused before authorized playback, and time out stalled native acknowledgements. A failed local return after receiver revocation keeps the selected occurrence without advancing or autoplaying.

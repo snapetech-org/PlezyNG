@@ -114,6 +114,11 @@ void main() {
     expect(entries.last.id, '000');
     expect(third.cursor, isNull);
     expect((await store.historyPage()).entries.first.id, 'newer');
+    final window = await store.historyWindow(2);
+    expect(window.entries.map((entry) => entry.id), ['newer', ...entries.take(99).map((entry) => entry.id)]);
+    final next = await store.historyPage(before: window.cursor);
+    expect(next.entries.map((entry) => entry.id), entries.skip(99).map((entry) => entry.id));
+    expect(next.cursor, isNull);
     expect(await MusicLibraryStore(db, 'other').historyPage().then((page) => page.entries), isEmpty);
   });
 

@@ -26,8 +26,16 @@ failures. Local finite download stations are a different feature.
 
 Music history is profile-owned listening history, paged by occurrence rather than
 deduplicated by track. New database writes refresh the loaded window without
-resetting it to the first page. This is not a server history import or a
-RAM-independent live playback queue.
+resetting it to the first page.
+
+Use the server button in Recently Played to browse playback history for a
+visible music library on an owned Plex server. Pleazyng only enables this when
+the active Plex identity is the verified account owner. Pages come from the
+[Plex Media Server API](https://developer.plex.tv/pms/).
+Provider plays are not inserted into local listening history, charts or paired
+sync: the server does not expose Pleazyng occurrence IDs or listened duration
+for a safe merge. Direct, shared and managed bindings without a verified owner
+identity do not expose the server view.
 
 The music-home Sync action shows conflicting offline rating/favorite decisions.
 Choose the reviewed local or remote value explicitly. A stale conflict revision

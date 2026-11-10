@@ -5520,6 +5520,7 @@
     "routeHint": "Het autosysteem bepaalt of de app automatisch kan verschijnen."
   },
   "musicTools": {
+    "serverHistory": "Afspeelgeschiedenis van de server",
     "nfcWrite": "NFC-tag schrijven",
     "nfcRead": "NFC-tag scannen",
     "nfcPrompt": "Houd een beschrijfbare NFC-tag bij je telefoon.",

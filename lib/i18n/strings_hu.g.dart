@@ -4295,6 +4295,7 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 	final TranslationsHu _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Szerver lejátszási előzményei';
 	@override String get nfcWrite => 'NFC-címke írása';
 	@override String get nfcRead => 'NFC-címke beolvasása';
 	@override String get nfcPrompt => 'Tartson egy írható NFC-címkét a telefon közelébe.';
@@ -9457,6 +9458,7 @@ extension on TranslationsHu {
 			'musicExperience.routeLost' => 'A hangkimenet megszakadt. Lejátszás szüneteltetve.',
 			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
 			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
+			'musicTools.serverHistory' => 'Szerver lejátszási előzményei',
 			'musicTools.nfcWrite' => 'NFC-címke írása',
 			'musicTools.nfcRead' => 'NFC-címke beolvasása',
 			'musicTools.nfcPrompt' => 'Tartson egy írható NFC-címkét a telefon közelébe.',

@@ -5529,6 +5529,7 @@
     "routeHint": "Il sistema dell’auto decide se l’app può apparire automaticamente."
   },
   "musicTools": {
+    "serverHistory": "Cronologia di riproduzione del server",
     "nfcWrite": "Scrivi tag NFC",
     "nfcRead": "Scansiona tag NFC",
     "nfcPrompt": "Avvicina un tag NFC scrivibile al telefono.",

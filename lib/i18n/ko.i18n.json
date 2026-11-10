@@ -5515,6 +5515,7 @@
     "routeHint": "앱 자동 표시 여부는 차량 시스템에서 결정합니다."
   },
   "musicTools": {
+    "serverHistory": "서버 재생 기록",
     "nfcWrite": "NFC 태그 쓰기",
     "nfcRead": "NFC 태그 스캔",
     "nfcPrompt": "쓰기 가능한 NFC 태그를 휴대전화 가까이에 대세요.",

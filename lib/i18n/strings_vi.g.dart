@@ -4272,6 +4272,7 @@ class _Translations$musicTools$vi extends Translations$musicTools$en {
 	final TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Lịch sử phát trên máy chủ';
 	@override String get nfcWrite => 'Ghi thẻ NFC';
 	@override String get nfcRead => 'Quét thẻ NFC';
 	@override String get nfcPrompt => 'Đưa thẻ NFC có thể ghi lại gần điện thoại.';
@@ -9432,6 +9433,7 @@ extension on TranslationsVi {
 			'musicExperience.routeLost' => 'Đầu ra âm thanh đã ngắt. Đã tạm dừng phát.',
 			'musicExperience.autoDriving' => 'Mở giao diện lái xe khi kết nối với ô tô',
 			'musicExperience.routeHint' => 'Hệ thống ô tô quyết định ứng dụng có thể tự hiển thị hay không.',
+			'musicTools.serverHistory' => 'Lịch sử phát trên máy chủ',
 			'musicTools.nfcWrite' => 'Ghi thẻ NFC',
 			'musicTools.nfcRead' => 'Quét thẻ NFC',
 			'musicTools.nfcPrompt' => 'Đưa thẻ NFC có thể ghi lại gần điện thoại.',

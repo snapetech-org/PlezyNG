@@ -4387,6 +4387,7 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 	final TranslationsAr _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'سجل التشغيل على الخادم';
 	@override String get nfcWrite => 'كتابة علامة NFC';
 	@override String get nfcRead => 'مسح علامة NFC';
 	@override String get nfcPrompt => 'قرّب علامة NFC قابلة للكتابة من هاتفك.';
@@ -9557,6 +9558,7 @@ extension on TranslationsAr {
 			'musicExperience.routeLost' => 'تم فصل مخرج الصوت. تم إيقاف التشغيل مؤقتًا.',
 			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
 			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
+			'musicTools.serverHistory' => 'سجل التشغيل على الخادم',
 			'musicTools.nfcWrite' => 'كتابة علامة NFC',
 			'musicTools.nfcRead' => 'مسح علامة NFC',
 			'musicTools.nfcPrompt' => 'قرّب علامة NFC قابلة للكتابة من هاتفك.',

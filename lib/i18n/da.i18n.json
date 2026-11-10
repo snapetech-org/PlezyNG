@@ -5520,6 +5520,7 @@
     "routeHint": "Bilens system bestemmer, om appen kan vises automatisk."
   },
   "musicTools": {
+    "serverHistory": "Afspilningshistorik på serveren",
     "nfcWrite": "Skriv NFC-mærke",
     "nfcRead": "Scan NFC-tag",
     "nfcPrompt": "Hold et skrivbart NFC-mærke tæt på din telefon.",

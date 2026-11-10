@@ -4290,6 +4290,7 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 	final TranslationsJa _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'サーバーの再生履歴';
 	@override String get nfcWrite => 'NFCタグに書き込む';
 	@override String get nfcRead => 'NFCタグをスキャン';
 	@override String get nfcPrompt => '書き込み可能なNFCタグをスマートフォンに近づけてください。';
@@ -9452,6 +9453,7 @@ extension on TranslationsJa {
 			'musicExperience.routeLost' => '音声出力が切断されました。再生を一時停止しました。',
 			'musicExperience.autoDriving' => '車に接続したら運転用画面を開く',
 			'musicExperience.routeHint' => 'アプリを自動表示できるかどうかは車のシステムによって決まります。',
+			'musicTools.serverHistory' => 'サーバーの再生履歴',
 			'musicTools.nfcWrite' => 'NFCタグに書き込む',
 			'musicTools.nfcRead' => 'NFCタグをスキャン',
 			'musicTools.nfcPrompt' => '書き込み可能なNFCタグをスマートフォンに近づけてください。',

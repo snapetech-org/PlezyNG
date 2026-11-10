@@ -4290,6 +4290,7 @@ class Translations$musicTools$zh extends Translations$musicTools$en {
 	final TranslationsZh _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => '服务器播放历史';
 	@override String get nfcWrite => '写入 NFC 标签';
 	@override String get nfcRead => '扫描 NFC 标签';
 	@override String get nfcPrompt => '请将可写入的 NFC 标签靠近手机。';
@@ -9452,6 +9453,7 @@ extension on TranslationsZh {
 			'musicExperience.routeLost' => '音频输出已断开。播放已暂停。',
 			'musicExperience.autoDriving' => '连接汽车时打开驾驶界面',
 			'musicExperience.routeHint' => '是否允许自动显示应用由汽车系统决定。',
+			'musicTools.serverHistory' => '服务器播放历史',
 			'musicTools.nfcWrite' => '写入 NFC 标签',
 			'musicTools.nfcRead' => '扫描 NFC 标签',
 			'musicTools.nfcPrompt' => '请将可写入的 NFC 标签靠近手机。',

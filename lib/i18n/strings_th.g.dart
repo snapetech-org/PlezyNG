@@ -4272,6 +4272,7 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 	final TranslationsTh _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'ประวัติการเล่นบนเซิร์ฟเวอร์';
 	@override String get nfcWrite => 'เขียนแท็ก NFC';
 	@override String get nfcRead => 'สแกนแท็ก NFC';
 	@override String get nfcPrompt => 'นำแท็ก NFC ที่เขียนได้มาไว้ใกล้โทรศัพท์';
@@ -9432,6 +9433,7 @@ extension on TranslationsTh {
 			'musicExperience.routeLost' => 'เอาต์พุตเสียงถูกตัดการเชื่อมต่อ หยุดเล่นชั่วคราวแล้ว',
 			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
 			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
+			'musicTools.serverHistory' => 'ประวัติการเล่นบนเซิร์ฟเวอร์',
 			'musicTools.nfcWrite' => 'เขียนแท็ก NFC',
 			'musicTools.nfcRead' => 'สแกนแท็ก NFC',
 			'musicTools.nfcPrompt' => 'นำแท็ก NFC ที่เขียนได้มาไว้ใกล้โทรศัพท์',

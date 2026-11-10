@@ -4295,6 +4295,7 @@ class _Translations$musicTools$nb extends Translations$musicTools$en {
 	final TranslationsNb _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Avspillingshistorikk på serveren';
 	@override String get nfcWrite => 'Skriv NFC-brikke';
 	@override String get nfcRead => 'Skann NFC-brikke';
 	@override String get nfcPrompt => 'Hold en skrivbar NFC-brikke nær telefonen.';
@@ -9457,6 +9458,7 @@ extension on TranslationsNb {
 			'musicExperience.routeLost' => 'Lydutgangen ble koblet fra. Avspillingen er pauset.',
 			'musicExperience.autoDriving' => 'Åpne kjørevisning ved tilkobling til en bil',
 			'musicExperience.routeHint' => 'Bilens system bestemmer om appen kan vises automatisk.',
+			'musicTools.serverHistory' => 'Avspillingshistorikk på serveren',
 			'musicTools.nfcWrite' => 'Skriv NFC-brikke',
 			'musicTools.nfcRead' => 'Skann NFC-brikke',
 			'musicTools.nfcPrompt' => 'Hold en skrivbar NFC-brikke nær telefonen.',

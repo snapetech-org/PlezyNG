@@ -4272,6 +4272,7 @@ class _Translations$musicTools$ms extends Translations$musicTools$en {
 	final TranslationsMs _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Sejarah main balik pelayan';
 	@override String get nfcWrite => 'Tulis tag NFC';
 	@override String get nfcRead => 'Imbas tag NFC';
 	@override String get nfcPrompt => 'Dekatkan tag NFC yang boleh ditulis pada telefon anda.';
@@ -9432,6 +9433,7 @@ extension on TranslationsMs {
 			'musicExperience.routeLost' => 'Output audio terputus. Main balik dijeda.',
 			'musicExperience.autoDriving' => 'Buka paparan pemanduan apabila disambungkan ke kereta',
 			'musicExperience.routeHint' => 'Sistem kereta menentukan sama ada aplikasi boleh muncul secara automatik.',
+			'musicTools.serverHistory' => 'Sejarah main balik pelayan',
 			'musicTools.nfcWrite' => 'Tulis tag NFC',
 			'musicTools.nfcRead' => 'Imbas tag NFC',
 			'musicTools.nfcPrompt' => 'Dekatkan tag NFC yang boleh ditulis pada telefon anda.',

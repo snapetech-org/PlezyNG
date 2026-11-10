@@ -5598,6 +5598,7 @@
     "routeHint": "The car system controls whether the app can appear automatically."
   },
   "musicTools": {
+    "serverHistory": "Server playback history",
     "nfcWrite": "Write NFC tag",
     "nfcRead": "Scan NFC tag",
     "nfcPrompt": "Hold a writable NFC tag near your phone.",

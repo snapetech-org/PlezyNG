@@ -14678,6 +14678,9 @@ class Translations$musicTools$en {
 
 	// Translations
 
+	/// en: 'Server playback history'
+	String get serverHistory => 'Server playback history';
+
 	/// en: 'Write NFC tag'
 	String get nfcWrite => 'Write NFC tag';
 
@@ -22639,6 +22642,7 @@ extension on Translations {
 			'musicExperience.routeLost' => 'Audio output disconnected. Playback paused.',
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
+			'musicTools.serverHistory' => 'Server playback history',
 			'musicTools.nfcWrite' => 'Write NFC tag',
 			'musicTools.nfcRead' => 'Scan NFC tag',
 			'musicTools.nfcPrompt' => 'Hold a writable NFC tag near your phone.',

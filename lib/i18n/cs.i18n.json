@@ -5568,6 +5568,7 @@
     "routeHint": "Systém auta určuje, zda se aplikace může zobrazit automaticky."
   },
   "musicTools": {
+    "serverHistory": "Historie přehrávání na serveru",
     "nfcWrite": "Zapsat NFC štítek",
     "nfcRead": "Naskenovat značku NFC",
     "nfcPrompt": "Přiložte zapisovatelný NFC štítek k telefonu.",

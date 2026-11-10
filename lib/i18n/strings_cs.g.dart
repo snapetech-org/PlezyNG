@@ -4337,6 +4337,7 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 	final TranslationsCs _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Historie přehrávání na serveru';
 	@override String get nfcWrite => 'Zapsat NFC štítek';
 	@override String get nfcRead => 'Naskenovat značku NFC';
 	@override String get nfcPrompt => 'Přiložte zapisovatelný NFC štítek k telefonu.';
@@ -9501,6 +9502,7 @@ extension on TranslationsCs {
 			'musicExperience.routeLost' => 'Zvukový výstup odpojen. Přehrávání pozastaveno.',
 			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
 			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
+			'musicTools.serverHistory' => 'Historie přehrávání na serveru',
 			'musicTools.nfcWrite' => 'Zapsat NFC štítek',
 			'musicTools.nfcRead' => 'Naskenovat značku NFC',
 			'musicTools.nfcPrompt' => 'Přiložte zapisovatelný NFC štítek k telefonu.',

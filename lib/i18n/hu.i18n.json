@@ -5520,6 +5520,7 @@
     "routeHint": "Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e."
   },
   "musicTools": {
+    "serverHistory": "Szerver lejátszási előzményei",
     "nfcWrite": "NFC-címke írása",
     "nfcRead": "NFC-címke beolvasása",
     "nfcPrompt": "Tartson egy írható NFC-címkét a telefon közelébe.",

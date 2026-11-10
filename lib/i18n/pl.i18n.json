@@ -5574,6 +5574,7 @@
     "routeHint": "System samochodu decyduje, czy aplikacja może pojawić się automatycznie."
   },
   "musicTools": {
+    "serverHistory": "Historia odtwarzania na serwerze",
     "nfcWrite": "Zapisz tag NFC",
     "nfcRead": "Skanuj tag NFC",
     "nfcPrompt": "Przyłóż zapisywalny tag NFC do telefonu.",

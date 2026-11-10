@@ -4295,6 +4295,7 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 	final TranslationsUz _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Serverdagi ijro tarixi';
 	@override String get nfcWrite => 'NFC tegiga yozish';
 	@override String get nfcRead => 'NFC tegini skanerlash';
 	@override String get nfcPrompt => 'Yoziladigan NFC tegini telefoningizga yaqin tuting.';
@@ -9457,6 +9458,7 @@ extension on TranslationsUz {
 			'musicExperience.routeLost' => 'Audio chiqishi uzildi. Ijro to‘xtatildi.',
 			'musicExperience.autoDriving' => 'Avtomobilga ulanganda haydash ko‘rinishini ochish',
 			'musicExperience.routeHint' => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.',
+			'musicTools.serverHistory' => 'Serverdagi ijro tarixi',
 			'musicTools.nfcWrite' => 'NFC tegiga yozish',
 			'musicTools.nfcRead' => 'NFC tegini skanerlash',
 			'musicTools.nfcPrompt' => 'Yoziladigan NFC tegini telefoningizga yaqin tuting.',

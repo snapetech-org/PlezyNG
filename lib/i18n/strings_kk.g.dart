@@ -4295,6 +4295,7 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 	final TranslationsKk _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Сервердегі ойнату тарихы';
 	@override String get nfcWrite => 'NFC тегіне жазу';
 	@override String get nfcRead => 'NFC тегін сканерлеу';
 	@override String get nfcPrompt => 'Жазылатын NFC тегін телефонға жақын ұстаңыз.';
@@ -9457,6 +9458,7 @@ extension on TranslationsKk {
 			'musicExperience.routeLost' => 'Аудио шығысы ажыратылды. Ойнату кідіртілді.',
 			'musicExperience.autoDriving' => 'Көлікке қосылғанда жүргізу көрінісін ашу',
 			'musicExperience.routeHint' => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.',
+			'musicTools.serverHistory' => 'Сервердегі ойнату тарихы',
 			'musicTools.nfcWrite' => 'NFC тегіне жазу',
 			'musicTools.nfcRead' => 'NFC тегін сканерлеу',
 			'musicTools.nfcPrompt' => 'Жазылатын NFC тегін телефонға жақын ұстаңыз.',

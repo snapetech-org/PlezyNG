@@ -4303,6 +4303,7 @@ class _Translations$musicTools$he extends Translations$musicTools$en {
 	final TranslationsHe _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'היסטוריית ניגון בשרת';
 	@override String get nfcWrite => 'כתיבה לתג NFC';
 	@override String get nfcRead => 'סריקת תג NFC';
 	@override String get nfcPrompt => 'יש להחזיק תג NFC הניתן לכתיבה ליד הטלפון.';
@@ -9465,6 +9466,7 @@ extension on TranslationsHe {
 			'musicExperience.routeLost' => 'פלט השמע נותק. הניגון הושהה.',
 			'musicExperience.autoDriving' => 'פתיחת תצוגת נהיגה בחיבור לרכב',
 			'musicExperience.routeHint' => 'מערכת הרכב קובעת אם האפליקציה יכולה להופיע אוטומטית.',
+			'musicTools.serverHistory' => 'היסטוריית ניגון בשרת',
 			'musicTools.nfcWrite' => 'כתיבה לתג NFC',
 			'musicTools.nfcRead' => 'סריקת תג NFC',
 			'musicTools.nfcPrompt' => 'יש להחזיק תג NFC הניתן לכתיבה ליד הטלפון.',

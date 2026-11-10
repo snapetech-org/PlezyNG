@@ -5515,6 +5515,7 @@
     "routeHint": "アプリを自動表示できるかどうかは車のシステムによって決まります。"
   },
   "musicTools": {
+    "serverHistory": "サーバーの再生履歴",
     "nfcWrite": "NFCタグに書き込む",
     "nfcRead": "NFCタグをスキャン",
     "nfcPrompt": "書き込み可能なNFCタグをスマートフォンに近づけてください。",

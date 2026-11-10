@@ -5520,6 +5520,7 @@
     "routeHint": "Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler."
   },
   "musicTools": {
+    "serverHistory": "Sunucudaki oynatma geçmişi",
     "nfcWrite": "NFC etiketi yaz",
     "nfcRead": "NFC etiketini tara",
     "nfcPrompt": "Yazılabilir bir NFC etiketini telefonunuza yaklaştırın.",

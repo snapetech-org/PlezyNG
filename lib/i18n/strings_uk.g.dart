@@ -4337,6 +4337,7 @@ class _Translations$musicTools$uk extends Translations$musicTools$en {
 	final TranslationsUk _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'Історія відтворення на сервері';
 	@override String get nfcWrite => 'Записати NFC-мітку';
 	@override String get nfcRead => 'Сканувати NFC-мітку';
 	@override String get nfcPrompt => 'Піднесіть доступну для запису NFC-мітку до телефона.';
@@ -9501,6 +9502,7 @@ extension on TranslationsUk {
 			'musicExperience.routeLost' => 'Аудіовихід від’єднано. Відтворення призупинено.',
 			'musicExperience.autoDriving' => 'Відкривати режим водіння при підключенні до авто',
 			'musicExperience.routeHint' => 'Система автомобіля визначає, чи може застосунок з’являтися автоматично.',
+			'musicTools.serverHistory' => 'Історія відтворення на сервері',
 			'musicTools.nfcWrite' => 'Записати NFC-мітку',
 			'musicTools.nfcRead' => 'Сканувати NFC-мітку',
 			'musicTools.nfcPrompt' => 'Піднесіть доступну для запису NFC-мітку до телефона.',

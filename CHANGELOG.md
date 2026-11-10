@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Browse paged Plex server playback history from Recently Played for music libraries owned by the active Plex account. Keep provider plays separate from local listening charts and paired imports.
+
 - Add bounded Plex music-history requests that validate each event against the verified server owner and requested library.
 
 - Use the app's rounded transport and speaker icons in listening history and synchronized groups.

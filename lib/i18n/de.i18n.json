@@ -5520,6 +5520,7 @@
     "routeHint": "Das Fahrzeugsystem entscheidet, ob die App automatisch angezeigt werden kann."
   },
   "musicTools": {
+    "serverHistory": "Wiedergabeverlauf des Servers",
     "nfcWrite": "NFC-Tag beschreiben",
     "nfcRead": "NFC-Tag scannen",
     "nfcPrompt": "Halte einen beschreibbaren NFC-Tag an dein Telefon.",

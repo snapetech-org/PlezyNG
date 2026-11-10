@@ -4295,6 +4295,7 @@ class _Translations$musicTools$fa extends Translations$musicTools$en {
 	final TranslationsFa _root; // ignore: unused_field
 
 	// Translations
+	@override String get serverHistory => 'سابقهٔ پخش سرور';
 	@override String get nfcWrite => 'نوشتن برچسب NFC';
 	@override String get nfcRead => 'اسکن برچسب NFC';
 	@override String get nfcPrompt => 'یک برچسب NFC قابل نوشتن را نزدیک تلفن نگه دارید.';
@@ -9457,6 +9458,7 @@ extension on TranslationsFa {
 			'musicExperience.routeLost' => 'خروجی صدا قطع شد. پخش مکث شد.',
 			'musicExperience.autoDriving' => 'باز کردن نمای رانندگی هنگام اتصال به خودرو',
 			'musicExperience.routeHint' => 'سیستم خودرو تعیین می‌کند که آیا برنامه می‌تواند خودکار نمایش داده شود.',
+			'musicTools.serverHistory' => 'سابقهٔ پخش سرور',
 			'musicTools.nfcWrite' => 'نوشتن برچسب NFC',
 			'musicTools.nfcRead' => 'اسکن برچسب NFC',
 			'musicTools.nfcPrompt' => 'یک برچسب NFC قابل نوشتن را نزدیک تلفن نگه دارید.',

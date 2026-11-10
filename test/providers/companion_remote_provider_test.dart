@@ -952,6 +952,42 @@ void main() {
       expect(provider.debugCryptoConnectionIds, [jellyfin.id, account.id]);
     });
 
+    test('a direct Plex profile can pair using its server identity without a Plex account', () async {
+      final stack = await ProfileStack.create();
+      addTearDown(stack.dispose);
+      final profile = _localProfile('direct-plex-profile');
+      final connection = PlexDirectConnection(
+        id: 'direct-plex',
+        baseUrl: 'https://plex.example.test',
+        serverName: 'Plex',
+        serverMachineId: 'plex-machine',
+        clientIdentifier: 'direct-client',
+        createdAt: DateTime(2026),
+      );
+      await stack.connections.upsert(connection);
+      await stack.profiles.upsert(profile);
+      await stack.profileConnections.upsert(
+        ProfileConnection(profileId: profile.id, connectionId: connection.id, userIdentifier: ''),
+        makeDefault: true,
+      );
+      await stack.storage.setActiveProfileId(profile.id);
+      await stack.active.initialize();
+      final provider = CompanionRemoteProvider();
+      addTearDown(provider.dispose);
+
+      expect(
+        await provider.ensureCryptoReady(
+          null,
+          connections: stack.connections,
+          activeProfile: stack.active,
+          profileConnections: stack.profileConnections,
+        ),
+        isTrue,
+      );
+      expect(provider.debugCryptoConnectionId, connection.id);
+      expect(provider.debugCryptoUserUuid, 'plex-direct');
+    });
+
     test('ensureCryptoReady does not fall back to an account without an active profile', () async {
       final stack = await ProfileStack.create();
       addTearDown(stack.dispose);

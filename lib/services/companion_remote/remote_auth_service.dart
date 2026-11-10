@@ -16,8 +16,8 @@ import 'remote_pairing_store.dart';
 /// must never authenticate remote commands without a random pairing code.
 ///
 /// Plex uses the Plex Home metadata available to signed-in devices. The
-/// MediaBrowser backends (Jellyfin and Emby) use the stable server/user
-/// identity available after sign-in for discovery. Authentication additionally
+/// MediaBrowser backends (Jellyfin and Emby) use a stable server/user identity.
+/// Direct Plex uses its server identity. Authentication additionally
 /// requires the random capability displayed by the host.
 class RemoteAuthService {
   RemoteAuthService._();
@@ -135,6 +135,18 @@ class RemoteAuthService {
 
     appLogger.d('RemoteAuth: Derived MediaBrowser secret');
     return _cachedSecret!;
+  }
+
+  /// Public discovery identity for a direct Plex server. Possession of this
+  /// value cannot authenticate a peer. Direct servers with local access can
+  /// be paired even when there is no Plex account or server token.
+  Future<List<int>> deriveDirectPlexIdentity(String machineId) async {
+    final key = await _hkdf.deriveKey(
+      secretKey: SecretKey(utf8.encode(machineId.toLowerCase())),
+      nonce: utf8.encode('plezy-remote-v1'),
+      info: utf8.encode('direct-plex-discovery'),
+    );
+    return key.extractBytes();
   }
 
   /// Derive per-session encryption key from homeSecret + both nonces.

@@ -537,7 +537,7 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
         case JellyfinConnection():
           addContext(await _createMediaBrowserAuthContext(connection: connection));
         case PlexDirectConnection():
-          break;
+          addContext(await _createDirectPlexAuthContext(connection));
       }
     }
 
@@ -593,6 +593,23 @@ class CompanionRemoteProvider with ChangeNotifier, DisposableChangeNotifierMixin
       clientIdentifier: account.clientIdentifier.isNotEmpty ? account.clientIdentifier : account.id,
       userUuid: resolvedUserUuid,
       allowedUserUuids: allowedUserUuids,
+    );
+  }
+
+  Future<RemoteAuthContext?> _createDirectPlexAuthContext(PlexDirectConnection connection) async {
+    final server = connection.serverMachineId.trim();
+    if (server.isEmpty) return null;
+    final auth = RemoteAuthService.instance;
+    final identity = await auth.deriveDirectPlexIdentity(server);
+    return RemoteAuthContext(
+      id: auth.computeAuthContextId(identity),
+      backend: connection.kind.id,
+      connectionId: connection.id,
+      homeSecret: identity,
+      discoveryKey: await auth.deriveDiscoveryKey(identity),
+      clientIdentifier: connection.clientIdentifier.isNotEmpty ? connection.clientIdentifier : connection.id,
+      userUuid: 'plex-direct',
+      allowedUserUuids: const ['plex-direct'],
     );
   }
 

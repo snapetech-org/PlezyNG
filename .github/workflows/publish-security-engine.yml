@@ -54,5 +54,5 @@ jobs:
           gh release create "$tag" \
             build/security-engine/flutter-security-engine-x64/* \
             build/security-engine/flutter-security-engine-arm64/* \
-            --target "$RUN_HEAD" --title "Patched Windows Flutter 3.47.8 engine" \
-            --notes "Pinned Flutter 3.47.8/Dart 3.13.7 with DComp and resize patches. Verify SHA-256 sidecars and embedded provenance."
+            --target "$RUN_HEAD" --latest=false --title "Pleazyng Windows Flutter 3.47.8 engine components" \
+            --notes "Build components for Pleazyng's Windows Flutter cache, not app installers. Pinned Flutter 3.47.8/Dart 3.13.7 with DComp and resize patches. Verify SHA-256 sidecars and embedded provenance."

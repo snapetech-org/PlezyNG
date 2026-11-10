@@ -4296,6 +4296,7 @@ class _Translations$musicTools$sv extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'Skriv NFC-tagg';
+	@override String get nfcRead => 'Skanna NFC-tagg';
 	@override String get nfcPrompt => 'Håll en skrivbar NFC-tagg nära telefonen.';
 	@override String get storageBudget => 'Uppskattad nedladdningsgräns (MiB; 0 = ∞)';
 	@override String get guestDj => 'Gäst-DJ';
@@ -9457,6 +9458,7 @@ extension on TranslationsSv {
 			'musicExperience.autoDriving' => 'Öppna körvyn vid anslutning till en bil',
 			'musicExperience.routeHint' => 'Bilens system avgör om appen kan visas automatiskt.',
 			'musicTools.nfcWrite' => 'Skriv NFC-tagg',
+			'musicTools.nfcRead' => 'Skanna NFC-tagg',
 			'musicTools.nfcPrompt' => 'Håll en skrivbar NFC-tagg nära telefonen.',
 			'musicTools.storageBudget' => 'Uppskattad nedladdningsgräns (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Gäst-DJ',

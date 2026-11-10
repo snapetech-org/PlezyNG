@@ -5521,6 +5521,7 @@
   },
   "musicTools": {
     "nfcWrite": "NFC ট্যাগে লিখুন",
+    "nfcRead": "NFC ট্যাগ স্ক্যান করুন",
     "nfcPrompt": "লেখার উপযোগী NFC ট্যাগটি ফোনের কাছে ধরুন।",
     "storageBudget": "আনুমানিক ডাউনলোডের সীমা (MiB; 0 = ∞)",
     "guestDj": "অতিথি ডিজে",

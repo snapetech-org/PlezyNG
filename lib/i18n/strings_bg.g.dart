@@ -4296,6 +4296,7 @@ class _Translations$musicTools$bg extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'Запис на NFC етикет';
+	@override String get nfcRead => 'Сканиране на NFC етикет';
 	@override String get nfcPrompt => 'Дръжте NFC етикет с възможност за запис близо до телефона.';
 	@override String get storageBudget => 'Приблизителен бюджет за изтегляне (MiB; 0 = ∞)';
 	@override String get guestDj => 'Гостуващ диджей';
@@ -9457,6 +9458,7 @@ extension on TranslationsBg {
 			'musicExperience.autoDriving' => 'Отваряне на изгледа за шофиране при свързване с кола',
 			'musicExperience.routeHint' => 'Системата на колата определя дали приложението може да се показва автоматично.',
 			'musicTools.nfcWrite' => 'Запис на NFC етикет',
+			'musicTools.nfcRead' => 'Сканиране на NFC етикет',
 			'musicTools.nfcPrompt' => 'Дръжте NFC етикет с възможност за запис близо до телефона.',
 			'musicTools.storageBudget' => 'Приблизителен бюджет за изтегляне (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Гостуващ диджей',

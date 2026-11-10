@@ -5521,6 +5521,7 @@
   },
   "musicTools": {
     "nfcWrite": "نوشتن برچسب NFC",
+    "nfcRead": "اسکن برچسب NFC",
     "nfcPrompt": "یک برچسب NFC قابل نوشتن را نزدیک تلفن نگه دارید.",
     "storageBudget": "سقف تخمینی دانلود (MiB; 0 = ∞)",
     "guestDj": "دی‌جی مهمان",

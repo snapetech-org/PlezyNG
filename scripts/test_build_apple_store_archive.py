@@ -7,7 +7,9 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_apple_store_archive import BUNDLE, GROUP, configure_project, validate_profile
+from build_apple_store_archive import (
+    BUNDLE, GROUP, MUSIC_NFC_ENTITLEMENT, MUSIC_NFC_FILE, configure_project, music_nfc_allowed, validate_profile,
+)
 
 TEAM = 'DM9A59DC85'
 CERT = b'fixture-distribution-certificate'
@@ -65,6 +67,34 @@ class AppleStoreSigningTests(unittest.TestCase):
         self.assertEqual(objects['otherrelease'], original['objects']['otherrelease'])
         with self.assertRaises(ValueError):
             configure_project(project, {'Absent': bindings['Runner']}, TEAM, 'fingerprint', Path('/tmp/keychain'))
+
+    def test_nfc_requires_explicit_tag_capability_without_replacing_other_entitlements(self):
+        profile = self.profile()
+        self.assertFalse(music_nfc_allowed(profile, 'ios'))
+        profile['Entitlements'][MUSIC_NFC_ENTITLEMENT] = ['NDEF']
+        self.assertFalse(music_nfc_allowed(profile, 'ios'))
+        profile['Entitlements'][MUSIC_NFC_ENTITLEMENT] = ['TAG']
+        self.assertTrue(music_nfc_allowed(profile, 'ios'))
+        self.assertFalse(music_nfc_allowed(profile, 'tvos'))
+        settings = {}
+        project = {'rootObject': 'root', 'objects': {
+            'root': {'targets': ['app']},
+            'app': {'isa': 'PBXNativeTarget', 'name': 'Runner', 'buildConfigurationList': 'configs'},
+            'configs': {'buildConfigurations': ['release']},
+            'release': {'name': 'Release', 'buildSettings': settings},
+        }}
+        binding = {'Runner': {'bundle': BUNDLE, 'uuid': UUID, 'music_nfc': False}}
+        configure_project(project, binding, TEAM, 'fixture', Path('/tmp/keychain'))
+        self.assertNotIn('CODE_SIGN_ENTITLEMENTS', settings)
+        self.assertNotIn('PLEAZYNG_MUSIC_NFC_ENABLED', settings)
+        binding['Runner']['music_nfc'] = True
+        configure_project(project, binding, TEAM, 'fixture', Path('/tmp/keychain'))
+        self.assertEqual(settings['CODE_SIGN_ENTITLEMENTS'], MUSIC_NFC_FILE)
+        self.assertEqual(settings.pop('PLEAZYNG_MUSIC_NFC_ENABLED'), 'YES')
+        settings['CODE_SIGN_ENTITLEMENTS'] = 'Runner/Custom.entitlements'
+        configure_project(project, binding, TEAM, 'fixture', Path('/tmp/keychain'))
+        self.assertEqual(settings['CODE_SIGN_ENTITLEMENTS'], 'Runner/Custom.entitlements')
+        self.assertNotIn('PLEAZYNG_MUSIC_NFC_ENABLED', settings)
 
 
 if __name__ == '__main__':

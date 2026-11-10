@@ -4296,6 +4296,7 @@ class _Translations$musicTools$uz extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC tegiga yozish';
+	@override String get nfcRead => 'NFC tegini skanerlash';
 	@override String get nfcPrompt => 'Yoziladigan NFC tegini telefoningizga yaqin tuting.';
 	@override String get storageBudget => 'Taxminiy yuklab olish chegarasi (MiB; 0 = ∞)';
 	@override String get guestDj => 'Mehmon DJ';
@@ -9457,6 +9458,7 @@ extension on TranslationsUz {
 			'musicExperience.autoDriving' => 'Avtomobilga ulanganda haydash ko‘rinishini ochish',
 			'musicExperience.routeHint' => 'Ilova avtomatik ko‘rsatilishini avtomobil tizimi belgilaydi.',
 			'musicTools.nfcWrite' => 'NFC tegiga yozish',
+			'musicTools.nfcRead' => 'NFC tegini skanerlash',
 			'musicTools.nfcPrompt' => 'Yoziladigan NFC tegini telefoningizga yaqin tuting.',
 			'musicTools.storageBudget' => 'Taxminiy yuklab olish chegarasi (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Mehmon DJ',

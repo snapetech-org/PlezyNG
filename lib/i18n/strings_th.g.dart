@@ -4273,6 +4273,7 @@ class _Translations$musicTools$th extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'เขียนแท็ก NFC';
+	@override String get nfcRead => 'สแกนแท็ก NFC';
 	@override String get nfcPrompt => 'นำแท็ก NFC ที่เขียนได้มาไว้ใกล้โทรศัพท์';
 	@override String get storageBudget => 'ขีดจำกัดการดาวน์โหลดโดยประมาณ (MiB; 0 = ∞)';
 	@override String get guestDj => 'ดีเจรับเชิญ';
@@ -9432,6 +9433,7 @@ extension on TranslationsTh {
 			'musicExperience.autoDriving' => 'เปิดมุมมองขับรถเมื่อเชื่อมต่อกับรถ',
 			'musicExperience.routeHint' => 'ระบบของรถเป็นผู้กำหนดว่าแอปจะแสดงโดยอัตโนมัติได้หรือไม่',
 			'musicTools.nfcWrite' => 'เขียนแท็ก NFC',
+			'musicTools.nfcRead' => 'สแกนแท็ก NFC',
 			'musicTools.nfcPrompt' => 'นำแท็ก NFC ที่เขียนได้มาไว้ใกล้โทรศัพท์',
 			'musicTools.storageBudget' => 'ขีดจำกัดการดาวน์โหลดโดยประมาณ (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'ดีเจรับเชิญ',

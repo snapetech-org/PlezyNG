@@ -5530,6 +5530,7 @@
   },
   "musicTools": {
     "nfcWrite": "Scrivi tag NFC",
+    "nfcRead": "Scansiona tag NFC",
     "nfcPrompt": "Avvicina un tag NFC scrivibile al telefono.",
     "storageBudget": "Limite stimato di download (MiB; 0 = ∞)",
     "guestDj": "DJ ospite",

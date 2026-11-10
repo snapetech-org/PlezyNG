@@ -5599,6 +5599,7 @@
   },
   "musicTools": {
     "nfcWrite": "Write NFC tag",
+    "nfcRead": "Scan NFC tag",
     "nfcPrompt": "Hold a writable NFC tag near your phone.",
     "storageBudget": "Estimated download budget (MiB; 0 = ∞)",
     "transferToDevice": "Transfer music to ${device}",

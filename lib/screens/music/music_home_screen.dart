@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -5,11 +7,14 @@ import 'package:provider/provider.dart';
 import '../../i18n/strings.g.dart';
 import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
+import '../../profiles/active_profile_provider.dart';
 import '../../providers/download_provider.dart';
+import '../../services/deep_links/deep_link_service.dart';
 import '../../services/music/music_discovery.dart';
 import '../../services/music/music_experience.dart';
 import '../../services/music/music_guest_dj.dart';
 import '../../services/music/music_library_store.dart';
+import '../../services/music/music_nfc_writer.dart';
 import '../../services/music/music_playback_service.dart';
 import '../../services/music/music_station.dart';
 import '../../widgets/app_icon.dart';
@@ -57,11 +62,36 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
   MusicChartGroup _group = MusicChartGroup.tracks;
   int _days = 30;
   bool _editing = false;
+  bool _readingNfc = false;
+  static const _nfc = MusicNfcWriter();
+  late final Future<bool> _canReadNfc = _nfc.readAvailable;
   int _loadRevision = 0;
   @override
   void initState() {
     super.initState();
     _loadFuture = _load();
+  }
+
+  Future<void> _readNfc() async {
+    final profiles = context.read<ActiveProfileProvider>();
+    final store = _experience.store;
+    bool current() => mounted && store.active && profiles.activeId == store.profileId;
+    if (_readingNfc || !current()) return;
+    setState(() => _readingNfc = true);
+    try {
+      final link = await _nfc.read(prompt: t.musicTools.nfcRead);
+      if (link != null && current()) DeepLinkService.instance.receive(link.toString());
+    } catch (_) {
+      if (mounted && current()) showErrorSnackBar(context, t.musicExperience.error);
+    } finally {
+      if (mounted) setState(() => _readingNfc = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_readingNfc) unawaited(_nfc.cancel());
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -358,6 +388,16 @@ class _MusicHomeScreenState extends State<MusicHomeScreen> {
                   spacing: 12,
                   runSpacing: 8,
                   children: [
+                    FutureBuilder<bool>(
+                      future: _canReadNfc,
+                      builder: (_, availability) => availability.data == true
+                          ? FilledButton.tonalIcon(
+                              icon: const AppIcon(Symbols.nfc_rounded),
+                              onPressed: _readingNfc ? null : _readNfc,
+                              label: Text(t.musicTools.nfcRead),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                     FilledButton.tonal(
                       onPressed: () => Navigator.of(
                         context,

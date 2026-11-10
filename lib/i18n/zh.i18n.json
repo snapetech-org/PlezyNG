@@ -5516,6 +5516,7 @@
   },
   "musicTools": {
     "nfcWrite": "写入 NFC 标签",
+    "nfcRead": "扫描 NFC 标签",
     "nfcPrompt": "请将可写入的 NFC 标签靠近手机。",
     "storageBudget": "预计下载容量上限 (MiB; 0 = ∞)",
     "guestDj": "客座 DJ",

@@ -5521,6 +5521,7 @@
   },
   "musicTools": {
     "nfcWrite": "NFC tegiga yozish",
+    "nfcRead": "NFC tegini skanerlash",
     "nfcPrompt": "Yoziladigan NFC tegini telefoningizga yaqin tuting.",
     "storageBudget": "Taxminiy yuklab olish chegarasi (MiB; 0 = ∞)",
     "guestDj": "Mehmon DJ",

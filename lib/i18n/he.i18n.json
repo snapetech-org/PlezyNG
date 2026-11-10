@@ -5531,6 +5531,7 @@
   },
   "musicTools": {
     "nfcWrite": "כתיבה לתג NFC",
+    "nfcRead": "סריקת תג NFC",
     "nfcPrompt": "יש להחזיק תג NFC הניתן לכתיבה ליד הטלפון.",
     "storageBudget": "תקציב הורדה משוער (MiB; 0 = ∞)",
     "guestDj": "תקליטן אורח",

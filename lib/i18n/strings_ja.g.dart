@@ -4291,6 +4291,7 @@ class _Translations$musicTools$ja extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFCタグに書き込む';
+	@override String get nfcRead => 'NFCタグをスキャン';
 	@override String get nfcPrompt => '書き込み可能なNFCタグをスマートフォンに近づけてください。';
 	@override String get storageBudget => 'ダウンロード容量の推定上限 (MiB; 0 = ∞)';
 	@override String get guestDj => 'ゲストDJ';
@@ -9452,6 +9453,7 @@ extension on TranslationsJa {
 			'musicExperience.autoDriving' => '車に接続したら運転用画面を開く',
 			'musicExperience.routeHint' => 'アプリを自動表示できるかどうかは車のシステムによって決まります。',
 			'musicTools.nfcWrite' => 'NFCタグに書き込む',
+			'musicTools.nfcRead' => 'NFCタグをスキャン',
 			'musicTools.nfcPrompt' => '書き込み可能なNFCタグをスマートフォンに近づけてください。',
 			'musicTools.storageBudget' => 'ダウンロード容量の推定上限 (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'ゲストDJ',

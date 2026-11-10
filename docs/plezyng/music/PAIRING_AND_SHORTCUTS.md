@@ -81,8 +81,24 @@ a write to fail; success is shown only after the native write completes.
 The NDEF record contains only a `pleazyng://play` link with server/item identity,
 never a server token, media URL or account credentials. Scanning resolves that
 identity against the currently authorized profile. A tag is not an access grant.
-Tags are not permanently locked by the writer. Physical tag qualification and
-other platforms' NFC writing remain separate work.
+Tags are not permanently locked by the writer. Physical tag qualification remains.
+
+## iPhone NFC
+
+On a compatible iPhone, use **Scan NFC tag** in Music home or the NFC-writing
+action in Music details. The foreground system scan accepts the same durable
+server/item links as Android without embedding tokens or profile selection.
+The app resolves scanned links through the active profile; a profile switch
+during scanning discards the result. There is no background custom-scheme tag
+launch on iOS.
+
+The iOS Store archive enables Core NFC when the verified Runner provisioning
+profile grants the `TAG` reader entitlement. For a local signed Xcode build,
+enable the Near Field Communication Tag Reading capability for Runner, include
+`Runner/MusicNFC.entitlements` (or merge its reader entitlement into the app's
+existing entitlements), and set `PLEAZYNG_MUSIC_NFC_ENABLED=YES` in the Runner
+configuration. Unsupported devices and unprovisioned builds hide these actions.
+Signed iPhone and physical NDEF tag qualification remain pending.
 
 ## Paired listening history
 

@@ -4296,6 +4296,7 @@ class _Translations$musicTools$hi extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC टैग लिखें';
+	@override String get nfcRead => 'NFC टैग स्कैन करें';
 	@override String get nfcPrompt => 'लिखने योग्य NFC टैग को अपने फ़ोन के पास रखें।';
 	@override String get storageBudget => 'अनुमानित डाउनलोड सीमा (MiB; 0 = ∞)';
 	@override String get guestDj => 'अतिथि डीजे';
@@ -9457,6 +9458,7 @@ extension on TranslationsHi {
 			'musicExperience.autoDriving' => 'कार से जुड़ने पर ड्राइविंग दृश्य खोलें',
 			'musicExperience.routeHint' => 'ऐप अपने आप दिख सकता है या नहीं, यह कार का सिस्टम तय करता है।',
 			'musicTools.nfcWrite' => 'NFC टैग लिखें',
+			'musicTools.nfcRead' => 'NFC टैग स्कैन करें',
 			'musicTools.nfcPrompt' => 'लिखने योग्य NFC टैग को अपने फ़ोन के पास रखें।',
 			'musicTools.storageBudget' => 'अनुमानित डाउनलोड सीमा (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'अतिथि डीजे',

@@ -48,11 +48,39 @@ void main() {
     expect(calls, isEmpty);
   });
 
+  test('foreground scanning accepts only bounded durable links with exactly one server and item', () async {
+    var scanned = 'pleazyng://play?server=server&id=track%20one';
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (call) async {
+      calls.add(call);
+      return call.method == 'readAvailable' ? true : scanned;
+    });
+    expect(await writer.readAvailable, isTrue);
+    final link = await writer.read(prompt: 'Scan NFC tag');
+    expect(link?.queryParameters, {'server': 'server', 'id': 'track one'});
+    expect(calls.last.arguments, {'prompt': 'Scan NFC tag'});
+    for (final invalid in [
+      'https://example.test/play?server=server&id=track',
+      'pleazyng://open',
+      'pleazyng://play?server=server&id=track&profile=another',
+      'pleazyng://play?server=server&id=track&token=secret',
+      'pleazyng://play?server=server&id=track&id=other',
+      'pleazyng://play?server=server&id=%20',
+      'pleazyng://play?server=server&id=${'x' * 2048}',
+    ]) {
+      scanned = invalid;
+      await expectLater(
+        writer.read(),
+        throwsA(isA<PlatformException>().having((error) => error.code, 'code', 'invalid_link')),
+      );
+    }
+  });
+
   test('cancellation is distinct from write failure and unavailable platforms', () async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (_) async {
       throw PlatformException(code: 'cancelled');
     });
     expect(await writer.write(musicTrack('one')), isFalse);
+    expect(await writer.read(), isNull);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (_) async {
       throw PlatformException(code: 'write_failed');
     });

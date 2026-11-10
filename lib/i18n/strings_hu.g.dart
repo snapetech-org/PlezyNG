@@ -4296,6 +4296,7 @@ class _Translations$musicTools$hu extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC-címke írása';
+	@override String get nfcRead => 'NFC-címke beolvasása';
 	@override String get nfcPrompt => 'Tartson egy írható NFC-címkét a telefon közelébe.';
 	@override String get storageBudget => 'Becsült letöltési keret (MiB; 0 = ∞)';
 	@override String get guestDj => 'Vendég DJ';
@@ -9457,6 +9458,7 @@ extension on TranslationsHu {
 			'musicExperience.autoDriving' => 'Vezetési nézet megnyitása autóhoz csatlakozáskor',
 			'musicExperience.routeHint' => 'Az autó rendszere dönti el, hogy az alkalmazás automatikusan megjelenhet-e.',
 			'musicTools.nfcWrite' => 'NFC-címke írása',
+			'musicTools.nfcRead' => 'NFC-címke beolvasása',
 			'musicTools.nfcPrompt' => 'Tartson egy írható NFC-címkét a telefon közelébe.',
 			'musicTools.storageBudget' => 'Becsült letöltési keret (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Vendég DJ',

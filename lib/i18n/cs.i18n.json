@@ -5569,6 +5569,7 @@
   },
   "musicTools": {
     "nfcWrite": "Zapsat NFC štítek",
+    "nfcRead": "Naskenovat značku NFC",
     "nfcPrompt": "Přiložte zapisovatelný NFC štítek k telefonu.",
     "storageBudget": "Odhadovaný limit stahování (MiB; 0 = ∞)",
     "guestDj": "Hostující DJ",

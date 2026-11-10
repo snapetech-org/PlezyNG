@@ -5603,6 +5603,7 @@
   },
   "musicTools": {
     "nfcWrite": "Escribir etiqueta NFC",
+    "nfcRead": "Escanear etiqueta NFC",
     "nfcPrompt": "Acerca una etiqueta NFC grabable al teléfono.",
     "storageBudget": "Presupuesto estimado de descarga (MiB; 0 = ∞)",
     "guestDj": "DJ invitado",

@@ -5521,6 +5521,7 @@
   },
   "musicTools": {
     "nfcWrite": "NFC-tag schrijven",
+    "nfcRead": "NFC-tag scannen",
     "nfcPrompt": "Houd een beschrijfbare NFC-tag bij je telefoon.",
     "storageBudget": "Geschat downloadbudget (MiB; 0 = ∞)",
     "guestDj": "Gast-dj",

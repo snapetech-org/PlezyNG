@@ -4273,6 +4273,7 @@ class _Translations$musicTools$id extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'Tulis tag NFC';
+	@override String get nfcRead => 'Pindai tag NFC';
 	@override String get nfcPrompt => 'Dekatkan tag NFC yang dapat ditulis ke ponsel Anda.';
 	@override String get storageBudget => 'Perkiraan batas unduhan (MiB; 0 = ∞)';
 	@override String get guestDj => 'DJ tamu';
@@ -9432,6 +9433,7 @@ extension on TranslationsId {
 			'musicExperience.autoDriving' => 'Buka tampilan berkendara saat terhubung ke mobil',
 			'musicExperience.routeHint' => 'Sistem mobil menentukan apakah aplikasi dapat muncul otomatis.',
 			'musicTools.nfcWrite' => 'Tulis tag NFC',
+			'musicTools.nfcRead' => 'Pindai tag NFC',
 			'musicTools.nfcPrompt' => 'Dekatkan tag NFC yang dapat ditulis ke ponsel Anda.',
 			'musicTools.storageBudget' => 'Perkiraan batas unduhan (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'DJ tamu',

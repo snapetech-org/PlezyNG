@@ -64,7 +64,7 @@ class _MusicMetadataScreenState extends State<MusicMetadataScreen> {
     );
     unawaited(navigator.push(route));
     try {
-      final written = await _nfc.write(widget.item);
+      final written = await _nfc.write(widget.item, prompt: t.musicTools.nfcPrompt);
       if (mounted && _sourceCurrent && written) showAppSnackBar(context, t.rateSheet.saved);
     } catch (_) {
       if (mounted && _sourceCurrent) showAppSnackBar(context, t.musicExperience.error);

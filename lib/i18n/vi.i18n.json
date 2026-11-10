@@ -5494,6 +5494,7 @@
   },
   "musicTools": {
     "nfcWrite": "Ghi thẻ NFC",
+    "nfcRead": "Quét thẻ NFC",
     "nfcPrompt": "Đưa thẻ NFC có thể ghi lại gần điện thoại.",
     "storageBudget": "Giới hạn tải xuống ước tính (MiB; 0 = ∞)",
     "guestDj": "DJ khách mời",

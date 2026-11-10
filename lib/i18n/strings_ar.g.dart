@@ -4388,6 +4388,7 @@ class _Translations$musicTools$ar extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'كتابة علامة NFC';
+	@override String get nfcRead => 'مسح علامة NFC';
 	@override String get nfcPrompt => 'قرّب علامة NFC قابلة للكتابة من هاتفك.';
 	@override String get storageBudget => 'ميزانية التنزيل التقديرية (MiB; 0 = ∞)';
 	@override String get guestDj => 'منسق موسيقى ضيف';
@@ -9557,6 +9558,7 @@ extension on TranslationsAr {
 			'musicExperience.autoDriving' => 'فتح واجهة القيادة عند الاتصال بسيارة',
 			'musicExperience.routeHint' => 'يحدد نظام السيارة ما إذا كان يمكن عرض التطبيق تلقائيًا.',
 			'musicTools.nfcWrite' => 'كتابة علامة NFC',
+			'musicTools.nfcRead' => 'مسح علامة NFC',
 			'musicTools.nfcPrompt' => 'قرّب علامة NFC قابلة للكتابة من هاتفك.',
 			'musicTools.storageBudget' => 'ميزانية التنزيل التقديرية (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'منسق موسيقى ضيف',

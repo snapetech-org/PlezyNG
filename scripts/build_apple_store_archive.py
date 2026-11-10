@@ -22,6 +22,13 @@ PROFILE_KEYS = {
     'tvos': [('Runner', BUNDLE, 'TVOS_PROVISIONING_PROFILE_BASE64'),
              ('TopShelfExtension', BUNDLE + '.TopShelfExtension', 'TVOS_TOPSHELF_PROVISIONING_PROFILE_BASE64')],
 }
+MUSIC_NFC_ENTITLEMENT = 'com.apple.developer.nfc.readersession.formats'
+MUSIC_NFC_FILE = 'Runner/MusicNFC.entitlements'
+
+
+def music_nfc_allowed(profile: dict, platform: str) -> bool:
+    formats = profile.get('Entitlements', {}).get(MUSIC_NFC_ENTITLEMENT)
+    return platform == 'ios' and isinstance(formats, list) and 'TAG' in formats
 
 
 def validate_profile(profile: dict, *, bundle: str, platform: str, team: str, certificate: bytes) -> str:
@@ -62,6 +69,9 @@ def configure_project(project: dict, bindings: dict[str, dict], team: str, finge
         settings.update(CODE_SIGN_STYLE='Manual', DEVELOPMENT_TEAM=team,
                         CODE_SIGN_IDENTITY=fingerprint, PROVISIONING_PROFILE_SPECIFIER=binding['uuid'],
                         PRODUCT_BUNDLE_IDENTIFIER=binding['bundle'])
+        if binding.get('music_nfc') and settings.get('CODE_SIGN_ENTITLEMENTS') in (None, '', MUSIC_NFC_FILE):
+            settings['CODE_SIGN_ENTITLEMENTS'] = MUSIC_NFC_FILE
+            settings['PLEAZYNG_MUSIC_NFC_ENABLED'] = 'YES'
         # Only the known job-owned path is added. Preserve other target flags.
         previous = settings.get('OTHER_CODE_SIGN_FLAGS', '$(inherited)')
         if isinstance(previous, list):
@@ -84,7 +94,7 @@ def archive(platform: str, archive_path: Path, export_path: Path, derived_data: 
                 profile_path.chmod(0o600)
                 profile = plistlib.loads(run(['security', 'cms', '-D', '-i', str(profile_path)]))
                 uuid = validate_profile(profile, bundle=bundle, platform=platform, team=team, certificate=certificate)
-                bindings[target] = {'bundle': bundle, 'uuid': uuid}
+                bindings[target] = {'bundle': bundle, 'uuid': uuid, 'music_nfc': music_nfc_allowed(profile, platform)}
                 installed = Path.home() / 'Library/MobileDevice/Provisioning Profiles' / f'{uuid}.mobileprovision'
                 installed.parent.mkdir(parents=True, exist_ok=True)
                 if installed.exists():

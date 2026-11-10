@@ -4296,6 +4296,7 @@ class _Translations$musicTools$tr extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC etiketi yaz';
+	@override String get nfcRead => 'NFC etiketini tara';
 	@override String get nfcPrompt => 'Yazılabilir bir NFC etiketini telefonunuza yaklaştırın.';
 	@override String get storageBudget => 'Tahmini indirme sınırı (MiB; 0 = ∞)';
 	@override String get guestDj => 'Konuk DJ';
@@ -9457,6 +9458,7 @@ extension on TranslationsTr {
 			'musicExperience.autoDriving' => 'Arabaya bağlanınca sürüş görünümünü aç',
 			'musicExperience.routeHint' => 'Uygulamanın otomatik gösterilip gösterilemeyeceğini araç sistemi belirler.',
 			'musicTools.nfcWrite' => 'NFC etiketi yaz',
+			'musicTools.nfcRead' => 'NFC etiketini tara',
 			'musicTools.nfcPrompt' => 'Yazılabilir bir NFC etiketini telefonunuza yaklaştırın.',
 			'musicTools.storageBudget' => 'Tahmini indirme sınırı (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Konuk DJ',

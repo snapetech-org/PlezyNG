@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Read and write credential-free music NFC links on supported iPhones from Music home and Music details. NFC-capable signed builds use the existing profile authorization path; builds without the reader capability keep NFC controls hidden.
+
 - Manage independently paired music receivers from Now Playing's Sync screen, with discovery, secure pairing, per-endpoint removal and profile-bound teardown without replacing the existing companion control peer.
 
 - Add independently negotiated music group endpoints with per-device clocks, departure and authorization guards, so one receiver can leave without pausing the leader or disconnecting other receivers.

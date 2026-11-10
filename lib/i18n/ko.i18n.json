@@ -5516,6 +5516,7 @@
   },
   "musicTools": {
     "nfcWrite": "NFC 태그 쓰기",
+    "nfcRead": "NFC 태그 스캔",
     "nfcPrompt": "쓰기 가능한 NFC 태그를 휴대전화 가까이에 대세요.",
     "storageBudget": "예상 다운로드 용량 한도 (MiB; 0 = ∞)",
     "guestDj": "게스트 DJ",

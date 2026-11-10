@@ -4291,6 +4291,7 @@ class _Translations$musicTools$ko extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC 태그 쓰기';
+	@override String get nfcRead => 'NFC 태그 스캔';
 	@override String get nfcPrompt => '쓰기 가능한 NFC 태그를 휴대전화 가까이에 대세요.';
 	@override String get storageBudget => '예상 다운로드 용량 한도 (MiB; 0 = ∞)';
 	@override String get guestDj => '게스트 DJ';
@@ -9452,6 +9453,7 @@ extension on TranslationsKo {
 			'musicExperience.autoDriving' => '차에 연결하면 운전 화면 열기',
 			'musicExperience.routeHint' => '앱 자동 표시 여부는 차량 시스템에서 결정합니다.',
 			'musicTools.nfcWrite' => 'NFC 태그 쓰기',
+			'musicTools.nfcRead' => 'NFC 태그 스캔',
 			'musicTools.nfcPrompt' => '쓰기 가능한 NFC 태그를 휴대전화 가까이에 대세요.',
 			'musicTools.storageBudget' => '예상 다운로드 용량 한도 (MiB; 0 = ∞)',
 			'musicTools.guestDj' => '게스트 DJ',

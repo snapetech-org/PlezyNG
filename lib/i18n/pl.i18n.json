@@ -5575,6 +5575,7 @@
   },
   "musicTools": {
     "nfcWrite": "Zapisz tag NFC",
+    "nfcRead": "Skanuj tag NFC",
     "nfcPrompt": "Przyłóż zapisywalny tag NFC do telefonu.",
     "storageBudget": "Szacowany limit pobierania (MiB; 0 = ∞)",
     "guestDj": "Gościnny DJ",

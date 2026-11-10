@@ -4292,6 +4292,7 @@ class _Translations$musicTools$zh_Hant extends Translations$musicTools$zh {
 
 	// Translations
 	@override String get nfcWrite => '寫入 NFC 標籤';
+	@override String get nfcRead => '掃描 NFC 標籤';
 	@override String get nfcPrompt => '請將可寫入的 NFC 標籤靠近手機。';
 	@override String get storageBudget => '預估下載容量上限 (MiB; 0 = ∞)';
 	@override String get guestDj => '客座 DJ';
@@ -9453,6 +9454,7 @@ extension on TranslationsZhHant {
 			'musicExperience.autoDriving' => '連接汽車時開啟駕駛畫面',
 			'musicExperience.routeHint' => '是否允許自動顯示應用程式由汽車系統決定。',
 			'musicTools.nfcWrite' => '寫入 NFC 標籤',
+			'musicTools.nfcRead' => '掃描 NFC 標籤',
 			'musicTools.nfcPrompt' => '請將可寫入的 NFC 標籤靠近手機。',
 			'musicTools.storageBudget' => '預估下載容量上限 (MiB; 0 = ∞)',
 			'musicTools.guestDj' => '客座 DJ',

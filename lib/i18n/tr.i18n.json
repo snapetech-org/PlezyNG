@@ -5521,6 +5521,7 @@
   },
   "musicTools": {
     "nfcWrite": "NFC etiketi yaz",
+    "nfcRead": "NFC etiketini tara",
     "nfcPrompt": "Yazılabilir bir NFC etiketini telefonunuza yaklaştırın.",
     "storageBudget": "Tahmini indirme sınırı (MiB; 0 = ∞)",
     "guestDj": "Konuk DJ",

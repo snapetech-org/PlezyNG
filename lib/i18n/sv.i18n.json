@@ -5521,6 +5521,7 @@
   },
   "musicTools": {
     "nfcWrite": "Skriv NFC-tagg",
+    "nfcRead": "Skanna NFC-tagg",
     "nfcPrompt": "Håll en skrivbar NFC-tagg nära telefonen.",
     "storageBudget": "Uppskattad nedladdningsgräns (MiB; 0 = ∞)",
     "guestDj": "Gäst-DJ",

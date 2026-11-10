@@ -4296,6 +4296,7 @@ class _Translations$musicTools$az extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC etiketinə yaz';
+	@override String get nfcRead => 'NFC etiketini skan et';
 	@override String get nfcPrompt => 'Yazıla bilən NFC etiketini telefonunuza yaxın tutun.';
 	@override String get storageBudget => 'Təxmini endirmə büdcəsi (MiB; 0 = ∞)';
 	@override String get guestDj => 'Qonaq DJ';
@@ -9457,6 +9458,7 @@ extension on TranslationsAz {
 			'musicExperience.autoDriving' => 'Avtomobilə qoşulduqda sürücülük görünüşünü aç',
 			'musicExperience.routeHint' => 'Tətbiqin avtomatik görünə biləcəyini avtomobil sistemi müəyyən edir.',
 			'musicTools.nfcWrite' => 'NFC etiketinə yaz',
+			'musicTools.nfcRead' => 'NFC etiketini skan et',
 			'musicTools.nfcPrompt' => 'Yazıla bilən NFC etiketini telefonunuza yaxın tutun.',
 			'musicTools.storageBudget' => 'Təxmini endirmə büdcəsi (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Qonaq DJ',

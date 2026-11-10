@@ -4296,6 +4296,7 @@ class _Translations$musicTools$bn extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC ট্যাগে লিখুন';
+	@override String get nfcRead => 'NFC ট্যাগ স্ক্যান করুন';
 	@override String get nfcPrompt => 'লেখার উপযোগী NFC ট্যাগটি ফোনের কাছে ধরুন।';
 	@override String get storageBudget => 'আনুমানিক ডাউনলোডের সীমা (MiB; 0 = ∞)';
 	@override String get guestDj => 'অতিথি ডিজে';
@@ -9457,6 +9458,7 @@ extension on TranslationsBn {
 			'musicExperience.autoDriving' => 'গাড়ির সঙ্গে যুক্ত হলে গাড়ি চালানোর দৃশ্য খুলুন',
 			'musicExperience.routeHint' => 'অ্যাপ স্বয়ংক্রিয়ভাবে দেখানো যাবে কি না গাড়ির সিস্টেম তা নির্ধারণ করে।',
 			'musicTools.nfcWrite' => 'NFC ট্যাগে লিখুন',
+			'musicTools.nfcRead' => 'NFC ট্যাগ স্ক্যান করুন',
 			'musicTools.nfcPrompt' => 'লেখার উপযোগী NFC ট্যাগটি ফোনের কাছে ধরুন।',
 			'musicTools.storageBudget' => 'আনুমানিক ডাউনলোডের সীমা (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'অতিথি ডিজে',

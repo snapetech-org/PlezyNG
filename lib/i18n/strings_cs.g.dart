@@ -4338,6 +4338,7 @@ class _Translations$musicTools$cs extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'Zapsat NFC štítek';
+	@override String get nfcRead => 'Naskenovat značku NFC';
 	@override String get nfcPrompt => 'Přiložte zapisovatelný NFC štítek k telefonu.';
 	@override String get storageBudget => 'Odhadovaný limit stahování (MiB; 0 = ∞)';
 	@override String get guestDj => 'Hostující DJ';
@@ -9501,6 +9502,7 @@ extension on TranslationsCs {
 			'musicExperience.autoDriving' => 'Otevřít režim řízení při připojení k autu',
 			'musicExperience.routeHint' => 'Systém auta určuje, zda se aplikace může zobrazit automaticky.',
 			'musicTools.nfcWrite' => 'Zapsat NFC štítek',
+			'musicTools.nfcRead' => 'Naskenovat značku NFC',
 			'musicTools.nfcPrompt' => 'Přiložte zapisovatelný NFC štítek k telefonu.',
 			'musicTools.storageBudget' => 'Odhadovaný limit stahování (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Hostující DJ',

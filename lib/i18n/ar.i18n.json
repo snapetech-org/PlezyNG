@@ -5629,6 +5629,7 @@
   },
   "musicTools": {
     "nfcWrite": "كتابة علامة NFC",
+    "nfcRead": "مسح علامة NFC",
     "nfcPrompt": "قرّب علامة NFC قابلة للكتابة من هاتفك.",
     "storageBudget": "ميزانية التنزيل التقديرية (MiB; 0 = ∞)",
     "guestDj": "منسق موسيقى ضيف",

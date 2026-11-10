@@ -5238,6 +5238,7 @@
   "musicExperience.autoDriving": "f28e0a5c3710aa0c",
   "musicExperience.routeHint": "aae7ee597d96590f",
   "musicTools.nfcWrite": "2b817b01dfea3452",
+  "musicTools.nfcRead": "1ab2c38840e738ce",
   "musicTools.nfcPrompt": "d1bd733e1bbee36b",
   "musicTools.storageBudget": "ada5929d0f0a66b8",
   "musicTools.transferToDevice": "4f12ff1653e5d49a",

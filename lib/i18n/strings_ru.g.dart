@@ -4342,6 +4342,7 @@ class _Translations$musicTools$ru extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'Записать NFC-метку';
+	@override String get nfcRead => 'Сканировать NFC-метку';
 	@override String get nfcPrompt => 'Поднесите доступную для записи NFC-метку к телефону.';
 	@override String get storageBudget => 'Расчётный лимит загрузки (MiB; 0 = ∞)';
 	@override String get guestDj => 'Приглашённый диджей';
@@ -9507,6 +9508,7 @@ extension on TranslationsRu {
 			'musicExperience.autoDriving' => 'Открывать режим вождения при подключении к машине',
 			'musicExperience.routeHint' => 'Система автомобиля определяет, может ли приложение появляться автоматически.',
 			'musicTools.nfcWrite' => 'Записать NFC-метку',
+			'musicTools.nfcRead' => 'Сканировать NFC-метку',
 			'musicTools.nfcPrompt' => 'Поднесите доступную для записи NFC-метку к телефону.',
 			'musicTools.storageBudget' => 'Расчётный лимит загрузки (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Приглашённый диджей',

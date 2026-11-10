@@ -110,6 +110,14 @@
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Pleazyng connects to your media servers and playback devices on your local network.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Read or write a music link on an NFC tag you choose.</string>
+	<key>PleazyngMusicNFCEnabled</key>
+	<string>$(PLEAZYNG_MUSIC_NFC_ENABLED)</string>
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array>
+		<string>D2760000850101</string>
+	</array>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_CC1AD845._googlecast._tcp</string>

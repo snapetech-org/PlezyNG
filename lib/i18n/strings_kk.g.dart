@@ -4296,6 +4296,7 @@ class _Translations$musicTools$kk extends Translations$musicTools$en {
 
 	// Translations
 	@override String get nfcWrite => 'NFC тегіне жазу';
+	@override String get nfcRead => 'NFC тегін сканерлеу';
 	@override String get nfcPrompt => 'Жазылатын NFC тегін телефонға жақын ұстаңыз.';
 	@override String get storageBudget => 'Жүктеп алудың болжалды шегі (MiB; 0 = ∞)';
 	@override String get guestDj => 'Қонақ диджей';
@@ -9457,6 +9458,7 @@ extension on TranslationsKk {
 			'musicExperience.autoDriving' => 'Көлікке қосылғанда жүргізу көрінісін ашу',
 			'musicExperience.routeHint' => 'Қолданбаның автоматты көрсетілуін көлік жүйесі анықтайды.',
 			'musicTools.nfcWrite' => 'NFC тегіне жазу',
+			'musicTools.nfcRead' => 'NFC тегін сканерлеу',
 			'musicTools.nfcPrompt' => 'Жазылатын NFC тегін телефонға жақын ұстаңыз.',
 			'musicTools.storageBudget' => 'Жүктеп алудың болжалды шегі (MiB; 0 = ∞)',
 			'musicTools.guestDj' => 'Қонақ диджей',

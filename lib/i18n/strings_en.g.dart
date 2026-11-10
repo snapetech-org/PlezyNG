@@ -14681,6 +14681,9 @@ class Translations$musicTools$en {
 	/// en: 'Write NFC tag'
 	String get nfcWrite => 'Write NFC tag';
 
+	/// en: 'Scan NFC tag'
+	String get nfcRead => 'Scan NFC tag';
+
 	/// en: 'Hold a writable NFC tag near your phone.'
 	String get nfcPrompt => 'Hold a writable NFC tag near your phone.';
 
@@ -22637,6 +22640,7 @@ extension on Translations {
 			'musicExperience.autoDriving' => 'Open driving view when connected to a car',
 			'musicExperience.routeHint' => 'The car system controls whether the app can appear automatically.',
 			'musicTools.nfcWrite' => 'Write NFC tag',
+			'musicTools.nfcRead' => 'Scan NFC tag',
 			'musicTools.nfcPrompt' => 'Hold a writable NFC tag near your phone.',
 			'musicTools.storageBudget' => 'Estimated download budget (MiB; 0 = ∞)',
 			'musicTools.transferToDevice' => ({required Object device}) => 'Transfer music to ${device}',

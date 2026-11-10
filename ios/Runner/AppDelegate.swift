@@ -67,6 +67,7 @@ enum DownloadBackupPolicy {
   }
 
   private let musicIntentHandler = MusicPlayIntentHandler()
+  private let musicNfcBridge = MusicNfcBridge()
 
   override func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
     intent is INPlayMediaIntent ? musicIntentHandler : super.application(application, handlerFor: intent)
@@ -121,6 +122,9 @@ enum DownloadBackupPolicy {
     GeneratedPluginRegistrant.register(with: registry)
     if let registrar = registry.registrar(forPlugin: "MusicCarBridge") {
       MusicCarBridge.shared.attach(registrar.messenger())
+    }
+    if let registrar = registry.registrar(forPlugin: "MusicNfcBridge") {
+      musicNfcBridge.attach(registrar.messenger())
     }
 
     if let registrar = registry.registrar(forPlugin: "DownloadStorageChannel") {

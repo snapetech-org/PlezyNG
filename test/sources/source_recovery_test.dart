@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +19,17 @@ import 'fixtures/memory_sources.dart';
 class _Controls extends FakeMediaControlsManager {
   @override
   Future<void> setBackgroundMode(bool enabled) async {}
+
+  @override
+  Future<void> updateFileMetadata({
+    required String title,
+    String? author,
+    String? album,
+    Duration? duration,
+    Uint8List? artwork,
+  }) async {
+    metadataTitles.add(title);
+  }
 }
 
 class _GatedPlayer extends FakePlayer {

@@ -22,7 +22,10 @@ An already published SHA does not rebuild.
    official aerynOS 2026.11 image. It installs the last-good public package, builds
    a new Stone with Boulder, and upgrades with Moss. It verifies installed ELF
    dependencies, ordinary app launch, fresh fixture sign-in, DV/fallback defaults,
-   visible H.264, pause, seek and fullscreen. Only authored fixture accounts are
+   visible H.264, pause, seek and fullscreen. Playing/paused OS background
+   return, route reopen and a named bookmark jump additionally require visible
+   authored frames, appropriate UI clock behavior and the authored 440 Hz audio.
+   Paused return must retain identical pixels and a fixed clock with no audio. Only authored fixture accounts are
    used; no personal media or credentials enter the guest.
 3. The channel controller checks the qualified handoff, publishes immutable
    prerelease assets, verifies GitHub's asset digests, then commits the recipe,

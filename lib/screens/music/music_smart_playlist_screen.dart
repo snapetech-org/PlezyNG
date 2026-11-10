@@ -86,12 +86,17 @@ class _MusicSmartPlaylistScreenState extends State<MusicSmartPlaylistScreen> {
       }
       if (metadata == null ||
           !metadata.smart ||
+          metadata.playlistType != 'audio' ||
           metadata.smartContent == null ||
           metadata.id != playlist.id ||
           metadata.serverId != playlist.serverId) {
         throw StateError('Smart playlist unavailable');
       }
-      final rules = MusicSmartPlaylistRules.fromContent(metadata.smartContent!);
+      final rules = MusicSmartPlaylistRules.fromContent(
+        metadata.smartContent!,
+        expectedServer: client.config.machineIdentifier ?? client.serverId.value,
+        audioPlaylist: true,
+      );
       final libraryKey = '${playlist.serverId}:${rules.libraryId}';
       if (!_libraries.any((library) => library.globalKey == libraryKey)) {
         throw StateError('Smart playlist library unavailable');
@@ -148,7 +153,7 @@ class _MusicSmartPlaylistScreenState extends State<MusicSmartPlaylistScreen> {
   }
 
   Future<void> _editFilters() => _run((client, rules, current) async {
-    final listing = await client.fetchLibraryFiltersWithValues(rules.libraryId, libraryKind: MediaKind.artist);
+    final listing = await client.fetchLibraryFiltersWithValues(rules.libraryId, libraryKind: rules.sourceKind);
     if (!mounted || !current()) return;
     List<LibraryFilter> selected = [];
     await Navigator.of(context).push<void>(
@@ -168,22 +173,7 @@ class _MusicSmartPlaylistScreenState extends State<MusicSmartPlaylistScreen> {
       ),
     );
     if (!current() || selected.isEmpty) return;
-    final added = MusicSmartPlaylistRules.fromFilters(
-      libraryId: rules.libraryId,
-      filters: selected,
-    ).parameters.where((entry) => entry.$1 != 'type').toList();
-    final existing = rules.parameters.where((entry) => !const {'type', 'sort', 'limit'}.contains(entry.$1)).toList();
-    final combined = MusicSmartPlaylistRules(
-      libraryId: rules.libraryId,
-      parameters: [
-        ...rules.parameters.where((entry) => const {'type', 'sort', 'limit'}.contains(entry.$1)),
-        if (existing.isNotEmpty) ...[('push', '1'), ...existing, ('pop', '1'), ('and', '1')],
-        ('push', '1'),
-        ...added,
-        ('pop', '1'),
-      ],
-    );
-    setState(() => _query.text = combined.query);
+    setState(() => _query.text = rules.appendFilters(selected).query);
   });
 
   Future<void> _save({bool copy = false}) => _run((client, rules, current) async {

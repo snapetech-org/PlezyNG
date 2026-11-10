@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Edit native Plex smart-playlist directory rules without losing repeated clauses, exact operators, relative dates, source types, grouping, sort or limits. Track, album and artist rules keep their server query semantics during preview and save.
+
 - Bind Cast ownership to both the receiver connection and media session, prepare loads paused before authorized playback, and time out stalled native acknowledgements. A failed local return after receiver revocation keeps the selected occurrence without advancing or autoplaying.
 
 - Add an iOS music widget with expiring Now Playing metadata and profile/queue-checked transport on iOS 17+. The widget never restores playback from stale data and is embedded in signed archives when its separate App Group provisioning profile is configured.

@@ -146,7 +146,7 @@ class MultiServerManager {
   /// Per-server owning [PlexAccountConnection]: its id and plex.tv token. The
   /// clientIdentifier above is device-wide, so the id is what tells two
   /// accounts' servers apart (see [PlexClient.plexAccountId]).
-  final Map<String, ({String id, String token})> _plexAccountByServer = {};
+  final Map<String, ({String id, String token, String? musicUserIdentifier})> _plexAccountByServer = {};
 
   String? _resolveClientIdentifier(ServerId serverId) => _clientIdByServer[serverId];
 
@@ -160,17 +160,19 @@ class MultiServerManager {
     required String clientIdentifier,
     required String accountId,
     required String accountToken,
+    String? musicUserIdentifier,
     PlexProfileScopeId? scope,
   }) {
     _clientIdByServer[serverId] = clientIdentifier;
-    _plexAccountByServer[serverId] = (id: accountId, token: accountToken);
+    _plexAccountByServer[serverId] = (id: accountId, token: accountToken, musicUserIdentifier: musicUserIdentifier);
     _plexServers[serverId] = server;
     if (scope != null) _plexScopeByServer[serverId] = scope;
     final client = _clients[serverId];
     if (client is PlexClient) {
       client
         ..plexAccountId = accountId
-        ..plexAccountToken = accountToken;
+        ..plexAccountToken = accountToken
+        ..plexMusicUserIdentifier = musicUserIdentifier;
     }
   }
 
@@ -576,7 +578,8 @@ class MultiServerManager {
     final account = _plexAccountByServer[serverId];
     client
       ..plexAccountId = account?.id
-      ..plexAccountToken = account?.token;
+      ..plexAccountToken = account?.token
+      ..plexMusicUserIdentifier = account?.musicUserIdentifier;
 
     // Save the initial endpoint (relay is refused — see _savePreferredEndpoint)
     await _savePreferredEndpoint(ServerId(serverId), storage, baseUrl, capturedServer: server);
@@ -757,6 +760,7 @@ class MultiServerManager {
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) async {
     final accountId = connection.id;
@@ -787,6 +791,7 @@ class MultiServerManager {
             clientIdentifier: connection.clientIdentifier,
             accountId: connection.id,
             accountToken: connection.accountToken,
+            musicUserIdentifier: musicUserIdentifier,
             scope: profileScopeId,
           );
           _refusedServers.remove(serverId);
@@ -818,6 +823,7 @@ class MultiServerManager {
         clientIdentifier: connection.clientIdentifier,
         accountId: connection.id,
         accountToken: connection.accountToken,
+        musicUserIdentifier: musicUserIdentifier,
         scope: profileScopeId,
       );
       try {

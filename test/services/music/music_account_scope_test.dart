@@ -36,4 +36,22 @@ void main() {
     expect(musicAccountScope(first), isNot(musicAccountScope(rotated)));
     expect(musicAccountScope(first), isNot(musicAccountScope(other)));
   });
+
+  test('verified Home user identity survives token rotation and isolates siblings', () {
+    final first = testPlexClient(token: 'first-token')
+      ..plexAccountId = 'account-a'
+      ..plexMusicUserIdentifier = 'home-user-a';
+    final rotated = testPlexClient(token: 'rotated-token')
+      ..plexAccountId = 'account-a'
+      ..plexMusicUserIdentifier = 'home-user-a';
+    final sibling = testPlexClient(token: 'sibling-token')
+      ..plexAccountId = 'account-a'
+      ..plexMusicUserIdentifier = 'home-user-b';
+    addTearDown(first.close);
+    addTearDown(rotated.close);
+    addTearDown(sibling.close);
+    expect(musicAccountScope(first), musicAccountScope(rotated));
+    expect(musicAccountScope(first), isNot(musicAccountScope(sibling)));
+    expect(musicAccountScope(first), isNot(contains('home-user-a')));
+  });
 }

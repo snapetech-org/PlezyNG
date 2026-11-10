@@ -493,6 +493,11 @@ class PlexClient
   @override
   String? plexAccountId;
 
+  /// Verified Plex Home user identifier supplied by the active profile
+  /// binding. Null for direct connections or when user identity is unknown.
+  /// Music writes use this stable value across server-token rotation.
+  String? plexMusicUserIdentifier;
+
   /// plex.tv token of the [plexAccountId] account, set alongside it.
   /// Plex's cloud Discover service ([fetchPersonDetails]) takes only plex.tv
   /// credentials: it rejects a Home or shared user's server [config] token.

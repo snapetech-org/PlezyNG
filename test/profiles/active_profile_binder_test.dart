@@ -791,6 +791,7 @@ void main() {
       expect(prepared.manager.lastConnection?.servers.single.accessToken, 'home-user-token');
       expect(prepared.manager.lastConnection?.servers.single.clientIdentifier, 'srv-1');
       expect(prepared.manager.lastProfileId, prepared.profileId);
+      expect(prepared.manager.lastMusicUserIdentifier, 'home-user-uuid');
     });
 
     test('binds from cache when plex.tv rejects the token, then flags re-auth from the reconcile', () async {
@@ -1613,16 +1614,19 @@ class _CapturingMultiServerManager extends MultiServerManager {
   int refreshCalls = 0;
   PlexAccountConnection? lastConnection;
   String? lastProfileId;
+  String? lastMusicUserIdentifier;
 
   @override
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) async {
     refreshCalls++;
     lastConnection = connection;
     lastProfileId = profileId;
+    lastMusicUserIdentifier = musicUserIdentifier;
     return connection.servers.map((server) => server.clientIdentifier).toSet();
   }
 }
@@ -1634,6 +1638,7 @@ class _AuthRejectingPlexManager extends MultiServerManager {
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) async {
     for (final server in connection.servers) {
@@ -1661,6 +1666,7 @@ class _SweptAuthRejectingPlexManager extends MultiServerManager {
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) async {
     for (final server in connection.servers) {
@@ -1678,6 +1684,7 @@ class _FailingPlexMultiServerManager extends MultiServerManager {
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) async {
     refreshCalls++;
@@ -1695,6 +1702,7 @@ class _RecordingPlexManager extends MultiServerManager {
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) async {
     calls++;
@@ -1715,6 +1723,7 @@ class _BlockingMixedMultiServerManager extends MultiServerManager {
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) async {
     if (!plexStarted.isCompleted) plexStarted.complete();
@@ -1774,11 +1783,13 @@ class _ControlledConnectManager extends MultiServerManager {
   Future<Set<String>> refreshTokensForProfile(
     PlexAccountConnection connection, {
     required String profileId,
+    String? musicUserIdentifier,
     Duration timeout = MediaServerTimeouts.perServerConnect,
   }) {
     return super.refreshTokensForProfile(
       connection.copyWith(servers: [for (final server in connection.servers) _GatedPlexServer(server, this)]),
       profileId: profileId,
+      musicUserIdentifier: musicUserIdentifier,
       timeout: timeout,
     );
   }

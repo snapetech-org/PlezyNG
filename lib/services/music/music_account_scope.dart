@@ -13,6 +13,10 @@ String musicAccountScope(MediaServerClient client) {
   final account = client.plexAccountId;
   final token = client.config.token;
   final owner = account == null || account.isEmpty ? 'direct' : 'plex:$account';
+  final user = client.plexMusicUserIdentifier;
+  if (account != null && account.isNotEmpty && user != null && user.isNotEmpty) {
+    return '$server|$owner:user:${sha256.convert(utf8.encode(user))}';
+  }
   // A Plex Home connection can bind several users under one account ID. The
   // active server credential distinguishes them without persisting the token.
   if (token == null) return '$server|$owner:anonymous';

@@ -958,7 +958,12 @@ class ActiveProfileBinder {
     }
     final stopwatch = Stopwatch()..start();
     final updatedConn = account.copyWith(servers: servers);
-    final boundIds = await serverManager.refreshTokensForProfile(updatedConn, profileId: profileId);
+    final profileConnection = await profileConnections.get(profileId, account.id);
+    final boundIds = await serverManager.refreshTokensForProfile(
+      updatedConn,
+      profileId: profileId,
+      musicUserIdentifier: profileConnection?.userIdentifier,
+    );
     appLogger.i(
       'ActiveProfileBinder: bound ${boundIds.length}/${servers.length} Plex servers for $profileLabel',
       error: {'elapsedMs': stopwatch.elapsedMilliseconds},
@@ -1197,7 +1202,13 @@ class ActiveProfileBinder {
     // offline. Newly-online expected servers are promoted into the visibility
     // filter by MultiServerProvider when the status emission this triggers
     // lands.
-    await serverManager.refreshTokensForProfile(account.copyWith(servers: fresh), profileId: profileId);
+    final profileConnection = await profileConnections.get(profileId, account.id);
+    if (!_isCurrentBind(profileId, generation)) return;
+    await serverManager.refreshTokensForProfile(
+      account.copyWith(servers: fresh),
+      profileId: profileId,
+      musicUserIdentifier: profileConnection?.userIdentifier,
+    );
   }
 
   Future<_ProfileBindResult> _bindMediaBrowser(

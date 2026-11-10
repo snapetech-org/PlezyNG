@@ -8,6 +8,9 @@ import 'package:http/testing.dart';
 import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/models/seerr/seerr_session.dart';
 import 'package:plezy/models/seerr/seerr_details.dart';
+import 'package:plezy/models/seerr/seerr_media.dart';
+import 'package:plezy/models/seerr/seerr_public_settings.dart';
+import 'package:plezy/models/seerr/seerr_request.dart';
 import 'package:plezy/models/seerr/seerr_request_intent.dart';
 import 'package:plezy/services/catalog/seerr_catalog_source.dart';
 import 'package:plezy/services/seerr/seerr_client.dart';
@@ -82,6 +85,79 @@ void main() {
     expect(
       librarySeerrTitleAction(SeerrCatalogSource(client), MediaKind.show, state)?.kind,
       SeerrTitleActionKind.request4k,
+    );
+  });
+
+  test('plain Seerr offers a library 4K request only while the quality is open and enabled', () {
+    final client = _client(MockClient((_) async => _answer([])), permissions: SeerrPermission.request4kMovie);
+    final source = SeerrCatalogSource(client);
+    const enabled = SeerrPublicSettings(movie4kEnabled: true);
+    const disabled = SeerrPublicSettings();
+    const open = SeerrDetails(mediaInfo: SeerrMediaInfo(statusCode: 5, status4kCode: 1));
+    SeerrLegacyLibraryOpportunity opportunity(SeerrDetails details, SeerrPublicSettings settings) =>
+        SeerrLegacyLibraryOpportunity.fromDetails(source, MediaKind.movie, details, settings);
+
+    expect(opportunity(open, enabled).request4k, isTrue);
+    expect(opportunity(const SeerrDetails(), enabled).request4k, isTrue);
+    expect(opportunity(open, disabled).request4k, isFalse);
+    expect(opportunity(const SeerrDetails(mediaInfo: SeerrMediaInfo(status4kCode: 5)), enabled).request4k, isFalse);
+    expect(opportunity(const SeerrDetails(mediaInfo: SeerrMediaInfo(status4kCode: 2)), enabled).request4k, isFalse);
+    expect(
+      opportunity(
+        const SeerrDetails(
+          mediaInfo: SeerrMediaInfo(requests: [SeerrRequest(id: 1, status: SeerrRequestStatus.approved, is4k: true)]),
+        ),
+        enabled,
+      ).request4k,
+      isFalse,
+    );
+  });
+
+  test('plain Seerr offers only aired, unclaimed missing library seasons', () {
+    final client = _client(MockClient((_) async => _answer([])));
+    final source = SeerrCatalogSource(client);
+    const seasons = [
+      SeerrSeason(seasonNumber: 0, episodeCount: 1, airDate: '2020-01-01'),
+      SeerrSeason(seasonNumber: 2, episodeCount: 8, airDate: '2026-10-01'),
+      SeerrSeason(seasonNumber: 3, episodeCount: 8, airDate: '2027-01-01'),
+    ];
+    SeerrLegacyLibraryOpportunity opportunity(SeerrMediaInfo? info) => SeerrLegacyLibraryOpportunity.fromDetails(
+      source,
+      MediaKind.show,
+      SeerrDetails(seasons: seasons, mediaInfo: info),
+      const SeerrPublicSettings(),
+      now: DateTime.utc(2026, 11, 9),
+    );
+
+    expect(opportunity(const SeerrMediaInfo(statusCode: 4)).missingSeasons, isTrue);
+    expect(opportunity(null).missingSeasons, isFalse);
+    expect(opportunity(const SeerrMediaInfo(statusCode: 5)).missingSeasons, isFalse);
+    expect(
+      opportunity(const SeerrMediaInfo(seasons: [SeerrSeasonInfo(seasonNumber: 2, statusCode: 5)])).missingSeasons,
+      isFalse,
+    );
+    expect(
+      opportunity(const SeerrMediaInfo(seasons: [SeerrSeasonInfo(seasonNumber: 2, statusCode: 6)])).missingSeasons,
+      isFalse,
+    );
+    expect(
+      opportunity(
+        const SeerrMediaInfo(
+          requests: [
+            SeerrRequest(id: 1, status: SeerrRequestStatus.pending, seasons: [SeerrRequestSeason(seasonNumber: 2)]),
+          ],
+        ),
+      ).missingSeasons,
+      isFalse,
+    );
+    expect(
+      librarySeerrTitleActions(
+        source,
+        MediaKind.show,
+        null,
+        legacy: opportunity(const SeerrMediaInfo(statusCode: 4)),
+      ).single.kind,
+      SeerrTitleActionKind.requestSeasons,
     );
   });
 

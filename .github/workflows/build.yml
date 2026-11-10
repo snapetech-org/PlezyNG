@@ -2798,30 +2798,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          python3 scripts/prepare_native_downloads.py --appimage-runtime "$RUNNER_TEMP/appimage-runtime-x86_64"
-          app_dir="$RUNNER_TEMP/pleazyng.AppDir"
-          appimagetool="$RUNNER_TEMP/appimagetool-x86_64.AppImage"
-          rm -rf "$app_dir"
-          install -d "$app_dir/opt/pleazyng" "$app_dir/usr/share/applications" "$app_dir/usr/share/icons/hicolor/512x512/apps"
-          cp -a "$BUNDLE_DIR"/. "$app_dir/opt/pleazyng/"
-          install -Dm755 linux/packaging/appimage/AppRun "$app_dir/AppRun"
-          install -Dm644 linux/packaging/appimage/pleazyng.desktop "$app_dir/pleazyng.desktop"
-          install -Dm644 linux/packaging/appimage/pleazyng.desktop "$app_dir/usr/share/applications/pleazyng.desktop"
-          install -Dm644 assets/pleazyng.png "$app_dir/pleazyng.png"
-          install -Dm644 assets/pleazyng.png "$app_dir/usr/share/icons/hicolor/512x512/apps/pleazyng.png"
-          python3 scripts/prepare_native_downloads.py --github-url \
-            https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-x86_64.AppImage \
-            --expected-sha ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0 --output "$appimagetool"
-          echo 'ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0  '"$appimagetool" | sha256sum --check --status
-          chmod +x "$appimagetool"
-          APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 VERSION="$RELEASE_TAG" \
-            "$appimagetool" --runtime-file "$RUNNER_TEMP/appimage-runtime-x86_64" "$app_dir" "$GITHUB_WORKSPACE/pleazyng-linux-x86_64.AppImage"
+          if ! command -v zsyncmake >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends zsync
+          fi
+          bash scripts/build_appimage.sh "$BUNDLE_DIR" "$GITHUB_WORKSPACE" "$RELEASE_TAG" "$GITHUB_REPOSITORY"
 
       - name: Attest x64 AppImage
         if: matrix.arch == 'x64'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
-          subject-path: pleazyng-linux-x86_64.AppImage
+          subject-path: |
+            pleazyng-linux-x86_64.AppImage
+            pleazyng-linux-x86_64.AppImage.zsync
 
       - name: Verify installed Flatpak runtime dependencies
         shell: bash
@@ -2867,7 +2856,9 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: linux-x64-appimage
-          path: pleazyng-linux-x86_64.AppImage
+          path: |
+            pleazyng-linux-x86_64.AppImage
+            pleazyng-linux-x86_64.AppImage.zsync
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-webos, build-tizen, build-ios, build-tvos, build-macos, build-windows, package-windows, build-linux]
@@ -3109,6 +3100,11 @@ jobs:
         with:
           name: linux-x64-appimage
           path: artifacts/linux-x64
+
+      - name: Verify AppImage update contracts before publication
+        # Recovered immutable releases can predate update metadata. Images
+        # that advertise updates always require a matching sidecar.
+        run: python3 scripts/verify_appimage_update.py --directory artifacts --repository "$GITHUB_REPOSITORY" --allow-legacy
 
       - name: Verify Tizen handoff before publication
         run: test -s artifacts/tizen/pleazyng-tizen-arm-tester-handoff.zip

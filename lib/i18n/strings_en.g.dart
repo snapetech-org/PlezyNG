@@ -10649,8 +10649,14 @@ class Translations$sourceSetup$en {
 
 	// Translations
 
-	/// en: 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.'
-	String get bookorbitHelp => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.';
+	/// en: 'Sign in with your own BookOrbit account. Pleazyng opens EPUB, KEPUB, PDF, CBZ, M4B, MP3, M4A, OPUS, OGG, and FLAC files in its existing readers and player, with audiobook progress synced to BookOrbit. Other BookOrbit formats remain available in BookOrbit. Requests for missing titles still go through your connected SeerrNG instance.'
+	String get bookorbitHelp => 'Sign in with your own BookOrbit account. Pleazyng opens EPUB, KEPUB, PDF, CBZ, M4B, MP3, M4A, OPUS, OGG, and FLAC files in its existing readers and player, with audiobook progress synced to BookOrbit. Other BookOrbit formats remain available in BookOrbit. Requests for missing titles still go through your connected SeerrNG instance.';
+
+	/// en: 'Open in BookOrbit'
+	String get bookorbitOpen => 'Open in BookOrbit';
+
+	/// en: 'View this title in BookOrbit to manage its library details and any formats Pleazyng cannot open. Listening progress syncs with your BookOrbit account.'
+	String get bookorbitDetailHelp => 'View this title in BookOrbit to manage its library details and any formats Pleazyng cannot open. Listening progress syncs with your BookOrbit account.';
 
 	/// en: 'Saved server certificate'
 	String get savedCertificate => 'Saved server certificate';
@@ -21210,7 +21216,9 @@ extension on Translations {
 			'audiobook.recoveryImportConfirm' => 'Merge this encrypted recovery file with current reading positions and notes? Existing history will be retained. Shared library and item IDs are not included; set matching IDs on every device before importing.',
 			'audiobook.recoveryExported' => 'Encrypted recovery file saved.',
 			'audiobook.recoveryImported' => 'Recovery data merged.',
-			'sourceSetup.bookorbitHelp' => 'Sign in with your own BookOrbit account to browse and play its books. Requests for missing titles still go through your connected SeerrNG instance.',
+			'sourceSetup.bookorbitHelp' => 'Sign in with your own BookOrbit account. Pleazyng opens EPUB, KEPUB, PDF, CBZ, M4B, MP3, M4A, OPUS, OGG, and FLAC files in its existing readers and player, with audiobook progress synced to BookOrbit. Other BookOrbit formats remain available in BookOrbit. Requests for missing titles still go through your connected SeerrNG instance.',
+			'sourceSetup.bookorbitOpen' => 'Open in BookOrbit',
+			'sourceSetup.bookorbitDetailHelp' => 'View this title in BookOrbit to manage its library details and any formats Pleazyng cannot open. Listening progress syncs with your BookOrbit account.',
 			'sourceSetup.savedCertificate' => 'Saved server certificate',
 			'sourceSetup.projectGutenberg' => 'Project Gutenberg',
 			'sourceSetup.nfsEndpointInvalid' => 'Enter an NFS URL such as nfs://nas:2049/export.',
@@ -21362,10 +21370,10 @@ extension on Translations {
 			'games.allGames' => 'All games',
 			'games.search' => 'Find a game',
 			'games.noMatches' => 'No games match this search.',
-			'games.favorite' => 'Save favorite',
-			'games.unfavorite' => 'Remove favorite',
 			_ => null,
 		} ?? switch (path) {
+			'games.favorite' => 'Save favorite',
+			'games.unfavorite' => 'Remove favorite',
 			'games.forget' => 'Forget computer',
 			'games.forgetDescription' => 'Remove this computer and its game shortcuts from this profile? To revoke this device’s authorization, remove it from the host’s paired devices.',
 			'games.unavailable' => 'The connection could not complete. Check that the computer is awake and paired, then try again.',
@@ -21876,10 +21884,10 @@ extension on Translations {
 			'subtitleAiUi.browseCapturedTranscript' => 'Browse captured transcript',
 			'subtitleAiUi.searchCuesSeekToTheirStartOrHideFutureDialogue' => 'Search cues, seek to their start, or hide future dialogue',
 			'subtitleAiUi.syncFromCapturedPlayback' => 'Sync from captured playback',
-			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
-			'subtitleAiUi.repairCutsFromCapturedPlayback' => 'Repair cuts from captured playback',
 			_ => null,
 		} ?? switch (path) {
+			'subtitleAiUi.alignsTheWatchedPortionAgainstAnExistingSubtitle' => 'Aligns the watched portion against an existing subtitle',
+			'subtitleAiUi.repairCutsFromCapturedPlayback' => 'Repair cuts from captured playback',
 			'subtitleAiUi.preservesCueTimingOutsideSpeechMatchedEvidence' => 'Preserves cue timing outside speech-matched evidence',
 			'subtitleAiUi.translateDetectedSpeechToEnglish' => 'Translate detected speech to English',
 			'subtitleAiUi.usedOnlyForGenerationSyncAlwaysTrans_5a1e6651' => 'Used only for generation; sync always transcribes the source language. Whisper translates audio instead of transcribing it.',
@@ -22390,10 +22398,10 @@ extension on Translations {
 			'karaokeUi.hostUnlock' => 'Host unlock',
 			'karaokeUi.chooseYourSingerName' => 'Choose your singer name',
 			'karaokeUi.searchSongs' => 'Search songs',
-			'bonusExtras.title' => 'Extras',
-			'bonusExtras.seeAll' => 'See all extras',
 			_ => null,
 		} ?? switch (path) {
+			'bonusExtras.title' => 'Extras',
+			'bonusExtras.seeAll' => 'See all extras',
 			'bonusExtras.findMore' => 'Find more',
 			'bonusExtras.empty' => 'No verified extras found for this title.',
 			'bonusExtras.search' => 'Search extras or a topic',

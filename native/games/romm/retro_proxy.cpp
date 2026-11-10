@@ -8,6 +8,8 @@
 #include <filesystem>
 
 #include "retro_android_process.h"
+#elif defined(PLEZY_RETRO_APPLE_EXTENSION)
+#include "retro_apple_process.h"
 #else
 #include "../../../shared/process/child_process.h"
 #endif
@@ -28,6 +30,8 @@ using namespace plezy::retro;
 using plezy::process::BytePipe;
 #if defined(__ANDROID__)
 namespace child = plezy::retro::android_process;
+#elif defined(PLEZY_RETRO_APPLE_EXTENSION)
+namespace child = plezy::retro::apple_process;
 #else
 namespace child = plezy::process::child_detail;
 #endif
@@ -44,7 +48,7 @@ void Diagnostic(const std::exception& error) {
 }
 std::recursive_mutex mutex;
 std::shared_ptr<child::Control> retiring;
-#if !defined(__ANDROID__)
+#if !defined(__ANDROID__) && !defined(PLEZY_RETRO_APPLE_EXTENSION)
 std::filesystem::path Helper() {
 #if defined(_WIN32)
   HMODULE library = nullptr;
@@ -79,7 +83,7 @@ class Session {
   bool healthy = false;
   Session(const char* corePath, const char* romPath = "", const char* systemPath = "", const char* savesPath = "") {
     Check(corePath && romPath && systemPath && savesPath);
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(PLEZY_RETRO_APPLE_EXTENSION)
     core = corePath;  // Android's linker resolves only the allowlisted APK libraries.
 #else
     core = std::filesystem::canonical(std::filesystem::u8path(corePath)).u8string();
@@ -88,7 +92,7 @@ class Session {
     if (*systemPath) system = std::filesystem::canonical(std::filesystem::u8path(systemPath)).u8string();
     if (*savesPath) saves = std::filesystem::canonical(std::filesystem::u8path(savesPath)).u8string();
     try {
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(PLEZY_RETRO_APPLE_EXTENSION)
       pipe = child::Spawn(core, rom, system, control);
       if (!rom.empty()) rom = "/rom/" + std::filesystem::u8path(rom).filename().u8string();
       system = "/system";
@@ -160,7 +164,13 @@ API void* plezy_retro_alloc(int size) {
   return size > 0 && size_t(size) <= kMaximumState ? std::malloc(size) : nullptr;
 }
 API void plezy_retro_free(void* data) { std::free(data); }
-API int plezy_retro_isolation_version() { return 1; }
+API int plezy_retro_isolation_version() {
+#ifdef PLEZY_RETRO_APPLE_EXTENSION
+  return child::ready.load(std::memory_order_acquire) ? 1 : 0;
+#else
+  return 1;
+#endif
+}
 API int plezy_retro_has_core(const char* path) {
   std::lock_guard<std::recursive_mutex> lock(mutex);
   if (session || !Reaped()) return 0;

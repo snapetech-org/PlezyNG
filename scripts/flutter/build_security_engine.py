@@ -63,7 +63,19 @@ def main():
                       GIT_CONFIG_VALUE_0='Pleazyng engine builder',
                       GIT_CONFIG_KEY_1='user.email',
                       GIT_CONFIG_VALUE_1='engine-build@users.noreply.github.com')
-    os.environ['PATH'] = str(depot) + os.pathsep + os.environ['PATH']
+    # Pinned depot_tools is deliberately not self-updated. Its Windows Git
+    # cache invokes git.bat, which the hosted runner's Git installation does
+    # not provide. Supply a workspace-local shim to that verified executable.
+    system_git = shutil.which('git.exe')
+    if not system_git:
+        raise RuntimeError('Windows Git executable is unavailable')
+    shim = root / 'windows-tools'
+    shim.mkdir()
+    (shim / 'git.bat').write_text(
+        '@echo off\n"' + system_git + '" %*\nexit /b %errorlevel%\n',
+        encoding='utf-8')
+    os.environ['PATH'] = os.pathsep.join([str(depot), str(shim), os.environ['PATH']])
+    run('cmd.exe', '/d', '/c', str(shim / 'git.bat'), '--version')
     destination = source / 'versions' / VERSION
     shutil.copytree(source / 'versions' / '3.47.1', destination)
     # Only Windows patches are applied. The upstream Apple port remains intact.
@@ -81,6 +93,21 @@ def main():
     if (monorepo / 'bin/internal/engine.version').read_text().strip() != ENGINE:
         raise RuntimeError('Unexpected engine ABI')
     run(sys.executable, source / 'engine.py', 'apply', VERSION, '--platform', 'windows', cwd=source)
+    # This SDK recognizes both VS year names and the new numeric installation
+    # directories, but the ARM64 CRT table is keyed by year. Normalize the
+    # detected directory through the SDK's own supported-version mapping.
+    toolchain_file = monorepo / 'engine/src/build/vs_toolchain.py'
+    spec = importlib.util.spec_from_file_location('pleazyng_vs_toolchain', toolchain_file)
+    toolchain = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(toolchain)
+    detected = toolchain.GetVisualStudioVersion()
+    if detected not in toolchain.VC_VERSIONS:
+        years = [year for year, directory in toolchain.MSVS_VERSIONS.items() if directory == detected]
+        if len(years) != 1 or years[0] not in toolchain.VC_VERSIONS:
+            raise RuntimeError('Unsupported Visual Studio runtime mapping')
+        os.environ['GYP_MSVS_VERSION'] = years[0]
+    os.environ['GYP_MSVS_OVERRIDE_PATH'] = toolchain.DetectVisualStudioPath()
+    print('Selected Visual Studio ' + toolchain.GetVisualStudioVersion(), flush=True)
     suffix = '_arm64' if args.arch == 'arm64' else ''
     for mode in ['debug', 'release']:
         run(sys.executable, source / 'engine.py', 'build', VERSION, f'host_{mode}{suffix}', cwd=source)

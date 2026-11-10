@@ -82,7 +82,8 @@ class MultiviewWorkspaceController extends ChangeNotifier {
   /// Checkpoints use the existing owner, including full-screen playback.
   /// No hidden player or route is created merely to record recovery state.
   void watchRecovery(Object owner, WorkspaceSessionDescriptor? Function() read) {
-    if (_disposed || (!_recoverySources.containsKey(owner) && _recoverySources.length >= WorkspaceSnapshot.maxSessions)) {
+    if (_disposed ||
+        (!_recoverySources.containsKey(owner) && _recoverySources.length >= WorkspaceSnapshot.maxSessions)) {
       return;
     }
     _recoverySources[owner] = read;
@@ -117,6 +118,11 @@ class MultiviewWorkspaceController extends ChangeNotifier {
           _activeRecovery.remove(entry.key);
         } else {
           _activeRecovery[entry.key] = value!;
+          // Opening the same item independently also fulfils its recovery.
+          // Keep an explicit operation alive until its handoff completes.
+          if (!_recoveryOperations.containsKey(value.id)) {
+            _pendingRecovery.remove(value.id);
+          }
         }
       } catch (_) {
         // A retiring owner must not prevent other sessions being checkpointed.

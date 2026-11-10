@@ -81,12 +81,15 @@ jobs:
           set -euo pipefail
           test -n "$STORE_REVIEW_ACCESS_CODE"
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/pleazyng-avd-index"
+          mkdir -p "$ANDROID_AVD_HOME"
           test -c /dev/kvm
           sudo chmod a+rw /dev/kvm
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install 'platform-tools' 'emulator' 'system-images;android-36;google_apis;x86_64'
           printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
             --name pleazyng-play-qualification --package 'system-images;android-36;google_apis;x86_64' \
             --path "$RUNNER_TEMP/pleazyng-play-avd" --device pixel_6
+          test -f "$ANDROID_AVD_HOME/pleazyng-play-qualification.ini"
           "$ANDROID_HOME/emulator/emulator" -avd pleazyng-play-qualification \
             -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect \
             -memory 4096 -cores 4 -port 5586 > "$RUNNER_TEMP/pleazyng-review-emulator.log" 2>&1 &

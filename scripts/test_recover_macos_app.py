@@ -14,6 +14,15 @@ class CompilationRecoveryTests(unittest.TestCase):
         changed = recovery.build_contract(workflow.replace('--dart-define=SUPPORTER_MODE=unlocked', '--dart-define=SUPPORTER_MODE=iap'))
         self.assertNotEqual(original, changed)
 
+    def test_manifest_contract_cannot_be_confused_with_legacy_literal_pin(self):
+        workflow = (Path(__file__).resolve().parents[1] / '.github/workflows/build.yml').read_text()
+        current = recovery.build_contract(workflow)
+        legacy = recovery.build_contract(workflow + '\n  FLUTTER_VERSION: "3.47.1"\n')
+        self.assertNotEqual(current, legacy)
+        without_loader = workflow.replace('run: python3 scripts/flutter/load_sdk_pin.py --github-env', 'run: echo skipped')
+        with self.assertRaises(ValueError):
+            recovery.build_contract(without_loader)
+
     def compare(self, files, **values):
         return dict(status='ahead',merge_base_commit={'sha':'a'*40},files=files,**values)
 
@@ -22,6 +31,8 @@ class CompilationRecoveryTests(unittest.TestCase):
 
     def test_application_native_or_renamed_inputs_are_rejected(self):
         for change in [{'filename':'lib/main.dart'},{'filename':'mpv-build.lock.json'},
+                       {'filename':'scripts/flutter/sdk-pin.json'},
+                       {'filename':'scripts/flutter/load_sdk_pin.py'},
                        {'filename':'.github/workflows/build.yml','previous_filename':'lib/main.dart'}]:
             with self.subTest(change=change),self.assertRaises(ValueError):
                 recovery.product_equivalence(self.compare([change]),'a'*40)

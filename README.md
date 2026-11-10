@@ -411,6 +411,7 @@ This list covers the current Pleazyng codebase, including additions since the fo
 - Now Playing with synced lyrics[^lyrics], persistent mini-player, and sleep timer
 - Accessible visualizer that follows Plex analysis or optional live audio stats on compatible MPV builds
 - Background playback with lock-screen, media-key, and notification controls[^bgaudio]
+- Paired music transfer to compatible Pleazyng sessions, with a [managed Linux ARM64 / Raspberry Pi endpoint](scripts/music_endpoint/README.md)
 - Offline playback of downloaded albums and tracks
 - Streaming quality presets — Original, 320, 192, or 128 kbps
 - OpenSubsonic/Subsonic artist, album, track and recent-album browsing, search and shared-player playback; progress is profile-local, with optional WebDAV state sync

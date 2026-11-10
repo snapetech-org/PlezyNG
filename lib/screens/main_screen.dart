@@ -65,6 +65,7 @@ import '../services/multi_server_manager.dart';
 import '../services/offline_watch_sync_service.dart';
 import '../services/new_episode_notification_service.dart';
 import '../services/settings_service.dart';
+import '../services/music/music_endpoint_mode.dart';
 import '../providers/offline_mode_provider.dart';
 import '../services/companion_remote/companion_remote_host_controller.dart';
 import '../services/companion_remote/companion_remote_receiver.dart';
@@ -1205,7 +1206,7 @@ class _MainScreenState extends State<MainScreen>
   Future<void> _autoStartCompanionRemoteServer() async {
     try {
       final settings = await SettingsService.getInstance();
-      if (!settings.read(SettingsService.enableCompanionRemoteServer)) return;
+      if (!settings.read(SettingsService.enableCompanionRemoteServer) && !MusicEndpointMode.enabled) return;
       if (!mounted) return;
       await startCompanionRemoteHost(context);
     } catch (e) {

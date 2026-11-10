@@ -117,6 +117,9 @@ install(CODE "
   " COMPONENT Runtime)
 
 set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
+install(FILES "${CMAKE_SOURCE_DIR}/../scripts/music_endpoint/install.sh"
+              "${CMAKE_SOURCE_DIR}/../scripts/music_endpoint/README.md"
+  DESTINATION "${INSTALL_BUNDLE_DATA_DIR}/music-endpoint" COMPONENT Runtime)
 set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Every ordinary Linux build includes the offline HDR10/SDR runtime. The

@@ -111,21 +111,24 @@ For iOS and tvOS signing, the App Store Connect `.p8` key is supplied as the raw
 | Launchpad PPA | `GPG_PRIVATE_KEY`; repository variable `LAUNCHPAD_PPA` in `ppa:<owner>/<archive>` format |
 | Relay Docker Hub mirror | `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` |
 
-GHCR uses the workflow's `GITHUB_TOKEN`; make the first package public in GitHub Packages settings if anonymous pulls are intended. The Discord publisher uses `DISCORD_RELEASE_WEBHOOK`.
+GHCR uses the workflow's `GITHUB_TOKEN`; make the first package public in GitHub Packages settings if anonymous pulls are intended. Discord uses `DISCORD_CHANGELOG_WEBHOOK` for #changelogs and the existing `DISCORD_RELEASE_WEBHOOK` for the project channel.
 
 ### Automatic Discord announcements
 
 `discord-release.yml` handles `release: published` on compatible hosted Linux.
 It reads the published stable release and sends its complete notes in bounded
-embeds, with mentions disabled and each response checked. Drafts, prereleases,
+embeds in #changelogs, with mentions disabled and each response checked. The
+project channel receives a link to the first verified note. Until the shared
+secret is configured, the existing project webhook receives the notes. Drafts, prereleases,
 foreign release URLs, and feature-branch manual dispatches are rejected.
 `publish_github_release()` also explicitly dispatches this workflow because
 publication using `GITHUB_TOKEN` does not trigger another workflow's release
 event. This applies to GitHub-only publication as well as full channel publication.
 
 Runs serialize by release tag. The release asset
-`discord-announcement-receipt.json` records confirmed message IDs after each
-chunk; it contains no webhook URL or credentials. Confirmed chunks are skipped
+`discord-changelog-receipt.json` records confirmed message IDs after each
+chunk and the project link. The original single-channel route keeps
+`discord-announcement-receipt.json`. Confirmed chunks are skipped
 on retries, and definite HTTP rejections leave that chunk retryable. The receipt is also retained as a workflow artifact, including on
 failure. If a POST's outcome is uncertain, automation stops instead of repeating
 it: inspect the retained receipt and Discord channel, then reconcile the

@@ -130,6 +130,32 @@ class DiscordDeliveryTest(unittest.TestCase):
                 self.assertEqual(send.call_count, 1)
                 self.assertEqual(send.call_args.args[-1], "a" * 10)
 
+    def test_project_link_retry_keeps_confirmed_changelog_chunks(self):
+        project = ("unused", (discord.route.CHANGELOG_GUILD, "123"))
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / discord.CHANGELOG_RECEIPT_NAME
+            with patch.object(discord, "gh"), patch.object(discord, "post", return_value={
+                "id": "456", "channel_id": discord.route.CHANGELOG_CHANNEL
+            }) as send_notes, patch.object(discord.route, "post", side_effect=[
+                discord.route.RejectedPost("Discord returned HTTP 403."),
+                f"https://discord.com/channels/{discord.route.CHANGELOG_GUILD}/123/789",
+            ]) as send_pointer:
+                with self.assertRaises(discord.route.RejectedPost):
+                    discord.announce(release(), "unused", target, project_route=project)
+                first = json.loads(target.read_text())
+                self.assertEqual(len(first["messages"]), 1)
+                self.assertFalse(first["in_flight_project_message"])
+                existing = release()
+                existing["assets"] = [{"name": discord.CHANGELOG_RECEIPT_NAME}]
+                receipt = discord.announce(existing, "unused", target, project_route=project)
+                discord.announce(existing, "unused", target, project_route=project)
+                self.assertEqual(send_notes.call_count, 1)
+                self.assertEqual(send_pointer.call_count, 2)
+                self.assertIn("/123/789", receipt["project_message"])
+                payload = send_pointer.call_args.args[2]
+                self.assertEqual(payload["flags"], 4)
+                self.assertIn(f"/{discord.route.CHANGELOG_CHANNEL}/456", payload["content"])
+
     def test_unpublished_prerelease_or_foreign_release_never_posts(self):
         with tempfile.TemporaryDirectory() as directory:
             event = Path(directory) / "release.json"
